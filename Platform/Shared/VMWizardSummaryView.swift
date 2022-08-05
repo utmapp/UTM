@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
 struct VMWizardSummaryView: View {
     @ObservedObject var wizardState: VMWizardState
     @EnvironmentObject private var data: UTMData
@@ -111,10 +110,10 @@ struct VMWizardSummaryView: View {
             TextField("Engine", text: .constant(wizardState.useAppleVirtualization ? "Apple Virtualization" : "QEMU"))
             Toggle("Use Virtualization", isOn: $wizardState.useVirtualization)
             if !wizardState.useAppleVirtualization {
-                TextField("Architecture", text: $wizardState.systemArchitecture.bound)
-                TextField("System", text: $wizardState.systemTarget.bound)
+                TextField("Architecture", text: .constant(wizardState.systemArchitecture.prettyValue))
+                TextField("System", text: .constant(wizardState.systemTarget.prettyValue))
             }
-            TextField("RAM", text: .constant(ByteCountFormatter.string(fromByteCount: Int64(wizardState.systemMemory), countStyle: .memory)))
+            TextField("RAM", text: .constant(ByteCountFormatter.string(fromByteCount: Int64(wizardState.systemMemoryMib * wizardState.bytesInMib), countStyle: .memory)))
             TextField("CPU", text: .constant(coreDescription))
             TextField("Storage", text: .constant(storageDescription))
             if !wizardState.useAppleVirtualization && wizardState.operatingSystem == .Linux {
@@ -142,6 +141,11 @@ struct VMWizardSummaryView: View {
                 TextField("Initial Ramdisk", text: .constant(wizardState.linuxInitialRamdiskURL?.path ?? ""))
                 TextField("Root Image", text: .constant(wizardState.linuxRootImageURL?.path ?? ""))
                 TextField("Boot Arguments", text: $wizardState.linuxBootArguments)
+                #if arch(arm64)
+                if wizardState.useAppleVirtualization && wizardState.operatingSystem == .Linux {
+                    Toggle("Use Rosetta", isOn: $wizardState.linuxHasRosetta)
+                }
+                #endif
             case .Windows, .Other:
                 if let windowsBootVhdx = wizardState.windowsBootVhdx {
                     TextField("Disk Image", text: .constant(windowsBootVhdx.path))
@@ -161,7 +165,6 @@ struct VMWizardSummaryView: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct VMWizardSummaryView_Previews: PreviewProvider {
     @StateObject static var wizardState = VMWizardState()
     

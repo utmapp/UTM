@@ -4,7 +4,7 @@
 /* A removable drive that has no image file inserted. */
 "(empty)" = "（無）";
 
-/* UTMQemuConfiguration+Drives */
+/* UTMLegacyQemuConfiguration+Drives */
 "%@ Drive" = "%@ 磁碟機";
 
 /* No comment provided by engineer. */
@@ -82,7 +82,7 @@
 /* No comment provided by engineer. */
 "Argument" = "引數";
 
-/* UTMQemuConfiguration */
+/* UTMLegacyQemuConfiguration */
 "BIOS" = "BIOS";
 
 /* No comment provided by engineer. */
@@ -106,7 +106,7 @@
 /* No comment provided by engineer. */
 "Boot VHDX Image:" = "開機 VHDX 映像檔：";
 
-/* UTMQemuConfiguration */
+/* UTMLegacyQemuConfiguration */
 "Bridged (Advanced)" = "橋接（進階）";
 
 /* No comment provided by engineer. */
@@ -149,7 +149,7 @@
 /* Configuration boot device */
 "CD/DVD" = "CD/DVD";
 
-/* UTMQemuConfiguration */
+/* UTMLegacyQemuConfiguration */
 "CD/DVD (ISO) Image" = "CD/DVD (ISO) 映像檔";
 
 /* VMRemovableDrivesViewController */
@@ -264,7 +264,7 @@
    VMWizardState */
 "Disk creation failed." = "無法建立磁碟。";
 
-/* UTMQemuConfiguration */
+/* UTMLegacyQemuConfiguration */
 "Disk Image" = "磁碟映像檔";
 
 /* No comment provided by engineer. */
@@ -299,7 +299,7 @@
 "Done" = "完成";
 
 /* No comment provided by engineer. */
-"Download prebuilt from UTM Gallery..." = "從 UTM 資源庫下載預先建置好的機器⋯";
+"Download prebuilt from UTM Gallery…" = "從 UTM 資源庫下載預先建置好的機器⋯";
 
 /* No comment provided by engineer. */
 "Download Ubuntu Server for ARM" = "下載 Ubuntu Server for ARM";
@@ -337,7 +337,7 @@
 /* No comment provided by engineer. */
 "Emulated Network Card" = "模擬網路卡";
 
-/* UTMQemuConfiguration */
+/* UTMLegacyQemuConfiguration */
 "Emulated VLAN" = "模擬 VLAN";
 
 /* No comment provided by engineer. */
@@ -482,7 +482,7 @@
 "Hide" = "隱藏";
 
 /* No comment provided by engineer. */
-"Hide Unused Flags..." = "隱藏無使用旗標⋯";
+"Hide Unused Flags…" = "隱藏無使用旗標⋯";
 
 /* VMDisplayViewController */
 "Hint: To show the toolbar again, use a three-finger swipe down on the screen." = "提示：若要再次顯示工具列，請使用三指在螢幕從上向下滑動。";
@@ -610,25 +610,25 @@
 /* No comment provided by engineer. */
 "License" = "授權條款";
 
-/* UTMQemuConfiguration */
+/* UTMLegacyQemuConfiguration */
 "Linear" = "線性";
 
 /* No comment provided by engineer. */
 "Linux" = "Linux";
 
-/* UTMQemuConfiguration */
+/* UTMLegacyQemuConfiguration */
 "Linux Device Tree Binary" = "Linux 裝置樹二進位";
 
 /* No comment provided by engineer. */
 "Linux initial ramdisk:" = "Linux 初始 ramdisk：";
 
-/* UTMQemuConfiguration */
+/* UTMLegacyQemuConfiguration */
 "Linux Kernel" = "Linux 核心";
 
 /* No comment provided by engineer. */
 "Linux kernel (required):" = "Linux 內核（必填）：";
 
-/* UTMQemuConfiguration */
+/* UTMLegacyQemuConfiguration */
 "Linux RAM Disk" = "Linux RAM Disk";
 
 /* No comment provided by engineer. */
@@ -667,7 +667,7 @@
 /* VMConfigInfoView */
 "Name is an invalid filename." = "名稱不是有效檔名。";
 
-/* UTMQemuConfiguration */
+/* UTMLegacyQemuConfiguration */
 "Nearest Neighbor" = "近鄰取樣";
 
 /* No comment provided by engineer. */
@@ -695,7 +695,7 @@
 "New VM name" = "新增 VM 名稱";
 
 /* No comment provided by engineer. */
-"New..." = "新增⋯";
+"New…" = "新增⋯";
 
 /* No comment provided by engineer. */
 "Continue" = "下一步";
@@ -720,7 +720,7 @@
 /* UTMDrive */
 "none" = "無";
 
-/* UTMQemuConfiguration */
+/* UTMLegacyQemuConfiguration */
 "None" = "無";
 
 /* No comment provided by engineer. */
@@ -884,7 +884,7 @@
 /* No comment provided by engineer. */
 "Shared Directory" = "共享檔案夾";
 
-/* UTMQemuConfiguration */
+/* UTMLegacyQemuConfiguration */
 "Shared Network" = "共享網路";
 
 /* VMConfigSharingViewController */
@@ -900,7 +900,7 @@
 "Show Advanced Settings" = "顯示進階設定";
 
 /* No comment provided by engineer. */
-"Show All Flags..." = "顯示所有旗標⋯";
+"Show All Flags…" = "顯示所有旗標⋯";
 
 /* No comment provided by engineer. */
 "Size" = "大小";

@@ -22,8 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UTMQemuVirtualMachine (Drives)
 
-@property (nonatomic, readonly) NSArray<UTMDrive *> *drives;
-
 - (BOOL)ejectDrive:(UTMDrive *)drive force:(BOOL)force error:(NSError * _Nullable *)error;
 - (BOOL)changeMediumForDrive:(UTMDrive *)drive url:(NSURL *)url error:(NSError * _Nullable *)error;
 - (BOOL)restoreRemovableDrivesFromBookmarksWithError:(NSError * _Nullable __autoreleasing *)error;

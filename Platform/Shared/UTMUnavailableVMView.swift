@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
 struct UTMUnavailableVMView: View {
     @ObservedObject var wrappedVM: UTMWrappedVirtualMachine
     @EnvironmentObject private var data: UTMData
@@ -26,7 +25,7 @@ struct UTMUnavailableVMView: View {
                              subtitle: wrappedVM.detailsSubtitleLabel,
                              progress: nil,
                              imageOverlaySystemName: "questionmark.circle.fill",
-                             popover: { WrappedVMDetailsView(path: wrappedVM.path!.path, onRemove: remove) },
+                             popover: { WrappedVMDetailsView(path: wrappedVM.path.path, onRemove: remove) },
                              onRemove: remove)
     }
     
@@ -35,7 +34,6 @@ struct UTMUnavailableVMView: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 fileprivate struct WrappedVMDetailsView: View {
     let path: String
     let onRemove: () -> Void
@@ -73,7 +71,6 @@ fileprivate struct WrappedVMDetailsView: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct UTMUnavailableVMView_Previews: PreviewProvider {
     static var previews: some View {
         UTMUnavailableVMView(wrappedVM: UTMWrappedVirtualMachine(bookmark: Data(), name: "Wrapped VM", path: URL(fileURLWithPath: "/")))

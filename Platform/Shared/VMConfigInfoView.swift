@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
 private enum IconStyle: String, Identifiable, CaseIterable {
     case generic = "Generic"
     case operatingSystem = "Operating System"
@@ -26,9 +25,8 @@ private enum IconStyle: String, Identifiable, CaseIterable {
     var id: String { rawValue }
 }
 
-@available(iOS 14, macOS 11, *)
-struct VMConfigInfoView<Config: ObservableObject & UTMConfigurable>: View {
-    @ObservedObject var config: Config
+struct VMConfigInfoView: View {
+    @Binding var config: UTMConfigurationInfo
     @State private var imageSelectVisible: Bool = false
     @State private var iconStyle: IconStyle = .generic
     @State private var warningMessage: String? = nil
@@ -65,9 +63,9 @@ struct VMConfigInfoView<Config: ObservableObject & UTMConfigurable>: View {
             }
             #endif
         }.onAppear {
-            if config.iconCustom {
+            if config.isIconCustom {
                 iconStyle = .custom
-            } else if config.iconUrl != nil {
+            } else if config.iconURL != nil {
                 iconStyle = .operatingSystem
             }
         }.alert(item: $warningMessage) { warning in
@@ -76,9 +74,8 @@ struct VMConfigInfoView<Config: ObservableObject & UTMConfigurable>: View {
     }
 
     private var nameField: some View {
-        TextField("Name", text: $config.name, onEditingChanged: validateName)
+        TextField("Name", text: $config.name)
             .keyboardType(.asciiCapable)
-            .disabled(config.isRenameDisabled)
     }
 
     private var notesField: some View {
@@ -95,19 +92,8 @@ struct VMConfigInfoView<Config: ObservableObject & UTMConfigurable>: View {
             return iconStyle
         } set: {
             iconStyle = $0
-            switch iconStyle {
-            case .generic:
-                config.icon = ""
-                config.selectedCustomIconPath = nil
-                break
-            case .operatingSystem:
-                config.iconCustom = false
-                config.selectedCustomIconPath = nil
-                break
-            case .custom:
-                config.iconCustom = true
-                break
-            }
+            config.isIconCustom = false
+            config.iconURL = nil
         }
 
         Picker(selection: style.animation(), label: Text("Style")) {
@@ -128,7 +114,7 @@ struct VMConfigInfoView<Config: ObservableObject & UTMConfigurable>: View {
         case .custom:
             #if os(macOS)
             Button(action: { imageSelectVisible.toggle() }, label: {
-                IconPreview(url: config.iconUrl)
+                IconPreview(url: config.iconURL)
             }).fileImporter(isPresented: $imageSelectVisible, allowedContentTypes: [.image]) { result in
                 switch result {
                 case .success(let url):
@@ -139,14 +125,14 @@ struct VMConfigInfoView<Config: ObservableObject & UTMConfigurable>: View {
             }.buttonStyle(.plain)
             #else
             Button(action: { imageSelectVisible.toggle() }, label: {
-                IconPreview(url: config.iconUrl)
+                IconPreview(url: config.iconURL)
             }).popover(isPresented: $imageSelectVisible, arrowEdge: .bottom) {
                 ImagePicker(onImageSelected: imageCustomSelected)
             }.buttonStyle(.plain)
             #endif
         case .operatingSystem:
             Button(action: { imageSelectVisible.toggle() }, label: {
-                IconPreview(url: config.iconUrl)
+                IconPreview(url: config.iconURL)
             }).popover(isPresented: $imageSelectVisible, arrowEdge: .bottom) {
                 IconSelect(onIconSelected: imageSelected)
             }.buttonStyle(.plain)
@@ -163,41 +149,22 @@ struct VMConfigInfoView<Config: ObservableObject & UTMConfigurable>: View {
         }
     }
     
-    private func validateName(editing: Bool) {
-        guard !editing else {
-            return
-        }
-        let fileManager = FileManager.default
-        let tempPath = fileManager.temporaryDirectory
-        let fakeFile = tempPath.appendingPathComponent(config.name)
-        if fileManager.createFile(atPath: fakeFile.path, contents: nil, attributes: nil) {
-            do {
-                try fileManager.removeItem(at: fakeFile)
-            } catch {
-                warningMessage = NSLocalizedString("Failed to check name.", comment: "VMConfigInfoView")
-            }
-        } else {
-            warningMessage = NSLocalizedString("Name is an invalid filename.", comment: "VMConfigInfoView")
-        }
-    }
-    
     private func imageCustomSelected(url: URL?) {
         if let imageURL = url {
-            config.selectedCustomIconPath = imageURL
-            config.iconCustom = true
+            config.iconURL = imageURL
+            config.isIconCustom = true
         }
         imageSelectVisible = false
     }
     
     private func imageSelected(url: URL) {
         let name = url.deletingPathExtension().lastPathComponent
-        config.icon = name
-        config.iconCustom = false
+        config.iconURL = UTMConfigurationInfo.builtinIcon(named: name)
+        config.isIconCustom = false
         imageSelectVisible = false
     }
 }
 
-@available(iOS 14, macOS 11, *)
 private struct IconPreview: View {
     let url: URL?
     
@@ -221,7 +188,6 @@ private struct IconPreview: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 private struct IconSelect: View {
     let onIconSelected: (URL) -> Void
     private let gridLayout = [GridItem(.adaptive(minimum: 60))]
@@ -286,13 +252,12 @@ private struct IconSelect: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct VMConfigInfoView_Previews: PreviewProvider {
-    @ObservedObject static private var config = UTMQemuConfiguration()
+    @State static private var config = UTMConfigurationInfo()
     
     static var previews: some View {
         Group {
-            VMConfigInfoView(config: config)
+            VMConfigInfoView(config: $config)
             IconSelect() { _ in
                 
             }

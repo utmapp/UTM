@@ -86,6 +86,16 @@
 		</dict>
 		<dict>
 			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Prefer device to external microphone</string>
+			<key>Key</key>
+			<string>PreferDeviceMicrophone</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
 			<string>Gestures</string>
@@ -267,6 +277,22 @@
 			<integer>1</integer>
 			<key>MaximumValue</key>
 			<integer>100</integer>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Cursor - Scroll Wheel</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Invert Scroll</string>
+			<key>Key</key>
+			<string>InvertScroll</string>
+			<key>DefaultValue</key>
+			<false/>
 		</dict>
 		<dict>
 			<key>Type</key>

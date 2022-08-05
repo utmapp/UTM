@@ -14,15 +14,12 @@
 // limitations under the License.
 //
 
-#import "UIViewController+Extensions.h"
 #import "VMDisplayMetalViewController.h"
 #import "VMDisplayMetalViewController+Touch.h"
 #import "VMDisplayMetalViewController+Pencil.h"
 #import "VMCursor.h"
 #import "VMScroll.h"
 #import "CSDisplay.h"
-#import "UTMQemuConfiguration.h"
-#import "UTMQemuConfiguration+Miscellaneous.h"
 #import "UTMSpiceIO.h"
 #import "UTMLogging.h"
 #import "UTMQemuVirtualMachine.h"
@@ -122,6 +119,10 @@ const CGFloat kScrollResistance = 10.0f;
 }
 
 #pragma mark - Properties from settings
+
+- (BOOL)isInvertScroll {
+    return [self boolForSetting:@"InvertScroll"];
+}
 
 - (VMGestureType)gestureTypeForSetting:(NSString *)key {
     NSInteger integer = [self integerForSetting:key];
@@ -301,11 +302,8 @@ static CGFloat CGPointToPixel(CGFloat point) {
         viewport.x = CGPointToPixel(translation.x) + _lastTwoPanOrigin.x;
         viewport.y = CGPointToPixel(translation.y) + _lastTwoPanOrigin.y;
         self.vmDisplay.viewportOrigin = [self clipDisplayToView:viewport];
-        // reset the resize toolbar icon
-        self.toolbar.isViewportChanged = YES;
         // persist this change in viewState
-        self.vm.viewState.displayOriginX = self.vmDisplay.viewportOrigin.x;
-        self.vm.viewState.displayOriginY = self.vmDisplay.viewportOrigin.y;
+        self.delegate.displayOrigin = self.vmDisplay.viewportOrigin;
     }
     if (sender.state == UIGestureRecognizerStateEnded) {
         // TODO: decelerate
@@ -373,7 +371,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
 
 - (CGPoint)moveMouseScroll:(CGPoint)translation {
     translation.y = CGPointToPixel(translation.y) / kScrollSpeedReduction;
-    if (self.vmQemuConfig.inputScrollInvert) {
+    if (self.isInvertScroll) {
         translation.y = -translation.y;
     }
     [self.vmInput sendMouseScroll:kCSInputScrollSmooth button:self.mouseButtonDown dy:translation.y];
@@ -465,31 +463,21 @@ static CGFloat CGPointToPixel(CGFloat point) {
         sender.state == UIGestureRecognizerStateEnded) {
         NSAssert(sender.scale > 0, @"sender.scale cannot be 0");
         self.vmDisplay.viewportScale *= sender.scale;
-        // reset the resize toolbar icon
-        self.toolbar.isViewportChanged = YES;
         // persist this change in viewState
-        self.vm.viewState.displayScale = self.vmDisplay.viewportScale;
+        self.delegate.displayScale = self.vmDisplay.viewportScale;
         sender.scale = 1.0;
     }
 }
 
 - (IBAction)gestureSwipeUp:(UISwipeGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateEnded) {
-        if (self.toolbar.hasLegacyToolbar && self.toolbar.isLegacyToolbarVisible) {
-            [self.toolbar hideLegacyToolbar];
-        } else if (!self.keyboardVisible) {
-            self.keyboardVisible = YES;
-        }
+        [self showKeyboard];
     }
 }
 
 - (IBAction)gestureSwipeDown:(UISwipeGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateEnded) {
-        if (self.keyboardVisible) {
-            self.keyboardVisible = NO;
-        } else if (self.toolbar.hasLegacyToolbar && !self.toolbar.isLegacyToolbarVisible) {
-            [self.toolbar showLegacyToolbar];
-        }
+        [self hideKeyboard];
     }
 }
 
@@ -628,7 +616,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
     self.vmDisplay.cursor.isInhibited = shouldHideCursor;
     if (shouldUseServerMouse != self.vmInput.serverModeCursor) {
         UTMLog(@"Switching mouse mode to server:%d for type:%ld", shouldUseServerMouse, type);
-        [self.vm requestInputTablet:!shouldUseServerMouse];
+        [self.delegate requestInputTablet:!shouldUseServerMouse];
         return YES;
     }
     return NO;
@@ -637,7 +625,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
 #pragma mark - Touch event handling
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    if (!self.vmQemuConfig.inputLegacy) {
+    if (!self.delegate.qemuInputLegacy) {
         for (UITouch *touch in touches) {
             if (@available(iOS 14, *)) {
                 if (self.prefersPointerLocked && (touch.type == UITouchTypeIndirect || touch.type == UITouchTypeIndirectPointer)) {
@@ -674,13 +662,15 @@ static CGFloat CGPointToPixel(CGFloat point) {
             }
             break; // handle a single touch only
         }
+    } else {
+        [self switchMouseType:VMMouseTypeRelative];
     }
     [super touchesBegan:touches withEvent:event];
 }
 
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     // move cursor in client mode, in server mode we handle in gesturePan
-    if (!self.vmQemuConfig.inputLegacy && !self.vmInput.serverModeCursor) {
+    if (!self.delegate.qemuInputLegacy && !self.vmInput.serverModeCursor) {
         for (UITouch *touch in touches) {
             [_cursor updateMovement:[touch locationInView:self.mtkView]];
             break; // handle single touch
@@ -691,7 +681,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
 
 - (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     // release click in client mode, in server mode we handle in gesturePan
-    if (!self.vmQemuConfig.inputLegacy && !self.vmInput.serverModeCursor) {
+    if (!self.delegate.qemuInputLegacy && !self.vmInput.serverModeCursor) {
         [self dragCursor:UIGestureRecognizerStateEnded primary:YES secondary:YES middle:YES];
     }
     [super touchesCancelled:touches withEvent:event];
@@ -699,7 +689,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
 
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     // release click in client mode, in server mode we handle in gesturePan
-    if (!self.vmQemuConfig.inputLegacy && !self.vmInput.serverModeCursor) {
+    if (!self.delegate.qemuInputLegacy && !self.vmInput.serverModeCursor) {
         [self dragCursor:UIGestureRecognizerStateEnded primary:YES secondary:YES middle:YES];
     }
     [super touchesEnded:touches withEvent:event];

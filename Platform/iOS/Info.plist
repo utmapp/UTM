@@ -33,8 +33,6 @@
 	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
 	<key>CFBundleShortVersionString</key>
 	<string>$(MARKETING_VERSION)</string>
-	<key>CFBundleVersion</key>
-	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -48,6 +46,8 @@
 			</array>
 		</dict>
 	</array>
+	<key>CFBundleVersion</key>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LSRequiresIPhoneOS</key>
@@ -64,27 +64,26 @@
 		<string>_altserver._tcp</string>
 	</array>
 	<key>NSLocalNetworkUsageDescription</key>
-	<string>UTM uses the local network to find and communicate with AltServer.</string>
+	<string>The virtual machine may access the local network. UTM also uses the local network to communicate with AltServer.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>VM background access requires location services. Location data will never leave the device.</string>
+	<string>UTM requests location data periodically to ensure the system keeps the background process active. Location data will never leave the device.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>VM background access requires location services. Location data will never leave the device.</string>
+	<string>UTM requests location data periodically to ensure the system keeps the background process active. Location data will never leave the device.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>VM background access requires location services. Location data will never leave the device.</string>
+	<string>UTM requests location data periodically to ensure the system keeps the background process active. Location data will never leave the device.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>VM needs access to microphone.</string>
+	<string>Permission is required for any virtual machine to record from the microphone.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>
 	<array>
+		<string>audio</string>
 		<string>location</string>
 	</array>
 	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
-	<key>UIMainStoryboardFile</key>
-	<string>Main</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>arm64</string>
@@ -126,5 +125,22 @@
 			</dict>
 		</dict>
 	</array>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<true/>
+		<key>UISceneConfigurations</key>
+		<dict>
+			<key>UIWindowSceneSessionRoleExternalDisplay</key>
+			<array>
+				<dict>
+					<key>UISceneDelegateClassName</key>
+					<string>$(PRODUCT_MODULE_NAME).UTMExternalSceneDelegate</string>
+					<key>UISceneConfigurationName</key>
+					<string>External</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
 </dict>
 </plist>

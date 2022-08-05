@@ -15,6 +15,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "UTMLoggingDelegate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -24,7 +25,7 @@ void UTMLog(NSString *format, ...) NS_FORMAT_FUNCTION(1,2) NS_NO_TAIL_CALL;
 
 @property (nonatomic, readonly) NSPipe *standardOutput;
 @property (nonatomic, readonly) NSPipe *standardError;
-@property (nonatomic) NSString *lastErrorLine;
+@property (nonatomic, weak) id<UTMLoggingDelegate> delegate;
 
 + (UTMLogging *)sharedInstance;
 

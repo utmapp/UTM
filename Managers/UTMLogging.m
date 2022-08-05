@@ -62,6 +62,7 @@ void UTMLog(NSString *format, ...) {
     if (self = [super init]) {
         __weak typeof(self) _weakSelf = self;
         self.standardOutput = [NSPipe pipe];
+        __block NSString *outBuffer = [NSString string];
         self.standardOutput.fileHandleForReading.readabilityHandler = ^(NSFileHandle *handle) {
             typeof(self) _self = _weakSelf;
             NSData *data = [handle availableData];
@@ -72,6 +73,10 @@ void UTMLog(NSString *format, ...) {
                 _self.originalStdoutWrite = nil;
             }
             [_self.fileOutputStream write:data.bytes maxLength:data.length];
+            NSArray<NSString *> *lines = [_self parseLinesFromData:data buffer:&outBuffer];
+            for (NSString *line in lines) {
+                [_self.delegate logging:_self didRecieveOutputLine:line];
+            }
         };
         self.standardError = [NSPipe pipe];
         __block NSString *errorBuffer = [NSString string];
@@ -85,7 +90,10 @@ void UTMLog(NSString *format, ...) {
                 _self.originalStderrWrite = nil;
             }
             [_self.fileOutputStream write:data.bytes maxLength:data.length];
-            _self.lastErrorLine = [_self parseLastLine:data buffer:&errorBuffer];
+            NSArray<NSString *> *lines = [_self parseLinesFromData:data buffer:&errorBuffer];
+            for (NSString *line in lines) {
+                [_self.delegate logging:_self didRecieveErrorLine:line];
+            }
         };
     }
     return self;
@@ -123,14 +131,14 @@ error:
     return NO;
 }
 
-- (NSString *)parseLastLine:(NSData *)data buffer:(NSString **)buffer {
+- (NSArray<NSString *> *)parseLinesFromData:(NSData *)data buffer:(NSString **)buffer {
     NSString *string = [*buffer stringByAppendingString:[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]];
     NSArray *lines = [string componentsSeparatedByString:@"\n"];
     *buffer = [lines lastObject];
     if (lines.count > 0) {
         lines = [lines subarrayWithRange:NSMakeRange(0, lines.count - 1)];
     }
-    return [lines lastObject];
+    return lines;
 }
 
 - (void)logToFile:(NSURL *)path {

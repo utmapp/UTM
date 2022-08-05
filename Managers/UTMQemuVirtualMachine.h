@@ -15,24 +15,13 @@
 //
 
 #import "UTMVirtualMachine.h"
-#import "UTMQemuManagerDelegate.h"
 #import "UTMSpiceIODelegate.h"
-
-@class UTMQemuConfiguration;
-
-typedef NS_ENUM(NSInteger, UTMDisplayType) {
-    UTMDisplayTypeFullGraphic,
-    UTMDisplayTypeConsole
-};
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMQemuVirtualMachine : UTMVirtualMachine<UTMQemuManagerDelegate>
+@interface UTMQemuVirtualMachine : UTMVirtualMachine
 
 @property (nonatomic, weak, nullable) id<UTMSpiceIODelegate> ioDelegate;
-@property (nonatomic, readonly) UTMQemuConfiguration *qemuConfig;
-
-- (UTMDisplayType)supportedDisplayType;
 
 @end
 

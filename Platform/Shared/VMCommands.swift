@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
 struct VMCommands: Commands {
     @Environment(\.openURL) private var openURL
     
@@ -24,10 +23,10 @@ struct VMCommands: Commands {
     var body: some Commands {
         CommandGroup(replacing: .newItem) {
             Button(action: { NotificationCenter.default.post(name: NSNotification.NewVirtualMachine, object: nil) }, label: {
-                Text("New...")
+                Text("New…")
             }).keyboardShortcut(KeyEquivalent("n"))
             Button(action: { NotificationCenter.default.post(name: NSNotification.OpenVirtualMachine, object: nil) }, label: {
-                Text("Open...")
+                Text("Open…")
             }).keyboardShortcut(KeyEquivalent("o"))
         }
         SidebarCommands()
@@ -35,13 +34,13 @@ struct VMCommands: Commands {
         CommandGroup(replacing: .help) {
             Button(action: { openLink("https://mac.getutm.app/gallery/") }, label: {
                 Text("Virtual Machine Gallery")
-            })
+            }).keyboardShortcut(KeyEquivalent("1"), modifiers: [.command, .control])
             Button(action: { openLink("https://mac.getutm.app/support/") }, label: {
                 Text("Support")
-            })
+            }).keyboardShortcut(KeyEquivalent("2"), modifiers: [.command, .control])
             Button(action: { openLink("https://mac.getutm.app/licenses/") }, label: {
                 Text("License")
-            })
+            }).keyboardShortcut(KeyEquivalent("3"), modifiers: [.command, .control])
         }
     }
     

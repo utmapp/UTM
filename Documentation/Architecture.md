@@ -5,9 +5,9 @@ UTM is built upon several pieces of technology, layered to provide compatibility
 ```
 ┌────────────────────┬──────────────────────┐
 │   iOS VM Display   │   macOS VM Display   │
-├────────────┬───────┴──────────────────────┤
-│ iOS Legacy │           SwiftUI            │
-├────────────┴──────────────────────────────┤
+├────────────────────┴──────────────────────┤
+│                  SwiftUI                  │
+├───────────────────────────────────────────┤
 │             UTMVirtualMachine             │
 ├────────────────┬──────────────────────────┤
 │   CocoaSpice   │                          │
@@ -47,9 +47,9 @@ On macOS, spawning new processes is permitted but due to App Sandbox security re
 
 The XPC helper spawns `QEMULauncher` with an inherited sandbox. This means it can access files that are accessible to the helper XPC. The launcher process is what runs QEMU. When a new file is opened (for example a new disk image is mounted), the main application will pass a bookmark to the helper XPC where it will call `-startAccessingSecurityScopedResource` which also applies to the child process (`QEMULauncher`). This way, QEMU does not have to have any knowledge of the App Sandbox.
 
-### UTMQemuConfiguration
+### UTMConfiguration
 
-VM configuration is stored in a PLIST format. This PLIST maps to a `UTMQemuConfiguration` object which stores the underlying configuration data in a `NSDictionary` for easy serialization.
+VM configuration is stored in a PLIST format. This PLIST maps to either a `UTMQemuConfiguration` or `UTMAppleConfiguration` structure which stores the underlying configuration data in a `Codable` interface for easy serialization.
 
 ### UTMQemuSystem
 

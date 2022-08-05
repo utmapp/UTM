@@ -21,7 +21,7 @@ If you want to build the dependencies yourself, it is highly recommended that yo
 
 1. Install Xcode command line and [Homebrew][1]
 2. Install the following build prerequisites
-    `brew install bison pkg-config gettext glib libgpg-error nasm make meson`
+    `brew install bison pkg-config gettext glib-utils libgpg-error nasm make meson`
    Make sure to add `bison` and `gettext` to your `$PATH` environment variable!
 	`export PATH=/usr/local/opt/bison/bin:/usr/local/opt/gettext/bin:$PATH`
 3. Run `./scripts/build_dependencies.sh -p macos -a ARCH` where `ARCH` is either `arm64` or `x86_64`.

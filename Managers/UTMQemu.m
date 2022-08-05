@@ -44,12 +44,12 @@
 #pragma mark - Construction
 
 - (instancetype)init {
-    return [self initWithArgv:[NSArray<NSString *> array]];
+    return [self initWithArguments:[NSArray<NSString *> array]];
 }
 
-- (instancetype)initWithArgv:(NSArray<NSString *> *)argv {
+- (instancetype)initWithArguments:(NSArray<NSString *> *)arguments {
     if (self = [super init]) {
-        _argv = [argv mutableCopy];
+        _argv = [arguments mutableCopy];
         _urls = [NSMutableArray<NSURL *> array];
         if (![self setupXpc]) {
             return nil;
@@ -68,7 +68,11 @@
 #if TARGET_OS_IPHONE
     return YES;
 #else // only supported on macOS
-    _connection = [[NSXPCConnection alloc] initWithServiceName:@"com.utmapp.QEMUHelper"];
+    NSString *helperIdentifier = NSBundle.mainBundle.infoDictionary[@"HelperIdentifier"];
+    if (!helperIdentifier) {
+        helperIdentifier = @"com.utmapp.QEMUHelper";
+    }
+    _connection = [[NSXPCConnection alloc] initWithServiceName:helperIdentifier];
     _connection.remoteObjectInterface = [NSXPCInterface interfaceWithProtocol:@protocol(QEMUHelperProtocol)];
     [_connection resume];
     return _connection != nil;
@@ -149,7 +153,7 @@
                 NSString *err = [NSString stringWithUTF8String:dlerror()];
                 completion(NO, err);
             } else if (self.fatal || self.status) {
-                completion(NO, [NSString stringWithFormat:NSLocalizedString(@"QEMU exited from an error: %@", @"UTMQemu"), self.logging.lastErrorLine]);
+                completion(NO, nil);
             } else {
                 completion(YES, nil);
             }
@@ -176,9 +180,6 @@
             completion(NO, error.localizedDescription);
         }
     }] startQemu:name standardOutput:standardOutput standardError:standardError libraryBookmark:libBookmark argv:self.argv onExit:^(BOOL success, NSString *msg){
-        if (!success && !msg) {
-            msg = self.logging.lastErrorLine;
-        }
         completion(success, msg);
     }];
 }

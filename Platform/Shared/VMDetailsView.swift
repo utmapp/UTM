@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
 struct VMDetailsView: View {
     @ObservedObject var vm: UTMVirtualMachine
     @EnvironmentObject private var data: UTMData
@@ -101,17 +100,15 @@ struct VMDetailsView: View {
             .modifier(VMOptionalNavigationTitleModifier(vm: vm))
             .modifier(VMToolbarModifier(vm: vm, bottom: !regularScreenSizeClass))
             .sheet(isPresented: $data.showSettingsModal) {
-                #if os(macOS)
-                if let appleVM = vm as? UTMAppleVirtualMachine {
-                    VMSettingsView(vm: appleVM, config: appleVM.appleConfig)
-                        .environmentObject(data)
-                } else if let qemuVM = vm as? UTMQemuVirtualMachine {
-                    VMSettingsView(vm: qemuVM, config: qemuVM.qemuConfig)
+                if let qemuConfig = vm.config.qemuConfig {
+                    VMSettingsView(vm: vm, config: qemuConfig)
                         .environmentObject(data)
                 }
-                #else
-                VMSettingsView(vm: vm as! UTMQemuVirtualMachine, config: vm.config as! UTMQemuConfiguration)
-                    .environmentObject(data)
+                #if os(macOS)
+                if let appleConfig = vm.config.appleConfig {
+                    VMSettingsView(vm: vm, config: appleConfig)
+                        .environmentObject(data)
+                }
                 #endif
             }
         }
@@ -119,7 +116,6 @@ struct VMDetailsView: View {
 }
 
 /// Returns just the content under macOS but adds the title on iOS. #3099
-@available(iOS 14, macOS 11, *)
 private struct VMOptionalNavigationTitleModifier: ViewModifier {
     @ObservedObject var vm: UTMVirtualMachine
     
@@ -132,7 +128,6 @@ private struct VMOptionalNavigationTitleModifier: ViewModifier {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct Screenshot: View {
     @ObservedObject var vm: UTMVirtualMachine
     let large: Bool
@@ -157,7 +152,7 @@ struct Screenshot: View {
                 .fill(Color(red: 230/255, green: 229/255, blue: 235/255))
                 .blendMode(.hardLight)
             if vm.isBusy {
-                BigWhiteSpinner()
+                Spinner(size: .large)
             } else if vm.state == .vmStopped {
                 Button(action: { data.run(vm: vm) }, label: {
                     Label("Run", systemImage: "play.circle.fill")
@@ -170,7 +165,6 @@ struct Screenshot: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct Details: View {
     @ObservedObject var vm: UTMVirtualMachine
     let sizeLabel: String
@@ -182,7 +176,7 @@ struct Details: View {
                 HStack {
                     plainLabel("Path", systemImage: "folder")
                     Spacer()
-                    Text(vm.path!.path)
+                    Text(vm.path.path)
                         .foregroundColor(.secondary)
                 }
             }
@@ -217,21 +211,46 @@ struct Details: View {
                     .foregroundColor(.secondary)
             }
             #if os(macOS)
-            if let appleVM = vm as? UTMAppleVirtualMachine {
-                HStack {
-                    plainLabel("Serial", systemImage: "phone.connection")
-                    Spacer()
-                    if #available(macOS 12, *) {
-                        Text(appleVM.serialPort?.name ?? "Inactive")
-                            .foregroundColor(.secondary)
-                            .textSelection(.enabled)
-                    } else {
-                        Text(appleVM.serialPort?.name ?? "Inactive")
-                            .foregroundColor(.secondary)
+            if let appleConfig = vm.config.appleConfig {
+                ForEach(appleConfig.serials) { serial in
+                    if serial.mode == .ptty {
+                        HStack {
+                            plainLabel("Serial (TTY)", systemImage: "phone.connection")
+                            Spacer()
+                            OptionalSelectableText(serial.interface?.name)
+                        }
                     }
                 }
             }
             #endif
+            if let qemuConfig = vm.config.qemuConfig {
+                ForEach(qemuConfig.serials) { serial in
+                    if serial.mode == .tcpClient {
+                        HStack {
+                            plainLabel("Serial (Client)", systemImage: "network")
+                            Spacer()
+                            let address = "\(serial.tcpHostAddress ?? "example.com"):\(serial.tcpPort ?? 1234)"
+                            OptionalSelectableText(vm.state == .vmStarted ? address : nil)
+                        }
+                    } else if serial.mode == .tcpServer {
+                        HStack {
+                            plainLabel("Serial (Server)", systemImage: "network")
+                            Spacer()
+                            let address = "\(serial.tcpPort ?? 1234)"
+                            OptionalSelectableText(vm.state == .vmStarted ? address : nil)
+                        }
+                    }
+                    #if os(macOS)
+                    if serial.mode == .ptty {
+                        HStack {
+                            plainLabel("Serial (TTY)", systemImage: "phone.connection")
+                            Spacer()
+                            OptionalSelectableText(serial.pttyDevice?.path)
+                        }
+                    }
+                    #endif
+                }
+            }
         }.lineLimit(1)
         .truncationMode(.tail)
     }
@@ -245,7 +264,6 @@ struct Details: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct DetailsLabelStyle: LabelStyle {
     var color: Color = .accentColor
     
@@ -263,17 +281,40 @@ struct DetailsLabelStyle: LabelStyle {
     }
 }
 
-@available(iOS 14, macOS 11, *)
+private struct OptionalSelectableText: View {
+    var content: String?
+    
+    init(_ content: String?) {
+        self.content = content
+    }
+    
+    var body: some View {
+        if #available(iOS 15, macOS 12, *) {
+            Text(content ?? NSLocalizedString("Inactive", comment: "VMDetailsView"))
+                .foregroundColor(.secondary)
+                .textSelection(.enabled)
+        } else {
+            Text(content ?? NSLocalizedString("Inactive", comment: "VMDetailsView"))
+                .foregroundColor(.secondary)
+        }
+    }
+}
+
 struct VMDetailsView_Previews: PreviewProvider {
     @State static private var config = UTMQemuConfiguration()
     
     static var previews: some View {
-        VMDetailsView(vm: UTMVirtualMachine(configuration: config, withDestinationURL: URL(fileURLWithPath: "")))
+        VMDetailsView(vm: UTMVirtualMachine(newConfig: config, destinationURL: URL(fileURLWithPath: "")))
         .onAppear {
-            config.shareDirectoryEnabled = true
-            config.newDrive("", path: "", type: .disk, interface: "ide")
-            config.newDrive("", path: "", type: .disk, interface: "sata")
-            config.newDrive("", path: "", type: .CD, interface: "ide")
+            config.sharing.directoryShareMode = .webdav
+            var drive = UTMQemuConfigurationDrive()
+            drive.imageType = .disk
+            drive.interface = .ide
+            config.drives.append(drive)
+            drive.interface = .scsi
+            config.drives.append(drive)
+            drive.imageType = .cd
+            config.drives.append(drive)
         }
     }
 }

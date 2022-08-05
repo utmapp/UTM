@@ -20,23 +20,37 @@ struct VMConfigAppleDriveCreateView: View {
     private let mibToGib = 1024
     let minSizeMib = 1
     
-    @Binding var driveSize: Int
+    @Binding var config: UTMAppleConfigurationDrive
     @State private var isGiB: Bool = true
     
     var body: some View {
         Form {
-            HStack {
-                NumberTextField("Size", number: Binding<NSNumber?>(get: {
-                    NSNumber(value: convertToDisplay(fromSizeMib: driveSize))
-                }, set: {
-                    driveSize = convertToMib(fromSize: $0?.intValue ?? 0)
-                }), onEditingChanged: validateSize)
-                    .multilineTextAlignment(.trailing)
-                    .help("The amount of storage to allocate for this image. An empty file of this size will be stored with the VM.")
-                Button(action: { isGiB.toggle() }, label: {
-                    Text(isGiB ? "GB" : "MB")
-                        .foregroundColor(.blue)
-                }).buttonStyle(.plain)
+            VStack {
+                Toggle(isOn: $config.isExternal.animation(), label: {
+                    Text("Removable")
+                }).help("If checked, the drive image will be stored with the VM.")
+                .onChange(of: config.isExternal) { newValue in
+                    if newValue {
+                        config.sizeMib = 0
+                    } else {
+                        config.sizeMib = 10240
+                    }
+                }
+                if !config.isExternal {
+                    HStack {
+                        NumberTextField("Size", number: Binding<Int>(get: {
+                            convertToDisplay(fromSizeMib: config.sizeMib)
+                        }, set: {
+                            config.sizeMib = convertToMib(fromSize: $0)
+                        }), onEditingChanged: validateSize)
+                        .multilineTextAlignment(.trailing)
+                        .help("The amount of storage to allocate for this image. An empty file of this size will be stored with the VM.")
+                        Button(action: { isGiB.toggle() }, label: {
+                            Text(isGiB ? "GB" : "MB")
+                                .foregroundColor(.blue)
+                        }).buttonStyle(.plain)
+                    }
+                }
             }
         }
     }
@@ -45,8 +59,8 @@ struct VMConfigAppleDriveCreateView: View {
         guard !editing else {
             return
         }
-        if driveSize < minSizeMib {
-            driveSize = minSizeMib
+        if config.sizeMib < minSizeMib {
+            config.sizeMib = minSizeMib
         }
     }
     
@@ -69,6 +83,6 @@ struct VMConfigAppleDriveCreateView: View {
 
 struct VMConfigAppleDriveCreateView_Previews: PreviewProvider {
     static var previews: some View {
-        VMConfigAppleDriveCreateView(driveSize: .constant(100))
+        VMConfigAppleDriveCreateView(config: .constant(.init(newSize: 1024)))
     }
 }

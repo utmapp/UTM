@@ -37,7 +37,46 @@ extension Optional where Wrapped == String {
     }
 }
 
-@available(iOS 14, macOS 11, *)
+extension Optional where Wrapped: FixedWidthInteger {
+    var _bound: Wrapped? {
+        get {
+            return self
+        }
+        set {
+            self = newValue
+        }
+    }
+    
+    public var bound: Wrapped {
+        get {
+            return _bound ?? 0
+        }
+        set {
+            _bound = newValue == 0 ? nil : newValue
+        }
+    }
+}
+
+extension Optional where Wrapped == Bool {
+    var _bound: Wrapped? {
+        get {
+            return self
+        }
+        set {
+            self = newValue
+        }
+    }
+    
+    public var bound: Wrapped {
+        get {
+            return _bound ?? false
+        }
+        set {
+            _bound = newValue
+        }
+    }
+}
+
 extension LocalizedStringKey {
     var localizedString: String {
         let mirror = Mirror(reflecting: self)
@@ -81,7 +120,6 @@ extension Array {
     }
 }
 
-@available(iOS 13, macOS 11, *)
 extension View {
     func onReceive(_ name: Notification.Name,
                    center: NotificationCenter = .default,
@@ -93,7 +131,6 @@ extension View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 extension UTType {
     static let UTM = UTType(exportedAs: "com.utmapp.utm")
     
@@ -112,7 +149,6 @@ extension Sequence where Element: Hashable {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 extension Color {
     init?(hexString hex: String) {
         if hex.count != 7 { // The '#' included

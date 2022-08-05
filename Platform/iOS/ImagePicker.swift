@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, *)
 struct ImagePicker: UIViewControllerRepresentable {
     class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
         let parent: ImagePicker
@@ -50,7 +49,6 @@ struct ImagePicker: UIViewControllerRepresentable {
     }
 }
 
-@available(iOS 14, *)
 struct ImagePicker_Previews: PreviewProvider {
     static var previews: some View {
         ImagePicker() { _ in

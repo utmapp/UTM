@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
 struct VMWizardDrivesView: View {
     @ObservedObject var wizardState: VMWizardState
     
@@ -48,7 +47,6 @@ struct VMWizardDrivesView: View {
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct VMWizardDrivesView_Previews: PreviewProvider {
     @StateObject static var wizardState = VMWizardState()
     

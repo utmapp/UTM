@@ -14,7 +14,6 @@
 // limitations under the License.
 //
 
-@protocol UTMConfigurable;
 @class UTMVirtualMachine;
 @class CSDisplay;
 @class CSInput;

@@ -14,10 +14,8 @@
 // limitations under the License.
 //
 
+#import <glib.h>
 #import "UTMSpiceIO.h"
-#import "UTMQemuConfiguration.h"
-#import "UTMQemuConfiguration+Miscellaneous.h"
-#import "UTMQemuConfiguration+Sharing.h"
 #import "UTMQemuManager.h"
 #import "UTMLogging.h"
 #import "UTMViewState.h"
@@ -29,9 +27,12 @@ extern NSString *const kUTMErrorDomain;
 
 @interface UTMSpiceIO ()
 
+@property (nonatomic, readwrite, nonnull) UTMConfigurationWrapper* configuration;
 @property (nonatomic, readwrite, nullable) CSDisplay *primaryDisplay;
+@property (nonatomic) NSMutableArray<CSDisplay *> *displays;
 @property (nonatomic, readwrite, nullable) CSInput *primaryInput;
 @property (nonatomic, readwrite, nullable) CSPort *primarySerial;
+@property (nonatomic) NSMutableArray<CSPort *> *serials;
 #if !defined(WITH_QEMU_TCI)
 @property (nonatomic, readwrite, nullable) CSUSBManager *primaryUsbManager;
 #endif
@@ -49,10 +50,12 @@ extern NSString *const kUTMErrorDomain;
 
 @implementation UTMSpiceIO
 
-- (instancetype)initWithConfiguration:(UTMQemuConfiguration *)configuration {
+- (instancetype)initWithConfiguration:(UTMConfigurationWrapper *)configuration {
     if (self = [super init]) {
-        _configuration = configuration;
+        self.configuration = configuration;
         self.connectQueue = dispatch_queue_create("SPICE Connect Attempt", NULL);
+        self.displays = [NSMutableArray array];
+        self.serials = [NSMutableArray array];
     }
     
     return self;
@@ -60,10 +63,10 @@ extern NSString *const kUTMErrorDomain;
 
 - (void)initializeSpiceIfNeeded {
     if (!self.spiceConnection) {
-        self.spiceConnection = [[CSConnection alloc] initWithUnixSocketFile:self.configuration.spiceSocketURL];
+        self.spiceConnection = [[CSConnection alloc] initWithUnixSocketFile:self.configuration.qemuSpiceSocketURL];
         self.spiceConnection.delegate = self;
-        self.spiceConnection.audioEnabled = _configuration.soundEnabled;
-        self.spiceConnection.session.shareClipboard = _configuration.shareClipboardEnabled;
+        self.spiceConnection.audioEnabled = _configuration.qemuHasAudio;
+        self.spiceConnection.session.shareClipboard = _configuration.qemuHasClipboardSharing;
         self.spiceConnection.session.pasteboardDelegate = [UTMPasteboard generalPasteboard];
     }
 }
@@ -77,6 +80,8 @@ extern NSString *const kUTMErrorDomain;
 #ifdef SPICE_DEBUG_LOGGING
     [self.spice spiceSetDebug:YES];
 #endif
+    // do not need to encode/decode audio locally
+    g_setenv("SPICE_DISABLE_OPUS", "1", TRUE);
     if (![self.spice spiceStart]) {
         if (err) {
             *err = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Failed to start SPICE client.", "UTMSpiceIO")}];
@@ -132,7 +137,10 @@ extern NSString *const kUTMErrorDomain;
     self.spiceConnection = nil;
     self.spice = nil;
     self.primaryDisplay = nil;
+    [self.displays removeAllObjects];
     self.primaryInput = nil;
+    self.primarySerial = nil;
+    [self.serials removeAllObjects];
 #if !defined(WITH_QEMU_TCI)
     self.primaryUsbManager = nil;
 #endif
@@ -183,18 +191,23 @@ extern NSString *const kUTMErrorDomain;
     });
 }
 
-- (void)spiceDisplayCreatedOrUpdated:(CSConnection *)connection display:(CSDisplay *)display {
+- (void)spiceDisplayCreated:(CSConnection *)connection display:(CSDisplay *)display {
     NSAssert(connection == self.spiceConnection, @"Unknown connection");
-    if (self.primaryDisplay == display) {
-        [self.delegate spiceDidChangeDisplay:display];
-    } else if (display.isPrimaryDisplay) {
+    if (display.isPrimaryDisplay) {
         self.primaryDisplay = display;
-        [self.delegate spiceDidCreateDisplay:display];
     }
+    [self.displays addObject:display];
+    [self.delegate spiceDidCreateDisplay:display];
+}
+
+- (void)spiceDisplayUpdated:(CSConnection *)connection display:(CSDisplay *)display {
+    NSAssert(connection == self.spiceConnection, @"Unknown connection");
+    [self.delegate spiceDidUpdateDisplay:display];
 }
 
 - (void)spiceDisplayDestroyed:(CSConnection *)connection display:(CSDisplay *)display {
     NSAssert(connection == self.spiceConnection, @"Unknown connection");
+    [self.displays removeObject:display];
     [self.delegate spiceDidDestroyDisplay:display];
 }
 
@@ -217,6 +230,9 @@ extern NSString *const kUTMErrorDomain;
     }
     if ([port.name isEqualToString:@"com.utmapp.terminal.0"]) {
         self.primarySerial = port;
+    }
+    if ([port.name hasPrefix:@"com.utmapp.terminal."]) {
+        [self.serials addObject:port];
         [self.delegate spiceDidCreateSerial:port];
     }
 }
@@ -226,6 +242,9 @@ extern NSString *const kUTMErrorDomain;
     }
     if ([port.name isEqualToString:@"com.utmapp.terminal.0"]) {
         self.primarySerial = port;
+    }
+    if ([port.name hasPrefix:@"com.utmapp.terminal."]) {
+        [self.serials removeObject:port];
         [self.delegate spiceDidDestroySerial:port];
     }
 }
@@ -244,7 +263,7 @@ extern NSString *const kUTMErrorDomain;
     if (self.sharedDirectory) {
         UTMLog(@"setting share directory to %@", self.sharedDirectory.path);
         [self.sharedDirectory startAccessingSecurityScopedResource];
-        [self.spiceConnection.session setSharedDirectory:self.sharedDirectory.path readOnly:self.configuration.shareDirectoryReadOnly];
+        [self.spiceConnection.session setSharedDirectory:self.sharedDirectory.path readOnly:self.configuration.qemuIsDirectoryShareReadOnly];
     }
 }
 
@@ -277,6 +296,16 @@ extern NSString *const kUTMErrorDomain;
 #endif
     if ([self.delegate respondsToSelector:@selector(spiceDynamicResolutionSupportDidChange:)]) {
         [self.delegate spiceDynamicResolutionSupportDidChange:self.dynamicResolutionSupported];
+    }
+    for (CSDisplay *display in self.displays) {
+        if (display != self.primaryDisplay) {
+            [self.delegate spiceDidCreateDisplay:display];
+        }
+    }
+    for (CSPort *port in self.serials) {
+        if (port != self.primarySerial) {
+            [self.delegate spiceDidCreateSerial:port];
+        }
     }
 }
 

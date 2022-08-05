@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(iOS 14, macOS 11, *)
 struct VMContextMenuModifier: ViewModifier {
     @ObservedObject var vm: UTMVirtualMachine
     @EnvironmentObject private var data: UTMData
@@ -28,7 +27,7 @@ struct VMContextMenuModifier: ViewModifier {
         content.contextMenu {
             #if os(macOS)
             Button {
-                NSWorkspace.shared.activateFileViewerSelecting([vm.path!])
+                NSWorkspace.shared.activateFileViewerSelecting([vm.path])
             } label: {
                 Label("Show in Finder", systemImage: "folder")
             }.help("Reveal where the VM is stored.")
@@ -55,6 +54,17 @@ struct VMContextMenuModifier: ViewModifier {
                 } label: {
                     Label("Run", systemImage: "play.fill")
                 }.help("Run the VM in the foreground.")
+                
+                #if os(macOS) && arch(arm64)
+                if #available(macOS 13, *), let appleConfig = vm.config.appleConfig, appleConfig.system.boot.operatingSystem == .macOS {
+                    Button {
+                        appleConfig.system.boot.startUpFromMacOSRecovery = true
+                        data.run(vm: vm)
+                    } label: {
+                        Label("Run Recovery", systemImage: "play.fill")
+                    }.help("Boot into recovery mode.")
+                }
+                #endif
                 
                 Button {
                     vm.isRunningAsSnapshot = true

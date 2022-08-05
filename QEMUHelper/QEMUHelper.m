@@ -16,7 +16,6 @@
 
 #import "QEMUHelper.h"
 #import <stdio.h>
-#import "Bootstrap.h"
 
 @interface QEMUHelper ()
 
@@ -100,11 +99,7 @@
         return;
     }
     
-    if (@available(macOS 11.3, *)) { // macOS 11.3 fixed sandbox bug for hypervisor to work
-        [self startQemuTask:binName standardOutput:standardOutput standardError:standardError libraryPath:libraryPath argv:argv onExit:onExit];
-    } else { // old deprecated fork() method
-        [self startQemuFork:binName standardOutput:standardOutput standardError:standardError libraryPath:libraryPath argv:argv onExit:onExit];
-    }
+    [self startQemuTask:binName standardOutput:standardOutput standardError:standardError libraryPath:libraryPath argv:argv onExit:onExit];
 }
 
 - (void)startQemuTask:(NSString *)binName standardOutput:(NSFileHandle *)standardOutput standardError:(NSFileHandle *)standardError libraryPath:(NSURL *)libraryPath argv:(NSArray<NSString *> *)argv onExit:(void(^)(BOOL,NSString *))onExit {
@@ -126,49 +121,6 @@
     if (![task launchAndReturnError:&err]) {
         NSLog(@"Error starting QEMU: %@", err);
         onExit(NO, NSLocalizedString(@"Error starting QEMU.", @"QEMUHelper"));
-    }
-}
-
-
-- (void)startQemuFork:(NSString *)binName standardOutput:(NSFileHandle *)standardOutput standardError:(NSFileHandle *)standardError libraryPath:(NSURL *)libraryPath argv:(NSArray<NSString *> *)argv onExit:(void(^)(BOOL,NSString *))onExit {
-    // convert all the Objective-C strings to C strings as we should not use objects in this context after fork()
-    NSString *path = [libraryPath URLByAppendingPathComponent:binName].path;
-    char *cpath = strdup(path.UTF8String);
-    int argc = (int)argv.count + 1;
-    char **cargv = calloc(argc, sizeof(char *));
-    cargv[0] = cpath;
-    for (int i = 0; i < argc-1; i++) {
-        cargv[i+1] = strdup(argv[i].UTF8String);
-    }
-    int newStdOut = standardOutput.fileDescriptor;
-    int newStdErr = standardError.fileDescriptor;
-    pid_t pid = startQemuFork(cpath, argc, (const char **)cargv, newStdOut, newStdErr);
-    // free all resources regardless of error because on success, child has a copy
-    [standardOutput closeFile];
-    [standardError closeFile];
-    for (int i = 0; i < argc; i++) {
-        free(cargv[i]);
-    }
-    free(cargv);
-    if (pid < 0) {
-        NSLog(@"Error starting QEMU: %d", pid);
-        onExit(NO, NSLocalizedString(@"Error starting QEMU.", @"QEMUHelper"));
-    } else {
-        // a new thread to reap the child and wait on its status
-        dispatch_async(self.childWaitQueue, ^{
-            do {
-                int status;
-                if (waitpid(pid, &status, 0) < 0) {
-                    NSLog(@"waitpid(%d) returned error: %d", pid, errno);
-                    onExit(NO, NSLocalizedString(@"QEMU exited unexpectedly.", @"QEMUHelper"));
-                } else if (WIFEXITED(status)) {
-                    NSLog(@"child process %d terminated", pid);
-                    onExit(WEXITSTATUS(status) == 0, nil);
-                } else {
-                    continue; // another reason, we ignore
-                }
-            } while (0);
-        });
     }
 }
 

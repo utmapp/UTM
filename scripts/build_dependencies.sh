@@ -64,7 +64,7 @@ check_env () {
     command -v gmake >/dev/null 2>&1 || { echo >&2 "${RED}You must install GNU make on your host machine (and link it to 'gmake').${NC}"; exit 1; }
     command -v meson >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'meson' on your host machine.${NC}"; exit 1; }
     command -v msgfmt >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'gettext' on your host machine.\n\t'msgfmt' needs to be in your \$PATH as well.${NC}"; exit 1; }
-    command -v glib-mkenums >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'glib' on your host machine.\n\t'glib-mkenums' needs to be in your \$PATH as well.${NC}"; exit 1; }
+    command -v glib-mkenums >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'glib-utils' on your host machine.\n\t'glib-mkenums' needs to be in your \$PATH as well.${NC}"; exit 1; }
     command -v gpg-error-config >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'libgpg-error' on your host machine.\n\t'gpg-error-config' needs to be in your \$PATH as well.${NC}"; exit 1; }
     command -v xcrun >/dev/null 2>&1 || { echo >&2 "${RED}'xcrun' is not found. Make sure you are running on OSX."; exit 1; }
     command -v otool >/dev/null 2>&1 || { echo >&2 "${RED}'otool' is not found. Make sure you are running on OSX."; exit 1; }
@@ -143,6 +143,7 @@ download_all () {
     download $SOUP_SRC
     download $PHODAV_SRC
     download $SPICE_CLIENT_SRC
+    download $ZSTD_SRC
     download $QEMU_SRC
     if [ -z "$SKIP_USB_BUILD" ]; then
         download $USB_SRC
@@ -358,7 +359,7 @@ meson_build () {
         SRCDIR="$BUILD_DIR/$NAME"
         ;;
     esac
-    MESON_CROSS="$(realpath "$BUILD_DIR/meson.cross")"
+    MESON_CROSS="$(realpath "$BUILD_DIR")/meson.cross"
     if [ ! -f "$MESON_CROSS" ]; then
         generate_meson_cross "$MESON_CROSS"
     fi
@@ -412,11 +413,8 @@ build_angle () {
         TARGET_CPU="x64"
         ;;
     esac
-    # FIXME: remove this hack to get iOS simulator to build on newer Xcode (crbug.com/1223481)
-    if [ "$PLATFORM" == "ios_simulator" ]; then
-        sed -i.old 's/assert(xcode_version_int == 1300)//g' "build/config/ios/BUILD.gn"
-        sed -i.old2 's/13.0.0/13.1.6/g' "build/config/ios/BUILD.gn"
-    fi
+    # FIXME: remove this hack when SwiftShader is fixed
+    sed -i.old 's/"-Wloop-analysis"/"-Wloop-analysis", "-Wno-deprecated-declarations"/g' "build/config/compiler/BUILD.gn"
     gn gen "--args=is_debug=false angle_build_all=false angle_enable_metal=true $IOS_BUILD_ARGS target_os=\"$TARGET_OS\" target_cpu=\"$TARGET_CPU\"" utm_build
     ninja -C utm_build -j $NCPU
     if [ "$TARGET_OS" == "ios" ]; then
@@ -427,9 +425,7 @@ build_angle () {
         cp -a "utm_build/libGLESv2.dylib" "$PREFIX/lib/libGLESv2.dylib"
     fi
     # FIXME: above
-    if [ "$PLATFORM" == "ios_simulator" ]; then
-        mv "build/config/ios/BUILD.gn.old" "build/config/ios/BUILD.gn"
-    fi
+    mv "build/config/compiler/BUILD.gn.old" "build/config/compiler/BUILD.gn"
     # -headerpad_max_install_names is broken and these still fail on long paths so we just make sure they run at the end with a short path
     #install_name_tool -id "$PREFIX/lib/libEGL.dylib" "$PREFIX/lib/libEGL.dylib"
     #install_name_tool -id "$PREFIX/lib/libGLESv2.dylib" "$PREFIX/lib/libGLESv2.dylib"
@@ -450,6 +446,8 @@ build_qemu_dependencies () {
     build $PIXMAN_SRC
     build_openssl $OPENSSL_SRC
     build $OPUS_SRC
+    ZSTD_BASENAME="$(basename $ZSTD_SRC)"
+    meson_build "$BUILD_DIR/${ZSTD_BASENAME%.tar.*}/build/meson"
     meson_build $GST_SRC -Dtests=disabled -Ddefault_library=both -Dregistry=false
     meson_build $GST_BASE_SRC -Dtests=disabled -Ddefault_library=both
     meson_build $GST_GOOD_SRC -Dtests=disabled -Ddefault_library=both

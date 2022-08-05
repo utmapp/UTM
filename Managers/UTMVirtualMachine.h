@@ -17,7 +17,7 @@
 #import <Foundation/Foundation.h>
 #import "UTMVirtualMachineDelegate.h"
 
-@protocol UTMConfigurable;
+@class UTMConfigurationWrapper;
 @class UTMLogging;
 @class UTMViewState;
 @class CSScreenshot;
@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UTMVirtualMachine : NSObject
 
 /// Path where the .utm is stored
-@property (nonatomic, readonly, nullable) NSURL *path;
+@property (nonatomic, readonly) NSURL *path;
 
 /// True if the .utm is loaded outside of the default storage
 ///
@@ -46,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// Configuration for this VM
 ///
 /// This property is observable and must only be accessed on the main thread.
-@property (nonatomic, readonly) id<UTMConfigurable> config;
+@property (nonatomic, readonly) UTMConfigurationWrapper *config;
 
 /// Additional configuration on a short lived, per-host basis
 ///
@@ -114,8 +114,8 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 /// `-saveUTMWithCompletion:` should be called to save to disk.
 /// @param configuration VM configuration
-/// @param dstUrl Parent file URL to save to
-+ (UTMVirtualMachine *)virtualMachineWithConfiguration:(id<UTMConfigurable>)configuration withDestinationURL:(NSURL *)dstUrl;
+/// @param packageURL Location of the VM
++ (UTMVirtualMachine *)virtualMachineWithConfiguration:(UTMConfigurationWrapper *)configuration packageURL:(NSURL *)packageURL;
 
 /// Discard any changes to configuration by reloading from disk
 /// @param err Error thrown

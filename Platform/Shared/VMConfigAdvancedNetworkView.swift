@@ -19,45 +19,42 @@ import SwiftUI
 @available(macOS 11, *)
 @available(iOS, introduced: 14, unavailable)
 struct VMConfigAdvancedNetworkView: View {
-    @ObservedObject var config: UTMQemuConfiguration
+    @Binding var config: UTMQemuConfigurationNetwork
 
     var body: some View {
         ScrollView {
             Form {
-                IPConfigurationSection(config: config)
+                IPConfigurationSection(config: $config)
             }.padding()
         }
     }
 }
 
-@available(iOS 14, macOS 11, *)
 struct IPConfigurationSection: View {
-    @ObservedObject var config: UTMQemuConfiguration
+    @Binding var config: UTMQemuConfigurationNetwork
 
     var body: some View {
-        Toggle(isOn: $config.networkIsolate, label: {
+        Toggle(isOn: $config.isIsolateFromHost, label: {
             Text("Isolate Guest from Host")
         })
         Group {
-            DefaultTextField("Guest Network", text: $config.networkAddress.bound, prompt: "10.0.2.0/24")
+            DefaultTextField("Guest Network", text: $config.vlanGuestAddress.bound, prompt: "10.0.2.0/24")
                 .keyboardType(.asciiCapable)
-            DefaultTextField("Guest Network (IPv6)", text: $config.networkAddressIPv6.bound, prompt: "fec0::/64")
+            DefaultTextField("Guest Network (IPv6)", text: $config.vlanGuestAddressIPv6.bound, prompt: "fec0::/64")
                 .keyboardType(.asciiCapable)
-            DefaultTextField("Host Address", text: $config.networkHost.bound, prompt: "10.0.2.2")
+            DefaultTextField("Host Address", text: $config.vlanHostAddress.bound, prompt: "10.0.2.2")
                 .keyboardType(.decimalPad)
-            DefaultTextField("Host Address (IPv6)", text: $config.networkHostIPv6.bound, prompt: "fec0::2")
+            DefaultTextField("Host Address (IPv6)", text: $config.vlanHostAddressIPv6.bound, prompt: "fec0::2")
                 .keyboardType(.asciiCapable)
-            DefaultTextField("DHCP Start", text: $config.networkDhcpStart.bound, prompt: "10.0.2.15")
+            DefaultTextField("DHCP Start", text: $config.vlanDhcpStartAddress.bound, prompt: "10.0.2.15")
                 .keyboardType(.decimalPad)
-            DefaultTextField("DHCP Host", text: $config.networkDhcpHost.bound)
+            DefaultTextField("DHCP Domain Name", text: $config.vlanDhcpDomain.bound)
                 .keyboardType(.asciiCapable)
-            DefaultTextField("DHCP Domain Name", text: $config.networkDhcpDomain.bound)
-                .keyboardType(.asciiCapable)
-            DefaultTextField("DNS Server", text: $config.networkDnsServer.bound, prompt: "10.0.2.3")
+            DefaultTextField("DNS Server", text: $config.vlanDnsServerAddress.bound, prompt: "10.0.2.3")
                 .keyboardType(.decimalPad)
-            DefaultTextField("DNS Server (IPv6)", text: $config.networkDnsServerIPv6.bound, prompt: "fec0::3")
+            DefaultTextField("DNS Server (IPv6)", text: $config.vlanDnsServerAddressIPv6.bound, prompt: "fec0::3")
                 .keyboardType(.asciiCapable)
-            DefaultTextField("DNS Search Domains", text: $config.networkDnsSearch.bound)
+            DefaultTextField("DNS Search Domains", text: $config.vlanDnsSearchDomain.bound)
                 .keyboardType(.asciiCapable)
         }.disableAutocorrection(true)
     }

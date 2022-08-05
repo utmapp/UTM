@@ -16,10 +16,13 @@
 
 import SwiftUI
 
-@available(iOS 14, *)
 struct VMSettingsView: View {
-    let vm: UTMVirtualMachine?
+    let vm: UTMVirtualMachine
     @ObservedObject var config: UTMQemuConfiguration
+    
+    @State private var isResetConfig: Bool = false
+    @State private var isCreateDriveShown: Bool = false
+    @State private var isImportDriveShown: Bool = false
     
     @EnvironmentObject private var data: UTMData
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
@@ -29,70 +32,97 @@ struct VMSettingsView: View {
             Form {
                 List {
                     NavigationLink(
-                        destination: VMConfigInfoView(config: config).navigationTitle("Information"),
+                        destination: VMConfigInfoView(config: $config.information).navigationTitle("Information"),
                         label: {
                             Label("Information", systemImage: "info.circle")
                                 .labelStyle(.roundRectIcon)
                         })
                     NavigationLink(
-                        destination: VMConfigSystemView(config: config).navigationTitle("System"),
+                        destination: VMConfigSystemView(config: $config.system, isResetConfig: $isResetConfig).navigationTitle("System"),
                         label: {
                             Label("System", systemImage: "cpu")
                                 .labelStyle(.roundRectIcon)
                         })
+                    .onChange(of: isResetConfig) { newValue in
+                        if newValue {
+                            config.reset(forArchitecture: config.system.architecture, target: config.system.target)
+                            isResetConfig = false
+                        }
+                    }
                     NavigationLink(
-                        destination: VMConfigQEMUView(config: config).navigationTitle("QEMU"),
+                        destination: VMConfigQEMUView(config: $config.qemu, system: $config.system, fetchFixedArguments: {
+                            config.generatedArguments
+                        }).navigationTitle("QEMU"),
                         label: {
                             Label("QEMU", systemImage: "shippingbox")
                                 .labelStyle(.roundRectIcon)
                         })
                     NavigationLink(
-                        destination: VMConfigDrivesView(config: config).navigationTitle("Drives"),
+                        destination: VMConfigInputView(config: $config.input).navigationTitle("Input"),
                         label: {
-                            Label("Drives", systemImage: "internaldrive")
+                            Label("Input", systemImage: "keyboard")
                                 .labelStyle(.roundRectIcon)
                         })
                     NavigationLink(
-                        destination: VMConfigDisplayView(config: config).navigationTitle("Display"),
-                        label: {
-                            Label("Display", systemImage: "rectangle.on.rectangle")
-                                .labelStyle(RoundRectIconLabelStyle(color: .green))
-                        })
-                    NavigationLink(
-                        destination: VMConfigInputView(config: config).navigationTitle("Input"),
-                        label: {
-                            Label("Input", systemImage: "keyboard")
-                                .labelStyle(RoundRectIconLabelStyle(color: .green))
-                        })
-                    NavigationLink(
-                        destination: VMConfigNetworkView(config: config).navigationTitle("Network"),
-                        label: {
-                            Label("Network", systemImage: "network")
-                                .labelStyle(RoundRectIconLabelStyle(color: .green))
-                        })
-                    NavigationLink(
-                        destination: VMConfigSoundView(config: config).navigationTitle("Sound"),
-                        label: {
-                            Label("Sound", systemImage: "speaker.wave.2")
-                                .labelStyle(RoundRectIconLabelStyle(color: .green))
-                        })
-                    NavigationLink(
-                        destination: VMConfigSharingView(config: config).navigationTitle("Sharing"),
+                        destination: VMConfigSharingView(config: $config.sharing).navigationTitle("Sharing"),
                         label: {
                             Label("Sharing", systemImage: "person.crop.circle")
-                                .labelStyle(RoundRectIconLabelStyle(color: .yellow))
+                                .labelStyle(.roundRectIcon)
                         })
+                    Section(header: Text("Devices")) {
+                        ForEach($config.displays) { $display in
+                            NavigationLink(destination: VMConfigDisplayView(config: $display, system: $config.system).navigationTitle("Display")) {
+                                    Label("Display", systemImage: "rectangle.on.rectangle")
+                                        .labelStyle(RoundRectIconLabelStyle(color: .green))
+                                }
+                        }.onDelete { offsets in
+                            config.displays.remove(atOffsets: offsets)
+                        }
+                        ForEach($config.serials) { $serial in
+                            NavigationLink(destination: VMConfigSerialView(config: $serial, system: $config.system).navigationTitle("Serial")) {
+                                    Label("Serial", systemImage: "cable.connector")
+                                        .labelStyle(RoundRectIconLabelStyle(color: .green))
+                                }
+                        }.onDelete { offsets in
+                            config.serials.remove(atOffsets: offsets)
+                        }
+                        ForEach($config.networks) { $network in
+                            NavigationLink(destination: VMConfigNetworkView(config: $network, system: $config.system).navigationTitle("Network")) {
+                                    Label("Network", systemImage: "network")
+                                        .labelStyle(RoundRectIconLabelStyle(color: .green))
+                                }
+                        }.onDelete { offsets in
+                            config.networks.remove(atOffsets: offsets)
+                        }
+                        ForEach($config.sound) { $sound in
+                            NavigationLink(destination: VMConfigSoundView(config: $sound, system: $config.system).navigationTitle("Sound")) {
+                                    Label("Sound", systemImage: "speaker.wave.2")
+                                        .labelStyle(RoundRectIconLabelStyle(color: .green))
+                                }
+                        }.onDelete { offsets in
+                            config.sound.remove(atOffsets: offsets)
+                        }
+                    }
+                    Section(header: Text("Drives")) {
+                        VMDrivesSettingsView(config: config, isCreateDriveShown: $isCreateDriveShown)
+                            .labelStyle(RoundRectIconLabelStyle(color: .yellow))
+                    }
                 }
             }
             .navigationTitle("Settings")
             .navigationViewStyle(.stack)
-            .navigationBarItems(leading: Button(action: cancel, label: {
-                Text("Cancel")
-            }), trailing: HStack {
-                Button(action: save, label: {
+            .navigationBarItems(leading: HStack {
+                VMSettingsAddDeviceMenuView(config: config, isCreateDriveShown: $isCreateDriveShown, isImportDriveShown: $isImportDriveShown)
+                EditButton()
+            }, trailing: HStack {
+                Button(action: cancel) {
+                    Text("Cancel")
+                }
+                Button(action: save) {
                     Text("Save")
-                })
+                }
             })
+            .fileImporter(isPresented: $isImportDriveShown, allowedContentTypes: [.item], onCompletion: importDrive)
         }.disabled(data.busy)
         .overlay(BusyOverlay())
     }
@@ -100,11 +130,7 @@ struct VMSettingsView: View {
     func save() {
         presentationMode.wrappedValue.dismiss()
         data.busyWorkAsync {
-            if let existing = self.vm {
-                try await data.save(vm: existing)
-            } else {
-                _ = try await data.create(config: self.config)
-            }
+            try await data.save(vm: vm)
         }
     }
     
@@ -114,9 +140,24 @@ struct VMSettingsView: View {
             try data.discardChanges(for: self.vm)
         }
     }
+    
+    private func importDrive(result: Result<URL, Error>) {
+        data.busyWorkAsync {
+            switch result {
+            case .success(let url):
+                await MainActor.run {
+                    var drive = UTMQemuConfigurationDrive(forArchitecture: config.system.architecture, target: config.system.target, isExternal: true)
+                    drive.imageURL = url
+                    config.drives.append(drive)
+                }
+                break
+            case .failure(let err):
+                throw err
+            }
+        }
+    }
 }
 
-@available(iOS 14, *)
 struct RoundRectIconLabelStyle: LabelStyle {
     var color: Color = .blue
     
@@ -134,18 +175,16 @@ struct RoundRectIconLabelStyle: LabelStyle {
     }
 }
 
-@available(iOS 14, *)
 extension LabelStyle where Self == RoundRectIconLabelStyle {
     static var roundRectIcon: RoundRectIconLabelStyle {
         RoundRectIconLabelStyle()
     }
 }
 
-@available(iOS 14, *)
 struct VMSettingsView_Previews: PreviewProvider {
     @State static private var config = UTMQemuConfiguration()
     
     static var previews: some View {
-        VMSettingsView(vm: nil, config: config)
+        VMSettingsView(vm: UTMVirtualMachine(), config: config)
     }
 }
