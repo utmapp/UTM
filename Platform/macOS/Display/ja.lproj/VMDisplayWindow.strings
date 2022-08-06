@@ -57,7 +57,7 @@
 "bKL-Th-FFw.paletteLabel" = "ドライブ";
 
 /* Class = "NSToolbarItem"; toolTip = "Drive image options"; ObjectID = "bKL-Th-FFw"; */
-"bKL-Th-FFw.toolTip" = "ドライブイメージのオプションです";
+"bKL-Th-FFw.toolTip" = "ドライブイメージのオプション";
 
 /* Class = "NSToolbarItem"; label = "Start/Pause"; ObjectID = "kT2-2U-cYm"; */
 "kT2-2U-cYm.label" = "開始/一時停止";
