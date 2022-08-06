@@ -111,11 +111,11 @@ else
 	rm -f "$OUTPUT/UTM.dmg"
 	command -v appdmg >/dev/null 2>&1
 	if [ $? -eq 0 ]; then
-		CONFIG="/tmp/appdmg.$$.json"
-		cp "$BASEDIR/resources/appdmg.json" "$CONFIG"
-		sed -i '' "s/\/tmp\/signed\/UTM.app/\/tmp\/signed.$$\/UTM.app/g" "$CONFIG"
-		appdmg "$CONFIG" "$OUTPUT/UTM.dmg"
-		rm "$CONFIG"
+		RESOURCES="/tmp/resources.$$"
+		cp -r "$BASEDIR/resources" "$RESOURCES"
+		sed -i '' "s/\/tmp\/signed\/UTM.app/\/tmp\/signed.$$\/UTM.app/g" "$RESOURCES/appdmg.json"
+		appdmg "$RESOURCES/appdmg.json" "$OUTPUT/UTM.dmg"
+		rm -rf "$RESOURCES"
 	else
 		echo "appdmg not found, falling back to non-customized DMG creation"
 		hdiutil create -fs HFS+ -srcfolder "$SIGNED/UTM.app" -volname "UTM" "$OUTPUT/UTM.dmg"
