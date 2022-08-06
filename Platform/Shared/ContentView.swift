@@ -87,6 +87,7 @@ struct ContentView: View {
             data.newVM()
         }.onReceive(NSNotification.OpenVirtualMachine) { _ in
             data.showNewVMSheet = false
+            openSheetPresented = false
             // FIXME: SwiftUI bug on iOS requires this wait
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.02) {
                 openSheetPresented = true
