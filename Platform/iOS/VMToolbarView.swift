@@ -188,19 +188,23 @@ struct VMToolbarView: View {
     }
     
     private func position(for geometry: GeometryProxy) -> CGPoint {
-        let offset: CGFloat = 48
+        let yoffset: CGFloat = 48
+        var xoffset: CGFloat = 48
         guard !isMoving else {
             return dragPosition
         }
+        if session.vm.hasUsbRedirection && !isCollapsed {
+            xoffset -= 12
+        }
         switch location {
         case .topRight:
-            return CGPoint(x: geometry.size.width - offset, y: offset)
+            return CGPoint(x: geometry.size.width - xoffset, y: yoffset)
         case .bottomRight:
-            return CGPoint(x: geometry.size.width - offset, y: geometry.size.height - offset)
+            return CGPoint(x: geometry.size.width - xoffset, y: geometry.size.height - yoffset)
         case .topLeft:
-            return CGPoint(x: offset, y: offset)
+            return CGPoint(x: xoffset, y: yoffset)
         case .bottomLeft:
-            return CGPoint(x: offset, y: geometry.size.height - offset)
+            return CGPoint(x: xoffset, y: geometry.size.height - yoffset)
         }
     }
     
