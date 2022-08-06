@@ -61,7 +61,11 @@ struct VMWindowView: View {
                                 Button {
                                     session.vm.requestVmResume()
                                 } label: {
-                                    Label("Resume", systemImage: "playpause.circle.fill")
+                                    if #available(iOS 16, *) {
+                                        Label("Resume", systemImage: "playpause.circle.fill")
+                                    } else {
+                                        Label("Resume", systemImage: "play.circle.fill")
+                                    }
                                 }
                             } else {
                                 Button {
@@ -80,7 +84,7 @@ struct VMWindowView: View {
                 }
             }.background(Color.black)
             .ignoresSafeArea()
-            if isInteractive {
+            if isInteractive && state.isRunning {
                 VMToolbarView(state: $state)
             }
         }
