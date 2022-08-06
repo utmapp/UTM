@@ -68,6 +68,9 @@ struct UTMPlaceholderVMView<Content>: View where Content: View {
         }.padding([.top, .bottom], 10)
         .onTapGesture(perform: toggleDetailsPopup)
         .popover(isPresented: $showingDetails, content: popover)
+        .onDisappear {
+            showingDetails = false
+        }
 #if os(macOS)
         .onHover(perform: { hovering in
             self.showRemoveButton = hovering
