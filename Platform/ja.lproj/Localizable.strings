@@ -1075,7 +1075,7 @@
 "Use Command+Option (⌘+⌥) for input capture/release" = "入力のキャプチャ/解放にcommand+option（⌘+⌥）を使用";
 "If disabled, the default combination Control+Option (⌃+⌥) will be used." = "無効にすると、デフォルトのコンビネーションcontrol+option（⌃+⌥）が使用されます。";
 "Caps Lock (⇪) is treated as a key" = "Caps Lock（⇪）をキーとして扱う";
-"If enabled, caps lock will be handled like other keys. If disabled, it is treated as a toggle that is synchronized with the host." = "有効にすると、Caps Lockはほかのキーと同様に処理されます。無効にすると、ホストと同期するトグルとして扱われます。";
+"If enabled, caps lock will be handled like other keys. If disabled, it is treated as a toggle that is synchronized with the host." = "有効にすると、Caps Lockがほかのキーと同様に処理されます。無効にすると、ホストと同期するトグルとして扱われます。";
 
 "Image File Type" = "イメージファイルの種類";
 "Reveal where the VM is stored." = "仮想マシンが格納されている場所を表示します。";
@@ -1098,12 +1098,12 @@
 "Default" = "デフォルト";
 "Balloon Device" = "バルーンデバイス";
 "Should be off for older operating systems such as Windows 7 or lower." = "Windows 7以前など、古いオペレーティングシステムに対してはオフにしておく必要があります。";
-"Should be on always unless the guest cannot boot because of this." = "これが原因でゲストが起動できない場合を除き、常にオンにしておく必要があります。";
+"Should be on always unless the guest cannot boot because of this." = "これが原因でゲストが起動できない場合を除き、常にオンにしておくべきです。";
 "TPM Device" = "TPMデバイス";
 "This is required to boot Windows 11." = "Windows 11の起動に必要です。";
 "Only available if host architecture matches the target. Otherwise, TCG emulation is used." = "ホストアーキテクチャがターゲットと一致する場合のみ利用できます。それ以外の場合は、TCGエミュレーションが使用されます。";
 "If checked, use local time for RTC which is required for Windows. Otherwise, use UTC clock." = "チェックを入れると、Windowsで必要とされるRTCにローカル時間を使用します。それ以外の場合は、UTCクロックを使用します。";
-"Instantiate PS/2 controller even when USB input is supported. Required for older Windows." = "USB入力に対応している場合でも、PS/2コントローラをインスタンス化します。古いWindowsでは必要です。";
+"Instantiate PS/2 controller even when USB input is supported. Required for older Windows." = "USB入力に対応している場合でも、PS/2コントローラをインスタンス化します。古いWindowsで必要です。";
 "(Delete)" = "（削除）";
 "Move Up" = "上に移動";
 "Move Up" = "下に移動";
@@ -1128,7 +1128,7 @@
 "Background Color" = "背景色";
 "If checked, no drive image will be stored with the VM. Instead you can mount/unmount image while the VM is running." = "チェックを入れると、ドライブイメージは仮想マシンに保存されなくなります。その代わり、仮想マシン実行中にイメージのマウント/マウント解除が可能になります。";
 "Hardware interface on the guest used to mount this image. Different operating systems support different interfaces. The default will be the most common interface." = "このイメージをマウントするために使用されるゲスト上のハードウェアインターフェイスです。オペレーティングシステムによって対応しているインターフェースは異なります。デフォルトでは最も一般的なインターフェイスが使用されます。";
-"The amount of storage to allocate for this image. Ignored if importing an image. If this is a raw image, then an empty file of this size will be stored with the VM. Otherwise, the disk image will dynamically expand up to this size." = "このイメージに割り当てるストレージ容量です。イメージを読み込む場合は無視されます。生イメージの場合、このサイズの空のファイルが 仮想マシンに保存されます。そうでない場合は、ディスクイメージはこのサイズまで動的に拡張されます。";
+"The amount of storage to allocate for this image. Ignored if importing an image. If this is a raw image, then an empty file of this size will be stored with the VM. Otherwise, the disk image will dynamically expand up to this size." = "このイメージに割り当てるストレージ容量です。イメージを読み込む場合は無視されます。生イメージの場合、このサイズの空のファイルが仮想マシンに保存されます。そうでない場合は、ディスクイメージはこのサイズまで動的に拡張されます。";
 "Advanced. If checked, a raw disk image is used. Raw disk image does not support snapshots and will not dynamically expand in size." = "上級者向け。チェックを入れると、生ディスクイメージが使用されます。生ディスクイメージはスナップショットに対応しておらず、サイズを動的に拡張することはありません。";
 "(New Drive)" = "（新規ドライブ）";
 "Read Only?" = "読み出しのみ";
