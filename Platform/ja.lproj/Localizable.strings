@@ -329,7 +329,7 @@
 "Hardware" = "ハードウェア";
 
 /* No comment provided by engineer. */
-"Hide Unused Flags..." = "未使用のフラグを非表示…";
+"Hide Unused Flags…" = "未使用のフラグを非表示…";
 
 /* VMDisplayViewController */
 "Hint: To show the toolbar again, use a three-finger swipe down on the screen." = "ヒント: ツールバーを再度表示するには、画面上で3本指のスワイプを使用します。";
@@ -359,7 +359,7 @@
 "Import…" = "読み込む…";
 
 /* No comment provided by engineer. */
-"Import Virtual Machine..." = "仮想マシンを読み込む…";
+"Import Virtual Machine…" = "仮想マシンを読み込む…";
 
 /* Save VM overlay */
 "Importing %@..." = "%@を読み込み中…";
@@ -491,7 +491,7 @@
 "New VM name" = "新しい仮想マシン名";
 
 /* No comment provided by engineer. */
-"New..." = "新規…";
+"New…" = "新規…";
 
 /* No button
    VMDisplayViewController
@@ -529,7 +529,7 @@
 "Note: select the path to share from the main screen." = "注意: メイン画面から共有するパスを選択してください。";
 
 /* No comment provided by engineer. */
-"Notes" = "注意";
+"Notes" = "メモ";
 
 /* OK button
    OK Button */
@@ -639,7 +639,7 @@
 "Show Advanced Settings" = "詳細設定を表示";
 
 /* No comment provided by engineer. */
-"Show All Flags..." = "すべてのフラグを表示…";
+"Show All Flags…" = "すべてのフラグを表示…";
 
 /* No comment provided by engineer. */
 "Size" = "サイズ";
@@ -879,16 +879,17 @@
 "Virtualization is not supported on your system." = "お使いのシステムは仮想化に対応していません。";
 "Emulate" = "エミュレート";
 "Slower, but can run other CPU architectures." = "低速ですが、ほかのCPUアーキテクチャを実行することができます。";
-"Download prebuilt from UTM Gallery..." = "UTMギャラリーからビルド済みパッケージをダウンロード…";
+"Download prebuilt from UTM Gallery…" = "UTMギャラリーからビルド済みパッケージをダウンロード…";
 "Close" = "閉じる";
 "Continue" = "続ける";
+"Empty" = "空";
 "Generate Windows Installer ISO" = "WindowsインストーラISOを生成";
 "Boot ISO Image:" = "起動ISOイメージ:";
 "Boot VHDX Image:" = "起動VHDXイメージ:";
 "Import VHDX Image" = "VHDXイメージを読み込む";
 "Browse" = "選択";
 "Clear" = "消去";
-"Download Windows 11 for ARM64 Preview VHDX" = "ARM64のためのWindows 11プレビューのVHDXをダウンロード";
+"Download Windows 11 for ARM64 Preview VHDX" = "ARM64向けWindows 11プレビューのVHDXをダウンロード";
 "Use Apple Virtualization" = "Apple仮想化を使用";
 "If set, use Apple's virtualization engine. Otherwise, use QEMU's virtualization engine." = "有効にすると、Appleの仮想化エンジンを使用します。それ以外の場合は、QEMUの仮想化エンジンを使用します。";
 "Boot from kernel image" = "カーネルイメージから起動";
@@ -973,7 +974,7 @@
 "Do not generate any arguments based on current configuration" = "現在の構成に基づく引数を生成しない";
 "Use local time for base clock" = "ベースクロックにローカル時間を使用";
 "These are advanced settings affecting QEMU which should be kept default unless you are running into issues." = "これらは、QEMUに影響を与える高度な設定であり、問題が発生しない限りはデフォルトのままにしておくべきです。";
-"Force PS/2 controller" = "PS/2コントローラを強制的に使用";
+"Force PS/2 controller" = "PS/2コントローラを強制";
 "This is appended to the -machine argument." = "-machine引数に追加されます。";
 
 //VM Creating Page
@@ -982,8 +983,8 @@
 "Skip Boot Image" = "起動イメージをスキップ";
 
 //VM List
-"Clone..." = "複製…";
-"Delete..." = "削除…";
+"Clone…" = "複製…";
+"Delete…" = "削除…";
 "Other" = "その他";
 
 //VMConfigNetworkView
@@ -1046,8 +1047,8 @@
 "Import IPSW" = "IPSWを読み込む";
 "Preconfigured" = "構成済み";
 "Prebuilt" = "ビルド済み";
-"Some older systems do not support UEFI boot, such as Windows 7 and below." = "Windows 7以前など、古いシステムはUEFI起動に対応していません。";
-"Open..." = "開く…";
+"Some older systems do not support UEFI boot, such as Windows 7 and below." = "Windows 7以前など、一部の古いシステムはUEFI起動に対応していません。";
+"Open…" = "開く…";
 "Existing" = "既存";
 "Advanced" = "詳細";
 "Skip ISO boot" = "ISO起動をスキップ";
@@ -1075,3 +1076,65 @@
 "If disabled, the default combination Control+Option (⌃+⌥) will be used." = "無効にすると、デフォルトのコンビネーションcontrol+option（⌃+⌥）が使用されます。";
 "Caps Lock (⇪) is treated as a key" = "Caps Lock（⇪）をキーとして扱う";
 "If enabled, caps lock will be handled like other keys. If disabled, it is treated as a toggle that is synchronized with the host." = "有効にすると、Caps Lockはほかのキーと同様に処理されます。無効にすると、ホストと同期するトグルとして扱われます。";
+
+"Image File Type" = "イメージファイルの種類";
+"Reveal where the VM is stored." = "仮想マシンが格納されている場所を表示します。";
+"Modify settings for this VM." = "この仮想マシンの設定を変更します。";
+"Stop the running VM." = "実行中の仮想マシンを停止します。";
+"Run the VM in the foreground." = "仮想マシンをフォアグラウンドで実行します。";
+"Run Recovery" = "“復旧”を実行";
+"Boot into recovery mode." = "復旧モードで起動します。";
+"Run without saving changes" = "変更内容を保存せずに実行";
+"Run the VM in the foreground, without saving data changes to disk." = "データの変更内容をディスクに保存せずに、仮想マシンをフォアグラウンドで実行します。";
+"Share a copy of this VM and all its data." = "この仮想マシン、およびそのデータのコピーを共有します。";
+"Move…" = "移動…";
+"Move this VM from internal storage to elsewhere." = "この仮想マシンを内部ストレージからほかの場所に移動します。";
+"Duplicate this VM along with all its data." = "この仮想マシン、およびそのデータを複製します。";
+"New from template…" = "テンプレートから新規作成…";
+"Create a new VM with the same configuration as this one but without any data." = "この仮想マシンと同じ構成の、データを含まない新規仮想マシンを作成します。";
+"Remove" = "削除";
+"Delete this shortcut. The underlying data will not be deleted." = "このショートカットを削除します。リンク先のデータは削除されません。";
+"Delete this VM and all its data." = "この仮想マシン、およびそのデータをすべて削除します。";
+"Default" = "デフォルト";
+"Balloon Device" = "バルーンデバイス";
+"Should be off for older operating systems such as Windows 7 or lower." = "Windows 7以前など、古いオペレーティングシステムに対してはオフにしておく必要があります。";
+"Should be on always unless the guest cannot boot because of this." = "これが原因でゲストが起動できない場合を除き、常にオンにしておく必要があります。";
+"TPM Device" = "TPMデバイス";
+"This is required to boot Windows 11." = "Windows 11の起動に必要です。";
+"Only available if host architecture matches the target. Otherwise, TCG emulation is used." = "ホストアーキテクチャがターゲットと一致する場合のみ利用できます。それ以外の場合は、TCGエミュレーションが使用されます。";
+"If checked, use local time for RTC which is required for Windows. Otherwise, use UTC clock." = "チェックを入れると、Windowsで必要とされるRTCにローカル時間を使用します。それ以外の場合は、UTCクロックを使用します。";
+"Instantiate PS/2 controller even when USB input is supported. Required for older Windows." = "USB入力に対応している場合でも、PS/2コントローラをインスタンス化します。古いWindowsでは必要です。";
+"(Delete)" = "（削除）";
+"Move Up" = "上に移動";
+"Move Up" = "下に移動";
+"Directory Share Mode" = "ディレクトリ共有モード";
+"Path" = "パス";
+"None" = "なし";
+"SPICE WebDAV (Legacy)" = "SPICE WebDAV（レガシー）";
+"VirtFS (Recommended)" = "VirtFS（推奨）";
+"VGA Device RAM (MB)" = "VGAデバイスRAM（MB）";
+"Guest Network" = "ゲストネットワーク";
+"Guest Network (IPv6)" = "ゲストネットワーク（IPv6）";
+"Host Address (IPv6)" = "ホストアドレス（IPv6）";
+"Host Address (IPv6)" = "ホストアドレス（IPv6）";
+"DHCP Start" = "DHCP割当先頭アドレス";
+"DHCP Domain Name" = "DHCPドメイン名";
+"DNS Server" = "DNSサーバ";
+"DNS Server (IPv6)" = "DNSサーバ（IPv6）";
+"DNS Search Domains" = "DNS検索ドメイン";
+"Connection" = "接続";
+"Mode" = "モード";
+"Text Color" = "文字色";
+"Background Color" = "背景色";
+"If checked, no drive image will be stored with the VM. Instead you can mount/unmount image while the VM is running." = "チェックを入れると、ドライブイメージは仮想マシンに保存されなくなります。その代わり、仮想マシン実行中にイメージのマウント/マウント解除が可能になります。";
+"Hardware interface on the guest used to mount this image. Different operating systems support different interfaces. The default will be the most common interface." = "このイメージをマウントするために使用されるゲスト上のハードウェアインターフェイスです。オペレーティングシステムによって対応しているインターフェースは異なります。デフォルトでは最も一般的なインターフェイスが使用されます。";
+"The amount of storage to allocate for this image. Ignored if importing an image. If this is a raw image, then an empty file of this size will be stored with the VM. Otherwise, the disk image will dynamically expand up to this size." = "このイメージに割り当てるストレージ容量です。イメージを読み込む場合は無視されます。生イメージの場合、このサイズの空のファイルが 仮想マシンに保存されます。そうでない場合は、ディスクイメージはこのサイズまで動的に拡張されます。";
+"Advanced. If checked, a raw disk image is used. Raw disk image does not support snapshots and will not dynamically expand in size." = "上級者向け。チェックを入れると、生ディスクイメージが使用されます。生ディスクイメージはスナップショットに対応しておらず、サイズを動的に拡張することはありません。";
+"(New Drive)" = "（新規ドライブ）";
+"Read Only?" = "読み出しのみ";
+"Delete this drive." = "このドライブを削除します。";
+"Reclaim Space" = "ディスク領域を再利用";
+"Reclaim" = "再利用";
+"Reclaim and Compress" = "再利用して圧縮";
+"Reclaim disk space by re-converting the disk image." = "ディスクイメージを再変換することでディスク領域を解放します。";
+"Would you like to re-convert this disk image to reclaim unused space? Note this will require enough temporary space to perform the conversion. You are strongly encouraged to back-up this VM before proceeding." = "未使用の領域を解放するために、このディスクイメージを再変換しますか? 変換を行うには、一時的に十分な空き領域が必要になることに注意してください。この作業を行う前に、この仮想マシンをバックアップしておくことを強く推奨します。";
