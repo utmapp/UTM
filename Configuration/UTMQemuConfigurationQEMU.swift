@@ -161,6 +161,9 @@ extension UTMQemuConfigurationQEMU {
 
 extension UTMQemuConfigurationQEMU {
     @MainActor mutating func saveData(to dataURL: URL, for system: UTMQemuConfigurationSystem) async throws -> [URL] {
+        guard hasUefiBoot else {
+            return []
+        }
         let fileManager = FileManager.default
         // save EFI variables
         let resourceURL = Bundle.main.url(forResource: "qemu", withExtension: nil)!
@@ -172,16 +175,13 @@ extension UTMQemuConfigurationQEMU {
         } else {
             throw UTMQemuConfigurationError.uefiNotSupported
         }
-        if hasUefiBoot {
-            let varsURL = dataURL.appendingPathComponent(QEMUPackageFileName.efiVariables.rawValue)
-            if !fileManager.fileExists(atPath: varsURL.path) {
-                try await Task.detached {
-                    try fileManager.copyItem(at: templateVarsURL, to: varsURL)
-                }.value
-            }
-            efiVarsURL = varsURL
-            return [varsURL]
+        let varsURL = dataURL.appendingPathComponent(QEMUPackageFileName.efiVariables.rawValue)
+        if !fileManager.fileExists(atPath: varsURL.path) {
+            try await Task.detached {
+                try fileManager.copyItem(at: templateVarsURL, to: varsURL)
+            }.value
         }
-        return []
+        efiVarsURL = varsURL
+        return [varsURL]
     }
 }
