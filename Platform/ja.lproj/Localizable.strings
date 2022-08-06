@@ -747,7 +747,7 @@
 "Warning: iOS will kill apps that use more than 80% of the device's total memory." = "警告: iOSは、デバイスの総メモリの80%以上を使用するAppを強制終了します。";
 
 /* No comment provided by engineer. */
-"Welcome to UTM" = "ようこそUTMへ";
+"Welcome to UTM" = "ようこそ、UTMへ";
 
 /* Startup message */
 "Welcome to UTM! Due to a bug in iOS, if you force kill this app, the system will be unstable and you cannot launch UTM again until you reboot. The recommended way to terminate this app is the button on the top left." = "ようこそUTMへ！iOSのバグにより、このAppを強制終了するとシステムが不安定になり、再起動するまでUTMを再度起動できなくなります。このAppを終了させるには、左上のボタンを使用することを推奨します。";
@@ -891,9 +891,9 @@
 "Clear" = "消去";
 "Download Windows 11 for ARM64 Preview VHDX" = "ARM64向けWindows 11プレビューのVHDXをダウンロード";
 "Use Apple Virtualization" = "Apple仮想化を使用";
-"If set, use Apple's virtualization engine. Otherwise, use QEMU's virtualization engine." = "有効にすると、Appleの仮想化エンジンを使用します。それ以外の場合は、QEMUの仮想化エンジンを使用します。";
+"If set, use Apple's virtualization engine. Otherwise, use QEMU's virtualization engine." = "有効にすると、Appleの仮想化エンジンを使用します。そうでない場合は、QEMUの仮想化エンジンを使用します。";
 "Boot from kernel image" = "カーネルイメージから起動";
-"If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO." = "有効にすると、生のカーネルイメージと初期RAMディスクから直接起動します。それ以外の場合、対応したISOから起動します。";
+"If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO." = "有効にすると、生のカーネルイメージと初期RAMディスクから直接起動します。そうでない場合は、対応したISOから起動します。";
 "Linux kernel (required):" = "Linuxカーネル（必須）:";
 "Linux initial ramdisk:" = "Linux初期RAMディスク:";
 "Linux Root FS Image:" = "Linuxルートファイルシステムイメージ:";
@@ -1101,8 +1101,8 @@
 "Should be on always unless the guest cannot boot because of this." = "これが原因でゲストが起動できない場合を除き、常にオンにしておくべきです。";
 "TPM Device" = "TPMデバイス";
 "This is required to boot Windows 11." = "Windows 11の起動に必要です。";
-"Only available if host architecture matches the target. Otherwise, TCG emulation is used." = "ホストアーキテクチャがターゲットと一致する場合のみ利用できます。それ以外の場合は、TCGエミュレーションが使用されます。";
-"If checked, use local time for RTC which is required for Windows. Otherwise, use UTC clock." = "チェックを入れると、Windowsで必要とされるRTCにローカル時間を使用します。それ以外の場合は、UTCクロックを使用します。";
+"Only available if host architecture matches the target. Otherwise, TCG emulation is used." = "ホストアーキテクチャがターゲットと一致する場合のみ利用できます。そうでない場合は、TCGエミュレーションが使用されます。";
+"If checked, use local time for RTC which is required for Windows. Otherwise, use UTC clock." = "チェックを入れると、Windowsで必要とされるRTCにローカル時間を使用します。そうでない場合は、UTCクロックを使用します。";
 "Instantiate PS/2 controller even when USB input is supported. Required for older Windows." = "USB入力に対応している場合でも、PS/2コントローラをインスタンス化します。古いWindowsで必要です。";
 "(Delete)" = "（削除）";
 "Move Up" = "上に移動";
