@@ -285,6 +285,7 @@
 		CE03D0CF24D9A33000F76B84 /* iconv.2.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641522653C7500FC7E63 /* iconv.2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE03D0D224DCF4B600F76B84 /* VMMetalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE03D0D124DCF4B600F76B84 /* VMMetalView.swift */; };
 		CE03D0D424DCF6DD00F76B84 /* VMMetalViewInputDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE03D0D324DCF6DD00F76B84 /* VMMetalViewInputDelegate.swift */; };
+		CE061CDB289E6DC30000351C /* VMDisplayWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE061CDD289E6DC30000351C /* VMDisplayWindow.xib */; };
 		CE0B6CEC24AD532500FE012D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CE550BD52259479D0063E575 /* Assets.xcassets */; };
 		CE0B6CED24AD532A00FE012D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CE550BD52259479D0063E575 /* Assets.xcassets */; };
 		CE0B6CF324AD568400FE012D /* UTMLegacyQemuConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = CE31C244225E555600A965DD /* UTMLegacyQemuConfiguration.m */; };
@@ -509,7 +510,6 @@
 		CE0DF1AF25A83C1700A51894 /* qemu-xtensa-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63ED22653C7400FC7E63 /* qemu-xtensa-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0DF1B025A83C1700A51894 /* qemu-xtensaeb-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641222653C7500FC7E63 /* qemu-xtensaeb-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0E9B87252FD06B0026E02B /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE0E9B86252FD06B0026E02B /* SwiftUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
-		CE0FE12824D3B08B0086CEF0 /* VMDisplayWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE0FE12724D3B08B0086CEF0 /* VMDisplayWindow.xib */; };
 		CE19392626DCB094005CEC17 /* RAMSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE19392526DCB093005CEC17 /* RAMSlider.swift */; };
 		CE19392726DCB094005CEC17 /* RAMSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE19392526DCB093005CEC17 /* RAMSlider.swift */; };
 		CE19392826DCB094005CEC17 /* RAMSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE19392526DCB093005CEC17 /* RAMSlider.swift */; };
@@ -1707,10 +1707,11 @@
 		CE059DC4243BFA3200338317 /* UTMLegacyQemuConfiguration+Sharing.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMLegacyQemuConfiguration+Sharing.m"; sourceTree = "<group>"; };
 		CE059DC6243E9E3400338317 /* UTMLocationManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMLocationManager.h; sourceTree = "<group>"; };
 		CE059DC7243E9E3400338317 /* UTMLocationManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMLocationManager.m; sourceTree = "<group>"; };
+		CE061CDC289E6DC30000351C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/VMDisplayWindow.xib; sourceTree = "<group>"; };
+		CE061CDF289E6DCF0000351C /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/VMDisplayWindow.strings; sourceTree = "<group>"; };
 		CE0DF17025A80B6300A51894 /* Bootstrap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Bootstrap.h; sourceTree = "<group>"; };
 		CE0DF17125A80B6300A51894 /* Bootstrap.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = Bootstrap.c; sourceTree = "<group>"; };
 		CE0E9B86252FD06B0026E02B /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
-		CE0FE12724D3B08B0086CEF0 /* VMDisplayWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = VMDisplayWindow.xib; sourceTree = "<group>"; };
 		CE19392526DCB093005CEC17 /* RAMSlider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RAMSlider.swift; sourceTree = "<group>"; };
 		CE20FAE62448D2BE0059AE11 /* VMScroll.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMScroll.h; sourceTree = "<group>"; };
 		CE20FAE72448D2BE0059AE11 /* VMScroll.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMScroll.m; sourceTree = "<group>"; };
@@ -2480,7 +2481,7 @@
 		CE1BD9FA24F4825C0022A468 /* Display */ = {
 			isa = PBXGroup;
 			children = (
-				CE0FE12724D3B08B0086CEF0 /* VMDisplayWindow.xib */,
+				CE061CDD289E6DC30000351C /* VMDisplayWindow.xib */,
 				CE612AC524D3B50700FA6300 /* VMDisplayWindowController.swift */,
 				84F746B8276FF40900A20C87 /* VMDisplayAppleWindowController.swift */,
 				845F170A289CB07200944904 /* VMDisplayAppleDisplayWindowController.swift */,
@@ -3405,6 +3406,7 @@
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				Base,
 				en,
 				"zh-Hans",
 				ko,
@@ -3467,7 +3469,7 @@
 				CE4698FA24C8FBD9008C1BD6 /* Icons in Resources */,
 				CE2D959024AD50D50059923A /* Localizable.strings in Resources */,
 				FFB02A90266CB09C006CD71A /* InfoPlist.strings in Resources */,
-				CE0FE12824D3B08B0086CEF0 /* VMDisplayWindow.xib in Resources */,
+				CE061CDB289E6DC30000351C /* VMDisplayWindow.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4438,6 +4440,15 @@
 				84937F1A289764DE003148F4 /* en */,
 			);
 			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		CE061CDD289E6DC30000351C /* VMDisplayWindow.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				CE061CDC289E6DC30000351C /* Base */,
+				CE061CDF289E6DCF0000351C /* ja */,
+			);
+			name = VMDisplayWindow.xib;
 			sourceTree = "<group>";
 		};
 		FFB02A8A266CB09C006CD71A /* InfoPlist.strings */ = {
