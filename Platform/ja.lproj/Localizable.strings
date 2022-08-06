@@ -95,7 +95,7 @@
 "Cannot start shared directory before SPICE starts." = "SPICE開始前に共有ディレクトリを開始できません。";
 
 /* VMDisplayMetalWindowController */
-"Captured mouse" = "マウスキャプチャ";
+"Captured mouse" = "マウスがキャプチャされました";
 
 /* Configuration boot device */
 "CD/DVD" = "CD/DVD";
@@ -1077,6 +1077,59 @@
 "Caps Lock (⇪) is treated as a key" = "Caps Lock（⇪）をキーとして扱う";
 "If enabled, caps lock will be handled like other keys. If disabled, it is treated as a toggle that is synchronized with the host." = "有効にすると、Caps Lockがほかのキーと同様に処理されます。無効にすると、ホストと同期するトグルとして扱われます。";
 
+//Apple Virtualization
+"Enable Balloon Device" = "バルーンデバイスを有効にする";
+"Enable Entropy Device" = "エントロピデバイスを有効にする";
+"Enable Sound" = "サウンドを有効にする";
+"Enable Keyboard" = "キーボードを有効にする";
+"Pointer" = "ポインタ";
+"Enable Rosetta on Linux (x86_64 Emulation)" = "Linux（x86_64エミュレーション）上でRosettaを有効にする";
+"If enabled, a virtiofs share tagged 'rosetta' will be available on the Linux guest for installing Rosetta for emulating x86_64 on ARM64." = "有効にすると、“rosetta”とタグ付けされたVirtioFS共有がLinuxゲストで使用できるようになり、ARM64でx86_64をエミュレートするためにRosettaをインストールすることができます。";
+
+"Waiting for VM to connect to display..." = "仮想マシンがディスプレイに接続するのを待機中…";
+"Power Off" = "パワーオフ";
+"Quit" = "終了";
+"Restart" = "再起動";
+"Zoom" = "ズーム";
+"Keyboard" = "キーボード";
+"Hide" = "非表示";
+"Current Window" = "現在のウインドウ";
+"Zoom/Reset" = "ズーム/リセット";
+"Display %lld: %@" = "ディスプレイ%1$lld: %2$@";
+"External Monitor" = "外部モニタ";
+"New Window…" = "新規ウインドウ…";
+"Change…" = "変更…";
+"Eject…" = "取り出す…";
+"Disk" = "ディスク";
+
+"No output device is selected for this window." = "このウインドウでは出力デバイスが選択されていません。";
+"This virtual machine cannot be run on this machine." = "この仮想マシンはこのマシン上では実行できません。";
+"Bootloader" = "ブートローダ";
+"Linux Settings" = "Linux設定";
+"Kernel Image" = "カーネルイメージ";
+"If checked, the drive image will be stored with the VM." = "チェックを入れると、ディスクイメージが仮想マシンに保存されます。";
+"The amount of storage to allocate for this image. An empty file of this size will be stored with the VM." = "このディスクのために確保するストレージ領域です。このサイズの空のファイルが仮想マシンに保存されます。";
+
+"Invalid MAC address." = "MACアドレスが無効です。";
+
+"Note: Shared directories will not be saved and will be reset when UTM quits." = "注意: 共有ディレクトリは保存されず、UTMを終了するとリセットされます。";
+"This directory is already being shared." = "このディレクトリはすでに共有されています。";
+"Add read only" = "読み出しのみを追加";
+"External Drive" = "外部ドライブ";
+"%@ Drive" = "%@ドライブ";
+"New Shared Directory…" = "新規共有ディレクトリ…";
+"New External Drive…" = "新規外部ドライブ…";
+"Add a new device." = "新規ドライブを追加します。";
+"Would you like to install macOS? If an existing operating system is already installed on the primary drive of this VM, then it will be erased." = "macOSをインストールしますか? この仮想マシンのプライマリドライブにすでに既存のオペレーティングシステムがインストールされている場合、消去されます。";
+"To access the shared directory, the guest OS must have Virtiofs drivers installed. You can then run `sudo mount -t virtiofs share /path/to/share` to mount to the share path." = "共有ディレクトリにアクセスするには、ゲストOSにVirtioFSドライバがインストールされている必要があります。`sudo mount -t virtiofs share /path/to/share`を実行して共有パスにマウントすることができます。";
+"Add…" = "追加…";
+
+"Installation: %lld%%" = "インストール: %lld%%";
+"%@ (Terminal %lld)" = "%1$@ (ターミナル%lld）";
+"Disposable Mode" = "使い捨てモード";
+"To release the mouse cursor, press %@ at the same time." = "マウスカーソルを解放するには、%@を同時に押してください。";
+"To capture input or to release the capture, press Command and Option at the same time." = "入力をキャプチャ、またはキャプチャを解除するには、コマンドとオプションを同時に押してください。";
+
 "Image File Type" = "イメージファイルの種類";
 "Reveal where the VM is stored." = "仮想マシンが格納されている場所を表示します。";
 "Modify settings for this VM." = "この仮想マシンの設定を変更します。";
@@ -1095,7 +1148,9 @@
 "Remove" = "削除";
 "Delete this shortcut. The underlying data will not be deleted." = "このショートカットを削除します。リンク先のデータは削除されません。";
 "Delete this VM and all its data." = "この仮想マシン、およびそのデータをすべて削除します。";
+
 "Default" = "デフォルト";
+"Disabled" = "無効";
 "Balloon Device" = "バルーンデバイス";
 "Should be off for older operating systems such as Windows 7 or lower." = "Windows 7以前など、古いオペレーティングシステムに対してはオフにしておく必要があります。";
 "Should be on always unless the guest cannot boot because of this." = "これが原因でゲストが起動できない場合を除き、常にオンにしておくべきです。";
@@ -1104,6 +1159,7 @@
 "Only available if host architecture matches the target. Otherwise, TCG emulation is used." = "ホストアーキテクチャがターゲットと一致する場合のみ利用できます。そうでない場合は、TCGエミュレーションが使用されます。";
 "If checked, use local time for RTC which is required for Windows. Otherwise, use UTC clock." = "チェックを入れると、Windowsで必要とされるRTCにローカル時間を使用します。そうでない場合は、UTCクロックを使用します。";
 "Instantiate PS/2 controller even when USB input is supported. Required for older Windows." = "USB入力に対応している場合でも、PS/2コントローラをインスタンス化します。古いWindowsで必要です。";
+
 "(Delete)" = "（削除）";
 "Move Up" = "上に移動";
 "Move Up" = "下に移動";
@@ -1113,6 +1169,7 @@
 "SPICE WebDAV (Legacy)" = "SPICE WebDAV（レガシー）";
 "VirtFS (Recommended)" = "VirtFS（推奨）";
 "VGA Device RAM (MB)" = "VGAデバイスRAM（MB）";
+
 "Guest Network" = "ゲストネットワーク";
 "Guest Network (IPv6)" = "ゲストネットワーク（IPv6）";
 "Host Address (IPv6)" = "ホストアドレス（IPv6）";
@@ -1122,17 +1179,27 @@
 "DNS Server" = "DNSサーバ";
 "DNS Server (IPv6)" = "DNSサーバ（IPv6）";
 "DNS Search Domains" = "DNS検索ドメイン";
+
 "Connection" = "接続";
 "Mode" = "モード";
 "Text Color" = "文字色";
 "Background Color" = "背景色";
+
+"Add a new drive." = "新規ドライブを追加します。";
+"Select an existing disk image." = "既存のディスクイメージを選択します。";
+"Create an empty drive." = "空のドライブを作成します。";
 "If checked, no drive image will be stored with the VM. Instead you can mount/unmount image while the VM is running." = "チェックを入れると、ドライブイメージは仮想マシンに保存されなくなります。その代わり、仮想マシン実行中にイメージのマウント/マウント解除が可能になります。";
 "Hardware interface on the guest used to mount this image. Different operating systems support different interfaces. The default will be the most common interface." = "このイメージをマウントするために使用されるゲスト上のハードウェアインターフェイスです。オペレーティングシステムによって対応しているインターフェースは異なります。デフォルトでは最も一般的なインターフェイスが使用されます。";
 "The amount of storage to allocate for this image. Ignored if importing an image. If this is a raw image, then an empty file of this size will be stored with the VM. Otherwise, the disk image will dynamically expand up to this size." = "このイメージに割り当てるストレージ容量です。イメージを読み込む場合は無視されます。生イメージの場合、このサイズの空のファイルが仮想マシンに保存されます。そうでない場合は、ディスクイメージはこのサイズまで動的に拡張されます。";
 "Advanced. If checked, a raw disk image is used. Raw disk image does not support snapshots and will not dynamically expand in size." = "上級者向け。チェックを入れると、生ディスクイメージが使用されます。生ディスクイメージはスナップショットに対応しておらず、サイズを動的に拡張することはありません。";
+
+"EFI Variables" = "EFI変数";
+"An image already exists with that name." = "その名前のイメージがすでに存在します。";
 "(New Drive)" = "（新規ドライブ）";
 "Read Only?" = "読み出しのみ";
 "Delete this drive." = "このドライブを削除します。";
+"(new)" = "（新規）";
+
 "Reclaim Space" = "ディスク領域を再利用";
 "Reclaim" = "再利用";
 "Reclaim and Compress" = "再利用して圧縮";
