@@ -693,7 +693,7 @@
 "Timed out waiting for RPC." = "RPC待機がタイムアウトしました。";
 
 /* VMDisplayMetalWindowController */
-"To release the mouse cursor, press ⌃+⌥ (Ctrl+Opt or Ctrl+Alt) at the same time." = "マウスカーソルを解放するには、⌃+⌥（Ctrl+OptまたはCtrl+Alt）を同時に押してください。";
+"To release the mouse cursor, press ⌃+⌥ (Ctrl+Opt or Ctrl+Alt) at the same time." = "マウスカーソルを解放するには、⌃+⌥（Ctrl+OptまたはCtrl+Alt）を同時に押します。";
 
 /* No comment provided by engineer. */
 "Tweaks" = "調整";
@@ -1127,8 +1127,8 @@
 "Installation: %lld%%" = "インストール: %lld%%";
 "%@ (Terminal %lld)" = "%1$@ (ターミナル%lld）";
 "Disposable Mode" = "使い捨てモード";
-"To release the mouse cursor, press %@ at the same time." = "マウスカーソルを解放するには、%@を同時に押してください。";
-"To capture input or to release the capture, press Command and Option at the same time." = "入力をキャプチャ、またはキャプチャを解除するには、コマンドとオプションを同時に押してください。";
+"To release the mouse cursor, press %@ at the same time." = "マウスカーソルを解放するには、%@を同時に押します。";
+"To capture input or to release the capture, press Command and Option at the same time." = "入力をキャプチャ、またはキャプチャを解除するには、コマンドとオプションを同時に押します。";
 
 "Image File Type" = "イメージファイルの種類";
 "Reveal where the VM is stored." = "仮想マシンが格納されている場所を表示します。";
@@ -1200,8 +1200,8 @@
 "Delete this drive." = "このドライブを削除します。";
 "(new)" = "（新規）";
 
-"Reclaim Space" = "ディスク領域を再利用";
-"Reclaim" = "再利用";
-"Reclaim and Compress" = "再利用して圧縮";
+"Reclaim Space" = "領域を解放";
+"Reclaim" = "解放";
+"Reclaim and Compress" = "解放して圧縮";
 "Reclaim disk space by re-converting the disk image." = "ディスクイメージを再変換することでディスク領域を解放します。";
-"Would you like to re-convert this disk image to reclaim unused space? Note this will require enough temporary space to perform the conversion. You are strongly encouraged to back-up this VM before proceeding." = "未使用の領域を解放するために、このディスクイメージを再変換しますか? 変換を行うには、一時的に十分な空き領域が必要になることに注意してください。この作業を行う前に、この仮想マシンをバックアップしておくことを強く推奨します。";
+"Would you like to re-convert this disk image to reclaim unused space? Note this will require enough temporary space to perform the conversion. You are strongly encouraged to back-up this VM before proceeding." = "このディスクイメージを再変換して、未使用の領域を解放しますか? 変換を行うには、一時的に十分な空き領域が必要になることに注意してください。この作業を行う前に、仮想マシンをバックアップしておくことを強く推奨します。";
