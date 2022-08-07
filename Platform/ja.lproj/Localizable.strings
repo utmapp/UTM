@@ -439,6 +439,12 @@
 "Icon" = "アイコン";
 
 // VMConfigInputView.swift
+"If enabled, the default input devices will be emulated on the USB bus." = "有効にすると、デフォルトの入力デバイスがUSBバス上でエミュレートされます。";
+"USB Support" = "USB対応";
+"USB Sharing" = "USB共有";
+"USB sharing not supported in this build of UTM." = "このビルドのUTMではUSB共有に対応していません。";
+"Share USB devices from host" = "ホストからUSBデバイスを共有";
+"Maximum Shared USB Devices" = "最大共有USBデバイス";
 "Additional Settings" = "その他の設定";
 "Gesture and Cursor Settings" = "ジェスチャとカーソルの設定";
 
