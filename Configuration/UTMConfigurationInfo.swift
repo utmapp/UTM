@@ -64,11 +64,14 @@ struct UTMConfigurationInfo: Codable {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(name, forKey: .name)
-        try container.encode(isIconCustom, forKey: .isIconCustom)
-        if isIconCustom {
-            try container.encode(iconURL!.lastPathComponent, forKey: .icon)
-        } else if let name = iconURL?.deletingPathExtension().lastPathComponent {
+        if isIconCustom, let iconURL = iconURL {
+            try container.encode(true, forKey: .isIconCustom)
+            try container.encode(iconURL.lastPathComponent, forKey: .icon)
+        } else if !isIconCustom, let name = iconURL?.deletingPathExtension().lastPathComponent {
+            try container.encode(false, forKey: .isIconCustom)
             try container.encode(name, forKey: .icon)
+        } else {
+            try container.encode(false, forKey: .isIconCustom)
         }
         try container.encodeIfPresent(notes, forKey: .notes)
         try container.encode(uuid, forKey: .uuid)
@@ -97,7 +100,7 @@ extension UTMConfigurationInfo {
                 isIconCustom = false
             }
         }
-        if let name = oldConfig.icon {
+        if !isIconCustom, let name = oldConfig.icon {
             iconURL = Self.builtinIcon(named: name)
         }
     }
