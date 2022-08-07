@@ -118,7 +118,12 @@ import Virtualization
             try await _vmStart()
             if #available(macOS 12, *) {
                 sharedDirectoriesChanged = appleConfig.$sharedDirectories.sink { [weak self] newShares in
-                    self?.updateSharedDirectories(with: newShares)
+                    guard let self = self else {
+                        return
+                    }
+                    self.vmQueue.async {
+                        self.updateSharedDirectories(with: newShares)
+                    }
                 }
             }
             changeState(.vmStarted)
