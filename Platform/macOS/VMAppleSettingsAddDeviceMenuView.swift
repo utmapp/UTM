@@ -41,7 +41,7 @@ struct VMAppleSettingsAddDeviceMenuView: View {
                 let newSerial = UTMAppleConfigurationSerial()
                 config.serials.append(newSerial)
             } label: {
-                Label("Serial", systemImage: "cable.connector")
+                Label("Serial", systemImage: "rectangle.connected.to.line.below")
             }
             Button {
                 let newNetwork = UTMAppleConfigurationNetwork()

@@ -57,7 +57,7 @@ struct VMQEMUSettingsView: View {
             }
             ForEach($config.serials) { $serial in
                 NavigationLink(destination: VMConfigSerialView(config: $serial, system: $config.system).scrollable()) {
-                    Label("Serial", systemImage: "cable.connector")
+                    Label("Serial", systemImage: "rectangle.connected.to.line.below")
                 }.contextMenu {
                     DestructiveButton("Remove") {
                         config.serials.removeAll(where: { $0.id == serial.id })

@@ -55,7 +55,7 @@ struct VMSettingsAddDeviceMenuView: View {
                 let newSerial = UTMQemuConfigurationSerial(forArchitecture: config.system.architecture, target: config.system.target)
                 config.serials.append(newSerial!)
             } label: {
-                Label("Serial", systemImage: "cable.connector")
+                Label("Serial", systemImage: "rectangle.connected.to.line.below")
             }
             Button {
                 let newNetwork = UTMQemuConfigurationNetwork(forArchitecture: config.system.architecture, target: config.system.target)

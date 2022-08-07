@@ -28,7 +28,7 @@ struct VMToolbarDisplayMenuView: View {
                     ForEach(session.devices) { device in
                         switch device {
                         case .serial(_, let index):
-                            MenuLabel("Serial \(index): \(session.qemuConfig.serials[index].target.prettyValue)", systemImage: "cable.connector").tag(device as VMWindowState.Device?)
+                            MenuLabel("Serial \(index): \(session.qemuConfig.serials[index].target.prettyValue)", systemImage: "rectangle.connected.to.line.below").tag(device as VMWindowState.Device?)
                         case .display(_, let index):
                             MenuLabel("Display \(index): \(session.qemuConfig.displays[index].hardware.prettyValue)", systemImage: "display").tag(device as VMWindowState.Device?)
                         }

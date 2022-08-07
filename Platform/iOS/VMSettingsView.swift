@@ -80,7 +80,7 @@ struct VMSettingsView: View {
                         }
                         ForEach($config.serials) { $serial in
                             NavigationLink(destination: VMConfigSerialView(config: $serial, system: $config.system).navigationTitle("Serial")) {
-                                    Label("Serial", systemImage: "cable.connector")
+                                    Label("Serial", systemImage: "rectangle.connected.to.line.below")
                                         .labelStyle(RoundRectIconLabelStyle(color: .green))
                                 }
                         }.onDelete { offsets in

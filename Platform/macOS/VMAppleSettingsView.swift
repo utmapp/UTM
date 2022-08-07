@@ -65,7 +65,7 @@ struct VMAppleSettingsView: View {
             }
             ForEach($config.serials) { $serial in
                 NavigationLink(destination: VMConfigAppleSerialView(config: $serial).scrollable()) {
-                    Label("Serial", systemImage: "cable.connector")
+                    Label("Serial", systemImage: "rectangle.connected.to.line.below")
                 }.contextMenu {
                     DestructiveButton("Remove") {
                         config.serials.removeAll(where: { $0.id == serial.id })
