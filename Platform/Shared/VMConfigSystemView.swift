@@ -158,12 +158,17 @@ private struct HardwareOptions: View {
     @Binding var target: any QEMUTarget
     @Binding var warningMessage: WarningMessage?
     @EnvironmentObject private var data: UTMData
+    @State private var isArchitectureFirstAppear: Bool = true
+    @State private var isTargetFirstAppear: Bool = true
     
     var body: some View {
         Section(header: Text("Hardware")) {
             VMConfigConstantPicker("Architecture", selection: $architecture)
                 .onAppear {
-                    architecture = config.architecture
+                    if isArchitectureFirstAppear {
+                        architecture = config.architecture
+                    }
+                    isArchitectureFirstAppear = false
                 }
                 .onChange(of: architecture) { newValue in
                     if newValue != config.architecture {
@@ -181,7 +186,10 @@ private struct HardwareOptions: View {
             }
             VMConfigConstantPicker("System", selection: $target, type: config.architecture.targetType)
                 .onAppear {
-                    target = config.target
+                    if isTargetFirstAppear {
+                        target = config.target
+                    }
+                    isTargetFirstAppear = false
                 }
                 .onChange(of: target.rawValue) { newValue in
                     if newValue != config.target.rawValue {

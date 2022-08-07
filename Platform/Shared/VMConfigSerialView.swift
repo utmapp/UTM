@@ -20,6 +20,7 @@ struct VMConfigSerialView: View {
     @Binding var config: UTMQemuConfigurationSerial
     @Binding var system: UTMQemuConfigurationSystem
     
+    @State private var isFirstAppear: Bool = true
     @State private var isUnsupportedAlertShown: Bool = false
     @State private var hardware: any QEMUSerialDevice = AnyQEMUConstant(rawValue: "")!
     
@@ -50,9 +51,14 @@ struct VMConfigSerialView: View {
                         VMConfigConstantPicker("Emulated Serial Device", selection: $hardware, type: system.architecture.serialDeviceType)
                     }
                     .onAppear {
-                        if let configHardware = config.hardware {
-                            hardware = configHardware
+                        if isFirstAppear {
+                            if let configHardware = config.hardware {
+                                hardware = configHardware
+                            } else if let `default` = system.architecture.serialDeviceType.allCases.first {
+                                hardware = `default`
+                            }
                         }
+                        isFirstAppear = false
                     }
                     .onChange(of: hardware.rawValue) { newValue in
                         config.hardware = hardware
