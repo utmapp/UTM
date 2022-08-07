@@ -40,7 +40,7 @@ struct VMConfigAppleNetworkingView: View {
             }
             if config.mode == .bridged {
                 Section(header: Text("Bridged Settings")) {
-                    DefaultPicker("Interface", selection: $config.bridgeInterface.bound) {
+                    Picker("Interface", selection: $config.bridgeInterface.bound) {
                         ForEach(VZBridgedNetworkInterface.networkInterfaces, id: \.identifier) { interface in
                             Text(interface.identifier)
                                 .tag(interface.identifier as String?)

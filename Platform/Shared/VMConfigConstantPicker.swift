@@ -42,7 +42,7 @@ struct VMConfigConstantPicker: View {
     }
     
     var body: some View {
-        DefaultPicker(titleKey, selection: $stringSelection) {
+        Picker(titleKey ?? "", selection: $stringSelection) {
             ForEach(type.allPrettyValues) { displayValue in
                 Text(displayValue).tag(rawValue(for: displayValue))
             }

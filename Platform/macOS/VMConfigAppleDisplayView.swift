@@ -141,7 +141,7 @@ struct VMConfigAppleDisplayView: View {
     
     var body: some View {
         Form {
-            DefaultPicker("Resolution", selection: displayResolution) {
+            Picker("Resolution", selection: displayResolution) {
                 ForEach(resolutions) { item in
                     Text(item.name)
                         .tag(item)
