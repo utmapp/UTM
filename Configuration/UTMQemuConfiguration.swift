@@ -212,12 +212,14 @@ extension UTMQemuConfiguration {
         let fileManager = FileManager.default
         let imagesURL = packageURL.appendingPathComponent(QEMUPackageFileName.images.rawValue)
         let dataURL = packageURL.appendingPathComponent(Self.dataDirectoryName)
-        guard !fileManager.fileExists(atPath: dataURL.path) && fileManager.fileExists(atPath: imagesURL.path) else {
-            throw UTMQemuConfigurationError.migrationFailed
+        if fileManager.fileExists(atPath: imagesURL.path) {
+            guard !fileManager.fileExists(atPath: dataURL.path) else {
+                throw UTMQemuConfigurationError.migrationFailed
+            }
+            try await Task.detached {
+                try fileManager.moveItem(at: imagesURL, to: dataURL)
+            }.value
         }
-        try await Task.detached {
-            try fileManager.moveItem(at: imagesURL, to: dataURL)
-        }.value
         // update any drives
         for i in 0..<drives.count {
             if !drives[i].isExternal, let oldImageURL = drives[i].imageURL {
