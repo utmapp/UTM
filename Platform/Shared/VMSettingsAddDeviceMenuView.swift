@@ -83,7 +83,12 @@ struct VMSettingsAddDeviceMenuView: View {
             }
             #endif
         } label: {
-            Label("New…", systemImage: "plus")
+            if #available(iOS 15, macOS 11, *) {
+                Label("New…", systemImage: "plus")
+            } else {
+                Label("New…", systemImage: "plus")
+                    .labelStyle(.iconOnly)
+            }
         }.help("Add a new device.")
         .menuStyle(.borderlessButton)
     }
