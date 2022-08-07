@@ -17,41 +17,53 @@
 import SwiftUI
 
 struct VMConfigConstantPicker: View {
-    @Binding private var stringSelection: String
+    private struct Identifier: Hashable {
+        let string: String
+        
+        init(_ string: String) {
+            self.string = string
+        }
+        
+        func hash(into hasher: inout Hasher) {
+            string.hash(into: &hasher)
+        }
+    }
+    
+    @Binding private var selection: Identifier
     private let titleKey: LocalizedStringKey?
     private let type: any QEMUConstant.Type
     
     init<T: QEMUConstant>(_ titleKey: LocalizedStringKey? = nil, selection: Binding<T>) {
-        self._stringSelection = Binding(get: {
-            selection.wrappedValue.rawValue
+        self._selection = Binding(get: {
+            Identifier(selection.wrappedValue.rawValue)
         }, set: { newValue in
-            selection.wrappedValue = T(rawValue: newValue)!
+            selection.wrappedValue = T(rawValue: newValue.string)!
         })
         self.titleKey = titleKey
         self.type = T.self
     }
     
     init<S>(_ titleKey: LocalizedStringKey? = nil, selection: Binding<S>, type: any QEMUConstant.Type) {
-        self._stringSelection = Binding(get: {
-            (selection.wrappedValue as! any QEMUConstant).rawValue
+        self._selection = Binding(get: {
+            Identifier((selection.wrappedValue as! any QEMUConstant).rawValue)
         }, set: { newValue in
-            selection.wrappedValue = type.init(rawValue: newValue)! as! S
+            selection.wrappedValue = type.init(rawValue: newValue.string)! as! S
         })
         self.titleKey = titleKey
         self.type = type
     }
     
     var body: some View {
-        Picker(titleKey ?? "", selection: $stringSelection) {
+        Picker(titleKey ?? "", selection: $selection) {
             ForEach(type.allPrettyValues) { displayValue in
-                Text(displayValue).tag(rawValue(for: displayValue))
+                Text(displayValue).tag(identifier(for: displayValue))
             }
         }
     }
     
-    private nonmutating func rawValue(for displayValue: String) -> String {
+    private nonmutating func identifier(for displayValue: String) -> Identifier {
         let index = type.allPrettyValues.firstIndex(of: displayValue)!
-        return type.allRawValues[index]
+        return Identifier(type.allRawValues[index])
     }
 }
 
