@@ -84,7 +84,7 @@ struct VMWizardOSLinuxView: View {
             if wizardState.useLinuxKernel {
                 
                 Section {
-                    Text(wizardState.linuxKernelURL?.lastPathComponent ?? "Empty")
+                    (wizardState.linuxKernelURL?.lastPathComponent.map { Text($0) } ?? Text("Empty"))
                         .font(.caption)
                     Button {
                         selectImage = .kernel
@@ -94,11 +94,15 @@ struct VMWizardOSLinuxView: View {
                     }
                     .padding(.leading, 1)
                 } header: {
-                    Text("\(wizardState.useAppleVirtualization ? "Uncompressed " : "")Linux kernel (required):")
+                    if wizardState.useAppleVirtualization {
+                        Text("Uncompressed \(Text("Linux kernel (required):"))")
+                    } else {
+                        Text("Linux kernel (required):")
+                    }
                 }
                 
                 Section {
-                    Text(wizardState.linuxInitialRamdiskURL?.lastPathComponent ?? "Empty")
+                    (wizardState.linuxInitialRamdiskURL?.lastPathComponent.map { Text($0) } ?? Text("Empty"))
                         .font(.caption)
 #if os(macOS)
                     HStack {
@@ -135,11 +139,15 @@ struct VMWizardOSLinuxView: View {
 #endif
                     
                 } header: {
-                    Text("\(wizardState.useAppleVirtualization ? "Uncompressed " : "")Linux initial ramdisk (optional):")
+                    if wizardState.useAppleVirtualization {
+                        Text("Uncompressed \(Text("Linux initial ramdisk (optional):"))")
+                    } else {
+                        Text("Linux initial ramdisk (optional):")
+                    }
                 }
                 
                 Section {
-                    Text(wizardState.linuxRootImageURL?.lastPathComponent ?? "Empty")
+                    (wizardState.linuxRootImageURL?.lastPathComponent.map { Text($0) } ?? Text("Empty"))
                         .font(.caption)
 #if os(macOS)
                     HStack {
@@ -174,7 +182,7 @@ struct VMWizardOSLinuxView: View {
                 }
                 
                 Section {
-                    Text(wizardState.bootImageURL?.lastPathComponent ?? "Empty")
+                    (wizardState.bootImageURL?.lastPathComponent.map { Text($0) } ?? Text("Empty"))
                         .font(.caption)
 #if os(macOS)
                     HStack {
@@ -226,7 +234,7 @@ struct VMWizardOSLinuxView: View {
             } else {
                 Section {
                     Text("Boot ISO Image:")
-                    Text(wizardState.bootImageURL?.lastPathComponent ?? "Empty")
+                    (wizardState.bootImageURL?.lastPathComponent.map { Text($0) } ?? Text("Empty"))
                         .font(.caption)
                     Button {
                         selectImage = .bootImage

@@ -30,7 +30,7 @@ struct VMWizardSharingView: View {
                 HStack {
                     Text("Directory")
                     Spacer()
-                    Text(wizardState.sharingDirectoryURL?.lastPathComponent ?? "Empty")
+                    (wizardState.sharingDirectoryURL?.lastPathComponent.map { Text($0) } ?? Text("Empty"))
                         .font(.caption)
                 }
                 if !wizardState.useAppleVirtualization {

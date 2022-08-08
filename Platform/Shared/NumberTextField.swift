@@ -44,7 +44,7 @@ struct NumberTextFieldOld: View {
                 return number.intValue == 0 ? "" : string
             }, set: {
                 // make sure we never set nil
-                self.number = self.formatter.number(from: $0) ?? NSNumber(value: 0)
+                self.number = self.formatter.number(from: $0) ?? 0
             }), onEditingChanged: onEditingChanged)
                 .keyboardType(.numberPad)
                 .multilineTextAlignment(.trailing)
@@ -110,7 +110,7 @@ struct NumberTextField: View {
     
     init(_ titleKey: LocalizedStringKey, number: Binding<Int>, prompt: LocalizedStringKey = "0", onEditingChanged: @escaping (Bool) -> Void = { _ in }) {
         let nsnumber = Binding<NSNumber?> {
-            return NSNumber(value: number.wrappedValue)
+            return number.wrappedValue as NSNumber
         } set: { newValue in
             number.wrappedValue = newValue?.intValue ?? 0
         }
@@ -147,13 +147,13 @@ extension NSNumber {
             let formatter = NumberFormatter()
             formatter.usesGroupingSeparator = false
             formatter.usesSignificantDigits = false
-            return formatter.number(from: value) ?? NSNumber(value: 0)
+            return formatter.number(from: value) ?? 0
         }
     }
 }
 
 struct NumberTextField_Previews: PreviewProvider {
     static var previews: some View {
-        NumberTextField("Test", number: .constant(NSNumber(value: 123)))
+        NumberTextField("Test", number: .constant(123 as NSNumber))
     }
 }

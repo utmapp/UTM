@@ -26,7 +26,7 @@ class VMDisplayQemuTerminalWindowController: VMDisplayQemuWindowController, VMDi
     
     override var defaultTitle: String {
         if isSecondary {
-            return NSLocalizedString("\(vmQemuConfig.information.name) (Terminal \(id+1))", comment: "VMDisplayQemuTerminalWindowController")
+            return String.localizedStringWithFormat(NSLocalizedString("%@ (Terminal %lld)", comment: "VMDisplayQemuTerminalWindowController"), vmQemuConfig.information.name, id + 1)
         } else {
             return super.defaultTitle
         }

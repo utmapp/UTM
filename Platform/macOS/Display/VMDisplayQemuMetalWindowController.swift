@@ -40,7 +40,7 @@ class VMQemuDisplayMetalWindowController: VMDisplayQemuWindowController {
     
     override var defaultTitle: String {
         if isSecondary {
-            return NSLocalizedString("\(vmQemuConfig.information.name) (Display \(id+1))", comment: "VMDisplayMetalWindowController")
+            return String.localizedStringWithFormat(NSLocalizedString("%@ (Display %lld)", comment: "VMDisplayMetalWindowController"), vmQemuConfig.information.name, id + 1)
         } else {
             return super.defaultTitle
         }
@@ -360,14 +360,14 @@ extension VMQemuDisplayMetalWindowController: VMMetalViewInputDelegate {
         let action = { () -> Void in
             self.qemuVM.requestInputTablet(false)
             self.metalView?.captureMouse()
-            self.window?.subtitle = NSLocalizedString("Press \(self.shouldUseCmdOptForCapture ? "⌘+⌥" : "⌃+⌥") to release cursor", comment: "VMQemuDisplayMetalWindowController")
+            self.window?.subtitle = String.localizedStringWithFormat(NSLocalizedString("Press %@ to release cursor", comment: "VMQemuDisplayMetalWindowController"), self.shouldUseCmdOptForCapture ? "⌘+⌥" : "⌃+⌥")
             self.window?.makeFirstResponder(self.metalView)
             self.syncCapsLock()
         }
         if isCursorCaptureAlertShown {
             let alert = NSAlert()
             alert.messageText = NSLocalizedString("Captured mouse", comment: "VMQemuDisplayMetalWindowController")
-            alert.informativeText = NSLocalizedString("To release the mouse cursor, press \(self.shouldUseCmdOptForCapture ? "⌘+⌥ (Cmd+Opt)" : "⌃+⌥ (Ctrl+Opt)") at the same time.", comment: "VMQemuDisplayMetalWindowController")
+            alert.informativeText = String.localizedStringWithFormat(NSLocalizedString("To release the mouse cursor, press %@ at the same time.", comment: "VMQemuDisplayMetalWindowController"), self.shouldUseCmdOptForCapture ? "⌘+⌥ (Cmd+Opt)" : "⌃+⌥ (Ctrl+Opt)")
             alert.showsSuppressionButton = true
             alert.beginSheetModal(for: window!) { _ in
                 if alert.suppressionButton?.state ?? .off == .on {

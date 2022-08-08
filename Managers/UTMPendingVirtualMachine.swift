@@ -84,7 +84,7 @@ import Foundation
             return
         }
         let localizedFormatString = NSLocalizedString("%@ remaining", comment: "Format string for remaining time until a download finishes")
-        self.estimatedTimeRemaining = String(format: localizedFormatString, etaString)
+        self.estimatedTimeRemaining = String.localizedStringWithFormat(localizedFormatString, etaString)
     }
     
     private func updateDownloadStats(for newBytesWritten: Int64, currentTotal totalBytesWritten: Int64, estimatedTotal totalBytesExpectedToWrite: Int64) {
@@ -100,7 +100,7 @@ import Foundation
         let bytesString = ByteCountFormatter.string(fromByteCount: bytesPerSecond, countStyle: .file)
         let speedFormat = NSLocalizedString("%@ / s",
                                             comment: "Format string for the 'per second' part of a download speed.")
-        estimatedDownloadSpeed = String(format: speedFormat, bytesString)
+        estimatedDownloadSpeed = String.localizedStringWithFormat(speedFormat, bytesString)
         /// sizes
         downloadedSize = ByteCountFormatter.string(fromByteCount: totalBytesWritten, countStyle: .file)
         estimatedDownloadSize = ByteCountFormatter.string(fromByteCount: totalBytesExpectedToWrite, countStyle: .file)

@@ -351,7 +351,7 @@ extension VMDisplayQemuWindowController: CSUSBManagerDelegate {
         let alert = NSAlert()
         alert.alertStyle = .informational
         alert.messageText = NSLocalizedString("USB Device", comment: "VMQemuDisplayMetalWindowController")
-        alert.informativeText = NSLocalizedString("Would you like to connect '\(usbDevice.name ?? usbDevice.description)' to this virtual machine?", comment: "VMQemuDisplayMetalWindowController")
+        alert.informativeText = String.localizedStringWithFormat(NSLocalizedString("Would you like to connect '%@' to this virtual machine?", comment: "VMQemuDisplayMetalWindowController"), usbDevice.name ?? usbDevice.description)
         alert.showsSuppressionButton = true
         alert.addButton(withTitle: NSLocalizedString("Confirm", comment: "VMQemuDisplayMetalWindowController"))
         alert.addButton(withTitle: NSLocalizedString("Cancel", comment: "VMQemuDisplayMetalWindowController"))

@@ -1190,6 +1190,9 @@
 		CED814EC24C7C2850042F0F1 /* VMConfigInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED814EB24C7C2850042F0F1 /* VMConfigInfoView.swift */; };
 		CED814ED24C7C2850042F0F1 /* VMConfigInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED814EB24C7C2850042F0F1 /* VMConfigInfoView.swift */; };
 		CED814EF24C7EB760042F0F1 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED814EE24C7EB760042F0F1 /* ImagePicker.swift */; };
+		CED8DF7528A120C100C34345 /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = CED8DF7928A120C100C34345 /* Localizable.stringsdict */; };
+		CED8DF7628A120C100C34345 /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = CED8DF7928A120C100C34345 /* Localizable.stringsdict */; };
+		CED8DF7728A120C100C34345 /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = CED8DF7928A120C100C34345 /* Localizable.stringsdict */; };
 		CEDF83F9258AE24E0030E4AC /* UTMPasteboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEDF83F8258AE24E0030E4AC /* UTMPasteboard.swift */; };
 		CEDF83FA258AE24E0030E4AC /* UTMPasteboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEDF83F8258AE24E0030E4AC /* UTMPasteboard.swift */; };
 		CEE7E936287CFDB100282049 /* UTMLegacyQemuConfiguration+Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = CEE7E934287CFDB100282049 /* UTMLegacyQemuConfiguration+Constants.m */; };
@@ -2150,6 +2153,7 @@
 		CED814E824C79F070042F0F1 /* VMConfigDriveCreateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigDriveCreateView.swift; sourceTree = "<group>"; };
 		CED814EB24C7C2850042F0F1 /* VMConfigInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigInfoView.swift; sourceTree = "<group>"; };
 		CED814EE24C7EB760042F0F1 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
+		CED8DF7828A120C100C34345 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = en; path = en.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		CEDC9BA2288B74E50030F494 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		CEDC9BA3288BBD130030F494 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
 		CEDC9BA4288BBD6B0030F494 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -2605,6 +2609,7 @@
 				CE2D955624AD4F980059923A /* Swift-Bridging-Header.h */,
 				CE550BD52259479D0063E575 /* Assets.xcassets */,
 				521F3EFB2414F73800130500 /* Localizable.strings */,
+				CED8DF7928A120C100C34345 /* Localizable.stringsdict */,
 				52459A312440C84E006A58D0 /* InfoPlist.strings */,
 			);
 			path = Platform;
@@ -3443,6 +3448,7 @@
 				CE2D936B24AD46670059923A /* Localizable.strings in Resources */,
 				CE2D936C24AD46670059923A /* qemu in Resources */,
 				CE2D936D24AD46670059923A /* VMDisplayMetalViewInputAccessory.xib in Resources */,
+				CED8DF7528A120C100C34345 /* Localizable.stringsdict in Resources */,
 				CE2D937224AD46670059923A /* Settings.bundle in Resources */,
 				CE0B6CED24AD532A00FE012D /* Assets.xcassets in Resources */,
 			);
@@ -3458,6 +3464,7 @@
 				CE2D959024AD50D50059923A /* Localizable.strings in Resources */,
 				FFB02A90266CB09C006CD71A /* InfoPlist.strings in Resources */,
 				CE0FE12824D3B08B0086CEF0 /* VMDisplayWindow.xib in Resources */,
+				CED8DF7728A120C100C34345 /* Localizable.stringsdict in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3477,6 +3484,7 @@
 				CEA45F67263519B5002FA97D /* Localizable.strings in Resources */,
 				CEA45F69263519B5002FA97D /* qemu in Resources */,
 				CEA45F6A263519B5002FA97D /* VMDisplayMetalViewInputAccessory.xib in Resources */,
+				CED8DF7628A120C100C34345 /* Localizable.stringsdict in Resources */,
 				CEA45F6D263519B5002FA97D /* Settings.bundle in Resources */,
 				CEA45F6F263519B5002FA97D /* Assets.xcassets in Resources */,
 			);
@@ -4422,6 +4430,14 @@
 				84937F1A289764DE003148F4 /* en */,
 			);
 			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		CED8DF7928A120C100C34345 /* Localizable.stringsdict */ = {
+			isa = PBXVariantGroup;
+			children = (
+				CED8DF7828A120C100C34345 /* en */,
+			);
+			name = Localizable.stringsdict;
 			sourceTree = "<group>";
 		};
 		FFB02A8A266CB09C006CD71A /* InfoPlist.strings */ = {

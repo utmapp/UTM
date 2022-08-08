@@ -264,7 +264,7 @@ struct QEMUTerminalFont: QEMUConstant {
             } else {
                 description = NSLocalizedString("Regular", comment: "UTMQemuConstants")
             }
-            return "\(font.familyName) (\(description)"
+            return String.localizedStringWithFormat(NSLocalizedString("%@ (%@)", comment: "QEMUConstant"), font.familyName, description)
         }
     }()
     #endif

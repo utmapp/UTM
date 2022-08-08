@@ -44,15 +44,15 @@ struct SavePanel: NSViewRepresentable {
             
             switch shareItem {
             case .debugLog:
-                savePanel.title = "Select where to save debug log:"
+                savePanel.title = NSLocalizedString("Select where to save debug log:", comment: "SavePanel")
                 savePanel.nameFieldStringValue = "debug"
                 savePanel.allowedContentTypes = [.appleLog]
             case .utmCopy(let vm), .utmMove(let vm):
-                savePanel.title = "Select where to save UTM Virtual Machine:"
+                savePanel.title = NSLocalizedString("Select where to save UTM Virtual Machine:", comment: "SavePanel")
                 savePanel.nameFieldStringValue = vm.path.lastPathComponent
                 savePanel.allowedContentTypes = [.UTM]
             case .qemuCommand:
-                savePanel.title = "Select where to export QEMU command:"
+                savePanel.title = NSLocalizedString("Select where to export QEMU command:", comment: "SavePanel")
                 savePanel.nameFieldStringValue = "command"
                 savePanel.allowedContentTypes = [.plainText]
             }

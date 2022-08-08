@@ -25,7 +25,7 @@
     if (!filename) {
         filename = NSLocalizedString(@"none", @"UTMDrive");
     }
-    return [NSString stringWithFormat:@"%@ (%@): %@", imageTypeStr, self.interface, filename];
+    return [NSString localizedStringWithFormat:@"%@ (%@): %@", imageTypeStr, self.interface, filename];
 }
 
 @end

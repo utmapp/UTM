@@ -260,7 +260,9 @@ extension VMDisplayAppleWindowController {
             if progress >= 1 {
                 self.window!.subtitle = ""
             } else {
-                self.window!.subtitle = NSLocalizedString("Installation: \(Int(progress * 100))%", comment: "VMDisplayAppleWindowController")
+                let installationFormat = NSLocalizedString("Installation: %@", comment: "VMDisplayAppleWindowController")
+                let percentString = NumberFormatter.localizedString(from: progress as NSNumber, number: .percent)
+                self.window!.subtitle = String.localizedStringWithFormat(installationFormat, percentString)
             }
         }
     }

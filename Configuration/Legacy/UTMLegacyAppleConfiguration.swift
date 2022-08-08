@@ -170,7 +170,7 @@ final class UTMLegacyAppleConfiguration: Codable {
         consoleBackgroundColor = try values.decodeIfPresent(String.self, forKey: .consoleBackgroundColor)
         consoleFont = try values.decodeIfPresent(String.self, forKey: .consoleFont)
         let fontSize = try values.decodeIfPresent(Int.self, forKey: .consoleFontSize)
-        consoleFontSize = NSNumber(value: fontSize ?? 12)
+        consoleFontSize = (fontSize ?? 12) as NSNumber
         consoleCursorBlink = try values.decode(Bool.self, forKey: .consoleCursorBlink)
         consoleResizeCommand = try values.decodeIfPresent(String.self, forKey: .consoleResizeCommand)
     }

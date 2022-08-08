@@ -90,7 +90,7 @@ struct MinimalProgressView: View {
         let formatter = NumberFormatter()
         formatter.numberStyle = .percent
         formatter.allowsFloats = false
-        let label = formatter.string(from: NSNumber(value: fractionCompleted)) ?? ""
+        let label = formatter.string(from: fractionCompleted as NSNumber) ?? ""
         return label
     }
     

@@ -42,7 +42,7 @@ struct RAMSlider: View {
     init<T: FixedWidthInteger>(systemMemory: Binding<T>, onValidate: @escaping (Bool) -> Void = { _ in }) {
         validateMemorySize = onValidate
         _systemMemory = Binding<NSNumber?>(get: {
-            NSNumber(value: UInt64(systemMemory.wrappedValue))
+            UInt64(systemMemory.wrappedValue) as NSNumber
         }, set: { newValue in
             systemMemory.wrappedValue = T(newValue?.uint64Value ?? 0)
         })
@@ -82,7 +82,7 @@ struct RAMSlider: View {
         guard i >= 0 && i < validMemoryValues.count else {
             return 0
         }
-        return NSNumber(value: validMemoryValues[i])
+        return validMemoryValues[i] as NSNumber
     }
 }
 
