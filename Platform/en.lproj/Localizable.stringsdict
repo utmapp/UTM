@@ -5,8 +5,8 @@
 	<key>%lld Cores</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@Cores@</string>
-		<key>Cores</key>
+		<string>%#@cores@</string>
+		<key>cores</key>
 		<dict>
 			<key>NSStringFormatSpecTypeKey</key>
 			<string>NSStringPluralRuleType</string>

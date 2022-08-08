@@ -360,14 +360,22 @@ extension VMQemuDisplayMetalWindowController: VMMetalViewInputDelegate {
         let action = { () -> Void in
             self.qemuVM.requestInputTablet(false)
             self.metalView?.captureMouse()
-            self.window?.subtitle = String.localizedStringWithFormat(NSLocalizedString("Press %@ to release cursor", comment: "VMQemuDisplayMetalWindowController"), self.shouldUseCmdOptForCapture ? "⌘+⌥" : "⌃+⌥")
+            
+            let format = NSLocalizedString("Press %@ to release cursor", comment: "VMQemuDisplayMetalWindowController")
+            let keys = NSLocalizedString(self.shouldUseCmdOptForCapture ? "⌘+⌥" : "⌃+⌥", comment: "VMQemuDisplayMetalWindowController")
+            self.window?.subtitle = String.localizedStringWithFormat(format, keys)
+            
             self.window?.makeFirstResponder(self.metalView)
             self.syncCapsLock()
         }
         if isCursorCaptureAlertShown {
             let alert = NSAlert()
             alert.messageText = NSLocalizedString("Captured mouse", comment: "VMQemuDisplayMetalWindowController")
-            alert.informativeText = String.localizedStringWithFormat(NSLocalizedString("To release the mouse cursor, press %@ at the same time.", comment: "VMQemuDisplayMetalWindowController"), self.shouldUseCmdOptForCapture ? "⌘+⌥ (Cmd+Opt)" : "⌃+⌥ (Ctrl+Opt)")
+            
+            let format = NSLocalizedString("To release the mouse cursor, press %@ at the same time.", comment: "VMQemuDisplayMetalWindowController")
+            let keys = NSLocalizedString(self.shouldUseCmdOptForCapture ? "⌘+⌥ (Cmd+Opt)" : "⌃+⌥ (Ctrl+Opt)", comment: "VMQemuDisplayMetalWindowController")
+            alert.informativeText = String.localizedStringWithFormat(format, keys)
+            
             alert.showsSuppressionButton = true
             alert.beginSheetModal(for: window!) { _ in
                 if alert.suppressionButton?.state ?? .off == .on {

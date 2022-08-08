@@ -98,7 +98,7 @@ import Foundation
         let bytesPerSecond = bytesWrittenSinceLastDownloadSpeedUpdate
         bytesWrittenSinceLastDownloadSpeedUpdate = 0
         let bytesString = ByteCountFormatter.string(fromByteCount: bytesPerSecond, countStyle: .file)
-        let speedFormat = NSLocalizedString("%@ / s",
+        let speedFormat = NSLocalizedString("%@/s",
                                             comment: "Format string for the 'per second' part of a download speed.")
         estimatedDownloadSpeed = String.localizedStringWithFormat(speedFormat, bytesString)
         /// sizes
