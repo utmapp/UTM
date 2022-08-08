@@ -39,6 +39,8 @@ import SwiftUI
     #if !WITH_QEMU_TCI
     private var primaryUsbManager: CSUSBManager?
     
+    private var usbManagerQueue = DispatchQueue(label: "USB Manager Queue", qos: .background)
+    
     @Published var mostRecentConnectedDevice: CSUSBDevice?
     
     @Published var allUsbDevices: [CSUSBDevice] = []
@@ -252,6 +254,7 @@ extension VMSessionState: UTMSpiceIODelegate {
             primaryUsbManager?.delegate = nil
             primaryUsbManager = usbManager
             usbManager?.delegate = self
+            refreshDevices()
         }
     }
     #endif
@@ -262,18 +265,39 @@ extension VMSessionState: CSUSBManagerDelegate {
     nonisolated func spiceUsbManager(_ usbManager: CSUSBManager, deviceError error: String, for device: CSUSBDevice) {
         Task { @MainActor in
             nonfatalError = error
+            refreshDevices()
         }
     }
     
     nonisolated func spiceUsbManager(_ usbManager: CSUSBManager, deviceAttached device: CSUSBDevice) {
         Task { @MainActor in
             mostRecentConnectedDevice = device
+            allUsbDevices.append(device)
         }
     }
     
     nonisolated func spiceUsbManager(_ usbManager: CSUSBManager, deviceRemoved device: CSUSBDevice) {
         Task { @MainActor in
-            disconnectDevice(device)
+            connectedUsbDevices.removeAll(where: { $0 == device })
+            allUsbDevices.removeAll(where: { $0 == device })
+        }
+    }
+    
+    private func withUsbManagerSerialized<T>(_ task: @escaping () async -> T, onComplete: @escaping @MainActor (T) -> Void) {
+        usbManagerQueue.async {
+            let event = DispatchSemaphore(value: 0)
+            Task.detached { [self] in
+                await MainActor.run {
+                    isUsbBusy = true
+                }
+                let result = await task()
+                await MainActor.run {
+                    isUsbBusy = false
+                    onComplete(result)
+                }
+                event.signal()
+            }
+            event.wait()
         }
     }
     
@@ -282,13 +306,15 @@ extension VMSessionState: CSUSBManagerDelegate {
             logger.error("no usb manager connected")
             return
         }
-        isUsbBusy = true
-        Task.detached { [self] in
+        withUsbManagerSerialized {
             let devices = usbManager.usbDevices
-            await MainActor.run {
-                allUsbDevices = devices
-                isUsbBusy = false
+            for device in devices {
+                let name = device.name // cache descriptor read
+                logger.debug("found device: \(name ?? "(unknown)")")
             }
+            return devices
+        } onComplete: { devices in
+            self.allUsbDevices = devices
         }
     }
     
@@ -297,16 +323,17 @@ extension VMSessionState: CSUSBManagerDelegate {
             logger.error("no usb manager connected")
             return
         }
-        isUsbBusy = true
-        Task.detached { [self] in
-            let (success, message) = await usbManager.connectUsbDevice(usbDevice)
-            await MainActor.run {
-                if success {
-                    self.connectedUsbDevices.append(usbDevice)
-                } else {
-                    nonfatalError = message
-                }
-                isUsbBusy = false
+        guard !connectedUsbDevices.contains(usbDevice) else {
+            logger.warning("connecting a device that is already connected")
+            return
+        }
+        withUsbManagerSerialized {
+            await usbManager.connectUsbDevice(usbDevice)
+        } onComplete: { success, message in
+            if success {
+                self.connectedUsbDevices.append(usbDevice)
+            } else {
+                self.nonfatalError = message
             }
         }
     }
@@ -316,19 +343,25 @@ extension VMSessionState: CSUSBManagerDelegate {
             logger.error("no usb manager connected")
             return
         }
-        isUsbBusy = true
-        Task.detached { [self] in
+        guard usbManager.isUsbDeviceConnected(usbDevice) else {
+            logger.warning("disconnecting a device that is not connected")
+            return
+        }
+        withUsbManagerSerialized {
             await usbManager.disconnectUsbDevice(usbDevice)
-            await MainActor.run {
-                connectedUsbDevices.removeAll(where: { $0 == usbDevice })
-                isUsbBusy = false
+        } onComplete: { success, message in
+            if !success {
+                self.nonfatalError = message
             }
+            self.connectedUsbDevices.removeAll(where: { $0 == usbDevice })
         }
     }
     
     private func clearDevices() {
-        connectedUsbDevices.removeAll()
-        allUsbDevices.removeAll()
+        Task { @MainActor in
+            connectedUsbDevices.removeAll()
+            allUsbDevices.removeAll()
+        }
     }
 }
 #endif
