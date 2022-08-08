@@ -84,7 +84,7 @@ struct VMWizardOSLinuxView: View {
             if wizardState.useLinuxKernel {
                 
                 Section {
-                    (wizardState.linuxKernelURL?.lastPathComponent.map { Text($0) } ?? Text("Empty"))
+                    ((wizardState.linuxKernelURL?.lastPathComponent).map { Text($0) } ?? Text("Empty"))
                         .font(.caption)
                     Button {
                         selectImage = .kernel
@@ -102,7 +102,7 @@ struct VMWizardOSLinuxView: View {
                 }
                 
                 Section {
-                    (wizardState.linuxInitialRamdiskURL?.lastPathComponent.map { Text($0) } ?? Text("Empty"))
+                    ((wizardState.linuxInitialRamdiskURL?.lastPathComponent).map { Text($0) } ?? Text("Empty"))
                         .font(.caption)
 #if os(macOS)
                     HStack {
@@ -147,7 +147,7 @@ struct VMWizardOSLinuxView: View {
                 }
                 
                 Section {
-                    (wizardState.linuxRootImageURL?.lastPathComponent.map { Text($0) } ?? Text("Empty"))
+                    ((wizardState.linuxRootImageURL?.lastPathComponent).map { Text($0) } ?? Text("Empty"))
                         .font(.caption)
 #if os(macOS)
                     HStack {
@@ -182,7 +182,7 @@ struct VMWizardOSLinuxView: View {
                 }
                 
                 Section {
-                    (wizardState.bootImageURL?.lastPathComponent.map { Text($0) } ?? Text("Empty"))
+                    ((wizardState.bootImageURL?.lastPathComponent).map { Text($0) } ?? Text("Empty"))
                         .font(.caption)
 #if os(macOS)
                     HStack {
@@ -234,7 +234,7 @@ struct VMWizardOSLinuxView: View {
             } else {
                 Section {
                     Text("Boot ISO Image:")
-                    (wizardState.bootImageURL?.lastPathComponent.map { Text($0) } ?? Text("Empty"))
+                    ((wizardState.bootImageURL?.lastPathComponent).map { Text($0) } ?? Text("Empty"))
                         .font(.caption)
                     Button {
                         selectImage = .bootImage

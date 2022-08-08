@@ -29,7 +29,7 @@ struct VMWizardOSOtherView: View {
             if !wizardState.isSkipBootImage {
                 Section {
                     Text("Boot ISO Image:")
-                    (wizardState.bootImageURL?.lastPathComponent.map { Text($0) } ?? Text("Empty"))
+                    ((wizardState.bootImageURL?.lastPathComponent).map { Text($0) } ?? Text("Empty"))
                         .font(.caption)
                     Button {
                         isFileImporterPresented.toggle()
