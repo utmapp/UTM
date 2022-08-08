@@ -290,11 +290,11 @@ private struct OptionalSelectableText: View {
     
     var body: some View {
         if #available(iOS 15, macOS 12, *) {
-            content.map { Text($0) } ?? Text("Inactive", comment: "VMDetailsView")
+            (content.map { Text($0) } ?? Text("Inactive", comment: "VMDetailsView"))
                 .foregroundColor(.secondary)
                 .textSelection(.enabled)
         } else {
-            content.map { Text($0) } ?? Text("Inactive", comment: "VMDetailsView")
+            (content.map { Text($0) } ?? Text("Inactive", comment: "VMDetailsView"))
                 .foregroundColor(.secondary)
         }
     }
