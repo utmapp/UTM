@@ -84,7 +84,7 @@ extension UTMVirtualMachine: ObservableObject {
             try? reloadConfiguration()
             throw error
         }
-        if existingPath != newPath {
+        if existingPath.path != newPath.path {
             try await Task.detached {
                 try fileManager.moveItem(at: existingPath, to: newPath)
             }.value
