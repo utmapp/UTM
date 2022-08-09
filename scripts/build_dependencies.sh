@@ -35,6 +35,10 @@ command -v realpath >/dev/null 2>&1 || realpath() {
     [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
 }
 
+version_check() {
+    [ "$1" = "$(echo "$1\n$2" | sort -V | head -n1)" ]
+}
+
 usage () {
     echo "Usage: [VARIABLE...] $(basename $0) [-p platform] [-a architecture] [-q qemu_path] [-d] [-r]"
     echo ""
@@ -61,7 +65,6 @@ check_env () {
     command -v python3 >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'python3' on your host machine.${NC}"; exit 1; }
     python_module_test six >/dev/null 2>&1 || { echo >&2 "${RED}'six' not found in your Python 3 installation.${NC}"; exit 1; }
     python_module_test pyparsing >/dev/null 2>&1 || { echo >&2 "${RED}'pyparsing' not found in your Python 3 installation.${NC}"; exit 1; }
-    command -v gmake >/dev/null 2>&1 || { echo >&2 "${RED}You must install GNU make on your host machine (and link it to 'gmake').${NC}"; exit 1; }
     command -v meson >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'meson' on your host machine.${NC}"; exit 1; }
     command -v msgfmt >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'gettext' on your host machine.\n\t'msgfmt' needs to be in your \$PATH as well.${NC}"; exit 1; }
     command -v glib-mkenums >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'glib-utils' on your host machine.\n\t'glib-mkenums' needs to be in your \$PATH as well.${NC}"; exit 1; }
@@ -69,7 +72,7 @@ check_env () {
     command -v xcrun >/dev/null 2>&1 || { echo >&2 "${RED}'xcrun' is not found. Make sure you are running on OSX."; exit 1; }
     command -v otool >/dev/null 2>&1 || { echo >&2 "${RED}'otool' is not found. Make sure you are running on OSX."; exit 1; }
     command -v install_name_tool >/dev/null 2>&1 || { echo >&2 "${RED}'install_name_tool' is not found. Make sure you are running on OSX."; exit 1; }
-    # TODO: check bison version >= 2.4
+    version_check "2.4" "$(bison -V | head -1 | awk '{ print $NF }')" || { echo >&2 "${RED}'bison' >= 2.4 is required. Did you install from Homebrew and updated your \$PATH variable?"; exit 1; }
 }
 
 download () {
@@ -204,6 +207,7 @@ generate_meson_cross() {
     echo "pkgconfig = ['$PREFIX/host/bin/pkg-config']" >> $cross
     echo "ranlib = [$(meson_quote $RANLIB)]" >> $cross
     echo "strip = [$(meson_quote $STRIP), '-x']" >> $cross
+    echo "python = ['$(which python3)']" >> $cross
     echo "[host_machine]" >> $cross
     case $PLATFORM in
     ios* )
@@ -462,18 +466,6 @@ build_qemu_dependencies () {
     build_angle
     meson_build $EPOXY_REPO -Dtests=false -Dglx=no -Degl=yes
     meson_build $VIRGLRENDERER_REPO -Dtests=false
-}
-
-build_qemu () {
-    pwd="$(pwd)"
-    cd "$QEMU_DIR"
-    echo "${GREEN}Configuring QEMU...${NC}"
-    ./configure --prefix="$PREFIX" --host="$CHOST" --cross-prefix="" $@
-    echo "${GREEN}Building QEMU...${NC}"
-    gmake -j$NCPU
-    echo "${GREEN}Installing QEMU...${NC}"
-    gmake install
-    cd "$pwd"
 }
 
 build_spice_client () {
@@ -761,7 +753,7 @@ rm -f "$BUILD_DIR/meson.cross"
 copy_private_headers
 build_pkg_config
 build_qemu_dependencies
-build_qemu $QEMU_PLATFORM_BUILD_FLAGS
+build $QEMU_SRC --cross-prefix="" $QEMU_PLATFORM_BUILD_FLAGS
 build_spice_client
 fixup_all
 remove_shared_gst_plugins # another hack...
