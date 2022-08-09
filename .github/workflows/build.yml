@@ -19,16 +19,20 @@ on:
         description: 'Test release?'
         required: true
         default: 'false'
+      rebuild_sysroot:
+        description: 'Force rebuild sysroot?'
+        required: true
+        default: 'false'
 
 env:
-  BUILD_SYSROOT_XCODE_PATH: /Applications/Xcode_13.4.app
+  BUILD_SYSROOT_XCODE_PATH: /Applications/Xcode-beta.app
   BUILD_PROJECT_XCODE_PATH: /Applications/Xcode-beta.app
-  INSTALL_REQUIREMENTS: true
+  INSTALL_REQUIREMENTS: false
 
 jobs:
   build-sysroot:
     name: Build Sysroot
-    runs-on: macos-12
+    runs-on: [self-hosted, macOS, performance]
     strategy:
       matrix:
         arch: [arm64, x86_64]
@@ -47,6 +51,7 @@ jobs:
         shell: bash
         run: sudo xcode-select -switch ${{ env.BUILD_SYSROOT_XCODE_PATH }}
       - name: Cache Sysroot
+        if: github.event.inputs.rebuild_sysroot != 'true'
         id: cache-sysroot
         uses: actions/cache@v3
         with:
@@ -83,6 +88,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Cache Sysroot (Universal Mac)
+        if: github.event.inputs.rebuild_sysroot != 'true'
         id: cache-sysroot-universal
         uses: actions/cache@v3
         with:

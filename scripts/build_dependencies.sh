@@ -29,7 +29,7 @@ PLATFORM=
 CHOST=
 SDK=
 SDKMINVER=
-NCPU=$(sysctl -n hw.ncpu)
+NCPU=$(sysctl -n hw.perflevel0.physicalcpu)
 
 command -v realpath >/dev/null 2>&1 || realpath() {
     [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
