@@ -329,7 +329,7 @@ extension VMDisplayQemuWindowController: CSUSBManagerDelegate {
         logger.debug("USB device attached: \(device)")
         if !isNoUsbPrompt {
             DispatchQueue.main.async {
-                if self.window!.isKeyWindow {
+                if self.window!.isKeyWindow && self.vm.state == .vmStarted {
                     self.showConnectPrompt(for: device)
                 }
             }
