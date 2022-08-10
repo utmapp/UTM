@@ -71,6 +71,8 @@ jobs:
       - name: Build Sysroot
         if: steps.cache-sysroot.outputs.cache-hit != 'true'
         run: ./scripts/build_dependencies.sh -p ${{ matrix.platform }} -a ${{ matrix.arch }}
+        env:
+          NCPU: ${{ matrix.platform == 'ios-tci' && '1' || '0' }} # limit 1 CPU for TCI build due to memory issues, 0 = unlimited for other builds
       - name: Compress Sysroot
         if: steps.cache-sysroot.outputs.cache-hit != 'true' || github.event_name == 'release' || github.event.inputs.test_release == 'true'
         run: tar -acf sysroot.tgz sysroot*
