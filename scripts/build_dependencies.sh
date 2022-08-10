@@ -29,7 +29,6 @@ PLATFORM=
 CHOST=
 SDK=
 SDKMINVER=
-NCPU=$(sysctl -n hw.perflevel0.physicalcpu)
 
 command -v realpath >/dev/null 2>&1 || realpath() {
     [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
@@ -49,6 +48,7 @@ usage () {
     echo "  -r, --rebuild    Avoid cleaning build directory."
     echo ""
     echo "  VARIABLEs are:"
+    echo "    NCPU           Number of CPUs to use in 'make', 0 to use all cores."
     echo "    SDKVERSION     Target a specific SDK version."
     echo "    CHOST          Configure host, set if not deducable by ARCH."
     echo ""
@@ -701,6 +701,12 @@ fi
 if [ -z "$SDKMINVER" ]; then
     SDKMINVER="$SDKVERSION"
 fi
+
+# Set NCPU
+if [ -z "$NCPU" ] || [ $NCPU -eq 0 ]; then
+    NCPU="$(sysctl -n hw.ncpu)"
+fi
+export NCPU
 
 # Export tools
 CC=$(xcrun --sdk $SDK --find gcc)
