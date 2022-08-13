@@ -57,6 +57,7 @@ jobs:
         with:
           path: sysroot-${{ matrix.platform }}-${{ matrix.arch }}
           key: ${{ matrix.platform }}-${{ matrix.arch }}-${{ hashFiles('scripts/build_dependencies.sh') }}-${{ hashFiles('patches/**') }}
+          upload-chunk-size: 1048576 # 1 MiB
       - name: Setup Path
         shell: bash
         run: |
