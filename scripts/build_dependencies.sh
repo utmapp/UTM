@@ -113,13 +113,15 @@ clone () {
     DIR="$BUILD_DIR/$NAME"
     if [ -d "$DIR" -a -z "$REDOWNLOAD" ]; then
         echo "${GREEN}$DIR already downloaded! Run with -d to force re-download.${NC}"
-        git -C "$DIR" fetch
     else
         rm -rf "$DIR"
         echo "${GREEN}Cloning ${URL}...${NC}"
-        git clone -n "$REPO" "$DIR"
+        mkdir "$DIR"
+        git -C "$DIR" init
+        git -C "$DIR" remote add origin "$REPO"
     fi
-    git -C "$DIR" checkout -q "$COMMIT"
+    git -C "$DIR" fetch --depth 1 origin "$COMMIT"
+    git -C "$DIR" checkout "$COMMIT"
 }
 
 download_all () {
