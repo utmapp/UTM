@@ -25,8 +25,7 @@ on:
         default: 'false'
 
 env:
-  BUILD_SYSROOT_XCODE_PATH: /Applications/Xcode-beta.app
-  BUILD_PROJECT_XCODE_PATH: /Applications/Xcode-beta.app
+  BUILD_XCODE_PATH: /Applications/Xcode-beta.app
   INSTALL_REQUIREMENTS: false
 
 jobs:
@@ -49,7 +48,8 @@ jobs:
           submodules: recursive
       - name: Setup Xcode
         shell: bash
-        run: sudo xcode-select -switch ${{ env.BUILD_SYSROOT_XCODE_PATH }}
+        run: |
+          [[ "$(xcode-select -p)" == "${{ env.BUILD_XCODE_PATH }}"* ]] || sudo xcode-select -s "${{ env.BUILD_XCODE_PATH }}"
       - name: Cache Sysroot
         if: github.event.inputs.rebuild_sysroot != 'true'
         id: cache-sysroot
@@ -159,7 +159,8 @@ jobs:
           script: core.setFailed('Cached sysroot not found!')
       - name: Setup Xcode
         shell: bash
-        run: sudo xcode-select -switch ${{ env.BUILD_PROJECT_XCODE_PATH }}
+        run: |
+          [[ "$(xcode-select -p)" == "${{ env.BUILD_XCODE_PATH }}"* ]] || sudo xcode-select -s "${{ env.BUILD_XCODE_PATH }}"
       - name: Build UTM
         run: |
           ./scripts/build_utm.sh -p ${{ matrix.platform }} -a ${{ matrix.arch }} -o UTM
@@ -191,7 +192,8 @@ jobs:
           script: core.setFailed('Cached sysroot not found!')
       - name: Setup Xcode
         shell: bash
-        run: sudo xcode-select -switch ${{ env.BUILD_PROJECT_XCODE_PATH }}
+        run: |
+          [[ "$(xcode-select -p)" == "${{ env.BUILD_XCODE_PATH }}"* ]] || sudo xcode-select -s "${{ env.BUILD_XCODE_PATH }}"
       - name: Build UTM
         run: |
           ./scripts/build_utm.sh -t "$SIGNING_TEAM_ID" -p macos -a "arm64 x86_64" -o UTM
