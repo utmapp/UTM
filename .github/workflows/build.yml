@@ -1,6 +1,8 @@
 name: Build
 on:
   push:
+    branches:
+      - '**'
     tags-ignore:
       - '**'
     paths-ignore:
@@ -27,7 +29,7 @@ env:
 jobs:
   build-sysroot:
     name: Build Sysroot
-    runs-on: [self-hosted, macOS, performance]
+    runs-on: [self-hosted, macOS]
     strategy:
       matrix:
         arch: [arm64, x86_64]
