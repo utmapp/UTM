@@ -790,7 +790,7 @@ class UTMData: ObservableObject {
         if event.wait(timeout: .now() + 10) == .timedOut {
             throw NSLocalizedString("Cannot find AltServer for JIT enable. You cannot run VMs until JIT is enabled.", comment: "UTMData")
         } else if let error = connectError {
-            throw NSLocalizedString("AltJIT error: \(error.localizedDescription)", comment: "UTMData")
+            throw String.localizedStringWithFormat(NSLocalizedString("AltJIT error: %@", comment: "UTMData"), error.localizedDescription)
         }
     }
 #endif
@@ -814,7 +814,7 @@ class UTMData: ObservableObject {
                 let (data, _) = try await URLSession.shared.data(for: request)
                 let attachResponse = try JSONDecoder().decode(AttachResponse.self, from: data)
                 if !attachResponse.success {
-                    attachError = String(format: NSLocalizedString("Failed to attach to JitStreamer:\n%@", comment: "ContentView"), attachResponse.message)
+                    attachError = String.localizedStringWithFormat(NSLocalizedString("Failed to attach to JitStreamer:\n%@", comment: "ContentView"), attachResponse.message)
                 }
             } catch is DecodingError {
                 throw NSLocalizedString("Failed to decode JitStreamer response.", comment: "ContentView")
@@ -825,7 +825,7 @@ class UTMData: ObservableObject {
                 throw attachError
             }
         } else {
-            throw String(format: NSLocalizedString("Invalid JitStreamer attach URL:\n%@", comment: "ContentView"), urlString)
+            throw String.localizedStringWithFormat(NSLocalizedString("Invalid JitStreamer attach URL:\n%@", comment: "ContentView"), urlString)
         }
     }
 

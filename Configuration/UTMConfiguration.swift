@@ -61,9 +61,9 @@ extension UTMConfigurationError: LocalizedError {
         switch self {
         case .versionTooLow: return NSLocalizedString("This configuration is too old and is not supported.", comment: "UTMConfiguration")
         case .versionTooHigh: return NSLocalizedString("This configuration is saved with a newer version of UTM and is not compatible with this version.", comment: "UTMConfiguration")
-        case .invalidConfigurationValue(let value): return NSLocalizedString("An invalid value of '\(value)' is used in the configuration file.", comment: "UTMConfiguration")
+        case .invalidConfigurationValue(let value): return String.localizedStringWithFormat(NSLocalizedString("An invalid value of '%@' is used in the configuration file.", comment: "UTMConfiguration"), value)
         case .invalidBackend: return NSLocalizedString("The backend for this configuration is not supported.", comment: "UTMConfiguration")
-        case .driveAlreadyExists(let url): return NSLocalizedString("The drive '\(url.lastPathComponent)' already exists and cannot be created.", comment: "UTMConfiguration")
+        case .driveAlreadyExists(let url): return String.localizedStringWithFormat(NSLocalizedString("The drive '%@' already exists and cannot be created.", comment: "UTMConfiguration"), url.lastPathComponent)
         default: return NSLocalizedString("An internal error has occurred.", comment: "UTMConfiguration")
         }
     }

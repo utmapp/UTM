@@ -37,7 +37,7 @@ fileprivate struct PendingVMDetailsView: View {
             if let currentSize = vm.downloadedSize, let estimatedSize = vm.estimatedDownloadSize {
                 let estimatedSpeed = vm.estimatedDownloadSpeed ?? NSLocalizedString("Extracting…", comment: "Word for decompressing a compressed folder")
                 let formatString = NSLocalizedString("%1$@ of %2$@ (%3$@)", comment: "Format string for download progress and speed, e. g. 5 MB of 6 GB (200 kbit/s)")
-                return String(format: formatString, currentSize, estimatedSize, estimatedSpeed)
+                return String.localizedStringWithFormat(formatString, currentSize, estimatedSize, estimatedSpeed)
             } else {
                 return NSLocalizedString("Preparing…", comment: "A download process is about to begin.")
             }

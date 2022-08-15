@@ -74,7 +74,7 @@ class KeyCodeMap {
                         let modKeyIsUsed = ((modFlagDict[key]! & modifiers) != 0)
                         subDict[key] = NSNumber(booleanLiteral: modKeyIsUsed).intValue
                     }
-                    subDict["virtKeyCode"] = NSNumber(value: keyCode).intValue
+                    subDict["virtKeyCode"] = (keyCode as NSNumber).intValue
                     
                     // manipulate the NSEvent to get character produce by virtual key code and modifiers
                     var character: String

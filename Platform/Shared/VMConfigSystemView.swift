@@ -145,7 +145,7 @@ private enum WarningMessage: Identifiable {
         switch self {
         case .overallocatedRam(let totalMib, let estimatedMib):
             let format = NSLocalizedString("Your device has %llu MB of memory and the estimated usage is %llu MB.", comment: "VMConfigSystemView")
-            return String(format: format, totalMib, estimatedMib)
+            return String.localizedStringWithFormat(format, totalMib, estimatedMib)
         case .resetSystem:
             return NSLocalizedString("Any unsaved changes will be lost.", comment: "VMConfigSystemView")
         }

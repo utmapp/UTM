@@ -87,11 +87,7 @@ struct MinimalProgressView: View {
     let fractionCompleted: CGFloat
     
     private var accessibilityLabel: String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .percent
-        formatter.allowsFloats = false
-        let label = formatter.string(from: NSNumber(value: fractionCompleted)) ?? ""
-        return label
+        return NumberFormatter.localizedString(from: fractionCompleted as NSNumber, number: .percent)
     }
     
     var body: some View {

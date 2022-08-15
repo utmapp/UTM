@@ -205,7 +205,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
         }
         if (!success) {
             if (!msg) {
-                msg = [NSString stringWithFormat:NSLocalizedString(@"QEMU exited from an error: %@", @"UTMQemuVirtualMachine"), self.lastErrorLine];
+                msg = [NSString localizedStringWithFormat:NSLocalizedString(@"QEMU exited from an error: %@", @"UTMQemuVirtualMachine"), self.lastErrorLine];
             }
             qemuStartError = [_self errorWithMessage:msg];
             dispatch_semaphore_signal(spiceConnectOrErrorEvent);
@@ -264,12 +264,12 @@ NSString *const kSuspendSnapshotName = @"suspend";
     assert(self.qemu.isConnected);
     // set up SPICE sharing and removable drives
     if (![self startSharedDirectoryWithError:&err]) {
-        errMsg = [NSString stringWithFormat:NSLocalizedString(@"Error trying to start shared directory: %@", @"UTMVirtualMachine"), err.localizedDescription];
+        errMsg = [NSString localizedStringWithFormat:NSLocalizedString(@"Error trying to start shared directory: %@", @"UTMVirtualMachine"), err.localizedDescription];
         completion([self errorWithMessage:errMsg]);
         return;
     }
     if (![self restoreRemovableDrivesFromBookmarksWithError:&err]) {
-        errMsg = [NSString stringWithFormat:NSLocalizedString(@"Error trying to restore removable drives: %@", @"UTMVirtualMachine"), err.localizedDescription];
+        errMsg = [NSString localizedStringWithFormat:NSLocalizedString(@"Error trying to restore removable drives: %@", @"UTMVirtualMachine"), err.localizedDescription];
         completion([self errorWithMessage:errMsg]);
         return;
     }
@@ -460,7 +460,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
         }
         if (saveError) {
             // replace error with detailed message
-            NSString *newMsg = [NSString stringWithFormat:NSLocalizedString(@"Failed to save VM snapshot. Usually this means at least one device does not support snapshots. %@", @"UTMQemuVirtualMachine"), saveError.localizedDescription];
+            NSString *newMsg = [NSString localizedStringWithFormat:NSLocalizedString(@"Failed to save VM snapshot. Usually this means at least one device does not support snapshots. %@", @"UTMQemuVirtualMachine"), saveError.localizedDescription];
             saveError = [self errorWithMessage:newMsg];
         }
         dispatch_semaphore_signal(saveTriggeredEvent);

@@ -104,10 +104,10 @@ struct VMDrivesSettingsView<Drive: UTMConfigurationDrive>: View {
             if qemuDrive.interface == .none && qemuDrive.imageName == QEMUPackageFileName.efiVariables.rawValue {
                 return NSLocalizedString("EFI Variables", comment: "VMDrivesSettingsView")
             } else {
-                return NSLocalizedString("\(qemuDrive.interface.prettyValue) Drive", comment: "VMDrivesSettingsView")
+                return String.localizedStringWithFormat(NSLocalizedString("%@ Drive", comment: "VMDrivesSettingsView"), qemuDrive.interface.prettyValue)
             }
         } else if let appleDrive = drive as? UTMAppleConfigurationDrive {
-            return NSLocalizedString("\(appleDrive.sizeString) Image", comment: "VMDrivesSettingsView")
+            return String.localizedStringWithFormat(NSLocalizedString("%@ Image", comment: "VMDrivesSettingsView"), appleDrive.sizeString)
         } else {
             fatalError("Unsupported drive type.")
         }

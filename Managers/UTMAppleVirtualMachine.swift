@@ -448,7 +448,7 @@ extension UTMAppleVirtualMachineError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .cannotAccessResource(let url):
-            return NSLocalizedString("Cannot access resource: \(url.path)", comment: "UTMAppleVirtualMachine")
+            return String.localizedStringWithFormat(NSLocalizedString("Cannot access resource: %@", comment: "UTMAppleVirtualMachine"), url.path)
         }
     }
 }

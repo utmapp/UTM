@@ -29,7 +29,9 @@ struct VMConfigNetworkPortForwardView: View {
                                                      onDelete: { config.portForward.removeAll(where: { $0 == forward }) }),
                         label: {
                             VStack(alignment: .leading) {
-                                Text(verbatim: "\(forward.guestAddress ?? ""):\(forward.guestPort) ➡️ \(forward.hostAddress ?? ""):\(forward.hostPort)")
+                                let guest = "\(forward.guestAddress ?? ""):\(forward.guestPort)"
+                                let host = "\(forward.hostAddress ?? ""):\(forward.hostPort)"
+                                Text("\(guest) ➡️ \(host)")
                                 Text(forward.protocol.prettyValue).font(.subheadline)
                             }
                         })

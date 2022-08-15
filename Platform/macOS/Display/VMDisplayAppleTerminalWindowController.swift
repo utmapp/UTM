@@ -32,7 +32,7 @@ class VMDisplayAppleTerminalWindowController: VMDisplayAppleWindowController, VM
     
     override var defaultTitle: String {
         if isSecondary {
-            return NSLocalizedString("\(super.defaultTitle) (Terminal \(index+1))", comment: "VMDisplayAppleTerminalWindowController")
+            return String.localizedStringWithFormat(NSLocalizedString("%@ (Terminal %lld)", comment: "VMDisplayAppleTerminalWindowController"), super.defaultTitle, index + 1)
         } else {
             return super.defaultTitle
         }

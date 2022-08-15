@@ -28,7 +28,7 @@ struct VMDrivesSettingsView: View {
         ForEach($config.drives) { $drive in
             NavigationLink(
                 destination: VMConfigDriveDetailsView(config: $drive, onDelete: nil), label: {
-                    Label(label(for: drive), systemImage: "externaldrive")
+                    Label(title: { labelTitle(for: drive) }, icon: { Image(systemName: "externaldrive") })
                 })
         }.onDelete { offsets in
             attemptDelete = offsets
@@ -44,11 +44,11 @@ struct VMDrivesSettingsView: View {
         }
     }
     
-    private func label(for drive: UTMQemuConfigurationDrive) -> String {
+    private func labelTitle(for drive: UTMQemuConfigurationDrive) -> Text {
         if drive.interface == .none && drive.imageName == QEMUPackageFileName.efiVariables.rawValue {
-            return NSLocalizedString("EFI Variables", comment: "VMDrivesSettingsView")
+            return Text("EFI Variables", comment: "VMDrivesSettingsView")
         } else {
-            return NSLocalizedString("\(drive.interface.prettyValue) Drive", comment: "VMDrivesSettingsView")
+            return Text("\(drive.interface.prettyValue) Drive", comment: "VMDrivesSettingsView")
         }
     }
     

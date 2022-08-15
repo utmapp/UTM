@@ -36,7 +36,9 @@ struct VMConfigNetworkPortForwardView: View {
             VStack {
                 ForEach(config.portForward) { forward in
                     Button(action: { selectedPortForward = forward }, label: {
-                        Text(verbatim: "\(forward.guestAddress ?? ""):\(forward.guestPort) ➡️ \(forward.hostAddress ?? ""):\(forward.hostPort)")
+                        let guest = "\(forward.guestAddress ?? ""):\(forward.guestPort)"
+                        let host = "\(forward.hostAddress ?? ""):\(forward.hostPort)"
+                        Text("\(guest) ➡️ \(host)")
                     }).buttonStyle(.bordered)
                     .popover(item: $selectedPortForward, arrowEdge: .bottom) { item in
                         PortForwardEdit(config: $config, forward: forward).padding()
