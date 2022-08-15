@@ -1,10 +1,6 @@
 name: Build
 on:
   push:
-    branches:
-      - 'master'
-      - 'dev'
-      - 'dev-monterey'
     tags-ignore:
       - '**'
     paths-ignore:
