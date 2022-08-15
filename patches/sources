@@ -34,7 +34,7 @@ SPICE_CLIENT_SRC="https://www.spice-space.org/download/gtk/spice-gtk-0.40.tar.xz
 
 # Source files for GPU acceleration
 DEPOT_TOOLS_REPO="https://chromium.googlesource.com/chromium/tools/depot_tools.git"
-DEPOT_TOOLS_COMMIT="1cabb17575917b73ec2e270d4187656c20b1ab0c"
+DEPOT_TOOLS_COMMIT="5da65ec20db9b17b03420d928240092e5955a769"
 ANGLE_REPO="https://github.com/utmapp/angle.git"
 ANGLE_COMMIT="9ebc0042cfb23f5affdd8a5dfdcf0ebacc084c1f"
 EPOXY_REPO="https://github.com/utmapp/libepoxy.git"

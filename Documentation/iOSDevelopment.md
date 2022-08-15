@@ -28,9 +28,10 @@ If you want to build the dependencies yourself, it is highly recommended that yo
 
 1. Install Xcode command line and [Homebrew][1]
 2. Install the following build prerequisites
-    `brew install bison pkg-config gettext glib-utils libgpg-error nasm make meson`
-   Make sure to add `bison` and `gettext` to your `$PATH` environment variable!
-	`export PATH=/usr/local/opt/bison/bin:/usr/local/opt/gettext/bin:$PATH`
+    `brew install bison pkg-config gettext glib-utils libgpg-error nasm meson`
+    `pip3 install six pyparsing`
+   Make sure to add `bison` to your `$PATH` environment variable!
+    `export PATH=/usr/local/opt/bison/bin:/opt/homebrew/opt/bison/bin:$PATH`
 3. Run `./scripts/build_dependencies.sh -p PLATFORM -a ARCHITECTURE` where `ARCHITECTURE` is the last part of the table above (e.g. `x86_64`) and `PLATFORM` is the first part (e.g. `ios_simulator-tci`).
 4. Repeat the above for any other platforms and architectures you wish to target.
 

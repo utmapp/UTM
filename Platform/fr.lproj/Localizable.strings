@@ -213,7 +213,7 @@
 "Create Directory" = "Créer le dossier";
 
 /* VMConfigDriveCreateViewController */
-"Creating disk..." = "Création du disque…";
+"Creating disk…" = "Création du disque…";
 
 /* No comment provided by engineer. */
 "Debug Logging" = "Enregistrement du débogage";
@@ -236,7 +236,7 @@
 "Delete…" = "Supprimer…";
 
 /* Delete VM overlay */
-"Deleting %@..." = "Suppression de %@…";
+"Deleting %@…" = "Suppression de %@…";
 
 /* No comment provided by engineer. */
 "DHCP Domain Name" = "Nom de domaine DHCP";
@@ -299,7 +299,7 @@
 "Done" = "Terminé";
 
 /* No comment provided by engineer. */
-"Download prebuilt from UTM Gallery..." = "Téléchargement d'une VM déjà prête depuis la bibliothèque d'UTM";
+"Download prebuilt from UTM Gallery…" = "Téléchargement d'une VM déjà prête depuis la bibliothèque d'UTM";
 
 /* No comment provided by engineer. */
 "Download Ubuntu Server for ARM" = "Télécharger Ubuntu Server pour ARM";
@@ -320,7 +320,7 @@
 "Edit" = "Modifier";
 
 /* No comment provided by engineer. */
-"Edit selected VM" = "Modifier la VM sélectionnée";
+"Edit selected VM" = "Paramétrer la VM sélectionnée";
 
 /* VMRemovableDrivesViewController */
 "Eject" = "Éjecter";
@@ -481,8 +481,8 @@
 /* No comment provided by engineer. */
 "Hide" = "Masquer";
 
-/* No comment provided by engineer. */
-"Hide Unused Flags..." = "Masquer les flags inutilisés…";
+/* System pane. */
+"Hide Unused…" = "Masquer les non-inutilisés…";
 
 /* VMDisplayViewController */
 "Hint: To show the toolbar again, use a three-finger swipe down on the screen." = "Astuce : pour afficher à nouveau la barre d'outils, faites glisser trois doigts vers le bas de l'écran.";
@@ -506,7 +506,7 @@
 "Hypervisor" = "Hyperviseur";
 
 /* No comment provided by engineer. */
-"I want to..." = "Je souhaite…";
+"I want to…" = "Je souhaite…";
 
 /* No comment provided by engineer. */
 "Icon" = "Icône";
@@ -527,10 +527,10 @@
 "Import VHDX Image" = "Importer une image VHDX";
 
 /* No comment provided by engineer. */
-"Import Virtual Machine..." = "Importer une machine virtuelle…";
+"Import Virtual Machine…" = "Importer une machine virtuelle…";
 
 /* Save VM overlay */
-"Importing %@..." = "Importation de %@…";
+"Importing %@…" = "Importation de %@…";
 
 /* No comment provided by engineer. */
 "Inactive" = "Inactive";
@@ -659,7 +659,7 @@
 "Mouse Wheel" = "Molette de la souris";
 
 /* Save VM overlay */
-"Moving %@..." = "Déplacement de %@…";
+"Moving %@…" = "Déplacement de %@…";
 
 /* Clone VM name prompt title */
 "Name" = "Nom";
@@ -695,10 +695,10 @@
 "New VM name" = "Nouveau nom pour la VM";
 
 /* No comment provided by engineer. */
-"New..." = "Nouveau…";
+"New…" = "Ajouter…";
 
 /* No comment provided by engineer. */
-"Open..." = "Ouvrir…";
+"Open…" = "Ouvrir…";
 
 /* No comment provided by engineer. */
 "Continue" = "Continuer";
@@ -849,7 +849,7 @@
 "Run" = "Démarrer";
 
 /* No comment provided by engineer. */
-"Run selected VM" = "Démarre la VM sélectionnée";
+"Run selected VM" = "Démarrer la VM sélectionnée";
 
 /* No comment provided by engineer. */
 "Running" = "En cours d'exécution";
@@ -861,7 +861,7 @@
 "Save" = "Enregistrer";
 
 /* Save VM overlay */
-"Saving %@..." = "Enregistrement de %@…";
+"Saving %@…" = "Enregistrement de %@…";
 
 /* No comment provided by engineer. */
 "Scaling" = "Mise à l'échelle";
@@ -882,7 +882,7 @@
 "Default is 1/4 of the RAM size (above). The JIT cache size is additive to the RAM size in the total memory usage!" = "1/4 de la RAM est utilisé par défaut (ci-dessus). La taille du cache JIT s'ajoute à la taille de la RAM utilisée !";
 
 /* No comment provided by engineer. */
-"These are advanced settings affecting QEMU which should be kept default unless you are running into issues." = "Ce sont des réglages avancés qui affectent le fonctionnement de QEMU, à laisser par défaut sauf si vous rencontrez des soucis.";
+"These are advanced settings affecting QEMU which should be kept default unless you are running into issues." = "Ce sont des réglages avancés qui affectent le fonctionnement de QEMU, laissez par défaut sauf si vous rencontrez des pb.";
 
 /* No comment provided by engineer. */
 "This is appended to the -machine argument." = "Ceci est ajouté à l'argument -machine.";
@@ -920,8 +920,8 @@
 /* No comment provided by engineer. */
 "Show Advanced Settings" = "Afficher les réglages avancés";
 
-/* No comment provided by engineer. */
-"Show All Flags..." = "Afficher tous les flags...";
+/* System pane. */
+"Show All…" = "Afficher tout…";
 
 /* No comment provided by engineer. */
 "Size" = "Taille";
@@ -1138,7 +1138,7 @@
 "Generic" = "Générique";
 
 /* No comment provided by engineer. */
-"Custom" = "Personnalisée";
+"Custom" = "Personnaliser";
 
 /* No comment provided by engineer. */
 "Status" = "État";
@@ -1220,3 +1220,180 @@
 
 /* No comment provided by engineer. */
 "Error" = "Erreur";
+
+/* Main pane. */
+"Move selected VM" = "Déplacer la VM sélectionnée";
+
+/* Preferences pane. */
+"Invert scrolling" = "Inverser le défilement de la souris";
+
+/* New VM window. */
+"Start" = "C'est parti";
+
+/* New VM window. */
+"Existing" = "Existant";
+
+/* New VM window. */
+"Preconfigured" = "Préconfiguré";
+
+/* New VM window. */
+"Import IPSW" = "Importer un IPSW";
+
+/* New VM window. */
+"Drag and drop IPSW file here" = "Glissez un fichier IPSW ici";
+
+/* New VM window. */
+"Empty" = "Vide";
+
+/* New VM window. */
+"Advanced" = "Avancé";
+
+/* New VM window. */
+"Skip ISO boot" = "Ignorer le démarrage sur l'ISO";
+
+/* New VM window. */
+"Image File Type" = "Type de fichier image";
+
+/* New VM window. */
+"Some older systems do not support UEFI boot, such as Windows 7 and below." = "Certains anciens systèmes ne prennent pas en charge le démarrage en UEFI, comme Windows 7 et antérieurs.";
+
+/* New VM window. */
+"File Imported" = "Fichier importé";
+
+/* New VM window. */
+"Hint: For the best Windows experience, make sure to download and install the latest [SPICE tools and QEMU drivers](https://mac.getutm.app/support/)." = "Astuce : pour la meilleure expérience possible avec Windows, téléchargez et installez les [derniers outils SPICE et drivers QEMU](https://mac.getutm.app/support/).";
+
+/* New VM window. */
+"Virtualization Engine" = "Moteur de virtualisation";
+
+/* New VM window. */
+"Apple Virtualization is experimental and only for advanced use cases. Leave unchecked to use QEMU, which is recommended." = "La prise en charge de la Virtualisation d'Apple est expérimentale et à utiliser uniquement pour des cas avancés. Laissez décoché pour utiliser QEMU, qui est recommandé.";
+
+/* New VM window. */
+"Boot Image Type" = "Type d'image de démarrage";
+
+/* New VM window. */
+"Linux kernel (required):" = "Noyau Linux (requis) :";
+
+/* New VM window. */
+"Linux initial ramdisk (optional):" = "Ramdisk initial de Linux (optionnel) :";
+
+/* New VM window. */
+"Linux Root FS image (optional):" = "Image Root FS de Linux (optionnel) :";
+
+/* New VM window. */
+"Boot ISO Image (optional):" = "Image ISO de démarrage (optionnel) :";
+
+/* System pane. */
+"Force Enable CPU Flags" = "Forcer l'activation des flags du CPU";
+
+/* System pane. */
+"Force Disable CPU Flags" = "Forcer la désactivation des flags du CPU";
+
+/* System pane. */
+"If checked, the CPU flag will be enabled. Otherwise, the default value will be used." = "Si coché, le flag du CPU sera activé. Dans le cas contraire, les valeurs par défaut seront utilisées.";
+
+/* System pane. */
+"If checked, the CPU flag will be disabled. Otherwise, the default value will be used." = "Si coché, le flag du CPU sera désactivé. Dans le cas contraire, les valeurs par défaut seront utilisées.";
+
+/* QEMU pane. */
+"Balloon Device" = "Appareil Balloon";
+
+/* Input pane. */
+"Disabled" = "Désactivé";
+
+/* Share pane. */
+"Directory Share Mode" = "Mode de partage de dossier";
+
+/* Share pane. */
+"SPICE WebDAV (Legacy)" = "WebDAV via SPICE (ancienne méthode)";
+
+/* Share pane. */
+"VirtFS (Recommended)" = "VirtFS (Recommandé)";
+
+/* Video pane. */
+"VGA Device RAM (MB)" = "Mémoire RAM de la carte VGA (en MB)";
+
+/* Network pane. */
+"Host Only" = "Hôte uniquement";
+
+/* Left pane. */
+"Serial" = "Série";
+
+/* Left pane. */
+"Devices" = "Périphériques";
+
+/* Serial pane. */
+"Built-in Terminal" = "Terminal intégré";
+
+/* Serial pane. */
+"TCP Client Connection" = "Connection Client TCP";
+
+/* Serial pane. */
+"TCP Server Connection" = "Connection Serveur TCP";
+
+/* Serial pane. */
+"Pseudo-TTY Device" = "Appareil pseudo-TTY";
+
+/* Serial pane. */
+"Target" = "Cible";
+
+/* Serial pane. */
+"Automatic Serial Device (max 4)" = "Appareil Série automatique (max 4)";
+
+/* Serial pane. */
+"Manual Serial Device (advanced)" = "Appareil Série en manuel (avancé)";
+
+/* Serial pane. */
+"Emulated Serial Device" = "Appareil Série émulé";
+
+/* Serial pane. */
+"GDB Debug Stub" = "GDB Debug Stub";
+
+/* Serial pane. */
+"QEMU Monitor (HMP)" = "Moniteur QEMU (HMP)";
+
+/* Serial pane. */
+"Server Address" = "Adresse du serveur";
+
+/* Serial pane. */
+"Wait for Connection" = "Attendre la connection";
+
+/* Serial pane. */
+"Text Color" = "Couleur du texte";
+
+/* Serial pane. */
+"Background Color" = "Couleur d'arrière-plan";
+
+/* Drive pane. */
+"None (Advanced)" = "Aucune (avancé)";
+
+/* Drive pane. */
+"SD Card" = "Carte SD";
+
+/* Drive pane. */
+"Aucune (avancé) Drive" = "Personnalisé";
+
+/* Drive pane. */
+"IDE Drive" = "Lecteur IDE";
+
+/* Drive pane. */
+"SCSI Drive" = "Lecteur SCSI";
+
+/* Drive pane. */
+"Carte SD Drive" = "Carte SD";
+
+/* Drive pane. */
+"Lecteur de disquettes Drive" = "Lecteur de disquettes";
+
+/* Drive pane. */
+"VirtIO Drive" = "Lecteur VirtIO";
+
+/* Drive pane. */
+"NVMe Drive" = "Lecteur NVMe";
+
+/* Drive pane. */
+"USB Drive" = "Lecteur USB";
+
+/* Share and Drive panes. */
+"Path" = "Emplacement";

@@ -133,6 +133,7 @@ struct VMWizardHardwareView: View {
                 #else
                 #error("Unsupported architecture.")
                 #endif
+                wizardState.systemTarget = wizardState.systemArchitecture.targetType.default
             }
         }
     }

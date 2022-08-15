@@ -271,7 +271,9 @@ extension VMSessionState: CSUSBManagerDelegate {
     
     nonisolated func spiceUsbManager(_ usbManager: CSUSBManager, deviceAttached device: CSUSBDevice) {
         Task { @MainActor in
-            mostRecentConnectedDevice = device
+            if vmState == .vmStarted {
+                mostRecentConnectedDevice = device
+            }
             allUsbDevices.append(device)
         }
     }

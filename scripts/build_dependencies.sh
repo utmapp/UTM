@@ -29,10 +29,13 @@ PLATFORM=
 CHOST=
 SDK=
 SDKMINVER=
-NCPU=$(sysctl -n hw.ncpu)
 
 command -v realpath >/dev/null 2>&1 || realpath() {
     [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
+}
+
+version_check() {
+    [ "$1" = "$(echo "$1\n$2" | sort -V | head -n1)" ]
 }
 
 usage () {
@@ -45,6 +48,7 @@ usage () {
     echo "  -r, --rebuild    Avoid cleaning build directory."
     echo ""
     echo "  VARIABLEs are:"
+    echo "    NCPU           Number of CPUs to use in 'make', 0 to use all cores."
     echo "    SDKVERSION     Target a specific SDK version."
     echo "    CHOST          Configure host, set if not deducable by ARCH."
     echo ""
@@ -61,7 +65,6 @@ check_env () {
     command -v python3 >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'python3' on your host machine.${NC}"; exit 1; }
     python_module_test six >/dev/null 2>&1 || { echo >&2 "${RED}'six' not found in your Python 3 installation.${NC}"; exit 1; }
     python_module_test pyparsing >/dev/null 2>&1 || { echo >&2 "${RED}'pyparsing' not found in your Python 3 installation.${NC}"; exit 1; }
-    command -v gmake >/dev/null 2>&1 || { echo >&2 "${RED}You must install GNU make on your host machine (and link it to 'gmake').${NC}"; exit 1; }
     command -v meson >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'meson' on your host machine.${NC}"; exit 1; }
     command -v msgfmt >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'gettext' on your host machine.\n\t'msgfmt' needs to be in your \$PATH as well.${NC}"; exit 1; }
     command -v glib-mkenums >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'glib-utils' on your host machine.\n\t'glib-mkenums' needs to be in your \$PATH as well.${NC}"; exit 1; }
@@ -69,7 +72,7 @@ check_env () {
     command -v xcrun >/dev/null 2>&1 || { echo >&2 "${RED}'xcrun' is not found. Make sure you are running on OSX."; exit 1; }
     command -v otool >/dev/null 2>&1 || { echo >&2 "${RED}'otool' is not found. Make sure you are running on OSX."; exit 1; }
     command -v install_name_tool >/dev/null 2>&1 || { echo >&2 "${RED}'install_name_tool' is not found. Make sure you are running on OSX."; exit 1; }
-    # TODO: check bison version >= 2.4
+    version_check "2.4" "$(bison -V | head -1 | awk '{ print $NF }')" || { echo >&2 "${RED}'bison' >= 2.4 is required. Did you install from Homebrew and updated your \$PATH variable?"; exit 1; }
 }
 
 download () {
@@ -110,13 +113,15 @@ clone () {
     DIR="$BUILD_DIR/$NAME"
     if [ -d "$DIR" -a -z "$REDOWNLOAD" ]; then
         echo "${GREEN}$DIR already downloaded! Run with -d to force re-download.${NC}"
-        git -C "$DIR" fetch
     else
         rm -rf "$DIR"
         echo "${GREEN}Cloning ${URL}...${NC}"
-        git clone -n "$REPO" "$DIR"
+        mkdir "$DIR"
+        git -C "$DIR" init
+        git -C "$DIR" remote add origin "$REPO"
     fi
-    git -C "$DIR" checkout -q "$COMMIT"
+    git -C "$DIR" fetch --depth 1 origin "$COMMIT"
+    git -C "$DIR" checkout "$COMMIT"
 }
 
 download_all () {
@@ -177,6 +182,7 @@ copy_private_headers() {
     LC_ALL=C sed -i '' -e 's/#if !KERNEL_USER32/#if 1/g' $(find "$OUTPUT_INCLUDES/IOKit" -type f)
     LC_ALL=C sed -i '' -e 's/#if KERNEL/#if 0/g' $(find "$OUTPUT_INCLUDES/IOKit" -type f)
     LC_ALL=C sed -i '' -e 's/#if !KERNEL/#if 1/g' $(find "$OUTPUT_INCLUDES/IOKit" -type f)
+    LC_ALL=C sed -i '' -e 's/__UNAVAILABLE_PUBLIC_IOS;/;/g' $(find "$OUTPUT_INCLUDES/IOKit" -type f)
     mkdir -p "$OUTPUT_INCLUDES/libkern"
     cp -r "$OSTYPES_HEADERS_PATH/OSTypes.h" "$OUTPUT_INCLUDES/libkern/OSTypes.h"
 }
@@ -204,6 +210,7 @@ generate_meson_cross() {
     echo "pkgconfig = ['$PREFIX/host/bin/pkg-config']" >> $cross
     echo "ranlib = [$(meson_quote $RANLIB)]" >> $cross
     echo "strip = [$(meson_quote $STRIP), '-x']" >> $cross
+    echo "python = ['$(which python3)']" >> $cross
     echo "[host_machine]" >> $cross
     case $PLATFORM in
     ios* )
@@ -464,18 +471,6 @@ build_qemu_dependencies () {
     meson_build $VIRGLRENDERER_REPO -Dtests=false
 }
 
-build_qemu () {
-    pwd="$(pwd)"
-    cd "$QEMU_DIR"
-    echo "${GREEN}Configuring QEMU...${NC}"
-    ./configure --prefix="$PREFIX" --host="$CHOST" --cross-prefix="" $@
-    echo "${GREEN}Building QEMU...${NC}"
-    gmake -j$NCPU
-    echo "${GREEN}Installing QEMU...${NC}"
-    gmake install
-    cd "$pwd"
-}
-
 build_spice_client () {
     meson_build "$QEMU_DIR/subprojects/libucontext" -Ddefault_library=static -Dfreestanding=true
     meson_build $JSON_GLIB_SRC -Dintrospection=disabled
@@ -709,6 +704,12 @@ if [ -z "$SDKMINVER" ]; then
     SDKMINVER="$SDKVERSION"
 fi
 
+# Set NCPU
+if [ -z "$NCPU" ] || [ $NCPU -eq 0 ]; then
+    NCPU="$(sysctl -n hw.ncpu)"
+fi
+export NCPU
+
 # Export tools
 CC=$(xcrun --sdk $SDK --find gcc)
 CPP=$(xcrun --sdk $SDK --find gcc)" -E"
@@ -743,6 +744,7 @@ export OBJCFLAGS
 export LDFLAGS
 
 check_env
+echo "${GREEN}Starting build for ${PLATFORM_FAMILY_NAME} ${ARCH} [${NCPU} jobs]${NC}"
 
 if [ ! -f "$BUILD_DIR/BUILD_SUCCESS" ]; then
     if [ ! -z "$REBUILD" ]; then
@@ -761,7 +763,7 @@ rm -f "$BUILD_DIR/meson.cross"
 copy_private_headers
 build_pkg_config
 build_qemu_dependencies
-build_qemu $QEMU_PLATFORM_BUILD_FLAGS
+build $QEMU_SRC --cross-prefix="" $QEMU_PLATFORM_BUILD_FLAGS
 build_spice_client
 fixup_all
 remove_shared_gst_plugins # another hack...
