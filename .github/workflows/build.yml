@@ -49,7 +49,6 @@ jobs:
         run: |
           [[ "$(xcode-select -p)" == "${{ env.BUILD_XCODE_PATH }}"* ]] || sudo xcode-select -s "${{ env.BUILD_XCODE_PATH }}"
       - name: Cache Sysroot
-        if: github.event.inputs.rebuild_sysroot != 'true'
         id: cache-sysroot
         uses: actions/cache@v3
         with:
@@ -61,14 +60,14 @@ jobs:
         run: |
           echo "/usr/local/opt/bison/bin:/opt/homebrew/opt/bison/bin" >> $GITHUB_PATH
       - name: Install Requirements
-        if: steps.cache-sysroot.outputs.cache-hit != 'true' && env.INSTALL_REQUIREMENTS == 'true'
+        if: (steps.cache-sysroot.outputs.cache-hit != 'true' || github.event.inputs.rebuild_sysroot == 'true') && env.INSTALL_REQUIREMENTS == 'true'
         run: |
           brew uninstall cmake
           brew install bison pkg-config gettext glib-utils libgpg-error nasm make meson
           pip3 install --user six pyparsing
           rm -f /usr/local/lib/pkgconfig/*.pc
       - name: Build Sysroot
-        if: steps.cache-sysroot.outputs.cache-hit != 'true'
+        if: steps.cache-sysroot.outputs.cache-hit != 'true' || github.event.inputs.rebuild_sysroot == 'true'
         run: ./scripts/build_dependencies.sh -p ${{ matrix.platform }} -a ${{ matrix.arch }}
         env:
           NCPU: ${{ matrix.platform == 'ios-tci' && '1' || '0' }} # limit 1 CPU for TCI build due to memory issues, 0 = unlimited for other builds
@@ -89,7 +88,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Cache Sysroot (Universal Mac)
-        if: github.event.inputs.rebuild_sysroot != 'true'
         id: cache-sysroot-universal
         uses: actions/cache@v3
         with:
