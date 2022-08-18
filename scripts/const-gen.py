@@ -269,7 +269,10 @@ def generateEnum(name, values, prettyValues, baseName='QEMUConstant', defaultVal
     output += f'        switch self {{\n'
     for value, valuePretty in zip(values, prettyValues):
         sanitized = sanitizeName(value)
-        output += f'        case .{sanitized}: return "{valuePretty}"\n'
+        if value in ['default']:
+            output += f'        case .{sanitized}: return NSLocalizedString("{valuePretty}", comment: "QEMUConstantGenerated")\n'
+        else:
+            output += f'        case .{sanitized}: return "{valuePretty}"\n'
     output += f'        }}\n'
     output += f'    }}\n'
     output += f'}}\n'

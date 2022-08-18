@@ -2145,6 +2145,7 @@
 		CEBE820226A4C1B5007AAB12 /* VMWizardDrivesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMWizardDrivesView.swift; sourceTree = "<group>"; };
 		CEBE820626A4C74E007AAB12 /* VMWizardSharingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMWizardSharingView.swift; sourceTree = "<group>"; };
 		CEBE820A26A4C8E0007AAB12 /* VMWizardSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMWizardSummaryView.swift; sourceTree = "<group>"; };
+		CEC9968328AA516000E7A025 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ja; path = ja.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		CECC764C2273A7D50059B955 /* cf-input-visitor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "cf-input-visitor.c"; sourceTree = "<group>"; };
 		CECC764D2273A7D50059B955 /* qapi-dealloc-visitor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "qapi-dealloc-visitor.c"; sourceTree = "<group>"; };
 		CECC764E2273A7D50059B955 /* qapi-util.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "qapi-util.c"; sourceTree = "<group>"; };
@@ -4435,14 +4436,6 @@
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
-		CED8DF7928A120C100C34345 /* Localizable.stringsdict */ = {
-			isa = PBXVariantGroup;
-			children = (
-				CED8DF7828A120C100C34345 /* en */,
-			);
-			name = Localizable.stringsdict;
-			sourceTree = "<group>";
-		};
 		CE061CDD289E6DC30000351C /* VMDisplayWindow.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -4459,6 +4452,15 @@
 				CE061CEB289EB62E0000351C /* ja */,
 			);
 			name = VMDisplayMetalViewInputAccessory.xib;
+			sourceTree = "<group>";
+		};
+		CED8DF7928A120C100C34345 /* Localizable.stringsdict */ = {
+			isa = PBXVariantGroup;
+			children = (
+				CED8DF7828A120C100C34345 /* en */,
+				CEC9968328AA516000E7A025 /* ja */,
+			);
+			name = Localizable.stringsdict;
 			sourceTree = "<group>";
 		};
 		FFB02A8A266CB09C006CD71A /* InfoPlist.strings */ = {

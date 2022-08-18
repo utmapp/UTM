@@ -262,7 +262,7 @@ class UTMData: ObservableObject {
     /// Generate a unique VM name
     /// - Parameter base: Base name
     /// - Returns: Unique name for a non-existing item in the default storage path
-    func newDefaultVMName(base: String = "Virtual Machine") -> String {
+    func newDefaultVMName(base: String = NSLocalizedString("Virtual Machine", comment: "UTMData")) -> String {
         let nameForId = { (i: Int) in i <= 1 ? base : "\(base) \(i)" }
         for i in 1..<1000 {
             let name = nameForId(i)

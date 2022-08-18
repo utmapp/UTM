@@ -15,7 +15,7 @@
 "Bkx-Ph-j0D.paletteLabel" = "停止";
 
 /* Class = "NSToolbarItem"; toolTip = "Shuts down and stops the VM"; ObjectID = "Bkx-Ph-j0D"; */
-"Bkx-Ph-j0D.toolTip" = "仮想マシンをシャットダウンして停止します";
+"Bkx-Ph-j0D.toolTip" = "仮想マシンをシステム終了して停止します";
 
 /* Class = "NSToolbarItem"; label = "Capture Mouse"; ObjectID = "FN7-zs-mWC"; */
 "FN7-zs-mWC.label" = "マウスをキャプチャ";
@@ -45,7 +45,7 @@
 "Ulf-oT-4cP.paletteLabel" = "コンソールのサイズを変更";
 
 /* Class = "NSToolbarItem"; toolTip = "Send console resize command"; ObjectID = "Ulf-oT-4cP"; */
-"Ulf-oT-4cP.toolTip" = "コンソールのサイズ変更コマンドを送信します";
+"Ulf-oT-4cP.toolTip" = "コンソールサイズ変更コマンドを送信します";
 
 /* Class = "NSButton"; ibShadowedToolTip = "Starts/resumes the VM"; ObjectID = "ZTi-Hs-ge6"; */
 "ZTi-Hs-ge6.ibShadowedToolTip" = "仮想マシンを開始/再開します";
