@@ -716,7 +716,7 @@
 "Extracting…" = "展開中…";
 "%1$@ of %2$@ (%3$@)" = "%1$@ / %2$@（%3$@）";
 "Preparing…" = "準備中…";
-"Cancel download" = "ダウンロードをキャンセル";
+"Cancel Download" = "ダウンロードをキャンセル";
 
 // UTMUnavailableVMView.swift
 "This virtual machine must be re-added to UTM by opening it with Finder. You can find it at the path: %@" = "この仮想マシンはFinderで開いてUTMに再度追加する必要があります。次のパスにあります: %@";
