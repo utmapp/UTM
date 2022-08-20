@@ -69,12 +69,13 @@ struct VMDetailsView: View {
                     if let appleVM = vm as? UTMAppleVirtualMachine {
                         VMAppleRemovableDrivesView(vm: appleVM, config: appleVM.appleConfig)
                             .padding([.leading, .trailing, .bottom])
-                    } else {
-                        VMRemovableDrivesView(vm: vm as! UTMQemuVirtualMachine)
+                    } else if let qemuVM = vm as? UTMQemuVirtualMachine {
+                        VMRemovableDrivesView(vm: qemuVM, config: qemuVM.qemuConfig)
                             .padding([.leading, .trailing, .bottom])
                     }
                     #else
-                    VMRemovableDrivesView(vm: vm as! UTMQemuVirtualMachine)
+                    let qemuVM = vm as! UTMQemuVirtualMachine
+                    VMRemovableDrivesView(vm: qemuVM, config: qemuVM.qemuConfig)
                         .padding([.leading, .trailing, .bottom])
                     #endif
                 } else {
@@ -89,10 +90,11 @@ struct VMDetailsView: View {
                         if let appleVM = vm as? UTMAppleVirtualMachine {
                             VMAppleRemovableDrivesView(vm: appleVM, config: appleVM.appleConfig)
                         } else if let qemuVM = vm as? UTMQemuVirtualMachine {
-                            VMRemovableDrivesView(vm: qemuVM)
+                            VMRemovableDrivesView(vm: qemuVM, config: qemuVM.qemuConfig)
                         }
                         #else
-                        VMRemovableDrivesView(vm: vm as! UTMQemuVirtualMachine)
+                        let qemuVM = vm as! UTMQemuVirtualMachine
+                        VMRemovableDrivesView(vm: qemuVM, config: qemuVM.qemuConfig)
                         #endif
                     }.padding([.leading, .trailing, .bottom])
                 }

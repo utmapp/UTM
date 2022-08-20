@@ -17,34 +17,35 @@
 import SwiftUI
 
 struct VMToolbarDriveMenuView: View {
+    @State var config: UTMQemuConfiguration
     @EnvironmentObject private var session: VMSessionState
     @State private var isFileImporterShown: Bool = false
-    @State private var selectedDrive: UTMDrive?
+    @State private var selectedDrive: Binding<UTMQemuConfigurationDrive>?
     @State private var isRefreshRequired: Bool = false
     
     var body: some View {
         Menu {
-            ForEach(session.vm.drives) { legacyDrive in
-                if legacyDrive.status != .fixed {
+            ForEach($config.drives) { $drive in
+                if drive.isExternal {
                     Menu {
                         Button {
-                            selectedDrive = legacyDrive
+                            selectedDrive = $drive
                             isFileImporterShown.toggle()
                         } label: {
                             MenuLabel("Change…", systemImage: "opticaldisc")
                         }
                         Button {
-                            ejectDriveImage(for: legacyDrive)
+                            ejectDriveImage(for: $drive)
                         } label: {
                             MenuLabel("Eject…", systemImage: "eject")
                         }
                     } label: {
-                        MenuLabel(legacyDrive.label, systemImage: legacyDrive.status == .ejected ? "opticaldiscdrive" : "opticaldiscdrive.fill")
+                        MenuLabel(drive.label, systemImage: drive.imageURL == nil ? "opticaldiscdrive" : "opticaldiscdrive.fill")
                     }
-                } else {
+                } else if drive.imageType == .disk || drive.imageType == .cd {
                     Button {
                     } label: {
-                        MenuLabel(legacyDrive.label, systemImage: "internaldrive")
+                        MenuLabel(drive.label, systemImage: "internaldrive")
                     }.disabled(true)
                 }
             }
@@ -64,27 +65,40 @@ struct VMToolbarDriveMenuView: View {
         }
     }
     
-    private func changeDriveImage(for legacyDrive: UTMDrive, with imageURL: URL) {
-        do {
-            try session.vm.changeMedium(for: legacyDrive, url: imageURL)
-            isRefreshRequired.toggle()
-        } catch {
-            session.nonfatalError = error.localizedDescription
+    private func changeDriveImage(for driveBinding: Binding<UTMQemuConfigurationDrive>, with imageURL: URL) {
+        Task.detached(priority: .background) {
+            do {
+                try await session.vm.changeMedium(&driveBinding.wrappedValue, with: imageURL)
+                Task { @MainActor in
+                    isRefreshRequired.toggle()
+                }
+            } catch {
+                Task { @MainActor in
+                    session.nonfatalError = error.localizedDescription
+                }
+            }
         }
     }
     
-    private func ejectDriveImage(for legacyDrive: UTMDrive) {
-        do {
-            try session.vm.ejectDrive(legacyDrive, force: false)
-            isRefreshRequired.toggle()
-        } catch {
-            session.nonfatalError = error.localizedDescription
+    private func ejectDriveImage(for driveBinding: Binding<UTMQemuConfigurationDrive>) {
+        Task.detached(priority: .background) {
+            do {
+                try await session.vm.eject(&driveBinding.wrappedValue)
+                Task { @MainActor in
+                    isRefreshRequired.toggle()
+                }
+            } catch {
+                Task { @MainActor in
+                    session.nonfatalError = error.localizedDescription
+                }
+            }
         }
     }
 }
 
 struct VMToolbarDriveMenuView_Previews: PreviewProvider {
+    @StateObject static var config = UTMQemuConfiguration()
     static var previews: some View {
-        VMToolbarDriveMenuView()
+        VMToolbarDriveMenuView(config: config)
     }
 }

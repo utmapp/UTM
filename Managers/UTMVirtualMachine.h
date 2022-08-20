@@ -20,6 +20,7 @@
 @class UTMConfigurationWrapper;
 @class UTMLogging;
 @class UTMViewState;
+@class UTMRegistryEntry;
 @class CSScreenshot;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -53,6 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// This includes display size, bookmarks to removable drives, etc.
 /// This property is observable and must only be accessed on the main thread.
 @property (nonatomic, readonly) UTMViewState *viewState;
+@property (nonatomic, nullable) UTMRegistryEntry *registryEntry;
 
 /// Current VM state, can observe this property for state changes or use the delegate
 ///

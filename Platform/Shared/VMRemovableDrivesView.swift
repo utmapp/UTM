@@ -18,12 +18,13 @@ import SwiftUI
 
 struct VMRemovableDrivesView: View {
     @ObservedObject var vm: UTMQemuVirtualMachine
+    @ObservedObject var config: UTMQemuConfiguration
     @EnvironmentObject private var data: UTMData
     @State private var shareDirectoryFileImportPresented: Bool = false
     @State private var diskImageFileImportPresented: Bool = false
     /// Explanation see "SwiftUI FileImporter modal bug" in the `body`
     @State private var workaroundFileImporterBug: Bool = false
-    @State private var currentDrive: UTMDrive?
+    @State private var currentDriveBinding: Binding<UTMQemuConfigurationDrive>?
     
     var fileManager: FileManager {
         FileManager.default
@@ -69,59 +70,61 @@ struct VMRemovableDrivesView: View {
                     }
                 }.fileImporter(isPresented: $shareDirectoryFileImportPresented, allowedContentTypes: [.folder], onCompletion: selectShareDirectory)
             }
-            ForEach(vm.drives.filter { $0.status != .fixed }) { drive in
-                HStack {
-                    // Drive menu
-                    Menu {
-                        // Browse button
-                        Button(action: {
-                            currentDrive = drive
-                            // MARK: SwiftUI FileImporter modal bug
-                            /// At this point in the execution, `diskImageFileImportPresented` must be `false`.
-                            /// However there is a SwiftUI FileImporter modal bug:
-                            /// if the user taps outside the import modal to cancel instead of tapping the actual cancel button,
-                            /// the `.fileImporter` doesn't actually set the isPresented Binding to `false`.
-                            if (diskImageFileImportPresented) {
-                                /// bug! Let's set the bool to false ourselves.
-                                diskImageFileImportPresented = false
-                                /// One more thing: we can't immediately set it to `true` again because then the state won't have changed.
-                                /// So we have to use the workaround, which is caught in the `.onChange` below.
-                                workaroundFileImporterBug = true
-                            } else {
-                                diskImageFileImportPresented = true
-                            }
-                        }, label: {
-                            Label("Browse…", systemImage: "doc.badge.plus")
-                        })
-                        .onChange(of: workaroundFileImporterBug) { doWorkaround in
-                            /// Explanation see "SwiftUI FileImporter modal bug" above
-                            if doWorkaround {
-                                DispatchQueue.main.async {
-                                    workaroundFileImporterBug = false
+            ForEach($config.drives) { $drive in
+                if drive.isExternal {
+                    HStack {
+                        // Drive menu
+                        Menu {
+                            // Browse button
+                            Button(action: {
+                                currentDriveBinding = $drive
+                                // MARK: SwiftUI FileImporter modal bug
+                                /// At this point in the execution, `diskImageFileImportPresented` must be `false`.
+                                /// However there is a SwiftUI FileImporter modal bug:
+                                /// if the user taps outside the import modal to cancel instead of tapping the actual cancel button,
+                                /// the `.fileImporter` doesn't actually set the isPresented Binding to `false`.
+                                if (diskImageFileImportPresented) {
+                                    /// bug! Let's set the bool to false ourselves.
+                                    diskImageFileImportPresented = false
+                                    /// One more thing: we can't immediately set it to `true` again because then the state won't have changed.
+                                    /// So we have to use the workaround, which is caught in the `.onChange` below.
+                                    workaroundFileImporterBug = true
+                                } else {
                                     diskImageFileImportPresented = true
                                 }
-                            }
-                        }
-                        // Eject button
-                        if drive.status != .ejected {
-                            Button(action: { clearRemovableImage(forDrive: drive) }, label: {
-                                Label("Clear", systemImage: "eject")
+                            }, label: {
+                                Label("Browse…", systemImage: "doc.badge.plus")
                             })
+                            .onChange(of: workaroundFileImporterBug) { doWorkaround in
+                                /// Explanation see "SwiftUI FileImporter modal bug" above
+                                if doWorkaround {
+                                    DispatchQueue.main.async {
+                                        workaroundFileImporterBug = false
+                                        diskImageFileImportPresented = true
+                                    }
+                                }
+                            }
+                            // Eject button
+                            if drive.imageURL != nil {
+                                Button(action: { clearRemovableImage(forDrive: $drive) }, label: {
+                                    Label("Clear", systemImage: "eject")
+                                })
+                            }
+                        } label: {
+                            DriveLabel(drive: drive)
+                        }.disabled(vm.viewState.hasSaveState)
+                        Spacer()
+                        // Disk image path, or (empty)
+                        Text(pathFor(drive))
+                            .lineLimit(1)
+                            .truncationMode(.tail)
+                            .foregroundColor(.secondary)
+                    }.fileImporter(isPresented: $diskImageFileImportPresented, allowedContentTypes: [.data]) { result in
+                        if let currentDrive = self.currentDriveBinding {
+                            selectRemovableImage(forDrive: currentDrive, result: result)
+                            self.currentDriveBinding = nil
                         }
-                    } label: {
-                        DriveLabel(drive: drive)
-                    }.disabled(vm.viewState.hasSaveState)
-                    Spacer()
-                    // Disk image path, or (empty)
-                    Text(pathFor(drive))
-                        .lineLimit(1)
-                        .truncationMode(.tail)
-                        .foregroundColor(.secondary)
-                }
-            }.fileImporter(isPresented: $diskImageFileImportPresented, allowedContentTypes: [.data]) { result in
-                if let currentDrive = self.currentDrive {
-                    selectRemovableImage(forDrive: currentDrive, result: result)
-                    self.currentDrive = nil
+                    }
                 }
             }
         }
@@ -148,10 +151,8 @@ struct VMRemovableDrivesView: View {
         }
     }
     
-    private func pathFor(_ drive: UTMDrive) -> String {
-        let path = vm.viewState.path(forRemovableDrive: drive.name ?? "") ?? ""
-        if path.count > 0 {
-            let url = URL(fileURLWithPath: path)
+    private func pathFor(_ drive: UTMQemuConfigurationDrive) -> String {
+        if let url = drive.imageURL {
             return url.lastPathComponent
         } else {
             return NSLocalizedString("(empty)", comment: "A removable drive that has no image file inserted.")
@@ -159,11 +160,11 @@ struct VMRemovableDrivesView: View {
     }
     
     private struct DriveLabel: View {
-        let drive: UTMDrive
+        let drive: UTMQemuConfigurationDrive
 
         var body: some View {
-            if drive.imageType == .CD {
-                return Label("CD/DVD", systemImage: drive.status == .ejected ? "opticaldiscdrive" : "opticaldiscdrive.fill")
+            if drive.imageType == .cd {
+                return Label("CD/DVD", systemImage: drive.imageURL == nil ? "opticaldiscdrive" : "opticaldiscdrive.fill")
             } else {
                 return Label("Removable", systemImage: "externaldrive")
             }
@@ -186,11 +187,11 @@ struct VMRemovableDrivesView: View {
         vm.clearSharedDirectory()
     }
     
-    private func selectRemovableImage(forDrive drive: UTMDrive, result: Result<URL, Error>) {
-        data.busyWork {
+    private func selectRemovableImage(forDrive drive: Binding<UTMQemuConfigurationDrive>, result: Result<URL, Error>) {
+        data.busyWorkAsync {
             switch result {
             case .success(let url):
-                try vm.changeMedium(for: drive, url: url)
+                try await vm.changeMedium(&drive.wrappedValue, with: url)
                 break
             case .failure(let err):
                 throw err
@@ -198,9 +199,9 @@ struct VMRemovableDrivesView: View {
         }
     }
     
-    private func clearRemovableImage(forDrive drive: UTMDrive) {
-        data.busyWork {
-            try vm.ejectDrive(drive, force: true)
+    private func clearRemovableImage(forDrive drive: Binding<UTMQemuConfigurationDrive>) {
+        data.busyWorkAsync {
+            try await vm.eject(&drive.wrappedValue)
         }
     }
 }

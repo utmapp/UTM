@@ -268,8 +268,19 @@ NSString *const kSuspendSnapshotName = @"suspend";
         completion([self errorWithMessage:errMsg]);
         return;
     }
-    if (![self restoreRemovableDrivesFromBookmarksWithError:&err]) {
-        errMsg = [NSString localizedStringWithFormat:NSLocalizedString(@"Error trying to restore removable drives: %@", @"UTMVirtualMachine"), err.localizedDescription];
+    __block NSError *restoreExternalDrivesError = nil;
+    dispatch_semaphore_t restoreExternalDrivesEvent = dispatch_semaphore_create(0);
+    [self restoreExternalDrivesWithCompletion:^(NSError *err) {
+        restoreExternalDrivesError = err;
+        dispatch_semaphore_signal(restoreExternalDrivesEvent);
+    }];
+    if (dispatch_semaphore_wait(restoreExternalDrivesEvent, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
+        UTMLog(@"Timed out waiting for external drives to be restored.");
+        completion([self errorGeneric]);
+        return;
+    }
+    if (restoreExternalDrivesError) {
+        errMsg = [NSString localizedStringWithFormat:NSLocalizedString(@"Error trying to restore removable drives: %@", @"UTMVirtualMachine"), restoreExternalDrivesError.localizedDescription];
         completion([self errorWithMessage:errMsg]);
         return;
     }
