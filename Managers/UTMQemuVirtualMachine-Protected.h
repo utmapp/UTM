@@ -18,6 +18,7 @@
 
 @class UTMQemu;
 @class UTMQemuManager;
+@class UTMSpiceIO;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -25,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly, nullable) UTMQemuManager *qemu;
 @property (nonatomic, readonly, nullable) UTMQemu *system;
+@property (nonatomic, readonly, nullable) UTMSpiceIO *ioService;
 
 - (void)saveViewState;
 

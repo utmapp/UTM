@@ -44,16 +44,6 @@ extern const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions;
 
 @implementation UTMQemuVirtualMachine (SPICE)
 
-- (UTMSpiceIO *)spiceIoWithError:(NSError * _Nullable __autoreleasing *)error {
-    if (![self.ioService isKindOfClass:[UTMSpiceIO class]]) {
-        if (error) {
-            *error = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"VM frontend does not support shared directories.", "UTMVirtualMachine+Sharing")}];
-        }
-        return nil;
-    }
-    return (UTMSpiceIO *)self.ioService;
-}
-
 #pragma mark - Shared Directory
 
 - (BOOL)saveSharedDirectory:(NSURL *)url error:(NSError * _Nullable __autoreleasing *)error {
@@ -79,11 +69,7 @@ extern const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions;
         return [self saveSharedDirectory:url error:error];
     }
     if (self.config.qemuHasWebdavSharing) {
-        UTMSpiceIO *spiceIO = [self spiceIoWithError:error];
-        if (!spiceIO) {
-            return NO;
-        }
-        [spiceIO changeSharedDirectory:url];
+        [self.ioService changeSharedDirectory:url];
     }
     return [self saveSharedDirectory:url error:error];
 }
@@ -104,13 +90,8 @@ extern const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions;
     if (!self.config.qemuHasWebdavSharing) {
         return YES;
     }
-    UTMSpiceIO *spiceIO = [self spiceIoWithError:error];
-    if (!spiceIO) {
-        return NO;
-    }
     
     NSData *bookmark = nil;
-    BOOL legacy = NO;
     if (self.viewState.sharedDirectory) {
         UTMLog(@"found shared directory bookmark");
         bookmark = self.viewState.sharedDirectory;
@@ -129,12 +110,9 @@ extern const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions;
                 success = [self saveSharedDirectory:shareURL error:error];
             }
             if (success) {
-                [spiceIO changeSharedDirectory:shareURL];
+                [self.ioService changeSharedDirectory:shareURL];
             }
             return success;
-        } else if (legacy) { // ignore errors for legacy sharing since we don't have a good way of handling it
-            UTMLog(@"Ignoring error on legacy shared directory");
-            return YES;
         } else {
             // clear the broken bookmark
             [self clearSharedDirectory];
@@ -165,7 +143,7 @@ extern const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions;
                 if (err) {
                     UTMLog(@"input select returned error: %@", err);
                 } else {
-                    UTMSpiceIO *spiceIO = [self spiceIoWithError:&err];
+                    UTMSpiceIO *spiceIO = self.ioService;
                     if (spiceIO) {
                         [spiceIO.primaryInput requestMouseMode:!tablet];
                     } else {
