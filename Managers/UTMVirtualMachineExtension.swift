@@ -191,11 +191,8 @@ public extension UTMQemuVirtualMachine {
     /// Sets up values in VM configuration corrosponding to per-device data like sharing path
     @objc func prepareConfigurationForStart() {
         if config.qemuConfig!.sharing.directoryShareMode != .none {
-            var stale: Bool = false
-            if let bookmark = viewState.sharedDirectory, let url = try? URL(resolvingBookmarkData: bookmark, options: kUTMBookmarkResolutionOptions, bookmarkDataIsStale: &stale) {
+            if let url = sharedDirectoryURL {
                 config.qemuConfig!.sharing.directoryShareUrl = url
-            } else {
-                logger.error("Cannot resolve bookmark for share path '\(viewState.sharedDirectoryPath ?? "nil")'")
             }
         }
     }

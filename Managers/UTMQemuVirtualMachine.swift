@@ -84,10 +84,11 @@ extension UTMQemuVirtualMachine {
         }
     }
     
-    @objc func restoreExternalDrives(completion: @escaping (Error?) -> Void) {
+    @objc func restoreExternalDrivesAndShares(completion: @escaping (Error?) -> Void) {
         Task.detached {
             do {
                 try await self.restoreExternalDrives()
+                try await self.restoreSharedDirectory()
                 completion(nil)
             } catch {
                 completion(error)
@@ -97,6 +98,67 @@ extension UTMQemuVirtualMachine {
     
     func externalImageURL(for drive: UTMQemuConfigurationDrive) -> URL? {
         registryEntry.externalDrives[drive.id]?.url
+    }
+}
+
+// MARK: - Shared directory
+extension UTMQemuVirtualMachine {
+    var sharedDirectoryURL: URL? {
+        registryEntry.sharedDirectories.first?.url
+    }
+    
+    func clearSharedDirectory() {
+        registryEntry.sharedDirectories = []
+    }
+    
+    func changeSharedDirectory(to url: URL) async throws {
+        _ = url.startAccessingSecurityScopedResource()
+        defer {
+            url.stopAccessingSecurityScopedResource()
+        }
+        let file = try UTMRegistryEntry.File(url: url, isReadOnly: qemuConfig.sharing.isDirectoryShareReadOnly)
+        registryEntry.sharedDirectories = [file]
+        if qemuConfig.sharing.directoryShareMode == .webdav {
+            if let ioService = ioService {
+                ioService.changeSharedDirectory(url)
+            }
+        } else if qemuConfig.sharing.directoryShareMode == .virtfs {
+            let tempBookmark = try url.bookmarkData()
+            try await changeVirtfsSharedDirectory(with: tempBookmark, isSecurityScoped: false)
+        }
+    }
+    
+    func changeVirtfsSharedDirectory(with bookmark: Data, isSecurityScoped: Bool) async throws {
+        guard let system = system else {
+            return
+        }
+        let (success, bookmark, path) = await system.accessData(withBookmark: bookmark, securityScoped: isSecurityScoped)
+        guard let bookmark = bookmark, let _ = path, success else {
+            throw UTMQemuVirtualMachineError.accessDriveImageFailed
+        }
+        if !registryEntry.sharedDirectories.isEmpty {
+            registryEntry.sharedDirectories[0].remoteBookmark = bookmark
+        }
+    }
+    
+    func restoreSharedDirectory() async throws {
+        guard let share = registryEntry.sharedDirectories.first else {
+            return
+        }
+        if qemuConfig.sharing.directoryShareMode == .virtfs {
+            if let bookmark = share.remoteBookmark {
+                // a share bookmark was saved while QEMU was running
+                try await changeVirtfsSharedDirectory(with: bookmark, isSecurityScoped: true)
+            } else if let localBookmark = registryEntry.externalDrives[id]?.bookmark {
+                // a share bookmark was saved while QEMU was NOT running
+                let url = try URL(resolvingPersistentBookmarkData: localBookmark)
+                try await changeSharedDirectory(to: url)
+            }
+        } else if qemuConfig.sharing.directoryShareMode == .webdav {
+            if let ioService = ioService {
+                ioService.changeSharedDirectory(share.url)
+            }
+        }
     }
 }
 
@@ -111,7 +173,9 @@ extension UTMQemuVirtualMachine {
                 }
             }
         }
-        // FIXME: update directory sharing
+        if qemuConfig.sharing.directoryShareMode != .none {
+            qemuConfig.sharing.directoryShareUrl = sharedDirectoryURL
+        }
     }
     
     override func updateRegistryPostSave() async throws {
@@ -126,13 +190,14 @@ extension UTMQemuVirtualMachine {
             }
         }
         if let url = config.qemuConfig!.sharing.directoryShareUrl {
-            try changeSharedDirectory(url)
+            try await changeSharedDirectory(to: url)
         }
     }
 }
 
 enum UTMQemuVirtualMachineError: Error {
     case accessDriveImageFailed
+    case accessShareFailed
     case invalidVmState
 }
 
@@ -140,6 +205,7 @@ extension UTMQemuVirtualMachineError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .accessDriveImageFailed: return NSLocalizedString("Failed to access drive image path.", comment: "UTMQemuVirtualMachine")
+        case .accessShareFailed: return NSLocalizedString("Failed to access shared directory.", comment: "UTMQemuVirtualMachine")
         case .invalidVmState: return NSLocalizedString("The virtual machine is in an invalid state.", comment: "UTMQemuVirtualMachine")
         }
     }

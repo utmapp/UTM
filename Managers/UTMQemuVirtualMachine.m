@@ -263,24 +263,19 @@ NSString *const kSuspendSnapshotName = @"suspend";
     }
     assert(self.qemu.isConnected);
     // set up SPICE sharing and removable drives
-    if (![self startSharedDirectoryWithError:&err]) {
-        errMsg = [NSString localizedStringWithFormat:NSLocalizedString(@"Error trying to start shared directory: %@", @"UTMVirtualMachine"), err.localizedDescription];
-        completion([self errorWithMessage:errMsg]);
-        return;
-    }
-    __block NSError *restoreExternalDrivesError = nil;
-    dispatch_semaphore_t restoreExternalDrivesEvent = dispatch_semaphore_create(0);
-    [self restoreExternalDrivesWithCompletion:^(NSError *err) {
-        restoreExternalDrivesError = err;
-        dispatch_semaphore_signal(restoreExternalDrivesEvent);
+    __block NSError *restoreExternalDrivesAndSharesError = nil;
+    dispatch_semaphore_t restoreExternalDrivesAndSharesEvent = dispatch_semaphore_create(0);
+    [self restoreExternalDrivesAndSharesWithCompletion:^(NSError *err) {
+        restoreExternalDrivesAndSharesError = err;
+        dispatch_semaphore_signal(restoreExternalDrivesAndSharesEvent);
     }];
-    if (dispatch_semaphore_wait(restoreExternalDrivesEvent, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
-        UTMLog(@"Timed out waiting for external drives to be restored.");
+    if (dispatch_semaphore_wait(restoreExternalDrivesAndSharesEvent, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
+        UTMLog(@"Timed out waiting for external drives and shares to be restored.");
         completion([self errorGeneric]);
         return;
     }
-    if (restoreExternalDrivesError) {
-        errMsg = [NSString localizedStringWithFormat:NSLocalizedString(@"Error trying to restore removable drives: %@", @"UTMVirtualMachine"), restoreExternalDrivesError.localizedDescription];
+    if (restoreExternalDrivesAndSharesError) {
+        errMsg = [NSString localizedStringWithFormat:NSLocalizedString(@"Error trying to restore external drives and shares: %@", @"UTMVirtualMachine"), restoreExternalDrivesAndSharesError.localizedDescription];
         completion([self errorWithMessage:errMsg]);
         return;
     }

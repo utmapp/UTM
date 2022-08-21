@@ -211,11 +211,11 @@ extension VMDisplayQemuWindowController {
                 logger.debug("no directory selected")
                 return
             }
-            DispatchQueue.global(qos: .background).async {
+            Task.detached(priority: .background) { [self] in
                 do {
-                    try self.qemuVM.changeSharedDirectory(url)
+                    try await self.qemuVM.changeSharedDirectory(to: url)
                 } catch {
-                    DispatchQueue.main.async {
+                    Task { @MainActor in
                         self.showErrorAlert(error.localizedDescription)
                     }
                 }

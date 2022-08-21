@@ -32,7 +32,7 @@ struct VMRemovableDrivesView: View {
 
 
     // Is a shared directory set?
-    private var hasSharedDir: Bool { vm.viewState.sharedDirectoryPath != nil }
+    private var hasSharedDir: Bool { vm.sharedDirectoryURL != nil }
 
     @ViewBuilder private var shareMenuActions: some View {
         Button(action: { shareDirectoryFileImportPresented.toggle() }) {
@@ -63,7 +63,7 @@ struct VMRemovableDrivesView: View {
                         Menu {
                             shareMenuActions
                         } label: {
-                            SharedPath(path: vm.viewState.sharedDirectoryPath)
+                            SharedPath(path: vm.sharedDirectoryURL?.path)
                         }.fixedSize()
                     } else {
                         Button("Browse…", action: { shareDirectoryFileImportPresented.toggle() })
@@ -171,10 +171,10 @@ struct VMRemovableDrivesView: View {
     }
     
     private func selectShareDirectory(result: Result<URL, Error>) {
-        data.busyWork {
+        data.busyWorkAsync {
             switch result {
             case .success(let url):
-                try vm.changeSharedDirectory(url)
+                try await vm.changeSharedDirectory(to: url)
                 break
             case .failure(let err):
                 throw err
