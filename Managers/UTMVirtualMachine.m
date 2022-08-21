@@ -19,7 +19,6 @@
 #import "UTMVirtualMachine-Private.h"
 #import "UTMQemuVirtualMachine.h"
 #import "UTMLogging.h"
-#import "UTMViewState.h"
 #import "UTM-Swift.h"
 #if defined(WITH_QEMU_TCI)
 @import CocoaSpiceNoUsb;
@@ -67,12 +66,6 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 - (void)setScreenshot:(CSScreenshot *)screenshot {
     [self propertyWillChange];
     _screenshot = screenshot;
-}
-
-- (void)setViewState:(UTMViewState *)viewState {
-    [self propertyWillChange];
-    _viewState = viewState;
-    self.anyCancellable = [self subscribeToConfiguration];
 }
 
 - (void)setConfig:(UTMConfigurationWrapper *)config {
@@ -206,7 +199,6 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 #else
         self.logging = [UTMLogging new];
 #endif
-        _viewState = [[UTMViewState alloc] init];
     }
     return self;
 }
@@ -217,7 +209,6 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
         self.config = configuration;
         self.path = packageURL;
         self.registryEntry = [UTMRegistry.shared entryFor:self];
-        [self loadViewState];
         [self loadScreenshot];
         self.state = kVMStopped;
     }
@@ -391,63 +382,6 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 
 - (void)vmResumeWithCompletion:(void (^)(NSError * _Nullable))completion {
     notImplemented;
-}
-
-#pragma mark - Plist Handling
-
-- (NSDictionary *)loadPlist:(NSURL *)path withError:(NSError **)err {
-    NSData *data = [NSData dataWithContentsOfURL:path];
-    if (!data) {
-        if (err) {
-            *err = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Failed to load plist", @"UTMVirtualMachine")}];
-        }
-        return nil;
-    }
-    id plist = [NSPropertyListSerialization propertyListWithData:data options:0 format:nil error:err];
-    if (!plist) {
-        return nil;
-    }
-    if (![plist isKindOfClass:[NSDictionary class]]) {
-        if (err) {
-            *err = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Config format incorrect.", @"UTMVirtualMachine")}];
-        }
-        return nil;
-    }
-    return plist;
-}
-
-- (BOOL)savePlist:(NSURL *)path dict:(NSDictionary *)dict withError:(NSError **)err {
-    NSError *_err;
-    // serialize plist
-    NSData *data = [NSPropertyListSerialization dataWithPropertyList:dict format:NSPropertyListXMLFormat_v1_0 options:0 error:&_err];
-    if (_err && err) {
-        *err = _err;
-        return NO;
-    }
-    // write plist
-    [data writeToURL:path options:NSDataWritingAtomic error:&_err];
-    if (_err && err) {
-        *err = _err;
-        return NO;
-    }
-    return YES;
-}
-
-#pragma mark - View State
-
-- (void)loadViewState {
-    NSDictionary *plist = [self loadPlist:[self.path URLByAppendingPathComponent:kUTMBundleViewFilename] withError:nil];
-    if (plist) {
-        self.viewState = [[UTMViewState alloc] initWithDictionary:plist];
-    } else {
-        self.viewState = [[UTMViewState alloc] init];
-    }
-}
-
-- (void)saveViewState {
-    [self savePlist:[self.path URLByAppendingPathComponent:kUTMBundleViewFilename]
-               dict:self.viewState.dictRepresentation
-          withError:nil];
 }
 
 #pragma mark - Screenshot

@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 
-#import "UTMViewState.h"
+#import "UTMLegacyViewState.h"
 #import "UTM-Swift.h"
 
 const NSString *const kUTMViewStateDisplayScaleKey = @"DisplayScale";

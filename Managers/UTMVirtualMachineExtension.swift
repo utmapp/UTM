@@ -42,9 +42,6 @@ extension UTMVirtualMachine: ObservableObject {
     fileprivate static let gibInMib = 1024
     func subscribeToConfiguration() -> [AnyObject] {
         var s: [AnyObject] = []
-        s.append(viewState.objectWillChange.sink { [weak self] in
-            self?.objectWillChange.send()
-        })
         if let config = config.qemuConfig {
             s.append(config.objectWillChange.sink { [weak self] in
                 self?.objectWillChange.send()
@@ -152,42 +149,6 @@ public extension UTMQemuVirtualMachine {
         return UTMQemuVirtualMachine.isSupported(systemArchitecture: config.qemuConfig!.system.architecture)
     }
     
-    @objc var drives: [UTMDrive] {
-        var drives: [UTMDrive] = []
-        for i in 0..<config.qemuConfig!.drives.count {
-            drives.append(legacyDrive(at: i))
-        }
-        return drives
-    }
-    
-    func legacyDrive(at index: Int) -> UTMDrive {
-        let qemuDrive = config.qemuConfig!.drives[index]
-        let drive = UTMDrive()
-        drive.index = index
-        switch qemuDrive.imageType {
-        case .disk: drive.imageType = .disk
-        case .cd: drive.imageType = .CD
-        default: drive.imageType = .none // skip other types
-        }
-        drive.interface = qemuDrive.interface.rawValue
-        drive.name = qemuDrive.id
-        if qemuDrive.isExternal {
-            // removable drive -> path stored only in viewState
-            if let path = viewState.path(forRemovableDrive: qemuDrive.id) {
-                drive.status = .inserted
-                drive.path = path
-            } else {
-                drive.status = .ejected
-                drive.path = nil
-            }
-        } else {
-            // fixed drive -> path stored in configuration
-            drive.status = .fixed
-            drive.path = qemuDrive.imageURL?.lastPathComponent
-        }
-        return drive
-    }
-    
     /// Sets up values in VM configuration corrosponding to per-device data like sharing path
     @objc func prepareConfigurationForStart() {
         if config.qemuConfig!.sharing.directoryShareMode != .none {
@@ -233,11 +194,5 @@ extension URL {
         try self.init(resolvingBookmarkData: bookmark,
                       options: Self.defaultResolutionOptions,
                       bookmarkDataIsStale: &stale)
-    }
-}
-
-extension UTMDrive: Identifiable {
-    public var id: Int {
-        self.index
     }
 }

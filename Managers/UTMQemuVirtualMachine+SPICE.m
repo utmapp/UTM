@@ -18,7 +18,6 @@
 #import "UTMLogging.h"
 #import "UTMQemuManager.h"
 #import "UTMSpiceIO.h"
-#import "UTMViewState.h"
 #import "UTMJailbreak.h"
 #import "UTM-Swift.h"
 #if defined(WITH_QEMU_TCI)
@@ -38,89 +37,9 @@ extern const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions;
 @property (nonatomic, readonly, nullable) UTMSpiceIO *ioService;
 @property (nonatomic) BOOL changeCursorRequestInProgress;
 
-- (void)saveViewState;
-
 @end
 
 @implementation UTMQemuVirtualMachine (SPICE)
-
-#pragma mark - Shared Directory
-
-- (BOOL)saveSharedDirectory:(NSURL *)url error:(NSError * _Nullable __autoreleasing *)error {
-    [url startAccessingSecurityScopedResource];
-    NSData *bookmark = [url bookmarkDataWithOptions:kUTMBookmarkCreationOptions
-                     includingResourceValuesForKeys:nil
-                                      relativeToURL:nil
-                                              error:error];
-    [url stopAccessingSecurityScopedResource];
-    if (!bookmark) {
-        return NO;
-    } else {
-        self.viewState.sharedDirectory = bookmark;
-        self.viewState.sharedDirectoryPath = url.path;
-        [self saveViewState];
-        return YES;
-    }
-}
-
-- (BOOL)changeSharedDirectory:(NSURL *)url error:(NSError * _Nullable __autoreleasing *)error {
-    if (!self.ioService) {
-        // if we haven't started the VM yet, save the URL for when the VM starts
-        return [self saveSharedDirectory:url error:error];
-    }
-    if (self.config.qemuHasWebdavSharing) {
-        [self.ioService changeSharedDirectory:url];
-    }
-    return [self saveSharedDirectory:url error:error];
-}
-
-- (void)clearSharedDirectory {
-    self.viewState.sharedDirectory = nil;
-    self.viewState.sharedDirectoryPath = nil;
-    [self saveViewState];
-}
-
-- (BOOL)startSharedDirectoryWithError:(NSError * _Nullable __autoreleasing *)error {
-    if (!self.ioService) {
-        if (error) {
-            *error = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Cannot start shared directory before SPICE starts.", "UTMVirtualMachine+Sharing")}];
-        }
-        return NO;
-    }
-    if (!self.config.qemuHasWebdavSharing) {
-        return YES;
-    }
-    
-    NSData *bookmark = nil;
-    if (self.viewState.sharedDirectory) {
-        UTMLog(@"found shared directory bookmark");
-        bookmark = self.viewState.sharedDirectory;
-    }
-    if (bookmark) {
-        BOOL stale;
-        NSURL *shareURL = [NSURL URLByResolvingBookmarkData:bookmark
-                                                    options:kUTMBookmarkResolutionOptions
-                                              relativeToURL:nil
-                                        bookmarkDataIsStale:&stale
-                                                      error:error];
-        if (shareURL) {
-            BOOL success = YES;
-            if (stale) {
-                UTMLog(@"stale bookmark, attempting to recreate");
-                success = [self saveSharedDirectory:shareURL error:error];
-            }
-            if (success) {
-                [self.ioService changeSharedDirectory:shareURL];
-            }
-            return success;
-        } else {
-            // clear the broken bookmark
-            [self clearSharedDirectory];
-            return NO;
-        }
-    }
-    return YES;
-}
 
 #pragma mark - Input device switching
 
