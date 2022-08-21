@@ -68,7 +68,7 @@ struct VMToolbarDriveMenuView: View {
     private func changeDriveImage(for drive: UTMQemuConfigurationDrive, with imageURL: URL) {
         Task.detached(priority: .background) {
             do {
-                try await session.vm.changeMedium(drive, with: imageURL)
+                try await session.vm.changeMedium(drive, to: imageURL)
                 Task { @MainActor in
                     isRefreshRequired.toggle()
                 }

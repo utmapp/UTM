@@ -190,7 +190,7 @@ struct VMRemovableDrivesView: View {
         data.busyWorkAsync {
             switch result {
             case .success(let url):
-                try await vm.changeMedium(drive, with: url)
+                try await vm.changeMedium(drive, to: url)
                 break
             case .failure(let err):
                 throw err

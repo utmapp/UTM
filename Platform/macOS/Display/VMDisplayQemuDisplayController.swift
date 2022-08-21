@@ -168,7 +168,7 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
             }
             Task.detached(priority: .background) { [self] in
                 do {
-                    try await qemuVM.changeMedium(drive, with: url)
+                    try await qemuVM.changeMedium(drive, to: url)
                 } catch {
                     Task { @MainActor in
                         showErrorAlert(error.localizedDescription)
