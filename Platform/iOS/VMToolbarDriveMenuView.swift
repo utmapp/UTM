@@ -20,32 +20,32 @@ struct VMToolbarDriveMenuView: View {
     @State var config: UTMQemuConfiguration
     @EnvironmentObject private var session: VMSessionState
     @State private var isFileImporterShown: Bool = false
-    @State private var selectedDrive: Binding<UTMQemuConfigurationDrive>?
+    @State private var selectedDrive: UTMQemuConfigurationDrive?
     @State private var isRefreshRequired: Bool = false
     
     var body: some View {
         Menu {
-            ForEach($config.drives) { $drive in
+            ForEach(config.drives) { drive in
                 if drive.isExternal {
                     Menu {
                         Button {
-                            selectedDrive = $drive
+                            selectedDrive = drive
                             isFileImporterShown.toggle()
                         } label: {
                             MenuLabel("Change…", systemImage: "opticaldisc")
                         }
                         Button {
-                            ejectDriveImage(for: $drive)
+                            ejectDriveImage(for: drive)
                         } label: {
                             MenuLabel("Eject…", systemImage: "eject")
                         }
                     } label: {
-                        MenuLabel(drive.label, systemImage: drive.imageURL == nil ? "opticaldiscdrive" : "opticaldiscdrive.fill")
+                        MenuLabel(label(for: drive), systemImage: session.vm.externalImageURL(for: drive) == nil ? "opticaldiscdrive" : "opticaldiscdrive.fill")
                     }
                 } else if drive.imageType == .disk || drive.imageType == .cd {
                     Button {
                     } label: {
-                        MenuLabel(drive.label, systemImage: "internaldrive")
+                        MenuLabel(label(for: drive), systemImage: "internaldrive")
                     }.disabled(true)
                 }
             }
@@ -65,10 +65,10 @@ struct VMToolbarDriveMenuView: View {
         }
     }
     
-    private func changeDriveImage(for driveBinding: Binding<UTMQemuConfigurationDrive>, with imageURL: URL) {
+    private func changeDriveImage(for drive: UTMQemuConfigurationDrive, with imageURL: URL) {
         Task.detached(priority: .background) {
             do {
-                try await session.vm.changeMedium(&driveBinding.wrappedValue, with: imageURL)
+                try await session.vm.changeMedium(drive, with: imageURL)
                 Task { @MainActor in
                     isRefreshRequired.toggle()
                 }
@@ -80,10 +80,10 @@ struct VMToolbarDriveMenuView: View {
         }
     }
     
-    private func ejectDriveImage(for driveBinding: Binding<UTMQemuConfigurationDrive>) {
+    private func ejectDriveImage(for drive: UTMQemuConfigurationDrive) {
         Task.detached(priority: .background) {
             do {
-                try await session.vm.eject(&driveBinding.wrappedValue)
+                try await session.vm.eject(drive)
                 Task { @MainActor in
                     isRefreshRequired.toggle()
                 }
@@ -93,6 +93,14 @@ struct VMToolbarDriveMenuView: View {
                 }
             }
         }
+    }
+    
+    private func label(for drive: UTMQemuConfigurationDrive) -> String {
+        let imageURL = session.vm.externalImageURL(for: drive) ?? drive.imageURL
+        return String.localizedStringWithFormat(NSLocalizedString("%@ (%@): %@", comment: "VMToolbarDriveMenuView"),
+                                                drive.imageType.prettyValue,
+                                                drive.interface.prettyValue,
+                                                imageURL?.lastPathComponent ?? NSLocalizedString("none", comment: "VMToolbarDriveMenuView"))
     }
 }
 

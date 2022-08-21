@@ -109,7 +109,7 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
                 continue // skip non-disks
             }
             let item = NSMenuItem()
-            item.title = drive.label
+            item.title = label(for: drive)
             if !drive.isExternal {
                 item.isEnabled = false
             } else {
@@ -120,7 +120,7 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
                                        keyEquivalent: "")
                 eject.target = self
                 eject.tag = i
-                eject.isEnabled = drive.imageURL != nil
+                eject.isEnabled = qemuVM.externalImageURL(for: drive) != nil
                 submenu.addItem(eject)
                 let change = NSMenuItem(title: NSLocalizedString("Change", comment: "VMDisplayWindowController"),
                                         action: #selector(changeDriveImage),
@@ -141,10 +141,10 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
             logger.error("wrong sender for ejectDrive")
             return
         }
-        let config = vmQemuConfig!
+        let drive = vmQemuConfig.drives[menu.tag]
         Task.detached(priority: .background) { [self] in
             do {
-                try await qemuVM.eject(&config.drives[menu.tag])
+                try await qemuVM.eject(drive)
             } catch {
                 Task { @MainActor in
                     showErrorAlert(error.localizedDescription)
@@ -154,6 +154,7 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
     }
     
     func openDriveImage(forDriveIndex index: Int) {
+        let drive = vmQemuConfig.drives[index]
         let openPanel = NSOpenPanel()
         openPanel.title = NSLocalizedString("Select Drive Image", comment: "VMDisplayWindowController")
         openPanel.allowedContentTypes = [.data]
@@ -165,10 +166,9 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
                 logger.debug("no file selected")
                 return
             }
-            let config = self.vmQemuConfig!
             Task.detached(priority: .background) { [self] in
                 do {
-                    try await qemuVM.changeMedium(&config.drives[index], with: url)
+                    try await qemuVM.changeMedium(drive, with: url)
                 } catch {
                     Task { @MainActor in
                         showErrorAlert(error.localizedDescription)
@@ -184,6 +184,14 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
             return
         }
         openDriveImage(forDriveIndex: menu.tag)
+    }
+    
+    @nonobjc private func label(for drive: UTMQemuConfigurationDrive) -> String {
+        let imageURL = qemuVM.externalImageURL(for: drive) ?? drive.imageURL
+        return String.localizedStringWithFormat(NSLocalizedString("%@ (%@): %@", comment: "VMDisplayQemuDisplayController"),
+                                                drive.imageType.prettyValue,
+                                                drive.interface.prettyValue,
+                                                imageURL?.lastPathComponent ?? NSLocalizedString("none", comment: "VMDisplayQemuDisplayController"))
     }
 }
 

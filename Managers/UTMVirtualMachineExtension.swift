@@ -210,6 +210,44 @@ public extension UTMQemuVirtualMachine {
     }
 }
 
+// MARK: - Bookmark handling
+extension URL {
+    private static var defaultCreationOptions: BookmarkCreationOptions {
+        #if os(iOS)
+        return .minimalBookmark
+        #else
+        return .withSecurityScope
+        #endif
+    }
+    
+    private static var defaultResolutionOptions: BookmarkResolutionOptions {
+        #if os(iOS)
+        return []
+        #else
+        return .withSecurityScope
+        #endif
+    }
+    
+    func persistentBookmarkData(isReadyOnly: Bool = false) throws -> Data {
+        var options = Self.defaultCreationOptions
+        #if os(macOS)
+        if isReadyOnly {
+            options.insert(.securityScopeAllowOnlyReadAccess)
+        }
+        #endif
+        return try self.bookmarkData(options: options,
+                                     includingResourceValuesForKeys: nil,
+                                     relativeTo: nil)
+    }
+    
+    init(resolvingPersistentBookmarkData bookmark: Data) throws {
+        var stale: Bool = false
+        try self.init(resolvingBookmarkData: bookmark,
+                      options: Self.defaultResolutionOptions,
+                      bookmarkDataIsStale: &stale)
+    }
+}
+
 extension UTMDrive: Identifiable {
     public var id: Int {
         self.index

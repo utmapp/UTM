@@ -22,34 +22,33 @@ extension UTMQemuVirtualMachine {
         config.qemuConfig!
     }
     
-    func eject(_ drive: inout UTMQemuConfigurationDrive, isForced: Bool = false) throws {
-        guard let oldURL = drive.imageURL else {
-            return // nothing to eject
-        }
+    func eject(_ drive: UTMQemuConfigurationDrive, isForced: Bool = false) throws {
         guard drive.isExternal else {
             return
         }
-        drive.imageURL = nil
-        registryEntry?.externalDrives.removeValue(forKey: drive.id)
-        system?.stopAccessingPath(oldURL.path)
+        if let oldPath = registryEntry.externalDrives[drive.id]?.path {
+            system?.stopAccessingPath(oldPath)
+        }
+        registryEntry.externalDrives.removeValue(forKey: drive.id)
         guard let qemu = qemu, qemu.isConnected else {
             return
         }
         try qemu.ejectDrive("drive\(drive.id)", force: isForced)
     }
     
-    func changeMedium(_ drive: inout UTMQemuConfigurationDrive, with url: URL) async throws {
+    func changeMedium(_ drive: UTMQemuConfigurationDrive, with url: URL) async throws {
         _ = url.startAccessingSecurityScopedResource()
         defer {
             url.stopAccessingSecurityScopedResource()
         }
         let tempBookmark = try url.bookmarkData()
-        try eject(&drive, isForced: true)
-        try await changeMedium(&drive, with: tempBookmark, isSecurityScoped: false)
-        drive.imageURL = url
+        try eject(drive, isForced: true)
+        let file = try UTMRegistryEntry.File(url: url, isReadOnly: drive.isReadOnly)
+        registryEntry.externalDrives[drive.id] = file
+        try await changeMedium(drive, with: tempBookmark, isSecurityScoped: false)
     }
     
-    private func changeMedium(_ drive: inout UTMQemuConfigurationDrive, with bookmark: Data, isSecurityScoped: Bool) async throws {
+    private func changeMedium(_ drive: UTMQemuConfigurationDrive, with bookmark: Data, isSecurityScoped: Bool) async throws {
         guard let system = system else {
             return
         }
@@ -57,8 +56,9 @@ extension UTMQemuVirtualMachine {
         guard let bookmark = bookmark, let path = path, success else {
             throw UTMQemuVirtualMachineError.accessDriveImageFailed
         }
-        let file = UTMRegistryEntry.File(path: path, bookmark: bookmark, isReadOnly: drive.isReadOnly)
-        registryEntry?.externalDrives[drive.id] = file
+        if registryEntry.externalDrives[drive.id] != nil {
+            registryEntry.externalDrives[drive.id]!.remoteBookmark = bookmark
+        }
         if let qemu = qemu, qemu.isConnected {
             try qemu.changeMedium(forDrive: "drive\(drive.id)", path: path)
         }
@@ -68,18 +68,18 @@ extension UTMQemuVirtualMachine {
         guard system != nil && qemu != nil && qemu!.isConnected else {
             throw UTMQemuVirtualMachineError.invalidVmState
         }
-        let qemuConfig = config.qemuConfig!
-        for i in qemuConfig.drives.indices {
-            if !qemuConfig.drives[i].isExternal {
+        for drive in qemuConfig.drives {
+            if !drive.isExternal {
                 continue
             }
-            let id = qemuConfig.drives[i].id
-            if let url = qemuConfig.drives[i].imageURL {
-                // an image was selected while the VM was stopped
-                try await changeMedium(&qemuConfig.drives[i], with: url)
-            } else if let bookmark = registryEntry?.externalDrives[id]?.bookmark {
-                // an image bookmark was saved
-                try await changeMedium(&qemuConfig.drives[i], with: bookmark, isSecurityScoped: true)
+            let id = drive.id
+            if let bookmark = registryEntry.externalDrives[id]?.remoteBookmark {
+                // an image bookmark was saved while QEMU was running
+                try await changeMedium(drive, with: bookmark, isSecurityScoped: true)
+            } else if let localBookmark = registryEntry.externalDrives[id]?.bookmark {
+                // an image bookmark was saved while QEMU was NOT running
+                let url = try URL(resolvingPersistentBookmarkData: localBookmark)
+                try await changeMedium(drive, with: url)
             }
         }
     }
@@ -93,6 +93,10 @@ extension UTMQemuVirtualMachine {
                 completion(error)
             }
         }
+    }
+    
+    func externalImageURL(for drive: UTMQemuConfigurationDrive) -> URL? {
+        registryEntry.externalDrives[drive.id]?.url
     }
 }
 

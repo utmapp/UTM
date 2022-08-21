@@ -218,14 +218,3 @@ extension UTMQemuConfigurationDrive {
         self.interface = defaultInterfaceForImageType!(imageType)
     }
 }
-
-// MARK: - Drive label for display
-
-extension UTMQemuConfigurationDrive {
-    var label: String {
-        String.localizedStringWithFormat(NSLocalizedString("%@ (%@): %@", comment: "UTMQemuConfigurationDrive"),
-                                         imageType.prettyValue,
-                                         interface.prettyValue,
-                                         imageURL?.lastPathComponent ?? NSLocalizedString("none", comment: "UTMQemuConfigurationDrive"))
-    }
-}

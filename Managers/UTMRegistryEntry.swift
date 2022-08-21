@@ -44,7 +44,10 @@ import Foundation
         }
         let path = vm.path.path
         name = vm.detailsTitleLabel
-        package = File(path: path, bookmark: bookmark, isReadOnly: false)
+        guard let package = try? File(path: path, bookmark: bookmark, isReadOnly: false) else {
+            return nil
+        }
+        self.package = package;
         uuid = vm.config.uuid.uuidString
         externalDrives = [:]
         sharedDirectories = []
@@ -74,22 +77,35 @@ import Foundation
 
 extension UTMRegistryEntry {
     struct File: Codable {
+        var url: URL
+        
         var path: String
         
         var bookmark: Data
+        
+        var remoteBookmark: Data?
         
         var isReadOnly: Bool
         
         private enum CodingKeys: String, CodingKey {
             case path = "Path"
             case bookmark = "Bookmark"
+            case remoteBookmark = "BookmarkRemote"
             case isReadOnly = "ReadOnly"
         }
         
-        init(path: String, bookmark: Data, isReadOnly: Bool = false) {
+        init(path: String, bookmark: Data, isReadOnly: Bool = false) throws {
             self.path = path
             self.bookmark = bookmark
             self.isReadOnly = isReadOnly
+            self.url = try URL(resolvingPersistentBookmarkData: bookmark)
+        }
+        
+        init(url: URL, isReadOnly: Bool = false) throws {
+            self.path = url.path
+            self.bookmark = try url.persistentBookmarkData(isReadyOnly: isReadOnly)
+            self.isReadOnly = isReadOnly
+            self.url = url
         }
         
         init(from decoder: Decoder) throws {
@@ -97,6 +113,8 @@ extension UTMRegistryEntry {
             path = try container.decode(String.self, forKey: .path)
             bookmark = try container.decode(Data.self, forKey: .bookmark)
             isReadOnly = try container.decode(Bool.self, forKey: .isReadOnly)
+            remoteBookmark = try container.decodeIfPresent(Data.self, forKey: .remoteBookmark)
+            url = try URL(resolvingPersistentBookmarkData: bookmark)
         }
         
         func encode(to encoder: Encoder) throws {
@@ -104,6 +122,7 @@ extension UTMRegistryEntry {
             try container.encode(path, forKey: .path)
             try container.encode(bookmark, forKey: .bookmark)
             try container.encode(isReadOnly, forKey: .isReadOnly)
+            try container.encodeIfPresent(remoteBookmark, forKey: .remoteBookmark)
         }
     }
     

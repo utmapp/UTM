@@ -49,6 +49,7 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 @property (nonatomic, readonly) BOOL isScreenshotSaveEnabled;
 @property (nonatomic, nullable) void (^screenshotTimerHandler)(void);
 @property (nonatomic) BOOL isScopedAccess;
+@property (nonatomic, readwrite) UTMRegistryEntry *registryEntry;
 
 @end
 
