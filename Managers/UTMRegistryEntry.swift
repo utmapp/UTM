@@ -23,6 +23,8 @@ import Foundation
     
     @UTMRegistryValue var uuid: String
     
+    @UTMRegistryValue var isSuspended: Bool
+    
     @UTMRegistryValue var externalDrives: [String: File]
     
     @UTMRegistryValue var sharedDirectories: [File]
@@ -33,6 +35,7 @@ import Foundation
         case name = "Name"
         case package = "Package"
         case uuid = "UUID"
+        case isSuspended = "Suspended"
         case externalDrives = "ExternalDrives"
         case sharedDirectories = "SharedDirectories"
         case windowSettings = "WindowSettings"
@@ -49,6 +52,7 @@ import Foundation
         }
         self.package = package;
         uuid = vm.config.uuid.uuidString
+        isSuspended = false
         externalDrives = [:]
         sharedDirectories = []
         windowSettings = [:]
@@ -59,6 +63,7 @@ import Foundation
         name = try container.decode(String.self, forKey: .name)
         package = try container.decode(File.self, forKey: .package)
         uuid = try container.decode(String.self, forKey: .uuid)
+        isSuspended = try container.decode(Bool.self, forKey: .isSuspended)
         externalDrives = try container.decode([String: File].self, forKey: .externalDrives)
         sharedDirectories = try container.decode([File].self, forKey: .sharedDirectories)
         windowSettings = try container.decode([Int: Window].self, forKey: .windowSettings)
@@ -69,9 +74,49 @@ import Foundation
         try container.encode(name, forKey: .name)
         try container.encode(package, forKey: .package)
         try container.encode(uuid, forKey: .uuid)
+        try container.encode(isSuspended, forKey: .isSuspended)
         try container.encode(externalDrives, forKey: .externalDrives)
         try container.encode(sharedDirectories, forKey: .sharedDirectories)
         try container.encode(windowSettings, forKey: .windowSettings)
+    }
+}
+
+// MARK: - Objective C bridging
+@objc extension UTMRegistryEntry {
+    var hasSaveState: Bool {
+        get {
+            isSuspended
+        }
+        
+        set {
+            isSuspended = newValue
+        }
+    }
+    
+    var packageRemoteBookmark: Data? {
+        get {
+            package.remoteBookmark
+        }
+        
+        set {
+            package.remoteBookmark = newValue
+        }
+    }
+    
+    var packageRemotePath: String? {
+        get {
+            if package.remoteBookmark != nil {
+                return package.path
+            } else {
+                return nil
+            }
+        }
+        
+        set {
+            if newValue != nil {
+                package.path = newValue!
+            }
+        }
     }
 }
 

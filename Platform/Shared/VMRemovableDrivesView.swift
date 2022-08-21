@@ -111,7 +111,7 @@ struct VMRemovableDrivesView: View {
                         }
                     } label: {
                         DriveLabel(drive: drive, isInserted: vm.externalImageURL(for: drive) != nil)
-                    }.disabled(vm.viewState.hasSaveState)
+                    }.disabled(vm.hasSaveState)
                     Spacer()
                     // Disk image path, or (empty)
                     Text(pathFor(drive))

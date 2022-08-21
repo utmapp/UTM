@@ -109,7 +109,7 @@ struct VMToolbarModifier: ViewModifier {
                     Spacer()
                 }
                 #endif
-                if vm.viewState.hasSaveState || vm.state != .vmStopped {
+                if vm.hasSaveState || vm.state != .vmStopped {
                     Button {
                         confirmAction = .confirmStopVM
                     } label: {
@@ -138,7 +138,7 @@ struct VMToolbarModifier: ViewModifier {
                     Label("Edit", systemImage: "slider.horizontal.3")
                         .labelStyle(.iconOnly)
                 }.help("Edit selected VM")
-                .disabled(vm.viewState.hasSaveState || vm.state != .vmStopped)
+                .disabled(vm.hasSaveState || vm.state != .vmStopped)
                 .padding(.leading, padding)
             }
         }

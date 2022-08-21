@@ -68,7 +68,7 @@ struct VMAppleRemovableDrivesView: View {
                         }
                     } label: {
                         Label("Shared Directory", systemImage: hasSharedDir ? "externaldrive.fill.badge.person.crop" : "externaldrive.badge.person.crop")
-                    }.disabled(vm.viewState.hasSaveState)
+                    }
                     Spacer()
                     FilePath(url: sharedDirectory.directoryURL)
                 }
@@ -94,7 +94,7 @@ struct VMAppleRemovableDrivesView: View {
                             }
                         } label: {
                             Label("External Drive", systemImage: "externaldrive")
-                        }.disabled(vm.viewState.hasSaveState)
+                        }.disabled(vm.hasSaveState || vm.state != .vmStopped)
                     } else {
                         Label("\(diskImage.sizeString) Drive", systemImage: "internaldrive")
                     }

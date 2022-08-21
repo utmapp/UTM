@@ -92,8 +92,8 @@ NSString *const kSuspendSnapshotName = @"suspend";
     if (!service) {
         service = [UTMQemu new]; // VM has not started yet, we create a temporary process
     }
-    NSData *bookmark = self.viewState.shortcutBookmark;
-    NSString *bookmarkPath = self.viewState.shortcutBookmarkPath;
+    NSData *bookmark = self.registryEntry.packageRemoteBookmark;
+    NSString *bookmarkPath = self.registryEntry.packageRemotePath;
     BOOL existing = bookmark != nil;
     if (!existing) {
         // create temporary bookmark
@@ -113,9 +113,8 @@ NSString *const kSuspendSnapshotName = @"suspend";
     [service accessDataWithBookmark:bookmark securityScoped:existing completion:^(BOOL success, NSData *newBookmark, NSString *newPath) {
         (void)service; // required to capture service so it is not released by ARC
         if (success) {
-            self.viewState.shortcutBookmark = newBookmark;
-            self.viewState.shortcutBookmarkPath = newPath;
-            [self saveViewState];
+            self.registryEntry.packageRemoteBookmark = newBookmark;
+            self.registryEntry.packageRemotePath = newPath;
             completion(nil);
         } else {
             completion([self errorWithMessage:NSLocalizedString(@"Failed to access data from shortcut.", @"UTMQemuVirtualMachine")]);
@@ -142,7 +141,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
         self.config.qemuIsDisposable = self.isRunningAsSnapshot;
     } else {
         // Loading save states isn't possible when -snapshot is used
-        if (self.viewState.hasSaveState) {
+        if (self.registryEntry.hasSaveState) {
             self.config.qemuSnapshotName = kSuspendSnapshotName;
         }
     }
@@ -285,7 +284,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
         completion(err);
         return;
     }
-    if (self.viewState.hasSaveState) {
+    if (self.registryEntry.hasSaveState) {
         [self _vmDeleteStateWithCompletion:^(NSError *error){
             // ignore error
             completion(nil);
@@ -304,10 +303,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
         [self changeState:kVMStarting];
         [self _vmStartWithCompletion:^(NSError *err){
             if (err) { // delete suspend state on error
-                dispatch_sync(dispatch_get_main_queue(), ^{
-                    self.viewState.hasSaveState = NO;
-                });
-                [self saveViewState];
+                self.registryEntry.hasSaveState = NO;
                 [self changeState:kVMStopped];
             } else {
                 [self changeState:kVMStarted];
@@ -365,10 +361,9 @@ NSString *const kSuspendSnapshotName = @"suspend";
 }
 
 - (void)_vmResetWithCompletion:(void (^)(NSError * _Nullable))completion {
-    if (self.viewState.hasSaveState) {
+    if (self.registryEntry.hasSaveState) {
         [self _vmDeleteStateWithCompletion:^(NSError *error) {}];
     }
-    [self saveViewState];
     __block NSError *resetError = nil;
     dispatch_semaphore_t resetTriggeredEvent = dispatch_semaphore_create(0);
     [self.qemu qemuResetWithCompletion:^(NSError *err) {
@@ -476,8 +471,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
         saveError = [self errorGeneric];
     } else if (!saveError) {
         UTMLog(@"Save completed");
-        self.viewState.hasSaveState = YES;
-        [self saveViewState];
+        self.registryEntry.hasSaveState = YES;
         [self saveScreenshot];
     }
     completion(saveError);
@@ -515,8 +509,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
             UTMLog(@"Delete save completed");
         }
     } // otherwise we mark as deleted
-    self.viewState.hasSaveState = NO;
-    [self saveViewState];
+    self.registryEntry.hasSaveState = NO;
     completion(deleteError);
 }
 
@@ -541,7 +534,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
         UTMLog(@"Resume operation timeout");
         resumeError = [self errorGeneric];
     }
-    if (self.viewState.hasSaveState) {
+    if (self.registryEntry.hasSaveState) {
         [self _vmDeleteStateWithCompletion:^(NSError *error){
             completion(nil);
         }];

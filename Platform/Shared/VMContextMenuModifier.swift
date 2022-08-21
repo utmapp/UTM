@@ -38,9 +38,9 @@ struct VMContextMenuModifier: ViewModifier {
                 data.edit(vm: vm)
             } label: {
                 Label("Edit", systemImage: "slider.horizontal.3")
-            }.disabled(vm.viewState.hasSaveState || vm.state != .vmStopped)
+            }.disabled(vm.hasSaveState || vm.state != .vmStopped)
             .help("Modify settings for this VM.")
-            if vm.viewState.hasSaveState || vm.state != .vmStopped {
+            if vm.hasSaveState || vm.state != .vmStopped {
                 Button {
                     confirmAction = .confirmStopVM
                 } label: {

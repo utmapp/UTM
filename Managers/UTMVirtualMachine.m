@@ -107,7 +107,7 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 - (NSString *)stateLabel {
     switch (_state) {
         case kVMStopped:
-            if (self.viewState.hasSaveState) {
+            if (self.registryEntry.hasSaveState) {
                 return NSLocalizedString(@"Suspended", "UTMVirtualMachine");
             } else {
                 return NSLocalizedString(@"Stopped", "UTMVirtualMachine");
@@ -122,7 +122,7 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 }
 
 - (BOOL)hasSaveState {
-    return self.viewState.hasSaveState;
+    return self.registryEntry.hasSaveState;
 }
 
 // MARK: - Other properties
