@@ -15,7 +15,6 @@
 //
 
 #import "UTMLegacyViewState.h"
-#import "UTM-Swift.h"
 
 const NSString *const kUTMViewStateDisplayScaleKey = @"DisplayScale";
 const NSString *const kUTMViewStateDisplayOriginXKey = @"DisplayOriginX";
@@ -30,18 +29,10 @@ const NSString *const kUTMViewStateShortcutBookmarkPathKey = @"ShortcutBookmarkP
 const NSString *const kUTMViewStateRemovableDrivesKey = @"RemovableDrives";
 const NSString *const kUTMViewStateRemovableDrivesPathKey = @"RemovableDrivesPath";
 
-@interface UTMViewState ()
-
-@property (nonatomic, nullable) NSURL *path;
-
-@end
-
-@implementation UTMViewState {
+@implementation UTMLegacyViewState {
     NSMutableDictionary *_rootDict;
     NSMutableDictionary<NSString *, NSData *> *_removableDrives;
-    NSMutableDictionary<NSString *, NSData *> *_removableDrivesTemp;
     NSMutableDictionary<NSString *, NSString *> *_removableDrivesPath;
-    NSMutableDictionary<NSString *, NSString *> *_removableDrivesPathTemp;
 }
 
 #pragma mark - Properties
@@ -50,155 +41,57 @@ const NSString *const kUTMViewStateRemovableDrivesPathKey = @"RemovableDrivesPat
     return (NSDictionary *)_rootDict;
 }
 
-- (double)displayScale {
-    return [_rootDict[kUTMViewStateDisplayScaleKey] doubleValue];
+- (CGFloat)displayScale {
+    return [_rootDict[kUTMViewStateDisplayScaleKey] floatValue];
 }
 
-- (void)setDisplayScale:(double)displayScale {
-    [self propertyWillChange];
-    _rootDict[kUTMViewStateDisplayScaleKey] = @(displayScale);
+- (CGFloat)displayOriginX {
+    return [_rootDict[kUTMViewStateDisplayOriginXKey] floatValue];
 }
 
-- (double)displayOriginX {
-    return [_rootDict[kUTMViewStateDisplayOriginXKey] doubleValue];
+- (CGFloat)displayOriginY {
+    return [_rootDict[kUTMViewStateDisplayOriginYKey] floatValue];
 }
 
-- (void)setDisplayOriginX:(double)displayOriginX {
-    [self propertyWillChange];
-    _rootDict[kUTMViewStateDisplayOriginXKey] = @(displayOriginX);
+- (BOOL)isKeyboardShown {
+    return [_rootDict[kUTMViewStateShowToolbarKey] boolValue];
 }
 
-- (double)displayOriginY {
-    return [_rootDict[kUTMViewStateDisplayOriginYKey] doubleValue];
-}
-
-- (void)setDisplayOriginY:(double)displayOriginY {
-    [self propertyWillChange];
-    _rootDict[kUTMViewStateDisplayOriginYKey] = @(displayOriginY);
+- (BOOL)isToolbarShown {
+    return [_rootDict[kUTMViewStateShowToolbarKey] boolValue];
 }
 
 - (BOOL)hasSaveState {
     return [_rootDict[kUTMViewStateSuspendedKey] boolValue];
 }
 
-- (void)setHasSaveState:(BOOL)hasSaveState {
-    [self propertyWillChange];
-    _rootDict[kUTMViewStateSuspendedKey] = @(hasSaveState);
-}
-
 - (NSData *)sharedDirectory {
     return _rootDict[kUTMViewStateSharedDirectoryKey];
-}
-
-- (void)setSharedDirectory:(NSData *)sharedDirectory {
-    [self propertyWillChange];
-    if (sharedDirectory) {
-        _rootDict[kUTMViewStateSharedDirectoryKey] = sharedDirectory;
-    } else {
-        [_rootDict removeObjectForKey:kUTMViewStateSharedDirectoryKey];
-    }
 }
 
 - (NSString *)sharedDirectoryPath {
     return _rootDict[kUTMViewStateSharedDirectoryPathKey];
 }
 
-- (void)setSharedDirectoryPath:(NSString *)sharedDirectoryPath {
-    [self propertyWillChange];
-    if (sharedDirectoryPath) {
-        _rootDict[kUTMViewStateSharedDirectoryPathKey] = sharedDirectoryPath;
-    } else {
-        [_rootDict removeObjectForKey:kUTMViewStateSharedDirectoryPathKey];
-    }
-}
-
 - (NSData *)shortcutBookmark {
     return _rootDict[kUTMViewStateShortcutBookmarkKey];
-}
-
-- (void)setShortcutBookmark:(NSData *)shortcutBookmark {
-    [self propertyWillChange];
-    if (shortcutBookmark) {
-        _rootDict[kUTMViewStateShortcutBookmarkKey] = shortcutBookmark;
-    } else {
-        [_rootDict removeObjectForKey:kUTMViewStateShortcutBookmarkKey];
-    }
 }
 
 - (NSString *)shortcutBookmarkPath {
     return _rootDict[kUTMViewStateShortcutBookmarkPathKey];
 }
 
-- (void)setShortcutBookmarkPath:(NSString *)shortcutBookmarkPath {
-    [self propertyWillChange];
-    if (shortcutBookmarkPath) {
-        _rootDict[kUTMViewStateShortcutBookmarkPathKey] = shortcutBookmarkPath;
-    } else {
-        [_rootDict removeObjectForKey:kUTMViewStateShortcutBookmarkPathKey];
-    }
-}
-
 #pragma mark - Removable drives
 
-- (void)setBookmark:(NSData *)bookmark path:(NSString *)path forRemovableDrive:(NSString *)drive persistent:(BOOL)persistent {
-    [self propertyWillChange];
-    if (persistent) {
-        _removableDrives[drive] = bookmark;
-        _removableDrivesPath[drive] = path;
-        [_removableDrivesTemp removeObjectForKey:drive];
-        [_removableDrivesPathTemp removeObjectForKey:drive];
-    } else {
-        _removableDrivesTemp[drive] = bookmark;
-        _removableDrivesPathTemp[drive] = path;
-    }
-}
-
-- (void)removeBookmarkForRemovableDrive:(NSString *)drive {
-    [self propertyWillChange];
-    [_removableDrives removeObjectForKey:drive];
-    [_removableDrivesTemp removeObjectForKey:drive];
-    [_removableDrivesPath removeObjectForKey:drive];
-    [_removableDrivesPathTemp removeObjectForKey:drive];
-}
-
-- (nullable NSData *)bookmarkForRemovableDrive:(NSString *)drive persistent:(out BOOL *)persistent {
-    NSData *temp = _removableDrivesTemp[drive];
-    if (temp) {
-        *persistent = NO;
-        return temp;
-    } else {
-        *persistent = YES;
-        return _removableDrives[drive];
-    }
+- (nullable NSData *)bookmarkForRemovableDrive:(NSString *)drive {
+    return _removableDrives[drive];
 }
 
 - (nullable NSString *)pathForRemovableDrive:(NSString *)drive {
-    NSString *temp = _removableDrivesPathTemp[drive];
-    if (temp) {
-        return temp;
-    } else {
-        return _removableDrivesPath[drive];
-    }
+    return _removableDrivesPath[drive];
 }
 
 #pragma mark - Init
-
-- (instancetype)init {
-    self = [super init];
-    if (self) {
-        _rootDict = [NSMutableDictionary dictionary];
-        _removableDrives = [NSMutableDictionary dictionary];
-        _removableDrivesTemp = [NSMutableDictionary dictionary];
-        _removableDrivesPath = [NSMutableDictionary dictionary];
-        _removableDrivesPathTemp = [NSMutableDictionary dictionary];
-        _rootDict[kUTMViewStateRemovableDrivesKey] = _removableDrives;
-        _rootDict[kUTMViewStateRemovableDrivesPathKey] = _removableDrivesPath;
-        self.displayScale = 1.0;
-        self.displayOriginX = 0;
-        self.displayOriginY = 0;
-    }
-    return self;
-}
 
 - (instancetype)initWithDictionary:(NSDictionary *)dictionary {
     self = [super init];
@@ -206,8 +99,6 @@ const NSString *const kUTMViewStateRemovableDrivesPathKey = @"RemovableDrivesPat
         _rootDict = CFBridgingRelease(CFPropertyListCreateDeepCopy(kCFAllocatorDefault, (__bridge CFDictionaryRef)dictionary, kCFPropertyListMutableContainers));
         _removableDrives = _rootDict[kUTMViewStateRemovableDrivesKey];
         _removableDrivesPath = _rootDict[kUTMViewStateRemovableDrivesPathKey];
-        _removableDrivesTemp = [NSMutableDictionary dictionary];
-        _removableDrivesPathTemp = [NSMutableDictionary dictionary];
         if (!_removableDrives) {
             _removableDrives = [NSMutableDictionary dictionary];
             _rootDict[kUTMViewStateRemovableDrivesKey] = _removableDrives;
