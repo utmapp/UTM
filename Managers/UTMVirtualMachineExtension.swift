@@ -79,7 +79,7 @@ extension UTMVirtualMachine: ObservableObject {
         let newPath = existingPath.deletingLastPathComponent().appendingPathComponent(config.name).appendingPathExtension("utm")
         do {
             try await config.save(to: existingPath)
-            try updateViewStatePostSave()
+            try await updateRegistryPostSave()
         } catch {
             try? reloadConfiguration()
             throw error
@@ -93,7 +93,11 @@ extension UTMVirtualMachine: ObservableObject {
         }
     }
     
-    func updateViewStatePostSave() throws {
+    @MainActor func updateConfigFromRegistry() {
+        // do nothing by default
+    }
+    
+    func updateRegistryPostSave() async throws {
         // do nothing by default
     }
 }
@@ -182,19 +186,6 @@ public extension UTMQemuVirtualMachine {
             drive.path = qemuDrive.imageURL?.lastPathComponent
         }
         return drive
-    }
-    
-    override func updateViewStatePostSave() throws {
-        //FIXME: remove this once we remove viewState
-        for drive in config.qemuConfig!.drives {
-            if drive.isExternal, let url = drive.imageURL {
-                let legacyDrive = drives.first(where: { $0.name == drive.id })
-                try changeMedium(for: legacyDrive!, url: url)
-            }
-        }
-        if let url = config.qemuConfig!.sharing.directoryShareUrl {
-            try changeSharedDirectory(url)
-        }
     }
     
     /// Sets up values in VM configuration corrosponding to per-device data like sharing path

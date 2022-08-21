@@ -113,6 +113,11 @@ struct VMDetailsView: View {
                 }
                 #endif
             }
+            .onChange(of: data.showSettingsModal) { newValue in
+                if newValue {
+                    vm.updateConfigFromRegistry()
+                }
+            }
         }
     }
 }

@@ -16,11 +16,19 @@
 
 import Foundation
 
-class UTMRegistry {
-    static let `default` = UTMRegistry()
+class UTMRegistry: NSObject {
+    @objc static let shared = UTMRegistry()
     
-    private init() {
+    private override init() {
         
+    }
+    
+    /// Gets an existing registry entry or create a new entry
+    /// - Parameter vm: UTM virtual machine to locate in the registry
+    /// - Returns: Either an existing registry entry or a new entry
+    @objc func entry(for vm: UTMVirtualMachine) -> UTMRegistryEntry {
+        // FIXME: locate existing registry
+        return UTMRegistryEntry(newFrom: vm)!
     }
     
     func update(entry: UTMRegistryEntry) {

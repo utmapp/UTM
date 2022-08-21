@@ -176,7 +176,7 @@ extension UTMRegistryEntry {
         }
         set {
             instance[keyPath: storageKeyPath].storage = newValue
-            UTMRegistry.default.update(entry: instance)
+            UTMRegistry.shared.update(entry: instance)
         }
     }
 

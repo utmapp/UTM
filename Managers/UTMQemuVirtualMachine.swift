@@ -100,6 +100,37 @@ extension UTMQemuVirtualMachine {
     }
 }
 
+// MARK: - Registry syncing
+extension UTMQemuVirtualMachine {
+    @MainActor override func updateConfigFromRegistry() {
+        for i in qemuConfig.drives.indices {
+            let drive = qemuConfig.drives[i]
+            if drive.isExternal {
+                if let file = registryEntry.externalDrives[drive.id] {
+                    qemuConfig.drives[i].imageURL = file.url
+                }
+            }
+        }
+        // FIXME: update directory sharing
+    }
+    
+    override func updateRegistryPostSave() async throws {
+        for i in qemuConfig.drives.indices {
+            let drive = qemuConfig.drives[i]
+            if drive.isExternal, let url = drive.imageURL {
+                try await changeMedium(drive, with: url)
+                await Task { @MainActor in
+                    // clear temporary URL
+                    qemuConfig.drives[i].imageURL = nil
+                }.value
+            }
+        }
+        if let url = config.qemuConfig!.sharing.directoryShareUrl {
+            try changeSharedDirectory(url)
+        }
+    }
+}
+
 enum UTMQemuVirtualMachineError: Error {
     case accessDriveImageFailed
     case invalidVmState

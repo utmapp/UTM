@@ -216,6 +216,7 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
     if (self) {
         self.config = configuration;
         self.path = packageURL;
+        self.registryEntry = [UTMRegistry.shared entryFor:self];
         [self loadViewState];
         [self loadScreenshot];
         self.state = kVMStopped;
