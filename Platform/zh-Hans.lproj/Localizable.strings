@@ -980,7 +980,7 @@
 "Force multicore may improve speed of emulation but also might result in unstable and incorrect emulation." = "强制多核可能提升模拟的速度，但也可能导致虚拟机运行不稳定和出现模拟错误。";
 
 //QEMU
-"Balloon Device" = "“气球”设备"
+"Balloon Device" = "“气球”设备";
 "Use Hypervisor" = "使用Hypervisor";
 "Do not generate any arguments based on current configuration" = "不要根据当前配置生成任何参数";
 "Use local time for base clock" = "使用本地时间作为基准时钟。";
