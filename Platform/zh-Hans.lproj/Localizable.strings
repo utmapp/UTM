@@ -1081,7 +1081,7 @@
 "Directory Share Mode" = "目录共享模式";
 "Path" = "路径";
 "SPICE WebDAV (Legacy)" = "SPICE WebDAV";
-"VirtFS" (Recommended)" = "VirtFS (推荐)";
+"VirtFS (Recommended)" = "VirtFS (推荐)";
 
 //Settings
 "Do not save VM screenshot to disk" = "不保存虚拟机快照至磁盘";
