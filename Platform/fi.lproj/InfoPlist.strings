@@ -1,0 +1,14 @@
+/* Privacy - Location Always and When In Use Usage Description */
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "IOS:n mekanismista johtuen virtuaalikoneen käynnissä pitäminen taustalla vaatii sijaintipalveluiden apua. Tämä ei välitä sijaintitietojasi.";
+
+/* Privacy - Location Always Usage Description */
+"NSLocationAlwaysUsageDescription" = "IOS:n mekanismista johtuen virtuaalikoneen käynnissä pitäminen taustalla vaatii sijaintipalveluiden apua. Tämä ei välitä sijaintitietojasi.";
+
+/* Privacy - Location When In Use Usage Description */
+"NSLocationWhenInUseUsageDescription" = "IOS:n mekanismista johtuen virtuaalikoneen käynnissä pitäminen taustalla vaatii sijaintipalveluiden apua. Tämä ei välitä sijaintitietojasi.";
+
+/* Privacy - Microphone Usage Description */
+"NSMicrophoneUsageDescription" = "UTM vaatii luvan mikrofonin käyttöön.";
+
+/* (No Comment) */
+"UTM virtual machine" = "UTM-virtuaalikone";

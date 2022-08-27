@@ -1,0 +1,1399 @@
+/* No comment provided by engineer. */
+"-" = "-";
+
+/* A removable drive that has no image file inserted. */
+"(empty)" = "（tyhjä）";
+
+/* UTMQemuConfiguration+Drives */
+"%@ Drive" = "Asema %@";
+
+/* No comment provided by engineer. */
+"00:00:00:00:00:00" = "00:00:00:00:00:00";
+
+/* No comment provided by engineer. */
+"0.0.0.0" = "0.0.0.0";
+
+/* No comment provided by engineer. */
+"10.0.2.0/24" = "10.0.2.0/24";
+
+/* No comment provided by engineer. */
+"10.0.2.2" = "10.0.2.2";
+
+/* No comment provided by engineer. */
+"10.0.2.3" = "10.0.2.3";
+
+/* No comment provided by engineer. */
+"10.0.2.15" = "10.0.2.15";
+
+/* No comment provided by engineer. */
+"127.0.0.1" = "127.0.0.1";
+
+/* No comment provided by engineer. */
+"1234" = "1234";
+
+/* VMConfigDriveCreateViewController */
+"A file already exists for this name, if you proceed, it will be replaced." = "Tälle nimelle on jo olemassa tiedosto. Jos jatkat, se korvataan.";
+
+/* VMListViewController */
+"A VM already exists with this name." = "VM on jo olemassa tällä nimellä.";
+
+/* No comment provided by engineer. */
+"Additional Settings" = "Lisäasetukset";
+
+/* No comment provided by engineer. */
+"Advanced: Bypass configuration and manually specify arguments" = "Lisäasetukset: Ohita määritykset ja määritä argumentit manuaalisesti";
+
+/* VMConfigSystemView */
+"Allocating too much memory will crash the VM. Your device has %llu MB of memory and the estimated usage is %llu MB." = "Liian paljon muistia kaataa virtuaalikoneen. Laitteessa on %llu Mt muistia ja arvioitu käyttö on %llu MB.";
+
+/* UTMData */
+"AltJIT error: (error.localizedDescription)" = "AltJIT-virhe ：(error.localizedDescription)";
+
+/* CSConnection */
+"An error occurred trying to connect to SPICE." = "Tapahtui virhe yritettäessä muodostaa yhteyttä palveluun SPICE.";
+
+/* UTMData */
+"An existing virtual machine already exists with this name." = "Tällä nimellä on jo olemassa virtuaalikone.";
+
+/* VMDisplayViewController */
+"An internal error has occured. UTM will terminate." = "Tapahtui sisäinen virhe. UTM päättyy.";
+
+/* No comment provided by engineer. */
+"Architecture" = "Arkkitehtuuri";
+
+/* VMConfigDirectoryPickerViewController */
+"Are you sure you want to delete this directory? All files and subdirectories WILL be deleted." = "Haluatko varmasti poistaa tämän hakemiston? Kaikki tiedostot ja alihakemistot poistetaan.";
+
+/* Delete confirmation */
+"Are you sure you want to delete this VM? Any drives associated will also be deleted." = "Haluatko varmasti poistaa tämän VM:n? Myös kaikki siihen liittyvät asemat poistetaan.";
+
+/* VMDisplayViewController */
+"Are you sure you want to exit UTM?" = "Haluatko varmasti poistua UTM:stä?";
+
+/* VMConfigDrivePickerViewController */
+"Are you sure you want to permanently delete this disk image?" = "Haluatko varmasti poistaa tämän levyvedoksen pysyvästi?";
+
+/* VMDisplayViewController */
+"Are you sure you want to reset this VM? Any unsaved changes will be lost." = "Haluatko varmasti nollata tämän virtuaalikoneen? Kaikki tallentamattomat muutokset menetetään.";
+
+/* VMDisplayViewController */
+"Are you sure you want to stop this VM and exit? Any unsaved changes will be lost." = "Haluatko varmasti pysäyttää tämän VM:n ja poistua? Kaikki tallentamattomat muutokset menetetään.";
+
+/* No comment provided by engineer. */
+"Argument" = "argumentti";
+
+/* UTMQemuConfiguration */
+"BIOS" = "BIOS";
+
+/* No comment provided by engineer. */
+"Blinking Cursor" = "Vilkkuva kursori";
+
+/* No comment provided by engineer. */
+"Boot" = "Boot";
+
+/* No comment provided by engineer. */
+"Boot Arguments" = "Käynnistysargumentit";
+
+/* No comment provided by engineer. */
+"Boot from kernel image" = "Käynnistä ydinkuvasta";
+
+/* No comment provided by engineer. */
+"Boot Image" = "Käynnistyskuva";
+
+/* No comment provided by engineer. */
+"Boot ISO Image:" = "Käynnistä ISO-kuva:";
+
+/* No comment provided by engineer. */
+"Boot VHDX Image:" = "Käynnistä VHDX-kuva:";
+
+/* UTMQemuConfiguration */
+"Bridged (Advanced)" = "Sillattu (edistynyt)";
+
+/* No comment provided by engineer. */
+"Bridged Interface" = "Sillattu käyttöliittymä";
+
+/* No comment provided by engineer. */
+"Browse" = "Selaa";
+
+/* No comment provided by engineer. */
+"Browse UTM Gallery" = "Selaa UTM-galleriaa";
+
+/* VMConfigSharingViewController */
+"Browse…" = "Selaa…";
+
+/* Cancel button
+ VMConfigDirectoryPickerViewController
+ VMConfigPortForwardingViewController
+ VMDisplayMetalWindowController
+ VMRemovableDrivesViewController */
+"Cancel" = "Peruuta";
+
+/* No comment provided by engineer. */
+"Cancel download" = "Peruuta lataus";
+
+/* VMConfigDriveCreateViewController */
+"Cannot create directory for disk image." = "Ei voi luoda hakemistoa levykuvalle.";
+
+/* UTMData */
+"Cannot find AltServer for JIT enable. You cannot run VMs until JIT is enabled." = "AltServer for JIT käyttöön ei löydy. Et voi ajaa VM:iä ennen kuin JIT on käytössä.";
+
+/* VMListViewController */
+"Cannot find VM." = "VM:ää ei löydy.";
+
+/* UTMData */
+"Cannot import this VM. Either the configuration is invalid, created in a newer version of UTM, or on a platform that is incompatible with this version of UTM." = "Tätä VM:ää ei voi tuoda. Joko kokoonpano on virheellinen, se on luotu uudemmassa UTM-versiossa tai alustalla, joka ei ole yhteensopiva tämän UTM-version kanssa.";
+
+/* UTMVirtualMachine+Sharing */
+"Cannot start shared directory before SPICE starts." = "Jaettua hakemistoa ei voi käynnistää ennen kuin SPICE alkaa.";
+
+/* Configuration boot device */
+"CD/DVD" = "CD/DVD";
+
+/* UTMQemuConfiguration */
+"CD/DVD (ISO) Image" = "Image (ISO) kuvake";
+
+/* VMRemovableDrivesViewController */
+"Change" = "Muuta";
+
+/* No comment provided by engineer. */
+"Clear" = "Tyhjennä";
+
+/* No comment provided by engineer. */
+"Clipboard Sharing" = "Leikepöydän jakaminen";
+
+/* Clone context menu */
+"Clone" = "Kloonaa";
+
+/* No comment provided by engineer. */
+"Clone selected VM" = "Kloonaa valittu virtuaalikone";
+
+/* No comment provided by engineer. */
+"Clone…" = "Kloonaa…";
+
+/* No comment provided by engineer. */
+"Close" = "Sulje";
+
+/* No comment provided by engineer. */
+"Command to send when resizing the console. Placeholder $COLS is the number of columns and $ROWS is the number of rows." = "Lähetyskomento konsolin kokoa muuttaessa. Paikkamerkki $COLS on sarakkeiden lukumäärä ja $ROWS rivien määrä.";
+
+/* UTMVirtualMachine */
+"Config format incorrect." = "Määritysmuoto on virheellinen.";
+
+/* VMDisplayMetalWindowController */
+"Confirm" = "Vahvista";
+
+/* No comment provided by engineer. */
+"Confirm Delete" = "Vahvista poistaminen";
+
+/* No comment provided by engineer. */
+"Console Only" = "Vain konsoli";
+
+/* VMWizardSummaryView */
+"Core" = "Ydin";
+
+/* VMWizardSummaryView */
+"Cores" = "Ytimet";
+
+/* No comment provided by engineer. */
+"CPU" = "Prosessori";
+
+/* No comment provided by engineer. */
+"CPU Cores" = "Prosessoriytimet";
+
+/* No comment provided by engineer. */
+"CPU Flags" = "Prosessori liput";
+
+/* Create button */
+"Create" = "Luo";
+
+/* No comment provided by engineer. */
+"Create a New Virtual Machine" = "Luo uusi virtuaalikone";
+
+/* VMConfigDirectoryPickerViewController */
+"Create Directory" = "Luo hakemisto";
+
+/* VMConfigDriveCreateViewController */
+"Creating disk…" = "Luodaan levyä…";
+
+/* No comment provided by engineer. */
+"Debug Logging" = "Virheenkorjausloki";
+
+/* No comment provided by engineer. */
+"Default" = "Oletus";
+
+/* Delete button
+ Delete context menu
+ VMConfigDirectoryPickerViewController */
+"Delete" = "Poista";
+
+/* VMConfigDrivesViewController */
+"Delete Data" = "Poista tiedot";
+
+/* No comment provided by engineer. */
+"Delete selected VM" = "Poista valittu VM";
+
+/* No comment provided by engineer. */
+"Delete…" = "Poista…";
+
+/* Delete VM overlay */
+"Deleting %@…" = "Poistetaan %@…";
+
+/* No comment provided by engineer. */
+"DHCP Domain Name" = "DHCP-verkkotunnuksen nimi";
+
+/* No comment provided by engineer. */
+"DHCP Host" = "DHCP-palvelin";
+
+/* No comment provided by engineer. */
+"DHCP Start" = "DHCP käynnistys";
+
+/* No comment provided by engineer. */
+"Directory" = "Hakemisto";
+
+/* VMConfigDirectoryPickerViewController */
+"Directory Name" = "Hakemiston nimi";
+
+/* VMDisplayTerminalViewController */
+"Disable this bar in Settings -> General -> Keyboards -> Shortcuts" = "Poista tämä palkki käytöstä kohdassa Asetukset -> Yleiset -> Näppäimistö -> Pikanäppäimet";
+
+/* No comment provided by engineer. */
+"Disk" = "Levy";
+
+/* UTMData
+ VMConfigDriveCreateViewController
+ VMWizardState */
+"Disk creation failed." = "Levyn luominen epäonnistui.";
+
+/* UTMQemuConfiguration */
+"Disk Image" = "Levykuva";
+
+/* No comment provided by engineer. */
+"Display" = "Näyttö";
+
+/* No comment provided by engineer. */
+"DNS Search Domains" = "DNS-hakualueet";
+
+/* No comment provided by engineer. */
+"DNS Server" = "DNS-palvelin";
+
+/* No comment provided by engineer. */
+"DNS Server (IPv6)" = "DNS-palvelin (IPv6)";
+
+/* VMDisplayMetalWindowController */
+"Do Not Show Again" = "Älä näytä uudelleen";
+
+/* VMConfigDrivesViewController */
+"Do you want to also delete the disk image data? If yes, the data will be lost. Otherwise, you can create a new drive with the existing data." = "Haluatko poistaa myös levykuvatiedot? Jos kyllä, tiedot menetetään. Muussa tapauksessa voit luoda uuden aseman olemassa olevilla tiedoilla.";
+
+/* No comment provided by engineer. */
+"Do you want to delete this VM and all its data?" = "Haluatko poistaa tämän virtuaalikoneen ja kaikki sen tiedot?";
+
+/* No comment provided by engineer. */
+"Do you want to duplicate this VM and all its data?" = "Haluatko kopioida tämän VM:n ja kaikki sen tiedot?";
+
+/* No comment provided by engineer. */
+"Do you want to force stop this VM and lose all unsaved data?" = "Haluatko pakottaa pysäyttämään tämän virtuaalikoneen ja menettää kaikki tallentamattomat tiedot?";
+
+/* VMConfigDirectoryPickerViewController
+ VMConfigPortForwardingViewController */
+"Done" = "Tehty";
+
+/* No comment provided by engineer. */
+"Download prebuilt from UTM Gallery…" = "Lataa valmiiksi rakennettu UTM Gallerysta…";
+
+/* No comment provided by engineer. */
+"Download Ubuntu Server for ARM" = "Lataa Ubuntu Server for ARM";
+
+/* No comment provided by engineer. */
+"Download Windows 11 for ARM64 Preview VHDX" = "Lataa Windows 11 for ARM64 Preview VHDX";
+
+/* No comment provided by engineer. */
+"Downscaling" = "Skaalaus";
+
+/* VMRemovableDrivesViewController */
+"Drive Options" = "Ajovaihtoehdot";
+
+/* No comment provided by engineer. */
+"Drives" = "Asemat";
+
+/* No comment provided by engineer. */
+"Edit" = "Muokkaa";
+
+/* No comment provided by engineer. */
+"Edit selected VM" = "Muokkaa valittua virtuaalikonetta";
+
+/* VMRemovableDrivesViewController */
+"Eject" = "Poista";
+
+/* No comment provided by engineer. */
+"Emulate" = "Emuloi";
+
+/* No comment provided by engineer. */
+"Emulated Audio Card" = "Emuloitu äänikortti";
+
+/* No comment provided by engineer. */
+"Emulated Display Card" = "Emuloitu näyttökortti";
+
+/* No comment provided by engineer. */
+"Emulated Network Card" = "Emuloitu verkkokortti";
+
+/* UTMQemuConfiguration */
+"Emulated VLAN" = "Emuloitu VLAN";
+
+/* No comment provided by engineer. */
+"en0" = "en0";
+
+/* No comment provided by engineer. */
+"Enable Clipboard Sharing" = "Ota leikepöydän jakaminen käyttöön";
+
+/* No comment provided by engineer. */
+"Enable Directory Sharing" = "Ota hakemistojen jakaminen käyttöön";
+
+/* No comment provided by engineer. */
+"Enable hardware OpenGL acceleration (experimental)" = "Ota käyttöön laitteiston OpenGL-kiihdytys (kokeellinen)";
+
+/* No comment provided by engineer. */
+"Enabled" = "Käytössä";
+
+/* No comment provided by engineer. */
+"Engine" = "Moottori";
+
+/* UTMJSONStream */
+"Error parsing JSON." = "JSON jäsentämisessä tapahtui virhe.";
+
+/* VMConfigDriveCreateViewController */
+"Error renaming file" = "Virhe tiedoston nimeämisessä";
+
+/* UTMVirtualMachine */
+"Error trying to restore removable drives: %@" = "Virhe yritettäessä palauttaa irrotettavia asemia: %@";
+
+/* UTMVirtualMachine */
+"Error trying to start shared directory: %@" = "Virhe yritettäessä käynnistää jaettu hakemisto: %@";
+
+/* No comment provided by engineer. */
+"Export Debug Log" = "Vie virheenkorjausloki";
+
+/* No comment provided by engineer. */
+"Export QEMU Command" = "Export QEMU Command";
+
+/* UTMVirtualMachine+Drives */
+"Failed create bookmark." = "Kirjanmerkin luominen epäonnistui.";
+
+/* UTMVirtualMachine+Drives */
+"Failed to access drive image path." = "Aseman kuvan polun käyttö epäonnistui.";
+
+/* VMConfigInfoView */
+"Failed to check name." = "Nimen tarkistaminen epäonnistui.";
+
+/* UTMData */
+"Failed to clone VM." = "VM:n kloonaus epäonnistui.";
+
+/* UTMSpiceIO */
+"Failed to connect to SPICE server." = "Yhteyden muodostaminen SPICE-palvelimeen epäonnistui.";
+
+/* UTMDataExtension */
+"Failed to delete saved state." = "Tallennetun tilan poistaminen epäonnistui.";
+
+/* VMWizardState */
+"Failed to get latest macOS version from Apple." = "Uusimman macOS-version hakeminen Applelta epäonnistui.";
+
+/* VMRemovableDrivesViewController */
+"Failed to get VM object." = "VM-objektin hakeminen epäonnistui.";
+
+/* UTMVirtualMachine */
+"Failed to load plist" = "Plistin lataaminen epäonnistui";
+
+/* UTMData */
+"Failed to parse imported VM." = "Tuodun VM:n jäsentäminen epäonnistui.";
+
+/* VMDisplayViewController */
+"Failed to save VM snapshot. Usually this means at least one device does not support snapshots." = "VM-vedoksen tallentaminen epäonnistui. Yleensä tämä tarkoittaa, että ainakin yksi laite ei tue tilannekuvia.";
+
+/* No comment provided by engineer. */
+"Faster, but can only run the native CPU architecture." = "Nopeampi, mutta voi käyttää vain alkuperäistä CPU-arkkitehtuuria.";
+
+/* No comment provided by engineer. */
+"fec0::/64" = "fec0::/64";
+
+/* No comment provided by engineer. */
+"fec0::2" = "fec0::2";
+
+/* No comment provided by engineer. */
+"fec0::3" = "fec0::3";
+
+/* No comment provided by engineer. */
+"Fit To Screen" = "Sovita näytölle";
+
+/* Configuration boot device */
+"Floppy" = "Korppu";
+
+/* No comment provided by engineer. */
+"Font" = "Fontti";
+
+/* No comment provided by engineer. */
+"Font Size" = "Fonttikoko";
+
+/* No comment provided by engineer. */
+"Force Multicore" = "Pakota moniytiminen";
+
+/* No comment provided by engineer. */
+"Full Graphics" = "Täysi grafiikka";
+
+/* No comment provided by engineer. */
+"GB" = "Gt";
+
+/* No comment provided by engineer. */
+"Generate Windows Installer ISO" = "Luo Windows Installer ISO";
+
+/* No comment provided by engineer. */
+"Gesture and Cursor Settings" = "Eleiden ja kohdistimen asetukset";
+
+/* No comment provided by engineer. */
+"Guest Address" = "Vierasosoite";
+
+/* VMConfigPortForwardingViewController */
+"Guest address (optional)" = "Vierasosoite (valinnainen)";
+
+/* No comment provided by engineer. */
+"Guest Network" = "Vierasverkosto";
+
+/* No comment provided by engineer. */
+"Guest Network (IPv6)" = "Vierailijaverkko (IPv6)";
+
+/* UTMQemuManager */
+"Guest panic" = "Vieras paniikki";
+
+/* No comment provided by engineer. */
+"Guest Port" = "Vierassatama";
+
+/* VMConfigPortForwardingViewController */
+"Guest port (required)" = "Vierasportti (pakollinen)";
+
+/* Configuration boot device */
+"Hard Disk" = "Kiintolevy";
+
+/* No comment provided by engineer. */
+"Hardware" = "Laitteisto";
+
+/* No comment provided by engineer. */
+"Hardware OpenGL Acceleration" = "Laitteiston OpenGL-kiihdytys";
+
+/* No comment provided by engineer. */
+"Hide" = "Piilottaa";
+
+/* System pane. */
+"Hide Unused…" = "Piilota käyttämätön...";
+
+/* VMDisplayViewController */
+"Hint: To show the toolbar again, use a three-finger swipe down on the screen." = "Vihje: Näytä työkalurivi uudelleen pyyhkäisemällä näytöllä kolmella sormella alaspäin.";
+
+/* No comment provided by engineer. */
+"Host Address" = "Palvelinsoite";
+
+/* No comment provided by engineer. */
+"Host Address (IPv6)" = "Palvelinosoite (IPv6)";
+
+/* VMConfigPortForwardingViewController */
+"Host address (optional)" = "Palvelinosoite (valinnainen)";
+
+/* No comment provided by engineer. */
+"Host Port" = "Palvelinportti";
+
+/* VMConfigPortForwardingViewController */
+"Host port (required)" = "Palvelinportti (pakollinen)";
+
+/* No comment provided by engineer. */
+"Hypervisor" = "Hypervisori";
+
+/* No comment provided by engineer. */
+"I want to…" = "Haluan…";
+
+/* No comment provided by engineer. */
+"Icon" = "Ikoni";
+
+/* No comment provided by engineer. */
+"If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO." = "Jos asetettu, käynnistä suoraan ytimen raakavedosta ja initrd:stä. Muussa tapauksessa käynnistä tuetulta ISO:lta.";
+
+/* No comment provided by engineer. */
+"Image Type" = "Kuvatyyppi";
+
+/* Import button */
+"Import…" = "Tuo...";
+
+/* No comment provided by engineer. */
+"Import Drive" = "Tuo asema";
+
+/* No comment provided by engineer. */
+"Import VHDX Image" = "Importer une image VHDX";
+
+/* No comment provided by engineer. */
+"Import Virtual Machine…" = "Tuo virtuaalikone...";
+
+/* Save VM overlay */
+"Importing %@…" = "Tuodaan %@…";
+
+/* No comment provided by engineer. */
+"Inactive" = "Epäaktiivinen";
+
+/* No comment provided by engineer. */
+"Information" = "Tiedot";
+
+/* No comment provided by engineer. */
+"Initial Ramdisk" = "Alkumuistilevy";
+
+/* No comment provided by engineer. */
+"Input" = "Syöte";
+
+/* No comment provided by engineer. */
+"Interface" = "Käyttöliittymä";
+
+/* UTMQemu */
+"Internal error has occurred." = "Tapahtui sisäinen virhe.";
+
+/* UTMVirtualMachine */
+"Internal error starting main loop." = "Sisäinen virhe pääsilmukan käynnistämisessä.";
+
+/* UTMVirtualMachine */
+"Internal error starting VM." = "Sisäinen virhe käynnistettäessä VM.";
+
+/* VMConfigSystemViewController */
+"Invalid core count." = "Virheellinen ydinmäärä.";
+
+/* UTMData */
+"Invalid drive size." = "Virheellinen aseman koko.";
+
+/* VMRemovableDrivesViewController */
+"Invalid file selected." = "Virheellinen tiedosto valittu.";
+
+/* VMConfigSystemViewController */
+"Invalid memory size." = "Virheellinen muistin koko.";
+
+/* VMConfigDriveCreateViewController */
+"Invalid name" = "Epäkelpo nimi";
+
+/* VMConfigDriveCreateViewController */
+"Invalid size" = "Väärä koko";
+
+/* VMListViewController */
+"Invalid UTM not imported." = "Virheellinen UTM ei tuotu.";
+
+/* No comment provided by engineer. */
+"Invert Mouse Scroll" = "Käänteinen hiiren vieritys";
+
+/* No comment provided by engineer. */
+"IP Configuration" = "IP-määritys";
+
+/* No comment provided by engineer. */
+"Isolate Guest from Host" = "Eristä vieras palvelimesta";
+
+/* No comment provided by engineer. */
+"JIT Cache" = "JIT-välimuisti";
+
+/* VMConfigSystemViewController */
+"JIT cache size cannot be larger than 2GB." = "JIT-välimuistin koko ei saa olla suurempi kuin 2 Gt.";
+
+/* VMConfigSystemViewController */
+"JIT cache size too small." = "JIT-välimuistin koko liian pieni.";
+
+/* No comment provided by engineer. */
+"Kernel" = "Ydin";
+
+/* No comment provided by engineer. */
+"Keyboard" = "Näppäimistö";
+
+/* No comment provided by engineer. */
+"Legacy" = "Perintö";
+
+/* No comment provided by engineer. */
+"Legacy (PS/2) Mode" = "Vanha (PS/2) -tila";
+
+/* No comment provided by engineer. */
+"License" = "Lisenssi";
+
+/* UTMQemuConfiguration */
+"Linear" = "Lineaarinen";
+
+/* No comment provided by engineer. */
+"Linux" = "Linux";
+
+/* UTMQemuConfiguration */
+"Linux Device Tree Binary" = "Linux-laitepuun binääri";
+
+/* No comment provided by engineer. */
+"Linux initial ramdisk:" = "Linuxin alkuperäinen muistilevy:";
+
+/* UTMQemuConfiguration */
+"Linux Kernel" = "Linux-ydin";
+
+/* No comment provided by engineer. */
+"Linux kernel (required):" = "Linux-ydin (pakollinen):";
+
+/* UTMQemuConfiguration */
+"Linux RAM Disk" = "Linuxin RAM-levy";
+
+/* No comment provided by engineer. */
+"Linux Root FS Image:" = "Linux FS -juurikuva:";
+
+/* No comment provided by engineer. */
+"Logging" = "Lokikirjaus";
+
+/* No comment provided by engineer. */
+"MAC Address" = "Mac osoite";
+
+/* VMWizardState */
+"macOS is not supported with QEMU." = "QEMU ei tue macOS:ää.";
+
+/* UTMQemuManager */
+"Manager being deallocated, killing pending RPC." = "Manageri vapautuu, tappaminen odottaa RPC:tä.";
+
+/* No comment provided by engineer. */
+"Maximum Shared USB Devices" = "Jaettujen USB-laitteiden enimmäismäärä";
+
+/* No comment provided by engineer. */
+"MB" = "Mt";
+
+/* No comment provided by engineer. */
+"Memory" = "Muisti";
+
+/* No comment provided by engineer. */
+"Mouse Wheel" = "Hiiren rulla";
+
+/* Save VM overlay */
+"Moving %@…" = "Siirretään %@…";
+
+/* Clone VM name prompt title */
+"Name" = "Nimi";
+
+/* VMConfigInfoView */
+"Name is an invalid filename." = "Nimi on virheellinen tiedostonimi.";
+
+/* UTMQemuConfiguration */
+"Nearest Neighbor" = "Lähin naapuri";
+
+/* No comment provided by engineer. */
+"Network" = "Verkko";
+
+/* No comment provided by engineer. */
+"Network Mode" = "Verkkotila";
+
+/* No comment provided by engineer. */
+"New" = "Uusi";
+
+/* No comment provided by engineer. */
+"New Drive" = "Uusi asema";
+
+/* VMConfigPortForwardingViewController */
+"New port forward" = "Uusi portitus";
+
+/* No comment provided by engineer. */
+"New Virtual Machine" = "Uusi virtuaalikone";
+
+/* No comment provided by engineer. */
+"New VM" = "Uusi VM";
+
+/* Clone VM name prompt message */
+"New VM name" = "Uusi VM-nimi";
+
+/* No comment provided by engineer. */
+"New…" = "Uusi…";
+
+/* No comment provided by engineer. */
+"Open…" = "Avaa…";
+
+/* No comment provided by engineer. */
+"Continue" = "Jatka";
+
+/* No button
+ VMDisplayViewController
+ VMListViewController */
+"No" = "Ei";
+
+/* UTMQemuManager */
+"No connection for RPC." = "Ei yhteyttä RPC:lle.";
+
+/* VMConfigExistingViewController */
+"No debug log found!" = "Virheenkorjauslokia ei löytynyt!";
+
+/* No comment provided by engineer. */
+"No drives added." = "Ei asemia lisätty.";
+
+/* UTMData */
+"No log found!" = "Lokia ei löytynyt!";
+
+/* UTMDrive */
+"none" = "ei mitään";
+
+/* UTMQemuConfiguration */
+"None" = "Ei mitään";
+
+/* No comment provided by engineer. */
+"Not running" = "Ei juokse";
+
+/* No comment provided by engineer. */
+"Note: Boot order is as listed." = "Huomaa: Käynnistysjärjestys on luettelon mukainen.";
+
+/* No comment provided by engineer. */
+"Note: select the path to share from the main screen." = "Huomaa: valitse jaettava polku päänäytöstä.";
+
+/* No comment provided by engineer. */
+"Notes" = "Muistiinpanot";
+
+/* OK button
+ OK Button */
+"OK" = "OK";
+
+/* No comment provided by engineer. */
+"Open VM Settings" = "Avaa VM-asetukset";
+
+/* No comment provided by engineer. */
+"Operating System" = "Käyttöjärjestelmä";
+
+/* No comment provided by engineer. */
+"Optionally select a directory to make accessible inside the VM. Note that support for shared directories varies by the guest operating system and may require additional guest drivers to be installed. See UTM support pages for more details." = "Valitse valinnaisesti hakemisto, joka on käytettävissä virtuaalikoneen sisällä. Huomaa, että jaettujen hakemistojen tuki vaihtelee vieraskäyttöjärjestelmän mukaan ja saattaa edellyttää lisävierasohjaimien asentamista. Katso lisätietoja UTM-tukisivuilta.";
+
+/* No comment provided by engineer. */
+"Other" = "Muu";
+
+/* No comment provided by engineer. */
+"Pause" = "Tauko";
+
+/* No comment provided by engineer. */
+"Pending" = "Odottaa";
+
+/* No comment provided by engineer. */
+"Play" = "Toista";
+
+/* VMWizardState */
+"Please select a boot image." = "Valitse käynnistyskuva.";
+
+/* VMWizardState */
+"Please select a kernel file." = "Valitse ydintiedosto.";
+
+/* VMWizardState */
+"Please select a system to emulate." = "Valitse emuloitava järjestelmä.";
+
+/* No comment provided by engineer. */
+"Port Forward" = "Portita";
+
+/* No comment provided by engineer. */
+"Power Off" = "Sammuta";
+
+/* No comment provided by engineer. */
+"Protocol" = "Protokolla";
+
+/* No comment provided by engineer. */
+"PS/2 has higher compatibility with older operating systems but does not support custom cursor settings." = "PS/2:lla on parempi yhteensopivuus vanhempien käyttöjärjestelmien kanssa, mutta se ei tue mukautettuja kohdistimen asetuksia.";
+
+/* No comment provided by engineer. */
+"QEMU" = "QEMU";
+
+/* No comment provided by engineer. */
+"QEMU Arguments" = "QEMU-argumentit";
+
+/* UTMQemu */
+"QEMU exited from an error: %@" = "QEMU poistui virheestä: %@";
+
+/* No comment provided by engineer. */
+"QEMU Machine Properties" = "QEMU-koneen ominaisuudet";
+
+/* No comment provided by engineer. */
+"Quit" = "Lopeta";
+
+/* No comment provided by engineer. */
+"RAM" = "Keskusmuisti";
+
+/* No comment provided by engineer. */
+"Random" = "Satunnainen";
+
+/* No comment provided by engineer. */
+"Read Only" = "Lue ainoastaan";
+
+/* No comment provided by engineer. */
+"Share is read only" = "Jaa on vain luku";
+
+/* No comment provided by engineer. */
+"Removable" = "Irrotettava";
+
+/* VMConfigDrivesView
+ VMConfigDrivesViewController */
+"Removable Drive" = "Irrotettava asema";
+
+/* No comment provided by engineer. */
+"Requires SPICE guest agent tools to be installed." = "Edellyttää SPICE-vierasagenttityökalujen asentamista.";
+
+/* No comment provided by engineer. */
+"Requires SPICE guest agent tools to be installed. Retina Mode is recommended only if the guest OS supports HiDPI." = "Edellyttää SPICE-vierasagenttityökalujen asentamista. Retina-tilaa suositellaan vain, jos vieraskäyttöjärjestelmä tukee HiDPI:tä.";
+
+/* No comment provided by engineer. */
+"Always use native (HiDPI) resolution" = "Käytä aina alkuperäistä (HiDPI) resoluutiota";
+
+/* No comment provided by engineer. */
+"Requires SPICE WebDAV service to be installed." = "Edellyttää SPICE WebDAV -palvelun asentamista.";
+
+/* No comment provided by engineer. */
+"Resize Console Command" = "Muuta konsolikomentoa";
+
+/* No comment provided by engineer. */
+"Resolution" = "Resoluutio";
+
+/* No comment provided by engineer. */
+"Restart" = "Käynnistä uudelleen";
+
+/* No comment provided by engineer. */
+"Retina Mode" = "Retina-tila";
+
+/* No comment provided by engineer. */
+"Root Image" = "Juurikuva";
+
+/* No comment provided by engineer. */
+"Run" = "Suorita";
+
+/* No comment provided by engineer. */
+"Run selected VM" = "Suorita valittu VM";
+
+/* No comment provided by engineer. */
+"Running" = "Suorittaa";
+
+/* VMDisplayViewController */
+"Running low on memory! UTM might soon be killed by iOS. You can prevent this by decreasing the amount of memory and/or JIT cache assigned to this VM" = "Muisti on vähissä! iOS saattaa pian tappaa UTM:n. Voit estää tämän vähentämällä tälle VM:lle osoitetun muistin ja/tai JIT-välimuistin määrää";
+
+/* No comment provided by engineer. */
+"Save" = "Tallenna";
+
+/* Save VM overlay */
+"Saving %@…" = "Tallentaa %@…";
+
+/* No comment provided by engineer. */
+"Scaling" = "Skaalaus";
+
+/* No comment provided by engineer. */
+"Selected:" = "Valittu:";
+
+/* No comment provided by engineer. */
+"Set to 0 for default which is 1/4 of the allocated Memory size. This is in addition to the host memory!" = "Aseta oletusarvoksi 0, joka on 1/4 varatusta muistin koosta. Tämä on isäntämuistin lisäksi!";
+
+/* No comment provided by engineer. */
+"Set to 0 to use maximum supported CPUs. Force multicore might result in incorrect emulation." = "Aseta arvoon 0, jos haluat käyttää enimmäistuettuja suorittimia. Moniytimisen pakottaminen voi johtaa virheelliseen emulointiin.";
+
+/* No comment provided by engineer. */
+"Force multicore may improve speed of emulation but also might result in unstable and incorrect emulation." = "Moniytimen pakottaminen voi parantaa emuloinnin nopeutta, mutta se voi myös johtaa epävakaaseen ja virheelliseen emulointiin.";
+
+/* No comment provided by engineer. */
+"Default is 1/4 of the RAM size (above). The JIT cache size is additive to the RAM size in the total memory usage!" = "Oletus on 1/4 RAM-koosta (yllä). JIT-välimuistin koko on lisätty RAM-kokoon kokonaismuistin käytössä!";
+
+/* No comment provided by engineer. */
+"These are advanced settings affecting QEMU which should be kept default unless you are running into issues." = "Nämä ovat QEMU:hun vaikuttavia lisäasetuksia, jotka tulisi pitää oletusarvoisina, ellei sinulla ole ongelmia.";
+
+/* No comment provided by engineer. */
+"This is appended to the -machine argument." = "Tämä on liitetty -kone-argumenttiin.";
+
+/* No comment provided by engineer. */
+"If enabled, the default input devices will be emulated on the USB bus." = "Jos käytössä, oletussyöttölaitteet emuloidaan USB-väylällä.";
+
+/* No comment provided by engineer. */
+"Settings" = "Asetukset";
+
+/* Share context menu */
+"Share" = "Jaa";
+
+/* No comment provided by engineer. */
+"Share Directory" = "Jaa hakemisto";
+
+/* No comment provided by engineer. */
+"Share selected VM" = "Jaa valittu VM";
+
+/* No comment provided by engineer. */
+"Shared Directory" = "Jaettu hakemisto";
+
+/* UTMQemuConfiguration */
+"Shared Network" = "Jaettu verkko";
+
+/* VMConfigSharingViewController */
+"Shared path has moved. Please re-choose." = "Jaettu polku on muuttanut. Valitse uudelleen.";
+
+/* VMConfigSharingViewController */
+"Shared path is no longer valid. Please re-choose." = "Jaettu polku ei ole enää kelvollinen. Valitse uudelleen.";
+
+/* No comment provided by engineer. */
+"Sharing" = "Jakaminen";
+
+/* No comment provided by engineer. */
+"Show Advanced Settings" = "Näytä lisäasetukset";
+
+/* System pane. */
+"Show All…" = "Näytä kaikki…";
+
+/* No comment provided by engineer. */
+"Size" = "Koko";
+
+/* No comment provided by engineer. */
+"Skip Boot Image" = "Ohita käynnistyskuva";
+
+/* No comment provided by engineer. */
+"Skip ISO boot (advanced)" = "Ohita ISO-käynnistys (edistynyt)";
+
+/* No comment provided by engineer. */
+"Slower, but can run other CPU architectures." = "Hitaampi, mutta voi käyttää muita suoritinarkkitehtuureja.";
+
+/* No comment provided by engineer. */
+"Sound" = "Ääni";
+
+/* No comment provided by engineer. */
+"Specify the size of the drive where data will be stored into." = "Määritä sen aseman koko, johon tiedot tallennetaan.";
+
+/* No comment provided by engineer. */
+"Stop" = "Pysäytä";
+
+/* No comment provided by engineer. */
+"Stop selected VM" = "Pysäytä valittu VM";
+
+/* No comment provided by engineer. */
+"Stop…" = "Pysäytä…";
+
+/* No comment provided by engineer. */
+"Storage" = "Tallennustila";
+
+/* No comment provided by engineer. */
+"stty cols $COLS rows $ROWS\n" = "stty sarakkeet $COLS riviä $ROWS\n";
+
+/* No comment provided by engineer. */
+"Style" = "Tyyli";
+
+/* No comment provided by engineer. */
+"Summary" = "Yhteenveto";
+
+/* No comment provided by engineer. */
+"Support" = "Tuki";
+
+/* No comment provided by engineer. */
+"Suspended" = "Keskeytetty";
+
+/* No comment provided by engineer. */
+"System" = "Järjestelmä";
+
+/* VMConfigPortForwardingViewController */
+"TCP Forward" = "TCP eteenpäin";
+
+/* No comment provided by engineer. */
+"Test" = "Testaa";
+
+/* No comment provided by engineer. */
+"The selected architecture is unsupported in this version of UTM." = "Valittua arkkitehtuuria ei tueta tässä UTM-versiossa.";
+
+/* VMConfigSystemViewController */
+"The total memory usage is close to your device's limit. iOS will kill the VM if it consumes too much memory." = "Kokonaismuistin käyttö on lähellä laitteesi rajaa. iOS tappaa virtuaalikoneen, jos se kuluttaa liikaa muistia.";
+
+/* No comment provided by engineer. */
+"Theme" = "Teema";
+
+/* Error shown when importing a ZIP file from web that doesn't contain a UTM Virtual Machine. */
+"There is no UTM file in the downloaded ZIP archive." = "Ladatussa ZIP-arkistossa ei ole UTM-tiedostoa.";
+
+/* No comment provided by engineer. */
+"These settings are unavailable in console display mode." = "Nämä asetukset eivät ole käytettävissä konsolin näyttötilassa.";
+
+/* UTMQemuSystem */
+"This version of macOS does not support audio in console mode. Please change the VM configuration or upgrade macOS." = "Tämä macOS-versio ei tue ääntä konsolitilassa. Muuta VM-kokoonpanoa tai päivitä macOS.";
+
+/* UTMQemuSystem */
+"This version of macOS does not support GPU acceleration. Please change the VM configuration or upgrade macOS." = "Tämä macOS-versio ei tue GPU-kiihdytystä. Muuta VM-kokoonpanoa tai päivitä macOS.";
+
+/* No comment provided by engineer. */
+"This virtual machine has been deleted." = "Tämä virtuaalikone on poistettu.";
+
+/* UTMQemuManager */
+"Timed out waiting for RPC." = "RPC:tä odottaessa aikakatkaisu.";
+
+/* No comment provided by engineer. */
+"Tweaks" = "Säädöt";
+
+/* No comment provided by engineer. */
+"Type" = "Tyyppi";
+
+/* VMConfigPortForwardingViewController */
+"UDP Forward" = "UDP eteenpäin";
+
+/* No comment provided by engineer. */
+"UEFI Boot" = "UEFI-käynnistys";
+
+/* No comment provided by engineer. */
+"Should be off for older operating systems such as Windows 7 or lower." = "Pitäisi olla pois päältä vanhemmissa käyttöjärjestelmissä, kuten Windows 7 tai vanhemmissa.";
+
+/* UTMQemuSystem */
+"UEFI is not supported with this architecture." = "Tämä arkkitehtuuri ei tue UEFI:ää.";
+
+/* VMWizardState */
+"Unavailable for this platform." = "Ei saatavilla tälle alustalle.";
+
+/* UTMVirtualMachineExtension */
+"Unknown" = "Tuntematon";
+
+/* No comment provided by engineer. */
+"Upscaling" = "Uscaling";
+
+/* No comment provided by engineer. */
+"USB" = "USB";
+
+/* No comment provided by engineer. */
+"USB 3.0 (XHCI) Support" = "USB 3.0 (XHCI) -tuki";
+
+/* No comment provided by engineer. */
+"USB not supported in console display mode." = "USB:tä ei tueta konsolin näyttötilassa.";
+
+/* No comment provided by engineer. */
+"USB not supported in this build of UTM." = "Tämä UTM-versio ei tue USB:tä.";
+
+/* No comment provided by engineer. */
+"USB Sharing" = "USB-jako";
+
+/* No comment provided by engineer. */
+"Use Hypervisor" = "Käytä Hypervisoria";
+
+/* No comment provided by engineer. */
+"Only available if host architecture matches the target. Otherwise, TCG emulation is used." = "Käytettävissä vain, jos isäntäarkkitehtuuri vastaa kohdetta. Muussa tapauksessa käytetään TCG-emulointia.";
+
+/* No comment provided by engineer. */
+"Use Virtualization" = "Käytä virtualisointia";
+
+/* No comment provided by engineer. */
+"User Guide" = "Käyttöohjeet";
+
+/* No comment provided by engineer. */
+"Virtual Machine Gallery" = "Virtuaalikonegalleria";
+
+/* No comment provided by engineer. */
+"Virtualization is not supported on your system." = "Järjestelmäsi ei tue virtualisointia.";
+
+/* No comment provided by engineer. */
+"Virtualize" = "Virtualisoi";
+
+/* UTMVirtualMachine+Sharing */
+"VM frontend does not support shared directories." = "VM-käyttöliittymä ei tue jaettuja hakemistoja.";
+
+/* VMConfigSystemViewController */
+"Warning: iOS will kill apps that use more than 80% of the device's total memory." = "Varoitus: iOS tappaa sovellukset, jotka käyttävät yli 80 % laitteen kokonaismuistista.";
+
+/* No comment provided by engineer. */
+"Welcome to UTM" = "Tervetuloa UTM:ään";
+
+/* Startup message */
+"Welcome to UTM! Due to a bug in iOS, if you force kill this app, the system will be unstable and you cannot launch UTM again until you reboot. The recommended way to terminate this app is the button on the top left." = "Tervetuloa UTM:ään! iOS-virheen vuoksi, jos pakotat tappamaan tämän sovelluksen, järjestelmästä tulee epävakaa, etkä voi käynnistää UTM:ää uudelleen ennen kuin käynnistät uudelleen. Suositeltu tapa lopettaa tämä sovellus on vasemmassa yläkulmassa oleva painike.";
+
+/* No comment provided by engineer. */
+"Windows" = "Windows";
+
+/* VMDisplayMetalWindowController */
+"Would you like to connect '%@' to this virtual machine?" = "Haluatko yhdistää '%@' tähän virtuaalikoneeseen?";
+
+/* VMConfigDrivePickerViewController */
+"Would you like to import an existing disk image or create a new one?" = "Haluatko tuoda olemassa olevan levyvedoksen vai luoda uuden?";
+
+/* VMDisplayViewController
+ VMListViewController
+ Yes button */
+"Yes" = "Kyllä";
+
+/* UTMData
+ VMConfigDrivePickerViewController */
+"You cannot import a .utm package as a drive. Did you mean to open the package with UTM?" = "Et voi tuoda .utm-pakettia asemana. Tarkoititko avata paketin UTM:llä?";
+
+/* UTMData
+ VMConfigDrivePickerViewController */
+"You cannot import a directory as a drive." = "Et voi tuoda hakemistoa asemana.";
+
+/* VMConfigDriveDetailsViewController */
+"You must select a disk image." = "Sinun on valittava levykuva.";
+
+/* VMDisplayViewController */
+"You must terminate the running VM before you can import a new VM." = "Vous devez arrêter la VM en cours avant de pouvoir importer une nouvelle VM.";
+
+/* ContentView */
+"Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached." = "IOS-versiosi ei tue virtuaalikoneiden käyttöä muokkaamattomana. Sinun on joko suoritettava UTM, kun se on rikki tai kun etädebuggeri on liitetty.";
+
+/* No comment provided by engineer. */
+"Zoom" = "Zoomaa";
+
+/* Manually added: Common > Button */
+"Go Back" = "Palaa";
+
+/* Manually added: Create a New Virtual Machine > macOS  */
+"To install macOS, you need to download a recovery IPSW. If you do not select an existing IPSW, the latest macOS IPSW will be downloaded from Apple." = "macOS:n asentamiseksi sinun on ladattava palautus-IPSW. Jos et valitse olemassa olevaa IPSW:tä, uusin macOS IPSW ladataan Applelta.";
+
+/* Manually added: Create a New Virtual Machine > Virtualization > Linux */
+"Use Apple Virtualization" = "Käytä Applen virtualisointia";
+
+/* Manually added: Configuration > Drive */
+"Delete Drive" = "Poista asema";
+
+/* Manually added: Configuration > Drive */
+"Move Up" = "Siirrä ylös";
+
+/* Manually added: Configuration > Drive */
+"Move Down" = "Siirrä alas";
+
+/* Manually added: VM's Context Menu */
+"Show in Finder" = "Näytä Finderissa";
+
+/* No comment provided by engineer. */
+"Generic" = "Yleistä";
+
+/* No comment provided by engineer. */
+"Custom" = "Mukautettu";
+
+/* No comment provided by engineer. */
+"Status" = "Tila";
+
+/* No comment provided by engineer. */
+"Stopped" = "Pysähdytetty";
+
+/* No comment provided by engineer. */
+"Acceleration" = "kiihtyvyys";
+
+/* No comment provided by engineer. */
+"Force PS/2 controller" = "Pakota PS/2-ohjain";
+
+/* No comment provided by engineer. */
+"Instantiate PS/2 controller even when USB input is supported. Required for older Windows." = "Instantoi PS/2-ohjain, vaikka USB-tuloa tuetaan. Vaaditaan vanhemmille Windowsille.";
+
+/* No comment provided by engineer. */
+"Use local time for base clock" = "Käytä paikallista aikaa peruskellona";
+
+/* No comment provided by engineer. */
+"If checked, use local time for RTC which is required for Windows. Otherwise, use UTC clock." = "Jos tämä on valittuna, käytä paikallista aikaa RTC:lle, jota Windows vaatii. Muussa tapauksessa käytä UTC-kelloa.";
+
+/* No comment provided by engineer. */
+"RNG Device" = "RNG-laite";
+
+/* No comment provided by engineer. */
+"Should be on always unless the guest cannot boot because of this." = "Pitäisi olla päällä aina, ellei vieras voi käynnistyä tämän vuoksi.";
+
+/* No comment provided by engineer. */
+"Boot UEFI" = "Käynnistä UEFI";
+
+/* No comment provided by engineer. */
+"Do not generate any arguments based on current configuration" = "Älä luo argumentteja nykyisen kokoonpanon perusteella";
+
+/* No comment provided by engineer. */
+"Keep UTM running after last window is closed and all VMs are shut down" = "Pidä UTM käynnissä, kun viimeinen ikkuna on suljettu ja kaikki VM:t suljetaan";
+
+/* No comment provided by engineer. */
+"VM display size is fixed" = "VM-näytön koko on kiinteä";
+
+/* No comment provided by engineer. */
+"Do not save VM screenshot to disk" = "Älä tallenna VM-kuvakaappausta levylle";
+
+/* No comment provided by engineer. */
+"Default VM Configuration" = "VM:n oletuskokoonpano";
+
+/* No comment provided by engineer. */
+"Force slower emulation by default (deprecated: now configured per-VM)" = "Pakota hitaampi emulointi oletuksena (vanhentunut: nyt määritetty VM-kohtaisesti)";
+
+/* No comment provided by engineer. */
+"Use only performance cores by default (deprecated: now configured per-VM)" = "Käytä oletuksena vain suorituskykyytimiä (vanhentunut: nyt määritetty VM-kohtaisesti)";
+
+/* No comment provided by engineer. */
+"Hold Control (⌃) for right click" = "Pidä ohjain (⌃) hiiren oikealla napsautuksella";
+
+/* No comment provided by engineer. */
+"Use Command+Option (⌘+⌥) for input capture/release" = "Käytä Command+Option (⌘+⌥) syötettä sieppaamiseen/vapauttamiseen";
+
+/* No comment provided by engineer. */
+"Caps Lock (⇪) is treated as a key" = "Caps Lockia (⇪) käsitellään avaimena";
+
+/* No comment provided by engineer. */
+"Do not show prompt when USB device is plugged in" = "Älä näytä kehotetta, kun USB-laite on kytkettynä";
+
+/* No comment provided by engineer. */
+"USB Support" = "USB-tuki";
+
+/* No comment provided by engineer. */
+"Auto Resolution" = "Automaattinen resoluutio";
+
+/* No comment provided by engineer. */
+"Resize display to window size automatically" = "Muuta näytön koko automaattisesti ikkunan kokoon";
+
+/* No comment provided by engineer. */
+"Share USB devices from host" = "Jaa USB-laitteet isännältä";
+
+/* No comment provided by engineer. */
+"Reclaim Space" = "Voit takaisin tilaa";
+
+/* No comment provided by engineer. */
+"Error" = "Virhe";
+
+/* Main pane. */
+"Move selected VM" = "Siirrä valittu VM";
+
+/* Preferences pane. */
+"Invert scrolling" = "Käännä vieritys";
+
+/* New VM window. */
+"Start" = "Aloita";
+
+/* New VM window. */
+"Existing" = "Nykyinen";
+
+/* New VM window. */
+"Preconfigured" = "Ennalta konfiguroitu";
+
+/* New VM window. */
+"Import IPSW" = "Tuo IPSW";
+
+/* New VM window. */
+"Drag and drop IPSW file here" = "Vedä ja pudota IPSW-tiedosto tähän";
+
+/* New VM window. */
+"Empty" = "Tyhjä";
+
+/* New VM window. */
+"Advanced" = "Lisäasetukset";
+
+/* New VM window. */
+"Skip ISO boot" = "Ohita ISO-käynnistys";
+
+/* New VM window. */
+"Image File Type" = "Kuvatiedostotyyppi";
+
+/* New VM window. */
+"Some older systems do not support UEFI boot, such as Windows 7 and below." = "Jotkin vanhemmat järjestelmät eivät tue UEFI-käynnistystä, kuten Windows 7 ja vanhempi.";
+
+/* New VM window. */
+"File Imported" = "Tiedosto tuotu";
+
+/* New VM window. */
+"Hint: For the best Windows experience, make sure to download and install the latest [SPICE tools and QEMU drivers](https://mac.getutm.app/support/)." = "Vihje: Saat parhaan Windows-kokemuksen lataamalla ja asentamalla uusimmat [SPICE-työkalut ja QEMU-ohjaimet](https://mac.getutm.app/support/).";
+
+/* New VM window. */
+"Virtualization Engine" = "Virtualisointimoottori";
+
+/* New VM window. */
+"Apple Virtualization is experimental and only for advanced use cases. Leave unchecked to use QEMU, which is recommended." = "Apple Virtualization on kokeellinen ja vain edistyneille käyttötapauksille. Jätä valitsematta, jos haluat käyttää QEMUa, mikä on suositeltavaa.";
+
+/* New VM window. */
+"Boot Image Type" = "Käynnistyskuvan tyyppi";
+
+/* New VM window. */
+"Linux kernel (required):" = "Linux-ydin (pakollinen):";
+
+/* New VM window. */
+"Linux initial ramdisk (optional):" = "Linuxin alkuperäinen muistilevy (valinnainen):";
+
+/* New VM window. */
+"Linux Root FS image (optional):" = "Linux Root FS -kuva (valinnainen):";
+
+/* New VM window. */
+"Boot ISO Image (optional):" = "Käynnistä ISO-kuva (valinnainen):";
+
+/* System pane. */
+"Force Enable CPU Flags" = "Pakota CPU-liput käyttöön";
+
+/* System pane. */
+"Force Disable CPU Flags" = "Pakota poistamaan prosessorin liput käytöstä";
+
+/* System pane. */
+"If checked, the CPU flag will be enabled. Otherwise, the default value will be used." = "Jos tämä on valittuna, CPU-lippu otetaan käyttöön. Muussa tapauksessa käytetään oletusarvoa.";
+
+/* System pane. */
+"If checked, the CPU flag will be disabled. Otherwise, the default value will be used." = "Jos tämä on valittuna, CPU-lippu poistetaan käytöstä. Muussa tapauksessa käytetään oletusarvoa.";
+
+/* QEMU pane. */
+"Balloon Device" = "Balloon laite";
+
+/* Input pane. */
+"Disabled" = "Poistettu käytöstä";
+
+/* Share pane. */
+"Directory Share Mode" = "Hakemiston jakotila";
+
+/* Share pane. */
+"SPICE WebDAV (Legacy)" = "SPICE WebDAV (perintö)";
+
+/* Share pane. */
+"VirtFS (Recommended)" = "VirtFS (suositus)";
+
+/* Video pane. */
+"VGA Device RAM (MB)" = "VGA-laitteen RAM (MB)";
+
+/* Network pane. */
+"Host Only" = "Vain palvelin";
+
+/* Left pane. */
+"Serial" = "Sarjanumero";
+
+/* Left pane. */
+"Devices" = "Laitteet";
+
+/* Serial pane. */
+"Built-in Terminal" = "Sisäänrakennettu terminaali";
+
+/* Serial pane. */
+"TCP Client Connection" = "TCP-asiakasyhteys";
+
+/* Serial pane. */
+"TCP Server Connection" = "TCP-palvelinyhteys";
+
+/* Serial pane. */
+"Pseudo-TTY Device" = "Pseudo-TTY-laite";
+
+/* Serial pane. */
+"Target" = "Kohde";
+
+/* Serial pane. */
+"Automatic Serial Device (max 4)" = "Automaattinen sarjalaite (max 4)";
+
+/* Serial pane. */
+"Manual Serial Device (advanced)" = "Manuaalinen sarjalaite (edistynyt)";
+
+/* Serial pane. */
+"Emulated Serial Device" = "Emuloitu sarjalaite";
+
+/* Serial pane. */
+"GDB Debug Stub" = "GDB Debug Stub";
+
+/* Serial pane. */
+"QEMU Monitor (HMP)" = "QEMU-näyttö (HMP)";
+
+/* Serial pane. */
+"Server Address" = "Palvelimen osoite";
+
+/* Serial pane. */
+"Wait for Connection" = "Odota yhteyttä";
+
+/* Serial pane. */
+"Text Color" = "Tekstin väri";
+
+/* Serial pane. */
+"Background Color" = "Taustaväri";
+
+/* Drive pane. */
+"None (Advanced)" = "Ei mitään (edistynyt)";
+
+/* Drive pane. */
+"SD Card" = "Sd-kortti";
+
+/* Drive pane. */
+"Aucune (avancé) Drive" = "Aucune (avancé) asema";
+
+/* Drive pane. */
+"IDE Drive" = "IDE-asema";
+
+/* Drive pane. */
+"SCSI Drive" = "SCSI-asema";
+
+/* Drive pane. */
+"Carte SD Drive" = "Carte SD-asema";
+
+/* Drive pane. */
+"Optical drive" = "levykeasema";
+
+/* Drive pane. */
+"VirtIO Drive" = "VirtIO Drive";
+
+/* Drive pane. */
+"NVMe Drive" = "NVMe-asema";
+
+/* Drive pane. */
+"USB Drive" = "USB-asema";
+
+/* Share and Drive panes. */
+"Path" = "Polku";
