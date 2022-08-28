@@ -194,11 +194,9 @@ extension UTMQemuVirtualMachine {
             try await changeSharedDirectory(to: url)
         }
         // remove any unreferenced drives
-        for id in registryEntry.externalDrives.keys {
-            if !qemuConfig.drives.contains(where: { $0.id == id }) {
-                registryEntry.externalDrives.removeValue(forKey: id)
-            }
-        }
+        registryEntry.externalDrives = registryEntry.externalDrives.filter({ element in
+            qemuConfig.drives.contains(where: { $0.id == element.key })
+        })
     }
 }
 

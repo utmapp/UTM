@@ -447,3 +447,27 @@ extension UTMAppleVirtualMachineError: LocalizedError {
         }
     }
 }
+
+// MARK: - Registry access
+extension UTMAppleVirtualMachine {
+    @MainActor override func updateRegistryPostSave() async throws {
+        try await super.updateRegistryPostSave()
+        registryEntry.sharedDirectories.removeAll(keepingCapacity: true)
+        for sharedDirectory in appleConfig.sharedDirectories {
+            if let url = sharedDirectory.directoryURL {
+                let file = try UTMRegistryEntry.File(url: url, isReadOnly: sharedDirectory.isReadOnly)
+                registryEntry.sharedDirectories.append(file)
+            }
+        }
+        for drive in appleConfig.drives {
+            if drive.isExternal, let url = drive.imageURL {
+                let file = try UTMRegistryEntry.File(url: url, isReadOnly: drive.isReadOnly)
+                registryEntry.externalDrives[drive.id] = file
+            }
+        }
+        // remove any unreferenced drives
+        registryEntry.externalDrives = registryEntry.externalDrives.filter({ element in
+            appleConfig.drives.contains(where: { $0.id == element.key })
+        })
+    }
+}

@@ -19,6 +19,7 @@ import Virtualization
 
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
 @available(macOS 11, *)
+/// Represent a shared directory. This is no longer saved to config.plist in latest versions.
 struct UTMAppleConfigurationSharedDirectory: Codable, Hashable, Identifiable {
     var directoryURL: URL?
     var isReadOnly: Bool

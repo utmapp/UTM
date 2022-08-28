@@ -31,6 +31,8 @@ import Foundation
     
     @Published private var _windowSettings: [Int: Window]
     
+    @Published private var _hasMigratedConfig: Bool
+    
     private enum CodingKeys: String, CodingKey {
         case name = "Name"
         case package = "Package"
@@ -39,6 +41,7 @@ import Foundation
         case externalDrives = "ExternalDrives"
         case sharedDirectories = "SharedDirectories"
         case windowSettings = "WindowSettings"
+        case hasMigratedConfig = "MigratedConfig"
     }
     
     init?(newFrom vm: UTMVirtualMachine) {
@@ -56,6 +59,7 @@ import Foundation
         _externalDrives = [:]
         _sharedDirectories = []
         _windowSettings = [:]
+        _hasMigratedConfig = false
     }
     
     required init(from decoder: Decoder) throws {
@@ -67,6 +71,7 @@ import Foundation
         _externalDrives = try container.decode([String: File].self, forKey: .externalDrives)
         _sharedDirectories = try container.decode([File].self, forKey: .sharedDirectories)
         _windowSettings = try container.decode([Int: Window].self, forKey: .windowSettings)
+        _hasMigratedConfig = try container.decodeIfPresent(Bool.self, forKey: .hasMigratedConfig) ?? false
     }
     
     func encode(to encoder: Encoder) throws {
@@ -78,6 +83,9 @@ import Foundation
         try container.encode(_externalDrives, forKey: .externalDrives)
         try container.encode(_sharedDirectories, forKey: .sharedDirectories)
         try container.encode(_windowSettings, forKey: .windowSettings)
+        if _hasMigratedConfig {
+            try container.encode(_hasMigratedConfig, forKey: .hasMigratedConfig)
+        }
     }
     
     func asDictionary() throws -> [String: Any] {
@@ -158,6 +166,16 @@ extension UTMRegistryEntryDecodable {
         
         set {
             _windowSettings = newValue
+        }
+    }
+    
+    var hasMigratedConfig: Bool {
+        get {
+            _hasMigratedConfig
+        }
+        
+        set {
+            _hasMigratedConfig = newValue
         }
     }
     
@@ -242,6 +260,44 @@ extension UTMRegistryEntry {
         migrate(viewState: viewState)
         try? fileManager.removeItem(at: viewStateURL) // delete view.plist
     }
+    
+    /// Try to migrate old bookmarks stored in config.plist or does nothing if not appliable.
+    /// - Parameter config: Config to migrate
+    @objc func migrate(fromConfig config: UTMConfigurationWrapper) {
+        #if os(macOS)
+        if let appleConfig = config.appleConfig {
+            Task { @MainActor in
+                if !hasMigratedConfig {
+                    migrate(fromAppleConfig: appleConfig)
+                    hasMigratedConfig = true
+                }
+            }
+        }
+        #endif
+    }
+    
+    #if os(macOS)
+    /// Try to migrate bookmarks from an Apple VM config.
+    /// - Parameter config: Apple config to migrate
+    @MainActor func migrate(fromAppleConfig config: UTMAppleConfiguration) {
+        for sharedDirectory in config.sharedDirectories {
+            if let url = sharedDirectory.directoryURL,
+               let file = try? File(url: url, isReadOnly: sharedDirectory.isReadOnly) {
+                sharedDirectories.append(file)
+            } else {
+                logger.error("Failed to migrate a shared directory from config.")
+            }
+        }
+        for drive in config.drives {
+            if drive.isExternal, let url = drive.imageURL,
+               let file = try? File(url: url, isReadOnly: drive.isReadOnly) {
+                externalDrives[drive.id] = file
+            } else {
+                logger.error("Failed to migrate drive \(drive.id) from config.")
+            }
+        }
+    }
+    #endif
 }
 
 // MARK: - Objective C bridging

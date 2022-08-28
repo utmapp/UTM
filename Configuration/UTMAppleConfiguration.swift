@@ -45,7 +45,7 @@ final class UTMAppleConfiguration: UTMConfiguration {
         case information = "Information"
         case system = "System"
         case virtualization = "Virtualization"
-        case sharedDirectories = "SharedDirectory"
+        case sharedDirectories = "SharedDirectory" // legacy
         case displays = "Display"
         case drives = "Drive"
         case networks = "Network"
@@ -73,7 +73,7 @@ final class UTMAppleConfiguration: UTMConfiguration {
         _information = try values.decode(UTMConfigurationInfo.self, forKey: .information)
         _system = try values.decode(UTMAppleConfigurationSystem.self, forKey: .system)
         _virtualization = try values.decode(UTMAppleConfigurationVirtualization.self, forKey: .virtualization)
-        _sharedDirectories = try values.decode([UTMAppleConfigurationSharedDirectory].self, forKey: .sharedDirectories)
+        _sharedDirectories = try values.decodeIfPresent([UTMAppleConfigurationSharedDirectory].self, forKey: .sharedDirectories) ?? []
         _displays = try values.decode([UTMAppleConfigurationDisplay].self, forKey: .displays)
         _drives = try values.decode([UTMAppleConfigurationDrive].self, forKey: .drives)
         _networks = try values.decode([UTMAppleConfigurationNetwork].self, forKey: .networks)
@@ -91,7 +91,6 @@ final class UTMAppleConfiguration: UTMConfiguration {
         try container.encode(_information, forKey: .information)
         try container.encode(_system, forKey: .system)
         try container.encode(_virtualization, forKey: .virtualization)
-        try container.encode(_sharedDirectories, forKey: .sharedDirectories)
         try container.encode(_displays, forKey: .displays)
         try container.encode(_drives, forKey: .drives)
         try container.encode(_networks, forKey: .networks)
