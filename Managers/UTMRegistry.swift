@@ -14,24 +14,74 @@
 // limitations under the License.
 //
 
+import Combine
 import Foundation
 
 class UTMRegistry: NSObject {
     @objc static let shared = UTMRegistry()
     
-    private override init() {
+    private var lastUpdateTasks: [UTMRegistryEntry: Task<Void, Error>] = [:]
+    
+    private var serializedEntries: [String: Any] {
+        get {
+            UserDefaults.standard.dictionary(forKey: "Registry") ?? [:]
+        }
         
+        set {
+            UserDefaults.standard.setValue(newValue, forKey: "Registry")
+        }
+    }
+    
+    private var changeListeners: [String: AnyCancellable] = [:]
+    
+    private var entries: [String: UTMRegistryEntry] {
+        didSet {
+            let toAdd = entries.keys.filter({ !changeListeners.keys.contains($0) })
+            for key in toAdd {
+                let entry = entries[key]!
+                changeListeners[key] = entry.objectWillChange.sink { [weak self, weak entry] in
+                    if let entry = entry {
+                        self?.update(entry: entry)
+                    }
+                }
+            }
+            let toRemove = changeListeners.keys.filter({ !entries.keys.contains($0) })
+            for key in toRemove {
+                changeListeners.removeValue(forKey: key)
+            }
+        }
+    }
+    
+    private override init() {
+        entries = [:]
+        super.init()
+        if let newEntries = try? serializedEntries.mapValues({ value in
+            let dict = value as! [String: Any]
+            return try UTMRegistryEntry(from: dict)
+        }) {
+            entries = newEntries
+        }
     }
     
     /// Gets an existing registry entry or create a new entry
     /// - Parameter vm: UTM virtual machine to locate in the registry
     /// - Returns: Either an existing registry entry or a new entry
     @objc func entry(for vm: UTMVirtualMachine) -> UTMRegistryEntry {
-        // FIXME: locate existing registry
+        if let entry = entries[vm.id] {
+            return entry
+        }
         return UTMRegistryEntry(newFrom: vm)!
     }
     
-    func update(entry: UTMRegistryEntry) {
-        
+    /// Coalesce multiple updates in quick succession into one
+    /// - Parameter entry: Entry to update
+    private func update(entry: UTMRegistryEntry) {
+        lastUpdateTasks[entry]?.cancel()
+        lastUpdateTasks[entry] = Task(priority: .background) {
+            let uuid = await entry.uuid
+            let dict = try await entry.asDictionary()
+            serializedEntries[uuid] = dict
+            lastUpdateTasks.removeValue(forKey: entry)
+        }
     }
 }

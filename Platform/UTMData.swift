@@ -420,7 +420,9 @@ class UTMData: ObservableObject {
         guard let newVM = UTMVirtualMachine(url: url) else {
             throw NSLocalizedString("Unable to add a shortcut to the new location.", comment: "UTMData")
         }
-        newVM.isShortcut = true
+        await Task { @MainActor in
+            newVM.isShortcut = true
+        }.value
         try await newVM.accessShortcut()
         
         let oldSelected = await selectedVM
@@ -514,11 +516,13 @@ class UTMData: ObservableObject {
             logger.info("found existing vm!")
             if let wrappedVM = vm as? UTMWrappedVirtualMachine {
                 logger.info("existing vm is wrapped")
-                if let unwrappedVM = wrappedVM.unwrap() {
-                    let index = await listRemove(vm: wrappedVM)
-                    await listAdd(vm: unwrappedVM, at: index)
-                    await listSelect(vm: unwrappedVM)
-                }
+                await Task { @MainActor in
+                    if let unwrappedVM = wrappedVM.unwrap() {
+                        let index = listRemove(vm: wrappedVM)
+                        listAdd(vm: unwrappedVM, at: index)
+                        listSelect(vm: unwrappedVM)
+                    }
+                }.value
             } else {
                 logger.info("existing vm is not wrapped")
                 await listSelect(vm: vm)
@@ -537,7 +541,9 @@ class UTMData: ObservableObject {
         } else if asShortcut {
             logger.info("loading as a shortcut")
             vm = UTMVirtualMachine(url: url)
-            vm?.isShortcut = true
+            await Task { @MainActor in
+                vm?.isShortcut = true
+            }.value
             try await vm?.accessShortcut()
         } else {
             logger.info("copying to Documents")

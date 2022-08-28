@@ -17,19 +17,19 @@
 import Foundation
 
 @objc class UTMRegistryEntry: NSObject, Codable, ObservableObject {
-    @UTMRegistryValue var name: String
+    @Published private var _name: String
     
-    @UTMRegistryValue var package: File
+    @Published private var _package: File
     
-    @UTMRegistryValue var uuid: String
+    @Published private var _uuid: String
     
-    @UTMRegistryValue var isSuspended: Bool
+    @Published private var _isSuspended: Bool
     
-    @UTMRegistryValue var externalDrives: [String: File]
+    @Published private var _externalDrives: [String: File]
     
-    @UTMRegistryValue var sharedDirectories: [File]
+    @Published private var _sharedDirectories: [File]
     
-    @UTMRegistryValue var windowSettings: [Int: Window]
+    @Published private var _windowSettings: [Int: Window]
     
     private enum CodingKeys: String, CodingKey {
         case name = "Name"
@@ -46,67 +46,185 @@ import Foundation
             return nil
         }
         let path = vm.path.path
-        name = vm.detailsTitleLabel
+        _name = vm.detailsTitleLabel
         guard let package = try? File(path: path, bookmark: bookmark, isReadOnly: false) else {
             return nil
         }
-        self.package = package;
-        uuid = vm.config.uuid.uuidString
-        isSuspended = false
-        externalDrives = [:]
-        sharedDirectories = []
-        windowSettings = [:]
+        _package = package;
+        _uuid = vm.config.uuid.uuidString
+        _isSuspended = false
+        _externalDrives = [:]
+        _sharedDirectories = []
+        _windowSettings = [:]
     }
     
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        name = try container.decode(String.self, forKey: .name)
-        package = try container.decode(File.self, forKey: .package)
-        uuid = try container.decode(String.self, forKey: .uuid)
-        isSuspended = try container.decode(Bool.self, forKey: .isSuspended)
-        externalDrives = try container.decode([String: File].self, forKey: .externalDrives)
-        sharedDirectories = try container.decode([File].self, forKey: .sharedDirectories)
-        windowSettings = try container.decode([Int: Window].self, forKey: .windowSettings)
+        _name = try container.decode(String.self, forKey: .name)
+        _package = try container.decode(File.self, forKey: .package)
+        _uuid = try container.decode(String.self, forKey: .uuid)
+        _isSuspended = try container.decode(Bool.self, forKey: .isSuspended)
+        _externalDrives = try container.decode([String: File].self, forKey: .externalDrives)
+        _sharedDirectories = try container.decode([File].self, forKey: .sharedDirectories)
+        _windowSettings = try container.decode([Int: Window].self, forKey: .windowSettings)
     }
     
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(name, forKey: .name)
-        try container.encode(package, forKey: .package)
-        try container.encode(uuid, forKey: .uuid)
-        try container.encode(isSuspended, forKey: .isSuspended)
-        try container.encode(externalDrives, forKey: .externalDrives)
-        try container.encode(sharedDirectories, forKey: .sharedDirectories)
-        try container.encode(windowSettings, forKey: .windowSettings)
+        try container.encode(_name, forKey: .name)
+        try container.encode(_package, forKey: .package)
+        try container.encode(_uuid, forKey: .uuid)
+        try container.encode(_isSuspended, forKey: .isSuspended)
+        try container.encode(_externalDrives, forKey: .externalDrives)
+        try container.encode(_sharedDirectories, forKey: .sharedDirectories)
+        try container.encode(_windowSettings, forKey: .windowSettings)
+    }
+    
+    @MainActor func asDictionary() throws -> [String: Any] {
+        let encoder = PropertyListEncoder()
+        encoder.outputFormat = .xml
+        let xml = try encoder.encode(self)
+        let dict = try PropertyListSerialization.propertyList(from: xml, format: nil)
+        return dict as! [String: Any]
+    }
+}
+
+protocol UTMRegistryEntryDecodable: Decodable {}
+extension UTMRegistryEntry: UTMRegistryEntryDecodable {}
+extension UTMRegistryEntryDecodable {
+    init(from dictionary: [String: Any]) throws {
+        let data = try PropertyListSerialization.data(fromPropertyList: dictionary, format: .xml, options: 0)
+        let decoder = PropertyListDecoder()
+        self = try decoder.decode(Self.self, from: data)
+    }
+}
+
+// MARK: - Accessors
+@MainActor extension UTMRegistryEntry {
+    var name: String {
+        get {
+            _name
+        }
+        
+        set {
+            _name = newValue
+        }
+    }
+    
+    var package: File {
+        get {
+            _package
+        }
+        
+        set {
+            _package = newValue
+        }
+    }
+    
+    var uuid: String {
+        get {
+            _uuid
+        }
+        
+        set {
+            _uuid = newValue
+        }
+    }
+    
+    var isSuspended: Bool {
+        get {
+            _isSuspended
+        }
+        
+        set {
+            _isSuspended = newValue
+        }
+    }
+    
+    var externalDrives: [String: File] {
+        get {
+            _externalDrives
+        }
+        
+        set {
+            _externalDrives = newValue
+        }
+    }
+    
+    var sharedDirectories: [File] {
+        get {
+            _sharedDirectories
+        }
+        
+        set {
+            _sharedDirectories = newValue
+        }
+    }
+    
+    var windowSettings: [Int: Window] {
+        get {
+            _windowSettings
+        }
+        
+        set {
+            _windowSettings = newValue
+        }
+    }
+    
+    func setExternalDrive(_ file: File, forId id: String) {
+        externalDrives[id] = file
+    }
+    
+    func updateExternalDriveRemoteBookmark(_ bookmark: Data, forId id: String) {
+        externalDrives[id]?.remoteBookmark = bookmark
+    }
+    
+    func removeExternalDrive(forId id: String) {
+        externalDrives.removeValue(forKey: id)
+    }
+    
+    func setSingleSharedDirectory(_ file: File) {
+        sharedDirectories = [file]
+    }
+    
+    func updateSingleSharedDirectoryRemoteBookmark(_ bookmark: Data) {
+        if !sharedDirectories.isEmpty {
+            sharedDirectories[0].remoteBookmark = bookmark
+        }
+    }
+    
+    func removeAllSharedDirectories() {
+        sharedDirectories = []
     }
 }
 
 // MARK: - Objective C bridging
+// FIXME: these are NOT synchronized to the actor
 @objc extension UTMRegistryEntry {
     var hasSaveState: Bool {
         get {
-            isSuspended
+            _isSuspended
         }
         
         set {
-            isSuspended = newValue
+            _isSuspended = newValue
         }
     }
     
     var packageRemoteBookmark: Data? {
         get {
-            package.remoteBookmark
+            _package.remoteBookmark
         }
         
         set {
-            package.remoteBookmark = newValue
+            _package.remoteBookmark = newValue
         }
     }
     
     var packageRemotePath: String? {
         get {
-            if package.remoteBookmark != nil {
-                return package.path
+            if _package.remoteBookmark != nil {
+                return _package.path
             } else {
                 return nil
             }
@@ -114,7 +232,7 @@ import Foundation
         
         set {
             if newValue != nil {
-                package.path = newValue!
+                _package.path = newValue!
             }
         }
     }
@@ -207,35 +325,5 @@ extension UTMRegistryEntry {
             try container.encode(isKeyboardVisible, forKey: .isKeyboardVisible)
             try container.encode(isDisplayZoomLocked, forKey: .isDisplayZoomLocked)
         }
-    }
-}
-
-@propertyWrapper struct UTMRegistryValue<Value> {
-    static subscript(
-        _enclosingInstance instance: UTMRegistryEntry,
-        wrapped wrappedKeyPath: ReferenceWritableKeyPath<UTMRegistryEntry, Value>,
-        storage storageKeyPath: ReferenceWritableKeyPath<UTMRegistryEntry, Self>
-    ) -> Value {
-        get {
-            instance[keyPath: storageKeyPath].storage
-        }
-        set {
-            instance[keyPath: storageKeyPath].storage = newValue
-            UTMRegistry.shared.update(entry: instance)
-        }
-    }
-
-    @available(*, unavailable,
-        message: "@UTMRegistryValue can only be applied to classes"
-    )
-    var wrappedValue: Value {
-        get { fatalError() }
-        set { fatalError() }
-    }
-
-    private var storage: Value
-
-    init(wrappedValue: Value) {
-        storage = wrappedValue
     }
 }

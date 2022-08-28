@@ -83,9 +83,6 @@ extern const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions;
 /// @returns UTM error with the localized description set to `message`
 - (NSError *)errorWithMessage:(nullable NSString *)message;
 
-/// Load screenshot from disk
-- (void)loadScreenshot;
-
 /// Save screenshot to disk
 - (void)saveScreenshot;
 

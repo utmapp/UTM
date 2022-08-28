@@ -68,12 +68,6 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
     _screenshot = screenshot;
 }
 
-- (void)setConfig:(UTMConfigurationWrapper *)config {
-    [self propertyWillChange];
-    _config = config;
-    self.anyCancellable = [self subscribeToConfiguration];
-}
-
 - (NSURL *)detailsIconUrl {
     return self.config.iconURL;
 }
@@ -206,11 +200,12 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 - (instancetype)initWithConfiguration:(UTMConfigurationWrapper *)configuration packageURL:(NSURL *)packageURL {
     self = [self init];
     if (self) {
+        _state = kVMStopped;
         self.config = configuration;
         self.path = packageURL;
         self.registryEntry = [UTMRegistry.shared entryFor:self];
         [self loadScreenshot];
-        self.state = kVMStopped;
+        self.anyCancellable = [self subscribeToChildren];
     }
     return self;
 }
@@ -227,7 +222,9 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
     }
     // delete existing screenshot if required
     if (!self.isScreenshotSaveEnabled) {
-        [self deleteScreenshot];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self deleteScreenshot];
+        });
     }
     typeof(self) __weak weakSelf = self;
     self.screenshotTimerHandler = ^{
@@ -247,12 +244,12 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
     dispatch_sync(dispatch_get_main_queue(), ^{
         self.state = state;
         [self.delegate virtualMachine:self didTransitionToState:state];
+        if (state == kVMStopped) {
+            [self setIsRunningAsSnapshot:NO];
+        }
     });
     if (state == kVMStarted) {
         [self startScreenshotTimer];
-    }
-    if (state == kVMStopped) {
-        [self setIsRunningAsSnapshot:NO];
     }
 }
 
@@ -394,7 +391,7 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 - (void)loadScreenshot {
     NSURL *url = [self.path URLByAppendingPathComponent:kUTMBundleScreenshotFilename];
     if ([[NSFileManager defaultManager] fileExistsAtPath:url.path]) {
-        self.screenshot = [[CSScreenshot alloc] initWithContentsOfURL:url];
+        _screenshot = [[CSScreenshot alloc] initWithContentsOfURL:url];
     }
 }
 

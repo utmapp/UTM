@@ -32,7 +32,7 @@ extension UTMVirtualMachine: ObservableObject {
 
 @objc extension UTMVirtualMachine {
     fileprivate static let gibInMib = 1024
-    func subscribeToConfiguration() -> [AnyObject] {
+    func subscribeToChildren() -> [AnyObject] {
         var s: [AnyObject] = []
         if let config = config.qemuConfig {
             s.append(config.objectWillChange.sink { [weak self] in
@@ -43,11 +43,14 @@ extension UTMVirtualMachine: ObservableObject {
                 self?.objectWillChange.send()
             })
         }
+        s.append(registryEntry.objectWillChange.sink { [weak self] in
+            self?.objectWillChange.send()
+        })
         return s
     }
     
-    func propertyWillChange() -> Void {
-        DispatchQueue.main.async { self.objectWillChange.send() }
+    @MainActor func propertyWillChange() -> Void {
+        objectWillChange.send()
     }
     
     @nonobjc convenience init<Config: UTMConfiguration>(newConfig: Config, destinationURL: URL) {
@@ -80,10 +83,6 @@ extension UTMVirtualMachine: ObservableObject {
             path = newPath
             try reloadConfiguration()
         }
-    }
-    
-    @MainActor func updateConfigFromRegistry() {
-        // do nothing by default
     }
     
     func updateRegistryPostSave() async throws {
@@ -139,15 +138,6 @@ public extension UTMQemuVirtualMachine {
     /// Check if the current VM target is supported by the host
     @objc var isSupported: Bool {
         return UTMQemuVirtualMachine.isSupported(systemArchitecture: config.qemuConfig!.system.architecture)
-    }
-    
-    /// Sets up values in VM configuration corrosponding to per-device data like sharing path
-    @objc func prepareConfigurationForStart() {
-        if config.qemuConfig!.sharing.directoryShareMode != .none {
-            if let url = sharedDirectoryURL {
-                config.qemuConfig!.sharing.directoryShareUrl = url
-            }
-        }
     }
 }
 

@@ -133,7 +133,24 @@ NSString *const kSuspendSnapshotName = @"suspend";
         [self.logging logToFile:self.config.qemuDebugLogURL];
     }
     
-    [self prepareConfigurationForStart];
+    // set up SPICE sharing and removable drives
+    NSString *errMsg;
+    __block NSError *restoreExternalDrivesAndSharesError = nil;
+    dispatch_semaphore_t restoreExternalDrivesAndSharesEvent = dispatch_semaphore_create(0);
+    [self restoreExternalDrivesAndSharesWithCompletion:^(NSError *err) {
+        restoreExternalDrivesAndSharesError = err;
+        dispatch_semaphore_signal(restoreExternalDrivesAndSharesEvent);
+    }];
+    if (dispatch_semaphore_wait(restoreExternalDrivesAndSharesEvent, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
+        UTMLog(@"Timed out waiting for external drives and shares to be restored.");
+        completion([self errorGeneric]);
+        return;
+    }
+    if (restoreExternalDrivesAndSharesError) {
+        errMsg = [NSString localizedStringWithFormat:NSLocalizedString(@"Error trying to restore external drives and shares: %@", @"UTMVirtualMachine"), restoreExternalDrivesAndSharesError.localizedDescription];
+        completion([self errorWithMessage:errMsg]);
+        return;
+    }
     
     if (self.isRunningAsSnapshot) {
         self.config.qemuIsDisposable = self.isRunningAsSnapshot;
@@ -218,7 +235,6 @@ NSString *const kSuspendSnapshotName = @"suspend";
     __block BOOL spiceConnectFailed = NO; // failure could have no error message
     __block NSError *spiceConnectError = nil;
     NSError *err;
-    NSString *errMsg;
     // start SPICE client
     [self.ioService connectWithCompletion:^(UTMQemuManager *manager, NSError *error) {
         if (manager) { // success
@@ -259,23 +275,6 @@ NSString *const kSuspendSnapshotName = @"suspend";
         return;
     }
     assert(self.qemu.isConnected);
-    // set up SPICE sharing and removable drives
-    __block NSError *restoreExternalDrivesAndSharesError = nil;
-    dispatch_semaphore_t restoreExternalDrivesAndSharesEvent = dispatch_semaphore_create(0);
-    [self restoreExternalDrivesAndSharesWithCompletion:^(NSError *err) {
-        restoreExternalDrivesAndSharesError = err;
-        dispatch_semaphore_signal(restoreExternalDrivesAndSharesEvent);
-    }];
-    if (dispatch_semaphore_wait(restoreExternalDrivesAndSharesEvent, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
-        UTMLog(@"Timed out waiting for external drives and shares to be restored.");
-        completion([self errorGeneric]);
-        return;
-    }
-    if (restoreExternalDrivesAndSharesError) {
-        errMsg = [NSString localizedStringWithFormat:NSLocalizedString(@"Error trying to restore external drives and shares: %@", @"UTMVirtualMachine"), restoreExternalDrivesAndSharesError.localizedDescription];
-        completion([self errorWithMessage:errMsg]);
-        return;
-    }
     // continue VM boot
     if (![self.qemu continueBootWithError:&err]) {
         UTMLog(@"Failed to boot: %@", err);
@@ -301,7 +300,9 @@ NSString *const kSuspendSnapshotName = @"suspend";
         [self changeState:kVMStarting];
         [self _vmStartWithCompletion:^(NSError *err){
             if (err) { // delete suspend state on error
-                self.registryEntry.hasSaveState = NO;
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    self.registryEntry.hasSaveState = YES;
+                });
                 [self changeState:kVMStopped];
             } else {
                 [self changeState:kVMStarted];
@@ -469,7 +470,9 @@ NSString *const kSuspendSnapshotName = @"suspend";
         saveError = [self errorGeneric];
     } else if (!saveError) {
         UTMLog(@"Save completed");
-        self.registryEntry.hasSaveState = YES;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.registryEntry.hasSaveState = YES;
+        });
         [self saveScreenshot];
     }
     completion(saveError);
@@ -507,7 +510,9 @@ NSString *const kSuspendSnapshotName = @"suspend";
             UTMLog(@"Delete save completed");
         }
     } // otherwise we mark as deleted
-    self.registryEntry.hasSaveState = NO;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.registryEntry.hasSaveState = NO;
+    });
     completion(deleteError);
 }
 
