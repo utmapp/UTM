@@ -42,9 +42,9 @@ class UTMDownloadIPSWTask: UTMDownloadTask {
             try fileManager.removeItem(at: cacheIpsw)
         }
         try fileManager.moveItem(at: location, to: cacheIpsw)
-        await Task { @MainActor in
+        await MainActor.run {
             config.system.boot.macRecoveryIpswURL = cacheIpsw
-        }.value
+        }
         return UTMVirtualMachine(newConfig: config, destinationURL: UTMData.defaultStorageUrl)
     }
 }

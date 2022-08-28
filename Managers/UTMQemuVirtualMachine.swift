@@ -29,13 +29,13 @@ extension UTMQemuVirtualMachine {
         if let oldPath = await registryEntry.externalDrives[drive.id]?.path {
             system?.stopAccessingPath(oldPath)
         }
-        await Task { @MainActor in
+        await MainActor.run {
             for i in qemuConfig.drives.indices {
                 if qemuConfig.drives[i].id == drive.id {
                     qemuConfig.drives[i].imageURL = nil
                 }
             }
-        }.value
+        }
         await registryEntry.removeExternalDrive(forId: drive.id)
         guard let qemu = qemu, qemu.isConnected else {
             return
@@ -65,13 +65,13 @@ extension UTMQemuVirtualMachine {
         }
         await registryEntry.updateExternalDriveRemoteBookmark(bookmark, forId: drive.id)
         let newUrl = url ?? URL(fileURLWithPath: path)
-        await Task { @MainActor in
+        await MainActor.run {
             for i in qemuConfig.drives.indices {
                 if qemuConfig.drives[i].id == drive.id {
                     qemuConfig.drives[i].imageURL = newUrl
                 }
             }
-        }.value
+        }
         if let qemu = qemu, qemu.isConnected {
             try qemu.changeMedium(forDrive: "drive\(drive.id)", path: path)
         }
@@ -136,9 +136,9 @@ extension UTMQemuVirtualMachine {
             if let ioService = ioService {
                 ioService.changeSharedDirectory(url)
             }
-            await Task { @MainActor in
+            await MainActor.run {
                 qemuConfig.sharing.directoryShareUrl = url
-            }.value
+            }
         } else if await qemuConfig.sharing.directoryShareMode == .virtfs {
             let tempBookmark = try url.bookmarkData()
             try await changeVirtfsSharedDirectory(with: tempBookmark, isSecurityScoped: false)
@@ -154,9 +154,9 @@ extension UTMQemuVirtualMachine {
             throw UTMQemuVirtualMachineError.accessDriveImageFailed
         }
         await registryEntry.updateSingleSharedDirectoryRemoteBookmark(bookmark)
-        await Task { @MainActor in
+        await MainActor.run {
             qemuConfig.sharing.directoryShareUrl = URL(fileURLWithPath: path)
-        }.value
+        }
     }
     
     func restoreSharedDirectory() async throws {

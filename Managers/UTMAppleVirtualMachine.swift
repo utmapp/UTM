@@ -275,10 +275,8 @@ import Virtualization
             let slaveTtyHandle = FileHandle(fileDescriptor: sfd, closeOnDealloc: false)
             appleConfig.serials[i].fileHandleForReading = terminalTtyHandle
             appleConfig.serials[i].fileHandleForWriting = terminalTtyHandle
-            Task { @MainActor in
-                let serialPort = UTMSerialPort(portNamed: name, readFileHandle: slaveTtyHandle, writeFileHandle: slaveTtyHandle, terminalFileHandle: terminalTtyHandle)
-                appleConfig.serials[i].interface = serialPort
-            }
+            let serialPort = UTMSerialPort(portNamed: name, readFileHandle: slaveTtyHandle, writeFileHandle: slaveTtyHandle, terminalFileHandle: terminalTtyHandle)
+            appleConfig.serials[i].interface = serialPort
         }
         let vzConfig = appleConfig.appleVZConfiguration
         apple = VZVirtualMachine(configuration: vzConfig, queue: vmQueue)
