@@ -35,11 +35,6 @@ NS_ASSUME_NONNULL_BEGIN
 /// This property is observable and must only be accessed on the main thread. 
 @property (nonatomic) BOOL isShortcut;
 
-/// Bookmark data of the .utm bundle (can be inside or outside storage)
-///
-/// This is nil if a bookmark cannot be created for any reason (such as access denied)
-@property (nonatomic, readonly, nullable) NSData *bookmark;
-
 /// Set by caller to handle VM events
 @property (nonatomic, weak, nullable) id<UTMVirtualMachineDelegate> delegate;
 
@@ -105,10 +100,6 @@ NS_ASSUME_NONNULL_BEGIN
 /// Create an existing UTM virtual machine from a path
 /// @param url File URL
 + (nullable UTMVirtualMachine *)virtualMachineWithURL:(NSURL *)url;
-
-/// Create an existing UTM virtual machine from a file bookmark
-/// @param bookmark Bookmark data
-+ (nullable UTMVirtualMachine *)virtualMachineWithBookmark:(NSData *)bookmark;
 
 /// Create a new UTM virtual machine from a configuration
 ///

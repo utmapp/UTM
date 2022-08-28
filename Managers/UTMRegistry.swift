@@ -77,7 +77,7 @@ class UTMRegistry: NSObject {
         if let entry = entries[vm.config.uuid.uuidString] {
             return entry
         }
-        let newEntry = UTMRegistryEntry(newFrom: vm)!
+        let newEntry = UTMRegistryEntry(newFrom: vm)
         entries[newEntry.uuid.uuidString] = newEntry
         return newEntry
     }

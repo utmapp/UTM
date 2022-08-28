@@ -115,12 +115,7 @@ class UTMData: ObservableObject {
         for i in list.indices.reversed() {
             let vm = list[i]
             if !fileManager.fileExists(atPath: vm.path.path) {
-                if let wrappedVM = UTMWrappedVirtualMachine(placeholderFor: vm) {
-                    list[i] = wrappedVM
-                } else {
-                    // we cannot even make a placeholder, then remove the element
-                    list.remove(at: i)
-                }
+                list[i] = await UTMWrappedVirtualMachine(from: vm.registryEntry)
             }
         }
         // now look for and add new VMs in default storage

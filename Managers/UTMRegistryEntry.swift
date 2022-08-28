@@ -44,16 +44,16 @@ import Foundation
         case hasMigratedConfig = "MigratedConfig"
     }
     
-    init?(newFrom vm: UTMVirtualMachine) {
-        guard let bookmark = vm.bookmark else {
-            return nil
+    init(newFrom vm: UTMVirtualMachine) {
+        let package: File?
+        let path = vm.path
+        if let wrappedVM = vm as? UTMWrappedVirtualMachine {
+            package = try? File(path: path.path, bookmark: wrappedVM.bookmark)
+        } else {
+            package = try? File(url: path)
         }
-        let path = vm.path.path
         _name = vm.detailsTitleLabel
-        guard let package = try? File(path: path, bookmark: bookmark, isReadOnly: false) else {
-            return nil
-        }
-        _package = package;
+        _package = package ?? File(path: path.path)
         uuid = vm.config.uuid
         _isSuspended = false
         _externalDrives = [:]
@@ -373,7 +373,7 @@ extension UTMRegistryEntry {
             self.url = url
         }
         
-        fileprivate init(path: String, remoteBookmark: Data) {
+        fileprivate init(path: String, remoteBookmark: Data = Data()) {
             self.path = path
             self.bookmark = Data()
             self.isReadOnly = false
@@ -387,7 +387,7 @@ extension UTMRegistryEntry {
             bookmark = try container.decode(Data.self, forKey: .bookmark)
             isReadOnly = try container.decode(Bool.self, forKey: .isReadOnly)
             remoteBookmark = try container.decodeIfPresent(Data.self, forKey: .remoteBookmark)
-            url = try URL(resolvingPersistentBookmarkData: bookmark)
+            url = (try? URL(resolvingPersistentBookmarkData: bookmark)) ?? URL(fileURLWithPath: path)
         }
         
         func encode(to encoder: Encoder) throws {

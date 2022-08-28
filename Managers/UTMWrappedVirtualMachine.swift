@@ -26,7 +26,7 @@ import Foundation
         NSLocalizedString("Unavailable", comment: "UTMUnavailableVirtualMachine")
     }
     
-    override var bookmark: Data? {
+    var bookmark: Data {
         _bookmark
     }
     
@@ -61,15 +61,6 @@ import Foundation
         super.init(configuration: config, packageURL: path)
     }
     
-    /// Create a new wrapped UTM VM from an existing UTM VM
-    /// - Parameter vm: Existing VM
-    convenience init?(placeholderFor vm: UTMVirtualMachine) {
-        guard let bookmark = vm.bookmark else {
-            return nil
-        }
-        self.init(bookmark: bookmark, name: vm.detailsTitleLabel, path: vm.path)
-    }
-    
     /// Create a new wrapped UTM VM from a registry entry
     /// - Parameter registryEntry: Registry entry
     @MainActor convenience init(from registryEntry: UTMRegistryEntry) {
@@ -98,9 +89,8 @@ import Foundation
     
     /// Unwrap to a fully formed UTM VM
     /// - Returns: New UTM VM if it is valid and can be accessed
-    @available(iOS 14, macOS 11, *)
-    public func unwrap() -> UTMVirtualMachine? {
-        guard let vm = UTMVirtualMachine(bookmark: _bookmark) else {
+    @MainActor func unwrap() -> UTMVirtualMachine? {
+        guard let vm = UTMVirtualMachine(url: registryEntry.package.url) else {
             return nil
         }
         let defaultStorageUrl = UTMData.defaultStorageUrl.standardizedFileURL

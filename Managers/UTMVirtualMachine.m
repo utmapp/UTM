@@ -32,14 +32,6 @@ NSString *const kUTMBundleExtension = @"utm";
 NSString *const kUTMBundleViewFilename = @"view.plist";
 NSString *const kUTMBundleScreenshotFilename = @"screenshot.png";
 
-#if TARGET_OS_IPHONE
-const NSURLBookmarkCreationOptions kUTMBookmarkCreationOptions = NSURLBookmarkCreationMinimalBookmark;
-const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions = 0;
-#else
-const NSURLBookmarkCreationOptions kUTMBookmarkCreationOptions = NSURLBookmarkCreationWithSecurityScope;
-const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions = NSURLBookmarkResolutionWithSecurityScope;
-#endif
-
 const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 
 @interface UTMVirtualMachine ()
@@ -53,8 +45,6 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 @end
 
 @implementation UTMVirtualMachine
-
-@synthesize bookmark = _bookmark;
 
 // MARK: - Observable properties
 
@@ -114,16 +104,6 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 
 // MARK: - Other properties
 
-- (NSData *)bookmark {
-    if (!_bookmark) {
-        _bookmark = [self.path bookmarkDataWithOptions:kUTMBookmarkCreationOptions
-                        includingResourceValuesForKeys:nil
-                                         relativeToURL:nil
-                                                 error:nil];
-    }
-    return _bookmark;
-}
-
 - (void)setPath:(NSURL *)path {
     if (_path && self.isScopedAccess) {
         [_path stopAccessingSecurityScopedResource];
@@ -155,23 +135,6 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
     } else {
         return nil;
     }
-}
-
-+ (UTMVirtualMachine *)virtualMachineWithBookmark:(NSData *)bookmark {
-    BOOL stale;
-    NSURL *url = [NSURL URLByResolvingBookmarkData:bookmark
-                                            options:kUTMBookmarkResolutionOptions
-                                      relativeToURL:nil
-                                bookmarkDataIsStale:&stale
-                                              error:nil];
-    if (!url) {
-        return nil;
-    }
-    UTMVirtualMachine *vm = [UTMVirtualMachine virtualMachineWithURL:url];
-    if (!stale) {
-        vm.bookmark = bookmark;
-    }
-    return vm;
 }
 
 + (UTMVirtualMachine *)virtualMachineWithConfiguration:(UTMConfigurationWrapper *)configuration packageURL:(nonnull NSURL *)packageURL {

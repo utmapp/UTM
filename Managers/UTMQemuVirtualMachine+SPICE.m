@@ -26,11 +26,6 @@
 @import CocoaSpice;
 #endif
 
-extern NSString *const kUTMErrorDomain;
-
-extern const NSURLBookmarkCreationOptions kUTMBookmarkCreationOptions;
-extern const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions;
-
 @interface UTMQemuVirtualMachine ()
 
 @property (nonatomic, readonly, nullable) UTMQemuManager *qemu;

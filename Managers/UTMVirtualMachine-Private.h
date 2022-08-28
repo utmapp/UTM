@@ -20,15 +20,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UTMVirtualMachine ()
 
-@property (nonatomic, readwrite, nullable) NSData *bookmark;
-
 /// Reference to logger for VM stdout/stderr
 @property (nonatomic) UTMLogging *logging;
 
 @property (nonatomic, assign, readwrite) UTMVMState state;
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithConfiguration:(UTMConfigurationWrapper *)configuration packageURL:(NSURL *)packageURL;
+- (instancetype)initWithConfiguration:(UTMConfigurationWrapper *)configuration packageURL:(NSURL *)packageURL NS_DESIGNATED_INITIALIZER;
 
 @end
 

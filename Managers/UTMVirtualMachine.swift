@@ -17,12 +17,8 @@
 import Foundation
 
 extension UTMVirtualMachine: Identifiable {
-    public var id: String {
-        if self.bookmark != nil {
-            return bookmark!.base64EncodedString()
-        } else {
-            return self.path.path // path if we're an existing VM
-        }
+    public var id: (UUID, String) {
+        return (registryEntry.uuid, path.path)
     }
 }
 
