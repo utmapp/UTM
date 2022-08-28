@@ -24,6 +24,10 @@
 // UTMConfigurationInfo.swift
 "Virtual Machine" = "仮想マシン";
 
+// UTMConfigurationDrive.swift
+"%@ (%@): %@" = "%1$@（%2$@）: %3$@";
+"none" = "なし";
+
 // UTMAppleConfiguration.swift
 "This is not a valid Apple Virtualization configuration." = "有効なApple仮想化構成ではありません。";
 "This virtual machine cannot run on the current host machine." = "この仮想マシンは現在のホストマシンでは実行できません。";
@@ -87,10 +91,6 @@
 
 /* Managers */
 
-// UTMDrive.m
-"none" = "なし";
-"%@ (%@): %@" = "%1$@（%2$@）: %3$@";
-
 // UTMJSONStream.m
 "Error parsing JSON." = "JSONのパース中にエラーが発生しました。";
 "Port is not connected." = "ポートが接続されていません。";
@@ -103,17 +103,19 @@
 "Timed out waiting for RPC." = "RPCの待機時間がタイムアウトしました。";
 "Manager being deallocated, killing pending RPC." = "マネージャの割り当てが解除され、保留中のRPCが強制終了しました。";
 
+// UTMQemuVirtualMachine.swift
+"Failed to access drive image path." = "ドライブイメージパスのアクセスに失敗しました。";
+"Failed to access shared directory." = "共有ディレクトリのアクセスに失敗しました。";
+"The virtual machine is in an invalid state." = "仮想マシンが無効な状態です。";
+
 // UTMQemuVirtualMachine.m
 "Failed to access data from shortcut." = "ショートカットからデータのアクセスに失敗しました。";
 "This build of UTM does not support emulating the architecture of this VM." = "このビルドのUTMは、この仮想マシンのアーキテクチャのエミュレートには対応していません。";
+"Error trying to restore external drives and shares: %@" = "外部ドライブおよび共有の復元中にエラーが発生しました: %@";
 "QEMU exited from an error: %@" = "QEMUがエラーにより終了しました: %@";
 "Error trying to start shared directory: %@" = "共有ディレクトリの開始中にエラーが発生しました: %@";
 "Error trying to restore removable drives: %@" = "リムーバブルドライブの復元中にエラーが発生しました: %@";
 "Failed to save VM snapshot. Usually this means at least one device does not support snapshots. %@" = "仮想マシンのスナップショットを保存できませんでした。これは、通常1台以上のデバイスがスナップショットに対応していないことを意味します。%@";
-
-// UTMQemuVirtualMachine+Drives.m
-"Failed create bookmark." = "ブックマークの作成に失敗しました。";
-"Failed to access drive image path." = "ドライブイメージパスのアクセスに失敗しました。";
 
 // UTMQemuVirtualMachine+SPICE.m
 "VM frontend does not support shared directories." = "仮想マシンのフロントエンドが共有ディレクトリに対応していません。";
@@ -199,6 +201,7 @@
 
 // VMToolbarDriveMenuView.swift
 "Change…" = "変更…";
+"Clear…" = "消去…";
 "Eject…" = "取り出す…";
 "Disk" = "ディスク";
 
