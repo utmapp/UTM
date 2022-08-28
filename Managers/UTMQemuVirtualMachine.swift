@@ -16,12 +16,64 @@
 
 import Foundation
 
-// MARK: - External drives
-extension UTMQemuVirtualMachine {
-    var qemuConfig: UTMQemuConfiguration {
+// MARK: - Display details
+public extension UTMQemuVirtualMachine {
+    internal var qemuConfig: UTMQemuConfiguration {
         config.qemuConfig!
     }
     
+    @MainActor override var detailsTitleLabel: String {
+        qemuConfig.information.name
+    }
+    
+    @MainActor override var detailsSubtitleLabel: String {
+        detailsSystemTargetLabel
+    }
+    
+    @MainActor override var detailsNotes: String? {
+        qemuConfig.information.notes
+    }
+    
+    @MainActor override var detailsSystemTargetLabel: String {
+        qemuConfig.system.target.prettyValue
+    }
+    
+    @MainActor override var detailsSystemArchitectureLabel: String {
+        qemuConfig.system.architecture.prettyValue
+    }
+    
+    @MainActor override var detailsSystemMemoryLabel: String {
+        let bytesInMib = Int64(1048576)
+        return ByteCountFormatter.string(fromByteCount: Int64(qemuConfig.system.memorySize) * bytesInMib, countStyle: .memory)
+    }
+    
+    /// Check if a QEMU target is supported
+    /// - Parameter systemArchitecture: QEMU architecture
+    /// - Returns: true if UTM is compiled with the supporting binaries
+    internal static func isSupported(systemArchitecture: QEMUArchitecture) -> Bool {
+        let arch = systemArchitecture.rawValue
+        let bundleURL = Bundle.main.bundleURL
+        #if os(macOS)
+        let contentsURL = bundleURL.appendingPathComponent("Contents", isDirectory: true)
+        let base = "Versions/A/"
+        #else
+        let contentsURL = bundleURL
+        let base = ""
+        #endif
+        let frameworksURL = contentsURL.appendingPathComponent("Frameworks", isDirectory: true)
+        let framework = frameworksURL.appendingPathComponent("qemu-" + arch + "-softmmu.framework/" + base + "qemu-" + arch + "-softmmu", isDirectory: false)
+        logger.error("\(framework.path)")
+        return FileManager.default.fileExists(atPath: framework.path)
+    }
+    
+    /// Check if the current VM target is supported by the host
+    @objc var isSupported: Bool {
+        return UTMQemuVirtualMachine.isSupported(systemArchitecture: qemuConfig._system.architecture)
+    }
+}
+
+// MARK: - External drives
+extension UTMQemuVirtualMachine {
     func eject(_ drive: UTMQemuConfigurationDrive, isForced: Bool = false) async throws {
         guard drive.isExternal else {
             return

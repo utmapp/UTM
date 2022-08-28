@@ -109,57 +109,6 @@ extension UTMVirtualMachine: ObservableObject {
     }
 }
 
-public extension UTMQemuVirtualMachine {
-    @MainActor override var detailsTitleLabel: String {
-        config.qemuConfig!.information.name
-    }
-    
-    @MainActor override var detailsSubtitleLabel: String {
-        self.detailsSystemTargetLabel
-    }
-    
-    @MainActor override var detailsNotes: String? {
-        config.qemuConfig!.information.notes
-    }
-    
-    @MainActor override var detailsSystemTargetLabel: String {
-        config.qemuConfig!.system.target.prettyValue
-    }
-    
-    @MainActor override var detailsSystemArchitectureLabel: String {
-        config.qemuConfig!.system.architecture.prettyValue
-    }
-    
-    @MainActor override var detailsSystemMemoryLabel: String {
-        let bytesInMib = Int64(1048576)
-        return ByteCountFormatter.string(fromByteCount: Int64(config.qemuConfig!.system.memorySize) * bytesInMib, countStyle: .memory)
-    }
-    
-    /// Check if a QEMU target is supported
-    /// - Parameter systemArchitecture: QEMU architecture
-    /// - Returns: true if UTM is compiled with the supporting binaries
-    internal static func isSupported(systemArchitecture: QEMUArchitecture) -> Bool {
-        let arch = systemArchitecture.rawValue
-        let bundleURL = Bundle.main.bundleURL
-        #if os(macOS)
-        let contentsURL = bundleURL.appendingPathComponent("Contents", isDirectory: true)
-        let base = "Versions/A/"
-        #else
-        let contentsURL = bundleURL
-        let base = ""
-        #endif
-        let frameworksURL = contentsURL.appendingPathComponent("Frameworks", isDirectory: true)
-        let framework = frameworksURL.appendingPathComponent("qemu-" + arch + "-softmmu.framework/" + base + "qemu-" + arch + "-softmmu", isDirectory: false)
-        logger.error("\(framework.path)")
-        return FileManager.default.fileExists(atPath: framework.path)
-    }
-    
-    /// Check if the current VM target is supported by the host
-    @objc var isSupported: Bool {
-        return UTMQemuVirtualMachine.isSupported(systemArchitecture: config.qemuConfig!._system.architecture)
-    }
-}
-
 // MARK: - Bookmark handling
 extension URL {
     private static var defaultCreationOptions: BookmarkCreationOptions {
