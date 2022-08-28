@@ -193,6 +193,12 @@ extension UTMQemuVirtualMachine {
         if let url = config.qemuConfig!.sharing.directoryShareUrl {
             try await changeSharedDirectory(to: url)
         }
+        // remove any unreferenced drives
+        for id in registryEntry.externalDrives.keys {
+            if !qemuConfig.drives.contains(where: { $0.id == id }) {
+                registryEntry.externalDrives.removeValue(forKey: id)
+            }
+        }
     }
 }
 
