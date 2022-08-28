@@ -30,9 +30,11 @@ class UTMRegistry: NSObject {
         }
     }
     
+    private var registryListener: AnyCancellable?
+    
     private var changeListeners: [String: AnyCancellable] = [:]
     
-    private var entries: [String: UTMRegistryEntry] {
+    @Published private var entries: [String: UTMRegistryEntry] {
         didSet {
             let toAdd = entries.keys.filter({ !changeListeners.keys.contains($0) })
             for key in toAdd {
@@ -40,8 +42,8 @@ class UTMRegistry: NSObject {
                 changeListeners[key] = entry.objectWillChange
                     .debounce(for: .seconds(1), scheduler: DispatchQueue.global(qos: .utility))
                     .sink { [weak self, weak entry] in
-                    if let entry = entry {
-                        self?.commit(entry: entry)
+                    if let self = self, let entry = entry {
+                        self.commit(entry: entry, to: &self.serializedEntries)
                     }
                 }
             }
@@ -61,26 +63,69 @@ class UTMRegistry: NSObject {
         }) {
             entries = newEntries
         }
+        registryListener = $entries
+            .debounce(for: .seconds(1), scheduler: DispatchQueue.global(qos: .utility))
+            .sink { [weak self] newEntries in
+                self?.commitAll(entries: newEntries)
+            }
     }
     
     /// Gets an existing registry entry or create a new entry
     /// - Parameter vm: UTM virtual machine to locate in the registry
     /// - Returns: Either an existing registry entry or a new entry
     @objc func entry(for vm: UTMVirtualMachine) -> UTMRegistryEntry {
-        if let entry = entries[vm.id] {
+        if let entry = entries[vm.config.uuid.uuidString] {
             return entry
         }
-        return UTMRegistryEntry(newFrom: vm)!
+        let newEntry = UTMRegistryEntry(newFrom: vm)!
+        entries[newEntry.uuid.uuidString] = newEntry
+        return newEntry
+    }
+    
+    /// Get an existing registry entry for a UUID
+    /// - Parameter uuidString: UUID
+    /// - Returns: An existing registry entry or nil if it does not exist
+    func entry(for uuidString: String) -> UTMRegistryEntry? {
+        return entries[uuidString]
     }
     
     /// Commit the entry to persistent storage
     /// This runs in a background queue.
     /// - Parameter entry: Entry to commit
-    private func commit(entry: UTMRegistryEntry) {
-        Task {
-            let uuid = await entry.uuid
-            let dict = try await entry.asDictionary()
-            serializedEntries[uuid] = dict
+    private func commit(entry: UTMRegistryEntry, to entries: inout [String: Any]) {
+        let uuid = entry.uuid
+        if let dict = try? entry.asDictionary() {
+            entries[uuid.uuidString] = dict
+        } else {
+            logger.error("Failed to commit entry for \(uuid)")
+        }
+    }
+    
+    /// Commit all entries to persistent storage
+    /// This runs in a background queue.
+    /// - Parameter entries: All entries to commit
+    private func commitAll(entries: [String: UTMRegistryEntry]) {
+        var newSerializedEntries: [String: Any] = [:]
+        for key in entries.keys {
+            let entry = entries[key]!
+            commit(entry: entry, to: &newSerializedEntries)
+        }
+        serializedEntries = newSerializedEntries
+    }
+    
+    /// Remove an entry from the registry
+    /// - Parameter entry: Entry to remove
+    func remove(entry: UTMRegistryEntry) {
+        entries.removeValue(forKey: entry.uuid.uuidString)
+    }
+    
+    /// Remove all entries from the registry except for the specified set
+    /// - Parameter uuidStrings: Keys to NOT remove
+    func prune(exceptFor uuidStrings: Set<String>) {
+        for key in entries.keys {
+            if !uuidStrings.contains(key) {
+                entries.removeValue(forKey: key)
+            }
         }
     }
 }

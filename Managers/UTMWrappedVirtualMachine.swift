@@ -52,13 +52,13 @@ import Foundation
     ///   - bookmark: Bookmark data for this VM
     ///   - name: Name of this VM
     ///   - path: Path where the VM is located
-    init(bookmark: Data, name: String, path: URL) {
+    ///   - uuid: UUID of the VM
+    init(bookmark: Data, name: String, path: URL, uuid: UUID? = nil) {
         _bookmark = bookmark
         _name = name
         _path = path
-        super.init()
-        self.path = path
-        self.config = UTMConfigurationWrapper(placeholderFor: name)
+        let config = UTMConfigurationWrapper(placeholderFor: name, uuid: uuid)
+        super.init(configuration: config, packageURL: path)
     }
     
     /// Create a new wrapped UTM VM from an existing UTM VM
@@ -70,7 +70,14 @@ import Foundation
         self.init(bookmark: bookmark, name: vm.detailsTitleLabel, path: vm.path)
     }
     
-    /// Create a new wrapped UTM VM from a dictionary
+    /// Create a new wrapped UTM VM from a registry entry
+    /// - Parameter registryEntry: Registry entry
+    @MainActor convenience init(from registryEntry: UTMRegistryEntry) {
+        let file = registryEntry.package
+        self.init(bookmark: file.bookmark, name: registryEntry.name, path: file.url, uuid: registryEntry.uuid)
+    }
+    
+    /// Create a new wrapped UTM VM from a dictionary (legacy support)
     /// - Parameter info: Dictionary info
     convenience init?(from info: [String: Any]) {
         guard let bookmark = info["Bookmark"] as? Data,

@@ -183,6 +183,7 @@ extension UTMQemuVirtualMachine {
 // MARK: - Registry syncing
 extension UTMQemuVirtualMachine {
     @MainActor override func updateRegistryPostSave() async throws {
+        try await super.updateRegistryPostSave()
         for i in qemuConfig.drives.indices {
             let drive = qemuConfig.drives[i]
             if drive.isExternal, let url = drive.imageURL {

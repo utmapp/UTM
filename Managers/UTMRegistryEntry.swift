@@ -21,7 +21,7 @@ import Foundation
     
     @Published private var _package: File
     
-    @Published private var _uuid: String
+    var uuid: UUID
     
     @Published private var _isSuspended: Bool
     
@@ -51,7 +51,7 @@ import Foundation
             return nil
         }
         _package = package;
-        _uuid = vm.config.uuid.uuidString
+        uuid = vm.config.uuid
         _isSuspended = false
         _externalDrives = [:]
         _sharedDirectories = []
@@ -62,7 +62,7 @@ import Foundation
         let container = try decoder.container(keyedBy: CodingKeys.self)
         _name = try container.decode(String.self, forKey: .name)
         _package = try container.decode(File.self, forKey: .package)
-        _uuid = try container.decode(String.self, forKey: .uuid)
+        uuid = try container.decode(UUID.self, forKey: .uuid)
         _isSuspended = try container.decode(Bool.self, forKey: .isSuspended)
         _externalDrives = try container.decode([String: File].self, forKey: .externalDrives)
         _sharedDirectories = try container.decode([File].self, forKey: .sharedDirectories)
@@ -73,14 +73,14 @@ import Foundation
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(_name, forKey: .name)
         try container.encode(_package, forKey: .package)
-        try container.encode(_uuid, forKey: .uuid)
+        try container.encode(uuid, forKey: .uuid)
         try container.encode(_isSuspended, forKey: .isSuspended)
         try container.encode(_externalDrives, forKey: .externalDrives)
         try container.encode(_sharedDirectories, forKey: .sharedDirectories)
         try container.encode(_windowSettings, forKey: .windowSettings)
     }
     
-    @MainActor func asDictionary() throws -> [String: Any] {
+    func asDictionary() throws -> [String: Any] {
         let encoder = PropertyListEncoder()
         encoder.outputFormat = .xml
         let xml = try encoder.encode(self)
@@ -118,16 +118,6 @@ extension UTMRegistryEntryDecodable {
         
         set {
             _package = newValue
-        }
-    }
-    
-    var uuid: String {
-        get {
-            _uuid
-        }
-        
-        set {
-            _uuid = newValue
         }
     }
     

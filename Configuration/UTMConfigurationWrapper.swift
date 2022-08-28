@@ -317,9 +317,9 @@ import Foundation
         }
     }
     
-    @objc init(placeholderFor name: String) {
+    @objc init(placeholderFor name: String, uuid: UUID? = nil) {
         self.placeholderName = name
-        self.placeholderUuid = UUID()
+        self.placeholderUuid = uuid ?? UUID()
         self.placeholderIconURL = nil
     }
     

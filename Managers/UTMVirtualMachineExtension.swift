@@ -86,7 +86,8 @@ extension UTMVirtualMachine: ObservableObject {
     }
     
     @MainActor func updateRegistryPostSave() async throws {
-        // do nothing by default
+        registryEntry.name = config.name
+        registryEntry.package = try UTMRegistryEntry.File(url: path)
     }
 }
 

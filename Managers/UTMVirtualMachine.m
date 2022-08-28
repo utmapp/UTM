@@ -185,22 +185,15 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
     return [[UTMQemuVirtualMachine alloc] initWithConfiguration:configuration packageURL:packageURL];
 }
 
-- (instancetype)init {
+- (instancetype)initWithConfiguration:(UTMConfigurationWrapper *)configuration packageURL:(NSURL *)packageURL {
     self = [super init];
     if (self) {
+        _state = kVMStopped;
 #if TARGET_OS_IPHONE
         self.logging = [UTMLogging sharedInstance];
 #else
         self.logging = [UTMLogging new];
 #endif
-    }
-    return self;
-}
-
-- (instancetype)initWithConfiguration:(UTMConfigurationWrapper *)configuration packageURL:(NSURL *)packageURL {
-    self = [self init];
-    if (self) {
-        _state = kVMStopped;
         self.config = configuration;
         self.path = packageURL;
         self.registryEntry = [UTMRegistry.shared entryFor:self];

@@ -152,10 +152,39 @@ class UTMData: ObservableObject {
         if await virtualMachines != list {
             await listReplace(with: list)
         }
+        // prune the registry
+        let uuids = list.map({ $0.registryEntry.uuid.uuidString })
+        UTMRegistry.shared.prune(exceptFor: Set(uuids))
     }
     
     /// Load VM list (and order) from persistent storage
     @MainActor private func listLoadFromDefaults() {
+        let defaults = UserDefaults.standard
+        guard defaults.object(forKey: "VMList") == nil else {
+            listLegacyLoadFromDefaults()
+            // delete legacy
+            defaults.removeObject(forKey: "VMList")
+            return
+        }
+        // registry entry list
+        guard let list = defaults.stringArray(forKey: "VMEntryList") else {
+            return
+        }
+        virtualMachines = list.compactMap { uuidString in
+            guard let entry = UTMRegistry.shared.entry(for: uuidString) else {
+                return nil
+            }
+            let wrappedVM = UTMWrappedVirtualMachine(from: entry)
+            if let vm = wrappedVM.unwrap() {
+                return vm
+            } else {
+                return wrappedVM
+            }
+        }
+    }
+    
+    /// Load VM list (and order) from persistent storage (legacy)
+    @MainActor private func listLegacyLoadFromDefaults() {
         let defaults = UserDefaults.standard
         // legacy path list
         if let files = defaults.array(forKey: "VMList") as? [String] {
@@ -173,7 +202,11 @@ class UTMData: ObservableObject {
                 } else if let dict = item as? [String: Any] {
                     wrappedVM = UTMWrappedVirtualMachine(from: dict)
                 }
-                if let vm = wrappedVM?.unwrap() {
+                if let wrappedVM = wrappedVM, let vm = wrappedVM.unwrap() {
+                    // legacy VMs don't have UUID stored so we made a fake UUID
+                    if wrappedVM.registryEntry.uuid != vm.registryEntry.uuid {
+                        UTMRegistry.shared.remove(entry: wrappedVM.registryEntry)
+                    }
                     return vm
                 } else {
                     return wrappedVM
@@ -185,10 +218,8 @@ class UTMData: ObservableObject {
     /// Save VM list (and order) to persistent storage
     @MainActor private func listSaveToDefaults() {
         let defaults = UserDefaults.standard
-        let wrappedVMs = virtualMachines.compactMap { vm -> [String: Any]? in
-            UTMWrappedVirtualMachine(placeholderFor: vm)?.serialized
-        }
-        defaults.set(wrappedVMs, forKey: "VMList")
+        let wrappedVMs = virtualMachines.map { $0.registryEntry.uuid.uuidString }
+        defaults.set(wrappedVMs, forKey: "VMEntryList")
     }
     
     @MainActor private func listReplace(with vms: [UTMVirtualMachine]) {
@@ -224,6 +255,7 @@ class UTMData: ObservableObject {
             selectedVM = nil
         }
         vm.isDeleted = true // alert views to update
+        UTMRegistry.shared.remove(entry: vm.registryEntry)
         return index
     }
     

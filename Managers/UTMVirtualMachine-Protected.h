@@ -67,8 +67,12 @@ extern const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions;
 @property (nonatomic, readonly) NSString *stateLabel;
 
 @property (nonatomic, readwrite) NSURL *path;
-@property (nonatomic, readwrite, copy) UTMConfigurationWrapper *config;
+@property (nonatomic, readwrite) UTMConfigurationWrapper *config;
 @property (nonatomic, readwrite, nullable) CSScreenshot *screenshot;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)initWithConfiguration:(UTMConfigurationWrapper *)configuration packageURL:(NSURL *)packageURL NS_DESIGNATED_INITIALIZER;
 
 /// Updates the internal state and view state
 /// @param state New state
