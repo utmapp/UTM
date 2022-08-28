@@ -450,16 +450,19 @@ extension UTMAppleVirtualMachineError: LocalizedError {
 
 // MARK: - Registry access
 extension UTMAppleVirtualMachine {
-    @MainActor override func updateRegistryPostSave() async throws {
-        try await super.updateRegistryPostSave()
+    @MainActor override func updateRegistryFromConfig() async throws {
+        // save a copy to not collide with updateConfigFromRegistry()
+        let configShares = appleConfig.sharedDirectories
+        let configDrives = appleConfig.drives
+        try await super.updateRegistryFromConfig()
         registryEntry.sharedDirectories.removeAll(keepingCapacity: true)
-        for sharedDirectory in appleConfig.sharedDirectories {
+        for sharedDirectory in configShares {
             if let url = sharedDirectory.directoryURL {
                 let file = try UTMRegistryEntry.File(url: url, isReadOnly: sharedDirectory.isReadOnly)
                 registryEntry.sharedDirectories.append(file)
             }
         }
-        for drive in appleConfig.drives {
+        for drive in configDrives {
             if drive.isExternal, let url = drive.imageURL {
                 let file = try UTMRegistryEntry.File(url: url, isReadOnly: drive.isReadOnly)
                 registryEntry.externalDrives[drive.id] = file
@@ -467,7 +470,18 @@ extension UTMAppleVirtualMachine {
         }
         // remove any unreferenced drives
         registryEntry.externalDrives = registryEntry.externalDrives.filter({ element in
-            appleConfig.drives.contains(where: { $0.id == element.key })
+            configDrives.contains(where: { $0.id == element.key && $0.isExternal })
         })
+    }
+    
+    @MainActor override func updateConfigFromRegistry() {
+        super.updateConfigFromRegistry()
+        appleConfig.sharedDirectories = registryEntry.sharedDirectories.map({ UTMAppleConfigurationSharedDirectory(directoryURL: $0.url, isReadOnly: $0.isReadOnly )})
+        for i in appleConfig.drives.indices {
+            let id = appleConfig.drives[i].id
+            if let file = registryEntry.externalDrives[id], appleConfig.drives[i].isExternal {
+                appleConfig.drives[i].imageURL = file.url
+            }
+        }
     }
 }

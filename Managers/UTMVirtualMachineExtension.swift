@@ -44,8 +44,18 @@ extension UTMVirtualMachine: ObservableObject {
             })
         }
         s.append(registryEntry.objectWillChange.sink { [weak self] in
-            self?.objectWillChange.send()
+            guard let self = self else {
+                return
+            }
+            self.objectWillChange.send()
+            Task { @MainActor in
+                self.updateConfigFromRegistry()
+            }
         })
+        // first sync on construction
+        Task { @MainActor in
+            self.updateConfigFromRegistry()
+        }
         return s
     }
     
@@ -71,7 +81,7 @@ extension UTMVirtualMachine: ObservableObject {
         let newPath = existingPath.deletingLastPathComponent().appendingPathComponent(config.name).appendingPathExtension("utm")
         do {
             try await config.save(to: existingPath)
-            try await updateRegistryPostSave()
+            try await updateRegistryFromConfig()
         } catch {
             try? reloadConfiguration()
             throw error
@@ -85,11 +95,17 @@ extension UTMVirtualMachine: ObservableObject {
         }
     }
     
-    @MainActor func updateRegistryPostSave() async throws {
+    /// Called when we save the config
+    @MainActor func updateRegistryFromConfig() async throws {
         registryEntry.name = config.name
         let oldRemoteBookmark = registryEntry.package.remoteBookmark
         registryEntry.package = try UTMRegistryEntry.File(url: path)
         registryEntry.package.remoteBookmark = oldRemoteBookmark
+    }
+    
+    /// Called whenever the registry entry changes
+    @MainActor func updateConfigFromRegistry() {
+        // implement in subclass
     }
 }
 

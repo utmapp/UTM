@@ -29,13 +29,6 @@ extension UTMQemuVirtualMachine {
         if let oldPath = await registryEntry.externalDrives[drive.id]?.path {
             system?.stopAccessingPath(oldPath)
         }
-        await MainActor.run {
-            for i in qemuConfig.drives.indices {
-                if qemuConfig.drives[i].id == drive.id {
-                    qemuConfig.drives[i].imageURL = nil
-                }
-            }
-        }
         await registryEntry.removeExternalDrive(forId: drive.id)
         guard let qemu = qemu, qemu.isConnected else {
             return
@@ -65,13 +58,6 @@ extension UTMQemuVirtualMachine {
         }
         await registryEntry.updateExternalDriveRemoteBookmark(bookmark, forId: drive.id)
         let newUrl = url ?? URL(fileURLWithPath: path)
-        await MainActor.run {
-            for i in qemuConfig.drives.indices {
-                if qemuConfig.drives[i].id == drive.id {
-                    qemuConfig.drives[i].imageURL = newUrl
-                }
-            }
-        }
         if let qemu = qemu, qemu.isConnected {
             try qemu.changeMedium(forDrive: "drive\(drive.id)", path: path)
         }
@@ -121,7 +107,6 @@ extension UTMQemuVirtualMachine {
     }
     
     @MainActor func clearSharedDirectory() {
-        qemuConfig.sharing.directoryShareUrl = nil
         registryEntry.removeAllSharedDirectories()
     }
     
@@ -135,9 +120,6 @@ extension UTMQemuVirtualMachine {
         if await qemuConfig.sharing.directoryShareMode == .webdav {
             if let ioService = ioService {
                 ioService.changeSharedDirectory(url)
-            }
-            await MainActor.run {
-                qemuConfig.sharing.directoryShareUrl = url
             }
         } else if await qemuConfig.sharing.directoryShareMode == .virtfs {
             let tempBookmark = try url.bookmarkData()
@@ -154,9 +136,6 @@ extension UTMQemuVirtualMachine {
             throw UTMQemuVirtualMachineError.accessDriveImageFailed
         }
         await registryEntry.updateSingleSharedDirectoryRemoteBookmark(bookmark)
-        await MainActor.run {
-            qemuConfig.sharing.directoryShareUrl = URL(fileURLWithPath: path)
-        }
     }
     
     func restoreSharedDirectory() async throws {
@@ -182,21 +161,36 @@ extension UTMQemuVirtualMachine {
 
 // MARK: - Registry syncing
 extension UTMQemuVirtualMachine {
-    @MainActor override func updateRegistryPostSave() async throws {
-        try await super.updateRegistryPostSave()
-        for i in qemuConfig.drives.indices {
-            let drive = qemuConfig.drives[i]
+    @MainActor override func updateRegistryFromConfig() async throws {
+        // save a copy to not collide with updateConfigFromRegistry()
+        let configShare = qemuConfig.sharing.directoryShareUrl
+        let configDrives = qemuConfig.drives
+        try await super.updateRegistryFromConfig()
+        for drive in configDrives {
             if drive.isExternal, let url = drive.imageURL {
                 try await changeMedium(drive, to: url)
             }
         }
-        if let url = config.qemuConfig!.sharing.directoryShareUrl {
+        if let url = configShare {
             try await changeSharedDirectory(to: url)
         }
         // remove any unreferenced drives
         registryEntry.externalDrives = registryEntry.externalDrives.filter({ element in
-            qemuConfig.drives.contains(where: { $0.id == element.key })
+            configDrives.contains(where: { $0.id == element.key && $0.isExternal })
         })
+    }
+    
+    @MainActor override func updateConfigFromRegistry() {
+        super.updateConfigFromRegistry()
+        if let sharedDirectoryURL = sharedDirectoryURL {
+            qemuConfig.sharing.directoryShareUrl = sharedDirectoryURL
+        }
+        for i in qemuConfig.drives.indices {
+            let id = qemuConfig.drives[i].id
+            if let file = registryEntry.externalDrives[id], qemuConfig.drives[i].isExternal {
+                qemuConfig.drives[i].imageURL = file.url
+            }
+        }
     }
 }
 
