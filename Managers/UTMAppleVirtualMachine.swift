@@ -26,27 +26,27 @@ import Virtualization
         config.appleConfig!
     }
     
-    override var detailsTitleLabel: String {
+    @MainActor override var detailsTitleLabel: String {
         appleConfig.information.name
     }
     
-    override var detailsSubtitleLabel: String {
+    @MainActor override var detailsSubtitleLabel: String {
         detailsSystemTargetLabel
     }
     
-    override var detailsNotes: String? {
+    @MainActor override var detailsNotes: String? {
         appleConfig.information.notes
     }
     
-    override var detailsSystemTargetLabel: String {
+    @MainActor override var detailsSystemTargetLabel: String {
         appleConfig.system.boot.operatingSystem.rawValue
     }
     
-    override var detailsSystemArchitectureLabel: String {
+    @MainActor override var detailsSystemArchitectureLabel: String {
         appleConfig.system.architecture
     }
     
-    override var detailsSystemMemoryLabel: String {
+    @MainActor override var detailsSystemMemoryLabel: String {
         let bytesInMib = Int64(1048576)
         return ByteCountFormatter.string(fromByteCount: Int64(appleConfig.system.memorySize) * bytesInMib, countStyle: .memory)
     }
@@ -71,10 +71,7 @@ import Virtualization
         let newConfig = try UTMAppleConfiguration.load(from: path) as! UTMAppleConfiguration
         let oldConfig = appleConfig
         // copy non-persistent values over
-        newConfig.sharedDirectories = oldConfig.sharedDirectories
-        if #available(macOS 12, *) {
-            newConfig.system.boot.macRecoveryIpswURL = oldConfig.system.boot.macRecoveryIpswURL
-        }
+        newConfig.copyNonpersistentValuesUnsafely(from: oldConfig)
         config = UTMConfigurationWrapper(wrapping: newConfig)
     }
     
@@ -83,11 +80,11 @@ import Virtualization
     }
     
     private func _vmStart() async throws {
-        try createAppleVM()
+        try await createAppleVM()
+        let boot = await appleConfig.system.boot
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) -> Void in
             vmQueue.async {
                 #if os(macOS) && arch(arm64)
-                let boot = self.appleConfig.system.boot
                 if #available(macOS 13, *), boot.operatingSystem == .macOS {
                     let options = VZMacOSVirtualMachineStartOptions()
                     options.startUpFromMacOSRecovery = boot.startUpFromMacOSRecovery
@@ -117,12 +114,14 @@ import Virtualization
             try await beginAccessingResources()
             try await _vmStart()
             if #available(macOS 12, *) {
-                sharedDirectoriesChanged = appleConfig.$sharedDirectories.sink { [weak self] newShares in
-                    guard let self = self else {
-                        return
-                    }
-                    self.vmQueue.async {
-                        self.updateSharedDirectories(with: newShares)
+                Task { @MainActor in
+                    sharedDirectoriesChanged = appleConfig.sharedDirectoriesPublisher.sink { [weak self] newShares in
+                        guard let self = self else {
+                            return
+                        }
+                        self.vmQueue.async {
+                            self.updateSharedDirectories(with: newShares)
+                        }
                     }
                 }
             }
@@ -269,7 +268,7 @@ import Virtualization
         screenshot = screenshotDelegate?.screenshot
     }
     
-    private func createAppleVM() throws {
+    @MainActor private func createAppleVM() throws {
         for i in appleConfig.serials.indices {
             let (fd, sfd, name) = try createPty()
             let terminalTtyHandle = FileHandle(fileDescriptor: fd, closeOnDealloc: false)
@@ -306,7 +305,7 @@ import Virtualization
             return
         }
         changeState(.vmStarting)
-        try createAppleVM()
+        try await createAppleVM()
         #if os(macOS) && arch(arm64)
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             vmQueue.async {
@@ -414,11 +413,9 @@ extension UTMAppleVirtualMachine: VZVirtualMachineDelegate {
         sharedDirectoriesChanged = nil
         Task { @MainActor in
             stopAccesingResources()
-        }
-        for i in appleConfig.serials.indices {
-            if let serialPort = appleConfig.serials[i].interface {
-                serialPort.close()
-                Task { @MainActor in
+            for i in appleConfig.serials.indices {
+                if let serialPort = appleConfig.serials[i].interface {
+                    serialPort.close()
                     appleConfig.serials[i].interface = nil
                     appleConfig.serials[i].fileHandleForReading = nil
                     appleConfig.serials[i].fileHandleForWriting = nil

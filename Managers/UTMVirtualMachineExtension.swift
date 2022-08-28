@@ -85,33 +85,33 @@ extension UTMVirtualMachine: ObservableObject {
         }
     }
     
-    func updateRegistryPostSave() async throws {
+    @MainActor func updateRegistryPostSave() async throws {
         // do nothing by default
     }
 }
 
 public extension UTMQemuVirtualMachine {
-    override var detailsTitleLabel: String {
+    @MainActor override var detailsTitleLabel: String {
         config.qemuConfig!.information.name
     }
     
-    override var detailsSubtitleLabel: String {
+    @MainActor override var detailsSubtitleLabel: String {
         self.detailsSystemTargetLabel
     }
     
-    override var detailsNotes: String? {
+    @MainActor override var detailsNotes: String? {
         config.qemuConfig!.information.notes
     }
     
-    override var detailsSystemTargetLabel: String {
+    @MainActor override var detailsSystemTargetLabel: String {
         config.qemuConfig!.system.target.prettyValue
     }
     
-    override var detailsSystemArchitectureLabel: String {
+    @MainActor override var detailsSystemArchitectureLabel: String {
         config.qemuConfig!.system.architecture.prettyValue
     }
     
-    override var detailsSystemMemoryLabel: String {
+    @MainActor override var detailsSystemMemoryLabel: String {
         let bytesInMib = Int64(1048576)
         return ByteCountFormatter.string(fromByteCount: Int64(config.qemuConfig!.system.memorySize) * bytesInMib, countStyle: .memory)
     }
@@ -137,7 +137,7 @@ public extension UTMQemuVirtualMachine {
     
     /// Check if the current VM target is supported by the host
     @objc var isSupported: Bool {
-        return UTMQemuVirtualMachine.isSupported(systemArchitecture: config.qemuConfig!.system.architecture)
+        return UTMQemuVirtualMachine.isSupported(systemArchitecture: config.qemuConfig!._system.architecture)
     }
 }
 

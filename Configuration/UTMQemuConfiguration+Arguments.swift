@@ -17,7 +17,7 @@
 import Foundation
 
 /// Build QEMU arguments from config
-extension UTMQemuConfiguration {
+@MainActor extension UTMQemuConfiguration {
     /// Helper function to generate a final argument
     /// - Parameter string: Argument fragment
     /// - Returns: Final argument fragment

@@ -29,11 +29,13 @@ extension UTMQemuVirtualMachine {
         if let oldPath = await registryEntry.externalDrives[drive.id]?.path {
             system?.stopAccessingPath(oldPath)
         }
-        for i in qemuConfig.drives.indices {
-            if qemuConfig.drives[i].id == drive.id {
-                qemuConfig.drives[i].imageURL = nil
+        await Task { @MainActor in
+            for i in qemuConfig.drives.indices {
+                if qemuConfig.drives[i].id == drive.id {
+                    qemuConfig.drives[i].imageURL = nil
+                }
             }
-        }
+        }.value
         await registryEntry.removeExternalDrive(forId: drive.id)
         guard let qemu = qemu, qemu.isConnected else {
             return
@@ -63,11 +65,13 @@ extension UTMQemuVirtualMachine {
         }
         await registryEntry.updateExternalDriveRemoteBookmark(bookmark, forId: drive.id)
         let newUrl = url ?? URL(fileURLWithPath: path)
-        for i in qemuConfig.drives.indices {
-            if qemuConfig.drives[i].id == drive.id {
-                qemuConfig.drives[i].imageURL = newUrl
+        await Task { @MainActor in
+            for i in qemuConfig.drives.indices {
+                if qemuConfig.drives[i].id == drive.id {
+                    qemuConfig.drives[i].imageURL = newUrl
+                }
             }
-        }
+        }.value
         if let qemu = qemu, qemu.isConnected {
             try qemu.changeMedium(forDrive: "drive\(drive.id)", path: path)
         }
@@ -77,7 +81,7 @@ extension UTMQemuVirtualMachine {
         guard system != nil && qemu != nil && qemu!.isConnected else {
             throw UTMQemuVirtualMachineError.invalidVmState
         }
-        for drive in qemuConfig.drives {
+        for drive in await qemuConfig.drives {
             if !drive.isExternal {
                 continue
             }
@@ -126,14 +130,16 @@ extension UTMQemuVirtualMachine {
         defer {
             url.stopAccessingSecurityScopedResource()
         }
-        let file = try UTMRegistryEntry.File(url: url, isReadOnly: qemuConfig.sharing.isDirectoryShareReadOnly)
+        let file = try await UTMRegistryEntry.File(url: url, isReadOnly: qemuConfig.sharing.isDirectoryShareReadOnly)
         await registryEntry.setSingleSharedDirectory(file)
-        if qemuConfig.sharing.directoryShareMode == .webdav {
+        if await qemuConfig.sharing.directoryShareMode == .webdav {
             if let ioService = ioService {
                 ioService.changeSharedDirectory(url)
             }
-            qemuConfig.sharing.directoryShareUrl = url
-        } else if qemuConfig.sharing.directoryShareMode == .virtfs {
+            await Task { @MainActor in
+                qemuConfig.sharing.directoryShareUrl = url
+            }.value
+        } else if await qemuConfig.sharing.directoryShareMode == .virtfs {
             let tempBookmark = try url.bookmarkData()
             try await changeVirtfsSharedDirectory(with: tempBookmark, isSecurityScoped: false)
         }
@@ -148,14 +154,16 @@ extension UTMQemuVirtualMachine {
             throw UTMQemuVirtualMachineError.accessDriveImageFailed
         }
         await registryEntry.updateSingleSharedDirectoryRemoteBookmark(bookmark)
-        qemuConfig.sharing.directoryShareUrl = URL(fileURLWithPath: path)
+        await Task { @MainActor in
+            qemuConfig.sharing.directoryShareUrl = URL(fileURLWithPath: path)
+        }.value
     }
     
     func restoreSharedDirectory() async throws {
         guard let share = await registryEntry.sharedDirectories.first else {
             return
         }
-        if qemuConfig.sharing.directoryShareMode == .virtfs {
+        if await qemuConfig.sharing.directoryShareMode == .virtfs {
             if let bookmark = share.remoteBookmark {
                 // a share bookmark was saved while QEMU was running
                 try await changeVirtfsSharedDirectory(with: bookmark, isSecurityScoped: true)
@@ -164,7 +172,7 @@ extension UTMQemuVirtualMachine {
                 let url = try URL(resolvingPersistentBookmarkData: share.bookmark)
                 try await changeSharedDirectory(to: url)
             }
-        } else if qemuConfig.sharing.directoryShareMode == .webdav {
+        } else if await qemuConfig.sharing.directoryShareMode == .webdav {
             if let ioService = ioService {
                 ioService.changeSharedDirectory(share.url)
             }
@@ -174,15 +182,11 @@ extension UTMQemuVirtualMachine {
 
 // MARK: - Registry syncing
 extension UTMQemuVirtualMachine {
-    override func updateRegistryPostSave() async throws {
+    @MainActor override func updateRegistryPostSave() async throws {
         for i in qemuConfig.drives.indices {
             let drive = qemuConfig.drives[i]
             if drive.isExternal, let url = drive.imageURL {
                 try await changeMedium(drive, to: url)
-                await Task { @MainActor in
-                    // clear temporary URL
-                    qemuConfig.drives[i].imageURL = nil
-                }.value
             }
         }
         if let url = config.qemuConfig!.sharing.directoryShareUrl {
