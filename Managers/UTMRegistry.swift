@@ -20,8 +20,6 @@ import Foundation
 class UTMRegistry: NSObject {
     @objc static let shared = UTMRegistry()
     
-    private var lastUpdateTasks: [UTMRegistryEntry: Task<Void, Error>] = [:]
-    
     private var serializedEntries: [String: Any] {
         get {
             UserDefaults.standard.dictionary(forKey: "Registry") ?? [:]
@@ -39,9 +37,11 @@ class UTMRegistry: NSObject {
             let toAdd = entries.keys.filter({ !changeListeners.keys.contains($0) })
             for key in toAdd {
                 let entry = entries[key]!
-                changeListeners[key] = entry.objectWillChange.sink { [weak self, weak entry] in
+                changeListeners[key] = entry.objectWillChange
+                    .debounce(for: .seconds(1), scheduler: DispatchQueue.global(qos: .utility))
+                    .sink { [weak self, weak entry] in
                     if let entry = entry {
-                        self?.update(entry: entry)
+                        self?.commit(entry: entry)
                     }
                 }
             }
@@ -73,15 +73,14 @@ class UTMRegistry: NSObject {
         return UTMRegistryEntry(newFrom: vm)!
     }
     
-    /// Coalesce multiple updates in quick succession into one
-    /// - Parameter entry: Entry to update
-    private func update(entry: UTMRegistryEntry) {
-        lastUpdateTasks[entry]?.cancel()
-        lastUpdateTasks[entry] = Task(priority: .background) {
+    /// Commit the entry to persistent storage
+    /// This runs in a background queue.
+    /// - Parameter entry: Entry to commit
+    private func commit(entry: UTMRegistryEntry) {
+        Task {
             let uuid = await entry.uuid
             let dict = try await entry.asDictionary()
             serializedEntries[uuid] = dict
-            lastUpdateTasks.removeValue(forKey: entry)
         }
     }
 }
