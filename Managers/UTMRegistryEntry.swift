@@ -188,6 +188,62 @@ extension UTMRegistryEntryDecodable {
     }
 }
 
+// MARK: - Migration from UTMViewState
+
+extension UTMRegistryEntry {
+    /// Migrate from a view state
+    /// - Parameter viewState: View state to migrate
+    private func migrate(viewState: UTMLegacyViewState) {
+        var primaryWindow = Window()
+        if viewState.displayScale != .zero {
+            primaryWindow.scale = viewState.displayScale
+        }
+        if viewState.displayOriginX != .zero || viewState.displayOriginY != .zero {
+            primaryWindow.origin = CGPoint(x: viewState.displayOriginX,
+                                           y: viewState.displayOriginY)
+        }
+        primaryWindow.isKeyboardVisible = viewState.isKeyboardShown
+        primaryWindow.isToolbarVisible = viewState.isToolbarShown
+        if primaryWindow != Window() {
+            _windowSettings[0] = primaryWindow
+        }
+        _isSuspended = viewState.hasSaveState
+        if let sharedDirectoryBookmark = viewState.sharedDirectory, let sharedDirectoryPath = viewState.sharedDirectoryPath {
+            if let file = try? File(path: sharedDirectoryPath,
+                                    bookmark: sharedDirectoryBookmark) {
+                _sharedDirectories = [file]
+            } else {
+                logger.error("Failed to migrate shared directory \(sharedDirectoryPath) because bookmark is invalid.")
+            }
+        }
+        if let shortcutBookmark = viewState.shortcutBookmark {
+            _package.remoteBookmark = shortcutBookmark
+        }
+        for drive in viewState.allDrives() {
+            if let bookmark = viewState.bookmark(forRemovableDrive: drive), let path = viewState.path(forRemovableDrive: drive) {
+                let file = File(path: path, remoteBookmark: bookmark)
+                _externalDrives[drive] = file
+            }
+        }
+    }
+    
+    /// Try to migrate from a view.plist or does nothing if it does not exist.
+    /// - Parameter viewStateURL: URL to view.plist
+    @objc func migrateUnsafe(viewStateURL: URL) {
+        let fileManager = FileManager.default
+        guard fileManager.fileExists(atPath: viewStateURL.path) else {
+            return
+        }
+        guard let dict = try? NSDictionary(contentsOf: viewStateURL, error: ()) as? [AnyHashable : Any] else {
+            logger.error("Failed to parse legacy \(viewStateURL)")
+            return
+        }
+        let viewState = UTMLegacyViewState(dictionary: dict)
+        migrate(viewState: viewState)
+        try? fileManager.removeItem(at: viewStateURL) // delete view.plist
+    }
+}
+
 // MARK: - Objective C bridging
 // FIXME: these are NOT synchronized to the actor
 @objc extension UTMRegistryEntry {
@@ -261,6 +317,14 @@ extension UTMRegistryEntry {
             self.url = url
         }
         
+        fileprivate init(path: String, remoteBookmark: Data) {
+            self.path = path
+            self.bookmark = Data()
+            self.isReadOnly = false
+            self.url = URL(fileURLWithPath: path)
+            self.remoteBookmark = remoteBookmark
+        }
+        
         init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             path = try container.decode(String.self, forKey: .path)
@@ -279,7 +343,7 @@ extension UTMRegistryEntry {
         }
     }
     
-    struct Window: Codable {
+    struct Window: Codable, Equatable {
         var scale: CGFloat = 1.0
         
         var origin: CGPoint = .zero
@@ -296,6 +360,9 @@ extension UTMRegistryEntry {
             case isToolbarVisible = "ToolbarVisible"
             case isKeyboardVisible = "KeyboardVisible"
             case isDisplayZoomLocked = "DisplayZoomLocked"
+        }
+        
+        init() {
         }
         
         init(from decoder: Decoder) throws {

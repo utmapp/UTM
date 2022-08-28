@@ -83,6 +83,10 @@ const NSString *const kUTMViewStateRemovableDrivesPathKey = @"RemovableDrivesPat
 
 #pragma mark - Removable drives
 
+- (NSArray<NSString *> *)allDrives {
+    return [_removableDrives allKeys];
+}
+
 - (nullable NSData *)bookmarkForRemovableDrive:(NSString *)drive {
     return _removableDrives[drive];
 }

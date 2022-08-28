@@ -36,6 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithDictionary:(NSDictionary *)dictionary NS_DESIGNATED_INITIALIZER;
 
+- (NSArray<NSString *> *)allDrives;
 - (nullable NSData *)bookmarkForRemovableDrive:(NSString *)drive;
 - (nullable NSString *)pathForRemovableDrive:(NSString *)drive;
 

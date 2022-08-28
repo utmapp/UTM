@@ -197,6 +197,9 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
         self.config = configuration;
         self.path = packageURL;
         self.registryEntry = [UTMRegistry.shared entryFor:self];
+        // migrate legacy view state
+        NSURL *viewStateURL = [packageURL URLByAppendingPathComponent:kUTMBundleViewFilename];
+        [self.registryEntry migrateUnsafeWithViewStateURL:viewStateURL];
         [self loadScreenshot];
         self.anyCancellable = [self subscribeToChildren];
     }

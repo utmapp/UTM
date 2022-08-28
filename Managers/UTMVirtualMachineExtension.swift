@@ -87,7 +87,9 @@ extension UTMVirtualMachine: ObservableObject {
     
     @MainActor func updateRegistryPostSave() async throws {
         registryEntry.name = config.name
+        let oldRemoteBookmark = registryEntry.package.remoteBookmark
         registryEntry.package = try UTMRegistryEntry.File(url: path)
+        registryEntry.package.remoteBookmark = oldRemoteBookmark
     }
 }
 
