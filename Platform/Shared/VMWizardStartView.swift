@@ -118,7 +118,9 @@ struct VMWizardStartView: View {
             }
 
         }
+        #if os(iOS)
         .navigationTitle(Text("Start"))
+        #endif
     }
     
     private func processIsTranslated() -> Bool {

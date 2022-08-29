@@ -122,7 +122,9 @@ struct VMWizardHardwareView: View {
                 
             }
         }
+        #if os(iOS)
         .navigationTitle(Text("Hardware"))
+        #endif
         .textFieldStyle(.roundedBorder)
         .onAppear {
             if wizardState.useVirtualization {

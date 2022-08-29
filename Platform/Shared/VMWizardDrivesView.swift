@@ -43,7 +43,9 @@ struct VMWizardDrivesView: View {
             }
             
         }
+        #if os(iOS)
         .navigationTitle(Text("Storage"))
+        #endif
     }
 }
 

@@ -82,7 +82,9 @@ struct VMWizardOSWindowsView: View {
                 }
             }
         }
+        #if os(iOS)
         .navigationTitle(Text("Windows"))
+        #endif
         .fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.data], onCompletion: processImage)
     }
     
