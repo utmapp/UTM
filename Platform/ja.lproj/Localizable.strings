@@ -85,8 +85,8 @@
 "VirtIO" = "VirtIO";
 "NVMe" = "NVMe";
 "USB" = "USB";
-"SPICE WebDAV (Legacy)" = "SPICE WebDAV（レガシー）";
-"VirtFS (Recommended)" = "VirtFS（推奨）";
+"SPICE WebDAV" = "SPICE WebDAV";
+"VirtFS" = "VirtFS";
 
 
 /* Managers */
@@ -202,6 +202,7 @@
 // VMToolbarDriveMenuView.swift
 "Change…" = "変更…";
 "Clear…" = "消去…";
+"Shared Directory: %@" = "共有ディレクトリ: %@";
 "Eject…" = "取り出す…";
 "Disk" = "ディスク";
 
