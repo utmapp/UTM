@@ -341,7 +341,7 @@ extension UTMRegistryEntry {
 }
 
 extension UTMRegistryEntry {
-    struct File: Codable {
+    struct File: Codable, Identifiable {
         var url: URL
         
         var path: String
@@ -351,6 +351,8 @@ extension UTMRegistryEntry {
         var remoteBookmark: Data?
         
         var isReadOnly: Bool
+        
+        let id: UUID = UUID()
         
         private enum CodingKeys: String, CodingKey {
             case path = "Path"
