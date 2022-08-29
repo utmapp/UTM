@@ -345,7 +345,7 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 
 - (BOOL)isScreenshotSaveEnabled {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    return ![defaults boolForKey:@"NoSaveScreenshot"];
+    return ![defaults boolForKey:@"NoSaveScreenshot"] && !self.isRunningAsSnapshot;
 }
 
 - (void)loadScreenshot {
