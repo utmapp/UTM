@@ -8,6 +8,8 @@
 	<array>
 		<string>$(TeamIdentifierPrefix)$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).UTM</string>
 	</array>
+	<key>com.apple.security.device.audio-input</key>
+	<true/>
 	<key>com.apple.security.device.usb</key>
 	<true/>
 	<key>com.apple.security.files.user-selected.read-write</key>
