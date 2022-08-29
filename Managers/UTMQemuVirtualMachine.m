@@ -300,7 +300,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
         [self _vmStartWithCompletion:^(NSError *err){
             if (err) { // delete suspend state on error
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    self.registryEntry.hasSaveState = YES;
+                    self.registryEntry.hasSaveState = NO;
                 });
                 [self changeState:kVMStopped];
             } else {
