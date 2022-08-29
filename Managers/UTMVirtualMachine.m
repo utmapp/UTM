@@ -36,17 +36,27 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 
 @interface UTMVirtualMachine ()
 
-@property (nonatomic) NSArray *anyCancellable;
 @property (nonatomic, readonly) BOOL isScreenshotSaveEnabled;
 @property (nonatomic, nullable) void (^screenshotTimerHandler)(void);
 @property (nonatomic) BOOL isScopedAccess;
-@property (nonatomic, readwrite) UTMRegistryEntry *registryEntry;
 
 @end
 
 @implementation UTMVirtualMachine
 
 // MARK: - Observable properties
+
+- (void)setConfig:(UTMConfigurationWrapper *)config {
+    [self propertyWillChange];
+    _config = config;
+    [self subscribeToChildren];
+}
+
+- (void)setRegistryEntry:(UTMRegistryEntry *)registryEntry {
+    [self propertyWillChange];
+    _registryEntry = registryEntry;
+    [self subscribeToChildren];
+}
 
 - (void)setState:(UTMVMState)state {
     [self propertyWillChange];
@@ -157,15 +167,15 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 #else
         self.logging = [UTMLogging new];
 #endif
-        self.config = configuration;
+        _config = configuration;
         self.path = packageURL;
-        self.registryEntry = [UTMRegistry.shared entryFor:self];
+        _registryEntry = [UTMRegistry.shared entryFor:self];
         // migrate legacy view state
         NSURL *viewStateURL = [packageURL URLByAppendingPathComponent:kUTMBundleViewFilename];
         [self.registryEntry migrateUnsafeWithViewStateURL:viewStateURL];
         [self.registryEntry migrateFromConfig:configuration];
         [self loadScreenshot];
-        self.anyCancellable = [self subscribeToChildren];
+        [self subscribeToChildren];
     }
     return self;
 }

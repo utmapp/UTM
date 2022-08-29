@@ -17,8 +17,8 @@
 import Foundation
 
 extension UTMVirtualMachine: Identifiable {
-    public var id: (UUID, String) {
-        return (registryEntry.uuid, path.path)
+    public var id: UUID {
+        return registryEntry.uuid
     }
 }
 
@@ -28,7 +28,7 @@ extension UTMVirtualMachine: ObservableObject {
 
 @objc extension UTMVirtualMachine {
     fileprivate static let gibInMib = 1024
-    func subscribeToChildren() -> [AnyObject] {
+    func subscribeToChildren() {
         var s: [AnyObject] = []
         if let config = config.qemuConfig {
             s.append(config.objectWillChange.sink { [weak self] in
@@ -52,7 +52,7 @@ extension UTMVirtualMachine: ObservableObject {
         Task { @MainActor in
             self.updateConfigFromRegistry()
         }
-        return s
+        anyCancellable = s
     }
     
     @MainActor func propertyWillChange() -> Void {
@@ -82,10 +82,9 @@ extension UTMVirtualMachine: ObservableObject {
             try await config.save(to: existingPath)
             try await updateRegistryFromConfig()
         } catch {
-            try? reloadConfiguration()
             throw error
         }
-        if existingPath.path != newPath.path {
+        if !isShortcut && existingPath.path != newPath.path {
             try await Task.detached {
                 try fileManager.moveItem(at: existingPath, to: newPath)
             }.value
@@ -96,15 +95,33 @@ extension UTMVirtualMachine: ObservableObject {
     
     /// Called when we save the config
     @MainActor func updateRegistryFromConfig() async throws {
+        if registryEntry.uuid != config.uuid {
+            changeUuid(to: config.uuid)
+        }
         registryEntry.name = config.name
+        let oldPath = registryEntry.package.path
         let oldRemoteBookmark = registryEntry.package.remoteBookmark
         registryEntry.package = try UTMRegistryEntry.File(url: path)
-        registryEntry.package.remoteBookmark = oldRemoteBookmark
+        if registryEntry.package.path == oldPath {
+            registryEntry.package.remoteBookmark = oldRemoteBookmark
+        }
     }
     
     /// Called whenever the registry entry changes
     @MainActor func updateConfigFromRegistry() {
         // implement in subclass
+    }
+    
+    /// Called when we have a duplicate UUID
+    @MainActor func changeUuid(to uuid: UUID) {
+        if let qemuConfig = config.qemuConfig {
+            qemuConfig.information.uuid = uuid
+        } else if let appleConfig = config.appleConfig {
+            appleConfig.information.uuid = uuid
+        } else {
+            fatalError("Invalid configuration.")
+        }
+        registryEntry = UTMRegistry.shared.entry(for: self)
     }
 }
 

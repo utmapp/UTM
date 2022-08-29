@@ -67,6 +67,8 @@ extern NSString *const kUTMBundleConfigFilename;
 @property (nonatomic, readwrite) NSURL *path;
 @property (nonatomic, readwrite) UTMConfigurationWrapper *config;
 @property (nonatomic, readwrite, nullable) CSScreenshot *screenshot;
+@property (nonatomic, readwrite) UTMRegistryEntry *registryEntry;
+@property (nonatomic) NSArray *anyCancellable;
 
 - (instancetype)init NS_UNAVAILABLE;
 

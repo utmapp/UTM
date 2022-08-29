@@ -21,7 +21,7 @@ import Foundation
     
     @Published private var _package: File
     
-    var uuid: UUID
+    private(set) var uuid: UUID
     
     @Published private var _isSuspended: Bool
     
@@ -203,6 +203,14 @@ extension UTMRegistryEntryDecodable {
     
     func removeAllSharedDirectories() {
         sharedDirectories = []
+    }
+    
+    func update(copying other: UTMRegistryEntry) {
+        isSuspended = other.isSuspended
+        externalDrives = other.externalDrives
+        sharedDirectories = other.sharedDirectories
+        windowSettings = other.windowSettings
+        hasMigratedConfig = other.hasMigratedConfig
     }
 }
 
