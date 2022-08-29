@@ -70,9 +70,13 @@ import Virtualization
     override func reloadConfiguration() throws {
         let newConfig = try UTMAppleConfiguration.load(from: path) as! UTMAppleConfiguration
         let oldConfig = appleConfig
-        // copy non-persistent values over
-        newConfig.copyNonpersistentValuesUnsafely(from: oldConfig)
         config = UTMConfigurationWrapper(wrapping: newConfig)
+        Task { @MainActor in
+            updateConfigFromRegistry()
+            if #available(macOS 12, *) {
+                newConfig.system.boot.macRecoveryIpswURL = oldConfig.system.boot.macRecoveryIpswURL
+            }
+        }
     }
     
     override func accessShortcut() async throws {

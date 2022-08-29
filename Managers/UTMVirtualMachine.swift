@@ -69,6 +69,9 @@ extension UTMVirtualMachine: ObservableObject {
 @objc extension UTMVirtualMachine {
     func reloadConfiguration() throws {
         try config.reload(from: path)
+        Task { @MainActor in
+            updateConfigFromRegistry()
+        }
     }
     
     func saveUTM() async throws {

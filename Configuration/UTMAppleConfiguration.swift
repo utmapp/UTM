@@ -328,17 +328,3 @@ extension UTMAppleConfiguration {
         return existingDataURLs
     }
 }
-
-// MARK: - Copy non-persistent values
-
-extension UTMAppleConfiguration {
-    /// Unsafely access another configuration and copies values.
-    /// Must only be called after init() or this could break concurrent accesses.
-    /// - Parameter other: Other configuration to copy from
-    func copyNonpersistentValuesUnsafely(from other: UTMAppleConfiguration) {
-        _sharedDirectories = other._sharedDirectories
-        if #available(macOS 12, *) {
-            _system.boot.macRecoveryIpswURL = other._system.boot.macRecoveryIpswURL
-        }
-    }
-}
