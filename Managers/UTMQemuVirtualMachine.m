@@ -312,9 +312,6 @@ NSString *const kSuspendSnapshotName = @"suspend";
 }
 
 - (void)_vmStopForce:(BOOL)force completion:(void (^)(NSError * _Nullable))completion {
-    // save view settings early to win exit race
-    [self saveViewState];
-    
     [self.qemu qemuQuitWithCompletion:nil];
     if (force || dispatch_semaphore_wait(self.qemuWillQuitEvent, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
         UTMLog(@"Stop operation timeout or force quit");

@@ -28,8 +28,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) UTMQemu *system;
 @property (nonatomic, readonly, nullable) UTMSpiceIO *ioService;
 
-- (void)saveViewState;
-
 @end
 
 NS_ASSUME_NONNULL_END
