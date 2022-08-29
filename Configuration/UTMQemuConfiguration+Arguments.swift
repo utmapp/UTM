@@ -196,20 +196,13 @@ import Foundation
                 f("cortex-a15")
             }
         } else {
-            var flags = ""
-            for flag in system.cpuFlagsAdd {
-                flags += ",+\(flag)"
-            }
-            for flag in system.cpuFlagsRemove {
-                flags += ",-\(flag)"
-            }
             f("-cpu")
             system.cpu
             for flag in system.cpuFlagsAdd {
-                "+\(flag)"
+                "+\(flag.rawValue)"
             }
             for flag in system.cpuFlagsRemove {
-                "-\(flag)"
+                "-\(flag.rawValue)"
             }
             f()
         }
