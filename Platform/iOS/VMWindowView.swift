@@ -133,10 +133,12 @@ struct VMWindowView: View {
                 state.device = nil
             }
         }
-        .onChange(of: state.device) { newDevice in
+        .onChange(of: state.device) { [oldDevice = state.device] newDevice in
             if session.windowDeviceMap[state.id] != newDevice {
                 session.windowDeviceMap[state.id] = newDevice
             }
+            state.saveWindow(to: session.vm.registryEntry, device: oldDevice)
+            state.restoreWindow(from: session.vm.registryEntry, device: newDevice)
         }
         #if !WITH_QEMU_TCI
         .onChange(of: session.mostRecentConnectedDevice) { newValue in
@@ -155,8 +157,8 @@ struct VMWindowView: View {
                 state.alert = .fatalError(message)
             }
         }
-        .onChange(of: session.vmState) { newValue in
-            vmStateUpdated(newValue)
+        .onChange(of: session.vmState) { [oldValue = session.vmState] newValue in
+            vmStateUpdated(from: oldValue, to: newValue)
         }
         .onReceive(keyboardDidShowNotification) { _ in
             state.isKeyboardShown = true
@@ -177,13 +179,14 @@ struct VMWindowView: View {
                 return
             }
             if newValue == .background {
+                saveWindow()
                 session.didEnterBackground()
             } else if newValue == .active {
                 session.didEnterForeground()
             }
         }
         .onAppear {
-            vmStateUpdated(session.vmState)
+            vmStateUpdated(from: nil, to: session.vmState)
             session.registerWindow(state.id, isExternal: !isInteractive)
             if !isInteractive {
                 session.externalWindowBinding = $state
@@ -197,7 +200,10 @@ struct VMWindowView: View {
         }
     }
     
-    private func vmStateUpdated(_ vmState: UTMVMState) {
+    private func vmStateUpdated(from oldState: UTMVMState?, to vmState: UTMVMState) {
+        if oldState == .vmStarted {
+            saveWindow()
+        }
         switch vmState {
         case .vmStopped, .vmPaused:
             withOptionalAnimation {
@@ -222,6 +228,10 @@ struct VMWindowView: View {
         @unknown default:
             break
         }
+    }
+    
+    private func saveWindow() {
+        state.saveWindow(to: session.vm.registryEntry, device: state.device)
     }
 }
 
