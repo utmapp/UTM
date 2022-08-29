@@ -389,7 +389,14 @@ class UTMData: ObservableObject {
         guard await !virtualMachines.contains(where: { !$0.isShortcut && $0.config.name == config.information.name }) else {
             throw NSLocalizedString("An existing virtual machine already exists with this name.", comment: "UTMData")
         }
-        let vm = UTMVirtualMachine(newConfig: config, destinationURL: Self.defaultStorageUrl)
+        let vm: UTMVirtualMachine
+        if config is UTMQemuConfiguration {
+            vm = UTMQemuVirtualMachine(newConfig: config, destinationURL: Self.defaultStorageUrl)
+        } else if config is UTMAppleConfiguration {
+            vm = UTMAppleVirtualMachine(newConfig: config, destinationURL: Self.defaultStorageUrl)
+        } else {
+            fatalError("Unknown configuration.")
+        }
         try await save(vm: vm)
         await listAdd(vm: vm)
         await listSelect(vm: vm)

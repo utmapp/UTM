@@ -52,7 +52,7 @@ import Foundation
         } else {
             package = try? File(url: path)
         }
-        _name = vm.detailsTitleLabel
+        _name = vm.config.name
         _package = package ?? File(path: path.path)
         uuid = vm.config.uuid
         _isSuspended = false
