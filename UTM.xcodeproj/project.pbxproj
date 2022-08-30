@@ -1570,6 +1570,14 @@
 		52873FD9247F5B1B0063E4C8 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		52873FDA247F5B1B0063E4C8 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		53A0BDD426D79FE40010EDC5 /* SavePanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavePanel.swift; sourceTree = "<group>"; };
+		5A17469E28BA9C4300278241 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/VMDisplayMetalViewInputAccessory.strings; sourceTree = "<group>"; };
+		5A17469F28BA9C4300278241 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/VMDisplayWindow.strings; sourceTree = "<group>"; };
+		5A1746A028BA9C4300278241 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		5A1746A128BA9C4300278241 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		5A1746A228BA9C4300278241 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/Localizable.strings; sourceTree = "<group>"; };
+		5A1746A428BA9C4300278241 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		5A1746A528BA9C4300278241 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/Localizable.strings; sourceTree = "<group>"; };
+		5A1746A628BA9C4300278241 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		83034C0626AB630F006B4BAF /* UTMPendingVMView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMPendingVMView.swift; sourceTree = "<group>"; };
 		835AA7B026AB7C85007A0411 /* UTMPendingVirtualMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMPendingVirtualMachine.swift; sourceTree = "<group>"; };
 		83A004B826A8CC95001AC09E /* UTMDownloadTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMDownloadTask.swift; sourceTree = "<group>"; };
@@ -3422,6 +3430,7 @@
 				"zh-Hant",
 				ja,
 				fr,
+				fi,
 				"es-419",
 			);
 			mainGroup = CE550BC0225947990063E575;
@@ -4436,6 +4445,7 @@
 				CEF84ADA2887D7D300578F41 /* ja */,
 				84937F0C28975DCB003148F4 /* fr */,
 				84937F19289764D9003148F4 /* en */,
+				5A1746A228BA9C4300278241 /* fi */,
 				E68D491F28AC018D00D34C54 /* es-419 */,
 			);
 			name = Localizable.strings;
@@ -4449,6 +4459,7 @@
 				52873FDA247F5B1B0063E4C8 /* zh-Hant */,
 				84937F0D28975DD2003148F4 /* fr */,
 				84937F1A289764DE003148F4 /* en */,
+				5A1746A428BA9C4300278241 /* fi */,
 				E68D492128AC018D00D34C54 /* es-419 */,
 			);
 			name = InfoPlist.strings;
@@ -4459,6 +4470,7 @@
 			children = (
 				CE061CDC289E6DC30000351C /* Base */,
 				CE061CDF289E6DCF0000351C /* ja */,
+				5A17469F28BA9C4300278241 /* fi */,
 				E68D491C28AC018700D34C54 /* es-419 */,
 				844C73F828BDA96200805313 /* fr */,
 			);
@@ -4470,6 +4482,7 @@
 			children = (
 				CE061CE8289EB6250000351C /* Base */,
 				CE061CEB289EB62E0000351C /* ja */,
+				5A17469E28BA9C4300278241 /* fi */,
 				E68D491B28AC018600D34C54 /* es-419 */,
 			);
 			name = VMDisplayMetalViewInputAccessory.xib;
@@ -4492,6 +4505,7 @@
 				CEDC9BA2288B74E50030F494 /* ja */,
 				84937F0E289761C0003148F4 /* fr */,
 				84937F17289764A9003148F4 /* en */,
+				5A1746A028BA9C4300278241 /* fi */,
 				E68D491D28AC018D00D34C54 /* es-419 */,
 			);
 			name = InfoPlist.strings;
@@ -4505,6 +4519,7 @@
 				CEDC9BA4288BBD6B0030F494 /* ja */,
 				84937F0F289761D1003148F4 /* fr */,
 				84937F18289764CF003148F4 /* en */,
+				5A1746A128BA9C4300278241 /* fi */,
 				E68D491E28AC018D00D34C54 /* es-419 */,
 			);
 			name = InfoPlist.strings;
@@ -4517,6 +4532,7 @@
 				C03453AF2709E35100AD51AD /* zh-Hans */,
 				84937F10289761FF003148F4 /* fr */,
 				84937F1C289764E8003148F4 /* en */,
+				5A1746A628BA9C4300278241 /* fi */,
 				E68D492328AC018E00D34C54 /* es-419 */,
 			);
 			name = InfoPlist.strings;
@@ -4530,6 +4546,7 @@
 				CEDC9BA3288BBD130030F494 /* ja */,
 				84937F1128976204003148F4 /* fr */,
 				84937F1B289764E4003148F4 /* en */,
+				5A1746A528BA9C4300278241 /* fi */,
 				E68D492228AC018E00D34C54 /* es-419 */,
 			);
 			name = Localizable.strings;

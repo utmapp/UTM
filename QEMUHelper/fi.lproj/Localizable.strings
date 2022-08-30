@@ -1,0 +1,9 @@
+/* QEMUHelper */
+"Cannot find QEMU support libraries." = "Vaadittuja QEMU-kirjastoja ei löytynyt";
+
+/* QEMUHelper */
+"Error starting QEMU." = "QEMU:n käynnistäminen epäonnistui";
+
+/* QEMUHelper */
+"QEMU exited unexpectedly." = "QEMU lopetti yllättäen";
+

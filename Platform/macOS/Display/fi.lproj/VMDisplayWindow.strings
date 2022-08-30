@@ -1,0 +1,78 @@
+
+/* Class = "NSToolbarItem"; label = "Shared Folder"; ObjectID = "7EC-GE-fIl"; */
+"7EC-GE-fIl.label" = "Jaettu kansio";
+
+/* Class = "NSToolbarItem"; paletteLabel = "Shared Folder"; ObjectID = "7EC-GE-fIl"; */
+"7EC-GE-fIl.paletteLabel" = "Jaettu kansio";
+
+/* Class = "NSToolbarItem"; toolTip = "Shared folder"; ObjectID = "7EC-GE-fIl"; */
+"7EC-GE-fIl.toolTip" = "Jaettu kansio";
+
+/* Class = "NSToolbarItem"; label = "Stop"; ObjectID = "Bkx-Ph-j0D"; */
+"Bkx-Ph-j0D.label" = "Pysäytä";
+
+/* Class = "NSToolbarItem"; paletteLabel = "Stop"; ObjectID = "Bkx-Ph-j0D"; */
+"Bkx-Ph-j0D.paletteLabel" = "Pysäytä";
+
+/* Class = "NSToolbarItem"; toolTip = "Shuts down and stops the VM"; ObjectID = "Bkx-Ph-j0D"; */
+"Bkx-Ph-j0D.toolTip" = "Pysäyttää VMän";
+
+/* Class = "NSToolbarItem"; label = "Capture Mouse"; ObjectID = "FN7-zs-mWC"; */
+"FN7-zs-mWC.label" = "Kaappaa hiiri";
+
+/* Class = "NSToolbarItem"; paletteLabel = "Capture Mouse"; ObjectID = "FN7-zs-mWC"; */
+"FN7-zs-mWC.paletteLabel" = "Kaappaa hiiri";
+
+/* Class = "NSToolbarItem"; toolTip = "Capture mouse cursor"; ObjectID = "FN7-zs-mWC"; */
+"FN7-zs-mWC.toolTip" = "Kaappaa hiiri";
+
+/* Class = "NSToolbarItem"; label = "Restart"; ObjectID = "G7P-HJ-bcy"; */
+"G7P-HJ-bcy.label" = "Käynnistä uudelleen";
+
+/* Class = "NSToolbarItem"; paletteLabel = "Restart"; ObjectID = "G7P-HJ-bcy"; */
+"G7P-HJ-bcy.paletteLabel" = "Käynnistä uudelleen";
+
+/* Class = "NSToolbarItem"; toolTip = "Restarts the VM"; ObjectID = "G7P-HJ-bcy"; */
+"G7P-HJ-bcy.toolTip" = "Käynnistä uudelleen VMän";
+
+/* Class = "NSWindow"; title = "UTM"; ObjectID = "QvC-M9-y7g"; */
+"QvC-M9-y7g.title" = "UTM";
+
+/* Class = "NSToolbarItem"; label = "Resize Console"; ObjectID = "Ulf-oT-4cP"; */
+"Ulf-oT-4cP.label" = "Muuta konsolin kokoa";
+
+/* Class = "NSToolbarItem"; paletteLabel = "Resize Console"; ObjectID = "Ulf-oT-4cP"; */
+"Ulf-oT-4cP.paletteLabel" = "Muuta konsolin kokoa";
+
+/* Class = "NSToolbarItem"; toolTip = "Send console resize command"; ObjectID = "Ulf-oT-4cP"; */
+"Ulf-oT-4cP.toolTip" = "Lähetä konsolin koonmuutoskomento";
+
+/* Class = "NSButton"; ibShadowedToolTip = "Starts/resumes the VM"; ObjectID = "ZTi-Hs-ge6"; */
+"ZTi-Hs-ge6.ibShadowedToolTip" = "Aloittaa/jatkaa VM:n";
+
+/* Class = "NSToolbarItem"; label = "Drives"; ObjectID = "bKL-Th-FFw"; */
+"bKL-Th-FFw.label" = "Asemat";
+
+/* Class = "NSToolbarItem"; paletteLabel = "Drives"; ObjectID = "bKL-Th-FFw"; */
+"bKL-Th-FFw.paletteLabel" = "Asemat";
+
+/* Class = "NSToolbarItem"; toolTip = "Drive image options"; ObjectID = "bKL-Th-FFw"; */
+"bKL-Th-FFw.toolTip" = "Drive-kuvavaihtoehdot";
+
+/* Class = "NSToolbarItem"; label = "Start/Pause"; ObjectID = "kT2-2U-cYm"; */
+"kT2-2U-cYm.label" = "Käynnistä/Tauko";
+
+/* Class = "NSToolbarItem"; paletteLabel = "Start/Pause"; ObjectID = "kT2-2U-cYm"; */
+"kT2-2U-cYm.paletteLabel" = "Käynnistä/Tauko";
+
+/* Class = "NSToolbarItem"; toolTip = "Start/pause the VM"; ObjectID = "kT2-2U-cYm"; */
+"kT2-2U-cYm.toolTip" = "Käynnistä/Tauota VM";
+
+/* Class = "NSToolbarItem"; label = "USB"; ObjectID = "tlw-Fb-ne3"; */
+"tlw-Fb-ne3.label" = "USB";
+
+/* Class = "NSToolbarItem"; paletteLabel = "USB"; ObjectID = "tlw-Fb-ne3"; */
+"tlw-Fb-ne3.paletteLabel" = "USB";
+
+/* Class = "NSToolbarItem"; toolTip = "USB devices"; ObjectID = "tlw-Fb-ne3"; */
+"tlw-Fb-ne3.toolTip" = "USB laitteet";

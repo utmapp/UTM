@@ -1,0 +1,21 @@
+/* Bundle name */
+"CFBundleName" = "UTM";
+
+/* Privacy - Local Network Usage Description */
+"NSLocalNetworkUsageDescription" = "UTM käyttää alkuperäistä verkkoa löytääkseen AltServerin ja viestiäkseen sen kanssa.";
+
+/* Privacy - Location Always and When In Use Usage Description */
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "Virtuaalikoneen taustakäyttö edellyttää sijaintipalveluita. Sijaintitietoja ei siirretä pois puhelimesta.";
+
+/* Privacy - Location Always Usage Description */
+"NSLocationAlwaysUsageDescription" = "Virtuaalikoneen taustakäyttö edellyttää sijaintipalveluita. Sijaintitietoja ei siirretä pois puhelimesta.";
+
+/* Privacy - Location When In Use Usage Description */
+"NSLocationWhenInUseUsageDescription" = "Virtuaalikoneen taustakäyttö edellyttää sijaintipalveluita. Sijaintitietoja ei siirretä pois puhelimesta.";
+
+/* Privacy - Microphone Usage Description */
+"NSMicrophoneUsageDescription" = "Virtuaalikone vaatii pääsyn mikrofoniin.";
+
+/* (No Comment) */
+"UTM virtual machine" = "UTM-virtuaalikone";
+
