@@ -22,10 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) BOOL hasUsbRedirection;
 
-- (BOOL)changeSharedDirectory:(NSURL *)url error:(NSError * _Nullable *)error;
-- (void)clearSharedDirectory;
-- (BOOL)startSharedDirectoryWithError:(NSError * _Nullable __autoreleasing *)error;
-
 - (void)requestInputTablet:(BOOL)tablet;
 
 @end

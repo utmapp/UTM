@@ -1,5 +1,5 @@
 //
-// Copyright © 2020 osy. All rights reserved.
+// Copyright © 2022 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,18 +14,20 @@
 // limitations under the License.
 //
 
-#import "UTMDrive.h"
-#import "UTMLegacyQemuConfiguration+Constants.h"
+#import "UTMQemuVirtualMachine.h"
 
-@implementation UTMDrive
+@class UTMQemu;
+@class UTMQemuManager;
+@class UTMSpiceIO;
 
-- (NSString *)label {
-    NSString *imageTypeStr = [UTMLegacyQemuConfiguration supportedImageTypesPretty][self.imageType];
-    NSString *filename = self.path.lastPathComponent;
-    if (!filename) {
-        filename = NSLocalizedString(@"none", @"UTMDrive");
-    }
-    return [NSString localizedStringWithFormat:NSLocalizedString(@"%@ (%@): %@", @"UTMDrive"), imageTypeStr, self.interface, filename];
-}
+NS_ASSUME_NONNULL_BEGIN
+
+@interface UTMQemuVirtualMachine (Protected)
+
+@property (nonatomic, readonly, nullable) UTMQemuManager *qemu;
+@property (nonatomic, readonly, nullable) UTMQemu *system;
+@property (nonatomic, readonly, nullable) UTMSpiceIO *ioService;
 
 @end
+
+NS_ASSUME_NONNULL_END

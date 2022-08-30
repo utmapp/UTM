@@ -55,7 +55,6 @@ struct UTMQemuConfigurationDrive: UTMConfigurationDrive {
     
     enum CodingKeys: String, CodingKey {
         case imageName = "ImageName"
-        case bookmark = "Bookmark"
         case imageType = "ImageType"
         case interface = "Interface"
         case identifier = "Identifier"
@@ -73,11 +72,6 @@ struct UTMQemuConfigurationDrive: UTMConfigurationDrive {
             self.imageName = imageName
             imageURL = dataURL.appendingPathComponent(imageName)
             isExternal = false
-        } else if let bookmark = try values.decodeIfPresent(Data.self, forKey: .bookmark) {
-            var stale: Bool = false
-            imageURL = try? URL(resolvingBookmarkData: bookmark, options: kUTMBookmarkResolutionOptions, bookmarkDataIsStale: &stale)
-            imageName = imageURL?.lastPathComponent
-            isExternal = true
         } else {
             isExternal = true
         }
@@ -90,19 +84,6 @@ struct UTMQemuConfigurationDrive: UTMConfigurationDrive {
         var container = encoder.container(keyedBy: CodingKeys.self)
         if !isExternal {
             try container.encodeIfPresent(imageURL?.lastPathComponent, forKey: .imageName)
-        } else {
-            var options = kUTMBookmarkCreationOptions
-            #if os(macOS)
-            if isReadOnly {
-                options.insert(.securityScopeAllowOnlyReadAccess)
-            }
-            #endif
-            _ = imageURL?.startAccessingSecurityScopedResource()
-            defer {
-                imageURL?.stopAccessingSecurityScopedResource()
-            }
-            let bookmark = try imageURL?.bookmarkData(options: options)
-            try container.encodeIfPresent(bookmark, forKey: .bookmark)
         }
         try container.encode(imageType, forKey: .imageType)
         if imageType == .cd || imageType == .disk {

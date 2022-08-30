@@ -17,7 +17,7 @@
 import Foundation
 
 /// Build QEMU arguments from config
-extension UTMQemuConfiguration {
+@MainActor extension UTMQemuConfiguration {
     /// Helper function to generate a final argument
     /// - Parameter string: Argument fragment
     /// - Returns: Final argument fragment
@@ -196,20 +196,13 @@ extension UTMQemuConfiguration {
                 f("cortex-a15")
             }
         } else {
-            var flags = ""
-            for flag in system.cpuFlagsAdd {
-                flags += ",+\(flag)"
-            }
-            for flag in system.cpuFlagsRemove {
-                flags += ",-\(flag)"
-            }
             f("-cpu")
             system.cpu
             for flag in system.cpuFlagsAdd {
-                "+\(flag)"
+                "+\(flag.rawValue)"
             }
             for flag in system.cpuFlagsRemove {
-                "-\(flag)"
+                "-\(flag.rawValue)"
             }
             f()
         }
@@ -688,26 +681,27 @@ extension UTMQemuConfiguration {
                 f("virtserialport,chardev=charchannel1,id=channel1,name=org.spice-space.webdav.0")
                 f("-chardev")
                 f("spiceport,name=org.spice-space.webdav.0,id=charchannel1")
-            } else if sharing.directoryShareMode == .virtfs, let url = sharing.directoryShareUrl {
-                f("-fsdev")
-                "local"
-                "id=virtfs0"
-                "path="
-                url
-                "security_model=mapped-xattr"
-                if sharing.isDirectoryShareReadOnly {
-                    "readonly=on"
-                }
-                f()
-                f("-device")
-                if system.architecture == .s390x {
-                    "virtio-9p-ccw"
-                } else {
-                    "virtio-9p-pci"
-                }
-                "fsdev=virtfs0"
-                "mount_tag=share"
             }
+        }
+        if sharing.directoryShareMode == .virtfs, let url = sharing.directoryShareUrl {
+            f("-fsdev")
+            "local"
+            "id=virtfs0"
+            "path="
+            url
+            "security_model=mapped-xattr"
+            if sharing.isDirectoryShareReadOnly {
+                "readonly=on"
+            }
+            f()
+            f("-device")
+            if system.architecture == .s390x {
+                "virtio-9p-ccw"
+            } else {
+                "virtio-9p-pci"
+            }
+            "fsdev=virtfs0"
+            "mount_tag=share"
         }
     }
     

@@ -21,21 +21,21 @@ import Virtualization
 @available(macOS 11, *)
 final class UTMAppleConfiguration: UTMConfiguration {
     /// Basic information and icon
-    @Published var information: UTMConfigurationInfo = .init()
+    @Published var _information: UTMConfigurationInfo = .init()
     
-    @Published var system: UTMAppleConfigurationSystem = .init()
+    @Published private var _system: UTMAppleConfigurationSystem = .init()
     
-    @Published var virtualization: UTMAppleConfigurationVirtualization = .init()
+    @Published private var _virtualization: UTMAppleConfigurationVirtualization = .init()
     
-    @Published var sharedDirectories: [UTMAppleConfigurationSharedDirectory] = []
+    @Published private var _sharedDirectories: [UTMAppleConfigurationSharedDirectory] = []
     
-    @Published var displays: [UTMAppleConfigurationDisplay] = [.init()]
+    @Published private var _displays: [UTMAppleConfigurationDisplay] = [.init()]
     
-    @Published var drives: [UTMAppleConfigurationDrive] = []
+    @Published private var _drives: [UTMAppleConfigurationDrive] = []
     
-    @Published var networks: [UTMAppleConfigurationNetwork] = [.init()]
+    @Published private var _networks: [UTMAppleConfigurationNetwork] = [.init()]
     
-    @Published var serials: [UTMAppleConfigurationSerial] = []
+    @Published private var _serials: [UTMAppleConfigurationSerial] = []
     
     var backend: UTMBackend {
         .apple
@@ -45,7 +45,7 @@ final class UTMAppleConfiguration: UTMConfiguration {
         case information = "Information"
         case system = "System"
         case virtualization = "Virtualization"
-        case sharedDirectories = "SharedDirectory"
+        case sharedDirectories = "SharedDirectory" // legacy
         case displays = "Display"
         case drives = "Drive"
         case networks = "Network"
@@ -70,32 +70,31 @@ final class UTMAppleConfiguration: UTMConfiguration {
         guard version <= Self.currentVersion else {
             throw UTMConfigurationError.versionTooHigh
         }
-        information = try values.decode(UTMConfigurationInfo.self, forKey: .information)
-        system = try values.decode(UTMAppleConfigurationSystem.self, forKey: .system)
-        virtualization = try values.decode(UTMAppleConfigurationVirtualization.self, forKey: .virtualization)
-        sharedDirectories = try values.decode([UTMAppleConfigurationSharedDirectory].self, forKey: .sharedDirectories)
-        displays = try values.decode([UTMAppleConfigurationDisplay].self, forKey: .displays)
-        drives = try values.decode([UTMAppleConfigurationDrive].self, forKey: .drives)
-        networks = try values.decode([UTMAppleConfigurationNetwork].self, forKey: .networks)
-        serials = try values.decode([UTMAppleConfigurationSerial].self, forKey: .serials)
+        _information = try values.decode(UTMConfigurationInfo.self, forKey: .information)
+        _system = try values.decode(UTMAppleConfigurationSystem.self, forKey: .system)
+        _virtualization = try values.decode(UTMAppleConfigurationVirtualization.self, forKey: .virtualization)
+        _sharedDirectories = try values.decodeIfPresent([UTMAppleConfigurationSharedDirectory].self, forKey: .sharedDirectories) ?? []
+        _displays = try values.decode([UTMAppleConfigurationDisplay].self, forKey: .displays)
+        _drives = try values.decode([UTMAppleConfigurationDrive].self, forKey: .drives)
+        _networks = try values.decode([UTMAppleConfigurationNetwork].self, forKey: .networks)
+        _serials = try values.decode([UTMAppleConfigurationSerial].self, forKey: .serials)
         // remove incompatible configurations
-        if #unavailable(macOS 13), system.boot.operatingSystem != .macOS {
-            displays = []
+        if #unavailable(macOS 13), _system.boot.operatingSystem != .macOS {
+            _displays = []
         } else if #unavailable(macOS 12) {
-            displays = []
+            _displays = []
         }
     }
     
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(information, forKey: .information)
-        try container.encode(system, forKey: .system)
-        try container.encode(virtualization, forKey: .virtualization)
-        try container.encode(sharedDirectories, forKey: .sharedDirectories)
-        try container.encode(displays, forKey: .displays)
-        try container.encode(drives, forKey: .drives)
-        try container.encode(networks, forKey: .networks)
-        try container.encode(serials, forKey: .serials)
+        try container.encode(_information, forKey: .information)
+        try container.encode(_system, forKey: .system)
+        try container.encode(_virtualization, forKey: .virtualization)
+        try container.encode(_displays, forKey: .displays)
+        try container.encode(_drives, forKey: .drives)
+        try container.encode(_networks, forKey: .networks)
+        try container.encode(_serials, forKey: .serials)
         try container.encode(UTMBackend.apple, forKey: .backend)
         try container.encode(Self.currentVersion, forKey: .configurationVersion)
     }
@@ -126,30 +125,120 @@ extension UTMAppleConfigurationError: LocalizedError {
     }
 }
 
+// MARK: - Public accessors
+
+@MainActor extension UTMAppleConfiguration {
+    var information: UTMConfigurationInfo {
+        get {
+            _information
+        }
+        
+        set {
+            _information = newValue
+        }
+    }
+    
+    var system: UTMAppleConfigurationSystem {
+        get {
+            _system
+        }
+        
+        set {
+            _system = newValue
+        }
+    }
+    
+    var virtualization: UTMAppleConfigurationVirtualization {
+        get {
+            _virtualization
+        }
+        
+        set {
+            _virtualization = newValue
+        }
+    }
+    
+    var sharedDirectories: [UTMAppleConfigurationSharedDirectory] {
+        get {
+            _sharedDirectories
+        }
+        
+        set {
+            _sharedDirectories = newValue
+        }
+    }
+    
+    var sharedDirectoriesPublisher: Published<[UTMAppleConfigurationSharedDirectory]>.Publisher {
+        get {
+            $_sharedDirectories
+        }
+    }
+    
+    var displays: [UTMAppleConfigurationDisplay] {
+        get {
+            _displays
+        }
+        
+        set {
+            _displays = newValue
+        }
+    }
+    
+    var drives: [UTMAppleConfigurationDrive] {
+        get {
+            _drives
+        }
+        
+        set {
+            _drives = newValue
+        }
+    }
+    
+    var networks: [UTMAppleConfigurationNetwork] {
+        get {
+            _networks
+        }
+        
+        set {
+            _networks = newValue
+        }
+    }
+    
+    var serials: [UTMAppleConfigurationSerial] {
+        get {
+            _serials
+        }
+        
+        set {
+            _serials = newValue
+        }
+    }
+}
+
 // MARK: - Conversion of old config format
 
 extension UTMAppleConfiguration {
     convenience init(migrating oldConfig: UTMLegacyAppleConfiguration, dataURL: URL) {
         self.init()
-        information = .init(migrating: oldConfig, dataURL: dataURL)
-        system = .init(migrating: oldConfig)
-        virtualization = .init(migrating: oldConfig)
-        sharedDirectories = oldConfig.sharedDirectories.map { .init(migrating: $0) }
+        _information = .init(migrating: oldConfig, dataURL: dataURL)
+        _system = .init(migrating: oldConfig)
+        _virtualization = .init(migrating: oldConfig)
+        _sharedDirectories = oldConfig.sharedDirectories.map { .init(migrating: $0) }
         #if arch(arm64)
         if #available(macOS 12, *) {
-            displays = oldConfig.displays.map { .init(migrating: $0) }
+            _displays = oldConfig.displays.map { .init(migrating: $0) }
         }
         #endif
-        drives = oldConfig.diskImages.map { .init(migrating: $0) }
-        networks = oldConfig.networkDevices.map { .init(migrating: $0) }
+        _drives = oldConfig.diskImages.map { .init(migrating: $0) }
+        _networks = oldConfig.networkDevices.map { .init(migrating: $0) }
         if oldConfig.isConsoleDisplay {
             var serial = UTMAppleConfigurationSerial()
             serial.terminal = .init(migrating: oldConfig)
-            serials = [serial]
+            _serials = [serial]
         } else if oldConfig.isSerialEnabled {
             var serial = UTMAppleConfigurationSerial()
             serial.mode = .ptty
-            serials = [serial]
+            _serials = [serial]
         }
     }
 }
@@ -158,7 +247,7 @@ extension UTMAppleConfiguration {
 
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
 @available(macOS 11, *)
-extension UTMAppleConfiguration {
+@MainActor extension UTMAppleConfiguration {
     var appleVZConfiguration: VZVirtualMachineConfiguration {
         let vzconfig = VZVirtualMachineConfiguration()
         system.fillVZConfiguration(vzconfig)
@@ -213,19 +302,19 @@ extension UTMAppleConfiguration {
 
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
 @available(macOS 11, *)
-extension UTMAppleConfiguration {
+@MainActor extension UTMAppleConfiguration {
     func prepareSave(for packageURL: URL) async throws {
         try await virtualization.prepareSave(for: packageURL)
     }
     
     func saveData(to dataURL: URL) async throws -> [URL] {
         var existingDataURLs = [URL]()
-        existingDataURLs += try await information.saveData(to: dataURL)
-        existingDataURLs += try await system.boot.saveData(to: dataURL)
+        existingDataURLs += try await _information.saveData(to: dataURL)
+        existingDataURLs += try await _system.boot.saveData(to: dataURL)
         
         #if arch(arm64)
         if #available(macOS 12, *), system.macPlatform != nil {
-            existingDataURLs += try await system.macPlatform!.saveData(to: dataURL)
+            existingDataURLs += try await _system.macPlatform!.saveData(to: dataURL)
         }
         #endif
 
@@ -233,7 +322,7 @@ extension UTMAppleConfiguration {
         try appleVZConfiguration.validate()
 
         for i in 0..<drives.count {
-            existingDataURLs += try await drives[i].saveData(to: dataURL)
+            existingDataURLs += try await _drives[i].saveData(to: dataURL)
         }
         
         return existingDataURLs

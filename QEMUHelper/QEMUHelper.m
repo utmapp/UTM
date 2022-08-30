@@ -20,7 +20,7 @@
 @interface QEMUHelper ()
 
 @property NSMutableArray<NSURL *> *urls;
-@property dispatch_queue_t childWaitQueue;
+@property NSTask *childTask;
 
 @end
 
@@ -29,7 +29,6 @@
 - (instancetype)init {
     if (self = [super init]) {
         self.urls = [NSMutableArray array];
-        self.childWaitQueue = dispatch_queue_create("childWaitQueue", DISPATCH_QUEUE_CONCURRENT);
     }
     return self;
 }
@@ -107,6 +106,7 @@
     NSTask *task = [NSTask new];
     NSMutableArray<NSString *> *newArgv = [argv mutableCopy];
     NSString *path = [libraryPath URLByAppendingPathComponent:binName].path;
+    __weak typeof(self) _self = self;
     [newArgv insertObject:path atIndex:0];
     task.executableURL = [[[NSBundle mainBundle] URLForAuxiliaryExecutable:@"QEMULauncher.app"] URLByAppendingPathComponent:@"Contents/MacOS/QEMULauncher"];
     task.arguments = newArgv;
@@ -116,12 +116,19 @@
     task.qualityOfService = NSQualityOfServiceUserInitiated;
     task.terminationHandler = ^(NSTask *task) {
         BOOL normalExit = task.terminationReason == NSTaskTerminationReasonExit && task.terminationStatus == 0;
+        _self.childTask = nil;
         onExit(normalExit, nil);
     };
     if (![task launchAndReturnError:&err]) {
         NSLog(@"Error starting QEMU: %@", err);
         onExit(NO, NSLocalizedString(@"Error starting QEMU.", @"QEMUHelper"));
     }
+    self.childTask = task;
+}
+
+- (void)terminate {
+    [self.childTask terminate];
+    self.childTask = nil;
 }
 
 @end

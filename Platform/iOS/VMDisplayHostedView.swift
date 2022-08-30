@@ -32,31 +32,31 @@ struct VMDisplayHostedView: UIViewControllerRepresentable {
             vm.config.qemuConfig
         }
         
-        var qemuInputLegacy: Bool {
+        @MainActor var qemuInputLegacy: Bool {
             vmConfig.input.usbBusSupport == .disabled || vmConfig.qemu.hasPS2Controller
         }
         
-        var qemuDisplayUpscaler: MTLSamplerMinMagFilter {
+        @MainActor var qemuDisplayUpscaler: MTLSamplerMinMagFilter {
             vmConfig.displays[state.device!.configIndex].upscalingFilter.metalSamplerMinMagFilter
         }
         
-        var qemuDisplayDownscaler: MTLSamplerMinMagFilter {
+        @MainActor var qemuDisplayDownscaler: MTLSamplerMinMagFilter {
             vmConfig.displays[state.device!.configIndex].downscalingFilter.metalSamplerMinMagFilter
         }
         
-        var qemuDisplayIsDynamicResolution: Bool {
+        @MainActor var qemuDisplayIsDynamicResolution: Bool {
             vmConfig.displays[state.device!.configIndex].isDynamicResolution
         }
         
-        var qemuDisplayIsNativeResolution: Bool {
+        @MainActor var qemuDisplayIsNativeResolution: Bool {
             vmConfig.displays[state.device!.configIndex].isNativeResolution
         }
         
-        var qemuHasClipboardSharing: Bool {
+        @MainActor var qemuHasClipboardSharing: Bool {
             vmConfig.sharing.hasClipboardSharing
         }
         
-        var qemuConsoleResizeCommand: String? {
+        @MainActor var qemuConsoleResizeCommand: String? {
             vmConfig.serials[state.device!.configIndex].terminal?.resizeCommand
         }
         

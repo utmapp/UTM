@@ -68,7 +68,7 @@ extension UTMData {
     }
     
     func stop(vm: UTMVirtualMachine) throws {
-        if vm.viewState.hasSaveState {
+        if vm.hasSaveState {
             vm.requestVmDeleteState()
         }
         vm.vmStop(force: false, completion: { _ in

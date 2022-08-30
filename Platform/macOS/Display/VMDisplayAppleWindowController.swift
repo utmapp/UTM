@@ -148,12 +148,11 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
 extension VMDisplayAppleWindowController {
     func openShareMenu(_ sender: Any) {
         let menu = NSMenu()
-        for i in appleConfig.sharedDirectories.indices {
+        let entry = appleVM.registryEntry
+        for i in entry.sharedDirectories.indices {
             let item = NSMenuItem()
-            let sharedDirectory = appleConfig.sharedDirectories[i]
-            guard let name = sharedDirectory.directoryURL?.lastPathComponent else {
-                continue
-            }
+            let sharedDirectory = entry.sharedDirectories[i]
+            let name = sharedDirectory.url.lastPathComponent
             item.title = name
             let submenu = NSMenu()
             let ro = NSMenuItem(title: NSLocalizedString("Read Only", comment: "VMDisplayAppleController"),
@@ -188,8 +187,9 @@ extension VMDisplayAppleWindowController {
     
     @objc func addShare(sender: AnyObject) {
         pickShare { url in
-            let sharedDirectory = UTMAppleConfigurationSharedDirectory(directoryURL: url)
-            self.appleConfig.sharedDirectories.append(sharedDirectory)
+            if let sharedDirectory = try? UTMRegistryEntry.File(url: url) {
+                self.appleVM.registryEntry.sharedDirectories.append(sharedDirectory)
+            }
         }
     }
     
@@ -199,10 +199,11 @@ extension VMDisplayAppleWindowController {
             return
         }
         let i = menu.tag
-        let isReadOnly = appleConfig.sharedDirectories[i].isReadOnly
+        let isReadOnly = appleVM.registryEntry.sharedDirectories[i].isReadOnly
         pickShare { url in
-            let sharedDirectory = UTMAppleConfigurationSharedDirectory(directoryURL: url, isReadOnly: isReadOnly)
-            self.appleConfig.sharedDirectories[i] = sharedDirectory
+            if let sharedDirectory = try? UTMRegistryEntry.File(url: url, isReadOnly: isReadOnly) {
+                self.appleVM.registryEntry.sharedDirectories[i] = sharedDirectory
+            }
         }
     }
     
@@ -212,8 +213,8 @@ extension VMDisplayAppleWindowController {
             return
         }
         let i = menu.tag
-        let isReadOnly = appleConfig.sharedDirectories[i].isReadOnly
-        appleConfig.sharedDirectories[i].isReadOnly = !isReadOnly
+        let isReadOnly = appleVM.registryEntry.sharedDirectories[i].isReadOnly
+        appleVM.registryEntry.sharedDirectories[i].isReadOnly = !isReadOnly
     }
     
     @objc func removeShare(sender: AnyObject) {
@@ -222,7 +223,7 @@ extension VMDisplayAppleWindowController {
             return
         }
         let i = menu.tag
-        appleConfig.sharedDirectories.remove(at: i)
+        appleVM.registryEntry.sharedDirectories.remove(at: i)
     }
     
     func pickShare(_ onComplete: @escaping (URL) -> Void) {

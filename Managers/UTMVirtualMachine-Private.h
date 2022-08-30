@@ -20,36 +20,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UTMVirtualMachine ()
 
-@property (nonatomic, readwrite) UTMViewState *viewState;
-
-@property (nonatomic, readwrite, nullable) NSData *bookmark;
-
 /// Reference to logger for VM stdout/stderr
 @property (nonatomic) UTMLogging *logging;
 
 @property (nonatomic, assign, readwrite) UTMVMState state;
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithConfiguration:(UTMConfigurationWrapper *)configuration packageURL:(NSURL *)packageURL;
-
-/// Load a plist into a NSDictionary representation
-/// @param path Path to plist
-/// @param err Error thrown if failed
-/// @returns A dictionary on success, nil on failure and `err` contains the thrown error
-- (NSDictionary *)loadPlist:(NSURL *)path withError:(NSError **)err;
-
-/// Saves a plist to disk
-/// @param path Path to save to
-/// @param dict Dictionary to convert to plist
-/// @param err Error thrown if failed
-/// @returns true if successful, otherwise `err` contains the thrown error
-- (BOOL)savePlist:(NSURL *)path dict:(NSDictionary *)dict withError:(NSError **)err;
-
-/// (Re)loads the view state from disk
-- (void)loadViewState;
-
-/// Saves the current view state to disk
-- (void)saveViewState;
+- (instancetype)initWithConfiguration:(UTMConfigurationWrapper *)configuration packageURL:(NSURL *)packageURL NS_DESIGNATED_INITIALIZER;
 
 @end
 

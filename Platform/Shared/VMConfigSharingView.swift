@@ -30,7 +30,7 @@ struct VMConfigSharingView: View {
                     })
                 }
                 
-                DetailedSection("Shared Directory") {
+                DetailedSection("Shared Directory", description: "WebDAV requires installing SPICE daemon. VirtFS requires installing device drivers.") {
                     VMConfigConstantPicker("Directory Share Mode", selection: $config.directoryShareMode)
                     if config.directoryShareMode != .none {
                         HStack {

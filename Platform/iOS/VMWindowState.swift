@@ -54,12 +54,6 @@ struct VMWindowState: Identifiable {
         }
     }
     
-    var displayOriginY: Float = 0.0 {
-        didSet {
-            isViewportChanged = shouldViewportChange
-        }
-    }
-    
     var displayViewSize: CGSize = .zero
     
     var isDisplayZoomLocked: Bool = false
@@ -161,5 +155,34 @@ extension VMWindowState {
             isViewportChanged = false
             isDisplayZoomLocked = false
         }
+    }
+}
+
+// MARK: - Persist changes
+
+@MainActor extension VMWindowState {
+    func saveWindow(to registryEntry: UTMRegistryEntry, device: Device?) {
+        guard case let .display(_, id) = device else {
+            return
+        }
+        var window = UTMRegistryEntry.Window()
+        window.scale = displayScale
+        window.origin = displayOrigin
+        window.isDisplayZoomLocked = isDisplayZoomLocked
+        window.isKeyboardVisible = isKeyboardShown
+        registryEntry.windowSettings[id] = window
+    }
+    
+    mutating func restoreWindow(from registryEntry: UTMRegistryEntry, device: Device?) {
+        guard case let .display(display, id) = device else {
+            return
+        }
+        let window = registryEntry.windowSettings[id] ?? UTMRegistryEntry.Window()
+        display.viewportScale = window.scale
+        display.viewportOrigin = window.origin
+        displayScale = window.scale
+        displayOrigin = window.origin
+        isDisplayZoomLocked = window.isDisplayZoomLocked
+        isKeyboardRequested = window.isKeyboardVisible
     }
 }

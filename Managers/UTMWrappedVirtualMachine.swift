@@ -26,7 +26,7 @@ import Foundation
         NSLocalizedString("Unavailable", comment: "UTMUnavailableVirtualMachine")
     }
     
-    override var bookmark: Data? {
+    var bookmark: Data {
         _bookmark
     }
     
@@ -52,25 +52,23 @@ import Foundation
     ///   - bookmark: Bookmark data for this VM
     ///   - name: Name of this VM
     ///   - path: Path where the VM is located
-    init(bookmark: Data, name: String, path: URL) {
+    ///   - uuid: UUID of the VM
+    init(bookmark: Data, name: String, path: URL, uuid: UUID? = nil) {
         _bookmark = bookmark
         _name = name
         _path = path
-        super.init()
-        self.path = path
-        self.config = UTMConfigurationWrapper(placeholderFor: name)
+        let config = UTMConfigurationWrapper(placeholderFor: name, uuid: uuid)
+        super.init(configuration: config, packageURL: path)
     }
     
-    /// Create a new wrapped UTM VM from an existing UTM VM
-    /// - Parameter vm: Existing VM
-    convenience init?(placeholderFor vm: UTMVirtualMachine) {
-        guard let bookmark = vm.bookmark else {
-            return nil
-        }
-        self.init(bookmark: bookmark, name: vm.detailsTitleLabel, path: vm.path)
+    /// Create a new wrapped UTM VM from a registry entry
+    /// - Parameter registryEntry: Registry entry
+    @MainActor convenience init(from registryEntry: UTMRegistryEntry) {
+        let file = registryEntry.package
+        self.init(bookmark: file.bookmark, name: registryEntry.name, path: file.url, uuid: registryEntry.uuid)
     }
     
-    /// Create a new wrapped UTM VM from a dictionary
+    /// Create a new wrapped UTM VM from a dictionary (legacy support)
     /// - Parameter info: Dictionary info
     convenience init?(from info: [String: Any]) {
         guard let bookmark = info["Bookmark"] as? Data,
@@ -91,9 +89,8 @@ import Foundation
     
     /// Unwrap to a fully formed UTM VM
     /// - Returns: New UTM VM if it is valid and can be accessed
-    @available(iOS 14, macOS 11, *)
-    public func unwrap() -> UTMVirtualMachine? {
-        guard let vm = UTMVirtualMachine(bookmark: _bookmark) else {
+    @MainActor func unwrap() -> UTMVirtualMachine? {
+        guard let vm = UTMVirtualMachine(url: registryEntry.package.url) else {
             return nil
         }
         let defaultStorageUrl = UTMData.defaultStorageUrl.standardizedFileURL

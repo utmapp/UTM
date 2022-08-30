@@ -24,6 +24,10 @@ import SwiftUI
 #if canImport(AltKit) && !WITH_QEMU_TCI
 import AltKit
 #endif
+#if !os(macOS)
+typealias UTMAppleConfiguration = UTMQemuConfiguration
+typealias UTMAppleVirtualMachine = UTMQemuVirtualMachine
+#endif
 
 struct AlertMessage: Identifiable {
     var message: String
@@ -115,12 +119,7 @@ class UTMData: ObservableObject {
         for i in list.indices.reversed() {
             let vm = list[i]
             if !fileManager.fileExists(atPath: vm.path.path) {
-                if let wrappedVM = UTMWrappedVirtualMachine(placeholderFor: vm) {
-                    list[i] = wrappedVM
-                } else {
-                    // we cannot even make a placeholder, then remove the element
-                    list.remove(at: i)
-                }
+                list[i] = await UTMWrappedVirtualMachine(from: vm.registryEntry)
             }
         }
         // now look for and add new VMs in default storage
@@ -152,10 +151,49 @@ class UTMData: ObservableObject {
         if await virtualMachines != list {
             await listReplace(with: list)
         }
+        // prune the registry
+        let uuids = list.map({ $0.registryEntry.uuid.uuidString })
+        UTMRegistry.shared.prune(exceptFor: Set(uuids))
     }
     
     /// Load VM list (and order) from persistent storage
     @MainActor private func listLoadFromDefaults() {
+        let defaults = UserDefaults.standard
+        guard defaults.object(forKey: "VMList") == nil else {
+            listLegacyLoadFromDefaults()
+            // fix collisions
+            for vm in virtualMachines {
+                if uuidHasCollision(with: vm) {
+                    uuidRegenerate(for: vm)
+                }
+            }
+            // delete legacy
+            defaults.removeObject(forKey: "VMList")
+            return
+        }
+        // registry entry list
+        guard let list = defaults.stringArray(forKey: "VMEntryList") else {
+            return
+        }
+        virtualMachines = list.compactMap { uuidString in
+            guard let entry = UTMRegistry.shared.entry(for: uuidString) else {
+                return nil
+            }
+            let wrappedVM = UTMWrappedVirtualMachine(from: entry)
+            if let vm = wrappedVM.unwrap() {
+                if vm.registryEntry.uuid != wrappedVM.registryEntry.uuid {
+                    // we had a duplicate UUID so we change it
+                    vm.changeUuid(to: wrappedVM.registryEntry.uuid)
+                }
+                return vm
+            } else {
+                return wrappedVM
+            }
+        }
+    }
+    
+    /// Load VM list (and order) from persistent storage (legacy)
+    @MainActor private func listLegacyLoadFromDefaults() {
         let defaults = UserDefaults.standard
         // legacy path list
         if let files = defaults.array(forKey: "VMList") as? [String] {
@@ -173,7 +211,11 @@ class UTMData: ObservableObject {
                 } else if let dict = item as? [String: Any] {
                     wrappedVM = UTMWrappedVirtualMachine(from: dict)
                 }
-                if let vm = wrappedVM?.unwrap() {
+                if let wrappedVM = wrappedVM, let vm = wrappedVM.unwrap() {
+                    // legacy VMs don't have UUID stored so we made a fake UUID
+                    if wrappedVM.registryEntry.uuid != vm.registryEntry.uuid {
+                        UTMRegistry.shared.remove(entry: wrappedVM.registryEntry)
+                    }
                     return vm
                 } else {
                     return wrappedVM
@@ -185,10 +227,8 @@ class UTMData: ObservableObject {
     /// Save VM list (and order) to persistent storage
     @MainActor private func listSaveToDefaults() {
         let defaults = UserDefaults.standard
-        let wrappedVMs = virtualMachines.compactMap { vm -> [String: Any]? in
-            UTMWrappedVirtualMachine(placeholderFor: vm)?.serialized
-        }
-        defaults.set(wrappedVMs, forKey: "VMList")
+        let wrappedVMs = virtualMachines.map { $0.registryEntry.uuid.uuidString }
+        defaults.set(wrappedVMs, forKey: "VMEntryList")
     }
     
     @MainActor private func listReplace(with vms: [UTMVirtualMachine]) {
@@ -199,6 +239,9 @@ class UTMData: ObservableObject {
     /// - Parameter vm: VM to add
     /// - Parameter at: Optional index to add to, otherwise will be added to the end
     @MainActor private func listAdd(vm: UTMVirtualMachine, at index: Int? = nil) {
+        if uuidHasCollision(with: vm) {
+            uuidRegenerate(for: vm)
+        }
         if let index = index {
             virtualMachines.insert(vm, at: index)
         } else {
@@ -352,6 +395,11 @@ class UTMData: ObservableObject {
     func discardChanges(for vm: UTMVirtualMachine? = nil) throws {
         if let vm = vm {
             try vm.reloadConfiguration()
+            Task { @MainActor in
+                if uuidHasCollision(with: vm) {
+                    vm.changeUuid(to: UUID())
+                }
+            }
         }
     }
     
@@ -362,7 +410,14 @@ class UTMData: ObservableObject {
         guard await !virtualMachines.contains(where: { !$0.isShortcut && $0.config.name == config.information.name }) else {
             throw NSLocalizedString("An existing virtual machine already exists with this name.", comment: "UTMData")
         }
-        let vm = UTMVirtualMachine(newConfig: config, destinationURL: Self.defaultStorageUrl)
+        let vm: UTMVirtualMachine
+        if config is UTMQemuConfiguration {
+            vm = UTMQemuVirtualMachine(newConfig: config, destinationURL: Self.defaultStorageUrl)
+        } else if config is UTMAppleConfiguration {
+            vm = UTMAppleVirtualMachine(newConfig: config, destinationURL: Self.defaultStorageUrl)
+        } else {
+            fatalError("Unknown configuration.")
+        }
         try await save(vm: vm)
         await listAdd(vm: vm)
         await listSelect(vm: vm)
@@ -372,12 +427,15 @@ class UTMData: ObservableObject {
     /// Delete a VM from disk
     /// - Parameter vm: VM to delete
     /// - Returns: Index of item removed in VM list or nil if not in list
-    @discardableResult func delete(vm: UTMVirtualMachine) async throws -> Int? {
+    @discardableResult func delete(vm: UTMVirtualMachine, alsoRegistry: Bool = true) async throws -> Int? {
         if let _ = vm as? UTMWrappedVirtualMachine {
         } else {
             try fileManager.removeItem(at: vm.path)
         }
         
+        if alsoRegistry {
+            UTMRegistry.shared.remove(entry: vm.registryEntry)
+        }
         return await listRemove(vm: vm)
     }
     
@@ -391,6 +449,8 @@ class UTMData: ObservableObject {
         guard let newVM = UTMVirtualMachine(url: newPath) else {
             throw NSLocalizedString("Failed to clone VM.", comment: "UTMData")
         }
+        await vm.changeUuid(to: UUID())
+        try await vm.saveUTM()
         var index = await virtualMachines.firstIndex(of: vm)
         if index != nil {
             index! += 1
@@ -420,11 +480,13 @@ class UTMData: ObservableObject {
         guard let newVM = UTMVirtualMachine(url: url) else {
             throw NSLocalizedString("Unable to add a shortcut to the new location.", comment: "UTMData")
         }
-        newVM.isShortcut = true
-        try await newVM.accessShortcut()
+        await MainActor.run {
+            newVM.isShortcut = true
+        }
+        try await newVM.updateRegistryFromConfig()
         
         let oldSelected = await selectedVM
-        let index = try await delete(vm: vm)
+        let index = try await delete(vm: vm, alsoRegistry: false)
         await listAdd(vm: newVM, at: index)
         if oldSelected == vm {
             await listSelect(vm: newVM)
@@ -443,15 +505,14 @@ class UTMData: ObservableObject {
     /// - Parameter vm: Existing VM to copy configuration from
     @MainActor func template(vm: UTMVirtualMachine) async throws {
         let copy = try UTMQemuConfiguration.load(from: vm.path)
-        #if !os(macOS)
-        typealias UTMAppleConfiguration = UTMQemuConfiguration
-        #endif
         if let copy = copy as? UTMQemuConfiguration {
             copy.information.name = self.newDefaultVMName(base: copy.information.name)
+            copy.information.uuid = UUID()
             copy.drives = []
             _ = try await create(config: copy)
         } else if let copy = copy as? UTMAppleConfiguration {
             copy.information.name = self.newDefaultVMName(base: copy.information.name)
+            copy.information.uuid = UUID()
             copy.drives = []
             _ = try await create(config: copy)
         } else {
@@ -514,10 +575,12 @@ class UTMData: ObservableObject {
             logger.info("found existing vm!")
             if let wrappedVM = vm as? UTMWrappedVirtualMachine {
                 logger.info("existing vm is wrapped")
-                if let unwrappedVM = wrappedVM.unwrap() {
-                    let index = await listRemove(vm: wrappedVM)
-                    await listAdd(vm: unwrappedVM, at: index)
-                    await listSelect(vm: unwrappedVM)
+                await MainActor.run {
+                    if let unwrappedVM = wrappedVM.unwrap() {
+                        let index = listRemove(vm: wrappedVM)
+                        listAdd(vm: unwrappedVM, at: index)
+                        listSelect(vm: unwrappedVM)
+                    }
                 }
             } else {
                 logger.info("existing vm is not wrapped")
@@ -537,8 +600,9 @@ class UTMData: ObservableObject {
         } else if asShortcut {
             logger.info("loading as a shortcut")
             vm = UTMVirtualMachine(url: url)
-            vm?.isShortcut = true
-            try await vm?.accessShortcut()
+            await MainActor.run {
+                vm?.isShortcut = true
+            }
         } else {
             logger.info("copying to Documents")
             try fileManager.copyItem(at: url, to: dest)
@@ -629,6 +693,25 @@ class UTMData: ObservableObject {
         }
     }
     #endif
+    
+    // MARK: - UUID migration
+    
+    @MainActor private func uuidHasCollision(with vm: UTMVirtualMachine) -> Bool {
+        for otherVM in virtualMachines {
+            if otherVM == vm {
+                return false
+            } else if otherVM.registryEntry.uuid == vm.registryEntry.uuid {
+                return true
+            }
+        }
+        return false
+    }
+    
+    @MainActor private func uuidRegenerate(for vm: UTMVirtualMachine) {
+        let oldEntry = vm.registryEntry
+        vm.changeUuid(to: UUID())
+        vm.registryEntry.update(copying: oldEntry)
+    }
     
     // MARK: - Other utility functions
     

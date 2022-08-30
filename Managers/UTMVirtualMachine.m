@@ -19,7 +19,6 @@
 #import "UTMVirtualMachine-Private.h"
 #import "UTMQemuVirtualMachine.h"
 #import "UTMLogging.h"
-#import "UTMViewState.h"
 #import "UTM-Swift.h"
 #if defined(WITH_QEMU_TCI)
 @import CocoaSpiceNoUsb;
@@ -33,19 +32,10 @@ NSString *const kUTMBundleExtension = @"utm";
 NSString *const kUTMBundleViewFilename = @"view.plist";
 NSString *const kUTMBundleScreenshotFilename = @"screenshot.png";
 
-#if TARGET_OS_IPHONE
-const NSURLBookmarkCreationOptions kUTMBookmarkCreationOptions = NSURLBookmarkCreationMinimalBookmark;
-const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions = 0;
-#else
-const NSURLBookmarkCreationOptions kUTMBookmarkCreationOptions = NSURLBookmarkCreationWithSecurityScope;
-const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions = NSURLBookmarkResolutionWithSecurityScope;
-#endif
-
 const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 
 @interface UTMVirtualMachine ()
 
-@property (nonatomic) NSArray *anyCancellable;
 @property (nonatomic, readonly) BOOL isScreenshotSaveEnabled;
 @property (nonatomic, nullable) void (^screenshotTimerHandler)(void);
 @property (nonatomic) BOOL isScopedAccess;
@@ -54,9 +44,19 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 
 @implementation UTMVirtualMachine
 
-@synthesize bookmark = _bookmark;
-
 // MARK: - Observable properties
+
+- (void)setConfig:(UTMConfigurationWrapper *)config {
+    [self propertyWillChange];
+    _config = config;
+    [self subscribeToChildren];
+}
+
+- (void)setRegistryEntry:(UTMRegistryEntry *)registryEntry {
+    [self propertyWillChange];
+    _registryEntry = registryEntry;
+    [self subscribeToChildren];
+}
 
 - (void)setState:(UTMVMState)state {
     [self propertyWillChange];
@@ -66,18 +66,6 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 - (void)setScreenshot:(CSScreenshot *)screenshot {
     [self propertyWillChange];
     _screenshot = screenshot;
-}
-
-- (void)setViewState:(UTMViewState *)viewState {
-    [self propertyWillChange];
-    _viewState = viewState;
-    self.anyCancellable = [self subscribeToConfiguration];
-}
-
-- (void)setConfig:(UTMConfigurationWrapper *)config {
-    [self propertyWillChange];
-    _config = config;
-    self.anyCancellable = [self subscribeToConfiguration];
 }
 
 - (NSURL *)detailsIconUrl {
@@ -106,7 +94,7 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 - (NSString *)stateLabel {
     switch (_state) {
         case kVMStopped:
-            if (self.viewState.hasSaveState) {
+            if (self.registryEntry.hasSaveState) {
                 return NSLocalizedString(@"Suspended", "UTMVirtualMachine");
             } else {
                 return NSLocalizedString(@"Stopped", "UTMVirtualMachine");
@@ -121,20 +109,10 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 }
 
 - (BOOL)hasSaveState {
-    return self.viewState.hasSaveState;
+    return self.registryEntry.hasSaveState;
 }
 
 // MARK: - Other properties
-
-- (NSData *)bookmark {
-    if (!_bookmark) {
-        _bookmark = [self.path bookmarkDataWithOptions:kUTMBookmarkCreationOptions
-                        includingResourceValuesForKeys:nil
-                                         relativeToURL:nil
-                                                 error:nil];
-    }
-    return _bookmark;
-}
 
 - (void)setPath:(NSURL *)path {
     if (_path && self.isScopedAccess) {
@@ -169,23 +147,6 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
     }
 }
 
-+ (UTMVirtualMachine *)virtualMachineWithBookmark:(NSData *)bookmark {
-    BOOL stale;
-    NSURL *url = [NSURL URLByResolvingBookmarkData:bookmark
-                                            options:kUTMBookmarkResolutionOptions
-                                      relativeToURL:nil
-                                bookmarkDataIsStale:&stale
-                                              error:nil];
-    if (!url) {
-        return nil;
-    }
-    UTMVirtualMachine *vm = [UTMVirtualMachine virtualMachineWithURL:url];
-    if (!stale) {
-        vm.bookmark = bookmark;
-    }
-    return vm;
-}
-
 + (UTMVirtualMachine *)virtualMachineWithConfiguration:(UTMConfigurationWrapper *)configuration packageURL:(nonnull NSURL *)packageURL {
 #if TARGET_OS_OSX
     if (@available(macOS 11, *)) {
@@ -197,27 +158,24 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
     return [[UTMQemuVirtualMachine alloc] initWithConfiguration:configuration packageURL:packageURL];
 }
 
-- (instancetype)init {
+- (instancetype)initWithConfiguration:(UTMConfigurationWrapper *)configuration packageURL:(NSURL *)packageURL {
     self = [super init];
     if (self) {
+        _state = kVMStopped;
 #if TARGET_OS_IPHONE
         self.logging = [UTMLogging sharedInstance];
 #else
         self.logging = [UTMLogging new];
 #endif
-        _viewState = [[UTMViewState alloc] init];
-    }
-    return self;
-}
-
-- (instancetype)initWithConfiguration:(UTMConfigurationWrapper *)configuration packageURL:(NSURL *)packageURL {
-    self = [self init];
-    if (self) {
-        self.config = configuration;
+        _config = configuration;
         self.path = packageURL;
-        [self loadViewState];
+        _registryEntry = [UTMRegistry.shared entryFor:self];
+        // migrate legacy view state
+        NSURL *viewStateURL = [packageURL URLByAppendingPathComponent:kUTMBundleViewFilename];
+        [self.registryEntry migrateUnsafeWithViewStateURL:viewStateURL];
+        [self.registryEntry migrateFromConfig:configuration];
         [self loadScreenshot];
-        self.state = kVMStopped;
+        [self subscribeToChildren];
     }
     return self;
 }
@@ -234,7 +192,9 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
     }
     // delete existing screenshot if required
     if (!self.isScreenshotSaveEnabled) {
-        [self deleteScreenshot];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self deleteScreenshot];
+        });
     }
     typeof(self) __weak weakSelf = self;
     self.screenshotTimerHandler = ^{
@@ -254,12 +214,12 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
     dispatch_sync(dispatch_get_main_queue(), ^{
         self.state = state;
         [self.delegate virtualMachine:self didTransitionToState:state];
+        if (state == kVMStopped) {
+            [self setIsRunningAsSnapshot:NO];
+        }
     });
     if (state == kVMStarted) {
         [self startScreenshotTimer];
-    }
-    if (state == kVMStopped) {
-        [self setIsRunningAsSnapshot:NO];
     }
 }
 
@@ -391,74 +351,17 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
     notImplemented;
 }
 
-#pragma mark - Plist Handling
-
-- (NSDictionary *)loadPlist:(NSURL *)path withError:(NSError **)err {
-    NSData *data = [NSData dataWithContentsOfURL:path];
-    if (!data) {
-        if (err) {
-            *err = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Failed to load plist", @"UTMVirtualMachine")}];
-        }
-        return nil;
-    }
-    id plist = [NSPropertyListSerialization propertyListWithData:data options:0 format:nil error:err];
-    if (!plist) {
-        return nil;
-    }
-    if (![plist isKindOfClass:[NSDictionary class]]) {
-        if (err) {
-            *err = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Config format incorrect.", @"UTMVirtualMachine")}];
-        }
-        return nil;
-    }
-    return plist;
-}
-
-- (BOOL)savePlist:(NSURL *)path dict:(NSDictionary *)dict withError:(NSError **)err {
-    NSError *_err;
-    // serialize plist
-    NSData *data = [NSPropertyListSerialization dataWithPropertyList:dict format:NSPropertyListXMLFormat_v1_0 options:0 error:&_err];
-    if (_err && err) {
-        *err = _err;
-        return NO;
-    }
-    // write plist
-    [data writeToURL:path options:NSDataWritingAtomic error:&_err];
-    if (_err && err) {
-        *err = _err;
-        return NO;
-    }
-    return YES;
-}
-
-#pragma mark - View State
-
-- (void)loadViewState {
-    NSDictionary *plist = [self loadPlist:[self.path URLByAppendingPathComponent:kUTMBundleViewFilename] withError:nil];
-    if (plist) {
-        self.viewState = [[UTMViewState alloc] initWithDictionary:plist];
-    } else {
-        self.viewState = [[UTMViewState alloc] init];
-    }
-}
-
-- (void)saveViewState {
-    [self savePlist:[self.path URLByAppendingPathComponent:kUTMBundleViewFilename]
-               dict:self.viewState.dictRepresentation
-          withError:nil];
-}
-
 #pragma mark - Screenshot
 
 - (BOOL)isScreenshotSaveEnabled {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    return ![defaults boolForKey:@"NoSaveScreenshot"];
+    return ![defaults boolForKey:@"NoSaveScreenshot"] && !self.isRunningAsSnapshot;
 }
 
 - (void)loadScreenshot {
     NSURL *url = [self.path URLByAppendingPathComponent:kUTMBundleScreenshotFilename];
     if ([[NSFileManager defaultManager] fileExistsAtPath:url.path]) {
-        self.screenshot = [[CSScreenshot alloc] initWithContentsOfURL:url];
+        _screenshot = [[CSScreenshot alloc] initWithContentsOfURL:url];
     }
 }
 

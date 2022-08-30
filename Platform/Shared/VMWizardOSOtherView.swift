@@ -51,7 +51,9 @@ struct VMWizardOSOtherView: View {
                 Text("Advanced")
             }
         }
+        #if os(iOS)
         .navigationTitle(Text("Other"))
+        #endif
         .fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.data], onCompletion: processImage)
     }
     

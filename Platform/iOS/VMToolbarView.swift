@@ -116,7 +116,7 @@ struct VMToolbarView: View {
                     .offset(offset(for: 4))
                 }
                 #endif
-                VMToolbarDriveMenuView()
+                VMToolbarDriveMenuView(config: session.qemuConfig)
                 .offset(offset(for: 3))
                 VMToolbarDisplayMenuView(state: $state)
                 .offset(offset(for: 2))

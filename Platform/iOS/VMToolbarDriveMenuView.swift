@@ -17,43 +17,72 @@
 import SwiftUI
 
 struct VMToolbarDriveMenuView: View {
+    @State var config: UTMQemuConfiguration
     @EnvironmentObject private var session: VMSessionState
     @State private var isFileImporterShown: Bool = false
-    @State private var selectedDrive: UTMDrive?
+    @State private var isSelectingShare: Bool = false
+    @State private var selectedDrive: UTMQemuConfigurationDrive?
     @State private var isRefreshRequired: Bool = false
+    
+    private let noneText = NSLocalizedString("none", comment: "VMToolbarDriveMenuView")
     
     var body: some View {
         Menu {
-            ForEach(session.vm.drives) { legacyDrive in
-                if legacyDrive.status != .fixed {
+            if config.sharing.directoryShareMode == .webdav {
+                Menu {
+                    Button {
+                        selectedDrive = nil
+                        isSelectingShare = true
+                        isFileImporterShown.toggle()
+                    } label: {
+                        MenuLabel("Change…", systemImage: "folder.badge.person.crop")
+                    }
+                    Button {
+                        session.vm.clearSharedDirectory()
+                    } label: {
+                        MenuLabel("Clear…", systemImage: "clear")
+                    }
+                } label: {
+                    let url = session.vm.sharedDirectoryURL
+                    MenuLabel("Shared Directory: \(url?.lastPathComponent ?? noneText)", systemImage: url == nil ? "folder.badge.person.crop" : "folder.fill.badge.person.crop")
+                }
+                Divider()
+            }
+            ForEach(config.drives) { drive in
+                if drive.isExternal {
                     Menu {
                         Button {
-                            selectedDrive = legacyDrive
+                            selectedDrive = drive
+                            isSelectingShare = false
                             isFileImporterShown.toggle()
                         } label: {
                             MenuLabel("Change…", systemImage: "opticaldisc")
                         }
                         Button {
-                            ejectDriveImage(for: legacyDrive)
+                            ejectDriveImage(for: drive)
                         } label: {
                             MenuLabel("Eject…", systemImage: "eject")
                         }
                     } label: {
-                        MenuLabel(legacyDrive.label, systemImage: legacyDrive.status == .ejected ? "opticaldiscdrive" : "opticaldiscdrive.fill")
+                        MenuLabel(label(for: drive), systemImage: session.vm.externalImageURL(for: drive) == nil ? "opticaldiscdrive" : "opticaldiscdrive.fill")
                     }
-                } else {
+                } else if drive.imageType == .disk || drive.imageType == .cd {
                     Button {
                     } label: {
-                        MenuLabel(legacyDrive.label, systemImage: "internaldrive")
+                        MenuLabel(label(for: drive), systemImage: "internaldrive")
                     }.disabled(true)
                 }
             }
         } label: {
             Label("Disk", systemImage: "opticaldisc")
-        }.fileImporter(isPresented: $isFileImporterShown, allowedContentTypes: [.item]) { result in
+        }.fileImporter(isPresented: $isFileImporterShown, allowedContentTypes: isSelectingShare ? [.folder] : [.item]) { result in
             switch result {
             case .success(let success):
-                changeDriveImage(for: selectedDrive!, with: success)
+                if isSelectingShare {
+                    changeSharedDirectory(to: success)
+                } else if let drive = selectedDrive {
+                    changeDriveImage(for: drive, with: success)
+                }
             case .failure(let failure):
                 session.nonfatalError = failure.localizedDescription
             }
@@ -64,27 +93,63 @@ struct VMToolbarDriveMenuView: View {
         }
     }
     
-    private func changeDriveImage(for legacyDrive: UTMDrive, with imageURL: URL) {
-        do {
-            try session.vm.changeMedium(for: legacyDrive, url: imageURL)
-            isRefreshRequired.toggle()
-        } catch {
-            session.nonfatalError = error.localizedDescription
+    private func changeDriveImage(for drive: UTMQemuConfigurationDrive, with imageURL: URL) {
+        Task.detached(priority: .background) {
+            do {
+                try await session.vm.changeMedium(drive, to: imageURL)
+                Task { @MainActor in
+                    isRefreshRequired.toggle()
+                }
+            } catch {
+                Task { @MainActor in
+                    session.nonfatalError = error.localizedDescription
+                }
+            }
         }
     }
     
-    private func ejectDriveImage(for legacyDrive: UTMDrive) {
-        do {
-            try session.vm.ejectDrive(legacyDrive, force: false)
-            isRefreshRequired.toggle()
-        } catch {
-            session.nonfatalError = error.localizedDescription
+    private func changeSharedDirectory(to url: URL) {
+        Task.detached(priority: .background) {
+            do {
+                try await session.vm.changeSharedDirectory(to: url)
+                Task { @MainActor in
+                    isRefreshRequired.toggle()
+                }
+            } catch {
+                Task { @MainActor in
+                    session.nonfatalError = error.localizedDescription
+                }
+            }
         }
+    }
+    
+    private func ejectDriveImage(for drive: UTMQemuConfigurationDrive) {
+        Task.detached(priority: .background) {
+            do {
+                try await session.vm.eject(drive)
+                Task { @MainActor in
+                    isRefreshRequired.toggle()
+                }
+            } catch {
+                Task { @MainActor in
+                    session.nonfatalError = error.localizedDescription
+                }
+            }
+        }
+    }
+    
+    private func label(for drive: UTMQemuConfigurationDrive) -> String {
+        let imageURL = session.vm.externalImageURL(for: drive) ?? drive.imageURL
+        return String.localizedStringWithFormat(NSLocalizedString("%@ (%@): %@", comment: "VMToolbarDriveMenuView"),
+                                                drive.imageType.prettyValue,
+                                                drive.interface.prettyValue,
+                                                imageURL?.lastPathComponent ?? noneText)
     }
 }
 
 struct VMToolbarDriveMenuView_Previews: PreviewProvider {
+    @StateObject static var config = UTMQemuConfiguration()
     static var previews: some View {
-        VMToolbarDriveMenuView()
+        VMToolbarDriveMenuView(config: config)
     }
 }
