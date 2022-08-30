@@ -1,0 +1,14 @@
+/* Privacy - Location Always and When In Use Usage Description */
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "Debido al funcionamiento de iOS, mantener la máquina virtual en segundo plano requiere de los servicios de localización. Esto no transmitirá su información de ubicación.";
+
+/* Privacy - Location Always Usage Description */
+"NSLocationAlwaysUsageDescription" = "Debido al funcionamiento de iOS, mantener la máquina virtual en segundo plano requiere de los servicios de localización. Esto no transmitirá su información de ubicación.";
+
+/* Privacy - Location When In Use Usage Description */
+"NSLocationWhenInUseUsageDescription" = "Debido al funcionamiento de iOS, mantener la máquina virtual en segundo plano requiere de los servicios de localización. Esto no transmitirá su información de ubicación.";
+
+/* Privacy - Microphone Usage Description */
+"NSMicrophoneUsageDescription" = "UTM requiere su permiso para usar el micrófono.";
+
+/* (No Comment) */
+"UTM virtual machine" = "Máquina virtual de UTM";
