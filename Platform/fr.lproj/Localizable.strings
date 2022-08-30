@@ -2,7 +2,7 @@
 "-" = "-";
 
 /* A removable drive that has no image file inserted. */
-"(empty)" = "（vide）";
+"(empty)" = "（vide)";
 
 /* UTMQemuConfiguration+Drives */
 "%@ Drive" = "Lecteur %@";
@@ -626,7 +626,7 @@
 "Linux Kernel" = "Noyau Linux";
 
 /* No comment provided by engineer. */
-"Linux kernel (required):" = "Noyau (kernel) Linux (requis) ：";
+"%@Linux kernel (required):" = "%@Noyau (kernel) Linux (requis) ：";
 
 /* UTMQemuConfiguration */
 "Linux RAM Disk" = "RAM Disk de Linux";
@@ -888,7 +888,7 @@
 "This is appended to the -machine argument." = "Ceci est ajouté à l'argument -machine.";
 
 /* No comment provided by engineer. */
-"If enabled, the default input devices will be emulated on the USB bus." = "Si activé, les appareils d'entrée par défaut seront émulés via le bus USB.";
+"If enabled, the default input devices will be emulated on the USB bus." = "Si coché, les appareils d'entrée par défaut seront émulés via le bus USB.";
 
 /* No comment provided by engineer. */
 "Settings" = "Réglages";
@@ -897,7 +897,7 @@
 "Share" = "Partager";
 
 /* No comment provided by engineer. */
-"Share Directory" = "Parte de dossier";
+"Share Directory" = "Partage de dossier";
 
 /* No comment provided by engineer. */
 "Share selected VM" = "Partager la VM sélectionnée";
@@ -1201,9 +1201,6 @@
 "Caps Lock (⇪) is treated as a key" = "Verrr. Maj (⇪) est considéré comme une touche";
 
 /* No comment provided by engineer. */
-"Do not show prompt when USB device is plugged in" = "Ne rien demander lorsqu'un appareil USB est branché";
-
-/* No comment provided by engineer. */
 "USB Support" = "Prise en charge de l'USB";
 
 /* No comment provided by engineer. */
@@ -1229,71 +1226,31 @@
 
 /* New VM window. */
 "Start" = "C'est parti";
-
-/* New VM window. */
 "Existing" = "Existant";
-
-/* New VM window. */
 "Preconfigured" = "Préconfiguré";
-
-/* New VM window. */
 "Import IPSW" = "Importer un IPSW";
-
-/* New VM window. */
 "Drag and drop IPSW file here" = "Glissez un fichier IPSW ici";
-
-/* New VM window. */
 "Empty" = "Vide";
-
-/* New VM window. */
 "Advanced" = "Avancé";
-
-/* New VM window. */
 "Skip ISO boot" = "Ignorer le démarrage sur l'ISO";
-
-/* New VM window. */
 "Image File Type" = "Type de fichier image";
-
-/* New VM window. */
 "Some older systems do not support UEFI boot, such as Windows 7 and below." = "Certains anciens systèmes ne prennent pas en charge le démarrage en UEFI, comme Windows 7 et antérieurs.";
-
-/* New VM window. */
 "File Imported" = "Fichier importé";
-
-/* New VM window. */
+"Directory Selected" = "Dossier sélectionné";
 "Hint: For the best Windows experience, make sure to download and install the latest [SPICE tools and QEMU drivers](https://mac.getutm.app/support/)." = "Astuce : pour la meilleure expérience possible avec Windows, téléchargez et installez les [derniers outils SPICE et drivers QEMU](https://mac.getutm.app/support/).";
-
-/* New VM window. */
 "Virtualization Engine" = "Moteur de virtualisation";
-
-/* New VM window. */
 "Apple Virtualization is experimental and only for advanced use cases. Leave unchecked to use QEMU, which is recommended." = "La prise en charge de la Virtualisation d'Apple est expérimentale et à utiliser uniquement pour des cas avancés. Laissez décoché pour utiliser QEMU, qui est recommandé.";
-
-/* New VM window. */
+"Apple Virtualization" = "Virtualisation par Apple";
 "Boot Image Type" = "Type d'image de démarrage";
-
-/* New VM window. */
 "Linux kernel (required):" = "Noyau Linux (requis) :";
-
-/* New VM window. */
-"Linux initial ramdisk (optional):" = "Ramdisk initial de Linux (optionnel) :";
-
-/* New VM window. */
+"%@Linux initial ramdisk (optional):" = "%@Ramdisk initial de Linux (optionnel) :";
 "Linux Root FS image (optional):" = "Image Root FS de Linux (optionnel) :";
-
-/* New VM window. */
 "Boot ISO Image (optional):" = "Image ISO de démarrage (optionnel) :";
 
 /* System pane. */
 "Force Enable CPU Flags" = "Forcer l'activation des flags du CPU";
-
-/* System pane. */
 "Force Disable CPU Flags" = "Forcer la désactivation des flags du CPU";
-
-/* System pane. */
 "If checked, the CPU flag will be enabled. Otherwise, the default value will be used." = "Si coché, le flag du CPU sera activé. Dans le cas contraire, les valeurs par défaut seront utilisées.";
-
-/* System pane. */
 "If checked, the CPU flag will be disabled. Otherwise, the default value will be used." = "Si coché, le flag du CPU sera désactivé. Dans le cas contraire, les valeurs par défaut seront utilisées.";
 
 /* QEMU pane. */
@@ -1304,11 +1261,7 @@
 
 /* Share pane. */
 "Directory Share Mode" = "Mode de partage de dossier";
-
-/* Share pane. */
 "SPICE WebDAV (Legacy)" = "WebDAV via SPICE (ancienne méthode)";
-
-/* Share pane. */
 "VirtFS (Recommended)" = "VirtFS (Recommandé)";
 
 /* Video pane. */
@@ -1319,81 +1272,320 @@
 
 /* Left pane. */
 "Serial" = "Série";
-
-/* Left pane. */
 "Devices" = "Périphériques";
 
 /* Serial pane. */
 "Built-in Terminal" = "Terminal intégré";
-
-/* Serial pane. */
 "TCP Client Connection" = "Connection Client TCP";
-
-/* Serial pane. */
 "TCP Server Connection" = "Connection Serveur TCP";
-
-/* Serial pane. */
 "Pseudo-TTY Device" = "Appareil pseudo-TTY";
-
-/* Serial pane. */
 "Target" = "Cible";
-
-/* Serial pane. */
 "Automatic Serial Device (max 4)" = "Appareil Série automatique (max 4)";
-
-/* Serial pane. */
 "Manual Serial Device (advanced)" = "Appareil Série en manuel (avancé)";
-
-/* Serial pane. */
 "Emulated Serial Device" = "Appareil Série émulé";
-
-/* Serial pane. */
 "GDB Debug Stub" = "GDB Debug Stub";
-
-/* Serial pane. */
 "QEMU Monitor (HMP)" = "Moniteur QEMU (HMP)";
-
-/* Serial pane. */
 "Server Address" = "Adresse du serveur";
-
-/* Serial pane. */
 "Wait for Connection" = "Attendre la connection";
-
-/* Serial pane. */
 "Text Color" = "Couleur du texte";
-
-/* Serial pane. */
 "Background Color" = "Couleur d'arrière-plan";
 
 /* Drive pane. */
 "None (Advanced)" = "Aucune (avancé)";
-
-/* Drive pane. */
 "SD Card" = "Carte SD";
-
-/* Drive pane. */
 "Aucune (avancé) Drive" = "Personnalisé";
-
-/* Drive pane. */
 "IDE Drive" = "Lecteur IDE";
-
-/* Drive pane. */
 "SCSI Drive" = "Lecteur SCSI";
-
-/* Drive pane. */
 "Carte SD Drive" = "Carte SD";
-
-/* Drive pane. */
 "Lecteur de disquettes Drive" = "Lecteur de disquettes";
-
-/* Drive pane. */
 "VirtIO Drive" = "Lecteur VirtIO";
-
-/* Drive pane. */
 "NVMe Drive" = "Lecteur NVMe";
-
-/* Drive pane. */
 "USB Drive" = "Lecteur USB";
 
 /* Share and Drive panes. */
 "Path" = "Emplacement";
+
+/* Main window. */
+"This virtual machine has been removed." = "Cette machine virtuelle a été supprimée.";
+
+/* Contextual menu on VM. */
+"Run without saving changes" = "Exécuter sans enregistrer les modifs.";
+
+/* Contextual menu on VM. */
+"Share…" = "Partager…";
+
+/* Contextual menu on VM. */
+"Move…" = "Déplacer…";
+
+/* Contextual menu on VM. */
+"New from template…" = "Nouvelle VM basée sur ce modèle…";
+
+/* New VM. */
+"Use Rosetta" = "Utiliser Rosetta";
+
+/* VM download. */
+"Failed to parse the downloaded VM." = "Impossible d'analyser la VM téléchargée.";
+"Extracting…" = "Extraction…";
+"%1$@ of %2$@ (%3$@)" = "%1$@ sur %2$@（%3$@）";
+"Preparing…" = "Préparation…";
+
+/* Platform/macOS */
+
+// UTMUnavailableVMView.swift
+"This virtual machine must be re-added to UTM by opening it with Finder. You can find it at the path: %@" = "Cette machine virtuelle doit être à nouveau ajoutée en l'ouvrant via le Finder. Vous pourrez la trouver à cet emplacement : %@";
+"This virtual machine cannot be found at: %@" = "Cette machine virtuelle peut être trouvée à cet emplacement : %@";
+
+"macOS guests are only supported on ARM64 devices." = "Les machines macOS invitées ne sont prises en charge que sur les apparareils en ARM64.";
+
+// VMWizardOSLinuxView.swift
+"Download Ubuntu Desktop" = "Télécharger Ubuntu Desktop";
+"Enable Rosetta (x86_64 Emulation)" = "Activer Rosetta (émulation x86_64)";
+"Installation Instructions" = "Instructions d'installation";
+"Note: The file system tag for mounting the installer is 'rosetta'." = "Note : le tag du système de fichiers pour monter l'Installer est 'rosetta'.";
+"Additional Options" = "Options supplémentaires";
+
+/* No comment provided by engineer. */
+"Remove selected shortcut" = "Supprimer le raccourci sélectionné";
+
+/* VM details. */
+"Serial (TTY)" = "Série (TTY)";
+"Serial (Client)" = "Série (Client)";
+"Serial (Server)" = "Serial (Serveur)";
+
+// VMContextMenuModifier.swift
+"Delete this VM and all its data." = "Supprime cette VM et toutes ses données.";
+"Delete this shortcut. The underlying data will not be deleted." = "Supprime ce raccourci. Les données associées ne seront pas supprimées.";
+"Create a new VM with the same configuration as this one but without any data." = "Crée une nouvelle VM avec la même configuration que celle-ci, mais sans aucune donnée.";
+"Duplicate this VM along with all its data." = "Duplique cette VM avec toutes ses données.";
+"Move this VM from internal storage to elsewhere." = "Déplace cette VM depuis le stockage interne vers ailleurs.";
+"Share a copy of this VM and all its data." = "Partage une copie de cette VM et toutes ses données.";
+"Run the VM in the foreground, without saving data changes to disk." = "Exécute la VM en premier plan, sans sauvegarder les changements sur le disque.";
+"Boot into recovery mode." = "Démarre en mode récupération.";
+"Run the VM in the foreground." = "Exécute la VM au premier plan";
+"Modify settings for this VM." = "Changer les réglages de cette VM.";
+"Reveal where the VM is stored." = "Affiche l'emplacement où est enregistrée la VM.";
+
+// VMConfigSystemView.swift
+"Do you want to move this VM to another location? This will copy the data to the new location, delete the data from the original location, and then create a shortcut." = "Voulez-vous déplacer cette VM à un autre endroit ? Cela copiera les données vers le nouvel emplacement, supprimera les données de l'emplacement d'origine, et créera un raccourci.";
+"Do you want to remove this shortcut? The data will not be deleted." = "Voulez-vous supprimer ce raccourci ? Les données ne seront pas supprimées.";
+"This change will reset all settings" = "Ce changement réinitialisera tous les réglages";
+
+// VMConfigSerialView.swift
+"The target does not support hardware emulated serial connections." = "La cible prend pas en charge l'émulation matérielle de connection de Série.";
+
+// VMConfigQEMUView.swift
+"(Delete)" = "（Supprimer）";
+"TPM Device" = "Puce TPM";
+"This is required to boot Windows 11." = "Ceci est requis pour démarrer Windows 11";
+"Tweaks" = "Améliorations";
+
+// VMConfigInputView.swift
+"USB sharing not supported in this build of UTM." = "Le partage USB n'est pas pris en charge sur cette version d'UTM.";
+
+// VMConfigDriveDetailsView.swift
+"(new)" = "（nouveau）";
+"Reclaim" = "Libérer";
+"Reclaim and Compress" = "Libérer et compresser";
+"Reclaim disk space by re-converting the disk image." = "Libère de l'espace disque en re-convertissant l'image disque.";
+"Would you like to re-convert this disk image to reclaim unused space? Note this will require enough temporary space to perform the conversion. You are strongly encouraged to back-up this VM before proceeding." = "Souhaitez-vous re-convertir l'image disque pour libérer de l'espace ? Notez que cela requiert temporairement de l'espace pour effectuer la conversion. Il est fortement conseillé de sauvegarder cette VM avant de continuer.";
+
+// VMConfigDriveCreateView.swift
+"If checked, no drive image will be stored with the VM. Instead you can mount/unmount image while the VM is running." = "Si coché, aucune image de lecteur ne sera enregistrée avec la VM. À la place, vous pouvez monter/démonter une image pendant que la VM est en exécution.";
+"Hardware interface on the guest used to mount this image. Different operating systems support different interfaces. The default will be the most common interface." = "Interface matérielle de l'invité utilisée pour monter l'image. Différents systèmes d'exploitation utilisent différentes interfaces. Celle par défaut est la plus commune.";
+"The amount of storage to allocate for this image. Ignored if importing an image. If this is a raw image, then an empty file of this size will be stored with the VM. Otherwise, the disk image will dynamically expand up to this size." = "La quantité de stockage à allouer pour cette image. Ignoré si importation d'image. Si c'est une image brute, un fichier vide de la même taille sera enregistré avec la VM. Sinon, l'image disque sera dynamiquement étendue jusqu'à cette taille.";
+"Raw Image" = "Image brute (RAW)";
+"Advanced. If checked, a raw disk image is used. Raw disk image does not support snapshots and will not dynamically expand in size." = "Avancé. Si coché, une image disque brute sera utilisée. Les image de disque brutes ne prennent pas en charge les instantanés et leur taille ne sera pas étendue dynamiquement.";
+
+// SavePanel.swift
+"Select where to save debug log:" = "Sélectionnez où enregistrer le journal de débogage :";
+"Select where to save UTM Virtual Machine:" = "Sélectionnez où sauvegarder la machine virtuelle UTM :";
+"Select where to export QEMU command:" = "Sélectionnez où exporter la commande QEMU :";
+
+// VMAppleSettingsAddDeviceMenuView.swift
+"Add a new device." = "Ajouter un nouvel appareil.";
+
+// VMAppleSettingsView.swift
+"Boot" = "Boot";
+"Virtualization" = "Virtualisation";
+"Drives" = "Lecteurs";
+
+// VMAppleRemovableDrivesView.swift
+"Remove" = "Retirer";
+"External Drive" = "Lecteur externe";
+"New Shared Directory…" = "Nouveau dossier partagé…";
+"New External Drive…" = "Nouveau lecteur externe…";
+
+// VMDrivesSettingsView.swift
+"Add a new drive." = "Ajoute un nouveau lecteur.";
+"Select an existing disk image." = "Sélectionne une image disque existante.";
+"Create an empty drive." = "Créer un nouveau lecteur vide.";
+"%@ Image" = "Image %@";
+"An image already exists with that name." = "Une image avec ce nom existe déjà.";
+
+// VMConfigAppleVirtualizationView.swift
+"Enable Entropy Device" = "Active l'appareil Entropy";
+"Enable Sound" = "Activer l'audio";
+"Enable Keyboard" = "Activer le clavier";
+"Pointer" = "Pointeur";
+"Enable Rosetta on Linux (x86_64 Emulation)" = "Active Rosetta sur Linux (émulation x86_64)";
+"If enabled, a virtiofs share tagged 'rosetta' will be available on the Linux guest for installing Rosetta for emulating x86_64 on ARM64." = "Si coché, un partage virtiofs tagué 'rosetta' sera disponible pour l'invité Linux pour installer Roserra pour émuler le x86_64 sur ARM64.";
+
+// VMConfigAppleDriveDetailsView.swift
+"Name" = "Nom";
+"(New Drive)" = "(Nouveau lecteur)";
+"Read Only?" = "Lecture seule ?";
+"Delete Drive" = "Supprimer le lecteur";
+"Delete this drive." = "Supprime ce lecteur.";
+
+// VMConfigAppleNetworkingView.swift
+"Invalid MAC address." = "Adresse MAC non valide";
+
+// VMConfigAppleSerialView.swift
+"Connection" = "Connection";
+"Mode" = "Mode";
+"Note: Shared directories will not be saved and will be reset when UTM quits." = "Note : les dossiers partagés ne seront pas sauvegardés et seront réinitialisés lorsque vous quitterez UTM.";
+"Shared Path" = "Chemin partagé";
+"Add" = "Ajouter";
+"This directory is already being shared." = "Ce dossier est déjà partagé.";
+"Add read only" = "Ajouter en lecture seule";
+
+// VMConfigAppleDriveCreateView.swift
+"Removable" = "Amovible";
+"If checked, the drive image will be stored with the VM." = "Si coché, l'image du disque sera stocké avec la VM.";
+"Size" = "Taille";
+"The amount of storage to allocate for this image. An empty file of this size will be stored with the VM." = "La quantité de stockage à allouer pour cette image. Un fichier vide de cette taille sera enregistré dans la VM.";
+
+// VMConfigAppleDisplayView.swift
+"Only available on macOS virtual machines." = "Uniquement disponible sur les machines virtuelles macOS.";
+
+// VMConfigAppleBootView.swift
+"Operating System" = "Système d'exploitation";
+"Bootloader" = "Bootloader";
+"UEFI" = "UEFI";
+"Please select an uncompressed Linux kernel image." = "Veuillez sélectionner une image noyau non compressée de Linux.";
+"Please select a macOS recovery IPSW." = "Veuillez sélectionner un fichier IPSW de réinstallation de macOS.";
+"This operating system is unsupported on your machine." = "Ce système d'exploitation n'est pas pris en charge sur votre machine.";
+"Select a file." = "Sélectionnez un fichier";
+"Linux Settings" = "Réglages de Linux";
+"Kernel Image" = "Image du noyau";
+"Browse…" = "Parcourir…";
+"Ramdisk (optional)" = "Ramdisk (optionnel)";
+"Clear" = "Effacer";
+"Boot Arguments" = "Arguments de démarrage";
+"macOS Settings" = "Réglages de macOS";
+"IPSW Install Image" = "Image d'installation IPSW";
+"Your machine does not support running this IPSW." = "Votre machine ne prend pas en charge l'exécution de cet IPSW.";
+
+// UTMDataExtension.swift
+"This virtual machine cannot be run on this machine." = "Cette machine virtuelle ne peut pas être exécutée sur cette machine.";
+
+// SettingsView.swift
+"Application" = "Application";
+"If enabled, resizing of the VM window will not be allowed." = "Si coché, il ne sera pas possible de redimensionner la fenêtre de la VM.";
+"If enabled, any existing screenshot will be deleted the next time the VM is started." = "Si coché, toutes les captures d'écran existantes seront supprimées au prochain démarrage de la VM.";
+"If disabled, the default combination Control+Option (⌃+⌥) will be used." = "Si décoché, la combinaison par défaut Control+Option (⌃+⌥) sera utilisée.";
+"If enabled, caps lock will be handled like other keys. If disabled, it is treated as a toggle that is synchronized with the host." = "Si coché, Verr Maj sera géré comme toutes les autres touches. Si décoché, il sera traité comme un bouton qui sera synchronisé avec l'hôte.";
+"If enabled, scroll whell input will be inverted." = "Si coché, le défilement de la molette de la souris sera inversé.";
+"Do not show prompt when USB device is plugged in" = "Ne pas afficher de message lorsqu'un périphérique USB est connecté";
+
+// AppDelegate.swift
+"Quitting UTM will kill all running VMs." = "Si vous quittez UTM, toutes les VM en cours d'exécution seront tuées.";
+
+// Display/VMDisplayWindowController.swift
+"This may corrupt the VM and any unsaved changes will be lost. To quit safely, shut down from the guest." = "Ceci peut corrompre la VM et tous les changements non sauvegardés seront perdus. Pour quitter en toute sécurité, quittez le système d'exploitation de l'invité.";
+"This will reset the VM and any unsaved state will be lost." = "Ceci va réinitialiser la VM et toutes les informations non enregistrées seront perdues.";
+"Error" = "Erreur";
+"Confirmation" = "Confirmation";
+"Closing this window will kill the VM." = "Fermer cette fenêtre tuera la VM.";
+
+// Display/VMDisplayAppleWindowController.swift
+"Would you like to install macOS? If an existing operating system is already installed on the primary drive of this VM, then it will be erased." = "Voulez-vous installer macOS ? Si un système d'exploitation existe déjà sur le lecteur principal de cette VM, il sera effacé.";
+"Directory sharing" = "Partage de dossier";
+"To access the shared directory, the guest OS must have Virtiofs drivers installed. You can then run `sudo mount -t virtiofs share /path/to/share` to mount to the share path." = "Pour accéder au dossier partagé, le système invité doit avoir installé les drivers Virtiofs. Vous pouvez ensuite exécuter `sudo mount -t virtiofs share /chemin/du/partage` pour monter le dossier partagé.";
+"Read Only" = "Lecture seule";
+"Remove…" = "Supprimer…";
+"Add…" = "Ajouter…";
+"Select Shared Folder" = "Sélectionner le dossier partagé";
+"Installation: %lld%%" = "Installation : %lld%%";
+
+// Display/VMDisplayAppleDisplayWindowController.swift
+"%@ (Terminal %lld)" = "%@ (Terminal %lld)";
+
+// Display/VMDisplayQemuWindowController.swift
+"Disposable Mode" = "Disposable Mode";
+
+// Display/VMQemuDisplayMetalWindowController.swift
+"%@ (Display %lld)" = "%@ (Display %lld)";
+"Metal is not supported on this device. Cannot render display." = "Metal n'est pas pris en charge sur cet appareil. Impossible de faire un rendu de l'affichage.";
+"Internal error." = "Erreur interne";
+"Press %@ to release cursor" = "Appuyez sur %@ pour libérer le curseur";
+"Captured mouse" = "Souris capturée";
+"To release the mouse cursor, press %@ at the same time." = "Pour libérer le curseur de la souris, appuyez su  %@ simultanément.";
+
+// Display/VMMetalView.swift
+"Capture Input" = "Capturer l'entrée";
+"To capture input or to release the capture, press Command and Option at the same time." = "Pour capturer ou libérer l'entrée, appuyez sur Command et Option en même temps.";
+
+// VMWindowView.swift
+"No output device is selected for this window." = "Aucun appareil de sortie n'est sélectionné pour cette fenêtre.";
+
+// VMToolbarUSBMenuView.swift
+"No USB devices detected." = "Aucun appareil USB détecté.";
+
+// VMToolbarDisplayMenuView.swift
+"Serial %lld: %@" = "Série %lld: %@";
+"Display %lld: %@" = "Écran %lld: %@";
+"Current Window" = "Fenêtre actuelle";
+"Zoom/Reset" = "Zoom/Réinitialiser";
+"External Monitor" = "Moniteur externe";
+"New Window…" = "Nouvelle fenêtre…";
+
+"Waiting for VM to connect to display..." = "En attente de la connection de la VM à l'écran…";
+
+// UTMWrappedVirtualMachine.swift
+"Unavailable" = "Non disponible";
+"(Unavailable)" = "(non disponible)";
+
+// UTMPendingVirtualMachine.swift
+"%@ remaining" = "%@ restant";
+"%@/s" = "%@/s";
+
+// UTMSpiceIO.m
+"Failed to start SPICE client." = "Impossible de démarrer le client SPICE";
+"Internal error trying to connect to SPICE server." = "Erreur interne en essayant de connecter le serveur SPICE.";
+
+// UTMAppleVirtualMachine.swift
+"Cannot create virtual terminal." = "Impossible de créer le terminal virtuel.";
+"Cannot access resource: %@" = "Impossible d'accéder à la ressource : %@";
+
+// UTMVirtualMachine.m
+"Starting" = "Déamarre";
+"Started" = "Démarrée";
+"Pausing" = "Mise en pause";
+"Paused" = "En pause";
+"Resuming" = "Reprise";
+"Stopping" = "Arrêt en cours";
+
+// UTMQemuVirtualMachine.m
+"Failed to access data from shortcut." = "Impossible d'accéder aux données à partir du raccourci.";
+"This build of UTM does not support emulating the architecture of this VM." = "Cette version d'UTM ne prend pas en charge l'émulation de l'achitecture de cette VM.";
+
+// UTMDrive.m
+"Port is not connected." = "Le port n'est pas connecté.";
+
+// UTMQemuConfiguration.swift
+"Failed to migrate configuration from a previous UTM version." = "Impossible de migrer la configuration depuis une ancienne version d'UTM.";
+
+// UTMAppleConfigurationVirtualization.swift
+"Mouse" = "Souris";
+"Trackpad" = "Trackpad";
+
+// UTMAppleConfiguration.swift
+"This is not a valid Apple Virtualization configuration." = "Ceci n'est pas une configuration de virtualisation Apple valide.";
+"This virtual machine cannot run on the current host machine." = "Cette machine virtuelle ne peut pas être exécutée sur cette machine hôte.";
+"A valid kernel image must be specified." = "Une image de noyau valide doit être spécifiée.";
+"This virtual machine contains an invalid hardware model. The configuration may be corrupted or is outdated." = "La machine virtuelle contient un modèle matériel non valide. La configuration est peut-être corrompue ou périmée.";
+"Rosetta is not supported on the current host machine." = "Rosette n'est pas prise en charge sur cette machine hôte.";
+
+// UTMConfigurationInfo.swift
+"Virtual Machine" = "Machine virtuelle";

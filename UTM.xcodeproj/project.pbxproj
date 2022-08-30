@@ -1613,6 +1613,7 @@
 		843BF83F284555E70029D60D /* UTMQemuConfigurationPortForward.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMQemuConfigurationPortForward.swift; sourceTree = "<group>"; };
 		8443EFF12845641600B2E6E2 /* UTMQemuConfigurationDrive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMQemuConfigurationDrive.swift; sourceTree = "<group>"; };
 		8443EFF928456F3B00B2E6E2 /* UTMQemuConfigurationSharing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMQemuConfigurationSharing.swift; sourceTree = "<group>"; };
+		844C73F828BDA96200805313 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/VMDisplayWindow.strings; sourceTree = "<group>"; };
 		844EC0FA2773EE49003C104A /* UTMDownloadIPSWTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMDownloadIPSWTask.swift; sourceTree = "<group>"; };
 		8453DCB0278CE33E0037A0DA /* qemu-img.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "qemu-img.framework"; path = "$(SYSROOT_DIR)/Frameworks/qemu-img.framework"; sourceTree = "<group>"; };
 		8453DCB3278CE5410037A0DA /* UTMQemuImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMQemuImage.swift; sourceTree = "<group>"; };
@@ -4459,6 +4460,7 @@
 				CE061CDC289E6DC30000351C /* Base */,
 				CE061CDF289E6DCF0000351C /* ja */,
 				E68D491C28AC018700D34C54 /* es-419 */,
+				844C73F828BDA96200805313 /* fr */,
 			);
 			name = VMDisplayWindow.xib;
 			sourceTree = "<group>";
