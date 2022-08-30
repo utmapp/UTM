@@ -1,15 +1,6 @@
-/* Privacy - Location Always and When In Use Usage Description */
-"NSLocationAlwaysAndWhenInUseUsageDescription" = "En raison du mécanisme d'iOS, le maintien en arrière-plan de l'exécution de la machine virtuelle nécessite l'aide de services de localisation. Cela ne transmettra pas vos informations de localisation.";
-
-/* Privacy - Location Always Usage Description */
-"NSLocationAlwaysUsageDescription" = "En raison du mécanisme d'iOS, le maintien en arrière-plan de l'exécution de la machine virtuelle nécessite l'aide de services de localisation. Cela ne transmettra pas vos informations de localisation.";
-
-/* Privacy - Location When In Use Usage Description */
-"NSLocationWhenInUseUsageDescription" = "En raison du mécanisme d'iOS, le maintien en arrière-plan de l'exécution de la machine virtuelle nécessite l'aide de services de localisation. Cela ne transmettra pas vos informations de localisation.";
-
-/* Privacy - Microphone Usage Description */
-"NSMicrophoneUsageDescription" = "UTM nécessite votre autorisation pour utiliser le microphone.";
+/* Bundle name */
+"CFBundleName" = "UTM";
 
 /* (No Comment) */
-"UTM virtual machine" = "Machine virtuelle UTM";
+"UTM virtual machine" = "Machine Virtuelle UTM";
 

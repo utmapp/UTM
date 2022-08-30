@@ -1,0 +1,78 @@
+
+/* Class = "NSToolbarItem"; label = "Shared Folder"; ObjectID = "7EC-GE-fIl"; */
+"7EC-GE-fIl.label" = "Dossier partagé";
+
+/* Class = "NSToolbarItem"; paletteLabel = "Shared Folder"; ObjectID = "7EC-GE-fIl"; */
+"7EC-GE-fIl.paletteLabel" = "Dossier partagé";
+
+/* Class = "NSToolbarItem"; toolTip = "Shared folder"; ObjectID = "7EC-GE-fIl"; */
+"7EC-GE-fIl.toolTip" = "Dossier partagé";
+
+/* Class = "NSToolbarItem"; label = "Stop"; ObjectID = "Bkx-Ph-j0D"; */
+"Bkx-Ph-j0D.label" = "Arrêter";
+
+/* Class = "NSToolbarItem"; paletteLabel = "Stop"; ObjectID = "Bkx-Ph-j0D"; */
+"Bkx-Ph-j0D.paletteLabel" = "Arrêter";
+
+/* Class = "NSToolbarItem"; toolTip = "Shuts down and stops the VM"; ObjectID = "Bkx-Ph-j0D"; */
+"Bkx-Ph-j0D.toolTip" = "Éteint et arrête la VM";
+
+/* Class = "NSToolbarItem"; label = "Capture Mouse"; ObjectID = "FN7-zs-mWC"; */
+"FN7-zs-mWC.label" = "Capturer la souris";
+
+/* Class = "NSToolbarItem"; paletteLabel = "Capture Mouse"; ObjectID = "FN7-zs-mWC"; */
+"FN7-zs-mWC.paletteLabel" = "Capturer la souris";
+
+/* Class = "NSToolbarItem"; toolTip = "Capture mouse cursor"; ObjectID = "FN7-zs-mWC"; */
+"FN7-zs-mWC.toolTip" = "Capturer le curseur de la souris";
+
+/* Class = "NSToolbarItem"; label = "Restart"; ObjectID = "G7P-HJ-bcy"; */
+"G7P-HJ-bcy.label" = "Redémarrer";
+
+/* Class = "NSToolbarItem"; paletteLabel = "Restart"; ObjectID = "G7P-HJ-bcy"; */
+"G7P-HJ-bcy.paletteLabel" = "Redémarrer";
+
+/* Class = "NSToolbarItem"; toolTip = "Restarts the VM"; ObjectID = "G7P-HJ-bcy"; */
+"G7P-HJ-bcy.toolTip" = "Redémarre la VM";
+
+/* Class = "NSWindow"; title = "UTM"; ObjectID = "QvC-M9-y7g"; */
+"QvC-M9-y7g.title" = "UTM";
+
+/* Class = "NSToolbarItem"; label = "Resize Console"; ObjectID = "Ulf-oT-4cP"; */
+"Ulf-oT-4cP.label" = "Redimensionner la Console";
+
+/* Class = "NSToolbarItem"; paletteLabel = "Resize Console"; ObjectID = "Ulf-oT-4cP"; */
+"Ulf-oT-4cP.paletteLabel" = "Redimensionner la Console";
+
+/* Class = "NSToolbarItem"; toolTip = "Send console resize command"; ObjectID = "Ulf-oT-4cP"; */
+"Ulf-oT-4cP.toolTip" = "Envoyer la commande de redimensionnement à la Console";
+
+/* Class = "NSButton"; ibShadowedToolTip = "Starts/resumes the VM"; ObjectID = "ZTi-Hs-ge6"; */
+"ZTi-Hs-ge6.ibShadowedToolTip" = "Démarre/Reprend la VM";
+
+/* Class = "NSToolbarItem"; label = "Drives"; ObjectID = "bKL-Th-FFw"; */
+"bKL-Th-FFw.label" = "Lecteurs";
+
+/* Class = "NSToolbarItem"; paletteLabel = "Drives"; ObjectID = "bKL-Th-FFw"; */
+"bKL-Th-FFw.paletteLabel" = "Lecteurs";
+
+/* Class = "NSToolbarItem"; toolTip = "Drive image options"; ObjectID = "bKL-Th-FFw"; */
+"bKL-Th-FFw.toolTip" = "Options d'images de lecteurs";
+
+/* Class = "NSToolbarItem"; label = "Start/Pause"; ObjectID = "kT2-2U-cYm"; */
+"kT2-2U-cYm.label" = "Démarrer/Pause";
+
+/* Class = "NSToolbarItem"; paletteLabel = "Start/Pause"; ObjectID = "kT2-2U-cYm"; */
+"kT2-2U-cYm.paletteLabel" = "Démarrer/Pause";
+
+/* Class = "NSToolbarItem"; toolTip = "Start/pause the VM"; ObjectID = "kT2-2U-cYm"; */
+"kT2-2U-cYm.toolTip" = "Démarre/met en pause la VM";
+
+/* Class = "NSToolbarItem"; label = "USB"; ObjectID = "tlw-Fb-ne3"; */
+"tlw-Fb-ne3.label" = "USB";
+
+/* Class = "NSToolbarItem"; paletteLabel = "USB"; ObjectID = "tlw-Fb-ne3"; */
+"tlw-Fb-ne3.paletteLabel" = "USB";
+
+/* Class = "NSToolbarItem"; toolTip = "USB devices"; ObjectID = "tlw-Fb-ne3"; */
+"tlw-Fb-ne3.toolTip" = "Périphériques USB";

@@ -21,8 +21,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const kUTMBundleConfigFilename;
-extern const NSURLBookmarkCreationOptions kUTMBookmarkCreationOptions;
-extern const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions;
 
 @interface UTMVirtualMachine ()
 
@@ -67,8 +65,14 @@ extern const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions;
 @property (nonatomic, readonly) NSString *stateLabel;
 
 @property (nonatomic, readwrite) NSURL *path;
-@property (nonatomic, readwrite, copy) UTMConfigurationWrapper *config;
+@property (nonatomic, readwrite) UTMConfigurationWrapper *config;
 @property (nonatomic, readwrite, nullable) CSScreenshot *screenshot;
+@property (nonatomic, readwrite) UTMRegistryEntry *registryEntry;
+@property (nonatomic) NSArray *anyCancellable;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)initWithConfiguration:(UTMConfigurationWrapper *)configuration packageURL:(NSURL *)packageURL NS_DESIGNATED_INITIALIZER;
 
 /// Updates the internal state and view state
 /// @param state New state
@@ -82,9 +86,6 @@ extern const NSURLBookmarkResolutionOptions kUTMBookmarkResolutionOptions;
 /// @param message Localized message if possible
 /// @returns UTM error with the localized description set to `message`
 - (NSError *)errorWithMessage:(nullable NSString *)message;
-
-/// Load screenshot from disk
-- (void)loadScreenshot;
 
 /// Save screenshot to disk
 - (void)saveScreenshot;

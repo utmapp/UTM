@@ -18,12 +18,13 @@ import SwiftUI
 
 struct VMRemovableDrivesView: View {
     @ObservedObject var vm: UTMQemuVirtualMachine
+    @ObservedObject var config: UTMQemuConfiguration
     @EnvironmentObject private var data: UTMData
     @State private var shareDirectoryFileImportPresented: Bool = false
     @State private var diskImageFileImportPresented: Bool = false
     /// Explanation see "SwiftUI FileImporter modal bug" in the `body`
     @State private var workaroundFileImporterBug: Bool = false
-    @State private var currentDrive: UTMDrive?
+    @State private var currentDrive: UTMQemuConfigurationDrive?
     
     var fileManager: FileManager {
         FileManager.default
@@ -31,7 +32,7 @@ struct VMRemovableDrivesView: View {
 
 
     // Is a shared directory set?
-    private var hasSharedDir: Bool { vm.viewState.sharedDirectoryPath != nil }
+    private var hasSharedDir: Bool { vm.sharedDirectoryURL != nil }
 
     @ViewBuilder private var shareMenuActions: some View {
         Button(action: { shareDirectoryFileImportPresented.toggle() }) {
@@ -62,14 +63,14 @@ struct VMRemovableDrivesView: View {
                         Menu {
                             shareMenuActions
                         } label: {
-                            SharedPath(path: vm.viewState.sharedDirectoryPath)
+                            SharedPath(path: vm.sharedDirectoryURL?.path)
                         }.fixedSize()
                     } else {
                         Button("Browse…", action: { shareDirectoryFileImportPresented.toggle() })
                     }
                 }.fileImporter(isPresented: $shareDirectoryFileImportPresented, allowedContentTypes: [.folder], onCompletion: selectShareDirectory)
             }
-            ForEach(vm.drives.filter { $0.status != .fixed }) { drive in
+            ForEach(config.drives.filter { $0.isExternal }) { drive in
                 HStack {
                     // Drive menu
                     Menu {
@@ -103,25 +104,25 @@ struct VMRemovableDrivesView: View {
                             }
                         }
                         // Eject button
-                        if drive.status != .ejected {
+                        if vm.externalImageURL(for: drive) != nil {
                             Button(action: { clearRemovableImage(forDrive: drive) }, label: {
                                 Label("Clear", systemImage: "eject")
                             })
                         }
                     } label: {
-                        DriveLabel(drive: drive)
-                    }.disabled(vm.viewState.hasSaveState)
+                        DriveLabel(drive: drive, isInserted: vm.externalImageURL(for: drive) != nil)
+                    }.disabled(vm.hasSaveState)
                     Spacer()
                     // Disk image path, or (empty)
                     Text(pathFor(drive))
                         .lineLimit(1)
                         .truncationMode(.tail)
                         .foregroundColor(.secondary)
-                }
-            }.fileImporter(isPresented: $diskImageFileImportPresented, allowedContentTypes: [.data]) { result in
-                if let currentDrive = self.currentDrive {
-                    selectRemovableImage(forDrive: currentDrive, result: result)
-                    self.currentDrive = nil
+                }.fileImporter(isPresented: $diskImageFileImportPresented, allowedContentTypes: [.data]) { result in
+                    if let currentDrive = self.currentDrive {
+                        selectRemovableImage(forDrive: currentDrive, result: result)
+                        self.currentDrive = nil
+                    }
                 }
             }
         }
@@ -148,10 +149,8 @@ struct VMRemovableDrivesView: View {
         }
     }
     
-    private func pathFor(_ drive: UTMDrive) -> String {
-        let path = vm.viewState.path(forRemovableDrive: drive.name ?? "") ?? ""
-        if path.count > 0 {
-            let url = URL(fileURLWithPath: path)
+    private func pathFor(_ drive: UTMQemuConfigurationDrive) -> String {
+        if let url = vm.externalImageURL(for: drive) {
             return url.lastPathComponent
         } else {
             return NSLocalizedString("(empty)", comment: "A removable drive that has no image file inserted.")
@@ -159,11 +158,12 @@ struct VMRemovableDrivesView: View {
     }
     
     private struct DriveLabel: View {
-        let drive: UTMDrive
+        let drive: UTMQemuConfigurationDrive
+        let isInserted: Bool
 
         var body: some View {
-            if drive.imageType == .CD {
-                return Label("CD/DVD", systemImage: drive.status == .ejected ? "opticaldiscdrive" : "opticaldiscdrive.fill")
+            if drive.imageType == .cd {
+                return Label("CD/DVD", systemImage: !isInserted ? "opticaldiscdrive" : "opticaldiscdrive.fill")
             } else {
                 return Label("Removable", systemImage: "externaldrive")
             }
@@ -171,10 +171,10 @@ struct VMRemovableDrivesView: View {
     }
     
     private func selectShareDirectory(result: Result<URL, Error>) {
-        data.busyWork {
+        data.busyWorkAsync {
             switch result {
             case .success(let url):
-                try vm.changeSharedDirectory(url)
+                try await vm.changeSharedDirectory(to: url)
                 break
             case .failure(let err):
                 throw err
@@ -186,11 +186,11 @@ struct VMRemovableDrivesView: View {
         vm.clearSharedDirectory()
     }
     
-    private func selectRemovableImage(forDrive drive: UTMDrive, result: Result<URL, Error>) {
-        data.busyWork {
+    private func selectRemovableImage(forDrive drive: UTMQemuConfigurationDrive, result: Result<URL, Error>) {
+        data.busyWorkAsync {
             switch result {
             case .success(let url):
-                try vm.changeMedium(for: drive, url: url)
+                try await vm.changeMedium(drive, to: url)
                 break
             case .failure(let err):
                 throw err
@@ -198,9 +198,9 @@ struct VMRemovableDrivesView: View {
         }
     }
     
-    private func clearRemovableImage(forDrive drive: UTMDrive) {
-        data.busyWork {
-            try vm.ejectDrive(drive, force: true)
+    private func clearRemovableImage(forDrive drive: UTMQemuConfigurationDrive) {
+        data.busyWorkAsync {
+            try await vm.eject(drive)
         }
     }
 }

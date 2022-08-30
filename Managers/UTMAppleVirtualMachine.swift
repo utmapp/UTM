@@ -26,27 +26,27 @@ import Virtualization
         config.appleConfig!
     }
     
-    override var detailsTitleLabel: String {
+    @MainActor override var detailsTitleLabel: String {
         appleConfig.information.name
     }
     
-    override var detailsSubtitleLabel: String {
+    @MainActor override var detailsSubtitleLabel: String {
         detailsSystemTargetLabel
     }
     
-    override var detailsNotes: String? {
+    @MainActor override var detailsNotes: String? {
         appleConfig.information.notes
     }
     
-    override var detailsSystemTargetLabel: String {
+    @MainActor override var detailsSystemTargetLabel: String {
         appleConfig.system.boot.operatingSystem.rawValue
     }
     
-    override var detailsSystemArchitectureLabel: String {
+    @MainActor override var detailsSystemArchitectureLabel: String {
         appleConfig.system.architecture
     }
     
-    override var detailsSystemMemoryLabel: String {
+    @MainActor override var detailsSystemMemoryLabel: String {
         let bytesInMib = Int64(1048576)
         return ByteCountFormatter.string(fromByteCount: Int64(appleConfig.system.memorySize) * bytesInMib, countStyle: .memory)
     }
@@ -70,12 +70,13 @@ import Virtualization
     override func reloadConfiguration() throws {
         let newConfig = try UTMAppleConfiguration.load(from: path) as! UTMAppleConfiguration
         let oldConfig = appleConfig
-        // copy non-persistent values over
-        newConfig.sharedDirectories = oldConfig.sharedDirectories
-        if #available(macOS 12, *) {
-            newConfig.system.boot.macRecoveryIpswURL = oldConfig.system.boot.macRecoveryIpswURL
-        }
         config = UTMConfigurationWrapper(wrapping: newConfig)
+        Task { @MainActor in
+            updateConfigFromRegistry()
+            if #available(macOS 12, *) {
+                newConfig.system.boot.macRecoveryIpswURL = oldConfig.system.boot.macRecoveryIpswURL
+            }
+        }
     }
     
     override func accessShortcut() async throws {
@@ -83,11 +84,11 @@ import Virtualization
     }
     
     private func _vmStart() async throws {
-        try createAppleVM()
+        try await createAppleVM()
+        let boot = await appleConfig.system.boot
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) -> Void in
             vmQueue.async {
                 #if os(macOS) && arch(arm64)
-                let boot = self.appleConfig.system.boot
                 if #available(macOS 13, *), boot.operatingSystem == .macOS {
                     let options = VZMacOSVirtualMachineStartOptions()
                     options.startUpFromMacOSRecovery = boot.startUpFromMacOSRecovery
@@ -117,12 +118,14 @@ import Virtualization
             try await beginAccessingResources()
             try await _vmStart()
             if #available(macOS 12, *) {
-                sharedDirectoriesChanged = appleConfig.$sharedDirectories.sink { [weak self] newShares in
-                    guard let self = self else {
-                        return
-                    }
-                    self.vmQueue.async {
-                        self.updateSharedDirectories(with: newShares)
+                Task { @MainActor in
+                    sharedDirectoriesChanged = appleConfig.sharedDirectoriesPublisher.sink { [weak self] newShares in
+                        guard let self = self else {
+                            return
+                        }
+                        self.vmQueue.async {
+                            self.updateSharedDirectories(with: newShares)
+                        }
                     }
                 }
             }
@@ -269,17 +272,15 @@ import Virtualization
         screenshot = screenshotDelegate?.screenshot
     }
     
-    private func createAppleVM() throws {
+    @MainActor private func createAppleVM() throws {
         for i in appleConfig.serials.indices {
             let (fd, sfd, name) = try createPty()
             let terminalTtyHandle = FileHandle(fileDescriptor: fd, closeOnDealloc: false)
             let slaveTtyHandle = FileHandle(fileDescriptor: sfd, closeOnDealloc: false)
             appleConfig.serials[i].fileHandleForReading = terminalTtyHandle
             appleConfig.serials[i].fileHandleForWriting = terminalTtyHandle
-            Task { @MainActor in
-                let serialPort = UTMSerialPort(portNamed: name, readFileHandle: slaveTtyHandle, writeFileHandle: slaveTtyHandle, terminalFileHandle: terminalTtyHandle)
-                appleConfig.serials[i].interface = serialPort
-            }
+            let serialPort = UTMSerialPort(portNamed: name, readFileHandle: slaveTtyHandle, writeFileHandle: slaveTtyHandle, terminalFileHandle: terminalTtyHandle)
+            appleConfig.serials[i].interface = serialPort
         }
         let vzConfig = appleConfig.appleVZConfiguration
         apple = VZVirtualMachine(configuration: vzConfig, queue: vmQueue)
@@ -306,7 +307,7 @@ import Virtualization
             return
         }
         changeState(.vmStarting)
-        try createAppleVM()
+        try await createAppleVM()
         #if os(macOS) && arch(arm64)
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             vmQueue.async {
@@ -414,11 +415,9 @@ extension UTMAppleVirtualMachine: VZVirtualMachineDelegate {
         sharedDirectoriesChanged = nil
         Task { @MainActor in
             stopAccesingResources()
-        }
-        for i in appleConfig.serials.indices {
-            if let serialPort = appleConfig.serials[i].interface {
-                serialPort.close()
-                Task { @MainActor in
+            for i in appleConfig.serials.indices {
+                if let serialPort = appleConfig.serials[i].interface {
+                    serialPort.close()
                     appleConfig.serials[i].interface = nil
                     appleConfig.serials[i].fileHandleForReading = nil
                     appleConfig.serials[i].fileHandleForWriting = nil
@@ -449,6 +448,44 @@ extension UTMAppleVirtualMachineError: LocalizedError {
         switch self {
         case .cannotAccessResource(let url):
             return String.localizedStringWithFormat(NSLocalizedString("Cannot access resource: %@", comment: "UTMAppleVirtualMachine"), url.path)
+        }
+    }
+}
+
+// MARK: - Registry access
+extension UTMAppleVirtualMachine {
+    @MainActor override func updateRegistryFromConfig() async throws {
+        // save a copy to not collide with updateConfigFromRegistry()
+        let configShares = appleConfig.sharedDirectories
+        let configDrives = appleConfig.drives
+        try await super.updateRegistryFromConfig()
+        registryEntry.sharedDirectories.removeAll(keepingCapacity: true)
+        for sharedDirectory in configShares {
+            if let url = sharedDirectory.directoryURL {
+                let file = try UTMRegistryEntry.File(url: url, isReadOnly: sharedDirectory.isReadOnly)
+                registryEntry.sharedDirectories.append(file)
+            }
+        }
+        for drive in configDrives {
+            if drive.isExternal, let url = drive.imageURL {
+                let file = try UTMRegistryEntry.File(url: url, isReadOnly: drive.isReadOnly)
+                registryEntry.externalDrives[drive.id] = file
+            }
+        }
+        // remove any unreferenced drives
+        registryEntry.externalDrives = registryEntry.externalDrives.filter({ element in
+            configDrives.contains(where: { $0.id == element.key && $0.isExternal })
+        })
+    }
+    
+    @MainActor override func updateConfigFromRegistry() {
+        super.updateConfigFromRegistry()
+        appleConfig.sharedDirectories = registryEntry.sharedDirectories.map({ UTMAppleConfigurationSharedDirectory(directoryURL: $0.url, isReadOnly: $0.isReadOnly )})
+        for i in appleConfig.drives.indices {
+            let id = appleConfig.drives[i].id
+            if let file = registryEntry.externalDrives[id], appleConfig.drives[i].isExternal {
+                appleConfig.drives[i].imageURL = file.url
+            }
         }
     }
 }

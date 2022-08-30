@@ -27,7 +27,7 @@ class UTMDownloadIPSWTask: UTMDownloadTask {
         fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first!
     }
     
-    init(for config: UTMAppleConfiguration) {
+    @MainActor init(for config: UTMAppleConfiguration) {
         self.config = config
         super.init(for: config.system.boot.macRecoveryIpswURL!, named: config.information.name)
     }
@@ -42,7 +42,9 @@ class UTMDownloadIPSWTask: UTMDownloadTask {
             try fileManager.removeItem(at: cacheIpsw)
         }
         try fileManager.moveItem(at: location, to: cacheIpsw)
-        config.system.boot.macRecoveryIpswURL = cacheIpsw
+        await MainActor.run {
+            config.system.boot.macRecoveryIpswURL = cacheIpsw
+        }
         return UTMVirtualMachine(newConfig: config, destinationURL: UTMData.defaultStorageUrl)
     }
 }

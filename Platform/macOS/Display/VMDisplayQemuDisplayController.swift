@@ -91,16 +91,11 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
         item.title = NSLocalizedString("Querying drives status...", comment: "VMDisplayWindowController")
         item.isEnabled = false
         menu.addItem(item)
-        DispatchQueue.global(qos: .userInitiated).async {
-            let drives = self.qemuVM.drives
-            DispatchQueue.main.async {
-                self.updateDrivesMenu(menu, drives: drives)
-            }
-        }
+        updateDrivesMenu(menu, drives: vmQemuConfig.drives)
         menu.popUp(positioning: nil, at: NSEvent.mouseLocation, in: nil)
     }
     
-    func updateDrivesMenu(_ menu: NSMenu, drives: [UTMDrive]) {
+    @nonobjc func updateDrivesMenu(_ menu: NSMenu, drives: [UTMQemuConfigurationDrive]) {
         menu.removeAllItems()
         if drives.count == 0 {
             let item = NSMenuItem()
@@ -108,13 +103,14 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
             item.isEnabled = false
             menu.addItem(item)
         }
-        for drive in drives {
-            if drive.imageType != .disk && drive.imageType != .CD && drive.status == .fixed {
+        for i in drives.indices {
+            let drive = drives[i]
+            if drive.imageType != .disk && drive.imageType != .cd && !drive.isExternal {
                 continue // skip non-disks
             }
             let item = NSMenuItem()
-            item.title = drive.label
-            if drive.status == .fixed {
+            item.title = label(for: drive)
+            if !drive.isExternal {
                 item.isEnabled = false
             } else {
                 let submenu = NSMenu()
@@ -123,14 +119,14 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
                                        action: #selector(ejectDrive),
                                        keyEquivalent: "")
                 eject.target = self
-                eject.tag = drive.index
-                eject.isEnabled = drive.status != .ejected
+                eject.tag = i
+                eject.isEnabled = qemuVM.externalImageURL(for: drive) != nil
                 submenu.addItem(eject)
                 let change = NSMenuItem(title: NSLocalizedString("Change", comment: "VMDisplayWindowController"),
                                         action: #selector(changeDriveImage),
                                         keyEquivalent: "")
                 change.target = self
-                change.tag = drive.index
+                change.tag = i
                 change.isEnabled = true
                 submenu.addItem(change)
                 item.submenu = submenu
@@ -145,19 +141,20 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
             logger.error("wrong sender for ejectDrive")
             return
         }
-        let drive = qemuVM.drives[menu.tag]
-        DispatchQueue.global(qos: .background).async {
+        let drive = vmQemuConfig.drives[menu.tag]
+        Task.detached(priority: .background) { [self] in
             do {
-                try self.qemuVM.ejectDrive(drive, force: false)
+                try await qemuVM.eject(drive)
             } catch {
-                DispatchQueue.main.async {
-                    self.showErrorAlert(error.localizedDescription)
+                Task { @MainActor in
+                    showErrorAlert(error.localizedDescription)
                 }
             }
         }
     }
     
-    func openDriveImage(forDrive drive: UTMDrive) {
+    func openDriveImage(forDriveIndex index: Int) {
+        let drive = vmQemuConfig.drives[index]
         let openPanel = NSOpenPanel()
         openPanel.title = NSLocalizedString("Select Drive Image", comment: "VMDisplayWindowController")
         openPanel.allowedContentTypes = [.data]
@@ -169,12 +166,12 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
                 logger.debug("no file selected")
                 return
             }
-            DispatchQueue.global(qos: .background).async {
+            Task.detached(priority: .background) { [self] in
                 do {
-                    try self.qemuVM.changeMedium(for: drive, url: url)
+                    try await qemuVM.changeMedium(drive, to: url)
                 } catch {
-                    DispatchQueue.main.async {
-                        self.showErrorAlert(error.localizedDescription)
+                    Task { @MainActor in
+                        showErrorAlert(error.localizedDescription)
                     }
                 }
             }
@@ -186,8 +183,15 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
             logger.error("wrong sender for ejectDrive")
             return
         }
-        let drive = qemuVM.drives[menu.tag]
-        openDriveImage(forDrive: drive)
+        openDriveImage(forDriveIndex: menu.tag)
+    }
+    
+    @nonobjc private func label(for drive: UTMQemuConfigurationDrive) -> String {
+        let imageURL = qemuVM.externalImageURL(for: drive) ?? drive.imageURL
+        return String.localizedStringWithFormat(NSLocalizedString("%@ (%@): %@", comment: "VMDisplayQemuDisplayController"),
+                                                drive.imageType.prettyValue,
+                                                drive.interface.prettyValue,
+                                                imageURL?.lastPathComponent ?? NSLocalizedString("none", comment: "VMDisplayQemuDisplayController"))
     }
 }
 
@@ -207,11 +211,11 @@ extension VMDisplayQemuWindowController {
                 logger.debug("no directory selected")
                 return
             }
-            DispatchQueue.global(qos: .background).async {
+            Task.detached(priority: .background) { [self] in
                 do {
-                    try self.qemuVM.changeSharedDirectory(url)
+                    try await self.qemuVM.changeSharedDirectory(to: url)
                 } catch {
-                    DispatchQueue.main.async {
+                    Task { @MainActor in
                         self.showErrorAlert(error.localizedDescription)
                     }
                 }

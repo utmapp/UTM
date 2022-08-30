@@ -201,6 +201,7 @@
 
 - (void)stopQemu {
     if (_connection) {
+        [[_connection remoteObjectProxy] terminate];
         [_connection invalidate];
     }
     for (NSURL *url in _urls) {

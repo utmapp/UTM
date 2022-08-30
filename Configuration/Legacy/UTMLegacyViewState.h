@@ -18,25 +18,26 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMViewState : NSObject
+@interface UTMLegacyViewState : NSObject
 
 @property (nonatomic, weak, readonly) NSDictionary *dictRepresentation;
 
-@property (nonatomic, assign) double displayScale;
-@property (nonatomic, assign) double displayOriginX;
-@property (nonatomic, assign) double displayOriginY;
-@property (nonatomic, assign) BOOL hasSaveState;
-@property (nonatomic, copy, nullable) NSData *sharedDirectory;
-@property (nonatomic, copy, nullable) NSString *sharedDirectoryPath;
-@property (nonatomic, copy, nullable) NSData *shortcutBookmark;
-@property (nonatomic, copy, nullable) NSString *shortcutBookmarkPath;
+@property (nonatomic, readonly) CGFloat displayScale;
+@property (nonatomic, readonly) CGFloat displayOriginX;
+@property (nonatomic, readonly) CGFloat displayOriginY;
+@property (nonatomic, readonly) BOOL isKeyboardShown;
+@property (nonatomic, readonly) BOOL isToolbarShown;
+@property (nonatomic, readonly) BOOL hasSaveState;
+@property (nonatomic, readonly, nullable) NSData *sharedDirectory;
+@property (nonatomic, readonly, nullable) NSString *sharedDirectoryPath;
+@property (nonatomic, readonly, nullable) NSData *shortcutBookmark;
+@property (nonatomic, readonly, nullable) NSString *shortcutBookmarkPath;
 
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithDictionary:(NSDictionary *)dictionary NS_DESIGNATED_INITIALIZER;
 
-- (void)setBookmark:(NSData *)bookmark path:(NSString *)path forRemovableDrive:(NSString *)drive persistent:(BOOL)persistent;
-- (void)removeBookmarkForRemovableDrive:(NSString *)drive;
-- (nullable NSData *)bookmarkForRemovableDrive:(NSString *)drive persistent:(out BOOL *)persistent;
+- (NSArray<NSString *> *)allDrives;
+- (nullable NSData *)bookmarkForRemovableDrive:(NSString *)drive;
 - (nullable NSString *)pathForRemovableDrive:(NSString *)drive;
 
 @end

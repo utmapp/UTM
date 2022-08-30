@@ -152,30 +152,36 @@ struct VMConfigAppleBootView: View {
         }
         data.busyWorkAsync {
             let url = try result.get()
-            try await Task { @MainActor in
-                switch selection {
-                case .ipsw:
-                    if #available(macOS 12, *) {
-                        #if arch(arm64)
-                        let image = try await VZMacOSRestoreImage.image(from: url)
-                        guard let model = image.mostFeaturefulSupportedConfiguration?.hardwareModel else {
-                            throw NSLocalizedString("Your machine does not support running this IPSW.", comment: "VMConfigAppleBootView")
-                        }
+            switch selection {
+            case .ipsw:
+                if #available(macOS 12, *) {
+                    #if arch(arm64)
+                    let image = try await VZMacOSRestoreImage.image(from: url)
+                    guard let model = image.mostFeaturefulSupportedConfiguration?.hardwareModel else {
+                        throw NSLocalizedString("Your machine does not support running this IPSW.", comment: "VMConfigAppleBootView")
+                    }
+                    await MainActor.run {
                         config.macPlatform = UTMAppleConfigurationMacPlatform(newHardware: model)
                         config.boot.operatingSystem = .macOS
                         config.boot.macRecoveryIpswURL = url
-                        #endif
                     }
-                case .kernel:
+                    #endif
+                }
+            case .kernel:
+                await MainActor.run {
                     config.boot.operatingSystem = .linux
                     config.boot.linuxKernelURL = url
-                case .ramdisk:
-                    config.boot.linuxInitialRamdiskURL = url
-                case .unsupported:
-                    break
                 }
+            case .ramdisk:
+                await MainActor.run {
+                    config.boot.linuxInitialRamdiskURL = url
+                }
+            case .unsupported:
+                break
+            }
+            await MainActor.run {
                 operatingSystem = currentOperatingSystem
-            }.value
+            }
         }
     }
 }

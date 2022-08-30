@@ -78,7 +78,9 @@ struct VMWizardSharingView: View {
                 Text("Optionally select a directory to make accessible inside the VM. Note that support for shared directories varies by the guest operating system and may require additional guest drivers to be installed. See UTM support pages for more details.")
             }
         }
+        #if os(iOS)
         .navigationTitle(Text("Shared Directory"))
+        #endif
         .fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.folder], onCompletion: processDirectory)
     }
     

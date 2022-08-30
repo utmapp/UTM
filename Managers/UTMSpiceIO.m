@@ -18,7 +18,6 @@
 #import "UTMSpiceIO.h"
 #import "UTMQemuManager.h"
 #import "UTMLogging.h"
-#import "UTMViewState.h"
 #import "UTM-Swift.h"
 
 const int kMaxSpiceStartAttempts = 15; // qemu needs to start spice server first

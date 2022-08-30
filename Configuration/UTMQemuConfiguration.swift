@@ -19,34 +19,34 @@ import Foundation
 /// Settings for a QEMU configuration
 final class UTMQemuConfiguration: UTMConfiguration {
     /// Basic information and icon
-    @Published var information: UTMConfigurationInfo = .init()
+    @Published var _information: UTMConfigurationInfo = .init()
     
     /// System settings
-    @Published var system: UTMQemuConfigurationSystem = .init()
+    @Published var _system: UTMQemuConfigurationSystem = .init()
     
     /// Additional QEMU tweaks
-    @Published var qemu: UTMQemuConfigurationQEMU = .init()
+    @Published var _qemu: UTMQemuConfigurationQEMU = .init()
     
     /// Input settings
-    @Published var input: UTMQemuConfigurationInput = .init()
+    @Published var _input: UTMQemuConfigurationInput = .init()
     
     /// Sharing settings
-    @Published var sharing: UTMQemuConfigurationSharing = .init()
+    @Published var _sharing: UTMQemuConfigurationSharing = .init()
     
     /// All displays
-    @Published var displays: [UTMQemuConfigurationDisplay] = []
+    @Published var _displays: [UTMQemuConfigurationDisplay] = []
     
     /// All drives
-    @Published var drives: [UTMQemuConfigurationDrive] = []
+    @Published var _drives: [UTMQemuConfigurationDrive] = []
     
     /// All network adapters
-    @Published var networks: [UTMQemuConfigurationNetwork] = []
+    @Published var _networks: [UTMQemuConfigurationNetwork] = []
     
     /// All serial ouputs
-    @Published var serials: [UTMQemuConfigurationSerial] = []
+    @Published var _serials: [UTMQemuConfigurationSerial] = []
     
     /// All audio devices
-    @Published var sound: [UTMQemuConfigurationSound] = []
+    @Published var _sound: [UTMQemuConfigurationSound] = []
     
     /// True if configuration is migrated from a legacy config. Not saved.
     private(set) var isLegacy: Bool = false
@@ -87,30 +87,30 @@ final class UTMQemuConfiguration: UTMConfiguration {
         guard version <= Self.currentVersion else {
             throw UTMConfigurationError.versionTooHigh
         }
-        information = try values.decode(UTMConfigurationInfo.self, forKey: .information)
-        system = try values.decode(UTMQemuConfigurationSystem.self, forKey: .system)
-        qemu = try values.decode(UTMQemuConfigurationQEMU.self, forKey: .qemu)
-        input = try values.decode(UTMQemuConfigurationInput.self, forKey: .input)
-        sharing = try values.decode(UTMQemuConfigurationSharing.self, forKey: .sharing)
-        displays = try values.decode([UTMQemuConfigurationDisplay].self, forKey: .displays)
-        drives = try values.decode([UTMQemuConfigurationDrive].self, forKey: .drives)
-        networks = try values.decode([UTMQemuConfigurationNetwork].self, forKey: .networks)
-        serials = try values.decode([UTMQemuConfigurationSerial].self, forKey: .serials)
-        sound = try values.decode([UTMQemuConfigurationSound].self, forKey: .sound)
+        _information = try values.decode(UTMConfigurationInfo.self, forKey: .information)
+        _system = try values.decode(UTMQemuConfigurationSystem.self, forKey: .system)
+        _qemu = try values.decode(UTMQemuConfigurationQEMU.self, forKey: .qemu)
+        _input = try values.decode(UTMQemuConfigurationInput.self, forKey: .input)
+        _sharing = try values.decode(UTMQemuConfigurationSharing.self, forKey: .sharing)
+        _displays = try values.decode([UTMQemuConfigurationDisplay].self, forKey: .displays)
+        _drives = try values.decode([UTMQemuConfigurationDrive].self, forKey: .drives)
+        _networks = try values.decode([UTMQemuConfigurationNetwork].self, forKey: .networks)
+        _serials = try values.decode([UTMQemuConfigurationSerial].self, forKey: .serials)
+        _sound = try values.decode([UTMQemuConfigurationSound].self, forKey: .sound)
     }
     
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(information, forKey: .information)
-        try container.encode(system, forKey: .system)
-        try container.encode(qemu, forKey: .qemu)
-        try container.encode(input, forKey: .input)
-        try container.encode(sharing, forKey: .sharing)
-        try container.encode(displays, forKey: .displays)
-        try container.encode(drives, forKey: .drives)
-        try container.encode(networks, forKey: .networks)
-        try container.encode(serials, forKey: .serials)
-        try container.encode(sound, forKey: .sound)
+        try container.encode(_information, forKey: .information)
+        try container.encode(_system, forKey: .system)
+        try container.encode(_qemu, forKey: .qemu)
+        try container.encode(_input, forKey: .input)
+        try container.encode(_sharing, forKey: .sharing)
+        try container.encode(_displays, forKey: .displays)
+        try container.encode(_drives, forKey: .drives)
+        try container.encode(_networks, forKey: .networks)
+        try container.encode(_serials, forKey: .serials)
+        try container.encode(_sound, forKey: .sound)
         try container.encode(UTMBackend.qemu, forKey: .backend)
         try container.encode(Self.currentVersion, forKey: .configurationVersion)
     }
@@ -132,25 +132,129 @@ extension UTMQemuConfigurationError: LocalizedError {
     }
 }
 
+// MARK: - Public accessors
+
+@MainActor extension UTMQemuConfiguration {
+    var information: UTMConfigurationInfo {
+        get {
+            _information
+        }
+        
+        set {
+            _information = newValue
+        }
+    }
+    
+    var system: UTMQemuConfigurationSystem {
+        get {
+            _system
+        }
+        
+        set {
+            _system = newValue
+        }
+    }
+    
+    var qemu: UTMQemuConfigurationQEMU {
+        get {
+            _qemu
+        }
+        
+        set {
+            _qemu = newValue
+        }
+    }
+    
+    var input: UTMQemuConfigurationInput {
+        get {
+            _input
+        }
+        
+        set {
+            _input = newValue
+        }
+    }
+    
+    var sharing: UTMQemuConfigurationSharing {
+        get {
+            _sharing
+        }
+        
+        set {
+            _sharing = newValue
+        }
+    }
+    
+    var displays: [UTMQemuConfigurationDisplay] {
+        get {
+            _displays
+        }
+        
+        set {
+            _displays = newValue
+        }
+    }
+    
+    var drives: [UTMQemuConfigurationDrive] {
+        get {
+            _drives
+        }
+        
+        set {
+            _drives = newValue
+        }
+    }
+    
+    var networks: [UTMQemuConfigurationNetwork] {
+        get {
+            _networks
+        }
+        
+        set {
+            _networks = newValue
+        }
+    }
+    
+    var serials: [UTMQemuConfigurationSerial] {
+        get {
+            _serials
+        }
+        
+        set {
+            _serials = newValue
+        }
+    }
+    
+    var sound: [UTMQemuConfigurationSound] {
+        get {
+            _sound
+        }
+        
+        set {
+            _sound = newValue
+        }
+    }
+}
+
 // MARK: - Defaults
 
 extension UTMQemuConfiguration {
-    func reset(all: Bool = true) {
+    private func reset(all: Bool = true) {
         if all {
-            information = .init()
-            system = .init()
-            drives = []
+            _information = .init()
+            _system = .init()
+            _drives = []
         }
-        qemu = .init()
-        input = .init()
-        sharing = .init()
-        displays = []
-        networks = []
-        serials = []
-        sound = []
+        _qemu = .init()
+        _input = .init()
+        _sharing = .init()
+        _displays = []
+        _networks = []
+        _serials = []
+        _sound = []
     }
     
-    func reset(forArchitecture architecture: QEMUArchitecture, target: any QEMUTarget) {
+    @MainActor func reset(forArchitecture architecture: QEMUArchitecture, target: any QEMUTarget) {
         reset(all: false)
         qemu = .init(forArchitecture: architecture, target: target)
         input = .init(forArchitecture: architecture, target: target)
@@ -176,35 +280,35 @@ extension UTMQemuConfiguration {
     convenience init(migrating oldConfig: UTMLegacyQemuConfiguration) {
         self.init()
         isLegacy = true
-        information = .init(migrating: oldConfig)
-        system = .init(migrating: oldConfig)
-        qemu = .init(migrating: oldConfig)
-        input = .init(migrating: oldConfig)
-        sharing = .init(migrating: oldConfig)
+        _information = .init(migrating: oldConfig)
+        _system = .init(migrating: oldConfig)
+        _qemu = .init(migrating: oldConfig)
+        _input = .init(migrating: oldConfig)
+        _sharing = .init(migrating: oldConfig)
         if let display = UTMQemuConfigurationDisplay(migrating: oldConfig) {
-            displays = [display]
+            _displays = [display]
         }
-        drives = (0..<oldConfig.countDrives).map({ i in UTMQemuConfigurationDrive(migrating: oldConfig, at: i) })
+        _drives = (0..<oldConfig.countDrives).map({ i in UTMQemuConfigurationDrive(migrating: oldConfig, at: i) })
         // remove efi_vars which is no longer stored as a drive
-        drives.removeAll { drive in
+        _drives.removeAll { drive in
             drive.imageName == QEMUPackageFileName.efiVariables.rawValue
         }
         if let network = UTMQemuConfigurationNetwork(migrating: oldConfig) {
-            networks = [network]
+            _networks = [network]
         }
         if let serial = UTMQemuConfigurationSerial(migrating: oldConfig) {
-            serials = [serial]
+            _serials = [serial]
         }
-        if let _sound = UTMQemuConfigurationSound(migrating: oldConfig) {
-            sound = [_sound]
+        if let __sound = UTMQemuConfigurationSound(migrating: oldConfig) {
+            _sound = [__sound]
         }
     }
 }
 
 // MARK: - Saving data
 
-extension UTMQemuConfiguration {
-    @MainActor func prepareSave(for packageURL: URL) async throws {
+@MainActor extension UTMQemuConfiguration {
+    func prepareSave(for packageURL: URL) async throws {
         guard isLegacy else {
             return // nothing needed
         }
@@ -254,11 +358,11 @@ extension UTMQemuConfiguration {
     func saveData(to dataURL: URL) async throws -> [URL] {
         var existingDataURLs = [URL]()
         
-        existingDataURLs += try await information.saveData(to: dataURL)
-        existingDataURLs += try await qemu.saveData(to: dataURL, for: system)
+        existingDataURLs += try await _information.saveData(to: dataURL)
+        existingDataURLs += try await _qemu.saveData(to: dataURL, for: system)
 
         for i in 0..<drives.count {
-            existingDataURLs += try await drives[i].saveData(to: dataURL)
+            existingDataURLs += try await _drives[i].saveData(to: dataURL)
         }
         
         return existingDataURLs

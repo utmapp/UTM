@@ -37,7 +37,7 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
     private enum CodingKeys: String, CodingKey {
         case isReadOnly = "ReadOnly"
         case imageName = "ImageName"
-        case bookmark = "Bookmark"
+        case bookmark = "Bookmark" // legacy only
         case identifier = "Identifier"
     }
     
@@ -91,17 +91,6 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
         try container.encode(isReadOnly, forKey: .isReadOnly)
         if !isExternal {
             try container.encodeIfPresent(imageName, forKey: .imageName)
-        } else {
-            var options = NSURL.BookmarkCreationOptions.withSecurityScope
-            if isReadOnly {
-                options.insert(.securityScopeAllowOnlyReadAccess)
-            }
-            _ = imageURL?.startAccessingSecurityScopedResource()
-            defer {
-                imageURL?.stopAccessingSecurityScopedResource()
-            }
-            let bookmark = try imageURL?.bookmarkData(options: options)
-            try container.encodeIfPresent(bookmark, forKey: .bookmark)
         }
         try container.encode(id, forKey: .identifier)
     }

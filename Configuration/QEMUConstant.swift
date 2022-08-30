@@ -381,8 +381,8 @@ enum QEMUFileShareMode: String, CaseIterable, QEMUConstant {
     var prettyValue: String {
         switch self {
         case .none: return NSLocalizedString("None", comment: "UTMQemuConstants")
-        case .webdav: return NSLocalizedString("SPICE WebDAV (Legacy)", comment: "UTMQemuConstants")
-        case .virtfs: return NSLocalizedString("VirtFS (Recommended)", comment: "UTMQemuConstants")
+        case .webdav: return NSLocalizedString("SPICE WebDAV", comment: "UTMQemuConstants")
+        case .virtfs: return NSLocalizedString("VirtFS", comment: "UTMQemuConstants")
         }
     }
 }
