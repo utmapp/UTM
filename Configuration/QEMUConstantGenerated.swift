@@ -98,7 +98,7 @@ enum QEMUCPU_alpha: String, CaseIterable, QEMUCPU {
 
     var prettyValue: String {
         switch self {
-        case .`default`: return "Default"
+        case .`default`: return NSLocalizedString("Default", comment: "QEMUConstantGenerated")
         case .ev4_alpha_cpu: return "ev4-alpha-cpu"
         case .ev5_alpha_cpu: return "ev5-alpha-cpu"
         case .ev56_alpha_cpu: return "ev56-alpha-cpu"
@@ -150,7 +150,7 @@ enum QEMUCPU_arm: String, CaseIterable, QEMUCPU {
 
     var prettyValue: String {
         switch self {
-        case .`default`: return "Default"
+        case .`default`: return NSLocalizedString("Default", comment: "QEMUConstantGenerated")
         case .arm1026: return "arm1026"
         case .arm1136: return "arm1136"
         case .arm1136_r2: return "arm1136-r2"
@@ -235,7 +235,7 @@ enum QEMUCPU_aarch64: String, CaseIterable, QEMUCPU {
 
     var prettyValue: String {
         switch self {
-        case .`default`: return "Default"
+        case .`default`: return NSLocalizedString("Default", comment: "QEMUConstantGenerated")
         case .a64fx: return "a64fx"
         case .arm1026: return "arm1026"
         case .arm1136: return "arm1136"
@@ -287,7 +287,7 @@ enum QEMUCPU_avr: String, CaseIterable, QEMUCPU {
 
     var prettyValue: String {
         switch self {
-        case .`default`: return "Default"
+        case .`default`: return NSLocalizedString("Default", comment: "QEMUConstantGenerated")
         case .avr51_avr_cpu: return "avr51-avr-cpu"
         case .avr6_avr_cpu: return "avr6-avr-cpu"
         }
@@ -305,7 +305,7 @@ enum QEMUCPU_cris: String, CaseIterable, QEMUCPU {
 
     var prettyValue: String {
         switch self {
-        case .`default`: return "Default"
+        case .`default`: return NSLocalizedString("Default", comment: "QEMUConstantGenerated")
         case .crisv10: return "crisv10"
         case .crisv11: return "crisv11"
         case .crisv17: return "crisv17"
@@ -321,7 +321,7 @@ enum QEMUCPU_hppa: String, CaseIterable, QEMUCPU {
 
     var prettyValue: String {
         switch self {
-        case .`default`: return "Default"
+        case .`default`: return NSLocalizedString("Default", comment: "QEMUConstantGenerated")
         }
     }
 }
@@ -491,7 +491,7 @@ enum QEMUCPU_i386: String, CaseIterable, QEMUCPU {
         case .kvm64_v1: return "Common KVM processor (kvm64-v1)"
         case .Conroe: return "Conroe"
         case .Cooperlake: return "Cooperlake"
-        case .`default`: return "Default"
+        case .`default`: return NSLocalizedString("Default", comment: "QEMUConstantGenerated")
         case .Denverton: return "Denverton"
         case .Dhyana: return "Dhyana"
         case .EPYC: return "EPYC"
@@ -622,7 +622,7 @@ enum QEMUCPU_m68k: String, CaseIterable, QEMUCPU {
 
     var prettyValue: String {
         switch self {
-        case .`default`: return "Default"
+        case .`default`: return NSLocalizedString("Default", comment: "QEMUConstantGenerated")
         case .any: return "any"
         case .m5206: return "m5206"
         case .m5208: return "m5208"
@@ -641,7 +641,7 @@ enum QEMUCPU_microblaze: String, CaseIterable, QEMUCPU {
 
     var prettyValue: String {
         switch self {
-        case .`default`: return "Default"
+        case .`default`: return NSLocalizedString("Default", comment: "QEMUConstantGenerated")
         }
     }
 }
@@ -651,7 +651,7 @@ enum QEMUCPU_microblazeel: String, CaseIterable, QEMUCPU {
 
     var prettyValue: String {
         switch self {
-        case .`default`: return "Default"
+        case .`default`: return NSLocalizedString("Default", comment: "QEMUConstantGenerated")
         }
     }
 }
@@ -686,7 +686,7 @@ enum QEMUCPU_mips: String, CaseIterable, QEMUCPU {
         case ._4KEmR1: return "4KEmR1"
         case ._4Km: return "4Km"
         case ._74Kf: return "74Kf"
-        case .`default`: return "Default"
+        case .`default`: return NSLocalizedString("Default", comment: "QEMUConstantGenerated")
         case .I7200: return "I7200"
         case .M14K: return "M14K"
         case .M14Kc: return "M14Kc"
@@ -726,7 +726,7 @@ enum QEMUCPU_mipsel: String, CaseIterable, QEMUCPU {
         case ._4KEmR1: return "4KEmR1"
         case ._4Km: return "4Km"
         case ._74Kf: return "74Kf"
-        case .`default`: return "Default"
+        case .`default`: return NSLocalizedString("Default", comment: "QEMUConstantGenerated")
         case .I7200: return "I7200"
         case .M14K: return "M14K"
         case .M14Kc: return "M14Kc"
@@ -786,7 +786,7 @@ enum QEMUCPU_mips64: String, CaseIterable, QEMUCPU {
         case ._5Kc: return "5Kc"
         case ._5Kf: return "5Kf"
         case ._74Kf: return "74Kf"
-        case .`default`: return "Default"
+        case .`default`: return NSLocalizedString("Default", comment: "QEMUConstantGenerated")
         case .I6400: return "I6400"
         case .I6500: return "I6500"
         case .I7200: return "I7200"
@@ -856,7 +856,7 @@ enum QEMUCPU_mips64el: String, CaseIterable, QEMUCPU {
         case ._5Kc: return "5Kc"
         case ._5Kf: return "5Kf"
         case ._74Kf: return "74Kf"
-        case .`default`: return "Default"
+        case .`default`: return NSLocalizedString("Default", comment: "QEMUConstantGenerated")
         case .I6400: return "I6400"
         case .I6500: return "I6500"
         case .I7200: return "I7200"
@@ -881,7 +881,7 @@ enum QEMUCPU_nios2: String, CaseIterable, QEMUCPU {
 
     var prettyValue: String {
         switch self {
-        case .`default`: return "Default"
+        case .`default`: return NSLocalizedString("Default", comment: "QEMUConstantGenerated")
         }
     }
 }
@@ -893,7 +893,7 @@ enum QEMUCPU_or1k: String, CaseIterable, QEMUCPU {
 
     var prettyValue: String {
         switch self {
-        case .`default`: return "Default"
+        case .`default`: return NSLocalizedString("Default", comment: "QEMUConstantGenerated")
         case .any: return "any"
         case .or1200: return "or1200"
         }
@@ -1320,7 +1320,7 @@ enum QEMUCPU_ppc: String, CaseIterable, QEMUCPU {
         case ._750gx: return "750gx"
         case ._750l: return "750l"
         case ._755: return "755"
-        case .`default`: return "Default"
+        case .`default`: return NSLocalizedString("Default", comment: "QEMUConstantGenerated")
         case ._604: return "PVR 00040103 (604)"
         case ._603e_v1_1: return "PVR 00060101 (603e_v1.1)"
         case ._603e_v1_2: return "PVR 00060102 (603e_v1.2)"
@@ -2134,7 +2134,7 @@ enum QEMUCPU_ppc64: String, CaseIterable, QEMUCPU {
         case ._970: return "970"
         case ._970fx: return "970fx"
         case ._970mp: return "970mp"
-        case .`default`: return "Default"
+        case .`default`: return NSLocalizedString("Default", comment: "QEMUConstantGenerated")
         case ._604: return "PVR 00040103 (604)"
         case ._603e_v1_1: return "PVR 00060101 (603e_v1.1)"
         case ._603e_v1_2: return "PVR 00060102 (603e_v1.2)"
@@ -2532,7 +2532,7 @@ enum QEMUCPU_riscv32: String, CaseIterable, QEMUCPU {
 
     var prettyValue: String {
         switch self {
-        case .`default`: return "Default"
+        case .`default`: return NSLocalizedString("Default", comment: "QEMUConstantGenerated")
         case .lowrisc_ibex: return "lowrisc-ibex"
         case .rv32: return "rv32"
         case .sifive_e31: return "sifive-e31"
@@ -2552,7 +2552,7 @@ enum QEMUCPU_riscv64: String, CaseIterable, QEMUCPU {
 
     var prettyValue: String {
         switch self {
-        case .`default`: return "Default"
+        case .`default`: return NSLocalizedString("Default", comment: "QEMUConstantGenerated")
         case .rv64: return "rv64"
         case .shakti_c: return "shakti-c"
         case .sifive_e51: return "sifive-e51"
@@ -2568,7 +2568,7 @@ enum QEMUCPU_rx: String, CaseIterable, QEMUCPU {
 
     var prettyValue: String {
         switch self {
-        case .`default`: return "Default"
+        case .`default`: return NSLocalizedString("Default", comment: "QEMUConstantGenerated")
         case .rx62n_rx_cpu: return "rx62n-rx-cpu"
         }
     }
@@ -2656,7 +2656,7 @@ enum QEMUCPU_s390x: String, CaseIterable, QEMUCPU {
 
     var prettyValue: String {
         switch self {
-        case .`default`: return "Default"
+        case .`default`: return NSLocalizedString("Default", comment: "QEMUConstantGenerated")
         case .max: return "Enables all features supported by the accelerator in the current host (max)"
         case .gen16a: return "IBM 3931 GA1 (migration-safe) (gen16a)"
         case .gen16a_base: return "IBM 3931 GA1 (static, migration-safe) (gen16a-base)"
@@ -2745,7 +2745,7 @@ enum QEMUCPU_sh4: String, CaseIterable, QEMUCPU {
 
     var prettyValue: String {
         switch self {
-        case .`default`: return "Default"
+        case .`default`: return NSLocalizedString("Default", comment: "QEMUConstantGenerated")
         case .sh7751r: return "sh7751r"
         case .sh7785: return "sh7785"
         }
@@ -2759,7 +2759,7 @@ enum QEMUCPU_sh4eb: String, CaseIterable, QEMUCPU {
 
     var prettyValue: String {
         switch self {
-        case .`default`: return "Default"
+        case .`default`: return NSLocalizedString("Default", comment: "QEMUConstantGenerated")
         case .sh7751r: return "sh7751r"
         case .sh7785: return "sh7785"
         }
@@ -2783,7 +2783,7 @@ enum QEMUCPU_sparc: String, CaseIterable, QEMUCPU {
 
     var prettyValue: String {
         switch self {
-        case .`default`: return "Default"
+        case .`default`: return NSLocalizedString("Default", comment: "QEMUConstantGenerated")
         case .Fujitsu_MB86907: return "Fujitsu MB86907"
         case .LEON2: return "LEON2"
         case .LEON3: return "LEON3"
@@ -2821,7 +2821,7 @@ enum QEMUCPU_sparc64: String, CaseIterable, QEMUCPU {
 
     var prettyValue: String {
         switch self {
-        case .`default`: return "Default"
+        case .`default`: return NSLocalizedString("Default", comment: "QEMUConstantGenerated")
         case .Fujitsu_Sparc64_III: return "Fujitsu Sparc64 III"
         case .Fujitsu_Sparc64_IV: return "Fujitsu Sparc64 IV"
         case .Fujitsu_Sparc64_V: return "Fujitsu Sparc64 V"
@@ -2850,7 +2850,7 @@ enum QEMUCPU_tricore: String, CaseIterable, QEMUCPU {
 
     var prettyValue: String {
         switch self {
-        case .`default`: return "Default"
+        case .`default`: return NSLocalizedString("Default", comment: "QEMUConstantGenerated")
         case .tc1796: return "tc1796"
         case .tc1797: return "tc1797"
         case .tc27x: return "tc27x"
@@ -3023,7 +3023,7 @@ enum QEMUCPU_x86_64: String, CaseIterable, QEMUCPU {
         case .kvm64_v1: return "Common KVM processor (kvm64-v1)"
         case .Conroe: return "Conroe"
         case .Cooperlake: return "Cooperlake"
-        case .`default`: return "Default"
+        case .`default`: return NSLocalizedString("Default", comment: "QEMUConstantGenerated")
         case .Denverton: return "Denverton"
         case .Dhyana: return "Dhyana"
         case .EPYC: return "EPYC"
@@ -3152,7 +3152,7 @@ enum QEMUCPU_xtensa: String, CaseIterable, QEMUCPU {
 
     var prettyValue: String {
         switch self {
-        case .`default`: return "Default"
+        case .`default`: return NSLocalizedString("Default", comment: "QEMUConstantGenerated")
         case .dc232b: return "dc232b"
         case .dc233c: return "dc233c"
         case .de212: return "de212"
@@ -3171,7 +3171,7 @@ enum QEMUCPU_xtensaeb: String, CaseIterable, QEMUCPU {
 
     var prettyValue: String {
         switch self {
-        case .`default`: return "Default"
+        case .`default`: return NSLocalizedString("Default", comment: "QEMUConstantGenerated")
         case .fsf: return "fsf"
         case .test_kc705_be: return "test_kc705_be"
         }

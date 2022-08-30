@@ -61,7 +61,7 @@ struct VMWizardOSWindowsView: View {
                 } else {
                     Text("Boot ISO Image:")
                 }
-                Text((useVhdx ? wizardState.windowsBootVhdx?.lastPathComponent : wizardState.bootImageURL?.lastPathComponent) ?? "Empty")
+                ((useVhdx ? wizardState.windowsBootVhdx?.lastPathComponent : wizardState.bootImageURL?.lastPathComponent).map { Text($0) } ?? Text("Empty"))
                     .font(.caption)
                 Button {
                     isFileImporterPresented.toggle()

@@ -82,7 +82,7 @@ struct VMWizardOSView: View {
 
 struct OperatingSystem: View {
     let imageName: String
-    let name: String
+    let name: LocalizedStringKey
     
     private var imageURL: URL {
         let path = Bundle.main.path(forResource: imageName, ofType: "png", inDirectory: "Icons")!
