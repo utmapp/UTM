@@ -183,7 +183,9 @@ struct VMRemovableDrivesView: View {
     }
     
     private func clearShareDirectory() {
-        vm.clearSharedDirectory()
+        data.busyWorkAsync {
+            await vm.clearSharedDirectory()
+        }
     }
     
     private func selectRemovableImage(forDrive drive: UTMQemuConfigurationDrive, result: Result<URL, Error>) {

@@ -101,9 +101,7 @@ extension UTMQemuVirtualMachine {
     }
     
     private func changeMedium(_ drive: UTMQemuConfigurationDrive, with bookmark: Data, url: URL?, isSecurityScoped: Bool) async throws {
-        guard let system = system else {
-            return
-        }
+        let system = system ?? UTMQemu()
         let (success, bookmark, path) = await system.accessData(withBookmark: bookmark, securityScoped: isSecurityScoped)
         guard let bookmark = bookmark, let path = path, success else {
             throw UTMQemuVirtualMachineError.accessDriveImageFailed
@@ -158,11 +156,15 @@ extension UTMQemuVirtualMachine {
         registryEntry.sharedDirectories.first?.url
     }
     
-    @MainActor func clearSharedDirectory() {
-        registryEntry.removeAllSharedDirectories()
+    func clearSharedDirectory() async {
+        if let oldPath = await registryEntry.sharedDirectories.first?.path {
+            system?.stopAccessingPath(oldPath)
+        }
+        await registryEntry.removeAllSharedDirectories()
     }
     
     func changeSharedDirectory(to url: URL) async throws {
+        await clearSharedDirectory()
         _ = url.startAccessingSecurityScopedResource()
         defer {
             url.stopAccessingSecurityScopedResource()
@@ -180,9 +182,7 @@ extension UTMQemuVirtualMachine {
     }
     
     func changeVirtfsSharedDirectory(with bookmark: Data, isSecurityScoped: Bool) async throws {
-        guard let system = system else {
-            return
-        }
+        let system = system ?? UTMQemu()
         let (success, bookmark, path) = await system.accessData(withBookmark: bookmark, securityScoped: isSecurityScoped)
         guard let bookmark = bookmark, let path = path, success else {
             throw UTMQemuVirtualMachineError.accessDriveImageFailed

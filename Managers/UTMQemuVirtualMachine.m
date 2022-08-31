@@ -87,7 +87,9 @@ NSString *const kSuspendSnapshotName = @"suspend";
         return;
     }
     UTMQemu *service = self.system;
-    assert(service);
+    if (!service) {
+        service = [UTMQemu new]; // VM has not started yet, we create a temporary process
+    }
     NSData *bookmark = self.registryEntry.packageRemoteBookmark;
     NSString *bookmarkPath = self.registryEntry.packageRemotePath;
     BOOL existing = bookmark != nil;

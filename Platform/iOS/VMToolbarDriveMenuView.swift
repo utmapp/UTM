@@ -38,7 +38,9 @@ struct VMToolbarDriveMenuView: View {
                         MenuLabel("Change…", systemImage: "folder.badge.person.crop")
                     }
                     Button {
-                        session.vm.clearSharedDirectory()
+                        Task {
+                            await session.vm.clearSharedDirectory()
+                        }
                     } label: {
                         MenuLabel("Clear…", systemImage: "clear")
                     }

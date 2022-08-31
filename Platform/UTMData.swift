@@ -483,6 +483,7 @@ class UTMData: ObservableObject {
         await MainActor.run {
             newVM.isShortcut = true
         }
+        try await newVM.accessShortcut()
         try await newVM.updateRegistryFromConfig()
         
         let oldSelected = await selectedVM
@@ -603,6 +604,7 @@ class UTMData: ObservableObject {
             await MainActor.run {
                 vm?.isShortcut = true
             }
+            try await vm?.accessShortcut()
         } else {
             logger.info("copying to Documents")
             try fileManager.copyItem(at: url, to: dest)
