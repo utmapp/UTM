@@ -55,7 +55,8 @@ struct VMRemovableDrivesView: View {
 
 
         Group {
-            if vm.config.qemuConfig!.sharing.directoryShareMode != .none {
+            let mode = vm.config.qemuConfig!.sharing.directoryShareMode
+            if mode != .none {
                 HStack {
                     title
                     Spacer()
@@ -69,6 +70,7 @@ struct VMRemovableDrivesView: View {
                         Button("Browse…", action: { shareDirectoryFileImportPresented.toggle() })
                     }
                 }.fileImporter(isPresented: $shareDirectoryFileImportPresented, allowedContentTypes: [.folder], onCompletion: selectShareDirectory)
+                .disabled(mode == .virtfs && vm.state != .vmStopped)
             }
             ForEach(config.drives.filter { $0.isExternal }) { drive in
                 HStack {
