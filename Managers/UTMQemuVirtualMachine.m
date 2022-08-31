@@ -111,9 +111,11 @@ NSString *const kSuspendSnapshotName = @"suspend";
     [service accessDataWithBookmark:bookmark securityScoped:existing completion:^(BOOL success, NSData *newBookmark, NSString *newPath) {
         (void)service; // required to capture service so it is not released by ARC
         if (success) {
-            self.registryEntry.packageRemoteBookmark = newBookmark;
-            self.registryEntry.packageRemotePath = newPath;
-            completion(nil);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.registryEntry.packageRemoteBookmark = newBookmark;
+                self.registryEntry.packageRemotePath = newPath;
+                completion(nil);
+            });
         } else {
             completion([self errorWithMessage:NSLocalizedString(@"Failed to access data from shortcut.", @"UTMQemuVirtualMachine")]);
         }
@@ -189,6 +191,24 @@ NSString *const kSuspendSnapshotName = @"suspend";
         completion(ensureEfiVarsError);
         return;
     }
+    // set up SPICE sharing and removable drives
+    NSString *errMsg;
+    __block NSError *restoreExternalDrivesAndSharesError = nil;
+    dispatch_semaphore_t restoreExternalDrivesAndSharesEvent = dispatch_semaphore_create(0);
+    [self restoreExternalDrivesAndSharesWithCompletion:^(NSError *err) {
+        restoreExternalDrivesAndSharesError = err;
+        dispatch_semaphore_signal(restoreExternalDrivesAndSharesEvent);
+    }];
+    if (dispatch_semaphore_wait(restoreExternalDrivesAndSharesEvent, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
+        UTMLog(@"Timed out waiting for external drives and shares to be restored.");
+        completion([self errorGeneric]);
+        return;
+    }
+    if (restoreExternalDrivesAndSharesError) {
+        errMsg = [NSString localizedStringWithFormat:NSLocalizedString(@"Error trying to restore external drives and shares: %@", @"UTMVirtualMachine"), restoreExternalDrivesAndSharesError.localizedDescription];
+        completion([self errorWithMessage:errMsg]);
+        return;
+    }
     // start QEMU (this can be in parallel with SPICE connect below)
     __weak typeof(self) weakSelf = self;
     __block NSError *qemuStartError = nil;
@@ -256,24 +276,6 @@ NSString *const kSuspendSnapshotName = @"suspend";
         return;
     }
     assert(self.qemu.isConnected);
-    // set up SPICE sharing and removable drives
-    NSString *errMsg;
-    __block NSError *restoreExternalDrivesAndSharesError = nil;
-    dispatch_semaphore_t restoreExternalDrivesAndSharesEvent = dispatch_semaphore_create(0);
-    [self restoreExternalDrivesAndSharesWithCompletion:^(NSError *err) {
-        restoreExternalDrivesAndSharesError = err;
-        dispatch_semaphore_signal(restoreExternalDrivesAndSharesEvent);
-    }];
-    if (dispatch_semaphore_wait(restoreExternalDrivesAndSharesEvent, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
-        UTMLog(@"Timed out waiting for external drives and shares to be restored.");
-        completion([self errorGeneric]);
-        return;
-    }
-    if (restoreExternalDrivesAndSharesError) {
-        errMsg = [NSString localizedStringWithFormat:NSLocalizedString(@"Error trying to restore external drives and shares: %@", @"UTMVirtualMachine"), restoreExternalDrivesAndSharesError.localizedDescription];
-        completion([self errorWithMessage:errMsg]);
-        return;
-    }
     // continue VM boot
     if (![self.qemu continueBootWithError:&err]) {
         UTMLog(@"Failed to boot: %@", err);

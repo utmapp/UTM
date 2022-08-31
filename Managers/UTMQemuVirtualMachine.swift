@@ -114,7 +114,7 @@ extension UTMQemuVirtualMachine {
     }
     
     func restoreExternalDrives() async throws {
-        guard system != nil && qemu != nil && qemu!.isConnected else {
+        guard system != nil else {
             throw UTMQemuVirtualMachineError.invalidVmState
         }
         for drive in await qemuConfig.drives {

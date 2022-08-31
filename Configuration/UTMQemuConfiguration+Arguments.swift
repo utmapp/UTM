@@ -525,9 +525,13 @@ import Foundation
             "media=disk"
         }
         "id=drive\(drive.id)"
-        if !drive.isExternal && drive.imageURL != nil {
+        if let imageURL = drive.imageURL {
             "file="
-            drive.imageURL!
+            imageURL
+        }
+        if drive.isReadOnly {
+            "readonly=on"
+        } else {
             "discard=unmap"
             "detect-zeroes=unmap"
         }
