@@ -138,8 +138,11 @@ class UTMData: ObservableObject {
                     continue
                 }
                 let vm = UTMVirtualMachine(url: file)
-                if vm != nil {
-                    list.insert(vm!, at: 0)
+                if let vm = vm {
+                    if uuidHasCollision(with: vm, in: list) {
+                        await uuidRegenerate(for: vm)
+                    }
+                    list.insert(vm, at: 0)
                 } else {
                     logger.error("Failed to create object for \(file)")
                 }
@@ -175,7 +178,7 @@ class UTMData: ObservableObject {
         guard let list = defaults.stringArray(forKey: "VMEntryList") else {
             return
         }
-        virtualMachines = list.compactMap { uuidString in
+        virtualMachines = list.uniqued().compactMap { uuidString in
             guard let entry = UTMRegistry.shared.entry(for: uuidString) else {
                 return nil
             }
@@ -699,7 +702,11 @@ class UTMData: ObservableObject {
     // MARK: - UUID migration
     
     @MainActor private func uuidHasCollision(with vm: UTMVirtualMachine) -> Bool {
-        for otherVM in virtualMachines {
+        return uuidHasCollision(with: vm, in: virtualMachines)
+    }
+    
+    private func uuidHasCollision(with vm: UTMVirtualMachine, in list: [UTMVirtualMachine]) -> Bool {
+        for otherVM in list {
             if otherVM == vm {
                 return false
             } else if otherVM.registryEntry.uuid == vm.registryEntry.uuid {
