@@ -496,6 +496,8 @@ import Foundation
                 busindex += 1
                 "drive=drive\(drive.id)"
                 f()
+            } else {
+                realInterface = drive.interface
             }
         } else {
             realInterface = drive.interface
@@ -531,7 +533,7 @@ import Foundation
         }
         if drive.isReadOnly {
             "readonly=on"
-        } else {
+        } else if !drive.isExternal {
             "discard=unmap"
             "detect-zeroes=unmap"
         }
