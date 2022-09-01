@@ -483,8 +483,8 @@ extension UTMAppleVirtualMachine {
         appleConfig.sharedDirectories = registryEntry.sharedDirectories.map({ UTMAppleConfigurationSharedDirectory(directoryURL: $0.url, isReadOnly: $0.isReadOnly )})
         for i in appleConfig.drives.indices {
             let id = appleConfig.drives[i].id
-            if let file = registryEntry.externalDrives[id], appleConfig.drives[i].isExternal {
-                appleConfig.drives[i].imageURL = file.url
+            if appleConfig.drives[i].isExternal {
+                appleConfig.drives[i].imageURL = registryEntry.externalDrives[id]?.url
             }
         }
     }

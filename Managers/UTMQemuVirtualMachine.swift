@@ -234,13 +234,11 @@ extension UTMQemuVirtualMachine {
     
     @MainActor override func updateConfigFromRegistry() {
         super.updateConfigFromRegistry()
-        if let sharedDirectoryURL = sharedDirectoryURL {
-            qemuConfig.sharing.directoryShareUrl = sharedDirectoryURL
-        }
+        qemuConfig.sharing.directoryShareUrl = sharedDirectoryURL
         for i in qemuConfig.drives.indices {
             let id = qemuConfig.drives[i].id
-            if let file = registryEntry.externalDrives[id], qemuConfig.drives[i].isExternal {
-                qemuConfig.drives[i].imageURL = file.url
+            if qemuConfig.drives[i].isExternal {
+                qemuConfig.drives[i].imageURL = registryEntry.externalDrives[id]?.url
             }
         }
     }
