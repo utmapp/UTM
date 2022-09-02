@@ -33,53 +33,11 @@ struct ContentView: View {
     @Environment(\.openURL) var openURL
     
     var body: some View {
-        NavigationView {
-            List {
-                ForEach(data.virtualMachines) { vm in
-                    if let wrappedVM = vm as? UTMWrappedVirtualMachine {
-                        UTMUnavailableVMView(wrappedVM: wrappedVM)
-                    } else {
-                        NavigationLink(
-                            destination: VMDetailsView(vm: vm),
-                            tag: vm,
-                            selection: $data.selectedVM,
-                            label: { VMCardView(vm: vm) })
-                            .modifier(VMContextMenuModifier(vm: vm))
-                    }
-                }.onMove(perform: move)
-                .onDelete(perform: delete)
-                
-                if data.pendingVMs.count > 0 {
-                    Section(header: Text("Pending")) {
-                        ForEach(data.pendingVMs, id: \.name) { vm in
-                            UTMPendingVMView(vm: vm)
-                        }.onDelete(perform: cancel)
-                    }.transition(.opacity)
-                }
-            }.optionalSidebarFrame()
-            .listStyle(.sidebar)
-            .navigationTitle(productName)
-            .navigationOptionalSubtitle(data.selectedVM?.detailsTitleLabel ?? "")
-            .toolbar {
-                #if os(macOS)
-                ToolbarItem(placement: .navigation) {
-                    newButton
-                }
-                #else
-                ToolbarItem(placement: .navigationBarLeading) {
-                    newButton
-                }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-                #endif
-            }
-            .sheet(isPresented: $data.showNewVMSheet) {
-                VMWizardView()
-            }
-            VMPlaceholderView()
-        }.overlay(data.showSettingsModal ? AnyView(EmptyView()) : AnyView(BusyOverlay()))
-        .optionalWindowFrame()
+        VMNavigationListView()
+        .overlay(data.showSettingsModal ? AnyView(EmptyView()) : AnyView(BusyOverlay()))
+        #if os(macOS)
+        .frame(minWidth: 800, idealWidth: 1200, minHeight: 600, idealHeight: 800)
+        #endif
         .disabled(data.busy && !data.showNewVMSheet && !data.showSettingsModal)
         .onOpenURL(perform: handleURL)
         .handlesExternalEvents(preferring: ["*"], allowing: ["*"])
@@ -123,32 +81,6 @@ struct ContentView: View {
             }
             #endif
             #endif
-        }
-    }
-    
-    private var newButton: some View {
-        Button(action: { data.newVM() }, label: {
-            Label("New VM", systemImage: "plus").labelStyle(.iconOnly)
-        })
-    }
-    
-    private func move(fromOffsets: IndexSet, toOffset: Int) {
-        data.listMove(fromOffsets: fromOffsets, toOffset: toOffset)
-    }
-    
-    private func delete(indexSet: IndexSet) {
-        let selected = data.virtualMachines[indexSet]
-        for vm in selected {
-            data.busyWorkAsync {
-                try await data.delete(vm: vm)
-            }
-        }
-    }
-    
-    private func cancel(indexSet: IndexSet) {
-        let selected = data.pendingVMs[indexSet]
-        for vm in selected {
-            data.cancelDownload(for: vm)
         }
     }
     
@@ -241,40 +173,6 @@ struct ContentView: View {
         }
     }
 }
-
-#if os(macOS)
-@available(macOS 11, *)
-fileprivate extension View {
-    func navigationOptionalSubtitle<S>(_ subtitle: S) -> some View where S : StringProtocol {
-        return self.navigationSubtitle(subtitle)
-    }
-    
-    func optionalSidebarFrame() -> some View {
-        return self.frame(minWidth: 250, idealWidth: 350)
-    }
-    
-    func optionalWindowFrame() -> some View {
-        return self.frame(minWidth: 800, idealWidth: 1200, minHeight: 600, idealHeight: 800)
-    }
-}
-#else
-fileprivate extension View {
-    // ignore subtitle on iOS
-    func navigationOptionalSubtitle<S>(_ subtitle: S) -> some View where S : StringProtocol {
-        return self
-    }
-    
-    // ignore frame size
-    func optionalSidebarFrame() -> some View {
-        return self
-    }
-    
-    // ignore frame size
-    func optionalWindowFrame() -> some View {
-        return self
-    }
-}
-#endif
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
