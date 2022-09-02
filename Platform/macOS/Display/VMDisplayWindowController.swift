@@ -31,6 +31,7 @@ class VMDisplayWindowController: NSWindowController {
     @IBOutlet weak var drivesToolbarItem: NSToolbarItem!
     @IBOutlet weak var sharedFolderToolbarItem: NSToolbarItem!
     @IBOutlet weak var resizeConsoleToolbarItem: NSToolbarItem!
+    @IBOutlet weak var windowsToolbarItem: NSToolbarItem!
     
     var isPowerForce: Bool = false
     var shouldAutoStartVM: Bool = true
@@ -102,6 +103,9 @@ class VMDisplayWindowController: NSWindowController {
     @IBAction dynamic func sharedFolderButtonPressed(_ sender: Any) {
     }
     
+    @IBAction dynamic func windowsButtonPressed(_ sender: Any) {
+    }
+    
     // MARK: - UI states
     
     override func windowDidLoad() {
@@ -139,6 +143,7 @@ class VMDisplayWindowController: NSWindowController {
         restartToolbarItem.isEnabled = true
         captureMouseToolbarItem.isEnabled = true
         resizeConsoleToolbarItem.isEnabled = true
+        windowsToolbarItem.isEnabled = true
         window!.makeFirstResponder(displayView.subviews.first)
     }
     
@@ -166,6 +171,7 @@ class VMDisplayWindowController: NSWindowController {
         drivesToolbarItem.isEnabled = false
         sharedFolderToolbarItem.isEnabled = false
         usbToolbarItem.isEnabled = false
+        windowsToolbarItem.isEnabled = false
         window!.makeFirstResponder(nil)
     }
     

@@ -61,8 +61,9 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         }
         if !isSecondary {
             // create remaining serial windows
+            let primarySerialIndex = appleConfig.serials.firstIndex { $0.mode == .builtin }
             for i in appleConfig.serials.indices {
-                if i == 0 && self is VMDisplayAppleTerminalWindowController {
+                if i == primarySerialIndex && self is VMDisplayAppleTerminalWindowController {
                     continue
                 }
                 if appleConfig.serials[i].mode != .builtin || appleConfig.serials[i].terminal == nil {
@@ -276,6 +277,76 @@ extension VMDisplayAppleWindowController: UTMScreenshotProvider {
         } else {
             return nil
         }
+    }
+}
+
+extension VMDisplayAppleWindowController {
+    @IBAction override func windowsButtonPressed(_ sender: Any) {
+        let menu = NSMenu()
+        menu.autoenablesItems = false
+        if #available(macOS 12, *), !appleConfig.displays.isEmpty {
+            let item = NSMenuItem()
+            let title = NSLocalizedString("Display", comment: "VMDisplayAppleWindowController")
+            let isCurrent = self is VMDisplayAppleDisplayWindowController
+            item.title = title
+            item.isEnabled = !isCurrent
+            item.state = isCurrent ? .on : .off
+            item.target = self
+            item.action = #selector(showWindowFromDisplay)
+            menu.addItem(item)
+        }
+        for i in appleConfig.serials.indices {
+            if appleConfig.serials[i].mode != .builtin || appleConfig.serials[i].terminal == nil {
+                continue
+            }
+            let item = NSMenuItem()
+            let format = NSLocalizedString("Serial %lld", comment: "VMDisplayAppleWindowController")
+            let title = String.localizedStringWithFormat(format, i)
+            let isCurrent = (self as? VMDisplayAppleTerminalWindowController)?.index == i
+            item.title = title
+            item.isEnabled = !isCurrent
+            item.state = isCurrent ? .on : .off
+            item.tag = i
+            item.target = self
+            item.action = #selector(showWindowFromSerial)
+            menu.addItem(item)
+        }
+        menu.popUp(positioning: nil, at: NSEvent.mouseLocation, in: nil)
+    }
+    
+    @available(macOS 12, *)
+    @objc private func showWindowFromDisplay(sender: AnyObject) {
+        if self is VMDisplayAppleDisplayWindowController {
+            return
+        }
+        if let window = primaryWindow, window is VMDisplayAppleDisplayWindowController {
+            window.showWindow(self)
+        }
+    }
+    
+    @objc private func showWindowFromSerial(sender: AnyObject) {
+        let item = sender as! NSMenuItem
+        let id = item.tag
+        let secondaryWindows: [VMDisplayWindowController]
+        if let primaryWindow = primaryWindow {
+            if (primaryWindow as? VMDisplayAppleTerminalWindowController)?.index == id {
+                primaryWindow.showWindow(self)
+                return
+            }
+            secondaryWindows = primaryWindow.secondaryWindows
+        } else {
+            secondaryWindows = self.secondaryWindows
+        }
+        for window in secondaryWindows {
+            if (window as? VMDisplayAppleTerminalWindowController)?.index == id {
+                window.showWindow(self)
+                return
+            }
+        }
+        // create new serial window
+        let vc = VMDisplayAppleTerminalWindowController(secondaryForIndex: id, vm: appleVM)
+        showSecondaryWindow(vc)
+        vc.showWindow(self)
     }
 }
 

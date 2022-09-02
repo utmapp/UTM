@@ -35,6 +35,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) CSDisplay *primaryDisplay;
 @property (nonatomic, readonly, nullable) CSInput *primaryInput;
 @property (nonatomic, readonly, nullable) CSPort *primarySerial;
+@property (nonatomic, readonly) NSArray<CSDisplay *> *displays;
+@property (nonatomic, readonly) NSArray<CSPort *> *serials;
 #if !defined(WITH_QEMU_TCI)
 @property (nonatomic, readonly, nullable) CSUSBManager *primaryUsbManager;
 #endif

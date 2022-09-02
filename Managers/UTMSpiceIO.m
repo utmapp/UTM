@@ -28,10 +28,10 @@ extern NSString *const kUTMErrorDomain;
 
 @property (nonatomic, readwrite, nonnull) UTMConfigurationWrapper* configuration;
 @property (nonatomic, readwrite, nullable) CSDisplay *primaryDisplay;
-@property (nonatomic) NSMutableArray<CSDisplay *> *displays;
+@property (nonatomic) NSMutableArray<CSDisplay *> *mutableDisplays;
 @property (nonatomic, readwrite, nullable) CSInput *primaryInput;
 @property (nonatomic, readwrite, nullable) CSPort *primarySerial;
-@property (nonatomic) NSMutableArray<CSPort *> *serials;
+@property (nonatomic) NSMutableArray<CSPort *> *mutableSerials;
 #if !defined(WITH_QEMU_TCI)
 @property (nonatomic, readwrite, nullable) CSUSBManager *primaryUsbManager;
 #endif
@@ -49,12 +49,20 @@ extern NSString *const kUTMErrorDomain;
 
 @implementation UTMSpiceIO
 
+- (NSArray<CSDisplay *> *)displays {
+    return self.mutableDisplays;
+}
+
+- (NSArray<CSPort *> *)serials {
+    return self.mutableSerials;
+}
+
 - (instancetype)initWithConfiguration:(UTMConfigurationWrapper *)configuration {
     if (self = [super init]) {
         self.configuration = configuration;
         self.connectQueue = dispatch_queue_create("SPICE Connect Attempt", NULL);
-        self.displays = [NSMutableArray array];
-        self.serials = [NSMutableArray array];
+        self.mutableDisplays = [NSMutableArray array];
+        self.mutableSerials = [NSMutableArray array];
     }
     
     return self;
@@ -136,10 +144,10 @@ extern NSString *const kUTMErrorDomain;
     self.spiceConnection = nil;
     self.spice = nil;
     self.primaryDisplay = nil;
-    [self.displays removeAllObjects];
+    [self.mutableDisplays removeAllObjects];
     self.primaryInput = nil;
     self.primarySerial = nil;
-    [self.serials removeAllObjects];
+    [self.mutableSerials removeAllObjects];
 #if !defined(WITH_QEMU_TCI)
     self.primaryUsbManager = nil;
 #endif
@@ -195,7 +203,7 @@ extern NSString *const kUTMErrorDomain;
     if (display.isPrimaryDisplay) {
         self.primaryDisplay = display;
     }
-    [self.displays addObject:display];
+    [self.mutableDisplays addObject:display];
     [self.delegate spiceDidCreateDisplay:display];
 }
 
@@ -206,7 +214,7 @@ extern NSString *const kUTMErrorDomain;
 
 - (void)spiceDisplayDestroyed:(CSConnection *)connection display:(CSDisplay *)display {
     NSAssert(connection == self.spiceConnection, @"Unknown connection");
-    [self.displays removeObject:display];
+    [self.mutableDisplays removeObject:display];
     [self.delegate spiceDidDestroyDisplay:display];
 }
 
@@ -231,7 +239,7 @@ extern NSString *const kUTMErrorDomain;
         self.primarySerial = port;
     }
     if ([port.name hasPrefix:@"com.utmapp.terminal."]) {
-        [self.serials addObject:port];
+        [self.mutableSerials addObject:port];
         [self.delegate spiceDidCreateSerial:port];
     }
 }
@@ -243,7 +251,7 @@ extern NSString *const kUTMErrorDomain;
         self.primarySerial = port;
     }
     if ([port.name hasPrefix:@"com.utmapp.terminal."]) {
-        [self.serials removeObject:port];
+        [self.mutableSerials removeObject:port];
         [self.delegate spiceDidDestroySerial:port];
     }
 }
@@ -296,12 +304,12 @@ extern NSString *const kUTMErrorDomain;
     if ([self.delegate respondsToSelector:@selector(spiceDynamicResolutionSupportDidChange:)]) {
         [self.delegate spiceDynamicResolutionSupportDidChange:self.dynamicResolutionSupported];
     }
-    for (CSDisplay *display in self.displays) {
+    for (CSDisplay *display in self.mutableDisplays) {
         if (display != self.primaryDisplay) {
             [self.delegate spiceDidCreateDisplay:display];
         }
     }
-    for (CSPort *port in self.serials) {
+    for (CSPort *port in self.mutableSerials) {
         if (port != self.primarySerial) {
             [self.delegate spiceDidCreateSerial:port];
         }

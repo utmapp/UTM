@@ -25,6 +25,7 @@
                 <outlet property="touchBar" destination="MdV-I1-RxZ" id="rFp-7N-UJC"/>
                 <outlet property="usbToolbarItem" destination="tlw-Fb-ne3" id="LDL-Ug-hcY"/>
                 <outlet property="window" destination="QvC-M9-y7g" id="vHh-hj-7eR"/>
+                <outlet property="windowsToolbarItem" destination="MQ2-L1-yl7" id="AMz-hQ-2Lu"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
@@ -206,6 +207,19 @@
                             </connections>
                         </button>
                     </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="7D4A0EDC-50D2-43DC-81BE-DF49E227BDAD" label="Windows" paletteLabel="Windows" toolTip="Windows" image="rectangle.on.rectangle" catalog="system" bordered="YES" sizingBehavior="auto" id="MQ2-L1-yl7">
+                        <button key="view" verticalHuggingPriority="750" id="zHN-gd-wYW">
+                            <rect key="frame" x="12" y="14" width="31" height="23"/>
+                            <autoresizingMask key="autoresizingMask"/>
+                            <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="rectangle.on.rectangle" catalog="system" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="VmL-Zu-YQ8">
+                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                <font key="font" metaFont="system"/>
+                            </buttonCell>
+                            <connections>
+                                <action selector="windowsButtonPressed:" target="-2" id="isC-U7-0qV"/>
+                            </connections>
+                        </button>
+                    </toolbarItem>
                 </allowedToolbarItems>
                 <defaultToolbarItems>
                     <toolbarItem reference="Bkx-Ph-j0D"/>
@@ -216,6 +230,7 @@
                     <toolbarItem reference="tlw-Fb-ne3"/>
                     <toolbarItem reference="bKL-Th-FFw"/>
                     <toolbarItem reference="7EC-GE-fIl"/>
+                    <toolbarItem reference="MQ2-L1-yl7"/>
                 </defaultToolbarItems>
             </toolbar>
             <connections>
@@ -226,6 +241,10 @@
         <touchBar id="MdV-I1-RxZ">
             <point key="canvasLocation" x="-199" y="-165"/>
         </touchBar>
+        <toolbarItem implicitItemIdentifier="97090EAA-0A04-42C8-A0EF-26D0A5600BE8" label="Toolbar Item" paletteLabel="Toolbar Item" tag="-1" bordered="YES" id="C8Y-BQ-Y6m">
+            <size key="minSize" width="24" height="25"/>
+            <size key="maxSize" width="24" height="25"/>
+        </toolbarItem>
     </objects>
     <resources>
         <image name="Toolbar USB" width="30" height="30"/>
@@ -236,6 +255,7 @@
         <image name="play.circle.fill" catalog="system" width="15" height="15"/>
         <image name="play.fill" catalog="system" width="12" height="13"/>
         <image name="power" catalog="system" width="15" height="16"/>
+        <image name="rectangle.on.rectangle" catalog="system" width="19" height="15"/>
         <image name="restart" catalog="system" width="12" height="13"/>
     </resources>
 </document>
