@@ -16,7 +16,7 @@
 
 import CocoaSpiceRenderer
 
-class VMQemuDisplayMetalWindowController: VMDisplayQemuWindowController {
+class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
     var metalView: VMMetalView!
     var renderer: CSRenderer?
     
@@ -58,7 +58,7 @@ class VMQemuDisplayMetalWindowController: VMDisplayQemuWindowController {
     
     // MARK: - Init
     
-    convenience init(secondaryFromDisplay display: CSDisplay, primary: VMQemuDisplayMetalWindowController, vm: UTMQemuVirtualMachine, id: Int) {
+    convenience init(secondaryFromDisplay display: CSDisplay, primary: VMDisplayQemuMetalWindowController, vm: UTMQemuVirtualMachine, id: Int) {
         self.init(vm: vm, id: id)
         self.vmDisplay = display
         self.vmInput = primary.vmInput
@@ -154,7 +154,7 @@ class VMQemuDisplayMetalWindowController: VMDisplayQemuWindowController {
 }
 
 // MARK: - SPICE IO
-extension VMQemuDisplayMetalWindowController {
+extension VMDisplayQemuMetalWindowController {
     override func spiceDidCreateInput(_ input: CSInput) {
         if vmInput == nil {
             vmInput = input
@@ -221,7 +221,7 @@ extension VMQemuDisplayMetalWindowController {
 }
     
 // MARK: - Screen management
-extension VMQemuDisplayMetalWindowController {
+extension VMDisplayQemuMetalWindowController {
     fileprivate func displaySizeDidChange(size: CGSize) {
         // cancel any pending resize
         cancelResize?.cancel()
@@ -351,7 +351,7 @@ extension VMQemuDisplayMetalWindowController {
 }
 
 // MARK: - Input events
-extension VMQemuDisplayMetalWindowController: VMMetalViewInputDelegate {
+extension VMDisplayQemuMetalWindowController: VMMetalViewInputDelegate {
     var shouldUseCmdOptForCapture: Bool {
         isAlternativeCaptureKey || NSWorkspace.shared.isVoiceOverEnabled
     }
@@ -361,8 +361,8 @@ extension VMQemuDisplayMetalWindowController: VMMetalViewInputDelegate {
             self.qemuVM.requestInputTablet(false)
             self.metalView?.captureMouse()
             
-            let format = NSLocalizedString("Press %@ to release cursor", comment: "VMQemuDisplayMetalWindowController")
-            let keys = NSLocalizedString(self.shouldUseCmdOptForCapture ? "⌘+⌥" : "⌃+⌥", comment: "VMQemuDisplayMetalWindowController")
+            let format = NSLocalizedString("Press %@ to release cursor", comment: "VMDisplayQemuMetalWindowController")
+            let keys = NSLocalizedString(self.shouldUseCmdOptForCapture ? "⌘+⌥" : "⌃+⌥", comment: "VMDisplayQemuMetalWindowController")
             self.window?.subtitle = String.localizedStringWithFormat(format, keys)
             
             self.window?.makeFirstResponder(self.metalView)
@@ -370,10 +370,10 @@ extension VMQemuDisplayMetalWindowController: VMMetalViewInputDelegate {
         }
         if isCursorCaptureAlertShown {
             let alert = NSAlert()
-            alert.messageText = NSLocalizedString("Captured mouse", comment: "VMQemuDisplayMetalWindowController")
+            alert.messageText = NSLocalizedString("Captured mouse", comment: "VMDisplayQemuMetalWindowController")
             
-            let format = NSLocalizedString("To release the mouse cursor, press %@ at the same time.", comment: "VMQemuDisplayMetalWindowController")
-            let keys = NSLocalizedString(self.shouldUseCmdOptForCapture ? "⌘+⌥ (Cmd+Opt)" : "⌃+⌥ (Ctrl+Opt)", comment: "VMQemuDisplayMetalWindowController")
+            let format = NSLocalizedString("To release the mouse cursor, press %@ at the same time.", comment: "VMDisplayQemuMetalWindowController")
+            let keys = NSLocalizedString(self.shouldUseCmdOptForCapture ? "⌘+⌥ (Cmd+Opt)" : "⌃+⌥ (Ctrl+Opt)", comment: "VMDisplayQemuMetalWindowController")
             alert.informativeText = String.localizedStringWithFormat(format, keys)
             
             alert.showsSuppressionButton = true

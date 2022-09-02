@@ -303,15 +303,15 @@ extension VMDisplayQemuWindowController: UTMSpiceIODelegate {
         }
     }
     
-    @MainActor private func newDisplayWindow(from display: CSDisplay) -> VMQemuDisplayMetalWindowController? {
+    @MainActor private func newDisplayWindow(from display: CSDisplay) -> VMDisplayQemuMetalWindowController? {
         let id = display.monitorID
         guard id < vmQemuConfig.displays.count else {
             return nil
         }
-        guard let primary = self as? VMQemuDisplayMetalWindowController else {
+        guard let primary = self as? VMDisplayQemuMetalWindowController else {
             return nil
         }
-        let secondary = VMQemuDisplayMetalWindowController(secondaryFromDisplay: display, primary: primary, vm: qemuVM, id: id)
+        let secondary = VMDisplayQemuMetalWindowController(secondaryFromDisplay: display, primary: primary, vm: qemuVM, id: id)
         showSecondaryWindow(secondary)
         return secondary
     }
@@ -513,7 +513,7 @@ extension VMDisplayQemuWindowController {
             let item = NSMenuItem()
             let format = NSLocalizedString("Display %lld: %@", comment: "VMDisplayQemuDisplayController")
             let title = String.localizedStringWithFormat(format, id, config.hardware.prettyValue)
-            let isCurrent = self is VMQemuDisplayMetalWindowController && self.id == id
+            let isCurrent = self is VMDisplayQemuMetalWindowController && self.id == id
             item.title = title
             item.isEnabled = !isCurrent
             item.state = isCurrent ? .on : .off
@@ -544,7 +544,7 @@ extension VMDisplayQemuWindowController {
     @objc private func showWindowFromDisplay(sender: AnyObject) {
         let item = sender as! NSMenuItem
         let id = item.tag
-        if self is VMQemuDisplayMetalWindowController && self.id == id {
+        if self is VMDisplayQemuMetalWindowController && self.id == id {
             return
         }
         guard let display = qemuVM.ioService?.displays.first(where: { $0.monitorID == id}) else {
@@ -552,7 +552,7 @@ extension VMDisplayQemuWindowController {
         }
         let secondaryWindows: [VMDisplayWindowController]
         if let window = primaryWindow {
-            if (window as? VMQemuDisplayMetalWindowController)?.id == id {
+            if (window as? VMDisplayQemuMetalWindowController)?.id == id {
                 window.showWindow(self)
                 return
             }
@@ -561,7 +561,7 @@ extension VMDisplayQemuWindowController {
             secondaryWindows = self.secondaryWindows
         }
         for window in secondaryWindows {
-            if let window = window as? VMQemuDisplayMetalWindowController {
+            if let window = window as? VMDisplayQemuMetalWindowController {
                 if window.id == id {
                     // found existing window
                     window.showWindow(self)
