@@ -115,7 +115,7 @@
 "QEMU exited from an error: %@" = "QEMUがエラーにより終了しました: %@";
 "Error trying to start shared directory: %@" = "共有ディレクトリの開始中にエラーが発生しました: %@";
 "Error trying to restore removable drives: %@" = "リムーバブルドライブの復元中にエラーが発生しました: %@";
-"Failed to save VM snapshot. Usually this means at least one device does not support snapshots. %@" = "仮想マシンのスナップショットを保存できませんでした。これは、通常1台以上のデバイスがスナップショットに対応していないことを意味します。%@";
+"Failed to save VM snapshot. Usually this means at least one device does not support snapshots. %@" = "仮想マシンのスナップショットの保存に失敗しました。これは、通常1台以上のデバイスがスナップショットに対応していないことを意味します。%@";
 
 // UTMQemuVirtualMachine+SPICE.m
 "VM frontend does not support shared directories." = "仮想マシンのフロントエンドが共有ディレクトリに対応していません。";
@@ -241,6 +241,7 @@
 "Add…" = "追加…";
 "Select Shared Folder" = "共有フォルダを選択してください";
 "Installation: %@" = "インストール: %@";
+"Serial %lld" = "シリアル%lld";
 
 // Display/VMDisplayAppleDisplayWindowController.swift
 "%@ (Terminal %lld)" = "%1$@ (ターミナル%2$lld）";
@@ -248,7 +249,7 @@
 // Display/VMDisplayQemuWindowController.swift
 "Disposable Mode" = "使い捨てモード";
 
-// Display/VMQemuDisplayMetalWindowController.swift
+// Display/VMDisplayQemuMetalWindowController.swift
 "%@ (Display %lld)" = "%1$@（ディスプレイ%2$lld）";
 "Metal is not supported on this device. Cannot render display." = "このデバイスはMetalに対応していないため、ディスプレイを描画できません。";
 "Internal error." = "内部エラーが発生しました。";
@@ -395,9 +396,10 @@
 /* Platform/Shared */
 
 // ContentView.swift
-"Pending" = "保留中";
 "Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached. See https://getutm.app/install/ for more details." = "お使いのiOSバージョンは改造されていない状態での仮想マシンの実行に対応していません。脱獄（ジェイルブレイク）、またはリモートデバッガに接続された状態でUTMを実行する必要があります。詳細については、https://getutm.app/install/ を参照してください。";
-"New VM" = "新規仮想マシン";
+
+// FileBrowseField.swift
+"Path" = "パス";
 
 // VMCardView.swift
 "Run" = "実行";
@@ -441,7 +443,6 @@
 // VMConfigDriveDetailsView.swift
 "Removable Drive" = "リムーバブルドライブ";
 "(new)" = "（新規）";
-"Path" = "パス";
 "Image Type" = "イメージの種類";
 "Reclaim Space" = "領域を解放";
 "Reclaim" = "解放";
@@ -524,6 +525,7 @@
 
 // VMConfigSharingView.swift
 "Clipboard Sharing" = "クリップボード共有";
+"WebDAV requires installing SPICE daemon. VirtFS requires installing device drivers." = "WebDAVはSPICEデーモン、VirtFSはデバイスドライバのインストールが必要です。";
 "Directory Share Mode" = "ディレクトリ共有モード";
 
 // VMConfigSoundView.swift
@@ -589,6 +591,11 @@
 "Serial (Server)" = "シリアル（サーバ）";
 "Inactive" = "非アクティブ";
 
+// VMNavigationListView.swift
+"Pending" = "保留中";
+"New VM" = "新規仮想マシン";
+
+
 // VMPlaceholderView.swift
 "Welcome to UTM" = "ようこそUTMへ";
 "Create a New Virtual Machine" = "新規仮想マシンを作成";
@@ -637,14 +644,12 @@
 "Installation Instructions" = "インストール手順";
 "Note: The file system tag for mounting the installer is 'rosetta'." = "注意: インストーラをマウントするためのファイルシステムタグは“rosetta”です。";
 "Additional Options" = "その他のオプション";
-"Empty" = "空";
 "Uncompressed %@" = "無圧縮%@";
 "Linux kernel (required)" = "Linuxカーネル（必須）";
 "Linux initial ramdisk (optional)" = "Linux初期RAMディスク（オプション）";
 "Linux Root FS Image (optional)" = "Linux RootFSイメージ（オプション）";
 "Boot ISO Image (optional)" = "起動ISOイメージ（オプション）";
 "Boot ISO Image" = "起動ISOイメージ";
-"File Imported" = "ファイルを読み込む";
 
 // VMWizardOSMacView.swift
 "To install macOS, you need to download a recovery IPSW. If you do not select an existing IPSW, the latest macOS IPSW will be downloaded from Apple." = "macOSをインストールするには、復元IPSWをダウンロードする必要があります。既存のIPSWを選択しない場合は、Appleから最新のmacOSのIPSWがダウンロードされます。";
@@ -673,9 +678,9 @@
 "Hint: For the best Windows experience, make sure to download and install the latest [SPICE tools and QEMU drivers](https://mac.getutm.app/support/)." = "ヒント: 快適にWindowsを使用できるように、最新の[SPICEツール、およびQEMUドライバ](https://mac.getutm.app/support/)がダウンロードされインストールされていることを確認してください。";
 
 // VMWizardSharingView.swift
+"Shared Directory Path" = "共有ディレクトリパス";
 "Directory" = "ディレクトリ";
 "Share is read only" = "共有を読み出しのみにする";
-"Directory Selected" = "ディレクトリを選択";
 "Optionally select a directory to make accessible inside the VM. Note that support for shared directories varies by the guest operating system and may require additional guest drivers to be installed. See UTM support pages for more details." = "仮想マシン内部でアクセスできるようにするディレクトリを選択してください（オプション）。共有ディレクトリの対応はゲストのオペレーティングシステムによって異なり、追加のゲストドライバのインストールが必要になる場合があることに注意してください。詳細については、UTMサポートページを参照してください。";
 
 // VMWizardStartView.swift
