@@ -887,8 +887,8 @@
 "Close" = "关闭";
 "Continue" = "下一步";
 "Generate Windows Installer ISO" = "获取 Windows 安装光盘";
-"Boot ISO Image:" = "启动光盘镜像:";
-"Boot VHDX Image:" = "启动 VHDX 磁盘镜像:";
+"Boot ISO Image" = "启动光盘镜像";
+"Boot VHDX Image" = "启动 VHDX 磁盘镜像";
 "Import VHDX Image" = "导入 VHDX 磁盘镜像";
 "Browse" = "浏览文件";
 "Clear" = "清除";
@@ -897,7 +897,7 @@
 "If set, use Apple's virtualization engine. Otherwise, use QEMU's virtualization engine." = "如果启用此选项，将使用 Apple 提供的虚拟化引擎；否则使用 QEMU 提供的虚拟化引擎。";
 "Boot from kernel image" = "从内核镜像启动";
 "If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO." = "如果启用此选项，将直接从内核(kernel)镜像和初始RAM磁盘(initrd)启动。";
-"Linux kernel (required):" = "Linux 内核(必须):";
+"Linux kernel (required)" = "Linux 内核(必须)";
 "Linux initial ramdisk:" = "Linux 初始RAM磁盘(initrd):";
 "Linux Root FS Image:" = "Linux Root FS 镜像:";
 "Boot Arguments" = "启动参数";
@@ -1023,9 +1023,9 @@
 "Enable hardware OpenGL acceleration (experimental)" = "启用硬件 OpenGL 加速 (实验功能)";
 
 //VMWizardOSLinuxView
-"Linux initial ramdisk (optional):" = "Linux 初始RAM磁盘 (可选):";
-"Linux Root FS Image (optional):" = "Linux Root FS 镜像 (可选):";
-"Boot ISO Image (optional):" = "启动 ISO 镜像 (可选)";
+"Linux initial ramdisk (optional)" = "Linux 初始RAM磁盘 (可选)";
+"Linux Root FS Image (optional)" = "Linux Root FS 镜像 (可选)";
+"Boot ISO Image (optional)" = "启动 ISO 镜像 (可选)";
 
 //VMWizardOSMacView
 "To install macOS, you need to download a recovery IPSW. If you do not select an existing IPSW, the latest macOS IPSW will be downloaded from Apple." = "要安装 macOS，您需要下载恢复 IPSW 文件。如果您不选择现有的 IPSW，将从 Apple 下载最新的 macOS IPSW";

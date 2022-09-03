@@ -639,11 +639,11 @@
 "Additional Options" = "その他のオプション";
 "Empty" = "空";
 "Uncompressed %@" = "無圧縮%@";
-"Linux kernel (required):" = "Linuxカーネル（必須）:";
-"Linux initial ramdisk (optional):" = "Linux初期RAMディスク（オプション）:";
-"Linux Root FS Image (optional):" = "Linux RootFSイメージ（オプション）:";
-"Boot ISO Image (optional):" = "起動ISOイメージ（オプション）:";
-"Boot ISO Image:" = "起動ISOイメージ:";
+"Linux kernel (required)" = "Linuxカーネル（必須）";
+"Linux initial ramdisk (optional)" = "Linux初期RAMディスク（オプション）";
+"Linux Root FS Image (optional)" = "Linux RootFSイメージ（オプション）";
+"Boot ISO Image (optional)" = "起動ISOイメージ（オプション）";
+"Boot ISO Image" = "起動ISOイメージ";
 "File Imported" = "ファイルを読み込む";
 
 // VMWizardOSMacView.swift
@@ -669,7 +669,7 @@
 "Generate Windows Installer ISO" = "WindowsインストーラISOを生成";
 "Image File Type" = "イメージファイルの種類";
 "Some older systems do not support UEFI boot, such as Windows 7 and below." = "Windows 7以前など、一部の古いシステムはUEFI起動に対応していません。";
-"Boot VHDX Image:" = "起動VHDXイメージ:";
+"Boot VHDX Image" = "起動VHDXイメージ";
 "Hint: For the best Windows experience, make sure to download and install the latest [SPICE tools and QEMU drivers](https://mac.getutm.app/support/)." = "ヒント: 快適にWindowsを使用できるように、最新の[SPICEツール、およびQEMUドライバ](https://mac.getutm.app/support/)がダウンロードされインストールされていることを確認してください。";
 
 // VMWizardSharingView.swift

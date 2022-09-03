@@ -101,10 +101,10 @@
 "Boot Image" = "Image de boot (démarrage)";
 
 /* No comment provided by engineer. */
-"Boot ISO Image:" = "Image ISO de boot :";
+"Boot ISO Image" = "Image ISO de boot";
 
 /* No comment provided by engineer. */
-"Boot VHDX Image:" = "Démarrer sur l'image VHDX :";
+"Boot VHDX Image" = "Démarrer sur l'image VHDX";
 
 /* UTMQemuConfiguration */
 "Bridged (Advanced)" = "Pont (Avancé)";
@@ -626,7 +626,7 @@
 "Linux Kernel" = "Noyau Linux";
 
 /* No comment provided by engineer. */
-"%@Linux kernel (required):" = "%@Noyau (kernel) Linux (requis) ：";
+"%@Linux kernel (required)" = "%@Noyau (kernel) Linux (requis)";
 
 /* UTMQemuConfiguration */
 "Linux RAM Disk" = "RAM Disk de Linux";
@@ -1242,10 +1242,10 @@
 "Apple Virtualization is experimental and only for advanced use cases. Leave unchecked to use QEMU, which is recommended." = "La prise en charge de la Virtualisation d'Apple est expérimentale et à utiliser uniquement pour des cas avancés. Laissez décoché pour utiliser QEMU, qui est recommandé.";
 "Apple Virtualization" = "Virtualisation par Apple";
 "Boot Image Type" = "Type d'image de démarrage";
-"Linux kernel (required):" = "Noyau Linux (requis) :";
-"%@Linux initial ramdisk (optional):" = "%@Ramdisk initial de Linux (optionnel) :";
-"Linux Root FS image (optional):" = "Image Root FS de Linux (optionnel) :";
-"Boot ISO Image (optional):" = "Image ISO de démarrage (optionnel) :";
+"Linux kernel (required)" = "Noyau Linux (requis)";
+"%@Linux initial ramdisk (optional)" = "%@Ramdisk initial de Linux (optionnel)";
+"Linux Root FS image (optional)" = "Image Root FS de Linux (optionnel)";
+"Boot ISO Image (optional)" = "Image ISO de démarrage (optionnel)";
 
 /* System pane. */
 "Force Enable CPU Flags" = "Forcer l'activation des flags du CPU";

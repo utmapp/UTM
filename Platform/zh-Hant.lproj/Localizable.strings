@@ -101,10 +101,10 @@
 "Boot Image" = "開機映像檔";
 
 /* No comment provided by engineer. */
-"Boot ISO Image:" = "開機 ISO 映像檔：";
+"Boot ISO Image" = "開機 ISO 映像檔";
 
 /* No comment provided by engineer. */
-"Boot VHDX Image:" = "開機 VHDX 映像檔：";
+"Boot VHDX Image" = "開機 VHDX 映像檔";
 
 /* UTMLegacyQemuConfiguration */
 "Bridged (Advanced)" = "橋接（進階）";
@@ -626,7 +626,7 @@
 "Linux Kernel" = "Linux 核心";
 
 /* No comment provided by engineer. */
-"Linux kernel (required):" = "Linux 內核（必填）：";
+"Linux kernel (required)" = "Linux 內核（必填）";
 
 /* UTMLegacyQemuConfiguration */
 "Linux RAM Disk" = "Linux RAM Disk";

@@ -68,9 +68,9 @@ struct VMWizardOSWindowsView: View {
                 }
             } header: {
                 if useVhdx {
-                    Text("Boot VHDX Image:")
+                    Text("Boot VHDX Image")
                 } else {
-                    Text("Boot ISO Image:")
+                    Text("Boot ISO Image")
                 }
             } footer: {
                 if #available(iOS 15, macOS 12, *) {

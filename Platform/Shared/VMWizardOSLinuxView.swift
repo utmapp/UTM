@@ -89,9 +89,9 @@ struct VMWizardOSLinuxView: View {
                     }.disabled(wizardState.isBusy)
                 } header: {
                     if wizardState.useAppleVirtualization {
-                        Text("Uncompressed \(Text("Linux kernel (required):"))")
+                        Text("Uncompressed \(Text("Linux kernel (required)"))")
                     } else {
-                        Text("Linux kernel (required):")
+                        Text("Linux kernel (required)")
                     }
                 }
                 
@@ -101,9 +101,9 @@ struct VMWizardOSLinuxView: View {
                     }.disabled(wizardState.isBusy)
                 } header: {
                     if wizardState.useAppleVirtualization {
-                        Text("Uncompressed \(Text("Linux initial ramdisk (optional):"))")
+                        Text("Uncompressed \(Text("Linux initial ramdisk (optional)"))")
                     } else {
-                        Text("Linux initial ramdisk (optional):")
+                        Text("Linux initial ramdisk (optional)")
                     }
                 }
                 
@@ -112,7 +112,7 @@ struct VMWizardOSLinuxView: View {
                         selectImage = .rootImage
                     }.disabled(wizardState.isBusy)
                 } header: {
-                    Text("Linux Root FS Image (optional):")
+                    Text("Linux Root FS Image (optional)")
                 }
                 
                 Section {
@@ -120,7 +120,7 @@ struct VMWizardOSLinuxView: View {
                         selectImage = .bootImage
                     }.disabled(wizardState.isBusy)
                 } header: {
-                    Text("Boot ISO Image (optional):")
+                    Text("Boot ISO Image (optional)")
                 }
                 
                 Section {
@@ -134,7 +134,7 @@ struct VMWizardOSLinuxView: View {
                         selectImage = .bootImage
                     }.disabled(wizardState.isBusy)
                 } header: {
-                    Text("Boot ISO Image:")
+                    Text("Boot ISO Image")
                 }
             }
             if wizardState.isBusy {

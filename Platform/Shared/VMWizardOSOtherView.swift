@@ -35,7 +35,7 @@ struct VMWizardOSOtherView: View {
                         Spinner(size: .large)
                     }
                 } header: {
-                    Text("Boot ISO Image:")
+                    Text("Boot ISO Image")
                 }
             }
             Section {

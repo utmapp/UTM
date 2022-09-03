@@ -26,28 +26,17 @@ struct VMWizardSharingView: View {
             .font(.largeTitle)
 #endif
         List {
-            Section {
-                HStack {
-                    Text("Directory")
-                    Spacer()
-                    ((wizardState.sharingDirectoryURL?.lastPathComponent).map { Text($0) } ?? Text("Empty"))
-                        .font(.caption)
-                }
+            DetailedSection("Shared Directory Path", description: "Optionally select a directory to make accessible inside the VM. Note that support for shared directories varies by the guest operating system and may require additional guest drivers to be installed. See UTM support pages for more details.") {
+                FileBrowseField(url: $wizardState.sharingDirectoryURL, isFileImporterPresented: $isFileImporterPresented)
+                    .disabled(wizardState.isBusy)
+                
                 if !wizardState.useAppleVirtualization {
                     Toggle("Share is read only", isOn: $wizardState.sharingReadOnly)
                 }
-            } header: {
-                Text("Directory Selected")
-            }
-            Section {
-                FileBrowseField(url: $wizardState.sharingDirectoryURL, isFileImporterPresented: $isFileImporterPresented)
-                    .disabled(wizardState.isBusy)
                 
                 if wizardState.isBusy {
                     Spinner(size: .large)
                 }
-            } footer: {
-                Text("Optionally select a directory to make accessible inside the VM. Note that support for shared directories varies by the guest operating system and may require additional guest drivers to be installed. See UTM support pages for more details.")
             }
         }
         #if os(iOS)

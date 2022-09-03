@@ -101,10 +101,10 @@
 "Boot Image" = "Käynnistyskuva";
 
 /* No comment provided by engineer. */
-"Boot ISO Image:" = "Käynnistä ISO-kuva:";
+"Boot ISO Image" = "Käynnistä ISO-kuva";
 
 /* No comment provided by engineer. */
-"Boot VHDX Image:" = "Käynnistä VHDX-kuva:";
+"Boot VHDX Image" = "Käynnistä VHDX-kuva";
 
 /* UTMQemuConfiguration */
 "Bridged (Advanced)" = "Sillattu (edistynyt)";
@@ -626,7 +626,7 @@
 "Linux Kernel" = "Linux-ydin";
 
 /* No comment provided by engineer. */
-"Linux kernel (required):" = "Linux-ydin (pakollinen):";
+"Linux kernel (required)" = "Linux-ydin (pakollinen)";
 
 /* UTMQemuConfiguration */
 "Linux RAM Disk" = "Linuxin RAM-levy";
@@ -1273,16 +1273,16 @@
 "Boot Image Type" = "Käynnistyskuvan tyyppi";
 
 /* New VM window. */
-"Linux kernel (required):" = "Linux-ydin (pakollinen):";
+"Linux kernel (required)" = "Linux-ydin (pakollinen)";
 
 /* New VM window. */
-"Linux initial ramdisk (optional):" = "Linuxin alkuperäinen muistilevy (valinnainen):";
+"Linux initial ramdisk (optional)" = "Linuxin alkuperäinen muistilevy (valinnainen)";
 
 /* New VM window. */
-"Linux Root FS image (optional):" = "Linux Root FS -kuva (valinnainen):";
+"Linux Root FS image (optional)" = "Linux Root FS -kuva (valinnainen)";
 
 /* New VM window. */
-"Boot ISO Image (optional):" = "Käynnistä ISO-kuva (valinnainen):";
+"Boot ISO Image (optional)" = "Käynnistä ISO-kuva (valinnainen)";
 
 /* System pane. */
 "Force Enable CPU Flags" = "Pakota CPU-liput käyttöön";

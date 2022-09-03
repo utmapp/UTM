@@ -80,10 +80,10 @@
 "Boot Image" = "Imagen de arranque";
 
 /* No comment provided by engineer. */
-"Boot ISO Image:" = "Imagen ISO de arranque:";
+"Boot ISO Image" = "Imagen ISO de arranque";
 
 /* No comment provided by engineer. */
-"Boot VHDX Image:" = "Imagen VHDX de arranque:";
+"Boot VHDX Image" = "Imagen VHDX de arranque";
 
 /* UTMQemuConfiguration */
 "Bridged (Advanced)" = "Puenteada (Avanzado)";
@@ -599,7 +599,7 @@
 "Linux Kernel" = "Kernel de Linux";
 
 /* No comment provided by engineer. */
-"Linux kernel (required):" = "Kernel de Linux (requerido)";
+"Linux kernel (required)" = "Kernel de Linux (requerido)";
 
 /* UTMQemuConfiguration */
 "Linux RAM Disk" = "Disco de memoria de Linux";
@@ -1255,16 +1255,16 @@
 "Boot Image Type" = "Tipo de imagen de arranque";
 
 /* New VM window. */
-"Linux kernel (required):" = "Kernel de Linux (requerido):";
+"Linux kernel (required)" = "Kernel de Linux (requerido)";
 
 /* New VM window. */
-"Linux initial ramdisk (optional):" = "RAMDisk inicial de Linux (opcional):";
+"Linux initial ramdisk (optional)" = "RAMDisk inicial de Linux (opcional)";
 
 /* New VM window. */
-"Linux Root FS image (optional):" = "Imagen Root FS de Linux (opcional):";
+"Linux Root FS image (optional)" = "Imagen Root FS de Linux (opcional)";
 
 /* New VM window. */
-"Boot ISO Image (optional):" = "Imagen ISO de arranque (opcional):";
+"Boot ISO Image (optional)" = "Imagen ISO de arranque (opcional)";
 
 /* System pane. */
 "Force Enable CPU Flags" = "Forzar habilitado de argumentos de CPU";
