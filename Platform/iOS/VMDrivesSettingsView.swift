@@ -35,7 +35,7 @@ struct VMDrivesSettingsView: View {
             attemptDelete = offsets
         }
         .onMove(perform: moveDrives)
-        .sheet(isPresented: $isCreateDriveShown) {
+        .nonbrokenSheet(isPresented: $isCreateDriveShown) {
             CreateDrive(newDrive: UTMQemuConfigurationDrive(forArchitecture: config.system.architecture, target: config.system.target), onDismiss: newDrive)
         }
         .globalFileImporter(isPresented: $isImportDriveShown, allowedContentTypes: [.item], onCompletion: importDrive)
@@ -84,6 +84,26 @@ struct VMDrivesSettingsView: View {
 }
 
 // MARK: - Create Drive
+
+private extension View {
+    /// A sheet that isn't broken on older versions.
+    ///
+    /// On iOS 14 and older, .sheet() breaks the table layout for some reason.
+    /// This workarounds it by putting the sheet inside an overlay which does
+    /// not affect displaying the sheet at all.
+    /// - Parameters:
+    ///   - isPresented: same as .sheet()
+    ///   - onDismiss: same as .sheet()
+    ///   - content: same as .sheet()
+    /// - Returns: same as .sheet()
+    @ViewBuilder func nonbrokenSheet<Content>(isPresented: Binding<Bool>, onDismiss: (() -> Void)? = nil, @ViewBuilder content: @escaping () -> Content) -> some View where Content : View {
+        if #available(iOS 15, macOS 12, *) {
+            self.sheet(isPresented: isPresented, onDismiss: onDismiss, content: content)
+        } else {
+            self.overlay(EmptyView().sheet(isPresented: isPresented, onDismiss: onDismiss, content: content))
+        }
+    }
+}
 
 private struct CreateDrive: View {
     @State var newDrive: UTMQemuConfigurationDrive

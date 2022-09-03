@@ -104,11 +104,11 @@ struct VMSettingsView: View {
                         }.onDelete { offsets in
                             config.sound.remove(atOffsets: offsets)
                         }
-                    }
+                    }.uniqued()
                     Section(header: Text("Drives")) {
                         VMDrivesSettingsView(config: config, isCreateDriveShown: $isCreateDriveShown, isImportDriveShown: $isImportDriveShown)
                             .labelStyle(RoundRectIconLabelStyle(color: .yellow))
-                    }
+                    }.uniqued()
                 }
             }
             .navigationTitle("Settings")
@@ -165,6 +165,22 @@ struct RoundRectIconLabelStyle: LabelStyle {
 extension LabelStyle where Self == RoundRectIconLabelStyle {
     static var roundRectIcon: RoundRectIconLabelStyle {
         RoundRectIconLabelStyle()
+    }
+}
+
+private extension View {
+    /// Force an view to be unique in each update.
+    ///
+    /// On iOS 14 and under and macOS 11 and under, there is a SwiftUI bug
+    /// which causes a crash when a table is updated with multiple sections.
+    /// This workaround will (inefficently) force a redraw every refresh.
+    /// - Returns: some View
+    @ViewBuilder func uniqued() -> some View {
+        if #available(iOS 15, macOS 12, *) {
+            self
+        } else {
+            self.id(UUID())
+        }
     }
 }
 
