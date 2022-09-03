@@ -28,21 +28,14 @@ struct VMWizardOSOtherView: View {
         List {
             if !wizardState.isSkipBootImage {
                 Section {
-                    Text("Boot ISO Image:")
-                    ((wizardState.bootImageURL?.lastPathComponent).map { Text($0) } ?? Text("Empty"))
-                        .font(.caption)
-                    Button {
-                        isFileImporterPresented.toggle()
-                    } label: {
-                        Text("Browse…")
-                    }
+                    FileBrowseField(url: $wizardState.bootImageURL, isFileImporterPresented: $isFileImporterPresented, hasClearButton: false)
                     .disabled(wizardState.isBusy)
                     .padding(.leading, 1)
                     if wizardState.isBusy {
                         Spinner(size: .large)
                     }
                 } header: {
-                    Text("File Imported")
+                    Text("Boot ISO Image:")
                 }
             }
             Section {

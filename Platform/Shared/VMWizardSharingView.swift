@@ -40,36 +40,8 @@ struct VMWizardSharingView: View {
                 Text("Directory Selected")
             }
             Section {
-#if os(macOS)
-                HStack {
-                    Button {
-                        isFileImporterPresented.toggle()
-                    } label: {
-                        Text("Browse…")
-                    }
+                FileBrowseField(url: $wizardState.sharingDirectoryURL, isFileImporterPresented: $isFileImporterPresented)
                     .disabled(wizardState.isBusy)
-                    Button {
-                        wizardState.sharingDirectoryURL = nil
-                    } label: {
-                        Text("Clear")
-                    }
-                    .disabled(wizardState.isBusy)
-                }
-                .padding(.leading, 1)
-#else
-                Button {
-                    isFileImporterPresented.toggle()
-                } label: {
-                    Text("Browse…")
-                }
-                .disabled(wizardState.isBusy)
-                Button {
-                    wizardState.sharingDirectoryURL = nil
-                } label: {
-                    Text("Clear")
-                }
-                .disabled(wizardState.isBusy)
-#endif
                 
                 if wizardState.isBusy {
                     Spinner(size: .large)

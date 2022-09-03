@@ -40,20 +40,8 @@ struct VMWizardOSMacView: View {
                     Text(selected.lastPathComponent)
                         .font(.caption)
                 }
-                HStack {
-                    Button {
-                        isFileImporterPresented.toggle()
-                    } label: {
-                        Text("Browse…")
-                    }
-                    Button {
-                        wizardState.macRecoveryIpswURL = nil
-                        wizardState.macPlatform = nil
-                    } label: {
-                        Text("Clear")
-                    }
-                }.disabled(wizardState.isBusy)
-                .buttonStyle(BrowseButtonStyle())
+                FileBrowseField(url: $wizardState.macRecoveryIpswURL, isFileImporterPresented: $isFileImporterPresented)
+                    .disabled(wizardState.isBusy)
                 #endif
                 if wizardState.isBusy {
                     Spinner(size: .large)

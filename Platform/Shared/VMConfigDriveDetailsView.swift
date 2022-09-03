@@ -47,20 +47,12 @@ struct VMConfigDriveDetailsView: View {
                     }
                 }
             } else {
-                HStack {
-                    TextField("Path", text: .constant(config.imageURL?.path ?? ""))
-                        .disabled(true)
-                    Button("Clear") {
-                        config.imageURL = nil
-                    }
-                    Button("Browse…") {
-                        isImporterPresented.toggle()
-                    }.fileImporter(isPresented: $isImporterPresented, allowedContentTypes: [.item]) { result in
-                        data.busyWorkAsync {
-                            let url = try result.get()
-                            await MainActor.run {
-                                config.imageURL = url
-                            }
+                FileBrowseField(url: $config.imageURL, isFileImporterPresented: $isImporterPresented)
+                .fileImporter(isPresented: $isImporterPresented, allowedContentTypes: [.item]) { result in
+                    data.busyWorkAsync {
+                        let url = try result.get()
+                        await MainActor.run {
+                            config.imageURL = url
                         }
                     }
                 }

@@ -54,13 +54,3 @@ struct BigButtonStyle: ButtonStyle {
         BigButtonView(width: width, height: height, configuration: configuration)
     }
 }
-
-#if os(macOS)
-typealias BrowseButtonStyle = DefaultButtonStyle
-#else
-struct BrowseButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        BigButtonStyle.BigButtonView(width: 150, height: 50, configuration: configuration)
-    }
-}
-#endif

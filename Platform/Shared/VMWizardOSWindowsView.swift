@@ -56,26 +56,22 @@ struct VMWizardOSWindowsView: View {
             
             Section {
                 if useVhdx {
-                    Text("Boot VHDX Image:")
-                    
+                    FileBrowseField(url: $wizardState.windowsBootVhdx, isFileImporterPresented: $isFileImporterPresented, hasClearButton: false)
+                        .disabled(wizardState.isBusy)
                 } else {
-                    Text("Boot ISO Image:")
+                    FileBrowseField(url: $wizardState.bootImageURL, isFileImporterPresented: $isFileImporterPresented, hasClearButton: false)
+                        .disabled(wizardState.isBusy)
                 }
-                ((useVhdx ? wizardState.windowsBootVhdx?.lastPathComponent : wizardState.bootImageURL?.lastPathComponent).map { Text($0) } ?? Text("Empty"))
-                    .font(.caption)
-                Button {
-                    isFileImporterPresented.toggle()
-                } label: {
-                    Text("Browse…")
-                }
-                .disabled(wizardState.isBusy)
-                .padding(.leading, 1)
                 
                 if wizardState.isBusy {
                     Spinner(size: .large)
                 }
             } header: {
-                Text("File Imported")
+                if useVhdx {
+                    Text("Boot VHDX Image:")
+                } else {
+                    Text("Boot ISO Image:")
+                }
             } footer: {
                 if #available(iOS 15, macOS 12, *) {
                     Text("Hint: For the best Windows experience, make sure to download and install the latest [SPICE tools and QEMU drivers](https://mac.getutm.app/support/).")

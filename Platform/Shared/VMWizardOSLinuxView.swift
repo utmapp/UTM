@@ -84,15 +84,9 @@ struct VMWizardOSLinuxView: View {
             if wizardState.useLinuxKernel {
                 
                 Section {
-                    ((wizardState.linuxKernelURL?.lastPathComponent).map { Text($0) } ?? Text("Empty"))
-                        .font(.caption)
-                    Button {
+                    FileBrowseField(url: $wizardState.linuxKernelURL, isFileImporterPresented: $isFileImporterPresented, hasClearButton: false) {
                         selectImage = .kernel
-                        isFileImporterPresented.toggle()
-                    } label: {
-                        Text("Browse…")
-                    }
-                    .padding(.leading, 1)
+                    }.disabled(wizardState.isBusy)
                 } header: {
                     if wizardState.useAppleVirtualization {
                         Text("Uncompressed \(Text("Linux kernel (required):"))")
@@ -102,42 +96,9 @@ struct VMWizardOSLinuxView: View {
                 }
                 
                 Section {
-                    ((wizardState.linuxInitialRamdiskURL?.lastPathComponent).map { Text($0) } ?? Text("Empty"))
-                        .font(.caption)
-#if os(macOS)
-                    HStack {
-                        Button {
-                            selectImage = .initialRamdisk
-                            isFileImporterPresented.toggle()
-                        } label: {
-                            Text("Browse…")
-                        }
-                        .disabled(wizardState.isBusy)
-                        .padding(.leading, 1)
-                        Button {
-                            wizardState.linuxInitialRamdiskURL = nil
-                        } label: {
-                            Text("Clear")
-                        }
-                        .padding(.leading, 1)
-                    }
-#else
-                    Button {
+                    FileBrowseField(url: $wizardState.linuxInitialRamdiskURL, isFileImporterPresented: $isFileImporterPresented) {
                         selectImage = .initialRamdisk
-                        isFileImporterPresented.toggle()
-                    } label: {
-                        Text("Browse…")
-                    }
-                    .disabled(wizardState.isBusy)
-                    .padding(.leading, 1)
-                    Button {
-                        wizardState.linuxInitialRamdiskURL = nil
-                    } label: {
-                        Text("Clear")
-                    }
-                    .padding(.leading, 1)
-#endif
-                    
+                    }.disabled(wizardState.isBusy)
                 } header: {
                     if wizardState.useAppleVirtualization {
                         Text("Uncompressed \(Text("Linux initial ramdisk (optional):"))")
@@ -147,81 +108,17 @@ struct VMWizardOSLinuxView: View {
                 }
                 
                 Section {
-                    ((wizardState.linuxRootImageURL?.lastPathComponent).map { Text($0) } ?? Text("Empty"))
-                        .font(.caption)
-#if os(macOS)
-                    HStack {
-                        Button {
-                            selectImage = .rootImage
-                            isFileImporterPresented.toggle()
-                        } label: {
-                            Text("Browse…")
-                        }
-                        Button {
-                            wizardState.linuxRootImageURL = nil
-                        } label: {
-                            Text("Clear")
-                        }
-                    }
-#else
-                    Button {
+                    FileBrowseField(url: $wizardState.linuxRootImageURL, isFileImporterPresented: $isFileImporterPresented) {
                         selectImage = .rootImage
-                        isFileImporterPresented.toggle()
-                    } label: {
-                        Text("Browse…")
-                    }
-                    Button {
-                        wizardState.linuxRootImageURL = nil
-                    } label: {
-                        Text("Clear")
-                    }
-#endif
-                    
+                    }.disabled(wizardState.isBusy)
                 } header: {
                     Text("Linux Root FS Image (optional):")
                 }
                 
                 Section {
-                    ((wizardState.bootImageURL?.lastPathComponent).map { Text($0) } ?? Text("Empty"))
-                        .font(.caption)
-#if os(macOS)
-                    HStack {
-                        Button {
-                            selectImage = .bootImage
-                            isFileImporterPresented.toggle()
-                        } label: {
-                            Text("Browse…")
-                        }
-                        .disabled(wizardState.isBusy)
-                        .padding(.leading, 1)
-                        Button {
-                            wizardState.bootImageURL = nil
-                            wizardState.isSkipBootImage = true
-                        } label: {
-                            Text("Clear")
-                        }
-                        .disabled(wizardState.isBusy)
-                        .padding(.leading, 1)
-                    }
-#else
-                    Button {
+                    FileBrowseField(url: $wizardState.bootImageURL, isFileImporterPresented: $isFileImporterPresented) {
                         selectImage = .bootImage
-                        isFileImporterPresented.toggle()
-                    } label: {
-                        Text("Browse…")
-                    }
-                    .disabled(wizardState.isBusy)
-                    .padding(.leading, 1)
-                    Button {
-                        wizardState.bootImageURL = nil
-                        wizardState.isSkipBootImage = true
-                    } label: {
-                        Text("Clear")
-                    }
-                    .disabled(wizardState.isBusy)
-                    .padding(.leading, 1)
-#endif
-                    
+                    }.disabled(wizardState.isBusy)
                 } header: {
                     Text("Boot ISO Image (optional):")
                 }
@@ -233,17 +130,11 @@ struct VMWizardOSLinuxView: View {
                 }
             } else {
                 Section {
-                    Text("Boot ISO Image:")
-                    ((wizardState.bootImageURL?.lastPathComponent).map { Text($0) } ?? Text("Empty"))
-                        .font(.caption)
-                    Button {
+                    FileBrowseField(url: $wizardState.bootImageURL, isFileImporterPresented: $isFileImporterPresented) {
                         selectImage = .bootImage
-                        isFileImporterPresented.toggle()
-                    } label: {
-                        Text("Browse…")
                     }.disabled(wizardState.isBusy)
                 } header: {
-                    Text("File Imported")
+                    Text("Boot ISO Image:")
                 }
             }
             if wizardState.isBusy {

@@ -102,40 +102,19 @@ struct VMConfigAppleBootView: View {
 
             if operatingSystem == .linux && !config.boot.hasUefiBoot {
                 Section(header: Text("Linux Settings")) {
-                    HStack {
-                        TextField("Kernel Image", text: .constant(config.boot.linuxKernelURL?.lastPathComponent ?? ""))
-                            .disabled(true)
-                        Button("Browse…") {
-                            importBootloaderSelection = .kernel
-                            importFileShown = true
-                        }
+                    FileBrowseField("Kernel Image", url: $config.boot.linuxKernelURL, isFileImporterPresented: $importFileShown, hasClearButton: false) {
+                        importBootloaderSelection = .kernel
                     }
-                    HStack {
-                        TextField("Ramdisk (optional)", text: .constant(config.boot.linuxInitialRamdiskURL?.lastPathComponent ?? ""))
-                            .disabled(true)
-                        Button("Clear") {
-                            config.boot.linuxInitialRamdiskURL = nil
-                        }
-                        Button("Browse…") {
-                            importBootloaderSelection = .ramdisk
-                            importFileShown = true
-                        }
+                    FileBrowseField("Ramdisk (optional)", url: $config.boot.linuxInitialRamdiskURL, isFileImporterPresented: $importFileShown) {
+                        importBootloaderSelection = .ramdisk
                     }
                     TextField("Boot arguments", text: $config.boot.linuxCommandLine.bound)
                 }
             } else if #available(macOS 12, *), operatingSystem == .macOS {
                 #if arch(arm64)
                 Section(header: Text("macOS Settings")) {
-                    HStack {
-                        TextField("IPSW Install Image", text: .constant(config.boot.macRecoveryIpswURL?.lastPathComponent ?? ""))
-                            .disabled(true)
-                        Button("Clear") {
-                            config.boot.macRecoveryIpswURL = nil
-                        }
-                        Button("Browse…") {
-                            importBootloaderSelection = .ipsw
-                            importFileShown = true
-                        }
+                    FileBrowseField("IPSW Install Image", url: $config.boot.macRecoveryIpswURL, isFileImporterPresented: $importFileShown) {
+                        importBootloaderSelection = .ipsw
                     }
                 }
                 #endif

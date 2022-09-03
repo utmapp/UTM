@@ -33,16 +33,7 @@ struct VMConfigSharingView: View {
                 DetailedSection("Shared Directory", description: "WebDAV requires installing SPICE daemon. VirtFS requires installing device drivers.") {
                     VMConfigConstantPicker("Directory Share Mode", selection: $config.directoryShareMode)
                     if config.directoryShareMode != .none {
-                        HStack {
-                            TextField("Path", text: .constant(config.directoryShareUrl?.path ?? ""))
-                                .disabled(true)
-                            Button("Clear") {
-                                config.directoryShareUrl = nil
-                            }
-                            Button("Browse…") {
-                                isImporterPresented.toggle()
-                            }
-                        }
+                        FileBrowseField(url: $config.directoryShareUrl, isFileImporterPresented: $isImporterPresented)
                         Toggle(isOn: $config.isDirectoryShareReadOnly, label: {
                             Text("Read Only")
                         })
