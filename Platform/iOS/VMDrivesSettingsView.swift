@@ -21,6 +21,7 @@ import SwiftUI
 struct VMDrivesSettingsView: View {
     @ObservedObject var config: UTMQemuConfiguration
     @Binding var isCreateDriveShown: Bool
+    @Binding var isImportDriveShown: Bool
     @State private var attemptDelete: IndexSet?
     @EnvironmentObject private var data: UTMData
     
@@ -37,6 +38,7 @@ struct VMDrivesSettingsView: View {
         .sheet(isPresented: $isCreateDriveShown) {
             CreateDrive(newDrive: UTMQemuConfigurationDrive(forArchitecture: config.system.architecture, target: config.system.target), onDismiss: newDrive)
         }
+        .globalFileImporter(isPresented: $isImportDriveShown, allowedContentTypes: [.item], onCompletion: importDrive)
         .actionSheet(item: $attemptDelete) { offsets in
             ActionSheet(title: Text("Confirm Delete"), message: Text("Are you sure you want to permanently delete this disk image?"), buttons: [.cancel(), .destructive(Text("Delete")) {
                 deleteDrives(offsets: offsets)
@@ -62,6 +64,22 @@ struct VMDrivesSettingsView: View {
     
     private func moveDrives(source: IndexSet, destination: Int) {
         config.drives.move(fromOffsets: source, toOffset: destination)
+    }
+    
+    private func importDrive(result: Result<URL, Error>) {
+        data.busyWorkAsync {
+            switch result {
+            case .success(let url):
+                await MainActor.run {
+                    var drive = UTMQemuConfigurationDrive(forArchitecture: config.system.architecture, target: config.system.target, isExternal: true)
+                    drive.imageURL = url
+                    config.drives.append(drive)
+                }
+                break
+            case .failure(let err):
+                throw err
+            }
+        }
     }
 }
 
@@ -103,7 +121,7 @@ struct VMConfigDrivesView_Previews: PreviewProvider {
     
     static var previews: some View {
         Group {
-            VMDrivesSettingsView(config: config, isCreateDriveShown: .constant(false))
+            VMDrivesSettingsView(config: config, isCreateDriveShown: .constant(false), isImportDriveShown: .constant(false))
             CreateDrive(newDrive: UTMQemuConfigurationDrive()) { _ in
                 
             }

@@ -106,6 +106,9 @@
 		8432329428C2ED9000CFBC97 /* FileBrowseField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8432329328C2ED9000CFBC97 /* FileBrowseField.swift */; };
 		8432329528C2ED9000CFBC97 /* FileBrowseField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8432329328C2ED9000CFBC97 /* FileBrowseField.swift */; };
 		8432329628C2ED9000CFBC97 /* FileBrowseField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8432329328C2ED9000CFBC97 /* FileBrowseField.swift */; };
+		8432329828C3017F00CFBC97 /* GlobalFileImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8432329728C3017F00CFBC97 /* GlobalFileImporter.swift */; };
+		8432329928C3017F00CFBC97 /* GlobalFileImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8432329728C3017F00CFBC97 /* GlobalFileImporter.swift */; };
+		8432329A28C3084A00CFBC97 /* GlobalFileImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8432329728C3017F00CFBC97 /* GlobalFileImporter.swift */; };
 		843BF82428441EAD0029D60D /* UTMQemuConfigurationDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843BF82328441EAD0029D60D /* UTMQemuConfigurationDisplay.swift */; };
 		843BF82528441EAD0029D60D /* UTMQemuConfigurationDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843BF82328441EAD0029D60D /* UTMQemuConfigurationDisplay.swift */; };
 		843BF82628441EAD0029D60D /* UTMQemuConfigurationDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843BF82328441EAD0029D60D /* UTMQemuConfigurationDisplay.swift */; };
@@ -1619,6 +1622,7 @@
 		84258C41288F806400C66366 /* VMToolbarUSBMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMToolbarUSBMenuView.swift; sourceTree = "<group>"; };
 		8432328F28C2CDAD00CFBC97 /* VMNavigationListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMNavigationListView.swift; sourceTree = "<group>"; };
 		8432329328C2ED9000CFBC97 /* FileBrowseField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileBrowseField.swift; sourceTree = "<group>"; };
+		8432329728C3017F00CFBC97 /* GlobalFileImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalFileImporter.swift; sourceTree = "<group>"; };
 		843BF82328441EAD0029D60D /* UTMQemuConfigurationDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMQemuConfigurationDisplay.swift; sourceTree = "<group>"; };
 		843BF82728441FAF0029D60D /* QEMUConstantGenerated.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QEMUConstantGenerated.swift; sourceTree = "<group>"; };
 		843BF82B284482C10029D60D /* UTMQemuConfigurationInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMQemuConfigurationInput.swift; sourceTree = "<group>"; };
@@ -3155,6 +3159,7 @@
 				CEF0304C26A2AFBE00667B63 /* BigButtonStyle.swift */,
 				84B36D2827B790BE00C22685 /* DestructiveButton.swift */,
 				8471772727CD3CAB00D3A50B /* DetailedSection.swift */,
+				8432329728C3017F00CFBC97 /* GlobalFileImporter.swift */,
 				4B224B9C279D4D8100B63CFF /* InListButtonStyle.swift */,
 				CEF0304D26A2AFBE00667B63 /* Spinner.swift */,
 				84018696288B71BF0050AC51 /* BusyIndicator.swift */,
@@ -3754,6 +3759,7 @@
 				CE2D92F324AD46670059923A /* qapi-commands-introspect.c in Sources */,
 				84B36D2527B704C200C22685 /* UTMDownloadVMTask.swift in Sources */,
 				CE2D92F424AD46670059923A /* qapi-types-sockets.c in Sources */,
+				8432329828C3017F00CFBC97 /* GlobalFileImporter.swift in Sources */,
 				CE2D92F624AD46670059923A /* qapi-events-block-core.c in Sources */,
 				841E58CB28937EE200137A20 /* UTMExternalSceneDelegate.swift in Sources */,
 				84FCABBA268CE05E0036196C /* UTMQemuVirtualMachine.m in Sources */,
@@ -4043,6 +4049,7 @@
 				8471772A27CD3CAB00D3A50B /* DetailedSection.swift in Sources */,
 				CE0B6D7624AD584D00FE012D /* qapi-types-machine.c in Sources */,
 				CE0B6D3824AD57FD00FE012D /* qapi-commands-authz.c in Sources */,
+				8432329A28C3084A00CFBC97 /* GlobalFileImporter.swift in Sources */,
 				CE19392826DCB094005CEC17 /* RAMSlider.swift in Sources */,
 				CE0B6D4524AD584C00FE012D /* qapi-types-run-state.c in Sources */,
 				2C33B3AA2566C9B100A954A6 /* VMContextMenuModifier.swift in Sources */,
@@ -4364,6 +4371,7 @@
 				84909A8E27CACD5C005605F1 /* UTMPlaceholderVMView.swift in Sources */,
 				CEA45EF4263519B5002FA97D /* VMConfigSoundView.swift in Sources */,
 				CEA45EF5263519B5002FA97D /* qapi-events-crypto.c in Sources */,
+				8432329928C3017F00CFBC97 /* GlobalFileImporter.swift in Sources */,
 				CEA45EF6263519B5002FA97D /* UTMLegacyQemuConfiguration.m in Sources */,
 				CEA45EF7263519B5002FA97D /* UTMQemuVirtualMachine+SPICE.m in Sources */,
 				CEA45EF8263519B5002FA97D /* VMDetailsView.swift in Sources */,

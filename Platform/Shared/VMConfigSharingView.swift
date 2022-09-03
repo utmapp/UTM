@@ -38,7 +38,7 @@ struct VMConfigSharingView: View {
                             Text("Read Only")
                         })
                     }
-                }.fileImporter(isPresented: $isImporterPresented, allowedContentTypes: [.folder]) { result in
+                }.globalFileImporter(isPresented: $isImporterPresented, allowedContentTypes: [.folder]) { result in
                     data.busyWorkAsync {
                         let url = try result.get()
                         await MainActor.run {

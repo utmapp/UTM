@@ -48,7 +48,7 @@ struct VMConfigDriveDetailsView: View {
                 }
             } else {
                 FileBrowseField(url: $config.imageURL, isFileImporterPresented: $isImporterPresented)
-                .fileImporter(isPresented: $isImporterPresented, allowedContentTypes: [.item]) { result in
+                .globalFileImporter(isPresented: $isImporterPresented, allowedContentTypes: [.item]) { result in
                     data.busyWorkAsync {
                         let url = try result.get()
                         await MainActor.run {
