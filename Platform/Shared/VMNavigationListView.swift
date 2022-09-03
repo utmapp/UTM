@@ -20,31 +20,55 @@ struct VMNavigationListView: View {
     @EnvironmentObject private var data: UTMData
     
     var body: some View {
-        NavigationView {
-            List {
-                ForEach(data.virtualMachines) { vm in
-                    if let wrappedVM = vm as? UTMWrappedVirtualMachine {
-                        UTMUnavailableVMView(wrappedVM: wrappedVM)
-                    } else {
-                        NavigationLink(
-                            destination: VMDetailsView(vm: vm),
-                            tag: vm,
-                            selection: $data.selectedVM,
-                            label: { VMCardView(vm: vm) })
-                            .modifier(VMContextMenuModifier(vm: vm))
-                    }
-                }.onMove(perform: move)
-                .onDelete(perform: delete)
-                
-                if data.pendingVMs.count > 0 {
-                    Section(header: Text("Pending")) {
-                        ForEach(data.pendingVMs, id: \.name) { vm in
-                            UTMPendingVMView(vm: vm)
-                        }.onDelete(perform: cancel)
-                    }.transition(.opacity)
+        if #available(iOS 16, macOS 13, *) {
+            NavigationSplitView {
+                List(selection: $data.selectedVM) {
+                    listBody
+                }.modifier(VMListModifier())
+            } detail: {
+                if let vm = data.selectedVM {
+                    VMDetailsView(vm: vm)
+                } else {
+                    VMPlaceholderView()
                 }
-            }.modifier(VMListModifier())
-            VMPlaceholderView()
+            }
+        } else {
+            NavigationView {
+                List {
+                    listBody
+                }.modifier(VMListModifier())
+                VMPlaceholderView()
+            }
+        }
+    }
+    
+    @ViewBuilder private var listBody: some View {
+        ForEach(data.virtualMachines) { vm in
+            if let wrappedVM = vm as? UTMWrappedVirtualMachine {
+                UTMUnavailableVMView(wrappedVM: wrappedVM)
+            } else {
+                if #available(iOS 16, macOS 13, *) {
+                    VMCardView(vm: vm)
+                        .modifier(VMContextMenuModifier(vm: vm))
+                        .tag(vm)
+                } else {
+                    NavigationLink(
+                        destination: VMDetailsView(vm: vm),
+                        tag: vm,
+                        selection: $data.selectedVM,
+                        label: { VMCardView(vm: vm) })
+                    .modifier(VMContextMenuModifier(vm: vm))
+                }
+            }
+        }.onMove(perform: move)
+        .onDelete(perform: delete)
+        
+        if data.pendingVMs.count > 0 {
+            Section(header: Text("Pending")) {
+                ForEach(data.pendingVMs, id: \.name) { vm in
+                    UTMPendingVMView(vm: vm)
+                }.onDelete(perform: cancel)
+            }.transition(.opacity)
         }
     }
     
