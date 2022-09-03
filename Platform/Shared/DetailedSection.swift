@@ -32,10 +32,11 @@ struct DetailedSection<Content>: View where Content: View {
         Section(content: {
             content
             Text(description)
-                .frame(alignment: .leading)
+                .frame(maxWidth: 600, alignment: .leading)
                 .lineLimit(nil)
                 .font(.footnote)
-        }, header: { Text(titleKey) }, footer: { Text("").padding(.bottom) })
+                .padding(.bottom)
+        }, header: { Text(titleKey) })
         #else
         Section(content: { content }, header: { Text(titleKey) }, footer: { Text(description) })
         #endif
