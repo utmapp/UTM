@@ -48,9 +48,14 @@ struct FileBrowseField: View {
             }
         }
         #else
-        TextField(titleKey, text: .constant(url?.path ?? ""))
-            .truncationMode(.head)
-            .disabled(true)
+        if let path = url?.path {
+            Text(path)
+                .lineLimit(1)
+                .truncationMode(.head)
+        } else {
+            Text(titleKey)
+                .foregroundColor(.secondary)
+        }
         if hasClearButton {
             Button {
                 url = nil
