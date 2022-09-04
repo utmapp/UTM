@@ -59,6 +59,7 @@ enum VMWizardOS: String, Identifiable {
     @Published var alertMessage: AlertMessage?
     @Published var isBusy: Bool = false
     @Published var systemBootUefi: Bool = true
+    @Published var isGuestToolsInstallRequested: Bool = true
     @Published var useVirtualization: Bool = false {
         didSet {
             if !useVirtualization {
@@ -433,6 +434,10 @@ enum VMWizardOS: String, Identifiable {
             diskImage.imageType = .disk
             diskImage.interface = mainDriveInterface
             config.drives.append(diskImage)
+        }
+        if operatingSystem == .Windows && isGuestToolsInstallRequested {
+            let toolsDiskDrive = UTMQemuConfigurationDrive(forArchitecture: systemArchitecture, target: systemTarget, isExternal: true)
+            config.drives.append(toolsDiskDrive)
         }
         return config
     }

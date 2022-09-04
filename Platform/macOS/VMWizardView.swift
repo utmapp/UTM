@@ -97,7 +97,10 @@ struct VMWizardView: View {
                             }
                             #endif
                             if let qemuConfig = config.qemuConfig {
-                                _ = try await data.create(config: qemuConfig)
+                                let vm = try await data.create(config: qemuConfig) as! UTMQemuVirtualMachine
+                                await MainActor.run {
+                                    vm.isGuestToolsInstallRequested = wizardState.isGuestToolsInstallRequested
+                                }
                             } else if let appleConfig = config.appleConfig {
                                 _ = try await data.create(config: appleConfig)
                             }

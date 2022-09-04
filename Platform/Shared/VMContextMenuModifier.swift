@@ -75,6 +75,17 @@ struct VMContextMenuModifier: ViewModifier {
                     }.help("Run the VM in the foreground, without saving data changes to disk.")
                 }
                 
+                #if os(iOS)
+                if let qemuVM = vm as? UTMQemuVirtualMachine {
+                    Button {
+                        qemuVM.isGuestToolsInstallRequested = true
+                    } label: {
+                        Label("Install Windows Guest Tools…", systemImage: "wrench.and.screwdriver")
+                    }.help("Download and mount the guest tools for Windows.")
+                    .disabled(qemuVM.isGuestToolsInstallRequested)
+                }
+                #endif
+                
                 Divider()
             }
             Button {

@@ -50,10 +50,6 @@ struct VMWizardOSWindowsView: View {
                 }
             }
             
-            DetailedSection("", description: "Some older systems do not support UEFI boot, such as Windows 7 and below.") {
-                Toggle("UEFI Boot", isOn: $wizardState.systemBootUefi)
-            }
-            
             Section {
                 if useVhdx {
                     FileBrowseField(url: $wizardState.windowsBootVhdx, isFileImporterPresented: $isFileImporterPresented, hasClearButton: false)
@@ -72,9 +68,16 @@ struct VMWizardOSWindowsView: View {
                 } else {
                     Text("Boot ISO Image")
                 }
-            } footer: {
-                if #available(iOS 15, macOS 12, *) {
-                    Text("Hint: For the best Windows experience, make sure to download and install the latest [SPICE tools and QEMU drivers](https://mac.getutm.app/support/).")
+            }
+            
+            DetailedSection("", description: "Some older systems do not support UEFI boot, such as Windows 7 and below.") {
+                Toggle("UEFI Boot", isOn: $wizardState.systemBootUefi)
+            }
+            
+            // Disabled on iOS 14 due to a SwiftUI layout bug
+            if #available(iOS 15, *) {
+                DetailedSection("", description: "Download and mount the guest support package for Windows. This is required for some features including dynamic resolution and clipboard sharing.") {
+                    Toggle("Install drivers and SPICE tools", isOn: $wizardState.isGuestToolsInstallRequested)
                 }
             }
         }

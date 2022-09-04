@@ -94,7 +94,13 @@ fileprivate struct WizardWrapper: View {
                         data.busyWorkAsync {
                             let config = try await wizardState.generateConfig()
                             if let qemuConfig = config.qemuConfig {
-                                _ = try await data.create(config: qemuConfig)
+                                let vm = try await data.create(config: qemuConfig) as! UTMQemuVirtualMachine
+                                if #available(iOS 15, *) {
+                                    // This is broken on iOS 14
+                                    await MainActor.run {
+                                        vm.isGuestToolsInstallRequested = wizardState.isGuestToolsInstallRequested
+                                    }
+                                }
                             } else {
                                 fatalError("Invalid configuration type.")
                             }
