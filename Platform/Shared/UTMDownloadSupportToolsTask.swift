@@ -31,18 +31,14 @@ class UTMDownloadSupportToolsTask: UTMDownloadTask {
         cacheUrl.appendingPathComponent(Self.supportToolsDownloadUrl.lastPathComponent)
     }
     
+    var hasExistingSupportTools: Bool {
+        fileManager.fileExists(atPath: supportToolsLocalUrl.path)
+    }
+    
     init(for vm: UTMQemuVirtualMachine) {
         self.vm = vm
         let name = NSLocalizedString("Windows Guest Support Tools", comment: "UTMDownloadSupportToolsTask")
         super.init(for: Self.supportToolsDownloadUrl, named: name)
-    }
-    
-    override func download() async throws -> UTMVirtualMachine? {
-        if fileManager.fileExists(atPath: supportToolsLocalUrl.path) {
-            return try await mountTools()
-        } else {
-            return try await super.download()
-        }
     }
     
     override func processCompletedDownload(at location: URL) async throws -> UTMVirtualMachine {
@@ -56,7 +52,7 @@ class UTMDownloadSupportToolsTask: UTMDownloadTask {
         return try await mountTools()
     }
     
-    private func mountTools() async throws -> UTMVirtualMachine {
+    func mountTools() async throws -> UTMVirtualMachine {
         for file in await vm.registryEntry.externalDrives.values {
             if file.path == supportToolsLocalUrl.path {
                 throw UTMDownloadSupportToolsTaskError.alreadyMounted

@@ -142,7 +142,9 @@ struct VMContextMenuModifier: ViewModifier {
         })
         .onChange(of: (vm as? UTMQemuVirtualMachine)?.isGuestToolsInstallRequested) { newValue in
             if newValue == true {
-                data.downloadSupportTools(for: vm as! UTMQemuVirtualMachine)
+                data.busyWorkAsync {
+                    try await data.mountSupportTools(for: vm as! UTMQemuVirtualMachine)
+                }
             }
         }
     }

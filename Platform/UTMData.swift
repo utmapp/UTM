@@ -669,17 +669,22 @@ class UTMData: ObservableObject {
         }
     }
     
-    @MainActor func downloadSupportTools(for vm: UTMQemuVirtualMachine) {
+    @MainActor func mountSupportTools(for vm: UTMQemuVirtualMachine) async throws {
         let task = UTMDownloadSupportToolsTask(for: vm)
-        listAdd(pendingVM: task.pendingVM)
-        Task {
-            do {
-                _ = try await task.download()
-            } catch {
-                showErrorAlert(message: error.localizedDescription)
-            }
+        if task.hasExistingSupportTools {
+            _ = try await task.mountTools()
             vm.isGuestToolsInstallRequested = false
-            listRemove(pendingVM: task.pendingVM)
+        } else {
+            listAdd(pendingVM: task.pendingVM)
+            Task {
+                do {
+                    _ = try await task.download()
+                } catch {
+                    showErrorAlert(message: error.localizedDescription)
+                }
+                vm.isGuestToolsInstallRequested = false
+                listRemove(pendingVM: task.pendingVM)
+            }
         }
     }
     
