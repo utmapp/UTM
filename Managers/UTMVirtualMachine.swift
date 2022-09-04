@@ -48,10 +48,6 @@ extension UTMVirtualMachine: ObservableObject {
                 self.updateConfigFromRegistry()
             }
         })
-        // first sync on construction
-        Task { @MainActor in
-            self.updateConfigFromRegistry()
-        }
         anyCancellable = s
     }
     

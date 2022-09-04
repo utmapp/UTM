@@ -141,7 +141,11 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
     UTMConfigurationWrapper *config = [[UTMConfigurationWrapper alloc] initFrom:url];
     [url stopAccessingSecurityScopedResource];
     if (config) {
-        return [UTMVirtualMachine virtualMachineWithConfiguration:config packageURL:url];
+        UTMVirtualMachine *vm = [UTMVirtualMachine virtualMachineWithConfiguration:config packageURL:url];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [vm updateConfigFromRegistry];
+        });
+        return vm;
     } else {
         return nil;
     }
