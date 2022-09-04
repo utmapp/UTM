@@ -252,7 +252,7 @@ extension VMDisplayQemuWindowController: UTMSpiceIODelegate {
             return
         }
         Task { @MainActor in
-            newDisplayWindow(from: display)
+            findWindow(for: display)
         }
     }
     
@@ -293,7 +293,7 @@ extension VMDisplayQemuWindowController: UTMSpiceIODelegate {
             return
         }
         Task { @MainActor in
-            newSerialWindow(from: serial)
+            findWindow(for: serial)
         }
     }
     
@@ -301,31 +301,6 @@ extension VMDisplayQemuWindowController: UTMSpiceIODelegate {
         for subwindow in secondaryWindows {
             (subwindow as! VMDisplayQemuWindowController).spiceDidDestroySerial(serial)
         }
-    }
-    
-    @MainActor private func newDisplayWindow(from display: CSDisplay) -> VMDisplayQemuMetalWindowController? {
-        let id = display.monitorID
-        guard id < vmQemuConfig.displays.count else {
-            return nil
-        }
-        guard let primary = self as? VMDisplayQemuMetalWindowController else {
-            return nil
-        }
-        let secondary = VMDisplayQemuMetalWindowController(secondaryFromDisplay: display, primary: primary, vm: qemuVM, id: id)
-        showSecondaryWindow(secondary)
-        return secondary
-    }
-    
-    @MainActor private func newSerialWindow(from serial: CSPort) -> VMDisplayQemuTerminalWindowController? {
-        guard let id = configIdForSerial(serial) else {
-            return nil
-        }
-        guard id < vmQemuConfig.serials.count else {
-            return nil
-        }
-        let secondary = VMDisplayQemuTerminalWindowController(secondaryFromSerialPort: serial, vm: qemuVM, id: id)
-        showSecondaryWindow(secondary)
-        return secondary
     }
 }
 
@@ -550,27 +525,8 @@ extension VMDisplayQemuWindowController {
         guard let display = qemuVM.ioService?.displays.first(where: { $0.monitorID == id}) else {
             return
         }
-        let secondaryWindows: [VMDisplayWindowController]
-        if let window = primaryWindow {
-            if (window as? VMDisplayQemuMetalWindowController)?.id == id {
-                window.showWindow(self)
-                return
-            }
-            secondaryWindows = window.secondaryWindows
-        } else {
-            secondaryWindows = self.secondaryWindows
-        }
-        for window in secondaryWindows {
-            if let window = window as? VMDisplayQemuMetalWindowController {
-                if window.id == id {
-                    // found existing window
-                    window.showWindow(self)
-                    return
-                }
-            }
-        }
-        if let newWindow = newDisplayWindow(from: display) {
-            newWindow.showWindow(self)
+        if let window = findWindow(for: display) {
+            window.showWindow(self)
         }
     }
     
@@ -583,11 +539,62 @@ extension VMDisplayQemuWindowController {
         guard let serial = qemuVM.ioService?.serials.first(where: { id == configIdForSerial($0) }) else {
             return
         }
+        if let window = findWindow(for: serial) {
+            window.showWindow(self)
+        }
+    }
+    
+    @MainActor private func findWindow(for display: CSDisplay) -> VMDisplayQemuWindowController? {
+        let id = display.monitorID
         let secondaryWindows: [VMDisplayWindowController]
+        if self.id == id {
+            return self
+        }
+        if let window = primaryWindow {
+            if (window as? VMDisplayQemuMetalWindowController)?.id == id {
+                return window as? VMDisplayQemuWindowController
+            }
+            secondaryWindows = window.secondaryWindows
+        } else {
+            secondaryWindows = self.secondaryWindows
+        }
+        for window in secondaryWindows {
+            if let window = window as? VMDisplayQemuMetalWindowController {
+                if window.id == id {
+                    // found existing window
+                    return window
+                }
+            }
+        }
+        if let newWindow = newWindow(from: display) {
+            return newWindow
+        } else {
+            return nil
+        }
+    }
+    
+    @MainActor private func newWindow(from display: CSDisplay) -> VMDisplayQemuMetalWindowController? {
+        let id = display.monitorID
+        guard id < vmQemuConfig.displays.count else {
+            return nil
+        }
+        guard let primary = self as? VMDisplayQemuMetalWindowController else {
+            return nil
+        }
+        let secondary = VMDisplayQemuMetalWindowController(secondaryFromDisplay: display, primary: primary, vm: qemuVM, id: id)
+        registerSecondaryWindow(secondary)
+        return secondary
+    }
+    
+    @MainActor private func findWindow(for serial: CSPort) -> VMDisplayQemuWindowController? {
+        let id = configIdForSerial(serial)!
+        let secondaryWindows: [VMDisplayWindowController]
+        if self.id == id {
+            return self
+        }
         if let window = primaryWindow {
             if (window as? VMDisplayQemuTerminalWindowController)?.id == id {
-                window.showWindow(self)
-                return
+                return window as? VMDisplayQemuWindowController
             }
             secondaryWindows = window.secondaryWindows
         } else {
@@ -597,13 +604,26 @@ extension VMDisplayQemuWindowController {
             if let window = window as? VMDisplayQemuTerminalWindowController {
                 if window.id == id {
                     // found existing window
-                    window.showWindow(self)
-                    return
+                    return window
                 }
             }
         }
-        if let newWindow = newSerialWindow(from: serial) {
-            newWindow.showWindow(self)
+        if let newWindow = newWindow(from: serial) {
+            return newWindow
+        } else {
+            return nil
         }
+    }
+    
+    @MainActor private func newWindow(from serial: CSPort) -> VMDisplayQemuTerminalWindowController? {
+        guard let id = configIdForSerial(serial) else {
+            return nil
+        }
+        guard id < vmQemuConfig.serials.count else {
+            return nil
+        }
+        let secondary = VMDisplayQemuTerminalWindowController(secondaryFromSerialPort: serial, vm: qemuVM, id: id)
+        registerSecondaryWindow(secondary)
+        return secondary
     }
 }

@@ -201,7 +201,7 @@ class VMDisplayWindowController: NSWindowController {
     
     // MARK: - Create a secondary window
     
-    func showSecondaryWindow(_ secondaryWindow: VMDisplayWindowController, at index: Int? = nil) {
+    func registerSecondaryWindow(_ secondaryWindow: VMDisplayWindowController, at index: Int? = nil) {
         secondaryWindows.insert(secondaryWindow, at: index ?? secondaryWindows.endIndex)
         secondaryWindow.onClose = { [weak self] _ in
             self?.secondaryWindows.removeAll(where: { $0 == secondaryWindow })

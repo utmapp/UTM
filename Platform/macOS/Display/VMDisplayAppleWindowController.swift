@@ -70,7 +70,7 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
                     continue
                 }
                 let vc = VMDisplayAppleTerminalWindowController(secondaryForIndex: i, vm: appleVM)
-                showSecondaryWindow(vc)
+                registerSecondaryWindow(vc)
             }
         }
     }
@@ -345,7 +345,7 @@ extension VMDisplayAppleWindowController {
         }
         // create new serial window
         let vc = VMDisplayAppleTerminalWindowController(secondaryForIndex: id, vm: appleVM)
-        showSecondaryWindow(vc)
+        registerSecondaryWindow(vc)
         vc.showWindow(self)
     }
 }
