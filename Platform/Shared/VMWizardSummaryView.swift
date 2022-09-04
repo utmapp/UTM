@@ -94,6 +94,14 @@ struct VMWizardSummaryView: View {
                     wizardState.name = data.newDefaultVMName(base: os.rawValue)
                 }
             }
+            if #available(iOS 15, macOS 12, *) {
+                wizardState.confusedUserCheck()
+            } else {
+                // SwiftUI bug: on older versions you need some delay
+                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
+                    wizardState.confusedUserCheck()
+                }
+            }
         }
     }
     

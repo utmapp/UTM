@@ -469,3 +469,51 @@ enum VMWizardOS: String, Identifiable {
         }
     }
 }
+
+// MARK: - Warnings for common mistakes
+
+extension VMWizardState {
+    nonisolated func confusedUserCheck() {
+        Task { @MainActor in
+            do {
+                try confusedUserCheckBootImage()
+            } catch {
+                self.alertMessage = AlertMessage(error.localizedDescription)
+            }
+        }
+    }
+    
+    private func confusedUserCheckBootImage() throws {
+        guard let path = bootImageURL?.path.lowercased() else {
+            return
+        }
+        if systemArchitecture == .aarch64 {
+            if path.contains("x64") {
+                throw VMWizardError.confusedArchitectureWarning("x64", systemArchitecture, "a64")
+            }
+            if path.contains("amd64") {
+                throw VMWizardError.confusedArchitectureWarning("amd64", systemArchitecture, "arm64")
+            }
+            if path.contains("x86_64") {
+                throw VMWizardError.confusedArchitectureWarning("x86_64", systemArchitecture, "arm64")
+            }
+        }
+        if systemArchitecture == .x86_64 {
+            if path.contains("arm64") {
+                throw VMWizardError.confusedArchitectureWarning("arm64", systemArchitecture, "amd64")
+            }
+        }
+    }
+}
+
+enum VMWizardError: Error {
+    case confusedArchitectureWarning(String, QEMUArchitecture, String)
+}
+
+extension VMWizardError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case .confusedArchitectureWarning(let pattern, let architecture, let expected): return String.localizedStringWithFormat(NSLocalizedString("The selected boot image contains the word '%@' but the guest architecture is '%@'. Please ensure you have selected an image that is compatible with '%@'.", comment: "VMWizardState"), pattern, architecture.prettyValue, expected)
+        }
+    }
+}
