@@ -558,7 +558,7 @@ extension VMDisplayQemuWindowController {
     @MainActor private func findWindow(for display: CSDisplay) -> VMDisplayQemuWindowController? {
         let id = display.monitorID
         let secondaryWindows: [VMDisplayWindowController]
-        if self.id == id {
+        if self is VMDisplayQemuMetalWindowController && self.id == id {
             return self
         }
         if let window = primaryWindow {
@@ -600,7 +600,7 @@ extension VMDisplayQemuWindowController {
     @MainActor private func findWindow(for serial: CSPort) -> VMDisplayQemuWindowController? {
         let id = configIdForSerial(serial)!
         let secondaryWindows: [VMDisplayWindowController]
-        if self.id == id {
+        if self is VMDisplayQemuTerminalWindowController && self.id == id {
             return self
         }
         if let window = primaryWindow {
