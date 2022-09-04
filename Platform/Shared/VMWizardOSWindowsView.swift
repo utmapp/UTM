@@ -42,10 +42,6 @@ struct VMWizardOSWindowsView: View {
                 if #available(iOS 15, macOS 12, *) {
                     if wizardState.windowsBootVhdx != nil {
                         useVhdx = true
-                    } else {
-                        #if arch(arm64)
-                        useVhdx = wizardState.useVirtualization
-                        #endif
                     }
                 }
             }
