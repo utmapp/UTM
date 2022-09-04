@@ -49,6 +49,7 @@ extension VMDisplayTerminal {
             terminalView.nativeBackgroundColor = NSColor(backgroundColor)
         }
         terminalView.getTerminal().resize(cols: windowConfig.columns, rows: windowConfig.rows)
+        terminalView.getTerminal().setCursorStyle(config.hasCursorBlink ? .blinkBlock : .steadyBlock)
         let size = window.frameRect(forContentRect: terminalView.getOptimalFrameSize()).size
         let frame = CGRect(origin: window.frame.origin, size: size)
         window.minSize = size

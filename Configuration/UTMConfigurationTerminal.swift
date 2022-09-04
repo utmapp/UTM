@@ -36,6 +36,9 @@ struct UTMConfigurationTerminal: Codable, Identifiable {
     /// Command to send when the console is resized.
     var resizeCommand: String?
     
+    /// Terminal has a blinking cursor.
+    var hasCursorBlink: Bool = true
+    
     let id = UUID()
     
     enum CodingKeys: String, CodingKey {
@@ -45,6 +48,7 @@ struct UTMConfigurationTerminal: Codable, Identifiable {
         case font = "Font"
         case fontSize = "FontSize"
         case resizeCommand = "ResizeCommand"
+        case hasCursorBlink = "CursorBlink"
     }
     
     init() {
@@ -58,6 +62,7 @@ struct UTMConfigurationTerminal: Codable, Identifiable {
         font = try values.decode(QEMUTerminalFont.self, forKey: .font)
         fontSize = try values.decode(Int.self, forKey: .fontSize)
         resizeCommand = try values.decodeIfPresent(String.self, forKey: .resizeCommand)
+        hasCursorBlink = try values.decodeIfPresent(Bool.self, forKey: .hasCursorBlink) ?? true
     }
     
     func encode(to encoder: Encoder) throws {
@@ -71,6 +76,7 @@ struct UTMConfigurationTerminal: Codable, Identifiable {
         try container.encode(font, forKey: .font)
         try container.encode(fontSize, forKey: .fontSize)
         try container.encodeIfPresent(resizeCommand, forKey: .resizeCommand)
+        try container.encode(hasCursorBlink, forKey: .hasCursorBlink)
     }
 }
 
@@ -88,6 +94,7 @@ extension UTMConfigurationTerminal {
             fontSize = fontSizeNum.intValue
         }
         resizeCommand = oldConfig.consoleResizeCommand
+        hasCursorBlink = oldConfig.consoleCursorBlink
     }
     
     #if os(macOS)
@@ -102,6 +109,7 @@ extension UTMConfigurationTerminal {
             fontSize = fontSizeNum.intValue
         }
         resizeCommand = oldConfig.consoleResizeCommand
+        hasCursorBlink = oldConfig.consoleCursorBlink
     }
     #endif
 }

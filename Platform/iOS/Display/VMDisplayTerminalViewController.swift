@@ -156,6 +156,7 @@ extension VMDisplayTerminalViewController {
             terminalView.nativeForegroundColor = UIColor(textColor)
             terminalView.nativeBackgroundColor = UIColor(backgroundColor)
         }
+        terminalView.getTerminal().setCursorStyle(style.hasCursorBlink ? .blinkBlock : .steadyBlock)
     }
 }
 

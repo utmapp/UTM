@@ -146,8 +146,9 @@ struct VMDisplayHostedView: UIViewControllerRepresentable {
             mvc.delegate = context.coordinator
             mvc.setDisplayScaling(state.displayScale, origin: state.displayOrigin)
             vc = mvc
-        case .serial(let serial, _):
-            vc = VMDisplayTerminalViewController(port: serial)
+        case .serial(let serial, let id):
+            let style = vm.qemuConfig.serials[id].terminal
+            vc = VMDisplayTerminalViewController(port: serial, style: style)
             vc.delegate = context.coordinator
         }
         context.coordinator.vmStateCancellable = session.$vmState.sink { vmState in

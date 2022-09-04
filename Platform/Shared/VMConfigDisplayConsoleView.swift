@@ -58,6 +58,7 @@ struct VMConfigDisplayConsoleView: View {
                     .frame(width: 50)
                     .multilineTextAlignment(.trailing)
             }
+            Toggle("Blinking cursor?", isOn: $config.hasCursorBlink)
         }
         
         DetailedSection("Resize Console Command", description: "Command to send when resizing the console. Placeholder $COLS is the number of columns and $ROWS is the number of rows.") {
