@@ -21,14 +21,17 @@ import SwiftUI
 private let kVMDefaultResizeCmd = "stty cols $COLS rows $ROWS\\n"
 
 protocol VMDisplayTerminal {
-    func setupTerminal(_ terminalView: TerminalView, using config: UTMConfigurationTerminal, for window: NSWindow)
+    var vm: UTMVirtualMachine! { get }
+    @MainActor func setupTerminal(_ terminalView: TerminalView, using config: UTMConfigurationTerminal, id: Int, for window: NSWindow)
     func resizeCommand(for terminal: TerminalView, using config: UTMConfigurationTerminal) -> String
+    func sizeChanged(id: Int, newCols: Int, newRows: Int)
 }
 
 extension VMDisplayTerminal {
-    func setupTerminal(_ terminalView: TerminalView, using config: UTMConfigurationTerminal, for window: NSWindow) {
+    @MainActor func setupTerminal(_ terminalView: TerminalView, using config: UTMConfigurationTerminal, id: Int, for window: NSWindow) {
         let fontSize = config.fontSize
         let fontName = config.font.rawValue
+        let windowConfig = vm.registryEntry.terminalSettings[id] ?? UTMRegistryEntry.Terminal()
         if fontName != "" {
             let orig = terminalView.font
             let new = NSFont(name: fontName, size: CGFloat(fontSize)) ?? orig
@@ -45,7 +48,7 @@ extension VMDisplayTerminal {
             terminalView.nativeForegroundColor = NSColor(textColor)
             terminalView.nativeBackgroundColor = NSColor(backgroundColor)
         }
-        terminalView.getTerminal().resize(cols: 80, rows: 24)
+        terminalView.getTerminal().resize(cols: windowConfig.columns, rows: windowConfig.rows)
         let size = window.frameRect(forContentRect: terminalView.getOptimalFrameSize()).size
         let frame = CGRect(origin: window.frame.origin, size: size)
         window.minSize = size
@@ -61,5 +64,14 @@ extension VMDisplayTerminal {
             .replacingOccurrences(of: "$ROWS", with: String(rows))
             .replacingOccurrences(of: "\\n", with: "\n")
         return cmd
+    }
+    
+    func sizeChanged(id: Int, newCols: Int, newRows: Int) {
+        Task { @MainActor in
+            let windowConfig = UTMRegistryEntry.Terminal(columns: newCols, rows: newRows)
+            if let vm = vm {
+                vm.registryEntry.terminalSettings[id] = windowConfig
+            }
+        }
     }
 }

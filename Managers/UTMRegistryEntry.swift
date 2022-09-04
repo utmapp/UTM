@@ -31,6 +31,8 @@ import Foundation
     
     @Published private var _windowSettings: [Int: Window]
     
+    @Published private var _terminalSettings: [Int: Terminal]
+    
     @Published private var _hasMigratedConfig: Bool
     
     private enum CodingKeys: String, CodingKey {
@@ -41,6 +43,7 @@ import Foundation
         case externalDrives = "ExternalDrives"
         case sharedDirectories = "SharedDirectories"
         case windowSettings = "WindowSettings"
+        case terminalSettings = "TerminalSettings"
         case hasMigratedConfig = "MigratedConfig"
     }
     
@@ -59,6 +62,7 @@ import Foundation
         _externalDrives = [:]
         _sharedDirectories = []
         _windowSettings = [:]
+        _terminalSettings = [:]
         _hasMigratedConfig = false
     }
     
@@ -71,6 +75,7 @@ import Foundation
         _externalDrives = try container.decode([String: File].self, forKey: .externalDrives)
         _sharedDirectories = try container.decode([File].self, forKey: .sharedDirectories)
         _windowSettings = try container.decode([Int: Window].self, forKey: .windowSettings)
+        _terminalSettings = try container.decodeIfPresent([Int: Terminal].self, forKey: .terminalSettings) ?? [:]
         _hasMigratedConfig = try container.decodeIfPresent(Bool.self, forKey: .hasMigratedConfig) ?? false
     }
     
@@ -83,6 +88,7 @@ import Foundation
         try container.encode(_externalDrives, forKey: .externalDrives)
         try container.encode(_sharedDirectories, forKey: .sharedDirectories)
         try container.encode(_windowSettings, forKey: .windowSettings)
+        try container.encode(_terminalSettings, forKey: .terminalSettings)
         if _hasMigratedConfig {
             try container.encode(_hasMigratedConfig, forKey: .hasMigratedConfig)
         }
@@ -169,6 +175,16 @@ extension UTMRegistryEntryDecodable {
         }
     }
     
+    var terminalSettings: [Int: Terminal] {
+        get {
+            _terminalSettings
+        }
+        
+        set {
+            _terminalSettings = newValue
+        }
+    }
+    
     var hasMigratedConfig: Bool {
         get {
             _hasMigratedConfig
@@ -210,6 +226,7 @@ extension UTMRegistryEntryDecodable {
         externalDrives = other.externalDrives
         sharedDirectories = other.sharedDirectories
         windowSettings = other.windowSettings
+        terminalSettings = other.terminalSettings
         hasMigratedConfig = other.hasMigratedConfig
     }
 }
@@ -447,6 +464,34 @@ extension UTMRegistryEntry {
             try container.encode(isToolbarVisible, forKey: .isToolbarVisible)
             try container.encode(isKeyboardVisible, forKey: .isKeyboardVisible)
             try container.encode(isDisplayZoomLocked, forKey: .isDisplayZoomLocked)
+        }
+    }
+    
+    struct Terminal: Codable, Equatable {
+        var columns: Int
+        
+        var rows: Int
+        
+        private enum CodingKeys: String, CodingKey {
+            case columns = "Columns"
+            case rows = "Rows"
+        }
+        
+        init(columns: Int = 80, rows: Int = 24) {
+            self.columns = columns
+            self.rows = rows
+        }
+        
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            columns = try container.decode(Int.self, forKey: .columns)
+            rows = try container.decode(Int.self, forKey: .rows)
+        }
+        
+        func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(columns, forKey: .columns)
+            try container.encode(rows, forKey: .rows)
         }
     }
 }

@@ -49,7 +49,7 @@ class VMDisplayQemuTerminalWindowController: VMDisplayQemuWindowController, VMDi
     override func enterLive() {
         super.enterLive()
         captureMouseToolbarItem.isEnabled = false
-        setupTerminal(terminalView, using: serialConfig!.terminal!, for: window!)
+        setupTerminal(terminalView, using: serialConfig!.terminal!, id: id, for: window!)
     }
     
     override func enterSuspended(isBusy busy: Bool) {
@@ -90,6 +90,7 @@ class VMDisplayQemuTerminalWindowController: VMDisplayQemuWindowController, VMDi
 
 extension VMDisplayQemuTerminalWindowController: TerminalViewDelegate {
     func sizeChanged(source: TerminalView, newCols: Int, newRows: Int) {
+        sizeChanged(id: id, newCols: newCols, newRows: newRows)
     }
     
     func setTerminalTitle(source: TerminalView, title: String) {

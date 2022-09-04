@@ -58,7 +58,7 @@ class VMDisplayAppleTerminalWindowController: VMDisplayAppleWindowController, VM
     }
     
     override func updateWindowFrame() {
-        setupTerminal(terminalView, using: serialConfig.terminal!, for: window!)
+        setupTerminal(terminalView, using: serialConfig.terminal!, id: index, for: window!)
         super.updateWindowFrame()
     }
     
@@ -77,6 +77,7 @@ class VMDisplayAppleTerminalWindowController: VMDisplayAppleWindowController, VM
 // MARK: - Terminal view delegate
 extension VMDisplayAppleTerminalWindowController: TerminalViewDelegate, UTMSerialPortDelegate {
     func sizeChanged(source: TerminalView, newCols: Int, newRows: Int) {
+        sizeChanged(id: index, newCols: newCols, newRows: newRows)
     }
     
     func setTerminalTitle(source: TerminalView, title: String) {
