@@ -63,6 +63,11 @@ NSString *const kSuspendSnapshotName = @"suspend";
     }
 }
 
+- (void)setIsGuestToolsInstallRequested:(BOOL)isGuestToolsInstallRequested {
+    [self propertyWillChange];
+    _isGuestToolsInstallRequested = isGuestToolsInstallRequested;
+}
+
 - (instancetype)initWithConfiguration:(UTMConfigurationWrapper *)configuration packageURL:(NSURL *)packageURL {
     self = [super initWithConfiguration:configuration packageURL:packageURL];
     if (self) {

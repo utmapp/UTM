@@ -129,5 +129,10 @@ struct VMContextMenuModifier: ViewModifier {
                 showSharePopup.toggle()
             }
         })
+        .onChange(of: (vm as? UTMQemuVirtualMachine)?.isGuestToolsInstallRequested) { newValue in
+            if newValue == true {
+                data.downloadSupportTools(for: vm as! UTMQemuVirtualMachine)
+            }
+        }
     }
 }

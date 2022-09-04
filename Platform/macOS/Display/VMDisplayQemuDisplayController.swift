@@ -102,6 +102,13 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
             item.title = NSLocalizedString("No drives connected.", comment: "VMDisplayWindowController")
             item.isEnabled = false
             menu.addItem(item)
+        } else {
+            let item = NSMenuItem()
+            item.title = NSLocalizedString("Install Windows Guest Tools…", comment: "VMDisplayWindowController")
+            item.isEnabled = !qemuVM.isGuestToolsInstallRequested
+            item.target = self
+            item.action = #selector(installWindowsGuestTools)
+            menu.addItem(item)
         }
         for i in drives.indices {
             let drive = drives[i]
@@ -192,6 +199,10 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
                                                 drive.imageType.prettyValue,
                                                 drive.interface.prettyValue,
                                                 imageURL?.lastPathComponent ?? NSLocalizedString("none", comment: "VMDisplayQemuDisplayController"))
+    }
+    
+    @MainActor private func installWindowsGuestTools(sender: AnyObject) {
+        qemuVM.isGuestToolsInstallRequested = true
     }
 }
 

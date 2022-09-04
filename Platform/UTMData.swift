@@ -669,6 +669,20 @@ class UTMData: ObservableObject {
         }
     }
     
+    @MainActor func downloadSupportTools(for vm: UTMQemuVirtualMachine) {
+        let task = UTMDownloadSupportToolsTask(for: vm)
+        listAdd(pendingVM: task.pendingVM)
+        Task {
+            do {
+                _ = try await task.download()
+            } catch {
+                showErrorAlert(message: error.localizedDescription)
+            }
+            vm.isGuestToolsInstallRequested = false
+            listRemove(pendingVM: task.pendingVM)
+        }
+    }
+    
     /// Cancel a download and discard any data
     /// - Parameter pendingVM: Pending VM to cancel
     func cancelDownload(for pendingVM: UTMPendingVirtualMachine) {

@@ -23,6 +23,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak, nullable) id<UTMSpiceIODelegate> ioDelegate;
 
+/// Set to true to request guest tools install.
+///
+/// This property is observable and must only be accessed on the main thread.
+@property (nonatomic) BOOL isGuestToolsInstallRequested;
+
 @end
 
 NS_ASSUME_NONNULL_END
