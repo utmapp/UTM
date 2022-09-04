@@ -486,8 +486,8 @@ class UTMData: ObservableObject {
         await MainActor.run {
             newVM.isShortcut = true
         }
-        try await newVM.accessShortcut()
         try await newVM.updateRegistryFromConfig()
+        try await newVM.accessShortcut()
         
         let oldSelected = await selectedVM
         let index = try await delete(vm: vm, alsoRegistry: false)
