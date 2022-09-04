@@ -672,8 +672,8 @@ class UTMData: ObservableObject {
     @MainActor func mountSupportTools(for vm: UTMQemuVirtualMachine) async throws {
         let task = UTMDownloadSupportToolsTask(for: vm)
         if task.hasExistingSupportTools {
-            _ = try await task.mountTools()
             vm.isGuestToolsInstallRequested = false
+            _ = try await task.mountTools()
         } else {
             listAdd(pendingVM: task.pendingVM)
             Task {
