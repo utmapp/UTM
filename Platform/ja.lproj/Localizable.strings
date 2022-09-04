@@ -211,7 +211,7 @@
 
 // VMWindowView.swift
 "Resume" = "再開";
-"Are you sure you want to stop this VM and exit? Any unsaved changes will be lost." = "この仮想マシンを停止して終了してもよろしいですか? 保存されていない変更内容は失われます。";
+"Are you sure you want to stop this VM and exit? Any unsaved changes will be lost." = "この仮想マシンを停止し、終了してもよろしいですか? 保存されていない変更内容は失われます。";
 "No" = "いいえ";
 "Yes" = "はい";
 "Are you sure you want to exit UTM?" = "UTMを終了してもよろしいですか?";
@@ -457,7 +457,7 @@
 
 // VMConfigInputView.swift
 "If enabled, the default input devices will be emulated on the USB bus." = "有効にすると、デフォルトの入力デバイスがUSBバス上でエミュレートされます。";
-"USB Support" = "USB対応";
+"USB Support" = "対応USB";
 "USB Sharing" = "USB共有";
 "USB sharing not supported in this build of UTM." = "このビルドのUTMではUSB共有に対応していません。";
 "Share USB devices from host" = "ホストからUSBデバイスを共有";
@@ -569,6 +569,8 @@
 "Boot into recovery mode." = "復旧モードで起動します。";
 "Run without saving changes" = "変更内容を保存せずに実行";
 "Run the VM in the foreground, without saving data changes to disk." = "データの変更内容をディスクに保存せずに、仮想マシンをフォアグラウンドで実行します。";
+"Install Windows Guest Tools…" = "Windowsゲストツールをインストール…";
+"Download and mount the guest tools for Windows." = "Windows用ゲストツールをダウンロードし、マウントします。";
 "Share…" = "共有…";
 "Share a copy of this VM and all its data." = "この仮想マシン、およびそのデータのコピーをすべて共有します。";
 "Move…" = "移動…";
@@ -594,7 +596,6 @@
 // VMNavigationListView.swift
 "Pending" = "保留中";
 "New VM" = "新規仮想マシン";
-
 
 // VMPlaceholderView.swift
 "Welcome to UTM" = "ようこそUTMへ";
@@ -670,12 +671,13 @@
 
 // VMWizardOSWindowsView.swift
 "Import VHDX Image" = "VHDXイメージを読み込む";
-"Download Windows 11 for ARM64 Preview VHDX" = "ARM64用Windows 11プレビューのVHDXをダウンロード";
+"Download Windows 11 for ARM64 Preview VHDX" = "ARM64用Windows 11プレビューVHDXをダウンロード";
 "Generate Windows Installer ISO" = "WindowsインストーラISOを生成";
 "Image File Type" = "イメージファイルの種類";
 "Some older systems do not support UEFI boot, such as Windows 7 and below." = "Windows 7以前など、一部の古いシステムはUEFI起動に対応していません。";
 "Boot VHDX Image" = "起動VHDXイメージ";
-"Hint: For the best Windows experience, make sure to download and install the latest [SPICE tools and QEMU drivers](https://mac.getutm.app/support/)." = "ヒント: 快適にWindowsを使用できるように、最新の[SPICEツール、およびQEMUドライバ](https://mac.getutm.app/support/)がダウンロードされインストールされていることを確認してください。";
+"Download and mount the guest support package for Windows. This is required for some features including dynamic resolution and clipboard sharing." = "Windows用ゲストサポートパッケージをダウンロードし、マウントします。動的解像度やクリップボード共有など、一部の機能を使用する場合に必要です。";
+"Install drivers and SPICE tools" = "ドライバとSPICEツールをインストール";
 
 // VMWizardSharingView.swift
 "Shared Directory Path" = "共有ディレクトリパス";
@@ -720,6 +722,11 @@
 // UTMDownloadVMTask.swift
 "There is no UTM file in the downloaded ZIP archive." = "ダウンロードされたZIPアーカイブ内にUTMファイルがありません。";
 "Failed to parse the downloaded VM." = "ダウンロードされた仮想マシンのパースに失敗しました。";
+
+// UTMDownloadSupportToolsTask.swift
+"Windows Guest Support Tools" = "Windowsゲストサポートツール";
+"No empty removable drive found. Make sure you have at least one removable drive that is not in use." = "空のリムーバブルドライブが見つかりません。使用していないリムーバブルドライブが少なくとも1台あることを確認してください。";
+"The guest support tools have already been mounted." = "ゲストサポートツールはすでにマウントされています。";
 
 // UTMPendingVMView.swift
 "Extracting…" = "展開中…";
