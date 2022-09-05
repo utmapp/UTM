@@ -15,7 +15,7 @@
 "Bkx-Ph-j0D.paletteLabel" = "停止";
 
 /* Class = "NSToolbarItem"; toolTip = "Shuts down and stops the VM"; ObjectID = "Bkx-Ph-j0D"; */
-"Bkx-Ph-j0D.toolTip" = "仮想マシンをシステム終了して停止します";
+"Bkx-Ph-j0D.toolTip" = "仮想マシンをシステム終了し、停止します";
 
 /* Class = "NSToolbarItem"; label = "Toolbar Item"; ObjectID = "C8Y-BQ-Y6m"; */
 "C8Y-BQ-Y6m.label" = "ツールバー項目";

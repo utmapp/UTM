@@ -258,8 +258,8 @@
 "⌃+⌥" = "⌃+⌥";
 "Captured mouse" = "マウスがキャプチャされました";
 "To release the mouse cursor, press %@ at the same time." = "マウスカーソルを解放するには、%@を同時に押します。";
-"⌘+⌥ (Cmd+Opt)" = "⌘+⌥（command+option）";
-"⌃+⌥ (Ctrl+Opt)" = "⌃+⌥（control+option）";
+"⌘+⌥ (Cmd+Opt)" = "⌘+⌥（Command+Option）";
+"⌃+⌥ (Ctrl+Opt)" = "⌃+⌥（Control+Option）";
 
 // Display/VMMetalView.swift
 "Capture Input" = "入力をキャプチャ";
@@ -276,8 +276,8 @@
 "Do not save VM screenshot to disk" = "仮想マシンのスクリーンショットをディスクに保存しない";
 "If enabled, any existing screenshot will be deleted the next time the VM is started." = "有効にすると、次回仮想マシンを開始したときに既存のスクリーンショットが削除されます。";
 "Hold Control (⌃) for right click" = "control（⌃）を押している間右クリック";
-"Use Command+Option (⌘+⌥) for input capture/release" = "入力のキャプチャ/解放にcommand+option（⌘+⌥）を使用";
-"If disabled, the default combination Control+Option (⌃+⌥) will be used." = "無効にすると、デフォルトのコンビネーションcontrol+option（⌃+⌥）が使用されます。";
+"Use Command+Option (⌘+⌥) for input capture/release" = "入力のキャプチャ/解放にCommand+Option（⌘+⌥）を使用";
+"If disabled, the default combination Control+Option (⌃+⌥) will be used." = "無効にすると、デフォルトのコンビネーションControl+Option（⌃+⌥）が使用されます。";
 "Caps Lock (⇪) is treated as a key" = "Caps Lock（⇪）をキーとして扱う";
 "If enabled, caps lock will be handled like other keys. If disabled, it is treated as a toggle that is synchronized with the host." = "有効にすると、Caps Lockがほかのキーと同様に処理されます。無効にすると、ホストと同期するトグルとして扱われます。";
 "Invert scrolling" = "スクロールを反転";
@@ -401,6 +401,9 @@
 // FileBrowseField.swift
 "Path" = "パス";
 
+// SizeTextField.swift
+"The amount of storage to allocate for this image. Ignored if importing an image. If this is a raw image, then an empty file of this size will be stored with the VM. Otherwise, the disk image will dynamically expand up to this size." = "このイメージに割り当てるストレージ領域です。イメージを読み込む場合は無視されます。生イメージの場合、このサイズの空のファイルが仮想マシンに保存されます。そうでない場合、ディスクイメージはこのサイズまで動的に拡張されます。";
+
 // VMCardView.swift
 "Run" = "実行";
 
@@ -430,13 +433,13 @@
 "Background Color" = "背景色";
 "Font" = "フォント";
 "Font Size" = "フォントサイズ";
+"Blinking cursor?" = "点滅カーソル";
 "Resize Console Command" = "コンソールサイズ変更コマンド";
 "Command to send when resizing the console. Placeholder $COLS is the number of columns and $ROWS is the number of rows." = "コンソールのサイズを変更するときに送信するコマンドです。$COLSは列数、$ROWSは行数に置き換えられます。";
 
 // VMConfigDriveCreateView.swift
 "If checked, no drive image will be stored with the VM. Instead you can mount/unmount image while the VM is running." = "チェックを入れると、ドライブイメージは仮想マシンに保存されなくなります。その代わり、仮想マシン実行中にイメージのマウント/マウント解除が可能になります。";
 "Hardware interface on the guest used to mount this image. Different operating systems support different interfaces. The default will be the most common interface." = "このイメージをマウントするために使用されるゲスト上のハードウェアインターフェイスです。オペレーティングシステムによって対応しているインターフェイスは異なります。デフォルトでは最も一般的なインターフェイスが使用されます。";
-"The amount of storage to allocate for this image. Ignored if importing an image. If this is a raw image, then an empty file of this size will be stored with the VM. Otherwise, the disk image will dynamically expand up to this size." = "このイメージに割り当てるストレージ領域です。イメージを読み込む場合は無視されます。生イメージの場合、このサイズの空のファイルが仮想マシンに保存されます。そうでない場合は、ディスクイメージはこのサイズまで動的に拡張されます。";
 "Raw Image" = "生イメージ";
 "Advanced. If checked, a raw disk image is used. Raw disk image does not support snapshots and will not dynamically expand in size." = "詳細オプションです。チェックを入れると、生ディスクイメージが使用されます。生ディスクイメージはスナップショットに対応しておらず、サイズを動的に拡張することはありません。";
 
@@ -444,11 +447,19 @@
 "Removable Drive" = "リムーバブルドライブ";
 "(new)" = "（新規）";
 "Image Type" = "イメージの種類";
-"Reclaim Space" = "領域を解放";
-"Reclaim" = "解放";
-"Reclaim and Compress" = "解放して圧縮";
-"Reclaim disk space by re-converting the disk image." = "ディスクイメージを再変換することでディスク領域を解放します。";
-"Would you like to re-convert this disk image to reclaim unused space? Note this will require enough temporary space to perform the conversion. You are strongly encouraged to back-up this VM before proceeding." = "このディスクイメージを再変換して未使用の領域を解放しますか? 変換を行うには、一時的に十分な空き領域が必要になることに注意してください。この作業を行う前に、仮想マシンをバックアップしておくことを強く推奨します。";
+"Reclaim Space" = "領域を回収";
+"Reclaim disk space by re-converting the disk image." = "ディスクイメージを再変換することでディスク領域を回収します。";
+"Compress" = "圧縮";
+"Compress by re-converting the disk image and compressing the data." = "ディスクイメージを再変換し、データを圧縮することで圧縮します。";
+"Resize…" = "サイズを変更…";
+"Increase the size of the disk image." = "ディスクイメージのサイズを大きくします。";
+"Would you like to re-convert this disk image to reclaim unused space? Note this will require enough temporary space to perform the conversion. You are strongly encouraged to back-up this VM before proceeding." = "このディスクイメージを再変換して未使用の領域を回収しますか? 変換を行うには、一時的に十分な空き領域が必要になることに注意してください。この作業を行う前に、仮想マシンをバックアップしておくことを強く推奨します。";
+"Reclaim" = "回収";
+"Would you like to re-convert this disk image to reclaim unused space and apply compression? Note this will require enough temporary space to perform the conversion. Compression only applies to existing data and new data will still be written uncompressed. You are strongly encouraged to back-up this VM before proceeding." = "このディスクイメージを再変換して未使用の領域を回収し、圧縮を適用しますか? 変換を行うには、一時的に十分な空き領域が必要になることに注意してください。圧縮は既存のデータにのみ適用され、新しいデータは圧縮されずに書き込まれます。この作業を行う前に、仮想マシンをバックアップしておくことを強く推奨します。";
+"Resizing is experimental and could result in data loss. You are strongly encouraged to back-up this VM before proceeding. Would you like to resize to %lld GiB?" = "サイズ変更は実験的な機能であり、データが失われる可能性があります。この作業を行う前に、仮想マシンをバックアップしておくことを強く推奨します。%lld GiBにサイズを変更しますか?";
+"Resize" = "サイズを変更";
+"Minimum size: %@" = "最小サイズ: %@";
+"Calculating current size..." = "現在のサイズを計算中…";
 
 // VMConfigInfoView.swift
 "Generic" = "一般";
@@ -503,9 +514,9 @@
 "TPM Device" = "TPMデバイス";
 "This is required to boot Windows 11." = "Windows 11の起動に必要です。";
 "Use Hypervisor" = "ハイパーバイザを使用";
-"Only available if host architecture matches the target. Otherwise, TCG emulation is used." = "ホストアーキテクチャがターゲットと一致する場合のみ利用できます。そうでない場合は、TCGエミュレーションが使用されます。";
+"Only available if host architecture matches the target. Otherwise, TCG emulation is used." = "ホストアーキテクチャがターゲットと一致する場合のみ利用できます。そうでない場合、TCGエミュレーションが使用されます。";
 "Use local time for base clock" = "ベースクロックにローカル時間を使用";
-"If checked, use local time for RTC which is required for Windows. Otherwise, use UTC clock." = "チェックを入れると、Windowsで必要とされるRTCにローカル時間を使用します。そうでない場合は、UTCクロックを使用します。";
+"If checked, use local time for RTC which is required for Windows. Otherwise, use UTC clock." = "チェックを入れると、Windowsで必要とされるRTCにローカル時間を使用します。そうでない場合、UTCクロックを使用します。";
 "Force PS/2 controller" = "PS/2コントローラを強制";
 "Instantiate PS/2 controller even when USB input is supported. Required for older Windows." = "USB入力に対応している場合でも、PS/2コントローラをインスタンス化します。古いWindowsで必要です。";
 "QEMU Machine Properties" = "QEMUマシンプロパティ";
@@ -534,9 +545,9 @@
 // VMConfigSystemView.swift
 "CPU" = "CPU";
 "Force Enable CPU Flags" = "CPUフラグを強制的に有効にする";
-"If checked, the CPU flag will be enabled. Otherwise, the default value will be used." = "チェックを入れると、CPUフラグが有効になります。そうでない場合は、デフォルトの値が使用されます。";
+"If checked, the CPU flag will be enabled. Otherwise, the default value will be used." = "チェックを入れると、CPUフラグが有効になります。そうでない場合、デフォルトの値が使用されます。";
 "Force Disable CPU Flags" = "CPUフラグを強制的に無効にする";
-"If checked, the CPU flag will be disabled. Otherwise, the default value will be used." = "チェックを入れると、CPUフラグが無効になります。そうでない場合は、デフォルトの値が使用されます。";
+"If checked, the CPU flag will be disabled. Otherwise, the default value will be used." = "チェックを入れると、CPUフラグが無効になります。そうでない場合、デフォルトの値が使用されます。";
 "Force multicore may improve speed of emulation but also might result in unstable and incorrect emulation." = "マルチコアを強制すると、エミュレーションの速度は向上しますが、エミュレーションが不安定になったり、正しく実行されなかったりする可能性があります。";
 "Cores" = "コア";
 "Force Multicore" = "マルチコアを強制";
@@ -637,7 +648,7 @@
 "Apple Virtualization is experimental and only for advanced use cases. Leave unchecked to use QEMU, which is recommended." = "Apple仮想化は実験的な機能であり、高度なユースケースにのみ使用します。推奨されるQEMUを使用するには、チェックを外したままにします。";
 "Use Apple Virtualization" = "Apple仮想化を使用";
 "Boot from kernel image" = "カーネルイメージから起動";
-"If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO." = "有効にすると、生のカーネルイメージと初期RAMディスクから直接起動します。そうでない場合は、対応したISOから起動します。";
+"If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO." = "有効にすると、生のカーネルイメージと初期RAMディスクから直接起動します。そうでない場合、対応したISOから起動します。";
 "Download Ubuntu Server for ARM" = "ARM用Ubuntu Serverをダウンロード";
 "Download Ubuntu Desktop" = "Ubuntu Desktopをダウンロード";
 "Boot Image Type" = "起動イメージの種類";
@@ -653,7 +664,7 @@
 "Boot ISO Image" = "起動ISOイメージ";
 
 // VMWizardOSMacView.swift
-"To install macOS, you need to download a recovery IPSW. If you do not select an existing IPSW, the latest macOS IPSW will be downloaded from Apple." = "macOSをインストールするには、復元IPSWをダウンロードする必要があります。既存のIPSWを選択しない場合は、Appleから最新のmacOSのIPSWがダウンロードされます。";
+"To install macOS, you need to download a recovery IPSW. If you do not select an existing IPSW, the latest macOS IPSW will be downloaded from Apple." = "macOSをインストールするには、復元IPSWをダウンロードする必要があります。既存のIPSWを選択しない場合、Appleから最新のmacOSのIPSWがダウンロードされます。";
 "Drag and drop IPSW file here" = "ここにIPSWファイルをドラッグアンドドロップ";
 "Import IPSW" = "IPSWを読み込む";
 "macOS guests are only supported on ARM64 devices." = "macOSゲストはARM64デバイスにのみ対応しています。";
@@ -701,6 +712,7 @@
 "Failed to get latest macOS version from Apple." = "Appleから最新のmacOSバージョンの取得に失敗しました。";
 "macOS is not supported with QEMU." = "macOSはQEMUには対応していません。";
 "Unavailable for this platform." = "このプラットフォームでは利用できません。";
+"The selected boot image contains the word '%@' but the guest architecture is '%@'. Please ensure you have selected an image that is compatible with '%@'." = "選択された起動イメージには単語“%1$@”が含まれていますが、ゲストアーキテクチャは“%2$@”です。“%3$@”と互換性のあるイメージが選択されていることを確認してください。";
 
 // VMWizardSummaryView.swift
 "Default Cores" = "デフォルトのコア数";
