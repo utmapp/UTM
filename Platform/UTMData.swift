@@ -716,6 +716,15 @@ class UTMData: ObservableObject {
             throw error
         }
     }
+    
+    func qcow2DriveSize(for driveUrl: URL) async -> Int64 {
+        return (try? await UTMQemuImage.size(image: driveUrl)) ?? 0
+    }
+
+    func resizeQcow2Drive(for driveUrl: URL, sizeInMib: Int) async throws {
+        let bytesinMib = 1048576
+        try await UTMQemuImage.resize(image: driveUrl, size: UInt64(sizeInMib * bytesinMib))
+    }
     #endif
     
     // MARK: - UUID migration
