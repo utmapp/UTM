@@ -17,11 +17,7 @@
 import SwiftUI
 
 struct VMConfigDriveCreateView: View {
-    private let mibToGib = 1024
-    let minSizeMib = 1
-    
     @Binding var config: UTMQemuConfigurationDrive
-    @State private var isGiB: Bool = true
     
     var body: some View {
         Form {
@@ -36,48 +32,11 @@ struct VMConfigDriveCreateView: View {
             VMConfigConstantPicker("Interface", selection: $config.interface)
                 .help("Hardware interface on the guest used to mount this image. Different operating systems support different interfaces. The default will be the most common interface.")
             if !config.isExternal {
-                HStack {
-                    NumberTextField("Size", number: Binding<Int>(get: {
-                        convertToDisplay(fromSizeMib: config.sizeMib)
-                    }, set: {
-                        config.sizeMib = convertToMib(fromSize: $0)
-                    }), onEditingChanged: validateSize)
-                        .multilineTextAlignment(.trailing)
-                        .help("The amount of storage to allocate for this image. Ignored if importing an image. If this is a raw image, then an empty file of this size will be stored with the VM. Otherwise, the disk image will dynamically expand up to this size.")
-                    Button(action: { isGiB.toggle() }, label: {
-                        Text(isGiB ? "GB" : "MB")
-                            .foregroundColor(.blue)
-                    }).buttonStyle(.plain)
-                }
+                SizeTextField($config.sizeMib)
                 Toggle(isOn: $config.isRawImage) {
                     Text("Raw Image")
                 }.help("Advanced. If checked, a raw disk image is used. Raw disk image does not support snapshots and will not dynamically expand in size.")
             }
-        }
-    }
-    
-    private func validateSize(editing: Bool) {
-        guard !editing else {
-            return
-        }
-        if config.sizeMib < minSizeMib {
-            config.sizeMib = minSizeMib
-        }
-    }
-    
-    private func convertToMib(fromSize size: Int) -> Int {
-        if isGiB {
-            return size * mibToGib
-        } else {
-            return size
-        }
-    }
-    
-    private func convertToDisplay(fromSizeMib sizeMib: Int) -> Int {
-        if isGiB {
-            return sizeMib / mibToGib
-        } else {
-            return sizeMib
         }
     }
 }

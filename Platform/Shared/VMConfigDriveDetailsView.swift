@@ -17,17 +17,32 @@
 import SwiftUI
 
 private let bytesInMib: Int64 = 1024 * 1024
+private let mibInGib: Int = 1024
 
 struct VMConfigDriveDetailsView: View {
+    private enum ConfirmItem: Identifiable {
+        case reclaim(URL)
+        case compress(URL)
+        case resize(URL)
+        
+        var id: Int {
+            switch self {
+            case .reclaim(_): return 1
+            case .compress(_): return 2
+            case .resize(_): return 3
+            }
+        }
+    }
+    
     @Binding var config: UTMQemuConfigurationDrive
     let onDelete: (() -> Void)?
     
     @EnvironmentObject private var data: UTMData
     @State private var isImporterPresented: Bool = false
     
-    let helpMessage: LocalizedStringKey = "Reclaim disk space by re-converting the disk image."
-    let confirmMessage: LocalizedStringKey = "Would you like to re-convert this disk image to reclaim unused space? Note this will require enough temporary space to perform the conversion. You are strongly encouraged to back-up this VM before proceeding."
-    @State private var isConfirmConvertShown: Bool = false
+    @State private var confirmAlert: ConfirmItem?
+    @State private var isResizePopoverShown: Bool = false
+    @State private var proposedSizeMib: Int = 0
     
     var body: some View {
         Form {
@@ -78,23 +93,39 @@ struct VMConfigDriveDetailsView: View {
                 }
                 
                 if let imageUrl = config.imageURL, FileManager.default.fileExists(atPath: imageUrl.path) {
-                    if #available(macOS 12, *) {
-                        Button(action: { isConfirmConvertShown.toggle() }) {
-                            Label("Reclaim Space", systemImage: "arrow.3.trianglepath")
-                        }.help(helpMessage)
-                        .alert(confirmMessage, isPresented: $isConfirmConvertShown) {
-                            Button("Cancel", role: .cancel) {}
-                            Button("Reclaim", role: .destructive) { reclaimSpace(for: imageUrl, withCompression: false) }
-                            Button("Reclaim and Compress", role: .destructive) { reclaimSpace(for: imageUrl, withCompression: true) }
-                        }
-                    } else {
-                        Button(action: { isConfirmConvertShown.toggle() }) {
-                            Label("Reclaim Space", systemImage: "arrow.3.trianglepath")
-                        }.help(helpMessage)
-                        .alert(isPresented: $isConfirmConvertShown) {
-                            Alert(title: Text(confirmMessage), primaryButton: .cancel(), secondaryButton: .destructive(Text("Reclaim")) { reclaimSpace(for: imageUrl, withCompression: false) })
-                        }
+                    Button {
+                        confirmAlert = .reclaim(imageUrl)
+                    } label: {
+                        Label("Reclaim Space", systemImage: "arrow.3.trianglepath")
+                    }.help("Reclaim disk space by re-converting the disk image.")
+                    
+                    Button {
+                        confirmAlert = .compress(imageUrl)
+                    } label: {
+                        Label("Compress", systemImage: "arrow.right.and.line.vertical.and.arrow.left")
+                    }.help("Compress by re-converting the disk image and compressing the data.")
+                    
+                    Button {
+                        isResizePopoverShown.toggle()
+                    } label: {
+                        Label("Resize…", systemImage: "arrow.left.and.line.vertical.and.arrow.right")
+                    }.help("Increase the size of the disk image.")
+                    .popover(isPresented: $isResizePopoverShown) {
+                        ResizePopoverView(imageURL: imageUrl, proposedSizeMib: $proposedSizeMib) {
+                            confirmAlert = .resize(imageUrl)
+                        }.padding()
                     }
+                }
+            }.alert(item: $confirmAlert) { item in
+                switch item {
+                case .reclaim(let imageURL):
+                    return Alert(title: Text("Would you like to re-convert this disk image to reclaim unused space? Note this will require enough temporary space to perform the conversion. You are strongly encouraged to back-up this VM before proceeding."), primaryButton: .cancel(), secondaryButton: .destructive(Text("Reclaim")) { reclaimSpace(for: imageURL, withCompression: false) })
+                case .compress(let imageURL):
+                    return Alert(title: Text("Would you like to re-convert this disk image to reclaim unused space and apply compression? Note this will require enough temporary space to perform the conversion. Compression only applies to existing data and new data will still be written uncompressed. You are strongly encouraged to back-up this VM before proceeding."), primaryButton: .cancel(), secondaryButton: .destructive(Text("Reclaim")) { reclaimSpace(for: imageURL, withCompression: false) })
+                case .resize(let imageURL):
+                    return Alert(title: Text("Resizing is experimental and could result in data loss. You are strongly encouraged to back-up this VM before proceeding. Would you like to resize to \(proposedSizeMib / mibInGib) GiB?"), primaryButton: .cancel(), secondaryButton: .destructive(Text("Resize")) {
+                        resizeDrive(for: imageURL, sizeInMib: proposedSizeMib)
+                    })
                 }
             }
             #endif
@@ -107,5 +138,60 @@ struct VMConfigDriveDetailsView: View {
             try await data.reclaimSpace(for: driveUrl, withCompression: isCompressed)
         }
     }
+    
+    private func resizeDrive(for driveUrl: URL, sizeInMib: Int) {
+        data.busyWorkAsync {
+            try await data.resizeQcow2Drive(for: driveUrl, sizeInMib: sizeInMib)
+        }
+    }
     #endif
 }
+
+#if os(macOS)
+private struct ResizePopoverView: View {
+    let imageURL: URL
+    @Binding var proposedSizeMib: Int
+    let onConfirm: () -> Void
+    @EnvironmentObject private var data: UTMData
+    
+    @State private var currentSize: Int64?
+    
+    @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
+    
+    private var sizeString: String? {
+        if let currentSize = currentSize {
+            return ByteCountFormatter.string(fromByteCount: currentSize, countStyle: .file)
+        } else {
+            return nil
+        }
+    }
+    
+    private var minSizeMib: Int {
+        Int((currentSize! + bytesInMib - 1) / bytesInMib)
+    }
+    
+    var body: some View {
+        VStack {
+            if let sizeString = sizeString {
+                Text("Minimum size: \(sizeString)")
+                Form {
+                    SizeTextField($proposedSizeMib, minSizeMib: minSizeMib)
+                    Button("Resize") {
+                        if proposedSizeMib > minSizeMib {
+                            onConfirm()
+                        }
+                        presentationMode.wrappedValue.dismiss()
+                    }
+                }
+            } else {
+                ProgressView("Calculating current size...")
+            }
+        }.onAppear {
+            Task { @MainActor in
+                currentSize = await data.qcow2DriveSize(for: imageURL)
+                proposedSizeMib = minSizeMib
+            }
+        }
+    }
+}
+#endif
