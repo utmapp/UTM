@@ -102,13 +102,13 @@ struct VMConfigDriveDetailsView: View {
                     Button {
                         confirmAlert = .compress(imageUrl)
                     } label: {
-                        Label("Compress", systemImage: "arrow.right.and.line.vertical.and.arrow.left")
+                        Label("Compress", systemImage: "arrowtriangle.right.and.line.vertical.and.arrowtriangle.left")
                     }.help("Compress by re-converting the disk image and compressing the data.")
                     
                     Button {
                         isResizePopoverShown.toggle()
                     } label: {
-                        Label("Resize…", systemImage: "arrow.left.and.line.vertical.and.arrow.right")
+                        Label("Resize…", systemImage: "arrowtriangle.left.and.line.vertical.and.arrowtriangle.right")
                     }.help("Increase the size of the disk image.")
                     .popover(isPresented: $isResizePopoverShown) {
                         ResizePopoverView(imageURL: imageUrl, proposedSizeMib: $proposedSizeMib) {
