@@ -24,7 +24,7 @@ class UTMDownloadSupportToolsTask: UTMDownloadTask {
     private static let supportToolsDownloadUrl = URL(string: "https://github.com/utmapp/qemu/releases/download/v7.0.0-utm/spice-guest-tools-0.164.4.iso")!
     
     private var supportUrl: URL {
-        fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!.appendingPathComponent("GuestSupportTools")
     }
     
     private var supportToolsLocalUrl: URL {
