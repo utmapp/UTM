@@ -414,22 +414,13 @@ import Foundation
         var busindex = busInterfaceMap[drive.interface.rawValue, default: 0]
         var realInterface = QEMUDriveInterface.none
         if drive.interface == .ide {
-            let totalIde = drives.filter({ $0.interface == .ide }).count
-            if totalIde >= 2 && busindex % 2 == 0 {
-                f("-device")
-                f("piix4-ide,id=ide\(busindex / 2)")
-            }
             f("-device")
             if isRemovable {
                 "ide-cd"
             } else {
                 "ide-hd"
             }
-            if totalIde >= 2 {
-                "bus=ide\(busindex / 2).\(busindex % 2)"
-            } else {
-                "bus=ide.\(busindex)"
-            }
+            "bus=ide.\(busindex)"
             busindex += 1
             "drive=drive\(drive.id)"
             "bootindex=\(bootindex)"
