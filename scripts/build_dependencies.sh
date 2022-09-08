@@ -158,6 +158,7 @@ download_all () {
     clone $ANGLE_REPO $ANGLE_COMMIT
     clone $EPOXY_REPO $EPOXY_COMMIT
     clone $VIRGLRENDERER_REPO $VIRGLRENDERER_COMMIT
+    clone $HYPERVISOR_REPO $HYPERVISOR_COMMIT
 }
 
 copy_private_headers() {
@@ -441,6 +442,20 @@ build_angle () {
     export PATH=$OLD_PATH
 }
 
+build_hypervisor () {
+    OLD_PATH=$PATH
+    export PATH="$(realpath "$BUILD_DIR/depot_tools.git"):$OLD_PATH"
+    pwd="$(pwd)"
+    cd "$BUILD_DIR/Hypervisor.git"
+
+    echo "${GREEN}Building Hypervisor...${NC}"
+    env -i PATH=$PATH xcodebuild archive -archivePath "Hypervisor" -scheme "Hypervisor" -sdk $SDK -configuration Release
+
+    rsync -a "Hypervisor.xcarchive/Products/Library/Frameworks/" "$PREFIX/Frameworks"
+    cd "$pwd"
+    export PATH=$OLD_PATH
+}
+
 build_qemu_dependencies () {
     build $FFI_SRC
     build $ICONV_SRC
@@ -469,6 +484,10 @@ build_qemu_dependencies () {
     build_angle
     meson_build $EPOXY_REPO -Dtests=false -Dglx=no -Degl=yes
     meson_build $VIRGLRENDERER_REPO -Dtests=false
+    # Hypervisor for iOS
+    if [ "$PLATFORM" == "ios" ]; then
+        build_hypervisor
+    fi
 }
 
 build_spice_client () {
@@ -630,11 +649,13 @@ ios* )
         SDK=iphonesimulator
         CFLAGS_MINVER="-mios-simulator-version-min=$SDKMINVER"
         PLATFORM_FAMILY_PREFIX="iOS_Simulator"
+        HVF_FLAGS="--disable-hvf"
         ;;
     * )
         SDK=iphoneos
         CFLAGS_MINVER="-miphoneos-version-min=$SDKMINVER"
         PLATFORM_FAMILY_PREFIX="iOS"
+        HVF_FLAGS=""
         ;;
     esac
     CFLAGS_TARGET=
@@ -647,12 +668,13 @@ ios* )
         fi
         PLATFORM_FAMILY_NAME="$PLATFORM_FAMILY_PREFIX-TCI"
         SKIP_USB_BUILD=1
+        HVF_FLAGS="--disable-hvf"
         ;;
     * )
         PLATFORM_FAMILY_NAME="$PLATFORM_FAMILY_PREFIX"
         ;;
     esac
-    QEMU_PLATFORM_BUILD_FLAGS="--disable-debug-info --enable-shared-lib --disable-hvf --disable-cocoa --disable-coreaudio --disable-slirp-smbd --enable-ucontext --with-coroutine=libucontext $TCI_BUILD_FLAGS"
+    QEMU_PLATFORM_BUILD_FLAGS="--disable-debug-info --enable-shared-lib --disable-cocoa --disable-coreaudio --disable-slirp-smbd --enable-ucontext --with-coroutine=libucontext $HVF_FLAGS $TCI_BUILD_FLAGS"
     ;;
 macos )
     if [ -z "$SDKMINVER" ]; then
@@ -732,11 +754,11 @@ export STRIP
 export PREFIX
 
 # Flags
-CFLAGS="$CFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include $CFLAGS_MINVER $CFLAGS_TARGET"
-CPPFLAGS="$CPPFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include $CFLAGS_MINVER $CFLAGS_TARGET"
-CXXFLAGS="$CXXFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include $CFLAGS_MINVER $CFLAGS_TARGET"
-OBJCFLAGS="$OBJCFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include $CFLAGS_MINVER $CFLAGS_TARGET"
-LDFLAGS="$LDFLAGS -arch $ARCH -isysroot $SDKROOT -L$PREFIX/lib $CFLAGS_MINVER $CFLAGS_TARGET"
+CFLAGS="$CFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks $CFLAGS_MINVER $CFLAGS_TARGET"
+CPPFLAGS="$CPPFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks $CFLAGS_MINVER $CFLAGS_TARGET"
+CXXFLAGS="$CXXFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks $CFLAGS_MINVER $CFLAGS_TARGET"
+OBJCFLAGS="$OBJCFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks $CFLAGS_MINVER $CFLAGS_TARGET"
+LDFLAGS="$LDFLAGS -arch $ARCH -isysroot $SDKROOT -L$PREFIX/lib -F$PREFIX/Frameworks $CFLAGS_MINVER $CFLAGS_TARGET"
 export CFLAGS
 export CPPFLAGS
 export CXXFLAGS
@@ -765,6 +787,11 @@ build_pkg_config
 build_qemu_dependencies
 build $QEMU_SRC --cross-prefix="" $QEMU_PLATFORM_BUILD_FLAGS
 build_spice_client
+# Fake Hypervisor to get iOS Simulator to build
+if [ "$PLATFORM" == "ios_simulator" ]; then
+    mkdir "$PREFIX/Frameworks/Hypervisor.framework"
+    touch "$PREFIX/Frameworks/Hypervisor.framework/Hypervisor"
+fi
 fixup_all
 remove_shared_gst_plugins # another hack...
 generate_qapi $QEMU_SRC

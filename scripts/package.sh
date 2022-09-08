@@ -216,8 +216,6 @@ ipa )
 	<true/>
 	<key>com.apple.developer.kernel.extended-virtual-addressing</key>
 	<true/>
-	<!-- https://siguza.github.io/psychicpaper/ -->
-	<!---><!-->
 	<key>dynamic-codesigning</key>
 	<true/>
 	<key>com.apple.private.iokit.IOServiceSetAuthorizationID</key>
@@ -231,7 +229,8 @@ ipa )
 	<true/>
 	<key>com.apple.vm.device-access</key>
 	<true/>
-	<!-- -->
+	<key>com.apple.private.hypervisor</key>
+	<true/>
 </dict>
 </plist>
 EOL

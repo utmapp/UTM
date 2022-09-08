@@ -243,6 +243,7 @@
 		84C505AC28C588EC007CE8FF /* SizeTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C505AB28C588EC007CE8FF /* SizeTextField.swift */; };
 		84C505AD28C588EC007CE8FF /* SizeTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C505AB28C588EC007CE8FF /* SizeTextField.swift */; };
 		84C505AE28C588EC007CE8FF /* SizeTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C505AB28C588EC007CE8FF /* SizeTextField.swift */; };
+		84C5068728CA5702007CE8FF /* Hypervisor.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 84C5068528CA5702007CE8FF /* Hypervisor.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		84C584E1268E95B3000FCABF /* UTMLegacyAppleConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C584DE268E95B3000FCABF /* UTMLegacyAppleConfiguration.swift */; };
 		84C584E3268F8AE7000FCABF /* VMQEMUSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C584E2268F8AE7000FCABF /* VMQEMUSettingsView.swift */; };
 		84C584E5268F8C65000FCABF /* VMAppleSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C584E4268F8C65000FCABF /* VMAppleSettingsView.swift */; };
@@ -1420,6 +1421,7 @@
 				CE2D938A24AD46670059923A /* gstrtp-1.0.0.framework in Embed Libraries */,
 				CE2D938B24AD46670059923A /* gstriff-1.0.0.framework in Embed Libraries */,
 				CE2D938C24AD46670059923A /* qemu-ppc-softmmu.framework in Embed Libraries */,
+				84C5068728CA5702007CE8FF /* Hypervisor.framework in Embed Libraries */,
 				CE2D938D24AD46670059923A /* phodav-2.0.0.framework in Embed Libraries */,
 				CE2D938E24AD46670059923A /* gthread-2.0.0.framework in Embed Libraries */,
 				CE2D938F24AD46670059923A /* qemu-aarch64-softmmu.framework in Embed Libraries */,
@@ -1702,6 +1704,7 @@
 		84BB99392899E8D500DF28B2 /* VMHeadlessSessionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMHeadlessSessionState.swift; sourceTree = "<group>"; };
 		84C4D9012880CA8A00EC3B2B /* VMSettingsAddDeviceMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMSettingsAddDeviceMenuView.swift; sourceTree = "<group>"; };
 		84C505AB28C588EC007CE8FF /* SizeTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SizeTextField.swift; sourceTree = "<group>"; };
+		84C5068528CA5702007CE8FF /* Hypervisor.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Hypervisor.framework; path = "$(SYSROOT_DIR)/Frameworks/Hypervisor.framework"; sourceTree = "<group>"; };
 		84C584DC268E70F1000FCABF /* UTMVirtualMachine-Protected.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMVirtualMachine-Protected.h"; sourceTree = "<group>"; };
 		84C584DE268E95B3000FCABF /* UTMLegacyAppleConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMLegacyAppleConfiguration.swift; sourceTree = "<group>"; };
 		84C584E2268F8AE7000FCABF /* VMQEMUSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMQEMUSettingsView.swift; sourceTree = "<group>"; };
@@ -2540,6 +2543,7 @@
 		CE2D63D622653C7300FC7E63 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				84C5068528CA5702007CE8FF /* Hypervisor.framework */,
 				84818C0B2898A07A009EDB67 /* AVFAudio.framework */,
 				84937EFE28960789003148F4 /* zstd.1.framework */,
 				848308D4278A1F2200E3E474 /* Virtualization.framework */,

@@ -257,10 +257,19 @@ bool jb_has_usb_entitlement(void) {
     }
     return entitled;
 }
+
+bool jb_has_hypervisor_entitlement(void) {
+    return true;
+}
 #else
 bool jb_has_usb_entitlement(void) {
     NSDictionary *entitlements = cached_app_entitlements();
     return entitlements[@"com.apple.security.exception.iokit-user-client-class"] != nil;
+}
+
+bool jb_has_hypervisor_entitlement(void) {
+    NSDictionary *entitlements = cached_app_entitlements();
+    return entitlements[@"com.apple.private.hypervisor"] != nil;
 }
 #endif
 

@@ -41,3 +41,7 @@ EPOXY_REPO="https://github.com/utmapp/libepoxy.git"
 EPOXY_COMMIT="266d2290a437c655f7419e85af06bfbb73a720c4"
 VIRGLRENDERER_REPO="https://github.com/utmapp/virglrenderer.git"
 VIRGLRENDERER_COMMIT="42b176aea0ac55c22e30514a4e28b452fe1ef648"
+
+# Decompiled Hypervisor for iOS
+HYPERVISOR_REPO="https://github.com/utmapp/Hypervisor.git"
+HYPERVISOR_COMMIT="5ae503b4f3a96c42572bf98a5e4ba4cab4994824"
