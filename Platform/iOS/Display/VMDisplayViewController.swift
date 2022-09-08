@@ -47,14 +47,6 @@ public extension VMDisplayViewController {
         navigationController?.setNavigationBarHidden(true, animated: animated)
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        for notification in notifications {
-            NotificationCenter.default.removeObserver(notification)
-        }
-        notifications.removeAllObjects()
-    }
-    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         if runInBackground {
