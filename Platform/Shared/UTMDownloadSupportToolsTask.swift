@@ -43,7 +43,7 @@ class UTMDownloadSupportToolsTask: UTMDownloadTask {
     
     override func processCompletedDownload(at location: URL) async throws -> UTMVirtualMachine {
         if !fileManager.fileExists(atPath: supportUrl.path) {
-            try fileManager.createDirectory(at: supportUrl, withIntermediateDirectories: false)
+            try fileManager.createDirectory(at: supportUrl, withIntermediateDirectories: true)
         }
         if fileManager.fileExists(atPath: supportToolsLocalUrl.path) {
             try fileManager.removeItem(at: supportToolsLocalUrl)
