@@ -54,7 +54,7 @@ class Main {
             logger.info("MEM: successfully removed memory limits")
         }
         // UIViewController patches
-        UIViewController.patch()
+        UTMViewControllerPatches.patchAll()
         #endif
         UTMApp.main()
     }

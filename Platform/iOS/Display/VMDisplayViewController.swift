@@ -41,17 +41,19 @@ public extension VMDisplayViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        if let root = view.window?.rootViewController {
-            root.setChildForHomeIndicatorAutoHidden(nil)
-            root.setChildViewControllerForPointerLock(nil)
+        if let parent = parent {
+            parent.setChildForHomeIndicatorAutoHidden(nil)
+            parent.setChildViewControllerForPointerLock(nil)
+            parent.setChildForPressesHandler(nil)
         }
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        if let root = view.window?.rootViewController {
-            root.setChildForHomeIndicatorAutoHidden(self)
-            root.setChildViewControllerForPointerLock(self)
+        if let parent = parent {
+            parent.setChildForHomeIndicatorAutoHidden(self)
+            parent.setChildViewControllerForPointerLock(self)
+            parent.setChildForPressesHandler(self)
         }
         if runInBackground {
             logger.info("Start location tracking to enable running in background")
