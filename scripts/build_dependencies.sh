@@ -456,6 +456,16 @@ build_hypervisor () {
     export PATH=$OLD_PATH
 }
 
+generate_fake_hypervisor () {
+    mkdir "$PREFIX/Frameworks/Hypervisor.framework"
+    touch "$PREFIX/Frameworks/Hypervisor.framework/Hypervisor"
+    /usr/libexec/PlistBuddy -c "Add :CFBundleExecutable string Hypervisor" "$PREFIX/Frameworks/Hypervisor.framework/Info.plist"
+    /usr/libexec/PlistBuddy -c "Add :CFBundleIdentifier string com.pomegranate.Hypervisor" "$PREFIX/Frameworks/Hypervisor.framework/Info.plist"
+    /usr/libexec/PlistBuddy -c "Add :MinimumOSVersion string $SDKMINVER" "$PREFIX/Frameworks/Hypervisor.framework/Info.plist"
+    /usr/libexec/PlistBuddy -c "Add :CFBundleVersion string 1" "$PREFIX/Frameworks/Hypervisor.framework/Info.plist"
+    /usr/libexec/PlistBuddy -c "Add :CFBundleShortVersionString string 1.0" "$PREFIX/Frameworks/Hypervisor.framework/Info.plist"
+}
+
 build_qemu_dependencies () {
     build $FFI_SRC
     build $ICONV_SRC
@@ -787,12 +797,11 @@ build_pkg_config
 build_qemu_dependencies
 build $QEMU_SRC --cross-prefix="" $QEMU_PLATFORM_BUILD_FLAGS
 build_spice_client
+fixup_all
 # Fake Hypervisor to get iOS Simulator to build
 if [ "$PLATFORM" == "ios_simulator" ]; then
-    mkdir "$PREFIX/Frameworks/Hypervisor.framework"
-    touch "$PREFIX/Frameworks/Hypervisor.framework/Hypervisor"
+    generate_fake_hypervisor
 fi
-fixup_all
 remove_shared_gst_plugins # another hack...
 generate_qapi $QEMU_SRC
 echo "${GREEN}All done!${NC}"
