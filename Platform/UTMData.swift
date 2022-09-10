@@ -895,6 +895,7 @@ class UTMData: ObservableObject {
                             connectError = error
                         case .success:
                             logger.debug("Successfully enabled JIT compilation!")
+                            Main.jitAvailable = true
                         }
                         
                         connection.disconnect()
@@ -935,6 +936,8 @@ class UTMData: ObservableObject {
                 let attachResponse = try JSONDecoder().decode(AttachResponse.self, from: data)
                 if !attachResponse.success {
                     attachError = String.localizedStringWithFormat(NSLocalizedString("Failed to attach to JitStreamer:\n%@", comment: "ContentView"), attachResponse.message)
+                } else {
+                    Main.jitAvailable = true
                 }
             } catch is DecodingError {
                 throw NSLocalizedString("Failed to decode JitStreamer response.", comment: "ContentView")
