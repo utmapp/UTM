@@ -7,30 +7,6 @@
 /* UTMQemuConfiguration+Drives */
 "%@ Drive" = "Lecteur %@";
 
-/* No comment provided by engineer. */
-"00:00:00:00:00:00" = "00:00:00:00:00:00";
-
-/* No comment provided by engineer. */
-"0.0.0.0" = "0.0.0.0";
-
-/* No comment provided by engineer. */
-"10.0.2.0/24" = "10.0.2.0/24";
-
-/* No comment provided by engineer. */
-"10.0.2.2" = "10.0.2.2";
-
-/* No comment provided by engineer. */
-"10.0.2.3" = "10.0.2.3";
-
-/* No comment provided by engineer. */
-"10.0.2.15" = "10.0.2.15";
-
-/* No comment provided by engineer. */
-"127.0.0.1" = "127.0.0.1";
-
-/* No comment provided by engineer. */
-"1234" = "1234";
-
 /* VMConfigDriveCreateViewController */
 "A file already exists for this name, if you proceed, it will be replaced." = "Un fichier portant ce nom existe déjà, si vous continuez, il sera remplacé.";
 
@@ -58,9 +34,6 @@
 /* VMDisplayViewController */
 "An internal error has occured. UTM will terminate." = "Une erreur interne est survenue. UTM va quitter.";
 
-/* No comment provided by engineer. */
-"Architecture" = "Architecture";
-
 /* VMConfigDirectoryPickerViewController */
 "Are you sure you want to delete this directory? All files and subdirectories WILL be deleted." = "Voulez-vous vraiment supprimer ce dossier ? Tous les fichiers et sous-dossiers seront SUPPRIMÉS.";
 
@@ -87,6 +60,7 @@
 
 /* No comment provided by engineer. */
 "Blinking Cursor" = "Curseur clignottant";
+"Blinking cursor?" = "Curseur clignottant ?";
 
 /* No comment provided by engineer. */
 "Boot" = "Boot";
@@ -95,16 +69,7 @@
 "Boot Arguments" = "Arguments de boot";
 
 /* No comment provided by engineer. */
-"Boot from kernel image" = "Booter depuis l'image du noyau";
-
-/* No comment provided by engineer. */
 "Boot Image" = "Image de boot (démarrage)";
-
-/* No comment provided by engineer. */
-"Boot ISO Image" = "Image ISO de boot";
-
-/* No comment provided by engineer. */
-"Boot VHDX Image" = "Démarrer sur l'image VHDX";
 
 /* UTMQemuConfiguration */
 "Bridged (Advanced)" = "Pont (Avancé)";
@@ -158,26 +123,15 @@
 /* No comment provided by engineer. */
 "Clear" = "Retirer";
 
-/* No comment provided by engineer. */
-"Clipboard Sharing" = "Partage du presse-papiers";
-
-/* Clone context menu */
+/* Clone context menu */ // VMToolbarModifier.swift
 "Clone" = "Cloner";
-
-/* No comment provided by engineer. */
 "Clone selected VM" = "Cloner la VM sélectionnée";
-
-/* No comment provided by engineer. */
-"Clone…" = "Cloner…";
 
 /* No comment provided by engineer. */
 "Close" = "Fermer";
 
 /* No comment provided by engineer. */
 "Command to send when resizing the console. Placeholder $COLS is the number of columns and $ROWS is the number of rows." = "Commande envoyée pour redimensionner la console. La variable $COLS est pour le nombre de colonnes et $ROWS pour le nombre de lignes.";
-
-/* UTMVirtualMachine */
-"Config format incorrect." = "Format de configuration incorrect.";
 
 /* VMDisplayMetalWindowController */
 "Confirm" = "Confirmer";
@@ -247,9 +201,6 @@
 /* No comment provided by engineer. */
 "DHCP Start" = "Début DHCP";
 
-/* No comment provided by engineer. */
-"Directory" = "Dossier";
-
 /* VMConfigDirectoryPickerViewController */
 "Directory Name" = "Nom du dossier";
 
@@ -266,9 +217,6 @@
 
 /* UTMQemuConfiguration */
 "Disk Image" = "Image disque";
-
-/* No comment provided by engineer. */
-"Display" = "Affichage";
 
 /* No comment provided by engineer. */
 "DNS Search Domains" = "Domaine de recherche DNS";
@@ -302,12 +250,6 @@
 "Download prebuilt from UTM Gallery…" = "Téléchargement d'une VM déjà prête depuis la bibliothèque d'UTM";
 
 /* No comment provided by engineer. */
-"Download Ubuntu Server for ARM" = "Télécharger Ubuntu Server pour ARM";
-
-/* No comment provided by engineer. */
-"Download Windows 11 for ARM64 Preview VHDX" = "Télécharger le VHDX de Windows 11 pour ARM64 Preview";
-
-/* No comment provided by engineer. */
 "Downscaling" = "Réduction de définition";
 
 /* VMRemovableDrivesViewController */
@@ -315,9 +257,6 @@
 
 /* No comment provided by engineer. */
 "Drives" = "Lecteurs";
-
-/* No comment provided by engineer. */
-"Edit" = "Modifier";
 
 /* No comment provided by engineer. */
 "Edit selected VM" = "Paramétrer la VM sélectionnée";
@@ -336,9 +275,6 @@
 
 /* No comment provided by engineer. */
 "Emulated Network Card" = "Carte réseau émulée";
-
-/* UTMQemuConfiguration */
-"Emulated VLAN" = "Émuler le VLAN";
 
 /* No comment provided by engineer. */
 "en0" = "en0";
@@ -394,14 +330,8 @@
 /* UTMDataExtension */
 "Failed to delete saved state." = "Impossible de supprimer l'état sauvegardé.";
 
-/* VMWizardState */
-"Failed to get latest macOS version from Apple." = "Impossible d'obtenir la dernière version disponible de macOS auprès d'Apple";
-
 /* VMRemovableDrivesViewController */
 "Failed to get VM object." = "Impossible d'obtenir l'objet VM.";
-
-/* UTMVirtualMachine */
-"Failed to load plist" = "Impossible de charger la plist";
 
 /* UTMData */
 "Failed to parse imported VM." = "Impossible de traiter la VM importée.";
@@ -443,9 +373,6 @@
 "GB" = "Gio";
 
 /* No comment provided by engineer. */
-"Generate Windows Installer ISO" = "Générer une ISO de l'installation de Windows";
-
-/* No comment provided by engineer. */
 "Gesture and Cursor Settings" = "Réglages des gestes et du curseur";
 
 /* No comment provided by engineer. */
@@ -477,9 +404,6 @@
 
 /* No comment provided by engineer. */
 "Hardware OpenGL Acceleration" = "Accélération matérielle d'OpenGL";
-
-/* No comment provided by engineer. */
-"Hide" = "Masquer";
 
 /* System pane. */
 "Hide Unused…" = "Masquer les non-inutilisés…";
@@ -523,8 +447,15 @@
 /* No comment provided by engineer. */
 "Import Drive" = "Importer un lecteur";
 
-/* No comment provided by engineer. */
+// VMWizardOSWindowsView.swift
 "Import VHDX Image" = "Importer une image VHDX";
+"Download Windows 11 for ARM64 Preview VHDX" = "Télécharger le VHDX de Windows 11 pour ARM64 Preview";
+"Generate Windows Installer ISO" = "Générer une ISO de l'installation de Windows";
+"Image File Type" = "Type de fichier image";
+"Some older systems do not support UEFI boot, such as Windows 7 and below." = "Certains anciens systèmes ne prennent pas en charge le démarrage en UEFI, comme Windows 7 et antérieurs.";
+"Boot VHDX Image" = "Démarrer sur l'image VHDX";
+"Download and mount the guest support package for Windows. This is required for some features including dynamic resolution and clipboard sharing." = "Télécharge et monte le paquet de prise en charge de l'invité Windows. Ceci est requis pour certaines fonctionnalités telles que la résolution dynamique et le partage du presse-papiers.";
+"Install drivers and SPICE tools" = "Installer les pilotes et outils SPICE";
 
 /* No comment provided by engineer. */
 "Import Virtual Machine…" = "Importer une machine virtuelle…";
@@ -532,17 +463,44 @@
 /* Save VM overlay */
 "Importing %@…" = "Importation de %@…";
 
-/* No comment provided by engineer. */
+// VMDetailsView.swift
+"This virtual machine has been removed." = "Cette machine virtuelle a été supprimée.";
+"Status" = "État";
+"Architecture" = "Architecture";
+"Machine" = "Machine";
+"Memory" = "Mémoire";
+"Serial (TTY)" = "Série (TTY)";
+"Serial (Client)" = "Série (Client)";
+"Serial (Server)" = "Série (Serveur)";
 "Inactive" = "Inactive";
 
-/* No comment provided by engineer. */
+// VMConfigNetworkPortForwardView.swift
+"%@ ➡️ %@" = "%1$@ ➡️ %2$@";
+
+// VMSettingsView.swift
 "Information" = "Information";
+"System" = "Système";
+"QEMU" = "QEMU";
+"Input" = "Entrée";
+"Sharing" = "Partage";
+"Devices" = "Périphériques";
+"Display" = "Affichage";
+"Serial" = "Série";
+"Network" = "Réseau";
+"Sound" = "Audio";
+"Settings" = "Réglages";
+"Save" = "Enregistrer";
+"Power Off" = "Éteindre";
+"Quit" = "Quitter";
+"Pause" = "Pause";
+"Play" = "Démarrer";
+"Restart" = "Redémarrer";
+"Zoom" = "Zoomer";
+"Keyboard" = "Clavier";
+"Hide" = "Masquer";
 
 /* No comment provided by engineer. */
 "Initial Ramdisk" = "Ramdisk initial";
-
-/* No comment provided by engineer. */
-"Input" = "Entrée";
 
 /* No comment provided by engineer. */
 "Interface" = "Interface";
@@ -599,9 +557,6 @@
 "Kernel" = "Noyau (Kernel)";
 
 /* No comment provided by engineer. */
-"Keyboard" = "Clavier";
-
-/* No comment provided by engineer. */
 "Legacy" = "Héritage";
 
 /* No comment provided by engineer. */
@@ -610,8 +565,17 @@
 /* No comment provided by engineer. */
 "License" = "Licence";
 
-/* UTMQemuConfiguration */
+// QEMUConstant.swift
 "Linear" = "Linéaire";
+"Nearest Neighbor" = "Au plus proche";
+"USB 2.0" = "USB 2.0";
+"USB 3.0 (XHCI)" = "USB 3.0（XHCI）";
+"Emulated VLAN" = "VLAN émulé";
+"Host Only" = "Hôte uniquement";
+"Italic, Bold" = "Italique, Gras";
+"Italic" = "Italique";
+"Bold" = "Gras";
+"Regular" = "Standard";
 
 /* No comment provided by engineer. */
 "Linux" = "Linux";
@@ -626,7 +590,7 @@
 "Linux Kernel" = "Noyau Linux";
 
 /* No comment provided by engineer. */
-"%@Linux kernel (required)" = "%@Noyau (kernel) Linux (requis)";
+"%@Linux kernel (required):" = "%@Noyau (kernel) Linux (requis) ：";
 
 /* UTMQemuConfiguration */
 "Linux RAM Disk" = "RAM Disk de Linux";
@@ -640,9 +604,6 @@
 /* No comment provided by engineer. */
 "MAC Address" = "Adresse MAC";
 
-/* VMWizardState */
-"macOS is not supported with QEMU." = "macOS n'est pas pris en charge par QEMU";
-
 /* UTMQemuManager */
 "Manager being deallocated, killing pending RPC." = "Le gestionnaire a été désalloué, arrêt du RPC en attente.";
 
@@ -651,9 +612,6 @@
 
 /* No comment provided by engineer. */
 "MB" = "Mio";
-
-/* No comment provided by engineer. */
-"Memory" = "Mémoire";
 
 /* No comment provided by engineer. */
 "Mouse Wheel" = "Molette de la souris";
@@ -666,12 +624,6 @@
 
 /* VMConfigInfoView */
 "Name is an invalid filename." = "Le nom du fichier est incorrect.";
-
-/* UTMQemuConfiguration */
-"Nearest Neighbor" = "Au plus proche";
-
-/* No comment provided by engineer. */
-"Network" = "Réseau";
 
 /* No comment provided by engineer. */
 "Network Mode" = "Mode du réseau";
@@ -749,43 +701,27 @@
 "Operating System" = "Système d'exploitation";
 
 /* No comment provided by engineer. */
-"Optionally select a directory to make accessible inside the VM. Note that support for shared directories varies by the guest operating system and may require additional guest drivers to be installed. See UTM support pages for more details." = "Vous pouvez sélectionner un dossier pour qu'il soit accessible dans la VM. Notez que la prise en charge des dossiers partagés varie selon l'OS invité et peut demander l'installation de pilotes supplémentaires dans l'OS invité. Consultez les pages d'aide d'UTM pour plus de détails.";
-
-/* No comment provided by engineer. */
 "Other" = "Autre";
-
-/* No comment provided by engineer. */
-"Pause" = "Pause";
 
 /* No comment provided by engineer. */
 "Pending" = "Suspendue";
 
-/* No comment provided by engineer. */
-"Play" = "Démarrer";
-
-/* VMWizardState */
+// VMWizardState.swift
 "Please select a boot image." = "Choisissez une image de boot.";
-
-/* VMWizardState */
 "Please select a kernel file." = "Veuillez choisir un fichier de noyau.";
-
-/* VMWizardState */
+"Failed to get latest macOS version from Apple." = "Impossible d'obtenir la dernière version disponible de macOS auprès d'Apple";
+"macOS is not supported with QEMU." = "macOS n'est pas pris en charge par QEMU";
 "Please select a system to emulate." = "Sélectionnez un système à émuler.";
+"Unavailable for this platform." = "Non disponible pour cette plateforme.";
 
 /* No comment provided by engineer. */
 "Port Forward" = "Redirection de port";
-
-/* No comment provided by engineer. */
-"Power Off" = "Éteindre";
 
 /* No comment provided by engineer. */
 "Protocol" = "Protocole";
 
 /* No comment provided by engineer. */
 "PS/2 has higher compatibility with older operating systems but does not support custom cursor settings." = "PS/2 a une plus haute compatibilité avec les anciens systèmes d'exploitation mais ne prend pas en charge les réglages personnalisés du curseur.";
-
-/* No comment provided by engineer. */
-"QEMU" = "QEMU";
 
 /* No comment provided by engineer. */
 "QEMU Arguments" = "Arguments pour QEMU";
@@ -797,9 +733,6 @@
 "QEMU Machine Properties" = "Propriétés de la machine QEMU";
 
 /* No comment provided by engineer. */
-"Quit" = "Quitter";
-
-/* No comment provided by engineer. */
 "RAM" = "RAM";
 
 /* No comment provided by engineer. */
@@ -808,8 +741,11 @@
 /* No comment provided by engineer. */
 "Read Only" = "Lecture seule";
 
-/* No comment provided by engineer. */
+// VMWizardSharingView.swift
+"Shared Directory Path" = "Chemin du dossier partagé";
+"Directory" = "Dossier";
 "Share is read only" = "Partage en lecture seule";
+"Optionally select a directory to make accessible inside the VM. Note that support for shared directories varies by the guest operating system and may require additional guest drivers to be installed. See UTM support pages for more details." = "Vous pouvez sélectionner un dossier pour qu'il soit accessible dans la VM. Notez que la prise en charge des dossiers partagés varie selon l'OS invité et peut demander l'installation de pilotes supplémentaires dans l'OS invité. Consultez les pages d'aide d'UTM pour plus de détails.";
 
 /* No comment provided by engineer. */
 "Removable" = "Amovible";
@@ -837,9 +773,6 @@
 "Resolution" = "Résolution";
 
 /* No comment provided by engineer. */
-"Restart" = "Redémarrer";
-
-/* No comment provided by engineer. */
 "Retina Mode" = "Mode Retina";
 
 /* No comment provided by engineer. */
@@ -856,9 +789,6 @@
 
 /* VMDisplayViewController */
 "Running low on memory! UTM might soon be killed by iOS. You can prevent this by decreasing the amount of memory and/or JIT cache assigned to this VM" = "Il ne reste presque plus de mémoire ! UTM peut bientôt être arrêté par iOS. Vous pouvez éviter ceci en réduisant la quantité de mémoire et/ou le cache JIT assigné à cette VM";
-
-/* No comment provided by engineer. */
-"Save" = "Enregistrer";
 
 /* Save VM overlay */
 "Saving %@…" = "Enregistrement de %@…";
@@ -890,8 +820,6 @@
 /* No comment provided by engineer. */
 "If enabled, the default input devices will be emulated on the USB bus." = "Si coché, les appareils d'entrée par défaut seront émulés via le bus USB.";
 
-/* No comment provided by engineer. */
-"Settings" = "Réglages";
 
 /* Share context menu */
 "Share" = "Partager";
@@ -915,9 +843,6 @@
 "Shared path is no longer valid. Please re-choose." = "Le chemin partagé n'est plus valide. Veuillez le sélectionner à nouveau.";
 
 /* No comment provided by engineer. */
-"Sharing" = "Partage";
-
-/* No comment provided by engineer. */
 "Show Advanced Settings" = "Afficher les réglages avancés";
 
 /* System pane. */
@@ -935,11 +860,9 @@
 /* No comment provided by engineer. */
 "Slower, but can run other CPU architectures." = "Plus lent, mais peut émuler un CPU d'une autre architecture.";
 
-/* No comment provided by engineer. */
-"Sound" = "Audio";
-
-/* No comment provided by engineer. */
-"Specify the size of the drive where data will be stored into." = "Définissez la taille du lecteur où seront enregistrées les données.";
+// VMWizardDrivesView.swift
+"Storage" = "Stockage";
+"Specify the size of the drive where data will be stored into." = "Définissez la taille du lecteur dans lequel seront enregistrées les données.";
 
 /* No comment provided by engineer. */
 "Stop" = "Arrêter";
@@ -949,9 +872,6 @@
 
 /* No comment provided by engineer. */
 "Stop…" = "Arrêter…";
-
-/* No comment provided by engineer. */
-"Storage" = "Stockage";
 
 /* No comment provided by engineer. */
 "stty cols $COLS rows $ROWS\n" = "stty cols $COLS rows $ROWS\n";
@@ -964,12 +884,6 @@
 
 /* No comment provided by engineer. */
 "Support" = "Aide";
-
-/* No comment provided by engineer. */
-"Suspended" = "Suspendue";
-
-/* No comment provided by engineer. */
-"System" = "Système";
 
 /* VMConfigPortForwardingViewController */
 "TCP Forward" = "Redirection TCP";
@@ -1021,9 +935,6 @@
 
 /* UTMQemuSystem */
 "UEFI is not supported with this architecture." = "L'UEFI n'est pas pris en charge avec cette architecture";
-
-/* VMWizardState */
-"Unavailable for this platform." = "Non disponible pour cette plateforme.";
 
 /* UTMVirtualMachineExtension */
 "Unknown" = "Inconnu";
@@ -1110,9 +1021,6 @@
 /* ContentView */
 "Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached." = "Votre version d'iOS ne prend pas en charge l'exécution de VM tant qu'il n'est pas modifié. Soit vous devez exécuter UTM sur un appareil jailbreaké, soit vous devez y rattacher un débogeur distant.";
 
-/* No comment provided by engineer. */
-"Zoom" = "Zoomer";
-
 /* Manually added: Common > Button */
 "Go Back" = "Retour";
 
@@ -1124,6 +1032,10 @@
 
 /* Manually added: Configuration > Drive */
 "Delete Drive" = "Supprimer le lecteur";
+"Compress" = "Compresser";
+"Compress by re-converting the disk image and compressing the data."= "Compression en reconvertissant l'image disque et en compressant les données.";
+"Resize…" = "Redimensionner…";
+"Increase the size of the disk image."="Augmente la taille de l'image disque.";
 
 /* Manually added: Configuration > Drive */
 "Move Up" = "Monter";
@@ -1131,20 +1043,11 @@
 /* Manually added: Configuration > Drive */
 "Move Down" = "Descendre";
 
-/* Manually added: VM's Context Menu */
-"Show in Finder" = "Afficher dans le Finder";
-
 /* No comment provided by engineer. */
 "Generic" = "Générique";
 
 /* No comment provided by engineer. */
 "Custom" = "Personnaliser";
-
-/* No comment provided by engineer. */
-"Status" = "État";
-
-/* No comment provided by engineer. */
-"Stopped" = "Arrêtée";
 
 /* No comment provided by engineer. */
 "Acceleration" = "Accélération";
@@ -1233,8 +1136,6 @@
 "Empty" = "Vide";
 "Advanced" = "Avancé";
 "Skip ISO boot" = "Ignorer le démarrage sur l'ISO";
-"Image File Type" = "Type de fichier image";
-"Some older systems do not support UEFI boot, such as Windows 7 and below." = "Certains anciens systèmes ne prennent pas en charge le démarrage en UEFI, comme Windows 7 et antérieurs.";
 "File Imported" = "Fichier importé";
 "Directory Selected" = "Dossier sélectionné";
 "Hint: For the best Windows experience, make sure to download and install the latest [SPICE tools and QEMU drivers](https://mac.getutm.app/support/)." = "Astuce : pour la meilleure expérience possible avec Windows, téléchargez et installez les [derniers outils SPICE et drivers QEMU](https://mac.getutm.app/support/).";
@@ -1242,10 +1143,6 @@
 "Apple Virtualization is experimental and only for advanced use cases. Leave unchecked to use QEMU, which is recommended." = "La prise en charge de la Virtualisation d'Apple est expérimentale et à utiliser uniquement pour des cas avancés. Laissez décoché pour utiliser QEMU, qui est recommandé.";
 "Apple Virtualization" = "Virtualisation par Apple";
 "Boot Image Type" = "Type d'image de démarrage";
-"Linux kernel (required)" = "Noyau Linux (requis)";
-"%@Linux initial ramdisk (optional)" = "%@Ramdisk initial de Linux (optionnel)";
-"Linux Root FS image (optional)" = "Image Root FS de Linux (optionnel)";
-"Boot ISO Image (optional)" = "Image ISO de démarrage (optionnel)";
 
 /* System pane. */
 "Force Enable CPU Flags" = "Forcer l'activation des flags du CPU";
@@ -1259,20 +1156,13 @@
 /* Input pane. */
 "Disabled" = "Désactivé";
 
-/* Share pane. */
+// VMConfigSharingView.swift
+"Clipboard Sharing" = "Partage du presse-papiers";
+"WebDAV requires installing SPICE daemon. VirtFS requires installing device drivers." = "WebDAV requiert l'installation du deamon SPICE. VirtFS requiert l'installation des pilotes.";
 "Directory Share Mode" = "Mode de partage de dossier";
-"SPICE WebDAV (Legacy)" = "WebDAV via SPICE (ancienne méthode)";
-"VirtFS (Recommended)" = "VirtFS (Recommandé)";
 
 /* Video pane. */
 "VGA Device RAM (MB)" = "Mémoire RAM de la carte VGA (en MB)";
-
-/* Network pane. */
-"Host Only" = "Hôte uniquement";
-
-/* Left pane. */
-"Serial" = "Série";
-"Devices" = "Périphériques";
 
 /* Serial pane. */
 "Built-in Terminal" = "Terminal intégré";
@@ -1305,21 +1195,6 @@
 /* Share and Drive panes. */
 "Path" = "Emplacement";
 
-/* Main window. */
-"This virtual machine has been removed." = "Cette machine virtuelle a été supprimée.";
-
-/* Contextual menu on VM. */
-"Run without saving changes" = "Exécuter sans enregistrer les modifs.";
-
-/* Contextual menu on VM. */
-"Share…" = "Partager…";
-
-/* Contextual menu on VM. */
-"Move…" = "Déplacer…";
-
-/* Contextual menu on VM. */
-"New from template…" = "Nouvelle VM basée sur ce modèle…";
-
 /* New VM. */
 "Use Rosetta" = "Utiliser Rosetta";
 
@@ -1338,32 +1213,46 @@
 "macOS guests are only supported on ARM64 devices." = "Les machines macOS invitées ne sont prises en charge que sur les apparareils en ARM64.";
 
 // VMWizardOSLinuxView.swift
+"Boot from kernel image" = "Booter depuis l'image du noyau";
+"Download Ubuntu Server for ARM" = "Télécharger Ubuntu Server pour ARM";
 "Download Ubuntu Desktop" = "Télécharger Ubuntu Desktop";
 "Enable Rosetta (x86_64 Emulation)" = "Activer Rosetta (émulation x86_64)";
 "Installation Instructions" = "Instructions d'installation";
 "Note: The file system tag for mounting the installer is 'rosetta'." = "Note : le tag du système de fichiers pour monter l'Installer est 'rosetta'.";
 "Additional Options" = "Options supplémentaires";
+"Uncompressed %@" = "%@ décoompressé";
+"Linux kernel (required)" = "Noyau Linux (requis)";
+"Linux initial ramdisk (optional)" = "Ramdisk initial de Linux (optionnel)";
+"Linux Root FS Image (optional)" = "Image Root FS de Linux (optionnel)";
+"Boot ISO Image (optional)" = "Image ISO de démarrage (optionnel)";
+"Boot ISO Image" = "Image ISO de boot";
 
 /* No comment provided by engineer. */
 "Remove selected shortcut" = "Supprimer le raccourci sélectionné";
 
-/* VM details. */
-"Serial (TTY)" = "Série (TTY)";
-"Serial (Client)" = "Série (Client)";
-"Serial (Server)" = "Serial (Serveur)";
-
 // VMContextMenuModifier.swift
-"Delete this VM and all its data." = "Supprime cette VM et toutes ses données.";
-"Delete this shortcut. The underlying data will not be deleted." = "Supprime ce raccourci. Les données associées ne seront pas supprimées.";
-"Create a new VM with the same configuration as this one but without any data." = "Crée une nouvelle VM avec la même configuration que celle-ci, mais sans aucune donnée.";
-"Duplicate this VM along with all its data." = "Duplique cette VM avec toutes ses données.";
-"Move this VM from internal storage to elsewhere." = "Déplace cette VM depuis le stockage interne vers ailleurs.";
-"Share a copy of this VM and all its data." = "Partage une copie de cette VM et toutes ses données.";
-"Run the VM in the foreground, without saving data changes to disk." = "Exécute la VM en premier plan, sans sauvegarder les changements sur le disque.";
-"Boot into recovery mode." = "Démarre en mode récupération.";
-"Run the VM in the foreground." = "Exécute la VM au premier plan";
-"Modify settings for this VM." = "Changer les réglages de cette VM.";
+"Show in Finder" = "Afficher dans le Finder";
 "Reveal where the VM is stored." = "Affiche l'emplacement où est enregistrée la VM.";
+"Edit" = "Modifier";
+"Modify settings for this VM." = "Changer les réglages de cette VM.";
+"Stop the running VM." = "Arrête la VM en cours d'exécution.";
+"Run the VM in the foreground." = "Exécute la VM au premier plan";
+"Run Recovery" = "Exécuter le mode Recovery";
+"Boot into recovery mode." = "Démarre le mode de récupération.";
+"Run without saving changes" = "Exécuter sans enregistrer les modifs.";
+"Run the VM in the foreground, without saving data changes to disk." = "Exécute la VM en premier plan, sans sauvegarder les changements sur le disque.";
+"Install Windows Guest Tools…" = "Installer les outils pour l'invité Windows…";
+"Download and mount the guest tools for Windows." = "Télécharge et monte les outils pour l'invité Windows";
+"Share…" = "Partager…";
+"Share a copy of this VM and all its data." = "Partage une copie de cette VM et toutes ses données.";
+"Move…" = "Déplacer…";
+"Move this VM from internal storage to elsewhere." = "Déplace cette VM depuis le stockage interne vers ailleurs.";
+"Clone…" = "Cloner…";
+"Duplicate this VM along with all its data." = "Duplique cette VM avec toutes ses données.";
+"New from template…" = "Nouvelle VM basée sur ce modèle…";
+"Create a new VM with the same configuration as this one but without any data." = "Crée une nouvelle VM avec la même configuration que celle-ci, mais sans aucune donnée.";
+"Delete this shortcut. The underlying data will not be deleted." = "Supprime ce raccourci. Les données associées ne seront pas supprimées.";
+"Delete this VM and all its data." = "Supprime cette VM et toutes ses données.";
 
 // VMConfigSystemView.swift
 "Do you want to move this VM to another location? This will copy the data to the new location, delete the data from the original location, and then create a shortcut." = "Voulez-vous déplacer cette VM à un autre endroit ? Cela copiera les données vers le nouvel emplacement, supprimera les données de l'emplacement d'origine, et créera un raccourci.";
@@ -1434,7 +1323,7 @@
 "Name" = "Nom";
 "(New Drive)" = "(Nouveau lecteur)";
 "Read Only?" = "Lecture seule ?";
-"Delete Drive" = "Supprimer le lecteur";
+"Delete Drive" = "Supprimer";
 "Delete this drive." = "Supprime ce lecteur.";
 
 // VMConfigAppleNetworkingView.swift
@@ -1456,6 +1345,7 @@
 "The amount of storage to allocate for this image. An empty file of this size will be stored with the VM." = "La quantité de stockage à allouer pour cette image. Un fichier vide de cette taille sera enregistré dans la VM.";
 
 // VMConfigAppleDisplayView.swift
+"HiDPI (Retina)" = "HiDPI（Retina）";
 "Only available on macOS virtual machines." = "Uniquement disponible sur les machines virtuelles macOS.";
 
 // VMConfigAppleBootView.swift
@@ -1507,6 +1397,7 @@
 "Add…" = "Ajouter…";
 "Select Shared Folder" = "Sélectionner le dossier partagé";
 "Installation: %lld%%" = "Installation : %lld%%";
+"Serial %lld" = "Série %lld";
 
 // Display/VMDisplayAppleDisplayWindowController.swift
 "%@ (Terminal %lld)" = "%@ (Terminal %lld)";
@@ -1559,12 +1450,16 @@
 "Cannot access resource: %@" = "Impossible d'accéder à la ressource : %@";
 
 // UTMVirtualMachine.m
+"Suspended" = "Suspendue";
+"Stopped" = "Arrêtée";
 "Starting" = "Déamarre";
 "Started" = "Démarrée";
 "Pausing" = "Mise en pause";
 "Paused" = "En pause";
 "Resuming" = "Reprise";
 "Stopping" = "Arrêt en cours";
+"Failed to load plist" = "Impossible de charger la plist";
+"Config format incorrect." = "Format de configuration incorrect.";
 
 // UTMQemuVirtualMachine.m
 "Failed to access data from shortcut." = "Impossible d'accéder aux données à partir du raccourci.";
@@ -1585,7 +1480,29 @@
 "This virtual machine cannot run on the current host machine." = "Cette machine virtuelle ne peut pas être exécutée sur cette machine hôte.";
 "A valid kernel image must be specified." = "Une image de noyau valide doit être spécifiée.";
 "This virtual machine contains an invalid hardware model. The configuration may be corrupted or is outdated." = "La machine virtuelle contient un modèle matériel non valide. La configuration est peut-être corrompue ou périmée.";
-"Rosetta is not supported on the current host machine." = "Rosette n'est pas prise en charge sur cette machine hôte.";
+"Rosetta is not supported on the current host machine." = "Rosetta n'est pas prise en charge sur cette machine hôte.";
 
 // UTMConfigurationInfo.swift
 "Virtual Machine" = "Machine virtuelle";
+
+// UTMData.swift
+"Unable to add a shortcut to the new location." = "Impossible d'ajouter un alias dans le nouvel emplacement.";
+"Failed to parse download URL." = "Impossible d'analyser l'URL de téléchargement.";
+"AltJIT error: %@" = "Erreur AltJIT : %@";
+"Failed to attach to JitStreamer:\n%@" = "Impossible de s'attacher à JitStreamer :\n%@";
+"Failed to decode JitStreamer response." = "Impossible de décoder la réponse de JitStreamer";
+"Failed to attach to JitStreamer." = "Impossible de s'attacher à JitStreamer.";
+"Invalid JitStreamer attach URL:\n%@" = "Attache de JitStreamer non valide :\n%@";
+
+// UTMDownloadSupportToolsTask.swift
+"Windows Guest Support Tools" = "Outil de prise en charge de l'invité Windows";
+"No empty removable drive found. Make sure you have at least one removable drive that is not in use." = "Aucun lecteur amovible vide trouvé. Assurez-vous d'avoir au moins un lecteur amovible qui ne soit pas en cours d'utilisation.";
+"The guest support tools have already been mounted." = "Les outils de prise en charge de l'invité sont déjà montés.";
+
+// UTMConfiguration.swift
+"This configuration is too old and is not supported." = "Cette configuration est trop ancienne et n'est pas prise en charge.";
+"This configuration is saved with a newer version of UTM and is not compatible with this version." = "Cette configuration est sauvegardée dans une version plus récente d'UTM et n'est pas compatible avec cette version.";
+"An invalid value of '%@' is used in the configuration file." = "Une valeur non valide de '%@' est utilisée dans le fichier de configuration.";
+"The backend for this configuration is not supported." = "Le moteur n'est pas pris en charge pour cette configuration.";
+"The drive '%@' already exists and cannot be created." = "Le lecteur '%@' existe déjà et ne peut être créé.";
+"An internal error has occurred." = "Une erreur interne est survenue.";
