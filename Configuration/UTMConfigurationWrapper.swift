@@ -310,9 +310,11 @@ import Foundation
     }
     
     @objc init?(from packageURL: URL) {
-        if let config = try? UTMQemuConfiguration.load(from: packageURL) {
+        do {
+            let config = try UTMQemuConfiguration.load(from: packageURL)
             self.wrappedValue = config
-        } else {
+        } catch {
+            logger.error("Error loading config from \(packageURL.path): \(error)")
             return nil
         }
     }
