@@ -140,9 +140,19 @@ class UTMData: ObservableObject {
                 let vm = UTMVirtualMachine(url: file)
                 if let vm = vm {
                     if uuidHasCollision(with: vm, in: list) {
-                        await uuidRegenerate(for: vm)
+                        if let index = list.firstIndex(where: { $0 is UTMWrappedVirtualMachine && $0.id == vm.id }) {
+                            // we have a stale VM with the same UUID, so we replace that entry with this one
+                            list[index] = vm
+                            // update the registry with the new bookmark
+                            try? await vm.updateRegistryFromConfig()
+                        } else {
+                            // duplicate is not stale so we need a new UUID
+                            await uuidRegenerate(for: vm)
+                            list.insert(vm, at: 0)
+                        }
+                    } else {
+                        list.insert(vm, at: 0)
                     }
-                    list.insert(vm, at: 0)
                 } else {
                     logger.error("Failed to create object for \(file)")
                 }
