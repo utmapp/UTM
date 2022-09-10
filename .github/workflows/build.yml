@@ -284,6 +284,41 @@ jobs:
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           repository: ${{ secrets.DISPATCH_ALTSTORE_REPO_NAME }}
           event-type: new-release
+  package-hv:
+    name: Package (iOS HV)
+    runs-on: macos-12
+    needs: build-utm
+    if: github.event_name == 'release' || github.event.inputs.test_release == 'true'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Download Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: UTM-ios-arm64
+      - name: Install ldid
+        run: brew install ldid
+      - name: Fakesign IPA
+        run: |
+          tar -xf UTM.xcarchive.tgz
+          ./scripts/package.sh ipa-hv UTM.xcarchive .
+          mv UTM.ipa UTM.HV.ipa
+      - name: Upload Artifact
+        if: github.event_name != 'release'
+        uses: actions/upload-artifact@v3
+        with:
+          name: UTM-HV-ipa
+          path: UTM.HV.ipa
+      - name: Upload Release Asset
+        if: github.event_name == 'release'
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: UTM.HV.ipa
+          asset_name: UTM.HV.ipa
+          asset_content_type: application/octet-stream
   package-deb:
     name: Package (iOS DEB)
     runs-on: macos-12

@@ -11,13 +11,14 @@ usage() {
 	echo "usage: $0 MODE inputXcarchive outputPath [TEAM_ID PROFILE_NAME]"
 	echo "  MODE is one of:"
 	echo "          deb (Cydia DEB)"
-	echo "          ipa (unsigned IPA with Psychic paper support)"
-	echo "          ipa-se (unsigned IPA with no entitlements)"
-	echo "          signedipa (developer signed IPA with valid PROFILE_NAME and TEAM_ID)"
+	echo "          ipa (unsigned IPA of full build with all entitlements)"
+	echo "          ipa-se (unsigned IPA of TCI build)"
+	echo "          ipa-hv (unsigned IPA of full build without JIT entitlement)"
+	echo "          ipa-signed (developer signed IPA with valid PROFILE_NAME and TEAM_ID)"
 	echo "  inputXcarchive is path to UTM.xcarchive"
 	echo "  outputPath is path to an EMPTY output directory for UTM.ipa or UTM.deb"
-	echo "  TEAM_ID is only used for signedipa and is the name of the team matching the profile"
-	echo "  PROFILE_NAME is only used for signedipa and is the name of the signing profile"
+	echo "  TEAM_ID is only used for ipa-signed and is the name of the team matching the profile"
+	echo "  PROFILE_NAME is only used for ipa-signed and is the name of the signing profile"
 	exit 1
 }
 
@@ -31,7 +32,7 @@ OUTPUT=$3
 BUNDLE_ID=
 
 case $MODE in
-deb | ipa | signedipa )
+deb | ipa | ipa-hv | ipa-signed )
 	NAME="UTM"
 	BUNDLE_ID="com.utmapp.UTM"
 	INPUT_APP="$INPUT/Products/Applications/UTM.app"
@@ -203,7 +204,11 @@ EOL
 	create_deb "$INPUT" "$OUTPUT" "$FAKEENT"
 	rm "$FAKEENT"
 	;;
-ipa )
+ipa | ipa-hv )
+	ENABLE_JIT="true"
+	if [ "$MODE" == "ipa-hv" ]; then
+		ENABLE_JIT="false"
+	fi
 	FAKEENT="/tmp/fakeent.$$.plist"
 	cat >"$FAKEENT" <<EOL
 <?xml version="1.0" encoding="UTF-8"?>
@@ -217,7 +222,7 @@ ipa )
 	<key>com.apple.developer.kernel.extended-virtual-addressing</key>
 	<true/>
 	<key>dynamic-codesigning</key>
-	<true/>
+	<${ENABLE_JIT}/>
 	<key>com.apple.private.iokit.IOServiceSetAuthorizationID</key>
 	<true/>
 	<key>com.apple.security.exception.iokit-user-client-class</key>
@@ -230,6 +235,8 @@ ipa )
 	<key>com.apple.vm.device-access</key>
 	<true/>
 	<key>com.apple.private.hypervisor</key>
+	<true/>
+	<key>com.apple.private.memorystatus</key>
 	<true/>
 </dict>
 </plist>
@@ -253,7 +260,7 @@ ipa-se )
 EOL
 	create_fake_ipa "$NAME" "$BUNDLE_ID" "$INPUT" "$OUTPUT" "$FAKEENT"
 	;;
-signedipa )
+ipa-signed )
 	itunes_sign "$INPUT" "$OUTPUT" $5 $6
 	;;
 esac
