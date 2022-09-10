@@ -49,6 +49,10 @@ class Main {
             logger.info("JIT: ptrace() hack failed")
             jitAvailable = false
         }
+        // raise memlimits on jailbroken devices
+        if jb_increase_memlimit() {
+            logger.info("MEM: successfully removed memory limits")
+        }
         #endif
         UTMApp.main()
     }

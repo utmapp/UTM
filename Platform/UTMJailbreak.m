@@ -52,6 +52,18 @@ struct cs_entitlements {
     char entitlements[];
 };
 
+#define MEMLIMIT_GIB (1024) // note this is 1TiB of RAM which iOS devices should not pass anytime soon...
+#define MEMORYSTATUS_CMD_SET_MEMLIMIT_PROPERTIES (7)
+
+typedef struct memorystatus_memlimit_properties {
+    int32_t memlimit_active;
+    uint32_t memlimit_active_attr;
+    int32_t memlimit_inactive;
+    uint32_t memlimit_inactive_attr;
+} memorystatus_memlimit_properties_t;
+
+int memorystatus_control(uint32_t command, int32_t pid, uint32_t flags, user_addr_t buffer, size_t buffersize);
+
 #if !TARGET_OS_OSX && !defined(WITH_QEMU_TCI)
 extern int csops(pid_t pid, unsigned int ops, void * useraddr, size_t usersize);
 extern boolean_t exc_server(mach_msg_header_t *, mach_msg_header_t *);
@@ -328,4 +340,13 @@ bool jb_enable_ptrace_hack(void) {
     
     return true;
 #endif
+}
+
+bool jb_increase_memlimit(void) {
+    memorystatus_memlimit_properties_t prop = {0};
+    int ret1 = 0, ret2 = 0;
+    prop.memlimit_active = 1024 * MEMLIMIT_GIB;
+    prop.memlimit_inactive = 1024 * MEMLIMIT_GIB;
+    ret1 = memorystatus_control(MEMORYSTATUS_CMD_SET_MEMLIMIT_PROPERTIES, getpid(), 0, (uintptr_t)&prop, sizeof(prop));
+    return ret1 == 0 && ret2 == 0;
 }
