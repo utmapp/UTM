@@ -21,19 +21,25 @@
 
 #pragma mark - Properties
 
-@synthesize prefersStatusBarHidden = _prefersStatusBarHidden;
+@synthesize prefersHomeIndicatorAutoHidden = _prefersHomeIndicatorAutoHidden;
+@synthesize prefersPointerLocked = _prefersPointerLocked;
 
 - (BOOL)prefersHomeIndicatorAutoHidden {
-    return YES; // always hide home indicator
+    return _prefersHomeIndicatorAutoHidden;
 }
 
-- (UIStatusBarStyle)preferredStatusBarStyle {
-    return UIStatusBarStyleLightContent;
+- (void)setPrefersHomeIndicatorAutoHidden:(BOOL)prefersHomeIndicatorAutoHidden {
+    _prefersHomeIndicatorAutoHidden = prefersHomeIndicatorAutoHidden;
+    [self setNeedsUpdateOfHomeIndicatorAutoHidden];
 }
 
-- (void)setPrefersStatusBarHidden:(BOOL)prefersStatusBarHidden {
-    _prefersStatusBarHidden = prefersStatusBarHidden;
-    [self setNeedsStatusBarAppearanceUpdate];
+- (BOOL)prefersPointerLocked {
+    return _prefersPointerLocked;
+}
+
+- (void)setPrefersPointerLocked:(BOOL)prefersPointerLocked {
+    _prefersPointerLocked = prefersPointerLocked;
+    [self setNeedsUpdateOfPrefersPointerLocked];
 }
 
 - (void)showKeyboard {

@@ -48,9 +48,6 @@ NS_AVAILABLE_IOS(13.4)
     }
 }
 
-- (BOOL)prefersPointerLocked {
-    return _mouseCaptured;
-}
 
 - (void)mouseDidBecomeCurrent:(NSNotification *)notification API_AVAILABLE(ios(14)) {
     GCMouse *mouse = notification.object;
@@ -88,9 +85,8 @@ NS_AVAILABLE_IOS(13.4)
         };
     }
     // no handler to the gcmouse scroll event, gestureScroll works fine.
-    _mouseCaptured = YES;
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self setNeedsUpdateOfPrefersPointerLocked];
+        self.prefersPointerLocked = YES;
     });
 }
 
@@ -104,9 +100,8 @@ NS_AVAILABLE_IOS(13.4)
     for (int i = 0; i < MIN(4, mouse.mouseInput.auxiliaryButtons.count); i++) {
         mouse.mouseInput.auxiliaryButtons[i].pressedChangedHandler = nil;
     }
-    _mouseCaptured = NO;
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self setNeedsUpdateOfPrefersPointerLocked];
+        self.prefersPointerLocked = NO;
     });
 }
 

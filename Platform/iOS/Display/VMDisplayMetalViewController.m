@@ -114,7 +114,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    self.prefersStatusBarHidden = YES;
+    self.prefersHomeIndicatorAutoHidden = YES;
 }
 
 - (void)viewDidAppear:(BOOL)animated {

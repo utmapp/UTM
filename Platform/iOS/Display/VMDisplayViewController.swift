@@ -19,10 +19,6 @@ import SwiftUI
 private var memoryAlertOnce = false
 
 @objc public extension VMDisplayViewController {
-    var largeScreen: Bool {
-        traitCollection.horizontalSizeClass == .regular && traitCollection.verticalSizeClass == .regular
-    }
-    
     var runInBackground: Bool {
         boolForSetting("RunInBackground")
     }
@@ -36,10 +32,6 @@ private var memoryAlertOnce = false
 public extension VMDisplayViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        if largeScreen {
-            prefersStatusBarHidden = true
-        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -47,8 +39,20 @@ public extension VMDisplayViewController {
         navigationController?.setNavigationBarHidden(true, animated: animated)
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        if let root = view.window?.rootViewController {
+            root.setChildForHomeIndicatorAutoHidden(nil)
+            root.setChildViewControllerForPointerLock(nil)
+        }
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        if let root = view.window?.rootViewController {
+            root.setChildForHomeIndicatorAutoHidden(self)
+            root.setChildViewControllerForPointerLock(self)
+        }
         if runInBackground {
             logger.info("Start location tracking to enable running in background")
             UTMLocationManager.sharedInstance().startUpdatingLocation()

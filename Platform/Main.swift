@@ -53,6 +53,8 @@ class Main {
         if jb_increase_memlimit() {
             logger.info("MEM: successfully removed memory limits")
         }
+        // UIViewController patches
+        UIViewController.patch()
         #endif
         UTMApp.main()
     }
