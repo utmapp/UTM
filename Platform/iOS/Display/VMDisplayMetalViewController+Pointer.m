@@ -36,7 +36,7 @@ NS_AVAILABLE_IOS(13.4)
 
 #pragma mark - GCMouse
 
-- (void)initGCMouse {
+- (void)startGCMouse {
     if (@available(iOS 14.0, *)) {  //if ios 14.0 above, use CGMouse instead
         [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(mouseDidBecomeCurrent:) name:GCMouseDidBecomeCurrentNotification object:nil];
         [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(mouseDidStopBeingCurrent:) name:GCMouseDidStopBeingCurrentNotification object:nil];
@@ -48,6 +48,15 @@ NS_AVAILABLE_IOS(13.4)
     }
 }
 
+- (void)stopGCMouse {
+    GCMouse *current = GCMouse.current;
+    [NSNotificationCenter.defaultCenter removeObserver:self name:GCMouseDidBecomeCurrentNotification object:nil];
+    if (current) {
+        // send the current mouse if already connected
+        [NSNotificationCenter.defaultCenter postNotificationName:GCMouseDidStopBeingCurrentNotification object:current];
+    }
+    [NSNotificationCenter.defaultCenter removeObserver:self name:GCMouseDidStopBeingCurrentNotification object:nil];
+}
 
 - (void)mouseDidBecomeCurrent:(NSNotification *)notification API_AVAILABLE(ios(14)) {
     GCMouse *mouse = notification.object;

@@ -98,7 +98,6 @@
     
     [self initTouch];
     [self initGamepad];
-    [self initGCMouse];
     // Pointing device support on iPadOS 13.4 GM or later
     if (@available(iOS 13.4, *)) {
         // Betas of iPadOS 13.4 did not include this API, that's why I check if the class exists
@@ -115,6 +114,12 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     self.prefersHomeIndicatorAutoHidden = YES;
+    [self startGCMouse];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    [self stopGCMouse];
 }
 
 - (void)viewDidAppear:(BOOL)animated {

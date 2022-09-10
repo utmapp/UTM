@@ -25,7 +25,8 @@ NS_AVAILABLE_IOS(13.4)
 @property (nonatomic, readonly) BOOL hasTouchpadPointer;
 
 -(void)initPointerInteraction;
--(void)initGCMouse;
+- (void)startGCMouse;
+- (void)stopGCMouse;
 
 @end
 

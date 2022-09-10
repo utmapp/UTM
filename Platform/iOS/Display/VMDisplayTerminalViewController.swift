@@ -51,9 +51,14 @@ import SwiftUI
         styleTerminal()
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         setupKeyboardMonitor()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        cleanupKeyboardMonitor()
     }
     
     override func enterLive() {
@@ -116,6 +121,13 @@ extension VMDisplayTerminalViewController {
         }
     }
     
+    func cleanupKeyboardMonitor() {
+        if #unavailable(iOS 15) {
+            NotificationCenter.default.removeObserver(self, name: UIWindow.keyboardWillShowNotification, object: nil)
+            NotificationCenter.default.removeObserver(self, name: UIWindow.keyboardWillHideNotification, object: nil)
+        }
+    }
+    
     @objc private func keyboardWillShow(_ notification: NSNotification) {
         guard let keyboardValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
         
@@ -163,7 +175,7 @@ extension VMDisplayTerminalViewController {
 // MARK: - TerminalViewDelegate
 extension VMDisplayTerminalViewController: TerminalViewDelegate {
     func sizeChanged(source: TerminalView, newCols: Int, newRows: Int) {
-        delegate.displayViewSize = CGSize(width: newCols, height: newRows)
+        delegate?.displayViewSize = CGSize(width: newCols, height: newRows)
     }
     
     func setTerminalTitle(source: TerminalView, title: String) {
@@ -176,12 +188,12 @@ extension VMDisplayTerminalViewController: TerminalViewDelegate {
     }
     
     func send(source: TerminalView, data: ArraySlice<UInt8>) {
-        delegate.displayDidAssertUserInteraction()
+        delegate?.displayDidAssertUserInteraction()
         vmSerialPort.write(Data(data))
     }
     
     func scrolled(source: TerminalView, position: Double) {
-        delegate.displayDidAssertUserInteraction()
+        delegate?.displayDidAssertUserInteraction()
     }
     
     func bell(source: TerminalView) {
@@ -194,7 +206,7 @@ extension VMDisplayTerminalViewController: CSPortDelegate {
     }
     
     func port(_ port: CSPort, didError error: String) {
-        delegate.serialDidError(error)
+        delegate?.serialDidError(error)
     }
     
     func port(_ port: CSPort, didRecieveData data: Data) {
