@@ -73,7 +73,7 @@ extension UTMVirtualMachine: ObservableObject {
     func saveUTM() async throws {
         let fileManager = FileManager.default
         let existingPath = path
-        let newPath = existingPath.deletingLastPathComponent().appendingPathComponent(config.name).appendingPathExtension("utm")
+        let newPath = UTMVirtualMachine.virtualMachinePath(config.name, inParentURL: existingPath.deletingLastPathComponent())
         do {
             try await config.save(to: existingPath)
             try await updateRegistryFromConfig()
