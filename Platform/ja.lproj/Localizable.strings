@@ -233,7 +233,7 @@
 "Closing this window will kill the VM." = "このウインドウを閉じると、仮想マシンを強制終了します。";
 
 // Display/VMDisplayAppleWindowController.swift
-"Would you like to install macOS? If an existing operating system is already installed on the primary drive of this VM, then it will be erased." = "macOSをインストールしますか? この仮想マシンのプライマリドライブにすでにオペレーティングシステムがインストールされている場合は消去されます。";
+"Would you like to install macOS? If an existing operating system is already installed on the primary drive of this VM, then it will be erased." = "macOSをインストールしますか? この仮想マシンのプライマリドライブにすでにオペレーティングシステムがインストールされている場合は、消去されます。";
 "Directory sharing" = "ディレクトリ共有";
 "To access the shared directory, the guest OS must have Virtiofs drivers installed. You can then run `sudo mount -t virtiofs share /path/to/share` to mount to the share path." = "共有ディレクトリにアクセスするには、ゲストOSにVirtioFSドライバがインストールされている必要があります。`sudo mount -t virtiofs share /path/to/share`を実行して共有パスにマウントできます。";
 "Read Only" = "読み出しのみ";
@@ -275,7 +275,7 @@
 "If enabled, resizing of the VM window will not be allowed." = "有効にすると、仮想マシンのディスプレイサイズを変更できなくなります。";
 "Do not save VM screenshot to disk" = "仮想マシンのスクリーンショットをディスクに保存しない";
 "If enabled, any existing screenshot will be deleted the next time the VM is started." = "有効にすると、次回仮想マシンを開始したときに既存のスクリーンショットが削除されます。";
-"Hold Control (⌃) for right click" = "control（⌃）を押している間右クリック";
+"Hold Control (⌃) for right click" = "Control（⌃）を押している間は右クリックにする";
 "Use Command+Option (⌘+⌥) for input capture/release" = "入力のキャプチャ/解放にCommand+Option（⌘+⌥）を使用";
 "If disabled, the default combination Control+Option (⌃+⌥) will be used." = "無効にすると、デフォルトのコンビネーションControl+Option（⌃+⌥）が使用されます。";
 "Caps Lock (⇪) is treated as a key" = "Caps Lock（⇪）をキーとして扱う";
@@ -645,7 +645,7 @@
 
 // VMWizardOSLinuxView.swift
 "Virtualization Engine" = "仮想化エンジン";
-"Apple Virtualization is experimental and only for advanced use cases. Leave unchecked to use QEMU, which is recommended." = "Apple仮想化は実験的な機能であり、高度なユースケースにのみ使用します。推奨されるQEMUを使用するには、チェックを外したままにします。";
+"Apple Virtualization is experimental and only for advanced use cases. Leave unchecked to use QEMU, which is recommended." = "Apple仮想化は実験的であり、高度なユースケースにのみ使用します。推奨されるQEMUを使用するには、チェックを外したままにします。";
 "Use Apple Virtualization" = "Apple仮想化を使用";
 "Boot from kernel image" = "カーネルイメージから起動";
 "If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO." = "有効にすると、生のカーネルイメージと初期RAMディスクから直接起動します。そうでない場合、対応したISOから起動します。";
@@ -703,6 +703,7 @@
 "Emulate" = "エミュレート";
 "Slower, but can run other CPU architectures." = "低速ですが、ほかのCPUアーキテクチャを実行することができます。";
 "Virtualization is not supported on your system." = "仮想化はお使いのシステムでは対応していません。";
+"This build does not emulation." = "このビルドではエミュレーションを行いません。";
 "Download prebuilt from UTM Gallery…" = "UTMギャラリーからビルド済みパッケージをダウンロード…";
 "Existing" = "既存";
 
