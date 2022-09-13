@@ -24,7 +24,7 @@ final class UTMViewControllerPatches {
     /// TODO: Some thread safety/race issues etc
     static func patchAll() {
         UIViewController.patchViewController()
-        UIResponder.patchResponder()
+        UIPress.patchPress()
     }
 }
 
@@ -79,44 +79,22 @@ extension UIViewController {
     }
 }
 
-extension UIResponder {
-    private static var _pressesOverride: [UIResponder: UIResponder] = [:]
+extension UIPress {
+    @objc static weak var pressResponderOverride: UIResponder?
     
-    @objc private dynamic func _pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
-        if let override = Self._pressesOverride[self] {
-            override.pressesBegan(presses, with: event)
-        } else if let next = self.next, let override = Self._pressesOverride[next] {
-            override.pressesBegan(presses, with: event)
-        } else {
-            _pressesBegan(presses, with: event)
-        }
+    @objc private dynamic var _responder: UIResponder? {
+        Self.pressResponderOverride ?? self._responder
     }
     
-    @objc private dynamic func _pressesEnded(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
-        if let override = Self._pressesOverride[self] {
-            override.pressesEnded(presses, with: event)
-        } else if let next = self.next, let override = Self._pressesOverride[next] {
-            override.pressesEnded(presses, with: event)
-        } else {
-            _pressesEnded(presses, with: event)
+    /// On iOS 15.0, there is a bug where SwiftUI does not propogate the presses event down
+    /// to a child view controller. This is not seen in iOS 14.5 or iOS 15.1.
+    fileprivate static func patchPress() {
+        if #available(iOS 15.0, *) {
+            if #unavailable(iOS 15.1) {
+                patch(#selector(getter: Self.responder),
+                      with: #selector(getter: Self._responder),
+                      class: Self.self)
+            }
         }
-    }
-    
-    @objc func setChildForPressesHandler(_ value: UIResponder?) {
-        if let value = value {
-            Self._pressesOverride[self] = value
-        } else {
-            Self._pressesOverride.removeValue(forKey: self)
-        }
-    }
-    
-    /// A view controller inside SwiftUI may not receive press events.
-    fileprivate static func patchResponder() {
-        patch(#selector(Self.pressesBegan(_:with:)),
-              with: #selector(Self._pressesBegan(_:with:)),
-              class: Self.self)
-        patch(#selector(Self.pressesEnded(_:with:)),
-              with: #selector(Self._pressesEnded(_:with:)),
-              class: Self.self)
     }
 }

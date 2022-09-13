@@ -44,7 +44,7 @@ public extension VMDisplayViewController {
         if let parent = parent {
             parent.setChildForHomeIndicatorAutoHidden(nil)
             parent.setChildViewControllerForPointerLock(nil)
-            parent.setChildForPressesHandler(nil)
+            UIPress.pressResponderOverride = nil
         }
     }
     
@@ -53,7 +53,7 @@ public extension VMDisplayViewController {
         if let parent = parent {
             parent.setChildForHomeIndicatorAutoHidden(self)
             parent.setChildViewControllerForPointerLock(self)
-            parent.setChildForPressesHandler(self)
+            UIPress.pressResponderOverride = self
         }
         if runInBackground {
             logger.info("Start location tracking to enable running in background")
