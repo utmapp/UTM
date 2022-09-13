@@ -21,8 +21,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface VMDisplayMetalViewController (Keyboard) <VMKeyboardViewDelegate>
 
-@property (nonatomic, readonly) NSArray<UIKeyCommand *> *keyCommands;
-
 - (IBAction)keyboardDonePressed:(UIButton *)sender;
 - (IBAction)keyboardPastePressed:(UIButton *)sender;
 - (IBAction)customKeyTouchDown:(VMKeyboardButton *)sender;

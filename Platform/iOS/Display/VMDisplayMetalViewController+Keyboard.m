@@ -85,118 +85,6 @@
     }
 }
 
-#pragma mark - Hardware Keyboard (< iOS 13.4)
-
-static NSString *kAllKeys = @"`1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./ \t\r\n\b";
-
-- (void)handleKeyCommand:(UIKeyCommand *)command {
-    NSString *key = command.input;
-    int scancode = 0;
-    if (command.modifierFlags & UIKeyModifierAlphaShift) {
-        [self sendExtendedKey:kCSInputKeyPress code:0x3A];
-    }
-    if (command.modifierFlags & UIKeyModifierShift) {
-        [self sendExtendedKey:kCSInputKeyPress code:0x2A];
-    }
-    if (command.modifierFlags & UIKeyModifierControl) {
-        [self sendExtendedKey:kCSInputKeyPress code:0x1D];
-    }
-    if (command.modifierFlags & UIKeyModifierAlternate) {
-        [self sendExtendedKey:kCSInputKeyPress code:0x38];
-    }
-    if (command.modifierFlags & UIKeyModifierCommand) {
-        [self sendExtendedKey:kCSInputKeyPress code:0xE05B];
-    }
-    if ([key isEqualToString:UIKeyInputEscape])
-        scancode = 0x01;
-    else if ([key isEqualToString:UIKeyInputUpArrow])
-        scancode = 0xE048;
-    else if ([key isEqualToString:UIKeyInputDownArrow])
-        scancode = 0xE050;
-    else if ([key isEqualToString:UIKeyInputLeftArrow])
-        scancode = 0xE04B;
-    else if ([key isEqualToString:UIKeyInputRightArrow])
-        scancode = 0xE04D;
-    if (scancode != 0) {
-        [self sendExtendedKey:kCSInputKeyPress code:scancode];
-    } else {
-        [self.keyboardView insertText:key];
-    }
-    [self onDelay:0.05f action:^{
-        if (scancode != 0) {
-            [self sendExtendedKey:kCSInputKeyRelease code:scancode];
-        }
-        if (command.modifierFlags & UIKeyModifierAlphaShift) {
-            [self sendExtendedKey:kCSInputKeyRelease code:0x3A];
-        }
-        if (command.modifierFlags & UIKeyModifierShift) {
-            [self sendExtendedKey:kCSInputKeyRelease code:0x2A];
-        }
-        if (command.modifierFlags & UIKeyModifierControl) {
-            [self sendExtendedKey:kCSInputKeyRelease code:0x1D];
-        }
-        if (command.modifierFlags & UIKeyModifierAlternate) {
-            [self sendExtendedKey:kCSInputKeyRelease code:0x38];
-        }
-        if (command.modifierFlags & UIKeyModifierCommand) {
-            [self sendExtendedKey:kCSInputKeyRelease code:0xE05B];
-        }
-        [self resetModifierToggles];
-    }];
-}
-
-- (NSArray<UIKeyCommand *> *)keyCommands {
-    // In iOS 13.4, we use the event handlers pressesBegan and pressesEnded
-    if (@available(iOS 13.4, *)) {
-        return nil;
-    }
-    
-    if (self.mutableKeyCommands != nil)
-        return self.mutableKeyCommands;
-    NSArray<NSString *> *specialKeys = @[UIKeyInputEscape, UIKeyInputUpArrow, UIKeyInputDownArrow,
-                                         UIKeyInputLeftArrow, UIKeyInputRightArrow];
-    self.mutableKeyCommands = [NSMutableArray new];
-    for (int i = 0; i < 32; i++) {
-        NSInteger modifier = 0;
-        if (i & 1) {
-            modifier |= UIKeyModifierAlphaShift;
-        }
-        if (i & 2) {
-            modifier |= UIKeyModifierShift;
-        }
-        if (i & 4) {
-            modifier |= UIKeyModifierControl;
-        }
-        if (i & 8) {
-            modifier |= UIKeyModifierAlternate;
-        }
-        if (i & 16) {
-            modifier |= UIKeyModifierCommand;
-        }
-        // add all normal keys
-        [kAllKeys enumerateSubstringsInRange:NSMakeRange(0, kAllKeys.length) options:NSStringEnumerationByComposedCharacterSequences usingBlock:^(NSString * _Nullable substring, NSRange substringRange, NSRange enclosingRange, BOOL * _Nonnull stop) {
-            [self addKey:substring toCommands:self.mutableKeyCommands withModifiers:modifier];
-        }];
-        // add special keys
-        for (NSString *key in specialKeys) {
-            [self addKey:key toCommands:self.mutableKeyCommands withModifiers:modifier];
-        }
-        // add just modifier keys
-        if (modifier) {
-            [self addKey:@"" toCommands:self.mutableKeyCommands withModifiers:modifier];
-        }
-    }
-    return self.mutableKeyCommands;
-}
-
-- (void)addKey:(NSString *)key toCommands:(NSMutableArray<UIKeyCommand *> *)commands withModifiers:(UIKeyModifierFlags)modifiers {
-    UIKeyCommand *command = [UIKeyCommand keyCommandWithInput:key
-                                                modifierFlags:modifiers
-                                                       action:@selector(handleKeyCommand:)];
-    [commands addObject:command];
-    
-}
-
 #pragma mark - iOS 13.4+ key event handling
 
 // from: https://download.microsoft.com/download/1/6/1/161ba512-40e2-4cc9-843a-923143f3456c/translate.pdf
@@ -287,12 +175,10 @@ static int API_AVAILABLE(ios(13.4)) hidToPs2(UIKeyboardHIDUsage hidCode) {
 - (void)pressesBegan:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event {
     BOOL didHandleEvent = NO;
     for (UIPress *press in presses) {
-        if (@available(iOS 13.4, *)) {
-            int code = hidToPs2(press.key.keyCode);
-            if (code) {
-                [self sendExtendedKey:kCSInputKeyPress code:code];
-                didHandleEvent = YES;
-            }
+        int code = hidToPs2(press.key.keyCode);
+        if (code) {
+            [self sendExtendedKey:kCSInputKeyPress code:code];
+            didHandleEvent = YES;
         }
     }
     if (!didHandleEvent) {
@@ -303,14 +189,12 @@ static int API_AVAILABLE(ios(13.4)) hidToPs2(UIKeyboardHIDUsage hidCode) {
 - (void)pressesEnded:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event {
     BOOL didHandleEvent = NO;
     for (UIPress *press in presses) {
-        if (@available(iOS 13.4, *)) {
-            int code = hidToPs2(press.key.keyCode);
-            if (code) {
-                [self sendExtendedKey:kCSInputKeyRelease code:code];
-                didHandleEvent = YES;
-            }
-            [self resetModifierToggles];
+        int code = hidToPs2(press.key.keyCode);
+        if (code) {
+            [self sendExtendedKey:kCSInputKeyRelease code:code];
+            didHandleEvent = YES;
         }
+        [self resetModifierToggles];
     }
     if (!didHandleEvent) {
         [super pressesEnded:presses withEvent:event];
