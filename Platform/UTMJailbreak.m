@@ -279,6 +279,7 @@ bool jb_has_usb_entitlement(void) {
     return entitlements[@"com.apple.security.exception.iokit-user-client-class"] != nil;
 }
 
+#if TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR
 #define HV_CALL_VM_GET_CAPABILITIES 0
 #define HV_UNSUPPORTED ((int32_t)0xfae9400f)
 
@@ -296,6 +297,11 @@ bool jb_has_hypervisor(void) {
     }
     return status != HV_UNSUPPORTED && [entitlements[@"com.apple.private.hypervisor"] boolValue];
 }
+#else
+bool jb_has_hypervisor(void) {
+    return false;
+}
+#endif
 #endif
 
 bool jb_has_cs_execseg_allow_unsigned(void) {
