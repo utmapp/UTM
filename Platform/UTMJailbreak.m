@@ -270,7 +270,7 @@ bool jb_has_usb_entitlement(void) {
     return entitled;
 }
 
-bool jb_has_hypervisor_entitlement(void) {
+bool jb_has_hypervisor(void) {
     return true;
 }
 #else
@@ -279,9 +279,22 @@ bool jb_has_usb_entitlement(void) {
     return entitlements[@"com.apple.security.exception.iokit-user-client-class"] != nil;
 }
 
-bool jb_has_hypervisor_entitlement(void) {
+#define HV_CALL_VM_GET_CAPABILITIES 0
+#define HV_UNSUPPORTED ((int32_t)0xfae9400f)
+
+__attribute__((naked)) uint64_t hv_trap(unsigned int hv_call, void* hv_arg) {
+    asm volatile("mov x16, #-0x5\n"
+               "svc 0x80\n"
+               "ret\n");
+}
+
+bool jb_has_hypervisor(void) {
     NSDictionary *entitlements = cached_app_entitlements();
-    return entitlements[@"com.apple.private.hypervisor"] != nil;
+    static int64_t status = 0;
+    if (!status) {
+        status = hv_trap(HV_CALL_VM_GET_CAPABILITIES, NULL);
+    }
+    return status != HV_UNSUPPORTED && [entitlements[@"com.apple.private.hypervisor"] boolValue];
 }
 #endif
 

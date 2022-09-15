@@ -49,7 +49,7 @@ struct VMConfigQEMUView: View {
     }
     
     private var supportsHypervisor: Bool {
-        guard jb_has_hypervisor_entitlement() else {
+        guard jb_has_hypervisor() else {
             return false
         }
         #if arch(arm64)

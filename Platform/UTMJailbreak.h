@@ -21,7 +21,7 @@
 
 bool jb_has_jit_entitlement(void);
 bool jb_has_usb_entitlement(void);
-bool jb_has_hypervisor_entitlement(void);
+bool jb_has_hypervisor(void);
 bool jb_has_cs_disabled(void);
 bool jb_has_cs_execseg_allow_unsigned(void);
 bool jb_enable_ptrace_hack(void);

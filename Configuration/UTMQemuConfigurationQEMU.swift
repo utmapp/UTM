@@ -92,7 +92,7 @@ struct UTMQemuConfigurationQEMU: Codable {
             debugLogURL = dataURL.appendingPathComponent(QEMUPackageFileName.debugLog.rawValue)
             efiVarsURL = dataURL.appendingPathComponent(QEMUPackageFileName.efiVariables.rawValue)
         }
-        if !jb_has_hypervisor_entitlement() {
+        if !jb_has_hypervisor() {
             hasHypervisor = false
         }
     }
@@ -127,11 +127,11 @@ extension UTMQemuConfigurationQEMU {
         }
         #if arch(arm64)
         if architecture == .aarch64 {
-            hasHypervisor = jb_has_hypervisor_entitlement()
+            hasHypervisor = jb_has_hypervisor()
         }
         #elseif arch(x86_64)
         if architecture == .x86_64 {
-            hasHypervisor = jb_has_hypervisor_entitlement()
+            hasHypervisor = jb_has_hypervisor()
         }
         #endif
     }
