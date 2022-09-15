@@ -181,6 +181,10 @@ deb )
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>com.apple.developer.kernel.increased-memory-limit</key>
+	<true/>
+	<key>com.apple.developer.kernel.extended-virtual-addressing</key>
+	<true/>
 	<key>dynamic-codesigning</key>
 	<true/>
 	<key>com.apple.private.iokit.IOServiceSetAuthorizationID</key>
@@ -194,9 +198,9 @@ deb )
 	<true/>
 	<key>com.apple.vm.device-access</key>
 	<true/>
-	<key>com.apple.developer.kernel.increased-memory-limit</key>
+	<key>com.apple.private.hypervisor</key>
 	<true/>
-	<key>com.apple.developer.kernel.extended-virtual-addressing</key>
+	<key>com.apple.private.memorystatus</key>
 	<true/>
 </dict>
 </plist>
