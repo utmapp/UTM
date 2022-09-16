@@ -48,19 +48,6 @@ struct VMConfigQEMUView: View {
         }
     }
     
-    private var supportsHypervisor: Bool {
-        guard jb_has_hypervisor() else {
-            return false
-        }
-        #if arch(arm64)
-        return system.architecture == .aarch64
-        #elseif arch(x86_64)
-        return system.architecture == .x86_64
-        #else
-        return false
-        #endif
-    }
-    
     var body: some View {
         VStack {
             Form {
@@ -86,7 +73,6 @@ struct VMConfigQEMUView: View {
                         .help("This is required to boot Windows 11.")
                     #endif
                     Toggle("Use Hypervisor", isOn: $config.hasHypervisor)
-                        .disabled(!supportsHypervisor)
                         .help("Only available if host architecture matches the target. Otherwise, TCG emulation is used.")
                     Toggle("Use local time for base clock", isOn: $config.hasRTCLocalTime)
                         .help("If checked, use local time for RTC which is required for Windows. Otherwise, use UTC clock.")

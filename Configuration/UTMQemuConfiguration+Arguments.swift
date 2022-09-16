@@ -256,11 +256,24 @@ import Foundation
         #endif
     }
     
+    private var supportsHypervisor: Bool {
+        guard jb_has_hypervisor() else {
+            return false
+        }
+        #if arch(arm64)
+        return system.architecture == .aarch64
+        #elseif arch(x86_64)
+        return system.architecture == .x86_64
+        #else
+        return false
+        #endif
+    }
+    
     @QEMUArgumentBuilder private var machineArguments: [QEMUArgument] {
         f("-machine")
         system.target
         f(machineProperties)
-        if qemu.hasHypervisor {
+        if qemu.hasHypervisor && supportsHypervisor {
             f("-accel")
             f("hvf")
         } else {

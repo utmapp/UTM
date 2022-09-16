@@ -92,9 +92,6 @@ struct UTMQemuConfigurationQEMU: Codable {
             debugLogURL = dataURL.appendingPathComponent(QEMUPackageFileName.debugLog.rawValue)
             efiVarsURL = dataURL.appendingPathComponent(QEMUPackageFileName.efiVariables.rawValue)
         }
-        if !jb_has_hypervisor() {
-            hasHypervisor = false
-        }
     }
     
     func encode(to encoder: Encoder) throws {
