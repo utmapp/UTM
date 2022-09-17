@@ -827,9 +827,9 @@ class UTMData: ObservableObject {
     /// - Parameters:
     ///   - vm: VM to send mouse/tablet coordinates to
     ///   - components: Data (see UTM Wiki for details)
-    func automationSendMouse(to vm: UTMVirtualMachine, urlComponents components: URLComponents) {
+    @MainActor func automationSendMouse(to vm: UTMVirtualMachine, urlComponents components: URLComponents) {
         guard let qemuVm = vm as? UTMQemuVirtualMachine else { return } // FIXME: implement for Apple VM
-        guard qemuVm.config.qemuHasDisplay else { return }
+        guard !qemuVm.qemuConfig.displays.isEmpty else { return }
         guard let queryItems = components.queryItems else { return }
         /// Parse targeted position
         var x: CGFloat? = nil

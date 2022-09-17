@@ -164,15 +164,6 @@ import Foundation
         }
     }
     
-    @objc var qemuInputLegacy: Bool {
-        if wrappedValue is UTMQemuConfiguration {
-            return qemuConfig!._input.usbBusSupport == .disabled || qemuConfig!._qemu.hasPS2Controller
-        } else {
-            fatalError()
-        }
-    }
-    
-    //FIXME: support multiple sound cards
     @objc var qemuHasAudio: Bool {
         if wrappedValue is UTMQemuConfiguration {
             return !qemuConfig!._sound.isEmpty
@@ -181,7 +172,6 @@ import Foundation
         }
     }
     
-    //FIXME: support multiple displays
     @objc var qemuHasDisplay: Bool {
         if wrappedValue is UTMQemuConfiguration {
             return !qemuConfig!._displays.isEmpty
@@ -193,38 +183,6 @@ import Foundation
     @objc var qemuHasTerminal: Bool {
         if wrappedValue is UTMQemuConfiguration {
             return !(qemuConfig!._serials.filter { $0.mode == .builtin }).isEmpty
-        } else {
-            fatalError()
-        }
-    }
-    
-    @objc var qemuDisplayUpscaler: MTLSamplerMinMagFilter {
-        if wrappedValue is UTMQemuConfiguration {
-            return qemuConfig!._displays.first!.upscalingFilter.metalSamplerMinMagFilter
-        } else {
-            fatalError()
-        }
-    }
-    
-    @objc var qemuDisplayDownscaler: MTLSamplerMinMagFilter {
-        if wrappedValue is UTMQemuConfiguration {
-            return qemuConfig!._displays.first!.downscalingFilter.metalSamplerMinMagFilter
-        } else {
-            fatalError()
-        }
-    }
-    
-    @objc var qemuDisplayIsDynamicResolution: Bool {
-        if wrappedValue is UTMQemuConfiguration {
-            return qemuConfig!._displays.first!.isDynamicResolution
-        } else {
-            fatalError()
-        }
-    }
-    
-    @objc var qemuDisplayIsNativeResolution: Bool {
-        if wrappedValue is UTMQemuConfiguration {
-            return qemuConfig!._displays.first!.isNativeResolution
         } else {
             fatalError()
         }
