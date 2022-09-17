@@ -589,7 +589,7 @@ extension VMDisplayQemuWindowController {
         guard id < vmQemuConfig.displays.count else {
             return nil
         }
-        guard let primary = self as? VMDisplayQemuMetalWindowController else {
+        guard let primary = (primaryWindow ?? self) as? VMDisplayQemuMetalWindowController else {
             return nil
         }
         let secondary = VMDisplayQemuMetalWindowController(secondaryFromDisplay: display, primary: primary, vm: qemuVM, id: id)
