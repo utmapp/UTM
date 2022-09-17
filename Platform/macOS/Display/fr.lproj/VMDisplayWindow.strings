@@ -15,7 +15,7 @@
 "Bkx-Ph-j0D.paletteLabel" = "Arrêter";
 
 /* Class = "NSToolbarItem"; toolTip = "Shuts down and stops the VM"; ObjectID = "Bkx-Ph-j0D"; */
-"Bkx-Ph-j0D.toolTip" = "Éteint et arrête la VM";
+"Bkx-Ph-j0D.toolTip" = "Arrête et stoppe la VM";
 
 /* Class = "NSToolbarItem"; label = "Capture Mouse"; ObjectID = "FN7-zs-mWC"; */
 "FN7-zs-mWC.label" = "Capturer la souris";
