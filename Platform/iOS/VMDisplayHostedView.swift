@@ -33,7 +33,7 @@ struct VMDisplayHostedView: UIViewControllerRepresentable {
         }
         
         @MainActor var qemuInputLegacy: Bool {
-            vmConfig.input.usbBusSupport == .disabled || vmConfig.qemu.hasPS2Controller
+            vmConfig.input.usbBusSupport == .disabled
         }
         
         @MainActor var qemuDisplayUpscaler: MTLSamplerMinMagFilter {
