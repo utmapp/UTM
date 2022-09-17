@@ -131,9 +131,11 @@ struct VMSettingsView: View {
     }
     
     func save() {
-        presentationMode.wrappedValue.dismiss()
         data.busyWorkAsync {
             try await data.save(vm: vm)
+            await MainActor.run {
+                presentationMode.wrappedValue.dismiss()
+            }
         }
     }
     

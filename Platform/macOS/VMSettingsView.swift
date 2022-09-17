@@ -50,12 +50,14 @@ struct VMSettingsView<Config: UTMConfiguration>: View {
     }
     
     func save() {
-        presentationMode.wrappedValue.dismiss()
         data.busyWorkAsync {
             if let existing = self.vm {
                 try await data.save(vm: existing)
             } else {
                 _ = try await data.create(config: self.config)
+            }
+            await MainActor.run {
+                presentationMode.wrappedValue.dismiss()
             }
         }
     }
