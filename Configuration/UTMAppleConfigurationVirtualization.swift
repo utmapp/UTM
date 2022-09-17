@@ -111,7 +111,7 @@ extension UTMAppleConfigurationVirtualization {
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
 @available(macOS 11, *)
 extension UTMAppleConfigurationVirtualization {
-    func fillVZConfiguration(_ vzconfig: VZVirtualMachineConfiguration) {
+    func fillVZConfiguration(_ vzconfig: VZVirtualMachineConfiguration) throws {
         if hasBalloon {
             vzconfig.memoryBalloonDevices = [VZVirtioTraditionalMemoryBalloonDeviceConfiguration()]
         }
@@ -142,14 +142,23 @@ extension UTMAppleConfigurationVirtualization {
                 }
                 vzconfig.pointingDevices = [device]
             }
+        } else {
+            if hasAudio || hasKeyboard || pointer != .disabled {
+                throw UTMAppleConfigurationError.featureNotSupported
+            }
         }
         #endif
         if #available(macOS 13, *) {
             #if arch(arm64)
-            if hasRosetta == true, let rosettaDirectoryShare = try? VZLinuxRosettaDirectoryShare() {
+            if hasRosetta == true {
+                let rosettaDirectoryShare = try VZLinuxRosettaDirectoryShare()
                 let fileSystemDevice = VZVirtioFileSystemDeviceConfiguration(tag: "rosetta")
                 fileSystemDevice.share = rosettaDirectoryShare
                 vzconfig.directorySharingDevices.append(fileSystemDevice)
+            }
+            #else
+            if hasRosetta == true {
+                throw UTMAppleConfigurationError.rosettaNotSupported
             }
             #endif
             if hasClipboardSharing {
@@ -162,6 +171,10 @@ extension UTMAppleConfigurationVirtualization {
                 let consoleDevice = VZVirtioConsoleDeviceConfiguration()
                 consoleDevice.ports[0] = consolePort
                 vzconfig.consoleDevices.append(consoleDevice)
+            }
+        } else {
+            if hasRosetta == true || hasClipboardSharing {
+                throw UTMAppleConfigurationError.featureNotSupported
             }
         }
     }

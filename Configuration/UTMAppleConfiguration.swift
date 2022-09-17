@@ -106,6 +106,7 @@ enum UTMAppleConfigurationError: Error {
     case kernelNotSpecified
     case hardwareModelInvalid
     case rosettaNotSupported
+    case featureNotSupported
 }
 
 extension UTMAppleConfigurationError: LocalizedError {
@@ -121,6 +122,8 @@ extension UTMAppleConfigurationError: LocalizedError {
             return NSLocalizedString("This virtual machine contains an invalid hardware model. The configuration may be corrupted or is outdated.", comment: "UTMAppleConfiguration")
         case .rosettaNotSupported:
             return NSLocalizedString("Rosetta is not supported on the current host machine.", comment: "UTMAppleConfiguration")
+        case .featureNotSupported:
+            return NSLocalizedString("The host operating system needs to be updated to support one or more features requested by the guest.", comment: "UTMAppleConfiguration")
         }
     }
 }
@@ -249,30 +252,32 @@ extension UTMAppleConfiguration {
 @available(macOS 11, *)
 @MainActor extension UTMAppleConfiguration {
     var appleVZConfiguration: VZVirtualMachineConfiguration {
-        let vzconfig = VZVirtualMachineConfiguration()
-        system.fillVZConfiguration(vzconfig)
-        if #available(macOS 12, *) {
-            let fsConfig = VZVirtioFileSystemDeviceConfiguration(tag: "share")
-            fsConfig.share = UTMAppleConfigurationSharedDirectory.makeDirectoryShare(from: sharedDirectories)
-            vzconfig.directorySharingDevices.append(fsConfig)
-        }
-        vzconfig.storageDevices = drives.compactMap { drive in
-            guard let attachment = try? drive.vzDiskImage() else {
-                return nil
+        get throws {
+            let vzconfig = VZVirtualMachineConfiguration()
+            try system.fillVZConfiguration(vzconfig)
+            if #available(macOS 12, *) {
+                let fsConfig = VZVirtioFileSystemDeviceConfiguration(tag: "share")
+                fsConfig.share = UTMAppleConfigurationSharedDirectory.makeDirectoryShare(from: sharedDirectories)
+                vzconfig.directorySharingDevices.append(fsConfig)
+            } else if !sharedDirectories.isEmpty {
+                throw UTMAppleConfigurationError.featureNotSupported
             }
-            if #available(macOS 13, *), drive.isExternal {
-                return VZUSBMassStorageDeviceConfiguration(attachment: attachment)
-            } else {
-                return VZVirtioBlockDeviceConfiguration(attachment: attachment)
+            vzconfig.storageDevices = try drives.compactMap { drive in
+                guard let attachment = try drive.vzDiskImage() else {
+                    return nil
+                }
+                if #available(macOS 13, *), drive.isExternal {
+                    return VZUSBMassStorageDeviceConfiguration(attachment: attachment)
+                } else {
+                    return VZVirtioBlockDeviceConfiguration(attachment: attachment)
+                }
             }
-        }
-        vzconfig.networkDevices.append(contentsOf: networks.compactMap({ $0.vzNetworking() }))
-        vzconfig.serialPorts.append(contentsOf: serials.compactMap({ $0.vzSerial() }))
-        // add remaining devices
-        virtualization.fillVZConfiguration(vzconfig)
-        #if arch(arm64)
-        if #available(macOS 12, *) {
-            if system.boot.operatingSystem == .macOS {
+            vzconfig.networkDevices.append(contentsOf: networks.compactMap({ $0.vzNetworking() }))
+            vzconfig.serialPorts.append(contentsOf: serials.compactMap({ $0.vzSerial() }))
+            // add remaining devices
+            try virtualization.fillVZConfiguration(vzconfig)
+            #if arch(arm64)
+            if #available(macOS 12, *), system.boot.operatingSystem == .macOS {
                 let graphics = VZMacGraphicsDeviceConfiguration()
                 graphics.displays = displays.map({ display in
                     display.vzMacDisplay()
@@ -281,10 +286,8 @@ extension UTMAppleConfiguration {
                     vzconfig.graphicsDevices = [graphics]
                 }
             }
-        }
-        #endif
-        if #available(macOS 13, *) {
-            if system.boot.operatingSystem != .macOS {
+            #endif
+            if #available(macOS 13, *), system.boot.operatingSystem != .macOS {
                 let graphics = VZVirtioGraphicsDeviceConfiguration()
                 graphics.scanouts = displays.map({ display in
                     display.vzVirtioDisplay()
@@ -292,9 +295,11 @@ extension UTMAppleConfiguration {
                 if graphics.scanouts.count > 0 {
                     vzconfig.graphicsDevices = [graphics]
                 }
+            } else if system.boot.operatingSystem != .macOS && !displays.isEmpty {
+                throw UTMAppleConfigurationError.featureNotSupported
             }
+            return vzconfig
         }
-        return vzconfig
     }
 }
 
