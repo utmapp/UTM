@@ -32,6 +32,8 @@ class VMDisplayQemuTerminalWindowController: VMDisplayQemuWindowController, VMDi
         }
     }
     
+    private var isSizeChangeIgnored: Bool = true
+    
     convenience init(secondaryFromSerialPort serialPort: CSPort, vm: UTMQemuVirtualMachine, id: Int) {
         self.init(vm: vm, id: id)
         self.vmSerialPort = serialPort
@@ -50,6 +52,7 @@ class VMDisplayQemuTerminalWindowController: VMDisplayQemuWindowController, VMDi
         super.enterLive()
         captureMouseToolbarItem.isEnabled = false
         setupTerminal(terminalView, using: serialConfig!.terminal!, id: id, for: window!)
+        isSizeChangeIgnored = false
     }
     
     override func enterSuspended(isBusy busy: Bool) {
@@ -90,7 +93,9 @@ class VMDisplayQemuTerminalWindowController: VMDisplayQemuWindowController, VMDi
 
 extension VMDisplayQemuTerminalWindowController: TerminalViewDelegate {
     func sizeChanged(source: TerminalView, newCols: Int, newRows: Int) {
-        sizeChanged(id: id, newCols: newCols, newRows: newRows)
+        if !isSizeChangeIgnored {
+            sizeChanged(id: id, newCols: newCols, newRows: newRows)
+        }
     }
     
     func setTerminalTitle(source: TerminalView, title: String) {

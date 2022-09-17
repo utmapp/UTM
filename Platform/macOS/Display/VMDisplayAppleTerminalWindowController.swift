@@ -41,6 +41,8 @@ class VMDisplayAppleTerminalWindowController: VMDisplayAppleWindowController, VM
     private(set) var isPrimary: Bool = true
     private(set) var index: Int = 0
     
+    private var isSizeChangeIgnored: Bool = true
+    
     convenience init(primaryForIndex index: Int, vm: UTMAppleVirtualMachine, onClose: ((Notification) -> Void)?) {
         self.init(vm: vm, onClose: onClose)
         self.index = index
@@ -59,6 +61,7 @@ class VMDisplayAppleTerminalWindowController: VMDisplayAppleWindowController, VM
     
     override func updateWindowFrame() {
         setupTerminal(terminalView, using: serialConfig.terminal!, id: index, for: window!)
+        isSizeChangeIgnored = false
         super.updateWindowFrame()
     }
     
@@ -77,7 +80,9 @@ class VMDisplayAppleTerminalWindowController: VMDisplayAppleWindowController, VM
 // MARK: - Terminal view delegate
 extension VMDisplayAppleTerminalWindowController: TerminalViewDelegate, UTMSerialPortDelegate {
     func sizeChanged(source: TerminalView, newCols: Int, newRows: Int) {
-        sizeChanged(id: index, newCols: newCols, newRows: newRows)
+        if !isSizeChangeIgnored {
+            sizeChanged(id: index, newCols: newCols, newRows: newRows)
+        }
     }
     
     func setTerminalTitle(source: TerminalView, title: String) {

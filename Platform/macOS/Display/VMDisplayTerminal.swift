@@ -52,7 +52,6 @@ extension VMDisplayTerminal {
         terminalView.getTerminal().setCursorStyle(config.hasCursorBlink ? .blinkBlock : .steadyBlock)
         let size = window.frameRect(forContentRect: terminalView.getOptimalFrameSize()).size
         let frame = CGRect(origin: window.frame.origin, size: size)
-        window.minSize = size
         window.setFrame(frame, display: false, animate: true)
     }
     
