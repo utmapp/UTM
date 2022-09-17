@@ -56,7 +56,6 @@ struct VMConfigAppleBootView: View {
                 guard newValue != currentOperatingSystem else {
                     return
                 }
-                config.boot.hasUefiBoot = false
                 if newValue == .linux {
                     if #available(macOS 13, *) {
                         config.boot.hasUefiBoot = true
@@ -77,7 +76,7 @@ struct VMConfigAppleBootView: View {
                 importBootloaderSelection = nil
                 operatingSystem = currentOperatingSystem
             }.onChange(of: config.boot.hasUefiBoot) { newValue in
-                if !newValue && operatingSystem == .linux {
+                if !newValue && operatingSystem == .linux && config.boot.linuxKernelURL == nil {
                     alertBootloaderSelection = .kernel
                     operatingSystem = .none
                 }
@@ -150,6 +149,7 @@ struct VMConfigAppleBootView: View {
                 await MainActor.run {
                     config.boot.operatingSystem = .linux
                     config.boot.linuxKernelURL = url
+                    config.boot.hasUefiBoot = false
                 }
             case .ramdisk:
                 await MainActor.run {
