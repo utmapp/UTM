@@ -27,7 +27,7 @@ struct VMConfigAppleVirtualizationView: View {
             if #available(macOS 12, *) {
                 Toggle("Enable Sound", isOn: $config.hasAudio)
                 Toggle("Enable Keyboard", isOn: $config.hasKeyboard)
-                VMConfigConstantPicker("Pointer", selection: $config.pointer)
+                Toggle("Enable Pointer", isOn: $config.hasPointer)
             }
             #if arch(arm64)
             if #available(macOS 13, *), operatingSystem == .linux {

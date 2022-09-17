@@ -43,7 +43,7 @@ struct UTMAppleConfigurationVirtualization: Codable {
     
     var hasKeyboard: Bool = true
     
-    var pointer: PointerDevice = .mouse
+    var hasPointer: Bool = true
     
     var hasRosetta: Bool?
     
@@ -54,7 +54,7 @@ struct UTMAppleConfigurationVirtualization: Codable {
         case hasBalloon = "Balloon"
         case hasEntropy = "Entropy"
         case hasKeyboard = "Keyboard"
-        case pointer = "Pointer"
+        case hasPointer = "Pointer"
         case rosetta = "Rosetta"
         case hasClipboardSharing = "ClipboardSharing"
     }
@@ -68,7 +68,11 @@ struct UTMAppleConfigurationVirtualization: Codable {
         hasBalloon = try values.decode(Bool.self, forKey: .hasBalloon)
         hasEntropy = try values.decode(Bool.self, forKey: .hasEntropy)
         hasKeyboard = try values.decode(Bool.self, forKey: .hasKeyboard)
-        pointer = try values.decode(PointerDevice.self, forKey: .pointer)
+        if let legacyPointer = try? values.decode(PointerDevice.self, forKey: .hasPointer) {
+            hasPointer = legacyPointer != .disabled
+        } else {
+            hasPointer = try values.decode(Bool.self, forKey: .hasPointer)
+        }
         #if arch(arm64)
         if #available(macOS 13, *) {
             hasRosetta = try values.decodeIfPresent(Bool.self, forKey: .rosetta)
@@ -83,7 +87,7 @@ struct UTMAppleConfigurationVirtualization: Codable {
         try container.encode(hasBalloon, forKey: .hasBalloon)
         try container.encode(hasEntropy, forKey: .hasEntropy)
         try container.encode(hasKeyboard, forKey: .hasKeyboard)
-        try container.encode(pointer, forKey: .pointer)
+        try container.encode(hasPointer, forKey: .hasPointer)
         try container.encodeIfPresent(hasRosetta, forKey: .rosetta)
         try container.encode(hasClipboardSharing, forKey: .hasClipboardSharing)
     }
@@ -101,7 +105,7 @@ extension UTMAppleConfigurationVirtualization {
         if #available(macOS 12, *) {
             hasAudio = oldConfig.isAudioEnabled
             hasKeyboard = oldConfig.isKeyboardEnabled
-            pointer = oldConfig.isPointingEnabled ? .mouse : .disabled
+            hasPointer = oldConfig.isPointingEnabled
         }
     }
 }
@@ -132,18 +136,11 @@ extension UTMAppleConfigurationVirtualization {
             if hasKeyboard {
                 vzconfig.keyboards = [VZUSBKeyboardConfiguration()]
             }
-            if pointer != .disabled {
-                let device: VZPointingDeviceConfiguration
-                if #available(macOS 13, *) {
-                    // FIXME: implement trackpad
-                    device = VZUSBScreenCoordinatePointingDeviceConfiguration()
-                } else {
-                    device = VZUSBScreenCoordinatePointingDeviceConfiguration()
-                }
-                vzconfig.pointingDevices = [device]
+            if hasPointer {
+                vzconfig.pointingDevices = [VZUSBScreenCoordinatePointingDeviceConfiguration()]
             }
         } else {
-            if hasAudio || hasKeyboard || pointer != .disabled {
+            if hasAudio || hasKeyboard || hasPointer {
                 throw UTMAppleConfigurationError.featureNotSupported
             }
         }

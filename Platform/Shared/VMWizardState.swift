@@ -306,7 +306,7 @@ enum VMWizardOS: String, Identifiable {
                 config.displays = [UTMAppleConfigurationDisplay(width: 1920, height: 1200)]
                 config.virtualization.hasAudio = true
                 config.virtualization.hasKeyboard = true
-                config.virtualization.pointer = .mouse
+                config.virtualization.hasPointer = true
             }
         }
         config.virtualization.hasBalloon = true
