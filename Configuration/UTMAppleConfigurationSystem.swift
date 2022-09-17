@@ -103,6 +103,9 @@ extension UTMAppleConfigurationSystem {
             boot.macRecoveryIpswURL = oldConfig.macRecoveryIpswURL
         }
         #endif
+        if boot.operatingSystem == .linux {
+            genericPlatform = UTMAppleConfigurationGenericPlatform()
+        }
     }
 }
 

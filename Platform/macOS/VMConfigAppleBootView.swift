@@ -79,6 +79,8 @@ struct VMConfigAppleBootView: View {
                 if !newValue && operatingSystem == .linux && config.boot.linuxKernelURL == nil {
                     alertBootloaderSelection = .kernel
                     operatingSystem = .none
+                } else if newValue {
+                    config.genericPlatform = UTMAppleConfigurationGenericPlatform()
                 }
             }.alert(item: $alertBootloaderSelection) { selection in
                 let okay = Alert.Button.default(Text("OK")) {
@@ -147,6 +149,7 @@ struct VMConfigAppleBootView: View {
                 }
             case .kernel:
                 await MainActor.run {
+                    config.genericPlatform = UTMAppleConfigurationGenericPlatform()
                     config.boot.operatingSystem = .linux
                     config.boot.linuxKernelURL = url
                     config.boot.hasUefiBoot = false

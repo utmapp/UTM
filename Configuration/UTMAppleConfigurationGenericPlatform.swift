@@ -36,7 +36,6 @@ struct UTMAppleConfigurationGenericPlatform: Codable {
         try container.encodeIfPresent(machineIdentifier, forKey: .machineIdentifier)
     }
     
-    @available(macOS 12, *)
     init() {
         if #available(macOS 13, *) {
             machineIdentifier = VZGenericMachineIdentifier().dataRepresentation

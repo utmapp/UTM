@@ -273,6 +273,7 @@ enum VMWizardOS: String, Identifiable {
                 bootloader.linuxInitialRamdiskURL = linuxInitialRamdiskURL
                 bootloader.linuxCommandLine = linuxBootArguments
                 config.system.boot = bootloader
+                config.system.genericPlatform = UTMAppleConfigurationGenericPlatform()
                 if let linuxRootImageURL = linuxRootImageURL {
                     config.drives.append(UTMAppleConfigurationDrive(existingURL: linuxRootImageURL))
                     isSkipDiskCreate = true
