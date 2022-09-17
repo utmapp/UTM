@@ -60,6 +60,8 @@ import Foundation
         resourceURL
         f()
         f("-S") // startup stopped
+        spiceArguments
+        networkArguments
         displayArguments
         serialArguments
         cpuArguments
@@ -70,7 +72,6 @@ import Foundation
             usbArguments
         }
         drivesArguments
-        networkArguments
         sharingArguments
         miscArguments
     }
@@ -91,7 +92,7 @@ import Foundation
         }
     }
     
-    @QEMUArgumentBuilder private var displayArguments: [QEMUArgument] {
+    @QEMUArgumentBuilder private var spiceArguments: [QEMUArgument] {
         f("-spice")
         "unix=on"
         "addr="
@@ -106,25 +107,26 @@ import Foundation
         f("spiceport,id=org.qemu.monitor.qmp,name=org.qemu.monitor.qmp.0")
         f("-mon")
         f("chardev=org.qemu.monitor.qmp,mode=control")
-        if isSparc {
-            if !displays.isEmpty {
-                f("-vga")
-                displays[0].hardware
-                if let vgaRamSize = displays[0].vgaRamMib {
-                    "vgamem_mb=\(vgaRamSize)"
-                }
-                f()
-            }
-        } else { // disable -vga and other default devices
+        if !isSparc { // disable -vga and other default devices
             // prevent QEMU default devices, which leads to duplicate CD drive (fix #2538)
             // see https://github.com/qemu/qemu/blob/6005ee07c380cbde44292f5f6c96e7daa70f4f7d/docs/qdev-device-use.txt#L382
             f("-nodefaults")
             f("-vga")
             f("none")
         }
+    }
+    
+    @QEMUArgumentBuilder private var displayArguments: [QEMUArgument] {
         if displays.isEmpty {
             f("-nographic")
-        } else if !isSparc { // SPARC uses -vga (above)
+        } else if isSparc { // only one display supported
+            f("-vga")
+            displays[0].hardware
+            if let vgaRamSize = displays[0].vgaRamMib {
+                "vgamem_mb=\(vgaRamSize)"
+            }
+            f()
+        } else {
             for display in displays {
                 f("-device")
                 display.hardware
