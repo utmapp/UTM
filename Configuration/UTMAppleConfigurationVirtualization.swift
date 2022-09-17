@@ -35,15 +35,15 @@ struct UTMAppleConfigurationVirtualization: Codable {
         }
     }
     
-    var hasAudio: Bool = true
+    var hasAudio: Bool = false
     
     var hasBalloon: Bool = true
     
     var hasEntropy: Bool = true
     
-    var hasKeyboard: Bool = true
+    var hasKeyboard: Bool = false
     
-    var hasPointer: Bool = true
+    var hasPointer: Bool = false
     
     var hasRosetta: Bool?
     

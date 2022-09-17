@@ -41,7 +41,7 @@ struct UTMAppleConfigurationSystem: Codable {
     /// The RAM of the guest in MiB.
     var memorySize: Int = 4096
     
-    var boot: UTMAppleConfigurationBoot = try! .init(for: .macOS)
+    var boot: UTMAppleConfigurationBoot = try! .init(for: .none)
     
     var macPlatform: UTMAppleConfigurationMacPlatform?
     

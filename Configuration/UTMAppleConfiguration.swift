@@ -226,7 +226,9 @@ extension UTMAppleConfiguration {
         _information = .init(migrating: oldConfig, dataURL: dataURL)
         _system = .init(migrating: oldConfig)
         _virtualization = .init(migrating: oldConfig)
-        _sharedDirectories = oldConfig.sharedDirectories.map { .init(migrating: $0) }
+        if #available(macOS 12, *) {
+            _sharedDirectories = oldConfig.sharedDirectories.map { .init(migrating: $0) }
+        }
         #if arch(arm64)
         if #available(macOS 12, *) {
             _displays = oldConfig.displays.map { .init(migrating: $0) }
