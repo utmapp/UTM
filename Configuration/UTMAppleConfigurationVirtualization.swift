@@ -155,9 +155,13 @@ extension UTMAppleConfigurationVirtualization {
             if hasClipboardSharing {
                 let spiceClipboardAgent = VZSpiceAgentPortAttachment()
                 spiceClipboardAgent.sharesClipboard = true
-                let serialConfig = VZVirtioConsoleDeviceSerialPortConfiguration()
-                serialConfig.attachment = spiceClipboardAgent
-                vzconfig.serialPorts.append(serialConfig)
+                let consolePort = VZVirtioConsolePortConfiguration()
+                consolePort.name = VZSpiceAgentPortAttachment.spiceAgentPortName
+                consolePort.attachment = spiceClipboardAgent
+                consolePort.isConsole = false
+                let consoleDevice = VZVirtioConsoleDeviceConfiguration()
+                consoleDevice.ports[0] = consolePort
+                vzconfig.consoleDevices.append(consoleDevice)
             }
         }
     }

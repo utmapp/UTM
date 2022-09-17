@@ -18,6 +18,7 @@ import SwiftUI
 
 struct VMConfigAppleVirtualizationView: View {
     @Binding var config: UTMAppleConfigurationVirtualization
+    let operatingSystem: UTMAppleConfigurationBoot.OperatingSystem
     
     var body: some View {
         Form {
@@ -29,7 +30,7 @@ struct VMConfigAppleVirtualizationView: View {
                 VMConfigConstantPicker("Pointer", selection: $config.pointer)
             }
             #if arch(arm64)
-            if #available(macOS 13, *) {
+            if #available(macOS 13, *), operatingSystem == .linux {
                 Toggle("Enable Rosetta on Linux (x86_64 Emulation)", isOn: $config.hasRosetta.bound)
                     .help("If enabled, a virtiofs share tagged 'rosetta' will be available on the Linux guest for installing Rosetta for emulating x86_64 on ARM64.")
                 
@@ -44,6 +45,6 @@ struct VMConfigAppleVirtualizationView: View {
 struct VMConfigAppleDevicesView_Previews: PreviewProvider {
     @State static private var config = UTMAppleConfigurationVirtualization()
     static var previews: some View {
-        VMConfigAppleVirtualizationView(config: $config)
+        VMConfigAppleVirtualizationView(config: $config, operatingSystem: .linux)
     }
 }

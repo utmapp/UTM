@@ -39,7 +39,7 @@ struct VMAppleSettingsView: View {
         NavigationLink(destination: VMConfigAppleBootView(config: $config.system).scrollable()) {
             Label("Boot", systemImage: "power")
         }
-        NavigationLink(destination: VMConfigAppleVirtualizationView(config: $config.virtualization).scrollable()) {
+        NavigationLink(destination: VMConfigAppleVirtualizationView(config: $config.virtualization, operatingSystem: config.system.boot.operatingSystem).scrollable()) {
             Label("Virtualization", systemImage: "wrench.and.screwdriver")
         }
         if #available(macOS 12, *) {
