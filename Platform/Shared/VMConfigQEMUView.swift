@@ -48,6 +48,14 @@ struct VMConfigQEMUView: View {
         }
     }
     
+    private var isMontereyOrHigher: Bool {
+        if #available(macOS 12, *) {
+            return true
+        } else {
+            return false
+        }
+    }
+    
     var body: some View {
         VStack {
             Form {
@@ -89,12 +97,15 @@ struct VMConfigQEMUView: View {
                         showExportArgs.toggle()
                     }.modifier(VMShareItemModifier(isPresented: $showExportArgs, shareItem: exportArgs(fixedArgs)))
                     #if os(macOS)
-                    VStack {
-                        ForEach(fixedArgs) { arg in
-                            TextField("", text: .constant(arg.string))
-                        }.disabled(true)
-                        CustomArguments(config: $config)
-                        NewArgumentTextField(config: $config)
+                    // SwiftUI bug: on macOS 11, the ForEach crashes during save
+                    if isMontereyOrHigher || !data.busy {
+                        VStack {
+                            ForEach(fixedArgs) { arg in
+                                TextField("", text: .constant(arg.string))
+                            }.disabled(true)
+                            CustomArguments(config: $config)
+                            NewArgumentTextField(config: $config)
+                        }
                     }
                     #else
                     List {
