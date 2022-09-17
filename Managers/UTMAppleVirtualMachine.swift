@@ -165,7 +165,7 @@ import Virtualization
     }
     
     override func vmStop(force: Bool) async throws {
-        guard state == .vmStarted else {
+        guard state == .vmStarted || state == .vmPaused else {
             return
         }
         changeState(.vmStopping)
