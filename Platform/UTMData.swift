@@ -381,7 +381,7 @@ class UTMData: ObservableObject {
     
     /// Save an existing VM to disk
     /// - Parameter vm: VM to save
-    func save(vm: UTMVirtualMachine) async throws {
+    @MainActor func save(vm: UTMVirtualMachine) async throws {
         do {
             try await vm.saveUTM()
         } catch {
@@ -405,13 +405,11 @@ class UTMData: ObservableObject {
     
     /// Discard changes to VM configuration
     /// - Parameter vm: VM configuration to discard
-    func discardChanges(for vm: UTMVirtualMachine? = nil) throws {
+    @MainActor func discardChanges(for vm: UTMVirtualMachine? = nil) throws {
         if let vm = vm {
             try vm.reloadConfiguration()
-            Task { @MainActor in
-                if uuidHasCollision(with: vm) {
-                    vm.changeUuid(to: UUID())
-                }
+            if uuidHasCollision(with: vm) {
+                vm.changeUuid(to: UUID())
             }
         }
     }

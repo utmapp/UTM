@@ -63,14 +63,12 @@ extension UTMVirtualMachine: ObservableObject {
 }
 
 @objc extension UTMVirtualMachine {
-    func reloadConfiguration() throws {
+    @MainActor func reloadConfiguration() throws {
         try config.reload(from: path)
-        Task { @MainActor in
-            updateConfigFromRegistry()
-        }
+        updateConfigFromRegistry()
     }
     
-    func saveUTM() async throws {
+    @MainActor func saveUTM() async throws {
         let fileManager = FileManager.default
         let existingPath = path
         let newPath = UTMVirtualMachine.virtualMachinePath(config.name, inParentURL: existingPath.deletingLastPathComponent())
