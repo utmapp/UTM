@@ -462,14 +462,18 @@ extension UTMAppleVirtualMachine {
         registryEntry.sharedDirectories.removeAll(keepingCapacity: true)
         for sharedDirectory in configShares {
             if let url = sharedDirectory.directoryURL {
+                _ = url.startAccessingSecurityScopedResource()
                 let file = try UTMRegistryEntry.File(url: url, isReadOnly: sharedDirectory.isReadOnly)
                 registryEntry.sharedDirectories.append(file)
+                url.stopAccessingSecurityScopedResource()
             }
         }
         for drive in configDrives {
             if drive.isExternal, let url = drive.imageURL {
+                _ = url.startAccessingSecurityScopedResource()
                 let file = try UTMRegistryEntry.File(url: url, isReadOnly: drive.isReadOnly)
                 registryEntry.externalDrives[drive.id] = file
+                url.stopAccessingSecurityScopedResource()
             }
         }
         // remove any unreferenced drives
