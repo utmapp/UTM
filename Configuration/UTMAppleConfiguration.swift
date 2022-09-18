@@ -29,7 +29,7 @@ final class UTMAppleConfiguration: UTMConfiguration {
     
     @Published private var _sharedDirectories: [UTMAppleConfigurationSharedDirectory] = []
     
-    @Published private var _displays: [UTMAppleConfigurationDisplay] = [.init()]
+    @Published private var _displays: [UTMAppleConfigurationDisplay] = []
     
     @Published private var _drives: [UTMAppleConfigurationDrive] = []
     
@@ -78,12 +78,6 @@ final class UTMAppleConfiguration: UTMConfiguration {
         _drives = try values.decode([UTMAppleConfigurationDrive].self, forKey: .drives)
         _networks = try values.decode([UTMAppleConfigurationNetwork].self, forKey: .networks)
         _serials = try values.decode([UTMAppleConfigurationSerial].self, forKey: .serials)
-        // remove incompatible configurations
-        if #unavailable(macOS 13), _system.boot.operatingSystem != .macOS {
-            _displays = []
-        } else if #unavailable(macOS 12) {
-            _displays = []
-        }
     }
     
     func encode(to encoder: Encoder) throws {
