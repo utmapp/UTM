@@ -25,8 +25,8 @@ struct VMConfigNetworkView: View {
         VStack {
             Form {
                 Section(header: Text("Hardware")) {
-                    VMConfigConstantPicker("Network Mode", selection: $config.mode)
                     #if os(macOS)
+                    VMConfigConstantPicker("Network Mode", selection: $config.mode)
                     if config.mode == .bridged {
                         DefaultTextField("Bridged Interface", text: $config.bridgeInterface.bound, prompt: "en0")
                             .keyboardType(.asciiCapable)
@@ -52,10 +52,14 @@ struct VMConfigNetworkView: View {
                     }
                 }
 
+                #if os(macOS)
                 /// Bridged and shared networking doesn't support port forwarding
                 if config.mode == .emulated {
                     VMConfigNetworkPortForwardView(config: $config)
                 }
+                #else
+                VMConfigNetworkPortForwardView(config: $config)
+                #endif
             }
         }
     }

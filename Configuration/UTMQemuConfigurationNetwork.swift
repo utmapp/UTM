@@ -124,22 +124,18 @@ struct UTMQemuConfigurationNetwork: Codable, Identifiable {
         try container.encode(macAddress, forKey: .macAddress)
         try container.encode(isIsolateFromHost, forKey: .isIsolateFromHost)
         try container.encode(portForward, forKey: .portForward)
-        #if os(macOS)
         if mode == .bridged {
             try container.encodeIfPresent(bridgeInterface, forKey: .bridgeInterface)
         }
-        #endif
-        if mode == .emulated {
-            try container.encodeIfPresent(vlanGuestAddress, forKey: .vlanGuestAddress)
-            try container.encodeIfPresent(vlanGuestAddressIPv6, forKey: .vlanGuestAddressIPv6)
-            try container.encodeIfPresent(vlanHostAddress, forKey: .vlanHostAddress)
-            try container.encodeIfPresent(vlanHostAddressIPv6, forKey: .vlanHostAddressIPv6)
-            try container.encodeIfPresent(vlanDhcpStartAddress, forKey: .vlanDhcpStartAddress)
-            try container.encodeIfPresent(vlanDhcpDomain, forKey: .vlanDhcpDomain)
-            try container.encodeIfPresent(vlanDnsServerAddress, forKey: .vlanDnsServerAddress)
-            try container.encodeIfPresent(vlanDnsServerAddressIPv6, forKey: .vlanDnsServerAddressIPv6)
-            try container.encodeIfPresent(vlanDnsSearchDomain, forKey: .vlanDnsSearchDomain)
-        }
+        try container.encodeIfPresent(vlanGuestAddress, forKey: .vlanGuestAddress)
+        try container.encodeIfPresent(vlanGuestAddressIPv6, forKey: .vlanGuestAddressIPv6)
+        try container.encodeIfPresent(vlanHostAddress, forKey: .vlanHostAddress)
+        try container.encodeIfPresent(vlanHostAddressIPv6, forKey: .vlanHostAddressIPv6)
+        try container.encodeIfPresent(vlanDhcpStartAddress, forKey: .vlanDhcpStartAddress)
+        try container.encodeIfPresent(vlanDhcpDomain, forKey: .vlanDhcpDomain)
+        try container.encodeIfPresent(vlanDnsServerAddress, forKey: .vlanDnsServerAddress)
+        try container.encodeIfPresent(vlanDnsServerAddressIPv6, forKey: .vlanDnsServerAddressIPv6)
+        try container.encodeIfPresent(vlanDnsSearchDomain, forKey: .vlanDnsSearchDomain)
     }
 }
 
@@ -209,16 +205,14 @@ extension UTMQemuConfigurationNetwork {
     private func convertMode(from str: String?) -> QEMUNetworkMode? {
         if str == "emulated" {
             return .emulated
-        }
-        #if os(macOS)
-        if str == "shared" {
+        } else if str == "shared" {
             return .shared
         } else if str == "host" {
             return .host
         } else if str == "bridged" {
             return .bridged
+        } else {
+            return nil
         }
-        #endif
-        return nil
     }
 }

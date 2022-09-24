@@ -181,20 +181,16 @@ enum QEMUUSBBus: String, CaseIterable, QEMUConstant {
 
 enum QEMUNetworkMode: String, CaseIterable, QEMUConstant {
     case emulated = "Emulated"
-    #if os(macOS)
     case shared = "Shared"
     case host = "Host"
     case bridged = "Bridged"
-    #endif
     
     var prettyValue: String {
         switch self {
         case .emulated: return NSLocalizedString("Emulated VLAN", comment: "UTMQemuConstants")
-        #if os(macOS)
         case .shared: return NSLocalizedString("Shared Network", comment: "UTMQemuConstants")
         case .host: return NSLocalizedString("Host Only", comment: "UTMQemuConstants")
         case .bridged: return NSLocalizedString("Bridged (Advanced)", comment: "UTMQemuConstants")
-        #endif
         }
     }
 }
