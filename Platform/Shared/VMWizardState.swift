@@ -93,6 +93,7 @@ enum VMWizardOS: String, Identifiable {
     @Published var linuxBootArguments: String = ""
     @Published var linuxHasRosetta: Bool = false
     @Published var windowsBootVhdx: URL?
+    @Published var isWindows10OrHigher: Bool = true
     @Published var systemArchitecture: QEMUArchitecture = .x86_64
     @Published var systemTarget: any QEMUTarget = QEMUTarget_x86_64.default
     #if os(macOS)

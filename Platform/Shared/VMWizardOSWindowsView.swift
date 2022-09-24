@@ -28,11 +28,23 @@ struct VMWizardOSWindowsView: View {
 #endif
         List {
             Section {
-                Toggle("Import VHDX Image", isOn: $useVhdx)
-                if useVhdx {
-                    Link("Download Windows 11 for ARM64 Preview VHDX", destination: URL(string: "https://www.microsoft.com/en-us/software-download/windowsinsiderpreviewARM64")!)
-                } else {
-                    Link("Generate Windows Installer ISO", destination: URL(string: "https://uupdump.net/")!)
+                Toggle("Install Windows 10 or higher", isOn: $wizardState.isWindows10OrHigher)
+                    .onChange(of: wizardState.isWindows10OrHigher) { newValue in
+                        if newValue {
+                            wizardState.systemBootUefi = true
+                            wizardState.isGuestToolsInstallRequested = true
+                        } else {
+                            wizardState.isGuestToolsInstallRequested = false
+                        }
+                    }
+                
+                if wizardState.isWindows10OrHigher {
+                    Toggle("Import VHDX Image", isOn: $useVhdx)
+                    if useVhdx {
+                        Link("Download Windows 11 for ARM64 Preview VHDX", destination: URL(string: "https://www.microsoft.com/en-us/software-download/windowsinsiderpreviewARM64")!)
+                    } else {
+                        Link("Generate Windows Installer ISO", destination: URL(string: "https://uupdump.net/")!)
+                    }
                 }
             } header: {
                 Text("Image File Type")
@@ -66,12 +78,15 @@ struct VMWizardOSWindowsView: View {
                 }
             }
             
-            DetailedSection("", description: "Some older systems do not support UEFI boot, such as Windows 7 and below.") {
-                Toggle("UEFI Boot", isOn: $wizardState.systemBootUefi)
+            if !wizardState.isWindows10OrHigher {
+                DetailedSection("", description: "Some older systems do not support UEFI boot, such as Windows 7 and below.") {
+                    Toggle("UEFI Boot", isOn: $wizardState.systemBootUefi)
+                }
             }
             
             // Disabled on iOS 14 due to a SwiftUI layout bug
-            if #available(iOS 15, *) {
+            // Disabled for non-Windows 10 installs due to autounattend version
+            if #available(iOS 15, *), wizardState.isWindows10OrHigher {
                 DetailedSection("", description: "Download and mount the guest support package for Windows. This is required for some features including dynamic resolution and clipboard sharing.") {
                     Toggle("Install drivers and SPICE tools", isOn: $wizardState.isGuestToolsInstallRequested)
                 }
