@@ -357,13 +357,11 @@ enum VMWizardOS: String, Identifiable {
         config.qemu.hasHypervisor = useVirtualization
         config.sharing.isDirectoryShareReadOnly = sharingReadOnly
         if let sharingDirectoryURL = sharingDirectoryURL {
-            if operatingSystem == .Windows {
-                // default webdav for windows
-                config.sharing.directoryShareMode = .webdav
-            } else {
-                config.sharing.directoryShareMode = .virtfs
-            }
             config.sharing.directoryShareUrl = sharingDirectoryURL
+        }
+        if config.sharing.directoryShareMode != .none && operatingSystem == .Linux {
+            // change default sharing to virtfs if linux
+            config.sharing.directoryShareMode = .virtfs
         }
         if operatingSystem == .Windows {
             // only change UEFI settings for Windows
