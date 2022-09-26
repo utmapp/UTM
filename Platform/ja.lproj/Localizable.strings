@@ -682,6 +682,7 @@
 "Custom" = "カスタム";
 
 // VMWizardOSWindowsView.swift
+"Install Windows 10 or higher" = "Windows 10以降をインストール";
 "Import VHDX Image" = "VHDXイメージを読み込む";
 "Download Windows 11 for ARM64 Preview VHDX" = "ARM64用Windows 11プレビューVHDXをダウンロード";
 "Generate Windows Installer ISO" = "WindowsインストーラISOを生成";
