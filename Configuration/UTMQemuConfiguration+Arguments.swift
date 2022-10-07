@@ -157,7 +157,7 @@ import Foundation
             case .tcpClient:
                 f("socket,id=term\(i),port=\(serials[i].tcpPort ?? 1234),host=\(serials[i].tcpHostAddress ?? "example.com"),server=off")
             case .tcpServer:
-                f("socket,id=term\(i),port=\(serials[i].tcpPort ?? 1234),server=on,wait=\((serials[i].isWaitForConnection ?? false) ? "on" : "off")")
+                f("socket,id=term\(i),port=\(serials[i].tcpPort ?? 1234),host=0.0.0.0,server=on,wait=\((serials[i].isWaitForConnection ?? false) ? "on" : "off")")
             #if os(macOS)
             case .ptty:
                 f("pty,id=term\(i)")
