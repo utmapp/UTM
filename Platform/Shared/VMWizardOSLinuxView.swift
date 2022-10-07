@@ -54,14 +54,9 @@ struct VMWizardOSLinuxView: View {
                 Toggle("Boot from kernel image", isOn: $wizardState.useLinuxKernel)
                     .help("If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO.")
                     .disabled(wizardState.useAppleVirtualization && !hasVenturaFeatures)
-                if !wizardState.useLinuxKernel {
-#if arch(arm64)
-                Link("Download Ubuntu Server for ARM", destination: URL(string: "https://ubuntu.com/download/server/arm")!)
-                    .buttonStyle(.borderless)
-#else
-                Link("Download Ubuntu Desktop", destination: URL(string: "https://ubuntu.com/download/desktop")!)
-                    .buttonStyle(.borderless)
-#endif
+                if !wizardState.useLinuxKernel && !wizardState.useAppleVirtualization {
+                    Link("Ubuntu Install Guide", destination: URL(string: "https://docs.getutm.app/guides/ubuntu/")!)
+                        .buttonStyle(.borderless)
                 }
             } header: {
                 Text("Boot Image Type")
@@ -71,10 +66,8 @@ struct VMWizardOSLinuxView: View {
             if #available(macOS 13, *), wizardState.useAppleVirtualization {
                 Section {
                     Toggle("Enable Rosetta (x86_64 Emulation)", isOn: $wizardState.linuxHasRosetta)
-                    Link("Installation Instructions", destination: URL(string: "https://developer.apple.com/documentation/virtualization/running_intel_binaries_in_linux_vms_with_rosetta#3978496")!)
+                    Link("Installation Instructions", destination: URL(string: "https://docs.getutm.app/advanced/rosetta/")!)
                         .buttonStyle(.borderless)
-                    Text("Note: The file system tag for mounting the installer is 'rosetta'.")
-                        .font(.footnote)
                 } header: {
                     Text("Additional Options")
                 }

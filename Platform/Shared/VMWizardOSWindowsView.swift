@@ -40,11 +40,7 @@ struct VMWizardOSWindowsView: View {
                 
                 if wizardState.isWindows10OrHigher {
                     Toggle("Import VHDX Image", isOn: $useVhdx)
-                    if useVhdx {
-                        Link("Download Windows 11 for ARM64 Preview VHDX", destination: URL(string: "https://www.microsoft.com/en-us/software-download/windowsinsiderpreviewARM64")!)
-                    } else {
-                        Link("Generate Windows Installer ISO", destination: URL(string: "https://uupdump.net/")!)
-                    }
+                    Link("Windows Install Guide", destination: URL(string: "https://docs.getutm.app/guide/windows/")!)
                 }
             } header: {
                 Text("Image File Type")

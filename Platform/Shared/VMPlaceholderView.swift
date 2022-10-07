@@ -39,7 +39,7 @@ struct VMPlaceholderView: View {
                     openURL(URL(string: "https://mac.getutm.app/guide/")!)
                 }
                 TileButton(titleKey: "Support", systemImage: "questionmark.circle") {
-                    openURL(URL(string: "https://mac.getutm.app/support/")!)
+                    openURL(URL(string: "https://docs.getutm.app/")!)
                 }
             }
         }

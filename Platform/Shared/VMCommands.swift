@@ -35,7 +35,7 @@ struct VMCommands: Commands {
             Button(action: { openLink("https://mac.getutm.app/gallery/") }, label: {
                 Text("Virtual Machine Gallery")
             }).keyboardShortcut(KeyEquivalent("1"), modifiers: [.command, .control])
-            Button(action: { openLink("https://mac.getutm.app/support/") }, label: {
+            Button(action: { openLink("https://docs.getutm.app/") }, label: {
                 Text("Support")
             }).keyboardShortcut(KeyEquivalent("2"), modifiers: [.command, .control])
             Button(action: { openLink("https://mac.getutm.app/licenses/") }, label: {
