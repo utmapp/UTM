@@ -34,6 +34,7 @@
 "A valid kernel image must be specified." = "Une image de noyau valide doit être spécifiée.";
 "This virtual machine contains an invalid hardware model. The configuration may be corrupted or is outdated." = "La machine virtuelle contient un modèle matériel non valide. La configuration est peut-être corrompue ou périmée.";
 "Rosetta is not supported on the current host machine." = "Rosetta n'est pas prise en charge sur cette machine hôte.";
+"The host operating system needs to be updated to support one or more features requested by the guest." = "Le système d'exploitation de l'hôte doit être mis à jour pour prendre en charge une ou plusieurs fonctionnalités requises par l'invité.";
 "Linux" = "Linux";
 "macOS" = "macOS";
 
@@ -147,7 +148,7 @@
 
 // UTMWrappedVirtualMachine.swift
 "Unavailable" = "Non disponible";
-"(Unavailable)" = "(non disponible)";
+"(Unavailable)" = "(Non disponible)";
 
 
 /* Platform/iOS */
@@ -247,7 +248,7 @@
 "%@ (Terminal %lld)" = "%@ (Terminal %lld)";
 
 // Display/VMDisplayQemuWindowController.swift
-"Disposable Mode" = "Disposable Mode";
+"Disposable Mode" = "Mode jetable";
 
 // Display/VMQemuDisplayMetalWindowController.swift
 "%@ (Display %lld)" = "%@ (Display %lld)";
@@ -641,7 +642,7 @@
 
 // VMWizardHardwareView.swift
 "Enable hardware OpenGL acceleration (experimental)" = "Activer l'accélération matérielle OpenGL (expérimental)";
-"Hardware OpenGL Acceleration" = "Accélération matérielle d'OpenGL";
+"Hardware OpenGL Acceleration" = "Accélération matérielle OpenGL";
 
 // VMWizardOSLinuxView.swift
 "Virtualization Engine" = "Moteur de virtualisation";
@@ -661,7 +662,7 @@
 "Linux initial ramdisk (optional)" = "Ramdisk initial de Linux (optionnel)";
 "Linux Root FS Image (optional)" = "Image Root FS de Linux (optionnel)";
 "Boot ISO Image (optional)" = "Image ISO de démarrage (optionnel)";
-"Boot ISO Image" = "Image ISO de boot";
+"Boot ISO Image" = "Image ISO de démarrage";
 
 // VMWizardOSMacView.swift
 "To install macOS, you need to download a recovery IPSW. If you do not select an existing IPSW, the latest macOS IPSW will be downloaded from Apple." = "Pour installer macOS, vous devez télécharger un IPSW de réinstallation. Si vous ne sélectionnez pas un IPSW existant, le dernier IPSW de macOS en date sera téléchargé depuis les serveurs d'Apple.";
@@ -812,7 +813,7 @@
 "Cannot create directory for disk image." = "Impossible de créer le dossier pour l'image disque.";
 
 /* VMListViewController */
-"Cannot find VM." = "Impossible de trouver la VM";
+"Cannot find VM." = "Impossible de trouver la VM.";
 
 /* VMRemovableDrivesViewController */
 "Change" = "Changer";
@@ -859,7 +860,7 @@
 /* UTMData
    VMConfigDriveCreateViewController
    VMWizardState */
-"Disk creation failed." = "La création du disque a échoué";
+"Disk creation failed." = "La création du disque a échoué.";
 
 /* VMDisplayMetalWindowController */
 "Do Not Show Again" = "Ne plus afficher";
@@ -923,18 +924,15 @@
 
 /* VMConfigPortForwardingViewController */
 "Guest address (optional)" = "Adresse de l'invité (optionnel)";
-
-/* VMConfigPortForwardingViewController */
 "Guest port (required)" = "Port de l'invité (requis)";
+"Host address (optional)" = "Adresse de l'hôte (optionnel)";
+"Host port (required)" = "Port hôte (requis)";
+"New port forward" = "Nouvelle redirection de port";
+"TCP Forward" = "Redirection TCP";
+"UDP Forward" = "Redirection UDP";
 
 /* VMDisplayViewController */
 "Hint: To show the toolbar again, use a three-finger swipe down on the screen." = "Astuce : pour afficher à nouveau la barre d'outils, faites glisser trois doigts vers le bas de l'écran.";
-
-/* VMConfigPortForwardingViewController */
-"Host address (optional)" = "Adresse de l'hôte (optionnel)";
-
-/* VMConfigPortForwardingViewController */
-"Host port (required)" = "Port hôte (requis)";
 
 /* No comment provided by engineer. */
 "Hypervisor" = "Hyperviseur";
@@ -950,12 +948,13 @@
 
 /* UTMVirtualMachine */
 "Internal error starting main loop." = "Erreur interne lors du démarrage de la boucle principale.";
-
-/* UTMVirtualMachine */
 "Internal error starting VM." = "Erreur interne lors du démarrage de la VM.";
 
 /* VMConfigSystemViewController */
 "Invalid core count." = "Nombre de cœurs invalide.";
+"Invalid memory size." = "Taille de la mémoire invide.";
+"JIT cache size cannot be larger than 2GB." = "La taille du cache JIT ne peut dépasser 2Gio.";
+"JIT cache size too small." = "La taille du cache JIT est trop petite.";
 
 /* UTMData */
 "Invalid drive size." = "Taille du lecteur invalide.";
@@ -963,13 +962,8 @@
 /* VMRemovableDrivesViewController */
 "Invalid file selected." = "Fichier sélectionné non valide.";
 
-/* VMConfigSystemViewController */
-"Invalid memory size." = "Taille de la mémoire invide.";
-
 /* VMConfigDriveCreateViewController */
 "Invalid name" = "Nom invalide";
-
-/* VMConfigDriveCreateViewController */
 "Invalid size" = "Taille invalide";
 
 /* VMListViewController */
@@ -977,12 +971,6 @@
 
 /* No comment provided by engineer. */
 "Invert Mouse Scroll" = "Inverser le défilement";
-
-/* VMConfigSystemViewController */
-"JIT cache size cannot be larger than 2GB." = "La taille du cache JIT ne peut dépasser 2Gio.";
-
-/* VMConfigSystemViewController */
-"JIT cache size too small." = "La taille du cache JIT est trop petite.";
 
 /* No comment provided by engineer. */
 "Legacy" = "Héritage";
@@ -1007,9 +995,6 @@
 
 /* VMConfigInfoView */
 "Name is an invalid filename." = "Le nom du fichier est incorrect.";
-
-/* VMConfigPortForwardingViewController */
-"New port forward" = "Nouvelle redirection de port";
 
 /* No comment provided by engineer. */
 "New Virtual Machine" = "Nouvelle machine virtuelle (VM)";
@@ -1089,9 +1074,6 @@
 /* No comment provided by engineer. */
 "stty cols $COLS rows $ROWS\n" = "stty cols $COLS rows $ROWS\n";
 
-/* VMConfigPortForwardingViewController */
-"TCP Forward" = "Redirection TCP";
-
 /* No comment provided by engineer. */
 "Test" = "Test";
 
@@ -1112,9 +1094,6 @@
 
 /* No comment provided by engineer. */
 "Type" = "Type";
-
-/* VMConfigPortForwardingViewController */
-"UDP Forward" = "Redirection UDP";
 
 /* UTMVirtualMachineExtension */
 "Unknown" = "Inconnu";
@@ -1143,9 +1122,6 @@
 /* UTMData
    VMConfigDrivePickerViewController */
 "You cannot import a .utm package as a drive. Did you mean to open the package with UTM?" = "Vous ne pouvez pas importer un paquet .utm en tant que lecteur. Souhaitiez-vous plutôt ouvrir ce paquet avec UTM ?";
-
-/* UTMData
-   VMConfigDrivePickerViewController */
 "You cannot import a directory as a drive." = "Vous ne pouvez pas importer un dossier en tant que lecteur.";
 
 /* VMConfigDriveDetailsViewController */
