@@ -650,8 +650,8 @@
 "Use Apple Virtualization" = "Apple仮想化を使用";
 "Boot from kernel image" = "カーネルイメージから起動";
 "If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO." = "有効にすると、生のカーネルイメージと初期RAMディスクから直接起動します。そうでない場合、対応したISOから起動します。";
-"Download Ubuntu Server for ARM" = "ARM用Ubuntu Serverをダウンロード";
-"Download Ubuntu Desktop" = "Ubuntu Desktopをダウンロード";
+"Debian Install Guide" = "Debianインストールガイド";
+"Ubuntu Install Guide" = "Ubuntuインストールガイド";
 "Boot Image Type" = "起動イメージの種類";
 "Enable Rosetta (x86_64 Emulation)" = "Rosettaを有効にする（x86_64エミュレーション）";
 "Installation Instructions" = "インストール手順";
@@ -684,8 +684,7 @@
 // VMWizardOSWindowsView.swift
 "Install Windows 10 or higher" = "Windows 10以降をインストール";
 "Import VHDX Image" = "VHDXイメージを読み込む";
-"Download Windows 11 for ARM64 Preview VHDX" = "ARM64用Windows 11プレビューVHDXをダウンロード";
-"Generate Windows Installer ISO" = "WindowsインストーラISOを生成";
+"Windows Install Guide" = "Windowsインストールガイド";
 "Image File Type" = "イメージファイルの種類";
 "Some older systems do not support UEFI boot, such as Windows 7 and below." = "Windows 7以前など、一部の古いシステムはUEFI起動に対応していません。";
 "Boot VHDX Image" = "起動VHDXイメージ";
