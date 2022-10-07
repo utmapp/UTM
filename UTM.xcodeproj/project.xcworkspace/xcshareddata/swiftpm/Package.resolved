@@ -32,8 +32,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-log",
       "state" : {
-        "revision" : "5d66f7ba25daf4f94100e7022febf3c75e37a6c7",
-        "version" : "1.4.2"
+        "revision" : "6fe203dc33195667ce1759bf0182975e4653ba1c",
+        "version" : "1.4.4"
       }
     },
     {
@@ -42,7 +42,7 @@
       "location" : "https://github.com/migueldeicaza/SwiftTerm.git",
       "state" : {
         "branch" : "main",
-        "revision" : "f1716ef7f5a6bf40e8c835052831d681bbb232b3"
+        "revision" : "6cd29ac01346ed67af9b0bd799a4114872257e36"
       }
     },
     {
@@ -59,8 +59,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/weichsel/ZIPFoundation.git",
       "state" : {
-        "revision" : "7254c74b49cec2cb81520523ba993c671f71b066",
-        "version" : "0.9.14"
+        "revision" : "f6a22e7da26314b38bf9befce34ae8e4b2543090",
+        "version" : "0.9.15"
       }
     }
   ],
