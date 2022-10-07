@@ -25,8 +25,15 @@ struct VMQEMUSettingsView: View {
     @State private var isNewDriveShown: Bool = false
     
     var body: some View {
-        NavigationLink(destination: VMConfigInfoView(config: $config.information).scrollable(), isActive: $infoActive) {
-            Label("Information", systemImage: "info.circle")
+        if #available(macOS 13, *) {
+            // SwiftUI bug: trick to have first item selected doesn't always work
+            NavigationLink(destination: VMConfigInfoView(config: $config.information).scrollable()) {
+                Label("Information", systemImage: "info.circle")
+            }
+        } else {
+            NavigationLink(destination: VMConfigInfoView(config: $config.information).scrollable(), isActive: $infoActive) {
+                Label("Information", systemImage: "info.circle")
+            }
         }
         NavigationLink(destination: VMConfigSystemView(config: $config.system, isResetConfig: $isResetConfig).scrollable()) {
             Label("System", systemImage: "cpu")

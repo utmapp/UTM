@@ -25,6 +25,7 @@ struct VMSettingsView<Config: UTMConfiguration>: View {
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
     var body: some View {
+        // FIXME: use new NavigationSplitView on macOS 13
         NavigationView {
             List {
                 if config is UTMQemuConfiguration {
