@@ -38,7 +38,11 @@ import Foundation
     }
     
     @objc var isAppleVirtualization: Bool {
+        #if os(iOS)
+        false
+        #else
         wrappedValue is UTMAppleConfiguration
+        #endif
     }
     
     @objc var name: String {
