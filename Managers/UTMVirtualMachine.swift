@@ -72,18 +72,21 @@ extension UTMVirtualMachine: ObservableObject {
         let fileManager = FileManager.default
         let existingPath = path
         let newPath = UTMVirtualMachine.virtualMachinePath(config.name, inParentURL: existingPath.deletingLastPathComponent())
-        do {
-            try await config.save(to: existingPath)
-            try await updateRegistryFromConfig()
-        } catch {
-            throw error
-        }
+        try await config.save(to: existingPath)
+        let hasRenamed: Bool
         if !isShortcut && existingPath.path != newPath.path {
             try await Task.detached {
                 try fileManager.moveItem(at: existingPath, to: newPath)
             }.value
             path = newPath
-            try reloadConfiguration()
+            hasRenamed = true
+        } else {
+            hasRenamed = false
+        }
+        try await updateRegistryFromConfig()
+        // reload the config if we renamed in order to point all the URLs to the right path
+        if hasRenamed {
+            try config.reload(from: path)
         }
     }
     
