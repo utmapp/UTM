@@ -54,9 +54,16 @@ struct VMWizardOSLinuxView: View {
                 Toggle("Boot from kernel image", isOn: $wizardState.useLinuxKernel)
                     .help("If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO.")
                     .disabled(wizardState.useAppleVirtualization && !hasVenturaFeatures)
-                if !wizardState.useLinuxKernel && !wizardState.useAppleVirtualization {
-                    Link("Ubuntu Install Guide", destination: URL(string: "https://docs.getutm.app/guides/ubuntu/")!)
-                        .buttonStyle(.borderless)
+                if !wizardState.useLinuxKernel {
+                    if wizardState.useAppleVirtualization {
+                        Link(destination: URL(string: "https://docs.getutm.app/guides/debian/")!) {
+                            Label("Debian Install Guide", systemImage: "link")
+                        }.buttonStyle(.borderless)
+                    } else {
+                        Link(destination: URL(string: "https://docs.getutm.app/guides/ubuntu/")!) {
+                            Label("Ubuntu Install Guide", systemImage: "link")
+                        }.buttonStyle(.borderless)
+                    }
                 }
             } header: {
                 Text("Boot Image Type")
@@ -66,8 +73,9 @@ struct VMWizardOSLinuxView: View {
             if #available(macOS 13, *), wizardState.useAppleVirtualization {
                 Section {
                     Toggle("Enable Rosetta (x86_64 Emulation)", isOn: $wizardState.linuxHasRosetta)
-                    Link("Installation Instructions", destination: URL(string: "https://docs.getutm.app/advanced/rosetta/")!)
-                        .buttonStyle(.borderless)
+                    Link(destination: URL(string: "https://docs.getutm.app/advanced/rosetta/")!) {
+                        Label("Installation Instructions", systemImage: "link")
+                    }.buttonStyle(.borderless)
                 } header: {
                     Text("Additional Options")
                 }

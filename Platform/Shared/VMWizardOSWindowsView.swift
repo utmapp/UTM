@@ -40,7 +40,9 @@ struct VMWizardOSWindowsView: View {
                 
                 if wizardState.isWindows10OrHigher {
                     Toggle("Import VHDX Image", isOn: $useVhdx)
-                    Link("Windows Install Guide", destination: URL(string: "https://docs.getutm.app/guide/windows/")!)
+                    Link(destination: URL(string: "https://docs.getutm.app/guide/windows/")!) {
+                        Label("Windows Install Guide", systemImage: "link")
+                    }.buttonStyle(.borderless)
                 }
             } header: {
                 Text("Image File Type")
