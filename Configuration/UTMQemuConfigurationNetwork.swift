@@ -68,9 +68,11 @@ struct UTMQemuConfigurationNetwork: Codable, Identifiable {
     /// Generate a random MAC address
     /// - Returns: A random MAC address
     static func randomMacAddress() -> String {
-        let bytes = (0..<6).map { _ in
+        var bytes = (0..<6).map { _ in
             arc4random() % 256
         }
+        // byte 0 should be local
+        bytes[0] = (bytes[0] & 0xFC) | 0x2
         let string = bytes.reduce("") { partialResult, byte in
             partialResult + String(format: ":%02X", byte)
         }
