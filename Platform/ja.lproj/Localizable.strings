@@ -32,7 +32,7 @@
 "This is not a valid Apple Virtualization configuration." = "有効なApple仮想化構成ではありません。";
 "This virtual machine cannot run on the current host machine." = "この仮想マシンは現在のホストマシンでは実行できません。";
 "A valid kernel image must be specified." = "有効なカーネルイメージを指定する必要があります。";
-"This virtual machine contains an invalid hardware model. The configuration may be corrupted or is outdated." = "この仮想マシンには無効なハードウェアモデルが含まれています。構成が壊れているか、古い可能性があります。";
+"This virtual machine contains an invalid hardware model. The configuration may be corrupted or is outdated." = "この仮想マシンには無効なハードウェアモデルが含まれています。構成が破損しているか、古くなっている可能性があります。";
 "Rosetta is not supported on the current host machine." = "Rosettaは現在のホストマシンでは対応していません。";
 "The host operating system needs to be updated to support one or more features requested by the guest." = "ゲストから要求された1つ以上の機能に対応するには、ホストのオペレーティングシステムをアップデートする必要があります。";
 "Linux" = "Linux";
@@ -567,7 +567,7 @@
 "Do you want to remove this shortcut? The data will not be deleted." = "このショートカットを削除しますか? データは削除されません。";
 "Do you want to force stop this VM and lose all unsaved data?" = "この仮想マシンを強制停止しますか? 保存されていないデータは失われます。";
 "Stop" = "停止";
-"Do you want to move this VM to another location? This will copy the data to the new location, delete the data from the original location, and then create a shortcut." = "この仮想マシンを別の場所に移動しますか? この操作により、データが新しい場所にコピーされ、元の場所のデータが削除された後、ショートカットが作成されます。";
+"Do you want to move this VM to another location? This will copy the data to the new location, delete the data from the original location, and then create a shortcut." = "この仮想マシンを別の場所に移動しますか? この操作により、データを新しい場所にコピーし、元の場所のデータを削除した後、ショートカットが作成されます。";
 "Confirm" = "確定";
 
 // VMContextMenuModifier.swift
@@ -650,8 +650,8 @@
 "Use Apple Virtualization" = "Apple仮想化を使用";
 "Boot from kernel image" = "カーネルイメージから起動";
 "If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO." = "有効にすると、生のカーネルイメージと初期RAMディスクから直接起動します。そうでない場合、対応したISOから起動します。";
-"Download Ubuntu Server for ARM" = "ARM用Ubuntu Serverをダウンロード";
-"Download Ubuntu Desktop" = "Ubuntu Desktopをダウンロード";
+"Debian Install Guide" = "Debianインストールガイド";
+"Ubuntu Install Guide" = "Ubuntuインストールガイド";
 "Boot Image Type" = "起動イメージの種類";
 "Enable Rosetta (x86_64 Emulation)" = "Rosettaを有効にする（x86_64エミュレーション）";
 "Installation Instructions" = "インストール手順";
@@ -682,9 +682,9 @@
 "Custom" = "カスタム";
 
 // VMWizardOSWindowsView.swift
+"Install Windows 10 or higher" = "Windows 10以降をインストール";
 "Import VHDX Image" = "VHDXイメージを読み込む";
-"Download Windows 11 for ARM64 Preview VHDX" = "ARM64用Windows 11プレビューVHDXをダウンロード";
-"Generate Windows Installer ISO" = "WindowsインストーラISOを生成";
+"Windows Install Guide" = "Windowsインストールガイド";
 "Image File Type" = "イメージファイルの種類";
 "Some older systems do not support UEFI boot, such as Windows 7 and below." = "Windows 7以前など、一部の古いシステムはUEFI起動に対応していません。";
 "Boot VHDX Image" = "起動VHDXイメージ";
