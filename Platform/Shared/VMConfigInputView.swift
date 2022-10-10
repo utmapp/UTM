@@ -47,14 +47,6 @@ struct VMConfigInputView: View {
                 }
                 #endif
                 
-                /* //FIXME: move to global setting
-                Section(header: Text("Mouse Wheel")) {
-                    Toggle(isOn: $config.inputScrollInvert, label: {
-                        Text("Invert Mouse Scroll")
-                    })
-                }
-                 */
-                
                 GestureSettingsSection()
             }
         }
