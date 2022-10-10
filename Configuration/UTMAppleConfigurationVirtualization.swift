@@ -73,12 +73,10 @@ struct UTMAppleConfigurationVirtualization: Codable {
         } else {
             hasPointer = try values.decode(Bool.self, forKey: .hasPointer)
         }
-        #if arch(arm64)
         if #available(macOS 13, *) {
             hasRosetta = try values.decodeIfPresent(Bool.self, forKey: .rosetta)
             hasClipboardSharing = try values.decodeIfPresent(Bool.self, forKey: .hasClipboardSharing) ?? false
         }
-        #endif
     }
     
     func encode(to encoder: Encoder) throws {
@@ -122,7 +120,6 @@ extension UTMAppleConfigurationVirtualization {
         if hasEntropy {
             vzconfig.entropyDevices = [VZVirtioEntropyDeviceConfiguration()]
         }
-        #if arch(arm64)
         if #available(macOS 12, *) {
             if hasAudio {
                 let audioConfiguration = VZVirtioSoundDeviceConfiguration()
@@ -144,7 +141,6 @@ extension UTMAppleConfigurationVirtualization {
                 throw UTMAppleConfigurationError.featureNotSupported
             }
         }
-        #endif
         if #available(macOS 13, *) {
             #if arch(arm64)
             if hasRosetta == true {
