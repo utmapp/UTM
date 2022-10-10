@@ -110,6 +110,8 @@ struct VMConfigAppleDisplayView: View {
                         resolution: Resolution(width: 3840, height: 2160)),
         NamedResolution(name: "4480 × 2520 — iMac (24-inch, 2021)",
                         resolution: Resolution(width: 4480, height: 2520)), // ppi: 218
+        NamedResolution(name: "5120 × 1440 — 5K Ultra Wide HD",
+                        resolution: Resolution(width: 5120, height: 1440)),
         NamedResolution(name: "5120 × 2880 — 5K Ultra HD",
                         resolution: Resolution(width: 5120, height: 2880)),
     ]
