@@ -19,8 +19,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     @Setting("KeepRunningAfterLastWindowClosed") private var isKeepRunningAfterLastWindowClosed: Bool = false
     
+    private var hasRunningVirtualMachines: Bool {
+        guard let vmList = data?.vmWindows.keys else {
+            return false
+        }
+        return vmList.contains(where: { $0.state == .vmStarted || ($0.state == .vmPaused && !$0.hasSaveState) })
+    }
+    
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
-        !isKeepRunningAfterLastWindowClosed // FIXME: check if any VMs are running once we support headless VMs
+        !isKeepRunningAfterLastWindowClosed && !hasRunningVirtualMachines
     }
     
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
@@ -29,7 +36,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         let vmList = data.vmWindows.keys
-        if vmList.contains(where: { $0.state == .vmStarted || ($0.state == .vmPaused && !$0.hasSaveState) }) { // There is at least 1 running VM
+        if hasRunningVirtualMachines { // There is at least 1 running VM
             DispatchQueue.main.async {
                 let alert = NSAlert()
                 alert.alertStyle = .informational
