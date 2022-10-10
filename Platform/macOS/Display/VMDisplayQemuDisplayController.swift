@@ -498,7 +498,7 @@ extension VMDisplayQemuWindowController {
             let config = vmQemuConfig.displays[id]
             let item = NSMenuItem()
             let format = NSLocalizedString("Display %lld: %@", comment: "VMDisplayQemuDisplayController")
-            let title = String.localizedStringWithFormat(format, id, config.hardware.prettyValue)
+            let title = String.localizedStringWithFormat(format, id + 1, config.hardware.prettyValue)
             let isCurrent = self is VMDisplayQemuMetalWindowController && self.id == id
             item.title = title
             item.isEnabled = !isCurrent
@@ -514,7 +514,7 @@ extension VMDisplayQemuWindowController {
             }
             let item = NSMenuItem()
             let format = NSLocalizedString("Serial %lld", comment: "VMDisplayQemuDisplayController")
-            let title = String.localizedStringWithFormat(format, id)
+            let title = String.localizedStringWithFormat(format, id + 1)
             let isCurrent = self is VMDisplayQemuTerminalWindowController && self.id == id
             item.title = title
             item.isEnabled = !isCurrent

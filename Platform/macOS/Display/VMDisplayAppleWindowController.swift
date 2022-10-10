@@ -301,7 +301,7 @@ extension VMDisplayAppleWindowController {
             }
             let item = NSMenuItem()
             let format = NSLocalizedString("Serial %lld", comment: "VMDisplayAppleWindowController")
-            let title = String.localizedStringWithFormat(format, i)
+            let title = String.localizedStringWithFormat(format, i + 1)
             let isCurrent = (self as? VMDisplayAppleTerminalWindowController)?.index == i
             item.title = title
             item.isEnabled = !isCurrent
