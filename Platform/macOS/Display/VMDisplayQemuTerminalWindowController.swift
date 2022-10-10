@@ -113,6 +113,14 @@ extension VMDisplayQemuTerminalWindowController: TerminalViewDelegate {
     
     func scrolled(source: TerminalView, position: Double) {
     }
+    
+    func sendString(_ string: String) {
+        if let vmSerialPort = vmSerialPort, let data = string.data(using: .nonLossyASCII) {
+            vmSerialPort.write(data)
+        } else {
+            logger.error("failed to send: \(string)")
+        }
+    }
 }
 
 extension VMDisplayQemuTerminalWindowController: CSPortDelegate {
@@ -129,12 +137,6 @@ extension VMDisplayQemuTerminalWindowController: CSPortDelegate {
             DispatchQueue.main.async {
                 terminalView.feed(byteArray: arr)
             }
-        }
-    }
-    
-    func defaultSerialWrite(data: Data) {
-        if let vmSerialPort = vmSerialPort {
-            vmSerialPort.write(data)
         }
     }
 }

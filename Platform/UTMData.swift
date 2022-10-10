@@ -811,11 +811,10 @@ class UTMData: ObservableObject {
     ///   - vm: VM to send text to
     ///   - components: Data (see UTM Wiki for details)
     func automationSendText(to vm: UTMVirtualMachine, urlComponents components: URLComponents) {
-        guard let qemuVm = vm as? UTMQemuVirtualMachine else { return } // FIXME: implement for Apple VM
         guard let queryItems = components.queryItems else { return }
         guard let text = queryItems.first(where: { $0.name == "text" })?.value else { return }
         #if os(macOS)
-        trySendTextSpice(vm: qemuVm, text: text)
+        trySendTextSpice(vm: vm, text: text)
         #else
         trySendTextSpice(text)
         #endif

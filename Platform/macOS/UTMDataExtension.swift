@@ -85,7 +85,7 @@ extension UTMData {
         }
     }
     
-    func trySendTextSpice(vm: UTMQemuVirtualMachine, text: String) {
+    func trySendTextSpice(vm: UTMVirtualMachine, text: String) {
         guard text.count > 0 else { return }
         if let vc = vmWindows[vm] as? VMDisplayQemuMetalWindowController {
             KeyCodeMap.createKeyMapIfNeeded()
@@ -175,12 +175,8 @@ extension UTMData {
                     }
                 }
             }
-        } else if let vc = vmWindows[vm] as? VMDisplayQemuTerminalWindowController {
-            if let data = text.data(using: .nonLossyASCII) {
-                vc.defaultSerialWrite(data: data)
-            } else {
-                logger.warning("failed to convert the text: '\(text)'")
-            }
+        } else if let terminal = vmWindows[vm] as? VMDisplayTerminal {
+            terminal.sendString(text)
         }
     }
     

@@ -25,6 +25,7 @@ protocol VMDisplayTerminal {
     @MainActor func setupTerminal(_ terminalView: TerminalView, using config: UTMConfigurationTerminal, id: Int, for window: NSWindow)
     func resizeCommand(for terminal: TerminalView, using config: UTMConfigurationTerminal) -> String
     func sizeChanged(id: Int, newCols: Int, newRows: Int)
+    func sendString(_ string: String)
 }
 
 extension VMDisplayTerminal {

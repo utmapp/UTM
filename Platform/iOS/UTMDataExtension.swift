@@ -46,8 +46,7 @@ extension UTMData {
         if let vc = vmVC as? VMDisplayMetalViewController {
             vc.keyboardView.insertText(text)
         } else if let vc = vmVC as? VMDisplayTerminalViewController {
-            //FIXME: terminal rewrite
-            //vc.sendData(fromCmdString: text)
+            vc.vmSerialPort.write(text.data(using: .nonLossyASCII)!)
         }
     }
 }

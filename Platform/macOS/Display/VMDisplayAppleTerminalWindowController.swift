@@ -75,6 +75,14 @@ class VMDisplayAppleTerminalWindowController: VMDisplayAppleWindowController, VM
         serialPort.delegate = self
         super.enterLive()
     }
+    
+    func sendString(_ string: String) {
+        if let serialPort = serialPort, let data = string.data(using: .nonLossyASCII) {
+            serialPort.write(data: data)
+        } else {
+            logger.error("failed to send: \(string)")
+        }
+    }
 }
 
 // MARK: - Terminal view delegate
