@@ -43,6 +43,7 @@ struct VMConfigSerialView: View {
                         }
                     if config.mode == .tcpServer {
                         Toggle("Wait for Connection", isOn: $config.isWaitForConnection.bound)
+                        Toggle("Allow Remote Connection", isOn: $config.isRemoteConnectionAllowed.bound)
                     }
                 }
                 

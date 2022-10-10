@@ -155,9 +155,20 @@ import Foundation
             case .builtin:
                 f("spiceport,id=term\(i),name=com.utmapp.terminal.\(i)")
             case .tcpClient:
-                f("socket,id=term\(i),port=\(serials[i].tcpPort ?? 1234),host=\(serials[i].tcpHostAddress ?? "example.com"),server=off")
+                "socket"
+                "id=term\(i)"
+                "port=\(serials[i].tcpPort ?? 1234)"
+                "host=\(serials[i].tcpHostAddress ?? "example.com")"
+                "server=off"
+                f()
             case .tcpServer:
-                f("socket,id=term\(i),port=\(serials[i].tcpPort ?? 1234),host=0.0.0.0,server=on,wait=\((serials[i].isWaitForConnection ?? false) ? "on" : "off")")
+                "socket"
+                "id=term\(i)"
+                "port=\(serials[i].tcpPort ?? 1234)"
+                "host=\(serials[i].isRemoteConnectionAllowed == true ? "0.0.0.0" : "127.0.0.1")"
+                "server=on"
+                "wait=\(serials[i].isWaitForConnection == true ? "on" : "off")"
+                f()
             #if os(macOS)
             case .ptty:
                 f("pty,id=term\(i)")

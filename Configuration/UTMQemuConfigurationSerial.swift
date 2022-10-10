@@ -43,6 +43,9 @@ struct UTMQemuConfigurationSerial: Codable, Identifiable {
     /// Applies only to TCP targets. If true, will wait for connection before starting VM.
     var isWaitForConnection: Bool?
     
+    /// Applies only to TCP server. If true, the port will be listened on all interfaces.
+    var isRemoteConnectionAllowed: Bool?
+    
     let id = UUID()
     
     enum CodingKeys: String, CodingKey {
@@ -53,6 +56,7 @@ struct UTMQemuConfigurationSerial: Codable, Identifiable {
         case tcpHostAddress = "TcpHostAddress"
         case tcpPort = "TcpPort"
         case isWaitForConnection = "WaitForConnection"
+        case isRemoteConnectionAllowed = "RemoteConnectionAllowed"
     }
     
     init() {
@@ -67,6 +71,7 @@ struct UTMQemuConfigurationSerial: Codable, Identifiable {
         tcpHostAddress = try values.decodeIfPresent(String.self, forKey: .tcpHostAddress)
         tcpPort = try values.decodeIfPresent(Int.self, forKey: .tcpPort)
         isWaitForConnection = try values.decodeIfPresent(Bool.self, forKey: .isWaitForConnection)
+        isRemoteConnectionAllowed = try values.decodeIfPresent(Bool.self, forKey: .isRemoteConnectionAllowed)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -83,6 +88,7 @@ struct UTMQemuConfigurationSerial: Codable, Identifiable {
         case .tcpServer:
             try container.encodeIfPresent(tcpPort, forKey: .tcpPort)
             try container.encodeIfPresent(isWaitForConnection, forKey: .isWaitForConnection)
+            try container.encodeIfPresent(isRemoteConnectionAllowed, forKey: .isRemoteConnectionAllowed)
         default:
             break
         }
