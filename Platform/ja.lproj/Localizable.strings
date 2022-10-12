@@ -657,8 +657,9 @@
 "Installation Instructions" = "インストール手順";
 "Note: The file system tag for mounting the installer is 'rosetta'." = "注意: インストーラをマウントするためのファイルシステムタグは“rosetta”です。";
 "Additional Options" = "その他のオプション";
-"Uncompressed %@" = "無圧縮%@";
+"Uncompressed Linux kernel (required)" = "無圧縮Linuxカーネル（必須）";
 "Linux kernel (required)" = "Linuxカーネル（必須）";
+"Uncompressed Linux initial ramdisk (optional)" = "無圧縮Linux初期RAMディスク（オプション）";
 "Linux initial ramdisk (optional)" = "Linux初期RAMディスク（オプション）";
 "Linux Root FS Image (optional)" = "Linux RootFSイメージ（オプション）";
 "Boot ISO Image (optional)" = "起動ISOイメージ（オプション）";
