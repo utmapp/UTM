@@ -74,6 +74,7 @@ class VMDisplayAppleTerminalWindowController: VMDisplayAppleWindowController, VM
     override func enterLive() {
         serialPort.delegate = self
         super.enterLive()
+        resizeConsoleToolbarItem.isEnabled = true
     }
     
     func sendString(_ string: String) {
