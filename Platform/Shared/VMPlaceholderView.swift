@@ -26,19 +26,19 @@ struct VMPlaceholderView: View {
                 Text("Welcome to UTM").font(.title)
             }
             HStack {
-                TileButton(titleKey: "Create a New Virtual Machine", systemImage: "plus.circle") {
+                TileButton(Label(String.create, systemImage: "plus.circle")) {
                     data.newVM()
                 }
-                TileButton(titleKey: "Browse UTM Gallery", systemImage: "arrow.down.circle") {
+                TileButton(Label(String.browse, systemImage: "arrow.down.circle")) {
                     openURL(URL(string: "https://mac.getutm.app/gallery/")!)
                 }
             }
             HStack {
                 /// Link to Mac sites on all platforms because they are more up to date
-                TileButton(titleKey: "User Guide", systemImage: "book.circle") {
+                TileButton(Label(String.guide, systemImage: "book.circle")) {
                     openURL(URL(string: "https://mac.getutm.app/guide/")!)
                 }
-                TileButton(titleKey: "Support", systemImage: "questionmark.circle") {
+                TileButton(Label(String.support, systemImage: "questionmark.circle")) {
                     openURL(URL(string: "https://docs.getutm.app/")!)
                 }
             }
@@ -46,14 +46,25 @@ struct VMPlaceholderView: View {
     }
 }
 
+fileprivate extension String {
+    static let create = NSLocalizedString("Create a New Virtual Machine", comment: "Welcome view")
+    static let browse = NSLocalizedString("Browse UTM Gallery", comment: "Welcome view")
+    static let guide = NSLocalizedString("User Guide", comment: "Welcome view")
+    static let support = NSLocalizedString("Support", comment: "Welcome view")
+}
+
 private struct TileButton: View {
-    let titleKey: LocalizedStringKey
-    let systemImage: String
+    let label: Label<Text, Image>
     let action: () -> Void
+    
+    init(_ label: Label<Text, Image>, action: @escaping () -> Void) {
+        self.label = label
+        self.action = action
+    }
     
     var body: some View {
         Button(action: action, label: {
-            Label(titleKey, systemImage: systemImage)
+            label
                 .labelStyle(TileLabelStyle())
         }).buttonStyle(BigButtonStyle(width: 150, height: 150))
     }
