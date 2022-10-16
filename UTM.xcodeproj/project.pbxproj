@@ -34,6 +34,7 @@
 		835AA7B126AB7C85007A0411 /* UTMPendingVirtualMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 835AA7B026AB7C85007A0411 /* UTMPendingVirtualMachine.swift */; };
 		835AA7B226AB7C85007A0411 /* UTMPendingVirtualMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 835AA7B026AB7C85007A0411 /* UTMPendingVirtualMachine.swift */; };
 		835AA7B326AB7C85007A0411 /* UTMPendingVirtualMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 835AA7B026AB7C85007A0411 /* UTMPendingVirtualMachine.swift */; };
+		836CA97F28FCC39700EB9EF0 /* QEMULauncher-InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 836CA97D28FCC39700EB9EF0 /* QEMULauncher-InfoPlist.strings */; };
 		83993290272F4A400059355F /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 8399328F272F4A400059355F /* ZIPFoundation */; };
 		83993292272F68550059355F /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 83993291272F68550059355F /* ZIPFoundation */; };
 		83993294272F685F0059355F /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 83993293272F685F0059355F /* ZIPFoundation */; };
@@ -1598,6 +1599,7 @@
 		5A1746A628BA9C4300278241 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		83034C0626AB630F006B4BAF /* UTMPendingVMView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMPendingVMView.swift; sourceTree = "<group>"; };
 		835AA7B026AB7C85007A0411 /* UTMPendingVirtualMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMPendingVirtualMachine.swift; sourceTree = "<group>"; };
+		836CA97E28FCC39700EB9EF0 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = "de.lproj/QEMULauncher-InfoPlist.strings"; sourceTree = "<group>"; };
 		83A004B826A8CC95001AC09E /* UTMDownloadTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMDownloadTask.swift; sourceTree = "<group>"; };
 		83C15C5E26CC441000ADFD45 /* KeyCodeMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyCodeMap.swift; sourceTree = "<group>"; };
 		83FBDD53242FA71900D2C5D7 /* VMDisplayMetalViewController+Pointer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VMDisplayMetalViewController+Pointer.h"; sourceTree = "<group>"; };
@@ -3039,6 +3041,7 @@
 		CE550BC0225947990063E575 = {
 			isa = PBXGroup;
 			children = (
+				836CA97D28FCC39700EB9EF0 /* QEMULauncher-InfoPlist.strings */,
 				CE50A41F2637BB200050430F /* Build.xcconfig */,
 				CE258ACC22715F8300E5A333 /* README.md */,
 				CE31C242225E543A00A965DD /* Configuration */,
@@ -3503,6 +3506,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				836CA97F28FCC39700EB9EF0 /* QEMULauncher-InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4522,6 +4526,14 @@
 				83FE63BC28F617CE0047FFEF /* de */,
 			);
 			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		836CA97D28FCC39700EB9EF0 /* QEMULauncher-InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				836CA97E28FCC39700EB9EF0 /* de */,
+			);
+			name = "QEMULauncher-InfoPlist.strings";
 			sourceTree = "<group>";
 		};
 		CE061CDD289E6DC30000351C /* VMDisplayWindow.xib */ = {
