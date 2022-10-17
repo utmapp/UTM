@@ -130,6 +130,9 @@
 /* No comment provided by engineer. */
 "Bridged Settings" = "Bridge-Modus Einstellungen";
 
+/* Welcome view */
+"Browse UTM Gallery" = "UTM-Galerie besuchen";
+
 /* No comment provided by engineer. */
 "Browse…" = "Durchsuchen…";
 
@@ -187,7 +190,7 @@
 "Confirm Delete" = "Löschen bestätigen";
 
 /* VMDisplayWindowController */
-"Confirmation" = "Bestätigung";
+"Confirmation" = "Warnung";
 
 /* No comment provided by engineer. */
 "Connection" = "Verbindung";
@@ -203,6 +206,9 @@
 
 /* No comment provided by engineer. */
 "Create" = "Erstellen";
+
+/* Welcome view */
+"Create a New Virtual Machine" = "Neue Virtuelle Maschine erstellen";
 
 /* No comment provided by engineer. */
 "Custom" = "Eigene";
@@ -362,6 +368,9 @@
 
 /* UTMQemuConstants */
 "GDB Debug Stub" = "GDB Debug Stub";
+
+/* No comment provided by engineer. */
+"Generic" = "Standard";
 
 /* No comment provided by engineer. */
 "Gesture and Cursor Settings" = "Gesten- und Zeiger-Einstellungen";
@@ -564,6 +573,9 @@
 
 /* UTMQemuConstants */
 "None (Advanced)" = "Keine (erweitert)";
+
+/* No comment provided by engineer. */
+"Note: Shared directories will not be saved and will be reset when UTM quits." = "Hinweis: freigegebene Ordner werden nicht gespeichert und beim Beenden von UTM zurückgesetzt.";
 
 /* No comment provided by engineer. */
 "Notes" = "Notizen";
@@ -795,7 +807,7 @@
 /* No comment provided by engineer. */
 "Summary" = "Zusammenfassung";
 
-/* No comment provided by engineer. */
+/* Welcome view */
 "Support" = "Support";
 
 /* UTMVirtualMachine */
@@ -944,6 +956,9 @@
 
 /* No comment provided by engineer. */
 "Use Command+Option (⌘+⌥) for input capture/release" = "Drücken Sie cmd+alt (⌘+⌥) um den Mauszeiger zu fangen oder freizugeben.";
+
+/* Welcome view */
+"User Guide" = "Benutzerhandbuch";
 
 /* UTMQemuConstants */
 "VirtFS" = "VirtFS";
