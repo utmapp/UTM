@@ -5,9 +5,13 @@
 
 -- <cite>圖靈（Alan Turing）, 1936年</cite>
 
-UTM是一個功能齊全的iOS虛擬機主機。簡而言之，它允許你在iPhone和iPad上運行Windows、Android、Ubuntu等操作系統。更多信息請訪問https://getutm.app/
+UTM是一個功能齊全的iOS虛擬機主機。簡而言之，它允許你在iPhone和iPad上運行Windows、Android、Ubuntu等操作系統。更多信息請訪問[https://getutm.app/](https://getutm.app/)和[https://mac.getutm.app/](https://mac.getutm.app/)
 
-![在iPhone上運行UTM的截圖](https://kyun.ltyuanfang.cn/tc/2020/08/16/b71e7b3b8d695.png)
+<p align="center">
+  <img width="450px" alt="在iPhone上運行UTM" src="screen.png">
+  <br>
+  <img width="450px" alt="在MacBook上運行UTM" src="screenmac.png">
+</p>
 
 ## 特性
 
