@@ -657,8 +657,9 @@
 "Installation Instructions" = "Instructions d'installation";
 "Note: The file system tag for mounting the installer is 'rosetta'." = "Note : le tag du système de fichiers pour monter l'Installer est 'rosetta'.";
 "Additional Options" = "Options supplémentaires";
-"Uncompressed %@" = "%@ décoompressé";
+"Uncompressed Linux kernel (required)" = "Linux kernel décoompressé (required)";
 "Linux kernel (required)" = "Noyau Linux (requis)";
+"Uncompressed Linux initial ramdisk (optional)" = "Ramdisk initial de Linux décoompressé (optionnel)";
 "Linux initial ramdisk (optional)" = "Ramdisk initial de Linux (optionnel)";
 "Linux Root FS Image (optional)" = "Image Root FS de Linux (optionnel)";
 "Boot ISO Image (optional)" = "Image ISO de démarrage (optionnel)";
