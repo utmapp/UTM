@@ -1,0 +1,14 @@
+/* Privacy - Location Always and When In Use Usage Description */
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "UTM verwendet den Ortungs-Zugriff nur, um die App im Hintergrund weiter auszuführen. Die Ortungsdaten werden nicht verwendet.";
+
+/* Privacy - Location Always Usage Description */
+"NSLocationAlwaysUsageDescription" = "UTM verwendet den Ortungs-Zugriff nur, um die App im Hintergrund weiter auszuführen. Die Ortungsdaten werden nicht verwendet.";
+
+/* Privacy - Location When In Use Usage Description */
+"NSLocationWhenInUseUsageDescription" = "UTM verwendet den Ortungs-Zugriff nur, um die App im Hintergrund weiter auszuführen. Die Ortungsdaten werden nicht verwendet.";
+
+/* Privacy - Microphone Usage Description */
+"NSMicrophoneUsageDescription" = "Für Mikrofonzugriff in der VM wird Ihre Erlaubnis benötigt.";
+
+/* (No Comment) */
+"UTM virtual machine" = "Virtuelle Maschine (UTM)";

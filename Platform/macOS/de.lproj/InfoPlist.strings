@@ -1,0 +1,9 @@
+/* Bundle name */
+"CFBundleName" = "UTM";
+
+/* Privacy - Microphone Usage Description */
+"NSMicrophoneUsageDescription" = "Für Mikrofonzugriff in der VM wird Ihre Erlaubnis benötigt.";
+
+/* (No Comment) */
+"UTM virtual machine" = "Virtuelle Maschine (UTM)";
+

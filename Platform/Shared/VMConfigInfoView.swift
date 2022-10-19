@@ -17,12 +17,21 @@
 import SwiftUI
 
 private enum IconStyle: String, Identifiable, CaseIterable {
-    case generic = "Generic"
-    case operatingSystem = "Operating System"
-    case custom = "Custom"
+    case generic
+    case operatingSystem
+    case custom
     
-    var localizedName: LocalizedStringKey { LocalizedStringKey(rawValue) }
-    var id: String { rawValue }
+    var text: Text {
+        get {
+            switch self {
+            case .generic: return Text("Generic");
+            case .operatingSystem: return Text("Operating System")
+            case .custom: return Text("Custom")
+            }
+        }
+    }
+    
+    var id: String { get { self.rawValue } }
 }
 
 struct VMConfigInfoView: View {
@@ -97,8 +106,8 @@ struct VMConfigInfoView: View {
         }
 
         Picker(selection: style.animation(), label: Text("Style")) {
-            ForEach(IconStyle.allCases, id: \.id) { value in
-                Text(value.localizedName)
+            ForEach(IconStyle.allCases, id: \.rawValue) { value in
+                value.text
                     .tag(value)
             }
         }

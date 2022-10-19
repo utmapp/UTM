@@ -34,6 +34,7 @@
 		835AA7B126AB7C85007A0411 /* UTMPendingVirtualMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 835AA7B026AB7C85007A0411 /* UTMPendingVirtualMachine.swift */; };
 		835AA7B226AB7C85007A0411 /* UTMPendingVirtualMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 835AA7B026AB7C85007A0411 /* UTMPendingVirtualMachine.swift */; };
 		835AA7B326AB7C85007A0411 /* UTMPendingVirtualMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 835AA7B026AB7C85007A0411 /* UTMPendingVirtualMachine.swift */; };
+		836CA97F28FCC39700EB9EF0 /* QEMULauncher-InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 836CA97D28FCC39700EB9EF0 /* QEMULauncher-InfoPlist.strings */; };
 		83993290272F4A400059355F /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 8399328F272F4A400059355F /* ZIPFoundation */; };
 		83993292272F68550059355F /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 83993291272F68550059355F /* ZIPFoundation */; };
 		83993294272F685F0059355F /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 83993293272F685F0059355F /* ZIPFoundation */; };
@@ -1598,10 +1599,20 @@
 		5A1746A628BA9C4300278241 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		83034C0626AB630F006B4BAF /* UTMPendingVMView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMPendingVMView.swift; sourceTree = "<group>"; };
 		835AA7B026AB7C85007A0411 /* UTMPendingVirtualMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMPendingVirtualMachine.swift; sourceTree = "<group>"; };
+		836CA97E28FCC39700EB9EF0 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = "de.lproj/QEMULauncher-InfoPlist.strings"; sourceTree = "<group>"; };
 		83A004B826A8CC95001AC09E /* UTMDownloadTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMDownloadTask.swift; sourceTree = "<group>"; };
 		83C15C5E26CC441000ADFD45 /* KeyCodeMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyCodeMap.swift; sourceTree = "<group>"; };
 		83FBDD53242FA71900D2C5D7 /* VMDisplayMetalViewController+Pointer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VMDisplayMetalViewController+Pointer.h"; sourceTree = "<group>"; };
 		83FBDD55242FA7BC00D2C5D7 /* VMDisplayMetalViewController+Pointer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "VMDisplayMetalViewController+Pointer.m"; sourceTree = "<group>"; };
+		83FE63B628F617CD0047FFEF /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/VMDisplayMetalViewInputAccessory.strings; sourceTree = "<group>"; };
+		83FE63B728F617CE0047FFEF /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/VMDisplayWindow.strings; sourceTree = "<group>"; };
+		83FE63B828F617CE0047FFEF /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		83FE63B928F617CE0047FFEF /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		83FE63BA28F617CE0047FFEF /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
+		83FE63BB28F617CE0047FFEF /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = de; path = de.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
+		83FE63BC28F617CE0047FFEF /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		83FE63BD28F617CE0047FFEF /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
+		83FE63BE28F617CE0047FFEF /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		8401865D2887B1620050AC51 /* VMDisplayTerminalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VMDisplayTerminalViewController.swift; sourceTree = "<group>"; };
 		84018682288A3B2E0050AC51 /* VMWindowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMWindowView.swift; sourceTree = "<group>"; };
 		84018685288A3B5B0050AC51 /* VMSessionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMSessionState.swift; sourceTree = "<group>"; };
@@ -3031,6 +3042,7 @@
 		CE550BC0225947990063E575 = {
 			isa = PBXGroup;
 			children = (
+				836CA97D28FCC39700EB9EF0 /* QEMULauncher-InfoPlist.strings */,
 				CE50A41F2637BB200050430F /* Build.xcconfig */,
 				CE258ACC22715F8300E5A333 /* README.md */,
 				CE31C242225E543A00A965DD /* Configuration */,
@@ -3464,6 +3476,7 @@
 				fr,
 				fi,
 				"es-419",
+				de,
 			);
 			mainGroup = CE550BC0225947990063E575;
 			packageReferences = (
@@ -3494,6 +3507,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				836CA97F28FCC39700EB9EF0 /* QEMULauncher-InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4495,6 +4509,7 @@
 				84937F19289764D9003148F4 /* en */,
 				5A1746A228BA9C4300278241 /* fi */,
 				E68D491F28AC018D00D34C54 /* es-419 */,
+				83FE63BA28F617CE0047FFEF /* de */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -4509,8 +4524,17 @@
 				84937F1A289764DE003148F4 /* en */,
 				5A1746A428BA9C4300278241 /* fi */,
 				E68D492128AC018D00D34C54 /* es-419 */,
+				83FE63BC28F617CE0047FFEF /* de */,
 			);
 			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		836CA97D28FCC39700EB9EF0 /* QEMULauncher-InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				836CA97E28FCC39700EB9EF0 /* de */,
+			);
+			name = "QEMULauncher-InfoPlist.strings";
 			sourceTree = "<group>";
 		};
 		CE061CDD289E6DC30000351C /* VMDisplayWindow.xib */ = {
@@ -4521,6 +4545,7 @@
 				5A17469F28BA9C4300278241 /* fi */,
 				E68D491C28AC018700D34C54 /* es-419 */,
 				844C73F828BDA96200805313 /* fr */,
+				83FE63B728F617CE0047FFEF /* de */,
 			);
 			name = VMDisplayWindow.xib;
 			sourceTree = "<group>";
@@ -4532,6 +4557,7 @@
 				CE061CEB289EB62E0000351C /* ja */,
 				5A17469E28BA9C4300278241 /* fi */,
 				E68D491B28AC018600D34C54 /* es-419 */,
+				83FE63B628F617CD0047FFEF /* de */,
 			);
 			name = VMDisplayMetalViewInputAccessory.xib;
 			sourceTree = "<group>";
@@ -4542,6 +4568,7 @@
 				CED8DF7828A120C100C34345 /* en */,
 				CEC9968328AA516000E7A025 /* ja */,
 				E68D492028AC018D00D34C54 /* es-419 */,
+				83FE63BB28F617CE0047FFEF /* de */,
 				8441289729005F49002752E3 /* fr */,
 			);
 			name = Localizable.stringsdict;
@@ -4557,6 +4584,7 @@
 				84937F17289764A9003148F4 /* en */,
 				5A1746A028BA9C4300278241 /* fi */,
 				E68D491D28AC018D00D34C54 /* es-419 */,
+				83FE63B828F617CE0047FFEF /* de */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -4571,6 +4599,7 @@
 				84937F18289764CF003148F4 /* en */,
 				5A1746A128BA9C4300278241 /* fi */,
 				E68D491E28AC018D00D34C54 /* es-419 */,
+				83FE63B928F617CE0047FFEF /* de */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -4584,6 +4613,7 @@
 				84937F1C289764E8003148F4 /* en */,
 				5A1746A628BA9C4300278241 /* fi */,
 				E68D492328AC018E00D34C54 /* es-419 */,
+				83FE63BE28F617CE0047FFEF /* de */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -4598,6 +4628,7 @@
 				84937F1B289764E4003148F4 /* en */,
 				5A1746A528BA9C4300278241 /* fi */,
 				E68D492228AC018E00D34C54 /* es-419 */,
+				83FE63BD28F617CE0047FFEF /* de */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";

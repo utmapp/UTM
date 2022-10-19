@@ -1,0 +1,1021 @@
+/* A removable drive that has no image file inserted. */
+"(empty)" = "(leer)";
+
+/* VMConfigAppleDriveDetailsView */
+"(New Drive)" = "(Neues Laufwerk)";
+
+/* No comment provided by engineer. */
+"(new)" = "(neu)";
+
+/* UTMWrappedVirtualMachine */
+"(Unavailable)" = "(nicht verfügbar)";
+
+/* QEMUConstant */
+"%@ (%@)" = "%1$@ (%2$@)";
+
+/* VMToolbarDriveMenuView */
+"%@ (%@): %@" = "%1$@ (%2$@): %3$@";
+
+/* VMDisplayMetalWindowController */
+"%@ (Display %lld)" = "%1$@ (Display %2$lld)";
+
+/* VMDisplayAppleTerminalWindowController
+   VMDisplayQemuTerminalWindowController */
+"%@ (Terminal %lld)" = "%1$@ (Terminal %2$lld)";
+
+/* No comment provided by engineer. */
+"%@ ➡️ %@" = "%1$@ ➡️ %2$@";
+
+/* VMDrivesSettingsView */
+"%@ Drive" = "%@ Laufwerk";
+
+/* VMDrivesSettingsView */
+"%@ Image" = "%@ Abbild";
+
+/* Format string for remaining time until a download finishes */
+"%@ remaining" = "%@ verbleibend";
+
+/* Format string for the 'per second' part of a download speed. */
+"%@/s" = "%@ / s";
+
+/* Format string for download progress and speed, e. g. 5 MB of 6 GB (200 kbit/s) */
+"%1$@ of %2$@ (%3$@)" = "%1$@ von %2$@ (%3$@)";
+
+/* UTMAppleConfiguration */
+"A valid kernel image must be specified." = "Ein valides Kernel-Abbild ist erforderlich.";
+
+/* VMDisplayAppleController */
+"Add…" = "Hinzufügen…";
+
+/* No comment provided by engineer. */
+"Additional Options" = "Weitere Optionen";
+
+/* No comment provided by engineer. */
+"Additional Settings" = "Weitere Einstellungen";
+
+/* No comment provided by engineer. */
+"Advanced" = "Erweitert";
+
+/* VMConfigSystemView */
+"Allocating too much memory will crash the VM." = "Zu viel zugewiesener Speicher wird zum Abstürzen der VM führen.";
+
+/* UTMData */
+"AltJIT error: %@" = "AltJIT Fehler: %@";
+
+/* UTMData */
+"An existing virtual machine already exists with this name." = "Es existiert bereits eine VM mit diesem Namen.";
+
+/* VMDrivesSettingsView */
+"An image already exists with that name." = "Es existiert bereits eine Abbild-Datei mit diesem Namen.";
+
+/* UTMConfiguration
+   UTMVirtualMachine */
+"An internal error has occurred." = "Ein interner Fehler ist aufgetreten.";
+
+/* UTMConfiguration */
+"An invalid value of '%@' is used in the configuration file." = "In der Konfigurationsdatei ist der ungültige Wert „%@” enthalten.";
+
+/* VMConfigSystemView */
+"Any unsaved changes will be lost." = "Alle nicht gespeicherten Änderungen gehen Verloren";
+
+/* No comment provided by engineer. */
+"Application" = "Programm";
+
+/* No comment provided by engineer. */
+"Architecture" = "Architektur";
+
+/* No comment provided by engineer. */
+"Are you sure you want to exit UTM?" = "Soll UTM wirklich beendet werden?";
+
+/* No comment provided by engineer. */
+"Are you sure you want to permanently delete this disk image?" = "Möchten Sie dieses Abbild wirklich dauerhaft löschen?";
+
+/* No comment provided by engineer. */
+"Are you sure you want to reset this VM? Any unsaved changes will be lost." = "Möchten Sie wirklich einen Reset ausführen? Ungespeicherte Änderungen gehen verloren.";
+
+/* No comment provided by engineer. */
+"Are you sure you want to stop this VM and exit? Any unsaved changes will be lost." = "Möchten Sie die VM wirklich ausschalten? Ungespeicherte Änderungen gehen verloren.";
+
+/* UTMQemuConstants */
+"Automatic Serial Device (max 4)" = "Automatische Serielle Konsole (max. 4)";
+
+/* UTMLegacyQemuConfiguration
+   UTMQemuConstants */
+"BIOS" = "BIOS";
+
+/* UTMQemuConstants */
+"Bold" = "Fett";
+
+/* No comment provided by engineer. */
+"Boot" = "Boot";
+
+/* No comment provided by engineer. */
+"Boot Arguments" = "Boot-Argumente";
+
+/* No comment provided by engineer. */
+"Boot Image Type" = "Art des Boot-Abbilds";
+
+/* No comment provided by engineer. */
+"Boot ISO Image" = "Boot-ISO-Abbild";
+
+/* No comment provided by engineer. */
+"Boot ISO Image (optional)" = "Boot-ISO-Abbild (optional)";
+
+/* No comment provided by engineer. */
+"Boot VHDX Image" = "Boot-VHDX-Abbild";
+
+/* UTMQemuConstants */
+"Bridged (Advanced)" = "Bridge (erweitert)";
+
+/* No comment provided by engineer. */
+"Bridged Settings" = "Bridge-Modus Einstellungen";
+
+/* Welcome view */
+"Browse UTM Gallery" = "UTM-Galerie besuchen";
+
+/* No comment provided by engineer. */
+"Browse…" = "Durchsuchen…";
+
+/* UTMQemuConstants */
+"Built-in Terminal" = "Eingebautes Terminal";
+
+/* VMDisplayWindowController
+   VMQemuDisplayMetalWindowController */
+"Cancel" = "Abbrechen";
+
+/* UTMAppleVirtualMachine */
+"Cannot access resource: %@" = "Ressource nicht verfügbar: %@";
+
+/* UTMAppleVirtualMachine */
+"Cannot create virtual terminal." = "Virtuelles Terminal kann nicht erzeugt werden.";
+
+/* UTMData */
+"Cannot find AltServer for JIT enable. You cannot run VMs until JIT is enabled." = "Der AltServer für JIT wurde nicht gefunden. Die VMs können nicht starten, bis JIT aktiviert wurde.";
+
+/* UTMData */
+"Cannot import this VM. Either the configuration is invalid, created in a newer version of UTM, or on a platform that is incompatible with this version of UTM." = "Die VM konnte nicht importiert werden. Möglicherweise wurde sie in einer neueren oder inkompatiblen Version von UTM erstellt.";
+
+/* No comment provided by engineer. */
+"Caps Lock (⇪) is treated as a key" = "Die Feststelltaste (⇪) wird als einzelner Tastendruck behandelt";
+
+/* VMMetalView */
+"Capture Input" = "Eingabe fangen";
+
+/* VMDisplayQemuMetalWindowController */
+"Captured mouse" = "Maus gefangen";
+
+/* Configuration boot device */
+"CD/DVD" = "CD/DVD";
+
+/* UTMLegacyQemuConfiguration
+   UTMQemuConstants */
+"CD/DVD (ISO) Image" = "CD/DVD (ISO-) Abbild";
+
+/* VMDisplayWindowController */
+"Change" = "Wechseln";
+
+/* VMDisplayAppleController */
+"Change…" = "Abbild Wechseln…";
+
+/* No comment provided by engineer. */
+"Clear" = "Entfernen";
+
+/* VMQemuDisplayMetalWindowController */
+"Closing this window will kill the VM." = "Das Schließen des Fensters wird die VM unsanft beenden.";
+
+/* VMQemuDisplayMetalWindowController */
+"Confirm" = "Bestätigen";
+
+/* No comment provided by engineer. */
+"Confirm Delete" = "Löschen bestätigen";
+
+/* VMDisplayWindowController */
+"Confirmation" = "Warnung";
+
+/* No comment provided by engineer. */
+"Connection" = "Verbindung";
+
+/* No comment provided by engineer. */
+"Cores" = "Kerne";
+
+/* No comment provided by engineer. */
+"CPU" = "Prozessor";
+
+/* No comment provided by engineer. */
+"CPU Cores" = "Prozessor-Kerne";
+
+/* No comment provided by engineer. */
+"Create" = "Erstellen";
+
+/* Welcome view */
+"Create a New Virtual Machine" = "Neue Virtuelle Maschine erstellen";
+
+/* No comment provided by engineer. */
+"Custom" = "Eigene";
+
+/* No comment provided by engineer. */
+"Debug Logging" = "Ereignis-Protokoll";
+
+/* QEMUConstantGenerated
+   UTMQemuConstants */
+"Default" = "Standard";
+
+/* VMWizardSummaryView */
+"Default Cores" = "Standard-Kerne";
+
+/* No comment provided by engineer. */
+"Delete" = "Löschen";
+
+/* No comment provided by engineer. */
+"Devices" = "Geräte";
+
+/* VMDisplayAppleWindowController */
+"Directory sharing" = "Ordnerfreigabe";
+
+/* UTMQemuConstants */
+"Disabled" = "Deaktiviert";
+
+/* UTMLegacyQemuConfiguration
+   UTMQemuConstants */
+"Disk Image" = "Laufwerks-Abbild";
+
+/* VMDisplayAppleWindowController */
+"Display" = "Display";
+
+/* VMDisplayQemuDisplayController */
+"Display %lld: %@" = "Display %1$lld: %2$@";
+
+/* VMDisplayQemuDisplayController */
+"Disposable Mode" = "Wegwerf-Modus";
+
+/* No comment provided by engineer. */
+"Do not save VM screenshot to disk" = "VM Screenshots nicht speichern";
+
+/* No comment provided by engineer. */
+"Do not show prompt when USB device is plugged in" = "USB-Abfrage deaktivieren";
+
+/* No comment provided by engineer. */
+"Do you want to delete this VM and all its data?" = "Möchten Sie diese VM und alle enthaltenen Daten löschen?";
+
+/* No comment provided by engineer. */
+"Do you want to duplicate this VM and all its data?" = "Möchten Sie diese VM und alle enthaltenen Daten duplizieren?";
+
+/* No comment provided by engineer. */
+"Do you want to force stop this VM and lose all unsaved data?" = "Möchten Sie diese VM unsanft beenden und ungespeicherte Daten verlieren?";
+
+/* No comment provided by engineer. */
+"Do you want to move this VM to another location? This will copy the data to the new location, delete the data from the original location, and then create a shortcut." = "Möchten Sie diese VM an einen neuen Speicherort bewegen? Dadurch werden alle enthaltenen Daten dorthin kopiert, das Original gelöscht und eine Verknüpfung erstellt.";
+
+/* No comment provided by engineer. */
+"Do you want to remove this shortcut? The data will not be deleted." = "Möchten Sie diese VM-Verknüpfung löschen? Die Daten werden nicht gelöscht.";
+
+/* No comment provided by engineer. */
+"Download prebuilt from UTM Gallery…" = "Fertiges System von der UTM-Galerie laden…";
+
+/* No comment provided by engineer. */
+"Drag and drop IPSW file here" = "IPSW-Datei hier ablegen";
+
+/* No comment provided by engineer. */
+"Drives" = "Laufwerke";
+
+/* VMDrivesSettingsView */
+"EFI Variables" = "EFI-Variablen";
+
+/* VMDisplayWindowController */
+"Eject" = "Auswerfen";
+
+/* No comment provided by engineer. */
+"Emulate" = "Emulieren";
+
+/* UTMQemuConstants */
+"Emulated VLAN" = "Emuliertes VLAN";
+
+/* No comment provided by engineer. */
+"Enable Clipboard Sharing" = "Geteilte Zwischenablage aktivieren";
+
+/* VMDisplayWindowController */
+"Error" = "Fehler";
+
+/* UTMJSONStream */
+"Error parsing JSON." = "Fehler bei der JSON-Verarbeitung.";
+
+/* UTMVirtualMachine */
+"Error trying to restore external drives and shares: %@" = "Fehler bei externen Laufwerken oder Freigaben: %@";
+
+/* No comment provided by engineer. */
+"Existing" = "Existierende";
+
+/* Word for decompressing a compressed folder */
+"Extracting…" = "Wird entpackt…";
+
+/* UTMQemuVirtualMachine */
+"Failed to access data from shortcut." = "Die verknüpften Daten konnten nicht gefunden werden.";
+
+/* UTMQemuVirtualMachine */
+"Failed to access drive image path." = "Das Laufwerks-Abbild konnte nicht gefunden werden.";
+
+/* UTMQemuVirtualMachine */
+"Failed to access shared directory." = "Der freigegebener Ordner konnte nicht gefunden werden.";
+
+/* ContentView */
+"Failed to attach to JitStreamer:\n%@" = "Fehler beim Start von JitStreamer: %@";
+
+/* ContentView */
+"Failed to attach to JitStreamer." = "Fehler beim Start von JitStreamer.";
+
+/* UTMData */
+"Failed to clone VM." = "Die VM konnte nicht dupliziert werden.";
+
+/* ContentView */
+"Failed to decode JitStreamer response." = "Die Kommunikation mit JitStreamer ist fehlgeschlagen.";
+
+/* VMWizardState */
+"Failed to get latest macOS version from Apple." = "Die neueste macOS-Version konnte nicht abgerufen werden.";
+
+/* UTMQemuConfigurationError */
+"Failed to migrate configuration from a previous UTM version." = "Die VM-Konfiguration konnte nicht von der alten UTM-Version übernommen werden.";
+
+/* UTMData */
+"Failed to parse download URL." = "Die Download-URL war fehlerhaft.";
+
+/* UTMData */
+"Failed to parse imported VM." = "Die importierte VM konnte nicht geöffnet werden.";
+
+/* UTMDownloadVMTask */
+"Failed to parse the downloaded VM." = "Die geladene VM konnte nicht geöffnet werden.";
+
+/* UTMQemuVirtualMachine */
+"Failed to save VM snapshot. Usually this means at least one device does not support snapshots. %@" = "Der VM-Zustand konnte nicht gespeichert werden. Meistens liegt das an einem nicht unterstützten Laufwerk. %@";
+
+/* UTMSpiceIO */
+"Failed to start SPICE client." = "Fehler beim Start des SPICE Client.";
+
+/* No comment provided by engineer. */
+"Faster, but can only run the native CPU architecture." = "Schneller, unterstützt jedoch nur die Host-CPU-Architektur.";
+
+/* Configuration boot device
+   UTMQemuConstants */
+"Floppy" = "Diskette";
+
+/* No comment provided by engineer. */
+"Font Size" = "Schriftgröße";
+
+/* No comment provided by engineer. */
+"Force Multicore" = "Multicore erzwingen";
+
+/* No comment provided by engineer. */
+"GB" = "GB";
+
+/* UTMQemuConstants */
+"GDB Debug Stub" = "GDB Debug Stub";
+
+/* No comment provided by engineer. */
+"Generic" = "Standard";
+
+/* No comment provided by engineer. */
+"Gesture and Cursor Settings" = "Gesten- und Zeiger-Einstellungen";
+
+/* UTMQemuManager */
+"Guest panic" = "Kernel-Panic in der VM";
+
+/* Configuration boot device */
+"Hard Disk" = "Festplatte";
+
+/* No comment provided by engineer. */
+"Hardware" = "Hardware";
+
+/* No comment provided by engineer. */
+"Hardware OpenGL Acceleration" = "OpenGL-Hardwarebeschleunigung";
+
+/* No comment provided by engineer. */
+"Hello" = "Hallo";
+
+/* No comment provided by engineer. */
+"Hide Unused…" = "Unbenutzte ausblenden…";
+
+/* No comment provided by engineer. */
+"Hold Control (⌃) for right click" = "Control halten (⌃) für Rechtsklick";
+
+/* UTMQemuConstants */
+"Host Only" = "Nur Host";
+
+/* No comment provided by engineer. */
+"Icon" = "Icon";
+
+/* UTMQemuConstants */
+"IDE" = "IDE";
+
+/* No comment provided by engineer. */
+"Image File Type" = "Abbild-Typ";
+
+/* No comment provided by engineer. */
+"Import IPSW" = "IPSW importieren";
+
+/* No comment provided by engineer. */
+"Import…" = "Importieren…";
+
+/* VMDetailsView */
+"Inactive" = "Inaktiv";
+
+/* No comment provided by engineer. */
+"Information" = "Information";
+
+/* No comment provided by engineer. */
+"Input" = "Eingabe";
+
+/* VMDisplayWindowController */
+"Install Windows Guest Tools…" = "Windows Gasterweiterung installieren…";
+
+/* VMDisplayAppleWindowController */
+"Installation: %@" = "Installation: %@";
+
+/* UTMQemu */
+"Internal error has occurred." = "Ein interner Fehler ist aufgetreten. (QEMU)";
+
+/* UTMSpiceIO */
+"Internal error trying to connect to SPICE server." = "Fehler bei Verbindung zum SPICE Server.";
+
+/* VMDisplayMetalWindowController */
+"Internal error." = "Interner Fehler.";
+
+/* ContentView */
+"Invalid JitStreamer attach URL:\n%@" = "JitStreamer-Attach-URL ist ungültig: %@";
+
+/* VMConfigAppleNetworkingView */
+"Invalid MAC address." = "Ungültige MAC-Adresse.";
+
+/* No comment provided by engineer. */
+"Invert scrolling" = "Scrollrichtung umkehren";
+
+/* No comment provided by engineer. */
+"IP Configuration" = "IP-Konfiguration";
+
+/* No comment provided by engineer. */
+"Isolate Guest from Host" = "Gast-Netz vom Host isolieren";
+
+/* UTMQemuConstants */
+"Italic" = "Kursiv";
+
+/* UTMQemuConstants */
+"Italic, Bold" = "Kursiv & Fett";
+
+/* No comment provided by engineer. */
+"Keep UTM running after last window is closed and all VMs are shut down" = "UTM weiter ausführen, wenn alle Fenster geschlossen und alle VMs beendet wurden";
+
+/* No comment provided by engineer. */
+"License" = "Lizenz";
+
+/* UTMQemuConstants */
+"Linear" = "Linear";
+
+/* UTMAppleConfigurationBoot */
+"Linux" = "Linux";
+
+/* UTMLegacyQemuConfiguration
+   UTMQemuConstants */
+"Linux Device Tree Binary" = "Linux Gerätebaum-Datei";
+
+/* No comment provided by engineer. */
+"Linux initial ramdisk (optional)" = "Linux Ramdisk (optional)";
+
+/* UTMLegacyQemuConfiguration
+   UTMQemuConstants */
+"Linux Kernel" = "Linux Kernel";
+
+/* No comment provided by engineer. */
+"Linux kernel (required)" = "Linux Kernel (erforderlich)";
+
+/* UTMLegacyQemuConfiguration
+   UTMQemuConstants */
+"Linux RAM Disk" = "Linux Ramdisk";
+
+/* No comment provided by engineer. */
+"Linux Root FS Image (optional)" = "Linux Root-Dateisystem-Abbild (optional)";
+
+/* No comment provided by engineer. */
+"Linux Settings" = "Linux Einstellungen";
+
+/* No comment provided by engineer. */
+"Logging" = "Protokollierung";
+
+/* UTMAppleConfigurationBoot */
+"macOS" = "macOS";
+
+/* VMWizardOSMacView */
+"macOS guests are only supported on ARM64 devices." = "macOS VMs sind nur auf Apple Silicon verfügbar.";
+
+/* VMWizardState */
+"macOS is not supported with QEMU." = "macOS wird nicht in QEMU unterstützt.";
+
+/* No comment provided by engineer. */
+"macOS Settings" = "macOS Einstellungen";
+
+/* UTMQemuManager */
+"Manager being deallocated, killing pending RPC." = "Manager wird beendet, stoppe verbleibende RPCs.";
+
+/* UTMQemuConstants */
+"Manual Serial Device (advanced)" = "Eigenes serielles Gerät (erweitert)";
+
+/* No comment provided by engineer. */
+"Maximum Shared USB Devices" = "Anzahl weitergeleiteter USB-Geräte (max.)";
+
+/* No comment provided by engineer. */
+"MB" = "MB";
+
+/* No comment provided by engineer. */
+"Memory" = "Speicher";
+
+/* VMDisplayMetalWindowController */
+"Metal is not supported on this device. Cannot render display." = "Display kann nicht angezeigt werden, weil Metal auf diesem Gerät nicht unterstützt wird.";
+
+/* No comment provided by engineer. */
+"Minimum size: %@" = "Mindestgröße: %@";
+
+/* UTMAppleConfigurationDevices */
+"Mouse" = "Maus";
+
+/* UTMQemuConstants */
+"MTD (NAND/NOR)" = "MTD (NAND/NOR)";
+
+/* No comment provided by engineer. */
+"Name" = "Name";
+
+/* UTMQemuConstants */
+"Nearest Neighbor" = "Nächstgelegen";
+
+/* No comment provided by engineer. */
+"New" = "Neu";
+
+/* No comment provided by engineer. */
+"New…" = "Neu…";
+
+/* No comment provided by engineer. */
+"No" = "Nein";
+
+/* VMDisplayWindowController */
+"No drives connected." = "Keine Laufwerke angeschlossen.";
+
+/* UTMDownloadSupportToolsTaskError */
+"No empty removable drive found. Make sure you have at least one removable drive that is not in use." = "Keine freien Laufwerke vorhanden. Stellen Sie sicher, dass ein Wechsellaufwerk verfügbar ist.";
+
+/* No comment provided by engineer. */
+"No output device is selected for this window." = "Für dieses Fenster wurde kein Ausgabegerät gewählt.";
+
+/* VMQemuDisplayMetalWindowController */
+"No USB devices detected." = "Keine USB-Geräte verfügbar.";
+
+/* VMToolbarDriveMenuView */
+"none" = "keine";
+
+/* UTMLegacyQemuConfiguration
+   UTMQemuConstants */
+"None" = "Keine";
+
+/* UTMQemuConstants */
+"None (Advanced)" = "Keine (erweitert)";
+
+/* No comment provided by engineer. */
+"Note: Shared directories will not be saved and will be reset when UTM quits." = "Hinweis: freigegebene Ordner werden nicht gespeichert und beim Beenden von UTM zurückgesetzt.";
+
+/* No comment provided by engineer. */
+"Notes" = "Notizen";
+
+/* UTMQemuConstants */
+"NVMe" = "NVMe";
+
+/* VMDisplayWindowController */
+"OK" = "Ok";
+
+/* No comment provided by engineer. */
+"Open…" = "Öffnen…";
+
+/* No comment provided by engineer. */
+"Operating System" = "Betriebssystem";
+
+/* No comment provided by engineer. */
+"Other" = "Andere";
+
+/* VMDisplayWindowController */
+"Pause" = "Pause";
+
+/* UTMVirtualMachine */
+"Paused" = "Pausiert";
+
+/* UTMVirtualMachine */
+"Pausing" = "Pausiert…";
+
+/* UTMQemuConstants */
+"PC System Flash" = "PC-System-Flash";
+
+/* No comment provided by engineer. */
+"Pending" = "In Arbeit";
+
+/* VMDisplayWindowController */
+"Play" = "Starten";
+
+/* VMWizardState */
+"Please select a boot image." = "Bitte wählen Sie ein Start-Abbild aus.";
+
+/* VMWizardState */
+"Please select a kernel file." = "Bitte wählen Sie eine Kernel-Datei aus.";
+
+/* No comment provided by engineer. */
+"Please select a macOS recovery IPSW." = "Bitte wählen Sie eine macOS Recovery IPSW-Datei aus.";
+
+/* No comment provided by engineer. */
+"Please select an uncompressed Linux kernel image." = "Bitte wählen Sie ein unkomprimiertes Linux Kernel-Abbild aus.";
+
+/* No comment provided by engineer. */
+"Port Forward" = "Port-Weiterleitung";
+
+/* UTMJSONStream */
+"Port is not connected." = "Port ist nicht verbunden.";
+
+/* No comment provided by engineer. */
+"Preconfigured" = "Vorgefertigt";
+
+/* A download process is about to begin. */
+"Preparing…" = "Vorbereitung…";
+
+/* VMDisplayQemuMetalWindowController */
+"Press %@ to release cursor" = "Drücken Sie %@ um den Cursor freizugeben.";
+
+/* UTMQemuConstants */
+"Pseudo-TTY Device" = "Pseudo-TTY-Gerät";
+
+/* No comment provided by engineer. */
+"QEMU Arguments" = "QEMU-Parameter";
+
+/* UTMQemuVirtualMachine */
+"QEMU exited from an error: %@" = "QEMU wurde mit Fehler beendet: %@";
+
+/* UTMQemuConstants */
+"QEMU Monitor (HMP)" = "QEMU Monitor (HMP)";
+
+/* VMDisplayWindowController */
+"Querying drives status..." = "Status der Laufwerke wird abgerufen…";
+
+/* VMQemuDisplayMetalWindowController */
+"Querying USB devices..." = "USB-Geräte werden abgerufen…";
+
+/* VMQemuDisplayMetalWindowController */
+"Quitting UTM will kill all running VMs." = "Mit dem Beenden von UTM werden alle laufenden VMs abrupt heruntergefahren.";
+
+/* No comment provided by engineer. */
+"Raw Image" = "Direktes Image";
+
+/* VMDisplayAppleController */
+"Read Only" = "Nur Lesen";
+
+/* No comment provided by engineer. */
+"Reclaim" = "Freigeben";
+
+/* UTMQemuConstants */
+"Regular" = "Normal";
+
+/* No comment provided by engineer. */
+"Removable" = "Wechselbar";
+
+/* No comment provided by engineer. */
+"Removable Drive" = "Wechsellaufwerk";
+
+/* No comment provided by engineer. */
+"Remove" = "Entfernen";
+
+/* VMDisplayAppleController */
+"Remove…" = "Entfernen…";
+
+/* No comment provided by engineer. */
+"Reset" = "Zurücksetzen";
+
+/* No comment provided by engineer. */
+"Resize" = "Größe anpassen";
+
+/* No comment provided by engineer. */
+"Resize display to screen size and orientation automatically" = "Anzeige-Größe automatisch an Display und Ausrichtung anpassen";
+
+/* No comment provided by engineer. */
+"Resize display to window size automatically" = "Anzeige-Größe automatisch an Fenstergröße anpassen";
+
+/* No comment provided by engineer. */
+"Resizing is experimental and could result in data loss. You are strongly encouraged to back-up this VM before proceeding. Would you like to resize to %@ GiB?" = "Das Ändern der Größe ist eine experimentelle Funktion und könnte Datenverlust nach sich ziehen. Machen Sie vorher ein Backup. Möchten Sie die Größe auf $@ GiB ändern?";
+
+/* UTMVirtualMachine */
+"Resuming" = "Wird fortgesetzt";
+
+/* No comment provided by engineer. */
+"Retina Mode" = "Retina-Modus";
+
+/* UTMAppleConfiguration */
+"Rosetta is not supported on the current host machine." = "Rosetta wird von der Host-Architektur nicht unterstützt.";
+
+/* No comment provided by engineer. */
+"Running low on memory! UTM might soon be killed by iOS. You can prevent this by decreasing the amount of memory and/or JIT cache assigned to this VM" = "Speicher-Engpass erkannt! UTM wird möglicherweise bald plötzlich beendet. Sie können dies fürs nächste Mal verhindern, indem Sie der VM weniger RAM zuweisen.";
+
+/* No comment provided by engineer. */
+"Save" = "Speichern";
+
+/* No comment provided by engineer. */
+"Scaling" = "Skalierung";
+
+/* UTMQemuConstants */
+"SCSI" = "SCSI";
+
+/* UTMQemuConstants */
+"SD Card" = "SD-Karte";
+
+/* No comment provided by engineer. */
+"Select a file." = "Wählen Sie eine Datei aus.";
+
+/* VMDisplayWindowController */
+"Select Drive Image" = "Abbild auswählen";
+
+/* VMDisplayAppleWindowController
+   VMDisplayWindowController */
+"Select Shared Folder" = "Order auswählen";
+
+/* SavePanel */
+"Select where to export QEMU command:" = "Ort zum Exportieren des QEMU-Kommandos auswählen";
+
+/* SavePanel */
+"Select where to save debug log:" = "Ort zum Exportieren des Debug Log auswählen";
+
+/* SavePanel */
+"Select where to save UTM Virtual Machine:" = "Speicherort der VM auswählen";
+
+/* No comment provided by engineer. */
+"Selected:" = "Ausgewählt:";
+
+/* VMDisplayAppleWindowController
+   VMDisplayQemuDisplayController */
+"Serial %lld" = "Serieller Anschluss %lld";
+
+/* No comment provided by engineer. */
+"Share USB devices from host" = "USB-Geräte des Host freigeben";
+
+/* No comment provided by engineer. */
+"Shared Directory" = "Freigegebener Ordner";
+
+/* UTMQemuConstants */
+"Shared Network" = "Gemeinsames Netzwerk";
+
+/* No comment provided by engineer. */
+"Sharing" = "Freigaben";
+
+/* No comment provided by engineer. */
+"Show Advanced Settings" = "Erweiterte Einstellungen anzeigen";
+
+/* No comment provided by engineer. */
+"Show All…" = "Alle anzeigen…";
+
+/* No comment provided by engineer. */
+"Size" = "Größe";
+
+/* No comment provided by engineer. */
+"Slower, but can run other CPU architectures." = "Langsamer, unterstützt eine Vielzahl an CPU-Architekturen";
+
+/* No comment provided by engineer. */
+"Specify the size of the drive where data will be stored into." = "Legen Sie die Größe des VM-Speicherplatzes fest.";
+
+/* UTMQemuConstants */
+"SPICE WebDAV" = "SPICE WebDAV";
+
+/* No comment provided by engineer. */
+"Start" = "Einschalten";
+
+/* UTMVirtualMachine */
+"Started" = "Gestartet";
+
+/* UTMVirtualMachine */
+"Starting" = "Startet";
+
+/* No comment provided by engineer. */
+"Stop" = "Ausschalten";
+
+/* UTMVirtualMachine */
+"Stopped" = "Ausgeschaltet";
+
+/* UTMVirtualMachine */
+"Stopping" = "Wird ausgeschaltet";
+
+/* No comment provided by engineer. */
+"Storage" = "Datenspeicher";
+
+/* No comment provided by engineer. */
+"Style" = "Stil";
+
+/* No comment provided by engineer. */
+"Summary" = "Zusammenfassung";
+
+/* Welcome view */
+"Support" = "Support";
+
+/* UTMVirtualMachine */
+"Suspended" = "Im Betrieb pausiert";
+
+/* No comment provided by engineer. */
+"System" = "System";
+
+/* UTMQemuConstants */
+"TCP" = "TCP";
+
+/* UTMQemuConstants */
+"TCP Client Connection" = "TCP Client-Verbindung";
+
+/* UTMQemuConstants */
+"TCP Server Connection" = "TCP Server-Verbindung";
+
+/* No comment provided by engineer. */
+"Test" = "Test";
+
+/* UTMConfiguration */
+"The backend for this configuration is not supported." = "Diese Konfiguration wird auf dieser Plattform nicht unterstützt.";
+
+/* UTMConfiguration */
+"The drive '%@' already exists and cannot be created." = "Laufwerk konnte nicht erstellt werden: ein Laufwerk %@ existiert bereits.";
+
+/* UTMDownloadSupportToolsTaskError */
+"The guest support tools have already been mounted." = "Die Gast-Unterstützung ist bereits eingelegt.";
+
+/* UTMAppleConfiguration */
+"The host operating system needs to be updated to support one or more features requested by the guest." = "Ihr Host-Betriebssystem muss aktualisiert werden, um eines oder mehrere von der VM erwartete Features freizuschalten.";
+
+/* No comment provided by engineer. */
+"The selected architecture is unsupported in this version of UTM." = "Die gewählte Architektur wird in dieser Version von UTM nicht unterstützt.";
+
+/* VMWizardState */
+"The selected boot image contains the word '%@' but the guest architecture is '%@'. Please ensure you have selected an image that is compatible with '%@'." = "Das gewählte Start-Abbild enthält das Wort „%1$@”, die Gast-Architektur ist jedoch „%2$@”. Bitte stellen Sie sicher, dass Sie ein passendes Abbild für „%3$@” ausgewählt haben.";
+
+/* No comment provided by engineer. */
+"The target does not support hardware emulated serial connections." = "Das Ziel unterstützt keine simulierte Hardware für serielle Anschlüsse.";
+
+/* UTMQemuVirtualMachine */
+"The virtual machine is in an invalid state." = "Die VM ist in einem ungültigen Zustand.";
+
+/* Error shown when importing a ZIP file from web that doesn't contain a UTM Virtual Machine. */
+"There is no UTM file in the downloaded ZIP archive." = "Im heruntergeladenen ZIP-Archiv befindet sich keine UTM-Datei.";
+
+/* No comment provided by engineer. */
+"This build does not emulation." = "Emulation wird in dieser Version nicht unterstützt.";
+
+/* UTMQemuVirtualMachine */
+"This build of UTM does not support emulating the architecture of this VM." = "Die Emulation dieser Gast-Architektur wird in dieser Version nicht unterstützt.";
+
+/* VMConfigSystemView */
+"This change will reset all settings" = "Diese Änderung setzt sämtliche anderen Einstellungen zurück!";
+
+/* UTMConfiguration */
+"This configuration is saved with a newer version of UTM and is not compatible with this version." = "Diese Konfiguration stammt aus einer neueren Version von UTM und wird nicht unterstützt.";
+
+/* UTMConfiguration */
+"This configuration is too old and is not supported." = "Diese Konfiguration ist veraltet und wird von dieser Version nicht unterstützt.";
+
+/* VMConfigAppleSharingView */
+"This directory is already being shared." = "Dieser Ordner wird bereits freigegeben.";
+
+/* UTMAppleConfiguration */
+"This is not a valid Apple Virtualization configuration." = "Dies ist keine gültige Apple Virtualization-Konfiguration.";
+
+/* VMDisplayWindowController */
+"This may corrupt the VM and any unsaved changes will be lost. To quit safely, shut down from the guest." = "Kann zu Datenverlust führen und die VM unbrauchbar machen. Fahren Sie die VM falls möglich mittels dem Gastsystem herunter.";
+
+/* No comment provided by engineer. */
+"This operating system is unsupported on your machine." = "Dieses Betriebssystem wird auf Ihrem Gerät nicht unterstützt.";
+
+/* UTMDataExtension */
+"This virtual machine cannot be run on this machine." = "Dieses VM wird auf Ihrem Gerät nicht unterstützt.";
+
+/* UTMAppleConfiguration */
+"This virtual machine cannot run on the current host machine." = "Diese VM wird auf Ihrem Gerät nicht unterstützt.";
+
+/* UTMAppleConfiguration */
+"This virtual machine contains an invalid hardware model. The configuration may be corrupted or is outdated." = "Die VM enthält ein nicht unterstütztes Hardware-Modell. Möglicherweise ist die Konfiguration beschädigt oder veraltet.";
+
+/* No comment provided by engineer. */
+"This virtual machine has been removed." = "Diese VM wurde entfernt.";
+
+/* VMDisplayWindowController */
+"This will reset the VM and any unsaved state will be lost." = "Die VM wird neu gestartet und nicht gespeicherte Änderungen gehen verloren.";
+
+/* UTMQemuManager */
+"Timed out waiting for RPC." = "Zeitüberschreitung bei RPC.";
+
+/* VMDisplayAppleWindowController */
+"To access the shared directory, the guest OS must have Virtiofs drivers installed. You can then run `sudo mount -t virtiofs share /path/to/share` to mount to the share path." = "Um auf das freigegebene Verzeichnis zugreifen zu können, müssen auf dem Gastbetriebssystem Virtiofs-Treiber installiert sein. Führen Sie anschließend `sudo mount -t virtiofs share /path/to/share` aus, um den Freigabepfad zu mounten.";
+
+/* VMMetalView */
+"To capture input or to release the capture, press Command and Option at the same time." = "Drücken Sie cmd und alt zugleich, um Tastatur und Mauszeiger zu fangen oder wieder freizugeben.";
+
+/* No comment provided by engineer. */
+"To install macOS, you need to download a recovery IPSW. If you do not select an existing IPSW, the latest macOS IPSW will be downloaded from Apple." = "Für die Installation von macOS wird ein Recovery-IPSW benötigt. Wenn Sie hier keines auswählen, wird als nächstes das neueste IPSW von Apple heruntergeladen.";
+
+/* VMDisplayQemuMetalWindowController */
+"To release the mouse cursor, press %@ at the same time." = "Drücken Sie %@ um den Mauszeiger freizugeben.";
+
+/* UTMAppleConfigurationDevices */
+"Trackpad" = "Trackpad";
+
+/* UTMQemuConstants */
+"UDP" = "UDP";
+
+/* No comment provided by engineer. */
+"UEFI" = "UEFI";
+
+/* UTMQemuConfigurationError */
+"UEFI is not supported with this architecture." = "UEFI wird von dieser Architektur nicht unterstützt.";
+
+/* UTMData */
+"Unable to add a shortcut to the new location." = "Die Verknüpfung zum neuen Speicherort konnte nicht erstellt werden.";
+
+/* UTMUnavailableVirtualMachine */
+"Unavailable" = "Nicht verfügbar";
+
+/* VMWizardState */
+"Unavailable for this platform." = "Auf dieser Plattform nicht verfügbar.";
+
+/* No comment provided by engineer. */
+"Uncompressed %@" = "Unkomprimiert %@";
+
+/* UTMQemuConstants */
+"USB" = "USB";
+
+/* UTMQemuConstants */
+"USB 2.0" = "USB 2.0";
+
+/* UTMQemuConstants */
+"USB 3.0 (XHCI)" = "USB 3.0 (XHCI)";
+
+/* VMQemuDisplayMetalWindowController */
+"USB Device" = "USB-Gerät";
+
+/* No comment provided by engineer. */
+"USB Sharing" = "USB-Freigabe";
+
+/* No comment provided by engineer. */
+"USB sharing not supported in this build of UTM." = "Die USB-Freigabe wird in dieser Version von UTM nicht unterstützt.";
+
+/* No comment provided by engineer. */
+"Use Command+Option (⌘+⌥) for input capture/release" = "Drücken Sie cmd+alt (⌘+⌥) um den Mauszeiger zu fangen oder freizugeben.";
+
+/* Welcome view */
+"User Guide" = "Benutzerhandbuch";
+
+/* UTMQemuConstants */
+"VirtFS" = "VirtFS";
+
+/* UTMQemuConstants */
+"VirtIO" = "VirtIO";
+
+/* UTMConfigurationInfo
+   UTMData */
+"Virtual Machine" = "Virtuelle Maschine";
+
+/* No comment provided by engineer. */
+"Virtual Machine Gallery" = "Bibliothek von virtuellen Maschinen";
+
+/* No comment provided by engineer. */
+"Virtualization is not supported on your system." = "Die Virtualisierung wird auf diesem System nicht unterstützt.";
+
+/* No comment provided by engineer. */
+"Virtualize" = "Virtualisieren";
+
+/* No comment provided by engineer. */
+"VM display size is fixed" = "VM Anzeige-Größe ist fest eingestellt.";
+
+/* No comment provided by engineer. */
+"Waiting for VM to connect to display..." = "Warte auf Verbindung der VM zum Display…";
+
+/* No comment provided by engineer. */
+"Welcome to UTM" = "Willkommen bei UTM";
+
+/* No comment provided by engineer. */
+"Windows" = "Windows";
+
+/* UTMDownloadSupportToolsTask */
+"Windows Guest Support Tools" = "Windows-Gasterweiterungen";
+
+/* VMQemuDisplayMetalWindowController */
+"Would you like to connect '%@' to this virtual machine?" = "Möchten Sie %@ an die VM anschließen?";
+
+/* VMDisplayAppleWindowController */
+"Would you like to install macOS? If an existing operating system is already installed on the primary drive of this VM, then it will be erased." = "Möchten Sie jetzt macOS installieren? Alle bestehenden Daten in der ersten Festplatte dieser VM werden gelöscht.";
+
+/* No comment provided by engineer. */
+"Would you like to re-convert this disk image to reclaim unused space and apply compression? Note this will require enough temporary space to perform the conversion. Compression only applies to existing data and new data will still be written uncompressed. You are strongly encouraged to back-up this VM before proceeding." = "Möchten Sie das Festplatten-Abbild durch erneute Konvertierung komprimieren? Dies erfordert ausreichend verfügbaren Speicherplatz für eine Kopie der Daten. Nur Bestehendes wird komprimiert, neue Daten werden nicht komprimiert. Machen Sie unbedingt ein Backup bevor Sie die Konvertierung starten.";
+
+/* No comment provided by engineer. */
+"Would you like to re-convert this disk image to reclaim unused space? Note this will require enough temporary space to perform the conversion. You are strongly encouraged to back-up this VM before proceeding." = "Möchten Sie den ungenutzten Speicherplatz in diesem Festplatten-Abbild durch erneute Konvertierung freigeben? Dies erfordert ausreichend verfügbaren Speicherplatz für eine Kopie der Daten. Machen Sie unbedingt ein Backup bevor Sie die Konvertierung starten.";
+
+/* No comment provided by engineer. */
+"Yes" = "Ja";
+
+/* VMConfigSystemView */
+"Your device has %llu MB of memory and the estimated usage is %llu MB." = "Ihr Gerät hat %1$llu MB Speicher und es wird voraussichtlich %2$llu MB verwendet.";
+
+/* VMConfigAppleBootView
+   VMWizardOSMacView */
+"Your machine does not support running this IPSW." = "DIe IPSW-Datei kann auf diesem Gerät nicht verwendet werden.";
+
+/* ContentView */
+"Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached. See https://getutm.app/install/ for more details." = "Diese Version von iOS erlaubt es nicht, VMs ohne weiteres auszuführen. Sie müssen JIT aktivieren – entweder mit Jailbreak oder Debugger – weitere Details unter https://getutm.app/install/ .";
+
