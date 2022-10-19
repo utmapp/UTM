@@ -529,6 +529,7 @@
 // VMConfigSerialView.swift
 "Target" = "ターゲット";
 "Wait for Connection" = "接続を待機";
+"Allow Remote Connection" = "リモート接続を許可";
 "Emulated Serial Device" = "仮想シリアルデバイス";
 "TCP" = "TCP";
 "Server Address" = "サーバアドレス";
@@ -689,7 +690,7 @@
 "Image File Type" = "イメージファイルの種類";
 "Some older systems do not support UEFI boot, such as Windows 7 and below." = "Windows 7以前など、一部の古いシステムはUEFI起動に対応していません。";
 "Boot VHDX Image" = "起動VHDXイメージ";
-"Download and mount the guest support package for Windows. This is required for some features including dynamic resolution and clipboard sharing." = "Windows用ゲストサポートパッケージをダウンロードし、マウントします。動的解像度やクリップボード共有など、一部の機能を使用する場合に必要です。";
+"Download and mount the guest support package for Windows. This is required for some features including dynamic resolution and clipboard sharing." = "Windows用ゲストサポートパッケージをダウンロードし、マウントします。ダイナミック解像度やクリップボード共有など、一部の機能を使用する場合に必要です。";
 "Install drivers and SPICE tools" = "ドライバとSPICEツールをインストール";
 
 // VMWizardSharingView.swift
