@@ -1642,6 +1642,7 @@
 		843BF83728451B380029D60D /* UTMConfigurationTerminal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMConfigurationTerminal.swift; sourceTree = "<group>"; };
 		843BF83B2845494C0029D60D /* UTMQemuConfigurationSerial.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMQemuConfigurationSerial.swift; sourceTree = "<group>"; };
 		843BF83F284555E70029D60D /* UTMQemuConfigurationPortForward.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMQemuConfigurationPortForward.swift; sourceTree = "<group>"; };
+		8441289729005F49002752E3 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = fr; path = fr.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		8443EFF12845641600B2E6E2 /* UTMQemuConfigurationDrive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMQemuConfigurationDrive.swift; sourceTree = "<group>"; };
 		8443EFF928456F3B00B2E6E2 /* UTMQemuConfigurationSharing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMQemuConfigurationSharing.swift; sourceTree = "<group>"; };
 		844C73F828BDA96200805313 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/VMDisplayWindow.strings; sourceTree = "<group>"; };
@@ -4541,6 +4542,7 @@
 				CED8DF7828A120C100C34345 /* en */,
 				CEC9968328AA516000E7A025 /* ja */,
 				E68D492028AC018D00D34C54 /* es-419 */,
+				8441289729005F49002752E3 /* fr */,
 			);
 			name = Localizable.stringsdict;
 			sourceTree = "<group>";

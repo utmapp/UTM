@@ -650,8 +650,8 @@
 "Use Apple Virtualization" = "Utiliser la Virtualisation d'Apple";
 "Boot from kernel image" = "Booter depuis l'image du noyau";
 "If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO." = "Si défini, démarrer directement à partir d'une image brute de noyau et initrd. Sinon, démarrer à partir d'un ISO pris en charge.";
-"Download Ubuntu Server for ARM" = "Télécharger Ubuntu Server pour ARM";
-"Download Ubuntu Desktop" = "Télécharger Ubuntu Desktop";
+"Debian Install Guide" = "Guide d'installation de Debian";
+"Ubuntu Install Guide" = "Guide d'installation d'Ubuntu";
 "Boot Image Type" = "Type d'image de démarrage";
 "Enable Rosetta (x86_64 Emulation)" = "Activer Rosetta (émulation x86_64)";
 "Installation Instructions" = "Instructions d'installation";
@@ -682,9 +682,9 @@
 "Custom" = "Personnalisé";
 
 // VMWizardOSWindowsView.swift
+"Install Windows 10 or higher" = "Installer Windows 10 ou plus récent";
 "Import VHDX Image" = "Importer une image VHDX";
-"Download Windows 11 for ARM64 Preview VHDX" = "Télécharger le VHDX de Windows 11 pour ARM64 Preview";
-"Generate Windows Installer ISO" = "Générer une ISO de l'installation de Windows";
+"Windows Install Guide" = "Guide d'installation de Windows";
 "Image File Type" = "Type de fichier image";
 "Some older systems do not support UEFI boot, such as Windows 7 and below." = "Certains anciens systèmes ne prennent pas en charge le démarrage en UEFI, comme Windows 7 et antérieurs.";
 "Boot VHDX Image" = "Démarrer sur l'image VHDX";
