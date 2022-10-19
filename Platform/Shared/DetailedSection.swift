@@ -32,7 +32,6 @@ struct DetailedSection<Content>: View where Content: View {
         Section(content: {
             content
             Text(description)
-                .conditionalFrame(maxWidth: 600, alignment: .leading)
                 .lineLimit(nil)
                 .font(.footnote)
                 .padding(.bottom)
@@ -40,18 +39,6 @@ struct DetailedSection<Content>: View where Content: View {
         #else
         Section(content: { content }, header: { Text(titleKey) }, footer: { Text(description) })
         #endif
-    }
-}
-
-private extension View {
-    @ViewBuilder func conditionalFrame(minWidth: CGFloat? = nil, idealWidth: CGFloat? = nil, maxWidth: CGFloat? = nil, minHeight: CGFloat? = nil, idealHeight: CGFloat? = nil, maxHeight: CGFloat? = nil, alignment: Alignment = .center) -> some View {
-        if #available(macOS 13, *) {
-            // SwiftUI: on macOS 13, this is required or the layout will be broken
-            self.frame(minWidth: minWidth, idealWidth: idealWidth, maxWidth: maxWidth, minHeight: minHeight, idealHeight: idealHeight, maxHeight: maxHeight, alignment: alignment)
-        } else {
-            // SwiftUI: on macOS 12 and below, the above breaks the layout
-            self
-        }
     }
 }
 
