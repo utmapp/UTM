@@ -17,8 +17,8 @@
 // Configuration settings file format documentation can be found at:
 // https://help.apple.com/xcode/#/dev745c5c974
 
-MARKETING_VERSION = 4.0.7
-CURRENT_PROJECT_VERSION = 66
+MARKETING_VERSION = 4.0.8
+CURRENT_PROJECT_VERSION = 67
 
 // Codesigning settings defined optionally, see Documentation/iOSDevelopment.md
 #include? "CodeSigning.xcconfig"
