@@ -4,9 +4,13 @@
 > 发明一台可以用来计算任何可计算序列的机器是完全有可能的。
 -- <cite>图灵（Alan Turing）, 1936年</cite>
 
-UTM是一个功能齐全的iOS虚拟机。简而言之，它允许你在iPhone和iPad上运行Windows、Android、Ubuntu等操作系统。更多信息请访问https://getutm.app/
+UTM是一个功能齐全的iOS虚拟机。简而言之，它允许你在iPhone和iPad上运行Windows、Android、Ubuntu等操作系统。更多信息请访问[https://getutm.app/](https://getutm.app/)和[https://mac.getutm.app/](https://mac.getutm.app/)
 
-![在iPhone上运行UTM的截图](https://kyun.ltyuanfang.cn/tc/2020/08/16/b71e7b3b8d695.png)
+<p align="center">
+  <img width="450px" alt="在iPhone上运行UTM" src="screen.png">
+  <br>
+  <img width="450px" alt="在MacBook上运行UTM" src="screenmac.png">
+</p>
 
 ## 特征
 
