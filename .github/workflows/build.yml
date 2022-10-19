@@ -23,7 +23,7 @@ on:
         default: 'false'
 
 env:
-  BUILD_XCODE_PATH: /Applications/Xcode-beta.app
+  BUILD_XCODE_PATH: /Applications/Xcode_14.1.app
   INSTALL_REQUIREMENTS: false
 
 jobs:

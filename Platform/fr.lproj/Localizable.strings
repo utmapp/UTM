@@ -107,7 +107,7 @@
 // UTMQemuVirtualMachine.swift
 "Failed to access drive image path." = "Impossible d'accéder au chemin de l'image du lecteur.";
 "Failed to access shared directory." = "Impossible d'accéder au dossier partagé.";
-"The virtual machine is in an invalid state." = "La machine virtuelle est dans un état non valide.";
+"The virtual machine is in an invalid state." = "La machine virtuelle est dans un état invalide.";
 
 // UTMQemuVirtualMachine.m
 "Failed to access data from shortcut." = "Impossible d'accéder aux données à partir du raccourci.";
@@ -481,7 +481,7 @@
 "Bridged Interface" = "Interface du pont";
 "Emulated Network Card" = "Carte réseau émulée";
 "Show Advanced Settings" = "Afficher les réglages avancés";
-"IP Configuration" = "Configuration adresse IP";
+"IP Configuration" = "Configuration de l'adresse IP";
 
 // VMConfigAdvancedNetworkView.swift
 "Isolate Guest from Host" = "Isoler l'invité de l'hôte";
@@ -560,8 +560,8 @@
 "Are you sure you want to reset this VM? Any unsaved changes will be lost." = "Êtes-vous sûr de vouloir réinitialiser cette VM ? Tout changement apporté sera perdu.";
 "Architecture" = "Architecture";
 "The selected architecture is unsupported in this version of UTM." = "L'architecture sélectionnée n'est pas disponible dans cette version d'UTM.";
-"Hide Unused…" = "Masquer les non-inutilisés…";
-"Show All…" = "Afficher tout…";
+"Hide Unused…" = "Masquer non-inutilisés…";
+"Show All…" = "Tout afficher…";
 "Do you want to duplicate this VM and all its data?" = "Voulez-vous dupliquer cette VM et toutes ses données ?";
 "Do you want to delete this VM and all its data?" = "Voulez-vous vraiment supprimer cette VM et toutes ses données ?";
 "Do you want to remove this shortcut? The data will not be deleted." = "Voulez-vous supprimer ce raccourci ? Les données ne seront pas supprimées.";
@@ -650,15 +650,16 @@
 "Use Apple Virtualization" = "Utiliser la Virtualisation d'Apple";
 "Boot from kernel image" = "Booter depuis l'image du noyau";
 "If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO." = "Si défini, démarrer directement à partir d'une image brute de noyau et initrd. Sinon, démarrer à partir d'un ISO pris en charge.";
-"Download Ubuntu Server for ARM" = "Télécharger Ubuntu Server pour ARM";
-"Download Ubuntu Desktop" = "Télécharger Ubuntu Desktop";
+"Debian Install Guide" = "Guide d'installation de Debian";
+"Ubuntu Install Guide" = "Guide d'installation d'Ubuntu";
 "Boot Image Type" = "Type d'image de démarrage";
 "Enable Rosetta (x86_64 Emulation)" = "Activer Rosetta (émulation x86_64)";
 "Installation Instructions" = "Instructions d'installation";
 "Note: The file system tag for mounting the installer is 'rosetta'." = "Note : le tag du système de fichiers pour monter l'Installer est 'rosetta'.";
 "Additional Options" = "Options supplémentaires";
-"Uncompressed %@" = "%@ décoompressé";
+"Uncompressed Linux kernel (required)" = "Linux kernel décoompressé (required)";
 "Linux kernel (required)" = "Noyau Linux (requis)";
+"Uncompressed Linux initial ramdisk (optional)" = "Ramdisk initial de Linux décoompressé (optionnel)";
 "Linux initial ramdisk (optional)" = "Ramdisk initial de Linux (optionnel)";
 "Linux Root FS Image (optional)" = "Image Root FS de Linux (optionnel)";
 "Boot ISO Image (optional)" = "Image ISO de démarrage (optionnel)";
@@ -682,9 +683,9 @@
 "Custom" = "Personnalisé";
 
 // VMWizardOSWindowsView.swift
+"Install Windows 10 or higher" = "Installer Windows 10 ou plus récent";
 "Import VHDX Image" = "Importer une image VHDX";
-"Download Windows 11 for ARM64 Preview VHDX" = "Télécharger le VHDX de Windows 11 pour ARM64 Preview";
-"Generate Windows Installer ISO" = "Générer une ISO de l'installation de Windows";
+"Windows Install Guide" = "Guide d'installation de Windows";
 "Image File Type" = "Type de fichier image";
 "Some older systems do not support UEFI boot, such as Windows 7 and below." = "Certains anciens systèmes ne prennent pas en charge le démarrage en UEFI, comme Windows 7 et antérieurs.";
 "Boot VHDX Image" = "Démarrer sur l'image VHDX";
@@ -703,9 +704,9 @@
 "Faster, but can only run the native CPU architecture." = "Plus rapide, mais ne peut exécuter que les VM de la même architecture que le CPU.";
 "Emulate" = "Émuler";
 "Slower, but can run other CPU architectures." = "Plus lent, mais peut émuler un CPU d'une autre architecture.";
-"Virtualization is not supported on your system." = "La Virtualisation n'est pas prise en charge sur votre système";
+"Virtualization is not supported on your system." = "La virtualisation n'est pas prise en charge sur votre système";
 "This build does not emulation." = "Cette version ne fait pas d'émulation.";
-"Download prebuilt from UTM Gallery…" = "Téléchargement d'une VM déjà prête depuis la bibliothèque d'UTM";
+"Download prebuilt from UTM Gallery…" = "Téléchargement d'une VM prête à utiliser depuis la bibliothèque d'UTM";
 "Existing" = "Existant";
 
 // VMWizardState.swift
@@ -759,7 +760,7 @@
 "An existing virtual machine already exists with this name." = "Il esiste déjà une machine vrituelle portant ce nom.";
 "Failed to clone VM." = "Impossible de cloner la VM.";
 "Unable to add a shortcut to the new location." = "Impossible d'ajouter un alias dans le nouvel emplacement.";
-"Cannot import this VM. Either the configuration is invalid, created in a newer version of UTM, or on a platform that is incompatible with this version of UTM." = "Impossible d'importer cette VM. La configuration est soit invalide, soit créée avec une version plus récente d'UTM, ou sur une plateforme qui n'est pas compatible avec cette version d'UTM.";
+"Cannot import this VM. Either the configuration is invalid, created in a newer version of UTM, or on a platform that is incompatible with this version of UTM." = "Impossible d'importer cette VM. La configuration est soit invalide, soit a été créée avec une version plus récente d'UTM, ou sur une plateforme qui n'est pas compatible avec cette version d'UTM.";
 "Failed to parse imported VM." = "Impossible de traiter la VM importée.";
 "Failed to parse download URL." = "Impossible d'analyser l'URL de téléchargement.";
 "Cannot find AltServer for JIT enable. You cannot run VMs until JIT is enabled." = "Impossible de trouver AltServer pour activation JIT. Vous ne pouvez pas démarrer de VM tant que JIT n'est pas activé.";
@@ -801,7 +802,7 @@
 "Argument" = "Argument";
 
 /* No comment provided by engineer. */
-"Boot Arguments" = "Arguments de boot";
+"Boot Arguments" = "Arguments de démarrage";
 
 /* No comment provided by engineer. */
 "Browse" = "Parcourir";
@@ -952,7 +953,7 @@
 
 /* VMConfigSystemViewController */
 "Invalid core count." = "Nombre de cœurs invalide.";
-"Invalid memory size." = "Taille de la mémoire invide.";
+"Invalid memory size." = "Taille de la mémoire invalide.";
 "JIT cache size cannot be larger than 2GB." = "La taille du cache JIT ne peut dépasser 2Gio.";
 "JIT cache size too small." = "La taille du cache JIT est trop petite.";
 
@@ -1027,7 +1028,7 @@
 "Please select a system to emulate." = "Sélectionnez un système à émuler.";
 
 /* No comment provided by engineer. */
-"PS/2 has higher compatibility with older operating systems but does not support custom cursor settings." = "PS/2 a une plus haute compatibilité avec les anciens systèmes d'exploitation mais ne prend pas en charge les réglages personnalisés du curseur.";
+"PS/2 has higher compatibility with older operating systems but does not support custom cursor settings." = "PS/2 a une meilleure compatibilité avec les anciens systèmes d'exploitation mais ne prend pas en charge les réglages du curseur personnalisés.";
 
 /* No comment provided by engineer. */
 "Read Only" = "Lecture seule";
@@ -1078,7 +1079,7 @@
 "Test" = "Test";
 
 /* VMConfigSystemViewController */
-"The total memory usage is close to your device's limit. iOS will kill the VM if it consumes too much memory." = "La mémoire totale utilisée est proche de la limite de votre appareil. iOS va quitter la VM si elle consomme trop de mémoire.";
+"The total memory usage is close to your device's limit. iOS will kill the VM if it consumes too much memory." = "La mémoire totale utilisée est proche de la limite de votre appareil. iOS va arrêter la VM si elle consomme trop de mémoire.";
 
 /* No comment provided by engineer. */
 "These settings are unavailable in console display mode." = "Ces réglages ne sont pas disponibles dans le mode d'affichage Console.";
@@ -1090,7 +1091,7 @@
 "This version of macOS does not support GPU acceleration. Please change the VM configuration or upgrade macOS." = "Cette version de macOS ne prend pas en charge l'accélération du GPU. Veuillez changer la configuration de la VM ou mettez à jour macOS.";
 
 /* No comment provided by engineer. */
-"This virtual machine has been deleted." = "Cette machine virtuelle a ét supprimée.";
+"This virtual machine has been deleted." = "Cette machine virtuelle a été supprimée.";
 
 /* No comment provided by engineer. */
 "Type" = "Type";
@@ -1111,13 +1112,13 @@
 "Warning: iOS will kill apps that use more than 80% of the device's total memory." = "Attention : iOS va quitter les apps qui utilisent plus de 80% de la mémoire de l'appareil.";
 
 /* Startup message */
-"Welcome to UTM! Due to a bug in iOS, if you force kill this app, the system will be unstable and you cannot launch UTM again until you reboot. The recommended way to terminate this app is the button on the top left." = "Bienvenue dans UTM ! À cause d'un bug dans iOS, si vous forcez à quitter cette app, le système va devenir instable et vous ne pourrez plus relancer UTM sans avoir redémarré votre appareil au préalable. Pour quitter cette app, il est recommandé d'utiliser le bouton en haut à gauche.";
+"Welcome to UTM! Due to a bug in iOS, if you force kill this app, the system will be unstable and you cannot launch UTM again until you reboot. The recommended way to terminate this app is the button on the top left." = "Bienvenue dans UTM ! À cause d'un bogue dans iOS, si vous forcez cette app à quitter, le système deviendra instable et vous ne pourrez plus relancer UTM sans avoir redémarré votre appareil au préalable. Pour quitter cette app, il est recommandé d'utiliser le bouton en haut à gauche.";
 
 /* No comment provided by engineer. */
 "Windows" = "Windows";
 
 /* VMConfigDrivePickerViewController */
-"Would you like to import an existing disk image or create a new one?" = "Souhaitez-vous importer l'image disque existante ou en créer une nouvelle ?";
+"Would you like to import an existing disk image or create a new one?" = "Souhaitez-vous importer l'image de disque existante ou en créer une nouvelle ?";
 
 /* UTMData
    VMConfigDrivePickerViewController */
@@ -1128,7 +1129,7 @@
 "You must select a disk image." = "Vous devez sélectionner une image de disque.";
 
 /* VMDisplayViewController */
-"You must terminate the running VM before you can import a new VM." = "Vous devez arrêter la VM en cours avant de pouvoir importer une nouvelle VM.";
+"You must terminate the running VM before you can import a new VM." = "Vous devez arrêter la VM en cours d'éxécution avant de pouvoir importer une nouvelle VM.";
 
 /* Manually added: Configuration > Drive */
 "Delete Drive" = "Supprimer";
@@ -1152,7 +1153,7 @@
 "Empty" = "Vide";
 "File Imported" = "Fichier importé";
 "Directory Selected" = "Dossier sélectionné";
-"Hint: For the best Windows experience, make sure to download and install the latest [SPICE tools and QEMU drivers](https://mac.getutm.app/support/)." = "Astuce : pour la meilleure expérience possible avec Windows, téléchargez et installez les [derniers outils SPICE et drivers QEMU](https://mac.getutm.app/support/).";
+"Hint: For the best Windows experience, make sure to download and install the latest [SPICE tools and QEMU drivers](https://mac.getutm.app/support/)." = "Astuce : pour la meilleure expérience possible avec Windows, téléchargez et installez les [derniers outils SPICE et pilotes QEMU](https://mac.getutm.app/support/).";
 
 /* Drive pane. */
 "Aucune (avancé) Drive" = "Personnalisé";

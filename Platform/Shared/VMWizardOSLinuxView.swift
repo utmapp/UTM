@@ -90,7 +90,7 @@ struct VMWizardOSLinuxView: View {
                     }.disabled(wizardState.isBusy)
                 } header: {
                     if wizardState.useAppleVirtualization {
-                        Text("Uncompressed \(Text("Linux kernel (required)"))")
+                        Text("Uncompressed Linux kernel (required)")
                     } else {
                         Text("Linux kernel (required)")
                     }
@@ -102,7 +102,7 @@ struct VMWizardOSLinuxView: View {
                     }.disabled(wizardState.isBusy)
                 } header: {
                     if wizardState.useAppleVirtualization {
-                        Text("Uncompressed \(Text("Linux initial ramdisk (optional)"))")
+                        Text("Uncompressed Linux initial ramdisk (optional)")
                     } else {
                         Text("Linux initial ramdisk (optional)")
                     }
