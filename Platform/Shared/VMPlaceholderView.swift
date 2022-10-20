@@ -34,9 +34,8 @@ struct VMPlaceholderView: View {
                 }
             }
             HStack {
-                /// Link to Mac sites on all platforms because they are more up to date
                 TileButton(Label(String.guide, systemImage: "book.circle")) {
-                    openURL(URL(string: "https://mac.getutm.app/guide/")!)
+                    openURL(URL(string: "https://docs.getutm.app/basics/basics/")!)
                 }
                 TileButton(Label(String.support, systemImage: "questionmark.circle")) {
                     openURL(URL(string: "https://docs.getutm.app/")!)
