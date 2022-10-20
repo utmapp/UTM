@@ -194,7 +194,7 @@ import Foundation
     @QEMUArgumentBuilder private var cpuArguments: [QEMUArgument] {
         if system.cpu.rawValue == system.architecture.cpuType.default.rawValue {
             // if default and not hypervisor, we don't pass any -cpu argument for x86 and use host for ARM
-            if qemu.hasHypervisor {
+            if isHypervisorUsed {
                 #if !arch(x86_64)
                 f("-cpu")
                 f("host")
@@ -269,7 +269,7 @@ import Foundation
         #endif
     }
     
-    private var supportsHypervisor: Bool {
+    private var isHypervisorSupported: Bool {
         guard jb_has_hypervisor() else {
             return false
         }
@@ -282,11 +282,15 @@ import Foundation
         #endif
     }
     
+    private var isHypervisorUsed: Bool {
+        isHypervisorSupported && qemu.hasHypervisor
+    }
+    
     @QEMUArgumentBuilder private var machineArguments: [QEMUArgument] {
         f("-machine")
         system.target
         f(machineProperties)
-        if qemu.hasHypervisor && supportsHypervisor {
+        if isHypervisorUsed {
             f("-accel")
             f("hvf")
         } else {
@@ -326,7 +330,7 @@ import Foundation
                 properties = properties.appendingDefaultPropertyName("highmem", value: "off")
             }
             // required to boot Windows ARM on TCG
-            if system.architecture == .aarch64 && !qemu.hasHypervisor {
+            if system.architecture == .aarch64 && !isHypervisorUsed {
                 properties = properties.appendingDefaultPropertyName("virtualization", value: "on")
             }
         }
