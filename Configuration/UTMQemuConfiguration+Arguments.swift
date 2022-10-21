@@ -68,7 +68,7 @@ import Foundation
         machineArguments
         architectureArguments
         soundArguments
-        if input.usbBusSupport != .disabled {
+        if isUsbUsed {
             usbArguments
         }
         drivesArguments
@@ -286,6 +286,23 @@ import Foundation
         isHypervisorSupported && qemu.hasHypervisor
     }
     
+    private var isUsbSupported: Bool {
+        if system.target.rawValue == QEMUTarget_x86_64.isapc.rawValue {
+            return false
+        }
+        if system.architecture == .s390x {
+            return false
+        }
+        if system.architecture == .sparc || system.architecture == .sparc64 {
+            return false
+        }
+        return true
+    }
+    
+    private var isUsbUsed: Bool {
+        isUsbSupported && input.usbBusSupport != .disabled
+    }
+    
     @QEMUArgumentBuilder private var machineArguments: [QEMUArgument] {
         f("-machine")
         system.target
@@ -318,7 +335,7 @@ import Foundation
         if target.hasPrefix("pc") || target.hasPrefix("q35") {
             properties = properties.appendingDefaultPropertyName("vmport", value: "off")
             // disable PS/2 emulation if we are not legacy input and it's not explicitly enabled
-            if input.usbBusSupport != .disabled && !qemu.hasPS2Controller {
+            if isUsbUsed && !qemu.hasPS2Controller {
                 properties = properties.appendingDefaultPropertyName("i8042", value: "off")
             }
         }
@@ -501,7 +518,7 @@ import Foundation
         } else if drive.interface == .usb {
             f("-device")
             // use usb 3 bus for virt system, unless using legacy input setting (this mirrors the code in argsForUsb)
-            let isUsb3 = input.usbBusSupport != .disabled && system.target.rawValue.hasPrefix("virt")
+            let isUsb3 = isUsbUsed && system.target.rawValue.hasPrefix("virt")
             "usb-storage"
             "drive=drive\(drive.id)"
             "removable=\(isRemovable)"
