@@ -4,5 +4,3 @@
 /* QEMUHelper */
 "Error starting QEMU." = "Error al iniciar QEMU.";
 
-/* QEMUHelper */
-"QEMU exited unexpectedly." = "QEMU salió inesperadamente.";
