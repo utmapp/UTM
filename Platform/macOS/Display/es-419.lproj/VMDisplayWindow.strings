@@ -59,13 +59,13 @@
 "kT2-2U-cYm.toolTip" = "Inicia/pausa la VM";
 
 /* Class = "NSToolbarItem"; label = "Windows"; ObjectID = "MQ2-L1-yl7"; */
-"MQ2-L1-yl7.label" = "Windows";
+"MQ2-L1-yl7.label" = "Ventanas";
 
 /* Class = "NSToolbarItem"; paletteLabel = "Windows"; ObjectID = "MQ2-L1-yl7"; */
-"MQ2-L1-yl7.paletteLabel" = "Windows";
+"MQ2-L1-yl7.paletteLabel" = "Ventanas";
 
 /* Class = "NSToolbarItem"; toolTip = "Windows"; ObjectID = "MQ2-L1-yl7"; */
-"MQ2-L1-yl7.toolTip" = "Windows";
+"MQ2-L1-yl7.toolTip" = "Ventanas";
 
 /* Class = "NSWindow"; title = "UTM"; ObjectID = "QvC-M9-y7g"; */
 "QvC-M9-y7g.title" = "UTM";
