@@ -786,7 +786,7 @@ import Foundation
 
 private extension String {
     func appendingDefaultPropertyName(_ name: String, value: String) -> String {
-        if !self.contains("name" + "=") {
+        if !self.contains(name + "=") {
             return self.appending("\(self.count > 0 ? "," : "")\(name)=\(value)")
         } else {
             return self
