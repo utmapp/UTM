@@ -95,6 +95,7 @@ struct VMNavigationListView: View {
 
 private struct VMListModifier: ViewModifier {
     @EnvironmentObject private var data: UTMData
+    @State private var settingsPresented = false
     
     func body(content: Content) -> some View {
         content
@@ -116,6 +117,11 @@ private struct VMListModifier: ViewModifier {
                 newButton
             }
             ToolbarItem(placement: .navigationBarTrailing) {
+                Button("Settings") {
+                    settingsPresented.toggle()
+                }
+            }
+            ToolbarItem(placement: .navigationBarTrailing) {
                 EditButton()
             }
             #endif
@@ -123,6 +129,11 @@ private struct VMListModifier: ViewModifier {
         .sheet(isPresented: $data.showNewVMSheet) {
             VMWizardView()
         }
+        #if os(iOS)
+        .sheet(isPresented: $settingsPresented) {
+            UTMSettingsView()
+        }
+        #endif
     }
     
     private var newButton: some View {
