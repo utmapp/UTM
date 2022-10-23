@@ -96,11 +96,12 @@ UTM是在Apache 2.0许可下发布的。但是，它使用了几个(L)GPL组件�
 
 一些图标使用 [Freepik](https://www.freepik.com) 从 [www.flaticon.com](https://www.flaticon.com/) 制作.
 
-另外, UTM还使用了以下MIT许可的组件:
+另外, UTM还使用了以下MIT/BSD许可的组件:
 
  * [IQKeyboardManager](https://github.com/hackiftekhar/IQKeyboardManager)
  * [SwiftTerm](https://github.com/migueldeicaza/SwiftTerm)
  * [ZIP Foundation](https://github.com/weichsel/ZIPFoundation)
+ * [InAppSettingsKit](https://github.com/futuretap/InAppSettingsKit)
 
 [1]: https://github.com/utmapp/UTM/actions?query=event%3Arelease+workflow%3ABuild
 [2]: https://dantheman827.github.io/ios-app-signer/

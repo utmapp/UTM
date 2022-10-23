@@ -56,11 +56,12 @@ UTM est distribué sous la licence permissive Apache 2.0. Cependant, il utilise 
 
 Certaines icônes sont faites par [Freepik](https://www.freepik.com) de [www.flaticon.com](https://www.flaticon.com/).
 
-De plus, le frontend d'UTM dépend de ces composants qui sont sous licence MIT :
+De plus, le frontend d'UTM dépend de ces composants qui sont sous licence MIT/BSD :
 
 * [IQKeyboardManager](https://github.com/hackiftekhar/IQKeyboardManager)
 * [SwiftTerm](https://github.com/migueldeicaza/SwiftTerm)
 * [ZIP Foundation](https://github.com/weichsel/ZIPFoundation)
+* [InAppSettingsKit](https://github.com/futuretap/InAppSettingsKit)
 
 L'hébergement en intégration continue est fourni par [MacStadium](https://www.macstadium.com/opensource)
 
