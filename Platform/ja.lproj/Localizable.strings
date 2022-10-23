@@ -158,6 +158,10 @@
 "Port Forward" = "ポート転送";
 "New" = "新規";
 
+// UTMSettingsView.swift
+"Settings" = "設定";
+"Close" = "閉じる";
+
 // VMConfigNetworkPortForwardView.swift
 "%@ ➡️ %@" = "%1$@ ➡️ %2$@";
 
@@ -181,7 +185,6 @@
 "Serial" = "シリアル";
 "Network" = "ネットワーク";
 "Sound" = "サウンド";
-"Settings" = "設定";
 "Save" = "保存";
 "Power Off" = "電源オフ";
 "Quit" = "終了";
