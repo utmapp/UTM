@@ -35,9 +35,11 @@ class Main {
     
     static func main() {
         #if os(iOS)
-        registerDefaultsFromSettingsBundle()
+        #if !WITH_QEMU_TCI
         // check if we have jailbreak
-        if jb_has_jit_entitlement() {
+        if jb_spawn_ptrace_child(CommandLine.argc, CommandLine.unsafeArgv) {
+            logger.info("JIT: ptrace() child spawn trick")
+        } else if jb_has_jit_entitlement() {
             logger.info("JIT: found entitlement")
         } else if jb_has_cs_disabled() {
             logger.info("JIT: CS_KILL disabled")
@@ -53,8 +55,11 @@ class Main {
         if jb_increase_memlimit() {
             logger.info("MEM: successfully removed memory limits")
         }
+        #endif
         // UIViewController patches
         UTMViewControllerPatches.patchAll()
+        // register defaults
+        registerDefaultsFromSettingsBundle()
         #endif
         UTMApp.main()
     }

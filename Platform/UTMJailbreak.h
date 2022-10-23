@@ -22,9 +22,11 @@
 bool jb_has_jit_entitlement(void);
 bool jb_has_usb_entitlement(void);
 bool jb_has_hypervisor(void);
+bool jb_has_container(void);
 bool jb_has_cs_disabled(void);
 bool jb_has_cs_execseg_allow_unsigned(void);
 bool jb_enable_ptrace_hack(void);
 bool jb_increase_memlimit(void);
+bool jb_spawn_ptrace_child(int argc, char **argv);
 
 #endif /* UTMJailbreak_h */

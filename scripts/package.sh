@@ -208,11 +208,7 @@ EOL
 	create_deb "$INPUT" "$OUTPUT" "$FAKEENT"
 	rm "$FAKEENT"
 	;;
-ipa | ipa-hv )
-	ENABLE_JIT="true"
-	if [ "$MODE" == "ipa-hv" ]; then
-		ENABLE_JIT="false"
-	fi
+ipa )
 	FAKEENT="/tmp/fakeent.$$.plist"
 	cat >"$FAKEENT" <<EOL
 <?xml version="1.0" encoding="UTF-8"?>
@@ -226,7 +222,7 @@ ipa | ipa-hv )
 	<key>com.apple.developer.kernel.extended-virtual-addressing</key>
 	<true/>
 	<key>dynamic-codesigning</key>
-	<${ENABLE_JIT}/>
+	<true/>
 	<key>com.apple.private.iokit.IOServiceSetAuthorizationID</key>
 	<true/>
 	<key>com.apple.security.exception.iokit-user-client-class</key>
@@ -241,6 +237,60 @@ ipa | ipa-hv )
 	<key>com.apple.private.hypervisor</key>
 	<true/>
 	<key>com.apple.private.memorystatus</key>
+	<true/>
+</dict>
+</plist>
+EOL
+	create_fake_ipa "$NAME" "$BUNDLE_ID" "$INPUT" "$OUTPUT" "$FAKEENT"
+	rm "$FAKEENT"
+	;;
+ipa-hv )
+	FAKEENT="/tmp/fakeent.$$.plist"
+	cat >"$FAKEENT" <<EOL
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>get-task-allow</key>
+	<true/>
+	<key>com.apple.developer.kernel.increased-memory-limit</key>
+	<true/>
+	<key>com.apple.developer.kernel.extended-virtual-addressing</key>
+	<true/>
+	<key>com.apple.private.iokit.IOServiceSetAuthorizationID</key>
+	<true/>
+	<key>com.apple.security.exception.iokit-user-client-class</key>
+	<array>
+		<string>AGXCommandQueue</string>
+		<string>AGXDevice</string>
+		<string>AGXDeviceUserClient</string>
+		<string>AGXSharedUserClient</string>
+		<string>AppleUSBHostDeviceUserClient</string>
+		<string>AppleUSBHostInterfaceUserClient</string>
+		<string>IOSurfaceRootUserClient</string>
+		<string>IOAccelContext</string>
+		<string>IOAccelContext2</string>
+		<string>IOAccelDevice</string>
+		<string>IOAccelDevice2</string>
+		<string>IOAccelSharedUserClient</string>
+		<string>IOAccelSharedUserClient2</string>
+		<string>IOAccelSubmitter2</string>
+	</array>
+	<key>com.apple.system.diagnostics.iokit-properties</key>
+	<true/>
+	<key>com.apple.vm.device-access</key>
+	<true/>
+	<key>com.apple.private.hypervisor</key>
+	<true/>
+	<key>com.apple.private.memorystatus</key>
+	<true/>
+	<key>com.apple.private.security.no-container</key>
+	<true/>
+	<key>com.apple.private.security.storage.AppDataContainers</key>
+	<true/>
+	<key>com.apple.private.security.storage.MobileDocuments</key>
+	<true/>
+	<key>platform-application</key>
 	<true/>
 </dict>
 </plist>

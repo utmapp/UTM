@@ -24,7 +24,7 @@ struct UTMSettingsView: View {
             IASKAppSettings()
                 .navigationTitle("Settings")
                 .navigationBarTitleDisplayMode(.inline)
-                .appSettingsShowPrivacyLink(false) //FIXME: detect TrollStore and set true
+                .appSettingsShowPrivacyLink(jb_has_container())
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
                         Button("Close") {

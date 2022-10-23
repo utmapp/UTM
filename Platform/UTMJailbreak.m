@@ -25,6 +25,7 @@
 #include <mach-o/loader.h>
 #include <mach-o/getsect.h>
 #include <pthread.h>
+#include <spawn.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/mman.h>
@@ -273,6 +274,10 @@ bool jb_has_usb_entitlement(void) {
 bool jb_has_hypervisor(void) {
     return true;
 }
+
+bool jb_has_container(void) {
+    return true;
+}
 #else
 bool jb_has_usb_entitlement(void) {
     NSDictionary *entitlements = cached_app_entitlements();
@@ -302,6 +307,11 @@ bool jb_has_hypervisor(void) {
     return false;
 }
 #endif
+
+bool jb_has_container(void) {
+    NSDictionary *entitlements = cached_app_entitlements();
+    return ![entitlements[@"com.apple.private.security.no-container"] boolValue];
+}
 #endif
 
 bool jb_has_cs_execseg_allow_unsigned(void) {
@@ -369,3 +379,28 @@ bool jb_increase_memlimit(void) {
     ret1 = memorystatus_control(MEMORYSTATUS_CMD_SET_MEMLIMIT_PROPERTIES, getpid(), 0, (uintptr_t)&prop, sizeof(prop));
     return ret1 == 0 && ret2 == 0;
 }
+
+#if !TARGET_OS_OSX && !defined(WITH_QEMU_TCI) && !TARGET_OS_SIMULATOR
+extern const char *environ[];
+
+bool jb_spawn_ptrace_child(int argc, char **argv) {
+    int ret; pid_t pid;
+    
+    if (getppid() != 1) {
+        ret = ptrace(PT_TRACE_ME, 0, NULL, 0);
+        NSLog(@"child: ptrace(PT_TRACE_ME) %d", ret);
+        exit(ret);
+    }
+    if (jb_has_container()) {
+        return false;
+    }
+    if ((ret = posix_spawnp(&pid, argv[0], NULL, NULL, (void *)argv, (void *)environ)) != 0) {
+        return false;
+    }
+    return true;
+}
+#else
+bool jb_spawn_ptrace_child(int argc, char **argv) {
+    return false;
+}
+#endif
