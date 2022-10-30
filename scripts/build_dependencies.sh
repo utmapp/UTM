@@ -261,6 +261,7 @@ build_pkg_config() {
     cd "$pwd"
 
     export PATH="$PREFIX/host/bin:$PATH"
+    export PKG_CONFIG="$PREFIX/host/bin/pkg-config"
 }
 
 build_openssl() {
@@ -338,11 +339,16 @@ build_openssl() {
 }
 
 build () {
-    URL=$1
-    shift 1
-    FILE="$(basename $URL)"
-    NAME="${FILE%.tar.*}"
-    DIR="$BUILD_DIR/$NAME"
+    if [ -d "$1" ]; then
+        DIR="$1"
+        NAME="$(basename "$DIR")"
+    else
+        URL=$1
+        shift 1
+        FILE="$(basename $URL)"
+        NAME="${FILE%.tar.*}"
+        DIR="$BUILD_DIR/$NAME"
+    fi
     pwd="$(pwd)"
 
     cd "$DIR"
@@ -578,9 +584,7 @@ remove_shared_gst_plugins () {
 }
 
 generate_qapi () {
-    FILE="$(basename $1)"
-    NAME="${FILE%.tar.*}"
-    DIR="$BUILD_DIR/$NAME"
+    DIR="$1"
     APIS="$DIR/qapi/qapi-schema.json"
 
     echo "${GREEN}Generating qapi sources from ${APIS}...${NC}"
@@ -718,6 +722,8 @@ if [ -z "$QEMU_DIR" ]; then
 elif [ ! -d "$QEMU_DIR" ]; then
     echo "${RED}Cannot find: ${QEMU_DIR}...${NC}"
     exit 1
+else
+    QEMU_DIR="$(realpath "$QEMU_DIR")"
 fi
 
 [ -d "$SYSROOT_DIR" ] || mkdir -p "$SYSROOT_DIR"
@@ -795,7 +801,7 @@ rm -f "$BUILD_DIR/meson.cross"
 copy_private_headers
 build_pkg_config
 build_qemu_dependencies
-build $QEMU_SRC --cross-prefix="" $QEMU_PLATFORM_BUILD_FLAGS
+build $QEMU_DIR --cross-prefix="" $QEMU_PLATFORM_BUILD_FLAGS
 build_spice_client
 fixup_all
 # Fake Hypervisor to get iOS Simulator to build
@@ -803,6 +809,6 @@ if [ "$PLATFORM" == "ios_simulator" ]; then
     generate_fake_hypervisor
 fi
 remove_shared_gst_plugins # another hack...
-generate_qapi $QEMU_SRC
+generate_qapi $QEMU_DIR
 echo "${GREEN}All done!${NC}"
 touch "$BUILD_DIR/BUILD_SUCCESS"
