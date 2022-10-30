@@ -243,6 +243,7 @@ class QAPISchemaType(QAPISchemaEntity):
             'number':  'QTYPE_QNUM',
             'int':     'QTYPE_QNUM',
             'boolean': 'QTYPE_QBOOL',
+            'array':   'QTYPE_QLIST',
             'object':  'QTYPE_QDICT'
         }
         return json2qtype.get(self.json_type())
@@ -1069,6 +1070,9 @@ class QAPISchema:
             None))
 
     def _make_variant(self, case, typ, ifcond, info):
+        if isinstance(typ, list):
+             assert len(typ) == 1
+             typ = self._make_array_type(typ[0], info)
         return QAPISchemaVariant(case, info, typ, ifcond)
 
     def _def_union_type(self, expr, info, doc):
