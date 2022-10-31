@@ -380,13 +380,15 @@ bool jb_increase_memlimit(void) {
     return ret1 == 0 && ret2 == 0;
 }
 
-#if !TARGET_OS_OSX && !defined(WITH_QEMU_TCI) && !TARGET_OS_SIMULATOR
+#if !TARGET_OS_OSX && !defined(WITH_QEMU_TCI)
 extern const char *environ[];
+
+static char *childArgv[] = {NULL, "debugme", NULL};
 
 bool jb_spawn_ptrace_child(int argc, char **argv) {
     int ret; pid_t pid;
     
-    if (getppid() != 1) {
+    if (argc > 1 && strcmp(argv[1], childArgv[1]) == 0) {
         ret = ptrace(PT_TRACE_ME, 0, NULL, 0);
         NSLog(@"child: ptrace(PT_TRACE_ME) %d", ret);
         exit(ret);
@@ -394,7 +396,8 @@ bool jb_spawn_ptrace_child(int argc, char **argv) {
     if (jb_has_container()) {
         return false;
     }
-    if ((ret = posix_spawnp(&pid, argv[0], NULL, NULL, (void *)argv, (void *)environ)) != 0) {
+    childArgv[0] = argv[0];
+    if ((ret = posix_spawnp(&pid, argv[0], NULL, NULL, (void *)childArgv, (void *)environ)) != 0) {
         return false;
     }
     return true;
