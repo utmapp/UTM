@@ -159,6 +159,7 @@ download_all () {
     clone $ANGLE_REPO $ANGLE_COMMIT
     clone $EPOXY_REPO $EPOXY_COMMIT
     clone $VIRGLRENDERER_REPO $VIRGLRENDERER_COMMIT
+    clone $MOLTENVK_REPO $MOLTENVK_COMMIT
     clone $HYPERVISOR_REPO $HYPERVISOR_COMMIT
 }
 
@@ -393,6 +394,48 @@ meson_build () {
     cd "$pwd"
 }
 
+build_moltenvk () {
+    pwd="$(pwd)"
+    cd "$BUILD_DIR/MoltenVK.git"
+    case $PLATFORM in
+    ios_simulator*)
+        platform="iossim"
+        dir="iOS-simulator"
+        ;;
+    ios* )
+        platform="ios"
+        dir="iOS"
+        ;;
+    macos )
+        platform="macos"
+        dir="macOS"
+        ;;
+    esac
+    ./fetchDependencies --$platform
+    # FIXME: remove this hack when simulator build is fixed
+    sed -i.old 's/exit 0/MVK_OS_CLANG="${MVK_OS_CLANG}-simulator"/g' "Scripts/create_dylib.sh"
+    make $platform
+    mv "Scripts/create_dylib.sh.old" "Scripts/create_dylib.sh"
+    dylib_arch=$(lipo "Package/Release/MoltenVK/dylib/${dir}/libMoltenVK.dylib" -archs)
+    if [ "$dylib_arch" == "$ARCH" ]; then
+        cp -a "Package/Release/MoltenVK/dylib/${dir}/libMoltenVK.dylib" "$PREFIX/lib/libMoltenVK.dylib"
+    else
+        lipo "Package/Release/MoltenVK/dylib/${dir}/libMoltenVK.dylib" -output "$PREFIX/lib/libMoltenVK.dylib" -thin $ARCH
+    fi
+    rsync -a "Package/Release/MoltenVK/include/" "$PREFIX/include"
+    # build pkgconfig
+    pkgconfig="$PREFIX/lib/pkgconfig/vulkan.pc"
+    echo "prefix=$prefix" > $pkgconfig
+    echo 'includedir=${prefix}/include' >> $pkgconfig
+    echo 'libdir=${prefix}/lib' >> $pkgconfig
+    echo 'Name: vulkan' >> $pkgconfig
+    echo 'Description: MoltenVK' >> $pkgconfig
+    echo 'Version: 1.2' >> $pkgconfig
+    echo 'Libs: -L${libdir} -lMoltenVK' >> $pkgconfig
+    echo 'Cflags: -I${includedir}' >> $pkgconfig
+    cd "$pwd"
+}
+
 build_angle () {
     OLD_PATH=$PATH
     export PATH="$(realpath "$BUILD_DIR/depot_tools.git"):$OLD_PATH"
@@ -499,6 +542,7 @@ build_qemu_dependencies () {
         meson_build $USBREDIR_SRC
     fi
     # GPU support
+    build_moltenvk
     build_angle
     meson_build $EPOXY_REPO -Dtests=false -Dglx=no -Degl=yes
     meson_build $VIRGLRENDERER_REPO -Dtests=false -Dcheck-gl-errors=false
