@@ -1,4 +1,3 @@
-
 /* Class = "NSToolbarItem"; label = "Shared Folder"; ObjectID = "7EC-GE-fIl"; */
 "7EC-GE-fIl.label" = "Carpeta compartida";
 
@@ -8,6 +7,15 @@
 /* Class = "NSToolbarItem"; toolTip = "Shared folder"; ObjectID = "7EC-GE-fIl"; */
 "7EC-GE-fIl.toolTip" = "Carpeta compartida";
 
+/* Class = "NSToolbarItem"; label = "Drives"; ObjectID = "bKL-Th-FFw"; */
+"bKL-Th-FFw.label" = "Unidades";
+
+/* Class = "NSToolbarItem"; paletteLabel = "Drives"; ObjectID = "bKL-Th-FFw"; */
+"bKL-Th-FFw.paletteLabel" = "Unidades";
+
+/* Class = "NSToolbarItem"; toolTip = "Drive image options"; ObjectID = "bKL-Th-FFw"; */
+"bKL-Th-FFw.toolTip" = "Opciones de unidades de disco";
+
 /* Class = "NSToolbarItem"; label = "Stop"; ObjectID = "Bkx-Ph-j0D"; */
 "Bkx-Ph-j0D.label" = "Detener";
 
@@ -16,6 +24,12 @@
 
 /* Class = "NSToolbarItem"; toolTip = "Shuts down and stops the VM"; ObjectID = "Bkx-Ph-j0D"; */
 "Bkx-Ph-j0D.toolTip" = "Apaga y detiene la VM";
+
+/* Class = "NSToolbarItem"; label = "Toolbar Item"; ObjectID = "C8Y-BQ-Y6m"; */
+"C8Y-BQ-Y6m.label" = "Elemento de la barra de herramientas";
+
+/* Class = "NSToolbarItem"; paletteLabel = "Toolbar Item"; ObjectID = "C8Y-BQ-Y6m"; */
+"C8Y-BQ-Y6m.paletteLabel" = "Elemento de la barra de herramientas";
 
 /* Class = "NSToolbarItem"; label = "Capture Mouse"; ObjectID = "FN7-zs-mWC"; */
 "FN7-zs-mWC.label" = "Capturar mouse";
@@ -35,8 +49,35 @@
 /* Class = "NSToolbarItem"; toolTip = "Restarts the VM"; ObjectID = "G7P-HJ-bcy"; */
 "G7P-HJ-bcy.toolTip" = "Reinicia la VM";
 
+/* Class = "NSToolbarItem"; label = "Start/Pause"; ObjectID = "kT2-2U-cYm"; */
+"kT2-2U-cYm.label" = "Iniciar/Pausar";
+
+/* Class = "NSToolbarItem"; paletteLabel = "Start/Pause"; ObjectID = "kT2-2U-cYm"; */
+"kT2-2U-cYm.paletteLabel" = "Iniciar/Pausar";
+
+/* Class = "NSToolbarItem"; toolTip = "Start/pause the VM"; ObjectID = "kT2-2U-cYm"; */
+"kT2-2U-cYm.toolTip" = "Inicia/pausa la VM";
+
+/* Class = "NSToolbarItem"; label = "Windows"; ObjectID = "MQ2-L1-yl7"; */
+"MQ2-L1-yl7.label" = "Ventanas";
+
+/* Class = "NSToolbarItem"; paletteLabel = "Windows"; ObjectID = "MQ2-L1-yl7"; */
+"MQ2-L1-yl7.paletteLabel" = "Ventanas";
+
+/* Class = "NSToolbarItem"; toolTip = "Windows"; ObjectID = "MQ2-L1-yl7"; */
+"MQ2-L1-yl7.toolTip" = "Ventanas";
+
 /* Class = "NSWindow"; title = "UTM"; ObjectID = "QvC-M9-y7g"; */
 "QvC-M9-y7g.title" = "UTM";
+
+/* Class = "NSToolbarItem"; label = "USB"; ObjectID = "tlw-Fb-ne3"; */
+"tlw-Fb-ne3.label" = "USB";
+
+/* Class = "NSToolbarItem"; paletteLabel = "USB"; ObjectID = "tlw-Fb-ne3"; */
+"tlw-Fb-ne3.paletteLabel" = "USB";
+
+/* Class = "NSToolbarItem"; toolTip = "USB devices"; ObjectID = "tlw-Fb-ne3"; */
+"tlw-Fb-ne3.toolTip" = "Dispositivos USB";
 
 /* Class = "NSToolbarItem"; label = "Resize Console"; ObjectID = "Ulf-oT-4cP"; */
 "Ulf-oT-4cP.label" = "Redimensionar la consola";
@@ -50,29 +91,3 @@
 /* Class = "NSButton"; ibShadowedToolTip = "Starts/resumes the VM"; ObjectID = "ZTi-Hs-ge6"; */
 "ZTi-Hs-ge6.ibShadowedToolTip" = "Inicia/resume la VM";
 
-/* Class = "NSToolbarItem"; label = "Drives"; ObjectID = "bKL-Th-FFw"; */
-"bKL-Th-FFw.label" = "Unidades";
-
-/* Class = "NSToolbarItem"; paletteLabel = "Drives"; ObjectID = "bKL-Th-FFw"; */
-"bKL-Th-FFw.paletteLabel" = "Unidades";
-
-/* Class = "NSToolbarItem"; toolTip = "Drive image options"; ObjectID = "bKL-Th-FFw"; */
-"bKL-Th-FFw.toolTip" = "Opciones de unidades de disco";
-
-/* Class = "NSToolbarItem"; label = "Start/Pause"; ObjectID = "kT2-2U-cYm"; */
-"kT2-2U-cYm.label" = "Iniciar/Pausar";
-
-/* Class = "NSToolbarItem"; paletteLabel = "Start/Pause"; ObjectID = "kT2-2U-cYm"; */
-"kT2-2U-cYm.paletteLabel" = "Iniciar/Pausar";
-
-/* Class = "NSToolbarItem"; toolTip = "Start/pause the VM"; ObjectID = "kT2-2U-cYm"; */
-"kT2-2U-cYm.toolTip" = "Inicia/pausa la VM";
-
-/* Class = "NSToolbarItem"; label = "USB"; ObjectID = "tlw-Fb-ne3"; */
-"tlw-Fb-ne3.label" = "USB";
-
-/* Class = "NSToolbarItem"; paletteLabel = "USB"; ObjectID = "tlw-Fb-ne3"; */
-"tlw-Fb-ne3.paletteLabel" = "USB";
-
-/* Class = "NSToolbarItem"; toolTip = "USB devices"; ObjectID = "tlw-Fb-ne3"; */
-"tlw-Fb-ne3.toolTip" = "Dispositivos USB";
