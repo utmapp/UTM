@@ -283,5 +283,6 @@ struct VMConfigSystemView_Previews: PreviewProvider {
     
     static var previews: some View {
         VMConfigSystemView(config: $config, isResetConfig: .constant(false))
+            .scrollable()
     }
 }

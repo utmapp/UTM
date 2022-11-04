@@ -56,5 +56,6 @@ struct VMConfigSharingView_Previews: PreviewProvider {
     
     static var previews: some View {
         VMConfigSharingView(config: $config)
+            .scrollable()
     }
 }

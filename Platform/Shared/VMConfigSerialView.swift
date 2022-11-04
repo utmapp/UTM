@@ -99,5 +99,6 @@ struct VMConfigSerialView_Previews: PreviewProvider {
     
     static var previews: some View {
         VMConfigSerialView(config: $config, system: $system)
+            .scrollable()
     }
 }

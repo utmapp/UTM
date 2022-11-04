@@ -100,5 +100,6 @@ struct VMConfigInputView_Previews: PreviewProvider {
     
     static var previews: some View {
         VMConfigInputView(config: $config)
+            .scrollable()
     }
 }

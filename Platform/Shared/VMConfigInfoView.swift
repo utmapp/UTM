@@ -267,6 +267,7 @@ struct VMConfigInfoView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
             VMConfigInfoView(config: $config)
+                .scrollable()
             IconSelect() { _ in
                 
             }

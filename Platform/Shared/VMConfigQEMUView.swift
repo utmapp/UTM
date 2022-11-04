@@ -210,5 +210,6 @@ struct VMConfigQEMUView_Previews: PreviewProvider {
     
     static var previews: some View {
         VMConfigQEMUView(config: $config, system: $system, fetchFixedArguments: { [] })
+            .frame(minHeight: 500)
     }
 }
