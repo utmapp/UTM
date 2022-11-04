@@ -74,6 +74,8 @@ struct VMConfigDisplayConsoleView_Previews: PreviewProvider {
         Form {
             VMConfigDisplayConsoleView(config: $config)
         }
+        #if os(macOS)
         .scrollable()
+        #endif
     }
 }
