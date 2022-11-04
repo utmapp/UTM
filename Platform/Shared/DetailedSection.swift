@@ -31,10 +31,14 @@ struct DetailedSection<Content>: View where Content: View {
         #if os(macOS)
         Section(content: {
             content
-            Text(description)
-                .lineLimit(nil)
-                .font(.footnote)
-                .padding(.bottom)
+            VStack {
+                Text(description)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .lineLimit(nil)
+                    .font(.footnote)
+                    .padding(.bottom)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }, header: { Text(titleKey) })
         #else
         Section(content: { content }, header: { Text(titleKey) }, footer: { Text(description) })
