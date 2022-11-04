@@ -435,6 +435,9 @@
 "Done" = "Completado";
 
 /* No comment provided by engineer. */
+"Download and mount the guest support package for Windows. This is required for some features including dynamic resolution and clipboard sharing." = "Descargar y montar el paquete de soporte de invitado para Windows. Esto es necesario para algunas funcionalidades como la resolución automática y el uso compartido del portapapeles.";
+
+/* No comment provided by engineer. */
 "Download prebuilt from UTM Gallery…" = "Descargar una VM lista para usar desde la librería de UTM...";
 
 /* No comment provided by engineer. */
@@ -793,6 +796,12 @@
 
 /* VMDisplayWindowController */
 "Install Windows Guest Tools…" = "Instalar herramientas de invitado de Windows…";
+
+/* No comment provided by engineer. */
+"Install Windows 10 or higher" = "Instalar Windows 10 o superior";
+
+/* No comment provided by engineer. */
+"Install drivers and SPICE tools" = "Instalar controladores y herramientas de SPICE";
 
 /* VMDisplayAppleWindowController */
 "Installation: %@" = "Instalación: %@";
