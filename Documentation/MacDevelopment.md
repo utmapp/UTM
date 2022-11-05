@@ -78,8 +78,7 @@ This builds `UTM.dmg` in `/path/to/output` which can be installed to `/Applicati
 #### Signed packages
 
 ```sh
-./scripts/package_mac.sh developer-id /path/to/UTM.xcarchive /path/to/output TEAM_ID 
-PROFILE_UUID HELPER_PROFILE_UUID LAUNCHER_PROFILE_UUID
+./scripts/package_mac.sh developer-id /path/to/UTM.xcarchive /path/to/output TEAM_ID PROFILE_UUID HELPER_PROFILE_UUID LAUNCHER_PROFILE_UUID
 ```
 
 To build a signed package, you need to be a registered Apple Developer. From the developer portal, create a certificate for "Developer ID Application" (and install it into your Keychain). Also create three provisioning profiles with that certificate with Hypervisor entitlements (you need to manually request these entitlements and be approved by Apple) for UTM, QEMUHelper, and QEMULauncher. `TEAM_ID` should be the same as in the certificate, `PROFILE_UUID` should be the UUID of the profile installed by Xcode (open the profile in Xcode), and `HELPER_PROFILE_UUID` is the UUID of a separate profile for the XPC helper. `LAUNCHER_PROFILE_UUID` is the UUID of a profile for the launcher.
@@ -89,8 +88,7 @@ Once properly signed, you can ask Apple to notarize the DMG.
 #### Mac App Store
 
 ```sh
-./scripts/package_mac.sh app-store /path/to/UTM.xcarchive /path/to/output TEAM_ID 
-PROFILE_UUID HELPER_PROFILE_UUID LAUNCHER_PROFILE_UUID
+./scripts/package_mac.sh app-store /path/to/UTM.xcarchive /path/to/output TEAM_ID PROFILE_UUID HELPER_PROFILE_UUID LAUNCHER_PROFILE_UUID
 ```
 
 Similar to the above but builds a `UTM.pkg` for submission to the Mac App Store. You need a certificate for "Apple Distribution" and a certificate for "Mac App Distribution" as well as a provisioning profile with the right entitlements.
