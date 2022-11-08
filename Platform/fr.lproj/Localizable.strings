@@ -337,7 +337,6 @@
 // VMConfigAppleSerialView.swift
 "Connection" = "Connection";
 "Mode" = "Mode";
-"Note: Shared directories will not be saved and will be reset when UTM quits." = "Note : les dossiers partagés ne seront pas sauvegardés et seront réinitialisés lorsque vous quitterez UTM.";
 "Shared Path" = "Chemin partagé";
 "Add" = "Ajouter";
 "This directory is already being shared." = "Ce dossier est déjà partagé.";

@@ -26,7 +26,6 @@ struct VMConfigAppleSharingView: View {
     
     var body: some View {
         Form {
-            Text("Note: Shared directories will not be saved and will be reset when UTM quits.")
             Table(config.sharedDirectories, selection: $selectedID) {
                 TableColumn("Shared Path") { share in
                     Text(share.directoryURL?.path ?? "")
