@@ -33,9 +33,9 @@ UTM to wielofunkcyjny emulator systemu oraz menedżer wirtualnych maszyn dla iOS
 
 UTM/QEMU wymaga generowania dynamicznego kodu (JIT) dla zmaksymalizowania wydajności. JIT na urządzeniach iOS wymaga albo przerobionego urządzenia, albo jeden z kilku luk znalezionych w danej wersji systemu iOS (zobacz "Instacja" po więcej szczegółów).
 
-UTM SE ("slow edition") używa [threaded interpreter][3] który działa lepiej niż tradycyjny interpreter, ale wciąż jest wolniejszy niż JIT. Ta technika jest podobna do tego co robi [iSH][4] dla dynamicznego wykonywania. W wyniku czego, UTM SE nie wymaga przerobionego urządzenia ani żadnych obejść systemu dla działąjącego JITa i może być uruchamiany jako normalna aplikacja.
+UTM SE ("slow edition") używa [wielowątkowego interpretera][3] który działa lepiej niż tradycyjny interpreter, ale wciąż jest wolniejszy niż JIT. Ta technika jest podobna do tego co robi [iSH][4] dla dynamicznego wykonywania. W wyniku czego, UTM SE nie wymaga przerobionego urządzenia ani żadnych obejść systemu dla działąjącego JITa i może być uruchamiany jako normalna aplikacja.
 
-To optimize for size and build times, only the following architectures are included in UTM SE: ARM, PPC, RISC-V, and x86 (all with both 32-bit and 64-bit variants).
+Aby zoptymalizować czas kompliacji i rozmiar aplikacji, tylko wymienione architektury są dostępne w UTM SE: ARM, PPC, RISC-V, i x86 (wszystkie zarówno w wariancie 32 i 64-bitowym).
 
 ## Instalacja
 
