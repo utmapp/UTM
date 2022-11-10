@@ -31,12 +31,14 @@ If you want to build the dependencies yourself, it is highly recommended that yo
     ```sh
     pip3 install six pyparsing
     ```
-   Make sure to add `bison` to your `$PATH` environment variable!
-	```sh
+    
+    Make sure to add `bison` to your `$PATH` environment variable!
+    
+    ```sh
     export PATH=/usr/local/opt/bison/bin:/opt/homebrew/opt/bison/bin:$PATH
     ```
 3. Run
-    ```
+    ```sh
     ./scripts/build_dependencies.sh -p macos -a ARCH
     ```
     where `ARCH` is either `arm64` or `x86_64`.
