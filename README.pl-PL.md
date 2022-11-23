@@ -43,11 +43,11 @@ UTM (SE) dla iOS: https://getutm.app/install/
 
 UTM jest również dostępne na macOS: https://mac.getutm.app/
 
-## Development
+## Rozwój projektu
 
-### [macOS Development](Documentation/MacDevelopment.md)
+### [Rozwój projektu na platformie macOS](Documentation/MacDevelopment.md)
 
-### [iOS Development](Documentation/iOSDevelopment.md)
+### [Rozwój projektu na platformie iOS](Documentation/iOSDevelopment.md)
 
 ## Powiązane
 
