@@ -349,6 +349,15 @@
 // VMConfigAppleSystemView.swift
 "CPU Cores" = "CPUコア数";
 
+// VMConfigNetworkPortForwardView.swift
+"Protocol" = "プロトコル";
+"Guest Address" = "ゲストアドレス";
+"Guest Port" = "ゲストポート";
+"Host Address" = "ホストアドレス";
+"Host Port" = "ホストポート";
+"Edit…" = "編集…";
+"New…" = "新規…";
+
 // VMConfigAppleVirtualizationView.swift
 "Enable Balloon Device" = "バルーンデバイスを有効にする";
 "Enable Entropy Device" = "エントロピデバイスを有効にする";
@@ -363,7 +372,6 @@
 // VMDrivesSettingsView.swift
 "Move Up" = "上に移動";
 "Move Down" = "下に移動";
-"New…" = "新規…";
 "Add a new drive." = "新規ドライブを追加します。";
 "Import…" = "読み込む…";
 "Select an existing disk image." = "既存のディスクイメージを選択します。";
@@ -490,19 +498,12 @@
 "Isolate Guest from Host" = "ゲストをホストから隔離";
 "Guest Network" = "ゲストネットワーク";
 "Guest Network (IPv6)" = "ゲストネットワーク（IPv6）";
-"Host Address" = "ホストアドレス";
 "Host Address (IPv6)" = "ホストアドレス（IPv6）";
 "DHCP Start" = "DHCP割当先頭アドレス";
 "DHCP Domain Name" = "DHCPドメイン名";
 "DNS Server" = "DNSサーバ";
 "DNS Server (IPv6)" = "DNSサーバ（IPv6）";
 "DNS Search Domains" = "DNS検索ドメイン";
-
-// VMConfigPortForwardForm.swift
-"Protocol" = "プロトコル";
-"Guest Address" = "ゲストアドレス";
-"Guest Port" = "ゲストポート";
-"Host Port" = "ホストポート";
 
 // VMConfigQEMUView.swift
 "Logging" = "ログ";
