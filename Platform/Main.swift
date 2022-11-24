@@ -61,6 +61,10 @@ class Main {
         // register defaults
         registerDefaultsFromSettingsBundle()
         #endif
+        #if os(macOS)
+        // SwiftUI bug: works around crash due to "already had more Update Constraints in Window passes than there are views in the window" exception
+        UserDefaults.standard.set(false, forKey: "NSWindowAssertWhenDisplayCycleLimitReached")
+        #endif
         UTMApp.main()
     }
     
