@@ -35,12 +35,22 @@ struct VMConfigNetworkPortForwardView: View {
             }) {
             VStack {
                 ForEach(config.portForward) { forward in
-                    Button(action: { selectedPortForward = forward }, label: {
+                    let isPopoverShown = Binding<Bool> {
+                        selectedPortForward == forward
+                    } set: { value in
+                        if value {
+                            selectedPortForward = forward
+                        } else {
+                            selectedPortForward = nil
+                        }
+                    }
+
+                    Button(action: { isPopoverShown.wrappedValue = true }, label: {
                         let guest = "\(forward.guestAddress ?? ""):\(forward.guestPort)"
                         let host = "\(forward.hostAddress ?? ""):\(forward.hostPort)"
                         Text("\(guest) ➡️ \(host)")
                     }).buttonStyle(.bordered)
-                    .popover(item: $selectedPortForward, arrowEdge: .bottom) { item in
+                    .popover(isPresented: isPopoverShown, arrowEdge: .bottom) {
                         PortForwardEdit(config: $config, forward: forward).padding()
                             .frame(width: 250)
                     }
@@ -61,7 +71,7 @@ struct PortForwardEdit: View {
             VMConfigPortForwardForm(forward: $forward).multilineTextAlignment(.trailing)
             HStack {
                 Spacer()
-                let index = config.portForward.firstIndex(of: forward)
+                let index = config.portForward.firstIndex(where: { $0.id == forward.id })
                 if let index = index {
                     Button(action: {
                         config.portForward.remove(at: index)
