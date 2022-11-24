@@ -57,12 +57,12 @@ extension UTMQemuConfigurationInput {
     init(forArchitecture architecture: QEMUArchitecture, target: any QEMUTarget) {
         self.init()
         let rawTarget = target.rawValue
-        if rawTarget.hasPrefix("pc") || rawTarget.hasPrefix("q35") {
+        if !architecture.hasUsbSupport || !target.hasUsbSupport {
+            usbBusSupport = .disabled
+        } else if rawTarget.hasPrefix("pc") || rawTarget.hasPrefix("q35") {
             usbBusSupport = .usb3_0
         } else if (architecture == .arm || architecture == .aarch64) && (rawTarget.hasPrefix("virt-") || rawTarget == "virt") {
             usbBusSupport = .usb3_0
-        } else if rawTarget == "isapc" {
-            usbBusSupport = .disabled
         }
     }
 }
