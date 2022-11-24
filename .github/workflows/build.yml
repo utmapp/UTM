@@ -38,7 +38,7 @@ jobs:
       id: checker
       shell: bash
       env:
-        IS_SELF_HOSTED_RUNNER: ${{ secrets.IS_SELF_HOSTED_RUNNER }}
+        IS_SELF_HOSTED_RUNNER: ${{ secrets.IS_SELF_HOSTED_RUNNER || (github.repository_owner == 'utmapp' && 'true') }}
       run: |
         echo "github-runner='$RUNNER_IMAGE'" >> $GITHUB_OUTPUT
         if [ "$IS_SELF_HOSTED_RUNNER" == "true" ]; then
@@ -89,7 +89,7 @@ jobs:
         run: |
           echo "/usr/local/opt/bison/bin:/opt/homebrew/opt/bison/bin" >> $GITHUB_PATH
       - name: Install Requirements
-        if: (steps.cache-sysroot.outputs.cache-hit != 'true' || github.event.inputs.rebuild_sysroot == 'true') && (matrix.runner == 'github' || needs.configuration.outputs.runners == env.RUNNER_IMAGE)
+        if: (steps.cache-sysroot.outputs.cache-hit != 'true' || github.event.inputs.rebuild_sysroot == 'true') && (matrix.runner == 'github' || needs.configuration.outputs.runner == env.RUNNER_IMAGE)
         run: |
           brew uninstall cmake
           brew install bison pkg-config gettext glib-utils libgpg-error nasm make meson
