@@ -100,6 +100,7 @@ Below is a summary of all the secrets used by GitHub Actions in the release proc
 |`APP_STORE_HELPER_PROFILE_UUID`  |UUID of provisioning profile above                                                 |
 |`APP_STORE_LAUNCHER_PROFILE_DATA`|Base64 encoded provisioning profile of QEMULauncher for App Store submission       |
 |`APP_STORE_LAUNCHER_PROFILE_UUID`|UUID of provisioning profile above                                                 |
+|`IS_SELF_HOSTED_RUNNER`          |Set to `true` to use a self hosted macOS runner set up by the owner                |
 
 ### Signing for release
 

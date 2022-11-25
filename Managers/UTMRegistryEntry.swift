@@ -72,8 +72,8 @@ import Foundation
         _package = try container.decode(File.self, forKey: .package)
         uuid = try container.decode(UUID.self, forKey: .uuid)
         _isSuspended = try container.decode(Bool.self, forKey: .isSuspended)
-        _externalDrives = try container.decode([String: File].self, forKey: .externalDrives)
-        _sharedDirectories = try container.decode([File].self, forKey: .sharedDirectories)
+        _externalDrives = (try container.decode([String: File].self, forKey: .externalDrives)).filter({ $0.value.isValid })
+        _sharedDirectories = try container.decode([File].self, forKey: .sharedDirectories).filter({ $0.isValid })
         _windowSettings = try container.decode([Int: Window].self, forKey: .windowSettings)
         _terminalSettings = try container.decodeIfPresent([Int: Terminal].self, forKey: .terminalSettings) ?? [:]
         _hasMigratedConfig = try container.decodeIfPresent(Bool.self, forKey: .hasMigratedConfig) ?? false
@@ -379,6 +379,8 @@ extension UTMRegistryEntry {
         
         let id: UUID = UUID()
         
+        fileprivate var isValid: Bool
+        
         private enum CodingKeys: String, CodingKey {
             case path = "Path"
             case bookmark = "Bookmark"
@@ -391,6 +393,7 @@ extension UTMRegistryEntry {
             self.bookmark = bookmark
             self.isReadOnly = isReadOnly
             self.url = try URL(resolvingPersistentBookmarkData: bookmark)
+            self.isValid = true
         }
         
         init(url: URL, isReadOnly: Bool = false) throws {
@@ -398,6 +401,7 @@ extension UTMRegistryEntry {
             self.bookmark = try url.persistentBookmarkData(isReadyOnly: isReadOnly)
             self.isReadOnly = isReadOnly
             self.url = url
+            self.isValid = true
         }
         
         fileprivate init(path: String, remoteBookmark: Data = Data()) {
@@ -406,6 +410,7 @@ extension UTMRegistryEntry {
             self.isReadOnly = false
             self.url = URL(fileURLWithPath: path)
             self.remoteBookmark = remoteBookmark
+            self.isValid = true
         }
         
         init(from decoder: Decoder) throws {
@@ -414,7 +419,18 @@ extension UTMRegistryEntry {
             bookmark = try container.decode(Data.self, forKey: .bookmark)
             isReadOnly = try container.decode(Bool.self, forKey: .isReadOnly)
             remoteBookmark = try container.decodeIfPresent(Data.self, forKey: .remoteBookmark)
-            url = (try? URL(resolvingPersistentBookmarkData: bookmark)) ?? URL(fileURLWithPath: path)
+            url = URL(fileURLWithPath: path)
+            if bookmark.isEmpty {
+                isValid = true
+            } else {
+                // we cannot throw because that stops the decode process so we record the error and continue
+                do {
+                    url = try URL(resolvingPersistentBookmarkData: bookmark)
+                    isValid = true
+                } catch {
+                    isValid = false
+                }
+            }
         }
         
         func encode(to encoder: Encoder) throws {

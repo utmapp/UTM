@@ -390,3 +390,51 @@ enum QEMUPackageFileName: String {
     case debugLog = "debug.log"
     case efiVariables = "efi_vars.fd"
 }
+
+// MARK: Supported features
+
+extension QEMUArchitecture {
+    var hasAgentSupport: Bool {
+        switch self {
+        case .sparc, .sparc64: return false
+        default: return true
+        }
+    }
+    
+    var hasSharingSupport: Bool {
+        switch self {
+        case .sparc, .sparc64: return false
+        default: return true
+        }
+    }
+    
+    var hasUsbSupport: Bool {
+        switch self {
+        case .s390x: return false
+        case .sparc, .sparc64: return false
+        default: return true
+        }
+    }
+    
+    var hasHypervisorSupport: Bool {
+        guard jb_has_hypervisor() else {
+            return false
+        }
+        #if arch(arm64)
+        return self == .aarch64
+        #elseif arch(x86_64)
+        return self == .x86_64
+        #else
+        return false
+        #endif
+    }
+}
+
+extension QEMUTarget {
+    var hasUsbSupport: Bool {
+        switch self.rawValue {
+        case "isapc": return false
+        default: return true
+        }
+    }
+}

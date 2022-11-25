@@ -72,6 +72,12 @@ struct VMQEMUSettingsView: View {
                         config.networks.removeAll(where: { $0.id == network.id })
                     }
                 }
+                if #available(macOS 12, *), network.mode == .emulated {
+                    NavigationLink(destination: VMConfigNetworkPortForwardView(config: $network)) {
+                        Label("Port Forward", systemImage: "point.topleft.down.curvedto.point.bottomright.up")
+                            .padding(.leading)
+                    }
+                }
             }
             ForEach($config.sound) { $sound in
                 NavigationLink(destination: VMConfigSoundView(config: $sound, system: $config.system).scrollable()) {

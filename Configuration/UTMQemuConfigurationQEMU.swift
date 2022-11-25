@@ -122,15 +122,7 @@ extension UTMQemuConfigurationQEMU {
             hasUefiBoot = true
             hasRNGDevice = true
         }
-        #if arch(arm64)
-        if architecture == .aarch64 {
-            hasHypervisor = jb_has_hypervisor()
-        }
-        #elseif arch(x86_64)
-        if architecture == .x86_64 {
-            hasHypervisor = jb_has_hypervisor()
-        }
-        #endif
+        hasHypervisor = architecture.hasHypervisorSupport
     }
 }
 

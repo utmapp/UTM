@@ -4,3 +4,6 @@
 /* (No Comment) */
 "UTM virtual machine" = "UTM virtuaalilaite";
 
+/* Privacy - Microphone Usage Description */
+"NSMicrophoneUsageDescription" = "UTM vaatii luvan mikrofonin käyttöön.";
+

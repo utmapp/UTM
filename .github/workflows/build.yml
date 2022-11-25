@@ -24,21 +24,50 @@ on:
 
 env:
   BUILD_XCODE_PATH: /Applications/Xcode_14.1.app
-  INSTALL_REQUIREMENTS: false
+  RUNNER_IMAGE: macos-12
 
 jobs:
+  configuration:
+    name: Setup configuration
+    runs-on: ubuntu-latest
+    outputs:
+      runner: ${{ steps.checker.outputs.runners }}
+      github-runner: ${{ steps.checker.outputs.github-runner }}
+    steps:
+    - name: Check for hosted runners
+      id: checker
+      shell: bash
+      env:
+        IS_SELF_HOSTED_RUNNER: ${{ secrets.IS_SELF_HOSTED_RUNNER || (github.repository_owner == 'utmapp' && 'true') }}
+      run: |
+        echo "github-runner='$RUNNER_IMAGE'" >> $GITHUB_OUTPUT
+        if [ "$IS_SELF_HOSTED_RUNNER" == "true" ]; then
+          echo "runners=['self-hosted', 'macOS']" >> $GITHUB_OUTPUT
+        else
+          echo "runners='$RUNNER_IMAGE'" >> $GITHUB_OUTPUT
+        fi
   build-sysroot:
     name: Build Sysroot
-    runs-on: [self-hosted, macOS, large]
+    runs-on: ${{ matrix.runner == 'default' && fromJSON(needs.configuration.outputs.runner) || fromJSON(needs.configuration.outputs.github-runner) }}
+    needs: configuration
     strategy:
       matrix:
         arch: [arm64, x86_64]
         platform: [ios, ios_simulator, ios-tci, macos]
+        runner: [default, github]
         exclude:
+          # x86_64 does not exist on iOS
           - arch: x86_64
             platform: ios
-          - arch: x86_64
+          # TCI does not exist for x86_64 and should not use default runner
+          - platform: ios-tci
+          # use default runner
+          - runner: github
+        include:
+          # always run iOS TCI build on GitHub Runner (Clang bug causes DOS on hosted runner)
+          - arch: arm64
             platform: ios-tci
+            runner: github
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -60,7 +89,7 @@ jobs:
         run: |
           echo "/usr/local/opt/bison/bin:/opt/homebrew/opt/bison/bin" >> $GITHUB_PATH
       - name: Install Requirements
-        if: (steps.cache-sysroot.outputs.cache-hit != 'true' || github.event.inputs.rebuild_sysroot == 'true') && env.INSTALL_REQUIREMENTS == 'true'
+        if: (steps.cache-sysroot.outputs.cache-hit != 'true' || github.event.inputs.rebuild_sysroot == 'true') && (matrix.runner == 'github' || needs.configuration.outputs.runner == env.RUNNER_IMAGE)
         run: |
           brew uninstall cmake
           brew install bison pkg-config gettext glib-utils libgpg-error nasm make meson
@@ -70,7 +99,7 @@ jobs:
         if: steps.cache-sysroot.outputs.cache-hit != 'true' || github.event.inputs.rebuild_sysroot == 'true'
         run: ./scripts/build_dependencies.sh -p ${{ matrix.platform }} -a ${{ matrix.arch }}
         env:
-          NCPU: ${{ matrix.platform == 'ios-tci' && '1' || '0' }} # limit 1 CPU for TCI build due to memory issues, 0 = unlimited for other builds
+           NCPU: ${{ matrix.platform == 'ios-tci' && '1' || '0' }} # limit 1 CPU for TCI build due to memory issues, 0 = unlimited for other builds
       - name: Compress Sysroot
         if: steps.cache-sysroot.outputs.cache-hit != 'true' || github.event_name == 'release' || github.event.inputs.test_release == 'true'
         run: tar -acf sysroot.tgz sysroot*
@@ -82,8 +111,8 @@ jobs:
           path: sysroot.tgz
   build-sysroot-universal:
     name: Build Sysroot (Universal Mac)
-    runs-on: macos-12
-    needs: build-sysroot
+    runs-on: ${{ fromJSON(needs.configuration.outputs.github-runner) }}
+    needs: [configuration, build-sysroot]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -127,8 +156,8 @@ jobs:
           path: sysroot.tgz
   build-utm:
     name: Build UTM
-    runs-on: [self-hosted, macOS]
-    needs: build-sysroot
+    runs-on: ${{ fromJSON(needs.configuration.outputs.runner) }}
+    needs: [configuration, build-sysroot]
     strategy:
       matrix:
         arch: [arm64, x86_64]
@@ -169,8 +198,8 @@ jobs:
           path: UTM.xcarchive.tgz
   build-universal:
     name: Build UTM (Universal Mac)
-    runs-on: [self-hosted, macOS]
-    needs: build-sysroot-universal
+    runs-on: ${{ fromJSON(needs.configuration.outputs.runner) }}
+    needs: [configuration, build-sysroot-universal]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -204,8 +233,8 @@ jobs:
           path: UTM.xcarchive.tgz
   package-ipa:
     name: Package (iOS IPA)
-    runs-on: macos-12
-    needs: build-utm
+    runs-on: ${{ fromJSON(needs.configuration.outputs.github-runner) }}
+    needs: [configuration, build-utm]
     if: github.event_name == 'release' || github.event.inputs.test_release == 'true'
     steps:
       - name: Checkout
@@ -246,8 +275,8 @@ jobs:
           event-type: new-release
   package-ipa-se:
     name: Package (iOS-TCI IPA)
-    runs-on: macos-12
-    needs: build-utm
+    runs-on: ${{ fromJSON(needs.configuration.outputs.github-runner) }}
+    needs: [configuration, build-utm]
     if: github.event_name == 'release' || github.event.inputs.test_release == 'true'
     steps:
       - name: Checkout
@@ -288,8 +317,8 @@ jobs:
           event-type: new-release
   package-hv:
     name: Package (iOS HV)
-    runs-on: macos-12
-    needs: build-utm
+    runs-on: ${{ fromJSON(needs.configuration.outputs.github-runner) }}
+    needs: [configuration, build-utm]
     if: github.event_name == 'release' || github.event.inputs.test_release == 'true'
     steps:
       - name: Checkout
@@ -323,8 +352,8 @@ jobs:
           asset_content_type: application/octet-stream
   package-deb:
     name: Package (iOS DEB)
-    runs-on: macos-12
-    needs: build-utm
+    runs-on: ${{ fromJSON(needs.configuration.outputs.github-runner) }}
+    needs: [configuration, build-utm]
     if: github.event_name == 'release' || github.event.inputs.test_release == 'true'
     steps:
       - name: Checkout
@@ -365,8 +394,8 @@ jobs:
           event-type: new-release
   package-mac:
     name: Package (macOS)
-    runs-on: macos-12
-    needs: build-universal
+    runs-on: ${{ fromJSON(needs.configuration.outputs.github-runner) }}
+    needs: [configuration, build-universal]
     if: github.event_name == 'release' || github.event.inputs.test_release == 'true'
     steps:
       - name: Checkout
@@ -427,8 +456,8 @@ jobs:
           asset_content_type: application/octet-stream
   submit-mac:
     name: Submit (macOS)
-    runs-on: macos-12
-    needs: build-universal
+    runs-on: ${{ fromJSON(needs.configuration.outputs.github-runner) }}
+    needs: [configuration, build-universal]
     if: github.event_name == 'release' || github.event.inputs.test_release == 'true'
     steps:
       - name: Checkout
