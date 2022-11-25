@@ -25,6 +25,9 @@ class UTMDownloadTask: NSObject, URLSessionDelegate, URLSessionDownloadDelegate 
     private var taskContinuation: CheckedContinuation<UTMVirtualMachine?, Error>?
     @MainActor private(set) lazy var pendingVM: UTMPendingVirtualMachine = createPendingVM()
     
+    private let kMaxRetries = 5
+    private var retries = 0
+    
     var fileManager: FileManager {
         FileManager.default
     }
@@ -82,6 +85,7 @@ class UTMDownloadTask: NSObject, URLSessionDelegate, URLSessionDownloadDelegate 
             sessionTask.cancel()
             return
         }
+        retries = 0 // reset retry counter on success
         Task {
             await pendingVM.setDownloadProgress(new: bytesWritten,
                                                 currentTotal: totalBytesWritten,
@@ -91,12 +95,22 @@ class UTMDownloadTask: NSObject, URLSessionDelegate, URLSessionDownloadDelegate 
     
     /// when the session ends with an error, it could be cancelled or an actual error
     internal func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        let error = error as? NSError
+        if let resumeData = error?.userInfo[NSURLSessionDownloadTaskResumeData] as? Data {
+            retries += 1
+            guard retries > kMaxRetries else {
+                logger.warning("Retrying download due to connection error...")
+                let task = session.downloadTask(withResumeData: resumeData)
+                task.resume()
+                return
+            }
+        }
         guard let taskContinuation = taskContinuation else {
             return
         }
         self.taskContinuation = nil
+        self.retries = 0 // reset retry counter
         if let error = error {
-            let error = error as NSError
             if error.code == NSURLErrorCancelled {
                 /// download was cancelled normally
                 taskContinuation.resume(returning: nil)
@@ -135,7 +149,7 @@ class UTMDownloadTask: NSObject, URLSessionDelegate, URLSessionDownloadDelegate 
     /// - Returns: Completed download or nil if canceled
     func download() async throws -> UTMVirtualMachine? {
         /// begin the download
-        let session = URLSession(configuration: .ephemeral, delegate: self, delegateQueue: nil)
+        let session = URLSession(configuration: .default, delegate: self, delegateQueue: nil)
         downloadTask = Task.detached { [self] in
             let sessionDownload = session.downloadTask(with: url)
             await pendingVM.setDownloadStarting()
