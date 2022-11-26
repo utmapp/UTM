@@ -567,6 +567,16 @@ NSString *const kSuspendSnapshotName = @"suspend";
     });
 }
 
+- (void)requestGuestPowerDown {
+    dispatch_async(self.vmOperations, ^{
+        [self.qemu qemuPowerDownWithCompletion:^(NSError *err) {
+            if (err) {
+                UTMLog(@"Error requesting power down: %@", err.localizedDescription);
+            }
+        }];
+    });
+}
+
 #pragma mark - Qemu manager delegate
 
 - (void)qemuHasWakeup:(UTMQemuManager *)manager {
