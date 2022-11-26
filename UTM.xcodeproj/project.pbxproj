@@ -1194,6 +1194,7 @@
 		CEA9059525FC6A3A00801E7C /* usbredirhost.1.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CEA9058725FC69D100801E7C /* usbredirhost.1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA9059625FC6A3B00801E7C /* usbredirparser.1.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CEA9058825FC69D100801E7C /* usbredirparser.1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEB20EEA282053320033EFB5 /* DoubleClickHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB20EE9282053320033EFB5 /* DoubleClickHandler.swift */; };
+		CEB54C852931E32F000D2AA9 /* UTMPatches.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB54C802931C43F000D2AA9 /* UTMPatches.swift */; };
 		CEB63A7624F4654400CAF323 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB63A7524F4654400CAF323 /* Main.swift */; };
 		CEB63A7724F4654400CAF323 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB63A7524F4654400CAF323 /* Main.swift */; };
 		CEB63A7A24F469E300CAF323 /* UTMJailbreak.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB63A7924F469E300CAF323 /* UTMJailbreak.m */; };
@@ -2184,6 +2185,7 @@
 		CEA9058725FC69D100801E7C /* usbredirhost.1.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = usbredirhost.1.framework; path = "$(SYSROOT_DIR)/Frameworks/usbredirhost.1.framework"; sourceTree = "<group>"; };
 		CEA9058825FC69D100801E7C /* usbredirparser.1.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = usbredirparser.1.framework; path = "$(SYSROOT_DIR)/Frameworks/usbredirparser.1.framework"; sourceTree = "<group>"; };
 		CEB20EE9282053320033EFB5 /* DoubleClickHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoubleClickHandler.swift; sourceTree = "<group>"; };
+		CEB54C802931C43F000D2AA9 /* UTMPatches.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMPatches.swift; sourceTree = "<group>"; };
 		CEB63A7524F4654400CAF323 /* Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
 		CEB63A7824F468BA00CAF323 /* UTMJailbreak.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMJailbreak.h; sourceTree = "<group>"; };
 		CEB63A7924F469E300CAF323 /* UTMJailbreak.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMJailbreak.m; sourceTree = "<group>"; };
@@ -2690,6 +2692,7 @@
 				CEEC811A24E48EC600ACB0B3 /* SettingsView.swift */,
 				CE2D955524AD4F980059923A /* UTMApp.swift */,
 				CEBBF1A624B5730F00C15049 /* UTMDataExtension.swift */,
+				CEB54C802931C43F000D2AA9 /* UTMPatches.swift */,
 				8401FD9F269D266E00265F0D /* VMConfigAppleBootView.swift */,
 				8401FDA3269D43CF00265F0D /* VMConfigAppleDisplayView.swift */,
 				8401FDAF269E1F7F00265F0D /* VMConfigAppleDriveCreateView.swift */,
@@ -4133,6 +4136,7 @@
 				848A98BA286A17A8006F0550 /* UTMAppleConfigurationNetwork.swift in Sources */,
 				CE0B6D1124AD57C700FE012D /* qapi-builtin-visit.c in Sources */,
 				84018699288B71BF0050AC51 /* BusyIndicator.swift in Sources */,
+				CEB54C852931E32F000D2AA9 /* UTMPatches.swift in Sources */,
 				848A98C0286A20E3006F0550 /* UTMAppleConfigurationBoot.swift in Sources */,
 				CE0B6D3F24AD584C00FE012D /* qapi-visit-qom.c in Sources */,
 				848D99B6286300160055C215 /* QEMUArgument.swift in Sources */,
