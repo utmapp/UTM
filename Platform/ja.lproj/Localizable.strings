@@ -346,6 +346,9 @@
 "This directory is already being shared." = "このディレクトリはすでに共有されています。";
 "Add read only" = "読み出しのみを追加";
 
+// VMConfigAppleSharingView.swift
+"Shared directories in macOS VMs are only available in macOS 13 and later." = "macOS仮想マシンの共有ディレクトリはmacOS 13以降でのみ使用できます。";
+
 // VMConfigAppleSystemView.swift
 "CPU Cores" = "CPUコア数";
 
