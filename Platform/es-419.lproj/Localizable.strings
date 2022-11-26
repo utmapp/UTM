@@ -575,9 +575,6 @@
 "None (Advanced)" = "Ninguno (avanzado)";
 
 /* No comment provided by engineer. */
-"Note: Shared directories will not be saved and will be reset when UTM quits." = "Nota: Los directorios compartidos no serán guardados y se restablecerán cuando UTM se cierre.";
-
-/* No comment provided by engineer. */
 "Notes" = "Notas";
 
 /* UTMQemuConstants */
