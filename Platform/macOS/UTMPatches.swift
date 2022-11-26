@@ -24,6 +24,8 @@ final class UTMPatches {
     /// TODO: Some thread safety/race issues etc
     static func patchAll() {
         NSKeyedUnarchiver.patchToolbarItem()
+        // SwiftUI bug: works around crash due to "already had more Update Constraints in Window passes than there are views in the window" exception
+        UserDefaults.standard.set(false, forKey: "NSWindowAssertWhenDisplayCycleLimitReached")
     }
 }
 

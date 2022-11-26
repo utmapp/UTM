@@ -17,7 +17,7 @@
 import UIKit
 
 /// Handles Obj-C patches to fix SwiftUI issues
-final class UTMViewControllerPatches {
+final class UTMPatches {
     static private var isPatched: Bool = false
     
     /// Installs the patches
