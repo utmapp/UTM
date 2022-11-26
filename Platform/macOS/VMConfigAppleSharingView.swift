@@ -26,6 +26,9 @@ struct VMConfigAppleSharingView: View {
     
     var body: some View {
         Form {
+            if config.system.boot.operatingSystem == .macOS {
+                Text("Shared directories in macOS VMs are only available in macOS 13 and later.")
+            }
             Table(config.sharedDirectories, selection: $selectedID) {
                 TableColumn("Shared Path") { share in
                     Text(share.directoryURL?.path ?? "")
