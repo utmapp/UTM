@@ -35,7 +35,7 @@ struct VMConfigDriveDetailsView: View {
     }
     
     @Binding var config: UTMQemuConfigurationDrive
-    let onDelete: (() -> Void)?
+    @Binding var requestDriveDelete: UTMQemuConfigurationDrive?
     
     @EnvironmentObject private var data: UTMData
     @State private var isImporterPresented: Bool = false
@@ -85,12 +85,12 @@ struct VMConfigDriveDetailsView: View {
             
             #if os(macOS)
             HStack {
-                if let onDelete = onDelete {
-                    Button(action: onDelete) {
-                        Label("Delete Drive", systemImage: "externaldrive.badge.minus")
-                            .foregroundColor(.red)
-                    }.help("Delete this drive.")
-                }
+                Button {
+                    requestDriveDelete = config
+                } label: {
+                    Label("Delete Drive", systemImage: "externaldrive.badge.minus")
+                        .foregroundColor(.red)
+                }.help("Delete this drive.")
                 
                 if let imageUrl = config.imageURL, FileManager.default.fileExists(atPath: imageUrl.path) {
                     Button {

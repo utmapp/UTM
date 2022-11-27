@@ -28,7 +28,7 @@ struct VMDrivesSettingsView: View {
     var body: some View {
         ForEach($config.drives) { $drive in
             NavigationLink(
-                destination: VMConfigDriveDetailsView(config: $drive, onDelete: nil), label: {
+                destination: VMConfigDriveDetailsView(config: $drive, requestDriveDelete: .constant(nil)), label: {
                     Label(title: { labelTitle(for: drive) }, icon: { Image(systemName: "externaldrive") })
                 })
         }.onDelete { offsets in

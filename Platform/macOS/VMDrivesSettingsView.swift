@@ -23,6 +23,7 @@ struct VMDrivesSettingsView<Drive: UTMConfigurationDrive>: View {
     @EnvironmentObject private var data: UTMData
     @State private var newDrivePopover: Bool = false
     @State private var importDrivePresented: Bool = false
+    @State private var requestDriveDelete: Drive?
     
     init(drives: Binding<[Drive]>, template: Drive) {
         self._drives = drives
@@ -33,13 +34,11 @@ struct VMDrivesSettingsView<Drive: UTMConfigurationDrive>: View {
     var body: some View {
         ForEach($drives) { $drive in
             let driveIndex = drives.firstIndex(of: drive)!
-            NavigationLink(destination: DriveDetailsView(config: $drive, onDelete: {
-                drives.removeAll(where: { $0 == drive })
-            }).scrollable()) {
+            NavigationLink(destination: DriveDetailsView(config: $drive, requestDriveDelete: $requestDriveDelete).scrollable()) {
                 Label(label(for: drive), systemImage: "externaldrive")
             }.contextMenu {
                 DestructiveButton("Delete") {
-                    drives.removeAll(where: { $0 == drive })
+                    requestDriveDelete = drive
                 }
                 if driveIndex != 0 {
                     Button {
@@ -97,6 +96,11 @@ struct VMDrivesSettingsView<Drive: UTMConfigurationDrive>: View {
                 }
             }.padding()
         }
+        .alert(item: $requestDriveDelete) { drive in
+            Alert(title: Text("Are you sure you want to permanently delete this disk image?"), primaryButton: .cancel(), secondaryButton: .destructive(Text("Delete")) {
+                drives.removeAll(where: { $0 == drive })
+            })
+        }
     }
     
     private func label(for drive: Drive) -> String {
@@ -147,13 +151,13 @@ struct VMDrivesSettingsView<Drive: UTMConfigurationDrive>: View {
 
 private struct DriveDetailsView<Drive: UTMConfigurationDrive>: View {
     @Binding var config: Drive
-    let onDelete: () -> Void
+    @Binding var requestDriveDelete: Drive?
     
     var body: some View {
         if config is UTMQemuConfigurationDrive {
-            VMConfigDriveDetailsView(config: $config as Any as! Binding<UTMQemuConfigurationDrive>, onDelete: onDelete)
+            VMConfigDriveDetailsView(config: $config as Any as! Binding<UTMQemuConfigurationDrive>, requestDriveDelete: $requestDriveDelete as Any as! Binding<UTMQemuConfigurationDrive?>)
         } else if config is UTMAppleConfigurationDrive {
-            VMConfigAppleDriveDetailsView(config: $config as Any as! Binding<UTMAppleConfigurationDrive>, onDelete: onDelete)
+            VMConfigAppleDriveDetailsView(config: $config as Any as! Binding<UTMAppleConfigurationDrive>, requestDriveDelete: $requestDriveDelete as Any as! Binding<UTMAppleConfigurationDrive?>)
         } else {
             fatalError("Unsupported drive type.")
         }
