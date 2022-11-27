@@ -78,9 +78,9 @@ struct VMConfigDriveDetailsView: View {
             }
             
             if let imageUrl = config.imageURL, let fileSize = data.computeSize(for: imageUrl) {
-                DefaultTextField("Size", text: .constant(ByteCountFormatter.string(fromByteCount: fileSize, countStyle: .file))).disabled(true)
+                DefaultTextField("Size", text: .constant(ByteCountFormatter.string(fromByteCount: fileSize, countStyle: .binary))).disabled(true)
             } else if config.sizeMib > 0 {
-                DefaultTextField("Size", text: .constant(ByteCountFormatter.string(fromByteCount: Int64(config.sizeMib) * bytesInMib, countStyle: .file))).disabled(true)
+                DefaultTextField("Size", text: .constant(ByteCountFormatter.string(fromByteCount: Int64(config.sizeMib) * bytesInMib, countStyle: .binary))).disabled(true)
             }
             
             #if os(macOS)
@@ -160,7 +160,7 @@ private struct ResizePopoverView: View {
     
     private var sizeString: String? {
         if let currentSize = currentSize {
-            return ByteCountFormatter.string(fromByteCount: currentSize, countStyle: .file)
+            return ByteCountFormatter.string(fromByteCount: currentSize, countStyle: .binary)
         } else {
             return nil
         }

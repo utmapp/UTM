@@ -48,7 +48,7 @@ import Virtualization
     
     @MainActor override var detailsSystemMemoryLabel: String {
         let bytesInMib = Int64(1048576)
-        return ByteCountFormatter.string(fromByteCount: Int64(appleConfig.system.memorySize) * bytesInMib, countStyle: .memory)
+        return ByteCountFormatter.string(fromByteCount: Int64(appleConfig.system.memorySize) * bytesInMib, countStyle: .binary)
     }
     
     override var hasSaveState: Bool {

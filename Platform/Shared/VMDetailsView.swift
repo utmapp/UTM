@@ -32,7 +32,7 @@ struct VMDetailsView: View {
     
     private var sizeLabel: String {
         let size = data.computeSize(for: vm)
-        return ByteCountFormatter.string(fromByteCount: size, countStyle: .file)
+        return ByteCountFormatter.string(fromByteCount: size, countStyle: .binary)
     }
     
     var body: some View {

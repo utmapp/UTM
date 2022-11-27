@@ -48,7 +48,7 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
         } else {
             sizeBytes = Int64(sizeMib) * Int64(bytesInMib)
         }
-        return ByteCountFormatter.string(fromByteCount: sizeBytes, countStyle: .file)
+        return ByteCountFormatter.string(fromByteCount: sizeBytes, countStyle: .binary)
     }
     
     init(newSize: Int) {
