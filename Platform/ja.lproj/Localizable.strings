@@ -332,10 +332,6 @@
 // VMConfigAppleDriveCreateView.swift
 "Removable" = "リムーバブル";
 "If checked, the drive image will be stored with the VM." = "チェックを入れると、ドライブイメージが仮想マシンに保存されます。";
-"Size" = "サイズ";
-"The amount of storage to allocate for this image. An empty file of this size will be stored with the VM." = "このディスクのために確保するストレージ領域です。このサイズの空のファイルが仮想マシンに保存されます。";
-"GB" = "GB";
-"MB" = "MB";
 
 // VMConfigAppleDriveDetailsView.swift
 "Name" = "名前";
@@ -431,8 +427,14 @@
 // FileBrowseField.swift
 "Path" = "パス";
 
+// RAMSlider.swift
+"Size" = "サイズ";
+"MB" = "MB";
+
 // SizeTextField.swift
 "The amount of storage to allocate for this image. Ignored if importing an image. If this is a raw image, then an empty file of this size will be stored with the VM. Otherwise, the disk image will dynamically expand up to this size." = "このイメージに割り当てるストレージ領域です。イメージを読み込む場合は無視されます。生イメージの場合、このサイズの空のファイルが仮想マシンに保存されます。そうでない場合、ディスクイメージはこのサイズまで動的に拡張されます。";
+"The amount of storage to allocate for this image. An empty file of this size will be stored with the VM." = "このディスクのために確保するストレージ領域です。このサイズの空のファイルが仮想マシンに保存されます。";
+"GB" = "GB";
 
 // VMCardView.swift
 "Run" = "実行";
