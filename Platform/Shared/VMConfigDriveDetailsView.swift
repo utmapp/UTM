@@ -35,7 +35,7 @@ struct VMConfigDriveDetailsView: View {
     }
     
     @Binding var config: UTMQemuConfigurationDrive
-    let onDelete: (() -> Void)?
+    @Binding var requestDriveDelete: UTMQemuConfigurationDrive?
     
     @EnvironmentObject private var data: UTMData
     @State private var isImporterPresented: Bool = false
@@ -78,19 +78,19 @@ struct VMConfigDriveDetailsView: View {
             }
             
             if let imageUrl = config.imageURL, let fileSize = data.computeSize(for: imageUrl) {
-                DefaultTextField("Size", text: .constant(ByteCountFormatter.string(fromByteCount: fileSize, countStyle: .file))).disabled(true)
+                DefaultTextField("Size", text: .constant(ByteCountFormatter.string(fromByteCount: fileSize, countStyle: .binary))).disabled(true)
             } else if config.sizeMib > 0 {
-                DefaultTextField("Size", text: .constant(ByteCountFormatter.string(fromByteCount: Int64(config.sizeMib) * bytesInMib, countStyle: .file))).disabled(true)
+                DefaultTextField("Size", text: .constant(ByteCountFormatter.string(fromByteCount: Int64(config.sizeMib) * bytesInMib, countStyle: .binary))).disabled(true)
             }
             
             #if os(macOS)
             HStack {
-                if let onDelete = onDelete {
-                    Button(action: onDelete) {
-                        Label("Delete Drive", systemImage: "externaldrive.badge.minus")
-                            .foregroundColor(.red)
-                    }.help("Delete this drive.")
-                }
+                Button {
+                    requestDriveDelete = config
+                } label: {
+                    Label("Delete Drive", systemImage: "externaldrive.badge.minus")
+                        .foregroundColor(.red)
+                }.help("Delete this drive.")
                 
                 if let imageUrl = config.imageURL, FileManager.default.fileExists(atPath: imageUrl.path) {
                     Button {
@@ -160,7 +160,7 @@ private struct ResizePopoverView: View {
     
     private var sizeString: String? {
         if let currentSize = currentSize {
-            return ByteCountFormatter.string(fromByteCount: currentSize, countStyle: .file)
+            return ByteCountFormatter.string(fromByteCount: currentSize, countStyle: .binary)
         } else {
             return nil
         }

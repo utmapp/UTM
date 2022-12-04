@@ -38,8 +38,13 @@ struct SizeTextField: View {
                 .multilineTextAlignment(.trailing)
                 .help("The amount of storage to allocate for this image. Ignored if importing an image. If this is a raw image, then an empty file of this size will be stored with the VM. Otherwise, the disk image will dynamically expand up to this size.")
             Button(action: { isGiB.toggle() }, label: {
-                Text(isGiB ? "GB" : "MB")
-                    .foregroundColor(.blue)
+                Group {
+                    if isGiB {
+                        Text("GB")
+                    } else {
+                        Text("MB")
+                    }
+                }.foregroundColor(.blue)
             }).buttonStyle(.plain)
         }
     }

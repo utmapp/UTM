@@ -71,6 +71,11 @@ struct VMConfigDisplayConsoleView_Previews: PreviewProvider {
     @State static private var config = UTMConfigurationTerminal()
     
     static var previews: some View {
-        VMConfigDisplayConsoleView(config: $config)
+        Form {
+            VMConfigDisplayConsoleView(config: $config)
+        }
+        #if os(macOS)
+        .scrollable()
+        #endif
     }
 }

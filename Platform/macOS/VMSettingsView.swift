@@ -51,7 +51,7 @@ struct VMSettingsView<Config: UTMConfiguration>: View {
     
     func save() {
         data.busyWorkAsync {
-            if let existing = self.vm {
+            if let existing = await self.vm {
                 try await data.save(vm: existing)
             } else {
                 _ = try await data.create(config: self.config)
@@ -89,9 +89,16 @@ extension View {
 
 @available(macOS 11, *)
 struct VMSettingsView_Previews: PreviewProvider {
-    @State static private var config = UTMQemuConfiguration()
+    @State static private var qemuConfig = UTMQemuConfiguration()
+    @State static private var appleConfig = UTMAppleConfiguration()
+    @State static private var data = UTMData()
     
     static var previews: some View {
-        VMSettingsView(vm: nil, config: config)
+        VMSettingsView(vm: nil, config: qemuConfig)
+            .environmentObject(data)
+            .previewDisplayName("QEMU VM Settings")
+        VMSettingsView(vm: nil, config: appleConfig)
+            .environmentObject(data)
+            .previewDisplayName("Apple VM Settings")
     }
 }

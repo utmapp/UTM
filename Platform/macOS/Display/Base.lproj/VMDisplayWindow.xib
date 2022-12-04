@@ -103,7 +103,7 @@
             </view>
             <toolbar key="toolbar" implicitIdentifier="204ED9EE-2DF0-4A0C-99E3-CD0CC398420A" showsBaselineSeparator="NO" displayMode="iconOnly" sizeMode="regular" id="qD6-Hj-nyo">
                 <allowedToolbarItems>
-                    <toolbarItem implicitItemIdentifier="9683821E-BFE9-43BA-9AB9-54F930376FD0" label="Stop" paletteLabel="Stop" toolTip="Shuts down and stops the VM" image="power" catalog="system" sizingBehavior="auto" navigational="YES" id="Bkx-Ph-j0D">
+                    <toolbarItem implicitItemIdentifier="9683821E-BFE9-43BA-9AB9-54F930376FD0" label="Stop" paletteLabel="Stop" toolTip="Shuts down and stops the VM" image="power" catalog="system" sizingBehavior="auto" navigational="YES" id="Bkx-Ph-j0D" customClass="NSMenuToolbarItem">
                         <button key="view" verticalHuggingPriority="750" id="FNq-Q0-aIF">
                             <rect key="frame" x="3" y="14" width="27" height="23"/>
                             <autoresizingMask key="autoresizingMask"/>
@@ -111,10 +111,10 @@
                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" metaFont="system"/>
                             </buttonCell>
-                            <connections>
-                                <action selector="stopButtonPressed:" target="-2" id="ddB-eA-l4t"/>
-                            </connections>
                         </button>
+                        <connections>
+                            <action selector="stopButtonPressed:" target="-2" id="fmn-4O-3B3"/>
+                        </connections>
                     </toolbarItem>
                     <toolbarItem implicitItemIdentifier="49A5F942-A936-49D2-B6AA-AAA5F726396B" label="Start/Pause" paletteLabel="Start/Pause" toolTip="Start/pause the VM" image="play.fill" catalog="system" sizingBehavior="auto" navigational="YES" id="kT2-2U-cYm">
                         <button key="view" verticalHuggingPriority="750" id="0gP-t0-ORQ">

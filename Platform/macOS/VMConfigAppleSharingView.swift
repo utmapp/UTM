@@ -26,7 +26,9 @@ struct VMConfigAppleSharingView: View {
     
     var body: some View {
         Form {
-            Text("Note: Shared directories will not be saved and will be reset when UTM quits.")
+            if config.system.boot.operatingSystem == .macOS {
+                Text("Shared directories in macOS VMs are only available in macOS 13 and later.")
+            }
             Table(config.sharedDirectories, selection: $selectedID) {
                 TableColumn("Shared Path") { share in
                     Text(share.directoryURL?.path ?? "")

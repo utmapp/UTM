@@ -92,6 +92,9 @@ struct VMAppleSettingsView: View {
 struct VMAppleSettingsView_Previews: PreviewProvider {
     @StateObject static var config = UTMAppleConfiguration()
     static var previews: some View {
-        VMAppleSettingsView(config: config)
+        List {
+            VMAppleSettingsView(config: config)
+        }
+        .frame(maxWidth: 400)
     }
 }

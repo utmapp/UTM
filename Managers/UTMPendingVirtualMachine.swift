@@ -97,13 +97,13 @@ import Foundation
         lastDownloadSpeedUpdate = Date()
         let bytesPerSecond = bytesWrittenSinceLastDownloadSpeedUpdate
         bytesWrittenSinceLastDownloadSpeedUpdate = 0
-        let bytesString = ByteCountFormatter.string(fromByteCount: bytesPerSecond, countStyle: .file)
+        let bytesString = ByteCountFormatter.string(fromByteCount: bytesPerSecond, countStyle: .binary)
         let speedFormat = NSLocalizedString("%@/s",
                                             comment: "Format string for the 'per second' part of a download speed.")
         estimatedDownloadSpeed = String.localizedStringWithFormat(speedFormat, bytesString)
         /// sizes
-        downloadedSize = ByteCountFormatter.string(fromByteCount: totalBytesWritten, countStyle: .file)
-        estimatedDownloadSize = ByteCountFormatter.string(fromByteCount: totalBytesExpectedToWrite, countStyle: .file)
+        downloadedSize = ByteCountFormatter.string(fromByteCount: totalBytesWritten, countStyle: .binary)
+        estimatedDownloadSize = ByteCountFormatter.string(fromByteCount: totalBytesExpectedToWrite, countStyle: .binary)
     }
     
     public func setDownloadProgress(new newBytesWritten: Int64, currentTotal totalBytesWritten: Int64, estimatedTotal totalBytesExpectedToWrite: Int64) {

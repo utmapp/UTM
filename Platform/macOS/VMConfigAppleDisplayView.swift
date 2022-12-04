@@ -102,6 +102,8 @@ struct VMConfigAppleDisplayView: View {
                         resolution: Resolution(width: 3024, height: 1964)), // ppi: 254
         NamedResolution(name: "3072 × 1920 — MacBook Pro (16-inch, 2019)",
                         resolution: Resolution(width: 3072, height: 1920)), // ppi: 226
+        NamedResolution(name: "3440 × 1440 — 21:9 Widescreen",
+                        resolution: Resolution(width: 3440, height: 1440)),
         NamedResolution(name: "3456 × 2160 — MacBook Pro (16-inch, 2021) Full Screen Window",
                         resolution: Resolution(width: 3456, height: 2160)), // ppi: 254
         NamedResolution(name: "3456 × 2234 — MacBook Pro (16-inch, 2021)",

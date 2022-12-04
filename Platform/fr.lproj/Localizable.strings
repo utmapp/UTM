@@ -158,6 +158,10 @@
 "Port Forward" = "Redirection de port";
 "New" = "Ajouter";
 
+// UTMSettingsView.swift
+"Settings" = "Réglages";
+"Close" = "Fermer";
+
 // VMConfigNetworkPortForwardView.swift
 "%@ ➡️ %@" = "%1$@ ➡️ %2$@";
 
@@ -181,7 +185,6 @@
 "Serial" = "Série";
 "Network" = "Réseau";
 "Sound" = "Audio";
-"Settings" = "Réglages";
 "Save" = "Enregistrer";
 "Power Off" = "Éteindre";
 "Quit" = "Quitter";

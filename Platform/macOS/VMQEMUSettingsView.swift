@@ -100,6 +100,9 @@ struct VMQEMUSettingsView_Previews: PreviewProvider {
     @State static private var config = UTMQemuConfiguration()
     
     static var previews: some View {
-        VMQEMUSettingsView(config: config)
+        List {
+            VMQEMUSettingsView(config: config)
+        }
+        .frame(maxWidth: 400)
     }
 }

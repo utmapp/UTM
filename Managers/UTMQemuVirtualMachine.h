@@ -28,6 +28,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// This property is observable and must only be accessed on the main thread.
 @property (nonatomic) BOOL isGuestToolsInstallRequested;
 
+/// Sends power off request to the guest
+- (void)requestGuestPowerDown;
+
 @end
 
 NS_ASSUME_NONNULL_END

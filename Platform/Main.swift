@@ -34,8 +34,7 @@ class Main {
     static var jitAvailable = true
     
     static func main() {
-        #if os(iOS)
-        #if !WITH_QEMU_TCI
+        #if os(iOS) && !WITH_QEMU_TCI
         // check if we have jailbreak
         if jb_spawn_ptrace_child(CommandLine.argc, CommandLine.unsafeArgv) {
             logger.info("JIT: ptrace() child spawn trick")
@@ -56,14 +55,11 @@ class Main {
             logger.info("MEM: successfully removed memory limits")
         }
         #endif
-        // UIViewController patches
-        UTMViewControllerPatches.patchAll()
+        // do patches
+        UTMPatches.patchAll()
+        #if os(iOS)
         // register defaults
         registerDefaultsFromSettingsBundle()
-        #endif
-        #if os(macOS)
-        // SwiftUI bug: works around crash due to "already had more Update Constraints in Window passes than there are views in the window" exception
-        UserDefaults.standard.set(false, forKey: "NSWindowAssertWhenDisplayCycleLimitReached")
         #endif
         UTMApp.main()
     }
