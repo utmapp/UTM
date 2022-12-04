@@ -1,0 +1,162 @@
+
+/* Class = "UIButton"; normalTitle = "F7"; ObjectID = "3yi-Pr-1ih"; */
+"3yi-Pr-1ih.normalTitle" = "F7";
+
+/* Class = "UIButton"; accessibilityLabel = "Paste"; ObjectID = "740-aI-39P"; */
+"740-aI-39P.accessibilityLabel" = "Coller";
+
+/* Class = "UIButton"; accessibilityLabel = "Tab"; ObjectID = "7pj-Jz-7JR"; */
+"7pj-Jz-7JR.accessibilityLabel" = "Tab";
+
+/* Class = "UIButton"; normalTitle = "⇥"; ObjectID = "7pj-Jz-7JR"; */
+"7pj-Jz-7JR.normalTitle" = "⇥";
+
+/* Class = "UIButton"; accessibilityLabel = "Right"; ObjectID = "8Lh-4D-Fz6"; */
+"8Lh-4D-Fz6.accessibilityLabel" = "Droite";
+
+/* Class = "UIButton"; normalTitle = "→"; ObjectID = "8Lh-4D-Fz6"; */
+"8Lh-4D-Fz6.normalTitle" = "→";
+
+/* Class = "UIButton"; accessibilityLabel = "Right"; ObjectID = "AY8-eJ-bAP"; */
+"AY8-eJ-bAP.accessibilityLabel" = "Droite";
+
+/* Class = "UIButton"; normalTitle = "Del"; ObjectID = "AY8-eJ-bAP"; */
+"AY8-eJ-bAP.normalTitle" = "Suppr";
+
+/* Class = "UIButton"; normalTitle = "F10"; ObjectID = "AhH-ij-IF8"; */
+"AhH-ij-IF8.normalTitle" = "F10";
+
+/* Class = "UIButton"; accessibilityLabel = "Up"; ObjectID = "BUL-js-yMh"; */
+"BUL-js-yMh.accessibilityLabel" = "Haut";
+
+/* Class = "UIButton"; normalTitle = "↑"; ObjectID = "BUL-js-yMh"; */
+"BUL-js-yMh.normalTitle" = "↑";
+
+/* Class = "UIButton"; accessibilityLabel = "Num Lock"; ObjectID = "BUk-Vf-yE5"; */
+"BUk-Vf-yE5.accessibilityLabel" = "Verr. Num.";
+
+/* Class = "UIButton"; normalTitle = "Num"; ObjectID = "BUk-Vf-yE5"; */
+"BUk-Vf-yE5.normalTitle" = "Num";
+
+/* Class = "UIButton"; normalTitle = "F5"; ObjectID = "DxX-zu-urb"; */
+"DxX-zu-urb.normalTitle" = "F5";
+
+/* Class = "UIButton"; normalTitle = "F12"; ObjectID = "EDi-KP-KwO"; */
+"EDi-KP-KwO.normalTitle" = "F12";
+
+/* Class = "UIButton"; accessibilityLabel = "Left"; ObjectID = "EVa-2J-CRA"; */
+"EVa-2J-CRA.accessibilityLabel" = "Gauche";
+
+/* Class = "UIButton"; normalTitle = "←"; ObjectID = "EVa-2J-CRA"; */
+"EVa-2J-CRA.normalTitle" = "←";
+
+/* Class = "UIButton"; accessibilityLabel = "Caps Lock"; ObjectID = "FDV-W6-qlO"; */
+"FDV-W6-qlO.accessibilityLabel" = "Verr. Maj.";
+
+/* Class = "UIButton"; normalTitle = "Caps"; ObjectID = "FDV-W6-qlO"; */
+"FDV-W6-qlO.normalTitle" = "Majuscules";
+
+/* Class = "UIButton"; accessibilityLabel = "Home"; ObjectID = "LU6-kH-vN3"; */
+"LU6-kH-vN3.accessibilityLabel" = "Début";
+
+/* Class = "UIButton"; normalTitle = "Home"; ObjectID = "LU6-kH-vN3"; */
+"LU6-kH-vN3.normalTitle" = "Début";
+
+/* Class = "UIButton"; normalTitle = "F8"; ObjectID = "LlV-Ae-CrL"; */
+"LlV-Ae-CrL.normalTitle" = "F8";
+
+/* Class = "UIButton"; normalTitle = "F1"; ObjectID = "PWe-Va-Qi1"; */
+"PWe-Va-Qi1.normalTitle" = "F1";
+
+/* Class = "UIButton"; accessibilityLabel = "Print Screen"; ObjectID = "Pes-KN-KzU"; */
+"Pes-KN-KzU.accessibilityLabel" = "Impression écran";
+
+/* Class = "UIButton"; normalTitle = "Pr Scr"; ObjectID = "Pes-KN-KzU"; */
+"Pes-KN-KzU.normalTitle" = "Impr. écran";
+
+/* Class = "UIButton"; accessibilityLabel = "Command"; ObjectID = "Pjh-3m-tFX"; */
+"Pjh-3m-tFX.accessibilityLabel" = "Command";
+
+/* Class = "UIButton"; normalTitle = "⌘"; ObjectID = "Pjh-3m-tFX"; */
+"Pjh-3m-tFX.normalTitle" = "⌘";
+
+/* Class = "UIButton"; accessibilityLabel = "Shift"; ObjectID = "QPo-cD-UlK"; */
+"QPo-cD-UlK.accessibilityLabel" = "Maj";
+
+/* Class = "UIButton"; normalTitle = "⇧"; ObjectID = "QPo-cD-UlK"; */
+"QPo-cD-UlK.normalTitle" = "⇧";
+
+/* Class = "UIButton"; accessibilityLabel = "Down"; ObjectID = "RCo-l7-gvf"; */
+"RCo-l7-gvf.accessibilityLabel" = "Bas";
+
+/* Class = "UIButton"; normalTitle = "↓"; ObjectID = "RCo-l7-gvf"; */
+"RCo-l7-gvf.normalTitle" = "↓";
+
+/* Class = "UIButton"; normalTitle = "F6"; ObjectID = "Rb5-vO-sIx"; */
+"Rb5-vO-sIx.normalTitle" = "F6";
+
+/* Class = "UIButton"; accessibilityLabel = "End"; ObjectID = "TOV-fV-TTa"; */
+"TOV-fV-TTa.accessibilityLabel" = "Fin";
+
+/* Class = "UIButton"; normalTitle = "End"; ObjectID = "TOV-fV-TTa"; */
+"TOV-fV-TTa.normalTitle" = "Fin";
+
+/* Class = "UIButton"; normalTitle = "F9"; ObjectID = "UNT-ei-lIn"; */
+"UNT-ei-lIn.normalTitle" = "F9";
+
+/* Class = "UIButton"; accessibilityLabel = "Control"; ObjectID = "bCv-uH-SSy"; */
+"bCv-uH-SSy.accessibilityLabel" = "Control";
+
+/* Class = "UIButton"; normalTitle = "⌃"; ObjectID = "bCv-uH-SSy"; */
+"bCv-uH-SSy.normalTitle" = "⌃";
+
+/* Class = "UIButton"; normalTitle = "F4"; ObjectID = "c7C-CG-EBg"; */
+"c7C-CG-EBg.normalTitle" = "F4";
+
+/* Class = "UIButton"; normalTitle = "F3"; ObjectID = "gUX-ez-mbt"; */
+"gUX-ez-mbt.normalTitle" = "F3";
+
+/* Class = "UIButton"; accessibilityLabel = "Page Down"; ObjectID = "h4q-XF-UMn"; */
+"h4q-XF-UMn.accessibilityLabel" = "Page Bas";
+
+/* Class = "UIButton"; normalTitle = "Pg Dn"; ObjectID = "h4q-XF-UMn"; */
+"h4q-XF-UMn.normalTitle" = "Pg Bas";
+
+/* Class = "UIButton"; accessibilityLabel = "Option"; ObjectID = "jxu-AQ-u8c"; */
+"jxu-AQ-u8c.accessibilityLabel" = "Option";
+
+/* Class = "UIButton"; normalTitle = "⌥"; ObjectID = "jxu-AQ-u8c"; */
+"jxu-AQ-u8c.normalTitle" = "⌥";
+
+/* Class = "UIButton"; accessibilityLabel = "Insert"; ObjectID = "kO0-HZ-5w2"; */
+"kO0-HZ-5w2.accessibilityLabel" = "Insérer";
+
+/* Class = "UIButton"; normalTitle = "Ins"; ObjectID = "kO0-HZ-5w2"; */
+"kO0-HZ-5w2.normalTitle" = "Ins";
+
+/* Class = "UIButton"; normalTitle = "F2"; ObjectID = "kd1-fj-kXM"; */
+"kd1-fj-kXM.normalTitle" = "F2";
+
+/* Class = "UIButton"; accessibilityLabel = "Escape"; ObjectID = "n12-9R-99C"; */
+"n12-9R-99C.accessibilityLabel" = "Échap";
+
+/* Class = "UIButton"; normalTitle = "⎋"; ObjectID = "n12-9R-99C"; */
+"n12-9R-99C.normalTitle" = "⎋";
+
+/* Class = "UIButton"; accessibilityLabel = "Page Up"; ObjectID = "pX1-7o-dbU"; */
+"pX1-7o-dbU.accessibilityLabel" = "Page Haut";
+
+/* Class = "UIButton"; normalTitle = "Pg Up"; ObjectID = "pX1-7o-dbU"; */
+"pX1-7o-dbU.normalTitle" = "Pg Haut";
+
+/* Class = "UIButton"; normalTitle = "F11"; ObjectID = "rfk-su-cFq"; */
+"rfk-su-cFq.normalTitle" = "F11";
+
+/* Class = "UIButton"; accessibilityLabel = "Hide Keyboard"; ObjectID = "rtU-Yt-FhT"; */
+"rtU-Yt-FhT.accessibilityLabel" = "Masquer le clavier";
+
+/* Class = "UIButton"; accessibilityLabel = "Scroll Lock"; ObjectID = "sF1-tj-hUG"; */
+"sF1-tj-hUG.accessibilityLabel" = "Arrêt défil.";
+
+/* Class = "UIButton"; normalTitle = "Scroll"; ObjectID = "sF1-tj-hUG"; */
+"sF1-tj-hUG.normalTitle" = "Défilement";

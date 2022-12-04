@@ -44,7 +44,7 @@ public extension UTMQemuVirtualMachine {
     
     @MainActor override var detailsSystemMemoryLabel: String {
         let bytesInMib = Int64(1048576)
-        return ByteCountFormatter.string(fromByteCount: Int64(qemuConfig.system.memorySize) * bytesInMib, countStyle: .memory)
+        return ByteCountFormatter.string(fromByteCount: Int64(qemuConfig.system.memorySize) * bytesInMib, countStyle: .binary)
     }
     
     /// Check if a QEMU target is supported

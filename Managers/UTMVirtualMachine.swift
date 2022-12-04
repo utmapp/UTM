@@ -58,7 +58,7 @@ extension UTMVirtualMachine: ObservableObject {
     @nonobjc convenience init<Config: UTMConfiguration>(newConfig: Config, destinationURL: URL) {
         let packageURL = UTMVirtualMachine.virtualMachinePath(newConfig.information.name, inParentURL: destinationURL)
         let configuration = UTMConfigurationWrapper(wrapping: newConfig)
-        self.init(configuration: configuration, packageURL: packageURL)
+        self.init(configurationWrapper: configuration, packageURL: packageURL)
     }
 }
 

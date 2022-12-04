@@ -269,38 +269,12 @@ import Foundation
         #endif
     }
     
-    private var isHypervisorSupported: Bool {
-        guard jb_has_hypervisor() else {
-            return false
-        }
-        #if arch(arm64)
-        return system.architecture == .aarch64
-        #elseif arch(x86_64)
-        return system.architecture == .x86_64
-        #else
-        return false
-        #endif
-    }
-    
     private var isHypervisorUsed: Bool {
-        isHypervisorSupported && qemu.hasHypervisor
-    }
-    
-    private var isUsbSupported: Bool {
-        if system.target.rawValue == QEMUTarget_x86_64.isapc.rawValue {
-            return false
-        }
-        if system.architecture == .s390x {
-            return false
-        }
-        if system.architecture == .sparc || system.architecture == .sparc64 {
-            return false
-        }
-        return true
+        system.architecture.hasHypervisorSupport && qemu.hasHypervisor
     }
     
     private var isUsbUsed: Bool {
-        isUsbSupported && input.usbBusSupport != .disabled
+        system.architecture.hasUsbSupport && system.target.hasUsbSupport && input.usbBusSupport != .disabled
     }
     
     @QEMUArgumentBuilder private var machineArguments: [QEMUArgument] {
@@ -721,8 +695,15 @@ import Foundation
         }
     }
     
+    private var isAgentUsed: Bool {
+        guard system.architecture.hasAgentSupport else {
+            return false
+        }
+        return sharing.hasClipboardSharing || sharing.directoryShareMode == .webdav || displays.contains(where: { $0.isDynamicResolution })
+    }
+    
     @QEMUArgumentBuilder private var sharingArguments: [QEMUArgument] {
-        if sharing.hasClipboardSharing || sharing.directoryShareMode == .webdav || displays.contains(where: { $0.isDynamicResolution }) {
+        if isAgentUsed {
             f("-device")
             f("virtio-serial")
             f("-device")
@@ -736,7 +717,7 @@ import Foundation
                 f("spiceport,name=org.spice-space.webdav.0,id=charchannel1")
             }
         }
-        if sharing.directoryShareMode == .virtfs, let url = sharing.directoryShareUrl {
+        if system.architecture.hasSharingSupport && sharing.directoryShareMode == .virtfs, let url = sharing.directoryShareUrl {
             f("-fsdev")
             "local"
             "id=virtfs0"

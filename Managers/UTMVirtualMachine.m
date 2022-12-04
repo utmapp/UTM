@@ -143,7 +143,7 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
     UTMConfigurationWrapper *config = [[UTMConfigurationWrapper alloc] initFrom:url];
     [url stopAccessingSecurityScopedResource];
     if (config) {
-        UTMVirtualMachine *vm = [UTMVirtualMachine virtualMachineWithConfiguration:config packageURL:url];
+        UTMVirtualMachine *vm = [UTMVirtualMachine virtualMachineWithConfigurationWrapper:config packageURL:url];
         dispatch_async(dispatch_get_main_queue(), ^{
             [vm updateConfigFromRegistry];
         });
@@ -153,7 +153,7 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
     }
 }
 
-+ (UTMVirtualMachine *)virtualMachineWithConfiguration:(UTMConfigurationWrapper *)configuration packageURL:(nonnull NSURL *)packageURL {
++ (UTMVirtualMachine *)virtualMachineWithConfigurationWrapper:(UTMConfigurationWrapper *)configuration packageURL:(nonnull NSURL *)packageURL {
 #if TARGET_OS_OSX
     if (@available(macOS 11, *)) {
         if (configuration.isAppleVirtualization) {

@@ -29,7 +29,7 @@ struct VMWizardSummaryView: View {
             }
         }
         #endif
-        return ByteCountFormatter.string(fromByteCount: size, countStyle: .file)
+        return ByteCountFormatter.string(fromByteCount: size, countStyle: .binary)
     }
     
     var coreDescription: String {
@@ -123,7 +123,7 @@ struct VMWizardSummaryView: View {
                 TextField("Architecture", text: .constant(wizardState.systemArchitecture.prettyValue))
                 TextField("System", text: .constant(wizardState.systemTarget.prettyValue))
             }
-            TextField("RAM", text: .constant(ByteCountFormatter.string(fromByteCount: Int64(wizardState.systemMemoryMib * wizardState.bytesInMib), countStyle: .memory)))
+            TextField("RAM", text: .constant(ByteCountFormatter.string(fromByteCount: Int64(wizardState.systemMemoryMib * wizardState.bytesInMib), countStyle: .binary)))
             TextField("CPU", text: .constant(coreDescription))
             TextField("Storage", text: .constant(storageDescription))
             if !wizardState.useAppleVirtualization && wizardState.operatingSystem == .Linux {

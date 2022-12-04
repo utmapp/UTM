@@ -60,6 +60,13 @@ extension UTMQemuConfigurationSharing {
     init(forArchitecture architecture: QEMUArchitecture, target: any QEMUTarget) {
         self.init()
         let rawTarget = target.rawValue
+        if !architecture.hasAgentSupport {
+            hasClipboardSharing = false
+        }
+        if !architecture.hasSharingSupport {
+            directoryShareMode = .none
+        }
+        // overrides for specific configurations
         if rawTarget.hasPrefix("pc") || rawTarget.hasPrefix("q35") {
             directoryShareMode = .webdav
             hasClipboardSharing = true

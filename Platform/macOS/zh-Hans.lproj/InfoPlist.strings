@@ -4,3 +4,6 @@
 /* (No Comment) */
 "UTM virtual machine" = "UTM虚拟机";
 
+/* Privacy - Microphone Usage Description */
+"NSMicrophoneUsageDescription" = "UTM需要您的同意才能使用麦克风。";
+

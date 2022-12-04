@@ -101,8 +101,8 @@
 		841E999928AC817D003C6CB6 /* UTMQemuVirtualMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841E999728AC817D003C6CB6 /* UTMQemuVirtualMachine.swift */; };
 		841E999A28AC817D003C6CB6 /* UTMQemuVirtualMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841E999728AC817D003C6CB6 /* UTMQemuVirtualMachine.swift */; };
 		84258C42288F806400C66366 /* VMToolbarUSBMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84258C41288F806400C66366 /* VMToolbarUSBMenuView.swift */; };
-		842B9F8D28CC58B700031EE7 /* UTMViewControllerPatches.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B9F8C28CC58B700031EE7 /* UTMViewControllerPatches.swift */; };
-		842B9F8E28CC58B700031EE7 /* UTMViewControllerPatches.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B9F8C28CC58B700031EE7 /* UTMViewControllerPatches.swift */; };
+		842B9F8D28CC58B700031EE7 /* UTMPatches.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B9F8C28CC58B700031EE7 /* UTMPatches.swift */; };
+		842B9F8E28CC58B700031EE7 /* UTMPatches.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B9F8C28CC58B700031EE7 /* UTMPatches.swift */; };
 		8432329028C2CDAD00CFBC97 /* VMNavigationListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8432328F28C2CDAD00CFBC97 /* VMNavigationListView.swift */; };
 		8432329128C2CDAD00CFBC97 /* VMNavigationListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8432328F28C2CDAD00CFBC97 /* VMNavigationListView.swift */; };
 		8432329228C2CDAD00CFBC97 /* VMNavigationListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8432328F28C2CDAD00CFBC97 /* VMNavigationListView.swift */; };
@@ -1194,6 +1194,7 @@
 		CEA9059525FC6A3A00801E7C /* usbredirhost.1.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CEA9058725FC69D100801E7C /* usbredirhost.1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA9059625FC6A3B00801E7C /* usbredirparser.1.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CEA9058825FC69D100801E7C /* usbredirparser.1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEB20EEA282053320033EFB5 /* DoubleClickHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB20EE9282053320033EFB5 /* DoubleClickHandler.swift */; };
+		CEB54C852931E32F000D2AA9 /* UTMPatches.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB54C802931C43F000D2AA9 /* UTMPatches.swift */; };
 		CEB63A7624F4654400CAF323 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB63A7524F4654400CAF323 /* Main.swift */; };
 		CEB63A7724F4654400CAF323 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB63A7524F4654400CAF323 /* Main.swift */; };
 		CEB63A7A24F469E300CAF323 /* UTMJailbreak.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB63A7924F469E300CAF323 /* UTMJailbreak.m */; };
@@ -1586,21 +1587,18 @@
 		2CE8EB082572E173000E2EBB /* qapi-visit-block-export.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-visit-block-export.c"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-block-export.c"; sourceTree = SOURCE_ROOT; };
 		4B224B9C279D4D8100B63CFF /* InListButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InListButtonStyle.swift; sourceTree = "<group>"; };
 		521F3EFA2414F73800130500 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
-		52459A322440C84E006A58D0 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		5286EC8E2437488E007E6CBC /* VMDisplayMetalViewController+Gamepad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "VMDisplayMetalViewController+Gamepad.h"; sourceTree = "<group>"; };
 		5286EC8F2437488E007E6CBC /* VMDisplayMetalViewController+Gamepad.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "VMDisplayMetalViewController+Gamepad.m"; sourceTree = "<group>"; };
 		5286EC91243748AC007E6CBC /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		5286EC93243748C3007E6CBC /* VMDisplayMetalViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VMDisplayMetalViewController.h; sourceTree = "<group>"; };
 		5286EC94243748C3007E6CBC /* VMDisplayMetalViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VMDisplayMetalViewController.m; sourceTree = "<group>"; };
 		52873FD9247F5B1B0063E4C8 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
-		52873FDA247F5B1B0063E4C8 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		53A0BDD426D79FE40010EDC5 /* SavePanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavePanel.swift; sourceTree = "<group>"; };
 		5A17469E28BA9C4300278241 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/VMDisplayMetalViewInputAccessory.strings; sourceTree = "<group>"; };
 		5A17469F28BA9C4300278241 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/VMDisplayWindow.strings; sourceTree = "<group>"; };
 		5A1746A028BA9C4300278241 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		5A1746A128BA9C4300278241 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		5A1746A228BA9C4300278241 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/Localizable.strings; sourceTree = "<group>"; };
-		5A1746A428BA9C4300278241 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		5A1746A528BA9C4300278241 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/Localizable.strings; sourceTree = "<group>"; };
 		5A1746A628BA9C4300278241 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		83034C0626AB630F006B4BAF /* UTMPendingVMView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMPendingVMView.swift; sourceTree = "<group>"; };
@@ -1616,7 +1614,6 @@
 		83FE63B928F617CE0047FFEF /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		83FE63BA28F617CE0047FFEF /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		83FE63BB28F617CE0047FFEF /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = de; path = de.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
-		83FE63BC28F617CE0047FFEF /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		83FE63BD28F617CE0047FFEF /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		83FE63BE28F617CE0047FFEF /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		8401865D2887B1620050AC51 /* VMDisplayTerminalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VMDisplayTerminalViewController.swift; sourceTree = "<group>"; };
@@ -1646,7 +1643,7 @@
 		841E999628AC80CA003C6CB6 /* UTMQemuVirtualMachine-Protected.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMQemuVirtualMachine-Protected.h"; sourceTree = "<group>"; };
 		841E999728AC817D003C6CB6 /* UTMQemuVirtualMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMQemuVirtualMachine.swift; sourceTree = "<group>"; };
 		84258C41288F806400C66366 /* VMToolbarUSBMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMToolbarUSBMenuView.swift; sourceTree = "<group>"; };
-		842B9F8C28CC58B700031EE7 /* UTMViewControllerPatches.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMViewControllerPatches.swift; sourceTree = "<group>"; };
+		842B9F8C28CC58B700031EE7 /* UTMPatches.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMPatches.swift; sourceTree = "<group>"; };
 		8432328F28C2CDAD00CFBC97 /* VMNavigationListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMNavigationListView.swift; sourceTree = "<group>"; };
 		8432329328C2ED9000CFBC97 /* FileBrowseField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileBrowseField.swift; sourceTree = "<group>"; };
 		8432329728C3017F00CFBC97 /* GlobalFileImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalFileImporter.swift; sourceTree = "<group>"; };
@@ -1706,7 +1703,6 @@
 		84909A9027CADAE0005605F1 /* UTMUnavailableVMView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMUnavailableVMView.swift; sourceTree = "<group>"; };
 		84937EFE28960789003148F4 /* zstd.1.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = zstd.1.framework; path = "$(SYSROOT_DIR)/Frameworks/zstd.1.framework"; sourceTree = "<group>"; };
 		84937F0C28975DCB003148F4 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
-		84937F0D28975DD2003148F4 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		84937F0E289761C0003148F4 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		84937F0F289761D1003148F4 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		84937F10289761FF003148F4 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -1714,7 +1710,6 @@
 		84937F17289764A9003148F4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		84937F18289764CF003148F4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		84937F19289764D9003148F4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
-		84937F1A289764DE003148F4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		84937F1B289764E4003148F4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		84937F1C289764E8003148F4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		84A381A9268CB30C0048EE4D /* VMDrivesSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDrivesSettingsView.swift; sourceTree = "<group>"; };
@@ -1736,6 +1731,7 @@
 		84CE3DB02904C7A100FF068B /* UTMSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMSettingsView.swift; sourceTree = "<group>"; };
 		84CF5DD2288DCE6400D01721 /* VMDisplayHostedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayHostedView.swift; sourceTree = "<group>"; };
 		84CF5DF4288F558400D01721 /* VMToolbarDriveMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMToolbarDriveMenuView.swift; sourceTree = "<group>"; };
+		84E3A8EB293349370024A740 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/VMDisplayMetalViewInputAccessory.strings; sourceTree = "<group>"; };
 		84E6F6FC289319AE00080EEF /* VMToolbarDisplayMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMToolbarDisplayMenuView.swift; sourceTree = "<group>"; };
 		84F746B8276FF40900A20C87 /* VMDisplayAppleWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayAppleWindowController.swift; sourceTree = "<group>"; };
 		84F746BA276FF70700A20C87 /* VMDisplayQemuDisplayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayQemuDisplayController.swift; sourceTree = "<group>"; };
@@ -2190,6 +2186,7 @@
 		CEA9058725FC69D100801E7C /* usbredirhost.1.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = usbredirhost.1.framework; path = "$(SYSROOT_DIR)/Frameworks/usbredirhost.1.framework"; sourceTree = "<group>"; };
 		CEA9058825FC69D100801E7C /* usbredirparser.1.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = usbredirparser.1.framework; path = "$(SYSROOT_DIR)/Frameworks/usbredirparser.1.framework"; sourceTree = "<group>"; };
 		CEB20EE9282053320033EFB5 /* DoubleClickHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoubleClickHandler.swift; sourceTree = "<group>"; };
+		CEB54C802931C43F000D2AA9 /* UTMPatches.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMPatches.swift; sourceTree = "<group>"; };
 		CEB63A7524F4654400CAF323 /* Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
 		CEB63A7824F468BA00CAF323 /* UTMJailbreak.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMJailbreak.h; sourceTree = "<group>"; };
 		CEB63A7924F469E300CAF323 /* UTMJailbreak.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMJailbreak.m; sourceTree = "<group>"; };
@@ -2260,7 +2257,6 @@
 		E68D491E28AC018D00D34C54 /* es-419 */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-419"; path = "es-419.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		E68D491F28AC018D00D34C54 /* es-419 */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-419"; path = "es-419.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		E68D492028AC018D00D34C54 /* es-419 */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = "es-419"; path = "es-419.lproj/Localizable.stringsdict"; sourceTree = "<group>"; };
-		E68D492128AC018D00D34C54 /* es-419 */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-419"; path = "es-419.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		E68D492228AC018E00D34C54 /* es-419 */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-419"; path = "es-419.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		E68D492328AC018E00D34C54 /* es-419 */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-419"; path = "es-419.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		E6F791192903EEC6000BAAC9 /* es-419 */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-419"; path = "es-419.lproj/QEMULauncher-InfoPlist.strings"; sourceTree = "<group>"; };
@@ -2684,7 +2680,6 @@
 				CE550BD52259479D0063E575 /* Assets.xcassets */,
 				521F3EFB2414F73800130500 /* Localizable.strings */,
 				CED8DF7928A120C100C34345 /* Localizable.stringsdict */,
-				52459A312440C84E006A58D0 /* InfoPlist.strings */,
 			);
 			path = Platform;
 			sourceTree = "<group>";
@@ -2698,6 +2693,7 @@
 				CEEC811A24E48EC600ACB0B3 /* SettingsView.swift */,
 				CE2D955524AD4F980059923A /* UTMApp.swift */,
 				CEBBF1A624B5730F00C15049 /* UTMDataExtension.swift */,
+				CEB54C802931C43F000D2AA9 /* UTMPatches.swift */,
 				8401FD9F269D266E00265F0D /* VMConfigAppleBootView.swift */,
 				8401FDA3269D43CF00265F0D /* VMConfigAppleDisplayView.swift */,
 				8401FDAF269E1F7F00265F0D /* VMConfigAppleDriveCreateView.swift */,
@@ -2737,8 +2733,8 @@
 				CEBBF1A424B56A2900C15049 /* UTMDataExtension.swift */,
 				841E58CA28937EE200137A20 /* UTMExternalSceneDelegate.swift */,
 				841E58CD28937FED00137A20 /* UTMMainView.swift */,
+				842B9F8C28CC58B700031EE7 /* UTMPatches.swift */,
 				84CE3DB02904C7A100FF068B /* UTMSettingsView.swift */,
-				842B9F8C28CC58B700031EE7 /* UTMViewControllerPatches.swift */,
 				CE2D954D24AD4F980059923A /* VMConfigNetworkPortForwardView.swift */,
 				84CF5DD2288DCE6400D01721 /* VMDisplayHostedView.swift */,
 				84018685288A3B5B0050AC51 /* VMSessionState.swift */,
@@ -3714,7 +3710,7 @@
 				CE2D92B324AD46670059923A /* qapi-events-net.c in Sources */,
 				CE2D92B424AD46670059923A /* qapi-visit-run-state.c in Sources */,
 				CED814E924C79F070042F0F1 /* VMConfigDriveCreateView.swift in Sources */,
-				842B9F8D28CC58B700031EE7 /* UTMViewControllerPatches.swift in Sources */,
+				842B9F8D28CC58B700031EE7 /* UTMPatches.swift in Sources */,
 				CE2D92B524AD46670059923A /* qapi-commands-tpm.c in Sources */,
 				CE19392626DCB094005CEC17 /* RAMSlider.swift in Sources */,
 				CE2D92B724AD46670059923A /* qapi-visit-common.c in Sources */,
@@ -4141,6 +4137,7 @@
 				848A98BA286A17A8006F0550 /* UTMAppleConfigurationNetwork.swift in Sources */,
 				CE0B6D1124AD57C700FE012D /* qapi-builtin-visit.c in Sources */,
 				84018699288B71BF0050AC51 /* BusyIndicator.swift in Sources */,
+				CEB54C852931E32F000D2AA9 /* UTMPatches.swift in Sources */,
 				848A98C0286A20E3006F0550 /* UTMAppleConfigurationBoot.swift in Sources */,
 				CE0B6D3F24AD584C00FE012D /* qapi-visit-qom.c in Sources */,
 				848D99B6286300160055C215 /* QEMUArgument.swift in Sources */,
@@ -4283,7 +4280,7 @@
 				CEA45E6B263519B5002FA97D /* UTMLegacyQemuConfiguration+Display.m in Sources */,
 				CEA45E6C263519B5002FA97D /* UTMVirtualMachine.swift in Sources */,
 				84B36D2A27B790BE00C22685 /* DestructiveButton.swift in Sources */,
-				842B9F8E28CC58B700031EE7 /* UTMViewControllerPatches.swift in Sources */,
+				842B9F8E28CC58B700031EE7 /* UTMPatches.swift in Sources */,
 				CEA45E6D263519B5002FA97D /* qapi-visit-block-core.c in Sources */,
 				CEE7E937287CFDB100282049 /* UTMLegacyQemuConfiguration+Constants.m in Sources */,
 				841619AB284315F9000034B2 /* UTMConfigurationInfo.swift in Sources */,
@@ -4535,20 +4532,6 @@
 			sourceTree = "<group>";
 			usesTabs = 0;
 		};
-		52459A312440C84E006A58D0 /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				52459A322440C84E006A58D0 /* zh-Hans */,
-				52873FDA247F5B1B0063E4C8 /* zh-Hant */,
-				84937F0D28975DD2003148F4 /* fr */,
-				84937F1A289764DE003148F4 /* en */,
-				5A1746A428BA9C4300278241 /* fi */,
-				E68D492128AC018D00D34C54 /* es-419 */,
-				83FE63BC28F617CE0047FFEF /* de */,
-			);
-			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
 		836CA97D28FCC39700EB9EF0 /* QEMULauncher-InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -4579,6 +4562,7 @@
 				5A17469E28BA9C4300278241 /* fi */,
 				E68D491B28AC018600D34C54 /* es-419 */,
 				83FE63B628F617CD0047FFEF /* de */,
+				84E3A8EB293349370024A740 /* fr */,
 			);
 			name = VMDisplayMetalViewInputAccessory.xib;
 			sourceTree = "<group>";

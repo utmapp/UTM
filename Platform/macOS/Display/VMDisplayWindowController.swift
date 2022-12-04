@@ -23,7 +23,7 @@ class VMDisplayWindowController: NSWindowController {
     @IBOutlet weak var startButton: NSButton!
     
     @IBOutlet weak var toolbar: NSToolbar!
-    @IBOutlet weak var stopToolbarItem: NSToolbarItem!
+    @IBOutlet weak var stopToolbarItem: NSMenuToolbarItem!
     @IBOutlet weak var startPauseToolbarItem: NSToolbarItem!
     @IBOutlet weak var restartToolbarItem: NSToolbarItem!
     @IBOutlet weak var captureMouseToolbarItem: NSToolbarItem!

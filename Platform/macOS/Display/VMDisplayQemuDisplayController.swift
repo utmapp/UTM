@@ -79,6 +79,56 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
         }
         super.enterSuspended(isBusy: busy)
     }
+    
+    override func windowDidLoad() {
+        setupStopButtonMenu()
+        super.windowDidLoad()
+    }
+}
+
+// MARK: - Stop menu
+extension VMDisplayQemuWindowController {
+    private func setupStopButtonMenu() {
+        let menu = NSMenu()
+        menu.autoenablesItems = false
+        let item1 = NSMenuItem()
+        item1.title = NSLocalizedString("Request power down", comment: "VMDisplayQemuDisplayController")
+        item1.toolTip = NSLocalizedString("Sends power down request to the guest. This simulates pressing the power button on a PC.", comment: "VMDisplayQemuDisplayController")
+        item1.target = self
+        item1.action = #selector(requestPowerDown)
+        menu.addItem(item1)
+        let item2 = NSMenuItem()
+        item2.title = NSLocalizedString("Force shut down", comment: "VMDisplayQemuDisplayController")
+        item2.toolTip = NSLocalizedString("Tells the VM process to shut down with risk of data corruption. This simulates holding down the power button on a PC.", comment: "VMDisplayQemuDisplayController")
+        item2.target = self
+        item2.action = #selector(qmpShutDown)
+        menu.addItem(item2)
+        let item3 = NSMenuItem()
+        item3.title = NSLocalizedString("Force kill", comment: "VMDisplayQemuDisplayController")
+        item3.toolTip = NSLocalizedString("Force kill the VM process with high risk of data corruption.", comment: "VMDisplayQemuDisplayController")
+        item3.target = self
+        item3.action = #selector(qmpForceKill)
+        menu.addItem(item3)
+        stopToolbarItem.menu = menu
+    }
+    
+    @MainActor @objc private func requestPowerDown(sender: AnyObject) {
+        qemuVM.requestGuestPowerDown()
+    }
+    
+    @MainActor @objc private func qmpShutDown(sender: AnyObject) {
+        let prev = isPowerForce
+        isPowerForce = false
+        stopButtonPressed(sender)
+        isPowerForce = prev
+    }
+    
+    @MainActor @objc private func qmpForceKill(sender: AnyObject) {
+        let prev = isPowerForce
+        isPowerForce = true
+        stopButtonPressed(sender)
+        isPowerForce = prev
+    }
 }
 
 // MARK: - Removable drives

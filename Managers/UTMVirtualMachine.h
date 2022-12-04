@@ -106,7 +106,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// `-saveUTMWithCompletion:` should be called to save to disk.
 /// @param configuration VM configuration
 /// @param packageURL Location of the VM
-+ (UTMVirtualMachine *)virtualMachineWithConfiguration:(UTMConfigurationWrapper *)configuration packageURL:(NSURL *)packageURL;
++ (UTMVirtualMachine *)virtualMachineWithConfigurationWrapper:(UTMConfigurationWrapper *)configuration packageURL:(NSURL *)packageURL;
 
 /// Discard any changes to configuration by reloading from disk
 /// @param err Error thrown

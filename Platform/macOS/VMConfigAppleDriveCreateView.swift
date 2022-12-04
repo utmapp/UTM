@@ -37,19 +37,7 @@ struct VMConfigAppleDriveCreateView: View {
                     }
                 }
                 if !config.isExternal {
-                    HStack {
-                        NumberTextField("Size", number: Binding<Int>(get: {
-                            convertToDisplay(fromSizeMib: config.sizeMib)
-                        }, set: {
-                            config.sizeMib = convertToMib(fromSize: $0)
-                        }), onEditingChanged: validateSize)
-                        .multilineTextAlignment(.trailing)
-                        .help("The amount of storage to allocate for this image. An empty file of this size will be stored with the VM.")
-                        Button(action: { isGiB.toggle() }, label: {
-                            Text(isGiB ? "GB" : "MB")
-                                .foregroundColor(.blue)
-                        }).buttonStyle(.plain)
-                    }
+                    SizeTextField($config.sizeMib)
                 }
             }
         }
