@@ -111,7 +111,7 @@
 
 // UTMQemuVirtualMachine.m
 "Failed to access data from shortcut." = "ショートカットからデータのアクセスに失敗しました。";
-"This build of UTM does not support emulating the architecture of this VM." = "このビルドのUTMは、この仮想マシンのアーキテクチャのエミュレートには対応していません。";
+"This build of UTM does not support emulating the architecture of this VM." = "このビルドのUTMは、この仮想マシンのアーキテクチャのエミュレーションには対応していません。";
 "Error trying to restore external drives and shares: %@" = "外部ドライブおよび共有の復元中にエラーが発生しました: %@";
 "QEMU exited from an error: %@" = "QEMUがエラーにより終了しました: %@";
 "Error trying to start shared directory: %@" = "共有ディレクトリの開始中にエラーが発生しました: %@";
@@ -250,12 +250,27 @@
 // Display/VMDisplayAppleDisplayWindowController.swift
 "%@ (Terminal %lld)" = "%1$@ (ターミナル%2$lld）";
 
-// Display/VMDisplayQemuWindowController.swift
+// Display/VMDisplayQemuDisplayController.swift
 "Disposable Mode" = "使い捨てモード";
+"Request power down" = "電源オフを要求";
+"Sends power down request to the guest. This simulates pressing the power button on a PC." = "ゲストに電源オフ要求を送信します。これにより、PCの電源ボタン押下をシミュレートします。";
+"Force shut down" = "強制システム終了";
+"Tells the VM process to shut down with risk of data corruption. This simulates holding down the power button on a PC." = "仮想マシンプロセスにデータ破損のリスクを伴うシステム終了を指示します。これにより、PCの電源ボタン長押しをシミュレートします。";
+"Force kill" = "強制終了";
+"Force kill the VM process with high risk of data corruption." = "仮想マシンプロセスを強制終了します。高いデータ破損のリスクを伴います。";
+"Querying drives status..." = "ドライブの状態を確認中…";
+"No drives connected." = "デバイスが接続されていません。";
+"Install Windows Guest Tools…" = "Windowsゲストツールをインストール…";
+"Eject" = "取り出す";
+"Change" = "変更";
+"Select Drive Image" = "ドライブイメージを選択してください";
+"USB Device" = "USBドライブ";
+"Confirm" = "確定";
+"Querying USB devices..." = "USBドライブを確認中…";
 
 // Display/VMDisplayQemuMetalWindowController.swift
 "%@ (Display %lld)" = "%1$@（ディスプレイ%2$lld）";
-"Metal is not supported on this device. Cannot render display." = "このデバイスはMetalに対応していないため、ディスプレイを描画できません。";
+"Metal is not supported on this device. Cannot render display." = "Metalはこのデバイスでは対応していないため、ディスプレイを描画できません。";
 "Internal error." = "内部エラーが発生しました。";
 "Press %@ to release cursor" = "%@を押してカーソルを解放します";
 "⌘+⌥" = "⌘+⌥";
@@ -297,7 +312,7 @@
 "UEFI" = "UEFI";
 "Please select an uncompressed Linux kernel image." = "無圧縮Linuxカーネルイメージを選択してください。";
 "Please select a macOS recovery IPSW." = "macOSの復元IPSWを選択してください。";
-"This operating system is unsupported on your machine." = "このオペレーティングシステムはお使いのマシンには対応していません。";
+"This operating system is unsupported on your machine." = "このオペレーティングシステムはお使いのマシンでは対応していません。";
 "Select a file." = "ファイルを選択してください。";
 "Linux Settings" = "Linux設定";
 "Kernel Image" = "カーネルイメージ";
@@ -317,10 +332,6 @@
 // VMConfigAppleDriveCreateView.swift
 "Removable" = "リムーバブル";
 "If checked, the drive image will be stored with the VM." = "チェックを入れると、ドライブイメージが仮想マシンに保存されます。";
-"Size" = "サイズ";
-"The amount of storage to allocate for this image. An empty file of this size will be stored with the VM." = "このディスクのために確保するストレージ領域です。このサイズの空のファイルが仮想マシンに保存されます。";
-"GB" = "GB";
-"MB" = "MB";
 
 // VMConfigAppleDriveDetailsView.swift
 "Name" = "名前";
@@ -345,8 +356,20 @@
 "This directory is already being shared." = "このディレクトリはすでに共有されています。";
 "Add read only" = "読み出しのみを追加";
 
+// VMConfigAppleSharingView.swift
+"Shared directories in macOS VMs are only available in macOS 13 and later." = "macOS仮想マシンの共有ディレクトリはmacOS 13以降でのみ使用できます。";
+
 // VMConfigAppleSystemView.swift
 "CPU Cores" = "CPUコア数";
+
+// VMConfigNetworkPortForwardView.swift
+"Protocol" = "プロトコル";
+"Guest Address" = "ゲストアドレス";
+"Guest Port" = "ゲストポート";
+"Host Address" = "ホストアドレス";
+"Host Port" = "ホストポート";
+"Edit…" = "編集…";
+"New…" = "新規…";
 
 // VMConfigAppleVirtualizationView.swift
 "Enable Balloon Device" = "バルーンデバイスを有効にする";
@@ -362,7 +385,6 @@
 // VMDrivesSettingsView.swift
 "Move Up" = "上に移動";
 "Move Down" = "下に移動";
-"New…" = "新規…";
 "Add a new drive." = "新規ドライブを追加します。";
 "Import…" = "読み込む…";
 "Select an existing disk image." = "既存のディスクイメージを選択します。";
@@ -404,8 +426,14 @@
 // FileBrowseField.swift
 "Path" = "パス";
 
+// RAMSlider.swift
+"Size" = "サイズ";
+"MB" = "MB";
+
 // SizeTextField.swift
 "The amount of storage to allocate for this image. Ignored if importing an image. If this is a raw image, then an empty file of this size will be stored with the VM. Otherwise, the disk image will dynamically expand up to this size." = "このイメージに割り当てるストレージ領域です。イメージを読み込む場合は無視されます。生イメージの場合、このサイズの空のファイルが仮想マシンに保存されます。そうでない場合、ディスクイメージはこのサイズまで動的に拡張されます。";
+"The amount of storage to allocate for this image. An empty file of this size will be stored with the VM." = "このディスクのために確保するストレージ領域です。このサイズの空のファイルが仮想マシンに保存されます。";
+"GB" = "GB";
 
 // VMCardView.swift
 "Run" = "実行";
@@ -471,9 +499,9 @@
 
 // VMConfigInputView.swift
 "If enabled, the default input devices will be emulated on the USB bus." = "有効にすると、デフォルトの入力デバイスがUSBバス上でエミュレートされます。";
-"USB Support" = "USBサポート";
+"USB Support" = "USB対応";
 "USB Sharing" = "USB共有";
-"USB sharing not supported in this build of UTM." = "このビルドのUTMではUSB共有に対応していません。";
+"USB sharing not supported in this build of UTM." = "USB共有はこのビルドのUTMでは対応していません。";
 "Share USB devices from host" = "ホストからUSBデバイスを共有";
 "Maximum Shared USB Devices" = "最大共有USBデバイス数";
 "Additional Settings" = "その他の設定";
@@ -489,19 +517,12 @@
 "Isolate Guest from Host" = "ゲストをホストから隔離";
 "Guest Network" = "ゲストネットワーク";
 "Guest Network (IPv6)" = "ゲストネットワーク（IPv6）";
-"Host Address" = "ホストアドレス";
 "Host Address (IPv6)" = "ホストアドレス（IPv6）";
 "DHCP Start" = "DHCP割当先頭アドレス";
 "DHCP Domain Name" = "DHCPドメイン名";
 "DNS Server" = "DNSサーバ";
 "DNS Server (IPv6)" = "DNSサーバ（IPv6）";
 "DNS Search Domains" = "DNS検索ドメイン";
-
-// VMConfigPortForwardForm.swift
-"Protocol" = "プロトコル";
-"Guest Address" = "ゲストアドレス";
-"Guest Port" = "ゲストポート";
-"Host Port" = "ホストポート";
 
 // VMConfigQEMUView.swift
 "Logging" = "ログ";
@@ -562,7 +583,7 @@
 "This change will reset all settings" = "この変更により、すべての設定をリセットされます";
 "Are you sure you want to reset this VM? Any unsaved changes will be lost." = "この仮想マシンをリセットしてもよろしいですか? 保存されていない変更内容は失われます。";
 "Architecture" = "アーキテクチャ";
-"The selected architecture is unsupported in this version of UTM." = "このバージョンのUTMは、選択されたアーキテクチャに対応していません。";
+"The selected architecture is unsupported in this version of UTM." = "選択されたアーキテクチャはこのバージョンのUTMでは対応していません。";
 "Hide Unused…" = "未使用を非表示…";
 "Show All…" = "すべてを表示…";
 "Do you want to duplicate this VM and all its data?" = "この仮想マシン、およびそのデータをすべて複製しますか?";
@@ -571,7 +592,6 @@
 "Do you want to force stop this VM and lose all unsaved data?" = "この仮想マシンを強制停止しますか? 保存されていないデータは失われます。";
 "Stop" = "停止";
 "Do you want to move this VM to another location? This will copy the data to the new location, delete the data from the original location, and then create a shortcut." = "この仮想マシンを別の場所に移動しますか? この操作により、データを新しい場所にコピーし、元の場所のデータを削除した後、ショートカットが作成されます。";
-"Confirm" = "確定";
 
 // VMContextMenuModifier.swift
 "Show in Finder" = "Finderに表示";
@@ -584,7 +604,6 @@
 "Boot into recovery mode." = "復旧モードで起動します。";
 "Run without saving changes" = "変更内容を保存せずに実行";
 "Run the VM in the foreground, without saving data changes to disk." = "データの変更内容をディスクに保存せずに、仮想マシンをフォアグラウンドで実行します。";
-"Install Windows Guest Tools…" = "Windowsゲストツールをインストール…";
 "Download and mount the guest tools for Windows." = "Windows用ゲストツールをダウンロードし、マウントします。";
 "Share…" = "共有…";
 "Share a copy of this VM and all its data." = "この仮想マシン、およびそのデータのコピーをすべて共有します。";
