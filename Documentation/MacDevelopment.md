@@ -5,11 +5,14 @@ Because UTM is a sand-boxed Mac app, there are a few extra steps needed for a pr
 ## Getting the Source
 
 Make sure you perform a recursive clone to get all the submodules:
-```
+```sh
 git clone --recursive https://github.com/utmapp/UTM.git
 ```
 
-Alternatively, run `git submodule update --init --recursive` after cloning if you did not do a recursive clone.
+Alternatively, run the following after cloning if you did not do a recursive clone.
+```sh
+git submodule update --init --recursive
+```
 
 ## Dependencies
 
@@ -21,15 +24,28 @@ If you want to build the dependencies yourself, it is highly recommended that yo
 
 1. Install Xcode command line and [Homebrew][1]
 2. Install the following build prerequisites
-    `brew install bison pkg-config gettext glib-utils libgpg-error nasm meson`
-    `pip3 install six pyparsing`
-   Make sure to add `bison` to your `$PATH` environment variable!
-	`export PATH=/usr/local/opt/bison/bin:/opt/homebrew/opt/bison/bin:$PATH`
-3. Run `./scripts/build_dependencies.sh -p macos -a ARCH` where `ARCH` is either `arm64` or `x86_64`.
+    ```sh
+    brew install bison pkg-config gettext glib-utils libgpg-error nasm meson
+    ```
+    
+    ```sh
+    pip3 install six pyparsing
+    ```
+    
+    Make sure to add `bison` to your `$PATH` environment variable!
+    
+    ```sh
+    export PATH=/usr/local/opt/bison/bin:/opt/homebrew/opt/bison/bin:$PATH
+    ```
+3. Run
+    ```sh
+    ./scripts/build_dependencies.sh -p macos -a ARCH
+    ```
+    where `ARCH` is either `arm64` or `x86_64`.
 
 If you want to build universal binaries, you need to run `build_dependencies.sh` for both `arm64` and `x86_64` and then run
 
-```
+```sh
 ./scripts/pack_dependencies.sh . macos arm64 x86_64
 ```
 
@@ -41,7 +57,7 @@ If you are developing QEMU and wish to pass in a custom path to QEMU, you can us
 
 You can build UTM with the script:
 
-```
+```sh
 ./scripts/build_utm.sh -t TEAMID -p macos -a ARCH -o /path/to/output/directory
 ```
 
@@ -55,7 +71,7 @@ Artifacts built with `build_utm.sh` (includes GitHub Actions artifacts) must be 
 
 #### Unsigned packages
 
-```
+```sh
 ./scripts/package_mac.sh unsigned /path/to/UTM.xcarchive /path/to/output
 ```
 
@@ -63,7 +79,7 @@ This builds `UTM.dmg` in `/path/to/output` which can be installed to `/Applicati
 
 #### Signed packages
 
-```
+```sh
 ./scripts/package_mac.sh developer-id /path/to/UTM.xcarchive /path/to/output TEAM_ID PROFILE_UUID HELPER_PROFILE_UUID LAUNCHER_PROFILE_UUID
 ```
 
@@ -73,7 +89,7 @@ Once properly signed, you can ask Apple to notarize the DMG.
 
 #### Mac App Store
 
-```
+```sh
 ./scripts/package_mac.sh app-store /path/to/UTM.xcarchive /path/to/output TEAM_ID PROFILE_UUID HELPER_PROFILE_UUID LAUNCHER_PROFILE_UUID
 ```
 
