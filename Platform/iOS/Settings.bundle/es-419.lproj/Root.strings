@@ -1,4 +1,7 @@
 /* (No Comment) */
+"About" = "Acerca de";
+
+/* (No Comment) */
 "Apple Pencil Input" = "Entrada de Apple Pencil";
 
 /* (No Comment) */
@@ -14,6 +17,9 @@
 "Backspace" = "Retroceso";
 
 /* (No Comment) */
+"Build" = "Compilación";
+
+/* (No Comment) */
 "Caps" = "Mayús";
 
 /* (No Comment) */
@@ -26,7 +32,13 @@
 "Cursor" = "Cursor";
 
 /* (No Comment) */
-"D-DOWN" = "";
+"Cursor - Drag Speed" = "Cursor - Velocidad de arrastre";
+
+/* (No Comment) */
+"Cursor - Scroll Wheel" = "Cursor - Rueda de desplazamiento";
+
+/* (No Comment) */
+"Disable screen dimming when idle" = "Deshabilitar la atenuación de la pantalla cuando esté inactivo";
 
 /* (No Comment) */
 "Disabled" = "Deshabilitado";
@@ -36,6 +48,18 @@
 
 /* (No Comment) */
 "Drag cursor" = "Arrastre el cursor";
+
+/* (No Comment) */
+"Devices" = "Dispositivos";
+
+/* (No Comment) */
+"Do not show prompt when USB device is plugged in" = "No alertar cuando un dispositivo USB se conecte";
+
+/* (No Comment) */
+"Do not save VM screenshot to disk" = "No guardar la captura de pantalla de la VM en el disco";
+
+/* (No Comment) */
+"Enable JitStreamer Attach" = "Habilitar el complemento de JitStreamer";
 
 /* (No Comment) */
 "Enabled" = "Habilitado";
@@ -57,6 +81,15 @@
 
 /* A single strings file, whose title is specified in your preferences schema. The strings files provide the localized content to display to the user for each of your preferences. */
 "Group" = "Grupo";
+
+/* (No Comment) */
+"Idle" = "Inactividad";
+
+/* (No Comment) */
+"Invert Scroll" = "Invertir desplazamiento";
+
+/* (No Comment) */
+"JitStreamer IP Address" = "Dirección IP de JitStreamer:";
 
 /* (No Comment) */
 "Left" = "Izquierda";
@@ -90,6 +123,9 @@
 
 /* (No Comment) */
 "none given" = "Nada";
+
+/* (No Comment) */
+"License" = "Licencia";
 
 /* (No Comment) */
 "Right" = "Derecha";
@@ -136,3 +172,5 @@
 /* (No Comment) */
 "Up" = "Arriba";
 
+/* (No Comment) */
+"Version" = "Versión";
