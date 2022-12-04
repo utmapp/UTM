@@ -462,6 +462,9 @@
 "Edit" = "Editar";
 
 /* No comment provided by engineer. */
+"Edit…" = "Editar...";
+
+/* No comment provided by engineer. */
 "Edit selected VM" = "Editar la VM seleccionada";
 
 /* VMDrivesSettingsView */
@@ -627,6 +630,9 @@
 /* No comment provided by engineer. */
 "Font Size" = "Tamaño de letra";
 
+/* VMDisplayQemuDisplayController */
+"Force kill" = "Matar a la fuerza";
+
 /* No comment provided by engineer. */
 "Force Multicore" = "Forzar multinúcleo";
 
@@ -641,6 +647,11 @@
 
 /* No comment provided by engineer. */
 "Force Disable CPU Flags" = "Forzar deshabilitado de argumentos de CPU";
+
+/* VMDisplayQemuDisplayController */
+"Force shut down" = "Forzar apagado";
+
+"Force kill the VM process with high risk of data corruption." = "Matar el proceso de la VM a la fuerza con alto riesgo de corromper los datos.";
 
 /* No comment provided by engineer. */
 "Full Graphics" = "Gráficos completos";
@@ -1233,6 +1244,9 @@
 /* VMDisplayAppleController */
 "Remove…" = "Eliminar…";
 
+/* VMDisplayQemuDisplayController */
+"Request power down" = "Solicitar apagado";
+
 /* No comment provided by engineer. */
 "Requires SPICE guest agent tools to be installed." = "Se requiere tener instalado las herramientas de agente invitado de SPICE.";
 
@@ -1339,6 +1353,9 @@
 /* No comment provided by engineer. */
 "Selected:" = "Seleccionado:";
 
+/* VMDisplayQemuDisplayController */
+"Sends power down request to the guest. This simulates pressing the power button on a PC." = "Enviar solicitud de apagado al invitado. Esto simula presionar el botón de apagado en una PC.";
+
 /* No comment provided by engineer. */
 "Serial" = "Serial";
 
@@ -1366,6 +1383,9 @@
 
 /* No comment provided by engineer. */
 "Shared Directory" = "Directorio compartido";
+
+/* VMConfigAppleSharingView */
+"Shared directories in macOS VMs are only available in macOS 13 and later." = "Los directorios compartidos en VMs de macOS sólo están disponibles en macOS 13 y posterior.";
 
 /* UTMQemuConstants */
 "Shared Network" = "Red compartida";
@@ -1492,6 +1512,15 @@
 
 /* No comment provided by engineer. */
 "Text Color" = "Color del texto";
+
+/* VMDisplayQemuDisplayController */
+"Tells the VM process to shut down with risk of data corruption. This simulates holding down the power button on a PC." = "Le dice al proceso de la VM de apagarse con riesgo de corromper los datos. Esto simula mantener presionado el botón de apagado en una PC:";
+
+/* SizeTextField */
+"The amount of storage to allocate for this image. Ignored if importing an image. If this is a raw image, then an empty file of this size will be stored with the VM. Otherwise, the disk image will dynamically expand up to this size." = "La cantidad de almacenamiento para asignar a esta imagen. Se ignora si la imagen es importada. Si es una imagen bruta, entonces se almacenará un archivo vacío de este tamaño con la VM. De otro modo, la imagen de disco se expandirá dinámicamente hasta este tamaño.";
+
+/* SizeTextField */
+"The amount of storage to allocate for this image. An empty file of this size will be stored with the VM." = "La cantidad de almacenamiento para asignar a esta imagen. Se almacenará un archivo vacío de este tamaño con la VM.";
 
 /* UTMConfiguration */
 "The backend for this configuration is not supported." = "El backend para esta configuración no está soportado.";
