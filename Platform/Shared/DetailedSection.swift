@@ -44,8 +44,11 @@ struct DetailedSection<Content>: View where Content: View {
 
 struct DetailedSection_Previews: PreviewProvider {
     static var previews: some View {
-        DetailedSection("Section", description: "Description") {
-            EmptyView()
+        Form {
+            DetailedSection("Section", description: "Description") {
+                EmptyView()
+            }
         }
+        .frame(width: 200)
     }
 }
