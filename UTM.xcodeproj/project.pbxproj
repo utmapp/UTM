@@ -265,6 +265,8 @@
 		84CF5DD4288DCE6400D01721 /* VMDisplayHostedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CF5DD2288DCE6400D01721 /* VMDisplayHostedView.swift */; };
 		84CF5DF3288E433F00D01721 /* SwiftUIVisualEffects in Frameworks */ = {isa = PBXBuildFile; productRef = 84CF5DF2288E433F00D01721 /* SwiftUIVisualEffects */; };
 		84CF5DF5288F558400D01721 /* VMToolbarDriveMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CF5DF4288F558400D01721 /* VMToolbarDriveMenuView.swift */; };
+		84E3A8F3293DB37E0024A740 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E3A8F2293DB37E0024A740 /* Main.swift */; };
+		84E3A8FB293DB7240024A740 /* utmctl in Embed CLI Tool */ = {isa = PBXBuildFile; fileRef = 84E3A8F0293DB37E0024A740 /* utmctl */; };
 		84E6F6FD289319AE00080EEF /* VMToolbarDisplayMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E6F6FC289319AE00080EEF /* VMToolbarDisplayMenuView.swift */; };
 		84E6F6FE289319AE00080EEF /* VMToolbarDisplayMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E6F6FC289319AE00080EEF /* VMToolbarDisplayMenuView.swift */; };
 		84F746B9276FF40900A20C87 /* VMDisplayAppleWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F746B8276FF40900A20C87 /* VMDisplayAppleWindowController.swift */; };
@@ -1301,6 +1303,13 @@
 			remoteGlobalIDString = 8401FD61269BE9C500265F0D;
 			remoteInfo = QEMULauncher;
 		};
+		84E3A8FC293DB7720024A740 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CE550BC1225947990063E575 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 84E3A8EF293DB37E0024A740;
+			remoteInfo = utmctl;
+		};
 		CE9A353226533A52005077CF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = CE550BC1225947990063E575 /* Project object */;
@@ -1318,6 +1327,27 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		84E3A8EE293DB37E0024A740 /* Copy Files */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			name = "Copy Files";
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+		84E3A8FA293DB70A0024A740 /* Embed CLI Tool */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 6;
+			files = (
+				84E3A8FB293DB7240024A740 /* utmctl in Embed CLI Tool */,
+			);
+			name = "Embed CLI Tool";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CE0B6E6D24AD66CE00FE012D /* Embed Libraries */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1732,6 +1762,11 @@
 		84CF5DD2288DCE6400D01721 /* VMDisplayHostedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayHostedView.swift; sourceTree = "<group>"; };
 		84CF5DF4288F558400D01721 /* VMToolbarDriveMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMToolbarDriveMenuView.swift; sourceTree = "<group>"; };
 		84E3A8EB293349370024A740 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/VMDisplayMetalViewInputAccessory.strings; sourceTree = "<group>"; };
+		84E3A8F0293DB37E0024A740 /* utmctl */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = utmctl; sourceTree = BUILT_PRODUCTS_DIR; };
+		84E3A8F2293DB37E0024A740 /* Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
+		84E3A8F7293DB3B60024A740 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		84E3A8F8293DB42B0024A740 /* utmctl.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = utmctl.entitlements; sourceTree = "<group>"; };
+		84E3A8F9293DB4D40024A740 /* utmctl-unsigned.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "utmctl-unsigned.entitlements"; sourceTree = "<group>"; };
 		84E6F6FC289319AE00080EEF /* VMToolbarDisplayMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMToolbarDisplayMenuView.swift; sourceTree = "<group>"; };
 		84F746B8276FF40900A20C87 /* VMDisplayAppleWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayAppleWindowController.swift; sourceTree = "<group>"; };
 		84F746BA276FF70700A20C87 /* VMDisplayQemuDisplayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayQemuDisplayController.swift; sourceTree = "<group>"; };
@@ -2282,6 +2317,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		84E3A8ED293DB37E0024A740 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CE2D932B24AD46670059923A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -2548,6 +2590,17 @@
 				CE6EDCDE241C4A6800A719DC /* UTMLegacyViewState.m */,
 			);
 			path = Legacy;
+			sourceTree = "<group>";
+		};
+		84E3A8F1293DB37E0024A740 /* utmctl */ = {
+			isa = PBXGroup;
+			children = (
+				84E3A8F8293DB42B0024A740 /* utmctl.entitlements */,
+				84E3A8F9293DB4D40024A740 /* utmctl-unsigned.entitlements */,
+				84E3A8F2293DB37E0024A740 /* Main.swift */,
+				84E3A8F7293DB3B60024A740 /* Info.plist */,
+			);
+			path = utmctl;
 			sourceTree = "<group>";
 		};
 		CE1BD9FA24F4825C0022A468 /* Display */ = {
@@ -3071,6 +3124,7 @@
 				CE6B240925F1F3CE0020D43E /* QEMULauncher */,
 				CE9A352E26533A51005077CF /* JailbreakInterposer */,
 				CE4698F824C8FBD9008C1BD6 /* Icons */,
+				84E3A8F1293DB37E0024A740 /* utmctl */,
 				CE550BCA225947990063E575 /* Products */,
 				CE2D63D622653C7300FC7E63 /* Frameworks */,
 			);
@@ -3086,6 +3140,7 @@
 				CEA45FB9263519B5002FA97D /* UTM SE.app */,
 				CE9A352D26533A51005077CF /* JailbreakInterposer.framework */,
 				8401FD62269BE9C500265F0D /* QEMULauncher.app */,
+				84E3A8F0293DB37E0024A740 /* utmctl */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -3332,6 +3387,23 @@
 			productReference = 8401FD62269BE9C500265F0D /* QEMULauncher.app */;
 			productType = "com.apple.product-type.application";
 		};
+		84E3A8EF293DB37E0024A740 /* utmctl */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 84E3A8F6293DB37E0024A740 /* Build configuration list for PBXNativeTarget "utmctl" */;
+			buildPhases = (
+				84E3A8EC293DB37E0024A740 /* Sources */,
+				84E3A8ED293DB37E0024A740 /* Frameworks */,
+				84E3A8EE293DB37E0024A740 /* Copy Files */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = utmctl;
+			productName = utmctl;
+			productReference = 84E3A8F0293DB37E0024A740 /* utmctl */;
+			productType = "com.apple.product-type.tool";
+		};
 		CE2D926824AD46670059923A /* iOS */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = CE2D93BB24AD46670059923A /* Build configuration list for PBXNativeTarget "iOS" */;
@@ -3370,10 +3442,12 @@
 				CE2D951A24AD48BE0059923A /* Resources */,
 				CE0B6E6D24AD66CE00FE012D /* Embed Libraries */,
 				CEBDA1E924D8BDDB0010B5EC /* Embed XPC Services */,
+				84E3A8FA293DB70A0024A740 /* Embed CLI Tool */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				84E3A8FD293DB7720024A740 /* PBXTargetDependency */,
 				85EC515C27CC74AA004A51DE /* PBXTargetDependency */,
 				85EC515E27CC74AA004A51DE /* PBXTargetDependency */,
 				CEBDA1E424D8BDDB0010B5EC /* PBXTargetDependency */,
@@ -3459,12 +3533,15 @@
 		CE550BC1225947990063E575 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1200;
+				LastSwiftUpdateCheck = 1410;
 				LastUpgradeCheck = 1320;
 				ORGANIZATIONNAME = osy;
 				TargetAttributes = {
 					8401FD61269BE9C500265F0D = {
 						CreatedOnToolsVersion = 12.4;
+					};
+					84E3A8EF293DB37E0024A740 = {
+						CreatedOnToolsVersion = 14.1;
 					};
 					CE2D926824AD46670059923A = {
 						LastSwiftMigration = 1200;
@@ -3519,6 +3596,7 @@
 				CEBDA1D924D8BDDA0010B5EC /* QEMUHelper */,
 				8401FD61269BE9C500265F0D /* QEMULauncher */,
 				CE9A352C26533A51005077CF /* JailbreakInterposer */,
+				84E3A8EF293DB37E0024A740 /* utmctl */,
 			);
 		};
 /* End PBXProject section */
@@ -3601,6 +3679,14 @@
 			files = (
 				8401FD72269BEB3000265F0D /* Bootstrap.c in Sources */,
 				8401FD71269BEB2B00265F0D /* main.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		84E3A8EC293DB37E0024A740 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				84E3A8F3293DB37E0024A740 /* Main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4503,6 +4589,11 @@
 			target = 8401FD61269BE9C500265F0D /* QEMULauncher */;
 			targetProxy = 8401FD7B269BECF200265F0D /* PBXContainerItemProxy */;
 		};
+		84E3A8FD293DB7720024A740 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 84E3A8EF293DB37E0024A740 /* utmctl */;
+			targetProxy = 84E3A8FC293DB7720024A740 /* PBXContainerItemProxy */;
+		};
 		85EC515C27CC74AA004A51DE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			productRef = 85EC515B27CC74AA004A51DE /* Logging */;
@@ -4701,6 +4792,47 @@
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+			};
+			name = Release;
+		};
+		84E3A8F4293DB37E0024A740 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CODE_SIGN_ENTITLEMENTS = "$(CLI_CODE_SIGN_ENTITLEMENTS)";
+				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_MAC:default=-)";
+				CODE_SIGN_STYLE = Manual;
+				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = "$(SRCROOT)/utmctl/Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).utmctl";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		84E3A8F5293DB37E0024A740 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CODE_SIGN_ENTITLEMENTS = "$(CLI_CODE_SIGN_ENTITLEMENTS)";
+				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_MAC:default=-)";
+				CODE_SIGN_STYLE = Manual;
+				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = "$(SRCROOT)/utmctl/Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).utmctl";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -5119,6 +5251,15 @@
 			buildConfigurations = (
 				8401FD6F269BE9C600265F0D /* Debug */,
 				8401FD70269BE9C600265F0D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		84E3A8F6293DB37E0024A740 /* Build configuration list for PBXNativeTarget "utmctl" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				84E3A8F4293DB37E0024A740 /* Debug */,
+				84E3A8F5293DB37E0024A740 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
