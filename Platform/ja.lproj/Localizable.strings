@@ -76,7 +76,7 @@
 "An invalid value of '%@' is used in the configuration file." = "構成ファイルで“%@”の無効な値が使用されています。";
 
 /* VMConfigSystemView */
-"Any unsaved changes will be lost." = "保存されていない変更は失われます。";
+"Any unsaved changes will be lost." = "保存されていない変更内容は失われます。";
 
 /* No comment provided by engineer. */
 "Application" = "アプリケーション";
@@ -385,7 +385,7 @@
 "Gesture and Cursor Settings" = "ジェスチャとカーソルの設定";
 
 /* UTMQemuManager */
-"Guest panic" = "ゲストがパニックを発生しました";
+"Guest panic" = "ゲストがパニックを発生させました";
 
 /* Configuration boot device */
 "Hard Disk" = "ハードディスク";
@@ -704,7 +704,7 @@
 "Resize display to window size automatically" = "ディスプレイサイズをウインドウサイズに自動的に合わせる";
 
 /* No comment provided by engineer. */
-"Resizing is experimental and could result in data loss. You are strongly encouraged to back-up this VM before proceeding. Would you like to resize to %@ GiB?" = "リサイズ機能は実験的なものであり、データを失う可能性があります。この作業を行う前に、このVMをバックアップすることを強くお勧めします。サイズを %@ GiB に変更しますか？";
+"Resizing is experimental and could result in data loss. You are strongly encouraged to back-up this VM before proceeding. Would you like to resize to %@ GiB?" = "サイズの変更は実験的であり、データが失われる可能性があります。この作業を行う前に、仮想マシンをバックアップしておくことを強く推奨します。サイズを%@ GiBに変更しますか?";
 
 /* UTMVirtualMachine */
 "Resuming" = "再開中";
@@ -970,7 +970,7 @@
 "USB sharing not supported in this build of UTM." = "USB共有はこのビルドのUTMでは対応していません。";
 
 /* No comment provided by engineer. */
-"Use Command+Option (⌘+⌥) for input capture/release" = "入力のキャプチャ/解放にCommand+Option（⌘+⌥）を使用";
+"Use Command+Option (⌘+⌥) for input capture/release" = "入力のキャプチャ/解放にCommand＋Option（⌘＋⌥）を使用";
 
 /* Welcome view */
 "User Guide" = "ユーザガイド";
@@ -1025,7 +1025,7 @@
 "Yes" = "はい";
 
 /* VMConfigSystemView */
-"Your device has %llu MB of memory and the estimated usage is %llu MB." = "お使いのデバイスのメモリは %1$llu MB ですが、この設定での推定使用量は %2$llu MB です。";
+"Your device has %llu MB of memory and the estimated usage is %llu MB." = "お使いのデバイスのメモリは%1$llu MBですが、この設定での推定使用量は%2$llu MBです。";
 
 /* VMConfigAppleBootView
    VMWizardOSMacView */
