@@ -1,2 +1,6 @@
+/* Privacy - Microphone Usage Description */
+"NSMicrophoneUsageDescription" = "マイクからの録音を行うには、どの仮想マシンであっても許可が必要です。";
+
 /* (No Comment) */
 "UTM virtual machine" = "UTM仮想マシン";
+
