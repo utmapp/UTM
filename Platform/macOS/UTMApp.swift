@@ -26,7 +26,11 @@ struct UTMApp: App {
                 .onAppear {
                     appDelegate.data = data
                     Task {
-                        try? await data.apiServer.start()
+                        do {
+                            try await data.apiServer.start()
+                        } catch {
+                            logger.error("Error starting API server: \(error)")
+                        }
                     }
                 }
                 .onReceive(.vmSessionError) { notification in
