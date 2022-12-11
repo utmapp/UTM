@@ -93,6 +93,7 @@ extension UTMAPI {
     
     /// Error codes
     enum APIError: Error, LocalizedError {
+        case serverNotFound
         case notConnected
         case invalidCommand
         case handlerNotFound
@@ -105,6 +106,7 @@ extension UTMAPI {
         
         var localizedDescription: String {
             switch self {
+            case .serverNotFound: return "Server not found."
             case .notConnected: return "Not connected to API server."
             case .invalidCommand: return "Invalid command."
             case .handlerNotFound: return "Command handler not found."

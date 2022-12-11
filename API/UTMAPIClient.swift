@@ -25,6 +25,11 @@ actor UTMAPIClient {
     /// The client socket when connected
     private var clientSocket: Socket?
     
+    /// True if the client socket is connected
+    var isConnected: Bool {
+        clientSocket != nil
+    }
+    
     init(connectPathUrl: URL) {
         self.connectPathUrl = connectPathUrl
     }
@@ -34,10 +39,17 @@ actor UTMAPIClient {
         guard clientSocket == nil else {
             return
         }
+        guard FileManager.default.isReadableFile(atPath: connectPathUrl.path) else {
+            throw UTMAPI.APIError.serverNotFound
+        }
         let address = UnixSocketAddress(path: FilePath(connectPathUrl.path))
         let socket = try await Socket(UnixStreamProtocol.stream)
-        try socket.fileDescriptor.closeIfThrows {
-            try socket.fileDescriptor.connect(to: address)
+        do {
+            try socket.fileDescriptor.closeIfThrows {
+                try socket.fileDescriptor.connect(to: address)
+            }
+        } catch Errno.connectionRefused {
+            throw UTMAPI.APIError.serverNotFound
         }
         logger.debug("[API Client] connected to server")
         clientSocket = socket

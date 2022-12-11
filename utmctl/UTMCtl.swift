@@ -15,6 +15,7 @@
 //
 
 import Foundation
+import AppKit
 import ArgumentParser
 import Logging
 
@@ -47,9 +48,30 @@ extension UTMAPICommand {
         logger.logLevel = environment.debug ? .debug : .info
         let socketUrl = environment.socketPath?.asFileURL ?? defaultSocketUrl
         let client = UTMAPIClient(connectPathUrl: socketUrl)
-        try await client.connect()
+        try await connectClient(client)
         try await run(with: client)
         try await client.disconnect()
+    }
+    
+    /// Attempt to connect to the server and spawn UTM if it is not running
+    /// - Parameter client: API client
+    private func connectClient(_ client: UTMAPIClient) async throws {
+        do {
+            try await client.connect()
+        } catch UTMAPI.APIError.serverNotFound {
+            logger.info("Launching UTM...")
+            let config = NSWorkspace.OpenConfiguration()
+            config.arguments = ["cli-request"]
+            try await NSWorkspace.shared.openApplication(at: utmAppUrl, configuration: config)
+            repeat {
+                do {
+                    try await client.connect()
+                } catch  UTMAPI.APIError.serverNotFound {
+                    // try again after a cooldown
+                    try await Task.sleep(nanoseconds: 1 * NSEC_PER_SEC)
+                }
+            } while await !client.isConnected
+        }
     }
     
     /// Socket either in app group or app sandbox
@@ -68,6 +90,17 @@ extension UTMAPICommand {
             }
         }
         return parentURL.appendingPathComponent("api.sock")
+    }
+    
+    /// Find the path to UTM.app
+    private var utmAppUrl: URL {
+        if let executableURL = Bundle.main.executableURL {
+            let utmURL = executableURL.deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+            if utmURL.lastPathComponent == "UTM.app" {
+                return utmURL
+            }
+        }
+        return URL(fileURLWithPath: "/Applications/UTM.app")
     }
     
     /// Default implementation of run command
