@@ -26,7 +26,7 @@
 "Advanced: Bypass configuration and manually specify arguments" = "高级：跳过配置并手动指定参数";
 
 /* VMConfigSystemView */
-"Allocating too much memory will crash the VM. Your device has %llu MB of memory and the estimated usage is %llu MB." = "分配过多的内存会使得虚拟机崩溃。你的设备拥有 %1$llu MB 的内存，大约使用了 %2$llu MB。";
+"Allocating too much memory will crash the VM. Your device has %llu MB of memory and the estimated usage is %llu MB." = "分配过多的内存会使虚拟机崩溃。你的设备拥有 %1$llu MB 的内存，估计使用量为 %2$llu MB。";
 
 /* No comment provided by engineer. */
 "Always use native (HiDPI) resolution" = "始终使用本机（HiDPI）分辨率";
@@ -299,7 +299,7 @@
 "Force Multicore" = "强制多核";
 
 /* No comment provided by engineer. */
-"Force slower emulation even when hypervisor is available" = "即使虚拟化可用，也强制较慢速模拟";
+"Force slower emulation even when hypervisor is available" = "即使虚拟化可用，也强制较慢速的模拟";
 
 /* No comment provided by engineer. */
 "Full Graphics" = "完整图形";
@@ -413,7 +413,7 @@
 "Isolate Guest from Host" = "将客户机与主机隔离";
 
 /* No comment provided by engineer. */
-"JIT Cache" = "JIT缓存";
+"JIT Cache" = "JIT 缓存";
 
 /* VMConfigSystemViewController */
 "JIT cache size cannot be larger than 2GB." = "JIT 缓存大小不能大于 2GB。";
@@ -422,7 +422,7 @@
 "JIT cache size too small." = "JIT 缓存过小。";
 
 /* No comment provided by engineer. */
-"Legacy" = "旧式";
+"Legacy" = "旧版";
 
 /* No comment provided by engineer. */
 "Legacy (PS/2) Mode" = "旧的（PS/2）模式";
@@ -750,7 +750,7 @@
 "Welcome to UTM" = "欢迎使用 UTM";
 
 /* Startup message */
-"Welcome to UTM! Due to a bug in iOS, if you force kill this app, the system will be unstable and you cannot launch UTM again until you reboot. The recommended way to terminate this app is the button on the top left." = "欢迎来到 UTM！由于 iOS 中有一个 bug，使得若强行终止此应用，系统将变得不稳定，必须重启系统才能再次打开 UTM。建议通过左上角的按钮来终止此应用。";
+"Welcome to UTM! Due to a bug in iOS, if you force kill this app, the system will be unstable and you cannot launch UTM again until you reboot. The recommended way to terminate this app is the button on the top left." = "欢迎使用 UTM！由于 iOS 中有一个 bug，使得若强行终止此应用，系统将变得不稳定，必须重启系统才能再次打开 UTM。建议通过左上角的按钮来终止此应用。";
 
 /* VMDisplayMetalWindowController */
 "Would you like to connect '(usbDevice.name ?? usbDevice.description)' to this virtual machine?" = "要将'(usbDevice.name ?? usbDevice.description)'连接到此虚拟机吗？";
@@ -817,7 +817,7 @@
 "Create a New Virtual Machine" = "新建一个虚拟机";
 
 /* No comment provided by engineer. */
-"User Guide" = "使用指导 ";
+"User Guide" = "使用指南";
 
 /* No comment provided by engineer. */
 "Browse UTM Gallery" = "访问 UTM 库";
@@ -898,7 +898,7 @@
 "Boot from kernel image" = "从内核映像启动";
 "If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO." = "若设置此选项，将直接从 raw 内核映像和 initrd 引导。否则从受支持的 ISO 引导。";
 "Linux kernel (required)" = "Linux 内核（必选）";
-"Linux initial ramdisk:" = "Linux 初始 虚拟内存盘（initrd）：";
+"Linux initial ramdisk:" = "Linux 初始虚拟内存盘：";
 "Linux Root FS Image:" = "Linux Root FS 映像：";
 "Boot Arguments" = "启动参数";
 "Download Ubuntu Server for ARM" = "下载 Ubuntu Server for ARM";
