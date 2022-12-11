@@ -74,11 +74,20 @@ extension UTMAPICommand {
     /// - Parameter client: Connected client
     func run(with client: UTMAPIClient) async throws {
         let request = createRequest()
-        let response = try await client.process(request: request)
-        if environment.machineReadable {
-            printJson(for: response)
-        } else {
-            printResponse(response)
+        do {
+            let response = try await client.process(request: request)
+            if environment.machineReadable {
+                printJson(for: response)
+            } else {
+                printResponse(response)
+            }
+        } catch {
+            if environment.machineReadable {
+                let jsonError = UTMAPI.ErrorResponse(error.localizedDescription)
+                printJson(for: jsonError)
+            } else {
+                throw error
+            }
         }
     }
     
@@ -90,7 +99,7 @@ extension UTMAPICommand {
     
     /// Prints the JSON response
     /// - Parameter response: Response from server
-    func printJson(for response: Request.Response) {
+    func printJson(for response: any UTMAPIResponse) {
         let data = try! UTMAPI.encode(response)
         let json = String(data: data, encoding: .utf8)!
         print(json)
@@ -99,7 +108,7 @@ extension UTMAPICommand {
     /// Default placeholder for printResponse
     /// - Parameter response: Response to print
     func printResponse(_ response: Request.Response) {
-        fatalError("You must implement printResponse() if you use the default run(with:)!")
+        // default no response is printed
     }
 }
 
@@ -110,6 +119,18 @@ extension UTMCtl {
         )
         
         @OptionGroup var environment: EnvironmentOptions
+        
+        func createRequest() -> UTMAPI.ListRequest {
+            UTMAPI.ListRequest()
+        }
+        
+        func printResponse(_ response: UTMAPI.ListResponse) {
+            print("UUID                                 Status   Name")
+            for entry in response.entries {
+                let status = entry.status.rawValue.padding(toLength: 8, withPad: " ", startingAt: 0)
+                print("\(entry.uuid) \(status) \(entry.name)")
+            }
+        }
     }
 }
 
@@ -122,6 +143,16 @@ extension UTMCtl {
         @OptionGroup var environment: EnvironmentOptions
         
         @OptionGroup var identifer: VMIdentifier
+        
+        func createRequest() -> UTMAPI.StatusRequest {
+            var request = UTMAPI.StatusRequest()
+            request.identifier = identifer.identifier
+            return request
+        }
+        
+        func printResponse(_ response: UTMAPI.StatusResponse) {
+            print(response.status)
+        }
     }
 }
 
@@ -134,6 +165,21 @@ extension UTMCtl {
         @OptionGroup var environment: EnvironmentOptions
         
         @OptionGroup var identifer: VMIdentifier
+        
+        @Flag(name: .shortAndLong, help: "Attach to the first serial port after start.")
+        var attach: Bool = false
+        
+        func run(with client: UTMAPIClient) async throws {
+            var request = UTMAPI.StartRequest()
+            request.identifier = identifer.identifier
+            _ = try await client.process(request: request)
+            if attach {
+                var attachCommand = Attach()
+                attachCommand.environment = environment
+                attachCommand.identifer = identifer
+                try await attachCommand.run(with: client)
+            }
+        }
     }
 }
 
@@ -146,6 +192,16 @@ extension UTMCtl {
         @OptionGroup var environment: EnvironmentOptions
         
         @OptionGroup var identifer: VMIdentifier
+        
+        @Flag(name: .shortAndLong, help: "Save the VM state before suspending.")
+        var saveState: Bool = false
+        
+        func createRequest() -> UTMAPI.SuspendRequest {
+            var request = UTMAPI.SuspendRequest()
+            request.identifier = identifer.identifier
+            request.shouldSaveState = saveState
+            return request
+        }
     }
 }
 
@@ -187,6 +243,19 @@ extension UTMCtl {
         @OptionGroup var identifer: VMIdentifier
         
         @OptionGroup var style: Style
+        
+        func createRequest() -> UTMAPI.StopRequest {
+            var request = UTMAPI.StopRequest()
+            request.identifier = identifer.identifier
+            if style.request {
+                request.type = .request
+            } else if style.force {
+                request.type = .force
+            } else if style.kill {
+                request.type = .kill
+            }
+            return request
+        }
     }
 }
 
@@ -199,6 +268,27 @@ extension UTMCtl {
         @OptionGroup var environment: EnvironmentOptions
         
         @OptionGroup var identifer: VMIdentifier
+        
+        @Option(help: "Index of the serial device to attach to.")
+        var index: Int?
+        
+        init() {
+            self.environment = EnvironmentOptions()
+            self.identifer = VMIdentifier()
+            self.index = nil
+        }
+        
+        func createRequest() -> UTMAPI.SerialRequest {
+            var request = UTMAPI.SerialRequest()
+            request.identifier = identifer.identifier
+            request.index = index
+            return request
+        }
+        
+        func printResponse(_ response: UTMAPI.SerialResponse) {
+            // TODO: spawn a terminal emulator
+            print(response.address)
+        }
     }
 }
 

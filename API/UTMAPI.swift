@@ -92,13 +92,16 @@ extension UTMAPI {
     }
     
     /// Error codes
-    enum APIError: Error {
+    enum APIError: Error, LocalizedError {
         case notConnected
         case invalidCommand
         case handlerNotFound
         case errorResponse(description: String)
         case requestFormatMismatch
         case responseFormatMismatch
+        case identifierNotFound
+        case operationNotAvailable
+        case deviceNotFound
         
         var localizedDescription: String {
             switch self {
@@ -108,6 +111,9 @@ extension UTMAPI {
             case .errorResponse(let description): return description
             case .requestFormatMismatch: return "Request format mismatch."
             case .responseFormatMismatch: return "Response format mismatch."
+            case .identifierNotFound: return "Identifier not found."
+            case .operationNotAvailable: return "Operation not available."
+            case .deviceNotFound: return "Device not found."
             }
         }
     }
@@ -161,14 +167,14 @@ extension UTMAPI {
 // MARK: - List command
 extension UTMAPI {
     /// List request
-    class ListRequest: UTMAPIRequest {
+    struct ListRequest: UTMAPIRequest {
         typealias Response = ListResponse
         
         private(set) var command: Command = .list
     }
     
     /// List response
-    class ListResponse: UTMAPIResponse {
+    struct ListResponse: UTMAPIResponse {
         typealias Request = ListRequest
         
         private(set) var command: Command = .list
@@ -192,7 +198,7 @@ extension UTMAPI {
 
 // MARK: - Status command
 extension UTMAPI {
-    class StatusRequest: UTMAPIRequest {
+    struct StatusRequest: UTMAPIRequest {
         typealias Response = StatusResponse
         
         private(set) var command: Command = .status
@@ -201,7 +207,7 @@ extension UTMAPI {
         var identifier: String = ""
     }
     
-    class StatusResponse: UTMAPIResponse {
+    struct StatusResponse: UTMAPIResponse {
         typealias Request = StatusRequest
         
         private(set) var command: Command = .status
@@ -213,7 +219,7 @@ extension UTMAPI {
 
 // MARK: - Start command
 extension UTMAPI {
-    class StartRequest: UTMAPIRequest {
+    struct StartRequest: UTMAPIRequest {
         typealias Response = StartResponse
         
         private(set) var command: Command = .start
@@ -222,7 +228,7 @@ extension UTMAPI {
         var identifier: String = ""
     }
     
-    class StartResponse: UTMAPIResponse {
+    struct StartResponse: UTMAPIResponse {
         typealias Request = StartRequest
         
         private(set) var command: Command = .start
@@ -231,16 +237,19 @@ extension UTMAPI {
 
 // MARK: - Suspend command
 extension UTMAPI {
-    class SuspendRequest: UTMAPIRequest {
+    struct SuspendRequest: UTMAPIRequest {
         typealias Response = SuspendResponse
         
         private(set) var command: Command = .suspend
         
         /// Either a UUID string (preferred) or the user specified name
         var identifier: String = ""
+        
+        /// If true, the VM state should be saved
+        var shouldSaveState: Bool = false
     }
     
-    class SuspendResponse: UTMAPIResponse {
+    struct SuspendResponse: UTMAPIResponse {
         typealias Request = SuspendRequest
         
         private(set) var command: Command = .suspend
@@ -255,7 +264,7 @@ extension UTMAPI {
         case request
     }
     
-    class StopRequest: UTMAPIRequest {
+    struct StopRequest: UTMAPIRequest {
         typealias Response = StopResponse
         
         private(set) var command: Command = .stop
@@ -267,7 +276,7 @@ extension UTMAPI {
         var type: VMStopType = .force
     }
     
-    class StopResponse: UTMAPIResponse {
+    struct StopResponse: UTMAPIResponse {
         typealias Request = StopRequest
         
         private(set) var command: Command = .stop
@@ -282,7 +291,7 @@ extension UTMAPI {
         case tcp(address: String, port: Int)
     }
     
-    class SerialRequest: UTMAPIRequest {
+    struct SerialRequest: UTMAPIRequest {
         typealias Response = SerialResponse
         
         private(set) var command: Command = .serial
@@ -294,7 +303,7 @@ extension UTMAPI {
         var index: Int?
     }
     
-    class SerialResponse: UTMAPIResponse {
+    struct SerialResponse: UTMAPIResponse {
         typealias Request = SerialRequest
         
         private(set) var command: Command = .serial
