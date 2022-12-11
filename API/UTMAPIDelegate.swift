@@ -1,5 +1,5 @@
 //
-// Copyright © 2021 osy. All rights reserved.
+// Copyright © 2022 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,20 +14,9 @@
 // limitations under the License.
 //
 
-#import "UTMVirtualMachine.h"
-#import "UTMSpiceIODelegate.h"
+import Foundation
 
-NS_ASSUME_NONNULL_BEGIN
-
-@interface UTMQemuVirtualMachine : UTMVirtualMachine
-
-@property (nonatomic, weak, nullable) id<UTMSpiceIODelegate> ioDelegate;
-
-/// Set to true to request guest tools install.
-///
-/// This property is observable and must only be accessed on the main thread.
-@property (nonatomic) BOOL isGuestToolsInstallRequested;
-
-@end
-
-NS_ASSUME_NONNULL_END
+/// Implemented by UTM to handle API requests
+protocol UTMAPIDelegate: AnyObject {
+    func handleAPIRequest(_ request: any UTMAPIRequest) async throws -> any UTMAPIResponse
+}

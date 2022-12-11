@@ -567,12 +567,10 @@ NSString *const kSuspendSnapshotName = @"suspend";
     });
 }
 
-- (void)requestGuestPowerDown {
+- (void)vmGuestPowerDownWithCompletion:(void (^)(NSError * _Nullable))completion {
     dispatch_async(self.vmOperations, ^{
         [self.qemu qemuPowerDownWithCompletion:^(NSError *err) {
-            if (err) {
-                UTMLog(@"Error requesting power down: %@", err.localizedDescription);
-            }
+            completion(err);
         }];
     });
 }

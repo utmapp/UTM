@@ -83,6 +83,13 @@ class UTMData: ObservableObject {
     @State var vmPrimaryWindowState: VMWindowState?
     #endif
     
+    #if os(macOS)
+    /// Handle UTM operations from clients
+    private(set) lazy var apiServer: UTMAPIServer = {
+        return UTMAPIServer(listenPathUrl: defaultSocketUrl, delegate: self)
+    }()
+    #endif
+    
     /// Shortcut for accessing FileManager.default
     private var fileManager: FileManager {
         FileManager.default

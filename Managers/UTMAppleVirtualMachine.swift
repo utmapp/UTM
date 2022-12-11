@@ -268,6 +268,19 @@ import Virtualization
         }
     }
     
+    override func vmGuestPowerDown() async throws {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            vmQueue.async {
+                do {
+                    try self.apple.requestStop()
+                    continuation.resume()
+                } catch {
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+    
     override func updateScreenshot() {
         screenshot = screenshotDelegate?.screenshot
     }

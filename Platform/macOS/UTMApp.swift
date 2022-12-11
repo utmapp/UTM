@@ -25,6 +25,9 @@ struct UTMApp: App {
             ContentView().environmentObject(data)
                 .onAppear {
                     appDelegate.data = data
+                    Task {
+                        try? await data.apiServer.start()
+                    }
                 }
                 .onReceive(.vmSessionError) { notification in
                     if let message = notification.userInfo?["Message"] as? String {

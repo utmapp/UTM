@@ -221,6 +221,15 @@ NS_ASSUME_NONNULL_BEGIN
 /// @returns Any error thrown will be non-null passed to the `completion` handler
 - (void)vmResumeWithCompletion:(void (^)(NSError * _Nullable))completion;
 
+/// Sends power off request to the guest
+- (void)requestGuestPowerDown;
+
+/// Request power down from the guest
+///
+/// @param completion Handler always will be called on completion
+/// @returns Any error thrown will be non-null passed to the `completion` handler
+- (void)vmGuestPowerDownWithCompletion:(void (^)(NSError * _Nullable))completion;
+
 @end
 
 NS_ASSUME_NONNULL_END
