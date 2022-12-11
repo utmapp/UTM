@@ -110,21 +110,26 @@ if [ "$PLATFORM" == "macos" ]; then
     UTM_ENTITLEMENTS="/tmp/utm.$$.entitlements"
     LAUNCHER_ENTITLEMENTS="/tmp/launcher.$$.entitlements"
     HELPER_ENTITLEMENTS="/tmp/helper.$$.entitlements"
+    CLI_ENTITLEMENTS="/tmp/cli.$$.entitlements"
     cp "$BASEDIR/../Platform/macOS/macOS.entitlements" "$UTM_ENTITLEMENTS"
     cp "$BASEDIR/../QEMULauncher/QEMULauncher.entitlements" "$LAUNCHER_ENTITLEMENTS"
     cp "$BASEDIR/../QEMUHelper/QEMUHelper.entitlements" "$HELPER_ENTITLEMENTS"
+    cp "$BASEDIR/../utmctl/utmctl.entitlements" "$CLI_ENTITLEMENTS"
     if [ ! -z "$TEAM_IDENTIFIER" ]; then
         TEAM_ID_PREFIX="${TEAM_IDENTIFIER}."
     fi
 
     /usr/libexec/PlistBuddy -c "Set :com.apple.security.application-groups:0 ${TEAM_ID_PREFIX}${PRODUCT_BUNDLE_PREFIX}.UTM" "$UTM_ENTITLEMENTS"
     /usr/libexec/PlistBuddy -c "Set :com.apple.security.application-groups:0 ${TEAM_ID_PREFIX}${PRODUCT_BUNDLE_PREFIX}.UTM" "$HELPER_ENTITLEMENTS"
+    /usr/libexec/PlistBuddy -c "Set :com.apple.security.application-groups:0 ${TEAM_ID_PREFIX}${PRODUCT_BUNDLE_PREFIX}.UTM" "$CLI_ENTITLEMENTS"
     codesign --force --sign - --entitlements "$LAUNCHER_ENTITLEMENTS" --timestamp=none --options runtime "$BUILT_PATH/Contents/XPCServices/QEMUHelper.xpc/Contents/MacOS/QEMULauncher.app/Contents/MacOS/QEMULauncher"
     codesign --force --sign - --entitlements "$HELPER_ENTITLEMENTS" --timestamp=none --options runtime "$BUILT_PATH/Contents/XPCServices/QEMUHelper.xpc/Contents/MacOS/QEMUHelper"
+    codesign --force --sign - --entitlements "$CLI_ENTITLEMENTS" --timestamp=none --options runtime "$BUILT_PATH/Contents/MacOS/utmctl"
     codesign --force --sign - --entitlements "$UTM_ENTITLEMENTS" --timestamp=none --options runtime "$BUILT_PATH/Contents/MacOS/UTM"
     rm "$UTM_ENTITLEMENTS"
     rm "$LAUNCHER_ENTITLEMENTS"
     rm "$HELPER_ENTITLEMENTS"
+    rm "$CLI_ENTITLEMENTS"
 else
     # always build with iOS entitlements, package.sh can strip it later
     codesign --force --sign - --entitlements "$BASEDIR/../Platform/iOS/iOS.entitlements" --timestamp=none "$BUILT_PATH"
