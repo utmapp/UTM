@@ -319,6 +319,15 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
     }];
 }
 
+
+- (void)requestGuestPowerDown {
+    [self vmGuestPowerDownWithCompletion:^(NSError *error) {
+        if (error) {
+            UTMLog(@"Error requesting power down: %@", error.localizedDescription);
+        }
+    }];
+}
+
 #define notImplemented @throw [NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"%s must be overridden in a subclass.", __PRETTY_FUNCTION__] userInfo:nil]
 
 - (void)accessShortcutWithCompletion:(void (^)(NSError * _Nullable))completion {
@@ -354,6 +363,10 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 }
 
 - (void)vmResumeWithCompletion:(void (^)(NSError * _Nullable))completion {
+    notImplemented;
+}
+
+- (void)vmGuestPowerDownWithCompletion:(void (^)(NSError * _Nullable))completion {
     notImplemented;
 }
 
