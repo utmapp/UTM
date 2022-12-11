@@ -192,3 +192,43 @@ extension UTMData {
         }
     }
 }
+
+// MARK: - API Server
+extension UTMData: UTMAPIDelegate {
+    /// Return the API socket URL path
+    var defaultSocketUrl: URL {
+        let appGroup = Bundle.main.infoDictionary?["AppGroupIdentifier"] as? String
+        // default to unsigned sandbox path
+        var parentURL: URL = FileManager.default.homeDirectoryForCurrentUser
+        parentURL.appendPathComponent("tmp")
+        if let appGroup = appGroup, !appGroup.hasPrefix("invalid.") {
+            if let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup) {
+                parentURL = containerURL
+            }
+        }
+        return parentURL.appendingPathComponent("api.sock")
+    }
+    
+    func handleAPIRequest(_ request: any UTMAPIRequest) async throws -> any UTMAPIResponse {
+        do {
+            switch request.command {
+            default: throw UTMAPI.APIError.handlerNotFound
+            }
+        } catch {
+            return UTMAPI.ErrorResponse(error.localizedDescription)
+        }
+    }
+}
+
+/// Convert UTM VM type to API type
+extension UTMVMState {
+    var apiStatus: UTMAPI.VMStatus {
+        switch self {
+        case .vmPausing, .vmResuming, .vmStarting, .vmStopping: return .busy
+        case .vmPaused: return .paused
+        case .vmStopped: return .stopped
+        case .vmStarted: return .started
+        @unknown default: return .unknown
+        }
+    }
+}

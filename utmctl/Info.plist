@@ -26,5 +26,7 @@
 	<string>Copyright © 2022 osy. All rights reserved.</string>
 	<key>AppGroupIdentifier</key>
 	<string>$(TeamIdentifierPrefix:default=invalid.)$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).UTM</string>
+	<key>AppBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).UTM</string>
 </dict>
 </plist>

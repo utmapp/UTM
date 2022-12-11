@@ -16,9 +16,7 @@
 
 import Foundation
 
-@main
-struct Main {
-    static func main() {
-        
-    }
+/// Implemented by UTM to handle API requests
+protocol UTMAPIDelegate: AnyObject {
+    func handleAPIRequest(_ request: any UTMAPIRequest) async throws -> any UTMAPIResponse
 }
