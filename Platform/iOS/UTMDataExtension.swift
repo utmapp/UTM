@@ -23,7 +23,7 @@ extension UTMData {
         session.start()
     }
     
-    func stop(vm: UTMVirtualMachine) throws {
+    func stop(vm: UTMVirtualMachine) {
         if vm.hasSaveState {
             vm.requestVmDeleteState()
         }

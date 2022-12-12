@@ -58,9 +58,7 @@ struct VMConfirmActionModifier: ViewModifier {
                 })
             case .confirmStopVM:
                 return Alert(title: Text("Do you want to force stop this VM and lose all unsaved data?"), primaryButton: .cancel(), secondaryButton: .destructive(Text("Stop")) {
-                    data.busyWork {
-                        try data.stop(vm: vm)
-                    }
+                    data.stop(vm: vm)
                     onConfirm()
                 })
             case .confirmMoveVM:

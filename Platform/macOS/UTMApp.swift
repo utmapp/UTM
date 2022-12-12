@@ -20,29 +20,58 @@ struct UTMApp: App {
     @State var data = UTMData()
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate: AppDelegate
     
-    var body: some Scene {
+    @ViewBuilder
+    var homeWindow: some View {
+        ContentView().environmentObject(data)
+            .onAppear {
+                appDelegate.data = data
+                Task {
+                    do {
+                        try await data.apiServer.start()
+                    } catch {
+                        logger.error("Error starting API server: \(error)")
+                    }
+                }
+            }
+            .onReceive(.vmSessionError) { notification in
+                if let message = notification.userInfo?["Message"] as? String {
+                    data.showErrorAlert(message: message)
+                }
+            }
+    }
+    
+    @SceneBuilder
+    var oldBody: some Scene {
         WindowGroup {
-            ContentView().environmentObject(data)
-                .onAppear {
-                    appDelegate.data = data
-                    Task {
-                        do {
-                            try await data.apiServer.start()
-                        } catch {
-                            logger.error("Error starting API server: \(error)")
-                        }
-                    }
-                }
-                .onReceive(.vmSessionError) { notification in
-                    if let message = notification.userInfo?["Message"] as? String {
-                        data.showErrorAlert(message: message)
-                    }
-                }
+            homeWindow
         }.commands {
             VMCommands()
         }
         Settings {
             SettingsView()
+        }
+    }
+    
+    @available(macOS 13, *)
+    @SceneBuilder
+    var newBody: some Scene {
+        Window("UTM", id: "home") {
+            homeWindow
+        }.commands {
+            VMCommands()
+        }
+        Settings {
+            SettingsView()
+        }
+        UTMMenuBarExtraScene(data: data)
+    }
+    
+    // HACK: SwiftUI doesn't provide if-statement support in SceneBuilder
+    var body: some Scene {
+        if #available(macOS 13, *) {
+            return newBody
+        } else {
+            return oldBody
         }
     }
 }

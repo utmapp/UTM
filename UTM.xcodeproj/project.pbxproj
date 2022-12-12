@@ -277,6 +277,7 @@
 		84E3A911294469B10024A740 /* Logging in Frameworks */ = {isa = PBXBuildFile; productRef = 84E3A910294469B10024A740 /* Logging */; };
 		84E3A913294534C80024A740 /* UTMAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E3A912294534C80024A740 /* UTMAPIClient.swift */; };
 		84E3A91529453FA50024A740 /* Socket in Frameworks */ = {isa = PBXBuildFile; productRef = 84E3A91429453FA50024A740 /* Socket */; };
+		84E3A91B2946D2590024A740 /* UTMMenuBarExtraScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E3A91A2946D2590024A740 /* UTMMenuBarExtraScene.swift */; };
 		84E6F6FD289319AE00080EEF /* VMToolbarDisplayMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E6F6FC289319AE00080EEF /* VMToolbarDisplayMenuView.swift */; };
 		84E6F6FE289319AE00080EEF /* VMToolbarDisplayMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E6F6FC289319AE00080EEF /* VMToolbarDisplayMenuView.swift */; };
 		84F746B9276FF40900A20C87 /* VMDisplayAppleWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F746B8276FF40900A20C87 /* VMDisplayAppleWindowController.swift */; };
@@ -1781,6 +1782,7 @@
 		84E3A90A29441DFF0024A740 /* UTMAPIServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMAPIServer.swift; sourceTree = "<group>"; };
 		84E3A90D29442DC20024A740 /* UTMAPIDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMAPIDelegate.swift; sourceTree = "<group>"; };
 		84E3A912294534C80024A740 /* UTMAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMAPIClient.swift; sourceTree = "<group>"; };
+		84E3A91A2946D2590024A740 /* UTMMenuBarExtraScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMMenuBarExtraScene.swift; sourceTree = "<group>"; };
 		84E6F6FC289319AE00080EEF /* VMToolbarDisplayMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMToolbarDisplayMenuView.swift; sourceTree = "<group>"; };
 		84F746B8276FF40900A20C87 /* VMDisplayAppleWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayAppleWindowController.swift; sourceTree = "<group>"; };
 		84F746BA276FF70700A20C87 /* VMDisplayQemuDisplayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayQemuDisplayController.swift; sourceTree = "<group>"; };
@@ -2784,6 +2786,7 @@
 				CEEC811A24E48EC600ACB0B3 /* SettingsView.swift */,
 				CE2D955524AD4F980059923A /* UTMApp.swift */,
 				CEBBF1A624B5730F00C15049 /* UTMDataExtension.swift */,
+				84E3A91A2946D2590024A740 /* UTMMenuBarExtraScene.swift */,
 				CEB54C802931C43F000D2AA9 /* UTMPatches.swift */,
 				8401FD9F269D266E00265F0D /* VMConfigAppleBootView.swift */,
 				8401FDA3269D43CF00265F0D /* VMConfigAppleDisplayView.swift */,
@@ -4025,6 +4028,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CEB63A7724F4654400CAF323 /* Main.swift in Sources */,
+				84E3A91B2946D2590024A740 /* UTMMenuBarExtraScene.swift in Sources */,
 				CE0B6D0024AD56AE00FE012D /* UTMVirtualMachine.m in Sources */,
 				CEB63A7B24F469E300CAF323 /* UTMJailbreak.m in Sources */,
 				83A004BB26A8CC95001AC09E /* UTMDownloadTask.swift in Sources */,

@@ -18,6 +18,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var data: UTMData?
     
     @Setting("KeepRunningAfterLastWindowClosed") private var isKeepRunningAfterLastWindowClosed: Bool = false
+    @Setting("HideDockIcon") private var isDockIconHidden: Bool = false
     
     private var hasRunningVirtualMachines: Bool {
         guard let vmList = data?.vmWindows.keys else {
@@ -81,6 +82,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             if fileManager.fileExists(atPath: url.path, isDirectory: &isDirectory) && !isDirectory.boolValue {
                 try? fileManager.removeItem(at: url)
             }
+        }
+    }
+    
+    func applicationWillFinishLaunching(_ notification: Notification) {
+        if isDockIconHidden {
+            NSApp.setActivationPolicy(.accessory)
         }
     }
 }

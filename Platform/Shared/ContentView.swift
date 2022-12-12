@@ -134,7 +134,7 @@ struct ContentView: View {
             case "stop":
                 if let vm = await findVM(), vm.state == .vmStarted {
                     vm.requestVmStop(force: true)
-                    try? data.stop(vm: vm)
+                    data.stop(vm: vm)
                 }
                 break
             case "restart":

@@ -77,6 +77,16 @@ extension Optional where Wrapped == Bool {
     }
 }
 
+extension Binding where Value == Bool {
+    var inverted: Binding<Bool> {
+        Binding {
+            !wrappedValue
+        } set: { newValue in
+            wrappedValue = !newValue
+        }
+    }
+}
+
 extension LocalizedStringKey {
     var localizedString: String {
         let mirror = Mirror(reflecting: self)

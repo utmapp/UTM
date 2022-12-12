@@ -19,6 +19,8 @@ import SwiftUI
 @available(macOS 11, *)
 struct SettingsView: View {
     @AppStorage("KeepRunningAfterLastWindowClosed") var isKeepRunningAfterLastWindowClosed = false
+    @AppStorage("ShowMenuIcon") var isMenuIconShown = false
+    @AppStorage("HideDockIcon") var isDockIconHidden = false
     @AppStorage("DisplayFixed") var isVMDisplayFixed = false
     @AppStorage("CtrlRightClick") var isCtrlRightClick = false
     @AppStorage("NoUsbPrompt") var isNoUsbPrompt = false
@@ -33,6 +35,19 @@ struct SettingsView: View {
                 Toggle(isOn: $isKeepRunningAfterLastWindowClosed, label: {
                     Text("Keep UTM running after last window is closed and all VMs are shut down")
                 })
+                if #available(macOS 13, *) {
+                    Toggle(isOn: $isDockIconHidden.inverted, label: {
+                        Text("Show dock icon")
+                    }).onChange(of: isDockIconHidden) { newValue in
+                        if newValue {
+                            isMenuIconShown = true
+                            isKeepRunningAfterLastWindowClosed = true
+                        }
+                    }
+                    Toggle(isOn: $isMenuIconShown, label: {
+                        Text("Show menu bar icon")
+                    }).disabled(isDockIconHidden)
+                }
             }
             Section(header: Text("Display")) {
                 Toggle(isOn: $isVMDisplayFixed, label: {
@@ -68,6 +83,8 @@ struct SettingsView: View {
 
 extension UserDefaults {
     @objc dynamic var KeepRunningAfterLastWindowClosed: Bool { false }
+    @objc dynamic var ShowMenuIcon: Bool { false }
+    @objc dynamic var HideDockIcon: Bool { false }
     @objc dynamic var NoCursorCaptureAlert: Bool { false }
     @objc dynamic var DisplayFixed: Bool { false }
     @objc dynamic var CtrlRightClick: Bool { false }
