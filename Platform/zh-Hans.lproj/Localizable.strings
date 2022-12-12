@@ -2,7 +2,7 @@
 "-" = "-";
 
 /* A removable drive that has no image file inserted. */
-"(empty)" = "（空）";
+"(empty)" = "(空)";
 
 /* No comment provided by engineer. */
 "0.0.0.0" = "0.0.0.0";
@@ -23,13 +23,13 @@
 "Additional Settings" = "附加设置";
 
 /* No comment provided by engineer. */
-"Advanced: Bypass configuration and manually specify arguments" = "高级：跳过配置并手动指定参数";
+"Advanced: Bypass configuration and manually specify arguments" = "高级: 跳过配置并手动指定参数";
 
 /* VMConfigSystemView */
 "Allocating too much memory will crash the VM. Your device has %llu MB of memory and the estimated usage is %llu MB." = "分配过多的内存会使虚拟机崩溃。你的设备拥有 %1$llu MB 的内存，估计使用量为 %2$llu MB。";
 
 /* No comment provided by engineer. */
-"Always use native (HiDPI) resolution" = "始终使用本机（HiDPI）分辨率";
+"Always use native (HiDPI) resolution" = "始终使用本机 (HiDPI) 分辨率";
 
 /* VMDisplayWindowController */
 "An internal error has occured." = "发生内部错误。";
@@ -71,13 +71,13 @@
 "Blinking Cursor" = "闪烁光标";
 
 /* UTMConfiguration */
-"Bridged (Advanced)" = "桥接（高级）";
+"Bridged (Advanced)" = "桥接 (高级)";
 
 /* No comment provided by engineer. */
 "Bridged Interface" = "桥接接口";
 
 /* VMConfigSharingViewController */
-"Browse…" = "浏览……";
+"Browse…" = "浏览…";
 
 /* No comment provided by engineer. */
 "Cancel" = "取消";
@@ -100,10 +100,10 @@
 /* Configuration boot device */
 "CD/DVD" = "CD/DVD";
 
-"(empty)" = "（空）";
+"(empty)" = "(空)";
 
 /* UTMConfiguration */
-"CD/DVD (ISO) Image" = "CD/DVD（ISO）映像";
+"CD/DVD (ISO) Image" = "CD/DVD (ISO) 映像";
 
 /* VMRemovableDrivesViewController */
 "Change" = "变化";
@@ -154,7 +154,7 @@
 "Create Directory" = "创建目录";
 
 /* VMConfigDriveCreateViewController */
-"Creating disk..." = "正在创建磁盘……";
+"Creating disk..." = "正在创建磁盘…";
 
 /* No comment provided by engineer. */
 "Debug Logging" = "调试日志记录";
@@ -168,7 +168,7 @@
 "Delete Data" = "删除数据";
 
 /* Delete VM overlay */
-"Deleting %@..." = "正在删除 %@...";
+"Deleting %@..." = "正在删除 %@…";
 
 /* VMConfigDirectoryPickerViewController */
 "Directory Name" = "目录名称";
@@ -248,10 +248,10 @@
 "Error renaming file" = "重命名失败";
 
 /* UTMVirtualMachine */
-"Error trying to restore removable drives: %@" = "尝试还原可移动驱动器时出错：%@";
+"Error trying to restore removable drives: %@" = "尝试还原可移动驱动器时出错: %@";
 
 /* UTMVirtualMachine */
-"Error trying to start shared directory: %@" = "尝试启动文件共享时出错：%@";
+"Error trying to start shared directory: %@" = "尝试启动文件共享时出错: %@";
 
 /* UTMVirtualMachine+Drives */
 "Failed create bookmark." = "创建书签失败。";
@@ -311,7 +311,7 @@
 "Guest Address" = "客户机地址";
 
 /* VMConfigPortForwardingViewController */
-"Guest address (optional)" = "客户机地址（可选）";
+"Guest address (optional)" = "客户机地址 (可选)";
 
 /* UTMQemuManager */
 "Guest panic" = "客户机宕机";
@@ -320,7 +320,7 @@
 "Guest Port" = "客户机端口";
 
 /* VMConfigPortForwardingViewController */
-"Guest port (required)" = "客户机端口（必填）";
+"Guest port (required)" = "客户机端口 (必填)";
 
 /* Configuration boot device */
 "Hard Disk" = "硬盘";
@@ -329,25 +329,25 @@
 "Hardware" = "硬件";
 
 /* No comment provided by engineer. */
-"Hide Unused Flags…" = "隐藏未使用的 flag……";
+"Hide Unused Flags…" = "隐藏未使用的 flag…";
 
 /* VMDisplayViewController */
-"Hint: To show the toolbar again, use a three-finger swipe down on the screen." = "提示：要再次显示工具栏，请使用三指从屏幕上向下滑动。";
+"Hint: To show the toolbar again, use a three-finger swipe down on the screen." = "提示: 要再次显示工具栏，请使用三指从屏幕上向下滑动。";
 
 /* No comment provided by engineer. */
-"Hold Control (⌃) for right click" = "按住 Control（⌃）以右键单击";
+"Hold Control (⌃) for right click" = "按住 Control (⌃) 以右键单击";
 
 /* No comment provided by engineer. */
 "Host Address" = "主机地址";
 
 /* VMConfigPortForwardingViewController */
-"Host address (optional)" = "主机地址（可选）";
+"Host address (optional)" = "主机地址 (可选)";
 
 /* No comment provided by engineer. */
 "Host Port" = "主机端口";
 
 /* VMConfigPortForwardingViewController */
-"Host port (required)" = "主机端口（必填）";
+"Host port (required)" = "主机端口 (必填)";
 
 /* No comment provided by engineer. */
 "Icon" = "图标";
@@ -356,13 +356,13 @@
 "Image Type" = "映像类型";
 
 /* Import button */
-"Import…" = "导入……";
+"Import…" = "导入…";
 
 /* No comment provided by engineer. */
-"Import Virtual Machine…" = "导入虚拟机……";
+"Import Virtual Machine…" = "导入虚拟机…";
 
 /* Save VM overlay */
-"Importing %@..." = "导入 %@...";
+"Importing %@..." = "导入 %@…";
 
 /* No comment provided by engineer. */
 "Input" = "输入";
@@ -407,7 +407,7 @@
 "Invert Mouse Scroll" = "反转鼠标滚动";
 
 /* No comment provided by engineer. */
-"IP Configuration" = "IP配置";
+"IP Configuration" = "IP 配置";
 
 /* No comment provided by engineer. */
 "Isolate Guest from Host" = "将客户机与主机隔离";
@@ -425,7 +425,7 @@
 "Legacy" = "旧版";
 
 /* No comment provided by engineer. */
-"Legacy (PS/2) Mode" = "旧的（PS/2）模式";
+"Legacy (PS/2) Mode" = "旧的 (PS/2) 模式";
 
 /* No comment provided by engineer. */
 "License" = "许可";
@@ -458,13 +458,13 @@
 "Memory" = "内存";
 
 /* VMDisplayMetalWindowController */
-"Metal is not supported on this device. Cannot render display." = "此设备不支持 Metal。无法渲染显示。";
+"Metal is not supported on this device. Cannot render display." = "此设备不支持 Metal，无法渲染显示。";
 
 /* No comment provided by engineer. */
 "Mouse Wheel" = "鼠标滚轮";
 
 /* Save VM overlay */
-"Moving %@..." = "删除 %@...";
+"Moving %@..." = "删除 %@…";
 
 /* Clone VM name prompt title */
 "Name" = "名称";
@@ -491,7 +491,7 @@
 "New VM name" = "新虚拟机名称";
 
 /* No comment provided by engineer. */
-"New…" = "新建……";
+"New…" = "新建…";
 
 /* No button
    VMDisplayViewController
@@ -523,10 +523,10 @@
 "None" = "无";
 
 /* No comment provided by engineer. */
-"Note: Boot order is as listed." = "注意：启动顺序如列表所示。";
+"Note: Boot order is as listed." = "注意: 启动顺序如列表所示。";
 
 /* No comment provided by engineer. */
-"Note: select the path to share from the main screen." = "注意：请从主界面选取文件共享的路径。";
+"Note: select the path to share from the main screen." = "注意: 请从主界面选取文件共享的路径。";
 
 /* No comment provided by engineer. */
 "Notes" = "备注";
@@ -554,16 +554,16 @@
 "QEMU Arguments" = "QEMU 参数";
 
 /* UTMQemu */
-"QEMU exited from an error: %@" = "QEMU 遇到错误退出：%@";
+"QEMU exited from an error: %@" = "QEMU 遇到错误退出: %@";
 
 /* No comment provided by engineer. */
 "QEMU Machine Properties" = "QEMU 虚拟机属性";
 
 /* VMDisplayWindowController */
-"Querying drives status..." = "正在查询驱动器状态...";
+"Querying drives status..." = "正在查询驱动器状态…";
 
 /* VMDisplayMetalWindowController */
-"Querying USB devices..." = "正在查询 USB 设备...";
+"Querying USB devices..." = "正在查询 USB 设备…";
 
 /* VMDisplayMetalWindowController */
 "Quitting UTM will kill all running VMs." = "退出 UTM 将终止所有正在运行的虚拟机。";
@@ -594,13 +594,13 @@
 "Retina Mode" = "高分辨率模式";
 
 /* VMDisplayViewController */
-"Running low on memory! UTM might soon be killed by iOS. You can prevent this by decreasing the amount of memory and/or JIT cache assigned to this VM" = "运行内存不足！UTM 可能很快就会被 iOS 终止。你可以通过减少分配给此虚拟机的内存和（或）JIT 缓存来防止这种情况。";
+"Running low on memory! UTM might soon be killed by iOS. You can prevent this by decreasing the amount of memory and/or JIT cache assigned to this VM" = "运行内存不足！UTM 可能很快就会被 iOS 终止。你可以通过减少分配给此虚拟机的内存和 (或) JIT 缓存来防止这种情况。";
 
 /* No comment provided by engineer. */
 "Save" = "保存";
 
 /* Save VM overlay */
-"Saving %@..." = "正在保存 %@...";
+"Saving %@..." = "正在保存 %@…";
 
 /* No comment provided by engineer. */
 "Scaling" = "缩放";
@@ -612,7 +612,7 @@
 "Select Shared Folder" = "选择共享文件夹";
 
 /* No comment provided by engineer. */
-"Selected:" = "已选择：";
+"Selected:" = "已选择: ";
 
 /* No comment provided by engineer. */
 "Set to 0 for default which is 1/4 of the allocated Memory size. This is in addition to the host memory!" = "默认值设置为 0，即分配内存大小的 1/4。这是对于主机内存的补充！";
@@ -639,7 +639,7 @@
 "Show Advanced Settings" = "显示高级设置";
 
 /* No comment provided by engineer. */
-"Show All Flags…" = "显示所有 flag……";
+"Show All Flags…" = "显示所有 flag…";
 
 /* No comment provided by engineer. */
 "Size" = "大小";
@@ -693,7 +693,7 @@
 "Timed out waiting for RPC." = "等待 RPC 超时。";
 
 /* VMDisplayMetalWindowController */
-"To release the mouse cursor, press ⌃+⌥ (Ctrl+Opt or Ctrl+Alt) at the same time." = "要释放鼠标光标，请同时按下 ⌃+⌥（Ctrl+Opt 或 Ctrl+Alt）。";
+"To release the mouse cursor, press ⌃+⌥ (Ctrl+Opt or Ctrl+Alt) at the same time." = "要释放鼠标光标，请同时按下 ⌃+⌥ (Ctrl+Opt 或 Ctrl+Alt)。";
 
 /* No comment provided by engineer. */
 "Tweaks" = "调整";
@@ -717,7 +717,7 @@
 "USB" = "USB";
 
 /* No comment provided by engineer. */
-"USB 3.0 (XHCI) Support" = "USB 3.0（XHCI）支持";
+"USB 3.0 (XHCI) Support" = "USB 3.0 (XHCI) 支持";
 
 /* VMDisplayMetalWindowController */
 "USB Device" = "USB 设备";
@@ -744,7 +744,7 @@
 "VM frontend does not support shared directories." = "虚拟机前端不支持目录共享。";
 
 /* VMConfigSystemViewController */
-"Warning: iOS will kill apps that use more than 80% of the device's total memory." = "警告：iOS 将终止使用超过设备总内存 80% 的应用。";
+"Warning: iOS will kill apps that use more than 80% of the device's total memory." = "警告: iOS 将终止使用超过设备总内存的 80% 的应用。";
 
 /* No comment provided by engineer. */
 "Welcome to UTM" = "欢迎使用 UTM";
@@ -753,10 +753,10 @@
 "Welcome to UTM! Due to a bug in iOS, if you force kill this app, the system will be unstable and you cannot launch UTM again until you reboot. The recommended way to terminate this app is the button on the top left." = "欢迎使用 UTM！由于 iOS 中有一个 bug，使得若强行终止此应用，系统将变得不稳定，必须重启系统才能再次打开 UTM。建议通过左上角的按钮来终止此应用。";
 
 /* VMDisplayMetalWindowController */
-"Would you like to connect '(usbDevice.name ?? usbDevice.description)' to this virtual machine?" = "要将'(usbDevice.name ?? usbDevice.description)'连接到此虚拟机吗？";
+"Would you like to connect '(usbDevice.name ?? usbDevice.description)' to this virtual machine?" = "要将“(usbDevice.name ?? usbDevice.description)”连接到此虚拟机吗？";
 
 /* VMDisplayMetalWindowController */
-"Would you like to connect '%@' to this virtual machine?" = "要将'%@'连接到此虚拟机吗？";
+"Would you like to connect '%@' to this virtual machine?" = "要将“%@”连接到此虚拟机吗？";
 
 /* VMConfigDrivePickerViewController */
 "Would you like to import an existing disk image or create a new one?" = "要导入现有磁盘映像还是创建新磁盘映像？";
@@ -767,7 +767,7 @@
 "Yes" = "是";
 
 /* No comment provided by engineer. */
-"You can download an existing VM configuration for popular operating systems from the UTM gallery or start from scratch." = "你可以从 UTM 库下载常用操作系统的现有 VM 配置，也可以从头开始。";
+"You can download an existing VM configuration for popular operating systems from the UTM gallery or start from scratch." = "你可以从 UTM 库下载常用操作系统的现有虚拟机配置，也可以从头开始。";
 
 /* UTMData
    VMConfigDrivePickerViewController */
@@ -877,13 +877,13 @@
 "Random" = "随机生成";
 
 //OS Guide
-"I want to..." = "我想要...";
+"I want to..." = "我想要…";
 "Virtualize" = "虚拟化";
 "Faster, but can only run the native CPU architecture." = "速度更快，但只能运行与本机相同的 CPU 架构。";
 "Virtualization is not supported on your system." = "你的系统不支持虚拟化。";
 "Emulate" = "模拟";
 "Slower, but can run other CPU architectures." = "速度较慢，但可以运行其他 CPU 架构。";
-"Download prebuilt from UTM Gallery…" = "从 UTM 库下载预构建的虚拟机……";
+"Download prebuilt from UTM Gallery…" = "从 UTM 库下载预构建的虚拟机…";
 "Close" = "关闭";
 "Continue" = "下一步";
 "Generate Windows Installer ISO" = "获取 Windows 安装 ISO";
@@ -897,17 +897,17 @@
 "If set, use Apple's virtualization engine. Otherwise, use QEMU's virtualization engine." = "若设置此选项，将使用 Apple 虚拟化引擎。否则使用 QEMU 虚拟化引擎。";
 "Boot from kernel image" = "从内核映像启动";
 "If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO." = "若设置此选项，将直接从 raw 内核映像和 initrd 引导。否则从受支持的 ISO 引导。";
-"Linux kernel (required)" = "Linux 内核（必选）";
-"Linux initial ramdisk:" = "Linux 初始虚拟内存盘：";
-"Linux Root FS Image:" = "Linux Root FS 映像：";
+"Linux kernel (required)" = "Linux 内核 (必选)";
+"Linux initial ramdisk:" = "Linux 初始虚拟内存盘: ";
+"Linux Root FS Image:" = "Linux Root FS 映像: ";
 "Boot Arguments" = "启动参数";
 "Download Ubuntu Server for ARM" = "下载 Ubuntu Server for ARM";
 "Download Ubuntu Desktop" = "下载 Ubuntu Desktop";
-"Skip ISO boot (advanced)" = "跳过 ISO 启动（高级）";
+"Skip ISO boot (advanced)" = "跳过 ISO 启动 (高级)";
 //VMWizardState.swift
 "Please select an uncompressed Linux kernel image." = "请选择一个未压缩的 Linux 内核映像。";
 "Please select a macOS recovery IPSW." = "请选择一个 macOS IPSW 恢复文件。";
-"Ramdisk (optional)" = "虚拟内存盘（可选）";
+"Ramdisk (optional)" = "虚拟内存盘(可选)";
 "macOS Settings" = "macOS 设置";
 "IPSW Install Image" = "IPSW 安装映像";
 "Your machine does not support running this IPSW." = "你的设备不支持运行此 IPSW 文件。";
@@ -925,7 +925,7 @@
 "Specify the size of the drive where data will be stored into." = "指定将在其中存储数据的驱动器的大小。";
 
 //Share Directory
-"Optionally select a directory to make accessible inside the VM. Note that support for shared directories varies by the guest operating system and may require additional guest drivers to be installed. See UTM support pages for more details." = "（可选）选择要在虚拟机中访问的目录。请注意，对共享目录的支持因客户机操作系统而异，可能需要安装其他客户机驱动程序。有关更多详细信息，请参阅 UTM 支持页面。";
+"Optionally select a directory to make accessible inside the VM. Note that support for shared directories varies by the guest operating system and may require additional guest drivers to be installed. See UTM support pages for more details." = "(可选) 选择要在虚拟机中访问的目录。请注意，对共享目录的支持因客户机操作系统而异，可能需要安装其他客户机驱动程序。有关更多详细信息，请参阅 UTM 支持页面。";
 "Share is read only" = "共享设为只读";
 
 //Summary
@@ -945,12 +945,12 @@
 "Size" = "大小";
 
 //Drive
-"Note: Boot order is as listed." = "注意：启动顺序如列表所示。";
+"Note: Boot order is as listed." = "注意: 启动顺序如列表所示。";
 "Removable" = "可移除";
 
 //Display
 "Resize display to screen size and orientation automatically" = "自动调整显示大小为屏幕大小和方向";
-"VGA Device RAM (MB)" = "VGA 设备内存（MB）";
+"VGA Device RAM (MB)" = "VGA 设备内存 (MB)";
 "Emulated Display Card" = "虚拟显卡";
 "Auto Resolution" = "自动分辨率";
 "Resize display to screen size automatically" = "自动将显示大小调整为屏幕大小";
@@ -962,7 +962,7 @@
 
 "USB not supported in this build of UTM." = "此版本的 UTM 不支持 USB。";
 "USB SHARING" = "USB 共享";
-"USB 3.0 (XHCI) Support" = "USB 3.0（XHCI）支持";
+"USB 3.0 (XHCI) Support" = "USB 3.0 (XHCI) 支持";
 "Maximum Shared USB Devices" = "最大共享 USB 设备数";
 "USB Support" = "USB支持选项";
 "If enabled, the default input devices will be emulated on the USB bus." = "若启用，将在 USB 总线上模拟默认输入设备。";
@@ -977,7 +977,7 @@
 "DIRECTORY SELECTED" = "已选择目录";
 "UEFI Boot" = "UEFI 启动";
 "RNG Device" = "RNG 设备";
-"Default is 1/4 of the RAM size (above). The JIT cache size is additive to the RAM size in the total memory usage!" = "默认值为 RAM 大小的 1/4（如上所示）。JIT 缓存大小是总内存使用量中 RAM 大小之和！";
+"Default is 1/4 of the RAM size (above). The JIT cache size is additive to the RAM size in the total memory usage!" = "默认值为 RAM 大小的 1/4 (如上所示)。JIT 缓存大小是总内存使用量中 RAM 大小之和！";
 "Force multicore may improve speed of emulation but also might result in unstable and incorrect emulation." = "强制多核可能会提高模拟速度，但也可能导致模拟不稳定和不正确。";
 
 //QEMU
@@ -995,8 +995,8 @@
 "Skip Boot Image" = "跳过启动映像";
 
 //VM List
-"Clone…" = "复制……";
-"Delete…" = "删除……";
+"Clone…" = "复制…";
+"Delete…" = "删除…";
 "Other" = "其它";
 
 //VMConfigNetworkView
@@ -1004,7 +1004,7 @@
 
 //VMContextMenuModifier
 "Show in Finder" = "在访达中显示";
-"Stop…" = "终止……";
+"Stop…" = "终止…";
 
 //VMDetailsView
 "Serial" = "串行端口";
@@ -1021,12 +1021,12 @@
 "Edit selected VM" = "编辑选择的虚拟机";
 
 //VMWizardHardwareView
-"Enable hardware OpenGL acceleration (experimental)" = "启用硬件 OpenGL 加速（实验性）";
+"Enable hardware OpenGL acceleration (experimental)" = "启用硬件 OpenGL 加速 (实验性)";
 
 //VMWizardOSLinuxView
-"Linux initial ramdisk (optional)" = "Linux 初始虚拟内存盘（可选）";
-"Linux Root FS Image (optional)" = "Linux Root FS 映像（可选）";
-"Boot ISO Image (optional)" = "启动 ISO 映像（可选）";
+"Linux initial ramdisk (optional)" = "Linux 初始虚拟内存盘 (可选)";
+"Linux Root FS Image (optional)" = "Linux Root FS 映像 (可选)";
+"Boot ISO Image (optional)" = "启动 ISO 映像 (可选)";
 
 //VMWizardOSMacView
 "To install macOS, you need to download a recovery IPSW. If you do not select an existing IPSW, the latest macOS IPSW will be downloaded from Apple." = "要安装 macOS，你需要下载 IPSW 恢复文件。如果未选择现有的 IPSW 文件，将从 Apple 下载最新的 macOS IPSW。";
@@ -1039,8 +1039,8 @@
 
 //UTMPendingVMView
 "Cancel download" = "取消下载";
-"Extracting…" = "提取……";
-"Preparing…" = "准备……";
+"Extracting…" = "提取…";
+"Preparing…" = "准备…";
 
 //MacOS View
 "Go Back" = "返回";
@@ -1048,7 +1048,7 @@
 "Delete Drive" = "删除硬盘";
 "IDE Drive" = "IDE 硬盘";
 "Boot Image" = "启动映像";
-"Hint: For the best Windows experience, make sure to download and install the latest [SPICE tools and QEMU drivers](https://mac.getutm.app/support/)." = "提示：为获得最佳的 Windows 体验，请确保下载并安装最新的 [SPICE 工具和 QEMU 驱动程序](https://mac.getutm.app/support/)。";
+"Hint: For the best Windows experience, make sure to download and install the latest [SPICE tools and QEMU drivers](https://mac.getutm.app/support/)." = "提示: 为获得最佳的 Windows 体验，请确保下载并安装最新的 [SPICE 工具和 QEMU 驱动程序](https://mac.getutm.app/support/)。";
 
 //WizardUI
 "Start" = "开始";
@@ -1060,7 +1060,7 @@
 "Preconfigured" = "预配置";
 "Prebuilt" = "预构建";
 "Some older systems do not support UEFI boot, such as Windows 7 and below." = "某些较旧的系统不支持 UEFI 启动，例如 Windows 7 及更低版本。";
-"Open…" = "打开……";
+"Open…" = "打开…";
 "Existing" = "现有的";
 "Advanced" = "高级";
 "Skip ISO boot" = "跳过 ISO 启动";
@@ -1081,15 +1081,15 @@
 //FileSharing
 "Directory Share Mode" = "目录共享模式";
 "Path" = "路径";
-"SPICE WebDAV (Legacy)" = "SPICE WebDAV（旧版）";
-"VirtFS (Recommended)" = "VirtFS（推荐）";
+"SPICE WebDAV (Legacy)" = "SPICE WebDAV (旧版)";
+"VirtFS (Recommended)" = "VirtFS (推荐)";
 
 //Settings
 "Do not save VM screenshot to disk" = "不保存虚拟机快照至磁盘";
 "Prefer device to external microphone" = "首选的设备不是外部麦克风";
 "CURSOR - SCROLL WHEEL" = "光标 - 滚轮";
 "Invert Scoll" = "反转滚轮";
-"This virtual machine must be re-added to UTM by opening it with Finder. You can find it at the path: %@" = "此虚拟机必须通过使用访达打开以将其重新添加到 UTM。你可以在以下路径中找到它：%@";
+"This virtual machine must be re-added to UTM by opening it with Finder. You can find it at the path: %@" = "此虚拟机必须通过访达打开以将其重新添加到 UTM。你可以在以下路径中找到它: %@";
 "JITSTREAMER" = "Jitstreamer";
 "Enable JitStreamer Attach" = "启用 JitStreamer 附加";
 "JitStreamer IP Address" = "JitStreamer IP 地址";
