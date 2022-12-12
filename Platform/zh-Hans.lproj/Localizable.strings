@@ -26,7 +26,7 @@
 "Advanced: Bypass configuration and manually specify arguments" = "高级: 跳过配置并手动指定参数";
 
 /* VMConfigSystemView */
-"Allocating too much memory will crash the VM. Your device has %llu MB of memory and the estimated usage is %llu MB." = "分配过多的内存会使虚拟机崩溃。你的设备拥有 %1$llu MB 的内存，估计使用量为 %2$llu MB。";
+"Allocating too much memory will crash the VM. Your device has %llu MB of memory and the estimated usage is %llu MB." = "分配过多的内存会导致虚拟机崩溃。你的设备拥有 %1$llu MB 的内存，估计使用量为 %2$llu MB。";
 
 /* No comment provided by engineer. */
 "Always use native (HiDPI) resolution" = "始终使用本机 (HiDPI) 分辨率";
@@ -83,13 +83,13 @@
 "Cancel" = "取消";
 
 /* VMConfigDriveCreateViewController */
-"Cannot create directory for disk image." = "无法为磁盘映像创建目录";
+"Cannot create directory for disk image." = "无法为磁盘映像创建目录。";
 
 /* VMDisplayTerminalWindowController */
-"Cannot find bundle resources." = "找不到绑定的资源";
+"Cannot find bundle resources." = "找不到绑定的资源。";
 
 /* VMListViewController */
-"Cannot find VM." = "未能找到虚拟机";
+"Cannot find VM." = "未能找到虚拟机。";
 
 /* UTMVirtualMachine+Sharing */
 "Cannot start shared directory before SPICE starts." = "在 SPICE 启动之前无法启动共享目录。";
@@ -106,13 +106,13 @@
 "CD/DVD (ISO) Image" = "CD/DVD (ISO) 映像";
 
 /* VMRemovableDrivesViewController */
-"Change" = "变化";
+"Change" = "更改";
 
 /* No comment provided by engineer. */
 "Clipboard Sharing" = "剪贴板共享";
 
 /* Clone context menu */
-"Clone" = "复制";
+"Clone" = "克隆";
 
 /* VMDisplayMetalWindowController */
 "Closing this window will kill the VM." = "关闭此窗口将终止虚拟机。";
@@ -206,7 +206,7 @@
 "Done" = "完成";
 
 /* No comment provided by engineer. */
-"Downscaling" = "缩小尺度";
+"Downscaling" = "降尺度";
 
 /* VMRemovableDrivesViewController */
 "Drive Options" = "驱动器选项";
@@ -236,7 +236,7 @@
 "Enable Directory Sharing" = "启用目录共享";
 
 /* No comment provided by engineer. */
-"Enabled" = "启用";
+"Enabled" = "已启用";
 
 /* VMDisplayWindowController */
 "Error" = "错误";
@@ -251,7 +251,7 @@
 "Error trying to restore removable drives: %@" = "尝试还原可移动驱动器时出错: %@";
 
 /* UTMVirtualMachine */
-"Error trying to start shared directory: %@" = "尝试启动文件共享时出错: %@";
+"Error trying to start shared directory: %@" = "尝试启动共享目录时出错: %@";
 
 /* UTMVirtualMachine+Drives */
 "Failed create bookmark." = "创建书签失败。";
@@ -260,7 +260,7 @@
 "Failed to access drive image path." = "无法访问驱动器映像路径。";
 
 /* VMConfigInfoView */
-"Failed to check name." = "无法检查名称";
+"Failed to check name." = "无法检查名称。";
 
 /* UTMData */
 "Failed to clone VM." = "无法克隆虚拟机。";
@@ -299,13 +299,13 @@
 "Force Multicore" = "强制多核";
 
 /* No comment provided by engineer. */
-"Force slower emulation even when hypervisor is available" = "即使虚拟化可用，也强制较慢速的模拟";
+"Force slower emulation even when hypervisor is available" = "即使虚拟化可用，也强制进行较慢的模拟";
 
 /* No comment provided by engineer. */
 "Full Graphics" = "完整图形";
 
 /* No comment provided by engineer. */
-"Gesture and Cursor Settings" = "更多图形和光标设置";
+"Gesture and Cursor Settings" = "手势和光标设置";
 
 /* No comment provided by engineer. */
 "Guest Address" = "客户机地址";
@@ -401,7 +401,7 @@
 "Invalid size" = "无效的大小";
 
 /* VMListViewController */
-"Invalid UTM not imported." = "未导入无效的 UTM";
+"Invalid UTM not imported." = "未导入无效的 UTM。";
 
 /* No comment provided by engineer. */
 "Invert Mouse Scroll" = "反转鼠标滚动";
@@ -425,7 +425,7 @@
 "Legacy" = "旧版";
 
 /* No comment provided by engineer. */
-"Legacy (PS/2) Mode" = "旧的 (PS/2) 模式";
+"Legacy (PS/2) Mode" = "旧版 (PS/2) 模式";
 
 /* No comment provided by engineer. */
 "License" = "许可";
@@ -511,7 +511,7 @@
 "No drives connected." = "未连接驱动器。";
 
 /* UTMData */
-"No log found!" = "找不到日志！";
+"No log found!" = "未找到日志！";
 
 /* VMDisplayMetalWindowController */
 "No USB devices detected." = "未检测到 USB 设备。";
@@ -579,7 +579,7 @@
 "Requires SPICE guest agent tools to be installed." = "需要安装 SPICE 客户机代理工具。";
 
 /* No comment provided by engineer. */
-"Requires SPICE guest agent tools to be installed. Retina Mode is recommended only if the guest OS supports HiDPI." = "需要安装 Spice 客户机代理工具。仅当客户机操作系统支持 HiDPI 时，才建议使用 Retina 模式。";
+"Requires SPICE guest agent tools to be installed. Retina Mode is recommended only if the guest OS supports HiDPI." = "需要安装 SPICE 客户机代理工具。仅当客户机操作系统支持 HiDPI 时，才建议使用 Retina 模式。";
 
 /* No comment provided by engineer. */
 "Requires SPICE WebDAV service to be installed." = "需要安装 SPICE WebDAV 服务。";
@@ -624,7 +624,7 @@
 "Share" = "共享";
 
 /* No comment provided by engineer. */
-"Shared Directory" = "文件共享";
+"Shared Directory" = "共享目录";
 
 /* UTMConfiguration */
 "Shared Network" = "共享网络";
@@ -862,7 +862,7 @@
 "Do you want to force stop this VM and lose all unsaved data?" = "是否想强行停止此虚拟机并放弃所有未保存的数据？";
 
 /* No comment provided by engineer. */
-"Export Debug Log" = "导出日志";
+"Export Debug Log" = "导出调试日志";
 
 /* No comment provided by engineer. */
 "Boot Order" = "启动顺序";
@@ -888,15 +888,15 @@
 "Continue" = "下一步";
 "Generate Windows Installer ISO" = "获取 Windows 安装 ISO";
 "Boot ISO Image" = "启动 ISO 映像";
-"Boot VHDX Image" = "启动 VHDX 磁盘映像";
-"Import VHDX Image" = "导入 VHDX 磁盘映像";
+"Boot VHDX Image" = "启动 VHDX 映像";
+"Import VHDX Image" = "导入 VHDX 映像";
 "Browse" = "浏览文件";
 "Clear" = "清除";
 "Download Windows 11 for ARM64 Preview VHDX" = "下载 Windows 11 ARM64 开发者预览版 VHDX 文件";
 "Use Apple Virtualization" = "使用 Apple 虚拟化";
 "If set, use Apple's virtualization engine. Otherwise, use QEMU's virtualization engine." = "若设置此选项，将使用 Apple 虚拟化引擎。否则使用 QEMU 虚拟化引擎。";
 "Boot from kernel image" = "从内核映像启动";
-"If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO." = "若设置此选项，将直接从 raw 内核映像和 initrd 引导。否则从受支持的 ISO 引导。";
+"If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO." = "若设置此选项，将直接从 raw 内核映像和 initrd (虚拟内存盘) 引导。否则从受支持的 ISO 引导。";
 "Linux kernel (required)" = "Linux 内核 (必选)";
 "Linux initial ramdisk:" = "Linux 初始虚拟内存盘: ";
 "Linux Root FS Image:" = "Linux Root FS 映像: ";
@@ -907,7 +907,7 @@
 //VMWizardState.swift
 "Please select an uncompressed Linux kernel image." = "请选择一个未压缩的 Linux 内核映像。";
 "Please select a macOS recovery IPSW." = "请选择一个 macOS IPSW 恢复文件。";
-"Ramdisk (optional)" = "虚拟内存盘(可选)";
+"Ramdisk (optional)" = "虚拟内存盘 (可选)";
 "macOS Settings" = "macOS 设置";
 "IPSW Install Image" = "IPSW 安装映像";
 "Your machine does not support running this IPSW." = "你的设备不支持运行此 IPSW 文件。";
@@ -931,8 +931,8 @@
 //Summary
 "Summary" = "总结";
 "Boot" = "启动";
-"Share Directory" = "文件共享";
-"Directory" = "路径";
+"Share Directory" = "共享目录";
+"Directory" = "目录";
 
 //Alt JIT
 "Cannot find AltServer for JIT enable. You cannot run VMs until JIT is enabled." = "找不到启用 JIT 的 AltServer。在启用 JIT 之前，无法运行虚拟机。";
@@ -957,14 +957,14 @@
 
 //Settings
 "Devices" = "设备";
-"Disable screen dimming when idle" = "空闲时禁用屏幕亮度调节";
+"Disable screen dimming when idle" = "空闲时禁用屏幕变暗";
 "Do not show prompt when USB device is plugged in" = "插入 USB 设备时不显示提示";
 
 "USB not supported in this build of UTM." = "此版本的 UTM 不支持 USB。";
 "USB SHARING" = "USB 共享";
 "USB 3.0 (XHCI) Support" = "USB 3.0 (XHCI) 支持";
 "Maximum Shared USB Devices" = "最大共享 USB 设备数";
-"USB Support" = "USB支持选项";
+"USB Support" = "USB 支持";
 "If enabled, the default input devices will be emulated on the USB bus." = "若启用，将在 USB 总线上模拟默认输入设备。";
 "USB sharing not supported in this build of UTM." = "此 UTM 版本不支持 USB 共享。";
 "Share USB devices from host" = "从主机共享 USB 设备";
@@ -985,9 +985,9 @@
 "Use Hypervisor" = "使用虚拟化";
 "Do not generate any arguments based on current configuration" = "不要基于当前配置生成任何参数";
 "Use local time for base clock" = "将本地时间用作基准时钟";
-"These are advanced settings affecting QEMU which should be kept default unless you are running into issues." = "这些是影响 QEMU 的高级设置，除非您遇到问题，否则应保持默认值。";
+"These are advanced settings affecting QEMU which should be kept default unless you are running into issues." = "这些是影响 QEMU 的高级设置，除非遇到问题，否则应保持默认值。";
 "Force PS/2 controller" = "强制使用 PS/2 控制器";
-"This is appended to the -machine argument." = "这里是添加至 -machine 后面的参数。";
+"This is appended to the -machine argument." = "这里是附加到 -machine 后面的参数。";
 
 //VM Creating Page
 "Open VM Settings" = "打开虚拟机设置";
@@ -995,7 +995,7 @@
 "Skip Boot Image" = "跳过启动映像";
 
 //VM List
-"Clone…" = "复制…";
+"Clone…" = "克隆…";
 "Delete…" = "删除…";
 "Other" = "其它";
 
@@ -1004,7 +1004,7 @@
 
 //VMContextMenuModifier
 "Show in Finder" = "在访达中显示";
-"Stop…" = "终止…";
+"Stop…" = "停止…";
 
 //VMDetailsView
 "Serial" = "串行端口";
@@ -1014,9 +1014,9 @@
 
 //VMToolbarModifier
 "Delete selected VM" = "删除选择的虚拟机";
-"Clone selected VM" = "复制选择的虚拟机";
+"Clone selected VM" = "克隆选择的虚拟机";
 "Share selected VM" = "共享选择的虚拟机";
-"Stop selected VM" = "终止选择的虚拟机";
+"Stop selected VM" = "停止选择的虚拟机";
 "Run selected VM" = "运行选择的虚拟机";
 "Edit selected VM" = "编辑选择的虚拟机";
 
@@ -1039,14 +1039,14 @@
 
 //UTMPendingVMView
 "Cancel download" = "取消下载";
-"Extracting…" = "提取…";
-"Preparing…" = "准备…";
+"Extracting…" = "正在提取…";
+"Preparing…" = "正在准备…";
 
 //MacOS View
 "Go Back" = "返回";
-"New Drive" = "新建硬盘";
-"Delete Drive" = "删除硬盘";
-"IDE Drive" = "IDE 硬盘";
+"New Drive" = "新建驱动器";
+"Delete Drive" = "删除驱动器";
+"IDE Drive" = "IDE 驱动器";
 "Boot Image" = "启动映像";
 "Hint: For the best Windows experience, make sure to download and install the latest [SPICE tools and QEMU drivers](https://mac.getutm.app/support/)." = "提示: 为获得最佳的 Windows 体验，请确保下载并安装最新的 [SPICE 工具和 QEMU 驱动程序](https://mac.getutm.app/support/)。";
 
