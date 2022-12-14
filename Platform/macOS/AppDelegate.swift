@@ -35,6 +35,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
     
+    @MainActor
+    public var scriptingVirtualMachines: [UTMScriptingVirtualMachineImpl] {
+        guard let data = data else {
+            return []
+        }
+        return data.virtualMachines.map { vm in
+            UTMScriptingVirtualMachineImpl(for: vm, data: data)
+        }
+    }
+    
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         !isKeepRunningAfterLastWindowClosed && !hasRunningVirtualMachines
     }
@@ -99,6 +109,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         if isLaunchedByCLI && isKeepRunningAfterLastWindowClosed {
             NSApp.windows.first?.close()
+        }
+    }
+    
+    func application(_ sender: NSApplication, delegateHandlesKey key: String) -> Bool {
+        switch key {
+        case "scriptingVirtualMachines": return true
+        default: return false
         }
     }
 }
