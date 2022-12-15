@@ -6,5 +6,12 @@
 	<false/>
 	<key>com.apple.security.network.client</key>
 	<true/>
+	<key>com.apple.security.scripting-targets</key>
+	<dict>
+		<key>$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).UTM</key>
+		<array>
+			<string>com.utmapp.UTM.vm-access</string>
+		</array>
+	</dict>
 </dict>
 </plist>

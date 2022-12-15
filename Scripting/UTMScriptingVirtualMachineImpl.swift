@@ -120,7 +120,7 @@ class UTMScriptingVirtualMachineImpl: NSObject {
         }
     }
     
-    func start(_ command: NSScriptCommand) {
+    @objc func start(_ command: NSScriptCommand) {
         withScriptCommand(command) { [self] in
             if vm.state == .vmStopped {
                 try await vm.vmStart()
@@ -132,14 +132,14 @@ class UTMScriptingVirtualMachineImpl: NSObject {
         }
     }
     
-    func suspend(_ command: NSScriptCommand) {
+    @objc func suspend(_ command: NSScriptCommand) {
         let shouldSaveState = command.evaluatedArguments?["doneFlag"] as? Bool ?? false
         withScriptCommand(command) { [self] in
             try await vm.vmPause(save: shouldSaveState)
         }
     }
     
-    func stop(_ command: NSScriptCommand) {
+    @objc func stop(_ command: NSScriptCommand) {
         let stopMethod = command.evaluatedArguments?["stopBy"] as? UTMScriptingStopMethod ?? .force
         withScriptCommand(command) { [self] in
             switch stopMethod {
