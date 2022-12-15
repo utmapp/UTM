@@ -17,12 +17,13 @@
 import Foundation
 
 @MainActor
-@objc class UTMScriptingSerialPortImpl: NSObject {
-    private(set) var id: Int
-    private(set) weak var parent: UTMScriptingVirtualMachineImpl?
-    private(set) var interface: UTMScriptingSerialInterface
-    private(set) var address: String
-    private(set) var port: Int
+@objc(UTMScriptingSerialPortImpl)
+class UTMScriptingSerialPortImpl: NSObject {
+    @objc private(set) var id: Int
+    @objc private(set) weak var parent: UTMScriptingVirtualMachineImpl?
+    @objc private(set) var interface: UTMScriptingSerialInterface
+    @objc private(set) var address: String
+    @objc private(set) var port: Int
     
     init(qemuSerial: UTMQemuConfigurationSerial, parent: UTMScriptingVirtualMachineImpl, index: Int) {
         self.id = index

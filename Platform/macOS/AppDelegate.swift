@@ -36,7 +36,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     @MainActor
-    public var scriptingVirtualMachines: [UTMScriptingVirtualMachineImpl] {
+    @objc var scriptingVirtualMachines: [UTMScriptingVirtualMachineImpl] {
         guard let data = data else {
             return []
         }

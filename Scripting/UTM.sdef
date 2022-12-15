@@ -5,17 +5,6 @@
 
     <suite name="Standard Suite" code="????" description="Common classes and commands for all applications.">
 
-        <command name="open" code="aevtodoc" description="Open a document.">
-            <direct-parameter description="The file(s) to be opened.">
-                <type type="file"/>
-                <type type="file" list="yes"/>
-            </direct-parameter>
-            <result description="The opened document(s).">
-                <type type="document"/>
-                <type type="document" list="yes"/>
-            </result>
-        </command>
-
         <enumeration name="printing error handling" code="enum">
             <enumerator name="standard" code="lwst" description="Standard PostScript error handling">
                 <cocoa boolean-value="NO"/>
@@ -53,15 +42,9 @@
                 <cocoa key="isActive"/>
             </property>
             <property name="version" code="vers" type="text" access="r" description="The version number of the application."/>
-            <element type="document">
-                <cocoa key="orderedDocuments"/>
-            </element>
             <element type="window" access="r">
                 <cocoa key="orderedWindows"/>
             </element>
-            <responds-to command="open">
-                <cocoa method="handleOpenScriptCommand:"/>
-            </responds-to>
             <responds-to command="quit">
                 <cocoa method="handleQuitScriptCommand:"/>
             </responds-to>
@@ -125,27 +108,13 @@
         </enumeration>
         
         <enumeration name="status" code="VmEs" description="Status type.">
-            <enumerator name="stopped" code="StSa" description="VM is not running.">
-                <cocoa integer-value="0" />
-            </enumerator>
-            <enumerator name="starting" code="StSb" description="VM is starting up.">
-                <cocoa integer-value="1" />
-            </enumerator>
-            <enumerator name="started" code="StSc" description="VM is running.">
-                <cocoa integer-value="2" />
-            </enumerator>
-            <enumerator name="pausing" code="StSd" description="VM is going to pause.">
-                <cocoa integer-value="3" />
-            </enumerator>
-            <enumerator name="paused" code="StSe" description="VM is paused.">
-                <cocoa integer-value="4" />
-            </enumerator>
-            <enumerator name="resuming" code="StSf" description="VM is resuming from pause.">
-                <cocoa integer-value="5" />
-            </enumerator>
-            <enumerator name="stopping" code="StSg" description="VM is stopping.">
-                <cocoa integer-value="6" />
-            </enumerator>
+            <enumerator name="stopped" code="StSa" description="VM is not running."/>
+            <enumerator name="starting" code="StSb" description="VM is starting up."/>
+            <enumerator name="started" code="StSc" description="VM is running."/>
+            <enumerator name="pausing" code="StSd" description="VM is going to pause."/>
+            <enumerator name="paused" code="StSe" description="VM is paused."/>
+            <enumerator name="resuming" code="StSf" description="VM is resuming from pause."/>
+            <enumerator name="stopping" code="StSg" description="VM is stopping."/>
         </enumeration>
         
         <enumeration name="stop method" code="VmEs" description="Stop by method.">

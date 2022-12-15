@@ -17,35 +17,36 @@
 import Foundation
 
 @MainActor
-@objc class UTMScriptingVirtualMachineImpl: NSObject {
+@objc(UTMScriptingVirtualMachineImpl)
+class UTMScriptingVirtualMachineImpl: NSObject {
     private var vm: UTMVirtualMachine
     private var data: UTMData
     
-    var id: String {
+    @objc var id: String {
         vm.id.uuidString
     }
     
-    var name: String {
+    @objc var name: String {
         vm.detailsTitleLabel
     }
     
-    var notes: String {
+    @objc var notes: String {
         vm.detailsNotes ?? ""
     }
     
-    var machine: String {
+    @objc var machine: String {
         vm.detailsSystemTargetLabel
     }
     
-    var architecture: String {
+    @objc var architecture: String {
         vm.detailsSystemArchitectureLabel
     }
     
-    var memory: String {
+    @objc var memory: String {
         vm.detailsSystemMemoryLabel
     }
     
-    var backend: UTMScriptingBackend {
+    @objc var backend: UTMScriptingBackend {
         if vm is UTMQemuVirtualMachine {
             return .qemu
         } else if vm is UTMAppleVirtualMachine {
@@ -55,7 +56,20 @@ import Foundation
         }
     }
     
-    var serialPorts: [UTMScriptingSerialPortImpl] {
+    @objc var status: UTMScriptingStatus {
+        switch vm.state {
+        case .vmStopped: return .stopped
+        case .vmStarting: return .starting
+        case .vmStarted: return .started
+        case .vmPausing: return .pausing
+        case .vmPaused: return .paused
+        case .vmResuming: return .resuming
+        case .vmStopping: return .stopping
+        @unknown default: return .stopped
+        }
+    }
+    
+    @objc var serialPorts: [UTMScriptingSerialPortImpl] {
         if let config = vm.config.qemuConfig {
             return config.serials.indices.map({ UTMScriptingSerialPortImpl(qemuSerial: config.serials[$0], parent: self, index: $0) })
         } else if let config = vm.config.appleConfig {
@@ -66,7 +80,7 @@ import Foundation
     }
     
     override var objectSpecifier: NSScriptObjectSpecifier? {
-        let appDescription = NSApp.classDescription as! NSScriptClassDescription
+        let appDescription = NSApplication.classDescription() as! NSScriptClassDescription
         return NSUniqueIDSpecifier(containerClassDescription: appDescription,
                                    containerSpecifier: nil,
                                    key: "scriptingVirtualMachines",
