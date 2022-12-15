@@ -27,14 +27,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return vmList.contains(where: { $0.state == .vmStarted || ($0.state == .vmPaused && !$0.hasSaveState) })
     }
     
-    private var isLaunchedByCLI: Bool {
-        if CommandLine.arguments.count > 1 && CommandLine.arguments[1] == "cli-request" {
-            return true
-        } else {
-            return false
-        }
-    }
-    
     @MainActor
     @objc var scriptingVirtualMachines: [UTMScriptingVirtualMachineImpl] {
         guard let data = data else {
@@ -106,9 +98,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         if isDockIconHidden {
             NSApp.setActivationPolicy(.accessory)
-        }
-        if isLaunchedByCLI && isKeepRunningAfterLastWindowClosed {
-            NSApp.windows.first?.close()
         }
     }
     

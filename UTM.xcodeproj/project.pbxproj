@@ -268,7 +268,6 @@
 		84E3A8F3293DB37E0024A740 /* UTMCtl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E3A8F2293DB37E0024A740 /* UTMCtl.swift */; };
 		84E3A8FB293DB7240024A740 /* utmctl in Embed CLI Tool */ = {isa = PBXBuildFile; fileRef = 84E3A8F0293DB37E0024A740 /* utmctl */; };
 		84E3A900293DBC290024A740 /* ArgumentParser in Frameworks */ = {isa = PBXBuildFile; productRef = 84E3A8FF293DBC290024A740 /* ArgumentParser */; };
-		84E3A911294469B10024A740 /* Logging in Frameworks */ = {isa = PBXBuildFile; productRef = 84E3A910294469B10024A740 /* Logging */; };
 		84E3A91B2946D2590024A740 /* UTMMenuBarExtraScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E3A91A2946D2590024A740 /* UTMMenuBarExtraScene.swift */; };
 		84E6F6FD289319AE00080EEF /* VMToolbarDisplayMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E6F6FC289319AE00080EEF /* VMToolbarDisplayMenuView.swift */; };
 		84E6F6FE289319AE00080EEF /* VMToolbarDisplayMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E6F6FC289319AE00080EEF /* VMToolbarDisplayMenuView.swift */; };
@@ -2334,7 +2333,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				84E3A911294469B10024A740 /* Logging in Frameworks */,
 				84E3A900293DBC290024A740 /* ArgumentParser in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3430,7 +3428,6 @@
 			name = utmctl;
 			packageProductDependencies = (
 				84E3A8FF293DBC290024A740 /* ArgumentParser */,
-				84E3A910294469B10024A740 /* Logging */,
 			);
 			productName = utmctl;
 			productReference = 84E3A8F0293DB37E0024A740 /* utmctl */;
@@ -5521,11 +5518,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 84E3A8FE293DBC290024A740 /* XCRemoteSwiftPackageReference "swift-argument-parser" */;
 			productName = ArgumentParser;
-		};
-		84E3A910294469B10024A740 /* Logging */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = CE020BA524AEDEF000B44AB6 /* XCRemoteSwiftPackageReference "swift-log" */;
-			productName = Logging;
 		};
 		85EC515B27CC74AA004A51DE /* Logging */ = {
 			isa = XCSwiftPackageProductDependency;

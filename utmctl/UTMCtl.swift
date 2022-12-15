@@ -17,12 +17,7 @@
 import Foundation
 import AppKit
 import ArgumentParser
-import Logging
 import ScriptingBridge
-
-var logger = Logger(label: "com.utmapp.utmctl") { label in
-    StreamLogHandler.standardError(label: label)
-}
 
 @main
 struct UTMCtl: ParsableCommand {
@@ -43,10 +38,10 @@ protocol UTMAPICommand: ParsableCommand {
 extension UTMAPICommand {
     /// Entry point for all subcommands
     func run() throws {
-        logger.logLevel = environment.debug ? .debug : .info
         guard let utmApp = SBApplication(url: utmAppUrl) else {
             throw UTMCtl.APIError.applicationNotFound
         }
+        utmApp.launchFlags = [.defaults, .andHide]
         utmApp.delegate = UTMCtl.EventErrorHandler.shared
         try run(with: utmApp)
     }
@@ -86,7 +81,10 @@ extension UTMCtl {
         ///   - error: Error
         /// - Returns: nil
         func eventDidFail(_ event: UnsafePointer<AppleEvent>, withError error: Error) -> Any? {
-            logger.error("Error from event: \(error.localizedDescription)")
+            FileHandle.standardError.write("Error from event: \(error.localizedDescription)")
+            if let user = (error as NSError).userInfo["ErrorString"] as? String {
+                FileHandle.standardError.write(user)
+            }
             return nil
         }
     }
@@ -323,17 +321,21 @@ extension UTMCtl {
     struct EnvironmentOptions: ParsableArguments {
         @Flag(name: .shortAndLong, help: "Show debug logging.")
         var debug: Bool = false
-        
-        @Flag(name: .shortAndLong, help: "Output results in JSON.")
-        var machineReadable: Bool = false
-        
-        @Option(help: "Specify a custom path to the UTM API server socket.")
-        var socketPath: String?
     }
 }
 
 private extension String {
     var asFileURL: URL {
         URL(fileURLWithPath: self, relativeTo: nil)
+    }
+}
+
+extension FileHandle: TextOutputStream {
+    private static var newLine = Data("\n".utf8)
+    
+    public func write(_ string: String) {
+        let data = Data(string.utf8)
+        self.write(data)
+        self.write(Self.newLine)
     }
 }
