@@ -38,11 +38,23 @@ protocol UTMAPICommand: ParsableCommand {
 extension UTMAPICommand {
     /// Entry point for all subcommands
     func run() throws {
-        guard let utmApp = SBApplication(url: utmAppUrl) else {
+        guard let app = SBApplication(url: utmAppUrl) else {
             throw UTMCtl.APIError.applicationNotFound
         }
-        utmApp.launchFlags = [.defaults, .andHide]
-        utmApp.delegate = UTMCtl.EventErrorHandler.shared
+        app.launchFlags = [.defaults, .andHide]
+        app.delegate = UTMCtl.EventErrorHandler.shared
+        let utmApp = app as UTMScriptingApplication
+        if environment.hide {
+            utmApp.setAutoTerminate!(false)
+            if let windows = utmApp.windows!() as? [UTMScriptingWindow] {
+                for window in windows {
+                    if window.name == "UTM" {
+                        window.close!()
+                        break
+                    }
+                }
+            }
+        }
         try run(with: utmApp)
     }
     
@@ -114,6 +126,7 @@ fileprivate extension UTMScriptingStatus {
         case .paused: return "paused"
         case .resuming: return "resuming"
         case .stopping: return "stopping"
+        @unknown default: return "unknown"
         }
     }
 }
@@ -321,6 +334,9 @@ extension UTMCtl {
     struct EnvironmentOptions: ParsableArguments {
         @Flag(name: .shortAndLong, help: "Show debug logging.")
         var debug: Bool = false
+        
+        @Flag(help: "Hide the main UTM window.")
+        var hide: Bool = false
     }
 }
 

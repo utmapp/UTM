@@ -85,6 +85,18 @@ extension NSApplication {
         }
     }
     
+    /// Set KVO value in scripting delegate if implemented
+    /// - Parameters:
+    ///   - value: Value to set to
+    ///   - key: Key to look up
+    @objc dynamic func xxx_setValue(_ value: Any?, forKey key: String) {
+        if scriptingDelegate?.application?(self, delegateHandlesKey: key) ?? false {
+            return (scriptingDelegate as! NSObject).setValue(value, forKey: key)
+        } else {
+            return xxx_setValue(value, forKey: key)
+        }
+    }
+    
     /// Get KVO value from scripting delegate if implemented
     /// - Parameters:
     ///   - index: Index of item
@@ -98,12 +110,31 @@ extension NSApplication {
         }
     }
     
+    /// Set KVO value in scripting delegate if implemented
+    /// - Parameters:
+    ///   - index: Index of item
+    ///   - key: Key to look up
+    ///   - value: Value to set item to
+    @objc dynamic func xxx_replaceValue(at index: Int, inPropertyWithKey key: String, withValue value: Any) {
+        if scriptingDelegate?.application?(self, delegateHandlesKey: key) ?? false {
+            return (scriptingDelegate as! NSObject).replaceValue(at: index, inPropertyWithKey: key, withValue: value)
+        } else {
+            return xxx_replaceValue(at: index, inPropertyWithKey: key, withValue: value)
+        }
+    }
+    
     fileprivate static func patchApplicationScripting() {
         patch(#selector(Self.value(forKey:)),
               with: #selector(Self.xxx_value(forKey:)),
               class: Self.self)
         patch(#selector(Self.value(at:inPropertyWithKey:)),
               with: #selector(Self.xxx_value(at:inPropertyWithKey:)),
+              class: Self.self)
+        patch(#selector(Self.setValue(_:forKey:)),
+              with: #selector(Self.xxx_setValue(_:forKey:)),
+              class: Self.self)
+        patch(#selector(Self.replaceValue(at:inPropertyWithKey:withValue:)),
+              with: #selector(Self.xxx_replaceValue(at:inPropertyWithKey:withValue:)),
               class: Self.self)
     }
 }

@@ -37,6 +37,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
     
+    @MainActor
+    @objc var isAutoTerminate: Bool {
+        get {
+            !isKeepRunningAfterLastWindowClosed
+        }
+        
+        set {
+            isKeepRunningAfterLastWindowClosed = !newValue
+        }
+    }
+    
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         !isKeepRunningAfterLastWindowClosed && !hasRunningVirtualMachines
     }
@@ -104,6 +115,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func application(_ sender: NSApplication, delegateHandlesKey key: String) -> Bool {
         switch key {
         case "scriptingVirtualMachines": return true
+        case "isAutoTerminate": return true
         default: return false
         }
     }

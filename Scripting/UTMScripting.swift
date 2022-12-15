@@ -74,21 +74,27 @@ import ScriptingBridge
     case unavailable = 0x49556e41 /* 'IUnA' */
 }
 
+// MARK: UTMScriptingGenericMethods
+@objc public protocol UTMScriptingGenericMethods {
+    @objc optional func close() // Close a document.
+}
+
 // MARK: UTMScriptingApplication
 @objc public protocol UTMScriptingApplication: SBApplicationProtocol {
     @objc optional func windows() -> SBElementArray
     @objc optional var name: String { get } // The name of the application.
     @objc optional var frontmost: Bool { get } // Is this the active application?
     @objc optional var version: String { get } // The version number of the application.
-    @objc optional func `open`(_ x: Any!) -> Any // Open a document.
     @objc optional func quit() // Quit the application.
     @objc optional func exists(_ x: Any!) -> Bool // Verify that an object exists.
     @objc optional func virtualMachines() -> SBElementArray
+    @objc optional var autoTerminate: Bool { get } // Auto terminate the application when all windows are closed?
+    @objc optional func setAutoTerminate(_ autoTerminate: Bool) // Auto terminate the application when all windows are closed?
 }
 extension SBApplication: UTMScriptingApplication {}
 
 // MARK: UTMScriptingWindow
-@objc public protocol UTMScriptingWindow: SBObjectProtocol {
+@objc public protocol UTMScriptingWindow: SBObjectProtocol, UTMScriptingGenericMethods {
     @objc optional var name: String { get } // The title of the window.
     @objc optional func id() -> Int // The unique identifier of the window.
     @objc optional var index: Int { get } // The index of the window, ordered front to back.
@@ -109,7 +115,7 @@ extension SBApplication: UTMScriptingApplication {}
 extension SBObject: UTMScriptingWindow {}
 
 // MARK: UTMScriptingVirtualMachine
-@objc public protocol UTMScriptingVirtualMachine: SBObjectProtocol {
+@objc public protocol UTMScriptingVirtualMachine: SBObjectProtocol, UTMScriptingGenericMethods {
     @objc optional func serialPorts() -> SBElementArray
     @objc optional func id() -> String // The unique identifier of the VM.
     @objc optional var name: String { get } // The name of the VM.
@@ -126,7 +132,7 @@ extension SBObject: UTMScriptingWindow {}
 extension SBObject: UTMScriptingVirtualMachine {}
 
 // MARK: UTMScriptingSerialPort
-@objc public protocol UTMScriptingSerialPort: SBObjectProtocol {
+@objc public protocol UTMScriptingSerialPort: SBObjectProtocol, UTMScriptingGenericMethods {
     @objc optional func id() -> Int // The unique identifier of the tag.
     @objc optional var interface: UTMScriptingSerialInterface { get } // The type of serial interface on the host.
     @objc optional var address: String { get } // Host address of the serial port (determined by the interface type).

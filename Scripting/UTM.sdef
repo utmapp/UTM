@@ -4,6 +4,7 @@
 <dictionary title="UTM Terminology">
 
     <suite name="Standard Suite" code="????" description="Common classes and commands for all applications.">
+        <access-group identifier="com.utmapp.UTM.vm-access" />
 
         <enumeration name="printing error handling" code="enum">
             <enumerator name="standard" code="lwst" description="Standard PostScript error handling">
@@ -13,6 +14,12 @@
                 <cocoa boolean-value="YES"/>
             </enumerator>
         </enumeration>
+        
+        <command name="close" code="coreclos" description="Close a document.">
+            <cocoa class="NSCloseCommand"/>
+            <access-group identifier="*"/>
+            <direct-parameter type="specifier" requires-access="r" description="the document(s) or window(s) to close."/>
+        </command>
 
         <command name="quit" code="aevtquit" description="Quit the application.">
             <cocoa class="NSQuitCommand"/>
@@ -99,6 +106,9 @@
           <element type="virtual machine" access="r">
             <cocoa key="scriptingVirtualMachines"/>
           </element>
+          <property name="auto terminate" code="kRlW" type="boolean" description="Auto terminate the application when all windows are closed?">
+              <cocoa key="isAutoTerminate"/>
+          </property>
         </class-extension>
         
         <enumeration name="backend" code="VmEb" description="Backend type.">
