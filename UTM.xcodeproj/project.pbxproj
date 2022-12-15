@@ -268,15 +268,7 @@
 		84E3A8F3293DB37E0024A740 /* UTMCtl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E3A8F2293DB37E0024A740 /* UTMCtl.swift */; };
 		84E3A8FB293DB7240024A740 /* utmctl in Embed CLI Tool */ = {isa = PBXBuildFile; fileRef = 84E3A8F0293DB37E0024A740 /* utmctl */; };
 		84E3A900293DBC290024A740 /* ArgumentParser in Frameworks */ = {isa = PBXBuildFile; productRef = 84E3A8FF293DBC290024A740 /* ArgumentParser */; };
-		84E3A903294065810024A740 /* UTMAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E3A902294065810024A740 /* UTMAPI.swift */; };
-		84E3A904294065810024A740 /* UTMAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E3A902294065810024A740 /* UTMAPI.swift */; };
-		84E3A90729441D860024A740 /* Socket in Frameworks */ = {isa = PBXBuildFile; productRef = 84E3A90629441D860024A740 /* Socket */; };
-		84E3A90929441DC70024A740 /* Socket in Frameworks */ = {isa = PBXBuildFile; productRef = 84E3A90829441DC70024A740 /* Socket */; };
-		84E3A90B29441DFF0024A740 /* UTMAPIServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E3A90A29441DFF0024A740 /* UTMAPIServer.swift */; };
-		84E3A90E29442DC20024A740 /* UTMAPIDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E3A90D29442DC20024A740 /* UTMAPIDelegate.swift */; };
 		84E3A911294469B10024A740 /* Logging in Frameworks */ = {isa = PBXBuildFile; productRef = 84E3A910294469B10024A740 /* Logging */; };
-		84E3A913294534C80024A740 /* UTMAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E3A912294534C80024A740 /* UTMAPIClient.swift */; };
-		84E3A91529453FA50024A740 /* Socket in Frameworks */ = {isa = PBXBuildFile; productRef = 84E3A91429453FA50024A740 /* Socket */; };
 		84E3A91B2946D2590024A740 /* UTMMenuBarExtraScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E3A91A2946D2590024A740 /* UTMMenuBarExtraScene.swift */; };
 		84E6F6FD289319AE00080EEF /* VMToolbarDisplayMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E6F6FC289319AE00080EEF /* VMToolbarDisplayMenuView.swift */; };
 		84E6F6FE289319AE00080EEF /* VMToolbarDisplayMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E6F6FC289319AE00080EEF /* VMToolbarDisplayMenuView.swift */; };
@@ -1783,10 +1775,6 @@
 		84E3A8F7293DB3B60024A740 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		84E3A8F8293DB42B0024A740 /* utmctl.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = utmctl.entitlements; sourceTree = "<group>"; };
 		84E3A8F9293DB4D40024A740 /* utmctl-unsigned.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "utmctl-unsigned.entitlements"; sourceTree = "<group>"; };
-		84E3A902294065810024A740 /* UTMAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMAPI.swift; sourceTree = "<group>"; };
-		84E3A90A29441DFF0024A740 /* UTMAPIServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMAPIServer.swift; sourceTree = "<group>"; };
-		84E3A90D29442DC20024A740 /* UTMAPIDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMAPIDelegate.swift; sourceTree = "<group>"; };
-		84E3A912294534C80024A740 /* UTMAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMAPIClient.swift; sourceTree = "<group>"; };
 		84E3A91A2946D2590024A740 /* UTMMenuBarExtraScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMMenuBarExtraScene.swift; sourceTree = "<group>"; };
 		84E6F6FC289319AE00080EEF /* VMToolbarDisplayMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMToolbarDisplayMenuView.swift; sourceTree = "<group>"; };
 		84F746B8276FF40900A20C87 /* VMDisplayAppleWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayAppleWindowController.swift; sourceTree = "<group>"; };
@@ -2348,7 +2336,6 @@
 			files = (
 				84E3A911294469B10024A740 /* Logging in Frameworks */,
 				84E3A900293DBC290024A740 /* ArgumentParser in Frameworks */,
-				84E3A90929441DC70024A740 /* Socket in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2384,7 +2371,6 @@
 				CE2D934224AD46670059923A /* jpeg.62.framework in Frameworks */,
 				83993292272F68550059355F /* ZIPFoundation in Frameworks */,
 				CE2D934324AD46670059923A /* intl.8.framework in Frameworks */,
-				84E3A90729441D860024A740 /* Socket in Frameworks */,
 				CE2D934424AD46670059923A /* gstapp-1.0.0.framework in Frameworks */,
 				CE2D934524AD46670059923A /* gthread-2.0.0.framework in Frameworks */,
 				CE2D934624AD46670059923A /* gstrtp-1.0.0.framework in Frameworks */,
@@ -2436,7 +2422,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				84E3A91529453FA50024A740 /* Socket in Frameworks */,
 				CEA9058925FC69D100801E7C /* usbredirhost.1.framework in Frameworks */,
 				CEA9058A25FC69D100801E7C /* usbredirparser.1.framework in Frameworks */,
 				CEA9053825F981E900801E7C /* usb-1.0.0.framework in Frameworks */,
@@ -2631,17 +2616,6 @@
 				84E3A8F7293DB3B60024A740 /* Info.plist */,
 			);
 			path = utmctl;
-			sourceTree = "<group>";
-		};
-		84E3A901294065580024A740 /* API */ = {
-			isa = PBXGroup;
-			children = (
-				84E3A902294065810024A740 /* UTMAPI.swift */,
-				84E3A912294534C80024A740 /* UTMAPIClient.swift */,
-				84E3A90D29442DC20024A740 /* UTMAPIDelegate.swift */,
-				84E3A90A29441DFF0024A740 /* UTMAPIServer.swift */,
-			);
-			path = API;
 			sourceTree = "<group>";
 		};
 		CE1BD9FA24F4825C0022A468 /* Display */ = {
@@ -3166,7 +3140,6 @@
 				CE9A352E26533A51005077CF /* JailbreakInterposer */,
 				CE4698F824C8FBD9008C1BD6 /* Icons */,
 				CEFE98DD2948518D007CB7A8 /* Scripting */,
-				84E3A901294065580024A740 /* API */,
 				84E3A8F1293DB37E0024A740 /* utmctl */,
 				CE550BCA225947990063E575 /* Products */,
 				CE2D63D622653C7300FC7E63 /* Frameworks */,
@@ -3457,7 +3430,6 @@
 			name = utmctl;
 			packageProductDependencies = (
 				84E3A8FF293DBC290024A740 /* ArgumentParser */,
-				84E3A90829441DC70024A740 /* Socket */,
 				84E3A910294469B10024A740 /* Logging */,
 			);
 			productName = utmctl;
@@ -3488,7 +3460,6 @@
 				840186592887AFD50050AC51 /* SwiftTerm */,
 				84018694288B66370050AC51 /* SwiftUIVisualEffects */,
 				84CE3DAB2904C14100FF068B /* InAppSettingsKit */,
-				84E3A90629441D860024A740 /* Socket */,
 			);
 			productName = UTM;
 			productReference = CE2D93BE24AD46670059923A /* UTM.app */;
@@ -3519,7 +3490,6 @@
 				8399328F272F4A400059355F /* ZIPFoundation */,
 				848F71E5277A2466006A0240 /* SwiftTerm */,
 				84B36D2127B3265400C22685 /* CocoaSpice */,
-				84E3A91429453FA50024A740 /* Socket */,
 			);
 			productName = UTM;
 			productReference = CE2D951C24AD48BE0059923A /* UTM.app */;
@@ -3649,7 +3619,6 @@
 				84018693288B66370050AC51 /* XCRemoteSwiftPackageReference "swiftui-visual-effects" */,
 				84CE3DAA2904C14100FF068B /* XCRemoteSwiftPackageReference "InAppSettingsKit" */,
 				84E3A8FE293DBC290024A740 /* XCRemoteSwiftPackageReference "swift-argument-parser" */,
-				84E3A90529441D860024A740 /* XCRemoteSwiftPackageReference "Socket" */,
 			);
 			productRefGroup = CE550BCA225947990063E575 /* Products */;
 			projectDirPath = "";
@@ -3752,10 +3721,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				84E3A913294534C80024A740 /* UTMAPIClient.swift in Sources */,
 				84E3A8F3293DB37E0024A740 /* UTMCtl.swift in Sources */,
 				CEC794BD2949663C00121A9F /* UTMScripting.swift in Sources */,
-				84E3A904294065810024A740 /* UTMAPI.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4119,7 +4086,6 @@
 				8401FDA2269D3E2500265F0D /* VMConfigAppleNetworkingView.swift in Sources */,
 				CE0B6D7C24AD584D00FE012D /* qapi-visit-char.c in Sources */,
 				CE9375A224BBDDD10074066F /* VMConfigDriveDetailsView.swift in Sources */,
-				84E3A90B29441DFF0024A740 /* UTMAPIServer.swift in Sources */,
 				CE2D955824AD4F980059923A /* VMConfigDisplayView.swift in Sources */,
 				CE0B6D5724AD584C00FE012D /* qapi-types-net.c in Sources */,
 				CEC794BA294924E300121A9F /* UTMScriptingSerialPortImpl.swift in Sources */,
@@ -4311,7 +4277,6 @@
 				CE0B6D3F24AD584C00FE012D /* qapi-visit-qom.c in Sources */,
 				848D99B6286300160055C215 /* QEMUArgument.swift in Sources */,
 				CE2D958A24AD4F990059923A /* VMConfigSystemView.swift in Sources */,
-				84E3A90E29442DC20024A740 /* UTMAPIDelegate.swift in Sources */,
 				CEBBF1A724B5730F00C15049 /* UTMDataExtension.swift in Sources */,
 				84C584E3268F8AE7000FCABF /* VMQEMUSettingsView.swift in Sources */,
 				845F1707289B5E2600944904 /* VMAppleSettingsAddDeviceMenuView.swift in Sources */,
@@ -4323,7 +4288,6 @@
 				CE612AC624D3B50700FA6300 /* VMDisplayWindowController.swift in Sources */,
 				53A0BDD726D79FE40010EDC5 /* SavePanel.swift in Sources */,
 				CE0B6D0724AD56AE00FE012D /* UTMQemuManager.m in Sources */,
-				84E3A903294065810024A740 /* UTMAPI.swift in Sources */,
 				CE0B6D3E24AD584C00FE012D /* qapi-visit-crypto.c in Sources */,
 				CE0B6D6C24AD584D00FE012D /* qapi-visit-common.c in Sources */,
 				2CE8EAF42572E0D0000E2EBB /* qapi-events-acpi.c in Sources */,
@@ -5445,14 +5409,6 @@
 				minimumVersion = 1.0.0;
 			};
 		};
-		84E3A90529441D860024A740 /* XCRemoteSwiftPackageReference "Socket" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/PureSwift/Socket.git";
-			requirement = {
-				branch = main;
-				kind = branch;
-			};
-		};
 		B329049A270FE136002707AC /* XCRemoteSwiftPackageReference "AltKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/rileytestut/AltKit.git";
@@ -5566,25 +5522,10 @@
 			package = 84E3A8FE293DBC290024A740 /* XCRemoteSwiftPackageReference "swift-argument-parser" */;
 			productName = ArgumentParser;
 		};
-		84E3A90629441D860024A740 /* Socket */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 84E3A90529441D860024A740 /* XCRemoteSwiftPackageReference "Socket" */;
-			productName = Socket;
-		};
-		84E3A90829441DC70024A740 /* Socket */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 84E3A90529441D860024A740 /* XCRemoteSwiftPackageReference "Socket" */;
-			productName = Socket;
-		};
 		84E3A910294469B10024A740 /* Logging */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = CE020BA524AEDEF000B44AB6 /* XCRemoteSwiftPackageReference "swift-log" */;
 			productName = Logging;
-		};
-		84E3A91429453FA50024A740 /* Socket */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 84E3A90529441D860024A740 /* XCRemoteSwiftPackageReference "Socket" */;
-			productName = Socket;
 		};
 		85EC515B27CC74AA004A51DE /* Logging */ = {
 			isa = XCSwiftPackageProductDependency;

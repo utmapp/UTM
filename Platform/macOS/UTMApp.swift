@@ -26,13 +26,6 @@ struct UTMApp: App {
             .onAppear {
                 appDelegate.data = data
                 NSApp.scriptingDelegate = appDelegate
-                Task {
-                    do {
-                        try await data.apiServer.start()
-                    } catch {
-                        logger.error("Error starting API server: \(error)")
-                    }
-                }
             }
             .onReceive(.vmSessionError) { notification in
                 if let message = notification.userInfo?["Message"] as? String {

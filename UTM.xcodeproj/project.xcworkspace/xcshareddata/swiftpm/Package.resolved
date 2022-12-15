@@ -37,15 +37,6 @@
       }
     },
     {
-      "identity" : "socket",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/PureSwift/Socket.git",
-      "state" : {
-        "branch" : "main",
-        "revision" : "6df639138e2d3ef26d2992f5691b59049bf75e91"
-      }
-    },
-    {
       "identity" : "swift-argument-parser",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-argument-parser.git",
@@ -61,15 +52,6 @@
       "state" : {
         "revision" : "6fe203dc33195667ce1759bf0182975e4653ba1c",
         "version" : "1.4.4"
-      }
-    },
-    {
-      "identity" : "swift-system",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/PureSwift/swift-system",
-      "state" : {
-        "branch" : "feature/dynamic-lib",
-        "revision" : "3e5be49e7cee5ba46f5b5bc994f08061dd9fe92a"
       }
     },
     {
