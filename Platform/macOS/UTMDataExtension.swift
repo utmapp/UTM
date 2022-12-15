@@ -19,7 +19,7 @@ import Carbon.HIToolbox
 
 @available(macOS 11, *)
 extension UTMData {
-    @MainActor func run(vm: UTMVirtualMachine) {
+    @MainActor func run(vm: UTMVirtualMachine, startImmediately: Bool = true) {
         var window: Any? = vmWindows[vm]
         if window == nil {
             let close = { (notification: Notification) -> Void in
@@ -59,10 +59,14 @@ extension UTMData {
             vm.delegate = unwrappedWindow
             unwrappedWindow.showWindow(nil)
             unwrappedWindow.window!.makeMain()
-            unwrappedWindow.requestAutoStart()
+            if startImmediately {
+                unwrappedWindow.requestAutoStart()
+            }
         } else if let unwrappedWindow = window as? VMHeadlessSessionState {
             vmWindows[vm] = unwrappedWindow
-            unwrappedWindow.start()
+            if startImmediately {
+                vm.requestVmStart()
+            }
         } else {
             logger.critical("Failed to create window controller.")
         }

@@ -122,6 +122,7 @@ class UTMScriptingVirtualMachineImpl: NSObject {
     
     @objc func start(_ command: NSScriptCommand) {
         withScriptCommand(command) { [self] in
+            data.run(vm: vm, startImmediately: false)
             if vm.state == .vmStopped {
                 try await vm.vmStart()
             } else if vm.state == .vmPaused {
