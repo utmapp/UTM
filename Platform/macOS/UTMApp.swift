@@ -25,6 +25,7 @@ struct UTMApp: App {
         ContentView().environmentObject(data)
             .onAppear {
                 appDelegate.data = data
+                NSApp.scriptingDelegate = appDelegate
                 Task {
                     do {
                         try await data.apiServer.start()
