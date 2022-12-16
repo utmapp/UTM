@@ -175,6 +175,9 @@
 /* No comment provided by engineer. */
 "Boot VHDX Image" = "Imagen VHDX de arranque";
 
+/* No comment provided by engineer. */
+"Boot into recovery mode." = "Arrancar en modo de recuperación.";
+
 /* UTMQemuConstants */
 "Bridged (Advanced)" = "Puenteada (Avanzado)";
 
@@ -304,6 +307,9 @@
 "Create a New Virtual Machine" = "Crear una nueva Máquina Virtual (VM)";
 
 /* No comment provided by engineer. */
+"Create a new VM with the same configuration as this one but without any data." = "Crear una nueva VM con la misma configuración que esta pero sin ningún dato.";
+
+/* No comment provided by engineer. */
 "Custom" = "Personalizado";
 
 /* VMConfigDirectoryPickerViewController */
@@ -339,6 +345,12 @@
 
 /* No comment provided by engineer. */
 "Delete…" = "Eliminar...";
+
+/* No comment provided by engineer. */
+"Delete this shortcut. The underlying data will not be deleted." = "Eliminar este acceso directo. Los datos subyacentes no se eliminarán.";
+
+/* No comment provided by engineer. */
+"Delete this VM and all its data." = "Eliminar esta VM y todos sus datos.";
 
 /* Delete VM overlay */
 "Deleting %@…" = "Eliminando %@...";
@@ -438,6 +450,9 @@
 "Download and mount the guest support package for Windows. This is required for some features including dynamic resolution and clipboard sharing." = "Descargar y montar el paquete de soporte de invitado para Windows. Esto es necesario para algunas funcionalidades como la resolución automática y el uso compartido del portapapeles.";
 
 /* No comment provided by engineer. */
+"Download and mount the guest tools for Windows." = "Descargar y montar las herramientas de invitado de Windows.";
+
+/* No comment provided by engineer. */
 "Download prebuilt from UTM Gallery…" = "Descargar una VM lista para usar desde la librería de UTM...";
 
 /* No comment provided by engineer. */
@@ -459,7 +474,13 @@
 "Drives" = "Unidades de disco";
 
 /* No comment provided by engineer. */
+"Duplicate this VM along with all its data." = "Duplica esta VM junto con todos sus datos.";
+
+/* No comment provided by engineer. */
 "Edit" = "Editar";
+
+/* No comment provided by engineer. */
+"Edit…" = "Editar...";
 
 /* No comment provided by engineer. */
 "Edit selected VM" = "Editar la VM seleccionada";
@@ -627,6 +648,9 @@
 /* No comment provided by engineer. */
 "Font Size" = "Tamaño de letra";
 
+/* VMDisplayQemuDisplayController */
+"Force kill" = "Matar a la fuerza";
+
 /* No comment provided by engineer. */
 "Force Multicore" = "Forzar multinúcleo";
 
@@ -641,6 +665,11 @@
 
 /* No comment provided by engineer. */
 "Force Disable CPU Flags" = "Forzar deshabilitado de argumentos de CPU";
+
+/* VMDisplayQemuDisplayController */
+"Force shut down" = "Forzar apagado";
+
+"Force kill the VM process with high risk of data corruption." = "Matar el proceso de la VM a la fuerza con alto riesgo de corromper los datos.";
 
 /* No comment provided by engineer. */
 "Full Graphics" = "Gráficos completos";
@@ -974,11 +1003,20 @@
 /* No comment provided by engineer. */
 "Mode" = "Modo";
 
+/* No comment provided by engineer. */
+"Modify settings for this VM." = "Modificar la configuración de esta VM";
+
 /* UTMAppleConfigurationDevices */
 "Mouse" = "Mouse";
 
 /* No comment provided by engineer. */
 "Mouse Wheel" = "Rueda de ratón";
+
+/* No comment provided by engineer. */
+"Move…" = "Mover...";
+
+/* No comment provided by engineer. */
+"Move this VM from internal storage to elsewhere." = "Mover esta VM del almacenamiento interno a otro lugar.";
 
 /* No comment provided by engineer. */
 "Move Up" = "Ascender";
@@ -1018,6 +1056,9 @@
 
 /* No comment provided by engineer. */
 "New Drive" = "Nueva unidad";
+
+/* No comment provided by engineer. */
+"New from template…" = "Nuevo desde plantilla...";
 
 /* VMConfigPortForwardingViewController */
 "New port forward" = "Nuevo puerto de redirección";
@@ -1233,6 +1274,9 @@
 /* VMDisplayAppleController */
 "Remove…" = "Eliminar…";
 
+/* VMDisplayQemuDisplayController */
+"Request power down" = "Solicitar apagado";
+
 /* No comment provided by engineer. */
 "Requires SPICE guest agent tools to be installed." = "Se requiere tener instalado las herramientas de agente invitado de SPICE.";
 
@@ -1272,6 +1316,9 @@
 /* No comment provided by engineer. */
 "Retina Mode" = "Modo Retina";
 
+/* No comment provided by engineer. */
+"Reveal where the VM is stored." = "Mostrar dónde se almacena la VM.";
+
 /* UTMAppleConfiguration */
 "Rosetta is not supported on the current host machine." = "Rosetta no está soportado en la máquina anfitrión actual.";
 
@@ -1285,7 +1332,19 @@
 "Run" = "Ejecutar";
 
 /* No comment provided by engineer. */
+"Run without saving changes" = "Ejecutar sin guardar los cambios";
+
+/* No comment provided by engineer. */
+"Run Recovery" = "Ejecutar Recuperación";
+
+/* No comment provided by engineer. */
 "Run selected VM" = "Ejecutar VM seleccionada";
+
+/* No comment provided by engineer. */
+"Run the VM in the foreground." = "Ejecutar la VM en primer plano.";
+
+/* No comment provided by engineer. */
+"Run the VM in the foreground, without saving data changes to disk." = "Ejecutar la VM en primer plano, sin guardar los cambios de datos en el disco.";
 
 /* No comment provided by engineer. */
 "Running" = "En ejecución";
@@ -1339,6 +1398,9 @@
 /* No comment provided by engineer. */
 "Selected:" = "Seleccionado:";
 
+/* VMDisplayQemuDisplayController */
+"Sends power down request to the guest. This simulates pressing the power button on a PC." = "Enviar solicitud de apagado al invitado. Esto simula presionar el botón de apagado en una PC.";
+
 /* No comment provided by engineer. */
 "Serial" = "Serial";
 
@@ -1355,6 +1417,12 @@
 /* Share context menu */
 "Share" = "Compartir";
 
+/* Share context menu */
+"Share…" = "Compartir...";
+
+/* No comment provided by engineer. */
+"Share a copy of this VM and all its data." = "Compartir una copia de esta VM con todos sus datos.";
+
 /* No comment provided by engineer. */
 "Share Directory" = "Compartir directorio";
 
@@ -1366,6 +1434,9 @@
 
 /* No comment provided by engineer. */
 "Shared Directory" = "Directorio compartido";
+
+/* VMConfigAppleSharingView */
+"Shared directories in macOS VMs are only available in macOS 13 and later." = "Los directorios compartidos en VMs de macOS sólo están disponibles en macOS 13 y posterior.";
 
 /* UTMQemuConstants */
 "Shared Network" = "Red compartida";
@@ -1437,6 +1508,9 @@
 "Stop" = "Detener";
 
 /* No comment provided by engineer. */
+"Stop the running VM." = "Detener la VM en ejecución.";
+
+/* No comment provided by engineer. */
 "Stop selected VM" = "Detener la VM seleccionada.";
 
 /* No comment provided by engineer. */
@@ -1492,6 +1566,15 @@
 
 /* No comment provided by engineer. */
 "Text Color" = "Color del texto";
+
+/* VMDisplayQemuDisplayController */
+"Tells the VM process to shut down with risk of data corruption. This simulates holding down the power button on a PC." = "Le dice al proceso de la VM de apagarse con riesgo de corromper los datos. Esto simula mantener presionado el botón de apagado en una PC:";
+
+/* SizeTextField */
+"The amount of storage to allocate for this image. Ignored if importing an image. If this is a raw image, then an empty file of this size will be stored with the VM. Otherwise, the disk image will dynamically expand up to this size." = "La cantidad de almacenamiento para asignar a esta imagen. Se ignora si la imagen es importada. Si es una imagen bruta, entonces se almacenará un archivo vacío de este tamaño con la VM. De otro modo, la imagen de disco se expandirá dinámicamente hasta este tamaño.";
+
+/* SizeTextField */
+"The amount of storage to allocate for this image. An empty file of this size will be stored with the VM." = "La cantidad de almacenamiento para asignar a esta imagen. Se almacenará un archivo vacío de este tamaño con la VM.";
 
 /* UTMConfiguration */
 "The backend for this configuration is not supported." = "El backend para esta configuración no está soportado.";
