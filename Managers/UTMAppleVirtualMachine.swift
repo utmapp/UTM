@@ -67,15 +67,13 @@ import Virtualization
     
     private var activeResourceUrls: [URL] = []
     
-    override func reloadConfiguration() throws {
+    @MainActor override func reloadConfiguration() throws {
         let newConfig = try UTMAppleConfiguration.load(from: path) as! UTMAppleConfiguration
         let oldConfig = appleConfig
         config = UTMConfigurationWrapper(wrapping: newConfig)
-        Task { @MainActor in
-            updateConfigFromRegistry()
-            if #available(macOS 12, *) {
-                newConfig.system.boot.macRecoveryIpswURL = oldConfig.system.boot.macRecoveryIpswURL
-            }
+        updateConfigFromRegistry()
+        if #available(macOS 12, *) {
+            newConfig.system.boot.macRecoveryIpswURL = oldConfig.system.boot.macRecoveryIpswURL
         }
     }
     

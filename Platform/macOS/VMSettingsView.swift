@@ -64,8 +64,8 @@ struct VMSettingsView<Config: UTMConfiguration>: View {
     
     func cancel() {
         presentationMode.wrappedValue.dismiss()
-        data.busyWork {
-            try data.discardChanges(for: self.vm)
+        data.busyWorkAsync {
+            try await data.discardChanges(for: self.vm)
         }
     }
 }
