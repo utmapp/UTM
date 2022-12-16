@@ -96,6 +96,7 @@ struct VMNavigationListView: View {
 private struct VMListModifier: ViewModifier {
     @EnvironmentObject private var data: UTMData
     @State private var settingsPresented = false
+    @State private var sheetPresented = false
     
     func body(content: Content) -> some View {
         content
@@ -126,12 +127,36 @@ private struct VMListModifier: ViewModifier {
             }
             #endif
         }
+        #if os(iOS)
+        // SwiftUI bug on iOS 14.4 and previous versions prevents multiple .sheet from working
+        .sheet(isPresented: $sheetPresented) {
+            if data.showNewVMSheet {
+                VMWizardView()
+            } else if settingsPresented {
+                UTMSettingsView()
+            }
+        }
+        .onChange(of: data.showNewVMSheet) { newValue in
+            if newValue {
+                settingsPresented = false
+                sheetPresented = true
+            }
+        }
+        .onChange(of: settingsPresented) { newValue in
+            if newValue {
+                data.showNewVMSheet = false
+                sheetPresented = true
+            }
+        }
+        .onChange(of: sheetPresented) { newValue in
+            if !newValue {
+                settingsPresented = false
+                data.showNewVMSheet = false
+            }
+        }
+        #else
         .sheet(isPresented: $data.showNewVMSheet) {
             VMWizardView()
-        }
-        #if os(iOS)
-        .sheet(isPresented: $settingsPresented) {
-            UTMSettingsView()
         }
         #endif
     }
