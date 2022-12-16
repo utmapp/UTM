@@ -33,7 +33,7 @@ struct VMSettingsView<Config: UTMConfiguration>: View {
                     VMAppleSettingsView(config: config as! UTMAppleConfiguration)
                 }
             }.listStyle(.sidebar)
-        }.frame(minWidth: 800, minHeight: 400)
+        }.frame(minWidth: 800, minHeight: 400, alignment: .leading)
         .toolbar {
             ToolbarItemGroup(placement: .cancellationAction) {
                 Button(action: cancel) {
@@ -72,11 +72,23 @@ struct VMSettingsView<Config: UTMConfiguration>: View {
 
 @available(macOS 11, *)
 struct ScrollableViewModifier: ViewModifier {
+    @State private var scrollViewContentSize: CGSize = .zero
+    
     func body(content: Content) -> some View {
         ScrollView {
-            content.padding()
+            content
             .frame(maxWidth: .infinity)
+            .padding()
+            .background(
+                GeometryReader { geo -> Color in
+                    DispatchQueue.main.async {
+                        scrollViewContentSize = geo.size
+                    }
+                    return Color.clear
+                }
+            )
         }
+        .frame(idealWidth: scrollViewContentSize.width)
     }
 }
 
