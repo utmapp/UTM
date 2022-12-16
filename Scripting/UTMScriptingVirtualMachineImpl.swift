@@ -161,7 +161,7 @@ extension UTMScriptingVirtualMachineImpl {
         
         var localizedDescription: String {
             switch self {
-            case .operationNotAvailable: return "Operation not available."
+            case .operationNotAvailable: return NSLocalizedString("Operation not available.", comment: "UTMScriptingVirtualMachineImpl")
             }
         }
     }
