@@ -24,6 +24,7 @@ final class UTMPatches {
     /// TODO: Some thread safety/race issues etc
     static func patchAll() {
         NSKeyedUnarchiver.patchToolbarItem()
+        NSApplication.patchApplicationScripting()
         // SwiftUI bug: works around crash due to "already had more Update Constraints in Window passes than there are views in the window" exception
         UserDefaults.standard.set(false, forKey: "NSWindowAssertWhenDisplayCycleLimitReached")
     }
@@ -53,6 +54,87 @@ extension NSKeyedUnarchiver {
     fileprivate static func patchToolbarItem() {
         patch(#selector(Self.decodeObject(forKey:)),
               with: #selector(Self.xxx_decodeObject(forKey:)),
+              class: Self.self)
+    }
+}
+
+private var ScriptingDelegateHandle: Int = 0
+
+/// Patch NSApplication to use a new delegate for scripting tasks
+/// We cannot use NSApplicationDelegate because SwiftUI wraps it with its own implementation
+extension NSApplication {
+    /// Set this, at startup, to the delegate used for scripting
+    weak var scriptingDelegate: NSApplicationDelegate? {
+        set {
+            objc_setAssociatedObject(self, &ScriptingDelegateHandle, newValue, .OBJC_ASSOCIATION_ASSIGN)
+        }
+        
+        get {
+            objc_getAssociatedObject(self, &ScriptingDelegateHandle) as? NSApplicationDelegate
+        }
+    }
+    
+    /// Get KVO value from scripting delegate if implemented
+    /// - Parameter key: Key to look up
+    /// - Returns: Value from either scripting delegate or the default implementation
+    @objc dynamic func xxx_value(forKey key: String) -> Any? {
+        if scriptingDelegate?.application?(self, delegateHandlesKey: key) ?? false {
+            return (scriptingDelegate as! NSObject).value(forKey: key)
+        } else {
+            return xxx_value(forKey: key)
+        }
+    }
+    
+    /// Set KVO value in scripting delegate if implemented
+    /// - Parameters:
+    ///   - value: Value to set to
+    ///   - key: Key to look up
+    @objc dynamic func xxx_setValue(_ value: Any?, forKey key: String) {
+        if scriptingDelegate?.application?(self, delegateHandlesKey: key) ?? false {
+            return (scriptingDelegate as! NSObject).setValue(value, forKey: key)
+        } else {
+            return xxx_setValue(value, forKey: key)
+        }
+    }
+    
+    /// Get KVO value from scripting delegate if implemented
+    /// - Parameters:
+    ///   - index: Index of item
+    ///   - key: Key to look up
+    /// - Returns: Value from either scripting delegate or the default implementation
+    @objc dynamic func xxx_value(at index: Int, inPropertyWithKey key: String) -> Any? {
+        if scriptingDelegate?.application?(self, delegateHandlesKey: key) ?? false {
+            return (scriptingDelegate as! NSObject).value(at: index, inPropertyWithKey: key)
+        } else {
+            return xxx_value(at: index, inPropertyWithKey: key)
+        }
+    }
+    
+    /// Set KVO value in scripting delegate if implemented
+    /// - Parameters:
+    ///   - index: Index of item
+    ///   - key: Key to look up
+    ///   - value: Value to set item to
+    @objc dynamic func xxx_replaceValue(at index: Int, inPropertyWithKey key: String, withValue value: Any) {
+        if scriptingDelegate?.application?(self, delegateHandlesKey: key) ?? false {
+            return (scriptingDelegate as! NSObject).replaceValue(at: index, inPropertyWithKey: key, withValue: value)
+        } else {
+            return xxx_replaceValue(at: index, inPropertyWithKey: key, withValue: value)
+        }
+    }
+    
+    fileprivate static func patchApplicationScripting() {
+        patch(#selector(Self.value(forKey:)),
+              with: #selector(Self.xxx_value(forKey:)),
+              class: Self.self)
+        patch(#selector(Self.value(at:inPropertyWithKey:)),
+              with: #selector(Self.xxx_value(at:inPropertyWithKey:)),
+              class: Self.self)
+        patch(#selector(Self.setValue(_:forKey:)),
+              with: #selector(Self.xxx_setValue(_:forKey:)),
+              class: Self.self)
+        patch(#selector(Self.replaceValue(at:inPropertyWithKey:withValue:)),
+              with: #selector(Self.xxx_replaceValue(at:inPropertyWithKey:withValue:)),
               class: Self.self)
     }
 }

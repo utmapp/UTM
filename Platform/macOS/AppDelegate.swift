@@ -27,11 +27,24 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return vmList.contains(where: { $0.state == .vmStarted || ($0.state == .vmPaused && !$0.hasSaveState) })
     }
     
-    private var isLaunchedByCLI: Bool {
-        if CommandLine.arguments.count > 1 && CommandLine.arguments[1] == "cli-request" {
-            return true
-        } else {
-            return false
+    @MainActor
+    @objc var scriptingVirtualMachines: [UTMScriptingVirtualMachineImpl] {
+        guard let data = data else {
+            return []
+        }
+        return data.virtualMachines.map { vm in
+            UTMScriptingVirtualMachineImpl(for: vm, data: data)
+        }
+    }
+    
+    @MainActor
+    @objc var isAutoTerminate: Bool {
+        get {
+            !isKeepRunningAfterLastWindowClosed
+        }
+        
+        set {
+            isKeepRunningAfterLastWindowClosed = !newValue
         }
     }
     
@@ -97,8 +110,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if isDockIconHidden {
             NSApp.setActivationPolicy(.accessory)
         }
-        if isLaunchedByCLI && isKeepRunningAfterLastWindowClosed {
-            NSApp.windows.first?.close()
+    }
+    
+    func application(_ sender: NSApplication, delegateHandlesKey key: String) -> Bool {
+        switch key {
+        case "scriptingVirtualMachines": return true
+        case "isAutoTerminate": return true
+        default: return false
         }
     }
 }

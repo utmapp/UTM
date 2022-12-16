@@ -41,10 +41,11 @@ extension VMHeadlessSessionState: UTMVirtualMachineDelegate {
             vmState = state
             if state == .vmStarted {
                 hasStarted = true
+                didStart()
             }
             if state == .vmStopped {
                 if hasStarted {
-                    stop() // graceful exit
+                    didStop() // graceful exit
                 }
                 hasStarted = false
             }
@@ -57,19 +58,18 @@ extension VMHeadlessSessionState: UTMVirtualMachineDelegate {
             NotificationCenter.default.post(name: .vmSessionError, object: nil, userInfo: ["Session": self, "Message": message])
             if !hasStarted {
                 // if we got an error and haven't started, then cleanup
-                stop()
+                didStop()
             }
         }
     }
 }
 
 extension VMHeadlessSessionState {
-    func start() {
+    private func didStart() {
         NotificationCenter.default.post(name: .vmSessionCreated, object: nil, userInfo: ["Session": self])
-        vm.requestVmStart()
     }
     
-    func stop() {
+    private func didStop() {
         NotificationCenter.default.post(name: .vmSessionEnded, object: nil, userInfo: ["Session": self])
     }
 }

@@ -87,5 +87,9 @@
 	<string>$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).QEMUHelper</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Permission is required for any virtual machine to record from the microphone.</string>
+	<key>NSAppleScriptEnabled</key>
+	<true/>
+	<key>OSAScriptingDefinition</key>
+	<string>UTM.sdef</string>
 </dict>
 </plist>

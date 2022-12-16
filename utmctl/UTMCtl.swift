@@ -17,14 +17,10 @@
 import Foundation
 import AppKit
 import ArgumentParser
-import Logging
-
-var logger = Logger(label: "com.utmapp.utmctl") { label in
-    StreamLogHandler.standardError(label: label)
-}
+import ScriptingBridge
 
 @main
-struct UTMCtl: AsyncParsableCommand {
+struct UTMCtl: ParsableCommand {
     static var configuration = CommandConfiguration(
         commandName: "utmctl",
         abstract: "CLI tool for controlling UTM virtual machines.",
@@ -33,63 +29,46 @@ struct UTMCtl: AsyncParsableCommand {
 }
 
 /// Common interface for all subcommands
-protocol UTMAPICommand: AsyncParsableCommand {
-    associatedtype Request: UTMAPIRequest = UTMAPI.AnyRequest
+protocol UTMAPICommand: ParsableCommand {
     var environment: UTMCtl.EnvironmentOptions { get }
     
-    func run(with client: UTMAPIClient) async throws
-    func createRequest() -> Request
-    func printResponse(_ response: Request.Response)
+    func run(with application: UTMScriptingApplication) throws
 }
 
 extension UTMAPICommand {
     /// Entry point for all subcommands
-    func run() async throws {
-        logger.logLevel = environment.debug ? .debug : .info
-        let socketUrl = environment.socketPath?.asFileURL ?? defaultSocketUrl
-        let client = UTMAPIClient(connectPathUrl: socketUrl)
-        try await connectClient(client)
-        try await run(with: client)
-        try await client.disconnect()
-    }
-    
-    /// Attempt to connect to the server and spawn UTM if it is not running
-    /// - Parameter client: API client
-    private func connectClient(_ client: UTMAPIClient) async throws {
-        do {
-            try await client.connect()
-        } catch UTMAPI.APIError.serverNotFound {
-            logger.info("Launching UTM...")
-            let config = NSWorkspace.OpenConfiguration()
-            config.arguments = ["cli-request"]
-            try await NSWorkspace.shared.openApplication(at: utmAppUrl, configuration: config)
-            repeat {
-                do {
-                    try await client.connect()
-                } catch  UTMAPI.APIError.serverNotFound {
-                    // try again after a cooldown
-                    try await Task.sleep(nanoseconds: 1 * NSEC_PER_SEC)
-                }
-            } while await !client.isConnected
+    func run() throws {
+        guard let app = SBApplication(url: utmAppUrl) else {
+            throw UTMCtl.APIError.applicationNotFound
         }
-    }
-    
-    /// Socket either in app group or app sandbox
-    private var defaultSocketUrl: URL {
-        let appGroup = Bundle.main.infoDictionary?["AppGroupIdentifier"] as? String
-        let appBundle = Bundle.main.infoDictionary?["AppBundleIdentifier"] as? String
-        // default to unsigned sandbox path
-        var parentURL: URL = try! FileManager.default.url(for: .libraryDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
-        parentURL.appendPathComponent("Containers")
-        parentURL.appendPathComponent(appBundle ?? "com.utmapp.UTM")
-        parentURL.appendPathComponent("Data")
-        parentURL.appendPathComponent("tmp")
-        if let appGroup = appGroup, !appGroup.hasPrefix("invalid.") {
-            if let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup) {
-                parentURL = containerURL
+        app.launchFlags = [.defaults, .andHide]
+        app.delegate = UTMCtl.EventErrorHandler.shared
+        let utmApp = app as UTMScriptingApplication
+        if environment.hide {
+            utmApp.setAutoTerminate!(false)
+            if let windows = utmApp.windows!() as? [UTMScriptingWindow] {
+                for window in windows {
+                    if window.name == "UTM" {
+                        window.close!()
+                        break
+                    }
+                }
             }
         }
-        return parentURL.appendingPathComponent("api.sock")
+        try run(with: utmApp)
+    }
+    
+    /// Get a virtual machine from an identifier
+    /// - Parameters:
+    ///   - identifier: Identifier
+    ///   - application: Scripting bridge application
+    /// - Returns: Virtual machine for identifier
+    func virtualMachine(forIdentifier identifier: UTMCtl.VMIdentifier, in application: UTMScriptingApplication) throws -> UTMScriptingVirtualMachine {
+        let list = application.virtualMachines!()
+        guard let vm = list.object(withID: identifier.identifier) as? UTMScriptingVirtualMachine else {
+            throw UTMCtl.APIError.virtualMachineNotFound
+        }
+        return vm
     }
     
     /// Find the path to UTM.app
@@ -102,46 +81,53 @@ extension UTMAPICommand {
         }
         return URL(fileURLWithPath: "/Applications/UTM.app")
     }
-    
-    /// Default implementation of run command
-    /// - Parameter client: Connected client
-    func run(with client: UTMAPIClient) async throws {
-        let request = createRequest()
-        do {
-            let response = try await client.process(request: request)
-            if environment.machineReadable {
-                printJson(for: response)
-            } else {
-                printResponse(response)
+}
+
+extension UTMCtl {
+    @objc class EventErrorHandler: NSObject, SBApplicationDelegate {
+        static let shared = EventErrorHandler()
+        
+        /// Error handler for scripting events
+        /// - Parameters:
+        ///   - event: Event that caused the error
+        ///   - error: Error
+        /// - Returns: nil
+        func eventDidFail(_ event: UnsafePointer<AppleEvent>, withError error: Error) -> Any? {
+            FileHandle.standardError.write("Error from event: \(error.localizedDescription)")
+            if let user = (error as NSError).userInfo["ErrorString"] as? String {
+                FileHandle.standardError.write(user)
             }
-        } catch {
-            if environment.machineReadable {
-                let jsonError = UTMAPI.ErrorResponse(error.localizedDescription)
-                printJson(for: jsonError)
-            } else {
-                throw error
+            return nil
+        }
+    }
+}
+
+extension UTMCtl {
+    enum APIError: Error, LocalizedError {
+        case applicationNotFound
+        case virtualMachineNotFound
+        
+        var localizedDescription: String {
+            switch self {
+            case .applicationNotFound: return "Application not found."
+            case .virtualMachineNotFound: return "Virtual machine not found."
             }
         }
     }
-    
-    /// Default placeholder for createRequest
-    /// - Returns: Nothing
-    func createRequest() -> Request {
-        fatalError("You must implement createRequest() if you use the default run(with:)!")
-    }
-    
-    /// Prints the JSON response
-    /// - Parameter response: Response from server
-    func printJson(for response: any UTMAPIResponse) {
-        let data = try! UTMAPI.encode(response)
-        let json = String(data: data, encoding: .utf8)!
-        print(json)
-    }
-    
-    /// Default placeholder for printResponse
-    /// - Parameter response: Response to print
-    func printResponse(_ response: Request.Response) {
-        // default no response is printed
+}
+
+fileprivate extension UTMScriptingStatus {
+    var asString: String {
+        switch self {
+        case .stopped: return "stopped"
+        case .starting: return "starting"
+        case .started: return "started"
+        case .pausing: return "pausing"
+        case .paused: return "paused"
+        case .resuming: return "resuming"
+        case .stopping: return "stopping"
+        @unknown default: return "unknown"
+        }
     }
 }
 
@@ -153,15 +139,17 @@ extension UTMCtl {
         
         @OptionGroup var environment: EnvironmentOptions
         
-        func createRequest() -> UTMAPI.ListRequest {
-            UTMAPI.ListRequest()
+        func run(with application: UTMScriptingApplication) throws {
+            if let list = application.virtualMachines!() as? [UTMScriptingVirtualMachine] {
+                printResponse(list)
+            }
         }
         
-        func printResponse(_ response: UTMAPI.ListResponse) {
+        func printResponse(_ response: [UTMScriptingVirtualMachine]) {
             print("UUID                                 Status   Name")
-            for entry in response.entries {
-                let status = entry.status.rawValue.padding(toLength: 8, withPad: " ", startingAt: 0)
-                print("\(entry.uuid) \(status) \(entry.name)")
+            for entry in response {
+                let status = entry.status!.asString.padding(toLength: 8, withPad: " ", startingAt: 0)
+                print("\(entry.id!()) \(status) \(entry.name!)")
             }
         }
     }
@@ -177,14 +165,14 @@ extension UTMCtl {
         
         @OptionGroup var identifer: VMIdentifier
         
-        func createRequest() -> UTMAPI.StatusRequest {
-            var request = UTMAPI.StatusRequest()
-            request.identifier = identifer.identifier
-            return request
+        func run(with application: UTMScriptingApplication) throws {
+            let vm = try virtualMachine(forIdentifier: identifer, in: application)
+            printResponse(vm)
+            
         }
         
-        func printResponse(_ response: UTMAPI.StatusResponse) {
-            print(response.status)
+        func printResponse(_ vm: UTMScriptingVirtualMachine) {
+            print(vm.status!.asString)
         }
     }
 }
@@ -202,15 +190,14 @@ extension UTMCtl {
         @Flag(name: .shortAndLong, help: "Attach to the first serial port after start.")
         var attach: Bool = false
         
-        func run(with client: UTMAPIClient) async throws {
-            var request = UTMAPI.StartRequest()
-            request.identifier = identifer.identifier
-            _ = try await client.process(request: request)
+        func run(with application: UTMScriptingApplication) throws {
+            let vm = try virtualMachine(forIdentifier: identifer, in: application)
+            vm.start!()
             if attach {
                 var attachCommand = Attach()
                 attachCommand.environment = environment
                 attachCommand.identifer = identifer
-                try await attachCommand.run(with: client)
+                try attachCommand.run(with: application)
             }
         }
     }
@@ -229,11 +216,9 @@ extension UTMCtl {
         @Flag(name: .shortAndLong, help: "Save the VM state before suspending.")
         var saveState: Bool = false
         
-        func createRequest() -> UTMAPI.SuspendRequest {
-            var request = UTMAPI.SuspendRequest()
-            request.identifier = identifer.identifier
-            request.shouldSaveState = saveState
-            return request
+        func run(with application: UTMScriptingApplication) throws {
+            let vm = try virtualMachine(forIdentifier: identifer, in: application)
+            vm.suspendSaving!(saveState)
         }
     }
 }
@@ -277,17 +262,17 @@ extension UTMCtl {
         
         @OptionGroup var style: Style
         
-        func createRequest() -> UTMAPI.StopRequest {
-            var request = UTMAPI.StopRequest()
-            request.identifier = identifer.identifier
+        func run(with application: UTMScriptingApplication) throws {
+            let vm = try virtualMachine(forIdentifier: identifer, in: application)
+            var stopMethod: UTMScriptingStopMethod = .force
             if style.request {
-                request.type = .request
+                stopMethod = .request
             } else if style.force {
-                request.type = .force
+                stopMethod = .force
             } else if style.kill {
-                request.type = .kill
+                stopMethod = .kill
             }
-            return request
+            vm.stopBy!(stopMethod)
         }
     }
 }
@@ -311,16 +296,31 @@ extension UTMCtl {
             self.index = nil
         }
         
-        func createRequest() -> UTMAPI.SerialRequest {
-            var request = UTMAPI.SerialRequest()
-            request.identifier = identifer.identifier
-            request.index = index
-            return request
+        func run(with application: UTMScriptingApplication) throws {
+            let vm = try virtualMachine(forIdentifier: identifer, in: application)
+            guard let serialPorts = vm.serialPorts!() as? [UTMScriptingSerialPort] else {
+                return
+            }
+            for serialPort in serialPorts {
+                if let index = index {
+                    if index != serialPort.id!() {
+                        continue
+                    }
+                }
+                if let interface = serialPort.interface, interface != .unavailable {
+                    printResponse(serialPort)
+                    return
+                }
+            }
         }
         
-        func printResponse(_ response: UTMAPI.SerialResponse) {
+        func printResponse(_ serialPort: UTMScriptingSerialPort) {
             // TODO: spawn a terminal emulator
-            print(response.address)
+            if serialPort.interface == .ptty {
+                print("PTTY: \(serialPort.address!)")
+            } else if serialPort.interface == .tcp {
+                print("TCP: \(serialPort.address!):\(serialPort.port!)")
+            }
         }
     }
 }
@@ -335,16 +335,23 @@ extension UTMCtl {
         @Flag(name: .shortAndLong, help: "Show debug logging.")
         var debug: Bool = false
         
-        @Flag(name: .shortAndLong, help: "Output results in JSON.")
-        var machineReadable: Bool = false
-        
-        @Option(help: "Specify a custom path to the UTM API server socket.")
-        var socketPath: String?
+        @Flag(help: "Hide the main UTM window.")
+        var hide: Bool = false
     }
 }
 
 private extension String {
     var asFileURL: URL {
         URL(fileURLWithPath: self, relativeTo: nil)
+    }
+}
+
+extension FileHandle: TextOutputStream {
+    private static var newLine = Data("\n".utf8)
+    
+    public func write(_ string: String) {
+        let data = Data(string.utf8)
+        self.write(data)
+        self.write(Self.newLine)
     }
 }
