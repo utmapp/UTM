@@ -220,8 +220,8 @@ extension CSPasteboardType {
 
 @objc extension UTMPasteboard {
     func hasContents() -> Bool {
-        if let types = systemPasteboard.types {
-            return types.count > 0
+        if let items = systemPasteboard.pasteboardItems {
+            return items.count > 0
         } else {
             return false
         }
@@ -261,10 +261,7 @@ extension CSPasteboardType {
     }
     
     func canReadItem(for type: CSPasteboardType) -> Bool {
-        guard let types = systemPasteboard.types else {
-            return false
-        }
-        return types.contains(type.rawValue)
+        systemPasteboard.availableType(from: [type.rawValue]) != nil
     }
 }
 #endif
