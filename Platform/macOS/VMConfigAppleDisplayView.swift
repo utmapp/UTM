@@ -38,10 +38,16 @@ struct VMConfigAppleDisplayView: View {
             lhs.resolution.heightInPixels == rhs.heightInPixels
         }
     }
-    private let defaultResolution = NamedResolution(name: "",
-                                                    resolution: Resolution(width: 1920, height: 1200))
+    
+    private static let customResolution = NamedResolution(name: NSLocalizedString("Custom", comment: "VMConfigAppleDisplayView"),
+                                                    resolution: Resolution(width: 0, height: 0))
+    
+    private var customResolution: NamedResolution {
+        Self.customResolution
+    }
     
     private let resolutions = [
+        Self.customResolution,
         NamedResolution(name: "1024 × 640 — 16:10",
                         resolution: Resolution(width: 1024, height: 640)),
         NamedResolution(name: "1024 × 665 — MacBook Pro (14-inch, 2021) Scaled",
@@ -127,7 +133,7 @@ struct VMConfigAppleDisplayView: View {
                     return item
                 }
             }
-            return defaultResolution
+            return customResolution
         } set: { newValue in
             config.widthInPixels = newValue.resolution.widthInPixels
             config.heightInPixels = newValue.resolution.heightInPixels
@@ -150,6 +156,10 @@ struct VMConfigAppleDisplayView: View {
                     Text(item.name)
                         .tag(item)
                 }
+            }
+            if displayResolution.wrappedValue == customResolution {
+                NumberTextField("Width", number: $config.widthInPixels)
+                NumberTextField("Height", number: $config.heightInPixels)
             }
             Toggle("HiDPI (Retina)", isOn: isHidpi)
                 .help("Only available on macOS virtual machines.")
