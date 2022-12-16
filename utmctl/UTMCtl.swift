@@ -65,10 +65,15 @@ extension UTMAPICommand {
     /// - Returns: Virtual machine for identifier
     func virtualMachine(forIdentifier identifier: UTMCtl.VMIdentifier, in application: UTMScriptingApplication) throws -> UTMScriptingVirtualMachine {
         let list = application.virtualMachines!()
-        guard let vm = list.object(withID: identifier.identifier) as? UTMScriptingVirtualMachine else {
-            throw UTMCtl.APIError.virtualMachineNotFound
+        return try withErrorsSilenced(application) {
+            if let vm = list.object(withID: identifier.identifier) as? UTMScriptingVirtualMachine, vm.id!() == identifier.identifier {
+                return vm
+            } else if let vm = list.object(withName: identifier.identifier) as? UTMScriptingVirtualMachine, vm.name! == identifier.identifier {
+                return vm
+            } else {
+                throw UTMCtl.APIError.virtualMachineNotFound
+            }
         }
-        return vm
     }
     
     /// Find the path to UTM.app
@@ -80,6 +85,14 @@ extension UTMAPICommand {
             }
         }
         return URL(fileURLWithPath: "/Applications/UTM.app")
+    }
+    
+    func withErrorsSilenced<Result>(_ application: UTMScriptingApplication, body: () throws -> Result) rethrows -> Result {
+        let delegate = application.delegate
+        application.delegate = nil
+        let result = try body()
+        application.delegate = delegate
+        return result
     }
 }
 
