@@ -141,11 +141,14 @@
         
         <command name="start" code="UTMvstar">
           <direct-parameter description="Virtual machine to start." type="virtual machine"/>
+          <parameter name="saving" code="SaVe" description="When false, do not save the VM changes to disk. Default value is true." type="boolean" optional="yes">
+            <cocoa key="saveFlag"/>
+          </parameter>
         </command>
         
         <command name="suspend" code="UTMvsusp">
           <direct-parameter description="Virtual machine to suspend." type="virtual machine"/>
-          <parameter name="saving" code="SaVe" description="Save VM state after suspend." type="boolean">
+          <parameter name="saving" code="SaVe" description="Save VM state after suspend. Default value is false." type="boolean" optional="yes">
             <cocoa key="saveFlag"/>
           </parameter>
         </command>

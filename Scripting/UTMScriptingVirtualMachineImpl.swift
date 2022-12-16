@@ -121,7 +121,14 @@ class UTMScriptingVirtualMachineImpl: NSObject {
     }
     
     @objc func start(_ command: NSScriptCommand) {
+        let shouldSaveState = command.evaluatedArguments?["saveFlag"] as? Bool ?? true
         withScriptCommand(command) { [self] in
+            if !shouldSaveState {
+                guard let vm = vm as? UTMQemuVirtualMachine else {
+                    throw ScriptingError.operationNotSupported
+                }
+                vm.isRunningAsSnapshot = true
+            }
             data.run(vm: vm, startImmediately: false)
             if vm.state == .vmStopped {
                 try await vm.vmStart()
@@ -134,7 +141,7 @@ class UTMScriptingVirtualMachineImpl: NSObject {
     }
     
     @objc func suspend(_ command: NSScriptCommand) {
-        let shouldSaveState = command.evaluatedArguments?["doneFlag"] as? Bool ?? false
+        let shouldSaveState = command.evaluatedArguments?["saveFlag"] as? Bool ?? false
         withScriptCommand(command) { [self] in
             try await vm.vmPause(save: shouldSaveState)
         }
@@ -158,10 +165,12 @@ class UTMScriptingVirtualMachineImpl: NSObject {
 extension UTMScriptingVirtualMachineImpl {
     enum ScriptingError: Error, LocalizedError {
         case operationNotAvailable
+        case operationNotSupported
         
         var localizedDescription: String {
             switch self {
             case .operationNotAvailable: return NSLocalizedString("Operation not available.", comment: "UTMScriptingVirtualMachineImpl")
+            case .operationNotSupported: return NSLocalizedString("Operation not supported by the backend.", comment: "UTMScriptingVirtualMachineImpl")
             }
         }
     }

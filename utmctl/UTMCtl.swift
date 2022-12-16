@@ -203,9 +203,12 @@ extension UTMCtl {
         @Flag(name: .shortAndLong, help: "Attach to the first serial port after start.")
         var attach: Bool = false
         
+        @Flag(help: "Run VM as a snapshot and do not save changes to disk.")
+        var disposible: Bool = false
+        
         func run(with application: UTMScriptingApplication) throws {
             let vm = try virtualMachine(forIdentifier: identifer, in: application)
-            vm.start!()
+            vm.startSaving!(!disposible)
             if attach {
                 var attachCommand = Attach()
                 attachCommand.environment = environment

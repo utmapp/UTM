@@ -125,7 +125,7 @@ extension SBObject: UTMScriptingWindow {}
     @objc optional var memory: String { get } // RAM size.
     @objc optional var backend: UTMScriptingBackend { get } // Emulation/virtualization engine used.
     @objc optional var status: UTMScriptingStatus { get } // Current running status.
-    @objc optional func start()
+    @objc optional func startSaving(_ saving: Bool)
     @objc optional func suspendSaving(_ saving: Bool)
     @objc optional func stopBy(_ by: UTMScriptingStopMethod)
 }
