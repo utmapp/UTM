@@ -19,7 +19,7 @@ ZSTD_SRC="https://github.com/facebook/zstd/releases/download/v1.5.2/zstd-1.5.2.t
 SPICE_PROTOCOL_SRC="https://www.spice-space.org/download/releases/spice-protocol-0.14.4.tar.xz"
 SPICE_SERVER_SRC="https://www.spice-space.org/download/releases/spice-server/spice-0.14.3.tar.bz2"
 USB_SRC="https://github.com/libusb/libusb/releases/download/v1.0.25/libusb-1.0.25.tar.bz2"
-USBREDIR_SRC="https://www.spice-space.org/download/usbredir/usbredir-0.12.0.tar.xz"
+USBREDIR_SRC="https://www.spice-space.org/download/usbredir/usbredir-0.13.0.tar.xz"
 SLIRP_SRC="https://gitlab.freedesktop.org/slirp/libslirp/-/archive/v4.7.0/libslirp-v4.7.0.tar.gz"
 QEMU_SRC="https://github.com/utmapp/qemu/releases/download/v7.2.0-utm/qemu-7.2.0-utm.tar.bz2"
 
