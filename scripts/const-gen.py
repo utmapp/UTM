@@ -20,6 +20,7 @@ TARGETS = [
     Name("cris", "CRIS"),
     Name("hppa", "HPPA"),
     Name("i386", "i386 (x86)"),
+    Name("loongarch64", "LoongArch64"),
     Name("m68k", "m68k"),
     Name("microblaze", "Microblaze"),
     Name("microblazeel", "Microblaze (Little Endian)"),
