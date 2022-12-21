@@ -460,8 +460,8 @@ class UTMData: ObservableObject {
         guard let newVM = UTMVirtualMachine(url: newPath) else {
             throw NSLocalizedString("Failed to clone VM.", comment: "UTMData")
         }
-        await vm.changeUuid(to: UUID())
-        try await vm.saveUTM()
+        await newVM.changeUuid(to: UUID(), name: newName)
+        try await newVM.saveUTM()
         var index = await virtualMachines.firstIndex(of: vm)
         if index != nil {
             index! += 1

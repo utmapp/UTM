@@ -110,11 +110,17 @@ extension UTMVirtualMachine: ObservableObject {
     }
     
     /// Called when we have a duplicate UUID
-    @MainActor func changeUuid(to uuid: UUID) {
+    @MainActor func changeUuid(to uuid: UUID, name: String? = nil) {
         if let qemuConfig = config.qemuConfig {
             qemuConfig.information.uuid = uuid
+            if let name = name {
+                qemuConfig.information.name = name
+            }
         } else if let appleConfig = config.appleConfig {
             appleConfig.information.uuid = uuid
+            if let name = name {
+                appleConfig.information.name = name
+            }
         } else {
             fatalError("Invalid configuration.")
         }
