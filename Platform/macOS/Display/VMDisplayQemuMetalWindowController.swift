@@ -196,7 +196,9 @@ extension VMDisplayQemuMetalWindowController {
     
     override func spiceDidUpdateDisplay(_ display: CSDisplay) {
         if vmDisplay == display {
-            displaySizeDidChange(size: display.displaySize)
+            if display.displaySize != self.displaySize {
+                displaySizeDidChange(size: display.displaySize)
+            }
         } else {
             super.spiceDidUpdateDisplay(display)
         }
