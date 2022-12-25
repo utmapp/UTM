@@ -1,7 +1,7 @@
 From bb5c41eb13130dada2f3cd766da9a537ef466a4b Mon Sep 17 00:00:00 2001
 From: osy <50960678+osy@users.noreply.github.com>
 Date: Tue, 20 Dec 2022 15:56:07 -0800
-Subject: [PATCH] spice-display: fix memory leak issues
+Subject: [PATCH 1/3] spice-display: fix memory leak issues
 
 1) Some of the error cases did not free GL memory.
 2) Remove some unneeded logic and simplify the code.
@@ -117,6 +117,208 @@ index 4e4791484c..c1d2a66fc5 100644
      //TODO: cursor stuff
  #endif
  
+-- 
+2.28.0
+
+From 34b035535eee0f8497a1492ae1d9478dc9c7e7a0 Mon Sep 17 00:00:00 2001
+From: osy <50960678+osy@users.noreply.github.com>
+Date: Sat, 24 Dec 2022 17:08:52 -0800
+Subject: [PATCH 2/3] spice-display: remove redundant glBindTexture
+
+---
+ ui/spice-display.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/ui/spice-display.c b/ui/spice-display.c
+index c1d2a66fc5..610edaa089 100644
+--- a/ui/spice-display.c
++++ b/ui/spice-display.c
+@@ -966,7 +966,6 @@ static void spice_iosurface_blit(SimpleSpiceDisplay *ssd, GLuint src_texture, bo
+ 
+ #if defined(CONFIG_ANGLE)
+     eglMakeCurrent(qemu_egl_display, ssd->esurface, ssd->esurface, spice_gl_ctx);
+-    glBindTexture(ssd->iosurface_fb.texture_target, ssd->iosurface_fb.texture);
+     egl_texture_blit(ssd->gls, &ssd->iosurface_fb, &tmp_fb, flip, swap);
+ #endif
+ }
+-- 
+2.28.0
+
+From bbc1efd4ca66d0892f2bced95fc6150192585a12 Mon Sep 17 00:00:00 2001
+From: osy <50960678+osy@users.noreply.github.com>
+Date: Sun, 25 Dec 2022 00:46:42 -0800
+Subject: [PATCH 3/3] Revert "virtio-blk: use BDRV_REQ_REGISTERED_BUF
+ optimization hint"
+
+This reverts commit baf422684d73c7bf38e2c18815e18d44fcf395b6.
+---
+ hw/block/virtio-blk.c          | 39 ++++++++++++----------------------
+ include/hw/virtio/virtio-blk.h |  2 --
+ 2 files changed, 14 insertions(+), 27 deletions(-)
+
+diff --git a/hw/block/virtio-blk.c b/hw/block/virtio-blk.c
+index f717550fdc..8131ec2dbc 100644
+--- a/hw/block/virtio-blk.c
++++ b/hw/block/virtio-blk.c
+@@ -21,7 +21,6 @@
+ #include "hw/block/block.h"
+ #include "hw/qdev-properties.h"
+ #include "sysemu/blockdev.h"
+-#include "sysemu/block-ram-registrar.h"
+ #include "sysemu/sysemu.h"
+ #include "sysemu/runstate.h"
+ #include "hw/virtio/virtio-blk.h"
+@@ -363,14 +362,12 @@ static void virtio_blk_handle_scsi(VirtIOBlockReq *req)
+     }
+ }
+ 
+-static inline void submit_requests(VirtIOBlock *s, MultiReqBuffer *mrb,
++static inline void submit_requests(BlockBackend *blk, MultiReqBuffer *mrb,
+                                    int start, int num_reqs, int niov)
+ {
+-    BlockBackend *blk = s->blk;
+     QEMUIOVector *qiov = &mrb->reqs[start]->qiov;
+     int64_t sector_num = mrb->reqs[start]->sector_num;
+     bool is_write = mrb->is_write;
+-    BdrvRequestFlags flags = 0;
+ 
+     if (num_reqs > 1) {
+         int i;
+@@ -401,18 +398,12 @@ static inline void submit_requests(VirtIOBlock *s, MultiReqBuffer *mrb,
+                               num_reqs - 1);
+     }
+ 
+-    if (blk_ram_registrar_ok(&s->blk_ram_registrar)) {
+-        flags |= BDRV_REQ_REGISTERED_BUF;
+-    }
+-
+     if (is_write) {
+-        blk_aio_pwritev(blk, sector_num << BDRV_SECTOR_BITS, qiov,
+-                        flags, virtio_blk_rw_complete,
+-                        mrb->reqs[start]);
++        blk_aio_pwritev(blk, sector_num << BDRV_SECTOR_BITS, qiov, 0,
++                        virtio_blk_rw_complete, mrb->reqs[start]);
+     } else {
+-        blk_aio_preadv(blk, sector_num << BDRV_SECTOR_BITS, qiov,
+-                       flags, virtio_blk_rw_complete,
+-                       mrb->reqs[start]);
++        blk_aio_preadv(blk, sector_num << BDRV_SECTOR_BITS, qiov, 0,
++                       virtio_blk_rw_complete, mrb->reqs[start]);
+     }
+ }
+ 
+@@ -434,14 +425,14 @@ static int multireq_compare(const void *a, const void *b)
+     }
+ }
+ 
+-static void virtio_blk_submit_multireq(VirtIOBlock *s, MultiReqBuffer *mrb)
++static void virtio_blk_submit_multireq(BlockBackend *blk, MultiReqBuffer *mrb)
+ {
+     int i = 0, start = 0, num_reqs = 0, niov = 0, nb_sectors = 0;
+     uint32_t max_transfer;
+     int64_t sector_num = 0;
+ 
+     if (mrb->num_reqs == 1) {
+-        submit_requests(s, mrb, 0, 1, -1);
++        submit_requests(blk, mrb, 0, 1, -1);
+         mrb->num_reqs = 0;
+         return;
+     }
+@@ -461,11 +452,11 @@ static void virtio_blk_submit_multireq(VirtIOBlock *s, MultiReqBuffer *mrb)
+              * 3. merge would exceed maximum transfer length of backend device
+              */
+             if (sector_num + nb_sectors != req->sector_num ||
+-                niov > blk_get_max_iov(s->blk) - req->qiov.niov ||
++                niov > blk_get_max_iov(blk) - req->qiov.niov ||
+                 req->qiov.size > max_transfer ||
+                 nb_sectors > (max_transfer -
+                               req->qiov.size) / BDRV_SECTOR_SIZE) {
+-                submit_requests(s, mrb, start, num_reqs, niov);
++                submit_requests(blk, mrb, start, num_reqs, niov);
+                 num_reqs = 0;
+             }
+         }
+@@ -481,7 +472,7 @@ static void virtio_blk_submit_multireq(VirtIOBlock *s, MultiReqBuffer *mrb)
+         num_reqs++;
+     }
+ 
+-    submit_requests(s, mrb, start, num_reqs, niov);
++    submit_requests(blk, mrb, start, num_reqs, niov);
+     mrb->num_reqs = 0;
+ }
+ 
+@@ -496,7 +487,7 @@ static void virtio_blk_handle_flush(VirtIOBlockReq *req, MultiReqBuffer *mrb)
+      * Make sure all outstanding writes are posted to the backing device.
+      */
+     if (mrb->is_write && mrb->num_reqs > 0) {
+-        virtio_blk_submit_multireq(s, mrb);
++        virtio_blk_submit_multireq(s->blk, mrb);
+     }
+     blk_aio_flush(s->blk, virtio_blk_flush_complete, req);
+ }
+@@ -676,7 +667,7 @@ static int virtio_blk_handle_request(VirtIOBlockReq *req, MultiReqBuffer *mrb)
+         if (mrb->num_reqs > 0 && (mrb->num_reqs == VIRTIO_BLK_MAX_MERGE_REQS ||
+                                   is_write != mrb->is_write ||
+                                   !s->conf.request_merging)) {
+-            virtio_blk_submit_multireq(s, mrb);
++            virtio_blk_submit_multireq(s->blk, mrb);
+         }
+ 
+         assert(mrb->num_reqs < VIRTIO_BLK_MAX_MERGE_REQS);
+@@ -783,7 +774,7 @@ void virtio_blk_handle_vq(VirtIOBlock *s, VirtQueue *vq)
+     } while (!virtio_queue_empty(vq));
+ 
+     if (mrb.num_reqs) {
+-        virtio_blk_submit_multireq(s, &mrb);
++        virtio_blk_submit_multireq(s->blk, &mrb);
+     }
+ 
+     blk_io_unplug(s->blk);
+@@ -832,7 +823,7 @@ void virtio_blk_process_queued_requests(VirtIOBlock *s, bool is_bh)
+     }
+ 
+     if (mrb.num_reqs) {
+-        virtio_blk_submit_multireq(s, &mrb);
++        virtio_blk_submit_multireq(s->blk, &mrb);
+     }
+     if (is_bh) {
+         blk_dec_in_flight(s->conf.conf.blk);
+@@ -1214,7 +1205,6 @@ static void virtio_blk_device_realize(DeviceState *dev, Error **errp)
+     }
+ 
+     s->change = qemu_add_vm_change_state_handler(virtio_blk_dma_restart_cb, s);
+-    blk_ram_registrar_init(&s->blk_ram_registrar, s->blk);
+     blk_set_dev_ops(s->blk, &virtio_block_ops, s);
+ 
+     blk_iostatus_enable(s->blk);
+@@ -1240,7 +1230,6 @@ static void virtio_blk_device_unrealize(DeviceState *dev)
+         virtio_del_queue(vdev, i);
+     }
+     qemu_coroutine_dec_pool_size(conf->num_queues * conf->queue_size / 2);
+-    blk_ram_registrar_destroy(&s->blk_ram_registrar);
+     qemu_del_vm_change_state_handler(s->change);
+     blockdev_mark_auto_del(s->blk);
+     virtio_cleanup(vdev);
+diff --git a/include/hw/virtio/virtio-blk.h b/include/hw/virtio/virtio-blk.h
+index 7f589b4146..d311c57cca 100644
+--- a/include/hw/virtio/virtio-blk.h
++++ b/include/hw/virtio/virtio-blk.h
+@@ -19,7 +19,6 @@
+ #include "hw/block/block.h"
+ #include "sysemu/iothread.h"
+ #include "sysemu/block-backend.h"
+-#include "sysemu/block-ram-registrar.h"
+ #include "qom/object.h"
+ 
+ #define TYPE_VIRTIO_BLK "virtio-blk-device"
+@@ -65,7 +64,6 @@ struct VirtIOBlock {
+     struct VirtIOBlockDataPlane *dataplane;
+     uint64_t host_features;
+     size_t config_size;
+-    BlockRAMRegistrar blk_ram_registrar;
+ };
+ 
+ typedef struct VirtIOBlockReq {
 -- 
 2.28.0
 
