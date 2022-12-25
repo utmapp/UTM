@@ -1,0 +1,24 @@
+diff -Naur a/sys/osxaudio/gstosxcoreaudiocommon.c b/sys/osxaudio/gstosxcoreaudiocommon.c
+--- a/sys/osxaudio/gstosxcoreaudiocommon.c	2021-05-31 16:11:47.000000000 -0700
++++ b/sys/osxaudio/gstosxcoreaudiocommon.c	2022-12-24 23:00:48.000000000 -0800
+@@ -137,15 +137,16 @@
+       "osx ring buffer stop ioproc: %p device_id %lu",
+       core_audio->element->io_proc, (gulong) core_audio->device_id);
+ 
++  // ###: why is it okay to directly remove from here but not from pause() ?
++  if (core_audio->io_proc_active) {
++    gst_core_audio_remove_render_callback (core_audio);
++  }
++
+   status = AudioOutputUnitStop (core_audio->audiounit);
+   if (status) {
+     GST_WARNING_OBJECT (core_audio->osxbuf,
+         "AudioOutputUnitStop failed: %d", (int) status);
+   }
+-  // ###: why is it okay to directly remove from here but not from pause() ?
+-  if (core_audio->io_proc_active) {
+-    gst_core_audio_remove_render_callback (core_audio);
+-  }
+   return TRUE;
+ }
+ 
