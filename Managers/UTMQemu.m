@@ -20,6 +20,12 @@
 #import <pthread.h>
 #import <TargetConditionals.h>
 
+@interface UTMQemu ()
+
+@property (nonatomic) dispatch_queue_t completionQueue;
+
+@end
+
 @implementation UTMQemu {
     NSMutableArray<NSString *> *_argv;
     NSMutableArray<NSURL *> *_urls;
@@ -54,6 +60,8 @@
         if (![self setupXpc]) {
             return nil;
         }
+        dispatch_queue_attr_t attr = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_UTILITY, QOS_MIN_RELATIVE_PRIORITY);
+        self.completionQueue = dispatch_queue_create("QEMU Completion Queue", attr);
     }
     return self;
 }
@@ -144,7 +152,7 @@
     pthread_attr_init(&qosAttribute);
     pthread_attr_set_qos_class_np(&qosAttribute, QOS_CLASS_USER_INTERACTIVE, 0);
     pthread_create(&qemu_thread, &qosAttribute, self.entry, (__bridge_retained void *)self);
-    dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
+    dispatch_async(self.completionQueue, ^{
         if (dispatch_semaphore_wait(self.done, DISPATCH_TIME_FOREVER)) {
             dlclose(dlctx);
             completion(NO, NSLocalizedString(@"Internal error has occurred.", @"UTMQemu"));

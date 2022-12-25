@@ -39,7 +39,7 @@ import SwiftUI
     #if !WITH_QEMU_TCI
     private var primaryUsbManager: CSUSBManager?
     
-    private var usbManagerQueue = DispatchQueue(label: "USB Manager Queue", qos: .background)
+    private var usbManagerQueue = DispatchQueue(label: "USB Manager Queue", qos: .utility)
     
     @Published var mostRecentConnectedDevice: CSUSBDevice?
     

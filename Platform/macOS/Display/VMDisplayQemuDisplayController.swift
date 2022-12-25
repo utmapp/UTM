@@ -363,7 +363,7 @@ extension VMDisplayQemuWindowController: CSUSBManagerDelegate {
             guard response == .alertFirstButtonReturn else {
                 return
             }
-            DispatchQueue.global(qos: .background).async {
+            DispatchQueue.global(qos: .utility).async {
                 usbManager.connectUsbDevice(usbDevice) { (result, message) in
                     DispatchQueue.main.async {
                         if let msg = message {
@@ -445,7 +445,7 @@ extension VMDisplayQemuWindowController {
             return
         }
         let device = allUsbDevices[menu.tag]
-        DispatchQueue.global(qos: .background).async {
+        DispatchQueue.global(qos: .utility).async {
             usbManager.connectUsbDevice(device) { (result, message) in
                 DispatchQueue.main.async {
                     if let msg = message {
@@ -469,7 +469,7 @@ extension VMDisplayQemuWindowController {
             return
         }
         let device = allUsbDevices[menu.tag]
-        DispatchQueue.global(qos: .background).async {
+        DispatchQueue.global(qos: .utility).async {
             usbManager.disconnectUsbDevice(device) { (result, message) in
                 DispatchQueue.main.async {
                     if let msg = message {

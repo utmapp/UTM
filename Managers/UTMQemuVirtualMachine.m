@@ -74,7 +74,8 @@ NSString *const kSuspendSnapshotName = @"suspend";
         self.qemuWillQuitEvent = dispatch_semaphore_create(0);
         self.qemuDidExitEvent = dispatch_semaphore_create(0);
         self.qemuDidConnectEvent = dispatch_semaphore_create(0);
-        self.vmOperations = dispatch_queue_create("com.utmapp.UTM.VMOperations", DISPATCH_QUEUE_SERIAL);
+        dispatch_queue_attr_t attr = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_UTILITY, 0);
+        self.vmOperations = dispatch_queue_create("com.utmapp.UTM.VMOperations", attr);
     }
     return self;
 }

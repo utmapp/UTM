@@ -145,7 +145,7 @@ enum ParserState {
     }
     NSAssert([json isKindOfClass:[NSDictionary class]], @"JSON data not dictionary");
     UTMLog(@"Debug JSON recieved <- %@", json);
-    dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_UTILITY, 0), ^{
         [self.delegate jsonStream:self receivedDictionary:(NSDictionary *)json];
     });
 }

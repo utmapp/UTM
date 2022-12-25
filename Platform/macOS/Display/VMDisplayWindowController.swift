@@ -82,9 +82,7 @@ class VMDisplayWindowController: NSWindowController {
     
     @IBAction func restartButtonPressed(_ sender: Any) {
         showConfirmAlert(NSLocalizedString("This will reset the VM and any unsaved state will be lost.", comment: "VMDisplayWindowController")) {
-            DispatchQueue.global(qos: .background).async {
-                self.vm.requestVmReset()
-            }
+            self.vm.requestVmReset()
         }
     }
     
@@ -245,9 +243,7 @@ extension VMDisplayWindowController: NSWindowDelegate {
     
     func windowWillClose(_ notification: Notification) {
         if !isSecondary {
-            DispatchQueue.global(qos: .background).async {
-                self.vm.requestVmStop(force: true)
-            }
+            self.vm.requestVmStop(force: true)
         }
         secondaryWindows.forEach { secondaryWindow in
             secondaryWindow.close()
