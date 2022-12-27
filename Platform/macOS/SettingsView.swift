@@ -29,6 +29,7 @@ struct SettingsView: View {
     @AppStorage("NoSaveScreenshot") var isNoSaveScreenshot = false
     @AppStorage("InvertScroll") var isInvertScroll = false
     @AppStorage("QEMURendererBackend") var qemuRendererBackend: UTMQEMURendererBackend = .qemuRendererBackendDefault
+    @AppStorage("QEMURendererFPSLimit") var qemuRendererFpsLimit: Int = 0
     
     var body: some View {
         Form {
@@ -62,6 +63,13 @@ struct SettingsView: View {
                     Text("ANGLE (OpenGL)").tag(UTMQEMURendererBackend.qemuRendererBackendAngleGL)
                     Text("ANGLE (Metal)").tag(UTMQEMURendererBackend.qemuRendererBackendAngleMetal)
                 }.help("By default, the best renderer for this device will be used. You can override this with to always use a specific renderer. This only applies to QEMU VMs with GPU accelerated graphics.")
+                HStack {
+                    Stepper("FPS Limit", value: $qemuRendererFpsLimit, in: 0...240, step: 15)
+                    NumberTextField("", number: $qemuRendererFpsLimit, prompt: "None")
+                        .frame(width: 80)
+                        .multilineTextAlignment(.trailing)
+                        .help("If set, a frame limit can improve smoothness in rendering by preventing stutters when set to the lowest value your device can handle.")
+                }
             }
             Section(header: Text("Input")) {
                 Toggle(isOn: $isCtrlRightClick, label: {
@@ -100,6 +108,7 @@ extension UserDefaults {
     @objc dynamic var NoSaveScreenshot: Bool { false }
     @objc dynamic var InvertScroll: Bool { false }
     @objc dynamic var QEMURendererBackend: Int { 0 }
+    @objc dynamic var QEMURendererFPSLimit: Int { 0 }
 }
 
 @available(macOS 11, *)

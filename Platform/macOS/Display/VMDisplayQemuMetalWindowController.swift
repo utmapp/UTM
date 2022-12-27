@@ -54,6 +54,7 @@ class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
     @Setting("AlternativeCaptureKey") private var isAlternativeCaptureKey: Bool = false
     @Setting("IsCapsLockKey") private var isCapsLockKey: Bool = false
     @Setting("InvertScroll") private var isInvertScroll: Bool = false
+    @Setting("QEMURendererFPSLimit") private var rendererFpsLimit: Int = 0
     private var settingObservations = [NSKeyValueObservation]()
     
     // MARK: - Init
@@ -81,6 +82,7 @@ class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
             logger.critical("Failed to create renderer.")
             return
         }
+        renderer.preferredFramesPerSecond = rendererFpsLimit
         renderer.mtkView(metalView, drawableSizeWillChange: metalView.drawableSize)
         renderer.changeUpscaler(displayConfig?.upscalingFilter.metalSamplerMinMagFilter ?? .linear, downscaler: displayConfig?.downscalingFilter.metalSamplerMinMagFilter ?? .linear)
         renderer.source = vmDisplay // can be nil if primary

@@ -124,6 +124,40 @@
 		</dict>
 		<dict>
 			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>FPS Limit</string>
+			<key>Key</key>
+			<string>QEMURendererFPSLimit</string>
+			<key>DefaultValue</key>
+			<string>0</string>
+			<key>Titles</key>
+			<array>
+				<string>None</string>
+				<string>15</string>
+				<string>30</string>
+				<string>45</string>
+				<string>60</string>
+				<string>75</string>
+				<string>90</string>
+				<string>105</string>
+				<string>120</string>
+			</array>
+			<key>Values</key>
+			<array>
+				<integer>0</integer>
+				<integer>15</integer>
+				<integer>30</integer>
+				<integer>45</integer>
+				<integer>60</integer>
+				<integer>75</integer>
+				<integer>90</integer>
+				<integer>105</integer>
+				<integer>120</integer>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
 			<string>Gestures</string>
