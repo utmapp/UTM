@@ -18,39 +18,60 @@ import SwiftUI
 
 @available(macOS 11, *)
 struct SettingsView: View {
+    
+    var body: some View {
+        TabView {
+            ApplicationSettingsView().padding()
+                .tabItem {
+                    Label("Application", systemImage: "app.badge")
+                }
+            DisplaySettingsView().padding()
+                .tabItem {
+                    Label("Display", systemImage: "rectangle.on.rectangle")
+                }
+            InputSettingsView().padding()
+                .tabItem {
+                    Label("Input", systemImage: "keyboard")
+                }
+        }.frame(minWidth: 600, minHeight: 300, alignment: .topLeading)
+    }
+}
+
+struct ApplicationSettingsView: View {
     @AppStorage("KeepRunningAfterLastWindowClosed") var isKeepRunningAfterLastWindowClosed = false
-    @AppStorage("ShowMenuIcon") var isMenuIconShown = false
     @AppStorage("HideDockIcon") var isDockIconHidden = false
+    @AppStorage("ShowMenuIcon") var isMenuIconShown = false
+    
+    var body: some View {
+        Form {
+            Toggle(isOn: $isKeepRunningAfterLastWindowClosed, label: {
+                Text("Keep UTM running after last window is closed and all VMs are shut down")
+            })
+            if #available(macOS 13, *) {
+                Toggle(isOn: $isDockIconHidden.inverted, label: {
+                    Text("Show dock icon")
+                }).onChange(of: isDockIconHidden) { newValue in
+                    if newValue {
+                        isMenuIconShown = true
+                        isKeepRunningAfterLastWindowClosed = true
+                    }
+                }
+                Toggle(isOn: $isMenuIconShown, label: {
+                    Text("Show menu bar icon")
+                }).disabled(isDockIconHidden)
+            }
+        }
+    }
+}
+
+struct DisplaySettingsView: View {
     @AppStorage("DisplayFixed") var isVMDisplayFixed = false
-    @AppStorage("CtrlRightClick") var isCtrlRightClick = false
-    @AppStorage("NoUsbPrompt") var isNoUsbPrompt = false
-    @AppStorage("AlternativeCaptureKey") var isAlternativeCaptureKey = false
-    @AppStorage("IsCapsLockKey") var isCapsLockKey = false
     @AppStorage("NoSaveScreenshot") var isNoSaveScreenshot = false
-    @AppStorage("InvertScroll") var isInvertScroll = false
     @AppStorage("QEMURendererBackend") var qemuRendererBackend: UTMQEMURendererBackend = .qemuRendererBackendDefault
     @AppStorage("QEMURendererFPSLimit") var qemuRendererFpsLimit: Int = 0
     
     var body: some View {
         Form {
-            Section(header: Text("Application")) {
-                Toggle(isOn: $isKeepRunningAfterLastWindowClosed, label: {
-                    Text("Keep UTM running after last window is closed and all VMs are shut down")
-                })
-                if #available(macOS 13, *) {
-                    Toggle(isOn: $isDockIconHidden.inverted, label: {
-                        Text("Show dock icon")
-                    }).onChange(of: isDockIconHidden) { newValue in
-                        if newValue {
-                            isMenuIconShown = true
-                            isKeepRunningAfterLastWindowClosed = true
-                        }
-                    }
-                    Toggle(isOn: $isMenuIconShown, label: {
-                        Text("Show menu bar icon")
-                    }).disabled(isDockIconHidden)
-                }
-            }
             Section(header: Text("Display")) {
                 Toggle(isOn: $isVMDisplayFixed, label: {
                     Text("VM display size is fixed")
@@ -58,7 +79,10 @@ struct SettingsView: View {
                 Toggle(isOn: $isNoSaveScreenshot) {
                     Text("Do not save VM screenshot to disk")
                 }.help("If enabled, any existing screenshot will be deleted the next time the VM is started.")
-                Picker("QEMU Renderer Backend", selection: $qemuRendererBackend) {
+            }
+            
+            Section(header: Text("QEMU Graphics Acceleration")) {
+                Picker("Renderer Backend", selection: $qemuRendererBackend) {
                     Text("Default").tag(UTMQEMURendererBackend.qemuRendererBackendDefault)
                     Text("ANGLE (OpenGL)").tag(UTMQEMURendererBackend.qemuRendererBackendAngleGL)
                     Text("ANGLE (Metal)").tag(UTMQEMURendererBackend.qemuRendererBackendAngleMetal)
@@ -71,27 +95,43 @@ struct SettingsView: View {
                         .help("If set, a frame limit can improve smoothness in rendering by preventing stutters when set to the lowest value your device can handle.")
                 }
             }
-            Section(header: Text("Input")) {
+        }
+    }
+}
+
+struct InputSettingsView: View {
+    @AppStorage("CtrlRightClick") var isCtrlRightClick = false
+    @AppStorage("AlternativeCaptureKey") var isAlternativeCaptureKey = false
+    @AppStorage("IsCapsLockKey") var isCapsLockKey = false
+    @AppStorage("InvertScroll") var isInvertScroll = false
+    @AppStorage("NoUsbPrompt") var isNoUsbPrompt = false
+    
+    var body: some View {
+        Form {
+            Section(header: Text("QEMU Pointer")) {
                 Toggle(isOn: $isCtrlRightClick, label: {
                     Text("Hold Control (⌃) for right click")
                 })
+                Toggle(isOn: $isInvertScroll, label: {
+                    Text("Invert scrolling")
+                }).help("If enabled, scroll whell input will be inverted.")
+            }
+            
+            Section(header: Text("QEMU Keyboard")) {
                 Toggle(isOn: $isAlternativeCaptureKey, label: {
                     Text("Use Command+Option (⌘+⌥) for input capture/release")
                 }).help("If disabled, the default combination Control+Option (⌃+⌥) will be used.")
                 Toggle(isOn: $isCapsLockKey, label: {
                     Text("Caps Lock (⇪) is treated as a key")
                 }).help("If enabled, caps lock will be handled like other keys. If disabled, it is treated as a toggle that is synchronized with the host.")
-                Toggle(isOn: $isInvertScroll, label: {
-                    Text("Invert scrolling")
-                }).help("If enabled, scroll whell input will be inverted.")
             }
-            Section(header: Text("USB")) {
+            
+            Section(header: Text("QEMU USB")) {
                 Toggle(isOn: $isNoUsbPrompt, label: {
                     Text("Do not show prompt when USB device is plugged in")
                 })
             }
-        }.padding(.vertical)
-        .padding()
+        }
     }
 }
 
