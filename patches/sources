@@ -19,8 +19,9 @@ ZSTD_SRC="https://github.com/facebook/zstd/releases/download/v1.5.2/zstd-1.5.2.t
 SPICE_PROTOCOL_SRC="https://www.spice-space.org/download/releases/spice-protocol-0.14.4.tar.xz"
 SPICE_SERVER_SRC="https://www.spice-space.org/download/releases/spice-server/spice-0.14.3.tar.bz2"
 USB_SRC="https://github.com/libusb/libusb/releases/download/v1.0.25/libusb-1.0.25.tar.bz2"
-USBREDIR_SRC="https://www.spice-space.org/download/usbredir/usbredir-0.12.0.tar.xz"
-QEMU_SRC="https://github.com/utmapp/qemu/releases/download/v7.1.0-utm/qemu-7.1.0-utm.tar.bz2"
+USBREDIR_SRC="https://www.spice-space.org/download/usbredir/usbredir-0.13.0.tar.xz"
+SLIRP_SRC="https://gitlab.freedesktop.org/slirp/libslirp/-/archive/v4.7.0/libslirp-v4.7.0.tar.gz"
+QEMU_SRC="https://github.com/utmapp/qemu/releases/download/v7.2.0-utm/qemu-7.2.0-utm.tar.bz2"
 
 # Source files for spice-client
 JSON_GLIB_SRC="https://download.gnome.org/sources/json-glib/1.6/json-glib-1.6.6.tar.xz"
@@ -36,11 +37,11 @@ SPICE_CLIENT_SRC="https://www.spice-space.org/download/gtk/spice-gtk-0.40.tar.xz
 DEPOT_TOOLS_REPO="https://chromium.googlesource.com/chromium/tools/depot_tools.git"
 DEPOT_TOOLS_COMMIT="5da65ec20db9b17b03420d928240092e5955a769"
 ANGLE_REPO="https://github.com/utmapp/angle.git"
-ANGLE_COMMIT="b9b67fbf749b7a5402593e54d01386c0cd96c42a"
+ANGLE_COMMIT="70e456bebd831c3c015c3fcca8b7e0e1ec9e04ef"
 EPOXY_REPO="https://github.com/utmapp/libepoxy.git"
 EPOXY_COMMIT="266d2290a437c655f7419e85af06bfbb73a720c4"
 VIRGLRENDERER_REPO="https://github.com/utmapp/virglrenderer.git"
-VIRGLRENDERER_COMMIT="2415ce6e2d66d2892bf214daf123b6d7bb2af9dc"
+VIRGLRENDERER_COMMIT="d46413cf4797a33cfbe1c9f14e6d22ce563ef700"
 
 # Decompiled Hypervisor for iOS
 HYPERVISOR_REPO="https://github.com/utmapp/Hypervisor.git"

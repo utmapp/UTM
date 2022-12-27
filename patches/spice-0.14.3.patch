@@ -1,7 +1,7 @@
 From c74ae160e3ac6d726fd312ba36f5ca4bfed0eb9c Mon Sep 17 00:00:00 2001
 From: Frediano Ziglio <fziglio@redhat.com>
 Date: Wed, 15 Apr 2020 13:36:13 +0100
-Subject: [PATCH 01/10] Fix compatibility with MSG_NOSIGNAL and Darwin
+Subject: [PATCH 01/11] Fix compatibility with MSG_NOSIGNAL and Darwin
 
 Darwin does not have MSG_NOSIGNAL but allows to set a SO_NOSIGPIPE
 option to disable sending SIGPIPE writing to closed socket.
@@ -74,12 +74,12 @@ index 3a3b7878..2935cfb5 100644
 +
  #endif // RED_SYS_SOCKET_H_
 -- 
-2.32.0 (Apple Git-132)
+2.28.0
 
 From c3ca9e8db128fb8e9fa033f8f1aabb96514f6f94 Mon Sep 17 00:00:00 2001
 From: Frediano Ziglio <fziglio@redhat.com>
 Date: Wed, 15 Apr 2020 14:30:37 +0100
-Subject: [PATCH 02/10] Fix compatibility with pthread_setname_np and Darwin
+Subject: [PATCH 02/11] Fix compatibility with pthread_setname_np and Darwin
 
 On Darwin pthread_setname_np accepts only an argument and
 set current thread name.
@@ -114,12 +114,12 @@ index 12a8e739..2f07337e 100644
      return r == 0;
  }
 -- 
-2.32.0 (Apple Git-132)
+2.28.0
 
 From d728111a51c8c08806e78c3b0d46d92a048b865a Mon Sep 17 00:00:00 2001
 From: Frediano Ziglio <fziglio@redhat.com>
 Date: Wed, 15 Apr 2020 14:35:10 +0100
-Subject: [PATCH 03/10] Fix compatibility with mremap and Darwin
+Subject: [PATCH 03/11] Fix compatibility with mremap and Darwin
 
 Darwin does not have mremap. Use munmap+mmap instead.
 That code is not in a hot path, number of nodes do not change very
@@ -158,12 +158,12 @@ index deffec1b..7d35c45b 100644
              }
              reds_nodes = (SpiceStatNode *)((char *) reds_stat + header_size);
 -- 
-2.32.0 (Apple Git-132)
+2.28.0
 
 From 20e058fd9ba28892adffc8d2ade809b698577756 Mon Sep 17 00:00:00 2001
 From: Frediano Ziglio <fziglio@redhat.com>
 Date: Wed, 15 Apr 2020 20:47:05 +0100
-Subject: [PATCH 04/10] Fix compatibility with TCP_KEEPIDLE and Darwin
+Subject: [PATCH 04/11] Fix compatibility with TCP_KEEPIDLE and Darwin
 
 Darwin uses for the same setting the TCP_KEEPALIVE option.
 Use TCP_KEEPALIVE instead of TCP_KEEPIDLE for Darwin.
@@ -198,12 +198,12 @@ index 78b94886..32ceb3b8 100644
          if (errno != ENOTSUP) {
              g_warning("setsockopt for keepalive timeout failed, %s", strerror(errno));
 -- 
-2.32.0 (Apple Git-132)
+2.28.0
 
 From eb21efe8e5d6fa2cc893b1f7fec356fd06834d30 Mon Sep 17 00:00:00 2001
 From: Frediano Ziglio <fziglio@redhat.com>
 Date: Wed, 15 Apr 2020 20:50:56 +0100
-Subject: [PATCH 05/10] Fix compatibility with ENOTSUP and Darwin
+Subject: [PATCH 05/11] Fix compatibility with ENOTSUP and Darwin
 
 Darwin uses also the constant EOPNOTSUPP for the same reasons.
 In some versions EOPNOTSUPP is defined as ENOTSUP.
@@ -259,12 +259,12 @@ index 32ceb3b8..f0aecc3d 100644
              return false;
          }
 -- 
-2.32.0 (Apple Git-132)
+2.28.0
 
 From f93264cb497ea3ab45d35ab3e03546d1cdaa1600 Mon Sep 17 00:00:00 2001
 From: Frediano Ziglio <fziglio@redhat.com>
 Date: Wed, 15 Apr 2020 21:15:34 +0100
-Subject: [PATCH 06/10] Fix compatibility with TCP sockets and Darwin
+Subject: [PATCH 06/11] Fix compatibility with TCP sockets and Darwin
 
 Using socket pairs and trying to set a TCP level option on the
 socket setsockopt returns EINVAL error and not ENOTSUP as
@@ -335,12 +335,12 @@ index f0aecc3d..e9778e73 100644
              return false;
          }
 -- 
-2.32.0 (Apple Git-132)
+2.28.0
 
 From 2e6271dbbab76e3868a6cee1c9a800d87ccd30a1 Mon Sep 17 00:00:00 2001
 From: osy <osy@turing.llc>
 Date: Fri, 4 Mar 2022 19:17:58 -0800
-Subject: [PATCH 07/10] red-stream: disable socket_set_cork() on Darwin
+Subject: [PATCH 07/11] red-stream: disable socket_set_cork() on Darwin
 
 TCP_NOPUSH is broken and cannot be used.
 ---
@@ -371,12 +371,12 @@ index 2c13aa2f..77d44c9a 100644
   * Set TCP_CORK on socket
   */
 -- 
-2.32.0 (Apple Git-132)
+2.28.0
 
 From 740fb04a95ff2a5aebd67f488e7d6f19b62fe3c1 Mon Sep 17 00:00:00 2001
 From: osy <osy@turing.llc>
 Date: Fri, 4 Mar 2022 19:20:06 -0800
-Subject: [PATCH 08/10] meson: fix build on Darwin
+Subject: [PATCH 08/11] meson: fix build on Darwin
 
 ---
  meson.build              | 4 +++-
@@ -428,12 +428,12 @@ index 8ec2cc91..4962f63d 100644
               install : false,
               include_directories : spice_server_include,
 -- 
-2.32.0 (Apple Git-132)
+2.28.0
 
 From a411fbcb321347356a78126e923bd49aa91381df Mon Sep 17 00:00:00 2001
 From: osy <osy@turing.llc>
 Date: Fri, 4 Mar 2022 19:23:44 -0800
-Subject: [PATCH 09/10] reds: always send monitors config
+Subject: [PATCH 09/11] reds: always send monitors config
 
 When the Windows VDagent sees a new monitor config, it will trigger a
 refresh of the display resolution. This is needed when the device driver
@@ -457,12 +457,12 @@ index d91b32b0..9513b5cf 100644
          red_channel_client_shutdown(RED_CHANNEL_CLIENT(mcc));
          return;
 -- 
-2.32.0 (Apple Git-132)
+2.28.0
 
 From e32a7ea61569b7771f0ef655fba86f6d23d53d31 Mon Sep 17 00:00:00 2001
 From: osy <osy@turing.llc>
 Date: Fri, 4 Mar 2022 20:09:34 -0800
-Subject: [PATCH 10/10] gstreamer-encoder: work without Orc
+Subject: [PATCH 10/11] gstreamer-encoder: work without Orc
 
 If Orc is missing, GStreamer will still work.
 ---
@@ -525,7 +525,41 @@ index 3ca04d7a..238463f2 100644
  VideoEncoder *gstreamer_encoder_new(SpiceVideoCodecType codec_type,
                                      uint64_t starting_bit_rate,
 -- 
-2.32.0 (Apple Git-132)
+2.28.0
+
+From 02cae4922d55c488cce790835ee2fccd61e34dbd Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Sun, 18 Dec 2022 23:20:48 -0800
+Subject: [PATCH 11/11] red-qxl: remove cookie assertion on scanout
+
+The original check ensures we do not have an outstanding GL_DRAW. However,
+in QEMU, there is no guarantee that a scanout cannot happen while the async
+GL_DRAW has not returned a result yet. This introduces a race where if a
+scanout is called while there is an outstanding GL_DRAW, QEMU will crash.
+
+The removal of this check enforces a new contract with the SPICE client.
+Every GL_DRAW must be matched with a GL_DONE (i.e. with a call to
+`spice_display_channel_gl_draw_done()` in the client) even if the render
+context is no longer valid. Otherwise, the assertion crash will happen in
+the next call to `spice_qxl_gl_draw_async()`.
+---
+ server/red-qxl.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/server/red-qxl.c b/server/red-qxl.c
+index dbfcd440..8cdf86f5 100644
+--- a/server/red-qxl.c
++++ b/server/red-qxl.c
+@@ -703,7 +703,6 @@ void spice_qxl_gl_scanout(QXLInstance *qxl,
+     spice_return_if_fail(qxl != NULL);
+ 
+     QXLState *qxl_state = qxl->st;
+-    spice_return_if_fail(qxl_state->gl_draw_cookie == GL_DRAW_COOKIE_INVALID);
+ 
+     pthread_mutex_lock(&qxl_state->scanout_mutex);
+ 
+-- 
+2.28.0
 
 --- a/subprojects/spice-common/meson.build	2022-03-04 19:26:32.000000000 -0800
 +++ b/subprojects/spice-common/meson.build	2022-03-04 19:26:03.000000000 -0800
@@ -549,3 +583,4 @@ index 3ca04d7a..238463f2 100644
      if cmd.returncode() != 0
        error('Python module @0@ not found'.format(module))
      endif
+

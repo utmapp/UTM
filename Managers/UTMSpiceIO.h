@@ -42,7 +42,6 @@ NS_ASSUME_NONNULL_BEGIN
 #endif
 @property (nonatomic, weak, nullable) id<UTMSpiceIODelegate> delegate;
 @property (nonatomic, readonly) BOOL isConnected;
-@property (nonatomic, readonly, nullable) CSScreenshot *screenshot;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithConfiguration:(UTMConfigurationWrapper *)configuration NS_DESIGNATED_INITIALIZER;
@@ -51,6 +50,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)startWithError:(NSError **)err;
 - (void)connectWithCompletion:(ioConnectCompletionHandler_t)block;
 - (void)disconnect;
+
+- (void)screenshotWithCompletion:(screenshotCallback_t)completion;
 
 @end
 

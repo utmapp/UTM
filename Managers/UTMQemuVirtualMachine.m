@@ -646,7 +646,11 @@ NSString *const kSuspendSnapshotName = @"suspend";
 #pragma mark - Screenshot
 
 - (void)updateScreenshot {
-    self.screenshot = [self.ioService screenshot];
+    [self.ioService screenshotWithCompletion:^(CSScreenshot * _Nullable screenshot) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.screenshot = screenshot;
+        });
+    }];
 }
 
 @end

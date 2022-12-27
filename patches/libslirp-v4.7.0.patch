@@ -1,0 +1,25 @@
+From 23019cdeb76de066cf3f05a599817e2ac6306747 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Sat, 17 Dec 2022 20:10:22 -0800
+Subject: [PATCH] meson: add libresolv for iOS builds
+
+---
+ meson.build | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/meson.build b/meson.build
+index 5605dc9..f6d128e 100644
+--- a/meson.build
++++ b/meson.build
+@@ -62,7 +62,7 @@ if host_system == 'windows'
+     cc.find_library('ws2_32'),
+     cc.find_library('iphlpapi')
+   ]
+-elif host_system == 'darwin'
++elif host_system == 'darwin' or host_system == 'ios'
+   platform_deps += [
+     cc.find_library('resolv')
+   ]
+-- 
+2.28.0
+

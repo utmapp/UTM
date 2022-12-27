@@ -149,6 +149,7 @@ download_all () {
     download $PHODAV_SRC
     download $SPICE_CLIENT_SRC
     download $ZSTD_SRC
+    download $SLIRP_SRC
     download $QEMU_SRC
     if [ -z "$SKIP_USB_BUILD" ]; then
         download $USB_SRC
@@ -491,6 +492,7 @@ build_qemu_dependencies () {
     meson_build $GST_GOOD_SRC -Dtests=disabled -Ddefault_library=both
     meson_build $SPICE_PROTOCOL_SRC
     meson_build $SPICE_SERVER_SRC -Dlz4=false -Dsasl=false
+    meson_build $SLIRP_SRC
     # USB support
     if [ -z "$SKIP_USB_BUILD" ]; then
         build $USB_SRC
@@ -499,7 +501,7 @@ build_qemu_dependencies () {
     # GPU support
     build_angle
     meson_build $EPOXY_REPO -Dtests=false -Dglx=no -Degl=yes
-    meson_build $VIRGLRENDERER_REPO -Dtests=false
+    meson_build $VIRGLRENDERER_REPO -Dtests=false -Dcheck-gl-errors=false
     # Hypervisor for iOS
     if [ "$PLATFORM" == "ios" ]; then
         build_hypervisor

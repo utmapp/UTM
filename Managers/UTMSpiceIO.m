@@ -153,8 +153,8 @@ extern NSString *const kUTMErrorDomain;
 #endif
 }
 
-- (CSScreenshot *)screenshot {
-    return [self.primaryDisplay screenshot];
+- (void)screenshotWithCompletion:(screenshotCallback_t)completion {
+    return [self.primaryDisplay screenshotWithCompletion:completion];
 }
 
 #pragma mark - CSConnectionDelegate
