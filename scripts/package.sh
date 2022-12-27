@@ -284,7 +284,7 @@ ipa-hv )
 	<true/>
 	<key>com.apple.private.memorystatus</key>
 	<true/>
-	<key>com.apple.private.security.no-container</key>
+	<key>com.apple.private.security.no-sandbox</key>
 	<true/>
 	<key>com.apple.private.security.storage.AppDataContainers</key>
 	<true/>
