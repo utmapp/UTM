@@ -181,6 +181,7 @@
     }
     NSFileHandle *standardOutput = self.logging.standardOutput.fileHandleForWriting;
     NSFileHandle *standardError = self.logging.standardError.fileHandleForWriting;
+    [_connection.remoteObjectProxy setEnvironment:self.environment];
     [[_connection remoteObjectProxyWithErrorHandler:^(NSError * _Nonnull error) {
         if (error.domain == NSCocoaErrorDomain && error.code == NSXPCConnectionInvalid) {
             completion(YES, nil); // inhibit this error since we always see it on quit

@@ -16,11 +16,20 @@
 
 #import "UTMQemu.h"
 
+/// Specify the backend renderer for this VM
+typedef NS_ENUM(NSInteger, UTMQEMURendererBackend) {
+    kQEMURendererBackendDefault = 0,
+    kQEMURendererBackendAngleGL = 1,
+    kQEMURendererBackendAngleMetal = 2,
+    kQEMURendererBackendMax = 3,
+};
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface UTMQemuSystem : UTMQemu
 
 @property (nonatomic, nullable, copy) NSArray<NSURL *> *resources;
+@property (nonatomic) UTMQEMURendererBackend rendererBackend;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithArguments:(NSArray<NSString *> *)arguments NS_UNAVAILABLE;

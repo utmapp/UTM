@@ -17,10 +17,12 @@
 #include <stdio.h>
 #include "Bootstrap.h"
 
+extern const char **environ;
+
 int main(int argc, const char * argv[]) {
     if (argc < 2) {
         fprintf(stderr, "usage: QEMULauncher dylibPath qemuArguments...\n");
         return 1;
     }
-    return startQemuProcess(argv[1], argc - 1, &argv[1]);
+    return startQemuProcess(argv[1], argc - 1, &argv[1], environ);
 }

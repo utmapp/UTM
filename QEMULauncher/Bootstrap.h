@@ -19,7 +19,7 @@
 
 #include <unistd.h>
 
-pid_t startQemuFork(const char *dylibPath, int argc, const char **argv, int newStdout, int newStderr);
-int startQemuProcess(const char *dylibPath, int argc, const char **argv);
+pid_t startQemuFork(const char *dylibPath, int argc, const char **argv, const char **envp, int newStdout, int newStderr);
+int startQemuProcess(const char *dylibPath, int argc, const char **argv, const char **envp);
 
 #endif /* Bootstrap_h */

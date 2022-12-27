@@ -68,8 +68,7 @@ static int loadQemu(const char *dylibPath, qemu_main_t *funcs) {
     return 0;
 }
 
-static void __attribute__((noreturn)) runQemu(qemu_main_t *funcs, int argc, const char **argv) {
-    const char *envp[] = { NULL };
+static void __attribute__((noreturn)) runQemu(qemu_main_t *funcs, int argc, const char **argv, const char **envp) {
     if (funcs->qemu_init) {
         funcs->qemu_init(argc, argv, envp);
     }
@@ -85,7 +84,7 @@ static void __attribute__((noreturn)) runQemu(qemu_main_t *funcs, int argc, cons
     exit(0);
 }
 
-pid_t startQemuFork(const char *dylibPath, int argc, const char **argv, int newStdout, int newStderr) {
+pid_t startQemuFork(const char *dylibPath, int argc, const char **argv, const char **envp, int newStdout, int newStderr) {
     qemu_main_t funcs = {};
     int res = loadQemu(dylibPath, &funcs);
     if (res < 0) {
@@ -103,16 +102,16 @@ pid_t startQemuFork(const char *dylibPath, int argc, const char **argv, int newS
     // set thread QoS
     pthread_set_qos_class_self_np(QOS_CLASS_USER_INTERACTIVE, 0);
     // launch qemu
-    runQemu(&funcs, argc, argv);
+    runQemu(&funcs, argc, argv, envp);
 }
 
-int startQemuProcess(const char *dylibPath, int argc, const char **argv) {
+int startQemuProcess(const char *dylibPath, int argc, const char **argv, const char **envp) {
     qemu_main_t funcs = {};
     int res = loadQemu(dylibPath, &funcs);
     if (res < 0) {
         return res;
     }
     // launch qemu
-    runQemu(&funcs, argc, argv);
+    runQemu(&funcs, argc, argv, envp);
     return 0;
 }

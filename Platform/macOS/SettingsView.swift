@@ -28,6 +28,7 @@ struct SettingsView: View {
     @AppStorage("IsCapsLockKey") var isCapsLockKey = false
     @AppStorage("NoSaveScreenshot") var isNoSaveScreenshot = false
     @AppStorage("InvertScroll") var isInvertScroll = false
+    @AppStorage("QEMURendererBackend") var qemuRendererBackend: UTMQEMURendererBackend = .qemuRendererBackendDefault
     
     var body: some View {
         Form {
@@ -56,6 +57,11 @@ struct SettingsView: View {
                 Toggle(isOn: $isNoSaveScreenshot) {
                     Text("Do not save VM screenshot to disk")
                 }.help("If enabled, any existing screenshot will be deleted the next time the VM is started.")
+                Picker("QEMU Renderer Backend", selection: $qemuRendererBackend) {
+                    Text("Default").tag(UTMQEMURendererBackend.qemuRendererBackendDefault)
+                    Text("ANGLE (OpenGL)").tag(UTMQEMURendererBackend.qemuRendererBackendAngleGL)
+                    Text("ANGLE (Metal)").tag(UTMQEMURendererBackend.qemuRendererBackendAngleMetal)
+                }.help("By default, the best renderer for this device will be used. You can override this with to always use a specific renderer. This only applies to QEMU VMs with GPU accelerated graphics.")
             }
             Section(header: Text("Input")) {
                 Toggle(isOn: $isCtrlRightClick, label: {
@@ -93,6 +99,7 @@ extension UserDefaults {
     @objc dynamic var IsCapsLockKey: Bool { false }
     @objc dynamic var NoSaveScreenshot: Bool { false }
     @objc dynamic var InvertScroll: Bool { false }
+    @objc dynamic var QEMURendererBackend: Int { 0 }
 }
 
 @available(macOS 11, *)

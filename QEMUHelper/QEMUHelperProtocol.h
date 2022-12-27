@@ -21,6 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 // The protocol that this service will vend as its API. This header file will also need to be visible to the process hosting the service.
 @protocol QEMUHelperProtocol
 
+@property (nonatomic, nullable) NSDictionary<NSString *, NSString *> *environment;
+
 - (void)accessDataWithBookmark:(NSData *)bookmark securityScoped:(BOOL)securityScoped completion:(void(^)(BOOL, NSData * _Nullable, NSString * _Nullable))completion;
 - (void)stopAccessingPath:(nullable NSString *)path;
 - (void)startQemu:(NSString *)binName standardOutput:(NSFileHandle *)standardOutput standardError:(NSFileHandle *)standardError libraryBookmark:(NSData *)libBookmark argv:(NSArray<NSString *> *)argv onExit:(void(^)(BOOL,NSString *))onExit;

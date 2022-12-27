@@ -28,6 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL hasRemoteProcess;
 @property (nonatomic, readonly) NSURL *libraryURL;
 @property (nonatomic) NSArray<NSString *> *argv;
+@property (nonatomic, nullable) NSDictionary<NSString *, NSString *> *environment;
 @property (nonatomic) dispatch_semaphore_t done;
 @property (nonatomic) NSInteger status;
 @property (nonatomic) NSInteger fatal;

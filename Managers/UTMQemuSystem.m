@@ -32,11 +32,25 @@
 static void *start_qemu(void *args) {
     UTMQemuSystem *self = (__bridge_transfer UTMQemuSystem *)args;
     NSArray<NSString *> *qemuArgv = self.argv;
+    NSMutableArray<NSString *> *environment = [NSMutableArray arrayWithCapacity:self.environment.count];
     
     NSCAssert(self->_qemu_init != NULL, @"Started thread with invalid function.");
     NSCAssert(self->_qemu_main_loop != NULL, @"Started thread with invalid function.");
     NSCAssert(self->_qemu_cleanup != NULL, @"Started thread with invalid function.");
     NSCAssert(qemuArgv, @"Started thread with invalid argv.");
+    
+    /* set up environment variables */
+    [self.environment enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
+        NSString *combined = [NSString stringWithFormat:@"%@=%@", key, value];
+        [environment addObject:combined];
+        setenv(key.UTF8String, value.UTF8String, 1);
+    }];
+    NSUInteger envc = environment.count;
+    const char *envp[envc + 1];
+    for (NSUInteger i = 0; i < envc; i++) {
+        envp[i] = environment[i].UTF8String;
+    }
+    envp[envc] = NULL;
     
     int argc = (int)qemuArgv.count + 1;
     const char *argv[argc];
@@ -44,13 +58,32 @@ static void *start_qemu(void *args) {
     for (int i = 0; i < qemuArgv.count; i++) {
         argv[i+1] = [qemuArgv[i] UTF8String];
     }
-    const char *envp[] = { NULL };
     self->_qemu_init(argc, argv, envp);
     self->_qemu_main_loop();
     self->_qemu_cleanup();
     self.status = 0;
     dispatch_semaphore_signal(self.done);
     return NULL;
+}
+
+- (void)setRendererBackend:(UTMQEMURendererBackend)rendererBackend {
+    _rendererBackend = rendererBackend;
+    switch (rendererBackend) {
+        case kQEMURendererBackendAngleGL:
+            self.environment = @{@"ANGLE_DEFAULT_PLATFORM": @"gl"};
+            break;
+        case kQEMURendererBackendAngleMetal:
+            self.environment = @{@"ANGLE_DEFAULT_PLATFORM": @"metal"};
+            break;
+        case kQEMURendererBackendDefault:
+#if TARGET_OS_IPHONE
+            // on iOS, use Metal as the default because it is more stable
+            self.environment = @{@"ANGLE_DEFAULT_PLATFORM": @"metal"};
+#endif
+            break;
+        default:
+            break;
+    }
 }
 
 - (instancetype)initWithArguments:(NSArray<NSString *> *)arguments architecture:(nonnull NSString *)architecture {

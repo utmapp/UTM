@@ -45,6 +45,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
 @property (nonatomic, nullable) dispatch_semaphore_t qemuDidConnectEvent;
 @property (nonatomic) BOOL changeCursorRequestInProgress;
 @property (nonatomic, nullable) NSString *lastErrorLine;
+@property (nonatomic, readonly) UTMQEMURendererBackend rendererBackend;
 
 @end
 
@@ -66,6 +67,15 @@ NSString *const kSuspendSnapshotName = @"suspend";
 - (void)setIsGuestToolsInstallRequested:(BOOL)isGuestToolsInstallRequested {
     [self propertyWillChange];
     _isGuestToolsInstallRequested = isGuestToolsInstallRequested;
+}
+
+- (UTMQEMURendererBackend)rendererBackend {
+    NSInteger value = [NSUserDefaults.standardUserDefaults integerForKey:@"QEMURendererBackend"];
+    if (value >= 0 && value < kQEMURendererBackendMax) {
+        return (UTMQEMURendererBackend)value;
+    } else {
+        return kQEMURendererBackendDefault;
+    }
 }
 
 - (instancetype)initWithConfiguration:(UTMConfigurationWrapper *)configuration packageURL:(NSURL *)packageURL {
@@ -219,6 +229,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
     __weak typeof(self) weakSelf = self;
     __block NSError *qemuStartError = nil;
     dispatch_semaphore_t spiceConnectOrErrorEvent = dispatch_semaphore_create(0);
+    self.system.rendererBackend = self.rendererBackend;
     [self.system startWithCompletion:^(BOOL success, NSString *msg){
         typeof(self) _self = weakSelf;
         if (!_self) {

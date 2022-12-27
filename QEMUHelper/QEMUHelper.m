@@ -26,6 +26,8 @@
 
 @implementation QEMUHelper
 
+@synthesize environment;
+
 - (instancetype)init {
     if (self = [super init]) {
         self.urls = [NSMutableArray array];
@@ -112,7 +114,9 @@
     task.arguments = newArgv;
     task.standardOutput = standardOutput;
     task.standardError = standardError;
-    //task.environment = @{@"DYLD_LIBRARY_PATH": libraryPath.path};
+    if (self.environment) {
+        task.environment = self.environment;
+    }
     task.qualityOfService = NSQualityOfServiceUserInitiated;
     task.terminationHandler = ^(NSTask *task) {
         BOOL normalExit = task.terminationReason == NSTaskTerminationReasonExit && task.terminationStatus == 0;
