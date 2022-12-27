@@ -250,8 +250,23 @@
 // Display/VMDisplayAppleDisplayWindowController.swift
 "%@ (Terminal %lld)" = "%@ (Terminal %lld)";
 
-// Display/VMDisplayQemuWindowController.swift
+// Display/VMDisplayQemuDisplayController.swift
 "Disposable Mode" = "Mode jetable";
+"Request power down" = "Demander un arrêt";
+"Sends power down request to the guest. This simulates pressing the power button on a PC." = "Envoie une requête d'extinction à l'invité. Cela simule un appui sur le bouton d'alimentation du PC.";
+"Force shut down" = "Forcer l'arrêt";
+"Tells the VM process to shut down with risk of data corruption. This simulates holding down the power button on a PC." = "Indique au processus de la VM de s'arrêter avec un risque de perte de données. Cela simule le fait d'appuyer longtemps sur le bouton d'alimention du PC.";
+"Force kill" = "Tuer la VM";
+"Force kill the VM process with high risk of data corruption." = "Force l'arrêt du processus de la VM avec un haut risque de corruption de données.";
+"Querying drives status..." = "Recherche du statut des lecteurs…";
+"No drives connected." = "Aucun lecteur connecté.";
+"Install Windows Guest Tools…" = "Installer les outils pour invité Windows…";
+"Eject" = "Éjecter";
+"Change" = "Changer";
+"Select Drive Image" = "Sélectionner une image de lecteur";
+"USB Device" = "Périphérique USB";
+"Confirm" = "Confirmer";
+"Querying USB devices..." = "Recherche des appareils USB…";
 
 // Display/VMQemuDisplayMetalWindowController.swift
 "%@ (Display %lld)" = "%@ (Display %lld)";
@@ -317,10 +332,6 @@
 // VMConfigAppleDriveCreateView.swift
 "Removable" = "Amovible";
 "If checked, the drive image will be stored with the VM." = "Si coché, l'image du disque sera stocké avec la VM.";
-"Size" = "Taille";
-"The amount of storage to allocate for this image. An empty file of this size will be stored with the VM." = "La quantité de stockage à allouer pour cette image. Un fichier vide de cette taille sera enregistré dans la VM.";
-"GB" = "Gio";
-"MB" = "Mio";
 
 // VMConfigAppleDriveDetailsView.swift
 "Name" = "Nom";
@@ -346,8 +357,20 @@
 "This directory is already being shared." = "Ce dossier est déjà partagé.";
 "Add read only" = "Ajouter en lecture seule";
 
+// VMConfigAppleSharingView.swift
+"Shared directories in macOS VMs are only available in macOS 13 and later." = "Les dossiers partagés dans les VM macOS ne sont disponibles que sur macOS 13 et suivants.";
+
 // VMConfigAppleSystemView.swift
 "CPU Cores" = "Cœurs de CPU";
+
+// VMConfigNetworkPortForwardView.swift
+"Protocol" = "Protocole";
+"Guest Address" = "Adresse de l'invité";
+"Guest Port" = "Port de l'invité";
+"Host Address" = "Adresse de l'hôte";
+"Host Port" = "Port hôte";
+"Edit…" = "Modifier…";
+"New…" = "Nouveau…";
 
 // VMConfigAppleVirtualizationView.swift
 "Enable Balloon Device" = "Activer l'appareil Balloon";
@@ -363,7 +386,6 @@
 // VMDrivesSettingsView.swift
 "Move Up" = "Monter";
 "Move Down" = "Descendre";
-"New…" = "Ajouter…";
 "Add a new drive." = "Ajoute un nouveau lecteur.";
 "Import…" = "Importer…";
 "Select an existing disk image." = "Sélectionne une image disque existante.";
@@ -402,11 +424,16 @@
 // ContentView.swift
 "Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached. See https://getutm.app/install/ for more details." = "Votre version d'iOS ne prend pas en charge l'exécution de VM tant qu'il n'est pas modifié. Soit vous devez exécuter UTM sur un appareil jailbreaké, soit vous devez y rattacher un débogeur distant. Consultez https://getutm.app/install/ pour plus de détails.";
 
-/* Share and Drive panes. */
+// FileBrowseField.swift
 "Path" = "Emplacement";
+
+// RAMSlider.swift
+"Size" = "Taille";
+"MB" = "MB";
 
 // SizeTextField.swift
 "The amount of storage to allocate for this image. Ignored if importing an image. If this is a raw image, then an empty file of this size will be stored with the VM. Otherwise, the disk image will dynamically expand up to this size." = "La quantité de stockage à allouer pour cette image. Ignoré si importation d'image. Si c'est une image brute, un fichier vide de la même taille sera enregistré avec la VM. Sinon, l'image disque sera dynamiquement étendue jusqu'à cette taille.";
+"GB" = "GB";
 
 // VMCardView.swift
 "Run" = "Démarrer";
@@ -490,19 +517,12 @@
 "Isolate Guest from Host" = "Isoler l'invité de l'hôte";
 "Guest Network" = "Réseau de l'invité";
 "Guest Network (IPv6)" = "Réseau de l'invité (IPv6)";
-"Host Address" = "Adresse de l'hôte";
 "Host Address (IPv6)" = "Adresse de l'hôte（IPv6)";
 "DHCP Start" = "Début DHCP";
 "DHCP Domain Name" = "Nom de domaine DHCP";
 "DNS Server" = "Serveur DNS";
 "DNS Server (IPv6)" = "Serveur DNS（IPv6）";
 "DNS Search Domains" = "Domaine de recherche DNS";
-
-// VMConfigPortForwardForm.swift
-"Protocol" = "Protocole";
-"Guest Address" = "Adresse de l'invité";
-"Guest Port" = "Port de l'invité";
-"Host Port" = "Port hôte";
 
 // VMConfigQEMUView.swift
 "Logging" = "Journalisation";
@@ -571,7 +591,6 @@
 "Do you want to force stop this VM and lose all unsaved data?" = "Voulez-vous forcer l'arrêt de cette VM et perdre toutes les données non enregistrées ?";
 "Stop" = "Arrêter";
 "Do you want to move this VM to another location? This will copy the data to the new location, delete the data from the original location, and then create a shortcut." = "Voulez-vous déplacer cette VM à un autre endroit ? Cela copiera les données vers le nouvel emplacement, supprimera les données de l'emplacement d'origine, et créera un raccourci.";
-"Confirm" = "Confirmer";
 
 // VMContextMenuModifier.swift
 "Show in Finder" = "Afficher dans le Finder";
