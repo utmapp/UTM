@@ -310,7 +310,7 @@ bool jb_has_hypervisor(void) {
 
 bool jb_has_container(void) {
     NSDictionary *entitlements = cached_app_entitlements();
-    return ![entitlements[@"com.apple.private.security.no-container"] boolValue];
+    return ![entitlements[@"com.apple.private.security.no-sandbox"] boolValue];
 }
 #endif
 
