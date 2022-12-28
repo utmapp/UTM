@@ -210,10 +210,7 @@ extension UTMCtl {
             let vm = try virtualMachine(forIdentifier: identifer, in: application)
             vm.startSaving!(!disposible)
             if attach {
-                var attachCommand = Attach()
-                attachCommand.environment = environment
-                attachCommand.identifer = identifer
-                try attachCommand.run(with: application)
+                print("WARNING: attach command is not implemented yet!")
             }
         }
     }
@@ -306,12 +303,6 @@ extension UTMCtl {
         @Option(help: "Index of the serial device to attach to.")
         var index: Int?
         
-        init() {
-            self.environment = EnvironmentOptions()
-            self.identifer = VMIdentifier()
-            self.index = nil
-        }
-        
         func run(with application: UTMScriptingApplication) throws {
             let vm = try virtualMachine(forIdentifier: identifer, in: application)
             guard let serialPorts = vm.serialPorts!() as? [UTMScriptingSerialPort] else {
@@ -323,6 +314,7 @@ extension UTMCtl {
                         continue
                     }
                 }
+                print("WARNING: attach command is not implemented yet!")
                 if let interface = serialPort.interface, interface != .unavailable {
                     printResponse(serialPort)
                     return
