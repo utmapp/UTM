@@ -154,9 +154,15 @@ private struct VMListModifier: ViewModifier {
                 data.showNewVMSheet = false
             }
         }
+        .onReceive(NSNotification.OpenVirtualMachine) { _ in
+            sheetPresented = false
+        }
         #else
         .sheet(isPresented: $data.showNewVMSheet) {
             VMWizardView()
+        }
+        .onReceive(NSNotification.OpenVirtualMachine) { _ in
+            data.showNewVMSheet = false
         }
         #endif
     }

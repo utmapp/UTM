@@ -44,7 +44,7 @@ struct ContentView: View {
         .onReceive(NSNotification.NewVirtualMachine) { _ in
             data.newVM()
         }.onReceive(NSNotification.OpenVirtualMachine) { _ in
-            data.showNewVMSheet = false
+            // VMNavigationListView also gets this notification and closes the wizard sheet
             openSheetPresented = false
             // FIXME: SwiftUI bug on iOS requires this wait
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.02) {
