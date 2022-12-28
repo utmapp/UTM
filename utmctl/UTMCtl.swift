@@ -204,11 +204,11 @@ extension UTMCtl {
         var attach: Bool = false
         
         @Flag(help: "Run VM as a snapshot and do not save changes to disk.")
-        var disposible: Bool = false
+        var disposable: Bool = false
         
         func run(with application: UTMScriptingApplication) throws {
             let vm = try virtualMachine(forIdentifier: identifer, in: application)
-            vm.startSaving!(!disposible)
+            vm.startSaving!(!disposable)
             if attach {
                 print("WARNING: attach command is not implemented yet!")
             }
