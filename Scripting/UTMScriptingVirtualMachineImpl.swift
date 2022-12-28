@@ -148,7 +148,12 @@ class UTMScriptingVirtualMachineImpl: NSObject {
     }
     
     @objc func stop(_ command: NSScriptCommand) {
-        let stopMethod = command.evaluatedArguments?["stopBy"] as? UTMScriptingStopMethod ?? .force
+        let stopMethod: UTMScriptingStopMethod
+        if let stopMethodValue = command.evaluatedArguments?["stopBy"] as? AEKeyword {
+            stopMethod = UTMScriptingStopMethod(rawValue: stopMethodValue) ?? .force
+        } else {
+            stopMethod = .force
+        }
         withScriptCommand(command) { [self] in
             switch stopMethod {
             case .force:
