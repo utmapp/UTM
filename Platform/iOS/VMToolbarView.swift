@@ -163,10 +163,10 @@ struct VMToolbarView: View {
                         longIdleTimeout.assertUserInteraction()
                     }
             )
-            .onChange(of: state.isRunning) { running in
+            .onAppear {
                 resetIdle()
                 longIdleTimeout.assertUserInteraction()
-                if running && isCollapsed {
+                if isCollapsed {
                     withOptionalAnimation(.easeInOut(duration: 1)) {
                         shake.toggle()
                     }
