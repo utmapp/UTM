@@ -126,9 +126,6 @@ struct VMWizardSummaryView: View {
             TextField("RAM", text: .constant(ByteCountFormatter.string(fromByteCount: Int64(wizardState.systemMemoryMib * wizardState.bytesInMib), countStyle: .binary)))
             TextField("CPU", text: .constant(coreDescription))
             TextField("Storage", text: .constant(storageDescription))
-            if !wizardState.useAppleVirtualization && wizardState.operatingSystem == .Linux {
-                Toggle("Hardware OpenGL Acceleration", isOn: $wizardState.isGLEnabled)
-            }
         }
     }
     
