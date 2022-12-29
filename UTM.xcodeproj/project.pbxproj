@@ -292,7 +292,6 @@
 		CE020BAC24AEE00000B44AB6 /* UTMLoggingSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE020BAA24AEE00000B44AB6 /* UTMLoggingSwift.swift */; };
 		CE020BB624B14F8400B44AB6 /* UTMVirtualMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE020BB524B14F8400B44AB6 /* UTMVirtualMachine.swift */; };
 		CE020BB724B14F8400B44AB6 /* UTMVirtualMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE020BB524B14F8400B44AB6 /* UTMVirtualMachine.swift */; };
-		CE02C8AA294EE4EB006DFE48 /* qemu-loongarch64-softmmu.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE02C8A8294EE4EA006DFE48 /* qemu-loongarch64-softmmu.framework */; };
 		CE02C8AB294EE4EB006DFE48 /* qemu-loongarch64-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE02C8A8294EE4EA006DFE48 /* qemu-loongarch64-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CE02C8AC294EE4EC006DFE48 /* slirp.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE02C8A9294EE4EB006DFE48 /* slirp.0.framework */; };
 		CE02C8AD294EE4EC006DFE48 /* slirp.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE02C8A9294EE4EB006DFE48 /* slirp.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -300,7 +299,6 @@
 		CE02C8B2294EE58C006DFE48 /* slirp.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE02C8A9294EE4EB006DFE48 /* slirp.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CE02C8B3294EE59A006DFE48 /* slirp.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE02C8A9294EE4EB006DFE48 /* slirp.0.framework */; };
 		CE02C8B4294EE59A006DFE48 /* slirp.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE02C8A9294EE4EB006DFE48 /* slirp.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		CE02C8B5294EE59F006DFE48 /* qemu-loongarch64-softmmu.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE02C8A8294EE4EA006DFE48 /* qemu-loongarch64-softmmu.framework */; };
 		CE02C8B6294EE59F006DFE48 /* qemu-loongarch64-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE02C8A8294EE4EA006DFE48 /* qemu-loongarch64-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CE03D05224D90B4E00F76B84 /* UTMQemuSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = CE03D05024D90B4E00F76B84 /* UTMQemuSystem.m */; };
 		CE03D05324D90B4E00F76B84 /* UTMQemuSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = CE03D05024D90B4E00F76B84 /* UTMQemuSystem.m */; };
@@ -2375,7 +2373,6 @@
 				CE2D933A24AD46670059923A /* libgstaudiorate.a in Frameworks */,
 				B3DDF57226E9BBA300CE47F0 /* AltKit in Frameworks */,
 				CE2D933B24AD46670059923A /* libgstvideofilter.a in Frameworks */,
-				CE02C8AA294EE4EB006DFE48 /* qemu-loongarch64-softmmu.framework in Frameworks */,
 				84018695288B66370050AC51 /* SwiftUIVisualEffects in Frameworks */,
 				84937F1D289767EC003148F4 /* zstd.1.framework in Frameworks */,
 				CE2D933C24AD46670059923A /* libgstapp.a in Frameworks */,
@@ -2489,7 +2486,6 @@
 				CE0B6EE724AD677200FE012D /* libgstvideotestsrc.a in Frameworks */,
 				CE0B6EBB24AD677200FE012D /* libgstgio.a in Frameworks */,
 				84937EFF28960789003148F4 /* zstd.1.framework in Frameworks */,
-				CE02C8B5294EE59F006DFE48 /* qemu-loongarch64-softmmu.framework in Frameworks */,
 				CE0B6EE224AD677200FE012D /* gstnet-1.0.0.framework in Frameworks */,
 				CE03D08624D90F0700F76B84 /* gmodule-2.0.0.framework in Frameworks */,
 				CE03D0CA24D9142000F76B84 /* ssl.1.1.framework in Frameworks */,
