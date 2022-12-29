@@ -671,7 +671,7 @@ ios* )
         SDK=iphoneos
         CFLAGS_MINVER="-miphoneos-version-min=$SDKMINVER"
         PLATFORM_FAMILY_PREFIX="iOS"
-        HVF_FLAGS=""
+        HVF_FLAGS="--enable-hvf-private"
         ;;
     esac
     CFLAGS_TARGET=
