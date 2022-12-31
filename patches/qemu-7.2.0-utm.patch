@@ -582,6 +582,45 @@ index 8d2248bb3f..8283a9b761 100644
  int hvf_arch_init(void)
  {
      return 0;
+=======
+From c874e68e5a1635326f8a2f52320b8dbe82f6be51 Mon Sep 17 00:00:00 2001
+From: osy <50960678+osy@users.noreply.github.com>
+Date: Fri, 30 Dec 2022 20:24:00 -0800
+Subject: [PATCH] tcti: disable TARGET_TB_PCREL for TCTI
+
+It is currently not supported.
+---
+ target/arm/cpu-param.h  | 2 ++
+ target/i386/cpu-param.h | 2 +-
+ 2 files changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/target/arm/cpu-param.h b/target/arm/cpu-param.h
+index 53cac9c89b..6c4af8f0d2 100644
+--- a/target/arm/cpu-param.h
++++ b/target/arm/cpu-param.h
+@@ -31,7 +31,9 @@
+ # define TARGET_PAGE_BITS_VARY
+ # define TARGET_PAGE_BITS_MIN  10
+ 
++#ifndef CONFIG_TCG_THREADED_INTERPRETER
+ # define TARGET_TB_PCREL 1
++#endif
+ 
+ /*
+  * Cache the attrs and shareability fields from the page table entry.
+diff --git a/target/i386/cpu-param.h b/target/i386/cpu-param.h
+index f579b16bd2..0975265ff3 100644
+--- a/target/i386/cpu-param.h
++++ b/target/i386/cpu-param.h
+@@ -25,7 +25,7 @@
+ #define TARGET_PAGE_BITS 12
+ #define NB_MMU_MODES 5
+ 
+-#ifndef CONFIG_USER_ONLY
++#if !defined(CONFIG_USER_ONLY) && !defined(CONFIG_TCG_THREADED_INTERPRETER)
+ # define TARGET_TB_PCREL 1
+ #endif
+ 
 -- 
 2.28.0
 

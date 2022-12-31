@@ -88,8 +88,9 @@
     // Initialize our renderer with the view size
     CGSize drawableSize = self.view.bounds.size;
     self.mtkView.drawableSize = drawableSize;
-    self.renderer.preferredFramesPerSecond = [self integerForSetting:@"QEMURendererFPSLimit"];
-    [self.renderer mtkView:self.mtkView drawableSizeWillChange:drawableSize];
+    if ([self integerForSetting:@"QEMURendererFPSLimit"] > 0) {
+        self.mtkView.preferredFramesPerSecond = [self integerForSetting:@"QEMURendererFPSLimit"];
+    }
     
     [self.renderer changeUpscaler:self.delegate.qemuDisplayUpscaler
                        downscaler:self.delegate.qemuDisplayDownscaler];

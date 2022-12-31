@@ -82,8 +82,9 @@ class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
             logger.critical("Failed to create renderer.")
             return
         }
-        renderer.preferredFramesPerSecond = rendererFpsLimit
-        renderer.mtkView(metalView, drawableSizeWillChange: metalView.drawableSize)
+        if rendererFpsLimit > 0 {
+            metalView.preferredFramesPerSecond = rendererFpsLimit
+        }
         renderer.changeUpscaler(displayConfig?.upscalingFilter.metalSamplerMinMagFilter ?? .linear, downscaler: displayConfig?.downscalingFilter.metalSamplerMinMagFilter ?? .linear)
         renderer.source = vmDisplay // can be nil if primary
         metalView.delegate = renderer
