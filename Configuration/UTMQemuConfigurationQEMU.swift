@@ -42,6 +42,9 @@ struct UTMQemuConfigurationQEMU: Codable {
     /// If true, use HVF hypervisor instead of TCG emulation.
     var hasHypervisor: Bool = false
     
+    /// If true, enable total store ordering.
+    var hasTSO: Bool = false
+    
     /// If true, attempt to sync RTC with the local time.
     var hasRTCLocalTime: Bool = false
     
