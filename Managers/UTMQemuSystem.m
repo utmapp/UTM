@@ -69,18 +69,11 @@ static void *start_qemu(void *args) {
 - (void)setRendererBackend:(UTMQEMURendererBackend)rendererBackend {
     _rendererBackend = rendererBackend;
     switch (rendererBackend) {
-        case kQEMURendererBackendAngleGL:
-            self.environment = @{@"ANGLE_DEFAULT_PLATFORM": @"gl"};
-            break;
         case kQEMURendererBackendAngleMetal:
             self.environment = @{@"ANGLE_DEFAULT_PLATFORM": @"metal"};
             break;
         case kQEMURendererBackendDefault:
-#if TARGET_OS_IPHONE
-            // on iOS, use Metal as the default because it is more stable
-            self.environment = @{@"ANGLE_DEFAULT_PLATFORM": @"metal"};
-#endif
-            break;
+        case kQEMURendererBackendAngleGL:
         default:
             break;
     }
