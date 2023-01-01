@@ -30,7 +30,7 @@
 
 @interface VMDisplayMetalViewController ()
 
-@property (nonatomic, nullable) CSRenderer *renderer;
+@property (nonatomic, nullable) CSMetalRenderer *renderer;
 
 @end
 
@@ -79,7 +79,7 @@
         return;
     }
     
-    self.renderer = [[CSRenderer alloc] initWithMetalKitView:self.mtkView];
+    self.renderer = [[CSMetalRenderer alloc] initWithMetalKitView:self.mtkView];
     if (!self.renderer) {
         UTMLog(@"Renderer failed initialization");
         return;
@@ -96,7 +96,6 @@
                        downscaler:self.delegate.qemuDisplayDownscaler];
     
     self.mtkView.delegate = self.renderer;
-    self.vmDisplay = self.vmDisplay; // reset renderer
     
     [self initTouch];
     [self initGamepad];
@@ -117,11 +116,13 @@
     [super viewWillAppear:animated];
     self.prefersHomeIndicatorAutoHidden = YES;
     [self startGCMouse];
+    [self.vmDisplay addRenderer:self.renderer];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [self stopGCMouse];
+    [self.vmDisplay removeRenderer:self.renderer];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -199,8 +200,11 @@
 }
 
 - (void)setVmDisplay:(CSDisplay *)display {
-    _vmDisplay = display;
-    self.renderer.source = display;
+    if (self.renderer) {
+        [_vmDisplay removeRenderer:self.renderer];
+        _vmDisplay = display;
+        [display addRenderer:self.renderer];
+    }
 }
 
 - (void)setDisplayScaling:(CGFloat)scaling origin:(CGPoint)origin {

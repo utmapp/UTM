@@ -18,9 +18,16 @@ import CocoaSpiceRenderer
 
 class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
     var metalView: VMMetalView!
-    var renderer: CSRenderer?
+    var renderer: CSMetalRenderer?
     
-    private var vmDisplay: CSDisplay?
+    private var vmDisplay: CSDisplay? {
+        didSet {
+            if let renderer = renderer {
+                oldValue?.removeRenderer(renderer)
+                vmDisplay?.addRenderer(renderer)
+            }
+        }
+    }
     private var vmInput: CSInput?
     
     private var displaySize: CGSize = .zero
@@ -76,7 +83,7 @@ class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
             return
         }
         displayView.addSubview(metalView)
-        renderer = CSRenderer.init(metalKitView: metalView)
+        renderer = CSMetalRenderer.init(metalKitView: metalView)
         guard let renderer = self.renderer else {
             showErrorAlert(NSLocalizedString("Internal error.", comment: "VMDisplayMetalWindowController"))
             logger.critical("Failed to create renderer.")
@@ -86,7 +93,7 @@ class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
             metalView.preferredFramesPerSecond = rendererFpsLimit
         }
         renderer.changeUpscaler(displayConfig?.upscalingFilter.metalSamplerMinMagFilter ?? .linear, downscaler: displayConfig?.downscalingFilter.metalSamplerMinMagFilter ?? .linear)
-        renderer.source = vmDisplay // can be nil if primary
+        vmDisplay?.addRenderer(renderer) // can be nil if primary
         metalView.delegate = renderer
         metalView.inputDelegate = self
         
@@ -95,6 +102,11 @@ class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
         })
         
         super.windowDidLoad()
+    }
+    
+    override func windowWillClose(_ notification: Notification) {
+        super.windowWillClose(notification)
+        vmDisplay?.removeRenderer(renderer!)
     }
     
     override func enterLive() {
@@ -175,7 +187,6 @@ extension VMDisplayQemuMetalWindowController {
     override func spiceDidCreateDisplay(_ display: CSDisplay) {
         if !isSecondary && vmDisplay == nil && display.isPrimaryDisplay {
             vmDisplay = display
-            renderer!.source = display
             displaySizeDidChange(size: display.displaySize)
         } else {
             super.spiceDidCreateDisplay(display)
@@ -190,7 +201,6 @@ extension VMDisplayQemuMetalWindowController {
                 }
             } else {
                 vmDisplay = nil
-                renderer!.source = nil
             }
         } else {
             super.spiceDidDestroyDisplay(display)
