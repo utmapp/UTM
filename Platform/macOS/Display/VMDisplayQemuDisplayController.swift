@@ -41,6 +41,25 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
         }
     }
     
+    var suspendDisabledReason: String? {
+        #if arch(x86_64)
+        if vmQemuConfig.qemu.hasHypervisor && vmQemuConfig.system.architecture == .x86_64 {
+            return NSLocalizedString("Suspend is not supported for virtualization.", comment: "VMDisplayQemuWindowController")
+        }
+        #endif
+        for display in vmQemuConfig.displays {
+            if display.hardware.rawValue.contains("-gl-") || display.hardware.rawValue.hasSuffix("-gl") {
+                return NSLocalizedString("Suspend is not supported when GPU acceleration is enabled.", comment: "VMDisplayQemuWindowController")
+            }
+        }
+        for drive in vmQemuConfig.drives {
+            if drive.interface == .nvme {
+                return NSLocalizedString("Susped is not supported when an emulated NVMe device is active.", comment: "VMDisplayQemuWindowController")
+            }
+        }
+        return nil
+    }
+    
     convenience init(vm: UTMQemuVirtualMachine, id: Int) {
         self.init(vm: vm, onClose: nil)
         self.id = id
@@ -55,12 +74,10 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
             qemuVM.ioDelegate = self
         }
         startPauseToolbarItem.isEnabled = true
-        #if arch(x86_64)
-        if vmQemuConfig.qemu.hasHypervisor {
-            // currently x86_64 HVF doesn't support suspending
+        if let suspendDisabledReason = suspendDisabledReason {
             startPauseToolbarItem.isEnabled = false
+            startPauseToolbarItem.toolTip = suspendDisabledReason
         }
-        #endif
         drivesToolbarItem.isEnabled = vmQemuConfig.drives.count > 0
         sharedFolderToolbarItem.isEnabled = vmQemuConfig.sharing.directoryShareMode == .webdav // virtfs cannot dynamically change
         usbToolbarItem.isEnabled = qemuVM.hasUsbRedirection
