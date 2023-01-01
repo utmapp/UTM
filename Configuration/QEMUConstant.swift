@@ -428,6 +428,15 @@ extension QEMUArchitecture {
         return false
         #endif
     }
+    
+    /// TSO is supported on jailbroken iOS devices with Hypervisor support
+    var hasTSOSupport: Bool {
+        #if os(iOS)
+        return hasHypervisorSupport
+        #else
+        return false
+        #endif
+    }
 }
 
 extension QEMUTarget {

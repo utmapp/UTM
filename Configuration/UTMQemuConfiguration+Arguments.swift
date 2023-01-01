@@ -273,6 +273,10 @@ import Foundation
         system.architecture.hasHypervisorSupport && qemu.hasHypervisor
     }
     
+    private var isTSOUsed: Bool {
+        system.architecture.hasTSOSupport && qemu.hasTSO
+    }
+    
     private var isUsbUsed: Bool {
         system.architecture.hasUsbSupport && system.target.hasUsbSupport && input.usbBusSupport != .disabled
     }
@@ -283,7 +287,11 @@ import Foundation
         f(machineProperties)
         if isHypervisorUsed {
             f("-accel")
-            f("hvf")
+            "hvf"
+            if isTSOUsed {
+                "tso=on"
+            }
+            f()
         } else {
             f("-accel")
             "tcg"

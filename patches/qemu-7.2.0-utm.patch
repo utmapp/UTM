@@ -322,6 +322,267 @@ index 7f589b4146..d311c57cca 100644
 -- 
 2.28.0
 
+From 531da34587b38c64787cb25b1de1c5d13f75def8 Mon Sep 17 00:00:00 2001
+From: osy <50960678+osy@users.noreply.github.com>
+Date: Wed, 28 Dec 2022 16:50:49 -0800
+Subject: [PATCH] hvf: support TSO mode (private feature)
+
+Apple Silicon supports TSO mode which can be used for emulating strong
+memory ordering in the guest. This feature requires the private entitlement
+`com.apple.private.hypervisor` as well as a private function to modify
+ACTLR_EL1 not exposed by the public Hypervisor framework.
+---
+ accel/hvf/hvf-accel-ops.c     | 51 ++++++++++++++++++++++++++---------
+ include/sysemu/hvf_int.h      | 13 +++++++++
+ meson.build                   |  1 +
+ meson_options.txt             |  2 ++
+ scripts/meson-buildoptions.sh |  3 +++
+ target/arm/hvf/hvf.c          | 28 +++++++++++++++++++
+ target/i386/hvf/hvf.c         |  5 ++++
+ 7 files changed, 90 insertions(+), 13 deletions(-)
+
+diff --git a/accel/hvf/hvf-accel-ops.c b/accel/hvf/hvf-accel-ops.c
+index 24913ca9c4..b414e240ec 100644
+--- a/accel/hvf/hvf-accel-ops.c
++++ b/accel/hvf/hvf-accel-ops.c
+@@ -57,13 +57,10 @@
+ #include "sysemu/hvf_int.h"
+ #include "sysemu/runstate.h"
+ #include "qemu/guest-random.h"
++#include "hw/boards.h"
+ 
+ HVFState *hvf_state;
+ 
+-#ifdef __aarch64__
+-#define HV_VM_DEFAULT NULL
+-#endif
+-
+ /* Memory slots */
+ 
+ hvf_slot *hvf_find_overlap_slot(uint64_t start, uint64_t size)
+@@ -319,25 +316,44 @@ bool hvf_allowed;
+ 
+ static int hvf_accel_init(MachineState *ms)
+ {
+-    int x;
+     hv_return_t ret;
+-    HVFState *s;
++    HVFState *s = HVF_STATE(ms->accelerator);
+ 
+-    ret = hv_vm_create(HV_VM_DEFAULT);
++    ret = hvf_arch_vm_create(s);
+     assert_hvf_ok(ret);
+ 
+-    s = g_new0(HVFState, 1);
++    hvf_state = s;
++    memory_listener_register(&hvf_memory_listener, &address_space_memory);
++
++    return hvf_arch_init();
++}
++
++#if defined(CONFIG_HVF_PRIVATE) && defined(__aarch64__)
++
++static bool hvf_get_tso(Object *obj, Error **errp)
++{
++    HVFState *s = HVF_STATE(obj);
++    return s->tso_mode;
++}
++
++static void hvf_set_tso(Object *obj, bool value, Error **errp)
++{
++    HVFState *s = HVF_STATE(obj);
++    s->tso_mode = value;
++}
++
++#endif
++
++static void hvf_accel_instance_init(Object *obj)
++{
++    int x;
++    HVFState *s = HVF_STATE(obj);
+ 
+     s->num_slots = ARRAY_SIZE(s->slots);
+     for (x = 0; x < s->num_slots; ++x) {
+         s->slots[x].size = 0;
+         s->slots[x].slot_id = x;
+     }
+-
+-    hvf_state = s;
+-    memory_listener_register(&hvf_memory_listener, &address_space_memory);
+-
+-    return hvf_arch_init();
+ }
+ 
+ static void hvf_accel_class_init(ObjectClass *oc, void *data)
+@@ -346,12 +362,21 @@ static void hvf_accel_class_init(ObjectClass *oc, void *data)
+     ac->name = "HVF";
+     ac->init_machine = hvf_accel_init;
+     ac->allowed = &hvf_allowed;
++
++#if defined(CONFIG_HVF_PRIVATE) && defined(__aarch64__)
++    object_class_property_add_bool(oc, "tso",
++        hvf_get_tso, hvf_set_tso);
++    object_class_property_set_description(oc, "tso",
++        "Set on/off to enable/disable total store ordering mode");
++#endif
+ }
+ 
+ static const TypeInfo hvf_accel_type = {
+     .name = TYPE_HVF_ACCEL,
+     .parent = TYPE_ACCEL,
++    .instance_init = hvf_accel_instance_init,
+     .class_init = hvf_accel_class_init,
++    .instance_size = sizeof(HVFState),
+ };
+ 
+ static void hvf_type_init(void)
+diff --git a/include/sysemu/hvf_int.h b/include/sysemu/hvf_int.h
+index 6545f7cd61..9f550b9f8b 100644
+--- a/include/sysemu/hvf_int.h
++++ b/include/sysemu/hvf_int.h
+@@ -17,6 +17,15 @@
+ #include <Hypervisor/hv.h>
+ #endif
+ 
++#if defined(CONFIG_HVF_PRIVATE) && defined(__aarch64__)
++extern hv_return_t _hv_vm_config_set_isa(hv_vm_config_t config, uint32_t isa);
++extern hv_return_t _hv_vcpu_get_actlr(hv_vcpu_t vcpu, uint64_t* value);
++extern hv_return_t _hv_vcpu_set_actlr(hv_vcpu_t vcpu, uint64_t value);
++
++#define HV_VM_CONFIG_ISA_PRIVATE (3)
++#define ACTLR_EL1_TSO_ENABLE_MASK ((1 << 1) | (1 << 9))
++#endif
++
+ /* hvf_slot flags */
+ #define HVF_SLOT_LOG (1 << 0)
+ 
+@@ -45,6 +54,9 @@ struct HVFState {
+ 
+     hvf_vcpu_caps *hvf_caps;
+     uint64_t vtimer_offset;
++#if defined(CONFIG_HVF_PRIVATE) && defined(__aarch64__)
++    bool tso_mode;
++#endif
+ };
+ extern HVFState *hvf_state;
+ 
+@@ -56,6 +68,7 @@ struct hvf_vcpu_state {
+ };
+ 
+ void assert_hvf_ok(hv_return_t ret);
++hv_return_t hvf_arch_vm_create(HVFState *s);
+ int hvf_arch_init(void);
+ int hvf_arch_init_vcpu(CPUState *cpu);
+ void hvf_arch_vcpu_destroy(CPUState *cpu);
+diff --git a/meson.build b/meson.build
+index 00fccfc676..ab6a60d1a8 100644
+--- a/meson.build
++++ b/meson.build
+@@ -440,6 +440,7 @@ if get_option('hvf').allowed()
+                    required: get_option('hvf'))
+   if hvf.found()
+     accelerators += 'CONFIG_HVF'
++    config_host_data.set('CONFIG_HVF_PRIVATE', get_option('hvf_private'))
+   endif
+ endif
+ if get_option('hax').allowed()
+diff --git a/meson_options.txt b/meson_options.txt
+index 43916078c8..8415d45071 100644
+--- a/meson_options.txt
++++ b/meson_options.txt
+@@ -72,6 +72,8 @@ option('whpx', type: 'feature', value: 'auto',
+        description: 'WHPX acceleration support')
+ option('hvf', type: 'feature', value: 'auto',
+        description: 'HVF acceleration support')
++option('hvf_private', type: 'boolean', value: 'false',
++       description: 'HVF private features (entitlements required)')
+ option('nvmm', type: 'feature', value: 'auto',
+        description: 'NVMM acceleration support')
+ option('xen', type: 'feature', value: 'auto',
+diff --git a/scripts/meson-buildoptions.sh b/scripts/meson-buildoptions.sh
+index 2496991056..010515ac98 100644
+--- a/scripts/meson-buildoptions.sh
++++ b/scripts/meson-buildoptions.sh
+@@ -26,6 +26,7 @@ meson_options_help() {
+   printf "%s\n" '  --enable-fuzzing         build fuzzing targets'
+   printf "%s\n" '  --enable-gcov            Enable coverage tracking.'
+   printf "%s\n" '  --enable-gprof           QEMU profiling with gprof'
++  printf "%s\n" '  --enable-hvf-private     HVF private features (entitlements required)'
+   printf "%s\n" '  --enable-lto             Use link time optimization'
+   printf "%s\n" '  --enable-malloc=CHOICE   choose memory allocator to use [system] (choices:'
+   printf "%s\n" '                           jemalloc/system/tcmalloc)'
+@@ -289,6 +290,8 @@ _meson_option_parse() {
+     --disable-hax) printf "%s" -Dhax=disabled ;;
+     --enable-hvf) printf "%s" -Dhvf=enabled ;;
+     --disable-hvf) printf "%s" -Dhvf=disabled ;;
++    --enable-hvf-private) printf "%s" -Dhvf_private=true ;;
++    --disable-hvf-private) printf "%s" -Dhvf_private=false ;;
+     --iasl=*) quote_sh "-Diasl=$2" ;;
+     --enable-iconv) printf "%s" -Diconv=enabled ;;
+     --disable-iconv) printf "%s" -Diconv=disabled ;;
+diff --git a/target/arm/hvf/hvf.c b/target/arm/hvf/hvf.c
+index 2c0323fe7f..bb7a4d5004 100644
+--- a/target/arm/hvf/hvf.c
++++ b/target/arm/hvf/hvf.c
+@@ -623,6 +623,18 @@ int hvf_arch_init_vcpu(CPUState *cpu)
+                               &arm_cpu->isar.id_aa64mmfr0);
+     assert_hvf_ok(ret);
+ 
++#if defined(CONFIG_HVF_PRIVATE)
++    /* enable TSO mode */
++    if (hvf_state->tso_mode) {
++        uint64_t actlr;
++        ret = _hv_vcpu_get_actlr(cpu->hvf->fd, &actlr);
++        assert_hvf_ok(ret);
++        actlr |= ACTLR_EL1_TSO_ENABLE_MASK;
++        ret = _hv_vcpu_set_actlr(cpu->hvf->fd, actlr);
++        assert_hvf_ok(ret);
++    }
++#endif
++
+     return 0;
+ }
+ 
+@@ -1343,6 +1355,22 @@ static void hvf_vm_state_change(void *opaque, bool running, RunState state)
+     }
+ }
+ 
++hv_return_t hvf_arch_vm_create(HVFState *s)
++{
++#if defined(CONFIG_HVF_PRIVATE)
++    hv_return_t ret;
++    hv_vm_config_t config = hv_vm_config_create();
++    if (s->tso_mode) {
++        _hv_vm_config_set_isa(config, HV_VM_CONFIG_ISA_PRIVATE);
++    }
++    ret = hv_vm_create(config);
++    os_release(config);
++    return ret;
++#else
++    return hv_vm_create(NULL);
++#endif
++}
++
+ int hvf_arch_init(void)
+ {
+     hvf_state->vtimer_offset = mach_absolute_time();
+diff --git a/target/i386/hvf/hvf.c b/target/i386/hvf/hvf.c
+index 8d2248bb3f..8283a9b761 100644
+--- a/target/i386/hvf/hvf.c
++++ b/target/i386/hvf/hvf.c
+@@ -212,6 +212,11 @@ void hvf_kick_vcpu_thread(CPUState *cpu)
+     cpus_kick_thread(cpu);
+ }
+ 
++hv_return_t hvf_arch_vm_create(HVFState *s)
++{
++    return hv_vm_create(HV_VM_DEFAULT);
++}
++
+ int hvf_arch_init(void)
+ {
+     return 0;
+=======
 From c874e68e5a1635326f8a2f52320b8dbe82f6be51 Mon Sep 17 00:00:00 2001
 From: osy <50960678+osy@users.noreply.github.com>
 Date: Fri, 30 Dec 2022 20:24:00 -0800
