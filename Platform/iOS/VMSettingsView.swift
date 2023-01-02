@@ -21,8 +21,7 @@ struct VMSettingsView: View {
     @ObservedObject var config: UTMQemuConfiguration
     
     @State private var isResetConfig: Bool = false
-    @State private var isCreateDriveShown: Bool = false
-    @State private var isImportDriveShown: Bool = false
+    @StateObject private var devicesState = DevicesState()
     
     @StateObject private var globalFileImporterShim = GlobalFileImporterShim()
     
@@ -71,51 +70,31 @@ struct VMSettingsView: View {
                             Label("Sharing", systemImage: "person.crop.circle")
                                 .labelStyle(.roundRectIcon)
                         })
-                    Section(header: Text("Devices")) {
-                        ForEach($config.displays) { $display in
-                            NavigationLink(destination: VMConfigDisplayView(config: $display, system: $config.system).navigationTitle("Display")) {
-                                    Label("Display", systemImage: "rectangle.on.rectangle")
-                                        .labelStyle(RoundRectIconLabelStyle(color: .green))
+                    if #available(iOS 15, *) {
+                        Devices(config: config, state: devicesState)
+                    } else {
+                        Section {
+                            NavigationLink {
+                                Form {
+                                    List {
+                                        Devices(config: config, state: devicesState)
+                                    }
                                 }
-                        }.onDelete { offsets in
-                            config.displays.remove(atOffsets: offsets)
+                            } label: {
+                                Label("Show all devices…", systemImage: "ellipsis")
+                                    .labelStyle(RoundRectIconLabelStyle(color: .green))
+                            }
                         }
-                        ForEach($config.serials) { $serial in
-                            NavigationLink(destination: VMConfigSerialView(config: $serial, system: $config.system).navigationTitle("Serial")) {
-                                    Label("Serial", systemImage: "rectangle.connected.to.line.below")
-                                        .labelStyle(RoundRectIconLabelStyle(color: .green))
-                                }
-                        }.onDelete { offsets in
-                            config.serials.remove(atOffsets: offsets)
-                        }
-                        ForEach($config.networks) { $network in
-                            NavigationLink(destination: VMConfigNetworkView(config: $network, system: $config.system).navigationTitle("Network")) {
-                                    Label("Network", systemImage: "network")
-                                        .labelStyle(RoundRectIconLabelStyle(color: .green))
-                                }
-                        }.onDelete { offsets in
-                            config.networks.remove(atOffsets: offsets)
-                        }
-                        ForEach($config.sound) { $sound in
-                            NavigationLink(destination: VMConfigSoundView(config: $sound, system: $config.system).navigationTitle("Sound")) {
-                                    Label("Sound", systemImage: "speaker.wave.2")
-                                        .labelStyle(RoundRectIconLabelStyle(color: .green))
-                                }
-                        }.onDelete { offsets in
-                            config.sound.remove(atOffsets: offsets)
-                        }
-                    }.uniqued()
-                    Section(header: Text("Drives")) {
-                        VMDrivesSettingsView(config: config, isCreateDriveShown: $isCreateDriveShown, isImportDriveShown: $isImportDriveShown)
-                            .labelStyle(RoundRectIconLabelStyle(color: .yellow))
-                    }.uniqued()
+                    }
                 }
             }
             .navigationTitle("Settings")
             .navigationViewStyle(.stack)
             .navigationBarItems(leading: HStack {
-                VMSettingsAddDeviceMenuView(config: config, isCreateDriveShown: $isCreateDriveShown, isImportDriveShown: $isImportDriveShown)
-                EditButton()
+                if #available(iOS 15, *) {
+                    VMSettingsAddDeviceMenuView(config: config, isCreateDriveShown: $devicesState.isCreateDriveShown, isImportDriveShown: $devicesState.isImportDriveShown)
+                    EditButton()
+                }
             }, trailing: HStack {
                 Button(action: cancel) {
                     Text("Cancel")
@@ -143,6 +122,79 @@ struct VMSettingsView: View {
         presentationMode.wrappedValue.dismiss()
         data.busyWork {
             try data.discardChanges(for: self.vm)
+        }
+    }
+}
+
+/// Private state shared between VMSettingsView and Devices
+///
+/// You may be reading this and wonder "why not use @State and @Binding instead?" Well, after a long session of debugging, it was revealed that lots of odd behaviours happen before
+/// trial and error led us to the following code. For example, settings would not get updated, or updating settings would cause random crashes, or deleting a device crashes. (Seems to be
+/// limited to iOS 14). Anyways, this code is less than optimal but it's what resulted from a natural evolution of code that would not cause any (known) problems in iOS 14.
+private class DevicesState: ObservableObject {
+    @Published var isCreateDriveShown: Bool = false
+    @Published var isImportDriveShown: Bool = false
+}
+
+private struct Devices: View {
+    @ObservedObject var config: UTMQemuConfiguration
+    @ObservedObject var state: DevicesState
+    
+    var body: some View {
+        Section(header: Text("Devices")) {
+            ForEach($config.displays) { $display in
+                NavigationLink(destination: VMConfigDisplayView(config: $display, system: $config.system).navigationTitle("Display")) {
+                    Label("Display", systemImage: "rectangle.on.rectangle")
+                        .labelStyle(RoundRectIconLabelStyle(color: .green))
+                }
+            }.onDelete { offsets in
+                config.displays.remove(atOffsets: offsets)
+            }
+            ForEach($config.serials) { $serial in
+                NavigationLink(destination: VMConfigSerialView(config: $serial, system: $config.system).navigationTitle("Serial")) {
+                    Label("Serial", systemImage: "rectangle.connected.to.line.below")
+                        .labelStyle(RoundRectIconLabelStyle(color: .green))
+                }
+            }.onDelete { offsets in
+                config.serials.remove(atOffsets: offsets)
+            }
+            ForEach($config.networks) { $network in
+                NavigationLink(destination: VMConfigNetworkView(config: $network, system: $config.system).navigationTitle("Network")) {
+                    Label("Network", systemImage: "network")
+                        .labelStyle(RoundRectIconLabelStyle(color: .green))
+                }
+            }.onDelete { offsets in
+                config.networks.remove(atOffsets: offsets)
+            }
+            ForEach($config.sound) { $sound in
+                NavigationLink(destination: VMConfigSoundView(config: $sound, system: $config.system).navigationTitle("Sound")) {
+                    Label("Sound", systemImage: "speaker.wave.2")
+                        .labelStyle(RoundRectIconLabelStyle(color: .green))
+                }
+            }.onDelete { offsets in
+                config.sound.remove(atOffsets: offsets)
+            }
+        }
+        Section(header: Text("Drives")) {
+            VMDrivesSettingsView(config: config, isCreateDriveShown: $state.isCreateDriveShown, isImportDriveShown: $state.isImportDriveShown)
+                .labelStyle(RoundRectIconLabelStyle(color: .yellow))
+        }
+        if #unavailable(iOS 15) {
+            // SwiftUI: !! WARNING DO NOT REMOVE !! The follow is LOAD BEARING code disguised as an innocent version display.
+            // On iOS 14, if you attach any attribute like .navigationBarItems() to something inside a List, it will mess up the layout.
+            // As a result, we cannot put it on any of the items above and instead we put in the sacrificial Section below.
+            Section {
+                HStack {
+                    Text("Version")
+                    Spacer()
+                    Text(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "")
+                }
+                HStack {
+                    Text("Build")
+                    Spacer()
+                    Text(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "")
+                }
+            }.navigationBarItems(trailing: VMSettingsAddDeviceMenuView(config: config, isCreateDriveShown: $state.isCreateDriveShown, isImportDriveShown: $state.isImportDriveShown))
         }
     }
 }
