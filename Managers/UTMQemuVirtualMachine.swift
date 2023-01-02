@@ -62,7 +62,6 @@ public extension UTMQemuVirtualMachine {
         #endif
         let frameworksURL = contentsURL.appendingPathComponent("Frameworks", isDirectory: true)
         let framework = frameworksURL.appendingPathComponent("qemu-" + arch + "-softmmu.framework/" + base + "qemu-" + arch + "-softmmu", isDirectory: false)
-        logger.error("\(framework.path)")
         return FileManager.default.fileExists(atPath: framework.path)
     }
     

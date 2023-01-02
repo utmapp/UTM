@@ -159,6 +159,7 @@ private struct HardwareOptions: View {
     @Binding var warningMessage: WarningMessage?
     @EnvironmentObject private var data: UTMData
     @State private var isArchitectureFirstAppear: Bool = true
+    @State private var isArchitectureSupported: Bool = true
     @State private var isTargetFirstAppear: Bool = true
     
     var body: some View {
@@ -176,11 +177,12 @@ private struct HardwareOptions: View {
                     }
                 }
                 .onChange(of: config.architecture) { newValue in
+                    isArchitectureSupported = UTMQemuVirtualMachine.isSupported(systemArchitecture: newValue)
                     if newValue != architecture {
                         architecture = newValue
                     }
                 }
-            if !UTMQemuVirtualMachine.isSupported(systemArchitecture: config.architecture) {
+            if !isArchitectureSupported {
                 Text("The selected architecture is unsupported in this version of UTM.")
                     .foregroundColor(.red)
             }
