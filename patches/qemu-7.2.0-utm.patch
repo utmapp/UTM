@@ -624,3 +624,115 @@ index f579b16bd2..0975265ff3 100644
 -- 
 2.28.0
 
+From 80c0e3099fe82b61e7a094f9f24a3c4aa030d5f3 Mon Sep 17 00:00:00 2001
+From: osy <50960678+osy@users.noreply.github.com>
+Date: Sun, 1 Jan 2023 16:51:56 -0800
+Subject: [PATCH] vmnet: stop recieving events when VM is stopped
+
+When the VM is stopped using the HMP command "stop", soon the handler will
+stop reading from the vmnet interface. This causes a flood of
+`VMNET_INTERFACE_PACKETS_AVAILABLE` events to arrive and puts the host CPU
+at 100%. We fix this by removing the event handler from vmnet when the VM
+is no longer in a running state and restore it when we return to a running
+state.
+---
+ net/vmnet-common.m | 48 +++++++++++++++++++++++++++++++++-------------
+ net/vmnet_int.h    |  2 ++
+ 2 files changed, 37 insertions(+), 13 deletions(-)
+
+diff --git a/net/vmnet-common.m b/net/vmnet-common.m
+index 2cb60b9ddd..2958283485 100644
+--- a/net/vmnet-common.m
++++ b/net/vmnet-common.m
+@@ -17,6 +17,7 @@
+ #include "clients.h"
+ #include "qemu/error-report.h"
+ #include "qapi/error.h"
++#include "sysemu/runstate.h"
+ 
+ #include <vmnet/vmnet.h>
+ #include <dispatch/dispatch.h>
+@@ -242,6 +243,35 @@ static void vmnet_bufs_init(VmnetState *s)
+     }
+ }
+ 
++/**
++ * Called on state change to un-register/re-register handlers
++ */
++static void vmnet_vm_state_change_cb(void *opaque, bool running, RunState state)
++{
++    VmnetState *s = opaque;
++
++    if (running) {
++        vmnet_interface_set_event_callback(
++            s->vmnet_if,
++            VMNET_INTERFACE_PACKETS_AVAILABLE,
++            s->if_queue,
++            ^(interface_event_t event_id, xpc_object_t event) {
++                assert(event_id == VMNET_INTERFACE_PACKETS_AVAILABLE);
++                /*
++                 * This function is being called from a non qemu thread, so
++                 * we only schedule a BH, and do the rest of the io completion
++                 * handling from vmnet_send_bh() which runs in a qemu context.
++                 */
++                qemu_bh_schedule(s->send_bh);
++            });
++    } else {
++        vmnet_interface_set_event_callback(
++            s->vmnet_if,
++            VMNET_INTERFACE_PACKETS_AVAILABLE,
++            NULL,
++            NULL);
++    }
++}
+ 
+ int vmnet_if_create(NetClientState *nc,
+                     xpc_object_t if_desc,
+@@ -329,19 +359,9 @@ int vmnet_if_create(NetClientState *nc,
+     s->packets_send_current_pos = 0;
+     s->packets_send_end_pos = 0;
+ 
+-    vmnet_interface_set_event_callback(
+-        s->vmnet_if,
+-        VMNET_INTERFACE_PACKETS_AVAILABLE,
+-        s->if_queue,
+-        ^(interface_event_t event_id, xpc_object_t event) {
+-            assert(event_id == VMNET_INTERFACE_PACKETS_AVAILABLE);
+-            /*
+-             * This function is being called from a non qemu thread, so
+-             * we only schedule a BH, and do the rest of the io completion
+-             * handling from vmnet_send_bh() which runs in a qemu context.
+-             */
+-            qemu_bh_schedule(s->send_bh);
+-        });
++    vmnet_vm_state_change_cb(s, 1, RUN_STATE_RUNNING);
++
++    s->change = qemu_add_vm_change_state_handler(vmnet_vm_state_change_cb, s);
+ 
+     return 0;
+ }
+@@ -356,6 +376,8 @@ void vmnet_cleanup_common(NetClientState *nc)
+         return;
+     }
+ 
++    vmnet_vm_state_change_cb(s, 0, RUN_STATE_SHUTDOWN);
++    qemu_del_vm_change_state_handler(s->change);
+     if_stopped_sem = dispatch_semaphore_create(0);
+     vmnet_stop_interface(
+         s->vmnet_if,
+diff --git a/net/vmnet_int.h b/net/vmnet_int.h
+index adf6e8c20d..ffba92108f 100644
+--- a/net/vmnet_int.h
++++ b/net/vmnet_int.h
+@@ -46,6 +46,8 @@ typedef struct VmnetState {
+     int packets_send_end_pos;
+ 
+     struct iovec iov_buf[VMNET_PACKETS_LIMIT];
++
++    VMChangeStateEntry *change;
+ } VmnetState;
+ 
+ const char *vmnet_status_map_str(vmnet_return_t status);
+-- 
+2.28.0
+
