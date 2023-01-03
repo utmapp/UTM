@@ -41,6 +41,8 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
         }
     }
     
+    private var defaultPauseTooltip: String?
+    
     var suspendDisabledReason: String? {
         #if arch(x86_64)
         if vmQemuConfig.qemu.hasHypervisor && vmQemuConfig.system.architecture == .x86_64 {
@@ -74,6 +76,9 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
             qemuVM.ioDelegate = self
         }
         startPauseToolbarItem.isEnabled = true
+        if defaultPauseTooltip == nil {
+            defaultPauseTooltip = startPauseToolbarItem.toolTip
+        }
         if let suspendDisabledReason = suspendDisabledReason {
             startPauseToolbarItem.isEnabled = false
             startPauseToolbarItem.toolTip = suspendDisabledReason
@@ -93,6 +98,9 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
             if isSecondary {
                 close()
             }
+        }
+        if defaultPauseTooltip != nil {
+            startPauseToolbarItem.toolTip = defaultPauseTooltip
         }
         super.enterSuspended(isBusy: busy)
     }
