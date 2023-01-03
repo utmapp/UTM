@@ -57,9 +57,9 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
         isExternal = false
     }
     
-    init(existingURL url: URL, isReadOnly: Bool = false, isExternal: Bool = false) {
+    init(existingURL url: URL, isExternal: Bool = false) {
         self.imageURL = url
-        self.isReadOnly = isReadOnly
+        self.isReadOnly = isExternal
         self.isExternal = isExternal
     }
     
@@ -68,29 +68,31 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
             throw UTMConfigurationError.invalidDataURL
         }
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        isReadOnly = try container.decode(Bool.self, forKey: .isReadOnly)
         if let imageName = try container.decodeIfPresent(String.self, forKey: .imageName) {
             self.imageName = imageName
             imageURL = dataURL.appendingPathComponent(imageName)
             isExternal = false
+            isReadOnly = try container.decodeIfPresent(Bool.self, forKey: .isReadOnly) ?? false
         } else if let bookmark = try container.decodeIfPresent(Data.self, forKey: .bookmark) {
             var stale: Bool = false
             imageURL = try? URL(resolvingBookmarkData: bookmark, options: .withSecurityScope, bookmarkDataIsStale: &stale)
             imageName = imageURL?.lastPathComponent
             isExternal = true
+            isReadOnly = true
         } else {
             imageURL = nil
             imageName = nil
             isExternal = true
+            isReadOnly = true
         }
         id = try container.decode(String.self, forKey: .identifier)
     }
     
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(isReadOnly, forKey: .isReadOnly)
         if !isExternal {
             try container.encodeIfPresent(imageName, forKey: .imageName)
+            try container.encode(isReadOnly, forKey: .isReadOnly)
         }
         try container.encode(id, forKey: .identifier)
     }

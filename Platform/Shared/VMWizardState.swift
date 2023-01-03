@@ -250,7 +250,7 @@ enum VMWizardOS: String, Identifiable {
         config.system.memorySize = systemMemoryMib
         config.system.cpuCount = systemCpuCount
         if !isSkipBootImage, let bootImageURL = bootImageURL {
-            config.drives.append(UTMAppleConfigurationDrive(existingURL: bootImageURL, isReadOnly: true, isExternal: true))
+            config.drives.append(UTMAppleConfigurationDrive(existingURL: bootImageURL, isExternal: true))
         }
         var isSkipDiskCreate = false
         switch operatingSystem {
@@ -286,7 +286,7 @@ enum VMWizardOS: String, Identifiable {
         case .Windows:
             config.information.iconURL = UTMConfigurationInfo.builtinIcon(named: "windows")
             if let windowsBootVhdx = windowsBootVhdx {
-                config.drives.append(UTMAppleConfigurationDrive(existingURL: windowsBootVhdx, isReadOnly: false, isExternal: false))
+                config.drives.append(UTMAppleConfigurationDrive(existingURL: windowsBootVhdx, isExternal: false))
                 isSkipDiskCreate = true
             }
         }

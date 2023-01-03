@@ -59,6 +59,13 @@
                  includingResourceValuesForKeys:nil
                                   relativeToURL:nil
                                           error:&err];
+        // if we fail, try again with read-only access
+        if (!bookmark) {
+            bookmark = [url bookmarkDataWithOptions:NSURLBookmarkCreationWithSecurityScope | NSURLBookmarkCreationSecurityScopeAllowOnlyReadAccess
+                     includingResourceValuesForKeys:nil
+                                      relativeToURL:nil
+                                              error:&err];
+        }
         if (!bookmark) {
             NSLog(@"Failed to create new bookmark!");
             completion(NO, bookmark, url.path);

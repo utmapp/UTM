@@ -58,6 +58,7 @@ struct UTMQemuConfigurationDrive: UTMConfigurationDrive {
         case imageType = "ImageType"
         case interface = "Interface"
         case identifier = "Identifier"
+        case isReadOnly = "ReadOnly"
     }
     
     init() {
@@ -72,8 +73,10 @@ struct UTMQemuConfigurationDrive: UTMConfigurationDrive {
             self.imageName = imageName
             imageURL = dataURL.appendingPathComponent(imageName)
             isExternal = false
+            isReadOnly = try values.decodeIfPresent(Bool.self, forKey: .isReadOnly) ?? false
         } else {
             isExternal = true
+            isReadOnly = true
         }
         imageType = try values.decode(QEMUDriveImageType.self, forKey: .imageType)
         interface = try values.decode(QEMUDriveInterface.self, forKey: .interface)
@@ -84,6 +87,7 @@ struct UTMQemuConfigurationDrive: UTMConfigurationDrive {
         var container = encoder.container(keyedBy: CodingKeys.self)
         if !isExternal {
             try container.encodeIfPresent(imageURL?.lastPathComponent, forKey: .imageName)
+            try container.encode(isReadOnly, forKey: .isReadOnly)
         }
         try container.encode(imageType, forKey: .imageType)
         if imageType == .cd || imageType == .disk {
@@ -211,7 +215,7 @@ extension UTMQemuConfigurationDrive {
         self.isRawImage = false
         self.imageName = nil
         self.sizeMib = 10240
-        self.isReadOnly = false
+        self.isReadOnly = isExternal
         self.imageURL = nil
         self.id = UUID().uuidString
         self.defaultInterfaceForImageType = { Self.defaultInterface(forArchitecture: architecture, target: target, imageType: $0) }

@@ -61,6 +61,7 @@ struct VMConfigDriveDetailsView: View {
                         Text("(new)")
                     }
                 }
+                Toggle("Read Only?", isOn: $config.isReadOnly)
             } else {
                 FileBrowseField(url: $config.imageURL, isFileImporterPresented: $isImporterPresented)
                 .globalFileImporter(isPresented: $isImporterPresented, allowedContentTypes: [.item]) { result in
