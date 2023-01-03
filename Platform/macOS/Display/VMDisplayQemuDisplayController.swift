@@ -54,7 +54,7 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
         }
         for drive in vmQemuConfig.drives {
             if drive.interface == .nvme {
-                return NSLocalizedString("Susped is not supported when an emulated NVMe device is active.", comment: "VMDisplayQemuWindowController")
+                return NSLocalizedString("Suspend is not supported when an emulated NVMe device is active.", comment: "VMDisplayQemuWindowController")
             }
         }
         return nil
