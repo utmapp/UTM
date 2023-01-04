@@ -81,9 +81,9 @@ extension UTMQemuConfigurationDisplay {
         }
         let rawTarget = target.rawValue
         if rawTarget.hasPrefix("pc") || rawTarget.hasPrefix("q35") {
-            hardware = QEMUDisplayDevice_x86_64.virtio_vga
+            hardware = QEMUDisplayDevice_x86_64.virtio_vga_gl
         } else if rawTarget.hasPrefix("virt-") || rawTarget == "virt" {
-            hardware = QEMUDisplayDevice_aarch64.virtio_ramfb
+            hardware = QEMUDisplayDevice_aarch64.virtio_ramfb_gl
         } else {
             let cards = architecture.displayDeviceType.allRawValues
             if cards.contains("VGA") {
