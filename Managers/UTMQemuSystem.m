@@ -51,6 +51,7 @@ static void *start_qemu(void *args) {
         envp[i] = environment[i].UTF8String;
     }
     envp[envc] = NULL;
+    setenv("TMPDIR", NSFileManager.defaultManager.temporaryDirectory.path.UTF8String, 1);
     
     int argc = (int)qemuArgv.count + 1;
     const char *argv[argc];

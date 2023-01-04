@@ -121,9 +121,12 @@
     task.arguments = newArgv;
     task.standardOutput = standardOutput;
     task.standardError = standardError;
+    NSMutableDictionary<NSString *, NSString *> *environment = [NSMutableDictionary dictionary];
+    environment[@"TMPDIR"] = NSFileManager.defaultManager.temporaryDirectory.path;
     if (self.environment) {
-        task.environment = self.environment;
+        [environment addEntriesFromDictionary:self.environment];
     }
+    task.environment = environment;
     task.qualityOfService = NSQualityOfServiceUserInitiated;
     task.terminationHandler = ^(NSTask *task) {
         BOOL normalExit = task.terminationReason == NSTaskTerminationReasonExit && task.terminationStatus == 0;
