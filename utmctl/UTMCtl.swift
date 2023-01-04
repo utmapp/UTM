@@ -193,7 +193,7 @@ extension UTMCtl {
 extension UTMCtl {
     struct Start: UTMAPICommand {
         static var configuration = CommandConfiguration(
-            abstract: "Start running a virtual machine."
+            abstract: "Start a virtual machine or resume a suspended virtual machine."
         )
         
         @OptionGroup var environment: EnvironmentOptions
@@ -219,14 +219,14 @@ extension UTMCtl {
 extension UTMCtl {
     struct Suspend: UTMAPICommand {
         static var configuration = CommandConfiguration(
-            abstract: "Suspend running a virtual machine."
+            abstract: "Suspend running a virtual machine to memory."
         )
         
         @OptionGroup var environment: EnvironmentOptions
         
         @OptionGroup var identifer: VMIdentifier
         
-        @Flag(name: .shortAndLong, help: "Save the VM state before suspending.")
+        @Flag(name: .shortAndLong, help: "Save the VM state to disk after suspending.")
         var saveState: Bool = false
         
         func run(with application: UTMScriptingApplication) throws {
@@ -239,7 +239,7 @@ extension UTMCtl {
 extension UTMCtl {
     struct Stop: UTMAPICommand {
         static var configuration = CommandConfiguration(
-            abstract: "Shuts down a virtual machine."
+            abstract: "Shuts down a running virtual machine."
         )
         
         struct Style: ParsableArguments {

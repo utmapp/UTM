@@ -139,21 +139,21 @@
             <enumerator name="unavailable" code="IUnA" description="Serial interface is currently unavailable or is in use by the GUI."/>
         </enumeration>
         
-        <command name="start" code="UTMvstar">
+        <command name="start" code="UTMvstar" description="Start a virtual machine or resume a suspended virtual machine.">
           <direct-parameter description="Virtual machine to start." type="virtual machine"/>
           <parameter name="saving" code="SaVe" description="When false, do not save the VM changes to disk. Default value is true." type="boolean" optional="yes">
             <cocoa key="saveFlag"/>
           </parameter>
         </command>
         
-        <command name="suspend" code="UTMvsusp">
+        <command name="suspend" code="UTMvsusp" description="Suspend a running virtual machine to memory.">
           <direct-parameter description="Virtual machine to suspend." type="virtual machine"/>
-          <parameter name="saving" code="SaVe" description="Save VM state after suspend. Default value is false." type="boolean" optional="yes">
+          <parameter name="saving" code="SaVe" description="Save VM state to disk after suspend. Default value is false." type="boolean" optional="yes">
             <cocoa key="saveFlag"/>
           </parameter>
         </command>
         
-        <command name="stop" code="UTMvstop">
+        <command name="stop" code="UTMvstop" description="Shuts down a running virtual machine.">
           <direct-parameter description="Virtual machine to stop." type="virtual machine"/>
           <parameter name="by" code="StBy" description="Method to stop the VM." type="stop method" optional="yes">
             <cocoa key="stopBy"/>
