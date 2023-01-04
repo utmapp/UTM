@@ -120,7 +120,7 @@ extension UTMCtl {
         case applicationNotFound
         case virtualMachineNotFound
         
-        var localizedDescription: String {
+        var errorDescription: String? {
             switch self {
             case .applicationNotFound: return "Application not found."
             case .virtualMachineNotFound: return "Virtual machine not found."

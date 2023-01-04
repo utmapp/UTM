@@ -172,7 +172,7 @@ extension UTMScriptingVirtualMachineImpl {
         case operationNotAvailable
         case operationNotSupported
         
-        var localizedDescription: String {
+        var errorDescription: String? {
             switch self {
             case .operationNotAvailable: return NSLocalizedString("Operation not available.", comment: "UTMScriptingVirtualMachineImpl")
             case .operationNotSupported: return NSLocalizedString("Operation not supported by the backend.", comment: "UTMScriptingVirtualMachineImpl")

@@ -102,13 +102,13 @@ class UTMDownloadVMTask: UTMDownloadTask {
     }
     
     private class UnzipNoUTMFileError: Error {
-        var localizedDescription: String {
+        var errorDescription: String? {
             NSLocalizedString("There is no UTM file in the downloaded ZIP archive.", comment: "Error shown when importing a ZIP file from web that doesn't contain a UTM Virtual Machine.")
         }
     }
     
     private class CreateUTMFailed: Error {
-        var localizedDescription: String {
+        var errorDescription: String? {
             NSLocalizedString("Failed to parse the downloaded VM.", comment: "UTMDownloadVMTask")
         }
     }
