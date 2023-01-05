@@ -888,6 +888,7 @@
 		CE93759924BB821F0074066F /* IQKeyboardManagerSwift in Frameworks */ = {isa = PBXBuildFile; productRef = CE93759824BB821F0074066F /* IQKeyboardManagerSwift */; };
 		CE9375A124BBDDD10074066F /* VMConfigDriveDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9375A024BBDDD10074066F /* VMConfigDriveDetailsView.swift */; };
 		CE9375A224BBDDD10074066F /* VMConfigDriveDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9375A024BBDDD10074066F /* VMConfigDriveDetailsView.swift */; };
+		CE980283296684AE0086DBC3 /* MoltenVK.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE980281296684AD0086DBC3 /* MoltenVK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CE9A353426533A52005077CF /* JailbreakInterposer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9A352D26533A51005077CF /* JailbreakInterposer.framework */; };
 		CE9A353526533A52005077CF /* JailbreakInterposer.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE9A352D26533A51005077CF /* JailbreakInterposer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CE9A354026533AE6005077CF /* JailbreakInterposer.c in Sources */ = {isa = PBXBuildFile; fileRef = CE9A353F26533AE6005077CF /* JailbreakInterposer.c */; };
@@ -1439,6 +1440,7 @@
 				CE0DF1AE25A83C1700A51894 /* qemu-x86_64-softmmu.framework in Embed Libraries */,
 				CE0DF1AF25A83C1700A51894 /* qemu-xtensa-softmmu.framework in Embed Libraries */,
 				CE0DF1B025A83C1700A51894 /* qemu-xtensaeb-softmmu.framework in Embed Libraries */,
+				CE980283296684AE0086DBC3 /* MoltenVK.framework in Embed Libraries */,
 				CEF78EF026B9B7910022CAF4 /* virglrenderer.1.framework in Embed Libraries */,
 				CEF78EE926B99F530022CAF4 /* EGL.framework in Embed Libraries */,
 				CEF78EEA26B99F530022CAF4 /* epoxy.0.framework in Embed Libraries */,
@@ -2213,6 +2215,7 @@
 		CE928C3026ACCDEA0099F293 /* VMAppleRemovableDrivesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMAppleRemovableDrivesView.swift; sourceTree = "<group>"; };
 		CE9375A024BBDDD10074066F /* VMConfigDriveDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigDriveDetailsView.swift; sourceTree = "<group>"; };
 		CE95877426D74C2A0086BDE8 /* iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iOS.entitlements; sourceTree = "<group>"; };
+		CE980281296684AD0086DBC3 /* MoltenVK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MoltenVK.framework; path = "$(SYSROOT_DIR)/Frameworks/MoltenVK.framework"; sourceTree = "<group>"; };
 		CE9A352D26533A51005077CF /* JailbreakInterposer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = JailbreakInterposer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE9A353026533A52005077CF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CE9A353F26533AE6005077CF /* JailbreakInterposer.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = JailbreakInterposer.c; sourceTree = "<group>"; };
@@ -2655,6 +2658,7 @@
 		CE2D63D622653C7300FC7E63 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CE980281296684AD0086DBC3 /* MoltenVK.framework */,
 				CE02C8A8294EE4EA006DFE48 /* qemu-loongarch64-softmmu.framework */,
 				CE02C8A9294EE4EB006DFE48 /* slirp.0.framework */,
 				84C5068528CA5702007CE8FF /* Hypervisor.framework */,
