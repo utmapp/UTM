@@ -41,7 +41,7 @@ ANGLE_COMMIT="70e456bebd831c3c015c3fcca8b7e0e1ec9e04ef"
 EPOXY_REPO="https://github.com/utmapp/libepoxy.git"
 EPOXY_COMMIT="266d2290a437c655f7419e85af06bfbb73a720c4"
 VIRGLRENDERER_REPO="https://github.com/utmapp/virglrenderer.git"
-VIRGLRENDERER_COMMIT="d46413cf4797a33cfbe1c9f14e6d22ce563ef700"
+VIRGLRENDERER_COMMIT="556707fd33ed0b36abc6109ab7ce80b5fe553d14"
 MOLTENVK_REPO="https://github.com/KhronosGroup/MoltenVK.git"
 MOLTENVK_COMMIT="7a320974d1b349c86149b0dbc9a2e796d8992ee0"
 

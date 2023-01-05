@@ -545,7 +545,7 @@ build_qemu_dependencies () {
     build_moltenvk
     build_angle
     meson_build $EPOXY_REPO -Dtests=false -Dglx=no -Degl=yes
-    meson_build $VIRGLRENDERER_REPO -Dtests=false -Dcheck-gl-errors=false
+    meson_build $VIRGLRENDERER_REPO -Dtests=false -Dcheck-gl-errors=false -Dvenus-experimental=true
     # Hypervisor for iOS
     if [ "$PLATFORM" == "ios" ]; then
         build_hypervisor
