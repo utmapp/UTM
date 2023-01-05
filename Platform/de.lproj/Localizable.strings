@@ -433,7 +433,7 @@
 "Internal error has occurred." = "Ein interner Fehler ist aufgetreten. (QEMU)";
 
 /* UTMSpiceIO */
-"Internal error trying to connect to SPICE server." = "Fehler beim Verbinden zum SPICE Server.";
+"Internal error trying to connect to SPICE server." = "Fehler beim Verbinden mit dem SPICE-Server.";
 
 /* VMDisplayMetalWindowController */
 "Internal error." = "Interner Fehler.";
