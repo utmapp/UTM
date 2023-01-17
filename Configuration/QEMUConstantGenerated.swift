@@ -5262,6 +5262,124 @@ typealias QEMUCPUFlag_xtensa = AnyQEMUConstant
 
 typealias QEMUCPUFlag_xtensaeb = AnyQEMUConstant
 
+typealias QEMUCPUHyperV_alpha = AnyQEMUConstant
+
+typealias QEMUCPUHyperV_arm = AnyQEMUConstant
+
+typealias QEMUCPUHyperV_aarch64 = AnyQEMUConstant
+
+typealias QEMUCPUHyperV_avr = AnyQEMUConstant
+
+typealias QEMUCPUHyperV_cris = AnyQEMUConstant
+
+typealias QEMUCPUHyperV_hppa = AnyQEMUConstant
+
+enum QEMUCPUHyperV_i386: String, CaseIterable, QEMUCPUHyperV {
+    case hv_avic = "hv-avic"
+    case hv_apicv = "hv-apicv"
+    case hv_crash = "hv-crash"
+    case hv_frequencies = "hv-frequencies"
+    case hv_relaxed = "hv-relaxed"
+    case hv_reset = "hv-reset"
+    case hv_runtime = "hv-runtime"
+    case hv_spinlocks = "hv-spinlocks=0x1fff"
+    case hv_time = "hv-time"
+    case hv_vapic = "hv-vapic"
+    case hv_xmm_input = "hv-xmm-input"
+    
+    var prettyValue: String {
+        switch self {
+        case .hv_avic: return "hv-apic"
+        case .hv_apicv: return "hv-apicv"
+        case .hv_crash: return "hv-crash"
+        case .hv_frequencies: return "hv-frequencies"
+        case .hv_relaxed: return "hv-relaxed"
+        case .hv_reset: return "hv-reset"
+        case .hv_runtime: return "hv-runtime"
+        case .hv_spinlocks: return "hv-spinlocks"
+        case .hv_time: return "hv-time"
+        case .hv_vapic: return "hv-vapic"
+        case .hv_xmm_input: return "hv-xmm-input"
+        }
+    }
+}
+
+typealias QEMUCPUHyperV_loongarch64 = AnyQEMUConstant
+
+typealias QEMUCPUHyperV_m68k = AnyQEMUConstant
+
+typealias QEMUCPUHyperV_microblaze = AnyQEMUConstant
+
+typealias QEMUCPUHyperV_microblazeel = AnyQEMUConstant
+
+typealias QEMUCPUHyperV_mips = AnyQEMUConstant
+
+typealias QEMUCPUHyperV_mipsel = AnyQEMUConstant
+
+typealias QEMUCPUHyperV_mips64 = AnyQEMUConstant
+
+typealias QEMUCPUHyperV_mips64el = AnyQEMUConstant
+
+typealias QEMUCPUHyperV_nios2 = AnyQEMUConstant
+
+typealias QEMUCPUHyperV_or1k = AnyQEMUConstant
+
+typealias QEMUCPUHyperV_ppc = AnyQEMUConstant
+
+typealias QEMUCPUHyperV_ppc64 = AnyQEMUConstant
+
+typealias QEMUCPUHyperV_riscv32 = AnyQEMUConstant
+
+typealias QEMUCPUHyperV_riscv64 = AnyQEMUConstant
+
+typealias QEMUCPUHyperV_rx = AnyQEMUConstant
+
+typealias QEMUCPUHyperV_s390x = AnyQEMUConstant
+
+typealias QEMUCPUHyperV_sh4 = AnyQEMUConstant
+
+typealias QEMUCPUHyperV_sh4eb = AnyQEMUConstant
+
+typealias QEMUCPUHyperV_sparc = AnyQEMUConstant
+
+typealias QEMUCPUHyperV_sparc64 = AnyQEMUConstant
+
+typealias QEMUCPUHyperV_tricore = AnyQEMUConstant
+
+enum QEMUCPUHyperV_x86_64: String, CaseIterable, QEMUCPUHyperV {
+    case hv_avic = "hv-avic"
+    case hv_apicv = "hv-apicv"
+    case hv_crash = "hv-crash"
+    case hv_frequencies = "hv-frequencies"
+    case hv_relaxed = "hv-relaxed"
+    case hv_reset = "hv-reset"
+    case hv_runtime = "hv-runtime"
+    case hv_spinlocks = "hv-spinlocks=0x1fff"
+    case hv_time = "hv-time"
+    case hv_vapic = "hv-vapic"
+    case hv_xmm_input = "hv-xmm-input"
+    
+    var prettyValue: String {
+        switch self {
+        case .hv_avic: return "hv-apic"
+        case .hv_apicv: return "hv-apicv"
+        case .hv_crash: return "hv-crash"
+        case .hv_frequencies: return "hv-frequencies"
+        case .hv_relaxed: return "hv-relaxed"
+        case .hv_reset: return "hv-reset"
+        case .hv_runtime: return "hv-runtime"
+        case .hv_spinlocks: return "hv-spinlocks"
+        case .hv_time: return "hv-time"
+        case .hv_vapic: return "hv-vapic"
+        case .hv_xmm_input: return "hv-xmm-input"
+        }
+    }
+}
+
+typealias QEMUCPUHyperV_xtensa = AnyQEMUConstant
+
+typealias QEMUCPUHyperV_xtensaeb = AnyQEMUConstant
+
 enum QEMUTarget_alpha: String, CaseIterable, QEMUTarget {
     case clipper
     case none
@@ -10089,6 +10207,43 @@ extension QEMUArchitecture {
         }
     }
 
+    var cpuHyperVType: any QEMUCPUHyperV.Type {
+        switch self {
+        case .alpha: return QEMUCPUHyperV_alpha.self
+        case .arm: return QEMUCPUHyperV_arm.self
+        case .aarch64: return QEMUCPUHyperV_aarch64.self
+        case .avr: return QEMUCPUHyperV_avr.self
+        case .cris: return QEMUCPUHyperV_cris.self
+        case .hppa: return QEMUCPUHyperV_hppa.self
+        case .i386: return QEMUCPUHyperV_i386.self
+        case .loongarch64: return QEMUCPUHyperV_loongarch64.self
+        case .m68k: return QEMUCPUHyperV_m68k.self
+        case .microblaze: return QEMUCPUHyperV_microblaze.self
+        case .microblazeel: return QEMUCPUHyperV_microblazeel.self
+        case .mips: return QEMUCPUHyperV_mips.self
+        case .mipsel: return QEMUCPUHyperV_mipsel.self
+        case .mips64: return QEMUCPUHyperV_mips64.self
+        case .mips64el: return QEMUCPUHyperV_mips64el.self
+        case .nios2: return QEMUCPUHyperV_nios2.self
+        case .or1k: return QEMUCPUHyperV_or1k.self
+        case .ppc: return QEMUCPUHyperV_ppc.self
+        case .ppc64: return QEMUCPUHyperV_ppc64.self
+        case .riscv32: return QEMUCPUHyperV_riscv32.self
+        case .riscv64: return QEMUCPUHyperV_riscv64.self
+        case .rx: return QEMUCPUHyperV_rx.self
+        case .s390x: return QEMUCPUHyperV_s390x.self
+        case .sh4: return QEMUCPUHyperV_sh4.self
+        case .sh4eb: return QEMUCPUHyperV_sh4eb.self
+        case .sparc: return QEMUCPUHyperV_sparc.self
+        case .sparc64: return QEMUCPUHyperV_sparc64.self
+        case .tricore: return QEMUCPUHyperV_tricore.self
+        case .x86_64: return QEMUCPUHyperV_x86_64.self
+        case .xtensa: return QEMUCPUHyperV_xtensa.self
+        case .xtensaeb: return QEMUCPUHyperV_xtensaeb.self
+    }
+}
+
+    
     var targetType: any QEMUTarget.Type {
         switch self {
         case .alpha: return QEMUTarget_alpha.self

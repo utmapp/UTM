@@ -124,6 +124,10 @@ protocol QEMUCPUFlag: QEMUConstant {}
 
 extension AnyQEMUConstant: QEMUCPUFlag {}
 
+protocol QEMUCPUHyperV: QEMUConstant {}
+
+extension AnyQEMUConstant: QEMUCPUHyperV {}
+
 protocol QEMUDisplayDevice: QEMUConstant {}
 
 extension AnyQEMUConstant: QEMUDisplayDevice {}

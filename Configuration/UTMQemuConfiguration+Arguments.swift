@@ -211,6 +211,9 @@ import Foundation
         } else {
             f("-cpu")
             system.cpu
+            for enlightenment in system.cpuHyperV {
+                "\(enlightenment.rawValue)"
+            }
             for flag in system.cpuFlagsAdd {
                 "+\(flag.rawValue)"
             }

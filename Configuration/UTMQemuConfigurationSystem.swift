@@ -27,6 +27,9 @@ struct UTMQemuConfigurationSystem: Codable {
     /// The QEMU CPU to emulate. Note that `default` will use the default CPU for the architecture.
     var cpu: any QEMUCPU = QEMUCPU_x86_64.default
     
+    /// Optional list of Hyper-V Enlightenments to enable on i386 & x86_64 CPUs.
+    var cpuHyperV: [any QEMUCPUHyperV] = []
+    
     /// Optional list of CPU flags to add to the target CPU.
     var cpuFlagsAdd: [any QEMUCPUFlag] = []
     
@@ -49,6 +52,7 @@ struct UTMQemuConfigurationSystem: Codable {
         case architecture = "Architecture"
         case target = "Target"
         case cpu = "CPU"
+        case cpuHyperV = "CPUHyperV"
         case cpuFlagsAdd = "CPUFlagsAdd"
         case cpuFlagsRemove = "CPUFlagsRemove"
         case cpuCount = "CPUCount"
@@ -65,6 +69,7 @@ struct UTMQemuConfigurationSystem: Codable {
         architecture = try values.decode(QEMUArchitecture.self, forKey: .architecture)
         target = try values.decode(architecture.targetType, forKey: .target)
         cpu = try values.decode(architecture.cpuType, forKey: .cpu)
+        cpuHyperV = try values.decode([AnyQEMUConstant].self, forKey: .cpuHyperV)
         cpuFlagsAdd = try values.decode([AnyQEMUConstant].self, forKey: .cpuFlagsAdd)
         cpuFlagsRemove = try values.decode([AnyQEMUConstant].self, forKey: .cpuFlagsRemove)
         cpuCount = try values.decode(Int.self, forKey: .cpuCount)
@@ -78,6 +83,7 @@ struct UTMQemuConfigurationSystem: Codable {
         try container.encode(architecture, forKey: .architecture)
         try container.encode(target.asAnyQEMUConstant(), forKey: .target)
         try container.encode(cpu.asAnyQEMUConstant(), forKey: .cpu)
+        try container.encode(cpuHyperV.map({ enlightenment in enlightenment.asAnyQEMUConstant() }), forKey: .cpuHyperV)
         try container.encode(cpuFlagsAdd.map({ flag in flag.asAnyQEMUConstant() }), forKey: .cpuFlagsAdd)
         try container.encode(cpuFlagsRemove.map({ flag in flag.asAnyQEMUConstant() }), forKey: .cpuFlagsRemove)
         try container.encode(cpuCount, forKey: .cpuCount)

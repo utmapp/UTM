@@ -37,6 +37,8 @@ struct VMConfigSystemView: View {
                 Section(header: Text("CPU")) {
                     VMConfigConstantPicker(selection: $config.cpu, type: config.architecture.cpuType)
                 }
+                CPUHyperVOptions(title: "Hyper-V Enlightenments", config: $config, enlightenments: $config.cpuHyperV)
+                    .help("Enable certain Hyper-V Enlightenments to improve the speed of the guest OS")
                 CPUFlagsOptions(title: "Force Enable CPU Flags", config: $config, flags: $config.cpuFlagsAdd)
                     .help("If checked, the CPU flag will be enabled. Otherwise, the default value will be used.")
                 CPUFlagsOptions(title: "Force Disable CPU Flags", config: $config, flags: $config.cpuFlagsRemove)
@@ -203,6 +205,52 @@ private struct HardwareOptions: View {
                         target = AnyQEMUConstant(rawValue: newValue)!
                     }
                 }
+        }
+    }
+}
+
+struct CPUHyperVOptions: View {
+    let title: LocalizedStringKey
+    @Binding var config: UTMQemuConfigurationSystem
+    @Binding var enlightenments: [any QEMUCPUHyperV]
+    @State private var showAllEnlightenments: Bool = false
+    
+    var body: some View {
+        let allEnlightenments = config.architecture.cpuHyperVType.allRawValues
+        if config.cpu.rawValue != "default" && allEnlightenments.count > 0 {
+            Section(header: Text(title)) {
+                if showAllEnlightenments || enlightenments.count > 0 {
+                    OptionsList {
+                        ForEach(allEnlightenments) { enlightenmentStr in
+                            let enlightenment = AnyQEMUConstant(rawValue: enlightenmentStr)!
+                            let isEnlightenmentOn = Binding<Bool> { () -> Bool in
+                                enlightenments.contains(where: { $0.rawValue == enlightenment.rawValue })
+                            } set: { isOn in
+                                if isOn {
+                                    enlightenments.append(enlightenment)
+                                } else {
+                                    enlightenments.removeAll(where: { $0.rawValue == enlightenment.rawValue })
+                                }
+                            }
+                            if showAllEnlightenments || isEnlightenmentOn.wrappedValue {
+                                Toggle(isOn: isEnlightenmentOn, label: {
+                                    Text(enlightenment.prettyValue)
+                                })
+                            }
+                        }
+                    }
+                }
+                Button {
+                    showAllEnlightenments.toggle()
+                } label: {
+                    if (showAllEnlightenments) {
+                        Text("Hide Unused…")
+                    } else {
+                        Text("Show All…")
+                    }
+                }
+
+            }
         }
     }
 }
