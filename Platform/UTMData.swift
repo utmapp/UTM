@@ -464,7 +464,7 @@ class UTMData: ObservableObject {
         let newName: String = newDefaultVMName(base: vm.detailsTitleLabel)
         let newPath = UTMVirtualMachine.virtualMachinePath(newName, inParentURL: documentsURL)
         
-        try fileManager.copyItem(at: vm.path, to: newPath)
+        try copyItemWithCopyfile(at: vm.path, to: newPath)
         guard let newVM = UTMVirtualMachine(url: newPath) else {
             throw NSLocalizedString("Failed to clone VM.", comment: "UTMData")
         }
@@ -487,7 +487,7 @@ class UTMData: ObservableObject {
         if fileManager.fileExists(atPath: url.path) {
             try fileManager.removeItem(at: url)
         }
-        try fileManager.copyItem(at: sourceUrl, to: url)
+        try copyItemWithCopyfile(at: sourceUrl, to: url)
     }
     
     /// Save a copy of the VM and all data to arbitary location and delete the original data
@@ -634,6 +634,15 @@ class UTMData: ObservableObject {
         }
         await listAdd(vm: vm)
         await listSelect(vm: vm)
+    }
+
+    func copyItemWithCopyfile(at srcURL: URL, to dstURL: URL) throws {
+//        let state = copyfile_state_alloc()
+        let status = copyfile(srcURL.path, dstURL.path, nil, copyfile_flags_t(COPYFILE_ALL | COPYFILE_RECURSIVE | COPYFILE_CLONE | COPYFILE_DATA_SPARSE))
+//        copyfile_state_free(state)
+        if status < 0 {
+            throw NSError(domain: NSPOSIXErrorDomain, code: Int(errno))
+        }
     }
     
     // MARK: - Downloading VMs
