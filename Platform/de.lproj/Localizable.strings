@@ -644,7 +644,7 @@
 "QEMU Arguments" = "QEMU-Parameter";
 
 /* UTMQemuVirtualMachine */
-"QEMU exited from an error: %@" = "QEMU wurde mit einem Fehler beendet: %@";
+"QEMU exited from an error: %@" = "QEMU wurde mit folgendem Fehler beendet: %@";
 
 /* UTMQemuConstants */
 "QEMU Monitor (HMP)" = "QEMU Monitor (HMP)";
