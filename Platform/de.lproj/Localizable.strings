@@ -659,7 +659,7 @@
 "Quitting UTM will kill all running VMs." = "Mit dem Beenden von UTM werden alle laufenden VMs direkt beendet.";
 
 /* No comment provided by engineer. */
-"Raw Image" = "Rohes Abbild";
+"Raw Image" = "Image im Raw Format";
 
 /* VMDisplayAppleController */
 "Read Only" = "Nur Lesen";
