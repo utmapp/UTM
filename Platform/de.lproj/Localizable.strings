@@ -300,7 +300,7 @@
 "Error parsing JSON." = "Fehler bei der JSON-Verarbeitung.";
 
 /* UTMVirtualMachine */
-"Error trying to restore external drives and shares: %@" = "Fehler beim Wiederherstellen externer Laufwerken oder Freigaben: %@";
+"Error trying to restore external drives and shares: %@" = "Fehler beim Wiederherstellen von externen Laufwerken oder Freigaben: %@";
 
 /* No comment provided by engineer. */
 "Existing" = "Existierende";
