@@ -94,7 +94,7 @@
 "Are you sure you want to reset this VM? Any unsaved changes will be lost." = "Möchten Sie wirklich einen Reset der VM ausführen? Alle ungespeicherten Änderungen gehen dabei verloren.";
 
 /* No comment provided by engineer. */
-"Are you sure you want to stop this VM and exit? Any unsaved changes will be lost." = "Möchten Sie die VM wirklich ausschalten? Alle ungespeicherten Änderungen gehen verloren.";
+"Are you sure you want to stop this VM and exit? Any unsaved changes will be lost." = "Möchten Sie die VM wirklich ausschalten? Alle ungespeicherten Änderungen gehen dabei verloren.";
 
 /* UTMQemuConstants */
 "Automatic Serial Device (max 4)" = "Automatische Serielle Konsole (max. 4)";
