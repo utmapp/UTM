@@ -73,7 +73,7 @@
 "An internal error has occurred." = "Ein interner Fehler ist aufgetreten.";
 
 /* UTMConfiguration */
-"An invalid value of '%@' is used in the configuration file." = "In der Konfigurationsdatei ist ein ungültige Wert für „%@” enthalten.";
+"An invalid value of '%@' is used in the configuration file." = "In der Konfigurationsdatei ist ein ungültiger Wert für „%@” enthalten.";
 
 /* VMConfigSystemView */
 "Any unsaved changes will be lost." = "Alle nicht gespeicherten Änderungen gehen verloren";
