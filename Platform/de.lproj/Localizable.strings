@@ -901,7 +901,7 @@
 "To access the shared directory, the guest OS must have Virtiofs drivers installed. You can then run `sudo mount -t virtiofs share /path/to/share` to mount to the share path." = "Um auf das freigegebene Verzeichnis zugreifen zu können, müssen auf dem Gastbetriebssystem VirtIOfs-Treiber installiert sein. Führen Sie anschließend `sudo mount -t virtiofs share /path/to/share` aus, um den Freigabepfad zu mounten.";
 
 /* VMMetalView */
-"To capture input or to release the capture, press Command and Option at the same time." = "Drücken Sie gleichzeitig CMD+OPT (⌘+⌥), um die Tastatur und den Mauszeiger nur in UTM zu nuzten oder wieder für alle andere Anwendungen freizugeben.";
+"To capture input or to release the capture, press Command and Option at the same time." = "Drücken Sie gleichzeitig CMD+OPT (⌘+⌥), um die Tastatur und den Mauszeiger ausschließlich in der VM zu nutzen oder wieder für alle andere Anwendungen freizugeben.";
 
 /* No comment provided by engineer. */
 "To install macOS, you need to download a recovery IPSW. If you do not select an existing IPSW, the latest macOS IPSW will be downloaded from Apple." = "Für die Installation von macOS wird ein Recovery-IPSW benötigt. Wenn Sie hier keines auswählen, wird als nächstes das neueste IPSW von Apple heruntergeladen.";
