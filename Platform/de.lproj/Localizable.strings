@@ -952,7 +952,7 @@
 "USB sharing not supported in this build of UTM." = "Die USB-Freigabe wird in dieser Version von UTM nicht unterstützt.";
 
 /* No comment provided by engineer. */
-"Use Command+Option (⌘+⌥) for input capture/release" = "Drücken Sie CMD+OPT (⌘+⌥) um den Mauszeiger zu fangen oder freizugeben.";
+"Use Command+Option (⌘+⌥) for input capture/release" = "Drücken Sie CMD+OPT (⌘+⌥), um die Tastatur und den Mauszeiger ausschließlich in der VM zu nutzen oder wieder für alle anderen Anwendungen freizugeben.";
 
 /* Welcome view */
 "User Guide" = "Benutzerhandbuch";
