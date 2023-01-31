@@ -261,7 +261,7 @@
 "Do you want to duplicate this VM and all its data?" = "Möchten Sie diese VM und alle enthaltenen Daten duplizieren?";
 
 /* No comment provided by engineer. */
-"Do you want to force stop this VM and lose all unsaved data?" = "Möchten Sie diese VM direkt beenden? Alle ungespeicherten Daten gehen verloren.";
+"Do you want to force stop this VM and lose all unsaved data?" = "Möchten Sie diese VM direkt beenden? Alle ungespeicherten Daten gehen dabei verloren.";
 
 /* No comment provided by engineer. */
 "Do you want to move this VM to another location? This will copy the data to the new location, delete the data from the original location, and then create a shortcut." = "Möchten Sie diese VM an einen neuen Speicherort bewegen? Dadurch werden alle enthaltenen Daten dorthin kopiert, das Original gelöscht und eine Verknüpfung erstellt.";
