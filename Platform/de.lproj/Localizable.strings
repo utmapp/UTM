@@ -707,7 +707,7 @@
 "Rosetta is not supported on the current host machine." = "Rosetta wird von der Host-Architektur nicht unterstützt.";
 
 /* No comment provided by engineer. */
-"Running low on memory! UTM might soon be killed by iOS. You can prevent this by decreasing the amount of memory and/or JIT cache assigned to this VM" = "Nicht genügend freier Speicher! UTM wird möglicherweise bald plötzlich beendet. Sie können dies beim nächsten Mal verhindern, indem Sie der VM weniger RAM zuweisen.";
+"Running low on memory! UTM might soon be killed by iOS. You can prevent this by decreasing the amount of memory and/or JIT cache assigned to this VM" = "Nicht genügend freier Speicher! UTM wird möglicherweise bald plötzlich beendet. Sie können dies verhindern, indem Sie der VM weniger RAM zuweisen.";
 
 /* No comment provided by engineer. */
 "Save" = "Speichern";
