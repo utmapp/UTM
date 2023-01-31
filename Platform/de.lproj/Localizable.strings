@@ -76,7 +76,7 @@
 "An invalid value of '%@' is used in the configuration file." = "In der Konfigurationsdatei ist ein ungültiger Wert für „%@” enthalten.";
 
 /* VMConfigSystemView */
-"Any unsaved changes will be lost." = "Alle nicht gespeicherten Änderungen gehen verloren";
+"Any unsaved changes will be lost." = "Alle ungespeicherten Änderungen gehen verloren";
 
 /* No comment provided by engineer. */
 "Application" = "Programm";
