@@ -52,10 +52,10 @@ jobs:
     needs: configuration
     strategy:
       matrix:
-        arch: [arm64, x86_64]
-        platform: [ios, ios_simulator, ios-tci, macos]
-        runner: [default, github]
-        exclude:
+      arch: [arm64, x86_64]
+      platform: [ios, ios_simulator, ios-tci, macos]
+       runner: [default, github]
+       exclude:
           # x86_64 does not exist on iOS
           - arch: x86_64
             platform: ios
@@ -85,18 +85,22 @@ jobs:
           key: ${{ matrix.platform }}-${{ matrix.arch }}-${{ hashFiles('scripts/build_dependencies.sh') }}-${{ hashFiles('patches/**') }}
           upload-chunk-size: 1048576 # 1 MiB
       - name: Setup Path
-        shell: bash
+        shell: /bin/bash --noprofile --norc -e -o pipefail 
         run: |
           echo "/usr/local/opt/bison/bin:/opt/homebrew/opt/bison/bin" >> $GITHUB_PATH
+        env:
+           BUILD_XCODE_PATH: /Applications/Xcode_14.1.app 
+           RUNNER_IMAGE: macos-12
+           MSYS: winsymlinks:nativestrict
       - name: Install Requirements
-        if: (steps.cache-sysroot.outputs.cache-hit != 'true' || github.event.inputs.rebuild_sysroot == 'true') && (matrix.runner == 'github' || needs.configuration.outputs.runner == env.RUNNER_IMAGE)
+        if: (steps.cache-sysroot.outputs.cache-hit != 'true' || github.event.inputs.rebuild_sysroot == 'true') && (matrix.runner == 'github' || needs.configuration.outputs.runner == env.RUNNER_IMAGE); then
         run: |
           brew uninstall cmake
-          brew install bison pkg-config gettext glib-utils libgpg-error nasm make meson
+          brew install bison pkg-config gettext glib libgpg-error nasm make meson
           pip3 install --user six pyparsing
           rm -f /usr/local/lib/pkgconfig/*.pc
       - name: Build Sysroot
-        if: steps.cache-sysroot.outputs.cache-hit != 'true' || github.event.inputs.rebuild_sysroot == 'true'
+        if: steps.cache-sysroot.outputs.cache-hit != 'true' || github.event.inputs.rebuild_sysroot == 'true'; then
         run: ./scripts/build_dependencies.sh -p ${{ matrix.platform }} -a ${{ matrix.arch }}
         env:
            NCPU: ${{ matrix.platform == 'ios-tci' && '1' || '0' }} # limit 1 CPU for TCI build due to memory issues, 0 = unlimited for other builds
