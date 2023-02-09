@@ -52,9 +52,13 @@ jobs:
     needs: configuration
     strategy:
       matrix:
-        arch: [arm64, x86_64]
-        platform: [ios, ios_simulator, ios-tci, macos]
-        runner: [default, github]
+        include: 
+          - arch: [arm64, x86_64]
+            platform: [ios, ios_simulator, ios-tci, macos]
+            runner: [default, github]
+          - arch: arm64 
+            platform: ios-tci
+            runner: github
         exclude:
           # x86_64 does not exist on iOS
           - arch: x86_64
@@ -63,11 +67,7 @@ jobs:
           - platform: ios-tci
           # use default runner
           - runner: github
-        include:
-          # always run iOS TCI build on GitHub Runner (Clang bug causes DOS on hosted runner)
-          - arch: arm64
-            platform: ios-tci
-            runner: github
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -92,14 +92,22 @@ jobs:
         if: (steps.cache-sysroot.outputs.cache-hit != 'true' || github.event.inputs.rebuild_sysroot == 'true') && (matrix.runner == 'github' || needs.configuration.outputs.runner == env.RUNNER_IMAGE)
         run: |
           brew uninstall cmake
-          brew install bison pkg-config gettext glib-utils libgpg-error nasm make meson
+          brew install bison pkg-config gettext glib libgpg-error nasm make meson
           pip3 install --user six pyparsing
           rm -f /usr/local/lib/pkgconfig/*.pc
+          shell: /bin/bash -e
+          env:
+            BUILD_XCODE_PATH: /Applications/Xcode_14.1.app
+            RUNNER_IMAGE: macos-12
+            MSYS: winsymlinks:nativestrict
       - name: Build Sysroot
-        if: steps.cache-sysroot.outputs.cache-hit != 'true' || github.event.inputs.rebuild_sysroot == 'true'
-        run: ./scripts/build_dependencies.sh -p ${{ matrix.platform }} -a ${{ matrix.arch }}
+        if: steps.cache-sysroot.outputs.cache-hit != 'true' || github.event.inputs.rebuild_sysroot == 'true'; then
+        run: ./scripts/build_dependencies.sh -p ios -a arm64
         env:
-           NCPU: ${{ matrix.platform == 'ios-tci' && '1' || '0' }} # limit 1 CPU for TCI build due to memory issues, 0 = unlimited for other builds
+          BUILD_XCODE_PATH: /Applications/Xcode_14.1.app
+          RUNNER_IMAGE: macos-12
+          MSYS: winsymlinks:nativestrict
+          NCPU: ${{ matrix.platform == 'ios-tci' && '1' || '0' }} # limit 1 CPU for TCI build due to memory issues, 0 = unlimited for other builds
       - name: Compress Sysroot
         if: steps.cache-sysroot.outputs.cache-hit != 'true' || github.event_name == 'release' || github.event.inputs.test_release == 'true'
         run: tar -acf sysroot.tgz sysroot*
