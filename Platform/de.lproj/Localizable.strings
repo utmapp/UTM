@@ -844,7 +844,7 @@
 "The selected boot image contains the word '%@' but the guest architecture is '%@'. Please ensure you have selected an image that is compatible with '%@'." = "Das gewählte Start-Abbild enthält das Wort „%1$@”, die Gast-Architektur ist jedoch „%2$@”. Bitte stellen Sie sicher, dass Sie ein passendes Abbild für „%3$@” ausgewählt haben.";
 
 /* No comment provided by engineer. */
-"The target does not support hardware emulated serial connections." = "Das Ziel unterstützt keine Hardware-Emulation für serielle Anschlüsse.";
+"The target does not support hardware emulated serial connections." = "Das Zielsystem unterstützt keine Hardware-Emulation für serielle Anschlüsse.";
 
 /* UTMQemuVirtualMachine */
 "The virtual machine is in an invalid state." = "Die VM ist in einem ungültigen Zustand.";
