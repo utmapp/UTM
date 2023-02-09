@@ -53,20 +53,17 @@ jobs:
     strategy:
       matrix:
         include: 
-          - arch: [arm64, x86_64]
-            platform: [ios, ios_simulator, ios-tci, macos]
-            runner: [default, github]
-          - arch: arm64 
+          - arch: arm64
             platform: ios-tci
             runner: github
         exclude:
           # x86_64 does not exist on iOS
           - arch: x86_64
-            platform: ios
+            platform: intel
           # TCI does not exist for x86_64 and should not use default runner
-          - platform: ios-tci
           # use default runner
-          - runner: github
+          - runner: exe
+          
 
     steps:
       - name: Checkout
