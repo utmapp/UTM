@@ -86,7 +86,7 @@ jobs:
         run: |
           echo "/usr/local/opt/bison/bin:/opt/homebrew/opt/bison/bin" >> $GITHUB_PATH
       - name: Install Requirements
-        if: (steps.cache-sysroot.outputs.cache-hit != 'true' || github.event.inputs.rebuild_sysroot == 'true') && (matrix.runner == 'github' || needs.configuration.outputs.runner == env.RUNNER_IMAGE)
+        if: (steps.cache-sysroot.outputs.cache-hit != 'true' || github.event.inputs.rebuild_sysroot == 'true') && (matrix.runner == 'github' || needs.configuration.outputs.runner == env.RUNNER_IMAGE);then
         run: |
           brew uninstall cmake
           brew install bison pkg-config gettext glib libgpg-error nasm make meson
@@ -97,19 +97,22 @@ jobs:
             BUILD_XCODE_PATH: /Applications/Xcode_14.1.app
             RUNNER_IMAGE: macos-12
             MSYS: winsymlinks:nativestrict
+          fi
       - name: Build Sysroot
         if: steps.cache-sysroot.outputs.cache-hit != 'true' || github.event.inputs.rebuild_sysroot == 'true'; then
         run: ./scripts/build_dependencies.sh -p ios -a arm64
+          fi
         env:
           BUILD_XCODE_PATH: /Applications/Xcode_14.1.app
           RUNNER_IMAGE: macos-12
           MSYS: winsymlinks:nativestrict
           NCPU: ${{ matrix.platform == 'ios-tci' && '1' || '0' }} # limit 1 CPU for TCI build due to memory issues, 0 = unlimited for other builds
       - name: Compress Sysroot
-        if: steps.cache-sysroot.outputs.cache-hit != 'true' || github.event_name == 'release' || github.event.inputs.test_release == 'true'
+        if: steps.cache-sysroot.outputs.cache-hit != 'true' || github.event_name == 'release' || github.event.inputs.test_release == 'true'; then
         run: tar -acf sysroot.tgz sysroot*
+         fi
       - name: Upload Sysroot
-        if: steps.cache-sysroot.outputs.cache-hit != 'true' || github.event_name == 'release' || github.event.inputs.test_release == 'true'
+        if: steps.cache-sysroot.outputs.cache-hit != 'true' || github.event_name == 'release' || github.event.inputs.test_release == 'true';
         uses: actions/upload-artifact@v3
         with:
           name: Sysroot-${{ matrix.platform }}-${{ matrix.arch }}
