@@ -14,21 +14,22 @@ UTM je plnohodnotný emulátor systému a hostitel virtuálního počítače pro
   <img width="450px" alt="UTM ejecutando en una MacBook" src="screenmac.png">
 </p>
 
-## Características
+## Funkce
 
-* Emulación de sistema completa (MMU, dispositivos, etc) usando QEMU.
-* Más de 30 procesadores compatibles, incluídos x86_64, ARM64 y RISC-V.
-* Modo de gráficos VGA usando SPICE y QXL.
-* Modo de terminal de texto.
-* Dispositivos USB.
-* Aceleración basada en JIT con QEMU TCG.
-* Interfaz diseñada desde cero para macOS 11 y iOS 11+ usando las mejores y más recientes APIs.
-* Crea, gestiona y ejecuta máquinas virtuales (VM) directamente desde tu dispositivo.
+* Úplná emulace systému (MMU, zařízení atd.) pomocí QEMU.
+* Podporuje více než 30 procesorů, včetně x86_64, ARM64 a RISC-V.
+* Grafický režim VGA pomocí SPICE a QXL.
+*  Režim textového terminálu.
+*  Zařízení USB.
+*  Akcelerace na bázi JIT pomocí QEMU TCG.
+*  Rozhraní od základu navržené pro macOS 11 a iOS 11+ s využitím nejnovějších a nejlepších rozhraní API.
+*  Vytvářejte, spravujte a spouštějte virtuální počítače (VM) přímo ze svého zařízení.
 
-## Características adicionales de macOS
+Translated with www.DeepL.com/Translator (free version)
+## Další funkce v systému macOS
 
-* Virtualización acelerada por hardware con el uso de Hypervisor.framework y QEMU.
-* Ejecuta clientes de macOS con Virtualization.framework en macOS 12+.
+* Hardwarově akcelerovaná virtualizace pomocí Hypervisor.frameworku a QEMU.
+* Spouštění klientů macOS s Virtualization.framework v systému macOS 12+.
 
 ## UTM SE
 
