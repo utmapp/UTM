@@ -33,43 +33,43 @@ Translated with www.DeepL.com/Translator (free version)
 
 ## UTM SE
 
-UTM/QEMU requiere de la generaciónd e código dinámico (JIT) para un máximo rendimiento. En dispositivos iOS, Jit requiere ya sea de un dispositivo con Jailbreak o cualquiera de las soluciones encontradas para versiones específicas de iOS (consulte "Instalar" para más detalles).
+pro dosažení maximálního výkonu vyžaduje UTM/QEMU dynamické generování kódu (JIT) . Na zařízeních se systémem iOS vyžaduje JIT buď jailbreaknuté zařízení, nebo některé z řešení nalezených pro konkrétní verze systému iOS (podrobnosti najdete v části "Instalace").
 
-UTM SE ("slow edition", edición lenta) usa un [intérprete de subprocesos][3] que funciona mejor que un intérprete tradicional pero aún más lento que JIT. Esta técnica es similar a lo que [iSH][4] realiza para la ejecución dinámica. Como resultado, UTM SE no requiere de Jailbreak ni ninguna solución alterna de JIT, además que puede ser descargada como una aplicación normal (a través del sideloading).
+UTM SE ("slow edition") používá vláknový interpret, který funguje lépe než tradiční interpret, ale stále pomaleji než JIT. Tato technika je podobná technice iSH pro dynamické spouštění. UTM SE proto nevyžaduje Jailbreak ani žádné alternativní řešení JIT a lze jej stáhnout jako běžnou aplikaci (pomocí sideloadingu).
 
-Para optimizar el tamaño y los tiempos de compilación, sólo se incluyen las siguientes arquitecturas en UTM SE: ARM, PPC, RISC-V y x86 (todas con variantes de 32 y 64 bits).
+Z důvodu optimalizace velikosti a doby kompilace jsou v UTM SE zahrnuty pouze následující architektury: ARM, PPC, RISC-V a x86 (všechny 32bitové a 64bitové varianty).
 
-## Instalar
+## Instalace
 
-UTM (SE) para iOS: https://getutm.app/install/
+UTM (SE) pro iOS: https://getutm.app/install/
 
-UTM está también disponible para macOS: https://mac.getutm.app/
+UTM je k dispozici také pro macOS: https://mac.getutm.app/
 
-## Desarrollo
+## Vývoj
 
-### [Desarrollo en macOS](Documentation/MacDevelopment.md)
+### [Vývoj v systému macOS](Documentation/MacDevelopment.md)
 
-### [Desarrollo en iOS](Documentation/iOSDevelopment.md)
+### [Vývoj pro iOS](Documentation/iOSDevelopment.md)
 
-## Relacionado
+## Související stránky
 
-* [iSH][4]: emula una interfaz de terminal de Linux para ejecutar aplicaciones x86 de Linux en iOS.
-* [a-shell][5]: paquetes de comandos y utilidades comunes de Unix, creados de forma nativa para iOS y accesibles a través de una interfaz de terminal.
+* [iSH][4]: emuluje terminálové rozhraní Linuxu pro spouštění aplikací x86 Linux v systému iOS.
+* [a-shell][5]: balíčky běžných unixových příkazů a nástrojů vytvořené nativně pro iOS a přístupné přes terminálové rozhraní.
 
-## Licencia
+## Licence
 
-UTM es distribuido bajo la licencia permisiva de Apache 2.0. Sin embargo, usa varios componentes (L)GPL. Muchos son dinámicamente enlazados a excepción de los plugins de gstreamer que son estáticamente enlazados, y partes del código que son tomados de qemu. Por favor tenga esto en consideración si pretende redistribuir esta aplicación.
+UTM je šířen pod licencí Apache 2.0. Používá však několik komponent (L)GPL. Mnohé z nich jsou dynamicky linkované, s výjimkou zásuvných modulů gstreameru, které jsou staticky linkované, a částí kódu, které jsou převzaty z qemu. Pokud máte v úmyslu tuto aplikaci dále šířit, vezměte to prosím v úvahu.
 
-Algunos iconos fueron hechos por [Freepik](https://www.freepik.com) de [www.flaticon.com](https://www.flaticon.com/).
+Některé ikony byly vytvořeny [Freepik](https://www.freepik.com) de [www.flaticon.com](https://www.flaticon.com/).
 
-Adicionalmente, el frontend de UTM depende en los siguientes componentes bajo la licencia MIT/BSD:
+Frontend UTM navíc využívá následující komponenty pod licencí MIT/BSD:
 
 * [IQKeyboardManager](https://github.com/hackiftekhar/IQKeyboardManager)
 * [SwiftTerm](https://github.com/migueldeicaza/SwiftTerm)
 * [ZIP Foundation](https://github.com/weichsel/ZIPFoundation)
 * [InAppSettingsKit](https://github.com/futuretap/InAppSettingsKit)
 
-El alojamiento de la integración continua es proporcionado por [MacStadium](https://www.macstadium.com/opensource).
+Kontinuální hostování integrace zajišťuje [MacStadium](https://www.macstadium.com/opensource).
 
 [<img src="https://uploads-ssl.webflow.com/5ac3c046c82724970fc60918/5c019d917bba312af7553b49_MacStadium-developerlogo.png" alt="Logo de MacStadium" width="250">](https://www.macstadium.com)
 
