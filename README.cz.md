@@ -2,7 +2,7 @@
 
 [![Build](https://github.com/utmapp/UTM/workflows/Build/badge.svg?branch=master&event=push)][1]
 
-> Es posible inventar una única máquina que pueda ser usada para computar cualquier secuencia computable. (It is possible to invent a single machine which can be used to compute any computable sequence.)
+> Je možné vynalézt jediný stroj, který lze použít k výpočtu libovolné vypočitatelné posloupnosti.
 
 -- <cite>Alan Turing, 1936</cite>
 
