@@ -6,7 +6,7 @@
 
 -- <cite>Alan Turing, 1936</cite>
 
-UTM es un emulador de sistemas completo y un host de máquinas virtuales para iOS y macOS, que está basado directamente en QEMU. En otras palabras, te permite ejecutar Windows, Linux y más en tu Mac, iPhone y iPad. Puedes ver más información en https://getutm.app y https://mac.getutm.app.
+UTM je plnohodnotný emulátor systému a hostitel virtuálního počítače pro iOS a macOS, který je založen přímo na QEMU. Jinými slovy, na Macu, iPhonu a iPadu můžete spouštět Windows, Linux a další systémy. Další informace naleznete zde  https://getutm.app y https://mac.getutm.app.
 
 <p align="center">
   <img width="450px" alt="UTM ejecutando en un iPhone" src="screen.png">
