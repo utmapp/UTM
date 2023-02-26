@@ -1021,7 +1021,7 @@
 "Edit selected VM" = "编辑选择的虚拟机";
 
 //VMWizardHardwareView
-"Enable hardware OpenGL acceleration (experimental)" = "启用硬件 OpenGL 加速 (实验性)";
+"Enable hardware OpenGL acceleration" = "启用硬件 OpenGL 加速";
 
 //VMWizardOSLinuxView
 "Linux initial ramdisk (optional)" = "Linux 初始虚拟内存盘 (可选)";

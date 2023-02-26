@@ -663,7 +663,7 @@
 "Specify the size of the drive where data will be stored into." = "Définissez la taille du lecteur dans lequel seront enregistrées les données.";
 
 // VMWizardHardwareView.swift
-"Enable hardware OpenGL acceleration (experimental)" = "Activer l'accélération matérielle OpenGL (expérimental)";
+"Enable hardware OpenGL acceleration" = "Activer l'accélération matérielle OpenGL";
 "Hardware OpenGL Acceleration" = "Accélération matérielle OpenGL";
 
 // VMWizardOSLinuxView.swift

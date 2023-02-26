@@ -350,7 +350,7 @@
 "Enable Directory Sharing" = "Ota hakemistojen jakaminen käyttöön";
 
 /* No comment provided by engineer. */
-"Enable hardware OpenGL acceleration (experimental)" = "Ota käyttöön laitteiston OpenGL-kiihdytys (kokeellinen)";
+"Enable hardware OpenGL acceleration" = "Ota käyttöön laitteiston OpenGL-kiihdytys";
 
 /* No comment provided by engineer. */
 "Enabled" = "Käytössä";

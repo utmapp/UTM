@@ -114,10 +114,8 @@ struct VMWizardHardwareView: View {
             
             
             if !wizardState.useAppleVirtualization && wizardState.operatingSystem == .Linux {
-                Section {
-                    Toggle("Enable hardware OpenGL acceleration (experimental)", isOn: $wizardState.isGLEnabled)
-                } header: {
-                    Text("Hardware OpenGL Acceleration")
+                DetailedSection("Hardware OpenGL Acceleration", description: "There are known issues in some newer Linux drivers including black screen, broken compositing, and apps failing to render.") {
+                    Toggle("Enable hardware OpenGL acceleration", isOn: $wizardState.isGLEnabled)
                 }
                 
             }

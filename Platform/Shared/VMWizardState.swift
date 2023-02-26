@@ -367,7 +367,7 @@ enum VMWizardOS: String, Identifiable {
             // only change UEFI settings for Windows
             config.qemu.hasUefiBoot = systemBootUefi
         }
-        if isGLEnabled, let displayCard = config.displays.first?.hardware {
+        if isGLEnabled || operatingSystem == .Windows, let displayCard = config.displays.first?.hardware {
             let newCard = displayCard.rawValue + "-gl"
             let allCards = systemArchitecture.displayDeviceType.allRawValues
             if allCards.contains(where: { $0 == newCard }) {

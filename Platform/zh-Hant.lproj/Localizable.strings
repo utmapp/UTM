@@ -350,7 +350,7 @@
 "Enable Directory Sharing" = "啟用檔案夾共享";
 
 /* No comment provided by engineer. */
-"Enable hardware OpenGL acceleration (experimental)" = "啟用 OpenGL 硬體加速（實驗性功能）";
+"Enable hardware OpenGL acceleration" = "啟用 OpenGL 硬體加速";
 
 /* No comment provided by engineer. */
 "Enabled" = "已啟用";

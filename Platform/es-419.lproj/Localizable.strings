@@ -536,7 +536,7 @@
 "Enable Rosetta on Linux (x86_64 Emulation)" = "Habilitar Rosetta en Linux (Emulación x86_64)";
 
 /* No comment provided by engineer. */
-"Enable hardware OpenGL acceleration (experimental)" = "Habilitar la aceleración OpenGL por hardware (experimental)";
+"Enable hardware OpenGL acceleration" = "Habilitar la aceleración OpenGL por hardware";
 
 /* No comment provided by engineer. */
 "Enabled" = "Habilitado";
