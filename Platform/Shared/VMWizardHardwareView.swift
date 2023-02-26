@@ -110,6 +110,17 @@ struct VMWizardHardwareView: View {
             } header: {
                 Text("CPU")
             }
+            
+            
+            
+            if !wizardState.useAppleVirtualization && wizardState.operatingSystem == .Linux {
+                Section {
+                    Toggle("Enable hardware OpenGL acceleration (experimental)", isOn: $wizardState.isGLEnabled)
+                } header: {
+                    Text("Hardware OpenGL Acceleration")
+                }
+                
+            }
         }
         #if os(iOS)
         .navigationTitle(Text("Hardware"))

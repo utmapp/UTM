@@ -104,6 +104,7 @@ enum VMWizardOS: String, Identifiable {
     @Published var storageSizeGib: Int = 8
     #endif
     @Published var systemCpuCount: Int = 0
+    @Published var isGLEnabled: Bool = false
     @Published var sharingDirectoryURL: URL?
     @Published var sharingReadOnly: Bool = false
     @Published var name: String?
@@ -365,19 +366,12 @@ enum VMWizardOS: String, Identifiable {
         if operatingSystem == .Windows {
             // only change UEFI settings for Windows
             config.qemu.hasUefiBoot = systemBootUefi
-        } else if operatingSystem == .Linux {
-            // enable GL acceleration by default if supported
-            switch systemArchitecture {
-            case .arm:
-                config.displays[0].hardware = QEMUDisplayDevice_arm.virtio_gpu_gl_pci
-            case .aarch64:
-                config.displays[0].hardware = QEMUDisplayDevice_aarch64.virtio_gpu_gl_pci
-            case .i386:
-                config.displays[0].hardware = QEMUDisplayDevice_i386.virtio_gpu_gl_pci
-            case .x86_64:
-                config.displays[0].hardware = QEMUDisplayDevice_x86_64.virtio_gpu_gl_pci
-            default:
-                break
+        }
+        if isGLEnabled, let displayCard = config.displays.first?.hardware {
+            let newCard = displayCard.rawValue + "-gl"
+            let allCards = systemArchitecture.displayDeviceType.allRawValues
+            if allCards.contains(where: { $0 == newCard }) {
+                config.displays[0].hardware = AnyQEMUConstant(rawValue: newCard)!
             }
         }
         let mainDriveInterface: QEMUDriveInterface
