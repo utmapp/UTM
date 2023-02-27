@@ -64,7 +64,12 @@ struct UTMQemuConfigurationSystem: Codable {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         architecture = try values.decode(QEMUArchitecture.self, forKey: .architecture)
         target = try values.decode(architecture.targetType, forKey: .target)
-        cpu = try values.decode(architecture.cpuType, forKey: .cpu)
+        do {
+            cpu = try values.decode(architecture.cpuType, forKey: .cpu)
+        } catch UTMConfigurationError.invalidConfigurationValue(let value) {
+            logger.warning("Unable to decode CPU '\(value)', resetting to default CPU")
+            cpu = architecture.cpuType.default
+        }
         cpuFlagsAdd = try values.decode([AnyQEMUConstant].self, forKey: .cpuFlagsAdd)
         cpuFlagsRemove = try values.decode([AnyQEMUConstant].self, forKey: .cpuFlagsRemove)
         cpuCount = try values.decode(Int.self, forKey: .cpuCount)
