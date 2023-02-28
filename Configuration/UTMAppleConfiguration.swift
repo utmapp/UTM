@@ -248,16 +248,16 @@ extension UTMAppleConfiguration {
 @available(macOS 11, *)
 @MainActor extension UTMAppleConfiguration {
     func appleVZConfiguration(ignoringDrives: Bool = false) throws -> VZVirtualMachineConfiguration {
-            let vzconfig = VZVirtualMachineConfiguration()
-            try system.fillVZConfiguration(vzconfig)
-            if #available(macOS 12, *) {
-                let fsConfig = VZVirtioFileSystemDeviceConfiguration(tag: "share")
-                fsConfig.share = UTMAppleConfigurationSharedDirectory.makeDirectoryShare(from: sharedDirectories)
-                vzconfig.directorySharingDevices.append(fsConfig)
-            } else if !sharedDirectories.isEmpty {
-                throw UTMAppleConfigurationError.featureNotSupported
-            }
-            if !ignoringDrives {
+        let vzconfig = VZVirtualMachineConfiguration()
+        try system.fillVZConfiguration(vzconfig)
+        if #available(macOS 12, *) {
+            let fsConfig = VZVirtioFileSystemDeviceConfiguration(tag: "share")
+            fsConfig.share = UTMAppleConfigurationSharedDirectory.makeDirectoryShare(from: sharedDirectories)
+            vzconfig.directorySharingDevices.append(fsConfig)
+        } else if !sharedDirectories.isEmpty {
+            throw UTMAppleConfigurationError.featureNotSupported
+        }
+        if !ignoringDrives {
             vzconfig.storageDevices = try drives.compactMap { drive in
                 guard let attachment = try drive.vzDiskImage() else {
                     return nil
@@ -268,38 +268,38 @@ extension UTMAppleConfiguration {
                     return VZVirtioBlockDeviceConfiguration(attachment: attachment)
                 }
             }
+        }
+        vzconfig.networkDevices.append(contentsOf: networks.compactMap({ $0.vzNetworking() }))
+        vzconfig.serialPorts.append(contentsOf: serials.compactMap({ $0.vzSerial() }))
+        // add remaining devices
+        try virtualization.fillVZConfiguration(vzconfig)
+        #if arch(arm64)
+        if #available(macOS 13, *), virtualization.hasPointer && system.boot.operatingSystem == .macOS {
+            // add a trackpad device
+            vzconfig.pointingDevices.insert(VZMacTrackpadConfiguration(), at: 0)
+        }
+        if #available(macOS 12, *), system.boot.operatingSystem == .macOS {
+            let graphics = VZMacGraphicsDeviceConfiguration()
+            graphics.displays = displays.map({ display in
+                display.vzMacDisplay()
+            })
+            if graphics.displays.count > 0 {
+                vzconfig.graphicsDevices = [graphics]
             }
-            vzconfig.networkDevices.append(contentsOf: networks.compactMap({ $0.vzNetworking() }))
-            vzconfig.serialPorts.append(contentsOf: serials.compactMap({ $0.vzSerial() }))
-            // add remaining devices
-            try virtualization.fillVZConfiguration(vzconfig)
-            #if arch(arm64)
-            if #available(macOS 13, *), virtualization.hasPointer && system.boot.operatingSystem == .macOS {
-                // add a trackpad device
-                vzconfig.pointingDevices.insert(VZMacTrackpadConfiguration(), at: 0)
+        }
+        #endif
+        if #available(macOS 13, *), system.boot.operatingSystem != .macOS {
+            let graphics = VZVirtioGraphicsDeviceConfiguration()
+            graphics.scanouts = displays.map({ display in
+                display.vzVirtioDisplay()
+            })
+            if graphics.scanouts.count > 0 {
+                vzconfig.graphicsDevices = [graphics]
             }
-            if #available(macOS 12, *), system.boot.operatingSystem == .macOS {
-                let graphics = VZMacGraphicsDeviceConfiguration()
-                graphics.displays = displays.map({ display in
-                    display.vzMacDisplay()
-                })
-                if graphics.displays.count > 0 {
-                    vzconfig.graphicsDevices = [graphics]
-                }
-            }
-            #endif
-            if #available(macOS 13, *), system.boot.operatingSystem != .macOS {
-                let graphics = VZVirtioGraphicsDeviceConfiguration()
-                graphics.scanouts = displays.map({ display in
-                    display.vzVirtioDisplay()
-                })
-                if graphics.scanouts.count > 0 {
-                    vzconfig.graphicsDevices = [graphics]
-                }
-            } else if system.boot.operatingSystem != .macOS && !displays.isEmpty {
-                throw UTMAppleConfigurationError.featureNotSupported
-            }
-            return vzconfig
+        } else if system.boot.operatingSystem != .macOS && !displays.isEmpty {
+            throw UTMAppleConfigurationError.featureNotSupported
+        }
+        return vzconfig
     }
 }
 
