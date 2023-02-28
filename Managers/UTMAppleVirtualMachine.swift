@@ -293,7 +293,7 @@ import Virtualization
             let serialPort = UTMSerialPort(portNamed: name, readFileHandle: slaveTtyHandle, writeFileHandle: slaveTtyHandle, terminalFileHandle: terminalTtyHandle)
             appleConfig.serials[i].interface = serialPort
         }
-        let vzConfig = try appleConfig.appleVZConfiguration
+        let vzConfig = try appleConfig.appleVZConfiguration()
         apple = VZVirtualMachine(configuration: vzConfig, queue: vmQueue)
         apple.delegate = self
     }
