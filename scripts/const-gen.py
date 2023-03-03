@@ -83,6 +83,13 @@ ADD_DEVICES = {
     },
 }
 
+BLOCK_DEVICES = [
+    'virtio-gpu-device',
+    'virtio-gpu-gl-device',
+    'virtio-net-device',
+    'virtio-serial-device',
+]
+
 HEADER = '''//
 // Copyright © 2022 osy. All rights reserved.
 //
@@ -130,6 +137,8 @@ def parseDeviceListing(defaults, listing):
         search = re.search('^name "(?P<name>[^"]*)"(?:, bus (?P<bus>[^\s]+))?(?:, alias "(?P<alias>[^"]+)")?(?:, desc "(?P<desc>[^"]+)")?$', line)
         name = search.group('name')
         desc = search.group('desc')
+        if name in BLOCK_DEVICES:
+            continue
         if not desc:
             desc = name
         else:
