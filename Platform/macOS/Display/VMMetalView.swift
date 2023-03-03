@@ -149,6 +149,9 @@ class VMMetalView: MTKView {
     override func keyDown(with event: NSEvent) {
         guard !event.isARepeat else { return }
         logger.trace("key down: \(event.keyCode)")
+        if event.modifierFlags.contains(.numericPad) {
+            inputDelegate?.didUseNumericPad()
+        }
         lastKeyDown = getScanCodeForEvent(event)
         inputDelegate?.keyDown(scanCode: lastKeyDown!)
     }

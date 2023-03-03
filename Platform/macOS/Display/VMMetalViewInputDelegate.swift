@@ -26,4 +26,5 @@ protocol VMMetalViewInputDelegate: class {
     func syncCapsLock(with modifier: NSEvent.ModifierFlags?)
     func captureMouse()
     func releaseMouse()
+    func didUseNumericPad()
 }

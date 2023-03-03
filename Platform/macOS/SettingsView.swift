@@ -103,6 +103,7 @@ struct InputSettingsView: View {
     @AppStorage("CtrlRightClick") var isCtrlRightClick = false
     @AppStorage("AlternativeCaptureKey") var isAlternativeCaptureKey = false
     @AppStorage("IsCapsLockKey") var isCapsLockKey = false
+    @AppStorage("IsNumLockForced") var isNumLockForced = false
     @AppStorage("InvertScroll") var isInvertScroll = false
     @AppStorage("NoUsbPrompt") var isNoUsbPrompt = false
     
@@ -124,6 +125,9 @@ struct InputSettingsView: View {
                 Toggle(isOn: $isCapsLockKey, label: {
                     Text("Caps Lock (⇪) is treated as a key")
                 }).help("If enabled, caps lock will be handled like other keys. If disabled, it is treated as a toggle that is synchronized with the host.")
+                Toggle(isOn: $isNumLockForced, label: {
+                    Text("Num Lock is forced on")
+                }).help("If enabled, num lock will always be on to the guest. Note this may make your keyboard's num lock indicator out of sync.")
             }
             
             Section(header: Text("QEMU USB")) {
@@ -145,6 +149,7 @@ extension UserDefaults {
     @objc dynamic var NoUsbPrompt: Bool { false }
     @objc dynamic var AlternativeCaptureKey: Bool { false }
     @objc dynamic var IsCapsLockKey: Bool { false }
+    @objc dynamic var IsNumLockForced: Bool { false }
     @objc dynamic var NoSaveScreenshot: Bool { false }
     @objc dynamic var InvertScroll: Bool { false }
     @objc dynamic var QEMURendererBackend: Int { 0 }

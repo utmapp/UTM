@@ -60,6 +60,7 @@ class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
     @Setting("CtrlRightClick") private var isCtrlRightClick: Bool = false
     @Setting("AlternativeCaptureKey") private var isAlternativeCaptureKey: Bool = false
     @Setting("IsCapsLockKey") private var isCapsLockKey: Bool = false
+    @Setting("IsNumLockForced") private var isNumLockForced: Bool = false
     @Setting("InvertScroll") private var isInvertScroll: Bool = false
     @Setting("QEMURendererFPSLimit") private var rendererFpsLimit: Int = 0
     private var settingObservations = [NSKeyValueObservation]()
@@ -534,5 +535,18 @@ extension VMDisplayQemuMetalWindowController: VMMetalViewInputDelegate {
             locks.subtract(.caps)
         }
         vmInput.keyLock = locks
+    }
+    
+    /// Update virtual num lock status if we force num pad to on
+    func didUseNumericPad() {
+        guard isNumLockForced else {
+            return // nothing to do
+        }
+        guard let vmInput = vmInput else {
+            return
+        }
+        if !vmInput.keyLock.contains(.num) {
+            vmInput.keyLock.insert(.num)
+        }
     }
 }
