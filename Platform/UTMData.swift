@@ -449,6 +449,9 @@ class UTMData: ObservableObject {
             try fileManager.removeItem(at: vm.path)
         }
         
+        // close any open window
+        close(vm: vm)
+        
         if alsoRegistry {
             UTMRegistry.shared.remove(entry: vm.registryEntry)
         }
