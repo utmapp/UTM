@@ -151,9 +151,8 @@ NSString *const kSuspendSnapshotName = @"suspend";
         [self.logging logToFile:self.config.qemuDebugLogURL];
     }
     
-    if (self.isRunningAsSnapshot) {
-        self.config.qemuIsDisposable = self.isRunningAsSnapshot;
-    } else {
+    self.config.qemuIsDisposable = self.isRunningAsSnapshot;
+    if (!self.isRunningAsSnapshot) {
         // Loading save states isn't possible when -snapshot is used
         if (self.registryEntry.hasSaveState) {
             self.config.qemuSnapshotName = kSuspendSnapshotName;
