@@ -220,7 +220,7 @@ struct CPUFlagsOptions: View {
                 if showAllFlags || flags.count > 0 {
                     OptionsList {
                         ForEach(allFlags) { flagStr in
-                            let flag = AnyQEMUConstant(rawValue: flagStr)!
+                            let flag = config.architecture.cpuFlagType.init(rawValue: flagStr)!
                             let isFlagOn = Binding<Bool> { () -> Bool in
                                 flags.contains(where: { $0.rawValue == flag.rawValue })
                             } set: { isOn in
