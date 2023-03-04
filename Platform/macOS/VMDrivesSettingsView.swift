@@ -58,6 +58,11 @@ struct VMDrivesSettingsView<Drive: UTMConfigurationDrive>: View {
         }.onMove { offsets, index in
             drives.move(fromOffsets: offsets, toOffset: index)
         }
+        .alert(item: $requestDriveDelete) { drive in
+            Alert(title: Text("Are you sure you want to permanently delete this disk image?"), primaryButton: .cancel(), secondaryButton: .destructive(Text("Delete")) {
+                drives.removeAll(where: { $0 == drive })
+            })
+        }
         Button {
             newDrivePopover.toggle()
         } label: {
@@ -95,11 +100,6 @@ struct VMDrivesSettingsView<Drive: UTMConfigurationDrive>: View {
                     }).help("Create an empty drive.")
                 }
             }.padding()
-        }
-        .alert(item: $requestDriveDelete) { drive in
-            Alert(title: Text("Are you sure you want to permanently delete this disk image?"), primaryButton: .cancel(), secondaryButton: .destructive(Text("Delete")) {
-                drives.removeAll(where: { $0 == drive })
-            })
         }
     }
     
