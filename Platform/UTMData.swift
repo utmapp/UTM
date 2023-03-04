@@ -332,23 +332,28 @@ class UTMData: ObservableObject {
     
     /// Generate a filename for an imported file, avoiding duplicate names
     /// - Parameters:
-    ///   - imagesUrl: Destination directory to test for file existance
-    ///   - filename: The filename of the existing image being imported
+    ///   - sourceUrl: Source image where name will come from
+    ///   - destUrl: Destination directory where duplicates will be checked
     ///   - withExtension: Optionally change the file extension
-    /// - Returns: Unique filename that is not used in the imagesUrl
-    func newImportedImage(at imagesUrl: URL, filename: String, withExtension: String? = nil) -> String {
-        let baseUrl = imagesUrl.appendingPathComponent(filename)
-        let name = baseUrl.deletingPathExtension().lastPathComponent
-        let ext = withExtension ?? baseUrl.pathExtension
+    /// - Returns: Unique filename that is not used in the destUrl
+    static func newImage(from sourceUrl: URL, to destUrl: URL, withExtension: String? = nil) -> URL {
+        let name = sourceUrl.deletingPathExtension().lastPathComponent
+        let ext = withExtension ?? sourceUrl.pathExtension
         let strFromInt = { (i: Int) in i == 1 ? "" : "-\(i)" }
         for i in 1..<1000 {
             let attempt = "\(name)\(strFromInt(i))"
-            let attemptUrl = imagesUrl.appendingPathComponent(attempt).appendingPathExtension(ext)
-            if !fileManager.fileExists(atPath: attemptUrl.path) {
-                return attemptUrl.lastPathComponent
+            let attemptUrl = destUrl.appendingPathComponent(attempt).appendingPathExtension(ext)
+            if !FileManager.default.fileExists(atPath: attemptUrl.path) {
+                return attemptUrl
             }
         }
-        return UUID().uuidString
+        repeat {
+            let attempt = UUID().uuidString
+            let attemptUrl = destUrl.appendingPathComponent(attempt).appendingPathExtension(ext)
+            if !FileManager.default.fileExists(atPath: attemptUrl.path) {
+                return attemptUrl
+            }
+        } while true
     }
     
     // MARK: - Other view states
@@ -712,9 +717,7 @@ class UTMData: ObservableObject {
     /// - Parameter isCompressed: Compress existing data
     func reclaimSpace(for driveUrl: URL, withCompression isCompressed: Bool = false) async throws {
         let baseUrl = driveUrl.deletingLastPathComponent()
-        let filename = driveUrl.lastPathComponent
-        let newName = newImportedImage(at: baseUrl, filename: filename, withExtension: "qcow2")
-        let dstUrl = baseUrl.appendingPathComponent(newName)
+        let dstUrl = Self.newImage(from: driveUrl, to: baseUrl, withExtension: "qcow2")
         try await UTMQemuImage.convert(from: driveUrl, toQcow2: dstUrl, withCompression: isCompressed)
         do {
             try fileManager.replaceItem(at: driveUrl, withItemAt: dstUrl, backupItemName: nil, resultingItemURL: nil)

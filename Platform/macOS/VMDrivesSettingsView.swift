@@ -122,13 +122,7 @@ struct VMDrivesSettingsView<Drive: UTMConfigurationDrive>: View {
         data.busyWorkAsync {
             switch result {
             case .success(let url):
-                let name = url.lastPathComponent
-                if await drives.contains(where: { image in
-                    image.imageURL?.lastPathComponent == name
-                }) {
-                    throw NSLocalizedString("An image already exists with that name.", comment: "VMDrivesSettingsView")
-                }
-                DispatchQueue.main.async {
+                await MainActor.run {
                     drive.imageURL = url
                     drives.append(drive)
                 }

@@ -175,16 +175,13 @@ extension UTMConfiguration {
             if sourceRef?.isEqual(destRef) ?? false {
                 return destURL
             }
-            if fileManager.contentsEqual(atPath: sourceURL.path, andPath: destURL.path) {
-                return destURL
-            }
-            try fileManager.removeItem(at: destURL)
         }
         if let customCopy = customCopy {
-            return try await customCopy(sourceURL, destURL)
+            return try await customCopy(sourceURL, destFolderURL)
         } else {
+            let newUrl = UTMData.newImage(from: sourceURL, to: destFolderURL)
             try await Task.detached {
-                try fileManager.copyItem(at: sourceURL, to: destURL)
+                try fileManager.copyItem(at: sourceURL, to: newUrl)
             }.value
             return destURL
         }

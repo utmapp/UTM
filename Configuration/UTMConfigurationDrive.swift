@@ -111,12 +111,11 @@ extension UTMConfigurationDrive {
     }
     
     #if os(macOS)
-    private func convertQcow2Image(at sourceURL: URL, to destURL: URL) async throws -> URL {
+    private func convertQcow2Image(at sourceURL: URL, to destFolderURL: URL) async throws -> URL {
         let fileManager = FileManager.default
-        let destQcow2 = destURL.deletingPathExtension().appendingPathExtension("qcow2")
-        guard !fileManager.fileExists(atPath: destQcow2.path) else {
-            throw UTMConfigurationError.driveAlreadyExists(destQcow2)
-        }
+        let destQcow2 = UTMData.newImage(from: sourceURL,
+                                         to: destFolderURL,
+                                         withExtension: "qcow2")
         try await UTMQemuImage.convert(from: sourceURL, toQcow2: destQcow2)
         return destQcow2
     }
