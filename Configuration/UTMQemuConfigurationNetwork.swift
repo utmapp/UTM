@@ -151,6 +151,8 @@ extension UTMQemuConfigurationNetwork {
             hardware = QEMUNetworkDevice_x86_64.rtl8139
         } else if rawTarget.hasPrefix("q35") {
             hardware = QEMUNetworkDevice_x86_64.e1000
+        } else if rawTarget == "isapc" {
+            hardware = QEMUNetworkDevice_x86_64.ne2k_isa
         } else if rawTarget.hasPrefix("virt-") || rawTarget == "virt" {
             hardware = QEMUNetworkDevice_aarch64.virtio_net_pci
         } else {

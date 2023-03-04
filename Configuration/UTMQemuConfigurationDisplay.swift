@@ -76,12 +76,14 @@ struct UTMQemuConfigurationDisplay: Codable, Identifiable {
 extension UTMQemuConfigurationDisplay {
     init?(forArchitecture architecture: QEMUArchitecture, target: any QEMUTarget) {
         self.init()
-        if !architecture.hasAgentSupport {
+        let rawTarget = target.rawValue
+        if !architecture.hasAgentSupport || rawTarget == "isapc" {
             isDynamicResolution = false
         }
-        let rawTarget = target.rawValue
         if rawTarget.hasPrefix("pc") || rawTarget.hasPrefix("q35") {
             hardware = QEMUDisplayDevice_x86_64.virtio_vga
+        } else if rawTarget == "isapc" {
+            hardware = QEMUDisplayDevice_x86_64.isa_vga
         } else if rawTarget.hasPrefix("virt-") || rawTarget == "virt" {
             hardware = QEMUDisplayDevice_aarch64.virtio_ramfb
         } else {
