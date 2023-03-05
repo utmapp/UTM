@@ -274,10 +274,13 @@ extension UTMAppleConfiguration {
         // add remaining devices
         try virtualization.fillVZConfiguration(vzconfig)
         #if arch(arm64)
+        /*
+        // Disable trackpad due to reported issues (#4636, #4645)
         if #available(macOS 13, *), virtualization.hasPointer && system.boot.operatingSystem == .macOS {
             // add a trackpad device
             vzconfig.pointingDevices.insert(VZMacTrackpadConfiguration(), at: 0)
         }
+        */
         if #available(macOS 12, *), system.boot.operatingSystem == .macOS {
             let graphics = VZMacGraphicsDeviceConfiguration()
             graphics.displays = displays.map({ display in
