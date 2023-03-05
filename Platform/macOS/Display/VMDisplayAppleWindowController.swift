@@ -80,7 +80,6 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         window!.subtitle = defaultSubtitle
         updateWindowFrame()
         super.enterLive()
-        captureMouseToolbarItem.isEnabled = false
         drivesToolbarItem.isEnabled = false
         usbToolbarItem.isEnabled = false
         startPauseToolbarItem.isEnabled = true

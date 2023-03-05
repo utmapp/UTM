@@ -35,7 +35,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="240" width="800" height="600"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1055"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1728" height="1079"/>
             <view key="contentView" wantsLayer="YES" id="EiT-Mj-1SZ">
                 <rect key="frame" x="0.0" y="0.0" width="800" height="600"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -143,11 +143,11 @@
                             </connections>
                         </button>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="E86439F7-239E-4570-B1FE-FFF2B4BA3F10" label="Capture Mouse" paletteLabel="Capture Mouse" toolTip="Capture mouse cursor" image="cursorarrow.rays" catalog="system" sizingBehavior="auto" id="FN7-zs-mWC">
+                    <toolbarItem implicitItemIdentifier="E86439F7-239E-4570-B1FE-FFF2B4BA3F10" label="Capture Input" paletteLabel="Capture Input" toolTip="Capture input devices" image="cursorarrow.rays" catalog="system" sizingBehavior="auto" id="FN7-zs-mWC">
                         <button key="view" verticalHuggingPriority="750" id="Ge3-wo-FzQ">
-                            <rect key="frame" x="30" y="14" width="28" height="23"/>
+                            <rect key="frame" x="26" y="14" width="28" height="23"/>
                             <autoresizingMask key="autoresizingMask"/>
-                            <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="cursorarrow.rays" catalog="system" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="EYc-Sr-2L8">
+                            <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="cursorarrow.rays" catalog="system" imagePosition="only" alignment="center" alternateImage="command.square" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="EYc-Sr-2L8">
                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                 <font key="font" metaFont="system"/>
                             </buttonCell>
@@ -250,6 +250,7 @@
     <resources>
         <image name="Toolbar USB" width="30" height="30"/>
         <image name="arrow.up.left.and.arrow.down.right" catalog="system" width="16" height="15"/>
+        <image name="command.square" catalog="system" width="15" height="14"/>
         <image name="cursorarrow.rays" catalog="system" width="16" height="16"/>
         <image name="folder.badge.person.crop" catalog="system" width="19" height="14"/>
         <image name="opticaldisc" catalog="system" width="15" height="15"/>

@@ -25,7 +25,7 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
     
     override func windowDidLoad() {
         mainView = VZVirtualMachineView()
-        appleView!.capturesSystemKeys = true
+        captureMouseToolbarButton.image = captureMouseToolbarButton.alternateImage // show capture keyboard image
         super.windowDidLoad()
     }
     
@@ -64,5 +64,9 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
     
     override func resizeConsoleButtonPressed(_ sender: Any) {
         updateWindowFrame()
+    }
+    
+    override func captureMouseButtonPressed(_ sender: Any) {
+        appleView!.capturesSystemKeys = captureMouseToolbarButton.state == .on
     }
 }

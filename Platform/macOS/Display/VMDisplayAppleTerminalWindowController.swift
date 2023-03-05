@@ -75,6 +75,7 @@ class VMDisplayAppleTerminalWindowController: VMDisplayAppleWindowController, VM
         serialPort.delegate = self
         super.enterLive()
         resizeConsoleToolbarItem.isEnabled = true
+        captureMouseToolbarItem.isEnabled = false
     }
     
     func sendString(_ string: String) {
