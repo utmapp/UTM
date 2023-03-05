@@ -1,7 +1,7 @@
 From 3a6ea13fd15abffea92fb866a6d2e8905a8a2f4f Mon Sep 17 00:00:00 2001
 From: osy <osy@turing.llc>
 Date: Sat, 4 Mar 2023 20:52:34 -0800
-Subject: [PATCH] osxaudio: fix race condition when removing AU callback
+Subject: [PATCH 1/2] osxaudio: fix race condition when removing AU callback
 
 If the IO thread has already entered the callback when it is being removed,
 the callback function can use memory that is being freed. We address this by
@@ -303,6 +303,271 @@ index 76b0eba32..10f5b18e4 100644
    return TRUE;
  }
  
+-- 
+2.37.1 (Apple Git-137.1)
+
+From 8a269018758b52c0df4035ef5989bc0c1f89a685 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Sun, 5 Mar 2023 01:28:03 -0800
+Subject: [PATCH 2/2] osxaudio: detect changes to default device
+
+If the user does not specify a device and we use the default device, then
+register a property listener for changes to that device and re-bind the AU.
+---
+ sys/osxaudio/gstosxaudiosink.c         |  4 ++
+ sys/osxaudio/gstosxaudiosink.h         |  1 +
+ sys/osxaudio/gstosxaudiosrc.c          |  4 ++
+ sys/osxaudio/gstosxaudiosrc.h          |  1 +
+ sys/osxaudio/gstosxcoreaudio.c         |  4 ++
+ sys/osxaudio/gstosxcoreaudio.h         |  1 +
+ sys/osxaudio/gstosxcoreaudiohal.c      | 82 ++++++++++++++++++++++++++
+ sys/osxaudio/gstosxcoreaudioremoteio.c |  6 ++
+ 8 files changed, 103 insertions(+)
+
+diff --git a/sys/osxaudio/gstosxaudiosink.c b/sys/osxaudio/gstosxaudiosink.c
+index 0e9608b69..2b2dcac57 100644
+--- a/sys/osxaudio/gstosxaudiosink.c
++++ b/sys/osxaudio/gstosxaudiosink.c
+@@ -203,6 +203,7 @@ gst_osx_audio_sink_init (GstOsxAudioSink * sink)
+   GST_DEBUG ("Initialising object");
+ 
+   sink->device_id = kAudioDeviceUnknown;
++  sink->is_default = TRUE;
+   sink->volume = DEFAULT_VOLUME;
+ }
+ 
+@@ -216,6 +217,7 @@ gst_osx_audio_sink_set_property (GObject * object, guint prop_id,
+ #ifndef HAVE_IOS
+     case ARG_DEVICE:
+       sink->device_id = g_value_get_int (value);
++      sink->is_default = FALSE;
+       break;
+ #endif
+     case ARG_VOLUME:
+@@ -502,6 +504,8 @@ gst_osx_audio_sink_create_ringbuffer (GstAudioBaseSink * sink)
+   if (ringbuffer->core_audio->device_id != osxsink->device_id)
+     ringbuffer->core_audio->device_id = osxsink->device_id;
+ 
++  ringbuffer->core_audio->is_following_default = osxsink->is_default;
++
+   return GST_AUDIO_RING_BUFFER (ringbuffer);
+ }
+ 
+diff --git a/sys/osxaudio/gstosxaudiosink.h b/sys/osxaudio/gstosxaudiosink.h
+index 2f55c4d2e..cdf9bf1f8 100644
+--- a/sys/osxaudio/gstosxaudiosink.h
++++ b/sys/osxaudio/gstosxaudiosink.h
+@@ -82,6 +82,7 @@ struct _GstOsxAudioSink
+   GstAudioBaseSink sink;
+ 
+   AudioDeviceID device_id;
++  gboolean is_default;
+ 
+   AudioUnit audiounit;
+   double volume;
+diff --git a/sys/osxaudio/gstosxaudiosrc.c b/sys/osxaudio/gstosxaudiosrc.c
+index c3c445b47..422cfaea2 100644
+--- a/sys/osxaudio/gstosxaudiosrc.c
++++ b/sys/osxaudio/gstosxaudiosrc.c
+@@ -166,6 +166,7 @@ gst_osx_audio_src_init (GstOsxAudioSrc * src)
+   gst_base_src_set_live (GST_BASE_SRC (src), TRUE);
+ 
+   src->device_id = kAudioDeviceUnknown;
++  src->is_default = TRUE;
+ }
+ 
+ static void
+@@ -177,6 +178,7 @@ gst_osx_audio_src_set_property (GObject * object, guint prop_id,
+   switch (prop_id) {
+     case ARG_DEVICE:
+       src->device_id = g_value_get_int (value);
++      src->is_default = FALSE;
+       break;
+     default:
+       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+@@ -323,6 +325,8 @@ gst_osx_audio_src_create_ringbuffer (GstAudioBaseSrc * src)
+   if (ringbuffer->core_audio->device_id != osxsrc->device_id)
+     ringbuffer->core_audio->device_id = osxsrc->device_id;
+ 
++  ringbuffer->core_audio->is_following_default = osxsrc->is_default;
++
+   return GST_AUDIO_RING_BUFFER (ringbuffer);
+ }
+ 
+diff --git a/sys/osxaudio/gstosxaudiosrc.h b/sys/osxaudio/gstosxaudiosrc.h
+index 9d825b028..0e16331ee 100644
+--- a/sys/osxaudio/gstosxaudiosrc.h
++++ b/sys/osxaudio/gstosxaudiosrc.h
+@@ -73,6 +73,7 @@ struct _GstOsxAudioSrc
+   GstAudioBaseSrc src;
+ 
+   AudioDeviceID device_id;
++  gboolean is_default;
+ };
+ 
+ struct _GstOsxAudioSrcClass
+diff --git a/sys/osxaudio/gstosxcoreaudio.c b/sys/osxaudio/gstosxcoreaudio.c
+index 4fae6aff3..0a994c4d4 100644
+--- a/sys/osxaudio/gstosxcoreaudio.c
++++ b/sys/osxaudio/gstosxcoreaudio.c
+@@ -64,6 +64,7 @@ gst_core_audio_init (GstCoreAudio * core_audio)
+   core_audio->is_passthrough = FALSE;
+   core_audio->device_id = kAudioDeviceUnknown;
+   core_audio->is_src = FALSE;
++  core_audio->is_following_default = FALSE;
+   core_audio->audiounit = NULL;
+   core_audio->cached_caps = NULL;
+   core_audio->cached_caps_valid = FALSE;
+@@ -134,6 +135,9 @@ gst_core_audio_close (GstCoreAudio * core_audio)
+ {
+   OSStatus status;
+ 
++  if (!gst_core_audio_close_impl (core_audio))
++    return FALSE;
++
+   /* Uninitialize the AudioUnit */
+   status = AudioUnitUninitialize (core_audio->audiounit);
+   if (status) {
+diff --git a/sys/osxaudio/gstosxcoreaudio.h b/sys/osxaudio/gstosxcoreaudio.h
+index 8d3f91fa7..68de91e0b 100644
+--- a/sys/osxaudio/gstosxcoreaudio.h
++++ b/sys/osxaudio/gstosxcoreaudio.h
+@@ -87,6 +87,7 @@ struct _GstCoreAudio
+ 
+   gboolean is_src;
+   gboolean is_passthrough;
++  gboolean is_following_default;
+   AudioDeviceID device_id;
+   gboolean cached_caps_valid; /* thread-safe flag */
+   GstCaps *cached_caps;
+diff --git a/sys/osxaudio/gstosxcoreaudiohal.c b/sys/osxaudio/gstosxcoreaudiohal.c
+index 79fed0d97..dbb6b89f4 100644
+--- a/sys/osxaudio/gstosxcoreaudiohal.c
++++ b/sys/osxaudio/gstosxcoreaudiohal.c
+@@ -1013,6 +1013,35 @@ _io_proc_spdif_stop (GstCoreAudio * core_audio)
+  *   Implementation    *
+  **********************/
+ 
++static OSStatus
++_default_device_changed_listener (AudioObjectID inObjectID,
++    UInt32 inNumberAddresses,
++    const AudioObjectPropertyAddress inAddresses[], void *inClientData)
++{
++  OSStatus status = noErr;
++  guint i;
++  GstCoreAudio *core_audio = inClientData;
++  AudioObjectPropertySelector prop_selector;
++  AudioDeviceID default_device_id;
++
++  prop_selector = core_audio->is_src ? kAudioHardwarePropertyDefaultInputDevice :
++    kAudioHardwarePropertyDefaultOutputDevice;
++
++  for (i = 0; i < inNumberAddresses; i++) {
++    if (inAddresses[i].mSelector == prop_selector) {
++      default_device_id = _audio_system_get_default_device (!core_audio->is_src);
++      if (default_device_id != kAudioDeviceUnknown) {
++        core_audio->device_id = default_device_id;
++        if (!gst_core_audio_bind_device (core_audio)) {
++          GST_DEBUG ("Could not bind changed default device");
++        }
++      }
++      break;
++    }
++  }
++  return (status);
++}
++
+ static gboolean
+ gst_core_audio_open_impl (GstCoreAudio * core_audio)
+ {
+@@ -1034,6 +1063,7 @@ gst_core_audio_open_impl (GstCoreAudio * core_audio)
+    */
+   ret = gst_core_audio_open_device (core_audio, kAudioUnitSubType_HALOutput,
+       "HALOutput");
++
+   if (!ret) {
+     GST_DEBUG ("Could not open device");
+     goto done;
+@@ -1045,10 +1075,62 @@ gst_core_audio_open_impl (GstCoreAudio * core_audio)
+     goto done;
+   }
+ 
++  if (core_audio->is_following_default) {
++    OSStatus status;
++    AudioObjectPropertySelector prop_selector;
++
++    prop_selector = core_audio->is_src ? kAudioHardwarePropertyDefaultInputDevice :
++      kAudioHardwarePropertyDefaultOutputDevice;
++    AudioObjectPropertyAddress propAddress = {
++      prop_selector,
++      kAudioObjectPropertyScopeGlobal,
++      kAudioObjectPropertyElementMaster
++    };
++
++    /* Install the property listener */
++    status = AudioObjectAddPropertyListener (kAudioObjectSystemObject,
++        &propAddress, _default_device_changed_listener,
++        (void *) core_audio);
++    if (status != noErr) {
++      GST_ERROR_OBJECT (core_audio->osxbuf,
++          "AudioObjectAddPropertyListener failed: %d", (int) status);
++      ret = FALSE;
++    }
++  }
++
+ done:
+   return ret;
+ }
+ 
++static gboolean
++gst_core_audio_close_impl (GstCoreAudio * core_audio)
++{
++  if (core_audio->is_following_default) {
++    OSStatus status;
++    AudioObjectPropertySelector prop_selector;
++
++    prop_selector = core_audio->is_src ? kAudioHardwarePropertyDefaultInputDevice :
++      kAudioHardwarePropertyDefaultOutputDevice;
++    AudioObjectPropertyAddress propAddress = {
++      prop_selector,
++      kAudioObjectPropertyScopeGlobal,
++      kAudioObjectPropertyElementMaster
++    };
++
++    /* Remove the property listener */
++    status = AudioObjectRemovePropertyListener (kAudioObjectSystemObject,
++        &propAddress, _default_device_changed_listener,
++        (void *) core_audio);
++    if (status != noErr) {
++      GST_ERROR_OBJECT (core_audio->osxbuf,
++          "AudioObjectRemovePropertyListener failed: %d", (int) status);
++      return FALSE;
++    }
++  }
++
++  return TRUE;
++}
++
+ static gboolean
+ gst_core_audio_start_processing_impl (GstCoreAudio * core_audio)
+ {
+diff --git a/sys/osxaudio/gstosxcoreaudioremoteio.c b/sys/osxaudio/gstosxcoreaudioremoteio.c
+index 10f5b18e4..d70910116 100644
+--- a/sys/osxaudio/gstosxcoreaudioremoteio.c
++++ b/sys/osxaudio/gstosxcoreaudioremoteio.c
+@@ -29,6 +29,12 @@ gst_core_audio_open_impl (GstCoreAudio * core_audio)
+       "RemoteIO");
+ }
+ 
++static gboolean
++gst_core_audio_close_impl (GstCoreAudio * core_audio)
++{
++  return TRUE;
++}
++
+ static gboolean
+ gst_core_audio_start_processing_impl (GstCoreAudio * core_audio)
+ {
 -- 
 2.37.1 (Apple Git-137.1)
 
