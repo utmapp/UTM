@@ -10,6 +10,7 @@
         <customObject id="-2" userLabel="File's Owner" customClass="VMDisplayWindowController" customModule="UTM" customModuleProvider="target">
             <connections>
                 <outlet property="activityIndicator" destination="Ulx-Td-rrm" id="urA-l7-PXl"/>
+                <outlet property="captureMouseToolbarButton" destination="Ge3-wo-FzQ" id="IkH-py-GRd"/>
                 <outlet property="captureMouseToolbarItem" destination="FN7-zs-mWC" id="qzI-Kk-0D1"/>
                 <outlet property="displayView" destination="M5X-Is-pc9" id="U6s-s4-48i"/>
                 <outlet property="drivesToolbarItem" destination="bKL-Th-FFw" id="3SQ-Qt-5jn"/>
@@ -147,7 +148,7 @@
                             <rect key="frame" x="30" y="14" width="28" height="23"/>
                             <autoresizingMask key="autoresizingMask"/>
                             <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="cursorarrow.rays" catalog="system" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="EYc-Sr-2L8">
-                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                 <font key="font" metaFont="system"/>
                             </buttonCell>
                             <connections>

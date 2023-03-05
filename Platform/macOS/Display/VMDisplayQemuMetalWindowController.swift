@@ -377,6 +377,8 @@ extension VMDisplayQemuMetalWindowController: VMMetalViewInputDelegate {
             self.qemuVM.requestInputTablet(false)
             self.metalView?.captureMouse()
             
+            self.captureMouseToolbarButton.state = .on
+            
             let format = NSLocalizedString("Press %@ to release cursor", comment: "VMDisplayQemuMetalWindowController")
             let keys = NSLocalizedString(self.shouldUseCmdOptForCapture ? "⌘+⌥" : "⌃+⌥", comment: "VMDisplayQemuMetalWindowController")
             self.window?.subtitle = String.localizedStringWithFormat(format, keys)
@@ -408,6 +410,7 @@ extension VMDisplayQemuMetalWindowController: VMMetalViewInputDelegate {
         syncCapsLock()
         qemuVM.requestInputTablet(true)
         metalView?.releaseMouse()
+        self.captureMouseToolbarButton.state = .off
         self.window?.subtitle = defaultSubtitle
     }
     
