@@ -48,26 +48,18 @@ jobs:
         fi
   build-sysroot:
     name: Build Sysroot
-    runs-on: ${{ matrix.runner == 'default' && fromJSON(needs.configuration.outputs.runner) || fromJSON(needs.configuration.outputs.github-runner) }}
+    runs-on: ${{ fromJSON(needs.configuration.outputs.runner) }}
     needs: configuration
     strategy:
       matrix:
         arch: [arm64, x86_64]
         platform: [ios, ios_simulator, ios-tci, macos]
-        runner: [default, github]
         exclude:
           # x86_64 does not exist on iOS
           - arch: x86_64
             platform: ios
-          # TCI does not exist for x86_64 and should not use default runner
-          - platform: ios-tci
-          # use default runner
-          - runner: github
-        include:
-          # always run iOS TCI build on GitHub Runner (Clang bug causes DOS on hosted runner)
-          - arch: arm64
+          - arch: x86_64
             platform: ios-tci
-            runner: github
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -89,7 +81,7 @@ jobs:
         run: |
           echo "/usr/local/opt/bison/bin:/opt/homebrew/opt/bison/bin" >> $GITHUB_PATH
       - name: Install Requirements
-        if: (steps.cache-sysroot.outputs.cache-hit != 'true' || github.event.inputs.rebuild_sysroot == 'true') && (matrix.runner == 'github' || needs.configuration.outputs.runner == env.RUNNER_IMAGE)
+        if: (steps.cache-sysroot.outputs.cache-hit != 'true' || github.event.inputs.rebuild_sysroot == 'true') && needs.configuration.outputs.runner == env.RUNNER_IMAGE
         run: |
           brew uninstall cmake
           brew install bison pkg-config gettext glib-utils libgpg-error nasm make meson
@@ -99,7 +91,7 @@ jobs:
         if: steps.cache-sysroot.outputs.cache-hit != 'true' || github.event.inputs.rebuild_sysroot == 'true'
         run: ./scripts/build_dependencies.sh -p ${{ matrix.platform }} -a ${{ matrix.arch }}
         env:
-           NCPU: ${{ matrix.platform == 'ios-tci' && '1' || '0' }} # limit 1 CPU for TCI build due to memory issues, 0 = unlimited for other builds
+          NCPU: ${{ matrix.platform == 'ios-tci' && '1' || '0' }} # limit 1 CPU for TCI build due to memory issues, 0 = unlimited for other builds
       - name: Compress Sysroot
         if: steps.cache-sysroot.outputs.cache-hit != 'true' || github.event_name == 'release' || github.event.inputs.test_release == 'true'
         run: tar -acf sysroot.tgz sysroot*
