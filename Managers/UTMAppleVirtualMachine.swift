@@ -72,9 +72,6 @@ import Virtualization
         let oldConfig = appleConfig
         config = UTMConfigurationWrapper(wrapping: newConfig)
         updateConfigFromRegistry()
-        if #available(macOS 12, *) {
-            newConfig.system.boot.macRecoveryIpswURL = oldConfig.system.boot.macRecoveryIpswURL
-        }
     }
     
     override func accessShortcut() async throws {
@@ -320,6 +317,10 @@ import Virtualization
         }
         changeState(.vmStarting)
         do {
+            _ = ipswUrl.startAccessingSecurityScopedResource()
+            defer {
+                ipswUrl.stopAccessingSecurityScopedResource()
+            }
             try await createAppleVM()
             #if os(macOS) && arch(arm64)
             try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
@@ -502,6 +503,12 @@ extension UTMAppleVirtualMachine {
         registryEntry.externalDrives = registryEntry.externalDrives.filter({ element in
             configDrives.contains(where: { $0.id == element.key && $0.isExternal })
         })
+        // save IPSW reference
+        if let url = appleConfig.system.boot.macRecoveryIpswURL {
+            _ = url.startAccessingSecurityScopedResource()
+            registryEntry.macRecoveryIpsw = try UTMRegistryEntry.File(url: url, isReadOnly: true)
+            url.stopAccessingSecurityScopedResource()
+        }
     }
     
     @MainActor override func updateConfigFromRegistry() {
@@ -512,6 +519,9 @@ extension UTMAppleVirtualMachine {
             if appleConfig.drives[i].isExternal {
                 appleConfig.drives[i].imageURL = registryEntry.externalDrives[id]?.url
             }
+        }
+        if let file = registryEntry.macRecoveryIpsw {
+            appleConfig.system.boot.macRecoveryIpswURL = file.url
         }
     }
 }

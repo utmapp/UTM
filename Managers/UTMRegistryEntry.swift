@@ -35,6 +35,8 @@ import Foundation
     
     @Published private var _hasMigratedConfig: Bool
     
+    @Published private var _macRecoveryIpsw: File?
+    
     private enum CodingKeys: String, CodingKey {
         case name = "Name"
         case package = "Package"
@@ -45,6 +47,7 @@ import Foundation
         case windowSettings = "WindowSettings"
         case terminalSettings = "TerminalSettings"
         case hasMigratedConfig = "MigratedConfig"
+        case macRecoveryIpsw = "MacRecoveryIpsw"
     }
     
     init(newFrom vm: UTMVirtualMachine) {
@@ -77,6 +80,7 @@ import Foundation
         _windowSettings = try container.decode([Int: Window].self, forKey: .windowSettings)
         _terminalSettings = try container.decodeIfPresent([Int: Terminal].self, forKey: .terminalSettings) ?? [:]
         _hasMigratedConfig = try container.decodeIfPresent(Bool.self, forKey: .hasMigratedConfig) ?? false
+        _macRecoveryIpsw = try container.decodeIfPresent(File.self, forKey: .macRecoveryIpsw)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -92,6 +96,7 @@ import Foundation
         if _hasMigratedConfig {
             try container.encode(_hasMigratedConfig, forKey: .hasMigratedConfig)
         }
+        try container.encodeIfPresent(_macRecoveryIpsw, forKey: .macRecoveryIpsw)
     }
     
     func asDictionary() throws -> [String: Any] {
@@ -192,6 +197,16 @@ extension UTMRegistryEntryDecodable {
         
         set {
             _hasMigratedConfig = newValue
+        }
+    }
+    
+    var macRecoveryIpsw: File? {
+        get {
+            _macRecoveryIpsw
+        }
+        
+        set {
+            _macRecoveryIpsw = newValue
         }
     }
     
