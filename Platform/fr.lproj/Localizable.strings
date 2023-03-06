@@ -180,12 +180,18 @@
 "QEMU" = "QEMU";
 "Input" = "Entrée";
 "Sharing" = "Partage";
+"Show all devices…" = "Afficher tous les appareils…";
+"Save" = "Enregistrer";
 "Devices" = "Périphériques";
 "Display" = "Affichage";
 "Serial" = "Série";
 "Network" = "Réseau";
 "Sound" = "Audio";
-"Save" = "Enregistrer";
+"Drives" = "Lecteurs";
+"Version" = "Version";
+"Build" = "Build";
+
+// VMToolbarView.swift
 "Power Off" = "Éteindre";
 "Quit" = "Quitter";
 "Pause" = "Pause";
@@ -244,7 +250,7 @@
 "Remove…" = "Supprimer…";
 "Add…" = "Ajouter…";
 "Select Shared Folder" = "Sélectionner le dossier partagé";
-"Installation: %lld%%" = "Installation : %lld%%";
+"Installation: %lld%%" = "Installation de : %lld%%";
 "Serial %lld" = "Série %lld";
 
 // Display/VMDisplayAppleDisplayWindowController.swift
@@ -252,6 +258,9 @@
 
 // Display/VMDisplayQemuDisplayController.swift
 "Disposable Mode" = "Mode jetable";
+"Suspend is not supported for virtualization." = "La suspension n'est pas prise en charge pour la virutualisation.";
+"Suspend is not supported when GPU acceleration is enabled." = "La suspension n'est pas prise en charge lorsque l'accélération avec le GPU est activée.";
+"Suspend is not supported when an emulated NVMe device is active." = "La suspension n'est pas prise en charge lorsque un appareil NVMe émulé est actif.";
 "Request power down" = "Demander un arrêt";
 "Sends power down request to the guest. This simulates pressing the power button on a PC." = "Envoie une requête d'extinction à l'invité. Cela simule un appui sur le bouton d'alimentation du PC.";
 "Force shut down" = "Forcer l'arrêt";
@@ -290,21 +299,43 @@
 // SettingsView.swift
 "Application" = "Application";
 "Keep UTM running after last window is closed and all VMs are shut down" = "Continuer d'exécuter UTM, même après que toutes les fenêtres soient fermées et les VM arrêtées";
+"Show dock icon" = "Afficher l'icône dans le dock";
+"Show menu bar icon" = "Afficher l'icône de la barre de menu";
 "VM display size is fixed" = "La taille de la fenêtre de la VM est fixe";
 "If enabled, resizing of the VM window will not be allowed." = "Si coché, il ne sera pas possible de redimensionner la fenêtre de la VM.";
 "Do not save VM screenshot to disk" = "Ne pas enregistrer de capture d'écran de la VM";
 "If enabled, any existing screenshot will be deleted the next time the VM is started." = "Si coché, toutes les captures d'écran existantes seront supprimées au prochain démarrage de la VM.";
+"QEMU Graphics Acceleration" = "Accélération graphique de QEMU";
+"Renderer Backend" = "Moteur de rendu";
+"ANGLE (OpenGL)" = "ANGLE（OpenGL）";
+"ANGLE (Metal)" = "ANGLE（Metal）";
+"By default, the best renderer for this device will be used. You can override this with to always use a specific renderer. This only applies to QEMU VMs with GPU accelerated graphics." = "Par défaut, le meilleur monteur pour cet appareil sera utilisé. Vous pouvez néanmoins forcer l'utilisation d'un moteur spécifique. Cela ne s'appliquera qu'aux VM de QEMU qui ont une accélération graphique du GPU.";
+"FPS Limit" = "Limitation de FPS";
+"If set, a frame limit can improve smoothness in rendering by preventing stutters when set to the lowest value your device can handle." = "Si défini, une limite d'image par seconde peut améliorer la fluidité du rendu en empéchant les saccades lorsque vous la réglez sur la valeur la plus basse que votre appareil peut gérer.";
+"QEMU Pointer" = "Pointeur QEMU";
 "Hold Control (⌃) for right click" = "Appuyer sur Control (⌃) pour un clic droit";
+"Invert scrolling" = "Inverser le défilement de la souris";
+"If enabled, scroll whell input will be inverted." = "Si coché, le défilement de la molette de la souris sera inversé.";
+"QEMU Keyboard" = "Clavier QEMU";
 "Use Command+Option (⌘+⌥) for input capture/release" = "Utiliser Command+Option (⌘+⌥) pour capturer ou rendre l'entrée";
 "If disabled, the default combination Control+Option (⌃+⌥) will be used." = "Si décoché, la combinaison par défaut Ctrl+Option (⌃+⌥) sera utilisée.";
 "Caps Lock (⇪) is treated as a key" = "Verrr. Maj (⇪) est considéré comme une touche";
 "If enabled, caps lock will be handled like other keys. If disabled, it is treated as a toggle that is synchronized with the host." = "Si coché, Verr Maj sera géré comme toutes les autres touches. Si décoché, il sera traité comme un bouton qui sera synchronisé avec l'hôte.";
-"Invert scrolling" = "Inverser le défilement de la souris";
-"If enabled, scroll whell input will be inverted." = "Si coché, le défilement de la molette de la souris sera inversé.";
+"QEMU USB" = "QEMU USB";
 "Do not show prompt when USB device is plugged in" = "Ne pas afficher de message lorsqu'un périphérique USB est connecté";
 
 // UTMDataExtension.swift
 "This virtual machine cannot be run on this machine." = "Cette machine virtuelle ne peut pas être exécutée sur cette machine.";
+
+// UTMMenuBarExtraScene.swift
+"Show UTM" = "Afficher UTM";
+"Show the main window." = "Afficher la fenêtre principale.";
+"Hide dock icon on next launch" = "Masque l'icône dans le dock au prochain démarrage";
+"Requires restarting UTM to take affect." = "Vous devez redémarrer UTM pour que cela prenne effet.";
+"No virtual machines found." = "Aucune machine virtuelle trouvée.";
+"Terminate UTM and stop all running VMs." = "Quitte UTM et arrête toutes les VM en cours d'exécution.";
+"Suspend" = "Suspendre";
+"Busy…" = "Occupé…";
 
 // VMConfigAppleBootView.swift
 "Operating System" = "Système d'exploitation";
@@ -326,6 +357,8 @@
 
 // VMConfigAppleDisplayView.swift
 "Resolution" = "Résolution";
+"Width" = "Largeur";
+"Height" = "Hauteur";
 "HiDPI (Retina)" = "HiDPI（Retina）";
 "Only available on macOS virtual machines." = "Uniquement disponible sur les machines virtuelles macOS.";
 
@@ -377,6 +410,7 @@
 "Enable Entropy Device" = "Activer l'appareil Entropy";
 "Enable Sound" = "Activer l'audio";
 "Enable Keyboard" = "Activer le clavier";
+"Enable Pointer" = "Activer le pointeur (souris)";
 "Pointer" = "Pointeur";
 "Enable Rosetta on Linux (x86_64 Emulation)" = "Active Rosetta sur Linux (émulation x86_64)";
 "If enabled, a virtiofs share tagged 'rosetta' will be available on the Linux guest for installing Rosetta for emulating x86_64 on ARM64." = "Si coché, un partage virtiofs tagué 'rosetta' sera disponible pour l'invité Linux pour installer Roserra pour émuler le x86_64 sur ARM64.";
@@ -447,6 +481,8 @@
 // VMConfigDisplayView.swift
 "Hardware" = "Matériel";
 "Emulated Display Card" = "Carte graphique émulée";
+"GPU Acceleration Supported" = "Accélération du GPU prise en charge";
+"Guest drivers are required for 3D acceleration." = "Les drivers pour l'invités sont requis pour l'accélération 3D.";
 "VGA Device RAM (MB)" = "Mémoire RAM de la carte VGA (en MB)";
 "Auto Resolution" = "Résolution automatique";
 "Resize display to window size automatically" = "Changer automatiquement la résolution en fonction de la taille de la fenêtre";
@@ -578,9 +614,10 @@
 "JIT Cache" = "Cache du JIT";
 "Default is 1/4 of the RAM size (above). The JIT cache size is additive to the RAM size in the total memory usage!" = "1/4 de la RAM est utilisé par défaut (ci-dessus). La taille du cache JIT s'ajoute à la taille de la RAM utilisée !";
 "Reset" = "Réinitialiser";
-"Allocating too much memory will crash the VM. Your device has %llu MB of memory and the estimated usage is %llu MB." = "La VM va planter si vous allouez trop de mémoire. Votre appareil a %llu Mio de mmoire et l'utilisation est estimée à %llu Mio.";
+"Allocating too much memory will crash the VM." = "La VM va planter si vous allouez trop de mémoire.";
 "This change will reset all settings" = "Ce changement réinitialisera tous les réglages";
-"Are you sure you want to reset this VM? Any unsaved changes will be lost." = "Êtes-vous sûr de vouloir réinitialiser cette VM ? Tout changement apporté sera perdu.";
+"Your device has %llu MB of memory and the estimated usage is %llu MB." = "Votre appareil a %llu Mio de mmoire et l'utilisation est estimée à %llu Mio.";
+"Any unsaved changes will be lost." = "Tout changement apporté sera perdu.";
 "Architecture" = "Architecture";
 "The selected architecture is unsupported in this version of UTM." = "L'architecture sélectionnée n'est pas disponible dans cette version d'UTM.";
 "Hide Unused…" = "Masquer non-inutilisés…";
@@ -663,7 +700,7 @@
 "Specify the size of the drive where data will be stored into." = "Définissez la taille du lecteur dans lequel seront enregistrées les données.";
 
 // VMWizardHardwareView.swift
-"Enable hardware OpenGL acceleration" = "Activer l'accélération matérielle OpenGL";
+"Enable hardware OpenGL acceleration (experimental)" = "Activer l'accélération matérielle OpenGL (expérimental)";
 "Hardware OpenGL Acceleration" = "Accélération matérielle OpenGL";
 
 // VMWizardOSLinuxView.swift
@@ -791,6 +828,13 @@
 "Failed to decode JitStreamer response." = "Impossible de décoder la réponse de JitStreamer";
 "Failed to attach to JitStreamer." = "Impossible de s'attacher à JitStreamer.";
 "Invalid JitStreamer attach URL:\n%@" = "Attache de JitStreamer non valide :\n%@";
+
+
+/* Scripting */
+
+// UTMScriptingVirtualMachineImpl.swift
+"Operation not available." = "Opération non disponible.";
+"Operation not supported by the backend." = "Opération non prise en charge par le moteur.";
 
 
 /* No comment provided by engineer. -----------------------------------------*/
