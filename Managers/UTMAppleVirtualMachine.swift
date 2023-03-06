@@ -340,8 +340,8 @@ import Virtualization
             throw UTMAppleVirtualMachineError.operatingSystemInstallNotSupported
             #endif
         } catch {
-            changeState(.vmStopped)
             delegate?.virtualMachine?(self, didCompleteInstallation: false)
+            changeState(.vmStopped)
             throw error
         }
     }
