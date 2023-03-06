@@ -14,6 +14,8 @@
 // limitations under the License.
 //
 
+import IOKit.pwr_mgt
+
 class VMDisplayWindowController: NSWindowController {
     
     @IBOutlet weak var displayView: NSView!
@@ -41,6 +43,9 @@ class VMDisplayWindowController: NSWindowController {
     var onClose: ((Notification) -> Void)?
     private(set) var secondaryWindows: [VMDisplayWindowController] = []
     private(set) weak var primaryWindow: VMDisplayWindowController?
+    private var preventIdleSleepAssertion: IOPMAssertionID?
+    
+    @Setting("PreventIdleSleep") private var isPreventIdleSleep: Bool = false
     
     var isSecondary: Bool {
         primaryWindow != nil
@@ -145,6 +150,16 @@ class VMDisplayWindowController: NSWindowController {
         resizeConsoleToolbarItem.isEnabled = true
         windowsToolbarItem.isEnabled = true
         window!.makeFirstResponder(displayView.subviews.first)
+        if isPreventIdleSleep && !isSecondary {
+            var preventIdleSleepAssertion: IOPMAssertionID = .zero
+            let success = IOPMAssertionCreateWithName(kIOPMAssertPreventUserIdleSystemSleep as CFString,
+                                                      IOPMAssertionLevel(kIOPMAssertionLevelOn),
+                                                      "UTM Virtual Machine Running" as CFString,
+                                                      &preventIdleSleepAssertion)
+            if success == kIOReturnSuccess {
+                self.preventIdleSleepAssertion = preventIdleSleepAssertion
+            }
+        }
     }
     
     func enterSuspended(isBusy busy: Bool) {
@@ -173,6 +188,9 @@ class VMDisplayWindowController: NSWindowController {
         usbToolbarItem.isEnabled = false
         windowsToolbarItem.isEnabled = false
         window!.makeFirstResponder(nil)
+        if let preventIdleSleepAssertion = preventIdleSleepAssertion {
+            IOPMAssertionRelease(preventIdleSleepAssertion)
+        }
     }
     
     // MARK: - Alert
@@ -248,6 +266,9 @@ extension VMDisplayWindowController: NSWindowDelegate {
         }
         secondaryWindows.forEach { secondaryWindow in
             secondaryWindow.close()
+        }
+        if let preventIdleSleepAssertion = preventIdleSleepAssertion {
+            IOPMAssertionRelease(preventIdleSleepAssertion)
         }
         onClose?(notification)
     }

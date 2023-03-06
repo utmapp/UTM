@@ -41,6 +41,7 @@ struct ApplicationSettingsView: View {
     @AppStorage("KeepRunningAfterLastWindowClosed") var isKeepRunningAfterLastWindowClosed = false
     @AppStorage("HideDockIcon") var isDockIconHidden = false
     @AppStorage("ShowMenuIcon") var isMenuIconShown = false
+    @AppStorage("PreventIdleSleep") var isPreventIdleSleep = false
     
     var body: some View {
         Form {
@@ -60,6 +61,9 @@ struct ApplicationSettingsView: View {
                     Text("Show menu bar icon")
                 }).disabled(isDockIconHidden)
             }
+            Toggle(isOn: $isPreventIdleSleep, label: {
+                Text("Prevent system from sleeping when any VM is running")
+            })
         }
     }
 }
@@ -143,6 +147,7 @@ extension UserDefaults {
     @objc dynamic var KeepRunningAfterLastWindowClosed: Bool { false }
     @objc dynamic var ShowMenuIcon: Bool { false }
     @objc dynamic var HideDockIcon: Bool { false }
+    @objc dynamic var PreventIdleSleep: Bool { false }
     @objc dynamic var NoCursorCaptureAlert: Bool { false }
     @objc dynamic var DisplayFixed: Bool { false }
     @objc dynamic var CtrlRightClick: Bool { false }

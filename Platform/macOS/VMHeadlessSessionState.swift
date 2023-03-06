@@ -15,6 +15,7 @@
 //
 
 import Foundation
+import IOKit.pwr_mgt
 
 /// Represents the UI state for a single headless VM session.
 @MainActor class VMHeadlessSessionState: NSObject, ObservableObject {
@@ -26,6 +27,9 @@ import Foundation
     @Published var fatalError: String?
     
     private var hasStarted: Bool = false
+    private var preventIdleSleepAssertion: IOPMAssertionID?
+    
+    @Setting("PreventIdleSleep") private var isPreventIdleSleep: Bool = false
     
     init(for vm: UTMVirtualMachine, onStop: ((Notification) -> Void)?) {
         self.vm = vm
@@ -67,10 +71,23 @@ extension VMHeadlessSessionState: UTMVirtualMachineDelegate {
 extension VMHeadlessSessionState {
     private func didStart() {
         NotificationCenter.default.post(name: .vmSessionCreated, object: nil, userInfo: ["Session": self])
+        if isPreventIdleSleep {
+            var preventIdleSleepAssertion: IOPMAssertionID = .zero
+            let success = IOPMAssertionCreateWithName(kIOPMAssertPreventUserIdleSystemSleep as CFString,
+                                                      IOPMAssertionLevel(kIOPMAssertionLevelOn),
+                                                      "UTM Virtual Machine Background" as CFString,
+                                                      &preventIdleSleepAssertion)
+            if success == kIOReturnSuccess {
+                self.preventIdleSleepAssertion = preventIdleSleepAssertion
+            }
+        }
     }
     
     private func didStop() {
         NotificationCenter.default.post(name: .vmSessionEnded, object: nil, userInfo: ["Session": self])
+        if let preventIdleSleepAssertion = preventIdleSleepAssertion {
+            IOPMAssertionRelease(preventIdleSleepAssertion)
+        }
     }
 }
 
