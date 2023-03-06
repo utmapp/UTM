@@ -129,6 +129,7 @@ import Virtualization
             }
             changeState(.vmStarted)
         } catch {
+            await stopAccesingResources()
             changeState(.vmStopped)
             throw error
         }
