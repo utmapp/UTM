@@ -46,6 +46,7 @@ class VMDisplayWindowController: NSWindowController {
     private var preventIdleSleepAssertion: IOPMAssertionID?
     
     @Setting("PreventIdleSleep") private var isPreventIdleSleep: Bool = false
+    @Setting("NoQuitConfirmation") private var isNoQuitConfirmation: Bool = false
     
     var isSecondary: Bool {
         primaryWindow != nil
@@ -243,15 +244,22 @@ extension VMDisplayWindowController: NSWindowDelegate {
         guard !(vm.state == .vmStopped || (vm.state == .vmPaused && vm.hasSaveState)) else {
             return true
         }
+        guard !isNoQuitConfirmation else {
+            return true
+        }
         let alert = NSAlert()
         alert.alertStyle = .informational
         alert.messageText = NSLocalizedString("Confirmation", comment: "VMDisplayWindowController")
         alert.informativeText = NSLocalizedString("Closing this window will kill the VM.", comment: "VMQemuDisplayMetalWindowController")
         alert.addButton(withTitle: NSLocalizedString("OK", comment: "VMDisplayWindowController"))
         alert.addButton(withTitle: NSLocalizedString("Cancel", comment: "VMDisplayWindowController"))
+        alert.showsSuppressionButton = true
         alert.beginSheetModal(for: sender) { response in
             switch response {
             case .alertFirstButtonReturn:
+                if alert.suppressionButton?.state == .on {
+                    self.isNoQuitConfirmation = true
+                }
                 sender.close()
             default:
                 return

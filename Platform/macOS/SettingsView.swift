@@ -42,6 +42,7 @@ struct ApplicationSettingsView: View {
     @AppStorage("HideDockIcon") var isDockIconHidden = false
     @AppStorage("ShowMenuIcon") var isMenuIconShown = false
     @AppStorage("PreventIdleSleep") var isPreventIdleSleep = false
+    @AppStorage("NoQuitConfirmation") var isNoQuitConfirmation = false
     
     var body: some View {
         Form {
@@ -64,6 +65,9 @@ struct ApplicationSettingsView: View {
             Toggle(isOn: $isPreventIdleSleep, label: {
                 Text("Prevent system from sleeping when any VM is running")
             })
+            Toggle(isOn: $isNoQuitConfirmation, label: {
+                Text("Do not show confirmation when closing a running VM")
+            }).help("Closing a VM without properly shutting it down could result in data loss.")
         }
     }
 }
@@ -148,6 +152,7 @@ extension UserDefaults {
     @objc dynamic var ShowMenuIcon: Bool { false }
     @objc dynamic var HideDockIcon: Bool { false }
     @objc dynamic var PreventIdleSleep: Bool { false }
+    @objc dynamic var NoQuitConfirmation: Bool { false }
     @objc dynamic var NoCursorCaptureAlert: Bool { false }
     @objc dynamic var DisplayFixed: Bool { false }
     @objc dynamic var CtrlRightClick: Bool { false }

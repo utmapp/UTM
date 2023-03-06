@@ -19,6 +19,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     @Setting("KeepRunningAfterLastWindowClosed") private var isKeepRunningAfterLastWindowClosed: Bool = false
     @Setting("HideDockIcon") private var isDockIconHidden: Bool = false
+    @Setting("NoQuitConfirmation") private var isNoQuitConfirmation: Bool = false
     
     private var hasRunningVirtualMachines: Bool {
         guard let vmList = data?.vmWindows.keys else {
@@ -56,6 +57,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         guard let data = data else {
             return .terminateNow
         }
+        guard !isNoQuitConfirmation else {
+            return .terminateNow
+        }
 
         let vmList = data.vmWindows.keys
         if hasRunningVirtualMachines { // There is at least 1 running VM
@@ -66,9 +70,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 alert.informativeText = NSLocalizedString("Quitting UTM will kill all running VMs.", comment: "VMQemuDisplayMetalWindowController")
                 alert.addButton(withTitle: NSLocalizedString("OK", comment: "VMDisplayWindowController"))
                 alert.addButton(withTitle: NSLocalizedString("Cancel", comment: "VMDisplayWindowController"))
+                alert.showsSuppressionButton = true
                 let confirm = { (response: NSApplication.ModalResponse) in
                     switch response {
                     case .alertFirstButtonReturn:
+                        if alert.suppressionButton?.state == .on {
+                            self.isNoQuitConfirmation = true
+                        }
                         NSApplication.shared.reply(toApplicationShouldTerminate: true)
                     default:
                         NSApplication.shared.reply(toApplicationShouldTerminate: false)
