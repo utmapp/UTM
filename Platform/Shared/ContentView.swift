@@ -15,6 +15,7 @@
 //
 
 import SwiftUI
+import UniformTypeIdentifiers
 #if !os(macOS)
 import IQKeyboardManagerSwift
 #endif
@@ -51,6 +52,7 @@ struct ContentView: View {
                 openSheetPresented = true
             }
         }.fileImporter(isPresented: $openSheetPresented, allowedContentTypes: [.UTM, .UTMextension], allowsMultipleSelection: true, onCompletion: selectImportedUTM)
+        .onDrop(of: [.fileURL], delegate: self)
         .onAppear {
             Task {
                 await data.listRefresh()
@@ -174,6 +176,47 @@ struct ContentView: View {
                 return
             }
         }
+    }
+}
+
+extension ContentView: DropDelegate {
+    func validateDrop(info: DropInfo) -> Bool {
+        !urlsFrom(info: info).isEmpty
+    }
+    
+    func performDrop(info: DropInfo) -> Bool {
+        data.busyWorkAsync {
+            for url in await urlsFrom(info: info) {
+                
+                try await data.importUTM(from: url)
+            }
+        }
+        return true
+    }
+    
+    private func urlsFrom(info: DropInfo) -> [URL] {
+        let providers = info.itemProviders(for: [.fileURL])
+
+        var validURLs: [URL] = []
+
+        let group = DispatchGroup()
+
+        providers.forEach { provider in
+            group.enter()
+            _ = provider.loadDataRepresentation(forTypeIdentifier: UTType.fileURL.identifier) { (data, error) in
+                if let data = data {
+                    let url = URL(dataRepresentation: data, relativeTo: nil)
+                    if url?.pathExtension == "utm" {
+                        validURLs.append(url!)
+                    }
+                }
+                group.leave()
+            }
+        }
+        
+        group.wait()
+
+        return validURLs
     }
 }
 
