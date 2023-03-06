@@ -102,8 +102,9 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
     
     override func virtualMachine(_ vm: UTMVirtualMachine, didTransitionTo state: UTMVMState) {
         super.virtualMachine(vm, didTransitionTo: state)
-        if #available(macOS 12, *), state == .vmStopped && isInstalling {
-            didFinishInstallation()
+        if state == .vmStopped && isInstalling {
+            isInstalling = false
+            vm.requestVmStart()
         }
     }
     
@@ -246,26 +247,25 @@ extension VMDisplayAppleWindowController {
 }
 
 extension VMDisplayAppleWindowController {
-    func didFinishInstallation() {
+    func virtualMachine(_ vm: UTMVirtualMachine, didCompleteInstallation success: Bool) {
         DispatchQueue.main.async {
-            self.isInstalling = false
-            // delete IPSW setting
-            self.enterSuspended(isBusy: true)
-            self.appleConfig.system.boot.macRecoveryIpswURL = nil
-            // start VM
-            self.vm.requestVmStart()
+            self.window!.subtitle = ""
+            if success {
+                // delete IPSW setting
+                self.enterSuspended(isBusy: true)
+                self.appleConfig.system.boot.macRecoveryIpswURL = nil
+                self.appleVM.registryEntry.macRecoveryIpsw = nil
+            } else {
+                self.isInstalling = false
+            }
         }
     }
     
     func virtualMachine(_ vm: UTMVirtualMachine, didUpdateInstallationProgress progress: Double) {
         DispatchQueue.main.async {
-            if progress >= 1 {
-                self.window!.subtitle = ""
-            } else {
-                let installationFormat = NSLocalizedString("Installation: %@", comment: "VMDisplayAppleWindowController")
-                let percentString = NumberFormatter.localizedString(from: progress as NSNumber, number: .percent)
-                self.window!.subtitle = String.localizedStringWithFormat(installationFormat, percentString)
-            }
+            let installationFormat = NSLocalizedString("Installation: %@", comment: "VMDisplayAppleWindowController")
+            let percentString = NumberFormatter.localizedString(from: progress as NSNumber, number: .percent)
+            self.window!.subtitle = String.localizedStringWithFormat(installationFormat, percentString)
         }
     }
 }

@@ -55,6 +55,11 @@ typedef NS_ENUM(NSUInteger, UTMVMState) {
 /// @param progress Number between 0.0 and 1.0 indiciating installation progress
 - (void)virtualMachine:(UTMVirtualMachine *)vm didUpdateInstallationProgress:(double)progress;
 
+/// Called when VM successfully completes installation
+/// @param vm Virtual machine
+/// @param success True if installation is successful
+- (void)virtualMachine:(UTMVirtualMachine *)vm didCompleteInstallation:(BOOL)success;
+
 @end
 
 NS_ASSUME_NONNULL_END

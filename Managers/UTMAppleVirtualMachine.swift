@@ -318,24 +318,31 @@ import Virtualization
             return
         }
         changeState(.vmStarting)
-        try await createAppleVM()
-        #if os(macOS) && arch(arm64)
-        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-            vmQueue.async {
-                let installer = VZMacOSInstaller(virtualMachine: self.apple, restoringFromImageAt: ipswUrl)
-                self.progressObserver = installer.progress.observe(\.fractionCompleted, options: [.initial, .new]) { progress, change in
-                    self.delegate?.virtualMachine?(self, didUpdateInstallationProgress: progress.fractionCompleted)
-                }
-                installer.install { result in
-                    continuation.resume(with: result)
+        do {
+            try await createAppleVM()
+            #if os(macOS) && arch(arm64)
+            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+                vmQueue.async {
+                    let installer = VZMacOSInstaller(virtualMachine: self.apple, restoringFromImageAt: ipswUrl)
+                    self.progressObserver = installer.progress.observe(\.fractionCompleted, options: [.initial, .new]) { progress, change in
+                        self.delegate?.virtualMachine?(self, didUpdateInstallationProgress: progress.fractionCompleted)
+                    }
+                    installer.install { result in
+                        continuation.resume(with: result)
+                    }
                 }
             }
+            changeState(.vmStarted)
+            progressObserver = nil
+            delegate?.virtualMachine?(self, didCompleteInstallation: true)
+            #else
+            throw UTMAppleVirtualMachineError.operatingSystemInstallNotSupported
+            #endif
+        } catch {
+            changeState(.vmStopped)
+            delegate?.virtualMachine?(self, didCompleteInstallation: false)
+            throw error
         }
-        changeState(.vmStarted)
-        progressObserver = nil
-        #else
-        changeState(.vmStopped)
-        #endif
     }
     
     @available(macOS 12, *)
@@ -452,6 +459,7 @@ protocol UTMScreenshotProvider: AnyObject {
 
 enum UTMAppleVirtualMachineError: Error {
     case cannotAccessResource(URL)
+    case operatingSystemInstallNotSupported
 }
 
 extension UTMAppleVirtualMachineError: LocalizedError {
@@ -459,6 +467,8 @@ extension UTMAppleVirtualMachineError: LocalizedError {
         switch self {
         case .cannotAccessResource(let url):
             return String.localizedStringWithFormat(NSLocalizedString("Cannot access resource: %@", comment: "UTMAppleVirtualMachine"), url.path)
+        case .operatingSystemInstallNotSupported:
+            return NSLocalizedString("The operating system cannot be installed on this machine.", comment: "UTMAppleVirtualMachine")
         }
     }
 }
