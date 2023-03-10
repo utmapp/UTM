@@ -332,6 +332,10 @@ import Foundation
             if system.architecture == .aarch64 && !isHypervisorUsed {
                 properties = properties.appendingDefaultPropertyName("virtualization", value: "on")
             }
+            // required for > 8 CPUs
+            if system.architecture == .aarch64 && emulatedCpuCount.0 > 8 {
+                properties = properties.appendingDefaultPropertyName("gic-version", value: "3")
+            }
         }
         if target == "mac99" {
             properties = properties.appendingDefaultPropertyName("via", value: "pmu")
