@@ -392,24 +392,32 @@ import Foundation
         Bundle.main.url(forResource: "qemu", withExtension: nil)!
     }
     
+    private var useCoreAudioBackend: Bool {
+        #if os(iOS)
+        return false
+        #else
+        // force CoreAudio backend for mac99 which only supports 44100 Hz
+        return sound.contains(where: { $0.hardware.rawValue == "screamer" })
+        #endif
+    }
+    
     @QEMUArgumentBuilder private var soundArguments: [QEMUArgument] {
+        f("-audiodev")
+        if useCoreAudioBackend {
+            "coreaudio"
+        } else {
+            "spice"
+        }
+        f("id=audio0")
         for _sound in sound {
-            if _sound.hardware.rawValue == "screamer" {
-                #if !os(iOS)
-                // force CoreAudio backend for mac99 which only supports 44100 Hz
-                f("-audiodev")
-                f("coreaudio,id=audio0")
-                // no device setting for screamer
-                #endif
-            } else {
-                f("-device")
-                _sound.hardware
+            f("-device")
+            _sound.hardware
+            if _sound.hardware.rawValue.contains("hda") {
                 f()
-                if _sound.hardware.rawValue.contains("hda") {
-                    f("-device")
-                    f("hda-duplex")
-                }
+                f("-device")
+                "hda-duplex"
             }
+            f("audiodev=audio0")
         }
     }
     
