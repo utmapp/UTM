@@ -396,11 +396,13 @@ enum VMWizardOS: String, Identifiable {
                 var kernel = UTMQemuConfigurationDrive()
                 kernel.imageURL = linuxKernelURL
                 kernel.imageType = .linuxKernel
+                kernel.isRawImage = true
                 config.drives.append(kernel)
                 if let linuxInitialRamdiskURL = linuxInitialRamdiskURL {
                     var initrd = UTMQemuConfigurationDrive()
                     initrd.imageURL = linuxInitialRamdiskURL
                     initrd.imageType = .linuxInitrd
+                    initrd.isRawImage = true
                     config.drives.append(initrd)
                 }
                 if let linuxRootImageURL = linuxRootImageURL {

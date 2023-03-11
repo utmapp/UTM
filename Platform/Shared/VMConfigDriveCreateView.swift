@@ -25,6 +25,7 @@ struct VMConfigDriveCreateView: View {
                 Text("Removable")
             }).onChange(of: config.isExternal) { removable in
                 config.imageType = removable ? .cd : .disk
+                config.isRawImage = removable
                 if let defaultInterfaceForImageType = config.defaultInterfaceForImageType {
                     config.interface = defaultInterfaceForImageType(config.imageType)
                 }
