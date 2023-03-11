@@ -101,6 +101,7 @@ struct UTMQemuConfigurationDrive: UTMConfigurationDrive {
         id.hash(into: &hasher)
         imageType.hash(into: &hasher)
         interface.hash(into: &hasher)
+        isRawImage.hash(into: &hasher)
     }
     
     func clone() -> UTMQemuConfigurationDrive {
