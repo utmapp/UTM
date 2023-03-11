@@ -587,10 +587,12 @@ remove_shared_gst_plugins () {
 
 generate_qapi () {
     DIR="$1"
+    GA_APIS="$DIR/qga/qapi-schema.json"
     APIS="$DIR/qapi/qapi-schema.json"
 
     echo "${GREEN}Generating qapi sources from ${APIS}...${NC}"
     python3 "$BASEDIR/qapi-gen.py" -b -o "$SYSROOT_DIR/qapi" "$APIS"
+    python3 "$BASEDIR/qapi-gen.py" -p 'qga-' -o "$SYSROOT_DIR/qga" "$GA_APIS"
 }
 
 # parse args
