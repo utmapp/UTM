@@ -16,7 +16,7 @@
 
 #import <Foundation/Foundation.h>
 #import "UTMJSONStreamDelegate.h"
-#import "UTMQemuManagerDelegate.h"
+#import "UTMQemuMonitorDelegate.h"
 
 @class UTMJSONStream;
 @class CSPort;
@@ -26,25 +26,10 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UTMQemuManager : NSObject<UTMJSONStreamDelegate>
 
 @property (nonatomic, readonly) UTMJSONStream *jsonStream;
-@property (nonatomic, weak) id<UTMQemuManagerDelegate> delegate;
 @property (nonatomic, readonly) BOOL isConnected;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithPort:(CSPort *)port NS_DESIGNATED_INITIALIZER;
-
-- (BOOL)qmpEnterCommandModeWithError:(NSError * _Nullable __autoreleasing *)error;
-- (BOOL)continueBootWithError:(NSError * _Nullable __autoreleasing *)error;
-
-- (void)qemuPowerDownWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion;
-- (void)qemuResetWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion;
-- (void)qemuStopWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion;
-- (void)qemuResumeWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion;
-- (void)qemuQuitWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion;
-- (void)qemuSaveStateWithCompletion:(void (^ _Nullable)(NSString * _Nullable, NSError * _Nullable))completion snapshotName:(NSString *)name;
-- (void)qemuDeleteStateWithCompletion:(void (^)(NSString * _Nullable, NSError * _Nullable))completion snapshotName:(NSString *)name;
-
-- (void)mouseIndexForAbsolute:(BOOL)absolute withCompletion:(void (^)(int64_t, NSError * _Nullable))completion;
-- (void)mouseSelect:(int64_t)index withCompletion:(void (^)(NSString * _Nullable, NSError * _Nullable))completion;
 
 @end
 

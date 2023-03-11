@@ -16,7 +16,7 @@
 
 #import "UTMQemuVirtualMachine+SPICE.h"
 #import "UTMLogging.h"
-#import "UTMQemuManager.h"
+#import "UTMQemuMonitor.h"
 #import "UTMSpiceIO.h"
 #import "UTMJailbreak.h"
 #import "UTM-Swift.h"
@@ -28,7 +28,7 @@
 
 @interface UTMQemuVirtualMachine ()
 
-@property (nonatomic, readonly, nullable) UTMQemuManager *qemu;
+@property (nonatomic, readonly, nullable) UTMQemuMonitor *qemu;
 @property (nonatomic, readonly, nullable) UTMSpiceIO *ioService;
 @property (nonatomic) BOOL changeCursorRequestInProgress;
 
@@ -39,7 +39,7 @@
 #pragma mark - Input device switching
 
 - (void)requestInputTablet:(BOOL)tablet {
-    UTMQemuManager *qemu;
+    UTMQemuMonitor *qemu;
     @synchronized (self) {
         qemu = self.qemu;
         if (self.changeCursorRequestInProgress || !qemu) {

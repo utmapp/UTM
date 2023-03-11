@@ -16,7 +16,7 @@
 
 #import <glib.h>
 #import "UTMSpiceIO.h"
-#import "UTMQemuManager.h"
+#import "UTMQemuMonitor.h"
 #import "UTMLogging.h"
 #import "UTM-Swift.h"
 
@@ -43,7 +43,7 @@ extern NSString *const kUTMErrorDomain;
 @property (nonatomic, readwrite) BOOL isConnected;
 @property (nonatomic) dispatch_queue_t connectQueue;
 @property (nonatomic, nullable) void (^connectAttemptCallback)(void);
-@property (nonatomic, nullable) void (^connectFinishedCallback)(UTMQemuManager *, CSConnectionError, NSError * _Nullable);
+@property (nonatomic, nullable) void (^connectFinishedCallback)(UTMQemuMonitor *, CSConnectionError, NSError * _Nullable);
 
 @end
 
@@ -104,14 +104,14 @@ extern NSString *const kUTMErrorDomain;
     __weak typeof(self) weakSelf = self;
     __block int attemptsLeft = kMaxSpiceStartAttempts;
     dispatch_async(self.connectQueue, ^{
-        self.connectFinishedCallback = ^(UTMQemuManager *manager, CSConnectionError code, NSError *error) {
+        self.connectFinishedCallback = ^(UTMQemuMonitor *monitor, CSConnectionError code, NSError *error) {
             typeof(self) _self = weakSelf;
             if (!_self) {
                 return;
             }
-            if (manager) {
+            if (monitor) {
                 _self.connectAttemptCallback = nil;
-                block(manager, nil);
+                block(monitor, nil);
             } else if (_self.connectAttemptCallback && code == kCSConnectionErrorConnect && attemptsLeft --> 0) {
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, kSpiceStartRetryTimeout), _self.connectQueue, _self.connectAttemptCallback);
             } else {
@@ -228,10 +228,10 @@ extern NSString *const kUTMErrorDomain;
 
 - (void)spiceForwardedPortOpened:(CSConnection *)connection port:(CSPort *)port {
     if ([port.name isEqualToString:@"org.qemu.monitor.qmp.0"]) {
-        UTMQemuManager *manager = [[UTMQemuManager alloc] initWithPort:port];
+        UTMQemuMonitor *monitor = [[UTMQemuMonitor alloc] initWithPort:port];
         dispatch_async(self.connectQueue, ^{
             if (self.connectFinishedCallback) {
-                self.connectFinishedCallback(manager, 0, nil);
+                self.connectFinishedCallback(monitor, 0, nil);
             }
         });
     }

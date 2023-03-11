@@ -23,9 +23,9 @@
 #endif
 
 @class UTMConfigurationWrapper;
-@class UTMQemuManager;
+@class UTMQemuMonitor;
 
-typedef void (^ioConnectCompletionHandler_t)(UTMQemuManager * _Nullable, NSError * _Nullable);
+typedef void (^ioConnectCompletionHandler_t)(UTMQemuMonitor * _Nullable, NSError * _Nullable);
 
 NS_ASSUME_NONNULL_BEGIN
 

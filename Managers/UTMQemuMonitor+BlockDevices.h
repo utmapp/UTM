@@ -1,5 +1,5 @@
 //
-// Copyright © 2022 osy. All rights reserved.
+// Copyright © 2020 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,19 +14,16 @@
 // limitations under the License.
 //
 
-#import "UTMQemuVirtualMachine.h"
-
-@class UTMQemu;
-@class UTMQemuMonitor;
-@class UTMSpiceIO;
+#import "UTMQemuMonitor.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMQemuVirtualMachine (Protected)
+@interface UTMQemuMonitor (BlockDevices)
 
-@property (nonatomic, readonly, nullable) UTMQemuMonitor *qemu;
-@property (nonatomic, readonly, nullable) UTMQemu *system;
-@property (nonatomic, readonly, nullable) UTMSpiceIO *ioService;
+@property (nonatomic, readonly, nullable) NSDictionary<NSString *, NSString *> *removableDrives;
+
+- (BOOL)ejectDrive:(NSString *)drive force:(BOOL)force error:(NSError * _Nullable *)error;
+- (BOOL)changeMediumForDrive:(NSString *)drive path:(NSString *)path error:(NSError * _Nullable *)error;
 
 @end
 

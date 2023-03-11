@@ -14,18 +14,13 @@
 // limitations under the License.
 //
 
-#import "UTMQemuManager+BlockDevices.h"
+#import "UTMQemuMonitor+BlockDevices.h"
+#import "UTMQemuManager-Protected.h"
 #import "UTMLogging.h"
 #import "qapi-commands.h"
 #import "error.h"
 
-@interface UTMQemuManager ()
-
-- (__autoreleasing NSError *)errorForQerror:(Error *)qerr;
-
-@end
-
-@implementation UTMQemuManager (BlockDevices)
+@implementation UTMQemuMonitor (BlockDevices)
 
 - (NSDictionary<NSString *, NSString *> *)removableDrives {
     if (!self.isConnected) {

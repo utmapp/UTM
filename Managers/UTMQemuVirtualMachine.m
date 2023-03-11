@@ -18,10 +18,10 @@
 #import "UTMVirtualMachine-Protected.h"
 #import "UTMVirtualMachine-Private.h"
 #import "UTMLoggingDelegate.h"
-#import "UTMQemuManagerDelegate.h"
+#import "UTMQemuMonitorDelegate.h"
 #import "UTMQemuVirtualMachine.h"
 #import "UTMQemuVirtualMachine+SPICE.h"
-#import "UTMQemuManager.h"
+#import "UTMQemuMonitor.h"
 #import "UTMQemuSystem.h"
 #import "UTMSpiceIO.h"
 #import "UTMLogging.h"
@@ -33,9 +33,9 @@ const int64_t kStopTimeout = (int64_t)30*NSEC_PER_SEC;
 extern NSString *const kUTMBundleConfigFilename;
 NSString *const kSuspendSnapshotName = @"suspend";
 
-@interface UTMQemuVirtualMachine () <UTMLoggingDelegate, UTMQemuManagerDelegate>
+@interface UTMQemuVirtualMachine () <UTMLoggingDelegate, UTMQemuMonitorDelegate>
 
-@property (nonatomic, readwrite, nullable) UTMQemuManager *qemu;
+@property (nonatomic, readwrite, nullable) UTMQemuMonitor *qemu;
 @property (nonatomic, readwrite, nullable) UTMQemuSystem *system;
 @property (nonatomic, readwrite, nullable) UTMSpiceIO *ioService;
 @property (nonatomic, weak) id<UTMSpiceIODelegate> ioServiceDelegate;
@@ -253,9 +253,9 @@ NSString *const kSuspendSnapshotName = @"suspend";
     __block NSError *spiceConnectError = nil;
     NSError *err;
     // start SPICE client
-    [self.ioService connectWithCompletion:^(UTMQemuManager *manager, NSError *error) {
-        if (manager) { // success
-            self.qemu = manager;
+    [self.ioService connectWithCompletion:^(UTMQemuMonitor *monitor, NSError *error) {
+        if (monitor) { // success
+            self.qemu = monitor;
             self.qemu.delegate = self;
         } else { // give up
             UTMLog(@"Failed to connect to SPICE: %@", error);
@@ -588,33 +588,33 @@ NSString *const kSuspendSnapshotName = @"suspend";
 
 #pragma mark - Qemu manager delegate
 
-- (void)qemuHasWakeup:(UTMQemuManager *)manager {
+- (void)qemuHasWakeup:(UTMQemuMonitor *)monitor {
     UTMLog(@"qemuHasWakeup");
 }
 
-- (void)qemuHasResumed:(UTMQemuManager *)manager {
+- (void)qemuHasResumed:(UTMQemuMonitor *)monitor {
     UTMLog(@"qemuHasResumed");
 }
 
-- (void)qemuHasStopped:(UTMQemuManager *)manager {
+- (void)qemuHasStopped:(UTMQemuMonitor *)monitor {
     UTMLog(@"qemuHasStopped");
 }
 
-- (void)qemuHasReset:(UTMQemuManager *)manager guest:(BOOL)guest reason:(ShutdownCause)reason {
+- (void)qemuHasReset:(UTMQemuMonitor *)monitor guest:(BOOL)guest reason:(ShutdownCause)reason {
     UTMLog(@"qemuHasReset, reason = %s", ShutdownCause_str(reason));
 }
 
-- (void)qemuHasSuspended:(UTMQemuManager *)manager {
+- (void)qemuHasSuspended:(UTMQemuMonitor *)monitor {
     UTMLog(@"qemuHasSuspended");
 }
 
-- (void)qemuWillQuit:(UTMQemuManager *)manager guest:(BOOL)guest reason:(ShutdownCause)reason {
+- (void)qemuWillQuit:(UTMQemuMonitor *)monitor guest:(BOOL)guest reason:(ShutdownCause)reason {
     UTMLog(@"qemuWillQuit, reason = %s", ShutdownCause_str(reason));
     dispatch_semaphore_signal(self.qemuWillQuitEvent);
     [self vmStopWithCompletion:^(NSError *error) {}]; // trigger quit
 }
 
-- (void)qemuError:(UTMQemuManager *)manager error:(NSString *)error {
+- (void)qemuError:(UTMQemuMonitor *)monitor error:(NSString *)error {
     UTMLog(@"qemuError: %@", error);
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.delegate virtualMachine:self didErrorWithMessage:error];
@@ -623,7 +623,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
 }
 
 // this is called right before we execute qmp_cont so we can setup additional option
-- (void)qemuQmpDidConnect:(UTMQemuManager *)manager {
+- (void)qemuQmpDidConnect:(UTMQemuMonitor *)monitor {
     UTMLog(@"qemuQmpDidConnect");
     dispatch_semaphore_signal(self.qemuDidConnectEvent);
 }

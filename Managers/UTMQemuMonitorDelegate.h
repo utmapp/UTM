@@ -20,18 +20,18 @@ typedef enum ShutdownCause ShutdownCause;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class UTMQemuManager;
+@class UTMQemuMonitor;
 
-@protocol UTMQemuManagerDelegate <NSObject>
+@protocol UTMQemuMonitorDelegate <NSObject>
 
-- (void)qemuHasStopped:(UTMQemuManager *)manager;
-- (void)qemuHasReset:(UTMQemuManager *)manager guest:(BOOL)guest reason:(ShutdownCause)reason;
-- (void)qemuHasResumed:(UTMQemuManager *)manager;
-- (void)qemuHasSuspended:(UTMQemuManager *)manager;
-- (void)qemuHasWakeup:(UTMQemuManager *)manager;
-- (void)qemuWillQuit:(UTMQemuManager *)manager guest:(BOOL)guest reason:(ShutdownCause)reason;
-- (void)qemuError:(UTMQemuManager *)manager error:(NSString *)error;
-- (void)qemuQmpDidConnect:(UTMQemuManager *)manager;
+- (void)qemuHasStopped:(UTMQemuMonitor *)monitor;
+- (void)qemuHasReset:(UTMQemuMonitor *)monitor guest:(BOOL)guest reason:(ShutdownCause)reason;
+- (void)qemuHasResumed:(UTMQemuMonitor *)monitor;
+- (void)qemuHasSuspended:(UTMQemuMonitor *)monitor;
+- (void)qemuHasWakeup:(UTMQemuMonitor *)monitor;
+- (void)qemuWillQuit:(UTMQemuMonitor *)monitor guest:(BOOL)guest reason:(ShutdownCause)reason;
+- (void)qemuError:(UTMQemuMonitor *)monitor error:(NSString *)error;
+- (void)qemuQmpDidConnect:(UTMQemuMonitor *)monitor;
 
 @end
 

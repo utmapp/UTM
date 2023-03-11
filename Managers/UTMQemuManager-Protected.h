@@ -1,5 +1,5 @@
 //
-// Copyright © 2020 osy. All rights reserved.
+// Copyright © 2023 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,15 +15,16 @@
 //
 
 #import "UTMQemuManager.h"
+#import "error.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMQemuManager (BlockDevices)
+@interface UTMQemuManager (Protected)
 
-@property (nonatomic, readonly, nullable) NSDictionary<NSString *, NSString *> *removableDrives;
+@property (nonatomic, readwrite) BOOL isConnected;
 
-- (BOOL)ejectDrive:(NSString *)drive force:(BOOL)force error:(NSError * _Nullable *)error;
-- (BOOL)changeMediumForDrive:(NSString *)drive path:(NSString *)path error:(NSError * _Nullable *)error;
+- (__autoreleasing NSError *)errorForQerror:(Error *)qerr;
+- (BOOL)didGetUnhandledKey:(NSString *)key value:(id)value;
 
 @end
 

@@ -22,7 +22,6 @@
 #import "VMDisplayMetalViewController+Gamepad.h"
 #import "VMKeyboardView.h"
 #import "UTMVirtualMachine.h"
-#import "UTMQemuManager.h"
 #import "UTMLogging.h"
 #import "CSDisplay.h"
 #import "UTM-Swift.h"
