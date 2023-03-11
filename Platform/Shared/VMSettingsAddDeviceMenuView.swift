@@ -68,7 +68,7 @@ struct VMSettingsAddDeviceMenuView: View {
                 config.sound.append(newSound!)
             } label: {
                 Label("Sound", systemImage: "speaker.wave.2")
-            }.disabled(config.system.architecture.soundDeviceType.allRawValues.isEmpty || config.sound.count >= 1)
+            }.disabled(config.system.architecture.soundDeviceType.allRawValues.isEmpty)
             #if os(iOS)
             Divider()
             Button {

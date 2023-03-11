@@ -57,6 +57,7 @@ DEFAULTS = {
 }
 
 AUDIO_SCREAMER = Device('screamer', 'macio', '', 'Screamer (Mac99 only)')
+AUDIO_PCSPK = Device('pcspk', 'macio', '', 'PC Speaker')
 DISPLAY_TCX = Device('tcx', 'none', '', 'Sun TCX')
 DISPLAY_CG3 = Device('cg3', 'none', '', 'Sun cgthree')
 NETWORK_LANCE = Device('lance', 'none', '', 'Lance (Am7990)')
@@ -79,6 +80,16 @@ ADD_DEVICES = {
         ]),
         "Network devices": set([
             NETWORK_LANCE
+        ])
+    },
+    "i386": {
+        "Sound devices": set([
+            AUDIO_PCSPK
+        ])
+    },
+    "x86_64": {
+        "Sound devices": set([
+            AUDIO_PCSPK
         ])
     },
 }

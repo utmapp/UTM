@@ -25,6 +25,12 @@ struct VMConfigSoundView: View {
             Form {
                 Section(header: Text("Hardware")) {
                     VMConfigConstantPicker("Emulated Audio Card", selection: $config.hardware, type: system.architecture.soundDeviceType)
+                    #if !os(macOS)
+                    if config.hardware.rawValue == "screamer" || config.hardware.rawValue == "pcspk" {
+                        Text("This audio card is not supported.")
+                            .foregroundColor(.red)
+                    }
+                    #endif
                 }
             }
         }

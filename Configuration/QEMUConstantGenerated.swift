@@ -8836,6 +8836,7 @@ enum QEMUSoundDevice_i386: String, CaseIterable, QEMUSoundDevice {
     case AC97
     case intel_hda = "intel-hda"
     case ich9_intel_hda = "ich9-intel-hda"
+    case pcspk
     case adlib
     case usb_audio = "usb-audio"
 
@@ -8848,6 +8849,7 @@ enum QEMUSoundDevice_i386: String, CaseIterable, QEMUSoundDevice {
         case .AC97: return "Intel 82801AA AC97 Audio (AC97)"
         case .intel_hda: return "Intel HD Audio Controller (ich6) (intel-hda)"
         case .ich9_intel_hda: return "Intel HD Audio Controller (ich9) (ich9-intel-hda)"
+        case .pcspk: return "PC Speaker"
         case .adlib: return "Yamaha YM3812 (OPL2) (adlib)"
         case .usb_audio: return "usb-audio"
         }
@@ -9196,6 +9198,7 @@ enum QEMUSoundDevice_x86_64: String, CaseIterable, QEMUSoundDevice {
     case AC97
     case intel_hda = "intel-hda"
     case ich9_intel_hda = "ich9-intel-hda"
+    case pcspk
     case adlib
     case usb_audio = "usb-audio"
 
@@ -9208,6 +9211,7 @@ enum QEMUSoundDevice_x86_64: String, CaseIterable, QEMUSoundDevice {
         case .AC97: return "Intel 82801AA AC97 Audio (AC97)"
         case .intel_hda: return "Intel HD Audio Controller (ich6) (intel-hda)"
         case .ich9_intel_hda: return "Intel HD Audio Controller (ich9) (ich9-intel-hda)"
+        case .pcspk: return "PC Speaker"
         case .adlib: return "Yamaha YM3812 (OPL2) (adlib)"
         case .usb_audio: return "usb-audio"
         }

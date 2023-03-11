@@ -314,12 +314,17 @@ import Foundation
         let target = system.target.rawValue
         let architecture = system.architecture.rawValue
         var properties = qemu.machinePropertyOverride ?? ""
-        if target.hasPrefix("pc") || target.hasPrefix("q35") {
+        if target.hasPrefix("pc") || target.hasPrefix("q35") || target == "isapc" {
             properties = properties.appendingDefaultPropertyName("vmport", value: "off")
             // disable PS/2 emulation if we are not legacy input and it's not explicitly enabled
             if isUsbUsed && !qemu.hasPS2Controller {
                 properties = properties.appendingDefaultPropertyName("i8042", value: "off")
             }
+            #if os(macOS)
+            if sound.contains(where: { $0.hardware.rawValue == "pcspk" }) {
+                properties = properties.appendingDefaultPropertyName("pcspk-audiodev", value: "audio1")
+            }
+            #endif
         }
         if target == "virt" || target.hasPrefix("virt-") && !architecture.hasPrefix("riscv") {
             if #available(macOS 12.4, iOS 15.5, *, *) {
@@ -409,7 +414,8 @@ import Foundation
             "spice"
         }
         f("id=audio0")
-        for _sound in sound {
+        // screamer has no extra device, pcspk is handled in machineProperties
+        for _sound in sound.filter({ $0.hardware.rawValue != "screamer" && $0.hardware.rawValue != "pcspk" }) {
             f("-device")
             _sound.hardware
             if _sound.hardware.rawValue.contains("hda") {
@@ -419,6 +425,13 @@ import Foundation
             }
             f("audiodev=audio0")
         }
+        // pcspk doesn't work with SPICE audio
+        #if os(macOS)
+        if sound.contains(where: { $0.hardware.rawValue == "pcspk" }) {
+            f("-audiodev")
+            f("coreaudio,id=audio1")
+        }
+        #endif
     }
     
     @QEMUArgumentBuilder private var drivesArguments: [QEMUArgument] {
