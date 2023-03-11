@@ -113,7 +113,7 @@ extension UTMAppleConfigurationVirtualization {
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
 @available(macOS 11, *)
 extension UTMAppleConfigurationVirtualization {
-    func fillVZConfiguration(_ vzconfig: VZVirtualMachineConfiguration) throws {
+    func fillVZConfiguration(_ vzconfig: VZVirtualMachineConfiguration, isMacOSGuest: Bool = false) throws {
         if hasBalloon {
             vzconfig.memoryBalloonDevices = [VZVirtioTraditionalMemoryBalloonDeviceConfiguration()]
         }
@@ -137,6 +137,12 @@ extension UTMAppleConfigurationVirtualization {
             }
             if hasPointer {
                 vzconfig.pointingDevices = [VZUSBScreenCoordinatePointingDeviceConfiguration()]
+                #if arch(arm64)
+                if #available(macOS 13, *), isMacOSGuest {
+                    // replace with trackpad device
+                    vzconfig.pointingDevices = [VZMacTrackpadConfiguration()]
+                }
+                #endif
             }
         } else {
             if hasAudio || hasKeyboard || hasPointer {
