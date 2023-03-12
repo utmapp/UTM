@@ -30,6 +30,12 @@ NS_ASSUME_NONNULL_BEGIN
 /// - Parameter completion: Callback to run on completion
 - (void)synchronizeWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion;
 
+/// Set guest time
+/// - Parameters:
+///   - time: time in seconds, relative to the Epoch of 1970-01-01 in UTC.
+///   - completion: Callback to run on completion
+- (void)guestSetTime:(NSTimeInterval)time withCompletion:(void (^ _Nullable)(NSError * _Nullable))completion;
+
 @end
 
 NS_ASSUME_NONNULL_END

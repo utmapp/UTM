@@ -22,6 +22,7 @@
 #import "UTMQemuVirtualMachine.h"
 #import "UTMQemuVirtualMachine+SPICE.h"
 #import "UTMQemuMonitor.h"
+#import "UTMQemuGuestAgent.h"
 #import "UTMQemuSystem.h"
 #import "UTMSpiceIO.h"
 #import "UTMLogging.h"
@@ -33,9 +34,12 @@ const int64_t kStopTimeout = (int64_t)30*NSEC_PER_SEC;
 extern NSString *const kUTMBundleConfigFilename;
 NSString *const kSuspendSnapshotName = @"suspend";
 
+static void *SpiceIoServiceGuestAgentContext = &SpiceIoServiceGuestAgentContext;
+
 @interface UTMQemuVirtualMachine () <UTMLoggingDelegate, UTMQemuMonitorDelegate>
 
 @property (nonatomic, readwrite, nullable) UTMQemuMonitor *qemu;
+@property (nonatomic, readwrite, nullable) UTMQemuGuestAgent *guestAgent;
 @property (nonatomic, readwrite, nullable) UTMQemuSystem *system;
 @property (nonatomic, readwrite, nullable) UTMSpiceIO *ioService;
 @property (nonatomic, weak) id<UTMSpiceIODelegate> ioServiceDelegate;
@@ -188,6 +192,10 @@ NSString *const kSuspendSnapshotName = @"suspend";
     self.ioService = [[UTMSpiceIO alloc] initWithConfiguration:self.config];
     self.ioService.delegate = self.ioServiceDelegate;
     self.ioServiceDelegate = nil;
+    [self.ioService addObserver:self
+                     forKeyPath:@"qemuGuestAgent"
+                        options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionInitial
+                        context:SpiceIoServiceGuestAgentContext];
     
     NSError *spiceError;
     if (![self.ioService startWithError:&spiceError]) {
@@ -336,6 +344,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
     }
     self.qemu.delegate = nil;
     self.qemu = nil;
+    [self.ioService removeObserver:self forKeyPath:@"qemuGuestAgent" context:SpiceIoServiceGuestAgentContext];
     self.ioService = nil;
     
     if (force || dispatch_semaphore_wait(self.qemuDidExitEvent, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
@@ -586,6 +595,32 @@ NSString *const kSuspendSnapshotName = @"suspend";
     });
 }
 
+#pragma mark - QEMU Guest agent
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
+    if (context == SpiceIoServiceGuestAgentContext) {
+        UTMQemuGuestAgent *guestAgent = ((UTMSpiceIO *)object).qemuGuestAgent;
+        if (guestAgent == nil && self.guestAgent != nil) {
+            [self _didDisconnectGuestAgent:self.guestAgent];
+        }
+        if (guestAgent != nil) {
+            [self _didConnectGuestAgent:guestAgent];
+        }
+        self.guestAgent = guestAgent;
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
+}
+
+- (void)_didConnectGuestAgent:(UTMQemuGuestAgent *)guestAgent {
+    UTMLog(@"QEMU guest agent has connected.");
+    [guestAgent guestSetTime:NSDate.now.timeIntervalSince1970 withCompletion:nil];
+}
+
+- (void)_didDisconnectGuestAgent:(UTMQemuGuestAgent *)guestAgent {
+    UTMLog(@"QEMU guest agent has disconnected.");
+}
+
 #pragma mark - Qemu manager delegate
 
 - (void)qemuHasWakeup:(UTMQemuMonitor *)monitor {
@@ -594,6 +629,7 @@ NSString *const kSuspendSnapshotName = @"suspend";
 
 - (void)qemuHasResumed:(UTMQemuMonitor *)monitor {
     UTMLog(@"qemuHasResumed");
+    [self.guestAgent guestSetTime:NSDate.now.timeIntervalSince1970 withCompletion:nil];
 }
 
 - (void)qemuHasStopped:(UTMQemuMonitor *)monitor {

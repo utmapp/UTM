@@ -25,6 +25,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak, nullable) id<UTMSpiceIODelegate> ioDelegate;
 
+/// If non-null, provides access to the QEMU guest agent interface
+@property (nonatomic, readonly, nullable) UTMQemuGuestAgent *guestAgent;
+
 /// Set to true to request guest tools install.
 ///
 /// This property is observable and must only be accessed on the main thread.

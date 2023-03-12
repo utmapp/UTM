@@ -103,4 +103,17 @@ extern NSString *const kUTMErrorDomain;
     });
 }
 
+- (void)guestSetTime:(NSTimeInterval)time withCompletion:(void (^ _Nullable)(NSError * _Nullable))completion {
+    int64_t timeNanoseconds = (int64_t)(time * NSEC_PER_SEC);
+    [self _withSynchronizeBlock:^{
+        Error *qerr = NULL;
+        qmp_guest_set_time(true, timeNanoseconds, &qerr, (__bridge void *)self);
+        if (qerr) {
+            return [self errorForQerror:qerr];
+        } else {
+            return (NSError *)nil;
+        }
+    } withCompletion:completion];
+}
+
 @end
