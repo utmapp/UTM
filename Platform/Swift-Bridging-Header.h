@@ -29,6 +29,7 @@
 #include "UTMQemu.h"
 #include "UTMQemuMonitor.h"
 #include "UTMQemuMonitor+BlockDevices.h"
+#include "UTMQemuGuestAgent.h"
 #include "UTMQemuSystem.h"
 #include "UTMJailbreak.h"
 #include "UTMLogging.h"

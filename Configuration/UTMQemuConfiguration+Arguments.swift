@@ -728,7 +728,7 @@ import Foundation
         }
     }
     
-    private var isAgentUsed: Bool {
+    private var isSpiceAgentUsed: Bool {
         guard system.architecture.hasAgentSupport else {
             return false
         }
@@ -736,9 +736,15 @@ import Foundation
     }
     
     @QEMUArgumentBuilder private var sharingArguments: [QEMUArgument] {
-        if isAgentUsed {
+        if system.architecture.hasAgentSupport {
             f("-device")
             f("virtio-serial")
+            f("-device")
+            f("virtserialport,chardev=org.qemu.guest_agent,name=org.qemu.guest_agent.0")
+            f("-chardev")
+            f("spiceport,id=org.qemu.guest_agent,name=org.qemu.guest_agent.0")
+        }
+        if isSpiceAgentUsed {
             f("-device")
             f("virtserialport,chardev=vdagent,name=com.redhat.spice.0")
             f("-chardev")

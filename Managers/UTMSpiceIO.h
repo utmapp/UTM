@@ -24,6 +24,7 @@
 
 @class UTMConfigurationWrapper;
 @class UTMQemuMonitor;
+@class UTMQemuGuestAgent;
 
 typedef void (^ioConnectCompletionHandler_t)(UTMQemuMonitor * _Nullable, NSError * _Nullable);
 
@@ -37,6 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) CSPort *primarySerial;
 @property (nonatomic, readonly) NSArray<CSDisplay *> *displays;
 @property (nonatomic, readonly) NSArray<CSPort *> *serials;
+@property (nonatomic, readonly, nullable) UTMQemuGuestAgent *qemuGuestAgent;
 #if !defined(WITH_QEMU_TCI)
 @property (nonatomic, readonly, nullable) CSUSBManager *primaryUsbManager;
 #endif

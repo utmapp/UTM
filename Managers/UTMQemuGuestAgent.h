@@ -1,5 +1,5 @@
 //
-// Copyright © 2021 osy. All rights reserved.
+// Copyright © 2023 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,21 +14,21 @@
 // limitations under the License.
 //
 
-#import "UTMVirtualMachine.h"
-#import "UTMSpiceIODelegate.h"
-
-@class UTMQemuGuestAgent;
+#import "UTMQemuManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMQemuVirtualMachine : UTMVirtualMachine
+/// Interface with QEMU Guest Agent
+@interface UTMQemuGuestAgent : UTMQemuManager
 
-@property (nonatomic, weak, nullable) id<UTMSpiceIODelegate> ioDelegate;
-
-/// Set to true to request guest tools install.
+/// Attempt synchronization with guest agent
 ///
-/// This property is observable and must only be accessed on the main thread.
-@property (nonatomic) BOOL isGuestToolsInstallRequested;
+/// If an error is returned, any number of things could have happened including:
+///   * Guest Agent has not started on the guest side
+///   * Guest Agent has not been installed yet
+///   * Guest Agent is too slow to respond
+/// - Parameter completion: Callback to run on completion
+- (void)synchronizeWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion;
 
 @end
 

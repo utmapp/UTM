@@ -17,6 +17,7 @@
 #import <glib.h>
 #import "UTMSpiceIO.h"
 #import "UTMQemuMonitor.h"
+#import "UTMQemuGuestAgent.h"
 #import "UTMLogging.h"
 #import "UTM-Swift.h"
 
@@ -32,6 +33,7 @@ extern NSString *const kUTMErrorDomain;
 @property (nonatomic, readwrite, nullable) CSInput *primaryInput;
 @property (nonatomic, readwrite, nullable) CSPort *primarySerial;
 @property (nonatomic) NSMutableArray<CSPort *> *mutableSerials;
+@property (nonatomic, readwrite, nullable) UTMQemuGuestAgent *qemuGuestAgent;
 #if !defined(WITH_QEMU_TCI)
 @property (nonatomic, readwrite, nullable) CSUSBManager *primaryUsbManager;
 #endif
@@ -235,6 +237,9 @@ extern NSString *const kUTMErrorDomain;
             }
         });
     }
+    if ([port.name isEqualToString:@"org.qemu.guest_agent.0"]) {
+        self.qemuGuestAgent = [[UTMQemuGuestAgent alloc] initWithPort:port];
+    }
     if ([port.name isEqualToString:@"com.utmapp.terminal.0"]) {
         self.primarySerial = port;
     }
@@ -246,6 +251,9 @@ extern NSString *const kUTMErrorDomain;
 
 - (void)spiceForwardedPortClosed:(CSConnection *)connection port:(CSPort *)port {
     if ([port.name isEqualToString:@"org.qemu.monitor.qmp.0"]) {
+    }
+    if ([port.name isEqualToString:@"org.qemu.guest_agent.0"]) {
+        self.qemuGuestAgent = nil;
     }
     if ([port.name isEqualToString:@"com.utmapp.terminal.0"]) {
         self.primarySerial = port;

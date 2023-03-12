@@ -22,6 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UTMQemuManager (Protected)
 
 @property (nonatomic, readwrite) BOOL isConnected;
+@property (nonatomic, readonly) NSInteger timeoutSeconds;
+@property (nonatomic, readonly) BOOL shouldSynchronizeParser;
 
 - (__autoreleasing NSError *)errorForQerror:(Error *)qerr;
 - (BOOL)didGetUnhandledKey:(NSString *)key value:(id)value;

@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithPort:(CSPort *)port NS_DESIGNATED_INITIALIZER;
-- (BOOL)sendDictionary:(NSDictionary *)dict error:(NSError * _Nullable *)error;
+- (BOOL)sendDictionary:(NSDictionary *)dictionary shouldSynchronize:(BOOL)shouldSynchronize error:(NSError * _Nullable *)error;
 
 @end
 

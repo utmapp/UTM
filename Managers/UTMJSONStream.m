@@ -24,6 +24,7 @@ enum ParserState {
     PARSER_NOT_IN_STRING,
     PARSER_IN_STRING,
     PARSER_IN_STRING_ESCAPE,
+    PARSER_WAITING_FOR_DELIMITER,
     PARSER_INVALID
 };
 
@@ -56,6 +57,7 @@ enum ParserState {
 }
 
 - (void)parseData {
+    __block NSUInteger skipLength = 0;
     __block NSUInteger endIndex = 0;
     [self.data enumerateByteRangesUsingBlock:^(const void *bytes, NSRange byteRange, BOOL *stop) {
         const char *str = (const char *)bytes;
@@ -63,7 +65,15 @@ enum ParserState {
             return;
         }
         for (NSUInteger i = self.parsedBytes - byteRange.location; i < byteRange.length; i++) {
-            if (self.state == PARSER_IN_STRING_ESCAPE) {
+            if (self.state == PARSER_WAITING_FOR_DELIMITER) {
+                skipLength++;
+                if (str[i] == (char)0xFF) {
+                    self.state = PARSER_NOT_IN_STRING;
+                    self.openCurlyCount = 0;
+                }
+                self.parsedBytes++;
+                continue;
+            } else if (self.state == PARSER_IN_STRING_ESCAPE) {
                 self.state = PARSER_IN_STRING;
             } else {
                 switch (str[i]) {
@@ -126,8 +136,13 @@ enum ParserState {
             }
         }
     }];
+    if (skipLength > 0) {
+        // discard any data before delimiter
+        [self.data replaceBytesInRange:NSMakeRange(0, skipLength) withBytes:NULL length:0];
+        self.parsedBytes -= skipLength;
+    }
     if (endIndex > 0) {
-        [self consumeJSONLength:endIndex];
+        [self consumeJSONLength:endIndex-skipLength];
     }
 }
 
@@ -169,7 +184,7 @@ enum ParserState {
     });
 }
 
-- (BOOL)sendDictionary:(NSDictionary *)dict error:(NSError * _Nullable *)error {
+- (BOOL)sendDictionary:(NSDictionary *)dict shouldSynchronize:(BOOL)shouldSynchronize error:(NSError * _Nullable *)error {
     UTMLog(@"Debug JSON send -> %@", dict);
     if (!self.port || !self.port.isOpen) {
         if (error) {
@@ -181,7 +196,15 @@ enum ParserState {
     if (!data) {
         return NO;
     }
-    [self.port writeData:data];
+    if (shouldSynchronize) {
+        dispatch_async(self.streamQueue, ^{
+            [self.port writeData:[NSData dataWithBytes:"\xFF" length:1]];
+            [self.port writeData:data];
+            self.state = PARSER_WAITING_FOR_DELIMITER;
+        });
+    } else {
+        [self.port writeData:data];
+    }
     return YES;
 }
 

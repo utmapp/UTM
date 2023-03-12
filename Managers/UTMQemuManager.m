@@ -20,7 +20,6 @@
 #import "qapi-emit-events.h"
 
 extern NSString *const kUTMErrorDomain;
-const int64_t kRPCTimeout = (int64_t)10*NSEC_PER_SEC;
 
 typedef void(^rpcCompletionHandler_t)(NSDictionary *, NSError *);
 
@@ -40,6 +39,14 @@ typedef void(^rpcCompletionHandler_t)(NSDictionary *, NSError *);
     _isConnected = isConnected;
 }
 
+- (NSInteger)timeoutSeconds {
+    return 10;
+}
+
+- (BOOL)shouldSynchronizeParser {
+    return NO;
+}
+
 void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void *ctx) {
     UTMQemuManager *self = (__bridge UTMQemuManager *)ctx;
     dispatch_semaphore_t rpc_sema = dispatch_semaphore_create(0);
@@ -54,10 +61,10 @@ void qmp_rpc_call(CFDictionaryRef args, CFDictionaryRef *ret, Error **err, void 
         _self.rpcCallback = nil;
         dispatch_semaphore_signal(rpc_sema); // copy to avoid race condition
     };
-    if (![self.jsonStream sendDictionary:(__bridge NSDictionary *)args error:&nserr] && self.rpcCallback) {
+    if (![self.jsonStream sendDictionary:(__bridge NSDictionary *)args shouldSynchronize:self.shouldSynchronizeParser error:&nserr] && self.rpcCallback) {
         self.rpcCallback(nil, nserr);
     }
-    if (dispatch_semaphore_wait(rpc_sema, dispatch_time(DISPATCH_TIME_NOW, kRPCTimeout)) != 0) {
+    if (dispatch_semaphore_wait(rpc_sema, dispatch_time(DISPATCH_TIME_NOW, (int64_t)self.timeoutSeconds*NSEC_PER_SEC)) != 0) {
         // possible race between this timeout and the callback being triggered
         self.rpcCallback = ^(NSDictionary *ret_dict, NSError *ret_err){
             _self.rpcCallback = nil;
