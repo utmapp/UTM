@@ -113,7 +113,7 @@ jobs:
         uses: osy/actions-cache@v3
         with:
           path: sysroot-macOS-arm64_x86_64
-          key: macos-universal-${{ hashFiles('scripts/build_dependencies.sh') }}-${{ hashFiles('patches/**') }}
+          key: macos-universal-${{ hashFiles('scripts/build_dependencies.sh', 'scripts/pack_dependencies.sh') }}-${{ hashFiles('patches/**') }}
       - name: Cache Sysroot (arm64)
         if: steps.cache-sysroot-universal.outputs.cache-hit != 'true'
         id: cache-sysroot-arm64
@@ -202,7 +202,7 @@ jobs:
         uses: osy/actions-cache@v3
         with:
           path: sysroot-macOS-arm64_x86_64
-          key: macos-universal-${{ hashFiles('scripts/build_dependencies.sh') }}-${{ hashFiles('patches/**') }}
+          key: macos-universal-${{ hashFiles('scripts/build_dependencies.sh', 'scripts/pack_dependencies.sh') }}-${{ hashFiles('patches/**') }}
       - name: Check Cache
         if: steps.cache-sysroot.outputs.cache-hit != 'true'
         uses: actions/github-script@v6
