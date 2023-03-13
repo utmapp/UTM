@@ -51,6 +51,16 @@ extern NSString *const kUTMErrorDomain;
     [super jsonStream:stream seenError:error];
 }
 
+- (__autoreleasing NSError * _Nullable)_convertErrorFromQerrorAndFree:(nullable Error *)qerror {
+    if (qerror) {
+        NSError *error = [self errorForQerror:qerror];
+        error_free(qerror);
+        return error;
+    } else {
+        return nil;
+    }
+}
+
 - (void)synchronizeWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion {
     self.isGuestAgentResponsive = NO;
     dispatch_async(self.guestAgentQueue, ^{
@@ -62,7 +72,7 @@ extern NSString *const kUTMErrorDomain;
         self.shouldSynchronizeParser = NO;
         if (qerr) {
             if (completion) {
-                completion([self errorForQerror:qerr]);
+                completion([self _convertErrorFromQerrorAndFree:qerr]);
             }
             return;
         }
@@ -108,12 +118,250 @@ extern NSString *const kUTMErrorDomain;
     [self _withSynchronizeBlock:^{
         Error *qerr = NULL;
         qmp_guest_set_time(true, timeNanoseconds, &qerr, (__bridge void *)self);
-        if (qerr) {
-            return [self errorForQerror:qerr];
-        } else {
-            return (NSError *)nil;
-        }
+        return [self _convertErrorFromQerrorAndFree:qerr];
     } withCompletion:completion];
+}
+
+- (void)guestFileOpen:(NSString *)path mode:(nullable NSString *)mode withCompletion:(void (^)(NSInteger, NSError * _Nullable))completion {
+    __block int64_t handle = 0;
+    [self _withSynchronizeBlock:^{
+        Error *qerr = NULL;
+        handle = qmp_guest_file_open(path.UTF8String, mode != nil, mode.UTF8String, &qerr, (__bridge void *)self);
+        return [self _convertErrorFromQerrorAndFree:qerr];
+    } withCompletion:^(NSError *error){
+        completion(handle, error);
+    }];
+}
+
+- (void)guestFileClose:(NSInteger)handle withCompletion:(void (^ _Nullable)(NSError * _Nullable))completion {
+    [self _withSynchronizeBlock:^{
+        Error *qerr = NULL;
+        qmp_guest_file_close(handle, &qerr, (__bridge void *)self);
+        return [self _convertErrorFromQerrorAndFree:qerr];
+    } withCompletion:completion];
+}
+
+- (void)guestFileRead:(NSInteger)handle count:(NSInteger)count withCompletion:(void (^)(NSData *, NSError * _Nullable))completion {
+    __block NSData *data = [NSData data];
+    [self _withSynchronizeBlock:^{
+        Error *qerr = NULL;
+        GuestFileRead *result = qmp_guest_file_read(handle, true, count, &qerr, (__bridge void *)self);
+        NSError *error = [self _convertErrorFromQerrorAndFree:qerr];
+        if (result) {
+            data = [[NSData alloc] initWithBase64EncodedString:[NSString stringWithCString:result->buf_b64
+                                                                                  encoding:NSASCIIStringEncoding]
+                                                       options:0];
+            qapi_free_GuestFileRead(result);
+        }
+        return error;
+    } withCompletion:^(NSError *error) {
+        completion(data, error);
+    }];
+}
+
+- (void)guestFileWrite:(NSInteger)handle data:(NSData *)data withCompletion:(void (^)(NSInteger, NSError * _Nullable))completion {
+    __block NSInteger written = 0;
+    [self _withSynchronizeBlock:^{
+        Error *qerr = NULL;
+        GuestFileWrite *result = qmp_guest_file_write(handle, [data base64EncodedStringWithOptions:0].UTF8String, true, data.length, &qerr, (__bridge void *)self);
+        NSError *error = [self _convertErrorFromQerrorAndFree:qerr];
+        if (result) {
+            written = result->count;
+            qapi_free_GuestFileWrite(result);
+        }
+        return error;
+    } withCompletion:^(NSError *error) {
+        completion(written, error);
+    }];
+}
+
+- (void)guestFileSeek:(NSInteger)handle offset:(NSInteger)offset whence:(QGASeek)whence withCompletion:(void (^)(NSInteger, NSError * _Nullable))completion {
+    __block NSInteger position = 0;
+    [self _withSynchronizeBlock:^{
+        Error *qerr = NULL;
+        GuestFileWhence _whence = { .type = QTYPE_QSTRING, .u.name = whence };
+        GuestFileSeek *result = qmp_guest_file_seek(handle, offset, &_whence, &qerr, (__bridge void *)self);
+        NSError *error = [self _convertErrorFromQerrorAndFree:qerr];
+        if (result) {
+            position = result->position;
+            qapi_free_GuestFileSeek(result);
+        }
+        return error;
+    } withCompletion:^(NSError *error) {
+        completion(position, error);
+    }];
+}
+
+- (void)guestFileFlush:(NSInteger)handle withCompletion:(void (^ _Nullable)(NSError * _Nullable))completion {
+    [self _withSynchronizeBlock:^{
+        Error *qerr = NULL;
+        qmp_guest_file_flush(handle, &qerr, (__bridge void *)self);
+        return [self _convertErrorFromQerrorAndFree:qerr];
+    } withCompletion:completion];
+}
+
+- (void)guestNetworkGetInterfacesWithCompletion:(void (^)(NSArray<UTMQemuGuestAgentNetworkInterface *> *, NSError * _Nullable))completion {
+    NSMutableArray<UTMQemuGuestAgentNetworkInterface *> *interfaces = [NSMutableArray array];
+    [self _withSynchronizeBlock:^{
+        Error *qerr = NULL;
+        GuestNetworkInterfaceList *result = qmp_guest_network_get_interfaces(&qerr, (__bridge void *)self);
+        NSError *error = [self _convertErrorFromQerrorAndFree:qerr];
+        if (result) {
+            for (GuestNetworkInterfaceList *list = result; list != NULL; list = list->next) {
+                [interfaces addObject:[UTMQemuGuestAgentNetworkInterface networkInterfaceFromQapi:list->value]];
+            }
+            qapi_free_GuestNetworkInterfaceList(result);
+        }
+        return error;
+    } withCompletion:^(NSError *error) {
+        completion(interfaces, error);
+    }];
+}
+
+static strList *arrayToStrList(NSArray<NSString *> * _Nullable arr) {
+    strList *head = NULL;
+    __block strList **next = &head;
+    [arr enumerateObjectsUsingBlock:^(NSString *obj, NSUInteger idx, BOOL *stop) {
+        strList *tail = g_malloc0(sizeof(strList));
+        tail->value = g_strdup(obj.UTF8String);
+        *next = tail;
+        next = &tail->next;
+    }];
+    return head;
+}
+
+- (void)guestExec:(NSString *)path argv:(nullable NSArray<NSString *> *)argv envp:(nullable NSArray<NSString *> *)envp input:(nullable NSData *)input captureOutput:(BOOL)captureOutput withCompletion:(void (^)(NSInteger, NSError * _Nullable))completion {
+    strList *_arg = arrayToStrList(argv);
+    strList *_env = arrayToStrList(envp);
+    __block NSInteger pid = -1;
+    [self _withSynchronizeBlock:^{
+        Error *qerr = NULL;
+        GuestExec *result = qmp_guest_exec(path.UTF8String,
+                                           _arg != NULL, _arg,
+                                           _env != NULL, _env,
+                                           input != nil, input.bytes,
+                                           true, captureOutput,
+                                           &qerr, (__bridge void *)self);
+        NSError *error = [self _convertErrorFromQerrorAndFree:qerr];
+        if (result) {
+            pid = result->pid;
+            qapi_free_GuestExec(result);
+        }
+        return error;
+    } withCompletion:^(NSError *error) {
+        if (_arg) {
+            qapi_free_strList(_arg);
+        }
+        if (_env) {
+            qapi_free_strList(_env);
+        }
+        completion(pid, error);
+    }];
+}
+
+- (void)guestExecStatus:(NSInteger)pid withCompletion:(void (^)(UTMQemuGuestAgentExecStatus *, NSError * _Nullable))completion {
+    __block UTMQemuGuestAgentExecStatus *status = nil;
+    [self _withSynchronizeBlock:^{
+        Error *qerr = NULL;
+        GuestExecStatus *result = qmp_guest_exec_status(pid, &qerr, (__bridge void *)self);
+        NSError *error = [self _convertErrorFromQerrorAndFree:qerr];
+        if (result) {
+            status = [UTMQemuGuestAgentExecStatus execStatusFromQapi:result];
+            qapi_free_GuestExecStatus(result);
+        }
+        return error;
+    } withCompletion:^(NSError *error) {
+        completion(status, error);
+    }];
+}
+
+@end
+
+@implementation UTMQemuGuestAgentNetworkAddress
+
++ (instancetype)networkAddressFromQapi:(GuestIpAddress *)qapi {
+    return [[UTMQemuGuestAgentNetworkAddress alloc] initFromQapi:qapi];
+}
+
+- (instancetype)initFromQapi:(GuestIpAddress *)qapi {
+    if (self = [super init]) {
+        self.ipAddress = [NSString stringWithCString:qapi->ip_address encoding:NSASCIIStringEncoding];
+        self.isIpV6Address = qapi->ip_address_type == GUEST_IP_ADDRESS_TYPE_IPV6;
+        self.ipAddressPrefix = qapi->prefix;
+    }
+    return self;
+}
+
+@end
+
+@implementation UTMQemuGuestAgentNetworkInterface
+
++ (instancetype)networkInterfaceFromQapi:(GuestNetworkInterface *)qapi {
+    return [[UTMQemuGuestAgentNetworkInterface alloc] initFromQapi:qapi];
+}
+
+- (instancetype)initFromQapi:(GuestNetworkInterface *)qapi {
+    if (self = [super init]) {
+        self.interfaceName = [NSString stringWithCString:qapi->name encoding:NSASCIIStringEncoding];
+        if (qapi->has_hardware_address) {
+            self.hardwareAddress = [NSString stringWithCString:qapi->hardware_address encoding:NSASCIIStringEncoding];
+        }
+        if (qapi->has_ip_addresses) {
+            NSMutableArray<UTMQemuGuestAgentNetworkAddress *> *ipAddresses = [NSMutableArray array];
+            for (GuestIpAddressList *list = qapi->ip_addresses; list != NULL; list = list->next) {
+                [ipAddresses addObject:[UTMQemuGuestAgentNetworkAddress networkAddressFromQapi:list->value]];
+            }
+            self.ipAddresses = ipAddresses;
+        } else {
+            self.ipAddresses = [NSArray array];
+        }
+        if (qapi->has_statistics) {
+            self.rxBytes = qapi->statistics->rx_bytes;
+            self.rxPackets = qapi->statistics->rx_packets;
+            self.rxErrors = qapi->statistics->rx_errs;
+            self.rxDropped = qapi->statistics->rx_dropped;
+            self.txBytes = qapi->statistics->tx_bytes;
+            self.txPackets = qapi->statistics->tx_packets;
+            self.txErrors = qapi->statistics->tx_errs;
+            self.txDropped = qapi->statistics->tx_dropped;
+        }
+    }
+    return self;
+}
+
+@end
+
+@implementation UTMQemuGuestAgentExecStatus
+
++ (instancetype)execStatusFromQapi:(GuestExecStatus *)qapi {
+    return [[UTMQemuGuestAgentExecStatus alloc] initFromQapi:qapi];
+}
+
+- (instancetype)initFromQapi:(GuestExecStatus *)qapi {
+    if (self = [super init]) {
+        self.hasExited = qapi->exited;
+        if (qapi->has_exitcode) {
+            self.exitCode = qapi->exitcode;
+        }
+        if (qapi->has_signal) {
+            self.signal = qapi->signal;
+        }
+        if (qapi->has_out_data) {
+            self.outData = [[NSData alloc] initWithBase64EncodedString:[NSString stringWithCString:qapi->out_data
+                                                                                          encoding:NSASCIIStringEncoding] options:0];
+        }
+        if (qapi->has_err_data) {
+            self.errData = [[NSData alloc] initWithBase64EncodedString:[NSString stringWithCString:qapi->err_data
+                                                                                          encoding:NSASCIIStringEncoding] options:0];
+        }
+        if (qapi->has_out_truncated) {
+            self.isOutDataTruncated = qapi->out_truncated;
+        }
+        if (qapi->has_err_truncated) {
+            self.isErrDataTruncated = qapi->err_truncated;
+        }
+    }
+    return self;
 }
 
 @end
