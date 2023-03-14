@@ -18,7 +18,7 @@ import Foundation
 
 @MainActor
 @objc(UTMScriptingVirtualMachineImpl)
-class UTMScriptingVirtualMachineImpl: NSObject {
+class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
     private var vm: UTMVirtualMachine
     private var data: UTMData
     
@@ -79,6 +79,10 @@ class UTMScriptingVirtualMachineImpl: NSObject {
         }
     }
     
+    var guestAgent: UTMQemuGuestAgent? {
+        (vm as? UTMQemuVirtualMachine)?.guestAgent
+    }
+    
     override var objectSpecifier: NSScriptObjectSpecifier? {
         let appDescription = NSApplication.classDescription() as! NSScriptClassDescription
         return NSUniqueIDSpecifier(containerClassDescription: appDescription,
@@ -90,34 +94,6 @@ class UTMScriptingVirtualMachineImpl: NSObject {
     init(for vm: UTMVirtualMachine, data: UTMData) {
         self.vm = vm
         self.data = data
-    }
-    
-    private func withScriptCommand<Result>(_ command: NSScriptCommand, body: @MainActor @escaping () async throws -> Result) {
-        guard command.evaluatedReceivers as? Self == self else {
-            return
-        }
-        command.suspendExecution()
-        // we need to run this in next event loop due to the need to return before calling resume
-        DispatchQueue.main.async {
-            Task {
-                do {
-                    let result = try await body()
-                    await MainActor.run {
-                        if result is Void {
-                            command.resumeExecution(withResult: nil)
-                        } else {
-                            command.resumeExecution(withResult: result)
-                        }
-                    }
-                } catch {
-                    await MainActor.run {
-                        command.scriptErrorNumber = errOSAGeneralError
-                        command.scriptErrorString = error.localizedDescription
-                        command.resumeExecution(withResult: nil)
-                    }
-                }
-            }
-        }
     }
     
     @objc func start(_ command: NSScriptCommand) {
@@ -173,17 +149,115 @@ class UTMScriptingVirtualMachineImpl: NSObject {
     }
 }
 
+// MARK: - Guest agent suite
+@objc extension UTMScriptingVirtualMachineImpl {
+    @nonobjc private func withGuestAgent<Result>(_ block: (UTMQemuGuestAgent) async throws -> Result) async throws -> Result {
+        guard vm.state == .vmStarted else {
+            throw ScriptingError.notRunning
+        }
+        guard let vm = vm as? UTMQemuVirtualMachine else {
+            throw ScriptingError.operationNotSupported
+        }
+        guard let guestAgent = vm.guestAgent else {
+            throw ScriptingError.guestAgentNotRunning
+        }
+        return try await block(guestAgent)
+    }
+    
+    @objc func valueInOpenFilesWithUniqueID(_ id: Int) -> UTMScriptingGuestFileImpl {
+        UTMScriptingGuestFileImpl(from: id, parent: self)
+    }
+    
+    @objc func openFile(_ command: NSScriptCommand) {
+        let path = command.evaluatedArguments?["path"] as? String
+        let mode = command.evaluatedArguments?["mode"] as? AEKeyword
+        let isUpdate = command.evaluatedArguments?["isUpdate"] as? Bool ?? false
+        withScriptCommand(command) { [self] in
+            guard let path = path else {
+                throw ScriptingError.invalidParameter
+            }
+            let modeValue: String
+            if let mode = mode {
+                switch UTMScriptingOpenMode(rawValue: mode) {
+                case .reading: modeValue = "r"
+                case .writing: modeValue = "w"
+                case .appending: modeValue = "a"
+                default: modeValue = "r"
+                }
+            } else {
+                modeValue = "r"
+            }
+            return try await withGuestAgent { guestAgent in
+                let handle = try await guestAgent.guestFileOpen(path, mode: modeValue + (isUpdate ? "+" : ""))
+                return UTMScriptingGuestFileImpl(from: handle, parent: self)
+            }
+        }
+    }
+    
+    @objc func valueInProcessesWithUniqueID(_ id: Int) -> UTMScriptingGuestProcessImpl {
+        UTMScriptingGuestProcessImpl(from: id, parent: self)
+    }
+    
+    @objc func execute(_ command: NSScriptCommand) {
+        let path = command.evaluatedArguments?["path"] as? String
+        let argv = command.evaluatedArguments?["argv"] as? [String]
+        let envp = command.evaluatedArguments?["envp"] as? [String]
+        let input = command.evaluatedArguments?["input"] as? String
+        let isBase64Encoded = command.evaluatedArguments?["isBase64Encoded"] as? Bool ?? false
+        let isCaptureOutput = command.evaluatedArguments?["isCaptureOutput"] as? Bool ?? false
+        let inputData = dataFromText(input, isBase64Encoded: isBase64Encoded)
+        withScriptCommand(command) { [self] in
+            guard let path = path else {
+                throw ScriptingError.invalidParameter
+            }
+            return try await withGuestAgent { guestAgent in
+                let pid = try await guestAgent.guestExec(path, argv: argv, envp: envp, input: inputData, captureOutput: isCaptureOutput)
+                return UTMScriptingGuestProcessImpl(from: pid, parent: self)
+            }
+        }
+    }
+    
+    @objc func queryIp(_ command: NSScriptCommand) {
+        withScriptCommand(command) { [self] in
+            try await withGuestAgent { guestAgent in
+                let interfaces = try await guestAgent.guestNetworkGetInterfaces()
+                var ipv4: [String] = []
+                var ipv6: [String] = []
+                for interface in interfaces {
+                    for ip in interface.ipAddresses {
+                        if ip.isIpV6Address {
+                            if ip.ipAddress != "::1" && ip.ipAddress != "0:0:0:0:0:0:0:1" {
+                                ipv6.append(ip.ipAddress)
+                            }
+                        } else {
+                            if ip.ipAddress != "127.0.0.1" {
+                                ipv4.append(ip.ipAddress)
+                            }
+                        }
+                    }
+                }
+                return ipv4 + ipv6
+            }
+        }
+    }
+}
+
+// MARK: - Errors
 extension UTMScriptingVirtualMachineImpl {
     enum ScriptingError: Error, LocalizedError {
         case operationNotAvailable
         case operationNotSupported
         case notRunning
+        case guestAgentNotRunning
+        case invalidParameter
         
         var errorDescription: String? {
             switch self {
             case .operationNotAvailable: return NSLocalizedString("Operation not available.", comment: "UTMScriptingVirtualMachineImpl")
             case .operationNotSupported: return NSLocalizedString("Operation not supported by the backend.", comment: "UTMScriptingVirtualMachineImpl")
             case .notRunning: return NSLocalizedString("The virtual machine is not running.", comment: "UTMScriptingVirtualMachineImpl")
+            case .guestAgentNotRunning: return NSLocalizedString("The QEMU guest agent is not running or not installed on the guest.", comment: "UTMScriptingVirtualMachineImpl")
+            case .invalidParameter: return NSLocalizedString("One or more required parameters are missing or invalid.", comment: "UTMScriptingVirtualMachineImpl")
             }
         }
     }

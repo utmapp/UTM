@@ -221,5 +221,217 @@
             description="Port number of the serial port (not used in some interface types)."/>
         </class>
     </suite>
-
+    
+    <suite name="UTM Guest Suite" code="UTMg" description="UTM virtual machine guest scripting suite. In order to use these commands, QEMU guest agent must be running.">
+        <access-group identifier="com.utmapp.UTM.vm-access" />
+        
+        <class-extension extends="virtual machine" description="Guest agent access.">
+            <element type="guest file" access="r"
+              description="Open files for this virtual machine from the guest agent.">
+              <cocoa key="openFiles"/>
+            </element>
+            
+            <element type="guest process" access="r"
+              description="Processe executed on this virtual machine from the guest agent.">
+              <cocoa key="processes"/>
+            </element>
+            
+            <responds-to command="open file">
+              <cocoa method="openFile:"/>
+            </responds-to>
+            <responds-to command="execute">
+              <cocoa method="execute:"/>
+            </responds-to>
+            <responds-to command="query ip">
+              <cocoa method="queryIp:"/>
+            </responds-to>
+        </class-extension>
+        
+        <enumeration name="open mode" code="OpMo" description="File open mode.">
+            <enumerator name="reading" code="OpRo" description="Open the file as read only. The file must exist."/>
+            <enumerator name="writing" code="OpWo" description="Open the file for writing. If the file does not exist, it will be created. If the file exists, it will be overwritten."/>
+            <enumerator name="appending" code="OpAp" description="Open the file for writing at the end. Offsets are ignored for writes. If the file does not exist, it will be created."/>
+        </enumeration>
+        
+        <command name="open file" code="UTMgOpEn" description="Open a file on the guest. You must close the file when you are done to prevent leaking guest resources.">
+          <direct-parameter description="Virtual machine of the guest." type="virtual machine"/>
+          <parameter name="at" code="OpPt" description="The guest path of the file to open." type="text">
+            <cocoa key="path"/>
+          </parameter>
+          <parameter name="for" code="OpMd" description="Open mode." type="open mode" optional="yes">
+            <cocoa key="mode"/>
+          </parameter>
+          <parameter name="updating" code="OpAp" description="If true, will open for both reading and writing. The file existance requirement and creation is still governed by the open mode. Default is false." type="boolean" optional="yes">
+            <cocoa key="isUpdate"/>
+          </parameter>
+          <result type="guest file" description="Guest file to operate on."/>
+        </command>
+        
+        <command name="execute" code="UTMgExEc" description="Execute a command or script on the guest.">
+          <direct-parameter description="Virtual machine of the guest." type="virtual machine"/>
+          <parameter name="at" code="ExPt" description="Either the full path of the executable to run or an executable found in the guest's PATH environment." type="text">
+            <cocoa key="path"/>
+          </parameter>
+          <parameter name="with arguments" code="ExAg" description="List of arguments to pass to the executable." optional="yes">
+            <cocoa key="argv"/>
+            <type type="text" list="yes"/>
+          </parameter>
+          <parameter name="with environment" code="ExEv" description="List of environment variables to pass to the executable. Each entry should be in the format NAME=VALUE." optional="yes">
+            <cocoa key="envp"/>
+            <type type="text" list="yes"/>
+          </parameter>
+          <parameter name="using input" code="ExIn" description="Data to feed into the process's standard input. If using base64 encoding, this should be a valid base64 string." type="text" optional="yes">
+            <cocoa key="input"/>
+          </parameter>
+          <parameter name="base64 encoding" code="Ex64" description="Input data is base64 encoded. The data will be decoded before being passed to the executable. Default is false." type="boolean" optional="yes">
+            <cocoa key="isBase64Encoded"/>
+          </parameter>
+          <parameter name="output capturing" code="ExOc" description="If true, the standard output and error will be captured and accessible in the returned object. You need to call update on the object to get the data. Default is false." type="boolean" optional="yes">
+            <cocoa key="isCaptureOutput"/>
+          </parameter>
+          <result type="guest process" description="Guest process that can be used to fetch the return value and outputs (if captured)."/>
+        </command>
+        
+        <command name="query ip" code="UTMgIpAd" description="Query the guest for all IP addresses on its network interfaces (excluding loopback).">
+          <direct-parameter description="Virtual machine of the guest." type="virtual machine"/>
+          <result description="List of IP addresses on all network interfaces (excluding loopback). Both IPv4 and IPv6 addresses can be returned. IPv4 addresses will show up before IPv6 addresses if any are available.">
+            <type type="text" list="yes"/>
+          </result>
+        </command>
+        
+        <class name="guest file" code="GuFi" description="A file that resides on the guest." plural="guest files">
+          <cocoa class="UTMScriptingGuestFileImpl"/>
+          <property name="id" code="ID  " type="integer" access="r"
+            description="The handle for the file."/>
+            
+          <responds-to command="read">
+            <cocoa method="read:"/>
+          </responds-to>
+          
+          <responds-to command="pull">
+            <cocoa method="pull:"/>
+          </responds-to>
+          
+          <responds-to command="write">
+            <cocoa method="write:"/>
+          </responds-to>
+          
+          <responds-to command="push">
+            <cocoa method="push:"/>
+          </responds-to>
+          
+          <responds-to command="close">
+            <cocoa method="close:"/>
+          </responds-to>
+        </class>
+        
+        <enumeration name="whence" code="WeCe" description="Where to offset from.">
+            <enumerator name="start position" code="StRt" description="The start of the file (only positive offsets)."/>
+            <enumerator name="current position" code="CuRr" description="The current pointer (both positive and negative offsets)."/>
+            <enumerator name="end position" code="UnAv" description="The end of the file (only negative offsets for reads, both for writes)."/>
+        </enumeration>
+        
+        <command name="read" code="GuFiReAd" description="Reads text data from a guest file.">
+          <direct-parameter description="Guest file to read." type="guest file"/>
+          <parameter name="at offset" code="RdOf" description="Specify the offset to start reading from. Default value is zero." type="integer" optional="yes">
+            <cocoa key="offset"/>
+          </parameter>
+          <parameter name="from" code="RdWh" description="Specify where the offset is from. Default value is from the current file pointer." type="whence" optional="yes">
+            <cocoa key="whence"/>
+          </parameter>
+          <parameter name="for length" code="RdLn" description="Amount of bytes to read. The limit is 48 MB. Default is to read until the end." type="integer" optional="yes">
+            <cocoa key="length"/>
+          </parameter>
+          <parameter name="base64 encoding" code="Rd64" description="If true, then the result will be base64 encoded. This is recommended if you are reading a binary file. Default is false." type="boolean" optional="yes">
+            <cocoa key="isBase64Encoded"/>
+          </parameter>
+          <parameter name="closing" code="RdCl" description="If true, the file will be closed after reading and must be opened again to perform more operations. If false, you can perform multiple reads on the same open file. The default is true." type="boolean" optional="yes">
+            <cocoa key="isClosing"/>
+          </parameter>
+          <result type="text" description="Data read from the guest file."/>
+        </command>
+        
+        <command name="pull" code="GuFiPuLl" description="Pulls a file from the guest to the host.">
+          <direct-parameter description="Guest file to pull." type="guest file"/>
+          <parameter name="to" code="kfil" description="The host file in which to save the guest file." type="file">
+            <cocoa key="file"/>
+          </parameter>
+          <parameter name="closing" code="PlCl" description="If true, the file will be closed after reading and must be opened again to perform more operations. If false, you can perform multiple reads on the same open file. The default is true." type="boolean" optional="yes">
+            <cocoa key="isClosing"/>
+          </parameter>
+        </command>
+        
+        <command name="write" code="GuFiWrIt" description="Writes text data to a guest file.">
+          <direct-parameter description="Guest file to write." type="guest file"/>
+          <parameter name="with data" code="WrDt" description="Data to write to the guest file. If base64 encoding is specified, this should be a valid base64 string which will be decoded before writing." type="text">
+            <cocoa key="data"/>
+          </parameter>
+          <parameter name="at offset" code="WrOf" description="Specify the offset to start writing to. Default value is zero." type="integer" optional="yes">
+            <cocoa key="offset"/>
+          </parameter>
+          <parameter name="from" code="WrWh" description="Specify where the offset is from. Default value is from the current file pointer." type="whence" optional="yes">
+            <cocoa key="whence"/>
+          </parameter>
+          <parameter name="base64 encoding" code="Wr64" description="If true, then the input data is base64 encoded. This is recommended if you are writing a binary file. Default is false." type="boolean" optional="yes">
+            <cocoa key="isBase64Encoded"/>
+          </parameter>
+          <parameter name="closing" code="WrCl" description="If true, the file will be closed after writing and must be opened again to perform more operations. If false, you can perform multiple reads on the same open file. The default is true." type="boolean" optional="yes">
+            <cocoa key="isClosing"/>
+          </parameter>
+        </command>
+        
+        <command name="push" code="GuFiPuSh" description="Pushes a file from the host to the guest and closes it.">
+          <direct-parameter description="Guest file to push." type="guest file"/>
+          <parameter name="from" code="kfil" description="The host file in which to send to the guest." type="file">
+            <cocoa key="file"/>
+          </parameter>
+          <parameter name="closing" code="PsCl" description="If true, the file will be closed after writing and must be opened again to perform more operations. If false, you can perform multiple reads on the same open file. The default is true." type="boolean" optional="yes">
+            <cocoa key="isClosing"/>
+          </parameter>
+        </command>
+        
+        <command name="close" code="GuFiClOs" description="Closes the file and prevent further operations.">
+          <direct-parameter description="Guest file to close." type="guest file"/>
+        </command>
+        
+        <class name="guest process" code="GuPr" description="A process on the guest." plural="guest processes">
+          <cocoa class="UTMScriptingGuestProcessImpl"/>
+          <property name="id" code="ID  " type="integer" access="r"
+            description="The PID of the process."/>
+          
+          <responds-to command="get result">
+            <cocoa method="getResult:"/>
+          </responds-to>
+        </class>
+        
+        <record-type name="execute result" code="ExRs" description="Process results after execution.">
+          <property name="exited" code="GuEx" type="boolean" access="r"
+            description="If true, the process has terminated.">
+            <cocoa key="hasExited" />
+          </property>
+            
+          <property name="exit code" code="GuEc" type="integer" access="r"
+            description="Exit code if it was normally terminated."/>
+            
+          <property name="signal code" code="GuSg" type="integer" access="r"
+            description="Signal number (Linux) or unhandled exception code (Windows) if the process was abnormally terminated."/>
+            
+          <property name="output text" code="GuOt" type="text" access="r"
+            description="If capture is enabled, the stdout of the process as text."/>
+            
+          <property name="error text" code="GuEr" type="text" access="r"
+            description="If capture is enabled, the stderr of the process as text."/>
+            
+          <property name="output data" code="GuOd" type="text" access="r"
+            description="If capture is enabled, the stdout of the process as base64 encoded data."/>
+            
+          <property name="error data" code="GuEd" type="text" access="r"
+            description="If capture is enabled, the stderr of the process as base64 encoded data."/>
+        </record-type>
+        
+        <command name="get result" code="GuPrGeRs" description="Fetch execution result from the guest.">
+          <direct-parameter description="Guest process to fetch result from." type="guest process"/>
+          <result type="execute result" description="Result from the guest."/>
+        </command>
+    </suite>
 </dictionary>

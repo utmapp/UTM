@@ -18,6 +18,8 @@
 
 public enum UTMScripting: String {
     case application = "application"
+    case guestFile = "guest file"
+    case guestProcess = "guest process"
     case serialPort = "serial port"
     case virtualMachine = "virtual machine"
     case window = "window"
@@ -74,6 +76,20 @@ import ScriptingBridge
     case unavailable = 0x49556e41 /* 'IUnA' */
 }
 
+// MARK: UTMScriptingOpenMode
+@objc public enum UTMScriptingOpenMode : AEKeyword {
+    case reading = 0x4f70526f /* 'OpRo' */
+    case writing = 0x4f70576f /* 'OpWo' */
+    case appending = 0x4f704170 /* 'OpAp' */
+}
+
+// MARK: UTMScriptingWhence
+@objc public enum UTMScriptingWhence : AEKeyword {
+    case startPosition = 0x53745274 /* 'StRt' */
+    case currentPosition = 0x43755272 /* 'CuRr' */
+    case endPosition = 0x556e4176 /* 'UnAv' */
+}
+
 // MARK: UTMScriptingGenericMethods
 @objc public protocol UTMScriptingGenericMethods {
     @objc optional func close() // Close a document.
@@ -125,9 +141,14 @@ extension SBObject: UTMScriptingWindow {}
     @objc optional var memory: String { get } // RAM size.
     @objc optional var backend: UTMScriptingBackend { get } // Emulation/virtualization engine used.
     @objc optional var status: UTMScriptingStatus { get } // Current running status.
-    @objc optional func startSaving(_ saving: Bool)
-    @objc optional func suspendSaving(_ saving: Bool)
-    @objc optional func stopBy(_ by: UTMScriptingStopMethod)
+    @objc optional func startSaving(_ saving: Bool) // Start a virtual machine or resume a suspended virtual machine.
+    @objc optional func suspendSaving(_ saving: Bool) // Suspend a running virtual machine to memory.
+    @objc optional func stopBy(_ by: UTMScriptingStopMethod) // Shuts down a running virtual machine.
+    @objc optional func openFileAt(_ at: String!, for for_: UTMScriptingOpenMode, updating: Bool) -> UTMScriptingGuestFile // Open a file on the guest. You must close the file when you are done to prevent leaking guest resources.
+    @objc optional func executeAt(_ at: String!, withArguments: [String]!, withEnvironment: [String]!, usingInput: String!, base64Encoding: Bool, outputCapturing: Bool) -> UTMScriptingGuestProcess // Execute a command or script on the guest.
+    @objc optional func queryIp() -> [Any] // Query the guest for all IP addresses on its network interfaces (excluding loopback).
+    @objc optional func guestFiles() -> SBElementArray
+    @objc optional func guestProcesses() -> SBElementArray
 }
 extension SBObject: UTMScriptingVirtualMachine {}
 
@@ -139,4 +160,22 @@ extension SBObject: UTMScriptingVirtualMachine {}
     @objc optional var port: Int { get } // Port number of the serial port (not used in some interface types).
 }
 extension SBObject: UTMScriptingSerialPort {}
+
+// MARK: UTMScriptingGuestFile
+@objc public protocol UTMScriptingGuestFile: SBObjectProtocol, UTMScriptingGenericMethods {
+    @objc optional func id() -> Int // The handle for the file.
+    @objc optional func readAtOffset(_ atOffset: Int, from: UTMScriptingWhence, forLength: Int, base64Encoding: Bool, closing: Bool) -> String // Reads text data from a guest file.
+    @objc optional func pullTo(_ to: URL!, closing: Bool) // Pulls a file from the guest to the host.
+    @objc optional func writeWithData(_ withData: String!, atOffset: Int, from: UTMScriptingWhence, base64Encoding: Bool, closing: Bool) // Writes text data to a guest file.
+    @objc optional func pushFrom(_ from: URL!, closing: Bool) // Pushes a file from the host to the guest and closes it.
+    @objc optional func close() // Closes the file and prevent further operations.
+}
+extension SBObject: UTMScriptingGuestFile {}
+
+// MARK: UTMScriptingGuestProcess
+@objc public protocol UTMScriptingGuestProcess: SBObjectProtocol, UTMScriptingGenericMethods {
+    @objc optional func id() -> Int // The PID of the process.
+    @objc optional func getResult() -> [AnyHashable : Any] // Fetch execution result from the guest.
+}
+extension SBObject: UTMScriptingGuestProcess {}
 
