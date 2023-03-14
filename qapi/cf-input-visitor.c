@@ -407,11 +407,11 @@ static bool cf_input_type_uint64(Visitor *v, const char *name,
         goto err;
     }
 
-    if (CFNumberGetValue(cfnum, kCFNumberSInt64Type, &val)) {
-        *obj = val;
+    if (!CFNumberGetValue(cfnum, kCFNumberSInt64Type, &val)) {
         return false;
     }
-
+    
+    *obj = val;
     // FIXME: CFNumber doesn't work with uint64_t!
 
     return true;
