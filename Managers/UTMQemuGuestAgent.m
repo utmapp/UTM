@@ -239,7 +239,7 @@ static strList *arrayToStrList(NSArray<NSString *> * _Nullable arr) {
         GuestExec *result = qmp_guest_exec(path.UTF8String,
                                            _arg != NULL, _arg,
                                            _env != NULL, _env,
-                                           input != nil, input.bytes,
+                                           input != nil, [input base64EncodedStringWithOptions:0].UTF8String,
                                            true, captureOutput,
                                            &qerr, (__bridge void *)self);
         NSError *error = [self _convertErrorFromQerrorAndFree:qerr];
