@@ -119,7 +119,6 @@ class UTMScriptingGuestFileImpl: NSObject, UTMScriptable {
                 data = try await guestAgent.guestFileRead(id, count: 4096)
                 try handle.write(contentsOf: data)
             } while data.count > 0
-            try await guestAgent.guestFileClose(id)
         }
     }
     
