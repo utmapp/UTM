@@ -24,7 +24,7 @@ struct UTMCtl: ParsableCommand {
     static var configuration = CommandConfiguration(
         commandName: "utmctl",
         abstract: "CLI tool for controlling UTM virtual machines.",
-        subcommands: [List.self, Status.self, Start.self, Suspend.self, Stop.self, Attach.self]
+        subcommands: [List.self, Status.self, Start.self, Suspend.self, Stop.self, Attach.self, File.self, Exec.self, IPAddress.self]
     )
 }
 
@@ -328,6 +328,134 @@ extension UTMCtl {
                 print("PTTY: \(serialPort.address!)")
             } else if serialPort.interface == .tcp {
                 print("TCP: \(serialPort.address!):\(serialPort.port!)")
+            }
+        }
+    }
+}
+
+extension UTMCtl {
+    struct File: ParsableCommand {
+        static var configuration = CommandConfiguration(
+            abstract: "Guest agent file operations.",
+            subcommands: [FilePull.self, FilePush.self]
+        )
+    }
+    
+    struct FilePull: UTMAPICommand {
+        static var configuration = CommandConfiguration(
+            commandName: "pull",
+            abstract: "Fetches a file from the guest and output it to stdout."
+        )
+        
+        @OptionGroup var environment: EnvironmentOptions
+        
+        @OptionGroup var identifer: VMIdentifier
+        
+        @Argument(help: "Path of the file to pull on the guest.")
+        var path: String
+        
+        func run(with application: UTMScriptingApplication) throws {
+            let vm = try virtualMachine(forIdentifier: identifer, in: application)
+            let file = vm.openFileAt!(path, for: .reading, updating: false)
+            var data: Data
+            repeat {
+                let text = file.readAtOffset!(0, from: .currentPosition, forLength: 4096, base64Encoding: true, closing: false)
+                data = Data(base64Encoded: text) ?? Data()
+                try FileHandle.standardOutput.write(contentsOf: data)
+            } while !data.isEmpty
+            file.close!()
+        }
+    }
+    
+    struct FilePush: UTMAPICommand {
+        static var configuration = CommandConfiguration(
+            commandName: "push",
+            abstract: "Uploads the contents of stdin to the guest."
+        )
+        
+        @OptionGroup var environment: EnvironmentOptions
+        
+        @OptionGroup var identifer: VMIdentifier
+        
+        @Argument(help: "Destination path on the guest.")
+        var path: String
+        
+        func run(with application: UTMScriptingApplication) throws {
+            let vm = try virtualMachine(forIdentifier: identifer, in: application)
+            let file = vm.openFileAt!(path, for: .writing, updating: false)
+            var data: Data
+            repeat {
+                data = try FileHandle.standardInput.read(upToCount: 4096) ?? Data()
+                file.writeWithData!(data.base64EncodedString(), atOffset: 0, from: .currentPosition, base64Encoding: true, closing: false)
+            } while !data.isEmpty
+            file.close!()
+        }
+    }
+}
+
+extension UTMCtl {
+    struct Exec: UTMAPICommand {
+        static var configuration = CommandConfiguration(
+            abstract: "Execute an application on the guest.",
+            discussion: "The return value of the command will be returned from this tool."
+        )
+        
+        @OptionGroup var environment: EnvironmentOptions
+        
+        @OptionGroup var identifer: VMIdentifier
+        
+        @Flag(name: .long, help: "Read in standard input and forward it to the guest.")
+        var input: Bool = false
+        
+        @Option(name: .long, parsing: .singleValue, help: "Set a single environment variable in the format NAME=VALUE")
+        var env: [String] = []
+        
+        @Option(parsing: .remaining, help: "Command line to execute on the guest.")
+        var cmd: [String]
+        
+        func run(with application: UTMScriptingApplication) throws {
+            let vm = try virtualMachine(forIdentifier: identifer, in: application)
+            let path = cmd.first!
+            let args = Array(cmd.dropFirst())
+            let data: Data
+            if input {
+                data = try FileHandle.standardInput.readToEnd() ?? Data()
+            } else {
+                data = Data()
+            }
+            let process = vm.executeAt!(path, withArguments: args, withEnvironment: env, usingInput: data.base64EncodedString(), base64Encoding: true, outputCapturing: true)
+            var result: [AnyHashable: Any]
+            repeat {
+                result = process.getResult!()
+            } while result["hasExited"] as? Bool == false
+            let exitCode = result["exitCode"] as? Int ?? 0
+            let outputData = result["outputData"] as? String ?? ""
+            let errorData = result["errorData"] as? String ?? ""
+            try FileHandle.standardOutput.write(contentsOf: Data(base64Encoded: outputData) ?? Data())
+            try FileHandle.standardError.write(contentsOf: Data(base64Encoded: errorData) ?? Data())
+            if exitCode != 0 {
+                Darwin.exit(Int32(exitCode))
+            }
+        }
+    }
+}
+
+extension UTMCtl {
+    struct IPAddress: UTMAPICommand {
+        static var configuration = CommandConfiguration(
+            abstract: "List all IP addresses associated with network interfaces on the guest.",
+            discussion: "IPv4 addresses (if available) will be listed before any IPv6 address."
+        )
+        
+        @OptionGroup var environment: EnvironmentOptions
+        
+        @OptionGroup var identifer: VMIdentifier
+        
+        func run(with application: UTMScriptingApplication) throws {
+            let vm = try virtualMachine(forIdentifier: identifer, in: application)
+            let addresses = vm.queryIp!()
+            for address in addresses {
+                print(address)
             }
         }
     }
