@@ -434,4 +434,299 @@
           <result type="execute result" description="Result from the guest."/>
         </command>
     </suite>
+
+    <suite name="UTM Configuration Suite" code="UTMc" description="UTM virtual machine configuration suite. Use this to create and configurate virtual machines.">
+        <access-group identifier="com.utmapp.UTM.vm-access" />
+        
+        <class-extension extends="virtual machine" description="Virtual machine configuration.">
+            <property name="configuration" code="VmCg" access="r"
+              description="The configuration of the virtual machine.">
+              <type type="qemu configuration"/>
+              <type type="apple configuration"/>
+            </property>
+            
+            <responds-to command="update configuration">
+              <cocoa method="updateConfiguration:"/>
+            </responds-to>
+        </class-extension>
+        
+        <command name="update configuration" code="UTMcUpDt" description="Update the configuration of the virtual machine. The VM must be in the stopped state.">
+          <direct-parameter description="Virtual machine to configure." type="virtual machine"/>
+          <parameter name="with" code="UpCf" description="The configuration to update the virtual machine. You cannot change the backend with this!">
+            <cocoa key="newConfiguration"/>
+            <type type="qemu configuration"/>
+            <type type="apple configuration"/>
+          </parameter>
+        </command>
+
+        <record-type name="qemu configuration" code="QeCf" description="QEMU virtual machine configuration.">
+          <property name="name" code="pnam" type="text"
+            description="Virtual machine name."/>
+            
+          <property name="notes" code="QcAr" type="text"
+            description="User-specified notes."/>
+            
+          <property name="architecture" code="QcAr" type="text"
+            description="QEMU system architecture."/>
+            
+          <property name="machine" code="QcMa" type="text"
+            description="QEMU target machine (if empty, the default will be used)."/>
+            
+          <property name="memory" code="QcMe" type="integer"
+            description="RAM size (in mebibytes)."/>
+            
+          <property name="cpu cores" code="QcCc" type="integer"
+            description="Number of CPU cores (0 is the default for this host)."/>
+            
+          <property name="hypervisor" code="QcHv" type="boolean"
+            description="Use the hypervisor (if supported)?"/>
+            
+          <property name="uefi" code="QcUe" type="boolean"
+            description="Use UEFI boot?"/>
+            
+          <property name="directory share mode" code="QcDs" type="qemu directory share mode"
+            description="Mode for directory sharing."/>
+            
+          <property name="drives" code="QcDr"
+            description="List of drive configuration.">
+            <type type="qemu drive existing configuration" list="yes"/>
+            <type type="qemu drive new configuration" list="yes"/>
+            <type type="qemu drive import configuration" list="yes"/>
+          </property>
+          
+          <property name="network interfaces" code="QcNi"
+            description="List of network configuration.">
+            <type type="qemu network configuration" list="yes"/>
+          </property>
+          
+          <property name="serial ports" code="QcSr"
+            description="List of serial configuration.">
+            <type type="qemu serial configuration" list="yes"/>
+          </property>
+        </record-type>
+        
+        <enumeration name="qemu directory share mode" code="QeSm" description="Method for sharing directory in QEMU.">
+            <enumerator name="none" code="SmOf" description="Do not enable directory sharing."/>
+            <enumerator name="WebDAV" code="SmWv" description="Use SPICE WebDav (SPICE guest tools required)."/>
+            <enumerator name="VirtFS" code="SmVs" description="Use VirtFS mount tagged 'share' (VirtFS guest drivers required)."/>
+        </enumeration>
+        
+        <record-type name="qemu drive existing configuration" code="QdEc" description="QEMU virtual existing drive configuration.">
+          <property name="id" code="ID  " type="text" access="r"
+            description="The unique identifier for this drive."/>
+            
+          <property name="removable" code="QdRm" type="boolean" access="r"
+            description="Is this drive removable?"/>
+            
+          <property name="interface" code="QdIf" type="qemu drive interface"
+            description="The hardware interface this drive is attached to (if empty, the default will be used)."/>
+            
+          <property name="host size" code="QdHs" type="integer" access="r"
+            description="The size of this drive as seen by the host (in MiB)."/>
+        </record-type>
+        
+        <record-type name="qemu drive new configuration" code="QdNc" description="QEMU virtual new drive configuration.">
+          <property name="interface" code="QdIf" type="qemu drive interface"
+            description="The hardware interface this drive is attached to (if empty, the default will be used)."/>
+            
+          <property name="removable" code="QdRm" type="boolean"
+            description="Is this drive removable?"/>
+            
+          <property name="guest size" code="QdHs" type="integer"
+            description="The size of this drive as seen by the guest (in MiB)."/>
+            
+          <property name="raw" code="QdRw" type="boolean"
+            description="Is this disk image raw format?"/>
+        </record-type>
+        
+        <record-type name="qemu drive import configuration" code="QdIc" description="QEMU virtual import drive configuration.">
+          <property name="interface" code="QdIf" type="qemu drive interface"
+            description="The hardware interface this drive is attached to (if empty, the default will be used)."/>
+            
+          <property name="removable" code="QdRm" type="boolean"
+            description="Is this drive removable?"/>
+            
+          <property name="source" code="QdSs" type="file"
+            description="The drive image to import into the virtual machine."/>
+            
+          <property name="raw" code="QdRw" type="boolean"
+            description="Is this disk image raw format?"/>
+        </record-type>
+        
+        <enumeration name="qemu drive interface" code="QeDi" description="QEMU drive interfaces.">
+            <enumerator name="none" code="QdIN"/>
+            <enumerator name="IDE" code="QdIi"/>
+            <enumerator name="SCSI" code="QdIs"/>
+            <enumerator name="SD" code="QdId"/>
+            <enumerator name="MTD" code="QdIm"/>
+            <enumerator name="Floppy" code="QdIf"/>
+            <enumerator name="PFlash" code="QdIp"/>
+            <enumerator name="VirtIO" code="QdIv"/>
+            <enumerator name="NVMe" code="QdIn"/>
+            <enumerator name="USB" code="QdIu"/>
+        </enumeration>
+        
+        <record-type name="qemu network configuration" code="QeCn" description="QEMU virtual network configuration.">
+          <property name="index" code="pidx" type="integer"
+            description="The position of the configuration to update. It can be empty to create a new device. Index is invalid after updating the configuration and must be reset to the current position."/>
+            
+          <property name="hardware" code="QnHw" type="text"
+            description="Name of the emulated network card (if empty, the default will be used)."/>
+            
+          <property name="mode" code="QnMd" type="qemu network mode"
+            description="This determines how the network device is attached to the host."/>
+            
+          <property name="address" code="QnAd" type="text"
+            description="MAC address (formatted as XX:XX:XX:XX:XX:XX, if empty a random address will be genertaed)"/>
+            
+          <property name="host interface" code="QnHi" type="text"
+            description="Only used in bridged mode. Specify the interface name to bridge to."/>
+            
+          <property name="port forwards" code="QnPf"
+            description="Only used in emulated mode. Allows port forwarding from guest to host.">
+            <type type="qemu port forward" list="yes"/>
+          </property>
+        </record-type>
+        
+        <enumeration name="qemu network mode" code="QeNm" description="Mode for networking device.">
+            <enumerator name="emulated" code="QnEm" description="Emulate a VLAN."/>
+            <enumerator name="shared" code="QnSh" description="NAT based sharing with the host."/>
+            <enumerator name="host" code="QnHs" description="NAT based sharing with no WAN routing."/>
+            <enumerator name="bridged" code="QnBr" description="Bridged to a host interface."/>
+        </enumeration>
+        
+        <record-type name="qemu port forward" code="QePf" description="QEMU port forward configuration.">
+          <property name="protocol" code="QpPr" type="network protocol"
+            description="Protocol of the port that will be forwarded."/>
+            
+          <property name="host address" code="QpHa" type="text"
+            description="The host interface IP address to forward to (if empty, it will forward to any interface)."/>
+            
+          <property name="host port" code="QpHp" type="integer"
+            description="Port number on the host."/>
+            
+          <property name="guest address" code="QpGa" type="text"
+            description="The IP address on the guest subnet to forward from (if empty, any guest IP will be accepted)."/>
+            
+          <property name="guest port" code="QpGp" type="integer"
+            description="Port number on the guest."/>
+        </record-type>
+        
+        <enumeration name="network protocol" code="NtPr" description="Supported network protocols.">
+            <enumerator name="TCP" code="NtTp"/>
+            <enumerator name="UDP" code="NtUp"/>
+        </enumeration>
+        
+        <record-type name="qemu serial configuration" code="QeSn" description="QEMU virtual serial configuration.">
+            <property name="index" code="pidx" type="integer"
+              description="The position of the configuration to update. It can be empty to create a new device. Index is invalid after updating the configuration and must be reset to the current position."/>
+              
+            <property name="hardware" code="QsHw" type="text"
+              description="Name of the emulated serial device (if empty, the default will be used)."/>
+              
+            <property name="interface" code="QsIf" type="serial interface"
+              description="The type of serial interface on the host."/>
+              
+            <property name="port" code="QsPt" type="integer"
+              description="The port number to listen on when the interface is a TCP server."/>
+        </record-type>
+        
+        <record-type name="apple configuration" code="ApCf" description="Apple virtual machine configuration.">
+          <property name="name" code="pnam" type="text"
+            description="Virtual machine name."/>
+            
+          <property name="notes" code="ApAr" type="text"
+            description="User-specified notes."/>
+            
+          <property name="memory" code="ApMe" type="integer"
+            description="RAM size (in mebibytes)."/>
+            
+          <property name="cpu cores" code="ApCc" type="integer"
+            description="Number of CPU cores (0 is the default for this host)."/>
+            
+          <property name="directory shares" code="ApDs"
+            description="List of directory share configuration.">
+            <type type="apple directory share configuration" list="yes"/>
+          </property>
+            
+          <property name="drives" code="ApDr"
+            description="List of drive configuration.">
+            <type type="apple drive existing configuration" list="yes"/>
+            <type type="apple drive new configuration" list="yes"/>
+            <type type="apple drive import configuration" list="yes"/>
+          </property>
+          
+          <property name="network interfaces" code="ApNi"
+            description="List of network configuration.">
+            <type type="apple network configuration" list="yes"/>
+          </property>
+          
+          <property name="serial ports" code="ApSr"
+            description="List of serial configuration.">
+            <type type="apple serial configuration" list="yes"/>
+          </property>
+        </record-type>
+        
+        <record-type name="apple directory share configuration" code="ApDs" description="Apple directory share configuration.">
+          <property name="index" code="pidx" type="integer"
+            description="The position of the configuration to update. It can be empty to create a new device. Index is invalid after updating the configuration and must be reset to the current position."/>
+            
+          <property name="read only" code="AdRo" type="boolean" access="r"
+            description="Is this directory read-only?"/>
+        </record-type>
+        
+        <record-type name="apple drive existing configuration" code="ApEc" description="Apple virtual existing drive configuration.">
+          <property name="id" code="ID  " type="text" access="r"
+            description="The unique identifier for this drive."/>
+            
+          <property name="removable" code="ApRm" type="boolean" access="r"
+            description="Is this drive removable?"/>
+            
+          <property name="host size" code="ApHs" type="integer" access="r"
+            description="The size of this drive as seen by the host (in MiB)."/>
+        </record-type>
+        
+        <record-type name="apple drive new configuration" code="ApNc" description="Apple virtual new drive configuration.">
+          <property name="guest size" code="ApGs" type="integer"
+            description="The size of this drive (in MiB)."/>
+            
+          <property name="removable" code="ApRm" type="boolean"
+            description="Is this drive removable?"/>
+        </record-type>
+        
+        <record-type name="apple drive import configuration" code="ApIc" description="Apple virtual import drive configuration.">
+          <property name="source" code="ApSs" type="file"
+            description="The drive image to import into the virtual machine."/>
+            
+          <property name="removable" code="ApRm" type="boolean"
+            description="Is this drive removable?"/>
+        </record-type>
+        
+        <record-type name="apple network configuration" code="ApCn" description="Apple virtual network configuration.">
+          <property name="index" code="pidx" type="integer"
+            description="The position of the configuration to update. It can be empty to create a new device. Index is invalid after updating the configuration and must be reset to the current position."/>
+            
+          <property name="mode" code="ApMd" type="apple network mode"
+            description="This determines how the network device is attached to the host."/>
+            
+          <property name="address" code="AnAd" type="text"
+            description="MAC address (formatted as XX:XX:XX:XX:XX:XX, if empty a random address will be genertaed)"/>
+            
+          <property name="host interface" code="AnHi" type="text"
+            description="Only used in bridged mode. Specify the interface name to bridge to."/>
+        </record-type>
+        
+        <enumeration name="apple network mode" code="ApNm" description="Mode for networking device.">
+            <enumerator name="shared" code="AnSh" description="NAT based sharing with the host."/>
+            <enumerator name="bridged" code="AnBr" description="Bridged to a host interface."/>
+        </enumeration>
+        
+        <record-type name="apple serial configuration" code="ApSn" description="Apple virtual serial configuration.">
+            <property name="index" code="pidx" type="integer"
+              description="The position of the configuration to update. It can be empty to create a new device. Index is invalid after updating the configuration and must be reset to the current position."/>
+              
+            <property name="interface" code="AsIf" type="serial interface"
+              description="The type of serial interface on the host (only PTTY is supported)."/>
+        </record-type>
+    </suite>
 </dictionary>

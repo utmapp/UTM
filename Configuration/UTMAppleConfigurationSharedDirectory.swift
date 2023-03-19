@@ -31,7 +31,7 @@ struct UTMAppleConfigurationSharedDirectory: Codable, Hashable, Identifiable {
         case isReadOnly = "ReadOnly"
     }
     
-    init(directoryURL: URL, isReadOnly: Bool = false) {
+    init(directoryURL: URL?, isReadOnly: Bool = false) {
         self.directoryURL = directoryURL
         self.isReadOnly = isReadOnly
     }

@@ -19,8 +19,8 @@ import Foundation
 @MainActor
 @objc(UTMScriptingVirtualMachineImpl)
 class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
-    private var vm: UTMVirtualMachine
-    private var data: UTMData
+    @nonobjc var vm: UTMVirtualMachine
+    @nonobjc var data: UTMData
     
     @objc var id: String {
         vm.id.uuidString
@@ -248,6 +248,7 @@ extension UTMScriptingVirtualMachineImpl {
         case operationNotAvailable
         case operationNotSupported
         case notRunning
+        case notStopped
         case guestAgentNotRunning
         case invalidParameter
         
@@ -256,6 +257,7 @@ extension UTMScriptingVirtualMachineImpl {
             case .operationNotAvailable: return NSLocalizedString("Operation not available.", comment: "UTMScriptingVirtualMachineImpl")
             case .operationNotSupported: return NSLocalizedString("Operation not supported by the backend.", comment: "UTMScriptingVirtualMachineImpl")
             case .notRunning: return NSLocalizedString("The virtual machine is not running.", comment: "UTMScriptingVirtualMachineImpl")
+            case .notStopped: return NSLocalizedString("The virtual machine must be stopped before this operation can be performed.", comment: "UTMScriptingVirtualMachineImpl")
             case .guestAgentNotRunning: return NSLocalizedString("The QEMU guest agent is not running or not installed on the guest.", comment: "UTMScriptingVirtualMachineImpl")
             case .invalidParameter: return NSLocalizedString("One or more required parameters are missing or invalid.", comment: "UTMScriptingVirtualMachineImpl")
             }

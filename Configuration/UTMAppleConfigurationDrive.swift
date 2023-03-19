@@ -57,7 +57,7 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
         isExternal = false
     }
     
-    init(existingURL url: URL, isExternal: Bool = false) {
+    init(existingURL url: URL?, isExternal: Bool = false) {
         self.imageURL = url
         self.isReadOnly = isExternal
         self.isExternal = isExternal

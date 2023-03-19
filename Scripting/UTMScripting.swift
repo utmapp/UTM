@@ -90,6 +90,47 @@ import ScriptingBridge
     case endPosition = 0x556e4176 /* 'UnAv' */
 }
 
+// MARK: UTMScriptingQemuDirectoryShareMode
+@objc public enum UTMScriptingQemuDirectoryShareMode : AEKeyword {
+    case none = 0x536d4f66 /* 'SmOf' */
+    case webDAV = 0x536d5776 /* 'SmWv' */
+    case virtFS = 0x536d5673 /* 'SmVs' */
+}
+
+// MARK: UTMScriptingQemuDriveInterface
+@objc public enum UTMScriptingQemuDriveInterface : AEKeyword {
+    case none = 0x5164494e /* 'QdIN' */
+    case ide = 0x51644969 /* 'QdIi' */
+    case scsi = 0x51644973 /* 'QdIs' */
+    case sd = 0x51644964 /* 'QdId' */
+    case mtd = 0x5164496d /* 'QdIm' */
+    case floppy = 0x51644966 /* 'QdIf' */
+    case pFlash = 0x51644970 /* 'QdIp' */
+    case virtIO = 0x51644976 /* 'QdIv' */
+    case nvMe = 0x5164496e /* 'QdIn' */
+    case usb = 0x51644975 /* 'QdIu' */
+}
+
+// MARK: UTMScriptingQemuNetworkMode
+@objc public enum UTMScriptingQemuNetworkMode : AEKeyword {
+    case emulated = 0x516e456d /* 'QnEm' */
+    case shared = 0x516e5368 /* 'QnSh' */
+    case host = 0x516e4873 /* 'QnHs' */
+    case bridged = 0x516e4272 /* 'QnBr' */
+}
+
+// MARK: UTMScriptingNetworkProtocol
+@objc public enum UTMScriptingNetworkProtocol : AEKeyword {
+    case tcp = 0x4e745470 /* 'NtTp' */
+    case udp = 0x4e745570 /* 'NtUp' */
+}
+
+// MARK: UTMScriptingAppleNetworkMode
+@objc public enum UTMScriptingAppleNetworkMode : AEKeyword {
+    case shared = 0x416e5368 /* 'AnSh' */
+    case bridged = 0x416e4272 /* 'AnBr' */
+}
+
 // MARK: UTMScriptingGenericMethods
 @objc public protocol UTMScriptingGenericMethods {
     @objc optional func close() // Close a document.
@@ -147,8 +188,10 @@ extension SBObject: UTMScriptingWindow {}
     @objc optional func openFileAt(_ at: String!, for for_: UTMScriptingOpenMode, updating: Bool) -> UTMScriptingGuestFile // Open a file on the guest. You must close the file when you are done to prevent leaking guest resources.
     @objc optional func executeAt(_ at: String!, withArguments: [String]!, withEnvironment: [String]!, usingInput: String!, base64Encoding: Bool, outputCapturing: Bool) -> UTMScriptingGuestProcess // Execute a command or script on the guest.
     @objc optional func queryIp() -> [Any] // Query the guest for all IP addresses on its network interfaces (excluding loopback).
+    @objc optional func updateConfigurationWith(_ with: Any!) // Update the configuration of the virtual machine. The VM must be in the stopped state.
     @objc optional func guestFiles() -> SBElementArray
     @objc optional func guestProcesses() -> SBElementArray
+    @objc optional var configuration: Any { get } // The configuration of the virtual machine.
 }
 extension SBObject: UTMScriptingVirtualMachine {}
 
