@@ -22,7 +22,6 @@ public enum UTMScripting: String {
     case guestProcess = "guest process"
     case serialPort = "serial port"
     case virtualMachine = "virtual machine"
-    case window = "window"
 }
 
 import AppKit
@@ -36,6 +35,13 @@ import ScriptingBridge
     func activate()
     var delegate: SBApplicationDelegate! { get set }
     var isRunning: Bool { get }
+}
+
+// MARK: UTMScriptingSaveOptions
+@objc public enum UTMScriptingSaveOptions : AEKeyword {
+    case yes = 0x79657320 /* 'yes ' */
+    case no = 0x6e6f2020 /* 'no  ' */
+    case ask = 0x61736b20 /* 'ask ' */
 }
 
 // MARK: UTMScriptingPrintingErrorHandling
@@ -133,22 +139,38 @@ import ScriptingBridge
 
 // MARK: UTMScriptingGenericMethods
 @objc public protocol UTMScriptingGenericMethods {
-    @objc optional func close() // Close a document.
+    @objc optional func closeSaving(_ saving: UTMScriptingSaveOptions, savingIn: URL!) // Close a document.
+    @objc optional func saveIn(_ in_: URL!, as: Any!) // Save a document.
+    @objc optional func printWithProperties(_ withProperties: [AnyHashable : Any]!, printDialog: Bool) // Print a document.
+    @objc optional func delete() // Delete an object.
+    @objc optional func duplicateTo(_ to: SBObject!, withProperties: [AnyHashable : Any]!) // Copy an object.
+    @objc optional func moveTo(_ to: SBObject!) // Move an object to a new location.
 }
 
 // MARK: UTMScriptingApplication
 @objc public protocol UTMScriptingApplication: SBApplicationProtocol {
+    @objc optional func documents() -> SBElementArray
     @objc optional func windows() -> SBElementArray
     @objc optional var name: String { get } // The name of the application.
     @objc optional var frontmost: Bool { get } // Is this the active application?
     @objc optional var version: String { get } // The version number of the application.
-    @objc optional func quit() // Quit the application.
+    @objc optional func `open`(_ x: Any!) -> Any // Open a document.
+    @objc optional func print(_ x: Any!, withProperties: [AnyHashable : Any]!, printDialog: Bool) // Print a document.
+    @objc optional func quitSaving(_ saving: UTMScriptingSaveOptions) // Quit the application.
     @objc optional func exists(_ x: Any!) -> Bool // Verify that an object exists.
     @objc optional func virtualMachines() -> SBElementArray
     @objc optional var autoTerminate: Bool { get } // Auto terminate the application when all windows are closed?
     @objc optional func setAutoTerminate(_ autoTerminate: Bool) // Auto terminate the application when all windows are closed?
 }
 extension SBApplication: UTMScriptingApplication {}
+
+// MARK: UTMScriptingDocument
+@objc public protocol UTMScriptingDocument: SBObjectProtocol, UTMScriptingGenericMethods {
+    @objc optional var name: String { get } // Its name.
+    @objc optional var modified: Bool { get } // Has it been modified since the last save?
+    @objc optional var file: URL { get } // Its location on disk, if it has one.
+}
+extension SBObject: UTMScriptingDocument {}
 
 // MARK: UTMScriptingWindow
 @objc public protocol UTMScriptingWindow: SBObjectProtocol, UTMScriptingGenericMethods {
@@ -163,6 +185,7 @@ extension SBApplication: UTMScriptingApplication {}
     @objc optional var visible: Bool { get } // Is the window visible right now?
     @objc optional var zoomable: Bool { get } // Does the window have a zoom button?
     @objc optional var zoomed: Bool { get } // Is the window zoomed right now?
+    @objc optional var document: UTMScriptingDocument { get } // The document whose contents are displayed in the window.
     @objc optional func setIndex(_ index: Int) // The index of the window, ordered front to back.
     @objc optional func setBounds(_ bounds: NSRect) // The bounding rectangle of the window.
     @objc optional func setMiniaturized(_ miniaturized: Bool) // Is the window minimized right now?

@@ -18,13 +18,8 @@ import Foundation
 
 @objc extension UTMScriptingVirtualMachineImpl {
     @objc var configuration: [AnyHashable : Any] {
-        if let vm = vm as? UTMQemuVirtualMachine {
-            return serializeQemuConfiguration(vm.qemuConfig)
-        } else if let vm = vm as? UTMAppleVirtualMachine {
-            return serializeAppleConfiguration(vm.appleConfig)
-        } else {
-            fatalError()
-        }
+        let wrapper = UTMScriptingConfigImpl(vm.config.wrappedValue as! any UTMConfiguration, data: data)
+        return wrapper.serializeConfiguration()
     }
     
     @objc func updateConfiguration(_ command: NSScriptCommand) {
@@ -36,24 +31,60 @@ import Foundation
             guard vm.state == .vmStopped else {
                 throw ScriptingError.notStopped
             }
-            if backend == .qemu {
-                try updateQemuConfiguration(from: newConfiguration)
-            } else if backend == .apple {
-                try updateAppleConfiguration(from: newConfiguration)
-            } else {
-                fatalError()
-            }
+            let wrapper = UTMScriptingConfigImpl(vm.config.wrappedValue as! any UTMConfiguration)
+            try wrapper.updateConfiguration(from: newConfiguration)
             try await data.save(vm: vm)
         }
     }
 }
 
 @MainActor
-extension UTMScriptingVirtualMachineImpl {
+class UTMScriptingConfigImpl {
     private var bytesInMib: Int64 {
         1048576
     }
     
+    private(set) var config: any UTMConfiguration
+    private weak var data: UTMData?
+    
+    init(_ config: any UTMConfiguration, data: UTMData? = nil) {
+        self.config = config
+        self.data = data
+    }
+    
+    func serializeConfiguration() -> [AnyHashable : Any] {
+        if let qemuConfig = config as? UTMQemuConfiguration {
+            return serializeQemuConfiguration(qemuConfig)
+        } else if let appleConfig = config as? UTMAppleConfiguration {
+            return serializeAppleConfiguration(appleConfig)
+        } else {
+            fatalError()
+        }
+    }
+    
+    func updateConfiguration(from record: [AnyHashable : Any]) throws {
+        if let _ = config as? UTMQemuConfiguration {
+            try updateQemuConfiguration(from: record)
+        } else if let _ = config as? UTMAppleConfiguration {
+            try updateAppleConfiguration(from: record)
+        } else {
+            fatalError()
+        }
+    }
+    
+    private func size(of drive: any UTMConfigurationDrive) -> Int {
+        guard let data = data else {
+            return 0
+        }
+        guard let url = drive.imageURL else {
+            return 0
+        }
+        return Int(data.computeSize(for: url) / bytesInMib)
+    }
+}
+
+@MainActor
+extension UTMScriptingConfigImpl {
     private func qemuDirectoryShareMode(from mode: QEMUFileShareMode) -> UTMScriptingQemuDirectoryShareMode {
         switch mode {
         case .none: return .none
@@ -77,13 +108,6 @@ extension UTMScriptingVirtualMachineImpl {
             "networkInterfaces": config.networks.enumerated().map({ serializeQemuNetwork($1, index: $0) }),
             "serialPorts": config.serials.enumerated().map({ serializeQemuSerial($1, index: $0) }),
         ]
-    }
-    
-    private func size(of drive: any UTMConfigurationDrive) -> Int {
-        guard let url = drive.imageURL else {
-            return 0
-        }
-        return Int(data.computeSize(for: url) / bytesInMib)
     }
     
     private func qemuDriveInterface(from interface: QEMUDriveInterface) -> UTMScriptingQemuDriveInterface {
@@ -224,7 +248,7 @@ extension UTMScriptingVirtualMachineImpl {
 }
 
 @MainActor
-extension UTMScriptingVirtualMachineImpl {
+extension UTMScriptingConfigImpl {
     private func updateElements<T>(_ array: inout [T], with records: [[AnyHashable : Any]], onExisting: @MainActor (inout T, [AnyHashable : Any]) throws -> Void, onNew: @MainActor ([AnyHashable : Any]) throws -> T) throws {
         var unseenIndicies = IndexSet(integersIn: array.indices)
         for record in records {
@@ -270,7 +294,7 @@ extension UTMScriptingVirtualMachineImpl {
     }
     
     private func updateQemuConfiguration(from record: [AnyHashable : Any]) throws {
-        let config = (vm as! UTMQemuVirtualMachine).qemuConfig
+        let config = config as! UTMQemuConfiguration
         if let name = record["name"] as? String, !name.isEmpty {
             config.information.name = name
         }
@@ -336,7 +360,7 @@ extension UTMScriptingVirtualMachineImpl {
     }
     
     private func updateQemuDrives(from records: [[AnyHashable : Any]]) throws {
-        let config = (vm as! UTMQemuVirtualMachine).qemuConfig
+        let config = config as! UTMQemuConfiguration
         try updateIdentifiedElements(&config.drives, with: records, onExisting: updateQemuExistingDrive, onNew: unserializeQemuDriveNew)
     }
     
@@ -347,7 +371,7 @@ extension UTMScriptingVirtualMachineImpl {
     }
     
     private func unserializeQemuDriveNew(from record: [AnyHashable : Any]) throws -> UTMQemuConfigurationDrive {
-        let config = (vm as! UTMQemuVirtualMachine).qemuConfig
+        let config = config as! UTMQemuConfiguration
         let removable = record["removable"] as? Bool ?? false
         var newDrive = UTMQemuConfigurationDrive(forArchitecture: config.system.architecture, target: config.system.target, isExternal: removable)
         if let importUrl = record["source"] as? URL {
@@ -365,7 +389,7 @@ extension UTMScriptingVirtualMachineImpl {
     }
     
     private func updateQemuNetworks(from records: [[AnyHashable : Any]]) throws {
-        let config = (vm as! UTMQemuVirtualMachine).qemuConfig
+        let config = config as! UTMQemuConfiguration
         try updateElements(&config.networks, with: records, onExisting: updateQemuExistingNetwork, onNew: { record in
             guard var newNetwork = UTMQemuConfigurationNetwork(forArchitecture: config.system.architecture, target: config.system.target) else {
                 throw ConfigurationError.deviceNotSupported
@@ -389,7 +413,7 @@ extension UTMScriptingVirtualMachineImpl {
     }
     
     private func updateQemuExistingNetwork(_ network: inout UTMQemuConfigurationNetwork, from record: [AnyHashable : Any]) throws {
-        let config = (vm as! UTMQemuVirtualMachine).qemuConfig
+        let config = config as! UTMQemuConfiguration
         if let hardware = record["hardware"] as? String, let hardware = config.system.architecture.networkDeviceType.init(rawValue: hardware) {
             network.hardware = hardware
         }
@@ -439,7 +463,7 @@ extension UTMScriptingVirtualMachineImpl {
     }
     
     private func updateQemuSerials(from records: [[AnyHashable : Any]]) throws {
-        let config = (vm as! UTMQemuVirtualMachine).qemuConfig
+        let config = config as! UTMQemuConfiguration
         try updateElements(&config.serials, with: records, onExisting: updateQemuExistingSerial, onNew: { record in
             guard var newSerial = UTMQemuConfigurationSerial(forArchitecture: config.system.architecture, target: config.system.target) else {
                 throw ConfigurationError.deviceNotSupported
@@ -461,7 +485,7 @@ extension UTMScriptingVirtualMachineImpl {
     }
     
     private func updateQemuExistingSerial(_ serial: inout UTMQemuConfigurationSerial, from record: [AnyHashable : Any]) throws {
-        let config = (vm as! UTMQemuVirtualMachine).qemuConfig
+        let config = config as! UTMQemuConfiguration
         if let hardware = record["hardware"] as? String, let hardware = config.system.architecture.serialDeviceType.init(rawValue: hardware) {
             serial.hardware = hardware
         }
@@ -474,7 +498,7 @@ extension UTMScriptingVirtualMachineImpl {
     }
     
     private func updateAppleConfiguration(from record: [AnyHashable : Any]) throws {
-        let config = (vm as! UTMAppleVirtualMachine).appleConfig
+        let config = config as! UTMAppleConfiguration
         if let name = record["name"] as? String, !name.isEmpty {
             config.information.name = name
         }
@@ -502,7 +526,7 @@ extension UTMScriptingVirtualMachineImpl {
     }
     
     private func updateAppleDirectoryShares(from records: [[AnyHashable : Any]]) throws {
-        let config = (vm as! UTMAppleVirtualMachine).appleConfig
+        let config = config as! UTMAppleConfiguration
         try updateElements(&config.sharedDirectories, with: records, onExisting: updateAppleExistingDirectoryShare, onNew: { record in
             var newShare = UTMAppleConfigurationSharedDirectory(directoryURL: nil, isReadOnly: false)
             try updateAppleExistingDirectoryShare(&newShare, from: record)
@@ -517,7 +541,7 @@ extension UTMScriptingVirtualMachineImpl {
     }
     
     private func updateAppleDrives(from records: [[AnyHashable : Any]]) throws {
-        let config = (vm as! UTMAppleVirtualMachine).appleConfig
+        let config = config as! UTMAppleConfiguration
         try updateIdentifiedElements(&config.drives, with: records, onExisting: { _, _  in }, onNew: unserializeAppleNewDrive)
     }
     
@@ -533,7 +557,7 @@ extension UTMScriptingVirtualMachineImpl {
     }
     
     private func updateAppleNetworks(from records: [[AnyHashable : Any]]) throws {
-        let config = (vm as! UTMAppleVirtualMachine).appleConfig
+        let config = config as! UTMAppleConfiguration
         try updateElements(&config.networks, with: records, onExisting: updateAppleExistingNetwork, onNew: { record in
             var newNetwork = UTMAppleConfigurationNetwork()
             try updateAppleExistingNetwork(&newNetwork, from: record)
@@ -565,7 +589,7 @@ extension UTMScriptingVirtualMachineImpl {
     }
     
     private func updateAppleSerials(from records: [[AnyHashable : Any]]) throws {
-        let config = (vm as! UTMAppleVirtualMachine).appleConfig
+        let config = config as! UTMAppleConfiguration
         try updateElements(&config.serials, with: records, onExisting: updateAppleExistingSerial, onNew: { record in
             var newSerial = UTMAppleConfigurationSerial()
             try updateAppleExistingSerial(&newSerial, from: record)

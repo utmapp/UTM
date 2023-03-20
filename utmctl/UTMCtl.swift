@@ -49,7 +49,7 @@ extension UTMAPICommand {
             if let windows = utmApp.windows!() as? [UTMScriptingWindow] {
                 for window in windows {
                     if window.name == "UTM" {
-                        window.close!()
+                        window.closeSaving!(.no, savingIn: nil)
                         break
                     }
                 }

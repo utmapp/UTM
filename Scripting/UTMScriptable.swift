@@ -25,9 +25,6 @@ extension UTMScriptable {
     ///   - body: What to do
     @MainActor
     func withScriptCommand<Result>(_ command: NSScriptCommand, body: @MainActor @escaping () async throws -> Result) {
-        guard command.evaluatedReceivers as? Self == self else {
-            return
-        }
         command.suspendExecution()
         // we need to run this in next event loop due to the need to return before calling resume
         DispatchQueue.main.async {
