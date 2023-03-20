@@ -136,6 +136,12 @@ static void *SpiceIoServiceGuestAgentContext = &SpiceIoServiceGuestAgentContext;
                 self.registryEntry.packageRemotePath = newPath;
                 completion(nil);
             });
+        } else if (existing) { // the remote bookmark is invalid but the local one still might be valid
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.registryEntry.packageRemoteBookmark = nil;
+                self.registryEntry.packageRemotePath = nil;
+                [self accessShortcutWithCompletion:completion];
+            });
         } else {
             completion([self errorWithMessage:NSLocalizedString(@"Failed to access data from shortcut.", @"UTMQemuVirtualMachine")]);
         }
