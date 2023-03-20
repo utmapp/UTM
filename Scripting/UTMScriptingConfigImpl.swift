@@ -310,7 +310,7 @@ extension UTMScriptingConfigImpl {
             config.system.architecture = arch
             config.system.target = target
             config.reset(forArchitecture: arch, target: target)
-        } else if let target = target {
+        } else if let target = target, target.rawValue != config.system.target.rawValue {
             config.system.target = target
             config.reset(forArchitecture: config.system.architecture, target: target)
         }
