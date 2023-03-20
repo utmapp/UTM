@@ -78,18 +78,6 @@
           <property name="name" code="pnam" type="text" access="r"
             description="The name of the VM."/>
             
-          <property name="notes" code="VmNo" type="text" access="r"
-            description="User specified notes."/>
-            
-          <property name="machine" code="VmTa" type="text" access="r"
-            description="Target machine name."/>
-            
-          <property name="architecture" code="VmAr" type="text" access="r"
-            description="Target architecture name."/>
-            
-          <property name="memory" code="VmMe" type="text" access="r"
-            description="RAM size."/>
-            
           <property name="backend" code="VmBa" type="backend" access="r"
             description="Emulation/virtualization engine used."/>
             
