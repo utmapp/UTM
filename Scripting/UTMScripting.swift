@@ -119,22 +119,22 @@ import ScriptingBridge
 
 // MARK: UTMScriptingQemuNetworkMode
 @objc public enum UTMScriptingQemuNetworkMode : AEKeyword {
-    case emulated = 0x516e456d /* 'QnEm' */
-    case shared = 0x516e5368 /* 'QnSh' */
-    case host = 0x516e4873 /* 'QnHs' */
-    case bridged = 0x516e4272 /* 'QnBr' */
+    case emulated = 0x456d5564 /* 'EmUd' */
+    case shared = 0x53685264 /* 'ShRd' */
+    case host = 0x486f5374 /* 'HoSt' */
+    case bridged = 0x42724764 /* 'BrGd' */
 }
 
 // MARK: UTMScriptingNetworkProtocol
 @objc public enum UTMScriptingNetworkProtocol : AEKeyword {
-    case tcp = 0x4e745470 /* 'NtTp' */
-    case udp = 0x4e745570 /* 'NtUp' */
+    case tcp = 0x54635070 /* 'TcPp' */
+    case udp = 0x55645070 /* 'UdPp' */
 }
 
 // MARK: UTMScriptingAppleNetworkMode
 @objc public enum UTMScriptingAppleNetworkMode : AEKeyword {
-    case shared = 0x416e5368 /* 'AnSh' */
-    case bridged = 0x416e4272 /* 'AnBr' */
+    case shared = 0x53685264 /* 'ShRd' */
+    case bridged = 0x42724764 /* 'BrGd' */
 }
 
 // MARK: UTMScriptingGenericMethods
@@ -199,10 +199,6 @@ extension SBObject: UTMScriptingWindow {}
     @objc optional func serialPorts() -> SBElementArray
     @objc optional func id() -> String // The unique identifier of the VM.
     @objc optional var name: String { get } // The name of the VM.
-    @objc optional var notes: String { get } // User specified notes.
-    @objc optional var machine: String { get } // Target machine name.
-    @objc optional var architecture: String { get } // Target architecture name.
-    @objc optional var memory: String { get } // RAM size.
     @objc optional var backend: UTMScriptingBackend { get } // Emulation/virtualization engine used.
     @objc optional var status: UTMScriptingStatus { get } // Current running status.
     @objc optional func startSaving(_ saving: Bool) // Start a virtual machine or resume a suspended virtual machine.
