@@ -583,9 +583,9 @@
 		CE25124929BFDBA6000790AB /* UTMScriptingGuestFileImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE25124829BFDBA6000790AB /* UTMScriptingGuestFileImpl.swift */; };
 		CE25124B29BFE273000790AB /* UTMScriptable.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE25124A29BFE273000790AB /* UTMScriptable.swift */; };
 		CE25124D29C55816000790AB /* UTMScriptingConfigImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE25124C29C55816000790AB /* UTMScriptingConfigImpl.swift */; };
-		CE25124F29C7E379000790AB /* UTMScriptingAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE25124E29C7E379000790AB /* UTMScriptingAppDelegate.swift */; };
 		CE25125129C806AF000790AB /* UTMScriptingDeleteCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE25125029C806AF000790AB /* UTMScriptingDeleteCommand.swift */; };
 		CE25125329C80A18000790AB /* UTMScriptingCloneCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE25125229C80A18000790AB /* UTMScriptingCloneCommand.swift */; };
+		CE25125529C80CD4000790AB /* UTMScriptingCreateCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE25125429C80CD4000790AB /* UTMScriptingCreateCommand.swift */; };
 		CE2D926A24AD46670059923A /* VMDisplayMetalViewController+Pointer.h in Sources */ = {isa = PBXBuildFile; fileRef = 83FBDD53242FA71900D2C5D7 /* VMDisplayMetalViewController+Pointer.h */; };
 		CE2D926B24AD46670059923A /* qapi-types-rocker.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C14D23FCEC09001177D6 /* qapi-types-rocker.c */; };
 		CE2D926E24AD46670059923A /* qapi-commands-crypto.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0AE23FCEC01001177D6 /* qapi-commands-crypto.c */; };
@@ -2106,9 +2106,9 @@
 		CE25124829BFDBA6000790AB /* UTMScriptingGuestFileImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMScriptingGuestFileImpl.swift; sourceTree = "<group>"; };
 		CE25124A29BFE273000790AB /* UTMScriptable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMScriptable.swift; sourceTree = "<group>"; };
 		CE25124C29C55816000790AB /* UTMScriptingConfigImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMScriptingConfigImpl.swift; sourceTree = "<group>"; };
-		CE25124E29C7E379000790AB /* UTMScriptingAppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMScriptingAppDelegate.swift; sourceTree = "<group>"; };
 		CE25125029C806AF000790AB /* UTMScriptingDeleteCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMScriptingDeleteCommand.swift; sourceTree = "<group>"; };
 		CE25125229C80A18000790AB /* UTMScriptingCloneCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMScriptingCloneCommand.swift; sourceTree = "<group>"; };
+		CE25125429C80CD4000790AB /* UTMScriptingCreateCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMScriptingCreateCommand.swift; sourceTree = "<group>"; };
 		CE258ACC22715F8300E5A333 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		CE2B89332262A21E00C6D9D8 /* UTMVirtualMachine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMVirtualMachine.h; sourceTree = "<group>"; };
 		CE2B89352262B2F600C6D9D8 /* UTMVirtualMachineDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMVirtualMachineDelegate.h; sourceTree = "<group>"; };
@@ -3463,12 +3463,12 @@
 				CEFE98DE29485237007CB7A8 /* UTM.sdef */,
 				CE25124A29BFE273000790AB /* UTMScriptable.swift */,
 				CEC794BB2949663C00121A9F /* UTMScripting.swift */,
-				CE25124E29C7E379000790AB /* UTMScriptingAppDelegate.swift */,
 				CEFE98E029485776007CB7A8 /* UTMScriptingVirtualMachineImpl.swift */,
 				CEC794B9294924E300121A9F /* UTMScriptingSerialPortImpl.swift */,
 				CE25124829BFDBA6000790AB /* UTMScriptingGuestFileImpl.swift */,
 				CE25124629BFDB87000790AB /* UTMScriptingGuestProcessImpl.swift */,
 				CE25124C29C55816000790AB /* UTMScriptingConfigImpl.swift */,
+				CE25125429C80CD4000790AB /* UTMScriptingCreateCommand.swift */,
 				CE25125029C806AF000790AB /* UTMScriptingDeleteCommand.swift */,
 				CE25125229C80A18000790AB /* UTMScriptingCloneCommand.swift */,
 			);
@@ -4122,7 +4122,6 @@
 				CE0B6D3724AD57FD00FE012D /* qapi-events-block-core.c in Sources */,
 				848A98B0286A0F74006F0550 /* UTMAppleConfiguration.swift in Sources */,
 				CE0B6D5E24AD584D00FE012D /* qapi-visit-authz.c in Sources */,
-				CE25124F29C7E379000790AB /* UTMScriptingAppDelegate.swift in Sources */,
 				CE0B6D4624AD584C00FE012D /* qapi-events-rdma.c in Sources */,
 				2C6D9E03256EE454003298E6 /* VMDisplayQemuTerminalWindowController.swift in Sources */,
 				CE6D21DD2553A6ED001D29C5 /* VMConfirmActionModifier.swift in Sources */,
@@ -4333,6 +4332,7 @@
 				CE0B6CF724AD568400FE012D /* UTMLegacyQemuConfiguration+Display.m in Sources */,
 				CE0B6D6F24AD584D00FE012D /* qapi-events-transaction.c in Sources */,
 				CE0B6D2524AD57FC00FE012D /* qapi-commands-sockets.c in Sources */,
+				CE25125529C80CD4000790AB /* UTMScriptingCreateCommand.swift in Sources */,
 				CE0B6D1624AD57FC00FE012D /* qapi-commands-block.c in Sources */,
 				843232B928C4816100CFBC97 /* UTMDownloadSupportToolsTask.swift in Sources */,
 				CE0B6D4724AD584C00FE012D /* qapi-visit-net.c in Sources */,

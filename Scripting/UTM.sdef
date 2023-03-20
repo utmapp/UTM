@@ -8,6 +8,17 @@
     <suite name="UTM Suite" code="UTMs" description="UTM virtual machines scripting suite.">
         <access-group identifier="com.utmapp.UTM.vm-access" />
         
+        <command name="make" code="corecrel" description="Create a new virtual machine.">
+            <cocoa class="UTMScriptingCreateCommand"/>
+            <parameter name="new" code="kocl" type="type" description="Specify 'virtual machine' here.">
+                <cocoa key="ObjectClass"/>
+            </parameter>
+            <parameter name="with properties" code="prdt" type="record" description="You must specify the backend as well as a configuration with a name. If this is a QEMU virtual machine, you must specify the architecture in the configuration as well.">
+                <cocoa key="KeyDictionary"/>
+            </parameter>
+            <result type="specifier" description="The new virtual machine (as a specifier)."/>
+        </command>
+        
         <class-extension extends="application" description="An application's top level scripting object.">
           <element type="virtual machine" access="r">
             <cocoa key="scriptingVirtualMachines"/>
@@ -15,9 +26,6 @@
           <property name="auto terminate" code="kRlW" type="boolean" description="Auto terminate the application when all windows are closed?">
               <cocoa key="isAutoTerminate"/>
           </property>
-          <responds-to command="make">
-            <cocoa method="handleCreateCommand:"/>
-          </responds-to>
         </class-extension>
         
         <enumeration name="backend" code="VmEb" description="Backend type.">

@@ -123,10 +123,6 @@ extension NSApplication {
         }
     }
     
-    @objc func handleCreateCommand(_ command: NSCreateCommand) {
-        (scriptingDelegate as? AppDelegate)?.handleCreateCommand(command)
-    }
-    
     fileprivate static func patchApplicationScripting() {
         patch(#selector(Self.value(forKey:)),
               with: #selector(Self.xxx_value(forKey:)),

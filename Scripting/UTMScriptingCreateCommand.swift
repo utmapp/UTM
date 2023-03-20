@@ -17,7 +17,8 @@
 import Foundation
 
 @MainActor
-@objc extension AppDelegate: UTMScriptable {
+@objc(UTMScriptingCreateCommand)
+class UTMScriptingCreateCommand: NSCreateCommand, UTMScriptable {
     private var bytesInMib: Int {
         1048576
     }
@@ -26,14 +27,17 @@ import Foundation
         1073741824
     }
     
-    @objc func handleCreateCommand(_ command: NSCreateCommand) {
-        if command.createClassDescription.implementationClassName == "UTMScriptingVirtualMachineImpl" {
-            let properties = command.resolvedKeyDictionary
-            withScriptCommand(command) { [self] in
-                guard let backend = properties["backend"] as? AEKeyword, let backend = UTMScriptingBackend(rawValue: backend) else {
+    private var data: UTMData? {
+        (NSApp.scriptingDelegate as? AppDelegate)?.data
+    }
+    
+    @objc override func performDefaultImplementation() -> Any? {
+        if createClassDescription.implementationClassName == "UTMScriptingVirtualMachineImpl" {
+            withScriptCommand(self) { [self] in
+                guard let backend = resolvedKeyDictionary["backend"] as? AEKeyword, let backend = UTMScriptingBackend(rawValue: backend) else {
                     throw ScriptingError.backendNotFound
                 }
-                guard let configuration = properties["configuration"] as? [AnyHashable : Any] else {
+                guard let configuration = resolvedKeyDictionary["configuration"] as? [AnyHashable : Any] else {
                     throw ScriptingError.configurationNotFound
                 }
                 if backend == .qemu {
@@ -44,8 +48,9 @@ import Foundation
                     throw ScriptingError.backendNotFound
                 }
             }
+            return nil
         } else {
-            command.performDefaultImplementation()
+            return super.performDefaultImplementation()
         }
     }
     
