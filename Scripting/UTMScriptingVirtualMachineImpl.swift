@@ -147,6 +147,30 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
             }
         }
     }
+    
+    @objc func delete(_ command: NSDeleteCommand) {
+        withScriptCommand(command) { [self] in
+            guard vm.state == .vmStopped else {
+                throw ScriptingError.notStopped
+            }
+            try await data.delete(vm: vm, alsoRegistry: true)
+        }
+    }
+    
+    @objc func clone(_ command: NSCloneCommand) {
+        let properties = command.evaluatedArguments?["WithProperties"] as? [AnyHashable : Any]
+        withScriptCommand(command) { [self] in
+            guard vm.state == .vmStopped else {
+                throw ScriptingError.notStopped
+            }
+            let newVM = try await data.clone(vm: vm)
+            if let properties = properties, let newConfiguration = properties["configuration"] as? [AnyHashable : Any] {
+                let wrapper = UTMScriptingConfigImpl(newVM.config.wrappedValue as! any UTMConfiguration)
+                try wrapper.updateConfiguration(from: newConfiguration)
+                try await data.save(vm: newVM)
+            }
+        }
+    }
 }
 
 // MARK: - Guest agent suite

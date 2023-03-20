@@ -584,6 +584,8 @@
 		CE25124B29BFE273000790AB /* UTMScriptable.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE25124A29BFE273000790AB /* UTMScriptable.swift */; };
 		CE25124D29C55816000790AB /* UTMScriptingConfigImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE25124C29C55816000790AB /* UTMScriptingConfigImpl.swift */; };
 		CE25124F29C7E379000790AB /* UTMScriptingAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE25124E29C7E379000790AB /* UTMScriptingAppDelegate.swift */; };
+		CE25125129C806AF000790AB /* UTMScriptingDeleteCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE25125029C806AF000790AB /* UTMScriptingDeleteCommand.swift */; };
+		CE25125329C80A18000790AB /* UTMScriptingCloneCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE25125229C80A18000790AB /* UTMScriptingCloneCommand.swift */; };
 		CE2D926A24AD46670059923A /* VMDisplayMetalViewController+Pointer.h in Sources */ = {isa = PBXBuildFile; fileRef = 83FBDD53242FA71900D2C5D7 /* VMDisplayMetalViewController+Pointer.h */; };
 		CE2D926B24AD46670059923A /* qapi-types-rocker.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C14D23FCEC09001177D6 /* qapi-types-rocker.c */; };
 		CE2D926E24AD46670059923A /* qapi-commands-crypto.c in Sources */ = {isa = PBXBuildFile; fileRef = CE23C0AE23FCEC01001177D6 /* qapi-commands-crypto.c */; };
@@ -2105,6 +2107,8 @@
 		CE25124A29BFE273000790AB /* UTMScriptable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMScriptable.swift; sourceTree = "<group>"; };
 		CE25124C29C55816000790AB /* UTMScriptingConfigImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMScriptingConfigImpl.swift; sourceTree = "<group>"; };
 		CE25124E29C7E379000790AB /* UTMScriptingAppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMScriptingAppDelegate.swift; sourceTree = "<group>"; };
+		CE25125029C806AF000790AB /* UTMScriptingDeleteCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMScriptingDeleteCommand.swift; sourceTree = "<group>"; };
+		CE25125229C80A18000790AB /* UTMScriptingCloneCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMScriptingCloneCommand.swift; sourceTree = "<group>"; };
 		CE258ACC22715F8300E5A333 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		CE2B89332262A21E00C6D9D8 /* UTMVirtualMachine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMVirtualMachine.h; sourceTree = "<group>"; };
 		CE2B89352262B2F600C6D9D8 /* UTMVirtualMachineDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMVirtualMachineDelegate.h; sourceTree = "<group>"; };
@@ -3465,6 +3469,8 @@
 				CE25124829BFDBA6000790AB /* UTMScriptingGuestFileImpl.swift */,
 				CE25124629BFDB87000790AB /* UTMScriptingGuestProcessImpl.swift */,
 				CE25124C29C55816000790AB /* UTMScriptingConfigImpl.swift */,
+				CE25125029C806AF000790AB /* UTMScriptingDeleteCommand.swift */,
+				CE25125229C80A18000790AB /* UTMScriptingCloneCommand.swift */,
 			);
 			path = Scripting;
 			sourceTree = "<group>";
@@ -4213,6 +4219,7 @@
 				CE0B6D6824AD584D00FE012D /* qapi-visit-machine.c in Sources */,
 				84C505AE28C588EC007CE8FF /* SizeTextField.swift in Sources */,
 				CE0B6D4A24AD584C00FE012D /* qapi-types-error.c in Sources */,
+				CE25125329C80A18000790AB /* UTMScriptingCloneCommand.swift in Sources */,
 				CE0B6D2124AD57FC00FE012D /* qapi-commands-error.c in Sources */,
 				CE2D956A24AD4F990059923A /* VMPlaceholderView.swift in Sources */,
 				CE0B6D5924AD584C00FE012D /* qapi-visit-run-state.c in Sources */,
@@ -4286,6 +4293,7 @@
 				CE928C2A26ABE6690099F293 /* UTMAppleVirtualMachine.swift in Sources */,
 				CE0B6D7724AD584D00FE012D /* qapi-events-misc-target.c in Sources */,
 				CE0B6CF524AD568400FE012D /* UTMLegacyQemuConfiguration+Miscellaneous.m in Sources */,
+				CE25125129C806AF000790AB /* UTMScriptingDeleteCommand.swift in Sources */,
 				CE0B6CFB24AD568400FE012D /* UTMLegacyQemuConfiguration+Networking.m in Sources */,
 				84C584E5268F8C65000FCABF /* VMAppleSettingsView.swift in Sources */,
 				84F746BB276FF70700A20C87 /* VMDisplayQemuDisplayController.swift in Sources */,

@@ -69,6 +69,21 @@
           </parameter>
         </command>
         
+        <command name="delete" code="coredelo" description="Delete a virtual machine. All data will be deleted, there is no confirmation!">
+            <cocoa class="UTMScriptingDeleteCommand"/>
+            <access-group identifier="*"/>
+            <direct-parameter type="virtual machine" description="The virtual machine to delete."/>
+        </command>
+        
+        <command name="duplicate" code="coreclon" description="Copy an virtual machine and all its data.">
+            <cocoa class="UTMScriptingCloneCommand"/>
+            <access-group identifier="*"/>
+            <direct-parameter type="virtual machine" requires-access="r" description="The virtual machine to copy."/>
+            <parameter name="with properties" code="prdt" type="record" description="Only the configuration can be changed." optional="yes">
+                <cocoa key="WithProperties"/>
+            </parameter>
+        </command>
+        
         <class name="virtual machine" code="UTMv" description="A virtual machine registered in UTM." plural="virtual machines">
           <cocoa class="UTMScriptingVirtualMachineImpl"/>
 
@@ -99,6 +114,10 @@
           
           <responds-to command="stop">
             <cocoa method="stop:"/>
+          </responds-to>
+          
+          <responds-to command="delete">
+            <cocoa method="delete:"/>
           </responds-to>
           
         </class>

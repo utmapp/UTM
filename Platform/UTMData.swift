@@ -460,7 +460,8 @@ class UTMData: ObservableObject {
     
     /// Save a copy of the VM and all data to default storage location
     /// - Parameter vm: VM to clone
-    func clone(vm: UTMVirtualMachine) async throws {
+    /// - Returns: The new VM
+    @discardableResult func clone(vm: UTMVirtualMachine) async throws -> UTMVirtualMachine {
         let newName: String = newDefaultVMName(base: vm.detailsTitleLabel)
         let newPath = UTMVirtualMachine.virtualMachinePath(newName, inParentURL: documentsURL)
         
@@ -476,6 +477,7 @@ class UTMData: ObservableObject {
         }
         await listAdd(vm: newVM, at: index)
         await listSelect(vm: newVM)
+        return newVM
     }
     
     /// Save a copy of the VM and all data to arbitary location
