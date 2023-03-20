@@ -397,12 +397,27 @@ import Foundation
         Bundle.main.url(forResource: "qemu", withExtension: nil)!
     }
     
+    private var soundBackend: UTMQEMUSoundBackend {
+        let value = UserDefaults.standard.integer(forKey: "QEMUSoundBackend")
+        if let backend = UTMQEMUSoundBackend(rawValue: value), backend != .qemuSoundBackendMax {
+            return backend
+        } else {
+            return .qemuSoundBackendDefault
+        }
+    }
+    
     private var useCoreAudioBackend: Bool {
         #if os(iOS)
         return false
         #else
         // force CoreAudio backend for mac99 which only supports 44100 Hz
-        return sound.contains(where: { $0.hardware.rawValue == "screamer" })
+        if sound.contains(where: { $0.hardware.rawValue == "screamer" }) {
+            return true
+        }
+        if soundBackend == .qemuSoundBackendDefault || soundBackend == .qemuSoundBackendCoreAudio {
+            return true
+        }
+        return false
         #endif
     }
     

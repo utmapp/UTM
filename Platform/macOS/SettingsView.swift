@@ -29,6 +29,10 @@ struct SettingsView: View {
                 .tabItem {
                     Label("Display", systemImage: "rectangle.on.rectangle")
                 }
+            SoundSettingsView().padding()
+                .tabItem {
+                    Label("Sound", systemImage: "speaker.wave.2")
+                }
             InputSettingsView().padding()
                 .tabItem {
                     Label("Input", systemImage: "keyboard")
@@ -102,6 +106,22 @@ struct DisplaySettingsView: View {
                         .multilineTextAlignment(.trailing)
                         .help("If set, a frame limit can improve smoothness in rendering by preventing stutters when set to the lowest value your device can handle.")
                 }
+            }
+        }
+    }
+}
+
+struct SoundSettingsView: View {
+    @AppStorage("QEMUSoundBackend") var qemuSoundBackend: UTMQEMUSoundBackend = .qemuSoundBackendDefault
+    
+    var body: some View {
+        Form {
+            Section(header: Text("QEMU Sound")) {
+                Picker("Sound Backend", selection: $qemuSoundBackend) {
+                    Text("Default").tag(UTMQEMUSoundBackend.qemuSoundBackendDefault)
+                    Text("SPICE with GStreamer").tag(UTMQEMUSoundBackend.qemuSoundBackendSPICE)
+                    Text("CoreAudio").tag(UTMQEMUSoundBackend.qemuSoundBackendCoreAudio)
+                }.help("By default, the best backend for the target will be used. If the selected backend is not available for any reason, an alternative will automatically be selected.")
             }
         }
     }

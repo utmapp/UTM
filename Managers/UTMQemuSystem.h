@@ -24,6 +24,14 @@ typedef NS_ENUM(NSInteger, UTMQEMURendererBackend) {
     kQEMURendererBackendMax = 3,
 };
 
+/// Specify the sound backend for this VM
+typedef NS_ENUM(NSInteger, UTMQEMUSoundBackend) {
+    kQEMUSoundBackendDefault = 0,
+    kQEMUSoundBackendSPICE = 1,
+    kQEMUSoundBackendCoreAudio = 2,
+    kQEMUSoundBackendMax = 3,
+};
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface UTMQemuSystem : UTMQemu
