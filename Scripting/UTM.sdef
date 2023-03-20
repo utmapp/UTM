@@ -413,9 +413,7 @@
             
           <property name="drives" code="DrVs"
             description="List of drive configuration.">
-            <type type="qemu drive existing configuration" list="yes"/>
-            <type type="qemu drive new configuration" list="yes"/>
-            <type type="qemu drive import configuration" list="yes"/>
+            <type type="qemu drive configuration" list="yes"/>
           </property>
           
           <property name="network interfaces" code="NtIf"
@@ -435,46 +433,27 @@
             <enumerator name="VirtFS" code="SmVs" description="Use VirtFS mount tagged 'share' (VirtFS guest drivers required)."/>
         </enumeration>
         
-        <record-type name="qemu drive existing configuration" code="QdEc" description="QEMU virtual existing drive configuration.">
+        <record-type name="qemu drive configuration" code="QdEc" description="QEMU virtual existing drive configuration.">
           <property name="id" code="ID  " type="text" access="r"
-            description="The unique identifier for this drive."/>
+            description="The unique identifier for this drive (if empty, a new drive will be created)."/>
             
           <property name="removable" code="ReMv" type="boolean" access="r"
-            description="Is this drive removable?"/>
+            description="Is this drive removable (cannot be changed after creation)?"/>
             
           <property name="interface" code="InTf" type="qemu drive interface"
             description="The hardware interface this drive is attached to (if empty, the default will be used)."/>
             
           <property name="host size" code="HoSz" type="integer" access="r"
             description="The size of this drive as seen by the host (in MiB)."/>
-        </record-type>
-        
-        <record-type name="qemu drive new configuration" code="QdNc" description="QEMU virtual new drive configuration.">
-          <property name="interface" code="InTf" type="qemu drive interface"
-            description="The hardware interface this drive is attached to (if empty, the default will be used)."/>
-            
-          <property name="removable" code="ReMv" type="boolean"
-            description="Is this drive removable?"/>
             
           <property name="guest size" code="GuSz" type="integer"
             description="The size of this drive as seen by the guest (in MiB)."/>
             
           <property name="raw" code="RaAw" type="boolean"
-            description="Is this disk image raw format?"/>
-        </record-type>
-        
-        <record-type name="qemu drive import configuration" code="QdIc" description="QEMU virtual import drive configuration.">
-          <property name="interface" code="InTf" type="qemu drive interface"
-            description="The hardware interface this drive is attached to (if empty, the default will be used)."/>
-            
-          <property name="removable" code="ReMv" type="boolean"
-            description="Is this drive removable?"/>
+            description="Is this disk image raw format (only for newly created drives)?"/>
             
           <property name="source" code="SrCe" type="file"
-            description="The drive image to import into the virtual machine."/>
-            
-          <property name="raw" code="RaAw" type="boolean"
-            description="Is this disk image raw format?"/>
+            description="An existing file to use as the source image."/>
         </record-type>
         
         <enumeration name="qemu drive interface" code="QeDi" description="QEMU drive interfaces.">
@@ -575,9 +554,7 @@
             
           <property name="drives" code="DrVs"
             description="List of drive configuration.">
-            <type type="apple drive existing configuration" list="yes"/>
-            <type type="apple drive new configuration" list="yes"/>
-            <type type="apple drive import configuration" list="yes"/>
+            <type type="apple drive configuration" list="yes"/>
           </property>
           
           <property name="network interfaces" code="NtIf"
@@ -599,31 +576,21 @@
             description="Is this directory read-only?"/>
         </record-type>
         
-        <record-type name="apple drive existing configuration" code="ApEc" description="Apple virtual existing drive configuration.">
+        <record-type name="apple drive configuration" code="ApEc" description="Apple virtual existing drive configuration.">
           <property name="id" code="ID  " type="text" access="r"
-            description="The unique identifier for this drive."/>
+            description="The unique identifier for this drive (if empty, a new drive will be created)."/>
             
           <property name="removable" code="ReMv" type="boolean" access="r"
-            description="Is this drive removable?"/>
+            description="Is this drive removable (cannot be changed after creation)?"/>
             
           <property name="host size" code="HoSz" type="integer" access="r"
             description="The size of this drive as seen by the host (in MiB)."/>
-        </record-type>
-        
-        <record-type name="apple drive new configuration" code="ApNc" description="Apple virtual new drive configuration.">
+            
           <property name="guest size" code="GuSz" type="integer"
-            description="The size of this drive (in MiB)."/>
+            description="The size of this drive as seen by the guest (in MiB)."/>
             
-          <property name="removable" code="ReMv" type="boolean"
-            description="Is this drive removable?"/>
-        </record-type>
-        
-        <record-type name="apple drive import configuration" code="ApIc" description="Apple virtual import drive configuration.">
           <property name="source" code="SrCe" type="file"
-            description="The drive image to import into the virtual machine."/>
-            
-          <property name="removable" code="ReMv" type="boolean"
-            description="Is this drive removable?"/>
+            description="An existing file to use as the source image."/>
         </record-type>
         
         <record-type name="apple network configuration" code="ApCn" description="Apple virtual network configuration.">

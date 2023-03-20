@@ -368,6 +368,9 @@ extension UTMScriptingConfigImpl {
         if let interface = parseQemuDriveInterface(record["interface"] as? AEKeyword) {
             drive.interface = interface
         }
+        if let source = record["source"] as? URL {
+            drive.imageURL = source
+        }
     }
     
     private func unserializeQemuDriveNew(from record: [AnyHashable : Any]) throws -> UTMQemuConfigurationDrive {
@@ -542,7 +545,13 @@ extension UTMScriptingConfigImpl {
     
     private func updateAppleDrives(from records: [[AnyHashable : Any]]) throws {
         let config = config as! UTMAppleConfiguration
-        try updateIdentifiedElements(&config.drives, with: records, onExisting: { _, _  in }, onNew: unserializeAppleNewDrive)
+        try updateIdentifiedElements(&config.drives, with: records, onExisting: updateAppleExistingDrive, onNew: unserializeAppleNewDrive)
+    }
+    
+    private func updateAppleExistingDrive(_ drive: inout UTMAppleConfigurationDrive, from record: [AnyHashable : Any]) throws {
+        if let source = record["source"] as? URL {
+            drive.imageURL = source
+        }
     }
     
     private func unserializeAppleNewDrive(from record: [AnyHashable : Any]) throws -> UTMAppleConfigurationDrive {
