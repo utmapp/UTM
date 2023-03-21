@@ -29,8 +29,8 @@ GST_SRC="https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-1.19.1.tar.xz
 GST_BASE_SRC="https://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-base-1.19.1.tar.xz"
 GST_GOOD_SRC="https://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-1.19.1.tar.xz"
 XML2_SRC="http://xmlsoft.org/sources/libxml2-2.9.12.tar.gz"
-SOUP_SRC="https://ftp.gnome.org/pub/GNOME/sources/libsoup/2.74/libsoup-2.74.2.tar.xz"
-PHODAV_SRC="http://ftp.gnome.org/pub/GNOME/sources/phodav/2.5/phodav-2.5.tar.xz"
+SOUP_SRC="https://download.gnome.org/sources/libsoup/2.74/libsoup-2.74.2.tar.xz"
+PHODAV_SRC="https://download.gnome.org/sources/phodav/2.5/phodav-2.5.tar.xz"
 SPICE_CLIENT_SRC="https://www.spice-space.org/download/gtk/spice-gtk-0.40.tar.xz"
 
 # Source files for GPU acceleration
