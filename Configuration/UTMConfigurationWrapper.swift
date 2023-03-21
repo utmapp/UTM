@@ -141,24 +141,6 @@ import Foundation
         }
     }
     
-    @objc var qemuSnapshotName: String? {
-        get {
-            if wrappedValue is UTMQemuConfiguration {
-                return qemuConfig!._qemu.snapshotName
-            } else {
-                fatalError()
-            }
-        }
-        
-        set {
-            if wrappedValue is UTMQemuConfiguration {
-                qemuConfig!._qemu.snapshotName = newValue
-            } else {
-                fatalError()
-            }
-        }
-    }
-    
     // FIXME: @MainActor here is a HACK and does nothing in Obj-C!
     @MainActor @objc var qemuSpiceSocketURL: URL {
         if wrappedValue is UTMQemuConfiguration {

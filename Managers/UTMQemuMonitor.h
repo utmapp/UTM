@@ -30,8 +30,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)qemuStopWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion;
 - (void)qemuResumeWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion;
 - (void)qemuQuitWithCompletion:(void (^ _Nullable)(NSError * _Nullable))completion;
-- (void)qemuSaveStateWithCompletion:(void (^ _Nullable)(NSString * _Nullable, NSError * _Nullable))completion snapshotName:(NSString *)name;
-- (void)qemuDeleteStateWithCompletion:(void (^)(NSString * _Nullable, NSError * _Nullable))completion snapshotName:(NSString *)name;
+- (void)qemuSaveSnapshot:(NSString *)snapshot withCompletion:(void (^)(NSString * _Nullable, NSError * _Nullable))completion;
+- (void)qemuDeleteSnapshot:(NSString *)snapshot withCompletion:(void (^)(NSString * _Nullable, NSError * _Nullable))completion;
+- (void)qemuRestoreSnapshot:(NSString *)snapshot withCompletion:(void (^)(NSString * _Nullable, NSError * _Nullable))completion;
 
 - (void)mouseIndexForAbsolute:(BOOL)absolute withCompletion:(void (^)(int64_t, NSError * _Nullable))completion;
 - (void)mouseSelect:(int64_t)index withCompletion:(void (^)(NSString * _Nullable, NSError * _Nullable))completion;

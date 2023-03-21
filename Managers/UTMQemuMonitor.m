@@ -229,13 +229,18 @@ qapi_enum_handler_registry qapi_enum_handler_registry_data = {
     [self qmpPowerCommand:@"quit" completion:completion];
 }
 
-- (void)qemuSaveStateWithCompletion:(void (^)(NSString * _Nullable, NSError * _Nullable))completion snapshotName:(NSString *)name {
-    NSString *cmd = [NSString stringWithFormat:@"savevm %@", name];
+- (void)qemuSaveSnapshot:(NSString *)snapshot withCompletion:(void (^)(NSString * _Nullable, NSError * _Nullable))completion {
+    NSString *cmd = [NSString stringWithFormat:@"savevm %@", snapshot];
     [self qmpHmpCommand:cmd completion:completion];
 }
 
-- (void)qemuDeleteStateWithCompletion:(void (^)(NSString * _Nullable, NSError * _Nullable))completion snapshotName:(NSString *)name {
-    NSString *cmd = [NSString stringWithFormat:@"delvm %@", name];
+- (void)qemuDeleteSnapshot:(NSString *)snapshot withCompletion:(void (^)(NSString * _Nullable, NSError * _Nullable))completion {
+    NSString *cmd = [NSString stringWithFormat:@"delvm %@", snapshot];
+    [self qmpHmpCommand:cmd completion:completion];
+}
+
+- (void)qemuRestoreSnapshot:(NSString *)snapshot withCompletion:(void (^)(NSString * _Nullable, NSError * _Nullable))completion {
+    NSString *cmd = [NSString stringWithFormat:@"loadvm %@", snapshot];
     [self qmpHmpCommand:cmd completion:completion];
 }
 

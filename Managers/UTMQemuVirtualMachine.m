@@ -162,12 +162,6 @@ static void *SpiceIoServiceGuestAgentContext = &SpiceIoServiceGuestAgentContext;
     }
     
     self.config.qemuIsDisposable = self.isRunningAsSnapshot;
-    if (!self.isRunningAsSnapshot) {
-        // Loading save states isn't possible when -snapshot is used
-        if (self.registryEntry.hasSaveState) {
-            self.config.qemuSnapshotName = kSuspendSnapshotName;
-        }
-    }
     
     NSArray<NSString *> *arguments = self.config.qemuArguments;
     NSArray<NSURL *> *resources = self.config.qemuResources;
@@ -306,6 +300,27 @@ static void *SpiceIoServiceGuestAgentContext = &SpiceIoServiceGuestAgentContext;
         return;
     }
     assert(self.qemu.isConnected);
+    // load saved state if requested
+    if (!self.isRunningAsSnapshot && self.registryEntry.hasSaveState) {
+        __block NSError *restoreError = nil;
+        dispatch_semaphore_t restoreSnapshotEvent = dispatch_semaphore_create(0);
+        [self.qemu qemuRestoreSnapshot:kSuspendSnapshotName withCompletion:^(NSString *result, NSError *error) {
+            if (error) {
+                restoreError = error;
+            } else if ([result localizedCaseInsensitiveContainsString:@"Error"]) {
+                restoreError = [self errorWithMessage:result]; // error message
+            }
+            dispatch_semaphore_signal(restoreSnapshotEvent);
+        }];
+        if (dispatch_semaphore_wait(restoreSnapshotEvent, DISPATCH_TIME_FOREVER) != 0) {
+            completion([self errorGeneric]);
+            return;
+        }
+        if (restoreError) {
+            completion(restoreError);
+            return;
+        }
+    }
     // continue VM boot
     if (![self.qemu continueBootWithError:&err]) {
         UTMLog(@"Failed to boot: %@", err);
@@ -478,7 +493,7 @@ static void *SpiceIoServiceGuestAgentContext = &SpiceIoServiceGuestAgentContext;
 - (void)_vmSaveStateWithCompletion:(void (^)(NSError * _Nullable))completion {
     __block NSError *saveError = nil;
     dispatch_semaphore_t saveTriggeredEvent = dispatch_semaphore_create(0);
-    [self.qemu qemuSaveStateWithCompletion:^(NSString *result, NSError *err) {
+    [self.qemu qemuSaveSnapshot:kSuspendSnapshotName withCompletion:^(NSString *result, NSError *err) {
         UTMLog(@"save callback: %@", result);
         if (err) {
             UTMLog(@"error: %@", err);
@@ -493,7 +508,7 @@ static void *SpiceIoServiceGuestAgentContext = &SpiceIoServiceGuestAgentContext;
             saveError = [self errorWithMessage:newMsg];
         }
         dispatch_semaphore_signal(saveTriggeredEvent);
-    } snapshotName:kSuspendSnapshotName];
+    }];
     if (dispatch_semaphore_wait(saveTriggeredEvent, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
         UTMLog(@"Save operation timeout");
         saveError = [self errorGeneric];
@@ -521,7 +536,7 @@ static void *SpiceIoServiceGuestAgentContext = &SpiceIoServiceGuestAgentContext;
     __block NSError *deleteError = nil;
     if (self.qemu) { // if QEMU is running
         dispatch_semaphore_t deleteTriggeredEvent = dispatch_semaphore_create(0);
-        [self.qemu qemuDeleteStateWithCompletion:^(NSString *result, NSError *err) {
+        [self.qemu qemuDeleteSnapshot:kSuspendSnapshotName withCompletion:^(NSString *result, NSError *err) {
             UTMLog(@"delete save callback: %@", result);
             if (err) {
                 UTMLog(@"error: %@", err);
@@ -531,7 +546,7 @@ static void *SpiceIoServiceGuestAgentContext = &SpiceIoServiceGuestAgentContext;
                 deleteError = [self errorWithMessage:result]; // error message
             }
             dispatch_semaphore_signal(deleteTriggeredEvent);
-        } snapshotName:kSuspendSnapshotName];
+        }];
         if (dispatch_semaphore_wait(deleteTriggeredEvent, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
             UTMLog(@"Delete save operation timeout");
             deleteError = [self errorGeneric];

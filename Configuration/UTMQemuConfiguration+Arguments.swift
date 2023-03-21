@@ -796,10 +796,7 @@ import Foundation
     @QEMUArgumentBuilder private var miscArguments: [QEMUArgument] {
         f("-name")
         f(information.name)
-        if let snapshotName = qemu.snapshotName {
-            f("-loadvm")
-            f(snapshotName)
-        } else if qemu.isDisposable {
+        if qemu.isDisposable {
             f("-snapshot")
         }
         f("-uuid")

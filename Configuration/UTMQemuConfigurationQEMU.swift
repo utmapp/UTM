@@ -57,9 +57,6 @@ struct UTMQemuConfigurationQEMU: Codable {
     /// Additional QEMU arguments.
     var additionalArguments: [QEMUArgument] = []
     
-    /// If set, attempt to boot from a snapshot with the following name. Not saved.
-    var snapshotName: String?
-    
     /// If true, changes to the VM will not be committed to disk. Not saved.
     var isDisposable: Bool = false
     
