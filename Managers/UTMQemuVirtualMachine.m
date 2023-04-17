@@ -274,6 +274,7 @@ static void *SpiceIoServiceGuestAgentContext = &SpiceIoServiceGuestAgentContext;
     }];
     if (dispatch_semaphore_wait(spiceConnectOrErrorEvent, self.config.qemuShouldWaitForeverForConnect ? DISPATCH_TIME_FOREVER : dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
         UTMLog(@"Timed out waiting for SPICE connect event");
+        [self _vmStopForce:YES completion:^(NSError *err) {}];
         completion([self errorGeneric]);
         return;
     }
@@ -282,6 +283,7 @@ static void *SpiceIoServiceGuestAgentContext = &SpiceIoServiceGuestAgentContext;
         return;
     }
     if (spiceConnectFailed) {
+        [self _vmStopForce:YES completion:^(NSError *err) {}];
         completion(spiceConnectError);
         return;
     }
@@ -289,6 +291,7 @@ static void *SpiceIoServiceGuestAgentContext = &SpiceIoServiceGuestAgentContext;
     // wait for QMP to connect
     if (dispatch_semaphore_wait(self.qemuDidConnectEvent, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
         UTMLog(@"Timed out waiting for QMP connect event");
+        [self _vmStopForce:YES completion:^(NSError *err) {}];
         completion([self errorGeneric]);
         return;
     }
@@ -296,6 +299,7 @@ static void *SpiceIoServiceGuestAgentContext = &SpiceIoServiceGuestAgentContext;
     // enter command mode
     if (![self.qemu qmpEnterCommandModeWithError:&err]) {
         UTMLog(@"Failed to enter command mode: %@", err);
+        [self _vmStopForce:YES completion:^(NSError *err) {}];
         completion(err);
         return;
     }
@@ -317,6 +321,7 @@ static void *SpiceIoServiceGuestAgentContext = &SpiceIoServiceGuestAgentContext;
             return;
         }
         if (restoreError) {
+            [self _vmStopForce:YES completion:^(NSError *err) {}];
             completion(restoreError);
             return;
         }
@@ -324,6 +329,7 @@ static void *SpiceIoServiceGuestAgentContext = &SpiceIoServiceGuestAgentContext;
     // continue VM boot
     if (![self.qemu continueBootWithError:&err]) {
         UTMLog(@"Failed to boot: %@", err);
+        [self _vmStopForce:YES completion:^(NSError *err) {}];
         completion(err);
         return;
     }
