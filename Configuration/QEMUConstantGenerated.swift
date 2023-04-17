@@ -6716,6 +6716,8 @@ enum QEMUDisplayDevice_alpha: String, CaseIterable, QEMUDisplayDevice {
     case ati_vga = "ati-vga"
     case bochs_display = "bochs-display"
     case secondary_vga = "secondary-vga"
+    case virtio_gpu_device = "virtio-gpu-device"
+    case virtio_gpu_gl_device = "virtio-gpu-gl-device"
     case virtio_gpu_gl_pci = "virtio-gpu-gl-pci"
     case virtio_gpu_pci = "virtio-gpu-pci"
     case vmware_svga = "vmware-svga"
@@ -6727,6 +6729,8 @@ enum QEMUDisplayDevice_alpha: String, CaseIterable, QEMUDisplayDevice {
         case .ati_vga: return "ati-vga"
         case .bochs_display: return "bochs-display"
         case .secondary_vga: return "secondary-vga"
+        case .virtio_gpu_device: return "virtio-gpu-device"
+        case .virtio_gpu_gl_device: return "virtio-gpu-gl-device (GPU Supported)"
         case .virtio_gpu_gl_pci: return "virtio-gpu-gl-pci (GPU Supported)"
         case .virtio_gpu_pci: return "virtio-gpu-pci"
         case .vmware_svga: return "vmware-svga"
@@ -6743,6 +6747,8 @@ enum QEMUDisplayDevice_arm: String, CaseIterable, QEMUDisplayDevice {
     case ramfb
     case secondary_vga = "secondary-vga"
     case ssd0323
+    case virtio_gpu_device = "virtio-gpu-device"
+    case virtio_gpu_gl_device = "virtio-gpu-gl-device"
     case virtio_gpu_gl_pci = "virtio-gpu-gl-pci"
     case virtio_gpu_pci = "virtio-gpu-pci"
     case virtio_ramfb = "virtio-ramfb"
@@ -6759,6 +6765,8 @@ enum QEMUDisplayDevice_arm: String, CaseIterable, QEMUDisplayDevice {
         case .ramfb: return "ram framebuffer standalone device (ramfb)"
         case .secondary_vga: return "secondary-vga"
         case .ssd0323: return "ssd0323"
+        case .virtio_gpu_device: return "virtio-gpu-device"
+        case .virtio_gpu_gl_device: return "virtio-gpu-gl-device (GPU Supported)"
         case .virtio_gpu_gl_pci: return "virtio-gpu-gl-pci (GPU Supported)"
         case .virtio_gpu_pci: return "virtio-gpu-pci"
         case .virtio_ramfb: return "virtio-ramfb"
@@ -6777,6 +6785,8 @@ enum QEMUDisplayDevice_aarch64: String, CaseIterable, QEMUDisplayDevice {
     case ramfb
     case secondary_vga = "secondary-vga"
     case ssd0323
+    case virtio_gpu_device = "virtio-gpu-device"
+    case virtio_gpu_gl_device = "virtio-gpu-gl-device"
     case virtio_gpu_gl_pci = "virtio-gpu-gl-pci"
     case virtio_gpu_pci = "virtio-gpu-pci"
     case virtio_ramfb = "virtio-ramfb"
@@ -6793,6 +6803,8 @@ enum QEMUDisplayDevice_aarch64: String, CaseIterable, QEMUDisplayDevice {
         case .ramfb: return "ram framebuffer standalone device (ramfb)"
         case .secondary_vga: return "secondary-vga"
         case .ssd0323: return "ssd0323"
+        case .virtio_gpu_device: return "virtio-gpu-device"
+        case .virtio_gpu_gl_device: return "virtio-gpu-gl-device (GPU Supported)"
         case .virtio_gpu_gl_pci: return "virtio-gpu-gl-pci (GPU Supported)"
         case .virtio_gpu_pci: return "virtio-gpu-pci"
         case .virtio_ramfb: return "virtio-ramfb"
@@ -6812,6 +6824,8 @@ enum QEMUDisplayDevice_hppa: String, CaseIterable, QEMUDisplayDevice {
     case ati_vga = "ati-vga"
     case bochs_display = "bochs-display"
     case secondary_vga = "secondary-vga"
+    case virtio_gpu_device = "virtio-gpu-device"
+    case virtio_gpu_gl_device = "virtio-gpu-gl-device"
     case virtio_gpu_gl_pci = "virtio-gpu-gl-pci"
     case virtio_gpu_pci = "virtio-gpu-pci"
     case virtio_vga = "virtio-vga"
@@ -6825,6 +6839,8 @@ enum QEMUDisplayDevice_hppa: String, CaseIterable, QEMUDisplayDevice {
         case .ati_vga: return "ati-vga"
         case .bochs_display: return "bochs-display"
         case .secondary_vga: return "secondary-vga"
+        case .virtio_gpu_device: return "virtio-gpu-device"
+        case .virtio_gpu_gl_device: return "virtio-gpu-gl-device (GPU Supported)"
         case .virtio_gpu_gl_pci: return "virtio-gpu-gl-pci (GPU Supported)"
         case .virtio_gpu_pci: return "virtio-gpu-pci"
         case .virtio_vga: return "virtio-vga"
@@ -6846,6 +6862,8 @@ enum QEMUDisplayDevice_i386: String, CaseIterable, QEMUDisplayDevice {
     case isa_vga = "isa-vga"
     case ramfb
     case secondary_vga = "secondary-vga"
+    case virtio_gpu_device = "virtio-gpu-device"
+    case virtio_gpu_gl_device = "virtio-gpu-gl-device"
     case virtio_gpu_gl_pci = "virtio-gpu-gl-pci"
     case virtio_gpu_pci = "virtio-gpu-pci"
     case virtio_ramfb = "virtio-ramfb"
@@ -6867,6 +6885,8 @@ enum QEMUDisplayDevice_i386: String, CaseIterable, QEMUDisplayDevice {
         case .isa_vga: return "isa-vga"
         case .ramfb: return "ram framebuffer standalone device (ramfb)"
         case .secondary_vga: return "secondary-vga"
+        case .virtio_gpu_device: return "virtio-gpu-device"
+        case .virtio_gpu_gl_device: return "virtio-gpu-gl-device (GPU Supported)"
         case .virtio_gpu_gl_pci: return "virtio-gpu-gl-pci (GPU Supported)"
         case .virtio_gpu_pci: return "virtio-gpu-pci"
         case .virtio_ramfb: return "virtio-ramfb"
@@ -6885,6 +6905,8 @@ enum QEMUDisplayDevice_loongarch64: String, CaseIterable, QEMUDisplayDevice {
     case bochs_display = "bochs-display"
     case ramfb
     case secondary_vga = "secondary-vga"
+    case virtio_gpu_device = "virtio-gpu-device"
+    case virtio_gpu_gl_device = "virtio-gpu-gl-device"
     case virtio_gpu_gl_pci = "virtio-gpu-gl-pci"
     case virtio_gpu_pci = "virtio-gpu-pci"
     case virtio_ramfb = "virtio-ramfb"
@@ -6901,6 +6923,8 @@ enum QEMUDisplayDevice_loongarch64: String, CaseIterable, QEMUDisplayDevice {
         case .bochs_display: return "bochs-display"
         case .ramfb: return "ram framebuffer standalone device (ramfb)"
         case .secondary_vga: return "secondary-vga"
+        case .virtio_gpu_device: return "virtio-gpu-device"
+        case .virtio_gpu_gl_device: return "virtio-gpu-gl-device (GPU Supported)"
         case .virtio_gpu_gl_pci: return "virtio-gpu-gl-pci (GPU Supported)"
         case .virtio_gpu_pci: return "virtio-gpu-pci"
         case .virtio_ramfb: return "virtio-ramfb"
@@ -6914,10 +6938,14 @@ enum QEMUDisplayDevice_loongarch64: String, CaseIterable, QEMUDisplayDevice {
 
 enum QEMUDisplayDevice_m68k: String, CaseIterable, QEMUDisplayDevice {
     case nubus_macfb = "nubus-macfb"
+    case virtio_gpu_device = "virtio-gpu-device"
+    case virtio_gpu_gl_device = "virtio-gpu-gl-device"
 
     var prettyValue: String {
         switch self {
         case .nubus_macfb: return "Nubus Macintosh framebuffer (nubus-macfb)"
+        case .virtio_gpu_device: return "virtio-gpu-device"
+        case .virtio_gpu_gl_device: return "virtio-gpu-gl-device (GPU Supported)"
         }
     }
 }
@@ -6934,6 +6962,8 @@ enum QEMUDisplayDevice_mips: String, CaseIterable, QEMUDisplayDevice {
     case isa_cirrus_vga = "isa-cirrus-vga"
     case isa_vga = "isa-vga"
     case secondary_vga = "secondary-vga"
+    case virtio_gpu_device = "virtio-gpu-device"
+    case virtio_gpu_gl_device = "virtio-gpu-gl-device"
     case virtio_gpu_gl_pci = "virtio-gpu-gl-pci"
     case virtio_gpu_pci = "virtio-gpu-pci"
     case vmware_svga = "vmware-svga"
@@ -6947,6 +6977,8 @@ enum QEMUDisplayDevice_mips: String, CaseIterable, QEMUDisplayDevice {
         case .isa_cirrus_vga: return "isa-cirrus-vga"
         case .isa_vga: return "isa-vga"
         case .secondary_vga: return "secondary-vga"
+        case .virtio_gpu_device: return "virtio-gpu-device"
+        case .virtio_gpu_gl_device: return "virtio-gpu-gl-device (GPU Supported)"
         case .virtio_gpu_gl_pci: return "virtio-gpu-gl-pci (GPU Supported)"
         case .virtio_gpu_pci: return "virtio-gpu-pci"
         case .vmware_svga: return "vmware-svga"
@@ -6962,6 +6994,8 @@ enum QEMUDisplayDevice_mipsel: String, CaseIterable, QEMUDisplayDevice {
     case isa_cirrus_vga = "isa-cirrus-vga"
     case isa_vga = "isa-vga"
     case secondary_vga = "secondary-vga"
+    case virtio_gpu_device = "virtio-gpu-device"
+    case virtio_gpu_gl_device = "virtio-gpu-gl-device"
     case virtio_gpu_gl_pci = "virtio-gpu-gl-pci"
     case virtio_gpu_pci = "virtio-gpu-pci"
     case vmware_svga = "vmware-svga"
@@ -6975,6 +7009,8 @@ enum QEMUDisplayDevice_mipsel: String, CaseIterable, QEMUDisplayDevice {
         case .isa_cirrus_vga: return "isa-cirrus-vga"
         case .isa_vga: return "isa-vga"
         case .secondary_vga: return "secondary-vga"
+        case .virtio_gpu_device: return "virtio-gpu-device"
+        case .virtio_gpu_gl_device: return "virtio-gpu-gl-device (GPU Supported)"
         case .virtio_gpu_gl_pci: return "virtio-gpu-gl-pci (GPU Supported)"
         case .virtio_gpu_pci: return "virtio-gpu-pci"
         case .vmware_svga: return "vmware-svga"
@@ -6990,6 +7026,8 @@ enum QEMUDisplayDevice_mips64: String, CaseIterable, QEMUDisplayDevice {
     case isa_cirrus_vga = "isa-cirrus-vga"
     case isa_vga = "isa-vga"
     case secondary_vga = "secondary-vga"
+    case virtio_gpu_device = "virtio-gpu-device"
+    case virtio_gpu_gl_device = "virtio-gpu-gl-device"
     case virtio_gpu_gl_pci = "virtio-gpu-gl-pci"
     case virtio_gpu_pci = "virtio-gpu-pci"
     case vmware_svga = "vmware-svga"
@@ -7003,6 +7041,8 @@ enum QEMUDisplayDevice_mips64: String, CaseIterable, QEMUDisplayDevice {
         case .isa_cirrus_vga: return "isa-cirrus-vga"
         case .isa_vga: return "isa-vga"
         case .secondary_vga: return "secondary-vga"
+        case .virtio_gpu_device: return "virtio-gpu-device"
+        case .virtio_gpu_gl_device: return "virtio-gpu-gl-device (GPU Supported)"
         case .virtio_gpu_gl_pci: return "virtio-gpu-gl-pci (GPU Supported)"
         case .virtio_gpu_pci: return "virtio-gpu-pci"
         case .vmware_svga: return "vmware-svga"
@@ -7020,6 +7060,8 @@ enum QEMUDisplayDevice_mips64el: String, CaseIterable, QEMUDisplayDevice {
     case isa_cirrus_vga = "isa-cirrus-vga"
     case isa_vga = "isa-vga"
     case secondary_vga = "secondary-vga"
+    case virtio_gpu_device = "virtio-gpu-device"
+    case virtio_gpu_gl_device = "virtio-gpu-gl-device"
     case virtio_gpu_gl_pci = "virtio-gpu-gl-pci"
     case virtio_gpu_pci = "virtio-gpu-pci"
     case virtio_vga = "virtio-vga"
@@ -7037,6 +7079,8 @@ enum QEMUDisplayDevice_mips64el: String, CaseIterable, QEMUDisplayDevice {
         case .isa_cirrus_vga: return "isa-cirrus-vga"
         case .isa_vga: return "isa-vga"
         case .secondary_vga: return "secondary-vga"
+        case .virtio_gpu_device: return "virtio-gpu-device"
+        case .virtio_gpu_gl_device: return "virtio-gpu-gl-device (GPU Supported)"
         case .virtio_gpu_gl_pci: return "virtio-gpu-gl-pci (GPU Supported)"
         case .virtio_gpu_pci: return "virtio-gpu-pci"
         case .virtio_vga: return "virtio-vga"
@@ -7054,6 +7098,8 @@ enum QEMUDisplayDevice_or1k: String, CaseIterable, QEMUDisplayDevice {
     case ati_vga = "ati-vga"
     case bochs_display = "bochs-display"
     case secondary_vga = "secondary-vga"
+    case virtio_gpu_device = "virtio-gpu-device"
+    case virtio_gpu_gl_device = "virtio-gpu-gl-device"
     case virtio_gpu_gl_pci = "virtio-gpu-gl-pci"
     case virtio_gpu_pci = "virtio-gpu-pci"
     case virtio_vga = "virtio-vga"
@@ -7067,6 +7113,8 @@ enum QEMUDisplayDevice_or1k: String, CaseIterable, QEMUDisplayDevice {
         case .ati_vga: return "ati-vga"
         case .bochs_display: return "bochs-display"
         case .secondary_vga: return "secondary-vga"
+        case .virtio_gpu_device: return "virtio-gpu-device"
+        case .virtio_gpu_gl_device: return "virtio-gpu-gl-device (GPU Supported)"
         case .virtio_gpu_gl_pci: return "virtio-gpu-gl-pci (GPU Supported)"
         case .virtio_gpu_pci: return "virtio-gpu-pci"
         case .virtio_vga: return "virtio-vga"
@@ -7083,6 +7131,8 @@ enum QEMUDisplayDevice_ppc: String, CaseIterable, QEMUDisplayDevice {
     case ati_vga = "ati-vga"
     case bochs_display = "bochs-display"
     case secondary_vga = "secondary-vga"
+    case virtio_gpu_device = "virtio-gpu-device"
+    case virtio_gpu_gl_device = "virtio-gpu-gl-device"
     case virtio_gpu_gl_pci = "virtio-gpu-gl-pci"
     case virtio_gpu_pci = "virtio-gpu-pci"
     case vmware_svga = "vmware-svga"
@@ -7095,6 +7145,8 @@ enum QEMUDisplayDevice_ppc: String, CaseIterable, QEMUDisplayDevice {
         case .ati_vga: return "ati-vga"
         case .bochs_display: return "bochs-display"
         case .secondary_vga: return "secondary-vga"
+        case .virtio_gpu_device: return "virtio-gpu-device"
+        case .virtio_gpu_gl_device: return "virtio-gpu-gl-device (GPU Supported)"
         case .virtio_gpu_gl_pci: return "virtio-gpu-gl-pci (GPU Supported)"
         case .virtio_gpu_pci: return "virtio-gpu-pci"
         case .vmware_svga: return "vmware-svga"
@@ -7109,6 +7161,8 @@ enum QEMUDisplayDevice_ppc64: String, CaseIterable, QEMUDisplayDevice {
     case ati_vga = "ati-vga"
     case bochs_display = "bochs-display"
     case secondary_vga = "secondary-vga"
+    case virtio_gpu_device = "virtio-gpu-device"
+    case virtio_gpu_gl_device = "virtio-gpu-gl-device"
     case virtio_gpu_gl_pci = "virtio-gpu-gl-pci"
     case virtio_gpu_pci = "virtio-gpu-pci"
     case virtio_vga = "virtio-vga"
@@ -7123,6 +7177,8 @@ enum QEMUDisplayDevice_ppc64: String, CaseIterable, QEMUDisplayDevice {
         case .ati_vga: return "ati-vga"
         case .bochs_display: return "bochs-display"
         case .secondary_vga: return "secondary-vga"
+        case .virtio_gpu_device: return "virtio-gpu-device"
+        case .virtio_gpu_gl_device: return "virtio-gpu-gl-device (GPU Supported)"
         case .virtio_gpu_gl_pci: return "virtio-gpu-gl-pci (GPU Supported)"
         case .virtio_gpu_pci: return "virtio-gpu-pci"
         case .virtio_vga: return "virtio-vga"
@@ -7139,6 +7195,8 @@ enum QEMUDisplayDevice_riscv32: String, CaseIterable, QEMUDisplayDevice {
     case bochs_display = "bochs-display"
     case ramfb
     case secondary_vga = "secondary-vga"
+    case virtio_gpu_device = "virtio-gpu-device"
+    case virtio_gpu_gl_device = "virtio-gpu-gl-device"
     case virtio_gpu_gl_pci = "virtio-gpu-gl-pci"
     case virtio_gpu_pci = "virtio-gpu-pci"
     case virtio_ramfb = "virtio-ramfb"
@@ -7155,6 +7213,8 @@ enum QEMUDisplayDevice_riscv32: String, CaseIterable, QEMUDisplayDevice {
         case .bochs_display: return "bochs-display"
         case .ramfb: return "ram framebuffer standalone device (ramfb)"
         case .secondary_vga: return "secondary-vga"
+        case .virtio_gpu_device: return "virtio-gpu-device"
+        case .virtio_gpu_gl_device: return "virtio-gpu-gl-device (GPU Supported)"
         case .virtio_gpu_gl_pci: return "virtio-gpu-gl-pci (GPU Supported)"
         case .virtio_gpu_pci: return "virtio-gpu-pci"
         case .virtio_ramfb: return "virtio-ramfb"
@@ -7173,6 +7233,8 @@ enum QEMUDisplayDevice_riscv64: String, CaseIterable, QEMUDisplayDevice {
     case bochs_display = "bochs-display"
     case ramfb
     case secondary_vga = "secondary-vga"
+    case virtio_gpu_device = "virtio-gpu-device"
+    case virtio_gpu_gl_device = "virtio-gpu-gl-device"
     case virtio_gpu_gl_pci = "virtio-gpu-gl-pci"
     case virtio_gpu_pci = "virtio-gpu-pci"
     case virtio_ramfb = "virtio-ramfb"
@@ -7189,6 +7251,8 @@ enum QEMUDisplayDevice_riscv64: String, CaseIterable, QEMUDisplayDevice {
         case .bochs_display: return "bochs-display"
         case .ramfb: return "ram framebuffer standalone device (ramfb)"
         case .secondary_vga: return "secondary-vga"
+        case .virtio_gpu_device: return "virtio-gpu-device"
+        case .virtio_gpu_gl_device: return "virtio-gpu-gl-device (GPU Supported)"
         case .virtio_gpu_gl_pci: return "virtio-gpu-gl-pci (GPU Supported)"
         case .virtio_gpu_pci: return "virtio-gpu-pci"
         case .virtio_ramfb: return "virtio-ramfb"
@@ -7204,6 +7268,8 @@ typealias QEMUDisplayDevice_rx = AnyQEMUConstant
 
 enum QEMUDisplayDevice_s390x: String, CaseIterable, QEMUDisplayDevice {
     case virtio_gpu_ccw = "virtio-gpu-ccw"
+    case virtio_gpu_device = "virtio-gpu-device"
+    case virtio_gpu_gl_device = "virtio-gpu-gl-device"
     case virtio_gpu_gl_pci = "virtio-gpu-gl-pci"
     case virtio_gpu_pci = "virtio-gpu-pci"
     case x_terminal3270 = "x-terminal3270"
@@ -7211,6 +7277,8 @@ enum QEMUDisplayDevice_s390x: String, CaseIterable, QEMUDisplayDevice {
     var prettyValue: String {
         switch self {
         case .virtio_gpu_ccw: return "virtio-gpu-ccw"
+        case .virtio_gpu_device: return "virtio-gpu-device"
+        case .virtio_gpu_gl_device: return "virtio-gpu-gl-device (GPU Supported)"
         case .virtio_gpu_gl_pci: return "virtio-gpu-gl-pci (GPU Supported)"
         case .virtio_gpu_pci: return "virtio-gpu-pci"
         case .x_terminal3270: return "x-terminal3270"
@@ -7225,6 +7293,8 @@ enum QEMUDisplayDevice_sh4: String, CaseIterable, QEMUDisplayDevice {
     case ati_vga = "ati-vga"
     case bochs_display = "bochs-display"
     case secondary_vga = "secondary-vga"
+    case virtio_gpu_device = "virtio-gpu-device"
+    case virtio_gpu_gl_device = "virtio-gpu-gl-device"
     case virtio_gpu_gl_pci = "virtio-gpu-gl-pci"
     case virtio_gpu_pci = "virtio-gpu-pci"
     case vmware_svga = "vmware-svga"
@@ -7237,6 +7307,8 @@ enum QEMUDisplayDevice_sh4: String, CaseIterable, QEMUDisplayDevice {
         case .ati_vga: return "ati-vga"
         case .bochs_display: return "bochs-display"
         case .secondary_vga: return "secondary-vga"
+        case .virtio_gpu_device: return "virtio-gpu-device"
+        case .virtio_gpu_gl_device: return "virtio-gpu-gl-device (GPU Supported)"
         case .virtio_gpu_gl_pci: return "virtio-gpu-gl-pci (GPU Supported)"
         case .virtio_gpu_pci: return "virtio-gpu-pci"
         case .vmware_svga: return "vmware-svga"
@@ -7251,6 +7323,8 @@ enum QEMUDisplayDevice_sh4eb: String, CaseIterable, QEMUDisplayDevice {
     case ati_vga = "ati-vga"
     case bochs_display = "bochs-display"
     case secondary_vga = "secondary-vga"
+    case virtio_gpu_device = "virtio-gpu-device"
+    case virtio_gpu_gl_device = "virtio-gpu-gl-device"
     case virtio_gpu_gl_pci = "virtio-gpu-gl-pci"
     case virtio_gpu_pci = "virtio-gpu-pci"
     case vmware_svga = "vmware-svga"
@@ -7263,6 +7337,8 @@ enum QEMUDisplayDevice_sh4eb: String, CaseIterable, QEMUDisplayDevice {
         case .ati_vga: return "ati-vga"
         case .bochs_display: return "bochs-display"
         case .secondary_vga: return "secondary-vga"
+        case .virtio_gpu_device: return "virtio-gpu-device"
+        case .virtio_gpu_gl_device: return "virtio-gpu-gl-device (GPU Supported)"
         case .virtio_gpu_gl_pci: return "virtio-gpu-gl-pci (GPU Supported)"
         case .virtio_gpu_pci: return "virtio-gpu-pci"
         case .vmware_svga: return "vmware-svga"
@@ -7288,6 +7364,8 @@ enum QEMUDisplayDevice_sparc64: String, CaseIterable, QEMUDisplayDevice {
     case ati_vga = "ati-vga"
     case bochs_display = "bochs-display"
     case secondary_vga = "secondary-vga"
+    case virtio_gpu_device = "virtio-gpu-device"
+    case virtio_gpu_gl_device = "virtio-gpu-gl-device"
     case virtio_gpu_gl_pci = "virtio-gpu-gl-pci"
     case virtio_gpu_pci = "virtio-gpu-pci"
     case vmware_svga = "vmware-svga"
@@ -7299,6 +7377,8 @@ enum QEMUDisplayDevice_sparc64: String, CaseIterable, QEMUDisplayDevice {
         case .ati_vga: return "ati-vga"
         case .bochs_display: return "bochs-display"
         case .secondary_vga: return "secondary-vga"
+        case .virtio_gpu_device: return "virtio-gpu-device"
+        case .virtio_gpu_gl_device: return "virtio-gpu-gl-device (GPU Supported)"
         case .virtio_gpu_gl_pci: return "virtio-gpu-gl-pci (GPU Supported)"
         case .virtio_gpu_pci: return "virtio-gpu-pci"
         case .vmware_svga: return "vmware-svga"
@@ -7320,6 +7400,8 @@ enum QEMUDisplayDevice_x86_64: String, CaseIterable, QEMUDisplayDevice {
     case isa_vga = "isa-vga"
     case ramfb
     case secondary_vga = "secondary-vga"
+    case virtio_gpu_device = "virtio-gpu-device"
+    case virtio_gpu_gl_device = "virtio-gpu-gl-device"
     case virtio_gpu_gl_pci = "virtio-gpu-gl-pci"
     case virtio_gpu_pci = "virtio-gpu-pci"
     case virtio_ramfb = "virtio-ramfb"
@@ -7341,6 +7423,8 @@ enum QEMUDisplayDevice_x86_64: String, CaseIterable, QEMUDisplayDevice {
         case .isa_vga: return "isa-vga"
         case .ramfb: return "ram framebuffer standalone device (ramfb)"
         case .secondary_vga: return "secondary-vga"
+        case .virtio_gpu_device: return "virtio-gpu-device"
+        case .virtio_gpu_gl_device: return "virtio-gpu-gl-device (GPU Supported)"
         case .virtio_gpu_gl_pci: return "virtio-gpu-gl-pci (GPU Supported)"
         case .virtio_gpu_pci: return "virtio-gpu-pci"
         case .virtio_ramfb: return "virtio-ramfb"
@@ -7358,6 +7442,8 @@ enum QEMUDisplayDevice_xtensa: String, CaseIterable, QEMUDisplayDevice {
     case ati_vga = "ati-vga"
     case bochs_display = "bochs-display"
     case secondary_vga = "secondary-vga"
+    case virtio_gpu_device = "virtio-gpu-device"
+    case virtio_gpu_gl_device = "virtio-gpu-gl-device"
     case virtio_gpu_gl_pci = "virtio-gpu-gl-pci"
     case virtio_gpu_pci = "virtio-gpu-pci"
     case vmware_svga = "vmware-svga"
@@ -7369,6 +7455,8 @@ enum QEMUDisplayDevice_xtensa: String, CaseIterable, QEMUDisplayDevice {
         case .ati_vga: return "ati-vga"
         case .bochs_display: return "bochs-display"
         case .secondary_vga: return "secondary-vga"
+        case .virtio_gpu_device: return "virtio-gpu-device"
+        case .virtio_gpu_gl_device: return "virtio-gpu-gl-device (GPU Supported)"
         case .virtio_gpu_gl_pci: return "virtio-gpu-gl-pci (GPU Supported)"
         case .virtio_gpu_pci: return "virtio-gpu-pci"
         case .vmware_svga: return "vmware-svga"
@@ -7382,6 +7470,8 @@ enum QEMUDisplayDevice_xtensaeb: String, CaseIterable, QEMUDisplayDevice {
     case ati_vga = "ati-vga"
     case bochs_display = "bochs-display"
     case secondary_vga = "secondary-vga"
+    case virtio_gpu_device = "virtio-gpu-device"
+    case virtio_gpu_gl_device = "virtio-gpu-gl-device"
     case virtio_gpu_gl_pci = "virtio-gpu-gl-pci"
     case virtio_gpu_pci = "virtio-gpu-pci"
     case vmware_svga = "vmware-svga"
@@ -7393,6 +7483,8 @@ enum QEMUDisplayDevice_xtensaeb: String, CaseIterable, QEMUDisplayDevice {
         case .ati_vga: return "ati-vga"
         case .bochs_display: return "bochs-display"
         case .secondary_vga: return "secondary-vga"
+        case .virtio_gpu_device: return "virtio-gpu-device"
+        case .virtio_gpu_gl_device: return "virtio-gpu-gl-device (GPU Supported)"
         case .virtio_gpu_gl_pci: return "virtio-gpu-gl-pci (GPU Supported)"
         case .virtio_gpu_pci: return "virtio-gpu-pci"
         case .vmware_svga: return "vmware-svga"
@@ -7424,6 +7516,7 @@ enum QEMUNetworkDevice_alpha: String, CaseIterable, QEMUNetworkDevice {
     case rtl8139
     case tulip
     case usb_net = "usb-net"
+    case virtio_net_device = "virtio-net-device"
     case virtio_net_pci = "virtio-net-pci"
     case virtio_net_pci_non_transitional = "virtio-net-pci-non-transitional"
     case virtio_net_pci_transitional = "virtio-net-pci-transitional"
@@ -7453,6 +7546,7 @@ enum QEMUNetworkDevice_alpha: String, CaseIterable, QEMUNetworkDevice {
         case .rtl8139: return "rtl8139"
         case .tulip: return "tulip"
         case .usb_net: return "usb-net"
+        case .virtio_net_device: return "virtio-net-device"
         case .virtio_net_pci: return "virtio-net-pci"
         case .virtio_net_pci_non_transitional: return "virtio-net-pci-non-transitional"
         case .virtio_net_pci_transitional: return "virtio-net-pci-transitional"
@@ -7485,6 +7579,7 @@ enum QEMUNetworkDevice_arm: String, CaseIterable, QEMUNetworkDevice {
     case rtl8139
     case tulip
     case usb_net = "usb-net"
+    case virtio_net_device = "virtio-net-device"
     case virtio_net_pci = "virtio-net-pci"
     case virtio_net_pci_non_transitional = "virtio-net-pci-non-transitional"
     case virtio_net_pci_transitional = "virtio-net-pci-transitional"
@@ -7515,6 +7610,7 @@ enum QEMUNetworkDevice_arm: String, CaseIterable, QEMUNetworkDevice {
         case .rtl8139: return "rtl8139"
         case .tulip: return "tulip"
         case .usb_net: return "usb-net"
+        case .virtio_net_device: return "virtio-net-device"
         case .virtio_net_pci: return "virtio-net-pci"
         case .virtio_net_pci_non_transitional: return "virtio-net-pci-non-transitional"
         case .virtio_net_pci_transitional: return "virtio-net-pci-transitional"
@@ -7547,6 +7643,7 @@ enum QEMUNetworkDevice_aarch64: String, CaseIterable, QEMUNetworkDevice {
     case rtl8139
     case tulip
     case usb_net = "usb-net"
+    case virtio_net_device = "virtio-net-device"
     case virtio_net_pci = "virtio-net-pci"
     case virtio_net_pci_non_transitional = "virtio-net-pci-non-transitional"
     case virtio_net_pci_transitional = "virtio-net-pci-transitional"
@@ -7577,6 +7674,7 @@ enum QEMUNetworkDevice_aarch64: String, CaseIterable, QEMUNetworkDevice {
         case .rtl8139: return "rtl8139"
         case .tulip: return "tulip"
         case .usb_net: return "usb-net"
+        case .virtio_net_device: return "virtio-net-device"
         case .virtio_net_pci: return "virtio-net-pci"
         case .virtio_net_pci_non_transitional: return "virtio-net-pci-non-transitional"
         case .virtio_net_pci_transitional: return "virtio-net-pci-transitional"
@@ -7612,6 +7710,7 @@ enum QEMUNetworkDevice_hppa: String, CaseIterable, QEMUNetworkDevice {
     case rtl8139
     case tulip
     case usb_net = "usb-net"
+    case virtio_net_device = "virtio-net-device"
     case virtio_net_pci = "virtio-net-pci"
     case virtio_net_pci_non_transitional = "virtio-net-pci-non-transitional"
     case virtio_net_pci_transitional = "virtio-net-pci-transitional"
@@ -7641,6 +7740,7 @@ enum QEMUNetworkDevice_hppa: String, CaseIterable, QEMUNetworkDevice {
         case .rtl8139: return "rtl8139"
         case .tulip: return "tulip"
         case .usb_net: return "usb-net"
+        case .virtio_net_device: return "virtio-net-device"
         case .virtio_net_pci: return "virtio-net-pci"
         case .virtio_net_pci_non_transitional: return "virtio-net-pci-non-transitional"
         case .virtio_net_pci_transitional: return "virtio-net-pci-transitional"
@@ -7674,6 +7774,7 @@ enum QEMUNetworkDevice_i386: String, CaseIterable, QEMUNetworkDevice {
     case rtl8139
     case tulip
     case usb_net = "usb-net"
+    case virtio_net_device = "virtio-net-device"
     case virtio_net_pci = "virtio-net-pci"
     case virtio_net_pci_non_transitional = "virtio-net-pci-non-transitional"
     case virtio_net_pci_transitional = "virtio-net-pci-transitional"
@@ -7705,6 +7806,7 @@ enum QEMUNetworkDevice_i386: String, CaseIterable, QEMUNetworkDevice {
         case .rtl8139: return "rtl8139"
         case .tulip: return "tulip"
         case .usb_net: return "usb-net"
+        case .virtio_net_device: return "virtio-net-device"
         case .virtio_net_pci: return "virtio-net-pci"
         case .virtio_net_pci_non_transitional: return "virtio-net-pci-non-transitional"
         case .virtio_net_pci_transitional: return "virtio-net-pci-transitional"
@@ -7738,6 +7840,7 @@ enum QEMUNetworkDevice_loongarch64: String, CaseIterable, QEMUNetworkDevice {
     case rtl8139
     case tulip
     case usb_net = "usb-net"
+    case virtio_net_device = "virtio-net-device"
     case virtio_net_pci = "virtio-net-pci"
     case virtio_net_pci_non_transitional = "virtio-net-pci-non-transitional"
     case virtio_net_pci_transitional = "virtio-net-pci-transitional"
@@ -7769,6 +7872,7 @@ enum QEMUNetworkDevice_loongarch64: String, CaseIterable, QEMUNetworkDevice {
         case .rtl8139: return "rtl8139"
         case .tulip: return "tulip"
         case .usb_net: return "usb-net"
+        case .virtio_net_device: return "virtio-net-device"
         case .virtio_net_pci: return "virtio-net-pci"
         case .virtio_net_pci_non_transitional: return "virtio-net-pci-non-transitional"
         case .virtio_net_pci_transitional: return "virtio-net-pci-transitional"
@@ -7776,7 +7880,15 @@ enum QEMUNetworkDevice_loongarch64: String, CaseIterable, QEMUNetworkDevice {
     }
 }
 
-typealias QEMUNetworkDevice_m68k = AnyQEMUConstant
+enum QEMUNetworkDevice_m68k: String, CaseIterable, QEMUNetworkDevice {
+    case virtio_net_device = "virtio-net-device"
+
+    var prettyValue: String {
+        switch self {
+        case .virtio_net_device: return "virtio-net-device"
+        }
+    }
+}
 
 typealias QEMUNetworkDevice_microblaze = AnyQEMUConstant
 
@@ -7806,6 +7918,7 @@ enum QEMUNetworkDevice_mips: String, CaseIterable, QEMUNetworkDevice {
     case rtl8139
     case tulip
     case usb_net = "usb-net"
+    case virtio_net_device = "virtio-net-device"
     case virtio_net_pci = "virtio-net-pci"
     case virtio_net_pci_non_transitional = "virtio-net-pci-non-transitional"
     case virtio_net_pci_transitional = "virtio-net-pci-transitional"
@@ -7835,6 +7948,7 @@ enum QEMUNetworkDevice_mips: String, CaseIterable, QEMUNetworkDevice {
         case .rtl8139: return "rtl8139"
         case .tulip: return "tulip"
         case .usb_net: return "usb-net"
+        case .virtio_net_device: return "virtio-net-device"
         case .virtio_net_pci: return "virtio-net-pci"
         case .virtio_net_pci_non_transitional: return "virtio-net-pci-non-transitional"
         case .virtio_net_pci_transitional: return "virtio-net-pci-transitional"
@@ -7866,6 +7980,7 @@ enum QEMUNetworkDevice_mipsel: String, CaseIterable, QEMUNetworkDevice {
     case rtl8139
     case tulip
     case usb_net = "usb-net"
+    case virtio_net_device = "virtio-net-device"
     case virtio_net_pci = "virtio-net-pci"
     case virtio_net_pci_non_transitional = "virtio-net-pci-non-transitional"
     case virtio_net_pci_transitional = "virtio-net-pci-transitional"
@@ -7895,6 +8010,7 @@ enum QEMUNetworkDevice_mipsel: String, CaseIterable, QEMUNetworkDevice {
         case .rtl8139: return "rtl8139"
         case .tulip: return "tulip"
         case .usb_net: return "usb-net"
+        case .virtio_net_device: return "virtio-net-device"
         case .virtio_net_pci: return "virtio-net-pci"
         case .virtio_net_pci_non_transitional: return "virtio-net-pci-non-transitional"
         case .virtio_net_pci_transitional: return "virtio-net-pci-transitional"
@@ -7926,6 +8042,7 @@ enum QEMUNetworkDevice_mips64: String, CaseIterable, QEMUNetworkDevice {
     case rtl8139
     case tulip
     case usb_net = "usb-net"
+    case virtio_net_device = "virtio-net-device"
     case virtio_net_pci = "virtio-net-pci"
     case virtio_net_pci_non_transitional = "virtio-net-pci-non-transitional"
     case virtio_net_pci_transitional = "virtio-net-pci-transitional"
@@ -7955,6 +8072,7 @@ enum QEMUNetworkDevice_mips64: String, CaseIterable, QEMUNetworkDevice {
         case .rtl8139: return "rtl8139"
         case .tulip: return "tulip"
         case .usb_net: return "usb-net"
+        case .virtio_net_device: return "virtio-net-device"
         case .virtio_net_pci: return "virtio-net-pci"
         case .virtio_net_pci_non_transitional: return "virtio-net-pci-non-transitional"
         case .virtio_net_pci_transitional: return "virtio-net-pci-transitional"
@@ -7988,6 +8106,7 @@ enum QEMUNetworkDevice_mips64el: String, CaseIterable, QEMUNetworkDevice {
     case rtl8139
     case tulip
     case usb_net = "usb-net"
+    case virtio_net_device = "virtio-net-device"
     case virtio_net_pci = "virtio-net-pci"
     case virtio_net_pci_non_transitional = "virtio-net-pci-non-transitional"
     case virtio_net_pci_transitional = "virtio-net-pci-transitional"
@@ -8019,6 +8138,7 @@ enum QEMUNetworkDevice_mips64el: String, CaseIterable, QEMUNetworkDevice {
         case .rtl8139: return "rtl8139"
         case .tulip: return "tulip"
         case .usb_net: return "usb-net"
+        case .virtio_net_device: return "virtio-net-device"
         case .virtio_net_pci: return "virtio-net-pci"
         case .virtio_net_pci_non_transitional: return "virtio-net-pci-non-transitional"
         case .virtio_net_pci_transitional: return "virtio-net-pci-transitional"
@@ -8051,6 +8171,7 @@ enum QEMUNetworkDevice_or1k: String, CaseIterable, QEMUNetworkDevice {
     case rtl8139
     case tulip
     case usb_net = "usb-net"
+    case virtio_net_device = "virtio-net-device"
     case virtio_net_pci = "virtio-net-pci"
     case virtio_net_pci_non_transitional = "virtio-net-pci-non-transitional"
     case virtio_net_pci_transitional = "virtio-net-pci-transitional"
@@ -8079,6 +8200,7 @@ enum QEMUNetworkDevice_or1k: String, CaseIterable, QEMUNetworkDevice {
         case .rtl8139: return "rtl8139"
         case .tulip: return "tulip"
         case .usb_net: return "usb-net"
+        case .virtio_net_device: return "virtio-net-device"
         case .virtio_net_pci: return "virtio-net-pci"
         case .virtio_net_pci_non_transitional: return "virtio-net-pci-non-transitional"
         case .virtio_net_pci_transitional: return "virtio-net-pci-transitional"
@@ -8113,6 +8235,7 @@ enum QEMUNetworkDevice_ppc: String, CaseIterable, QEMUNetworkDevice {
     case sungem
     case tulip
     case usb_net = "usb-net"
+    case virtio_net_device = "virtio-net-device"
     case virtio_net_pci = "virtio-net-pci"
     case virtio_net_pci_non_transitional = "virtio-net-pci-non-transitional"
     case virtio_net_pci_transitional = "virtio-net-pci-transitional"
@@ -8145,6 +8268,7 @@ enum QEMUNetworkDevice_ppc: String, CaseIterable, QEMUNetworkDevice {
         case .sungem: return "sungem"
         case .tulip: return "tulip"
         case .usb_net: return "usb-net"
+        case .virtio_net_device: return "virtio-net-device"
         case .virtio_net_pci: return "virtio-net-pci"
         case .virtio_net_pci_non_transitional: return "virtio-net-pci-non-transitional"
         case .virtio_net_pci_transitional: return "virtio-net-pci-transitional"
@@ -8180,6 +8304,7 @@ enum QEMUNetworkDevice_ppc64: String, CaseIterable, QEMUNetworkDevice {
     case sungem
     case tulip
     case usb_net = "usb-net"
+    case virtio_net_device = "virtio-net-device"
     case virtio_net_pci = "virtio-net-pci"
     case virtio_net_pci_non_transitional = "virtio-net-pci-non-transitional"
     case virtio_net_pci_transitional = "virtio-net-pci-transitional"
@@ -8213,6 +8338,7 @@ enum QEMUNetworkDevice_ppc64: String, CaseIterable, QEMUNetworkDevice {
         case .sungem: return "sungem"
         case .tulip: return "tulip"
         case .usb_net: return "usb-net"
+        case .virtio_net_device: return "virtio-net-device"
         case .virtio_net_pci: return "virtio-net-pci"
         case .virtio_net_pci_non_transitional: return "virtio-net-pci-non-transitional"
         case .virtio_net_pci_transitional: return "virtio-net-pci-transitional"
@@ -8245,6 +8371,7 @@ enum QEMUNetworkDevice_riscv32: String, CaseIterable, QEMUNetworkDevice {
     case rtl8139
     case tulip
     case usb_net = "usb-net"
+    case virtio_net_device = "virtio-net-device"
     case virtio_net_pci = "virtio-net-pci"
     case virtio_net_pci_non_transitional = "virtio-net-pci-non-transitional"
     case virtio_net_pci_transitional = "virtio-net-pci-transitional"
@@ -8275,6 +8402,7 @@ enum QEMUNetworkDevice_riscv32: String, CaseIterable, QEMUNetworkDevice {
         case .rtl8139: return "rtl8139"
         case .tulip: return "tulip"
         case .usb_net: return "usb-net"
+        case .virtio_net_device: return "virtio-net-device"
         case .virtio_net_pci: return "virtio-net-pci"
         case .virtio_net_pci_non_transitional: return "virtio-net-pci-non-transitional"
         case .virtio_net_pci_transitional: return "virtio-net-pci-transitional"
@@ -8307,6 +8435,7 @@ enum QEMUNetworkDevice_riscv64: String, CaseIterable, QEMUNetworkDevice {
     case rtl8139
     case tulip
     case usb_net = "usb-net"
+    case virtio_net_device = "virtio-net-device"
     case virtio_net_pci = "virtio-net-pci"
     case virtio_net_pci_non_transitional = "virtio-net-pci-non-transitional"
     case virtio_net_pci_transitional = "virtio-net-pci-transitional"
@@ -8337,6 +8466,7 @@ enum QEMUNetworkDevice_riscv64: String, CaseIterable, QEMUNetworkDevice {
         case .rtl8139: return "rtl8139"
         case .tulip: return "tulip"
         case .usb_net: return "usb-net"
+        case .virtio_net_device: return "virtio-net-device"
         case .virtio_net_pci: return "virtio-net-pci"
         case .virtio_net_pci_non_transitional: return "virtio-net-pci-non-transitional"
         case .virtio_net_pci_transitional: return "virtio-net-pci-transitional"
@@ -8348,6 +8478,7 @@ typealias QEMUNetworkDevice_rx = AnyQEMUConstant
 
 enum QEMUNetworkDevice_s390x: String, CaseIterable, QEMUNetworkDevice {
     case virtio_net_ccw = "virtio-net-ccw"
+    case virtio_net_device = "virtio-net-device"
     case virtio_net_pci = "virtio-net-pci"
     case virtio_net_pci_non_transitional = "virtio-net-pci-non-transitional"
     case virtio_net_pci_transitional = "virtio-net-pci-transitional"
@@ -8355,6 +8486,7 @@ enum QEMUNetworkDevice_s390x: String, CaseIterable, QEMUNetworkDevice {
     var prettyValue: String {
         switch self {
         case .virtio_net_ccw: return "virtio-net-ccw"
+        case .virtio_net_device: return "virtio-net-device"
         case .virtio_net_pci: return "virtio-net-pci"
         case .virtio_net_pci_non_transitional: return "virtio-net-pci-non-transitional"
         case .virtio_net_pci_transitional: return "virtio-net-pci-transitional"
@@ -8386,6 +8518,7 @@ enum QEMUNetworkDevice_sh4: String, CaseIterable, QEMUNetworkDevice {
     case rtl8139
     case tulip
     case usb_net = "usb-net"
+    case virtio_net_device = "virtio-net-device"
     case virtio_net_pci = "virtio-net-pci"
     case virtio_net_pci_non_transitional = "virtio-net-pci-non-transitional"
     case virtio_net_pci_transitional = "virtio-net-pci-transitional"
@@ -8415,6 +8548,7 @@ enum QEMUNetworkDevice_sh4: String, CaseIterable, QEMUNetworkDevice {
         case .rtl8139: return "rtl8139"
         case .tulip: return "tulip"
         case .usb_net: return "usb-net"
+        case .virtio_net_device: return "virtio-net-device"
         case .virtio_net_pci: return "virtio-net-pci"
         case .virtio_net_pci_non_transitional: return "virtio-net-pci-non-transitional"
         case .virtio_net_pci_transitional: return "virtio-net-pci-transitional"
@@ -8446,6 +8580,7 @@ enum QEMUNetworkDevice_sh4eb: String, CaseIterable, QEMUNetworkDevice {
     case rtl8139
     case tulip
     case usb_net = "usb-net"
+    case virtio_net_device = "virtio-net-device"
     case virtio_net_pci = "virtio-net-pci"
     case virtio_net_pci_non_transitional = "virtio-net-pci-non-transitional"
     case virtio_net_pci_transitional = "virtio-net-pci-transitional"
@@ -8475,6 +8610,7 @@ enum QEMUNetworkDevice_sh4eb: String, CaseIterable, QEMUNetworkDevice {
         case .rtl8139: return "rtl8139"
         case .tulip: return "tulip"
         case .usb_net: return "usb-net"
+        case .virtio_net_device: return "virtio-net-device"
         case .virtio_net_pci: return "virtio-net-pci"
         case .virtio_net_pci_non_transitional: return "virtio-net-pci-non-transitional"
         case .virtio_net_pci_transitional: return "virtio-net-pci-transitional"
@@ -8517,6 +8653,7 @@ enum QEMUNetworkDevice_sparc64: String, CaseIterable, QEMUNetworkDevice {
     case sunhme
     case tulip
     case usb_net = "usb-net"
+    case virtio_net_device = "virtio-net-device"
     case virtio_net_pci = "virtio-net-pci"
     case virtio_net_pci_non_transitional = "virtio-net-pci-non-transitional"
     case virtio_net_pci_transitional = "virtio-net-pci-transitional"
@@ -8547,6 +8684,7 @@ enum QEMUNetworkDevice_sparc64: String, CaseIterable, QEMUNetworkDevice {
         case .sunhme: return "sunhme"
         case .tulip: return "tulip"
         case .usb_net: return "usb-net"
+        case .virtio_net_device: return "virtio-net-device"
         case .virtio_net_pci: return "virtio-net-pci"
         case .virtio_net_pci_non_transitional: return "virtio-net-pci-non-transitional"
         case .virtio_net_pci_transitional: return "virtio-net-pci-transitional"
@@ -8582,6 +8720,7 @@ enum QEMUNetworkDevice_x86_64: String, CaseIterable, QEMUNetworkDevice {
     case rtl8139
     case tulip
     case usb_net = "usb-net"
+    case virtio_net_device = "virtio-net-device"
     case virtio_net_pci = "virtio-net-pci"
     case virtio_net_pci_non_transitional = "virtio-net-pci-non-transitional"
     case virtio_net_pci_transitional = "virtio-net-pci-transitional"
@@ -8613,6 +8752,7 @@ enum QEMUNetworkDevice_x86_64: String, CaseIterable, QEMUNetworkDevice {
         case .rtl8139: return "rtl8139"
         case .tulip: return "tulip"
         case .usb_net: return "usb-net"
+        case .virtio_net_device: return "virtio-net-device"
         case .virtio_net_pci: return "virtio-net-pci"
         case .virtio_net_pci_non_transitional: return "virtio-net-pci-non-transitional"
         case .virtio_net_pci_transitional: return "virtio-net-pci-transitional"
@@ -8643,6 +8783,7 @@ enum QEMUNetworkDevice_xtensa: String, CaseIterable, QEMUNetworkDevice {
     case rtl8139
     case tulip
     case usb_net = "usb-net"
+    case virtio_net_device = "virtio-net-device"
     case virtio_net_pci = "virtio-net-pci"
     case virtio_net_pci_non_transitional = "virtio-net-pci-non-transitional"
     case virtio_net_pci_transitional = "virtio-net-pci-transitional"
@@ -8671,6 +8812,7 @@ enum QEMUNetworkDevice_xtensa: String, CaseIterable, QEMUNetworkDevice {
         case .rtl8139: return "rtl8139"
         case .tulip: return "tulip"
         case .usb_net: return "usb-net"
+        case .virtio_net_device: return "virtio-net-device"
         case .virtio_net_pci: return "virtio-net-pci"
         case .virtio_net_pci_non_transitional: return "virtio-net-pci-non-transitional"
         case .virtio_net_pci_transitional: return "virtio-net-pci-transitional"
@@ -8701,6 +8843,7 @@ enum QEMUNetworkDevice_xtensaeb: String, CaseIterable, QEMUNetworkDevice {
     case rtl8139
     case tulip
     case usb_net = "usb-net"
+    case virtio_net_device = "virtio-net-device"
     case virtio_net_pci = "virtio-net-pci"
     case virtio_net_pci_non_transitional = "virtio-net-pci-non-transitional"
     case virtio_net_pci_transitional = "virtio-net-pci-transitional"
@@ -8729,6 +8872,7 @@ enum QEMUNetworkDevice_xtensaeb: String, CaseIterable, QEMUNetworkDevice {
         case .rtl8139: return "rtl8139"
         case .tulip: return "tulip"
         case .usb_net: return "usb-net"
+        case .virtio_net_device: return "virtio-net-device"
         case .virtio_net_pci: return "virtio-net-pci"
         case .virtio_net_pci_non_transitional: return "virtio-net-pci-non-transitional"
         case .virtio_net_pci_transitional: return "virtio-net-pci-transitional"
@@ -9260,6 +9404,7 @@ enum QEMUSerialDevice_alpha: String, CaseIterable, QEMUSerialDevice {
     case pci_serial_2x = "pci-serial-2x"
     case pci_serial_4x = "pci-serial-4x"
     case usb_serial = "usb-serial"
+    case virtio_serial_device = "virtio-serial-device"
     case virtio_serial_pci = "virtio-serial-pci"
     case virtio_serial_pci_non_transitional = "virtio-serial-pci-non-transitional"
     case virtio_serial_pci_transitional = "virtio-serial-pci-transitional"
@@ -9272,6 +9417,7 @@ enum QEMUSerialDevice_alpha: String, CaseIterable, QEMUSerialDevice {
         case .pci_serial_2x: return "pci-serial-2x"
         case .pci_serial_4x: return "pci-serial-4x"
         case .usb_serial: return "usb-serial"
+        case .virtio_serial_device: return "virtio-serial-device"
         case .virtio_serial_pci: return "virtio-serial-pci"
         case .virtio_serial_pci_non_transitional: return "virtio-serial-pci-non-transitional"
         case .virtio_serial_pci_transitional: return "virtio-serial-pci-transitional"
@@ -9285,6 +9431,7 @@ enum QEMUSerialDevice_arm: String, CaseIterable, QEMUSerialDevice {
     case pci_serial_2x = "pci-serial-2x"
     case pci_serial_4x = "pci-serial-4x"
     case usb_serial = "usb-serial"
+    case virtio_serial_device = "virtio-serial-device"
     case virtio_serial_pci = "virtio-serial-pci"
     case virtio_serial_pci_non_transitional = "virtio-serial-pci-non-transitional"
     case virtio_serial_pci_transitional = "virtio-serial-pci-transitional"
@@ -9296,6 +9443,7 @@ enum QEMUSerialDevice_arm: String, CaseIterable, QEMUSerialDevice {
         case .pci_serial_2x: return "pci-serial-2x"
         case .pci_serial_4x: return "pci-serial-4x"
         case .usb_serial: return "usb-serial"
+        case .virtio_serial_device: return "virtio-serial-device"
         case .virtio_serial_pci: return "virtio-serial-pci"
         case .virtio_serial_pci_non_transitional: return "virtio-serial-pci-non-transitional"
         case .virtio_serial_pci_transitional: return "virtio-serial-pci-transitional"
@@ -9309,6 +9457,7 @@ enum QEMUSerialDevice_aarch64: String, CaseIterable, QEMUSerialDevice {
     case pci_serial_2x = "pci-serial-2x"
     case pci_serial_4x = "pci-serial-4x"
     case usb_serial = "usb-serial"
+    case virtio_serial_device = "virtio-serial-device"
     case virtio_serial_pci = "virtio-serial-pci"
     case virtio_serial_pci_non_transitional = "virtio-serial-pci-non-transitional"
     case virtio_serial_pci_transitional = "virtio-serial-pci-transitional"
@@ -9320,6 +9469,7 @@ enum QEMUSerialDevice_aarch64: String, CaseIterable, QEMUSerialDevice {
         case .pci_serial_2x: return "pci-serial-2x"
         case .pci_serial_4x: return "pci-serial-4x"
         case .usb_serial: return "usb-serial"
+        case .virtio_serial_device: return "virtio-serial-device"
         case .virtio_serial_pci: return "virtio-serial-pci"
         case .virtio_serial_pci_non_transitional: return "virtio-serial-pci-non-transitional"
         case .virtio_serial_pci_transitional: return "virtio-serial-pci-transitional"
@@ -9338,6 +9488,7 @@ enum QEMUSerialDevice_hppa: String, CaseIterable, QEMUSerialDevice {
     case pci_serial_2x = "pci-serial-2x"
     case pci_serial_4x = "pci-serial-4x"
     case usb_serial = "usb-serial"
+    case virtio_serial_device = "virtio-serial-device"
     case virtio_serial_pci = "virtio-serial-pci"
     case virtio_serial_pci_non_transitional = "virtio-serial-pci-non-transitional"
     case virtio_serial_pci_transitional = "virtio-serial-pci-transitional"
@@ -9350,6 +9501,7 @@ enum QEMUSerialDevice_hppa: String, CaseIterable, QEMUSerialDevice {
         case .pci_serial_2x: return "pci-serial-2x"
         case .pci_serial_4x: return "pci-serial-4x"
         case .usb_serial: return "usb-serial"
+        case .virtio_serial_device: return "virtio-serial-device"
         case .virtio_serial_pci: return "virtio-serial-pci"
         case .virtio_serial_pci_non_transitional: return "virtio-serial-pci-non-transitional"
         case .virtio_serial_pci_transitional: return "virtio-serial-pci-transitional"
@@ -9364,6 +9516,7 @@ enum QEMUSerialDevice_i386: String, CaseIterable, QEMUSerialDevice {
     case pci_serial_2x = "pci-serial-2x"
     case pci_serial_4x = "pci-serial-4x"
     case usb_serial = "usb-serial"
+    case virtio_serial_device = "virtio-serial-device"
     case virtio_serial_pci = "virtio-serial-pci"
     case virtio_serial_pci_non_transitional = "virtio-serial-pci-non-transitional"
     case virtio_serial_pci_transitional = "virtio-serial-pci-transitional"
@@ -9376,6 +9529,7 @@ enum QEMUSerialDevice_i386: String, CaseIterable, QEMUSerialDevice {
         case .pci_serial_2x: return "pci-serial-2x"
         case .pci_serial_4x: return "pci-serial-4x"
         case .usb_serial: return "usb-serial"
+        case .virtio_serial_device: return "virtio-serial-device"
         case .virtio_serial_pci: return "virtio-serial-pci"
         case .virtio_serial_pci_non_transitional: return "virtio-serial-pci-non-transitional"
         case .virtio_serial_pci_transitional: return "virtio-serial-pci-transitional"
@@ -9390,6 +9544,7 @@ enum QEMUSerialDevice_loongarch64: String, CaseIterable, QEMUSerialDevice {
     case pci_serial_2x = "pci-serial-2x"
     case pci_serial_4x = "pci-serial-4x"
     case usb_serial = "usb-serial"
+    case virtio_serial_device = "virtio-serial-device"
     case virtio_serial_pci = "virtio-serial-pci"
     case virtio_serial_pci_non_transitional = "virtio-serial-pci-non-transitional"
     case virtio_serial_pci_transitional = "virtio-serial-pci-transitional"
@@ -9402,6 +9557,7 @@ enum QEMUSerialDevice_loongarch64: String, CaseIterable, QEMUSerialDevice {
         case .pci_serial_2x: return "pci-serial-2x"
         case .pci_serial_4x: return "pci-serial-4x"
         case .usb_serial: return "usb-serial"
+        case .virtio_serial_device: return "virtio-serial-device"
         case .virtio_serial_pci: return "virtio-serial-pci"
         case .virtio_serial_pci_non_transitional: return "virtio-serial-pci-non-transitional"
         case .virtio_serial_pci_transitional: return "virtio-serial-pci-transitional"
@@ -9411,10 +9567,12 @@ enum QEMUSerialDevice_loongarch64: String, CaseIterable, QEMUSerialDevice {
 }
 
 enum QEMUSerialDevice_m68k: String, CaseIterable, QEMUSerialDevice {
+    case virtio_serial_device = "virtio-serial-device"
     case virtserialport
 
     var prettyValue: String {
         switch self {
+        case .virtio_serial_device: return "virtio-serial-device"
         case .virtserialport: return "virtserialport"
         }
     }
@@ -9430,6 +9588,7 @@ enum QEMUSerialDevice_mips: String, CaseIterable, QEMUSerialDevice {
     case pci_serial_2x = "pci-serial-2x"
     case pci_serial_4x = "pci-serial-4x"
     case usb_serial = "usb-serial"
+    case virtio_serial_device = "virtio-serial-device"
     case virtio_serial_pci = "virtio-serial-pci"
     case virtio_serial_pci_non_transitional = "virtio-serial-pci-non-transitional"
     case virtio_serial_pci_transitional = "virtio-serial-pci-transitional"
@@ -9442,6 +9601,7 @@ enum QEMUSerialDevice_mips: String, CaseIterable, QEMUSerialDevice {
         case .pci_serial_2x: return "pci-serial-2x"
         case .pci_serial_4x: return "pci-serial-4x"
         case .usb_serial: return "usb-serial"
+        case .virtio_serial_device: return "virtio-serial-device"
         case .virtio_serial_pci: return "virtio-serial-pci"
         case .virtio_serial_pci_non_transitional: return "virtio-serial-pci-non-transitional"
         case .virtio_serial_pci_transitional: return "virtio-serial-pci-transitional"
@@ -9456,6 +9616,7 @@ enum QEMUSerialDevice_mipsel: String, CaseIterable, QEMUSerialDevice {
     case pci_serial_2x = "pci-serial-2x"
     case pci_serial_4x = "pci-serial-4x"
     case usb_serial = "usb-serial"
+    case virtio_serial_device = "virtio-serial-device"
     case virtio_serial_pci = "virtio-serial-pci"
     case virtio_serial_pci_non_transitional = "virtio-serial-pci-non-transitional"
     case virtio_serial_pci_transitional = "virtio-serial-pci-transitional"
@@ -9468,6 +9629,7 @@ enum QEMUSerialDevice_mipsel: String, CaseIterable, QEMUSerialDevice {
         case .pci_serial_2x: return "pci-serial-2x"
         case .pci_serial_4x: return "pci-serial-4x"
         case .usb_serial: return "usb-serial"
+        case .virtio_serial_device: return "virtio-serial-device"
         case .virtio_serial_pci: return "virtio-serial-pci"
         case .virtio_serial_pci_non_transitional: return "virtio-serial-pci-non-transitional"
         case .virtio_serial_pci_transitional: return "virtio-serial-pci-transitional"
@@ -9482,6 +9644,7 @@ enum QEMUSerialDevice_mips64: String, CaseIterable, QEMUSerialDevice {
     case pci_serial_2x = "pci-serial-2x"
     case pci_serial_4x = "pci-serial-4x"
     case usb_serial = "usb-serial"
+    case virtio_serial_device = "virtio-serial-device"
     case virtio_serial_pci = "virtio-serial-pci"
     case virtio_serial_pci_non_transitional = "virtio-serial-pci-non-transitional"
     case virtio_serial_pci_transitional = "virtio-serial-pci-transitional"
@@ -9494,6 +9657,7 @@ enum QEMUSerialDevice_mips64: String, CaseIterable, QEMUSerialDevice {
         case .pci_serial_2x: return "pci-serial-2x"
         case .pci_serial_4x: return "pci-serial-4x"
         case .usb_serial: return "usb-serial"
+        case .virtio_serial_device: return "virtio-serial-device"
         case .virtio_serial_pci: return "virtio-serial-pci"
         case .virtio_serial_pci_non_transitional: return "virtio-serial-pci-non-transitional"
         case .virtio_serial_pci_transitional: return "virtio-serial-pci-transitional"
@@ -9508,6 +9672,7 @@ enum QEMUSerialDevice_mips64el: String, CaseIterable, QEMUSerialDevice {
     case pci_serial_2x = "pci-serial-2x"
     case pci_serial_4x = "pci-serial-4x"
     case usb_serial = "usb-serial"
+    case virtio_serial_device = "virtio-serial-device"
     case virtio_serial_pci = "virtio-serial-pci"
     case virtio_serial_pci_non_transitional = "virtio-serial-pci-non-transitional"
     case virtio_serial_pci_transitional = "virtio-serial-pci-transitional"
@@ -9520,6 +9685,7 @@ enum QEMUSerialDevice_mips64el: String, CaseIterable, QEMUSerialDevice {
         case .pci_serial_2x: return "pci-serial-2x"
         case .pci_serial_4x: return "pci-serial-4x"
         case .usb_serial: return "usb-serial"
+        case .virtio_serial_device: return "virtio-serial-device"
         case .virtio_serial_pci: return "virtio-serial-pci"
         case .virtio_serial_pci_non_transitional: return "virtio-serial-pci-non-transitional"
         case .virtio_serial_pci_transitional: return "virtio-serial-pci-transitional"
@@ -9535,6 +9701,7 @@ enum QEMUSerialDevice_or1k: String, CaseIterable, QEMUSerialDevice {
     case pci_serial_2x = "pci-serial-2x"
     case pci_serial_4x = "pci-serial-4x"
     case usb_serial = "usb-serial"
+    case virtio_serial_device = "virtio-serial-device"
     case virtio_serial_pci = "virtio-serial-pci"
     case virtio_serial_pci_non_transitional = "virtio-serial-pci-non-transitional"
     case virtio_serial_pci_transitional = "virtio-serial-pci-transitional"
@@ -9546,6 +9713,7 @@ enum QEMUSerialDevice_or1k: String, CaseIterable, QEMUSerialDevice {
         case .pci_serial_2x: return "pci-serial-2x"
         case .pci_serial_4x: return "pci-serial-4x"
         case .usb_serial: return "usb-serial"
+        case .virtio_serial_device: return "virtio-serial-device"
         case .virtio_serial_pci: return "virtio-serial-pci"
         case .virtio_serial_pci_non_transitional: return "virtio-serial-pci-non-transitional"
         case .virtio_serial_pci_transitional: return "virtio-serial-pci-transitional"
@@ -9560,6 +9728,7 @@ enum QEMUSerialDevice_ppc: String, CaseIterable, QEMUSerialDevice {
     case pci_serial_2x = "pci-serial-2x"
     case pci_serial_4x = "pci-serial-4x"
     case usb_serial = "usb-serial"
+    case virtio_serial_device = "virtio-serial-device"
     case virtio_serial_pci = "virtio-serial-pci"
     case virtio_serial_pci_non_transitional = "virtio-serial-pci-non-transitional"
     case virtio_serial_pci_transitional = "virtio-serial-pci-transitional"
@@ -9572,6 +9741,7 @@ enum QEMUSerialDevice_ppc: String, CaseIterable, QEMUSerialDevice {
         case .pci_serial_2x: return "pci-serial-2x"
         case .pci_serial_4x: return "pci-serial-4x"
         case .usb_serial: return "usb-serial"
+        case .virtio_serial_device: return "virtio-serial-device"
         case .virtio_serial_pci: return "virtio-serial-pci"
         case .virtio_serial_pci_non_transitional: return "virtio-serial-pci-non-transitional"
         case .virtio_serial_pci_transitional: return "virtio-serial-pci-transitional"
@@ -9586,6 +9756,7 @@ enum QEMUSerialDevice_ppc64: String, CaseIterable, QEMUSerialDevice {
     case pci_serial_2x = "pci-serial-2x"
     case pci_serial_4x = "pci-serial-4x"
     case usb_serial = "usb-serial"
+    case virtio_serial_device = "virtio-serial-device"
     case virtio_serial_pci = "virtio-serial-pci"
     case virtio_serial_pci_non_transitional = "virtio-serial-pci-non-transitional"
     case virtio_serial_pci_transitional = "virtio-serial-pci-transitional"
@@ -9598,6 +9769,7 @@ enum QEMUSerialDevice_ppc64: String, CaseIterable, QEMUSerialDevice {
         case .pci_serial_2x: return "pci-serial-2x"
         case .pci_serial_4x: return "pci-serial-4x"
         case .usb_serial: return "usb-serial"
+        case .virtio_serial_device: return "virtio-serial-device"
         case .virtio_serial_pci: return "virtio-serial-pci"
         case .virtio_serial_pci_non_transitional: return "virtio-serial-pci-non-transitional"
         case .virtio_serial_pci_transitional: return "virtio-serial-pci-transitional"
@@ -9611,6 +9783,7 @@ enum QEMUSerialDevice_riscv32: String, CaseIterable, QEMUSerialDevice {
     case pci_serial_2x = "pci-serial-2x"
     case pci_serial_4x = "pci-serial-4x"
     case usb_serial = "usb-serial"
+    case virtio_serial_device = "virtio-serial-device"
     case virtio_serial_pci = "virtio-serial-pci"
     case virtio_serial_pci_non_transitional = "virtio-serial-pci-non-transitional"
     case virtio_serial_pci_transitional = "virtio-serial-pci-transitional"
@@ -9622,6 +9795,7 @@ enum QEMUSerialDevice_riscv32: String, CaseIterable, QEMUSerialDevice {
         case .pci_serial_2x: return "pci-serial-2x"
         case .pci_serial_4x: return "pci-serial-4x"
         case .usb_serial: return "usb-serial"
+        case .virtio_serial_device: return "virtio-serial-device"
         case .virtio_serial_pci: return "virtio-serial-pci"
         case .virtio_serial_pci_non_transitional: return "virtio-serial-pci-non-transitional"
         case .virtio_serial_pci_transitional: return "virtio-serial-pci-transitional"
@@ -9635,6 +9809,7 @@ enum QEMUSerialDevice_riscv64: String, CaseIterable, QEMUSerialDevice {
     case pci_serial_2x = "pci-serial-2x"
     case pci_serial_4x = "pci-serial-4x"
     case usb_serial = "usb-serial"
+    case virtio_serial_device = "virtio-serial-device"
     case virtio_serial_pci = "virtio-serial-pci"
     case virtio_serial_pci_non_transitional = "virtio-serial-pci-non-transitional"
     case virtio_serial_pci_transitional = "virtio-serial-pci-transitional"
@@ -9646,6 +9821,7 @@ enum QEMUSerialDevice_riscv64: String, CaseIterable, QEMUSerialDevice {
         case .pci_serial_2x: return "pci-serial-2x"
         case .pci_serial_4x: return "pci-serial-4x"
         case .usb_serial: return "usb-serial"
+        case .virtio_serial_device: return "virtio-serial-device"
         case .virtio_serial_pci: return "virtio-serial-pci"
         case .virtio_serial_pci_non_transitional: return "virtio-serial-pci-non-transitional"
         case .virtio_serial_pci_transitional: return "virtio-serial-pci-transitional"
@@ -9658,6 +9834,7 @@ typealias QEMUSerialDevice_rx = AnyQEMUConstant
 
 enum QEMUSerialDevice_s390x: String, CaseIterable, QEMUSerialDevice {
     case virtio_serial_ccw = "virtio-serial-ccw"
+    case virtio_serial_device = "virtio-serial-device"
     case virtio_serial_pci = "virtio-serial-pci"
     case virtio_serial_pci_non_transitional = "virtio-serial-pci-non-transitional"
     case virtio_serial_pci_transitional = "virtio-serial-pci-transitional"
@@ -9666,6 +9843,7 @@ enum QEMUSerialDevice_s390x: String, CaseIterable, QEMUSerialDevice {
     var prettyValue: String {
         switch self {
         case .virtio_serial_ccw: return "virtio-serial-ccw"
+        case .virtio_serial_device: return "virtio-serial-device"
         case .virtio_serial_pci: return "virtio-serial-pci"
         case .virtio_serial_pci_non_transitional: return "virtio-serial-pci-non-transitional"
         case .virtio_serial_pci_transitional: return "virtio-serial-pci-transitional"
@@ -9680,6 +9858,7 @@ enum QEMUSerialDevice_sh4: String, CaseIterable, QEMUSerialDevice {
     case pci_serial_2x = "pci-serial-2x"
     case pci_serial_4x = "pci-serial-4x"
     case usb_serial = "usb-serial"
+    case virtio_serial_device = "virtio-serial-device"
     case virtio_serial_pci = "virtio-serial-pci"
     case virtio_serial_pci_non_transitional = "virtio-serial-pci-non-transitional"
     case virtio_serial_pci_transitional = "virtio-serial-pci-transitional"
@@ -9692,6 +9871,7 @@ enum QEMUSerialDevice_sh4: String, CaseIterable, QEMUSerialDevice {
         case .pci_serial_2x: return "pci-serial-2x"
         case .pci_serial_4x: return "pci-serial-4x"
         case .usb_serial: return "usb-serial"
+        case .virtio_serial_device: return "virtio-serial-device"
         case .virtio_serial_pci: return "virtio-serial-pci"
         case .virtio_serial_pci_non_transitional: return "virtio-serial-pci-non-transitional"
         case .virtio_serial_pci_transitional: return "virtio-serial-pci-transitional"
@@ -9706,6 +9886,7 @@ enum QEMUSerialDevice_sh4eb: String, CaseIterable, QEMUSerialDevice {
     case pci_serial_2x = "pci-serial-2x"
     case pci_serial_4x = "pci-serial-4x"
     case usb_serial = "usb-serial"
+    case virtio_serial_device = "virtio-serial-device"
     case virtio_serial_pci = "virtio-serial-pci"
     case virtio_serial_pci_non_transitional = "virtio-serial-pci-non-transitional"
     case virtio_serial_pci_transitional = "virtio-serial-pci-transitional"
@@ -9718,6 +9899,7 @@ enum QEMUSerialDevice_sh4eb: String, CaseIterable, QEMUSerialDevice {
         case .pci_serial_2x: return "pci-serial-2x"
         case .pci_serial_4x: return "pci-serial-4x"
         case .usb_serial: return "usb-serial"
+        case .virtio_serial_device: return "virtio-serial-device"
         case .virtio_serial_pci: return "virtio-serial-pci"
         case .virtio_serial_pci_non_transitional: return "virtio-serial-pci-non-transitional"
         case .virtio_serial_pci_transitional: return "virtio-serial-pci-transitional"
@@ -9734,6 +9916,7 @@ enum QEMUSerialDevice_sparc64: String, CaseIterable, QEMUSerialDevice {
     case pci_serial_2x = "pci-serial-2x"
     case pci_serial_4x = "pci-serial-4x"
     case usb_serial = "usb-serial"
+    case virtio_serial_device = "virtio-serial-device"
     case virtio_serial_pci = "virtio-serial-pci"
     case virtio_serial_pci_non_transitional = "virtio-serial-pci-non-transitional"
     case virtio_serial_pci_transitional = "virtio-serial-pci-transitional"
@@ -9746,6 +9929,7 @@ enum QEMUSerialDevice_sparc64: String, CaseIterable, QEMUSerialDevice {
         case .pci_serial_2x: return "pci-serial-2x"
         case .pci_serial_4x: return "pci-serial-4x"
         case .usb_serial: return "usb-serial"
+        case .virtio_serial_device: return "virtio-serial-device"
         case .virtio_serial_pci: return "virtio-serial-pci"
         case .virtio_serial_pci_non_transitional: return "virtio-serial-pci-non-transitional"
         case .virtio_serial_pci_transitional: return "virtio-serial-pci-transitional"
@@ -9762,6 +9946,7 @@ enum QEMUSerialDevice_x86_64: String, CaseIterable, QEMUSerialDevice {
     case pci_serial_2x = "pci-serial-2x"
     case pci_serial_4x = "pci-serial-4x"
     case usb_serial = "usb-serial"
+    case virtio_serial_device = "virtio-serial-device"
     case virtio_serial_pci = "virtio-serial-pci"
     case virtio_serial_pci_non_transitional = "virtio-serial-pci-non-transitional"
     case virtio_serial_pci_transitional = "virtio-serial-pci-transitional"
@@ -9774,6 +9959,7 @@ enum QEMUSerialDevice_x86_64: String, CaseIterable, QEMUSerialDevice {
         case .pci_serial_2x: return "pci-serial-2x"
         case .pci_serial_4x: return "pci-serial-4x"
         case .usb_serial: return "usb-serial"
+        case .virtio_serial_device: return "virtio-serial-device"
         case .virtio_serial_pci: return "virtio-serial-pci"
         case .virtio_serial_pci_non_transitional: return "virtio-serial-pci-non-transitional"
         case .virtio_serial_pci_transitional: return "virtio-serial-pci-transitional"
@@ -9787,6 +9973,7 @@ enum QEMUSerialDevice_xtensa: String, CaseIterable, QEMUSerialDevice {
     case pci_serial_2x = "pci-serial-2x"
     case pci_serial_4x = "pci-serial-4x"
     case usb_serial = "usb-serial"
+    case virtio_serial_device = "virtio-serial-device"
     case virtio_serial_pci = "virtio-serial-pci"
     case virtio_serial_pci_non_transitional = "virtio-serial-pci-non-transitional"
     case virtio_serial_pci_transitional = "virtio-serial-pci-transitional"
@@ -9798,6 +9985,7 @@ enum QEMUSerialDevice_xtensa: String, CaseIterable, QEMUSerialDevice {
         case .pci_serial_2x: return "pci-serial-2x"
         case .pci_serial_4x: return "pci-serial-4x"
         case .usb_serial: return "usb-serial"
+        case .virtio_serial_device: return "virtio-serial-device"
         case .virtio_serial_pci: return "virtio-serial-pci"
         case .virtio_serial_pci_non_transitional: return "virtio-serial-pci-non-transitional"
         case .virtio_serial_pci_transitional: return "virtio-serial-pci-transitional"
@@ -9811,6 +9999,7 @@ enum QEMUSerialDevice_xtensaeb: String, CaseIterable, QEMUSerialDevice {
     case pci_serial_2x = "pci-serial-2x"
     case pci_serial_4x = "pci-serial-4x"
     case usb_serial = "usb-serial"
+    case virtio_serial_device = "virtio-serial-device"
     case virtio_serial_pci = "virtio-serial-pci"
     case virtio_serial_pci_non_transitional = "virtio-serial-pci-non-transitional"
     case virtio_serial_pci_transitional = "virtio-serial-pci-transitional"
@@ -9822,6 +10011,7 @@ enum QEMUSerialDevice_xtensaeb: String, CaseIterable, QEMUSerialDevice {
         case .pci_serial_2x: return "pci-serial-2x"
         case .pci_serial_4x: return "pci-serial-4x"
         case .usb_serial: return "usb-serial"
+        case .virtio_serial_device: return "virtio-serial-device"
         case .virtio_serial_pci: return "virtio-serial-pci"
         case .virtio_serial_pci_non_transitional: return "virtio-serial-pci-non-transitional"
         case .virtio_serial_pci_transitional: return "virtio-serial-pci-transitional"
