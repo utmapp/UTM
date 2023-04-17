@@ -659,6 +659,44 @@ import Foundation
         #endif
     }
     
+    private func parseNetworkSubnet(from network: UTMQemuConfigurationNetwork) -> (start: String, end: String, mask: String)? {
+        guard let net = network.vlanGuestAddress else {
+            return nil
+        }
+        let components = net.split(separator: "/")
+        let address: String
+        let binaryMask: UInt32
+        guard components.count >= 1 else {
+            return nil
+        }
+        if components.count == 2 {
+            var netmaskAddr = in_addr()
+            if inet_pton(AF_INET, String(components[1]), &netmaskAddr) == 1 {
+                binaryMask = UInt32(bigEndian: netmaskAddr.s_addr)
+            } else {
+                let topbits = Int(components[1])
+                guard let topbits = topbits, topbits >= 0 && topbits < 32 else {
+                    return nil
+                }
+                binaryMask = (0xFFFFFFFF as UInt32) << (32 - topbits)
+            }
+        } else {
+            binaryMask = 0xFFFFFF00
+        }
+        address = String(components[0])
+        var networkAddr = in_addr()
+        let netmask = in_addr(s_addr: in_addr_t(bigEndian: binaryMask))
+        guard inet_pton(AF_INET, address, &networkAddr) == 1 else {
+            return nil
+        }
+        let firstAddr = in_addr(s_addr: (in_addr_t(bigEndian: networkAddr.s_addr & netmask.s_addr) + 1).bigEndian)
+        let lastAddr = in_addr(s_addr: (in_addr_t(bigEndian: networkAddr.s_addr | ~netmask.s_addr) - 1).bigEndian)
+        let firstAddrStr = String(cString: inet_ntoa(firstAddr))
+        let lastAddrStr = String(cString: inet_ntoa(lastAddr))
+        let netmaskStr = String(cString: inet_ntoa(netmask))
+        return (firstAddrStr, lastAddrStr, netmaskStr)
+    }
+    
     @QEMUArgumentBuilder private var networkArguments: [QEMUArgument] {
         for i in networks.indices {
             if isSparc {
@@ -706,34 +744,43 @@ import Foundation
                     "restrict=on"
                 }
             }
-            if let guestAddress = networks[i].vlanGuestAddress {
-                "net=\(guestAddress)"
-            }
-            if let hostAddress = networks[i].vlanHostAddress {
-                "host=\(hostAddress)"
-            }
-            if let guestAddressIPv6 = networks[i].vlanGuestAddressIPv6 {
-                "ipv6-net=\(guestAddressIPv6)"
-            }
-            if let hostAddressIPv6 = networks[i].vlanHostAddressIPv6 {
-                "ipv6-host=\(hostAddressIPv6)"
-            }
-            if let dhcpStartAddress = networks[i].vlanDhcpStartAddress {
-                "dhcpstart=\(dhcpStartAddress)"
-            }
-            if let dnsServerAddress = networks[i].vlanDnsServerAddress {
-                "dns=\(dnsServerAddress)"
-            }
-            if let dnsServerAddressIPv6 = networks[i].vlanDnsServerAddressIPv6 {
-                "ipv6-dns=\(dnsServerAddressIPv6)"
-            }
-            if let dnsSearchDomain = networks[i].vlanDnsSearchDomain {
-                "dnssearch=\(dnsSearchDomain)"
-            }
-            if let dhcpDomain = networks[i].vlanDhcpDomain {
-                "domainname=\(dhcpDomain)"
-            }
-            if !useVMnet {
+            if useVMnet {
+                if let subnet = parseNetworkSubnet(from: networks[i]) {
+                    "start-address=\(subnet.start)"
+                    "end-address=\(subnet.end)"
+                    "subnet-mask=\(subnet.mask)"
+                }
+                if let nat66prefix = networks[i].vlanGuestAddressIPv6 {
+                    "nat66-prefix=\(nat66prefix)"
+                }
+            } else {
+                if let guestAddress = networks[i].vlanGuestAddress {
+                    "net=\(guestAddress)"
+                }
+                if let hostAddress = networks[i].vlanHostAddress {
+                    "host=\(hostAddress)"
+                }
+                if let guestAddressIPv6 = networks[i].vlanGuestAddressIPv6 {
+                    "ipv6-net=\(guestAddressIPv6)"
+                }
+                if let hostAddressIPv6 = networks[i].vlanHostAddressIPv6 {
+                    "ipv6-host=\(hostAddressIPv6)"
+                }
+                if let dhcpStartAddress = networks[i].vlanDhcpStartAddress {
+                    "dhcpstart=\(dhcpStartAddress)"
+                }
+                if let dnsServerAddress = networks[i].vlanDnsServerAddress {
+                    "dns=\(dnsServerAddress)"
+                }
+                if let dnsServerAddressIPv6 = networks[i].vlanDnsServerAddressIPv6 {
+                    "ipv6-dns=\(dnsServerAddressIPv6)"
+                }
+                if let dnsSearchDomain = networks[i].vlanDnsSearchDomain {
+                    "dnssearch=\(dnsSearchDomain)"
+                }
+                if let dhcpDomain = networks[i].vlanDhcpDomain {
+                    "domainname=\(dhcpDomain)"
+                }
                 for forward in networks[i].portForward {
                     "hostfwd=\(forward.protocol.rawValue.lowercased()):\(forward.hostAddress ?? ""):\(forward.hostPort)-\(forward.guestAddress ?? ""):\(forward.guestPort)"
                 }
