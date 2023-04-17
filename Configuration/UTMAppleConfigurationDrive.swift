@@ -72,19 +72,17 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
             self.imageName = imageName
             imageURL = dataURL.appendingPathComponent(imageName)
             isExternal = false
-            isReadOnly = try container.decodeIfPresent(Bool.self, forKey: .isReadOnly) ?? false
         } else if let bookmark = try container.decodeIfPresent(Data.self, forKey: .bookmark) {
             var stale: Bool = false
             imageURL = try? URL(resolvingBookmarkData: bookmark, options: .withSecurityScope, bookmarkDataIsStale: &stale)
             imageName = imageURL?.lastPathComponent
             isExternal = true
-            isReadOnly = true
         } else {
             imageURL = nil
             imageName = nil
             isExternal = true
-            isReadOnly = true
         }
+        isReadOnly = try container.decodeIfPresent(Bool.self, forKey: .isReadOnly) ?? isExternal
         id = try container.decode(String.self, forKey: .identifier)
     }
     
@@ -92,8 +90,8 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
         var container = encoder.container(keyedBy: CodingKeys.self)
         if !isExternal {
             try container.encodeIfPresent(imageName, forKey: .imageName)
-            try container.encode(isReadOnly, forKey: .isReadOnly)
         }
+        try container.encode(isReadOnly, forKey: .isReadOnly)
         try container.encode(id, forKey: .identifier)
     }
     

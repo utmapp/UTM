@@ -22,6 +22,9 @@ struct VMConfigAppleDriveDetailsView: View {
 
     var body: some View {
         Form {
+            Toggle(isOn: $config.isExternal, label: {
+                Text("Removable Drive")
+            }).disabled(true)
             TextField("Name", text: .constant(config.imageURL?.lastPathComponent ?? NSLocalizedString("(New Drive)", comment: "VMConfigAppleDriveDetailsView")))
                 .disabled(true)
             Toggle("Read Only?", isOn: $config.isReadOnly)

@@ -32,8 +32,10 @@ struct VMConfigAppleDriveCreateView: View {
                 .onChange(of: config.isExternal) { newValue in
                     if newValue {
                         config.sizeMib = 0
+                        config.isReadOnly = true
                     } else {
                         config.sizeMib = 10240
+                        config.isReadOnly = false
                     }
                 }
                 if !config.isExternal {
