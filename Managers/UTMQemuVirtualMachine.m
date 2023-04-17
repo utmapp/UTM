@@ -214,24 +214,6 @@ static void *SpiceIoServiceGuestAgentContext = &SpiceIoServiceGuestAgentContext;
         completion(ensureEfiVarsError);
         return;
     }
-    // set up SPICE sharing and removable drives
-    NSString *errMsg;
-    __block NSError *restoreExternalDrivesAndSharesError = nil;
-    dispatch_semaphore_t restoreExternalDrivesAndSharesEvent = dispatch_semaphore_create(0);
-    [self restoreExternalDrivesAndSharesWithCompletion:^(NSError *err) {
-        restoreExternalDrivesAndSharesError = err;
-        dispatch_semaphore_signal(restoreExternalDrivesAndSharesEvent);
-    }];
-    if (dispatch_semaphore_wait(restoreExternalDrivesAndSharesEvent, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
-        UTMLog(@"Timed out waiting for external drives and shares to be restored.");
-        completion([self errorGeneric]);
-        return;
-    }
-    if (restoreExternalDrivesAndSharesError) {
-        errMsg = [NSString localizedStringWithFormat:NSLocalizedString(@"Error trying to restore external drives and shares: %@", @"UTMVirtualMachine"), restoreExternalDrivesAndSharesError.localizedDescription];
-        completion([self errorWithMessage:errMsg]);
-        return;
-    }
     // start QEMU (this can be in parallel with SPICE connect below)
     __weak typeof(self) weakSelf = self;
     __block NSError *qemuStartError = nil;
@@ -325,6 +307,26 @@ static void *SpiceIoServiceGuestAgentContext = &SpiceIoServiceGuestAgentContext;
             completion(restoreError);
             return;
         }
+    }
+    // set up SPICE sharing and removable drives
+    NSString *errMsg;
+    __block NSError *restoreExternalDrivesAndSharesError = nil;
+    dispatch_semaphore_t restoreExternalDrivesAndSharesEvent = dispatch_semaphore_create(0);
+    [self restoreExternalDrivesAndSharesWithCompletion:^(NSError *err) {
+        restoreExternalDrivesAndSharesError = err;
+        dispatch_semaphore_signal(restoreExternalDrivesAndSharesEvent);
+    }];
+    if (dispatch_semaphore_wait(restoreExternalDrivesAndSharesEvent, dispatch_time(DISPATCH_TIME_NOW, kStopTimeout)) != 0) {
+        UTMLog(@"Timed out waiting for external drives and shares to be restored.");
+        [self _vmStopForce:YES completion:^(NSError *err) {}];
+        completion([self errorGeneric]);
+        return;
+    }
+    if (restoreExternalDrivesAndSharesError) {
+        errMsg = [NSString localizedStringWithFormat:NSLocalizedString(@"Error trying to restore external drives and shares: %@", @"UTMVirtualMachine"), restoreExternalDrivesAndSharesError.localizedDescription];
+        [self _vmStopForce:YES completion:^(NSError *err) {}];
+        completion([self errorWithMessage:errMsg]);
+        return;
     }
     // continue VM boot
     if (![self.qemu continueBootWithError:&err]) {
