@@ -479,12 +479,13 @@ import Foundation
     
     @QEMUArgumentBuilder private func driveArgument(for drive: UTMQemuConfigurationDrive, busInterfaceMap: inout [String: Int]) -> [QEMUArgument] {
         let isRemovable = drive.imageType == .cd || drive.isExternal
+        let isCd = drive.imageType == .cd && drive.interface != .floppy
         var bootindex = busInterfaceMap["boot", default: 0]
         var busindex = busInterfaceMap[drive.interface.rawValue, default: 0]
         var realInterface = QEMUDriveInterface.none
         if drive.interface == .ide {
             f("-device")
-            if isRemovable {
+            if isCd {
                 "ide-cd"
             } else {
                 "ide-hd"
@@ -505,7 +506,7 @@ import Foundation
                 }
             }
             f("-device")
-            if isRemovable {
+            if isCd {
                 "scsi-cd"
             } else {
                 "scsi-hd"
@@ -590,7 +591,7 @@ import Foundation
         default:
             "if=none"
         }
-        if isRemovable && drive.interface != .floppy {
+        if isCd {
             "media=cdrom"
         } else {
             "media=disk"
@@ -599,10 +600,12 @@ import Foundation
         if let imageURL = drive.imageURL {
             "file="
             imageURL
+        } else if !isCd {
+            "file=/dev/null"
         }
-        if drive.isReadOnly {
+        if drive.isReadOnly || isCd {
             "readonly=on"
-        } else if !drive.isExternal {
+        } else {
             "discard=unmap"
             "detect-zeroes=unmap"
         }
