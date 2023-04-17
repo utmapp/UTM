@@ -61,7 +61,6 @@ struct VMConfigDriveDetailsView: View {
                         Text("(new)")
                     }
                 }
-                Toggle("Read Only?", isOn: $config.isReadOnly)
             } else {
                 FileBrowseField(url: $config.imageURL, isFileImporterPresented: $isImporterPresented)
                 .globalFileImporter(isPresented: $isImporterPresented, allowedContentTypes: [.item]) { result in
@@ -73,9 +72,21 @@ struct VMConfigDriveDetailsView: View {
                     }
                 }
             }
+            Toggle("Read Only?", isOn: $config.isReadOnly)
+                .disabled(config.imageType != .none && config.imageType != .disk)
             VMConfigConstantPicker("Image Type", selection: $config.imageType)
+                .onChange(of: config.imageType) { imageType in
+                    if imageType != .none && config.imageType != .disk {
+                        config.isReadOnly = true
+                    }
+                }
             if config.imageType == .disk || config.imageType == .cd {
                 VMConfigConstantPicker("Interface", selection: $config.interface)
+                    .onChange(of: config.interface) { interface in
+                        if interface == .floppy && config.imageType == .cd {
+                            config.imageType = .disk
+                        }
+                    }
             }
             
             if let imageUrl = config.imageURL, let fileSize = data.computeSize(for: imageUrl) {

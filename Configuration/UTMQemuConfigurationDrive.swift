@@ -68,11 +68,10 @@ struct UTMQemuConfigurationDrive: UTMConfigurationDrive {
             self.imageName = imageName
             imageURL = dataURL.appendingPathComponent(imageName)
             isExternal = false
-            isReadOnly = try values.decodeIfPresent(Bool.self, forKey: .isReadOnly) ?? false
         } else {
             isExternal = true
-            isReadOnly = true
         }
+        isReadOnly = try values.decodeIfPresent(Bool.self, forKey: .isReadOnly) ?? isExternal
         imageType = try values.decode(QEMUDriveImageType.self, forKey: .imageType)
         interface = try values.decode(QEMUDriveInterface.self, forKey: .interface)
         id = try values.decode(String.self, forKey: .identifier)
@@ -82,8 +81,8 @@ struct UTMQemuConfigurationDrive: UTMConfigurationDrive {
         var container = encoder.container(keyedBy: CodingKeys.self)
         if !isExternal {
             try container.encodeIfPresent(imageURL?.lastPathComponent, forKey: .imageName)
-            try container.encode(isReadOnly, forKey: .isReadOnly)
         }
+        try container.encode(isReadOnly, forKey: .isReadOnly)
         try container.encode(imageType, forKey: .imageType)
         if imageType == .cd || imageType == .disk {
             try container.encode(interface, forKey: .interface)
@@ -139,6 +138,7 @@ extension UTMQemuConfigurationDrive {
         imageType = convertImageType(from: oldConfig.driveImageType(for: index))
         interface = convertInterface(from: oldConfig.driveInterfaceType(for: index))
         isExternal = oldConfig.driveRemovable(for: index)
+        isReadOnly = isExternal
         var oldId = oldConfig.driveName(for: index) ?? UUID().uuidString
         if oldId.hasPrefix("drive") {
             oldId.removeFirst(5)

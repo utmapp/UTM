@@ -24,14 +24,18 @@ struct VMConfigDriveCreateView: View {
             Toggle(isOn: $config.isExternal.animation(), label: {
                 Text("Removable")
             }).onChange(of: config.isExternal) { removable in
-                config.imageType = removable ? .cd : .disk
+                config.imageType = removable && config.interface != .floppy ? .cd : .disk
                 config.isRawImage = removable
+                config.isReadOnly = removable
                 if let defaultInterfaceForImageType = config.defaultInterfaceForImageType {
                     config.interface = defaultInterfaceForImageType(config.imageType)
                 }
             }.help("If checked, no drive image will be stored with the VM. Instead you can mount/unmount image while the VM is running.")
             VMConfigConstantPicker("Interface", selection: $config.interface)
                 .help("Hardware interface on the guest used to mount this image. Different operating systems support different interfaces. The default will be the most common interface.")
+                .onChange(of: config.interface) { interface in
+                    config.imageType = config.isExternal && interface != .floppy ? .cd : .disk
+                }
             if !config.isExternal {
                 SizeTextField($config.sizeMib)
                 Toggle(isOn: $config.isRawImage) {

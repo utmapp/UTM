@@ -167,7 +167,10 @@ struct VMRemovableDrivesView: View {
             if drive.imageType == .cd {
                 return Label("CD/DVD", systemImage: !isInserted ? "opticaldiscdrive" : "opticaldiscdrive.fill")
             } else {
-                return Label("Removable", systemImage: "externaldrive")
+                return Label(String.localizedStringWithFormat(NSLocalizedString("%@ %@", comment: "VMRemovableDrivesView"),
+                                                              NSLocalizedString("Removable", comment: "VMRemovableDrivesView"),
+                                                              drive.interface.prettyValue),
+                             systemImage: "externaldrive")
             }
         }
     }
