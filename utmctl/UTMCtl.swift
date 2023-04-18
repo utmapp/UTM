@@ -24,7 +24,7 @@ struct UTMCtl: ParsableCommand {
     static var configuration = CommandConfiguration(
         commandName: "utmctl",
         abstract: "CLI tool for controlling UTM virtual machines.",
-        subcommands: [List.self, Status.self, Start.self, Suspend.self, Stop.self, Attach.self, File.self, Exec.self, IPAddress.self]
+        subcommands: [List.self, Status.self, Start.self, Suspend.self, Stop.self, Attach.self, File.self, Exec.self, IPAddress.self, Clone.self]
     )
 }
 
@@ -457,6 +457,29 @@ extension UTMCtl {
             for address in addresses {
                 print(address)
             }
+        }
+    }
+}
+
+extension UTMCtl {
+    struct Clone: UTMAPICommand {
+        static var configuration = CommandConfiguration(
+            abstract: "Clone an existing virtual machine."
+        )
+        
+        @OptionGroup var environment: EnvironmentOptions
+        
+        @OptionGroup var identifer: VMIdentifier
+        
+        @Option var name: String?
+        
+        func run(with application: UTMScriptingApplication) throws {
+            let vm = try virtualMachine(forIdentifier: identifer, in: application)
+            var properties = ["configuration": [:]]
+            if let name = name {
+                properties["configuration"] = ["name": name]
+            }
+            vm.duplicateTo!(nil, withProperties: properties)
         }
     }
 }
