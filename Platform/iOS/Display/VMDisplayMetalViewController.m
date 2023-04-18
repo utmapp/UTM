@@ -142,6 +142,7 @@
 - (void)enterSuspendedWithIsBusy:(BOOL)busy {
     [super enterSuspendedWithIsBusy:busy];
     self.prefersPointerLocked = NO;
+    self.view.window.isIndirectPointerTouchIgnored = NO;
     if (!busy) {
         if (self.delegate.qemuHasClipboardSharing) {
             [[UTMPasteboard generalPasteboard] releasePollingModeForObject:self];
@@ -152,6 +153,7 @@
 - (void)enterLive {
     [super enterLive];
     self.prefersPointerLocked = YES;
+    self.view.window.isIndirectPointerTouchIgnored = YES;
     if (self.delegate.qemuDisplayIsDynamicResolution) {
         [self displayResize:self.view.bounds.size];
     }

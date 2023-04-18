@@ -94,9 +94,6 @@ NS_AVAILABLE_IOS(13.4)
         };
     }
     // no handler to the gcmouse scroll event, gestureScroll works fine.
-    dispatch_async(dispatch_get_main_queue(), ^{
-        self.prefersPointerLocked = YES;
-    });
 }
 
 - (void)mouseDidStopBeingCurrent:(NSNotification *)notification API_AVAILABLE(ios(14)) {
@@ -109,9 +106,6 @@ NS_AVAILABLE_IOS(13.4)
     for (int i = 0; i < MIN(4, mouse.mouseInput.auxiliaryButtons.count); i++) {
         mouse.mouseInput.auxiliaryButtons[i].pressedChangedHandler = nil;
     }
-    dispatch_async(dispatch_get_main_queue(), ^{
-        self.prefersPointerLocked = NO;
-    });
 }
 
 #pragma mark - UIPointerInteractionDelegate

@@ -25,6 +25,7 @@ final class UTMPatches {
     static func patchAll() {
         UIViewController.patchViewController()
         UIPress.patchPress()
+        UIWindow.patchWindow()
     }
 }
 
@@ -96,5 +97,46 @@ extension UIPress {
                       class: Self.self)
             }
         }
+    }
+}
+
+private var IndirectPointerTouchIgnoredHandle: Int = 0
+
+/// Patch to allow ignoring indirect touch when capturing pointer
+extension UIWindow {
+    /// When true, `sendEvent(_:)` will ignore any indirect touch events.
+    @objc var isIndirectPointerTouchIgnored: Bool {
+        set {
+            let number = NSNumber(booleanLiteral: newValue)
+            objc_setAssociatedObject(self, &IndirectPointerTouchIgnoredHandle, number, .OBJC_ASSOCIATION_ASSIGN)
+        }
+        
+        get {
+            let number = objc_getAssociatedObject(self, &IndirectPointerTouchIgnoredHandle) as? NSNumber
+            return number?.boolValue ?? false
+        }
+    }
+    
+    /// Replacement `sendEvent(_:)` function
+    /// - Parameter event: The event to dispatch.
+    @objc private func xxx_sendEvent(_ event: UIEvent) {
+        if isIndirectPointerTouchIgnored && event.type == .touches {
+            event.touches(for: self)?.forEach { touch in
+                if touch.type == .indirectPointer {
+                    // for some reason, if we just ignore the event, future touch events get messed up
+                    // so as an alternative, we still pass the event through but with a modified coordinate
+                    touch.perform(Selector(("_setLocationInWindow:resetPrevious:")),
+                                  with: CGPoint(x: -1, y: -1),
+                                  with: true)
+                }
+            }
+        }
+        xxx_sendEvent(event)
+    }
+    
+    fileprivate static func patchWindow() {
+        patch(#selector(sendEvent),
+              with: #selector(xxx_sendEvent),
+              class: Self.self)
     }
 }
