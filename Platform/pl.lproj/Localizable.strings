@@ -275,7 +275,7 @@
 // SettingsView.swift
 "Application" = "Aplikacja";
 "Keep UTM running after last window is closed and all VMs are shut down" = "Zostaw UTM uruchomione nawet jeśli ostatnie okno jest zamknięte i wszystkie maszyny wirtualne są wyłączone.";
-"VM display size is fixed" = "Rozmiar ekranu wirtualnej maszyny jest naprawiony";
+"VM display size is fixed" = "Rozmiar ekranu wirtualnej maszyny jest zablokowany";
 "If enabled, resizing of the VM window will not be allowed." = "Jeśli zaznaczone, manipulacja rozdzielczością okna maszyny wirtualnej będzie niemożliwe.";
 "Do not save VM screenshot to disk" = "Nie zapisuj migawek maszyny wirtualnej na dysk";
 "If enabled, any existing screenshot will be deleted the next time the VM is started." = "Jeśli zaznaczone, wszystkie istniejące migawki zostaną usunięte przy następnym uruchomieniu.";
