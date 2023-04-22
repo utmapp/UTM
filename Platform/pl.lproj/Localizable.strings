@@ -14,7 +14,7 @@
 "Linux Device Tree Binary" = "Plik binarny drzewa urządzeń systemu Linux";
 
 // UTMConfiguration.swift
-"This configuration is too old and is not supported." = "Ta konfiguracja jest przestarzała i nie wspierana";
+"This configuration is too old and is not supported." = "Ta konfiguracja jest przestarzała i niewspierana";
 "This configuration is saved with a newer version of UTM and is not compatible with this version." = "Ta konfiguracja została zapisana w nowszej wersji UTM i nie jest kompatybilna z tą wersją programu.";
 "An invalid value of '%@' is used in the configuration file." = "Nieprawidłowa wartość '%@' została użyta w pliku konfiguracyjnym";
 "The backend for this configuration is not supported." = "Funkcja (Backend) dla tej konfiguracji jest nie wspierana.";
@@ -34,7 +34,7 @@
 "A valid kernel image must be specified." = "Prawidłowy obraz jądra systemu (kernel) musi być zdefiniowany.";
 "This virtual machine contains an invalid hardware model. The configuration may be corrupted or is outdated." = "Wirtualna maszyna zawiera zły model sprzętu. Konfiguracja może być uszkodzona lub nieaktualna.";
 "Rosetta is not supported on the current host machine." = "Rosetta nie jest wspierana przez maszynę gospodarza (host).";
-"The host operating system needs to be updated to support one or more features requested by the guest." = "System operacyjny gospodarza musi zostać zaktualizowany, aby wspierać jeden lub więcej funkcji wymaganych przez gościa.";
+"The host operating system needs to be updated to support one or more features requested by the guest." = "System operacyjny gospodarza musi zostać zaktualizowany, aby wspierać jedną lub więcej funkcji wymaganych przez gościa.";
 "Linux" = "Linux";
 "macOS" = "macOS";
 
@@ -65,15 +65,15 @@
 "TCP" = "TCP";
 "UDP" = "UDP";
 "Default" = "Domyślne";
-"Italic, Bold" = "Italic, Pogrubiony";
-"Italic" = "Italic";
+"Italic, Bold" = "Kursywa, Pogrubiony";
+"Italic" = "Kursywa";
 "Bold" = "Pogrubiony";
 "Regular" = "Regularny";
 "%@ (%@)" = "%1$@（%2$@）";
 "TCP Client Connection" = "Połączenie kilent TCP";
 "TCP Server Connection" = "Połączenie serwer TCP";
-"Automatic Serial Device (max 4)" = "Automatyczne urządzenie Serial (maks. 4)";
-"Manual Serial Device (advanced)" = "Manualne urządzenie Serial (zaawansowane)";
+"Automatic Serial Device (max 4)" = "Automatyczne urządzenie szeregowe (maks. 4)";
+"Manual Serial Device (advanced)" = "Manualne urządzenie szeregowe (zaawansowane)";
 "GDB Debug Stub" = "GDB Debug Stub";
 "QEMU Monitor (HMP)" = "Monitor QEMU (HMP)";
 "None (Advanced)" = "Brak (Zaawansowane)";
@@ -116,7 +116,7 @@
 "QEMU exited from an error: %@" = "QEMU zakończył z błędem: %@";
 "Error trying to start shared directory: %@" = "Wystąpił błąd podczas próby uruchomienia współdzielonego katalogu ：%@";
 "Error trying to restore removable drives: %@" = "Wystąpił błąd podczas próby odzyskania dysków zewnętrznych: %@";
-"Failed to save VM snapshot. Usually this means at least one device does not support snapshots. %@" = "Nie udało się zapisać migawki. Zazwyczaj oznacza to conajmniej jedno urządzenie nie wspierające migawek. %@";
+"Failed to save VM snapshot. Usually this means at least one device does not support snapshots. %@" = "Nie udało się zapisać migawki. Zazwyczaj oznacza to co najmniej jedno urządzenie niewspierające migawek. %@";
 
 // UTMQemuVirtualMachine+SPICE.m
 "VM frontend does not support shared directories." = "Interfejs wirtualnej maszyny nie wspiera współdzielenia katalogów.";
@@ -182,7 +182,7 @@
 "Sharing" = "Współdzielenie";
 "Devices" = "Urządzenia";
 "Display" = "Monitor";
-"Serial" = "Serial";
+"Serial" = "Interfejs szeregowy";
 "Network" = "Sieć";
 "Sound" = "Dźwięk";
 "Save" = "Zapisz";
@@ -196,7 +196,7 @@
 "Hide" = "Schowaj";
 
 // VMToolbarDisplayMenuView.swift
-"Serial %lld: %@" = "Serial %lld: %@";
+"Serial %lld: %@" = "Szeregowe %lld: %@";
 "Display %lld: %@" = "Monitor %lld: %@";
 "Current Window" = "Obecne okno";
 "Zoom/Reset" = "Powiększ/Resetuj";
@@ -245,7 +245,7 @@
 "Add…" = "Dodaj...";
 "Select Shared Folder" = "Wybierz współdzielony katalog";
 "Installation: %lld%%" = "Instalacja: %lld%%";
-"Serial %lld" = "Serial %lld";
+"Serial %lld" = "Szeregowe %lld";
 
 // Display/VMDisplayAppleDisplayWindowController.swift
 "%@ (Terminal %lld)" = "%@ (Terminal %lld)";
@@ -255,7 +255,7 @@
 
 // Display/VMQemuDisplayMetalWindowController.swift
 "%@ (Display %lld)" = "%@ (Monitor %lld)";
-"Metal is not supported on this device. Cannot render display." = "Metal nie jest wspierany przez to urządzenie. Nie udało się wyrenderowaać okna.";
+"Metal is not supported on this device. Cannot render display." = "Metal nie jest wspierany przez to urządzenie. Nie udało się wyrenderować okna.";
 "Internal error." = "Błąd wewnętrzny";
 "Press %@ to release cursor" = "Naciśnij %@ aby uwolnić kursor";
 "⌘+⌥" = "⌘+⌥";
@@ -266,7 +266,7 @@
 "⌃+⌥ (Ctrl+Opt)" = "⌃+⌥（Ctrl+Opt）";
 
 // Display/VMMetalView.swift
-"Capture Input" = "Przechwytuj klawiatuję";
+"Capture Input" = "Przechwytuj klawiaturę";
 "To capture input or to release the capture, press Command and Option at the same time." = "Aby przechwycić klawiaturę lub uwolnić ją, naciśnij ⌘ i ⌥  w tym samym czasie.";
 
 // AppDelegate.swift
@@ -276,17 +276,17 @@
 "Application" = "Aplikacja";
 "Keep UTM running after last window is closed and all VMs are shut down" = "Zostaw UTM uruchomione nawet jeśli ostatnie okno jest zamknięte i wszystkie maszyny wirtualne są wyłączone.";
 "VM display size is fixed" = "Rozmiar ekranu wirtualnej maszyny jest zablokowany";
-"If enabled, resizing of the VM window will not be allowed." = "Jeśli zaznaczone, manipulacja rozdzielczością okna maszyny wirtualnej będzie niemożliwe.";
+"If enabled, resizing of the VM window will not be allowed." = "Jeśli zaznaczone, manipulacja rozdzielczością okna maszyny wirtualnej będzie niemożliwa.";
 "Do not save VM screenshot to disk" = "Nie zapisuj migawek maszyny wirtualnej na dysk";
 "If enabled, any existing screenshot will be deleted the next time the VM is started." = "Jeśli zaznaczone, wszystkie istniejące migawki zostaną usunięte przy następnym uruchomieniu.";
-"Hold Control (⌃) for right click" = "Przytrzymaj Control (⌃) aby wykonać prawy klik";
+"Hold Control (⌃) for right click" = "Przytrzymaj Control (⌃) aby wykonać prawe kliknięcie";
 "Use Command+Option (⌘+⌥) for input capture/release" = "Użyj Command+Option (⌘+⌥) aby przechwycić/uwolnić klawiaturę.";
 "If disabled, the default combination Control+Option (⌃+⌥) will be used." = "Jeśli wyłączone, podstawowa kombinacja Ctrl+Option (⌃+⌥) zostanie użyta.";
 "Caps Lock (⇪) is treated as a key" = "Caps Lock (⇪) jest traktowany jako klawisz.";
-"If enabled, caps lock will be handled like other keys. If disabled, it is treated as a toggle that is synchronized with the host." = "Jeśli właczone, Caps Lock będzie traktowany jak każdy inny klawisz. Jeśli wyłączone, będzie on traktowany jako przełącznik synchronizacji z hostem.";
+"If enabled, caps lock will be handled like other keys. If disabled, it is treated as a toggle that is synchronized with the host." = "Jeśli włączone, Caps Lock będzie traktowany jak każdy inny klawisz. Jeśli wyłączone, będzie on traktowany jako przełącznik zsynchronizowany z hostem.";
 "Invert scrolling" = "Odwróć kółko myszki";
 "If enabled, scroll whell input will be inverted." = "Jeśli włączone, kółko myszki będzie odwrócone.";
-"Do not show prompt when USB device is plugged in" = "Nie pokazuj jeśli urządzenie USB jest podłączone";
+"Do not show prompt when USB device is plugged in" = "Nie pokazuj powiadomienia gdy urządzenie USB zostanie podłączone";
 
 // UTMDataExtension.swift
 "This virtual machine cannot be run on this machine." = "Ta wirtualna maszyna nie może być uruchomiona na tej maszynie.";
@@ -318,7 +318,7 @@
 "Removable" = "Urządzenie zewnętrzne";
 "If checked, the drive image will be stored with the VM." = "Jeśli zaznaczone, obraz dysku będzie przechowywany wraz z wirtualną maszyną.";
 "Size" = "Rozmiar";
-"The amount of storage to allocate for this image. An empty file of this size will be stored with the VM." = "Ilość zaalokowanej pamięci dla tego obrazu. Pusty plik takiego rozmiaru będzie przechowywany wraz z maszyną wirtualną";
+"The amount of storage to allocate for this image. An empty file of this size will be stored with the VM." = "Ilość pamięci masowej przydzielonej dla tego obrazu. Pusty plik takiego rozmiaru będzie przechowywany wraz z maszyną wirtualną";
 "GB" = "GB";
 "MB" = "GB";
 
@@ -355,8 +355,8 @@
 "Enable Sound" = "Włącz dźwięk";
 "Enable Keyboard" = "Włącz klawiaturę";
 "Pointer" = "Pointer";
-"Enable Rosetta on Linux (x86_64 Emulation)" = "Włącz Rosetta na systemie Linux (emulacja x86_64)";
-"If enabled, a virtiofs share tagged 'rosetta' will be available on the Linux guest for installing Rosetta for emulating x86_64 on ARM64." = "Jeśli włączone, udostępnianie VIRTIOFS z tagiem 'rosetta' będzie dostępne dla systemu operacyjnego Linux (gościa), aby zainstalować Rosetta do emulacji x86_64 na ARM64.";
+"Enable Rosetta on Linux (x86_64 Emulation)" = "Włącz Rosettę na systemie Linux (emulacja x86_64)";
+"If enabled, a virtiofs share tagged 'rosetta' will be available on the Linux guest for installing Rosetta for emulating x86_64 on ARM64." = "Jeśli włączone, katalog współdzielony VIRTIOFS z tagiem 'rosetta' będzie dostępny dla systemu operacyjnego Linux (gościa), aby zainstalować Rosettę do emulacji x86_64 na ARM64.";
 "Enable Clipboard Sharing" = "Włącz współdzielenie katalogów";
 "Requires SPICE guest agent tools to be installed." = "Wymaga zainstalowanego agenta narzędzi dodatków gościa SPICE.";
 
@@ -366,7 +366,7 @@
 "New…" = "Nowy...";
 "Add a new drive." = "Dodaj nowy dysk.";
 "Import…" = "Importuj...";
-"Select an existing disk image." = "Sélectionne une image disque existante.";
+"Select an existing disk image." = "Wybierz istniejący obraz dysku.";
 "Create" = "Stwórz";
 "Create an empty drive." = "Stwórz pusty dysk.";
 "%@ Image" = "Obraz %@";
@@ -392,21 +392,21 @@
 "Go Back" = "Wróć";
 
 // SavePanel.swift
-"Select where to save debug log:" = "Wybierz gdzie zapisać plik dziennika zdzarzeń do debugowania:";
-"Select where to save UTM Virtual Machine:" = "Wybierz gdzie zapisać wirtualną maszynę UTM:";
-"Select where to export QEMU command:" = "Wybierz gdzie wyeksportować komendę QEMU:";
+"Select where to save debug log:" = "Wybierz, gdzie zapisać plik dziennika zdzarzeń do debugowania:";
+"Select where to save UTM Virtual Machine:" = "Wybierz, gdzie zapisać wirtualną maszynę UTM:";
+"Select where to export QEMU command:" = "Wybierz, gdzie wyeksportować komendę QEMU:";
 
 
 /* Platform/Shared */
 
 // ContentView.swift
-"Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached. See https://getutm.app/install/ for more details." = "Twoja wersja systemu iOS nie wspiera uruchamiania wirtualnych maszyn bez modyfikacji. Musisz albo uruchomić UTM gdy przerobisz urządzenie albo z dołączonym przenośnym debuggerem. Sprawdź https://getutm.app/install/ po więcej informacji.";
+"Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached. See https://getutm.app/install/ for more details." = "Twoja wersja systemu iOS nie wspiera uruchamiania wirtualnych maszyn bez modyfikacji. Musisz albo uruchomić UTM na jailbreakowanym urządzeniu albo z dołączonym zdalnym debuggerem. Sprawdź https://getutm.app/install/ po więcej informacji.";
 
 /* Share and Drive panes. */
 "Path" = "Ścieżka";
 
 // SizeTextField.swift
-"The amount of storage to allocate for this image. Ignored if importing an image. If this is a raw image, then an empty file of this size will be stored with the VM. Otherwise, the disk image will dynamically expand up to this size." = "Ilość pamięci masowej do alokacji dla tego obrazu. Ignorowane jeśli importujesz obraz. Jeśli jest to surowy obraz, wtedy plusty plik teg rozmiaru będzie przechwywany wraz z wirtualną maszyną. W przeciwnym wypadku, obraz dysku będzie dynamicznie się rozszerzał do docelowego rozmiaru.";
+"The amount of storage to allocate for this image. Ignored if importing an image. If this is a raw image, then an empty file of this size will be stored with the VM. Otherwise, the disk image will dynamically expand up to this size." = "Ilość pamięci masowej do przydzielenia dla tego obrazu. Ignorowane, jeśli importujesz obraz. Jeśli jest to surowy obraz, wtedy plusty plik tego rozmiaru będzie przechowywany wraz z wirtualną maszyną. W przeciwnym wypadku, obraz dysku będzie dynamicznie się rozszerzał do docelowego rozmiaru.";
 
 // VMCardView.swift
 "Run" = "Uruchom";
@@ -422,8 +422,8 @@
 "Emulated Display Card" = "Emulowana karta graficzna";
 "VGA Device RAM (MB)" = "Pamięć operacyjna (RAM) urządzenia VGA (MB)";
 "Auto Resolution" = "Automatyczna rozdzielczość";
-"Resize display to window size automatically" = "Zmieniaj obraz do rozmiaru okna automatycznie";
-"Resize display to screen size and orientation automatically" = "Zmieniaj obraz do rozmiaru ekranu oraz jego orientacje automatycznie.";
+"Resize display to window size automatically" = "Dopasuj obraz do rozmiaru okna automatycznie";
+"Resize display to screen size and orientation automatically" = "Dopasuj obraz do rozmiaru i orientacji ekranu automatycznie.";
 "Requires SPICE guest agent tools to be installed." = "Wymaga zainstalowanych dodatków gościa SPICE.";
 "Scaling" = "Skalowanie";
 "Upscaling" = "Skalowanie do wyższej rozdzielczości (Upscaling)";
@@ -442,8 +442,8 @@
 "Command to send when resizing the console. Placeholder $COLS is the number of columns and $ROWS is the number of rows." = "Komenda do wysłania gdy zmieniasz rozmiar konsoli. Symbol zastępczy $COLS to numer kolumn, a $ROWS to numer wierszy.";
 
 // VMConfigDriveCreateView.swift
-"If checked, no drive image will be stored with the VM. Instead you can mount/unmount image while the VM is running." = "Jeśli zaznaczone, żaden z obrazów dysków będzie przechowywany w tym samym miejscu co wirtualna maszyna. Zamiast tego możesz montować/odmontować obraz gdy maszyna jest uruchomiona.";
-"Hardware interface on the guest used to mount this image. Different operating systems support different interfaces. The default will be the most common interface." = "Interfejs sprzętowy po stronie gościa montował kiedy ten obraz. Różne systemy operacyjne wspierają rożne interfejsy. Domyślny będzie najbardziej spotykanym interfejsem.";
+"If checked, no drive image will be stored with the VM. Instead you can mount/unmount image while the VM is running." = "Jeśli zaznaczone, żaden obraz dysku nie będzie przechowywany z maszyną wirtualną. Zamiast tego możesz zamontować/odmontować obraz gdy maszyna jest uruchomiona.";
+"Hardware interface on the guest used to mount this image. Different operating systems support different interfaces. The default will be the most common interface." = "Interfejs sprzętowy po stronie gościa używany do zamontowania tego obrazu. Różne systemy operacyjne wspierają rożne interfejsy. Domyślny będzie najbardziej pospolitym interfejsem.";
 "Raw Image" = "Surowy obraz (RAW)";
 "Advanced. If checked, a raw disk image is used. Raw disk image does not support snapshots and will not dynamically expand in size." = "Zaawansowane. Jeśli zaznaczone, surowy obraz dysku jest używany. Surowy obraz dysku nie wspiera migawek i nie będzie dynamicznie się rozszerzać.";
 
@@ -459,14 +459,14 @@
 "Increase the size of the disk image."="Zwiększ rozmiar dysku.";
 "Would you like to re-convert this disk image to reclaim unused space? Note this will require enough temporary space to perform the conversion. You are strongly encouraged to back-up this VM before proceeding." = "Czy chciałbyś ponownie przekonwertować obraz dysku aby odzyskać nieużywane miejsce? Pamiętaj, że to wymaga dostatecznej ilości pamięci, aby wykonać konwersję. Zalecane jest zrobienie kopii zapasowej tej maszyny wirtualnej przed dalszym działaniem.";
 "Reclaim" = "Odzyskaj";
-"Would you like to re-convert this disk image to reclaim unused space and apply compression? Note this will require enough temporary space to perform the conversion. Compression only applies to existing data and new data will still be written uncompressed. You are strongly encouraged to back-up this VM before proceeding." = "Czy chciałbyś ponownie przekonwertować obraz dysku aby odzyskać nieużywane miejsce i zastosować kompresje? Pamiętaj, że to wymaga dostatecznej ilości pamięci, aby wykonać konwersję. Kompresja dotyczy tylko istniejących danych i nowe dane będą nadpisywane nieskompresowane. Zalecane jest zrobienie kopii zapasowej tej maszyny wirtualnej przed dalszym działaniem.";
+"Would you like to re-convert this disk image to reclaim unused space and apply compression? Note this will require enough temporary space to perform the conversion. Compression only applies to existing data and new data will still be written uncompressed. You are strongly encouraged to back-up this VM before proceeding." = "Czy chciałbyś ponownie przekonwertować obraz dysku aby odzyskać nieużywane miejsce i zastosować kompresję? Pamiętaj, że to wymaga dostatecznej ilości pamięci, aby wykonać konwersję. Kompresja dotyczy tylko istniejących danych i nowe dane będą nadpisywane nieskompresowane. Zalecane jest zrobienie kopii zapasowej tej maszyny wirtualnej przed dalszym działaniem.";
 "Resizing is experimental and could result in data loss. You are strongly encouraged to back-up this VM before proceeding. Would you like to resize to %lld GiB?" = "Zmiana rozmiaru jest eksperymentalna i może zakończyć się utratą danych. Zalecamy utworzenie kopii zapasowej tej maszyny wirtualnej przed kontynuowaniem. Czy chcesz zmienić rozmiar do %lld GiB?";
 "Resize" = "Zmień rozmiar";
 "Minimum size: %@" = "Minimalny rozmiar: %@";
 "Calculating current size..." = "Obliczam obecny rozmiar...";
 
 // VMConfigInfoView.swift
-"Generic" = "Ogólne";
+"Generic" = "Ogólna";
 "Notes" = "Notatki";
 "Icon" = "Ikona";
 
@@ -475,7 +475,7 @@
 "USB Support" = "Wsparcie USB";
 "USB Sharing" = "Współdzielenie USB";
 "USB sharing not supported in this build of UTM." = "Współdzielenie USB nie jest wspieranę przez tą wersję UTM.";
-"Share USB devices from host" = "Udostępnij urządzenia USB przez hosta";
+"Share USB devices from host" = "Udostępnij urządzenia USB hosta";
 "Maximum Shared USB Devices" = "Maksymalna ilość współdzielonych urządzeń USB";
 "Additional Settings" = "Dodatkowe ustawienia";
 "Gesture and Cursor Settings" = "Ustawienia gestów oraz kursora";
@@ -490,7 +490,7 @@
 "Isolate Guest from Host" = "Izoluj gościa od hosta";
 "Guest Network" = "Sieć gościa";
 "Guest Network (IPv6)" = "Sieć gościa (IPv6)";
-"Host Address" = "Ades hosta";
+"Host Address" = "Adres hosta";
 "Host Address (IPv6)" = "Adres hosta（IPv6)";
 "DHCP Start" = "Start DHCP";
 "DHCP Domain Name" = "Nazwa domeny DHCP";
@@ -509,22 +509,22 @@
 "Debug Logging" = "Debugowanie";
 "Export Debug Log" = "Eksportuj dziennik zdarzeń";
 "Tweaks" = "Poprawki";
-"These are advanced settings affecting QEMU which should be kept default unless you are running into issues." = "To są zaawansowane ustawienia wpływające na QEMU, które powinny zostać domyślne inaczej może powodować błędy.";
+"These are advanced settings affecting QEMU which should be kept default unless you are running into issues." = "To są zaawansowane ustawienia wpływające na QEMU, które powinny pozostać niezmienione, jeśli nie powodują błędów.";
 "UEFI Boot" = "Rozruch w trybie UEFI";
 "Should be off for older operating systems such as Windows 7 or lower." = "Powinno zostać wyłączone dla starszych systemów np. Windows 7 lub starsze.";
-"RNG Device" = "Urządzenie RNG";
+"RNG Device" = "Urządzenie generatora liczb losowych (RNG)";
 "Should be on always unless the guest cannot boot because of this." = "Powinno być zawsze włączone, chyba że powoduje problemy z uruchomieniem gościa.";
 "Balloon Device" = "Urządzenie Balloon";
 "TPM Device" = "Urządzenie TPM";
 "This is required to boot Windows 11." = "To jest wymagane, aby uruchomić Windows 11.";
 "Use Hypervisor" = "Użyj Hipernadzorcy (Hyperviosor)";
-"Only available if host architecture matches the target. Otherwise, TCG emulation is used." = "Dostępne tylko jeśli architektura gospodarza odpowiada architekturze gościa. W innym wypadku, emulacja TCG nie jest używana.";
-"Use local time for base clock" = "Używaj lokalnego czasu jako bazowy zegar maszyny wirtualnej";
-"If checked, use local time for RTC which is required for Windows. Otherwise, use UTC clock." = "Jeśli zaznaczone, używaj czasu lokalnego dla RTC, czego wymaga Windows. W innym wypadku, używa zegara UTC.";
+"Only available if host architecture matches the target. Otherwise, TCG emulation is used." = "Dostępne tylko jeśli architektura gospodarza odpowiada architekturze gościa. W innym wypadku, zostanie użyta emulacja TCG.";
+"Use local time for base clock" = "Używaj czasu lokalnego jako podstawowego zegara maszyny wirtualnej";
+"If checked, use local time for RTC which is required for Windows. Otherwise, use UTC clock." = "Jeśli zaznaczone, używaj czasu lokalnego dla RTC, czego wymaga Windows. W innym wypadku, używaj zegara UTC.";
 "Force PS/2 controller" = "Wymuś kontroler PS/2";
-"Instantiate PS/2 controller even when USB input is supported. Required for older Windows." = "Instancja kontrolera PS/2 nawet jeśli kontroler USB jest wspierany. Wymagane dla starszych wersji systemu Windows.";
+"Instantiate PS/2 controller even when USB input is supported. Required for older Windows." = "Utwórz instancję kontrolera PS/2 nawet jeśli kontroler USB jest wspierany. Wymagane dla starszych wersji systemu Windows.";
 "QEMU Machine Properties" = "Właściwości maszyny QEMU";
-"This is appended to the -machine argument." = "To jest dołączone do argumentu -machine.";
+"This is appended to the -machine argument." = "To jest dołąc~zone do argumentu -machine.";
 "QEMU Arguments" = "Argumenty dla QEMU";
 "Export QEMU Command" = "Eksportuj komendę QEMU";
 "(Delete)" = "（Usuń）";
@@ -532,11 +532,11 @@
 // VMConfigSerialView.swift
 "Target" = "Cel";
 "Wait for Connection" = "Czekam na połączenie";
-"Emulated Serial Device" = "Emulowane urządzenie Serial";
+"Emulated Serial Device" = "Emulowane urządzenie szeregowe";
 "TCP" = "TCP";
 "Server Address" = "Adres serwera";
 "Port" = "Port";
-"The target does not support hardware emulated serial connections." = "Cel nie wspiera emulowanych sprzętowo portów Serial";
+"The target does not support hardware emulated serial connections." = "Cel nie wspiera emulowanych sprzętowo portów szeregowych";
 
 // VMConfigSharingView.swift
 "Clipboard Sharing" = "Współdzielenie schowka";
@@ -549,16 +549,16 @@
 // VMConfigSystemView.swift
 "CPU" = "Procesor";
 "Force Enable CPU Flags" = "Wymuś włączenie flag procesora";
-"If checked, the CPU flag will be enabled. Otherwise, the default value will be used." = "Jeśli zaznaczone, flagi procesora będą włączone. W przeciwnym wypadku domyślne wartości będą wykorzystane.";
+"If checked, the CPU flag will be enabled. Otherwise, the default value will be used." = "Jeśli zaznaczone, flagi procesora będą włączone. W przeciwnym wypadku zostaną użyte domyślne wartości.";
 "Force Disable CPU Flags" = "Wymuś wyłączenie flag procesora";
-"If checked, the CPU flag will be disabled. Otherwise, the default value will be used." = "Jeśli zaznaczone, flagi procesora będą wyłączone. W przeciwnym wypadku domyślne wartości będą wykorzystane.";
+"If checked, the CPU flag will be disabled. Otherwise, the default value will be used." = "Jeśli zaznaczone, flagi procesora będą wyłączone. W przeciwnym wypadku zostaną użyte domyślne wartości.";
 "Force multicore may improve speed of emulation but also might result in unstable and incorrect emulation." = "Wymuszenie wielowątkowości może poprawić prędkość emulacji, ale również może sprawić, że będzie ona nieprawidłowa i niestabilna.";
 "Cores" = "Rdzenie";
 "Force Multicore" = "Wymuś wielowątkowość";
 "JIT Cache" = "Pamięć podręczna JIT";
-"Default is 1/4 of the RAM size (above). The JIT cache size is additive to the RAM size in the total memory usage!" = "Domyślne ustawienie to 1/4 rozmiaru pamięci operacyjnej RAM (poniżej). Pamięć podręczna JIT zalicza się do całkowitego zużycia pamięci operacyjnej!";
+"Default is 1/4 of the RAM size (above). The JIT cache size is additive to the RAM size in the total memory usage!" = "Domyślne ustawienie to 1/4 rozmiaru pamięci operacyjnej RAM (powyżej). Pamięć podręczna JIT zalicza się do całkowitego zużycia pamięci operacyjnej!";
 "Reset" = "Resetuj";
-"Allocating too much memory will crash the VM. Your device has %llu MB of memory and the estimated usage is %llu MB." = "Alokacja zbyt dużej ilości pamięci sprawi, że maszyna wirtualna się zawiesi. Twoje urządzenie ma %llu MB i szacowane zużycie pamięci to %llu MB.";
+"Allocating too much memory will crash the VM. Your device has %llu MB of memory and the estimated usage is %llu MB." = "Przydzielenie zbyt dużej ilości pamięci sprawi, że maszyna wirtualna się zawiesi. Twoje urządzenie ma %llu MB i szacowane zużycie pamięci to %llu MB.";
 "This change will reset all settings" = "Ta zmiania zresetuje wszystkie ustawienia.";
 "Are you sure you want to reset this VM? Any unsaved changes will be lost." = "Jesteś pewien że chcesz zresetować tą wirtualną maszynę? Wszelkie niezapisane dane zostaną utracone.";
 "Architecture" = "Architektura";
@@ -570,7 +570,7 @@
 "Do you want to remove this shortcut? The data will not be deleted." = "Czy chcesz usunąć ten skrót? Dane nie zostaną usunięte.";
 "Do you want to force stop this VM and lose all unsaved data?" = "Czy chcesz wymusić zatrzymanie tej maszyny wirtualnej i stracić wszystkie niezapisane dane?";
 "Stop" = "Zatrzymaj";
-"Do you want to move this VM to another location? This will copy the data to the new location, delete the data from the original location, and then create a shortcut." = "Voulez-vous déplacer cette VM à un autre endroit ? Cela copiera les données vers le nouvel emplacement, supprimera les données de l'emplacement d'origine, et créera un raccourci.";
+"Do you want to move this VM to another location? This will copy the data to the new location, delete the data from the original location, and then create a shortcut." = "Czy chcesz przenieść tą maszynę wirtualną do innej lokalizacji? To przeniesie dane do nowej lokalizacji, usuwając je z lokalizacji pierwotnej, a następnie utworzy skrót.";
 "Confirm" = "Potwierdź";
 
 // VMContextMenuModifier.swift
@@ -587,7 +587,7 @@
 "Install Windows Guest Tools…" = "Instaluj dodatki gościa dla systemu Windows...";
 "Download and mount the guest tools for Windows." = "Pobierz i zamontuj dodatki gościa dla systemu Windows";
 "Share…" = "Udostępnij...";
-"Share a copy of this VM and all its data." = "Udostępnij kopie tej maszyny wirtualnej i wszystkie jej dane.";
+"Share a copy of this VM and all its data." = "Udostępnij kopię tej maszyny wirtualnej i wszystkich jej danych.";
 "Move…" = "Przenieś...";
 "Move this VM from internal storage to elsewhere." = "Przenieś tą maszynę wirtualną z pamięci wewnętrznej gdzieś indziej.";
 "Clone…" = "Klonuj...";
@@ -603,9 +603,9 @@
 "Architecture" = "Architektura";
 "Machine" = "Maszyna";
 "Memory" = "Pamięć";
-"Serial (TTY)" = "Numer seryjny (TTY)";
-"Serial (Client)" = "Numer seryjny (Klient)";
-"Serial (Server)" = "Numer seryjny (Serwer)";
+"Serial (TTY)" = "Interfejs szeregowy (TTY)";
+"Serial (Client)" = "Interfejs szeregowy (Klient)";
+"Serial (Server)" = "Interfejs szeregowy (Serwer)";
 "Inactive" = "Nieaktywne";
 
 // VMNavigationListView.swift
@@ -631,7 +631,7 @@
 "Delete selected VM" = "Usuń wybraną wirtualną maszynę";
 "Clone" = "Klonuj";
 "Clone selected VM" = "Klonuj wybraną wirtualną maszynę";
-"Move" = "Déplacer";
+"Move" = "Przenieś";
 "Move selected VM" = "Przenieś wybraną wirtualną maszynę";
 "Share" = "Udostępnij";
 "Share selected VM" = "Udostępnij wybraną wirtualną maszynę";
@@ -644,22 +644,22 @@
 "Specify the size of the drive where data will be stored into." = "Ustaw rozmiar dysku, gdzie dane będą przechowywane.";
 
 // VMWizardHardwareView.swift
-"Enable hardware OpenGL acceleration" = "Włącz akceleracje sprzętową OpenGL";
+"Enable hardware OpenGL acceleration" = "Włącz akcelerację sprzętową OpenGL";
 "Hardware OpenGL Acceleration" = "Akceleracja sprzętowa OpenGL";
 
 // VMWizardOSLinuxView.swift
 "Virtualization Engine" = "Silnik wirtualizacji";
-"Apple Virtualization is experimental and only for advanced use cases. Leave unchecked to use QEMU, which is recommended." = "Wirtualizacja Apple jest eksperymentalna i tylko dla zaawansowanych użytkowników i tylko dla zaawansowanych działań. Zostaw odznaczone, aby użyć QEMU, co jest zalecane.";
+"Apple Virtualization is experimental and only for advanced use cases. Leave unchecked to use QEMU, which is recommended." = "Wirtualizacja Apple jest eksperymentalna i tylko dla zaawansowanych użytkowników. Zostaw odznaczone, aby użyć QEMU, co jest zalecane.";
 "Use Apple Virtualization" = "Użyj wirtualizacji Apple";
 "Boot from kernel image" = "Uruchom z obrazu jądra systemu (kernel)";
-"If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO." = "Jeśli zaznaczone, uruchom bezpośrednio z raw kernel image oraz initrd. W przeciwnym wypadku uruchom z wspieranego obrazu ISO.";
+"If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO." = "Jeśli zaznaczone, uruchom bezpośrednio z surowego obrazu jądra i pliku initrd. W przeciwnym wypadku uruchom z wspieranego obrazu ISO.";
 "Debian Install Guide" = "Instrukcja instalacji systemu Debian";
 "Ubuntu Install Guide" = "Instrukcja instalacji systemu Ubuntu";
 "Boot Image Type" = "Typ bootowalnego obrazu";
-"Enable Rosetta (x86_64 Emulation)" = "Włącz Rosetta (emulacja x86_64)";
+"Enable Rosetta (x86_64 Emulation)" = "Włącz Rosettę (emulacja x86_64)";
 "Installation Instructions" = "Instrukcja instalacji";
 "Note: The file system tag for mounting the installer is 'rosetta'." = "Pamiętaj: Tag systemu plików do montowania instalatora to 'rosetta'.";
-"Additional Options" = "Options supplémentaires";
+"Additional Options" = "Ustawienia dodatkowe";
 "Uncompressed Linux kernel (required)" = "Nieskompresowane jądro systemu (kernel) Linux (wymagane)";
 "Linux kernel (required)" = "Jądro systemu (kernel) Linux (wymagane)";
 "Uncompressed Linux initial ramdisk (optional)" = "Nieskompresowany Initial Linux RamDisk (opcjonalne)";
@@ -669,7 +669,7 @@
 "Boot ISO Image" = "Uruchom obraz ISO";
 
 // VMWizardOSMacView.swift
-"To install macOS, you need to download a recovery IPSW. If you do not select an existing IPSW, the latest macOS IPSW will be downloaded from Apple." = "Aby zainstalować macOS, musisz pobrać plik odzyskiwania w formacie IPSW. Jeśli nie wybierzesz istniejącego pliku IPSW (jeśli posiadasz), najnowszy plik IPSW zostanie pobrany prosto z serwerów Apple.";
+"To install macOS, you need to download a recovery IPSW. If you do not select an existing IPSW, the latest macOS IPSW will be downloaded from Apple." = "Aby zainstalować macOS, musisz pobrać plik odzyskiwania w formacie IPSW. Jeśli nie wybierzesz istniejącego pliku IPSW, najnowszy plik IPSW zostanie pobrany z serwerów Apple.";
 "Drag and drop IPSW file here" = "Przeciągnij i upuść plik IPSW tutaj";
 "Import IPSW" = "Importuj IPSW";
 "macOS guests are only supported on ARM64 devices." = "macOS jako system gościa jest wspierany tylko na urządzeniach ARM64.";
@@ -686,11 +686,11 @@
 "Custom" = "Własna";
 
 // VMWizardOSWindowsView.swift
-"Install Windows 10 or higher" = "Installer Windows 10 ou plus récent";
+"Install Windows 10 or higher" = "Zainstaluj system Windows 10 lub nowszy";
 "Import VHDX Image" = "Importuj obraz VHDX";
 "Windows Install Guide" = "Poradnik instalacji systemu Windows";
 "Image File Type" = "Typ pliku obrazu";
-"Some older systems do not support UEFI boot, such as Windows 7 and below." = "Niektóre starsze systemy nie wspierają UEFI, np. Windows 7 i niżej.";
+"Some older systems do not support UEFI boot, such as Windows 7 and below." = "Niektóre starsze systemy nie wspierają UEFI, np. Windows 7 i starsze.";
 "Boot VHDX Image" = "Uruchom obraz VHDX";
 "Download and mount the guest support package for Windows. This is required for some features including dynamic resolution and clipboard sharing." = "Pobierz i zamontuj dodatki gościa dla systemu Windows. To jest wymagane dla niektórych funkcji jak dynamiczna rozdzielczość i współdzielenie schowka.";
 "Install drivers and SPICE tools" = "Zainstaluj sterowniki oraz narzędzia SPICE";
@@ -704,11 +704,11 @@
 // VMWizardStartView.swift
 "Start" = "Uruchom";
 "Virtualize" = "Wirtualizacja";
-"Faster, but can only run the native CPU architecture." = "Szybsze, ale działa jedynie systemy z natywną architekturą dla procesora";
+"Faster, but can only run the native CPU architecture." = "Szybsze, ale wspiera jedynie systemy z architekturą natywną dla procesora";
 "Emulate" = "Emulacja";
 "Slower, but can run other CPU architectures." = "Wolniejsze, ale może uruchomić system z inną architekturą niż procesor";
 "Virtualization is not supported on your system." = "Wirtualizacja nie jest wspierana przez twój system.";
-"This build does not emulation." = "Ta wersja nie emuluje.";
+"This build does not emulation." = "Ta wersja nie wspiera emulacji.";
 "Download prebuilt from UTM Gallery…" = "Pobierz gotowca z Galerii UTM...";
 "Existing" = "Istniejące";
 
@@ -718,7 +718,7 @@
 "Failed to get latest macOS version from Apple." = "Nie udało się pobrać najnowszej wersji systemu macOS od Apple.";
 "macOS is not supported with QEMU." = "macOS nie jest wspierany przez QEMU";
 "Unavailable for this platform." = "Niedostępne dla tej platformy.";
-"The selected boot image contains the word '%@' but the guest architecture is '%@'. Please ensure you have selected an image that is compatible with '%@'." = "Wybrany obraz zawiera słowo '%@' ale architektura gościa jest '%@'. Upewnij się, że wybrałeś obraz który jest kompatybilny z '%@'.";
+"The selected boot image contains the word '%@' but the guest architecture is '%@'. Please ensure you have selected an image that is compatible with '%@'." = "Wybrany obraz zawiera słowo '%@' ale architektuą gościa jest '%@'. Upewnij się, że wybrałeś obraz który jest kompatybilny z '%@'.";
 
 // VMWizardSummaryView.swift
 "Default Cores" = "Domyślne rdzenie";
@@ -754,7 +754,7 @@
 
 // UTMUnavailableVMView.swift
 "This virtual machine must be re-added to UTM by opening it with Finder. You can find it at the path: %@" = "Ta maszyna wirtualna musi być dodana ponownie do UTM przez otwarcie jej za pomocą Findera. Możesz ją znaleźć w tej ścieżce: %@";
-"This virtual machine cannot be found at: %@" = "Ta wirtualna maszyna nie znajduje się w: %@";
+"This virtual machine cannot be found at: %@" = "Ta wirtualna maszyna nie została znaleziona w: %@";
 
 
 /* Platform */
@@ -765,7 +765,7 @@
 "Unable to add a shortcut to the new location." = "Nie udało się dodać skrótu do nowej lokalizacji.";
 "Cannot import this VM. Either the configuration is invalid, created in a newer version of UTM, or on a platform that is incompatible with this version of UTM." = "Nie udało się zaimportować tej maszyny wirtualnej. Konfiguracja może nie być prawidłowa albo została utworzona w nowszej wersji UTM lub na platformie która nie jest kompatybilna z tą wersją UTM.";
 "Failed to parse imported VM." = "Nie udało się parsować zaimportowanej wirtualnej maszyny.";
-"Failed to parse download URL." = "Nie udało się parsować adres URL pobierania.";
+"Failed to parse download URL." = "Nie udało się parsować adresu URL pobierania.";
 "Cannot find AltServer for JIT enable. You cannot run VMs until JIT is enabled." = "Nie udało się znaleźć AltServer dla aktywacji JIT. Uruchomienie wirtualnej maszyny będzie niemożliwe dopóki JIT nie będzie aktywowany.";
 "AltJIT error: %@" = "Błąd AltJIT : %@";
 "Failed to attach to JitStreamer:\n%@" = "Nie udało się dołączyć do JitStreamer:\n%@";
@@ -778,13 +778,13 @@
 "-" = "-";
 
 /* VMConfigDriveCreateViewController */
-"A file already exists for this name, if you proceed, it will be replaced." = "Plik z taką nazwą już istnieje. Jeśli zamierzasz kontynuować, zostanie on nadpisany.";
+"A file already exists for this name, if you proceed, it will be replaced." = "Plik z taką nazwą już istnieje. Jeśli kontynuujesz, zostanie on nadpisany.";
 
 /* VMListViewController */
 "A VM already exists with this name." = "Wirtualna maszyna o tej nazwie już istnieje.";
 
 /* No comment provided by engineer. */
-"Advanced: Bypass configuration and manually specify arguments" = "Zaawansowane: Pomiń konfigurację i manualnie okreś argumenty";
+"Advanced: Bypass configuration and manually specify arguments" = "Zaawansowane: Pomiń konfigurację i manualnie określ argumenty";
 
 /* UTMData */
 "AltJIT error: (error.localizedDescription)" = "Błąd AltJIT ：(error.localizedDescription)";
@@ -951,7 +951,7 @@
 "Importing %@…" = "Importuję %@…";
 
 /* UTMVirtualMachine */
-"Internal error starting main loop." = "Błąd wewnętrzny uruchamiając główną pętlę.";
+"Internal error starting main loop." = "Błąd wewnętrzny podczas uruchamiania głównej pętli.";
 "Internal error starting VM." = "Błąd wewnętrzny podczas uruchomiania wirtualnej maszyny.";
 
 /* VMConfigSystemViewController */
@@ -971,10 +971,10 @@
 "Invalid size" = "Niewłaściwy rozmiar";
 
 /* VMListViewController */
-"Invalid UTM not imported." = "Niewłaściwy UTM nie zaimportowano.";
+"Invalid UTM not imported." = "Niewłaściwy UTM, nie zaimportowano.";
 
 /* No comment provided by engineer. */
-"Invert Mouse Scroll" = "Odwróć przesunięcie myszy";
+"Invert Mouse Scroll" = "Odwróć kółko myszy";
 
 /* No comment provided by engineer. */
 "Legacy" = "Legacy";
@@ -983,7 +983,7 @@
 "Legacy (PS/2) Mode" = "Tryb Legacy (PS/2)";
 
 /* No comment provided by engineer. */
-"Linux initial ramdisk:" = "Inicjujący Linux Ramdisk：";
+"Linux initial ramdisk:" = "Initial Linux Ramdisk：";
 
 /* No comment provided by engineer. */
 "%@Linux kernel (required):" = "%@Jądro systemu (kernel) Linux (wymagane)：";
@@ -1082,16 +1082,16 @@
 "Test" = "Test";
 
 /* VMConfigSystemViewController */
-"The total memory usage is close to your device's limit. iOS will kill the VM if it consumes too much memory." = "Całkowite użycie pamięci jest bliskie do limitu twojego urządzenia. iOS zatrzyma wirtualną maszynę, jeśli ta będzie dalej używać tyle pamięci.";
+"The total memory usage is close to your device's limit. iOS will kill the VM if it consumes too much memory." = "Całkowite użycie pamięci jest bliskie limitu twojego urządzenia. iOS zatrzyma wirtualną maszynę, jeśli ta będzie dalej używać tyle pamięci.";
 
 /* No comment provided by engineer. */
 "These settings are unavailable in console display mode." = "Te ustawienia nie są dostępne w trybie konsolowym.";
 
 /* UTMQemuSystem */
-"This version of macOS does not support audio in console mode. Please change the VM configuration or upgrade macOS." = "Ta wersja macOS nie wspiera dźwięku w trybie konsolowym. roszę zweryfikować konfiguracje wirtualnej maszyny lub zaktualizować macOS.";
+"This version of macOS does not support audio in console mode. Please change the VM configuration or upgrade macOS." = "Ta wersja macOS nie wspiera dźwięku w trybie konsolowym. Proszę zweryfikować konfigurację wirtualnej maszyny lub zaktualizować macOS.";
 
 /* UTMQemuSystem */
-"This version of macOS does not support GPU acceleration. Please change the VM configuration or upgrade macOS." = "Ta wersja macOS nie wspiera akceleracji karty graficznej (GPU). Proszę zweryfikować konfiguracje wirtualnej maszyny lub zaktualizować macOS.";
+"This version of macOS does not support GPU acceleration. Please change the VM configuration or upgrade macOS." = "Ta wersja macOS nie wspiera akceleracji karty graficznej (GPU). Proszę zweryfikować konfigurację wirtualnej maszyny lub zaktualizować macOS.";
 
 /* No comment provided by engineer. */
 "This virtual machine has been deleted." = "Ta wirtualna maszyna została usunięta.";
@@ -1115,7 +1115,7 @@
 "Warning: iOS will kill apps that use more than 80% of the device's total memory." = "Uwaga: iOS wymusi zatrzymanie aplikacji które używają więcej niż 80% całkowitej pamieci urządzenia.";
 
 /* Startup message */
-"Welcome to UTM! Due to a bug in iOS, if you force kill this app, the system will be unstable and you cannot launch UTM again until you reboot. The recommended way to terminate this app is the button on the top left." = "Witaj w UTM! Przez błąd w systemie iOS, jeśli wymusisz zatrzymanie tej aplikacji, system będzie nie używalny, nie możesz też ponownie uruchomić UTM do momentu ponownego uruchomienia. Zalecane jest zatrzymanie działania tej aplikacji za pomocą tego przycisku w lewym górnym rogu.";
+"Welcome to UTM! Due to a bug in iOS, if you force kill this app, the system will be unstable and you cannot launch UTM again until you reboot. The recommended way to terminate this app is the button on the top left." = "Witaj w UTM! Przez błąd w systemie iOS, jeśli wymusisz zatrzymanie tej aplikacji, system będzie nieużywalny, nie możesz też ponownie uruchomić UTM do momentu ponownego uruchomienia. Zalecane jest zatrzymanie działania tej aplikacji za pomocą tego przycisku w lewym górnym rogu.";
 
 /* No comment provided by engineer. */
 "Windows" = "Windows";
