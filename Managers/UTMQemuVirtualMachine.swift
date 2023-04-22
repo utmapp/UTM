@@ -243,6 +243,21 @@ extension UTMQemuVirtualMachine {
             }
         }
     }
+    
+    @MainActor @objc var remoteBookmarks: [URL: Data] {
+        var dict = [URL: Data]()
+        for file in registryEntry.externalDrives.values {
+            if let bookmark = file.remoteBookmark {
+                dict[file.url] = bookmark
+            }
+        }
+        for file in registryEntry.sharedDirectories {
+            if let bookmark = file.remoteBookmark {
+                dict[file.url] = bookmark
+            }
+        }
+        return dict
+    }
 }
 
 enum UTMQemuVirtualMachineError: Error {

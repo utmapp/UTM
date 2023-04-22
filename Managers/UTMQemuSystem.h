@@ -37,6 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UTMQemuSystem : UTMQemu
 
 @property (nonatomic, nullable, copy) NSArray<NSURL *> *resources;
+@property (nonatomic, nullable, weak) NSDictionary<NSURL *, NSData *> *remoteBookmarks;
 @property (nonatomic) UTMQEMURendererBackend rendererBackend;
 
 - (instancetype)init NS_UNAVAILABLE;

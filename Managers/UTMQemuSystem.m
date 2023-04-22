@@ -15,6 +15,7 @@
 //
 
 #import <dlfcn.h>
+#import "UTMLogging.h"
 #import "UTMQemuSystem.h"
 
 @interface UTMQemuSystem ()
@@ -97,15 +98,28 @@ static void *start_qemu(void *args) {
 }
 
 - (void)startWithCompletion:(void (^)(BOOL, NSString * _Nonnull))completion {
+    dispatch_group_t group = dispatch_group_create();
     for (NSURL *resourceURL in self.resources) {
-        NSData *bookmark = [resourceURL bookmarkDataWithOptions:0
-                                 includingResourceValuesForKeys:nil
-                                                  relativeToURL:nil
-                                                          error:nil];
+        NSData *bookmark = self.remoteBookmarks[resourceURL];
+        BOOL securityScoped = YES;
+        if (!bookmark) {
+            bookmark = [resourceURL bookmarkDataWithOptions:0
+                             includingResourceValuesForKeys:nil
+                                              relativeToURL:nil
+                                                      error:nil];
+            securityScoped = NO;
+        }
         if (bookmark) {
-            [self accessDataWithBookmark:bookmark];
+            dispatch_group_enter(group);
+            [self accessDataWithBookmark:bookmark securityScoped:securityScoped completion:^(BOOL success, NSData *bookmark, NSString *path) {
+                if (!success) {
+                    UTMLog(@"Access QEMU bookmark failed for: %@", path);
+                }
+                dispatch_group_leave(group);
+            }];
         }
     }
+    dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
     NSString *name = [NSString stringWithFormat:@"qemu-%@-softmmu", self.architecture];
     [self startQemu:name completion:completion];
 }

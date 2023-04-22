@@ -165,8 +165,10 @@ static void *SpiceIoServiceGuestAgentContext = &SpiceIoServiceGuestAgentContext;
     
     NSArray<NSString *> *arguments = self.config.qemuArguments;
     NSArray<NSURL *> *resources = self.config.qemuResources;
+    NSDictionary<NSURL *, NSData *> *remoteBookmarks = self.remoteBookmarks;
     self.system = [[UTMQemuSystem alloc] initWithArguments:arguments architecture:self.config.qemuArchitecture];
     self.system.resources = resources;
+    self.system.remoteBookmarks = remoteBookmarks;
     self.system.logging = self.logging;
     self.system.logging.delegate = self;
 
