@@ -84,7 +84,7 @@ struct VMReleaseNotesView: View {
             if helper.releaseNotes.count == 0 {
                 isShowAll = true
             } else if helper.releaseNotes.first!.body.count == 0 {
-                //isShowAll = true
+                isShowAll = true
             }
         }
     }
