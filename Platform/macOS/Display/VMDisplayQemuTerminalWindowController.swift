@@ -33,6 +33,7 @@ class VMDisplayQemuTerminalWindowController: VMDisplayQemuWindowController, VMDi
     }
     
     private var isSizeChangeIgnored: Bool = true
+    @Setting("OptionAsMetaKey") var isOptionAsMetaKey: Bool = false
     
     convenience init(secondaryFromSerialPort serialPort: CSPort, vm: UTMQemuVirtualMachine, id: Int) {
         self.init(vm: vm, id: id)

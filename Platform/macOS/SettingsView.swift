@@ -128,6 +128,7 @@ struct SoundSettingsView: View {
 }
 
 struct InputSettingsView: View {
+    @AppStorage("OptionAsMetaKey") var isOptionAsMetaKey = false
     @AppStorage("CtrlRightClick") var isCtrlRightClick = false
     @AppStorage("AlternativeCaptureKey") var isAlternativeCaptureKey = false
     @AppStorage("IsCapsLockKey") var isCapsLockKey = false
@@ -137,6 +138,12 @@ struct InputSettingsView: View {
     
     var body: some View {
         Form {
+            Section(header: Text("Console")) {
+                Toggle(isOn: $isOptionAsMetaKey, label: {
+                    Text("Option is Meta key")
+                }).help("If enabled, Option will be mapped to the Meta key which can be useful for emacs. Otherwise, option will work as the system intended (such as for entering international text).")
+            }
+            
             Section(header: Text("QEMU Pointer")) {
                 Toggle(isOn: $isCtrlRightClick, label: {
                     Text("Hold Control (⌃) for right click")
@@ -175,6 +182,7 @@ extension UserDefaults {
     @objc dynamic var NoQuitConfirmation: Bool { false }
     @objc dynamic var NoCursorCaptureAlert: Bool { false }
     @objc dynamic var DisplayFixed: Bool { false }
+    @objc dynamic var OptionAsMetaKey: Bool { false }
     @objc dynamic var CtrlRightClick: Bool { false }
     @objc dynamic var NoUsbPrompt: Bool { false }
     @objc dynamic var AlternativeCaptureKey: Bool { false }

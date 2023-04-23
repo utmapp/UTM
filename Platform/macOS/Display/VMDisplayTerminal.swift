@@ -22,6 +22,7 @@ private let kVMDefaultResizeCmd = "stty cols $COLS rows $ROWS\\n"
 
 protocol VMDisplayTerminal {
     var vm: UTMVirtualMachine! { get }
+    var isOptionAsMetaKey: Bool { get }
     @MainActor func setupTerminal(_ terminalView: TerminalView, using config: UTMConfigurationTerminal, id: Int, for window: NSWindow)
     func resizeCommand(for terminal: TerminalView, using config: UTMConfigurationTerminal) -> String
     func sizeChanged(id: Int, newCols: Int, newRows: Int)
@@ -54,6 +55,7 @@ extension VMDisplayTerminal {
         let size = window.frameRect(forContentRect: terminalView.getOptimalFrameSize()).size
         let frame = CGRect(origin: window.frame.origin, size: size)
         window.setFrame(frame, display: false, animate: true)
+        terminalView.optionAsMetaKey = isOptionAsMetaKey
     }
     
     func resizeCommand(for terminalView: TerminalView, using config: UTMConfigurationTerminal) -> String {

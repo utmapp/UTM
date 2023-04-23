@@ -42,6 +42,7 @@ class VMDisplayAppleTerminalWindowController: VMDisplayAppleWindowController, VM
     private(set) var index: Int = 0
     
     private var isSizeChangeIgnored: Bool = true
+    @Setting("OptionAsMetaKey") var isOptionAsMetaKey: Bool = false
     
     convenience init(primaryForIndex index: Int, vm: UTMAppleVirtualMachine, onClose: ((Notification) -> Void)?) {
         self.init(vm: vm, onClose: onClose)

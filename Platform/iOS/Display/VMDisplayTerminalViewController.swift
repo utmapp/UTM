@@ -169,6 +169,7 @@ extension VMDisplayTerminalViewController {
             terminalView.nativeBackgroundColor = UIColor(backgroundColor)
         }
         terminalView.getTerminal().setCursorStyle(style.hasCursorBlink ? .blinkBlock : .steadyBlock)
+        terminalView.optionAsMetaKey = boolForSetting("OptionAsMetaKey")
     }
 }
 
