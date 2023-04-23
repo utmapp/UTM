@@ -56,6 +56,7 @@ class VMDisplayAppleTerminalWindowController: VMDisplayAppleWindowController, VM
     override func windowDidLoad() {
         mainView = TerminalView()
         terminalView!.terminalDelegate = self
+        terminalView.allowMouseReporting = false
         super.windowDidLoad()
     }
     
@@ -71,11 +72,15 @@ class VMDisplayAppleTerminalWindowController: VMDisplayAppleWindowController, VM
         
     }
     
+    override func captureMouseButtonPressed(_ sender: Any) {
+        terminalView.allowMouseReporting = !terminalView.allowMouseReporting
+        captureMouseToolbarButton.state = terminalView.allowMouseReporting ? .on : .off
+    }
+    
     override func enterLive() {
         serialPort.delegate = self
         super.enterLive()
         resizeConsoleToolbarItem.isEnabled = true
-        captureMouseToolbarItem.isEnabled = false
     }
     
     func sendString(_ string: String) {
@@ -116,5 +121,16 @@ extension VMDisplayAppleTerminalWindowController: TerminalViewDelegate, UTMSeria
                 terminalView.feed(byteArray: arr)
             }
         }
+    }
+    
+    func clipboardCopy(source: SwiftTerm.TerminalView, content: Data) {
+        if let str = String(bytes: content, encoding: .utf8) {
+            let pasteBoard = NSPasteboard.general
+            pasteBoard.clearContents()
+            pasteBoard.writeObjects([str as NSString])
+        }
+    }
+    
+    func rangeChanged(source: SwiftTerm.TerminalView, startY: Int, endY: Int) {
     }
 }

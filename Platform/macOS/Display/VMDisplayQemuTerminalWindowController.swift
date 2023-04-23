@@ -43,6 +43,7 @@ class VMDisplayQemuTerminalWindowController: VMDisplayQemuWindowController, VMDi
         terminalView = TerminalView(frame: displayView.bounds)
         terminalView.terminalDelegate = self
         terminalView.autoresizingMask = [.width, .height]
+        terminalView.allowMouseReporting = false
         displayView.addSubview(terminalView)
         vmSerialPort?.delegate = self // can be nil for primary window
         super.windowDidLoad()
@@ -50,7 +51,6 @@ class VMDisplayQemuTerminalWindowController: VMDisplayQemuWindowController, VMDi
     
     override func enterLive() {
         super.enterLive()
-        captureMouseToolbarItem.isEnabled = false
         setupTerminal(terminalView, using: serialConfig!.terminal!, id: id, for: window!)
         isSizeChangeIgnored = false
     }
@@ -65,6 +65,11 @@ class VMDisplayQemuTerminalWindowController: VMDisplayQemuWindowController, VMDi
     override func resizeConsoleButtonPressed(_ sender: Any) {
         let cmd = resizeCommand(for: terminalView, using: serialConfig!.terminal!)
         vmSerialPort?.write(cmd.data(using: .nonLossyASCII)!)
+    }
+    
+    override func captureMouseButtonPressed(_ sender: Any) {
+        terminalView.allowMouseReporting = !terminalView.allowMouseReporting
+        captureMouseToolbarButton.state = terminalView.allowMouseReporting ? .on : .off
     }
     
     override func spiceDidCreateSerial(_ serial: CSPort) {
@@ -120,6 +125,17 @@ extension VMDisplayQemuTerminalWindowController: TerminalViewDelegate {
         } else {
             logger.error("failed to send: \(string)")
         }
+    }
+    
+    func clipboardCopy(source: SwiftTerm.TerminalView, content: Data) {
+        if let str = String(bytes: content, encoding: .utf8) {
+            let pasteBoard = NSPasteboard.general
+            pasteBoard.clearContents()
+            pasteBoard.writeObjects([str as NSString])
+        }
+    }
+    
+    func rangeChanged(source: SwiftTerm.TerminalView, startY: Int, endY: Int) {
     }
 }
 

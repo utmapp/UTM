@@ -198,6 +198,15 @@ extension VMDisplayTerminalViewController: TerminalViewDelegate {
     
     func bell(source: TerminalView) {
     }
+    
+    func rangeChanged(source: TerminalView, startY: Int, endY: Int) {
+    }
+    
+    func clipboardCopy(source: TerminalView, content: Data) {
+        if let str = String(bytes: content, encoding: .utf8) {
+            UIPasteboard.general.string = str
+        }
+    }
 }
 
 // MARK: - CSPortDelegate
