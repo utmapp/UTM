@@ -367,7 +367,14 @@ enum VMWizardOS: String, Identifiable {
             // only change UEFI settings for Windows
             config.qemu.hasUefiBoot = systemBootUefi
         }
-        if isGLEnabled || operatingSystem == .Windows, let displayCard = config.displays.first?.hardware {
+        if operatingSystem == .Linux && config.displays.first != nil {
+            // change default display to virtio-gpu if supported
+            let newCard = isGLEnabled ? "virtio-gpu-gl-pci" : "virtio-gpu-pci"
+            let allCards = systemArchitecture.displayDeviceType.allRawValues
+            if allCards.contains(where: { $0 == newCard }) {
+                config.displays[0].hardware = AnyQEMUConstant(rawValue: newCard)!
+            }
+        } else if isGLEnabled || operatingSystem == .Windows, let displayCard = config.displays.first?.hardware {
             let newCard = displayCard.rawValue + "-gl"
             let allCards = systemArchitecture.displayDeviceType.allRawValues
             if allCards.contains(where: { $0 == newCard }) {
