@@ -140,7 +140,7 @@ struct InputSettingsView: View {
         Form {
             Section(header: Text("Console")) {
                 Toggle(isOn: $isOptionAsMetaKey, label: {
-                    Text("Option is Meta key")
+                    Text("Option (⌥) is Meta key")
                 }).help("If enabled, Option will be mapped to the Meta key which can be useful for emacs. Otherwise, option will work as the system intended (such as for entering international text).")
             }
             
