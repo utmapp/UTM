@@ -29,6 +29,7 @@ let productName = "UTM"
 struct ContentView: View {
     @State private var editMode = false
     @EnvironmentObject private var data: UTMData
+    @StateObject private var releaseHelper = UTMReleaseHelper()
     @State private var newPopupPresented = false
     @State private var openSheetPresented = false
     @Environment(\.openURL) var openURL
@@ -40,6 +41,16 @@ struct ContentView: View {
         .frame(minWidth: 800, idealWidth: 1200, minHeight: 600, idealHeight: 800)
         #endif
         .disabled(data.busy && !data.showNewVMSheet && !data.showSettingsModal)
+        .sheet(isPresented: $releaseHelper.isReleaseNotesShown, onDismiss: {
+            releaseHelper.closeReleaseNotes()
+        }, content: {
+            VMReleaseNotesView(helper: releaseHelper).padding()
+        })
+        .onReceive(NSNotification.ShowReleaseNotes) { _ in
+            Task {
+                await releaseHelper.fetchReleaseNotes(force: true)
+            }
+        }
         .onOpenURL(perform: handleURL)
         .handlesExternalEvents(preferring: ["*"], allowing: ["*"])
         .onReceive(NSNotification.NewVirtualMachine) { _ in
@@ -56,6 +67,9 @@ struct ContentView: View {
         .onAppear {
             Task {
                 await data.listRefresh()
+            }
+            Task {
+                await releaseHelper.fetchReleaseNotes()
             }
             #if os(macOS)
             NSWindow.allowsAutomaticWindowTabbing = false

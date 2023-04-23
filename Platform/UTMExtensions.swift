@@ -294,6 +294,7 @@ extension NSImage {
         }
     }
 }
+#endif
 
 @propertyWrapper
 struct Setting<T> {
@@ -320,4 +321,3 @@ struct Setting<T> {
         self.keyName = keyName
     }
 }
-#endif
