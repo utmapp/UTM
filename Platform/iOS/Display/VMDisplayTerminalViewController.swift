@@ -103,10 +103,11 @@ extension VMDisplayTerminalViewController {
         if #available(iOS 15.0, *), useAutoLayout {
             terminalView.translatesAutoresizingMaskIntoConstraints = false
             terminalView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
-            terminalView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-            terminalView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
-            
+            terminalView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor).isActive = true
+            terminalView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor).isActive = true
+            terminalView.bottomAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
             terminalView.keyboardLayoutGuide.topAnchor.constraint(equalTo: terminalView.bottomAnchor).isActive = true
+            terminalView.keyboardLayoutGuide.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
         } else {
             NotificationCenter.default.addObserver(
                 self,
