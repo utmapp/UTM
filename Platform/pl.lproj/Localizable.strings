@@ -524,7 +524,7 @@
 "Force PS/2 controller" = "Wymuś kontroler PS/2";
 "Instantiate PS/2 controller even when USB input is supported. Required for older Windows." = "Utwórz instancję kontrolera PS/2 nawet jeśli kontroler USB jest wspierany. Wymagane dla starszych wersji systemu Windows.";
 "QEMU Machine Properties" = "Właściwości maszyny QEMU";
-"This is appended to the -machine argument." = "To jest dołąc~zone do argumentu -machine.";
+"This is appended to the -machine argument." = "To jest dołączone do argumentu -machine.";
 "QEMU Arguments" = "Argumenty dla QEMU";
 "Export QEMU Command" = "Eksportuj komendę QEMU";
 "(Delete)" = "（Usuń）";
@@ -718,7 +718,7 @@
 "Failed to get latest macOS version from Apple." = "Nie udało się pobrać najnowszej wersji systemu macOS od Apple.";
 "macOS is not supported with QEMU." = "macOS nie jest wspierany przez QEMU";
 "Unavailable for this platform." = "Niedostępne dla tej platformy.";
-"The selected boot image contains the word '%@' but the guest architecture is '%@'. Please ensure you have selected an image that is compatible with '%@'." = "Wybrany obraz zawiera słowo '%@' ale architektuą gościa jest '%@'. Upewnij się, że wybrałeś obraz który jest kompatybilny z '%@'.";
+"The selected boot image contains the word '%@' but the guest architecture is '%@'. Please ensure you have selected an image that is compatible with '%@'." = "Wybrany obraz zawiera słowo '%@' ale architekturą gościa jest '%@'. Upewnij się, że wybrałeś obraz który jest kompatybilny z '%@'.";
 
 // VMWizardSummaryView.swift
 "Default Cores" = "Domyślne rdzenie";
