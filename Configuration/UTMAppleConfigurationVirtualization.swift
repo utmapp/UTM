@@ -45,6 +45,8 @@ struct UTMAppleConfigurationVirtualization: Codable {
     
     var hasPointer: Bool = false
     
+    var hasTrackpad: Bool = false
+    
     var hasRosetta: Bool?
     
     var hasClipboardSharing: Bool = false
@@ -55,6 +57,7 @@ struct UTMAppleConfigurationVirtualization: Codable {
         case hasEntropy = "Entropy"
         case hasKeyboard = "Keyboard"
         case hasPointer = "Pointer"
+        case hasTrackpad = "Trackpad"
         case rosetta = "Rosetta"
         case hasClipboardSharing = "ClipboardSharing"
     }
@@ -70,8 +73,10 @@ struct UTMAppleConfigurationVirtualization: Codable {
         hasKeyboard = try values.decode(Bool.self, forKey: .hasKeyboard)
         if let legacyPointer = try? values.decode(PointerDevice.self, forKey: .hasPointer) {
             hasPointer = legacyPointer != .disabled
+            hasTrackpad = legacyPointer == .trackpad
         } else {
             hasPointer = try values.decode(Bool.self, forKey: .hasPointer)
+            hasTrackpad = try values.decodeIfPresent(Bool.self, forKey: .hasTrackpad) ?? false
         }
         if #available(macOS 13, *) {
             hasRosetta = try values.decodeIfPresent(Bool.self, forKey: .rosetta)
@@ -138,7 +143,7 @@ extension UTMAppleConfigurationVirtualization {
             if hasPointer {
                 vzconfig.pointingDevices = [VZUSBScreenCoordinatePointingDeviceConfiguration()]
                 #if arch(arm64)
-                if #available(macOS 13, *), isMacOSGuest {
+                if #available(macOS 13, *), isMacOSGuest && hasTrackpad {
                     // replace with trackpad device
                     vzconfig.pointingDevices = [VZMacTrackpadConfiguration()]
                 }

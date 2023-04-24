@@ -78,6 +78,7 @@ enum VMWizardOS: String, Identifiable {
     #if os(macOS) && arch(arm64)
     @Published var macPlatform: UTMAppleConfigurationMacPlatform?
     @Published var macRecoveryIpswURL: URL?
+    @Published var macIsMonterey: Bool = false
     #endif
     @Published var isSkipBootImage: Bool = false
     @Published var bootImageURL: URL?
@@ -264,6 +265,7 @@ enum VMWizardOS: String, Identifiable {
                 config.system.boot = try! UTMAppleConfigurationBoot(for: .macOS)
                 config.system.boot.macRecoveryIpswURL = macRecoveryIpswURL
                 config.system.macPlatform = macPlatform
+                config.virtualization.hasTrackpad = !macIsMonterey
             }
             #endif
         case .Linux:
@@ -332,6 +334,7 @@ enum VMWizardOS: String, Identifiable {
                     if let hardwareModel = restoreImage.mostFeaturefulSupportedConfiguration?.hardwareModel {
                         self.macPlatform = UTMAppleConfigurationMacPlatform(newHardware: hardwareModel)
                         self.macRecoveryIpswURL = restoreImage.url
+                        self.macIsMonterey = restoreImage.buildVersion.hasPrefix("21")
                     } else {
                         self.alertMessage = AlertMessage(NSLocalizedString("Failed to get latest macOS version from Apple.", comment: "VMWizardState"))
                     }

@@ -29,6 +29,10 @@ struct VMConfigAppleVirtualizationView: View {
                 Toggle("Enable Keyboard", isOn: $config.hasKeyboard)
                 Toggle("Enable Pointer", isOn: $config.hasPointer)
             }
+            if #available(macOS 13, *), config.hasPointer {
+                Toggle("Use Trackpad", isOn: $config.hasTrackpad)
+                    .help("Allows passing through additional input from trackpads. Only supported on macOS 13+ guests.")
+            }
             if #available(macOS 13, *), operatingSystem == .linux {
                 #if arch(arm64)
                 Toggle("Enable Rosetta on Linux (x86_64 Emulation)", isOn: $config.hasRosetta.bound)
