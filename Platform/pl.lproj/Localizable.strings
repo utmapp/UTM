@@ -320,7 +320,7 @@
 "Size" = "Rozmiar";
 "The amount of storage to allocate for this image. An empty file of this size will be stored with the VM." = "Ilość pamięci masowej przydzielonej dla tego obrazu. Pusty plik takiego rozmiaru będzie przechowywany wraz z maszyną wirtualną";
 "GB" = "GB";
-"MB" = "GB";
+"MB" = "MB";
 
 // VMConfigAppleDriveDetailsView.swift
 "Name" = "Nazwa";
