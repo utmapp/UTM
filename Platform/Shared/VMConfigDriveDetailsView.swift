@@ -89,7 +89,8 @@ struct VMConfigDriveDetailsView: View {
                     }
             }
             
-            if let imageUrl = config.imageURL, let fileSize = data.computeSize(for: imageUrl) {
+            if let imageUrl = config.imageURL {
+                let fileSize = data.computeSize(for: imageUrl)
                 DefaultTextField("Size", text: .constant(ByteCountFormatter.string(fromByteCount: fileSize, countStyle: .binary))).disabled(true)
             } else if config.sizeMib > 0 {
                 DefaultTextField("Size", text: .constant(ByteCountFormatter.string(fromByteCount: Int64(config.sizeMib) * bytesInMib, countStyle: .binary))).disabled(true)
