@@ -794,14 +794,14 @@ import Foundation
     }
     
     private var isSpiceAgentUsed: Bool {
-        guard system.architecture.hasAgentSupport else {
+        guard system.architecture.hasAgentSupport && system.target.hasAgentSupport else {
             return false
         }
         return sharing.hasClipboardSharing || sharing.directoryShareMode == .webdav || displays.contains(where: { $0.isDynamicResolution })
     }
     
     @QEMUArgumentBuilder private var sharingArguments: [QEMUArgument] {
-        if system.architecture.hasAgentSupport {
+        if system.architecture.hasAgentSupport && system.target.hasAgentSupport {
             f("-device")
             f("virtio-serial")
             f("-device")

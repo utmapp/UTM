@@ -396,7 +396,14 @@ enum QEMUPackageFileName: String {
 extension QEMUArchitecture {
     var hasAgentSupport: Bool {
         switch self {
+        case .avr: return false
+        case .cris: return false
+        case .m68k: return false
+        case .microblaze, .microblazeel: return false
+        case .nios2: return false
+        case .rx: return false
         case .sparc, .sparc64: return false
+        case .tricore: return false
         default: return true
         }
     }
@@ -441,6 +448,13 @@ extension QEMUArchitecture {
 
 extension QEMUTarget {
     var hasUsbSupport: Bool {
+        switch self.rawValue {
+        case "isapc": return false
+        default: return true
+        }
+    }
+    
+    var hasAgentSupport: Bool {
         switch self.rawValue {
         case "isapc": return false
         default: return true
