@@ -67,7 +67,9 @@ import Foundation
         cpuArguments
         machineArguments
         architectureArguments
-        soundArguments
+        if !sound.isEmpty {
+            soundArguments
+        }
         if isUsbUsed {
             usbArguments
         }
@@ -411,10 +413,11 @@ import Foundation
         return false
         #else
         // force CoreAudio backend for mac99 which only supports 44100 Hz
-        if sound.contains(where: { $0.hardware.rawValue == "screamer" }) {
+        // pcspk doesn't work with SPICE audio
+        if sound.contains(where: { $0.hardware.rawValue == "screamer" || $0.hardware.rawValue == "pcspk" }) {
             return true
         }
-        if soundBackend == .qemuSoundBackendDefault || soundBackend == .qemuSoundBackendCoreAudio {
+        if soundBackend == .qemuSoundBackendCoreAudio {
             return true
         }
         return false
@@ -422,12 +425,13 @@ import Foundation
     }
     
     @QEMUArgumentBuilder private var soundArguments: [QEMUArgument] {
-        f("-audiodev")
         if useCoreAudioBackend {
+            f("-audiodev")
             "coreaudio"
-        } else {
-            "spice"
+            f("id=audio1")
         }
+        f("-audiodev")
+        "spice"
         f("id=audio0")
         // screamer has no extra device, pcspk is handled in machineProperties
         for _sound in sound.filter({ $0.hardware.rawValue != "screamer" && $0.hardware.rawValue != "pcspk" }) {
@@ -436,17 +440,22 @@ import Foundation
             if _sound.hardware.rawValue.contains("hda") {
                 f()
                 f("-device")
-                "hda-duplex"
+                if soundBackend == .qemuSoundBackendCoreAudio {
+                    "hda-output"
+                    "audiodev=audio1"
+                } else {
+                    "hda-duplex"
+                    "audiodev=audio0"
+                }
+                f()
+            } else {
+                if soundBackend == .qemuSoundBackendCoreAudio {
+                    f("audiodev=audio1")
+                } else {
+                    f("audiodev=audio0")
+                }
             }
-            f("audiodev=audio0")
         }
-        // pcspk doesn't work with SPICE audio
-        #if os(macOS)
-        if sound.contains(where: { $0.hardware.rawValue == "pcspk" }) {
-            f("-audiodev")
-            f("coreaudio,id=audio1")
-        }
-        #endif
     }
     
     @QEMUArgumentBuilder private var drivesArguments: [QEMUArgument] {
