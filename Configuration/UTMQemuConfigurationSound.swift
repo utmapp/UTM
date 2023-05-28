@@ -72,7 +72,9 @@ extension UTMQemuConfigurationSound {
         guard oldConfig.soundEnabled else {
             return nil
         }
-        if let hardwareStr = oldConfig.soundCard {
+        if oldConfig.soundCard == "ac97" { // change in case for this one device
+            hardware = AnyQEMUConstant(rawValue: "AC97")!
+        } else if let hardwareStr = oldConfig.soundCard {
             hardware = AnyQEMUConstant(rawValue: hardwareStr)!
         }
     }
