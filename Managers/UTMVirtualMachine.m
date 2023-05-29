@@ -139,9 +139,11 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
 }
 
 + (nullable UTMVirtualMachine *)virtualMachineWithURL:(NSURL *)url {
-    [url startAccessingSecurityScopedResource];
+    BOOL isScopedAccess = [url startAccessingSecurityScopedResource];
     UTMConfigurationWrapper *config = [[UTMConfigurationWrapper alloc] initFrom:url];
-    [url stopAccessingSecurityScopedResource];
+    if (isScopedAccess) {
+        [url stopAccessingSecurityScopedResource];
+    }
     if (config) {
         UTMVirtualMachine *vm = [UTMVirtualMachine virtualMachineWithConfigurationWrapper:config packageURL:url];
         dispatch_async(dispatch_get_main_queue(), ^{

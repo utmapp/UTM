@@ -217,12 +217,9 @@ extension ContentView: DropDelegate {
 
         providers.forEach { provider in
             group.enter()
-            _ = provider.loadDataRepresentation(forTypeIdentifier: UTType.fileURL.identifier) { (data, error) in
-                if let data = data {
-                    let url = URL(dataRepresentation: data, relativeTo: nil)
-                    if url?.pathExtension == "utm" {
-                        validURLs.append(url!)
-                    }
+            _ = provider.loadObject(ofClass: URL.self) { url, _ in
+                if url?.pathExtension == "utm" {
+                    validURLs.append(url!)
                 }
                 group.leave()
             }

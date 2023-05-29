@@ -589,6 +589,10 @@ class UTMData: ObservableObject {
         defer { url.stopAccessingSecurityScopedResource() }
         
         logger.info("importing: \(url)")
+        // attempt to turn temp URL to presistent bookmark early otherwise,
+        // when stopAccessingSecurityScopedResource() is called, we lose access
+        let bookmark = try url.persistentBookmarkData()
+        let url = try URL(resolvingPersistentBookmarkData: bookmark)
         let fileBasePath = url.deletingLastPathComponent()
         let fileName = url.lastPathComponent
         let dest = documentsURL.appendingPathComponent(fileName, isDirectory: true)
