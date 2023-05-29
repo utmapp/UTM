@@ -852,9 +852,16 @@ import Foundation
         }
     }
     
+    private func cleanupName(_ name: String) -> String {
+        let allowedCharacterSet = CharacterSet.alphanumerics.union(.whitespaces)
+        let filteredString = name.components(separatedBy: allowedCharacterSet.inverted)
+                                 .joined(separator: "")
+        return filteredString
+    }
+    
     @QEMUArgumentBuilder private var miscArguments: [QEMUArgument] {
         f("-name")
-        f(information.name)
+        f(cleanupName(information.name))
         if qemu.isDisposable {
             f("-snapshot")
         }
