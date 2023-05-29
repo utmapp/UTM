@@ -703,7 +703,7 @@ import Foundation
         let firstAddrStr = String(cString: inet_ntoa(firstAddr))
         let lastAddrStr = String(cString: inet_ntoa(lastAddr))
         let netmaskStr = String(cString: inet_ntoa(netmask))
-        return (firstAddrStr, lastAddrStr, netmaskStr)
+        return (network.vlanDhcpStartAddress ?? firstAddrStr, network.vlanDhcpEndAddress ?? lastAddrStr, netmaskStr)
     }
     
     @QEMUArgumentBuilder private var networkArguments: [QEMUArgument] {

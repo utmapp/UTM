@@ -47,8 +47,14 @@ struct IPConfigurationSection: View {
                     .keyboardType(.decimalPad)
                 DefaultTextField("Host Address (IPv6)", text: $config.vlanHostAddressIPv6.bound, prompt: "fec0::2")
                     .keyboardType(.asciiCapable)
-                DefaultTextField("DHCP Start", text: $config.vlanDhcpStartAddress.bound, prompt: "10.0.2.15")
+            }
+            DefaultTextField("DHCP Start", text: $config.vlanDhcpStartAddress.bound, prompt: "10.0.2.15")
+                .keyboardType(.decimalPad)
+            if config.mode != .emulated {
+                DefaultTextField("DHCP End", text: $config.vlanDhcpEndAddress.bound, prompt: "10.0.2.254")
                     .keyboardType(.decimalPad)
+            }
+            if config.mode == .emulated {
                 DefaultTextField("DHCP Domain Name", text: $config.vlanDhcpDomain.bound)
                     .keyboardType(.asciiCapable)
                 DefaultTextField("DNS Server", text: $config.vlanDnsServerAddress.bound, prompt: "10.0.2.3")
