@@ -19,7 +19,7 @@ import Foundation
 class VMDisplayAppleWindowController: VMDisplayWindowController {
     var mainView: NSView?
     
-    var isInstalling: Bool = false
+    var isInstallSuccessful: Bool = false
     
     var appleVM: UTMAppleVirtualMachine! {
         vm as? UTMAppleVirtualMachine
@@ -55,7 +55,7 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         super.windowDidLoad()
         if #available(macOS 12, *), let ipswUrl = appleConfig.system.boot.macRecoveryIpswURL {
             showConfirmAlert(NSLocalizedString("Would you like to install macOS? If an existing operating system is already installed on the primary drive of this VM, then it will be erased.", comment: "VMDisplayAppleWindowController")) {
-                self.isInstalling = true
+                self.isInstallSuccessful = false
                 self.appleVM.requestInstallVM(with: ipswUrl)
             }
         }
@@ -102,8 +102,8 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
     
     override func virtualMachine(_ vm: UTMVirtualMachine, didTransitionTo state: UTMVMState) {
         super.virtualMachine(vm, didTransitionTo: state)
-        if state == .vmStopped && isInstalling {
-            isInstalling = false
+        if state == .vmStopped && isInstallSuccessful {
+            isInstallSuccessful = false
             vm.requestVmStart()
         }
     }
@@ -255,8 +255,7 @@ extension VMDisplayAppleWindowController {
                 self.enterSuspended(isBusy: true)
                 self.appleConfig.system.boot.macRecoveryIpswURL = nil
                 self.appleVM.registryEntry.macRecoveryIpsw = nil
-            } else {
-                self.isInstalling = false
+                self.isInstallSuccessful = true
             }
         }
     }

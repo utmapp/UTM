@@ -59,6 +59,8 @@ import Virtualization
     
     private(set) var apple: VZVirtualMachine!
     
+    private var installProgress: Progress?
+    
     private var progressObserver: NSKeyValueObservation?
     
     private var sharedDirectoriesChanged: AnyCancellable?
@@ -161,12 +163,13 @@ import Virtualization
     }
     
     override func vmStop(force: Bool) async throws {
-        guard state == .vmStarted || state == .vmPaused else {
-            return
-        }
         changeState(.vmStopping)
         do {
-            try await _vmStop(force: force)
+            if let installProgress = installProgress {
+                installProgress.cancel()
+            } else {
+                try await _vmStop(force: force)
+            }
             changeState(.vmStopped)
         } catch {
             changeState(.vmStopped)
@@ -329,6 +332,7 @@ import Virtualization
                     self.progressObserver = installer.progress.observe(\.fractionCompleted, options: [.initial, .new]) { progress, change in
                         self.delegate?.virtualMachine?(self, didUpdateInstallationProgress: progress.fractionCompleted)
                     }
+                    self.installProgress = installer.progress
                     installer.install { result in
                         continuation.resume(with: result)
                     }
@@ -336,6 +340,7 @@ import Virtualization
             }
             changeState(.vmStarted)
             progressObserver = nil
+            installProgress = nil
             delegate?.virtualMachine?(self, didCompleteInstallation: true)
             #else
             throw UTMAppleVirtualMachineError.operatingSystemInstallNotSupported
