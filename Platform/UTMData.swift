@@ -391,6 +391,7 @@ class UTMData: ObservableObject {
             try await vm.saveUTM()
         } catch {
             // refresh the VM object as it is now stale
+            let origError = error
             do {
                 try discardChanges(for: vm)
             } catch {
@@ -398,13 +399,13 @@ class UTMData: ObservableObject {
                 let path = vm.path
                 guard let newVM = UTMVirtualMachine(url: path) else {
                     logger.debug("Cannot create new object for \(path.path)")
-                    return
+                    throw origError
                 }
                 let index = await listRemove(vm: vm)
                 await listAdd(vm: newVM, at: index)
                 await listSelect(vm: newVM)
             }
-            throw error
+            throw origError
         }
     }
     
