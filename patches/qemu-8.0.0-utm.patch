@@ -272,3 +272,64 @@ index e7cabeb46c..6754523321 100644
      DEFINE_PROP_END_OF_LIST(),
  };
  
+From 2b55e479e6fcbb466585fd25077a50c32e10dc3a Mon Sep 17 00:00:00 2001
+From: Paolo Bonzini <pbonzini@redhat.com>
+Date: Tue, 9 May 2023 16:17:15 +0200
+Subject: [PATCH] target/i386: fix operand size for VCOMI/VUCOMI instructions
+
+Compared to other SSE instructions, VUCOMISx and VCOMISx are different:
+the single and double precision versions are distinguished through a
+prefix, however they use no-prefix and 0x66 for SS and SD respectively.
+Scalar values usually are associated with 0xF2 and 0xF3.
+
+Because of these, they incorrectly perform a 128-bit memory load instead
+of a 32- or 64-bit load.  Fix this by writing a custom decoding function.
+
+I tested that the reproducer is fixed and the test-avx output does not
+change.
+
+Reported-by: Gabriele Svelto <gsvelto@mozilla.com>
+Resolves: https://gitlab.com/qemu-project/qemu/-/issues/1637
+Fixes: f8d19eec0d53 ("target/i386: reimplement 0x0f 0x28-0x2f, add AVX", 2022-10-18)
+Cc: qemu-stable@nongnu.org
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+---
+ target/i386/tcg/decode-new.c.inc | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
+
+diff --git a/target/i386/tcg/decode-new.c.inc b/target/i386/tcg/decode-new.c.inc
+index 4fdd87750be..48fefaffdf6 100644
+--- a/target/i386/tcg/decode-new.c.inc
++++ b/target/i386/tcg/decode-new.c.inc
+@@ -783,6 +783,17 @@ static void decode_0F2D(DisasContext *s, CPUX86State *env, X86OpEntry *entry, ui
+     *entry = *decode_by_prefix(s, opcodes_0F2D);
+ }
+ 
++static void decode_VxCOMISx(DisasContext *s, CPUX86State *env, X86OpEntry *entry, uint8_t *b)
++{
++    /*
++     * VUCOMISx and VCOMISx are different and use no-prefix and 0x66 for SS and SD
++     * respectively.  Scalar values usually are associated with 0xF2 and 0xF3, for
++     * which X86_VEX_REPScalar exists, but here it has to be decoded by hand.
++     */
++    entry->s1 = entry->s2 = (s->prefix & PREFIX_DATA ? X86_SIZE_sd : X86_SIZE_ss);
++    entry->gen = (*b == 0x2E ? gen_VUCOMI : gen_VCOMI);
++}
++
+ static void decode_sse_unary(DisasContext *s, CPUX86State *env, X86OpEntry *entry, uint8_t *b)
+ {
+     if (!(s->prefix & (PREFIX_REPZ | PREFIX_REPNZ))) {
+@@ -871,8 +882,8 @@ static const X86OpEntry opcodes_0F[256] = {
+     [0x2B] = X86_OP_GROUP0(0F2B),
+     [0x2C] = X86_OP_GROUP0(0F2C),
+     [0x2D] = X86_OP_GROUP0(0F2D),
+-    [0x2E] = X86_OP_ENTRY3(VUCOMI,     None,None, V,x, W,x,  vex4 p_00_66),
+-    [0x2F] = X86_OP_ENTRY3(VCOMI,      None,None, V,x, W,x,  vex4 p_00_66),
++    [0x2E] = X86_OP_GROUP3(VxCOMISx,   None,None, V,x, W,x,  vex3 p_00_66), /* VUCOMISS/SD */
++    [0x2F] = X86_OP_GROUP3(VxCOMISx,   None,None, V,x, W,x,  vex3 p_00_66), /* VCOMISS/SD */
+ 
+     [0x38] = X86_OP_GROUP0(0F38),
+     [0x3a] = X86_OP_GROUP0(0F3A),
+-- 
+GitLab
+
