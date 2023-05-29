@@ -584,3 +584,51 @@ index dbfcd440..8cdf86f5 100644
        error('Python module @0@ not found'.format(module))
      endif
 
+From 8bb90e55aa5cb80c7a8366c3faa0bba508b1e89f Mon Sep 17 00:00:00 2001
+From: Frediano Ziglio <freddy77@gmail.com>
+Date: Thu, 20 Aug 2020 11:31:36 +0100
+Subject: [PATCH] inputs-channel: Support more mouse buttons
+
+Extend mouse button bits support.
+Allows to support up to 16 buttons.
+
+Partly based on a patch from Kevin Pouget (RED_MOUSE_BUTTON_STATE_TO_AGENT
+macro, updated on new protocol constants).
+
+Signed-off-by: Frediano Ziglio <freddy77@gmail.com>
+Acked-by: Kevin Pouget <kpouget@redhat.com>
+---
+ server/inputs-channel.c | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
+
+diff --git a/server/inputs-channel.c b/server/inputs-channel.c
+index f22421f30..80ea8a897 100644
+--- a/server/inputs-channel.c
++++ b/server/inputs-channel.c
+@@ -117,15 +117,16 @@ const VDAgentMouseState *InputsChannel::get_mouse_state()
+     return &mouse_state;
+ }
+ 
+-#define RED_MOUSE_STATE_TO_LOCAL(state)     \
+-    ((state & SPICE_MOUSE_BUTTON_MASK_LEFT) |          \
+-     ((state & SPICE_MOUSE_BUTTON_MASK_MIDDLE) << 1) |   \
++// middle and right states are inverted
++// all buttons from SPICE_MOUSE_BUTTON_MASK_SIDE are mapped a bit higher
++// to avoid conflicting with some internal Qemu bit
++#define RED_MOUSE_STATE_TO_LOCAL(state)                           \
++    ((state & SPICE_MOUSE_BUTTON_MASK_LEFT) |                     \
++     ((state & (SPICE_MOUSE_BUTTON_MASK_MIDDLE|0xffe0)) << 1) |   \
+      ((state & SPICE_MOUSE_BUTTON_MASK_RIGHT) >> 1))
+ 
+-#define RED_MOUSE_BUTTON_STATE_TO_AGENT(state)                      \
+-    (((state & SPICE_MOUSE_BUTTON_MASK_LEFT) ? VD_AGENT_LBUTTON_MASK : 0) |    \
+-     ((state & SPICE_MOUSE_BUTTON_MASK_MIDDLE) ? VD_AGENT_MBUTTON_MASK : 0) |    \
+-     ((state & SPICE_MOUSE_BUTTON_MASK_RIGHT) ? VD_AGENT_RBUTTON_MASK : 0))
++// mouse button constants are defined to be off-one between agent and SPICE protocol
++#define RED_MOUSE_BUTTON_STATE_TO_AGENT(state) ((state) << 1)
+ 
+ void InputsChannel::activate_modifiers_watch()
+ {
+-- 
+GitLab
+
