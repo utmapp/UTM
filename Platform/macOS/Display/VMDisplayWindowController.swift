@@ -64,6 +64,11 @@ class VMDisplayWindowController: NSWindowController {
         self.init(window: nil)
         self.vm = vm
         self.onClose = onClose
+        NSWorkspace.shared.notificationCenter.addObserver(self, selector: #selector(didWake), name: NSWorkspace.didWakeNotification, object: nil)
+    }
+    
+    deinit {
+        NSWorkspace.shared.notificationCenter.removeObserver(self, name: NSWorkspace.didWakeNotification, object: nil)
     }
     
     @IBAction func stopButtonPressed(_ sender: Any) {
@@ -371,6 +376,15 @@ extension VMDisplayWindowController: UTMVirtualMachineDelegate {
             if vm.state != .vmStarted && vm.state != .vmPaused {
                 self.close()
             }
+        }
+    }
+}
+
+// MARK: - Computer wakeup
+extension VMDisplayWindowController {
+    @objc private func didWake(_ notification: NSNotification) {
+        if let qemuVM = vm as? UTMQemuVirtualMachine, let ga = qemuVM.guestAgent {
+            ga.guestSetTime(NSDate.now.timeIntervalSince1970)
         }
     }
 }

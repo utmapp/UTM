@@ -36,6 +36,11 @@ import IOKit.pwr_mgt
         self.onStop = onStop
         super.init()
         vm.delegate = self
+        NSWorkspace.shared.notificationCenter.addObserver(self, selector: #selector(didWake), name: NSWorkspace.didWakeNotification, object: nil)
+    }
+    
+    deinit {
+        NSWorkspace.shared.notificationCenter.removeObserver(self, name: NSWorkspace.didWakeNotification, object: nil)
     }
 }
 
@@ -95,4 +100,13 @@ extension Notification.Name {
     static let vmSessionCreated = Self("VMSessionCreated")
     static let vmSessionEnded = Self("VMSessionEnded")
     static let vmSessionError = Self("VMSessionError")
+}
+
+// MARK: - Computer wakeup
+extension VMHeadlessSessionState {
+    @objc private func didWake(_ notification: NSNotification) {
+        if let qemuVM = vm as? UTMQemuVirtualMachine, let ga = qemuVM.guestAgent {
+            ga.guestSetTime(NSDate.now.timeIntervalSince1970)
+        }
+    }
 }
