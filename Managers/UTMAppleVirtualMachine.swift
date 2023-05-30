@@ -163,13 +163,16 @@ import Virtualization
     }
     
     override func vmStop(force: Bool) async throws {
+        if let installProgress = installProgress {
+            installProgress.cancel()
+            return
+        }
+        guard state == .vmStarted || state == .vmPaused else {
+            return
+        }
         changeState(.vmStopping)
         do {
-            if let installProgress = installProgress {
-                installProgress.cancel()
-            } else {
-                try await _vmStop(force: force)
-            }
+            try await _vmStop(force: force)
             changeState(.vmStopped)
         } catch {
             changeState(.vmStopped)
