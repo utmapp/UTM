@@ -299,8 +299,10 @@
 // SettingsView.swift
 "Application" = "アプリケーション";
 "Keep UTM running after last window is closed and all VMs are shut down" = "最後のウインドウが閉じられ、すべての仮想マシンがシステム終了した後もUTMを実行し続ける";
-"Show dock icon" = "ドックアイコンを表示";
+"Show dock icon" = "Dockアイコンを表示";
 "Show menu bar icon" = "メニューバーアイコンを表示";
+"Prevent system from sleeping when any VM is running" = "仮想マシンの実行中にシステムがスリープしないようにする";
+"Do not show confirmation when closing a running VM" = "実行中の仮想マシンを閉じるときに確認を表示しない";
 "VM display size is fixed" = "仮想マシンのディスプレイサイズを固定";
 "If enabled, resizing of the VM window will not be allowed." = "有効にすると、仮想マシンのディスプレイサイズを変更できなくなります。";
 "Do not save VM screenshot to disk" = "仮想マシンのスクリーンショットをディスクに保存しない";
@@ -330,7 +332,7 @@
 // UTMMenuBarExtraScene.swift
 "Show UTM" = "UTMを表示";
 "Show the main window." = "メインウインドウを表示します。";
-"Hide dock icon on next launch" = "次回起動時にドックアイコンを非表示にする";
+"Hide dock icon on next launch" = "次回起動時にDockアイコンを非表示にする";
 "Requires restarting UTM to take affect." = "変更を適用するには、UTMを再起動する必要があります。";
 "No virtual machines found." = "仮想マシンが見つかりません。";
 "Terminate UTM and stop all running VMs." = "UTMを終了し、すべての実行中の仮想マシンを停止します。";
