@@ -57,7 +57,8 @@ import Virtualization
     
     private let vmQueue = DispatchQueue(label: "VZVirtualMachineQueue", qos: .userInteractive)
     
-    private(set) var apple: VZVirtualMachine!
+    /// This variable MUST be synchronized by `vmQueue`
+    private(set) var apple: VZVirtualMachine?
     
     private var installProgress: Progress?
     
@@ -85,11 +86,15 @@ import Virtualization
         let boot = await appleConfig.system.boot
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) -> Void in
             vmQueue.async {
+                guard let apple = self.apple else {
+                    continuation.resume(throwing: UTMAppleVirtualMachineError.operationNotAvailable)
+                    return
+                }
                 #if os(macOS) && arch(arm64)
                 if #available(macOS 13, *), boot.operatingSystem == .macOS {
                     let options = VZMacOSVirtualMachineStartOptions()
                     options.startUpFromMacOSRecovery = boot.startUpFromMacOSRecovery
-                    self.apple.start(options: options) { result in
+                    apple.start(options: options) { result in
                         if let result = result {
                             continuation.resume(with: .failure(result))
                         } else {
@@ -99,7 +104,7 @@ import Virtualization
                     return
                 }
                 #endif
-                self.apple.start { result in
+                apple.start { result in
                     continuation.resume(with: result)
                 }
             }
@@ -138,11 +143,15 @@ import Virtualization
         if force, #available(macOS 12, *) {
             try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
                 vmQueue.async {
-                    self.apple.stop { error in
+                    guard let apple = self.apple else {
+                        continuation.resume() // already stopped
+                        return
+                    }
+                    apple.stop { error in
                         if let error = error {
                             continuation.resume(throwing: error)
                         } else {
-                            self.guestDidStop(self.apple)
+                            self.guestDidStop(apple)
                             continuation.resume()
                         }
                     }
@@ -152,7 +161,11 @@ import Virtualization
             try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
                 vmQueue.async {
                     do {
-                        try self.apple.requestStop()
+                        guard let apple = self.apple else {
+                            continuation.resume() // already stopped
+                            return
+                        }
+                        try apple.requestStop()
                         continuation.resume()
                     } catch {
                         continuation.resume(throwing: error)
@@ -186,11 +199,15 @@ import Virtualization
         }
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             vmQueue.async {
-                self.apple.stop { error in
+                guard let apple = self.apple else {
+                    continuation.resume(throwing: UTMAppleVirtualMachineError.operationNotAvailable)
+                    return
+                }
+                apple.stop { error in
                     if let error = error {
                         continuation.resume(throwing: error)
                     } else {
-                        self.apple.start { result in
+                        apple.start { result in
                             continuation.resume(with: result)
                         }
                     }
@@ -216,11 +233,15 @@ import Virtualization
     private func _vmPause() async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             vmQueue.async {
+                guard let apple = self.apple else {
+                    continuation.resume(throwing: UTMAppleVirtualMachineError.operationNotAvailable)
+                    return
+                }
                 DispatchQueue.main.sync {
                     self.updateScreenshot()
                 }
                 self.saveScreenshot()
-                self.apple.pause { result in
+                apple.pause { result in
                     continuation.resume(with: result)
                 }
             }
@@ -249,7 +270,11 @@ import Virtualization
     private func _vmResume() async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             vmQueue.async {
-                self.apple.resume { result in
+                guard let apple = self.apple else {
+                    continuation.resume(throwing: UTMAppleVirtualMachineError.operationNotAvailable)
+                    return
+                }
+                apple.resume { result in
                     continuation.resume(with: result)
                 }
             }
@@ -273,8 +298,12 @@ import Virtualization
     override func vmGuestPowerDown() async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             vmQueue.async {
+                guard let apple = self.apple else {
+                    continuation.resume() // already stopped
+                    return
+                }
                 do {
-                    try self.apple.requestStop()
+                    try apple.requestStop()
                     continuation.resume()
                 } catch {
                     continuation.resume(throwing: error)
@@ -298,8 +327,10 @@ import Virtualization
             appleConfig.serials[i].interface = serialPort
         }
         let vzConfig = try appleConfig.appleVZConfiguration()
-        apple = VZVirtualMachine(configuration: vzConfig, queue: vmQueue)
-        apple.delegate = self
+        vmQueue.async { [self] in
+            apple = VZVirtualMachine(configuration: vzConfig, queue: vmQueue)
+            apple!.delegate = self
+        }
     }
     
     @available(macOS 12, *)
@@ -331,7 +362,11 @@ import Virtualization
             #if os(macOS) && arch(arm64)
             try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
                 vmQueue.async {
-                    let installer = VZMacOSInstaller(virtualMachine: self.apple, restoringFromImageAt: ipswUrl)
+                    guard let apple = self.apple else {
+                        continuation.resume(throwing: UTMAppleVirtualMachineError.operationNotAvailable)
+                        return
+                    }
+                    let installer = VZMacOSInstaller(virtualMachine: apple, restoringFromImageAt: ipswUrl)
                     self.progressObserver = installer.progress.observe(\.fractionCompleted, options: [.initial, .new]) { progress, change in
                         self.delegate?.virtualMachine?(self, didUpdateInstallationProgress: progress.fractionCompleted)
                     }
@@ -439,7 +474,9 @@ import Virtualization
 @available(macOS 11, *)
 extension UTMAppleVirtualMachine: VZVirtualMachineDelegate {
     func guestDidStop(_ virtualMachine: VZVirtualMachine) {
-        apple = nil
+        vmQueue.async { [self] in
+            apple = nil
+        }
         sharedDirectoriesChanged = nil
         Task { @MainActor in
             stopAccesingResources()
@@ -470,6 +507,7 @@ protocol UTMScreenshotProvider: AnyObject {
 enum UTMAppleVirtualMachineError: Error {
     case cannotAccessResource(URL)
     case operatingSystemInstallNotSupported
+    case operationNotAvailable
 }
 
 extension UTMAppleVirtualMachineError: LocalizedError {
@@ -479,6 +517,8 @@ extension UTMAppleVirtualMachineError: LocalizedError {
             return String.localizedStringWithFormat(NSLocalizedString("Cannot access resource: %@", comment: "UTMAppleVirtualMachine"), url.path)
         case .operatingSystemInstallNotSupported:
             return NSLocalizedString("The operating system cannot be installed on this machine.", comment: "UTMAppleVirtualMachine")
+        case .operationNotAvailable:
+            return NSLocalizedString("The operation is not available.", comment: "UTMAppleVirtualMachine")
         }
     }
 }
