@@ -15,12 +15,41 @@
 //
 
 import Foundation
+import QEMUKitInternal
 
 @objc class UTMQemuImage: UTMQemu {
     private var logOutput: String = ""
+    private var processExitContinuation: CheckedContinuation<Void, any Error>?
     
     private init() {
         super.init(arguments: [])
+    }
+    
+    override func qemuHasExited(_ exitCode: Int, message: String?) {
+        if let processExitContinuation = processExitContinuation {
+            self.processExitContinuation = nil
+            if exitCode != 0 {
+                if let message = message {
+                    processExitContinuation.resume(throwing: UTMQemuImageError.qemuError(message))
+                } else {
+                    processExitContinuation.resume(throwing: UTMQemuImageError.unknown)
+                }
+            } else {
+                processExitContinuation.resume()
+            }
+        }
+    }
+    
+    private func start() async throws {
+        try await withCheckedThrowingContinuation { continuation in
+            processExitContinuation = continuation
+            start("qemu-img") { error in
+                if let error = error {
+                    self.processExitContinuation = nil
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
     }
     
     static func convert(from url: URL, toQcow2 dest: URL, withCompression compressed: Bool = false) async throws {
@@ -39,14 +68,9 @@ import Foundation
         qemuImg.pushArgv(url.path)
         qemuImg.accessData(withBookmark: dstBookmark)
         qemuImg.pushArgv(dest.path)
-        let logging = UTMLogging()
+        let logging = QEMULogging()
         qemuImg.logging = logging
-        try await Task.detached {
-            let (success, message) = await qemuImg.start("qemu-img")
-            if !success, let message = message {
-                throw message
-            }
-        }.value
+        try await qemuImg.start()
     }
     
     /*
@@ -99,15 +123,10 @@ import Foundation
         qemuImg.pushArgv("--output=json")
         qemuImg.accessData(withBookmark: srcBookmark)
         qemuImg.pushArgv(url.path)
-        let logging = UTMLogging()
+        let logging = QEMULogging()
         logging.delegate = qemuImg
         qemuImg.logging = logging
-        try await Task.detached {
-            let (success, message) = await qemuImg.start("qemu-img")
-            if !success, let message = message {
-                throw message
-            }
-        }.value
+        try await qemuImg.start()
 
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
@@ -127,25 +146,34 @@ import Foundation
         qemuImg.accessData(withBookmark: srcBookmark)
         qemuImg.pushArgv(url.path)
         qemuImg.pushArgv(String(size))
-        let logging = UTMLogging()
+        let logging = QEMULogging()
         logging.delegate = qemuImg
         qemuImg.logging = logging
-        try await Task.detached {
-            let (success, message) = await qemuImg.start("qemu-img")
-            if !success, let message = message {
-                throw message
-            }
-        }.value
+        try await qemuImg.start()
     }
 }
 
-// MARK: - Logging delegate
+private enum UTMQemuImageError: Error {
+    case qemuError(String)
+    case unknown
+}
 
-extension UTMQemuImage: UTMLoggingDelegate {
-    func logging(_ logging: UTMLogging, didRecieveOutputLine line: String) {
+extension UTMQemuImageError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case .qemuError(let message): return message
+        case .unknown: return NSLocalizedString("An unknown QEMU error has occurred.", comment: "UTMQemuImage")
+        }
+    }
+}
+
+// MARK: - Logging
+
+extension UTMQemuImage: QEMULoggingDelegate {
+    func logging(_ logging: QEMULogging, didRecieveOutputLine line: String) {
         logOutput += line
     }
     
-    func logging(_ logging: UTMLogging, didRecieveErrorLine line: String) {
+    func logging(_ logging: QEMULogging, didRecieveErrorLine line: String) {
     }
 }

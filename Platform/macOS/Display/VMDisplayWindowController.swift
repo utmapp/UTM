@@ -383,8 +383,10 @@ extension VMDisplayWindowController: UTMVirtualMachineDelegate {
 // MARK: - Computer wakeup
 extension VMDisplayWindowController {
     @objc private func didWake(_ notification: NSNotification) {
-        if let qemuVM = vm as? UTMQemuVirtualMachine, let ga = qemuVM.guestAgent {
-            ga.guestSetTime(NSDate.now.timeIntervalSince1970)
+        if let qemuVM = vm as? UTMQemuVirtualMachine {
+            Task {
+                try? await qemuVM.guestAgent?.guestSetTime(NSDate.now.timeIntervalSince1970)
+            }
         }
     }
 }

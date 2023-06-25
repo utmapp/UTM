@@ -16,10 +16,9 @@
 
 #import <Foundation/Foundation.h>
 #import "QEMUHelperProtocol.h"
+@import QEMUKitInternal;
 
 typedef void * _Nullable (* _Nonnull UTMQemuThreadEntry)(void * _Nullable args);
-
-@class UTMLogging;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -33,17 +32,18 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSInteger status;
 @property (nonatomic) NSInteger fatal;
 @property (nonatomic) UTMQemuThreadEntry entry;
-@property (nonatomic, nullable) UTMLogging *logging;
+@property (nonatomic, nullable) QEMULogging *logging;
 
 - (instancetype)init;
 - (instancetype)initWithArguments:(NSArray<NSString *> *)arguments NS_DESIGNATED_INITIALIZER;
 - (void)pushArgv:(nullable NSString *)arg;
 - (void)clearArgv;
-- (void)startQemu:(nonnull NSString *)name completion:(void(^)(BOOL,NSString * _Nullable))completion;
+- (void)startQemu:(nonnull NSString *)name completion:(nonnull void (^)(NSError * _Nullable))completion;
 - (void)stopQemu;
 - (void)accessDataWithBookmark:(NSData *)bookmark;
 - (void)accessDataWithBookmark:(NSData *)bookmark securityScoped:(BOOL)securityScoped completion:(void(^)(BOOL, NSData * _Nullable, NSString * _Nullable))completion;
 - (void)stopAccessingPath:(nullable NSString *)path;
+- (void)qemuHasExited:(NSInteger)exitCode message:(nullable NSString *)message;
 
 @end
 

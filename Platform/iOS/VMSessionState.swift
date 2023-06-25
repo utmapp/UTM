@@ -70,7 +70,7 @@ import SwiftUI
         self.vm = vm
         super.init()
         vm.delegate = self
-        vm.ioDelegate = self
+        vm.ioServiceDelegate = self
     }
     
     func registerWindow(_ window: UUID, isExternal: Bool = false) {

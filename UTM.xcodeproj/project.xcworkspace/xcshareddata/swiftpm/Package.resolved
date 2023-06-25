@@ -37,6 +37,15 @@
       }
     },
     {
+      "identity" : "qemukit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/utmapp/QEMUKit.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "0ead7dd3ce538191c57c95484039ee0e133a639f"
+      }
+    },
+    {
       "identity" : "swift-argument-parser",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-argument-parser.git",

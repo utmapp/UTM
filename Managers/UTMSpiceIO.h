@@ -16,6 +16,7 @@
 
 #import <Foundation/Foundation.h>
 #import "UTMSpiceIODelegate.h"
+@import QEMUKitInternal;
 #if defined(WITH_QEMU_TCI)
 @import CocoaSpiceNoUsb;
 #else
@@ -23,14 +24,10 @@
 #endif
 
 @class UTMConfigurationWrapper;
-@class UTMQemuMonitor;
-@class UTMQemuGuestAgent;
-
-typedef void (^ioConnectCompletionHandler_t)(UTMQemuMonitor * _Nullable, NSError * _Nullable);
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMSpiceIO : NSObject<CSConnectionDelegate>
+@interface UTMSpiceIO : NSObject<CSConnectionDelegate, QEMUInterface>
 
 @property (nonatomic, readonly, nonnull) UTMConfigurationWrapper* configuration;
 @property (nonatomic, readonly, nullable) CSDisplay *primaryDisplay;
@@ -38,7 +35,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) CSPort *primarySerial;
 @property (nonatomic, readonly) NSArray<CSDisplay *> *displays;
 @property (nonatomic, readonly) NSArray<CSPort *> *serials;
-@property (nonatomic, readonly, nullable) UTMQemuGuestAgent *qemuGuestAgent;
 #if !defined(WITH_QEMU_TCI)
 @property (nonatomic, readonly, nullable) CSUSBManager *primaryUsbManager;
 #endif
@@ -49,8 +45,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithConfiguration:(UTMConfigurationWrapper *)configuration NS_DESIGNATED_INITIALIZER;
 - (void)changeSharedDirectory:(NSURL *)url;
 
-- (BOOL)startWithError:(NSError **)err;
-- (void)connectWithCompletion:(ioConnectCompletionHandler_t)block;
+- (BOOL)startWithError:(NSError * _Nullable *)error;
+- (BOOL)connectWithError:(NSError * _Nullable *)error;
 - (void)disconnect;
 
 - (void)screenshotWithCompletion:(screenshotCallback_t)completion;

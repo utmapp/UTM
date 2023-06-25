@@ -22,8 +22,6 @@
 #import "CSDisplay.h"
 #import "UTMSpiceIO.h"
 #import "UTMLogging.h"
-#import "UTMQemuVirtualMachine.h"
-#import "UTMQemuVirtualMachine+SPICE.h"
 #import "UTM-Swift.h"
 
 const CGFloat kScrollSpeedReduction = 100.0f;

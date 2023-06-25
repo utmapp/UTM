@@ -16,9 +16,9 @@
 
 #import <Foundation/Foundation.h>
 #import "UTMVirtualMachineDelegate.h"
+@import QEMUKitInternal;
 
 @class UTMConfigurationWrapper;
-@class UTMLogging;
 @class UTMRegistryEntry;
 @class CSScreenshot;
 

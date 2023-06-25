@@ -17,8 +17,6 @@
 #import <TargetConditionals.h>
 #import "UTMVirtualMachine.h"
 #import "UTMVirtualMachine-Private.h"
-#import "UTMQemuVirtualMachine.h"
-#import "UTMLogging.h"
 #import "UTM-Swift.h"
 #if defined(WITH_QEMU_TCI)
 @import CocoaSpiceNoUsb;
@@ -171,9 +169,9 @@ const dispatch_time_t kScreenshotPeriodSeconds = 60 * NSEC_PER_SEC;
     if (self) {
         _state = kVMStopped;
 #if TARGET_OS_IPHONE
-        self.logging = [UTMLogging sharedInstance];
+        self.logging = [QEMULogging sharedInstance];
 #else
-        self.logging = [UTMLogging new];
+        self.logging = [QEMULogging new];
 #endif
         _config = configuration;
         self.path = packageURL;

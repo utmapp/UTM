@@ -20,8 +20,6 @@
 #import "VMCursor.h"
 #import "CSDisplay.h"
 #import "VMScroll.h"
-#import "UTMQemuVirtualMachine.h"
-#import "UTMQemuVirtualMachine+SPICE.h"
 #import "UTMLogging.h"
 #import "UTM-Swift.h"
 

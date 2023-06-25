@@ -73,7 +73,7 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
     
     override func enterLive() {
         if !isSecondary {
-            qemuVM.ioDelegate = self
+            qemuVM.ioServiceDelegate = self
         }
         startPauseToolbarItem.isEnabled = true
         if defaultPauseTooltip == nil {

@@ -1,5 +1,5 @@
 //
-// Copyright © 2021 osy. All rights reserved.
+// Copyright © 2023 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,16 +14,13 @@
 // limitations under the License.
 //
 
-#import "UTMVirtualMachine.h"
+#import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMVirtualMachine ()
+@protocol QEMUHelperDelegate <NSObject>
 
-@property (nonatomic, assign, readwrite) UTMVMState state;
-
-- (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithConfiguration:(UTMConfigurationWrapper *)configuration packageURL:(NSURL *)packageURL NS_DESIGNATED_INITIALIZER;
+- (void)qemuHasExited:(NSInteger)exitCode message:(nullable NSString *)message;
 
 @end
 

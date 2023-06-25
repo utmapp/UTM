@@ -15,6 +15,7 @@
 //
 
 #import "QEMUHelper.h"
+#import "QEMUHelperDelegate.h"
 #import <stdio.h>
 
 @interface QEMUHelper ()
@@ -94,7 +95,7 @@
     NSLog(@"Cannot find '%@' in existing scoped access.", path);
 }
 
-- (void)startQemu:(NSString *)binName standardOutput:(NSFileHandle *)standardOutput standardError:(NSFileHandle *)standardError libraryBookmark:(NSData *)libBookmark argv:(NSArray<NSString *> *)argv onExit:(void(^)(BOOL,NSString *))onExit {
+- (void)startQemu:(NSString *)binName standardOutput:(NSFileHandle *)standardOutput standardError:(NSFileHandle *)standardError libraryBookmark:(NSData *)libBookmark argv:(NSArray<NSString *> *)argv completion:(void(^)(BOOL,NSString *))completion {
     NSError *err;
     NSURL *libraryPath = [NSURL URLByResolvingBookmarkData:libBookmark
                                                    options:0
@@ -103,14 +104,14 @@
                                                      error:&err];
     if (!libraryPath || ![[NSFileManager defaultManager] fileExistsAtPath:libraryPath.path]) {
         NSLog(@"Cannot resolve library path: %@", err);
-        onExit(NO, NSLocalizedString(@"Cannot find QEMU support libraries.", @"QEMUHelper"));
+        completion(NO, NSLocalizedString(@"Cannot find QEMU support libraries.", @"QEMUHelper"));
         return;
     }
     
-    [self startQemuTask:binName standardOutput:standardOutput standardError:standardError libraryPath:libraryPath argv:argv onExit:onExit];
+    [self startQemuTask:binName standardOutput:standardOutput standardError:standardError libraryPath:libraryPath argv:argv completion:completion];
 }
 
-- (void)startQemuTask:(NSString *)binName standardOutput:(NSFileHandle *)standardOutput standardError:(NSFileHandle *)standardError libraryPath:(NSURL *)libraryPath argv:(NSArray<NSString *> *)argv onExit:(void(^)(BOOL,NSString *))onExit {
+- (void)startQemuTask:(NSString *)binName standardOutput:(NSFileHandle *)standardOutput standardError:(NSFileHandle *)standardError libraryPath:(NSURL *)libraryPath argv:(NSArray<NSString *> *)argv completion:(void(^)(BOOL,NSString *))completion {
     NSError *err;
     NSTask *task = [NSTask new];
     NSMutableArray<NSString *> *newArgv = [argv mutableCopy];
@@ -129,15 +130,16 @@
     task.environment = environment;
     task.qualityOfService = NSQualityOfServiceUserInitiated;
     task.terminationHandler = ^(NSTask *task) {
-        BOOL normalExit = task.terminationReason == NSTaskTerminationReasonExit && task.terminationStatus == 0;
         _self.childTask = nil;
-        onExit(normalExit, nil);
+        [_self.connection.remoteObjectProxy qemuHasExited:task.terminationStatus message:nil];
     };
     if (![task launchAndReturnError:&err]) {
         NSLog(@"Error starting QEMU: %@", err);
-        onExit(NO, NSLocalizedString(@"Error starting QEMU.", @"QEMUHelper"));
+        completion(NO, err.localizedDescription);
+    } else {
+        self.childTask = task;
+        completion(YES, nil);
     }
-    self.childTask = task;
 }
 
 - (void)terminate {

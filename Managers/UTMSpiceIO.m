@@ -16,13 +16,8 @@
 
 #import <glib.h>
 #import "UTMSpiceIO.h"
-#import "UTMQemuMonitor.h"
-#import "UTMQemuGuestAgent.h"
-#import "UTMLogging.h"
 #import "UTM-Swift.h"
 
-const int kMaxSpiceStartAttempts = 15; // qemu needs to start spice server first
-const int64_t kSpiceStartRetryTimeout = (int64_t)1*NSEC_PER_SEC;
 extern NSString *const kUTMErrorDomain;
 
 @interface UTMSpiceIO ()
@@ -33,7 +28,6 @@ extern NSString *const kUTMErrorDomain;
 @property (nonatomic, readwrite, nullable) CSInput *primaryInput;
 @property (nonatomic, readwrite, nullable) CSPort *primarySerial;
 @property (nonatomic) NSMutableArray<CSPort *> *mutableSerials;
-@property (nonatomic, readwrite, nullable) UTMQemuGuestAgent *qemuGuestAgent;
 #if !defined(WITH_QEMU_TCI)
 @property (nonatomic, readwrite, nullable) CSUSBManager *primaryUsbManager;
 #endif
@@ -43,13 +37,12 @@ extern NSString *const kUTMErrorDomain;
 @property (nonatomic) NSInteger port;
 @property (nonatomic) BOOL dynamicResolutionSupported;
 @property (nonatomic, readwrite) BOOL isConnected;
-@property (nonatomic) dispatch_queue_t connectQueue;
-@property (nonatomic, nullable) void (^connectAttemptCallback)(void);
-@property (nonatomic, nullable) void (^connectFinishedCallback)(UTMQemuMonitor *, CSConnectionError, NSError * _Nullable);
 
 @end
 
 @implementation UTMSpiceIO
+
+@synthesize connectDelegate;
 
 - (NSArray<CSDisplay *> *)displays {
     return self.mutableDisplays;
@@ -62,7 +55,6 @@ extern NSString *const kUTMErrorDomain;
 - (instancetype)initWithConfiguration:(UTMConfigurationWrapper *)configuration {
     if (self = [super init]) {
         self.configuration = configuration;
-        self.connectQueue = dispatch_queue_create("SPICE Connect Attempt", NULL);
         self.mutableDisplays = [NSMutableArray array];
         self.mutableSerials = [NSMutableArray array];
     }
@@ -82,7 +74,7 @@ extern NSString *const kUTMErrorDomain;
 
 #pragma mark - Actions
 
-- (BOOL)startWithError:(NSError **)err {
+- (BOOL)startWithError:(NSError * _Nullable *)error {
     if (!self.spice) {
         self.spice = [CSMain sharedInstance];
     }
@@ -92,8 +84,8 @@ extern NSString *const kUTMErrorDomain;
     // do not need to encode/decode audio locally
     g_setenv("SPICE_DISABLE_OPUS", "1", TRUE);
     if (![self.spice spiceStart]) {
-        if (err) {
-            *err = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Failed to start SPICE client.", "UTMSpiceIO")}];
+        if (error) {
+            *error = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Failed to start SPICE client.", "UTMSpiceIO")}];
         }
         return NO;
     }
@@ -102,44 +94,18 @@ extern NSString *const kUTMErrorDomain;
     return YES;
 }
 
-- (void)connectWithCompletion:(ioConnectCompletionHandler_t)block {
-    __weak typeof(self) weakSelf = self;
-    __block int attemptsLeft = kMaxSpiceStartAttempts;
-    dispatch_async(self.connectQueue, ^{
-        self.connectFinishedCallback = ^(UTMQemuMonitor *monitor, CSConnectionError code, NSError *error) {
-            typeof(self) _self = weakSelf;
-            if (!_self) {
-                return;
-            }
-            if (monitor) {
-                _self.connectAttemptCallback = nil;
-                block(monitor, nil);
-            } else if (_self.connectAttemptCallback && code == kCSConnectionErrorConnect && attemptsLeft --> 0) {
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, kSpiceStartRetryTimeout), _self.connectQueue, _self.connectAttemptCallback);
-            } else {
-                _self.connectAttemptCallback = nil;
-                block(nil, error);
-            }
-        };
-        self.connectAttemptCallback = ^{
-            typeof(self) _self = weakSelf;
-            if (!_self) {
-                return;
-            }
-            if (![_self.spiceConnection connect]) {
-                _self.connectFinishedCallback(nil, 0, [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Internal error trying to connect to SPICE server.", "UTMSpiceIO")}]);
-            }
-        };
-        self.connectAttemptCallback();
-    });
+- (BOOL)connectWithError:(NSError * _Nullable *)error {
+    if (![self.spiceConnection connect]) {
+        if (error) {
+            *error = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Internal error trying to connect to SPICE server.", "UTMSpiceIO")}];
+        }
+        return NO;
+    } else {
+        return YES;
+    }
 }
 
 - (void)disconnect {
-    dispatch_async(self.connectQueue, ^{
-        if (self.connectFinishedCallback) {
-            self.connectFinishedCallback(nil, 0, nil);
-        }
-    });
     [self endSharingDirectory];
     [self.spiceConnection disconnect];
     self.spiceConnection.delegate = nil;
@@ -192,12 +158,7 @@ extern NSString *const kUTMErrorDomain;
 - (void)spiceError:(CSConnection *)connection code:(CSConnectionError)code message:(nullable NSString *)message {
     NSAssert(connection == self.spiceConnection, @"Unknown connection");
     self.isConnected = NO;
-    NSError *error = [NSError errorWithDomain:kUTMErrorDomain code:-code userInfo:@{NSLocalizedDescriptionKey: message}];
-    dispatch_async(self.connectQueue, ^{
-        if (self.connectFinishedCallback) {
-            self.connectFinishedCallback(nil, code, error);
-        }
-    });
+    [self.connectDelegate qemuInterface:self didErrorWithMessage:message];
 }
 
 - (void)spiceDisplayCreated:(CSConnection *)connection display:(CSDisplay *)display {
@@ -230,15 +191,12 @@ extern NSString *const kUTMErrorDomain;
 
 - (void)spiceForwardedPortOpened:(CSConnection *)connection port:(CSPort *)port {
     if ([port.name isEqualToString:@"org.qemu.monitor.qmp.0"]) {
-        UTMQemuMonitor *monitor = [[UTMQemuMonitor alloc] initWithPort:port];
-        dispatch_async(self.connectQueue, ^{
-            if (self.connectFinishedCallback) {
-                self.connectFinishedCallback(monitor, 0, nil);
-            }
-        });
+        UTMQemuPort *qemuPort = [[UTMQemuPort alloc] initFrom:port];
+        [self.connectDelegate qemuInterface:self didCreateMonitorPort:qemuPort];
     }
     if ([port.name isEqualToString:@"org.qemu.guest_agent.0"]) {
-        self.qemuGuestAgent = [[UTMQemuGuestAgent alloc] initWithPort:port];
+        UTMQemuPort *qemuPort = [[UTMQemuPort alloc] initFrom:port];
+        [self.connectDelegate qemuInterface:self didCreateGuestAgentPort:qemuPort];
     }
     if ([port.name isEqualToString:@"com.utmapp.terminal.0"]) {
         self.primarySerial = port;
@@ -253,7 +211,6 @@ extern NSString *const kUTMErrorDomain;
     if ([port.name isEqualToString:@"org.qemu.monitor.qmp.0"]) {
     }
     if ([port.name isEqualToString:@"org.qemu.guest_agent.0"]) {
-        self.qemuGuestAgent = nil;
     }
     if ([port.name isEqualToString:@"com.utmapp.terminal.0"]) {
         self.primarySerial = port;

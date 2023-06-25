@@ -97,7 +97,7 @@ static void *start_qemu(void *args) {
     return (_qemu_init != NULL) && (_qemu_main_loop != NULL) && (_qemu_cleanup != NULL);
 }
 
-- (void)startWithCompletion:(void (^)(BOOL, NSString * _Nonnull))completion {
+- (void)startQemuWithCompletion:(nonnull void (^)(NSError * _Nullable))completion {
     dispatch_group_t group = dispatch_group_create();
     for (NSURL *resourceURL in self.resources) {
         NSData *bookmark = self.remoteBookmarks[resourceURL];
@@ -122,6 +122,11 @@ static void *start_qemu(void *args) {
     dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
     NSString *name = [NSString stringWithFormat:@"qemu-%@-softmmu", self.architecture];
     [self startQemu:name completion:completion];
+}
+
+/// Called by superclass
+- (void)qemuHasExited:(NSInteger)exitCode message:(nullable NSString *)message {
+    [self.launcherDelegate qemuLauncher:self didExitWithExitCode:exitCode message:message];
 }
 
 @end

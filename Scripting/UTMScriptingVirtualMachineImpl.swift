@@ -15,6 +15,7 @@
 //
 
 import Foundation
+import QEMUKitInternal
 
 @MainActor
 @objc(UTMScriptingVirtualMachineImpl)
@@ -79,8 +80,10 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
         }
     }
     
-    var guestAgent: UTMQemuGuestAgent? {
-        (vm as? UTMQemuVirtualMachine)?.guestAgent
+    var guestAgent: QEMUGuestAgent! {
+        get async {
+            await (vm as? UTMQemuVirtualMachine)?.guestAgent
+        }
     }
     
     override var objectSpecifier: NSScriptObjectSpecifier? {
@@ -175,14 +178,14 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
 
 // MARK: - Guest agent suite
 @objc extension UTMScriptingVirtualMachineImpl {
-    @nonobjc private func withGuestAgent<Result>(_ block: (UTMQemuGuestAgent) async throws -> Result) async throws -> Result {
+    @nonobjc private func withGuestAgent<Result>(_ block: (QEMUGuestAgent) async throws -> Result) async throws -> Result {
         guard vm.state == .vmStarted else {
             throw ScriptingError.notRunning
         }
         guard let vm = vm as? UTMQemuVirtualMachine else {
             throw ScriptingError.operationNotSupported
         }
-        guard let guestAgent = vm.guestAgent else {
+        guard let guestAgent = await vm.guestAgent else {
             throw ScriptingError.guestAgentNotRunning
         }
         return try await block(guestAgent)

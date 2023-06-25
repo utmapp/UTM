@@ -15,6 +15,7 @@
 //
 
 import Foundation
+import QEMUKitInternal
 
 @MainActor
 @objc(UTMScriptingGuestFileImpl)
@@ -22,12 +23,10 @@ class UTMScriptingGuestFileImpl: NSObject, UTMScriptable {
     @objc private(set) var id: Int
     
     weak private var parent: UTMScriptingVirtualMachineImpl?
-    weak private var guestAgent: UTMQemuGuestAgent?
     
     init(from handle: Int, parent: UTMScriptingVirtualMachineImpl) {
         self.id = handle
         self.parent = parent
-        self.guestAgent = parent.guestAgent
     }
     
     override var objectSpecifier: NSScriptObjectSpecifier? {
@@ -44,17 +43,17 @@ class UTMScriptingGuestFileImpl: NSObject, UTMScriptable {
                                    uniqueID: id)
     }
     
-    private func seek(to offset: Int, whence: AEKeyword?, using guestAgent: UTMQemuGuestAgent) async throws {
-        let seek: QGASeek
+    private func seek(to offset: Int, whence: AEKeyword?, using guestAgent: QEMUGuestAgent) async throws {
+        let seek: QEMUGuestAgentSeek
         if let whence = whence {
             switch UTMScriptingWhence(rawValue: whence) {
-            case .startPosition: seek = QGA_SEEK_SET
-            case .currentPosition: seek = QGA_SEEK_CUR
-            case .endPosition: seek = QGA_SEEK_END
-            default: seek = QGA_SEEK_SET
+            case .startPosition: seek = .set
+            case .currentPosition: seek = .cur
+            case .endPosition: seek = .end
+            default: seek = .set
             }
         } else {
-            seek = QGA_SEEK_SET
+            seek = .set
         }
         try await guestAgent.guestFileSeek(id, offset: offset, whence: seek)
     }
@@ -67,7 +66,7 @@ class UTMScriptingGuestFileImpl: NSObject, UTMScriptable {
         let isBase64Encoded = command.evaluatedArguments?["isBase64Encoded"] as? Bool ?? false
         let isClosing = command.evaluatedArguments?["isClosing"] as? Bool ?? true
         withScriptCommand(command) { [self] in
-            guard let guestAgent = guestAgent else {
+            guard let guestAgent = await parent?.guestAgent else {
                 throw UTMScriptingVirtualMachineImpl.ScriptingError.guestAgentNotRunning
             }
             defer {
@@ -97,7 +96,7 @@ class UTMScriptingGuestFileImpl: NSObject, UTMScriptable {
         let file = command.evaluatedArguments?["file"] as? URL
         let isClosing = command.evaluatedArguments?["isClosing"] as? Bool ?? true
         withScriptCommand(command) { [self] in
-            guard let guestAgent = guestAgent else {
+            guard let guestAgent = await parent?.guestAgent else {
                 throw UTMScriptingVirtualMachineImpl.ScriptingError.guestAgentNotRunning
             }
             defer {
@@ -108,7 +107,7 @@ class UTMScriptingGuestFileImpl: NSObject, UTMScriptable {
             guard let file = file else {
                 throw UTMScriptingVirtualMachineImpl.ScriptingError.invalidParameter
             }
-            try await guestAgent.guestFileSeek(id, offset: 0, whence: QGA_SEEK_SET)
+            try await guestAgent.guestFileSeek(id, offset: 0, whence: .set)
             _ = file.startAccessingSecurityScopedResource()
             defer {
                 file.stopAccessingSecurityScopedResource()
@@ -130,7 +129,7 @@ class UTMScriptingGuestFileImpl: NSObject, UTMScriptable {
         let isBase64Encoded = command.evaluatedArguments?["isBase64Encoded"] as? Bool ?? false
         let isClosing = command.evaluatedArguments?["isClosing"] as? Bool ?? true
         withScriptCommand(command) { [self] in
-            guard let guestAgent = guestAgent else {
+            guard let guestAgent = await parent?.guestAgent else {
                 throw UTMScriptingVirtualMachineImpl.ScriptingError.guestAgentNotRunning
             }
             defer {
@@ -154,7 +153,7 @@ class UTMScriptingGuestFileImpl: NSObject, UTMScriptable {
         let file = command.evaluatedArguments?["file"] as? URL
         let isClosing = command.evaluatedArguments?["isClosing"] as? Bool ?? true
         withScriptCommand(command) { [self] in
-            guard let guestAgent = guestAgent else {
+            guard let guestAgent = await parent?.guestAgent else {
                 throw UTMScriptingVirtualMachineImpl.ScriptingError.guestAgentNotRunning
             }
             defer {
@@ -165,7 +164,7 @@ class UTMScriptingGuestFileImpl: NSObject, UTMScriptable {
             guard let file = file else {
                 throw UTMScriptingVirtualMachineImpl.ScriptingError.invalidParameter
             }
-            try await guestAgent.guestFileSeek(id, offset: 0, whence: QGA_SEEK_SET)
+            try await guestAgent.guestFileSeek(id, offset: 0, whence: .set)
             _ = file.startAccessingSecurityScopedResource()
             defer {
                 file.stopAccessingSecurityScopedResource()
@@ -181,7 +180,7 @@ class UTMScriptingGuestFileImpl: NSObject, UTMScriptable {
     
     @objc func close(_ command: NSScriptCommand) {
         withScriptCommand(command) { [self] in
-            guard let guestAgent = guestAgent else {
+            guard let guestAgent = await parent?.guestAgent else {
                 throw UTMScriptingVirtualMachineImpl.ScriptingError.guestAgentNotRunning
             }
             try await guestAgent.guestFileClose(id)

@@ -64,6 +64,9 @@ extern NSString *const kUTMBundleConfigFilename;
 /// This property is observable and must only be accessed on the main thread.
 @property (nonatomic, readonly) NSString *stateLabel;
 
+/// Reference to logger for VM stdout/stderr
+@property (nonatomic) QEMULogging *logging;
+
 @property (nonatomic, readwrite) NSURL *path;
 @property (nonatomic, readwrite) UTMConfigurationWrapper *config;
 @property (nonatomic, readwrite, nullable) CSScreenshot *screenshot;

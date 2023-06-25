@@ -34,16 +34,17 @@ typedef NS_ENUM(NSInteger, UTMQEMUSoundBackend) {
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMQemuSystem : UTMQemu
+@interface UTMQemuSystem : UTMQemu <QEMULauncher>
 
 @property (nonatomic, nullable, copy) NSArray<NSURL *> *resources;
 @property (nonatomic, nullable, weak) NSDictionary<NSURL *, NSData *> *remoteBookmarks;
 @property (nonatomic) UTMQEMURendererBackend rendererBackend;
+@property (nonatomic, weak) id<QEMULauncherDelegate> launcherDelegate;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithArguments:(NSArray<NSString *> *)arguments NS_UNAVAILABLE;
 - (instancetype)initWithArguments:(NSArray<NSString *> *)arguments architecture:(NSString *)architecture NS_DESIGNATED_INITIALIZER;
-- (void)startWithCompletion:(void(^)(BOOL, NSString *))completion;
+- (void)startQemuWithCompletion:(void(^)(NSError * _Nullable))completion;
 
 @end
 

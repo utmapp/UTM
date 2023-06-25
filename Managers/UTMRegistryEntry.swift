@@ -244,6 +244,17 @@ extension UTMRegistryEntryDecodable {
         terminalSettings = other.terminalSettings
         hasMigratedConfig = other.hasMigratedConfig
     }
+    
+    func setIsSuspended(_ isSuspended: Bool) {
+        self.isSuspended = isSuspended
+    }
+    
+    func setPackageRemoteBookmark(_ remoteBookmark: Data?, path: String? = nil) {
+        package.remoteBookmark = remoteBookmark
+        if let path = path {
+            package.path = path
+        }
+    }
 }
 
 // MARK: - Migration from UTMViewState
@@ -350,32 +361,6 @@ extension UTMRegistryEntry {
         
         set {
             _isSuspended = newValue
-        }
-    }
-    
-    var packageRemoteBookmark: Data? {
-        get {
-            _package.remoteBookmark
-        }
-        
-        set {
-            _package.remoteBookmark = newValue
-        }
-    }
-    
-    var packageRemotePath: String? {
-        get {
-            if _package.remoteBookmark != nil {
-                return _package.path
-            } else {
-                return nil
-            }
-        }
-        
-        set {
-            if newValue != nil {
-                _package.path = newValue!
-            }
         }
     }
 }

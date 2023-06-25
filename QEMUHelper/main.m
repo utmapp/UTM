@@ -16,6 +16,7 @@
 
 #import <Foundation/Foundation.h>
 #import "QEMUHelper.h"
+#import "QEMUHelperDelegate.h"
 
 @interface ServiceDelegate : NSObject <NSXPCListenerDelegate>
 @end
@@ -29,8 +30,12 @@
     // First, set the interface that the exported object implements.
     newConnection.exportedInterface = [NSXPCInterface interfaceWithProtocol:@protocol(QEMUHelperProtocol)];
     
+    // Set the remote interface as well
+    newConnection.remoteObjectInterface = [NSXPCInterface interfaceWithProtocol:@protocol(QEMUHelperDelegate)];
+    
     // Next, set the object that the connection exports. All messages sent on the connection to this service will be sent to the exported object to handle. The connection retains the exported object.
     QEMUHelper *exportedObject = [QEMUHelper new];
+    exportedObject.connection = newConnection;
     newConnection.exportedObject = exportedObject;
     
     // Resuming the connection allows the system to deliver more incoming messages.
