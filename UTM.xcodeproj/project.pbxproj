@@ -1235,20 +1235,6 @@
 /* Begin PBXFileReference section */
 		2C33B3A82566C9B100A954A6 /* VMContextMenuModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMContextMenuModifier.swift; sourceTree = "<group>"; };
 		2C6D9E02256EE454003298E6 /* VMDisplayQemuTerminalWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayQemuTerminalWindowController.swift; sourceTree = "<group>"; };
-		2C6D9E122571AFE5003298E6 /* UTMQcow2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMQcow2.h; sourceTree = "<group>"; };
-		2C6D9E132571AFE5003298E6 /* UTMQcow2.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = UTMQcow2.c; sourceTree = "<group>"; };
-		2CE8EAEC2572E0C2000E2EBB /* qapi-events-block-export.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-events-block-export.c"; path = "$(SYSROOT_DIR)/qapi/qapi-events-block-export.c"; sourceTree = SOURCE_ROOT; };
-		2CE8EAED2572E0C2000E2EBB /* qapi-events-block-export.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-events-block-export.h"; path = "$(SYSROOT_DIR)/qapi/qapi-events-block-export.h"; sourceTree = SOURCE_ROOT; };
-		2CE8EAF12572E0D0000E2EBB /* qapi-events-acpi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-events-acpi.h"; path = "$(SYSROOT_DIR)/qapi/qapi-events-acpi.h"; sourceTree = SOURCE_ROOT; };
-		2CE8EAF22572E0D0000E2EBB /* qapi-events-acpi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-events-acpi.c"; path = "$(SYSROOT_DIR)/qapi/qapi-events-acpi.c"; sourceTree = SOURCE_ROOT; };
-		2CE8EAF72572E130000E2EBB /* qapi-types-acpi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-types-acpi.c"; path = "$(SYSROOT_DIR)/qapi/qapi-types-acpi.c"; sourceTree = SOURCE_ROOT; };
-		2CE8EAF82572E130000E2EBB /* qapi-types-acpi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-types-acpi.h"; path = "$(SYSROOT_DIR)/qapi/qapi-types-acpi.h"; sourceTree = SOURCE_ROOT; };
-		2CE8EAFC2572E14C000E2EBB /* qapi-types-block-export.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-types-block-export.c"; path = "$(SYSROOT_DIR)/qapi/qapi-types-block-export.c"; sourceTree = SOURCE_ROOT; };
-		2CE8EAFD2572E14C000E2EBB /* qapi-types-block-export.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-types-block-export.h"; path = "$(SYSROOT_DIR)/qapi/qapi-types-block-export.h"; sourceTree = SOURCE_ROOT; };
-		2CE8EB022572E166000E2EBB /* qapi-visit-acpi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-acpi.h"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-acpi.h"; sourceTree = SOURCE_ROOT; };
-		2CE8EB032572E166000E2EBB /* qapi-visit-acpi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-visit-acpi.c"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-acpi.c"; sourceTree = SOURCE_ROOT; };
-		2CE8EB072572E173000E2EBB /* qapi-visit-block-export.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-block-export.h"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-block-export.h"; sourceTree = SOURCE_ROOT; };
-		2CE8EB082572E173000E2EBB /* qapi-visit-block-export.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-visit-block-export.c"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-block-export.c"; sourceTree = SOURCE_ROOT; };
 		4B224B9C279D4D8100B63CFF /* InListButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InListButtonStyle.swift; sourceTree = "<group>"; };
 		521F3EFA2414F73800130500 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		5286EC8E2437488E007E6CBC /* VMDisplayMetalViewController+Gamepad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "VMDisplayMetalViewController+Gamepad.h"; sourceTree = "<group>"; };
@@ -1304,7 +1290,6 @@
 		841E58D02893AF5400137A20 /* UTMApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMApp.swift; sourceTree = "<group>"; };
 		841E997428AA1191003C6CB6 /* UTMRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMRegistry.swift; sourceTree = "<group>"; };
 		841E997828AA119B003C6CB6 /* UTMRegistryEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMRegistryEntry.swift; sourceTree = "<group>"; };
-		841E999628AC80CA003C6CB6 /* UTMQemuVirtualMachine-Protected.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMQemuVirtualMachine-Protected.h"; sourceTree = "<group>"; };
 		841E999728AC817D003C6CB6 /* UTMQemuVirtualMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMQemuVirtualMachine.swift; sourceTree = "<group>"; };
 		84258C41288F806400C66366 /* VMToolbarUSBMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMToolbarUSBMenuView.swift; sourceTree = "<group>"; };
 		842B9F8C28CC58B700031EE7 /* UTMPatches.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMPatches.swift; sourceTree = "<group>"; };
@@ -1332,10 +1317,6 @@
 		845F1708289CA15C00944904 /* VMDisplayAppleTerminalWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayAppleTerminalWindowController.swift; sourceTree = "<group>"; };
 		845F170A289CB07200944904 /* VMDisplayAppleDisplayWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayAppleDisplayWindowController.swift; sourceTree = "<group>"; };
 		845F170C289CB3DE00944904 /* VMDisplayTerminal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayTerminal.swift; sourceTree = "<group>"; };
-		8469CAC8277D301300BA5601 /* qapi-types-compat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-types-compat.h"; path = "$(SYSROOT_DIR)/qapi/qapi-types-compat.h"; sourceTree = SOURCE_ROOT; };
-		8469CAC9277D301300BA5601 /* qapi-types-compat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-types-compat.c"; path = "$(SYSROOT_DIR)/qapi/qapi-types-compat.c"; sourceTree = SOURCE_ROOT; };
-		8469CACD277D345700BA5601 /* qapi-visit-compat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-visit-compat.c"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-compat.c"; sourceTree = SOURCE_ROOT; };
-		8469CACE277D345700BA5601 /* qapi-visit-compat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-compat.h"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-compat.h"; sourceTree = SOURCE_ROOT; };
 		8471770527CC974F00D3A50B /* DefaultTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultTextField.swift; sourceTree = "<group>"; };
 		8471772727CD3CAB00D3A50B /* DetailedSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailedSection.swift; sourceTree = "<group>"; };
 		84818C0B2898A07A009EDB67 /* AVFAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFAudio.framework; path = System/Library/Frameworks/AVFAudio.framework; sourceTree = SDKROOT; };
@@ -1381,7 +1362,6 @@
 		84A381A9268CB30C0048EE4D /* VMDrivesSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDrivesSettingsView.swift; sourceTree = "<group>"; };
 		84B36D2427B704C200C22685 /* UTMDownloadVMTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMDownloadVMTask.swift; sourceTree = "<group>"; };
 		84B36D2827B790BE00C22685 /* DestructiveButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DestructiveButton.swift; sourceTree = "<group>"; };
-		84BB99382899AB1800DF28B2 /* UTMLoggingDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMLoggingDelegate.h; sourceTree = "<group>"; };
 		84BB99392899E8D500DF28B2 /* VMHeadlessSessionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMHeadlessSessionState.swift; sourceTree = "<group>"; };
 		84C4D9012880CA8A00EC3B2B /* VMSettingsAddDeviceMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMSettingsAddDeviceMenuView.swift; sourceTree = "<group>"; };
 		84C505AB28C588EC007CE8FF /* SizeTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SizeTextField.swift; sourceTree = "<group>"; };
@@ -1408,8 +1388,6 @@
 		84F746B8276FF40900A20C87 /* VMDisplayAppleWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayAppleWindowController.swift; sourceTree = "<group>"; };
 		84F746BA276FF70700A20C87 /* VMDisplayQemuDisplayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayQemuDisplayController.swift; sourceTree = "<group>"; };
 		84F909FE289488F90008DBE2 /* MenuLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuLabel.swift; sourceTree = "<group>"; };
-		84FCABB8268CE05E0036196C /* UTMQemuVirtualMachine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMQemuVirtualMachine.h; sourceTree = "<group>"; };
-		84FCABB9268CE05E0036196C /* UTMQemuVirtualMachine.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMQemuVirtualMachine.m; sourceTree = "<group>"; };
 		84FCABBD268CE4080036196C /* UTMVirtualMachine-Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMVirtualMachine-Private.h"; sourceTree = "<group>"; };
 		85EC516327CC8C98004A51DE /* VMConfigAdvancedNetworkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigAdvancedNetworkView.swift; sourceTree = "<group>"; };
 		9786BB59294056960032B858 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -1445,251 +1423,6 @@
 		CE19392526DCB093005CEC17 /* RAMSlider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RAMSlider.swift; sourceTree = "<group>"; };
 		CE20FAE62448D2BE0059AE11 /* VMScroll.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMScroll.h; sourceTree = "<group>"; };
 		CE20FAE72448D2BE0059AE11 /* VMScroll.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMScroll.m; sourceTree = "<group>"; };
-		CE23C07B23FCEBFF001177D6 /* qapi-visit-error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-error.h"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-error.h"; sourceTree = SOURCE_ROOT; };
-		CE23C07C23FCEBFF001177D6 /* qapi-events-machine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-events-machine.h"; path = "$(SYSROOT_DIR)/qapi/qapi-events-machine.h"; sourceTree = SOURCE_ROOT; };
-		CE23C07D23FCEBFF001177D6 /* qapi-commands-block-core.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-commands-block-core.h"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-block-core.h"; sourceTree = SOURCE_ROOT; };
-		CE23C07E23FCEBFF001177D6 /* qapi-commands-run-state.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-commands-run-state.c"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-run-state.c"; sourceTree = SOURCE_ROOT; };
-		CE23C07F23FCEBFF001177D6 /* qapi-visit-tpm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-visit-tpm.c"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-tpm.c"; sourceTree = SOURCE_ROOT; };
-		CE23C08023FCEBFF001177D6 /* qapi-events-block.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-events-block.h"; path = "$(SYSROOT_DIR)/qapi/qapi-events-block.h"; sourceTree = SOURCE_ROOT; };
-		CE23C08123FCEBFF001177D6 /* qapi-commands-rocker.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-commands-rocker.c"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-rocker.c"; sourceTree = SOURCE_ROOT; };
-		CE23C08223FCEBFF001177D6 /* qapi-commands-ui.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-commands-ui.c"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-ui.c"; sourceTree = SOURCE_ROOT; };
-		CE23C08323FCEBFF001177D6 /* qapi-commands-migration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-commands-migration.h"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-migration.h"; sourceTree = SOURCE_ROOT; };
-		CE23C08423FCEBFF001177D6 /* qapi-events.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-events.h"; path = "$(SYSROOT_DIR)/qapi/qapi-events.h"; sourceTree = SOURCE_ROOT; };
-		CE23C08523FCEBFF001177D6 /* qapi-types-run-state.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-types-run-state.c"; path = "$(SYSROOT_DIR)/qapi/qapi-types-run-state.c"; sourceTree = SOURCE_ROOT; };
-		CE23C08623FCEBFF001177D6 /* qapi-commands-char.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-commands-char.c"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-char.c"; sourceTree = SOURCE_ROOT; };
-		CE23C08723FCEBFF001177D6 /* qapi-types-block.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-types-block.c"; path = "$(SYSROOT_DIR)/qapi/qapi-types-block.c"; sourceTree = SOURCE_ROOT; };
-		CE23C08823FCEBFF001177D6 /* qapi-visit-qdev.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-qdev.h"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-qdev.h"; sourceTree = SOURCE_ROOT; };
-		CE23C08923FCEBFF001177D6 /* qapi-events-trace.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-events-trace.c"; path = "$(SYSROOT_DIR)/qapi/qapi-events-trace.c"; sourceTree = SOURCE_ROOT; };
-		CE23C08A23FCEC00001177D6 /* qapi-visit-net.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-visit-net.c"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-net.c"; sourceTree = SOURCE_ROOT; };
-		CE23C08B23FCEC00001177D6 /* qapi-events-rdma.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-events-rdma.h"; path = "$(SYSROOT_DIR)/qapi/qapi-events-rdma.h"; sourceTree = SOURCE_ROOT; };
-		CE23C08C23FCEC00001177D6 /* qapi-events-rocker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-events-rocker.h"; path = "$(SYSROOT_DIR)/qapi/qapi-events-rocker.h"; sourceTree = SOURCE_ROOT; };
-		CE23C08D23FCEC00001177D6 /* qapi-events-error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-events-error.h"; path = "$(SYSROOT_DIR)/qapi/qapi-events-error.h"; sourceTree = SOURCE_ROOT; };
-		CE23C08E23FCEC00001177D6 /* qapi-commands-tpm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-commands-tpm.h"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-tpm.h"; sourceTree = SOURCE_ROOT; };
-		CE23C08F23FCEC00001177D6 /* qapi-commands-net.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-commands-net.c"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-net.c"; sourceTree = SOURCE_ROOT; };
-		CE23C09023FCEC00001177D6 /* qapi-visit-trace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-trace.h"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-trace.h"; sourceTree = SOURCE_ROOT; };
-		CE23C09123FCEC00001177D6 /* qapi-events-net.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-events-net.h"; path = "$(SYSROOT_DIR)/qapi/qapi-events-net.h"; sourceTree = SOURCE_ROOT; };
-		CE23C09223FCEC00001177D6 /* qapi-emit-events.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-emit-events.c"; path = "$(SYSROOT_DIR)/qapi/qapi-emit-events.c"; sourceTree = SOURCE_ROOT; };
-		CE23C09323FCEC00001177D6 /* qapi-types-qdev.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-types-qdev.h"; path = "$(SYSROOT_DIR)/qapi/qapi-types-qdev.h"; sourceTree = SOURCE_ROOT; };
-		CE23C09423FCEC00001177D6 /* qapi-commands-misc-target.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-commands-misc-target.h"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-misc-target.h"; sourceTree = SOURCE_ROOT; };
-		CE23C09523FCEC00001177D6 /* qapi-visit-job.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-visit-job.c"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-job.c"; sourceTree = SOURCE_ROOT; };
-		CE23C09623FCEC00001177D6 /* qapi-builtin-visit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-builtin-visit.c"; path = "$(SYSROOT_DIR)/qapi/qapi-builtin-visit.c"; sourceTree = SOURCE_ROOT; };
-		CE23C09723FCEC00001177D6 /* qapi-visit-sockets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-sockets.h"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-sockets.h"; sourceTree = SOURCE_ROOT; };
-		CE23C09823FCEC00001177D6 /* qapi-commands-common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-commands-common.h"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-common.h"; sourceTree = SOURCE_ROOT; };
-		CE23C09923FCEC00001177D6 /* qapi-types-block-core.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-types-block-core.c"; path = "$(SYSROOT_DIR)/qapi/qapi-types-block-core.c"; sourceTree = SOURCE_ROOT; };
-		CE23C09A23FCEC00001177D6 /* qapi-commands-run-state.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-commands-run-state.h"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-run-state.h"; sourceTree = SOURCE_ROOT; };
-		CE23C09B23FCEC00001177D6 /* qapi-commands-migration.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-commands-migration.c"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-migration.c"; sourceTree = SOURCE_ROOT; };
-		CE23C09C23FCEC00001177D6 /* qapi-events-migration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-events-migration.h"; path = "$(SYSROOT_DIR)/qapi/qapi-events-migration.h"; sourceTree = SOURCE_ROOT; };
-		CE23C09D23FCEC00001177D6 /* qapi-commands-audio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-commands-audio.c"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-audio.c"; sourceTree = SOURCE_ROOT; };
-		CE23C09E23FCEC00001177D6 /* qapi-events-qdev.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-events-qdev.c"; path = "$(SYSROOT_DIR)/qapi/qapi-events-qdev.c"; sourceTree = SOURCE_ROOT; };
-		CE23C09F23FCEC01001177D6 /* qapi-visit-migration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-migration.h"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-migration.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0A023FCEC01001177D6 /* qapi-visit-rocker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-rocker.h"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-rocker.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0A123FCEC01001177D6 /* qapi-events-run-state.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-events-run-state.h"; path = "$(SYSROOT_DIR)/qapi/qapi-events-run-state.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0A223FCEC01001177D6 /* qapi-commands-dump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-commands-dump.h"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-dump.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0A323FCEC01001177D6 /* qapi-visit-ui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-ui.h"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-ui.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0A423FCEC01001177D6 /* qapi-commands-authz.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-commands-authz.c"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-authz.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0A523FCEC01001177D6 /* qapi-events-ui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-events-ui.h"; path = "$(SYSROOT_DIR)/qapi/qapi-events-ui.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0A623FCEC01001177D6 /* qapi-visit-transaction.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-visit-transaction.c"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-transaction.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0A723FCEC01001177D6 /* qapi-visit-block.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-visit-block.c"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-block.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0A823FCEC01001177D6 /* qapi-events-qom.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-events-qom.c"; path = "$(SYSROOT_DIR)/qapi/qapi-events-qom.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0A923FCEC01001177D6 /* qapi-types-misc-target.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-types-misc-target.h"; path = "$(SYSROOT_DIR)/qapi/qapi-types-misc-target.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0AA23FCEC01001177D6 /* qapi-commands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-commands.h"; path = "$(SYSROOT_DIR)/qapi/qapi-commands.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0AB23FCEC01001177D6 /* qapi-types-audio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-types-audio.h"; path = "$(SYSROOT_DIR)/qapi/qapi-types-audio.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0AC23FCEC01001177D6 /* qapi-events-transaction.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-events-transaction.c"; path = "$(SYSROOT_DIR)/qapi/qapi-events-transaction.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0AD23FCEC01001177D6 /* qapi-events-introspect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-events-introspect.h"; path = "$(SYSROOT_DIR)/qapi/qapi-events-introspect.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0AE23FCEC01001177D6 /* qapi-commands-crypto.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-commands-crypto.c"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-crypto.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0AF23FCEC01001177D6 /* qapi-events-sockets.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-events-sockets.c"; path = "$(SYSROOT_DIR)/qapi/qapi-events-sockets.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0B023FCEC01001177D6 /* qapi-visit-rdma.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-rdma.h"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-rdma.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0B123FCEC01001177D6 /* qapi-visit-block-core.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-block-core.h"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-block-core.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0B223FCEC01001177D6 /* qapi-events-tpm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-events-tpm.h"; path = "$(SYSROOT_DIR)/qapi/qapi-events-tpm.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0B323FCEC01001177D6 /* qapi-visit-dump.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-visit-dump.c"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-dump.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0B423FCEC01001177D6 /* qapi-events-introspect.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-events-introspect.c"; path = "$(SYSROOT_DIR)/qapi/qapi-events-introspect.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0B523FCEC02001177D6 /* qapi-types-net.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-types-net.c"; path = "$(SYSROOT_DIR)/qapi/qapi-types-net.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0B623FCEC02001177D6 /* qapi-types.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-types.c"; path = "$(SYSROOT_DIR)/qapi/qapi-types.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0B723FCEC02001177D6 /* qapi-visit-ui.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-visit-ui.c"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-ui.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0B823FCEC02001177D6 /* qapi-visit-authz.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-visit-authz.c"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-authz.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0B923FCEC02001177D6 /* qapi-events-machine.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-events-machine.c"; path = "$(SYSROOT_DIR)/qapi/qapi-events-machine.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0BA23FCEC02001177D6 /* qapi-commands-audio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-commands-audio.h"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-audio.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0BB23FCEC02001177D6 /* qapi-commands-crypto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-commands-crypto.h"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-crypto.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0BC23FCEC02001177D6 /* qapi-events-trace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-events-trace.h"; path = "$(SYSROOT_DIR)/qapi/qapi-events-trace.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0BD23FCEC02001177D6 /* qapi-commands-sockets.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-commands-sockets.c"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-sockets.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0BE23FCEC02001177D6 /* qapi-visit-audio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-visit-audio.c"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-audio.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0BF23FCEC02001177D6 /* qapi-commands-tpm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-commands-tpm.c"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-tpm.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0C023FCEC02001177D6 /* qapi-commands-block.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-commands-block.h"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-block.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0C123FCEC02001177D6 /* qapi-events-crypto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-events-crypto.h"; path = "$(SYSROOT_DIR)/qapi/qapi-events-crypto.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0C223FCEC02001177D6 /* qapi-visit-crypto.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-visit-crypto.c"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-crypto.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0C323FCEC02001177D6 /* qapi-visit-qom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-qom.h"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-qom.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0C423FCEC02001177D6 /* qapi-types-run-state.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-types-run-state.h"; path = "$(SYSROOT_DIR)/qapi/qapi-types-run-state.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0C523FCEC02001177D6 /* qapi-events-char.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-events-char.h"; path = "$(SYSROOT_DIR)/qapi/qapi-events-char.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0C623FCEC02001177D6 /* qapi-types-common.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-types-common.c"; path = "$(SYSROOT_DIR)/qapi/qapi-types-common.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0C723FCEC02001177D6 /* qapi-events-misc-target.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-events-misc-target.c"; path = "$(SYSROOT_DIR)/qapi/qapi-events-misc-target.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0C823FCEC02001177D6 /* qapi-builtin-types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-builtin-types.h"; path = "$(SYSROOT_DIR)/qapi/qapi-builtin-types.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0C923FCEC02001177D6 /* qapi-types-machine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-types-machine.h"; path = "$(SYSROOT_DIR)/qapi/qapi-types-machine.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0CA23FCEC02001177D6 /* qapi-commands-misc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-commands-misc.h"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-misc.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0CB23FCEC02001177D6 /* qapi-types-migration.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-types-migration.c"; path = "$(SYSROOT_DIR)/qapi/qapi-types-migration.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0CC23FCEC03001177D6 /* qapi-events-authz.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-events-authz.c"; path = "$(SYSROOT_DIR)/qapi/qapi-events-authz.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0CD23FCEC03001177D6 /* qapi-visit-crypto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-crypto.h"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-crypto.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0CE23FCEC03001177D6 /* qapi-visit-migration.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-visit-migration.c"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-migration.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0CF23FCEC03001177D6 /* qapi-visit-audio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-audio.h"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-audio.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0D023FCEC03001177D6 /* qapi-commands-trace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-commands-trace.h"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-trace.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0D123FCEC03001177D6 /* qapi-commands-transaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-commands-transaction.h"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-transaction.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0D223FCEC03001177D6 /* qapi-commands.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-commands.c"; path = "$(SYSROOT_DIR)/qapi/qapi-commands.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0D323FCEC03001177D6 /* qapi-events-dump.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-events-dump.c"; path = "$(SYSROOT_DIR)/qapi/qapi-events-dump.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0D423FCEC03001177D6 /* qapi-events-authz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-events-authz.h"; path = "$(SYSROOT_DIR)/qapi/qapi-events-authz.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0D523FCEC03001177D6 /* qapi-builtin-types.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-builtin-types.c"; path = "$(SYSROOT_DIR)/qapi/qapi-builtin-types.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0D623FCEC03001177D6 /* qapi-events-sockets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-events-sockets.h"; path = "$(SYSROOT_DIR)/qapi/qapi-events-sockets.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0D723FCEC03001177D6 /* qapi-events-common.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-events-common.c"; path = "$(SYSROOT_DIR)/qapi/qapi-events-common.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0D823FCEC03001177D6 /* qapi-commands-sockets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-commands-sockets.h"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-sockets.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0D923FCEC03001177D6 /* qapi-events-block-core.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-events-block-core.h"; path = "$(SYSROOT_DIR)/qapi/qapi-events-block-core.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0DA23FCEC03001177D6 /* qapi-types-authz.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-types-authz.c"; path = "$(SYSROOT_DIR)/qapi/qapi-types-authz.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0DB23FCEC03001177D6 /* qapi-commands-machine-target.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-commands-machine-target.c"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-machine-target.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0DC23FCEC03001177D6 /* qapi-types-tpm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-types-tpm.c"; path = "$(SYSROOT_DIR)/qapi/qapi-types-tpm.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0DD23FCEC03001177D6 /* qapi-commands-dump.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-commands-dump.c"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-dump.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0DE23FCEC04001177D6 /* qapi-types-block-core.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-types-block-core.h"; path = "$(SYSROOT_DIR)/qapi/qapi-types-block-core.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0DF23FCEC04001177D6 /* qapi-commands-block-core.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-commands-block-core.c"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-block-core.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0E023FCEC04001177D6 /* qapi-visit-block-core.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-visit-block-core.c"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-block-core.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0E123FCEC04001177D6 /* qapi-commands-rdma.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-commands-rdma.h"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-rdma.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0E223FCEC04001177D6 /* qapi-visit-introspect.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-visit-introspect.c"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-introspect.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0E323FCEC04001177D6 /* qapi-types-crypto.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-types-crypto.c"; path = "$(SYSROOT_DIR)/qapi/qapi-types-crypto.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0E423FCEC04001177D6 /* qapi-visit-qom.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-visit-qom.c"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-qom.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0E523FCEC04001177D6 /* qapi-visit-trace.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-visit-trace.c"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-trace.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0E623FCEC04001177D6 /* qapi-commands-char.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-commands-char.h"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-char.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0E723FCEC04001177D6 /* qapi-commands-block.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-commands-block.c"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-block.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0E823FCEC04001177D6 /* qapi-visit-machine-target.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-machine-target.h"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-machine-target.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0E923FCEC04001177D6 /* qapi-visit-char.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-visit-char.c"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-char.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0EA23FCEC04001177D6 /* qapi-visit-introspect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-introspect.h"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-introspect.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0EB23FCEC04001177D6 /* qapi-visit-job.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-job.h"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-job.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0EC23FCEC04001177D6 /* qapi-visit-machine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-machine.h"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-machine.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0ED23FCEC04001177D6 /* qapi-visit-misc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-misc.h"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-misc.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0EE23FCEC04001177D6 /* qapi-events-migration.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-events-migration.c"; path = "$(SYSROOT_DIR)/qapi/qapi-events-migration.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0EF23FCEC04001177D6 /* qapi-events-block-core.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-events-block-core.c"; path = "$(SYSROOT_DIR)/qapi/qapi-events-block-core.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0F023FCEC04001177D6 /* qapi-events-error.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-events-error.c"; path = "$(SYSROOT_DIR)/qapi/qapi-events-error.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0F123FCEC04001177D6 /* qapi-visit-authz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-authz.h"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-authz.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0F223FCEC04001177D6 /* qapi-types-net.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-types-net.h"; path = "$(SYSROOT_DIR)/qapi/qapi-types-net.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0F323FCEC05001177D6 /* qapi-commands-error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-commands-error.h"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-error.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0F423FCEC05001177D6 /* qapi-types-char.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-types-char.h"; path = "$(SYSROOT_DIR)/qapi/qapi-types-char.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0F523FCEC05001177D6 /* qapi-visit-run-state.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-visit-run-state.c"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-run-state.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0F623FCEC05001177D6 /* qapi-types-common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-types-common.h"; path = "$(SYSROOT_DIR)/qapi/qapi-types-common.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0F723FCEC05001177D6 /* qapi-visit-rocker.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-visit-rocker.c"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-rocker.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0F823FCEC05001177D6 /* qapi-events-common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-events-common.h"; path = "$(SYSROOT_DIR)/qapi/qapi-events-common.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0F923FCEC05001177D6 /* qapi-types-introspect.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-types-introspect.c"; path = "$(SYSROOT_DIR)/qapi/qapi-types-introspect.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0FA23FCEC05001177D6 /* qapi-builtin-visit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-builtin-visit.h"; path = "$(SYSROOT_DIR)/qapi/qapi-builtin-visit.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0FB23FCEC05001177D6 /* qapi-commands-rdma.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-commands-rdma.c"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-rdma.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0FC23FCEC05001177D6 /* qapi-commands-error.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-commands-error.c"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-error.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0FD23FCEC05001177D6 /* qapi-events-run-state.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-events-run-state.c"; path = "$(SYSROOT_DIR)/qapi/qapi-events-run-state.c"; sourceTree = SOURCE_ROOT; };
-		CE23C0FE23FCEC05001177D6 /* qapi-types-dump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-types-dump.h"; path = "$(SYSROOT_DIR)/qapi/qapi-types-dump.h"; sourceTree = SOURCE_ROOT; };
-		CE23C0FF23FCEC05001177D6 /* qapi-commands-machine-target.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-commands-machine-target.h"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-machine-target.h"; sourceTree = SOURCE_ROOT; };
-		CE23C10023FCEC05001177D6 /* qapi-types-ui.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-types-ui.c"; path = "$(SYSROOT_DIR)/qapi/qapi-types-ui.c"; sourceTree = SOURCE_ROOT; };
-		CE23C10123FCEC05001177D6 /* qapi-events-net.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-events-net.c"; path = "$(SYSROOT_DIR)/qapi/qapi-events-net.c"; sourceTree = SOURCE_ROOT; };
-		CE23C10223FCEC05001177D6 /* qapi-visit-common.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-visit-common.c"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-common.c"; sourceTree = SOURCE_ROOT; };
-		CE23C10323FCEC05001177D6 /* qapi-commands-ui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-commands-ui.h"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-ui.h"; sourceTree = SOURCE_ROOT; };
-		CE23C10423FCEC05001177D6 /* qapi-visit-misc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-visit-misc.c"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-misc.c"; sourceTree = SOURCE_ROOT; };
-		CE23C10523FCEC05001177D6 /* qapi-commands-introspect.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-commands-introspect.c"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-introspect.c"; sourceTree = SOURCE_ROOT; };
-		CE23C10623FCEC05001177D6 /* qapi-visit-sockets.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-visit-sockets.c"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-sockets.c"; sourceTree = SOURCE_ROOT; };
-		CE23C10723FCEC06001177D6 /* qapi-visit-net.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-net.h"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-net.h"; sourceTree = SOURCE_ROOT; };
-		CE23C10823FCEC06001177D6 /* qapi-commands-common.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-commands-common.c"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-common.c"; sourceTree = SOURCE_ROOT; };
-		CE23C10923FCEC06001177D6 /* qapi-visit-qdev.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-visit-qdev.c"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-qdev.c"; sourceTree = SOURCE_ROOT; };
-		CE23C10A23FCEC06001177D6 /* qapi-types-qom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-types-qom.h"; path = "$(SYSROOT_DIR)/qapi/qapi-types-qom.h"; sourceTree = SOURCE_ROOT; };
-		CE23C10B23FCEC06001177D6 /* qapi-commands-transaction.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-commands-transaction.c"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-transaction.c"; sourceTree = SOURCE_ROOT; };
-		CE23C10C23FCEC06001177D6 /* qapi-visit-transaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-transaction.h"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-transaction.h"; sourceTree = SOURCE_ROOT; };
-		CE23C10D23FCEC06001177D6 /* qapi-visit-machine.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-visit-machine.c"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-machine.c"; sourceTree = SOURCE_ROOT; };
-		CE23C10E23FCEC06001177D6 /* qapi-types-sockets.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-types-sockets.c"; path = "$(SYSROOT_DIR)/qapi/qapi-types-sockets.c"; sourceTree = SOURCE_ROOT; };
-		CE23C10F23FCEC06001177D6 /* qapi-commands-rocker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-commands-rocker.h"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-rocker.h"; sourceTree = SOURCE_ROOT; };
-		CE23C11023FCEC06001177D6 /* qapi-commands-trace.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-commands-trace.c"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-trace.c"; sourceTree = SOURCE_ROOT; };
-		CE23C11123FCEC06001177D6 /* qapi-visit-machine-target.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-visit-machine-target.c"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-machine-target.c"; sourceTree = SOURCE_ROOT; };
-		CE23C11223FCEC06001177D6 /* qapi-types-error.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-types-error.c"; path = "$(SYSROOT_DIR)/qapi/qapi-types-error.c"; sourceTree = SOURCE_ROOT; };
-		CE23C11323FCEC06001177D6 /* qapi-events-misc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-events-misc.h"; path = "$(SYSROOT_DIR)/qapi/qapi-events-misc.h"; sourceTree = SOURCE_ROOT; };
-		CE23C11423FCEC06001177D6 /* qapi-types-audio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-types-audio.c"; path = "$(SYSROOT_DIR)/qapi/qapi-types-audio.c"; sourceTree = SOURCE_ROOT; };
-		CE23C11523FCEC06001177D6 /* qapi-types-trace.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-types-trace.c"; path = "$(SYSROOT_DIR)/qapi/qapi-types-trace.c"; sourceTree = SOURCE_ROOT; };
-		CE23C11623FCEC06001177D6 /* qapi-events-block.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-events-block.c"; path = "$(SYSROOT_DIR)/qapi/qapi-events-block.c"; sourceTree = SOURCE_ROOT; };
-		CE23C11723FCEC06001177D6 /* qapi-types-introspect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-types-introspect.h"; path = "$(SYSROOT_DIR)/qapi/qapi-types-introspect.h"; sourceTree = SOURCE_ROOT; };
-		CE23C11823FCEC06001177D6 /* qapi-types-misc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-types-misc.h"; path = "$(SYSROOT_DIR)/qapi/qapi-types-misc.h"; sourceTree = SOURCE_ROOT; };
-		CE23C11923FCEC06001177D6 /* qapi-visit-tpm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-tpm.h"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-tpm.h"; sourceTree = SOURCE_ROOT; };
-		CE23C11A23FCEC07001177D6 /* qapi-types-ui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-types-ui.h"; path = "$(SYSROOT_DIR)/qapi/qapi-types-ui.h"; sourceTree = SOURCE_ROOT; };
-		CE23C11B23FCEC07001177D6 /* qapi-events-misc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-events-misc.c"; path = "$(SYSROOT_DIR)/qapi/qapi-events-misc.c"; sourceTree = SOURCE_ROOT; };
-		CE23C11C23FCEC07001177D6 /* qapi-events-dump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-events-dump.h"; path = "$(SYSROOT_DIR)/qapi/qapi-events-dump.h"; sourceTree = SOURCE_ROOT; };
-		CE23C11D23FCEC07001177D6 /* qapi-events-crypto.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-events-crypto.c"; path = "$(SYSROOT_DIR)/qapi/qapi-events-crypto.c"; sourceTree = SOURCE_ROOT; };
-		CE23C11E23FCEC07001177D6 /* qapi-types-machine-target.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-types-machine-target.h"; path = "$(SYSROOT_DIR)/qapi/qapi-types-machine-target.h"; sourceTree = SOURCE_ROOT; };
-		CE23C11F23FCEC07001177D6 /* qapi-commands-qdev.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-commands-qdev.c"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-qdev.c"; sourceTree = SOURCE_ROOT; };
-		CE23C12023FCEC07001177D6 /* qapi-types-char.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-types-char.c"; path = "$(SYSROOT_DIR)/qapi/qapi-types-char.c"; sourceTree = SOURCE_ROOT; };
-		CE23C12123FCEC07001177D6 /* qapi-types-dump.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-types-dump.c"; path = "$(SYSROOT_DIR)/qapi/qapi-types-dump.c"; sourceTree = SOURCE_ROOT; };
-		CE23C12223FCEC07001177D6 /* qapi-visit-char.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-char.h"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-char.h"; sourceTree = SOURCE_ROOT; };
-		CE23C12323FCEC07001177D6 /* qapi-commands-job.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-commands-job.h"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-job.h"; sourceTree = SOURCE_ROOT; };
-		CE23C12423FCEC07001177D6 /* qapi-types-job.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-types-job.h"; path = "$(SYSROOT_DIR)/qapi/qapi-types-job.h"; sourceTree = SOURCE_ROOT; };
-		CE23C12523FCEC07001177D6 /* qapi-events-job.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-events-job.h"; path = "$(SYSROOT_DIR)/qapi/qapi-events-job.h"; sourceTree = SOURCE_ROOT; };
-		CE23C12623FCEC07001177D6 /* qapi-events-ui.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-events-ui.c"; path = "$(SYSROOT_DIR)/qapi/qapi-events-ui.c"; sourceTree = SOURCE_ROOT; };
-		CE23C12723FCEC07001177D6 /* qapi-events-char.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-events-char.c"; path = "$(SYSROOT_DIR)/qapi/qapi-events-char.c"; sourceTree = SOURCE_ROOT; };
-		CE23C12823FCEC07001177D6 /* qapi-types-misc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-types-misc.c"; path = "$(SYSROOT_DIR)/qapi/qapi-types-misc.c"; sourceTree = SOURCE_ROOT; };
-		CE23C12923FCEC07001177D6 /* qapi-events-rdma.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-events-rdma.c"; path = "$(SYSROOT_DIR)/qapi/qapi-events-rdma.c"; sourceTree = SOURCE_ROOT; };
-		CE23C12A23FCEC07001177D6 /* qapi-commands-qdev.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-commands-qdev.h"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-qdev.h"; sourceTree = SOURCE_ROOT; };
-		CE23C12B23FCEC07001177D6 /* qapi-types-crypto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-types-crypto.h"; path = "$(SYSROOT_DIR)/qapi/qapi-types-crypto.h"; sourceTree = SOURCE_ROOT; };
-		CE23C12C23FCEC07001177D6 /* qapi-visit-dump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-dump.h"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-dump.h"; sourceTree = SOURCE_ROOT; };
-		CE23C12D23FCEC07001177D6 /* qapi-events-audio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-events-audio.h"; path = "$(SYSROOT_DIR)/qapi/qapi-events-audio.h"; sourceTree = SOURCE_ROOT; };
-		CE23C12E23FCEC08001177D6 /* qapi-types-block.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-types-block.h"; path = "$(SYSROOT_DIR)/qapi/qapi-types-block.h"; sourceTree = SOURCE_ROOT; };
-		CE23C12F23FCEC08001177D6 /* qapi-types-rocker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-types-rocker.h"; path = "$(SYSROOT_DIR)/qapi/qapi-types-rocker.h"; sourceTree = SOURCE_ROOT; };
-		CE23C13023FCEC08001177D6 /* qapi-types-rdma.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-types-rdma.c"; path = "$(SYSROOT_DIR)/qapi/qapi-types-rdma.c"; sourceTree = SOURCE_ROOT; };
-		CE23C13123FCEC08001177D6 /* qapi-types-job.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-types-job.c"; path = "$(SYSROOT_DIR)/qapi/qapi-types-job.c"; sourceTree = SOURCE_ROOT; };
-		CE23C13223FCEC08001177D6 /* qapi-commands-machine.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-commands-machine.c"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-machine.c"; sourceTree = SOURCE_ROOT; };
-		CE23C13323FCEC08001177D6 /* qapi-commands-qom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-commands-qom.h"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-qom.h"; sourceTree = SOURCE_ROOT; };
-		CE23C13423FCEC08001177D6 /* qapi-types-transaction.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-types-transaction.c"; path = "$(SYSROOT_DIR)/qapi/qapi-types-transaction.c"; sourceTree = SOURCE_ROOT; };
-		CE23C13523FCEC08001177D6 /* qapi-visit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-visit.c"; path = "$(SYSROOT_DIR)/qapi/qapi-visit.c"; sourceTree = SOURCE_ROOT; };
-		CE23C13623FCEC08001177D6 /* qapi-visit-rdma.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-visit-rdma.c"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-rdma.c"; sourceTree = SOURCE_ROOT; };
-		CE23C13723FCEC08001177D6 /* qapi-visit-block.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-block.h"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-block.h"; sourceTree = SOURCE_ROOT; };
-		CE23C13823FCEC08001177D6 /* qapi-types-qom.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-types-qom.c"; path = "$(SYSROOT_DIR)/qapi/qapi-types-qom.c"; sourceTree = SOURCE_ROOT; };
-		CE23C13923FCEC08001177D6 /* qapi-events-tpm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-events-tpm.c"; path = "$(SYSROOT_DIR)/qapi/qapi-events-tpm.c"; sourceTree = SOURCE_ROOT; };
-		CE23C13A23FCEC08001177D6 /* qapi-types-sockets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-types-sockets.h"; path = "$(SYSROOT_DIR)/qapi/qapi-types-sockets.h"; sourceTree = SOURCE_ROOT; };
-		CE23C13B23FCEC08001177D6 /* qapi-events-machine-target.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-events-machine-target.h"; path = "$(SYSROOT_DIR)/qapi/qapi-events-machine-target.h"; sourceTree = SOURCE_ROOT; };
-		CE23C13C23FCEC08001177D6 /* qapi-commands-misc-target.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-commands-misc-target.c"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-misc-target.c"; sourceTree = SOURCE_ROOT; };
-		CE23C13D23FCEC08001177D6 /* qapi-events-machine-target.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-events-machine-target.c"; path = "$(SYSROOT_DIR)/qapi/qapi-events-machine-target.c"; sourceTree = SOURCE_ROOT; };
-		CE23C13E23FCEC08001177D6 /* qapi-events-audio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-events-audio.c"; path = "$(SYSROOT_DIR)/qapi/qapi-events-audio.c"; sourceTree = SOURCE_ROOT; };
-		CE23C13F23FCEC08001177D6 /* qapi-commands-introspect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-commands-introspect.h"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-introspect.h"; sourceTree = SOURCE_ROOT; };
-		CE23C14023FCEC09001177D6 /* qapi-events.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-events.c"; path = "$(SYSROOT_DIR)/qapi/qapi-events.c"; sourceTree = SOURCE_ROOT; };
-		CE23C14123FCEC09001177D6 /* qapi-events-misc-target.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-events-misc-target.h"; path = "$(SYSROOT_DIR)/qapi/qapi-events-misc-target.h"; sourceTree = SOURCE_ROOT; };
-		CE23C14223FCEC09001177D6 /* qapi-visit-misc-target.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-visit-misc-target.c"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-misc-target.c"; sourceTree = SOURCE_ROOT; };
-		CE23C14323FCEC09001177D6 /* qapi-visit-run-state.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-run-state.h"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-run-state.h"; sourceTree = SOURCE_ROOT; };
-		CE23C14423FCEC09001177D6 /* qapi-events-qom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-events-qom.h"; path = "$(SYSROOT_DIR)/qapi/qapi-events-qom.h"; sourceTree = SOURCE_ROOT; };
-		CE23C14523FCEC09001177D6 /* qapi-events-job.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-events-job.c"; path = "$(SYSROOT_DIR)/qapi/qapi-events-job.c"; sourceTree = SOURCE_ROOT; };
-		CE23C14623FCEC09001177D6 /* qapi-events-qdev.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-events-qdev.h"; path = "$(SYSROOT_DIR)/qapi/qapi-events-qdev.h"; sourceTree = SOURCE_ROOT; };
-		CE23C14723FCEC09001177D6 /* qapi-types-migration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-types-migration.h"; path = "$(SYSROOT_DIR)/qapi/qapi-types-migration.h"; sourceTree = SOURCE_ROOT; };
-		CE23C14823FCEC09001177D6 /* qapi-events-transaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-events-transaction.h"; path = "$(SYSROOT_DIR)/qapi/qapi-events-transaction.h"; sourceTree = SOURCE_ROOT; };
-		CE23C14923FCEC09001177D6 /* qapi-types-authz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-types-authz.h"; path = "$(SYSROOT_DIR)/qapi/qapi-types-authz.h"; sourceTree = SOURCE_ROOT; };
-		CE23C14A23FCEC09001177D6 /* qapi-types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-types.h"; path = "$(SYSROOT_DIR)/qapi/qapi-types.h"; sourceTree = SOURCE_ROOT; };
-		CE23C14B23FCEC09001177D6 /* qapi-visit-misc-target.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-misc-target.h"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-misc-target.h"; sourceTree = SOURCE_ROOT; };
-		CE23C14C23FCEC09001177D6 /* qapi-visit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit.h"; path = "$(SYSROOT_DIR)/qapi/qapi-visit.h"; sourceTree = SOURCE_ROOT; };
-		CE23C14D23FCEC09001177D6 /* qapi-types-rocker.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-types-rocker.c"; path = "$(SYSROOT_DIR)/qapi/qapi-types-rocker.c"; sourceTree = SOURCE_ROOT; };
-		CE23C14E23FCEC09001177D6 /* qapi-commands-net.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-commands-net.h"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-net.h"; sourceTree = SOURCE_ROOT; };
-		CE23C14F23FCEC09001177D6 /* qapi-types-rdma.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-types-rdma.h"; path = "$(SYSROOT_DIR)/qapi/qapi-types-rdma.h"; sourceTree = SOURCE_ROOT; };
-		CE23C15023FCEC09001177D6 /* qapi-visit-common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-visit-common.h"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-common.h"; sourceTree = SOURCE_ROOT; };
-		CE23C15123FCEC09001177D6 /* qapi-commands-misc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-commands-misc.c"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-misc.c"; sourceTree = SOURCE_ROOT; };
-		CE23C15223FCEC09001177D6 /* qapi-types-machine-target.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-types-machine-target.c"; path = "$(SYSROOT_DIR)/qapi/qapi-types-machine-target.c"; sourceTree = SOURCE_ROOT; };
-		CE23C15323FCEC09001177D6 /* qapi-commands-machine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-commands-machine.h"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-machine.h"; sourceTree = SOURCE_ROOT; };
-		CE23C15423FCEC0A001177D6 /* qapi-types-trace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-types-trace.h"; path = "$(SYSROOT_DIR)/qapi/qapi-types-trace.h"; sourceTree = SOURCE_ROOT; };
-		CE23C15523FCEC0A001177D6 /* qapi-commands-qom.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-commands-qom.c"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-qom.c"; sourceTree = SOURCE_ROOT; };
-		CE23C15623FCEC0A001177D6 /* qapi-emit-events.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-emit-events.h"; path = "$(SYSROOT_DIR)/qapi/qapi-emit-events.h"; sourceTree = SOURCE_ROOT; };
-		CE23C15723FCEC0A001177D6 /* qapi-commands-job.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-commands-job.c"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-job.c"; sourceTree = SOURCE_ROOT; };
-		CE23C15823FCEC0A001177D6 /* qapi-types-machine.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-types-machine.c"; path = "$(SYSROOT_DIR)/qapi/qapi-types-machine.c"; sourceTree = SOURCE_ROOT; };
-		CE23C15923FCEC0A001177D6 /* qapi-events-rocker.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-events-rocker.c"; path = "$(SYSROOT_DIR)/qapi/qapi-events-rocker.c"; sourceTree = SOURCE_ROOT; };
-		CE23C15A23FCEC0A001177D6 /* qapi-types-error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-types-error.h"; path = "$(SYSROOT_DIR)/qapi/qapi-types-error.h"; sourceTree = SOURCE_ROOT; };
-		CE23C15B23FCEC0A001177D6 /* qapi-types-qdev.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-types-qdev.c"; path = "$(SYSROOT_DIR)/qapi/qapi-types-qdev.c"; sourceTree = SOURCE_ROOT; };
-		CE23C15C23FCEC0A001177D6 /* qapi-commands-authz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-commands-authz.h"; path = "$(SYSROOT_DIR)/qapi/qapi-commands-authz.h"; sourceTree = SOURCE_ROOT; };
-		CE23C15D23FCEC0A001177D6 /* qapi-visit-error.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-visit-error.c"; path = "$(SYSROOT_DIR)/qapi/qapi-visit-error.c"; sourceTree = SOURCE_ROOT; };
-		CE23C15E23FCEC0A001177D6 /* qapi-types-tpm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-types-tpm.h"; path = "$(SYSROOT_DIR)/qapi/qapi-types-tpm.h"; sourceTree = SOURCE_ROOT; };
-		CE23C15F23FCEC0A001177D6 /* qapi-types-transaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qapi-types-transaction.h"; path = "$(SYSROOT_DIR)/qapi/qapi-types-transaction.h"; sourceTree = SOURCE_ROOT; };
-		CE23C16023FCEC0A001177D6 /* qapi-types-misc-target.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qapi-types-misc-target.c"; path = "$(SYSROOT_DIR)/qapi/qapi-types-misc-target.c"; sourceTree = SOURCE_ROOT; };
-		CE25121E29BD42FE000790AB /* qga-qapi-types.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qga-qapi-types.c"; path = "$(SYSROOT_DIR)/qga/qga-qapi-types.c"; sourceTree = SOURCE_ROOT; };
-		CE25121F29BD42FE000790AB /* qga-qapi-types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qga-qapi-types.h"; path = "$(SYSROOT_DIR)/qga/qga-qapi-types.h"; sourceTree = SOURCE_ROOT; };
-		CE25122029BD42FE000790AB /* qga-qapi-visit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qga-qapi-visit.h"; path = "$(SYSROOT_DIR)/qga/qga-qapi-visit.h"; sourceTree = SOURCE_ROOT; };
-		CE25122129BD42FE000790AB /* qga-qapi-events.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qga-qapi-events.c"; path = "$(SYSROOT_DIR)/qga/qga-qapi-events.c"; sourceTree = SOURCE_ROOT; };
-		CE25122229BD42FE000790AB /* qga-qapi-events.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qga-qapi-events.h"; path = "$(SYSROOT_DIR)/qga/qga-qapi-events.h"; sourceTree = SOURCE_ROOT; };
-		CE25122329BD42FE000790AB /* qga-qapi-emit-events.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qga-qapi-emit-events.c"; path = "$(SYSROOT_DIR)/qga/qga-qapi-emit-events.c"; sourceTree = SOURCE_ROOT; };
-		CE25122429BD42FE000790AB /* qga-qapi-visit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qga-qapi-visit.c"; path = "$(SYSROOT_DIR)/qga/qga-qapi-visit.c"; sourceTree = SOURCE_ROOT; };
-		CE25122529BD42FF000790AB /* qga-qapi-emit-events.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qga-qapi-emit-events.h"; path = "$(SYSROOT_DIR)/qga/qga-qapi-emit-events.h"; sourceTree = SOURCE_ROOT; };
-		CE25122629BD42FF000790AB /* qga-qapi-commands.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "qga-qapi-commands.c"; path = "$(SYSROOT_DIR)/qga/qga-qapi-commands.c"; sourceTree = SOURCE_ROOT; };
-		CE25122729BD42FF000790AB /* qga-qapi-commands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "qga-qapi-commands.h"; path = "$(SYSROOT_DIR)/qga/qga-qapi-commands.h"; sourceTree = SOURCE_ROOT; };
-		CE25123729BD46B4000790AB /* UTMQemuMonitor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMQemuMonitor.h; sourceTree = "<group>"; };
-		CE25123829BD46B4000790AB /* UTMQemuMonitor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMQemuMonitor.m; sourceTree = "<group>"; };
-		CE25123C29BD47D0000790AB /* UTMQemuManager-Protected.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMQemuManager-Protected.h"; sourceTree = "<group>"; };
-		CE25124129BD4F10000790AB /* UTMQemuGuestAgent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMQemuGuestAgent.h; sourceTree = "<group>"; };
-		CE25124229BD4F10000790AB /* UTMQemuGuestAgent.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMQemuGuestAgent.m; sourceTree = "<group>"; };
 		CE25124629BFDB87000790AB /* UTMScriptingGuestProcessImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMScriptingGuestProcessImpl.swift; sourceTree = "<group>"; };
 		CE25124829BFDBA6000790AB /* UTMScriptingGuestFileImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMScriptingGuestFileImpl.swift; sourceTree = "<group>"; };
 		CE25124A29BFE273000790AB /* UTMScriptable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMScriptable.swift; sourceTree = "<group>"; };
@@ -1791,21 +1524,6 @@
 		CE2D955624AD4F980059923A /* Swift-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Swift-Bridging-Header.h"; sourceTree = "<group>"; };
 		CE31C243225E553500A965DD /* UTMLegacyQemuConfiguration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMLegacyQemuConfiguration.h; sourceTree = "<group>"; };
 		CE31C244225E555600A965DD /* UTMLegacyQemuConfiguration.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMLegacyQemuConfiguration.m; sourceTree = "<group>"; };
-		CE3559992273AEA10059CB2D /* cf-output-visitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "cf-output-visitor.h"; sourceTree = "<group>"; };
-		CE35599A2273AEA20059CB2D /* error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = error.h; sourceTree = "<group>"; };
-		CE35599B2273AEA20059CB2D /* util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = util.h; sourceTree = "<group>"; };
-		CE35599C2273AEA20059CB2D /* cf-input-visitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "cf-input-visitor.h"; sourceTree = "<group>"; };
-		CE35599D2273AEA20059CB2D /* dealloc-visitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "dealloc-visitor.h"; sourceTree = "<group>"; };
-		CE35599E2273AEA20059CB2D /* visitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = visitor.h; sourceTree = "<group>"; };
-		CE35599F2273AEA20059CB2D /* visitor-impl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "visitor-impl.h"; sourceTree = "<group>"; };
-		CE3559A12273AEE80059CB2D /* queue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = queue.h; sourceTree = "<group>"; };
-		CE3559A32273B49D0059CB2D /* qerror.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = qerror.h; sourceTree = "<group>"; };
-		CE36B1542275061B004A1435 /* error.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = error.c; sourceTree = "<group>"; };
-		CE36B26822763F28004A1435 /* UTMJSONStream.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMJSONStream.h; sourceTree = "<group>"; };
-		CE36B26922763F28004A1435 /* UTMJSONStream.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMJSONStream.m; sourceTree = "<group>"; };
-		CE36B27E227665B7004A1435 /* UTMJSONStreamDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMJSONStreamDelegate.h; sourceTree = "<group>"; };
-		CE36B27F227668D1004A1435 /* UTMQemuManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMQemuManager.h; sourceTree = "<group>"; };
-		CE36B280227668D1004A1435 /* UTMQemuManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMQemuManager.m; sourceTree = "<group>"; };
 		CE3ADD65240EFBCA002D6A5F /* VMDisplayMetalViewController+Keyboard.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VMDisplayMetalViewController+Keyboard.h"; sourceTree = "<group>"; };
 		CE3ADD66240EFBCA002D6A5F /* VMDisplayMetalViewController+Keyboard.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "VMDisplayMetalViewController+Keyboard.m"; sourceTree = "<group>"; };
 		CE3ADD682411C661002D6A5F /* VMCursor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMCursor.h; sourceTree = "<group>"; };
@@ -1848,7 +1566,6 @@
 		CE7D972B24B2B17D0080CB69 /* BusyOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusyOverlay.swift; sourceTree = "<group>"; };
 		CE8813D224CD230300532628 /* ActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityView.swift; sourceTree = "<group>"; };
 		CE8813D424CD265700532628 /* VMShareFileModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMShareFileModifier.swift; sourceTree = "<group>"; };
-		CE8E6620227E5DF2003B9903 /* UTMQemuMonitorDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMQemuMonitorDelegate.h; sourceTree = "<group>"; };
 		CE928C2926ABE6690099F293 /* UTMAppleVirtualMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMAppleVirtualMachine.swift; sourceTree = "<group>"; };
 		CE928C3026ACCDEA0099F293 /* VMAppleRemovableDrivesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMAppleRemovableDrivesView.swift; sourceTree = "<group>"; };
 		CE9375A024BBDDD10074066F /* VMConfigDriveDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigDriveDetailsView.swift; sourceTree = "<group>"; };
@@ -1911,12 +1628,6 @@
 		CEC794B9294924E300121A9F /* UTMScriptingSerialPortImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMScriptingSerialPortImpl.swift; sourceTree = "<group>"; };
 		CEC794BB2949663C00121A9F /* UTMScripting.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UTMScripting.swift; sourceTree = "<group>"; };
 		CEC9968328AA516000E7A025 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ja; path = ja.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
-		CECC764C2273A7D50059B955 /* cf-input-visitor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "cf-input-visitor.c"; sourceTree = "<group>"; };
-		CECC764D2273A7D50059B955 /* qapi-dealloc-visitor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "qapi-dealloc-visitor.c"; sourceTree = "<group>"; };
-		CECC764E2273A7D50059B955 /* qapi-util.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "qapi-util.c"; sourceTree = "<group>"; };
-		CECC764F2273A7D50059B955 /* qapi-visit-core.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "qapi-visit-core.c"; sourceTree = "<group>"; };
-		CECC76502273A7D50059B955 /* cf-output-visitor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "cf-output-visitor.c"; sourceTree = "<group>"; };
-		CECC76562273A88F0059B955 /* qemu-compat.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "qemu-compat.h"; sourceTree = "<group>"; };
 		CED234EC254796E500ED0A57 /* NumberTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberTextField.swift; sourceTree = "<group>"; };
 		CED814E824C79F070042F0F1 /* VMConfigDriveCreateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigDriveCreateView.swift; sourceTree = "<group>"; };
 		CED814EB24C7C2850042F0F1 /* VMConfigInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigInfoView.swift; sourceTree = "<group>"; };
@@ -1951,10 +1662,6 @@
 		CEF6F5EA26DDD60500BC434D /* macOS-unsigned.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "macOS-unsigned.entitlements"; sourceTree = "<group>"; };
 		CEF6F5EB26DDD63100BC434D /* QEMUHelper-unsigned.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "QEMUHelper-unsigned.entitlements"; sourceTree = "<group>"; };
 		CEF6F5EC26DDD65700BC434D /* QEMULauncher-unsigned.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "QEMULauncher-unsigned.entitlements"; sourceTree = "<group>"; };
-		CEF83EB824F9ABEA00557D15 /* UTMQemuMonitor+BlockDevices.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMQemuMonitor+BlockDevices.h"; sourceTree = "<group>"; };
-		CEF83EB924F9ABEA00557D15 /* UTMQemuMonitor+BlockDevices.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMQemuMonitor+BlockDevices.m"; sourceTree = "<group>"; };
-		CEF83EC624FB1B9300557D15 /* UTMQemuVirtualMachine+SPICE.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMQemuVirtualMachine+SPICE.m"; sourceTree = "<group>"; };
-		CEF83EC924FB1BB200557D15 /* UTMQemuVirtualMachine+SPICE.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMQemuVirtualMachine+SPICE.h"; sourceTree = "<group>"; };
 		CEF84ADA2887D7D300578F41 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
 		CEFE98DE29485237007CB7A8 /* UTM.sdef */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = UTM.sdef; sourceTree = "<group>"; };
 		CEFE98E029485776007CB7A8 /* UTMScriptingVirtualMachineImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMScriptingVirtualMachineImpl.swift; sourceTree = "<group>"; };
@@ -2533,269 +2240,6 @@
 			path = Configuration;
 			sourceTree = "<group>";
 		};
-		CE36B2672275312A004A1435 /* Generated */ = {
-			isa = PBXGroup;
-			children = (
-				CE23C0D523FCEC03001177D6 /* qapi-builtin-types.c */,
-				CE23C0C823FCEC02001177D6 /* qapi-builtin-types.h */,
-				CE23C09623FCEC00001177D6 /* qapi-builtin-visit.c */,
-				CE23C0FA23FCEC05001177D6 /* qapi-builtin-visit.h */,
-				CE23C09D23FCEC00001177D6 /* qapi-commands-audio.c */,
-				CE23C0BA23FCEC02001177D6 /* qapi-commands-audio.h */,
-				CE23C0A423FCEC01001177D6 /* qapi-commands-authz.c */,
-				CE23C15C23FCEC0A001177D6 /* qapi-commands-authz.h */,
-				CE23C0DF23FCEC04001177D6 /* qapi-commands-block-core.c */,
-				CE23C07D23FCEBFF001177D6 /* qapi-commands-block-core.h */,
-				CE23C0E723FCEC04001177D6 /* qapi-commands-block.c */,
-				CE23C0C023FCEC02001177D6 /* qapi-commands-block.h */,
-				CE23C08623FCEBFF001177D6 /* qapi-commands-char.c */,
-				CE23C0E623FCEC04001177D6 /* qapi-commands-char.h */,
-				CE23C10823FCEC06001177D6 /* qapi-commands-common.c */,
-				CE23C09823FCEC00001177D6 /* qapi-commands-common.h */,
-				CE23C0AE23FCEC01001177D6 /* qapi-commands-crypto.c */,
-				CE23C0BB23FCEC02001177D6 /* qapi-commands-crypto.h */,
-				CE23C0DD23FCEC03001177D6 /* qapi-commands-dump.c */,
-				CE23C0A223FCEC01001177D6 /* qapi-commands-dump.h */,
-				CE23C0FC23FCEC05001177D6 /* qapi-commands-error.c */,
-				CE23C0F323FCEC05001177D6 /* qapi-commands-error.h */,
-				CE23C10523FCEC05001177D6 /* qapi-commands-introspect.c */,
-				CE23C13F23FCEC08001177D6 /* qapi-commands-introspect.h */,
-				CE23C15723FCEC0A001177D6 /* qapi-commands-job.c */,
-				CE23C12323FCEC07001177D6 /* qapi-commands-job.h */,
-				CE23C0DB23FCEC03001177D6 /* qapi-commands-machine-target.c */,
-				CE23C0FF23FCEC05001177D6 /* qapi-commands-machine-target.h */,
-				CE23C13223FCEC08001177D6 /* qapi-commands-machine.c */,
-				CE23C15323FCEC09001177D6 /* qapi-commands-machine.h */,
-				CE23C09B23FCEC00001177D6 /* qapi-commands-migration.c */,
-				CE23C08323FCEBFF001177D6 /* qapi-commands-migration.h */,
-				CE23C13C23FCEC08001177D6 /* qapi-commands-misc-target.c */,
-				CE23C09423FCEC00001177D6 /* qapi-commands-misc-target.h */,
-				CE23C15123FCEC09001177D6 /* qapi-commands-misc.c */,
-				CE23C0CA23FCEC02001177D6 /* qapi-commands-misc.h */,
-				CE23C08F23FCEC00001177D6 /* qapi-commands-net.c */,
-				CE23C14E23FCEC09001177D6 /* qapi-commands-net.h */,
-				CE23C11F23FCEC07001177D6 /* qapi-commands-qdev.c */,
-				CE23C12A23FCEC07001177D6 /* qapi-commands-qdev.h */,
-				CE23C15523FCEC0A001177D6 /* qapi-commands-qom.c */,
-				CE23C13323FCEC08001177D6 /* qapi-commands-qom.h */,
-				CE23C0FB23FCEC05001177D6 /* qapi-commands-rdma.c */,
-				CE23C0E123FCEC04001177D6 /* qapi-commands-rdma.h */,
-				CE23C08123FCEBFF001177D6 /* qapi-commands-rocker.c */,
-				CE23C10F23FCEC06001177D6 /* qapi-commands-rocker.h */,
-				CE23C07E23FCEBFF001177D6 /* qapi-commands-run-state.c */,
-				CE23C09A23FCEC00001177D6 /* qapi-commands-run-state.h */,
-				CE23C0BD23FCEC02001177D6 /* qapi-commands-sockets.c */,
-				CE23C0D823FCEC03001177D6 /* qapi-commands-sockets.h */,
-				CE23C0BF23FCEC02001177D6 /* qapi-commands-tpm.c */,
-				CE23C08E23FCEC00001177D6 /* qapi-commands-tpm.h */,
-				CE23C11023FCEC06001177D6 /* qapi-commands-trace.c */,
-				CE23C0D023FCEC03001177D6 /* qapi-commands-trace.h */,
-				CE23C10B23FCEC06001177D6 /* qapi-commands-transaction.c */,
-				CE23C0D123FCEC03001177D6 /* qapi-commands-transaction.h */,
-				CE23C08223FCEBFF001177D6 /* qapi-commands-ui.c */,
-				CE23C10323FCEC05001177D6 /* qapi-commands-ui.h */,
-				CE23C0D223FCEC03001177D6 /* qapi-commands.c */,
-				CE23C0AA23FCEC01001177D6 /* qapi-commands.h */,
-				CE23C09223FCEC00001177D6 /* qapi-emit-events.c */,
-				CE23C15623FCEC0A001177D6 /* qapi-emit-events.h */,
-				2CE8EAF22572E0D0000E2EBB /* qapi-events-acpi.c */,
-				2CE8EAF12572E0D0000E2EBB /* qapi-events-acpi.h */,
-				CE23C13E23FCEC08001177D6 /* qapi-events-audio.c */,
-				CE23C12D23FCEC07001177D6 /* qapi-events-audio.h */,
-				CE23C0CC23FCEC03001177D6 /* qapi-events-authz.c */,
-				CE23C0D423FCEC03001177D6 /* qapi-events-authz.h */,
-				CE23C0EF23FCEC04001177D6 /* qapi-events-block-core.c */,
-				CE23C0D923FCEC03001177D6 /* qapi-events-block-core.h */,
-				2CE8EAEC2572E0C2000E2EBB /* qapi-events-block-export.c */,
-				2CE8EAED2572E0C2000E2EBB /* qapi-events-block-export.h */,
-				CE23C11623FCEC06001177D6 /* qapi-events-block.c */,
-				CE23C08023FCEBFF001177D6 /* qapi-events-block.h */,
-				CE23C12723FCEC07001177D6 /* qapi-events-char.c */,
-				CE23C0C523FCEC02001177D6 /* qapi-events-char.h */,
-				CE23C0D723FCEC03001177D6 /* qapi-events-common.c */,
-				CE23C0F823FCEC05001177D6 /* qapi-events-common.h */,
-				CE23C11D23FCEC07001177D6 /* qapi-events-crypto.c */,
-				CE23C0C123FCEC02001177D6 /* qapi-events-crypto.h */,
-				CE23C0D323FCEC03001177D6 /* qapi-events-dump.c */,
-				CE23C11C23FCEC07001177D6 /* qapi-events-dump.h */,
-				CE23C0F023FCEC04001177D6 /* qapi-events-error.c */,
-				CE23C08D23FCEC00001177D6 /* qapi-events-error.h */,
-				CE23C0B423FCEC01001177D6 /* qapi-events-introspect.c */,
-				CE23C0AD23FCEC01001177D6 /* qapi-events-introspect.h */,
-				CE23C14523FCEC09001177D6 /* qapi-events-job.c */,
-				CE23C12523FCEC07001177D6 /* qapi-events-job.h */,
-				CE23C13D23FCEC08001177D6 /* qapi-events-machine-target.c */,
-				CE23C13B23FCEC08001177D6 /* qapi-events-machine-target.h */,
-				CE23C0B923FCEC02001177D6 /* qapi-events-machine.c */,
-				CE23C07C23FCEBFF001177D6 /* qapi-events-machine.h */,
-				CE23C0EE23FCEC04001177D6 /* qapi-events-migration.c */,
-				CE23C09C23FCEC00001177D6 /* qapi-events-migration.h */,
-				CE23C0C723FCEC02001177D6 /* qapi-events-misc-target.c */,
-				CE23C14123FCEC09001177D6 /* qapi-events-misc-target.h */,
-				CE23C11B23FCEC07001177D6 /* qapi-events-misc.c */,
-				CE23C11323FCEC06001177D6 /* qapi-events-misc.h */,
-				CE23C10123FCEC05001177D6 /* qapi-events-net.c */,
-				CE23C09123FCEC00001177D6 /* qapi-events-net.h */,
-				CE23C09E23FCEC00001177D6 /* qapi-events-qdev.c */,
-				CE23C14623FCEC09001177D6 /* qapi-events-qdev.h */,
-				CE23C0A823FCEC01001177D6 /* qapi-events-qom.c */,
-				CE23C14423FCEC09001177D6 /* qapi-events-qom.h */,
-				CE23C12923FCEC07001177D6 /* qapi-events-rdma.c */,
-				CE23C08B23FCEC00001177D6 /* qapi-events-rdma.h */,
-				CE23C15923FCEC0A001177D6 /* qapi-events-rocker.c */,
-				CE23C08C23FCEC00001177D6 /* qapi-events-rocker.h */,
-				CE23C0FD23FCEC05001177D6 /* qapi-events-run-state.c */,
-				CE23C0A123FCEC01001177D6 /* qapi-events-run-state.h */,
-				CE23C0AF23FCEC01001177D6 /* qapi-events-sockets.c */,
-				CE23C0D623FCEC03001177D6 /* qapi-events-sockets.h */,
-				CE23C13923FCEC08001177D6 /* qapi-events-tpm.c */,
-				CE23C0B223FCEC01001177D6 /* qapi-events-tpm.h */,
-				CE23C08923FCEBFF001177D6 /* qapi-events-trace.c */,
-				CE23C0BC23FCEC02001177D6 /* qapi-events-trace.h */,
-				CE23C0AC23FCEC01001177D6 /* qapi-events-transaction.c */,
-				CE23C14823FCEC09001177D6 /* qapi-events-transaction.h */,
-				CE23C12623FCEC07001177D6 /* qapi-events-ui.c */,
-				CE23C0A523FCEC01001177D6 /* qapi-events-ui.h */,
-				CE23C14023FCEC09001177D6 /* qapi-events.c */,
-				CE23C08423FCEBFF001177D6 /* qapi-events.h */,
-				2CE8EAF72572E130000E2EBB /* qapi-types-acpi.c */,
-				2CE8EAF82572E130000E2EBB /* qapi-types-acpi.h */,
-				CE23C11423FCEC06001177D6 /* qapi-types-audio.c */,
-				CE23C0AB23FCEC01001177D6 /* qapi-types-audio.h */,
-				CE23C0DA23FCEC03001177D6 /* qapi-types-authz.c */,
-				CE23C14923FCEC09001177D6 /* qapi-types-authz.h */,
-				CE23C09923FCEC00001177D6 /* qapi-types-block-core.c */,
-				CE23C0DE23FCEC04001177D6 /* qapi-types-block-core.h */,
-				2CE8EAFC2572E14C000E2EBB /* qapi-types-block-export.c */,
-				2CE8EAFD2572E14C000E2EBB /* qapi-types-block-export.h */,
-				CE23C08723FCEBFF001177D6 /* qapi-types-block.c */,
-				CE23C12E23FCEC08001177D6 /* qapi-types-block.h */,
-				CE23C12023FCEC07001177D6 /* qapi-types-char.c */,
-				CE23C0F423FCEC05001177D6 /* qapi-types-char.h */,
-				CE23C0C623FCEC02001177D6 /* qapi-types-common.c */,
-				CE23C0F623FCEC05001177D6 /* qapi-types-common.h */,
-				8469CAC9277D301300BA5601 /* qapi-types-compat.c */,
-				8469CAC8277D301300BA5601 /* qapi-types-compat.h */,
-				CE23C0E323FCEC04001177D6 /* qapi-types-crypto.c */,
-				CE23C12B23FCEC07001177D6 /* qapi-types-crypto.h */,
-				CE23C12123FCEC07001177D6 /* qapi-types-dump.c */,
-				CE23C0FE23FCEC05001177D6 /* qapi-types-dump.h */,
-				CE23C11223FCEC06001177D6 /* qapi-types-error.c */,
-				CE23C15A23FCEC0A001177D6 /* qapi-types-error.h */,
-				CE23C0F923FCEC05001177D6 /* qapi-types-introspect.c */,
-				CE23C11723FCEC06001177D6 /* qapi-types-introspect.h */,
-				CE23C13123FCEC08001177D6 /* qapi-types-job.c */,
-				CE23C12423FCEC07001177D6 /* qapi-types-job.h */,
-				CE23C15223FCEC09001177D6 /* qapi-types-machine-target.c */,
-				CE23C11E23FCEC07001177D6 /* qapi-types-machine-target.h */,
-				CE23C15823FCEC0A001177D6 /* qapi-types-machine.c */,
-				CE23C0C923FCEC02001177D6 /* qapi-types-machine.h */,
-				CE23C0CB23FCEC02001177D6 /* qapi-types-migration.c */,
-				CE23C14723FCEC09001177D6 /* qapi-types-migration.h */,
-				CE23C16023FCEC0A001177D6 /* qapi-types-misc-target.c */,
-				CE23C0A923FCEC01001177D6 /* qapi-types-misc-target.h */,
-				CE23C12823FCEC07001177D6 /* qapi-types-misc.c */,
-				CE23C11823FCEC06001177D6 /* qapi-types-misc.h */,
-				CE23C0B523FCEC02001177D6 /* qapi-types-net.c */,
-				CE23C0F223FCEC04001177D6 /* qapi-types-net.h */,
-				CE23C15B23FCEC0A001177D6 /* qapi-types-qdev.c */,
-				CE23C09323FCEC00001177D6 /* qapi-types-qdev.h */,
-				CE23C13823FCEC08001177D6 /* qapi-types-qom.c */,
-				CE23C10A23FCEC06001177D6 /* qapi-types-qom.h */,
-				CE23C13023FCEC08001177D6 /* qapi-types-rdma.c */,
-				CE23C14F23FCEC09001177D6 /* qapi-types-rdma.h */,
-				CE23C14D23FCEC09001177D6 /* qapi-types-rocker.c */,
-				CE23C12F23FCEC08001177D6 /* qapi-types-rocker.h */,
-				CE23C08523FCEBFF001177D6 /* qapi-types-run-state.c */,
-				CE23C0C423FCEC02001177D6 /* qapi-types-run-state.h */,
-				CE23C10E23FCEC06001177D6 /* qapi-types-sockets.c */,
-				CE23C13A23FCEC08001177D6 /* qapi-types-sockets.h */,
-				CE23C0DC23FCEC03001177D6 /* qapi-types-tpm.c */,
-				CE23C15E23FCEC0A001177D6 /* qapi-types-tpm.h */,
-				CE23C11523FCEC06001177D6 /* qapi-types-trace.c */,
-				CE23C15423FCEC0A001177D6 /* qapi-types-trace.h */,
-				CE23C13423FCEC08001177D6 /* qapi-types-transaction.c */,
-				CE23C15F23FCEC0A001177D6 /* qapi-types-transaction.h */,
-				CE23C10023FCEC05001177D6 /* qapi-types-ui.c */,
-				CE23C11A23FCEC07001177D6 /* qapi-types-ui.h */,
-				CE23C0B623FCEC02001177D6 /* qapi-types.c */,
-				CE23C14A23FCEC09001177D6 /* qapi-types.h */,
-				2CE8EB032572E166000E2EBB /* qapi-visit-acpi.c */,
-				2CE8EB022572E166000E2EBB /* qapi-visit-acpi.h */,
-				CE23C0BE23FCEC02001177D6 /* qapi-visit-audio.c */,
-				CE23C0CF23FCEC03001177D6 /* qapi-visit-audio.h */,
-				CE23C0B823FCEC02001177D6 /* qapi-visit-authz.c */,
-				CE23C0F123FCEC04001177D6 /* qapi-visit-authz.h */,
-				CE23C0E023FCEC04001177D6 /* qapi-visit-block-core.c */,
-				CE23C0B123FCEC01001177D6 /* qapi-visit-block-core.h */,
-				2CE8EB082572E173000E2EBB /* qapi-visit-block-export.c */,
-				2CE8EB072572E173000E2EBB /* qapi-visit-block-export.h */,
-				CE23C0A723FCEC01001177D6 /* qapi-visit-block.c */,
-				CE23C13723FCEC08001177D6 /* qapi-visit-block.h */,
-				CE23C0E923FCEC04001177D6 /* qapi-visit-char.c */,
-				CE23C12223FCEC07001177D6 /* qapi-visit-char.h */,
-				CE23C10223FCEC05001177D6 /* qapi-visit-common.c */,
-				CE23C15023FCEC09001177D6 /* qapi-visit-common.h */,
-				8469CACD277D345700BA5601 /* qapi-visit-compat.c */,
-				8469CACE277D345700BA5601 /* qapi-visit-compat.h */,
-				CE23C0C223FCEC02001177D6 /* qapi-visit-crypto.c */,
-				CE23C0CD23FCEC03001177D6 /* qapi-visit-crypto.h */,
-				CE23C0B323FCEC01001177D6 /* qapi-visit-dump.c */,
-				CE23C12C23FCEC07001177D6 /* qapi-visit-dump.h */,
-				CE23C15D23FCEC0A001177D6 /* qapi-visit-error.c */,
-				CE23C07B23FCEBFF001177D6 /* qapi-visit-error.h */,
-				CE23C0E223FCEC04001177D6 /* qapi-visit-introspect.c */,
-				CE23C0EA23FCEC04001177D6 /* qapi-visit-introspect.h */,
-				CE23C09523FCEC00001177D6 /* qapi-visit-job.c */,
-				CE23C0EB23FCEC04001177D6 /* qapi-visit-job.h */,
-				CE23C11123FCEC06001177D6 /* qapi-visit-machine-target.c */,
-				CE23C0E823FCEC04001177D6 /* qapi-visit-machine-target.h */,
-				CE23C10D23FCEC06001177D6 /* qapi-visit-machine.c */,
-				CE23C0EC23FCEC04001177D6 /* qapi-visit-machine.h */,
-				CE23C0CE23FCEC03001177D6 /* qapi-visit-migration.c */,
-				CE23C09F23FCEC01001177D6 /* qapi-visit-migration.h */,
-				CE23C14223FCEC09001177D6 /* qapi-visit-misc-target.c */,
-				CE23C14B23FCEC09001177D6 /* qapi-visit-misc-target.h */,
-				CE23C10423FCEC05001177D6 /* qapi-visit-misc.c */,
-				CE23C0ED23FCEC04001177D6 /* qapi-visit-misc.h */,
-				CE23C08A23FCEC00001177D6 /* qapi-visit-net.c */,
-				CE23C10723FCEC06001177D6 /* qapi-visit-net.h */,
-				CE23C10923FCEC06001177D6 /* qapi-visit-qdev.c */,
-				CE23C08823FCEBFF001177D6 /* qapi-visit-qdev.h */,
-				CE23C0E423FCEC04001177D6 /* qapi-visit-qom.c */,
-				CE23C0C323FCEC02001177D6 /* qapi-visit-qom.h */,
-				CE23C13623FCEC08001177D6 /* qapi-visit-rdma.c */,
-				CE23C0B023FCEC01001177D6 /* qapi-visit-rdma.h */,
-				CE23C0F723FCEC05001177D6 /* qapi-visit-rocker.c */,
-				CE23C0A023FCEC01001177D6 /* qapi-visit-rocker.h */,
-				CE23C0F523FCEC05001177D6 /* qapi-visit-run-state.c */,
-				CE23C14323FCEC09001177D6 /* qapi-visit-run-state.h */,
-				CE23C10623FCEC05001177D6 /* qapi-visit-sockets.c */,
-				CE23C09723FCEC00001177D6 /* qapi-visit-sockets.h */,
-				CE23C07F23FCEBFF001177D6 /* qapi-visit-tpm.c */,
-				CE23C11923FCEC06001177D6 /* qapi-visit-tpm.h */,
-				CE23C0E523FCEC04001177D6 /* qapi-visit-trace.c */,
-				CE23C09023FCEC00001177D6 /* qapi-visit-trace.h */,
-				CE23C0A623FCEC01001177D6 /* qapi-visit-transaction.c */,
-				CE23C10C23FCEC06001177D6 /* qapi-visit-transaction.h */,
-				CE23C0B723FCEC02001177D6 /* qapi-visit-ui.c */,
-				CE23C0A323FCEC01001177D6 /* qapi-visit-ui.h */,
-				CE23C13523FCEC08001177D6 /* qapi-visit.c */,
-				CE23C14C23FCEC09001177D6 /* qapi-visit.h */,
-				CE25122629BD42FF000790AB /* qga-qapi-commands.c */,
-				CE25122729BD42FF000790AB /* qga-qapi-commands.h */,
-				CE25122329BD42FE000790AB /* qga-qapi-emit-events.c */,
-				CE25122529BD42FF000790AB /* qga-qapi-emit-events.h */,
-				CE25122129BD42FE000790AB /* qga-qapi-events.c */,
-				CE25122229BD42FE000790AB /* qga-qapi-events.h */,
-				CE25121E29BD42FE000790AB /* qga-qapi-types.c */,
-				CE25121F29BD42FE000790AB /* qga-qapi-types.h */,
-				CE25122429BD42FE000790AB /* qga-qapi-visit.c */,
-				CE25122029BD42FE000790AB /* qga-qapi-visit.h */,
-			);
-			name = Generated;
-			sourceTree = "<group>";
-		};
 		CE550BC0225947990063E575 = {
 			isa = PBXGroup;
 			children = (
@@ -2804,7 +2248,6 @@
 				CE31C242225E543A00A965DD /* Configuration */,
 				CE5F1659226138AB00F3D56B /* Managers */,
 				CE2D953624AD4F980059923A /* Platform */,
-				CECC76492273A7AE0059B955 /* qapi */,
 				CEBDA1DB24D8BDDA0010B5EC /* QEMUHelper */,
 				CE9D18F72265410E00355E14 /* qemu */,
 				CE6B240925F1F3CE0020D43E /* QEMULauncher */,
@@ -2835,37 +2278,16 @@
 		CE5F1659226138AB00F3D56B /* Managers */ = {
 			isa = PBXGroup;
 			children = (
-				CE36B26822763F28004A1435 /* UTMJSONStream.h */,
-				CE36B26922763F28004A1435 /* UTMJSONStream.m */,
-				CE36B27E227665B7004A1435 /* UTMJSONStreamDelegate.h */,
 				CE6EDCE0241DA0E900A719DC /* UTMLogging.h */,
 				CE6EDCE1241DA0E900A719DC /* UTMLogging.m */,
-				84BB99382899AB1800DF28B2 /* UTMLoggingDelegate.h */,
 				CEDF83F8258AE24E0030E4AC /* UTMPasteboard.swift */,
-				2C6D9E122571AFE5003298E6 /* UTMQcow2.h */,
-				2C6D9E132571AFE5003298E6 /* UTMQcow2.c */,
 				CE9D197A226542FE00355E14 /* UTMQemu.h */,
 				CE9D197B226542FE00355E14 /* UTMQemu.m */,
 				8453DCB3278CE5410037A0DA /* UTMQemuImage.swift */,
-				CE36B27F227668D1004A1435 /* UTMQemuManager.h */,
-				CE36B280227668D1004A1435 /* UTMQemuManager.m */,
-				CE25123C29BD47D0000790AB /* UTMQemuManager-Protected.h */,
-				CE25123729BD46B4000790AB /* UTMQemuMonitor.h */,
-				CE25123829BD46B4000790AB /* UTMQemuMonitor.m */,
-				CEF83EB824F9ABEA00557D15 /* UTMQemuMonitor+BlockDevices.h */,
-				CEF83EB924F9ABEA00557D15 /* UTMQemuMonitor+BlockDevices.m */,
-				CE8E6620227E5DF2003B9903 /* UTMQemuMonitorDelegate.h */,
 				84A0A8822A47D52E0038F329 /* UTMQemuPort.swift */,
-				CE25124129BD4F10000790AB /* UTMQemuGuestAgent.h */,
-				CE25124229BD4F10000790AB /* UTMQemuGuestAgent.m */,
 				CE03D05424D90BE000F76B84 /* UTMQemuSystem.h */,
 				CE03D05024D90B4E00F76B84 /* UTMQemuSystem.m */,
 				841E999728AC817D003C6CB6 /* UTMQemuVirtualMachine.swift */,
-				84FCABB8268CE05E0036196C /* UTMQemuVirtualMachine.h */,
-				84FCABB9268CE05E0036196C /* UTMQemuVirtualMachine.m */,
-				841E999628AC80CA003C6CB6 /* UTMQemuVirtualMachine-Protected.h */,
-				CEF83EC924FB1BB200557D15 /* UTMQemuVirtualMachine+SPICE.h */,
-				CEF83EC624FB1B9300557D15 /* UTMQemuVirtualMachine+SPICE.m */,
 				CE2B89352262B2F600C6D9D8 /* UTMVirtualMachineDelegate.h */,
 				CE020BB524B14F8400B44AB6 /* UTMVirtualMachine.swift */,
 				CE2B89332262A21E00C6D9D8 /* UTMVirtualMachine.h */,
@@ -3028,30 +2450,6 @@
 				FFB02A91266CB09C006CD71A /* InfoPlist.strings */,
 			);
 			path = QEMUHelper;
-			sourceTree = "<group>";
-		};
-		CECC76492273A7AE0059B955 /* qapi */ = {
-			isa = PBXGroup;
-			children = (
-				CE36B2672275312A004A1435 /* Generated */,
-				CE35599C2273AEA20059CB2D /* cf-input-visitor.h */,
-				CE3559992273AEA10059CB2D /* cf-output-visitor.h */,
-				CE35599D2273AEA20059CB2D /* dealloc-visitor.h */,
-				CE35599A2273AEA20059CB2D /* error.h */,
-				CECC76562273A88F0059B955 /* qemu-compat.h */,
-				CE3559A32273B49D0059CB2D /* qerror.h */,
-				CE3559A12273AEE80059CB2D /* queue.h */,
-				CE35599B2273AEA20059CB2D /* util.h */,
-				CE35599F2273AEA20059CB2D /* visitor-impl.h */,
-				CE35599E2273AEA20059CB2D /* visitor.h */,
-				CECC764C2273A7D50059B955 /* cf-input-visitor.c */,
-				CECC76502273A7D50059B955 /* cf-output-visitor.c */,
-				CE36B1542275061B004A1435 /* error.c */,
-				CECC764D2273A7D50059B955 /* qapi-dealloc-visitor.c */,
-				CECC764E2273A7D50059B955 /* qapi-util.c */,
-				CECC764F2273A7D50059B955 /* qapi-visit-core.c */,
-			);
-			path = qapi;
 			sourceTree = "<group>";
 		};
 		CEFE98DD2948518D007CB7A8 /* Scripting */ = {
