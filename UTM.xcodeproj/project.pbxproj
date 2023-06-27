@@ -148,6 +148,9 @@
 		8471772827CD3CAB00D3A50B /* DetailedSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8471772727CD3CAB00D3A50B /* DetailedSection.swift */; };
 		8471772927CD3CAB00D3A50B /* DetailedSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8471772727CD3CAB00D3A50B /* DetailedSection.swift */; };
 		8471772A27CD3CAB00D3A50B /* DetailedSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8471772727CD3CAB00D3A50B /* DetailedSection.swift */; };
+		847BF9AA2A49C783000BD9AA /* VMData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847BF9A92A49C783000BD9AA /* VMData.swift */; };
+		847BF9AB2A49C783000BD9AA /* VMData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847BF9A92A49C783000BD9AA /* VMData.swift */; };
+		847BF9AC2A49C783000BD9AA /* VMData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847BF9A92A49C783000BD9AA /* VMData.swift */; };
 		84818C0C2898A07A009EDB67 /* AVFAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84818C0B2898A07A009EDB67 /* AVFAudio.framework */; };
 		84818C0D2898A07F009EDB67 /* AVFAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84818C0B2898A07A009EDB67 /* AVFAudio.framework */; };
 		848308D5278A1F2200E3E474 /* Virtualization.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 848308D4278A1F2200E3E474 /* Virtualization.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -1319,6 +1322,7 @@
 		845F170C289CB3DE00944904 /* VMDisplayTerminal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayTerminal.swift; sourceTree = "<group>"; };
 		8471770527CC974F00D3A50B /* DefaultTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultTextField.swift; sourceTree = "<group>"; };
 		8471772727CD3CAB00D3A50B /* DetailedSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailedSection.swift; sourceTree = "<group>"; };
+		847BF9A92A49C783000BD9AA /* VMData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMData.swift; sourceTree = "<group>"; };
 		84818C0B2898A07A009EDB67 /* AVFAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFAudio.framework; path = System/Library/Frameworks/AVFAudio.framework; sourceTree = SDKROOT; };
 		848308D4278A1F2200E3E474 /* Virtualization.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Virtualization.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.1.sdk/System/Library/Frameworks/Virtualization.framework; sourceTree = DEVELOPER_DIR; };
 		848A98AF286A0F74006F0550 /* UTMAppleConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMAppleConfiguration.swift; sourceTree = "<group>"; };
@@ -2120,6 +2124,7 @@
 				CEB63A7924F469E300CAF323 /* UTMJailbreak.m */,
 				CEB63A7824F468BA00CAF323 /* UTMJailbreak.h */,
 				CE020BAA24AEE00000B44AB6 /* UTMLoggingSwift.swift */,
+				847BF9A92A49C783000BD9AA /* VMData.swift */,
 				CE2D955624AD4F980059923A /* Swift-Bridging-Header.h */,
 				CE550BD52259479D0063E575 /* Assets.xcassets */,
 				521F3EFB2414F73800130500 /* Localizable.strings */,
@@ -2824,6 +2829,7 @@
 				8443EFF22845641600B2E6E2 /* UTMQemuConfigurationDrive.swift in Sources */,
 				8443EFFA28456F3B00B2E6E2 /* UTMQemuConfigurationSharing.swift in Sources */,
 				CE772AAC25C8B0F600E4E379 /* ContentView.swift in Sources */,
+				847BF9AA2A49C783000BD9AA /* VMData.swift in Sources */,
 				CE2D927A24AD46670059923A /* UTMLegacyQemuConfiguration+System.m in Sources */,
 				843BF8302844853E0029D60D /* UTMQemuConfigurationNetwork.swift in Sources */,
 				CE2D927C24AD46670059923A /* UTMQemu.m in Sources */,
@@ -3141,6 +3147,7 @@
 				CE020BA424AEDC7C00B44AB6 /* UTMData.swift in Sources */,
 				CE25124929BFDBA6000790AB /* UTMScriptingGuestFileImpl.swift in Sources */,
 				848A98C8287206AE006F0550 /* VMConfigAppleVirtualizationView.swift in Sources */,
+				847BF9AC2A49C783000BD9AA /* VMData.swift in Sources */,
 				CE25124729BFDB87000790AB /* UTMScriptingGuestProcessImpl.swift in Sources */,
 				CE2D958824AD4F990059923A /* VMConfigPortForwardForm.swift in Sources */,
 				845F170D289CB3DE00944904 /* VMDisplayTerminal.swift in Sources */,
@@ -3281,6 +3288,7 @@
 				841E997628AA1191003C6CB6 /* UTMRegistry.swift in Sources */,
 				CEF0304F26A2AFBF00667B63 /* BigButtonStyle.swift in Sources */,
 				84018691288A73300050AC51 /* VMDisplayViewController.m in Sources */,
+				847BF9AB2A49C783000BD9AA /* VMData.swift in Sources */,
 				84909A8E27CACD5C005605F1 /* UTMPlaceholderVMView.swift in Sources */,
 				CEA45EF4263519B5002FA97D /* VMConfigSoundView.swift in Sources */,
 				8432329928C3017F00CFBC97 /* GlobalFileImporter.swift in Sources */,

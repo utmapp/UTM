@@ -18,18 +18,24 @@ import Foundation
 import SwiftUI
 
 extension UTMData {
-    @MainActor func run(vm: UTMVirtualMachine) {
-        let session = VMSessionState(for: vm as! UTMQemuVirtualMachine)
+    func run(vm: VMData) {
+        guard let wrapped = vm.wrapped else {
+            return
+        }
+        let session = VMSessionState(for: wrapped as! UTMQemuVirtualMachine)
         session.start()
     }
     
-    func stop(vm: UTMVirtualMachine) {
-        if vm.hasSaveState {
-            vm.requestVmDeleteState()
+    func stop(vm: VMData) {
+        guard let wrapped = vm.wrapped else {
+            return
+        }
+        if wrapped.hasSaveState {
+            wrapped.requestVmDeleteState()
         }
     }
     
-    func close(vm: UTMVirtualMachine) {
+    func close(vm: VMData) {
         // do nothing
     }
     

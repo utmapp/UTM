@@ -132,9 +132,9 @@ struct ContentView: View {
     }
     
     @MainActor private func handleUTMURL(with components: URLComponents) async throws {
-        func findVM() async -> UTMVirtualMachine? {
+        func findVM() -> VMData? {
             if let vmName = components.queryItems?.first(where: { $0.name == "name" })?.value {
-                return await data.virtualMachines.first(where: { $0.detailsTitleLabel == vmName })
+                return data.virtualMachines.first(where: { $0.detailsTitleLabel == vmName })
             } else {
                 return nil
             }
@@ -143,48 +143,48 @@ struct ContentView: View {
         if let action = components.host {
             switch action {
             case "start":
-                if let vm = await findVM(), vm.state == .vmStopped {
+                if let vm = findVM(), vm.wrapped?.state == .vmStopped {
                     data.run(vm: vm)
                 }
                 break
             case "stop":
-                if let vm = await findVM(), vm.state == .vmStarted {
-                    vm.requestVmStop(force: true)
+                if let vm = findVM(), vm.wrapped?.state == .vmStarted {
+                    vm.wrapped!.requestVmStop(force: true)
                     data.stop(vm: vm)
                 }
                 break
             case "restart":
-                if let vm = await findVM(), vm.state == .vmStarted {
-                    vm.requestVmReset()
+                if let vm = findVM(), vm.wrapped?.state == .vmStarted {
+                    vm.wrapped!.requestVmReset()
                 }
                 break
             case "pause":
-                if let vm = await findVM(), vm.state == .vmStarted {
+                if let vm = findVM(), vm.wrapped?.state == .vmStarted {
                     let shouldSaveOnPause: Bool
-                    if let vm = vm as? UTMQemuVirtualMachine {
+                    if let vm = vm.wrapped as? UTMQemuVirtualMachine {
                         shouldSaveOnPause = !vm.isRunningAsSnapshot
                     } else {
                         shouldSaveOnPause = true
                     }
-                    vm.requestVmPause(save: shouldSaveOnPause)
+                    vm.wrapped!.requestVmPause(save: shouldSaveOnPause)
                 }
             case "resume":
-                if let vm = await findVM(), vm.state == .vmPaused {
-                    vm.requestVmResume()
+                if let vm = findVM(), vm.wrapped?.state == .vmPaused {
+                    vm.wrapped!.requestVmResume()
                 }
                 break
             case "sendText":
-                if let vm = await findVM(), vm.state == .vmStarted {
-                    data.automationSendText(to: vm, urlComponents: components)
+                if let vm = findVM(), vm.wrapped?.state == .vmStarted {
+                    data.automationSendText(to: vm.wrapped!, urlComponents: components)
                 }
                 break
             case "click":
-                if let vm = await findVM(), vm.state == .vmStarted {
-                    data.automationSendMouse(to: vm, urlComponents: components)
+                if let vm = findVM(), vm.wrapped?.state == .vmStarted {
+                    data.automationSendMouse(to: vm.wrapped!, urlComponents: components)
                 }
                 break
             case "downloadVM":
-                data.downloadUTMZip(from: components)
+                await data.downloadUTMZip(from: components)
                 break
             default:
                 return
@@ -199,8 +199,9 @@ extension ContentView: DropDelegate {
     }
     
     func performDrop(info: DropInfo) -> Bool {
+        let urls = urlsFrom(info: info)
         data.busyWorkAsync {
-            for url in await urlsFrom(info: info) {
+            for url in urls {
                 
                 try await data.importUTM(from: url)
             }

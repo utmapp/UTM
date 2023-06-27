@@ -19,7 +19,10 @@ import Carbon.HIToolbox
 
 @available(macOS 11, *)
 extension UTMData {
-    @MainActor func run(vm: UTMVirtualMachine, startImmediately: Bool = true) {
+    func run(vm: VMData, startImmediately: Bool = true) {
+        guard let vm = vm.wrapped else {
+            return
+        }
         var window: Any? = vmWindows[vm]
         if window == nil {
             let close = { (notification: Notification) -> Void in
@@ -65,24 +68,34 @@ extension UTMData {
         } else if let unwrappedWindow = window as? VMHeadlessSessionState {
             vmWindows[vm] = unwrappedWindow
             if startImmediately {
-                vm.requestVmStart()
+                if vm.state == .vmPaused {
+                    vm.requestVmResume()
+                } else {
+                    vm.requestVmStart()
+                }
             }
         } else {
             logger.critical("Failed to create window controller.")
         }
     }
     
-    func stop(vm: UTMVirtualMachine) {
-        if vm.hasSaveState {
-            vm.requestVmDeleteState()
+    func stop(vm: VMData) {
+        guard let wrapped = vm.wrapped else {
+            return
         }
-        vm.vmStop(force: false, completion: { _ in
+        if wrapped.hasSaveState {
+            wrapped.requestVmDeleteState()
+        }
+        wrapped.vmStop(force: false, completion: { _ in
             self.close(vm: vm)
         })
     }
     
-    func close(vm: UTMVirtualMachine) {
-        if let window = vmWindows.removeValue(forKey: vm) as? VMDisplayWindowController {
+    func close(vm: VMData) {
+        guard let wrapped = vm.wrapped else {
+            return
+        }
+        if let window = vmWindows.removeValue(forKey: wrapped) as? VMDisplayWindowController {
             DispatchQueue.main.async {
                 window.close()
             }

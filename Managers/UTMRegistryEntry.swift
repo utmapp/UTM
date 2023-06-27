@@ -50,23 +50,29 @@ import Foundation
         case macRecoveryIpsw = "MacRecoveryIpsw"
     }
     
-    init(newFrom vm: UTMVirtualMachine) {
+    init(uuid: UUID, name: String, path: String, bookmark: Data? = nil) {
+        _name = name
         let package: File?
-        let path = vm.path
-        if let wrappedVM = vm as? UTMWrappedVirtualMachine {
-            package = try? File(path: path.path, bookmark: wrappedVM.bookmark)
+        if let bookmark = bookmark {
+            package = try? File(path: path, bookmark: bookmark)
         } else {
-            package = try? File(url: path)
+            package = nil
         }
-        _name = vm.config.name
-        _package = package ?? File(path: path.path)
-        uuid = vm.config.uuid
+        _package = package ?? File(path: path)
+        self.uuid = uuid
         _isSuspended = false
         _externalDrives = [:]
         _sharedDirectories = []
         _windowSettings = [:]
         _terminalSettings = [:]
         _hasMigratedConfig = false
+    }
+    
+    convenience init(newFrom vm: UTMVirtualMachine) {
+        self.init(uuid: vm.config.uuid, name: vm.config.name, path: vm.path.path)
+        if let package = try? File(url: vm.path) {
+            _package = package
+        }
     }
     
     required init(from decoder: Decoder) throws {

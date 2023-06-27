@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 
-class AppDelegate: NSObject, NSApplicationDelegate {
+@MainActor class AppDelegate: NSObject, NSApplicationDelegate {
     var data: UTMData?
     
     @Setting("KeepRunningAfterLastWindowClosed") private var isKeepRunningAfterLastWindowClosed: Bool = false

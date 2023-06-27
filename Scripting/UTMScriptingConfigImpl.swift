@@ -33,7 +33,7 @@ import Foundation
             }
             let wrapper = UTMScriptingConfigImpl(vm.config.wrappedValue as! any UTMConfiguration)
             try wrapper.updateConfiguration(from: newConfiguration)
-            try await data.save(vm: vm)
+            try await data.save(vm: box)
         }
     }
 }

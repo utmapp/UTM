@@ -110,7 +110,7 @@ extension UTMVirtualMachine: ObservableObject {
     }
     
     /// Called when we have a duplicate UUID
-    @MainActor func changeUuid(to uuid: UUID, name: String? = nil) {
+    @MainActor func changeUuid(to uuid: UUID, name: String? = nil, copyFromExisting existing: UTMRegistryEntry? = nil) {
         if let qemuConfig = config.qemuConfig {
             qemuConfig.information.uuid = uuid
             if let name = name {
@@ -125,6 +125,9 @@ extension UTMVirtualMachine: ObservableObject {
             fatalError("Invalid configuration.")
         }
         registryEntry = UTMRegistry.shared.entry(for: self)
+        if let existing = existing {
+            registryEntry.update(copying: existing)
+        }
     }
 }
 

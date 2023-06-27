@@ -20,8 +20,11 @@ import QEMUKitInternal
 @MainActor
 @objc(UTMScriptingVirtualMachineImpl)
 class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
-    @nonobjc var vm: UTMVirtualMachine
+    @nonobjc var box: VMData
     @nonobjc var data: UTMData
+    @nonobjc var vm: UTMVirtualMachine! {
+        box.wrapped
+    }
     
     @objc var id: String {
         vm.id.uuidString
@@ -94,8 +97,8 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
                                    uniqueID: id)
     }
     
-    init(for vm: UTMVirtualMachine, data: UTMData) {
-        self.vm = vm
+    init(for vm: VMData, data: UTMData) {
+        self.box = vm
         self.data = data
     }
     
@@ -108,7 +111,7 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
                 }
                 vm.isRunningAsSnapshot = true
             }
-            data.run(vm: vm, startImmediately: false)
+            data.run(vm: box, startImmediately: false)
             if vm.state == .vmStopped {
                 try await vm.vmStart()
             } else if vm.state == .vmPaused {
@@ -156,7 +159,7 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
             guard vm.state == .vmStopped else {
                 throw ScriptingError.notStopped
             }
-            try await data.delete(vm: vm, alsoRegistry: true)
+            try await data.delete(vm: box, alsoRegistry: true)
         }
     }
     
@@ -166,9 +169,9 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
             guard vm.state == .vmStopped else {
                 throw ScriptingError.notStopped
             }
-            let newVM = try await data.clone(vm: vm)
+            let newVM = try await data.clone(vm: box)
             if let properties = properties, let newConfiguration = properties["configuration"] as? [AnyHashable : Any] {
-                let wrapper = UTMScriptingConfigImpl(newVM.config.wrappedValue as! any UTMConfiguration)
+                let wrapper = UTMScriptingConfigImpl(newVM.config!)
                 try wrapper.updateConfiguration(from: newConfiguration)
                 try await data.save(vm: newVM)
             }

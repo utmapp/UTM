@@ -44,8 +44,8 @@ struct VMNavigationListView: View {
     
     @ViewBuilder private var listBody: some View {
         ForEach(data.virtualMachines) { vm in
-            if let wrappedVM = vm as? UTMWrappedVirtualMachine {
-                UTMUnavailableVMView(wrappedVM: wrappedVM)
+            if !vm.isLoaded {
+                UTMUnavailableVMView(vm: vm)
             } else {
                 if #available(iOS 16, macOS 13, *) {
                     VMCardView(vm: vm)

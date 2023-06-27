@@ -17,7 +17,7 @@
 import SwiftUI
 
 struct VMSettingsView: View {
-    let vm: UTMVirtualMachine
+    let vm: VMData
     @ObservedObject var config: UTMQemuConfiguration
     
     @State private var isResetConfig: Bool = false
@@ -242,6 +242,6 @@ struct VMSettingsView_Previews: PreviewProvider {
     @State static private var config = UTMQemuConfiguration()
     
     static var previews: some View {
-        VMSettingsView(vm: UTMVirtualMachine(), config: config)
+        VMSettingsView(vm: VMData(wrapping: UTMVirtualMachine()), config: config)
     }
 }

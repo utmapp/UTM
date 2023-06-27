@@ -17,7 +17,7 @@
 import SwiftUI
 
 struct VMDetailsView: View {
-    @ObservedObject var vm: UTMVirtualMachine
+    @ObservedObject var vm: VMData
     @EnvironmentObject private var data: UTMData
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     #if !os(macOS)
@@ -62,10 +62,10 @@ struct VMDetailsView: View {
                             .padding([.leading, .trailing])
                     }.padding([.leading, .trailing])
                     #if os(macOS)
-                    if let appleVM = vm as? UTMAppleVirtualMachine {
+                    if let appleVM = vm.wrapped as? UTMAppleVirtualMachine {
                         VMAppleRemovableDrivesView(vm: appleVM, config: appleVM.appleConfig, registryEntry: appleVM.registryEntry)
                             .padding([.leading, .trailing, .bottom])
-                    } else if let qemuVM = vm as? UTMQemuVirtualMachine {
+                    } else if let qemuVM = vm.wrapped as? UTMQemuVirtualMachine {
                         VMRemovableDrivesView(vm: qemuVM, config: qemuVM.qemuConfig)
                             .padding([.leading, .trailing, .bottom])
                     }
@@ -83,13 +83,13 @@ struct VMDetailsView: View {
                                 .fixedSize(horizontal: false, vertical: true)
                         }
                         #if os(macOS)
-                        if let appleVM = vm as? UTMAppleVirtualMachine {
+                        if let appleVM = vm.wrapped as? UTMAppleVirtualMachine {
                             VMAppleRemovableDrivesView(vm: appleVM, config: appleVM.appleConfig, registryEntry: appleVM.registryEntry)
-                        } else if let qemuVM = vm as? UTMQemuVirtualMachine {
+                        } else if let qemuVM = vm.wrapped as? UTMQemuVirtualMachine {
                             VMRemovableDrivesView(vm: qemuVM, config: qemuVM.qemuConfig)
                         }
                         #else
-                        let qemuVM = vm as! UTMQemuVirtualMachine
+                        let qemuVM = vm.wrapped as! UTMQemuVirtualMachine
                         VMRemovableDrivesView(vm: qemuVM, config: qemuVM.qemuConfig)
                         #endif
                     }.padding([.leading, .trailing, .bottom])
@@ -98,12 +98,12 @@ struct VMDetailsView: View {
             .modifier(VMOptionalNavigationTitleModifier(vm: vm))
             .modifier(VMToolbarModifier(vm: vm, bottom: !regularScreenSizeClass))
             .sheet(isPresented: $data.showSettingsModal) {
-                if let qemuConfig = vm.config.qemuConfig {
+                if let qemuConfig = vm.config as? UTMQemuConfiguration {
                     VMSettingsView(vm: vm, config: qemuConfig)
                         .environmentObject(data)
                 }
                 #if os(macOS)
-                if let appleConfig = vm.config.appleConfig {
+                if let appleConfig = vm.config as? UTMAppleConfiguration {
                     VMSettingsView(vm: vm, config: appleConfig)
                         .environmentObject(data)
                 }
@@ -115,7 +115,7 @@ struct VMDetailsView: View {
 
 /// Returns just the content under macOS but adds the title on iOS. #3099
 private struct VMOptionalNavigationTitleModifier: ViewModifier {
-    @ObservedObject var vm: UTMVirtualMachine
+    @ObservedObject var vm: VMData
     
     func body(content: Content) -> some View {
         #if os(macOS)
@@ -127,7 +127,7 @@ private struct VMOptionalNavigationTitleModifier: ViewModifier {
 }
 
 struct Screenshot: View {
-    @ObservedObject var vm: UTMVirtualMachine
+    @ObservedObject var vm: VMData
     let large: Bool
     @EnvironmentObject private var data: UTMData
     
@@ -135,13 +135,13 @@ struct Screenshot: View {
         ZStack {
             Rectangle()
                 .fill(Color.black)
-            if vm.screenshot != nil {
+            if let screenshotImage = vm.screenshotImage {
                 #if os(macOS)
-                Image(nsImage: vm.screenshot!.image)
+                Image(nsImage: screenshotImage)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                 #else
-                Image(uiImage: vm.screenshot!.image)
+                Image(uiImage: screenshotImage)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                 #endif
@@ -151,7 +151,7 @@ struct Screenshot: View {
                 .blendMode(.hardLight)
             if vm.isBusy {
                 Spinner(size: .large)
-            } else if vm.state == .vmStopped {
+            } else if vm.isStopped {
                 Button(action: { data.run(vm: vm) }, label: {
                     Label("Run", systemImage: "play.circle.fill")
                         .labelStyle(.iconOnly)
@@ -164,7 +164,7 @@ struct Screenshot: View {
 }
 
 struct Details: View {
-    @ObservedObject var vm: UTMVirtualMachine
+    @ObservedObject var vm: VMData
     let sizeLabel: String
     @EnvironmentObject private var data: UTMData
     
@@ -174,7 +174,7 @@ struct Details: View {
                 HStack {
                     plainLabel("Path", systemImage: "folder")
                     Spacer()
-                    Text(vm.path.path)
+                    Text(vm.pathUrl.path)
                         .foregroundColor(.secondary)
                 }
             }
@@ -209,7 +209,7 @@ struct Details: View {
                     .foregroundColor(.secondary)
             }
             #if os(macOS)
-            if let appleConfig = vm.config.appleConfig {
+            if let appleConfig = vm.config as? UTMAppleConfiguration {
                 ForEach(appleConfig.serials) { serial in
                     if serial.mode == .ptty {
                         HStack {
@@ -221,21 +221,21 @@ struct Details: View {
                 }
             }
             #endif
-            if let qemuConfig = vm.config.qemuConfig {
+            if let qemuConfig = vm.config as? UTMQemuConfiguration {
                 ForEach(qemuConfig.serials) { serial in
                     if serial.mode == .tcpClient {
                         HStack {
                             plainLabel("Serial (Client)", systemImage: "network")
                             Spacer()
                             let address = "\(serial.tcpHostAddress ?? "example.com"):\(serial.tcpPort ?? 1234)"
-                            OptionalSelectableText(vm.state == .vmStarted ? address : nil)
+                            OptionalSelectableText(vm.wrapped?.state == .vmStarted ? address : nil)
                         }
                     } else if serial.mode == .tcpServer {
                         HStack {
                             plainLabel("Serial (Server)", systemImage: "network")
                             Spacer()
                             let address = "\(serial.tcpPort ?? 1234)"
-                            OptionalSelectableText(vm.state == .vmStarted ? address : nil)
+                            OptionalSelectableText(vm.wrapped?.state == .vmStarted ? address : nil)
                         }
                     }
                     #if os(macOS)
@@ -302,7 +302,7 @@ struct VMDetailsView_Previews: PreviewProvider {
     @State static private var config = UTMQemuConfiguration()
     
     static var previews: some View {
-        VMDetailsView(vm: UTMVirtualMachine(newConfig: config, destinationURL: URL(fileURLWithPath: "")))
+        VMDetailsView(vm: VMData(wrapping: UTMVirtualMachine(newConfig: config, destinationURL: URL(fileURLWithPath: ""))))
         .onAppear {
             config.sharing.directoryShareMode = .webdav
             var drive = UTMQemuConfigurationDrive()

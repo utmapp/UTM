@@ -27,7 +27,7 @@ enum ConfirmAction: Int, Identifiable {
 }
 
 struct VMConfirmActionModifier: ViewModifier {
-    let vm: UTMVirtualMachine
+    let vm: VMData
     @Binding var confirmAction: ConfirmAction?
     let onConfirm: () -> Void
     @EnvironmentObject private var data: UTMData

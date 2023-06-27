@@ -416,7 +416,9 @@ extension UTMQemuVirtualMachine {
     @MainActor
     override func updateScreenshot() {
         ioService?.screenshot(completion: { screenshot in
-            self.screenshot = screenshot
+            Task { @MainActor in
+                self.screenshot = screenshot
+            }
         })
     }
     

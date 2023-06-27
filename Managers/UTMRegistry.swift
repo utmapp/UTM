@@ -82,6 +82,22 @@ class UTMRegistry: NSObject {
         return newEntry
     }
     
+    /// Gets an existing registry entry or create a new entry for a legacy bookmark
+    /// - Parameters:
+    ///   - uuid: UUID
+    ///   - name: VM name
+    ///   - path: VM path string
+    ///   - bookmark: VM bookmark
+    /// - Returns: Either an existing registry entry or a new entry
+    func entry(uuid: UUID, name: String, path: String, bookmark: Data? = nil) -> UTMRegistryEntry {
+        if let entry = entries[uuid.uuidString] {
+            return entry
+        }
+        let newEntry = UTMRegistryEntry(uuid: uuid, name: name, path: path, bookmark: bookmark)
+        entries[uuid.uuidString] = newEntry
+        return newEntry
+    }
+    
     /// Get an existing registry entry for a UUID
     /// - Parameter uuidString: UUID
     /// - Returns: An existing registry entry or nil if it does not exist

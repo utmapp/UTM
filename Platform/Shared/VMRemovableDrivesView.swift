@@ -216,7 +216,7 @@ struct VMRemovableDrivesView_Previews: PreviewProvider {
     @State static private var config = UTMQemuConfiguration()
     
     static var previews: some View {
-        VMDetailsView(vm: UTMVirtualMachine(newConfig: config, destinationURL: URL(fileURLWithPath: "")))
+        VMDetailsView(vm: VMData(wrapping: UTMVirtualMachine(newConfig: config, destinationURL: URL(fileURLWithPath: ""))))
         .onAppear {
             config.sharing.directoryShareMode = .webdav
             var drive = UTMQemuConfigurationDrive()
