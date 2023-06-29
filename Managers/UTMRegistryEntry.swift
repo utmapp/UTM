@@ -330,21 +330,6 @@ extension UTMRegistryEntry {
         try? fileManager.removeItem(at: viewStateURL) // delete view.plist
     }
     
-    /// Try to migrate old bookmarks stored in config.plist or does nothing if not appliable.
-    /// - Parameter config: Config to migrate
-    @objc func migrate(fromConfig config: UTMConfigurationWrapper) {
-        #if os(macOS)
-        if let appleConfig = config.appleConfig {
-            Task { @MainActor in
-                if !hasMigratedConfig {
-                    migrate(fromAppleConfig: appleConfig)
-                    hasMigratedConfig = true
-                }
-            }
-        }
-        #endif
-    }
-    
     #if os(macOS)
     /// Try to migrate bookmarks from an Apple VM config.
     /// - Parameter config: Apple config to migrate

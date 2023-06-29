@@ -91,17 +91,17 @@ struct VMWizardView: View {
                         data.busyWorkAsync {
                             let config = try await wizardState.generateConfig()
                             #if arch(arm64)
-                            if #available(macOS 12, *), await wizardState.isPendingIPSWDownload {
-                                await data.downloadIPSW(using: config.appleConfig!)
+                            if #available(macOS 12, *), await wizardState.isPendingIPSWDownload, let appleConfig = config as? UTMAppleConfiguration {
+                                await data.downloadIPSW(using: appleConfig)
                                 return
                             }
                             #endif
-                            if let qemuConfig = config.qemuConfig {
+                            if let qemuConfig = config as? UTMQemuConfiguration {
                                 let vm = try await data.create(config: qemuConfig)
                                 await MainActor.run {
                                     qemuConfig.qemu.isGuestToolsInstallRequested = wizardState.isGuestToolsInstallRequested
                                 }
-                            } else if let appleConfig = config.appleConfig {
+                            } else if let appleConfig = config as? UTMAppleConfiguration {
                                 _ = try await data.create(config: appleConfig)
                             }
                             if await wizardState.isOpenSettingsAfterCreation {

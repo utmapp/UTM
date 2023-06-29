@@ -93,7 +93,7 @@ fileprivate struct WizardWrapper: View {
                         onDismiss()
                         data.busyWorkAsync {
                             let config = try await wizardState.generateConfig()
-                            if let qemuConfig = config.qemuConfig {
+                            if let qemuConfig = config as? UTMQemuConfiguration {
                                 let vm = try await data.create(config: qemuConfig)
                                 if #available(iOS 15, *) {
                                     // This is broken on iOS 14
