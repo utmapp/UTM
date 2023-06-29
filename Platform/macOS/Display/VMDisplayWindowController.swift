@@ -242,23 +242,27 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
     // MARK: - Virtual machine delegate
     
     func virtualMachine(_ vm: any UTMVirtualMachine, didTransitionToState state: UTMVirtualMachineState) {
-        switch state {
-        case .stopped, .paused:
-            enterSuspended(isBusy: false)
-        case .pausing, .stopping, .starting, .resuming, .saving, .restoring:
-            enterSuspended(isBusy: true)
-        case .started:
-            enterLive()
-        }
-        for subwindow in secondaryWindows {
-            subwindow.virtualMachine(vm, didTransitionToState: state)
+        Task { @MainActor in
+            switch state {
+            case .stopped, .paused:
+                enterSuspended(isBusy: false)
+            case .pausing, .stopping, .starting, .resuming, .saving, .restoring:
+                enterSuspended(isBusy: true)
+            case .started:
+                enterLive()
+            }
+            for subwindow in secondaryWindows {
+                subwindow.virtualMachine(vm, didTransitionToState: state)
+            }
         }
     }
     
     func virtualMachine(_ vm: any UTMVirtualMachine, didErrorWithMessage message: String) {
-        showErrorAlert(message) { _ in
-            if vm.state != .started && vm.state != .paused {
-                self.close()
+        Task { @MainActor in
+            showErrorAlert(message) { _ in
+                if vm.state != .started && vm.state != .paused {
+                    self.close()
+                }
             }
         }
     }
