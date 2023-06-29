@@ -2104,12 +2104,13 @@
 				CEB63A9624F47C1200CAF323 /* Shared */,
 				CEB63A7524F4654400CAF323 /* Main.swift */,
 				CE020BA224AEDC7C00B44AB6 /* UTMData.swift */,
-				CE2D954624AD4F980059923A /* UTMExtensions.swift */,
-				CEB63A7924F469E300CAF323 /* UTMJailbreak.m */,
-				CEB63A7824F468BA00CAF323 /* UTMJailbreak.h */,
-				CE020BAA24AEE00000B44AB6 /* UTMLoggingSwift.swift */,
+				83A004B826A8CC95001AC09E /* UTMDownloadTask.swift */,
+				84B36D2427B704C200C22685 /* UTMDownloadVMTask.swift */,
+				844EC0FA2773EE49003C104A /* UTMDownloadIPSWTask.swift */,
+				843232B628C4816100CFBC97 /* UTMDownloadSupportToolsTask.swift */,
+				835AA7B026AB7C85007A0411 /* UTMPendingVirtualMachine.swift */,
+				CE611BE629F50CAD001817BC /* UTMReleaseHelper.swift */,
 				847BF9A92A49C783000BD9AA /* VMData.swift */,
-				CE2D955624AD4F980059923A /* Swift-Bridging-Header.h */,
 				CE550BD52259479D0063E575 /* Assets.xcassets */,
 				521F3EFB2414F73800130500 /* Localizable.strings */,
 				CED8DF7928A120C100C34345 /* Localizable.stringsdict */,
@@ -2234,7 +2235,7 @@
 				CE50A41F2637BB200050430F /* Build.xcconfig */,
 				CE258ACC22715F8300E5A333 /* README.md */,
 				CE31C242225E543A00A965DD /* Configuration */,
-				CE5F1659226138AB00F3D56B /* Managers */,
+				CE5F1659226138AB00F3D56B /* Services */,
 				CE2D953624AD4F980059923A /* Platform */,
 				CEBDA1DB24D8BDDA0010B5EC /* QEMUHelper */,
 				CE9D18F72265410E00355E14 /* qemu */,
@@ -2263,11 +2264,18 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		CE5F1659226138AB00F3D56B /* Managers */ = {
+		CE5F1659226138AB00F3D56B /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				CE2D955624AD4F980059923A /* Swift-Bridging-Header.h */,
+				CE2D954624AD4F980059923A /* UTMExtensions.swift */,
+				CEB63A7924F469E300CAF323 /* UTMJailbreak.m */,
+				CEB63A7824F468BA00CAF323 /* UTMJailbreak.h */,
+				CE059DC6243E9E3400338317 /* UTMLocationManager.h */,
+				CE059DC7243E9E3400338317 /* UTMLocationManager.m */,
 				CE6EDCE0241DA0E900A719DC /* UTMLogging.h */,
 				CE6EDCE1241DA0E900A719DC /* UTMLogging.m */,
+				CE020BAA24AEE00000B44AB6 /* UTMLoggingSwift.swift */,
 				CEDF83F8258AE24E0030E4AC /* UTMPasteboard.swift */,
 				CE9D197A226542FE00355E14 /* UTMQemu.h */,
 				CE9D197B226542FE00355E14 /* UTMQemu.m */,
@@ -2275,21 +2283,18 @@
 				84A0A8822A47D52E0038F329 /* UTMQemuPort.swift */,
 				CE03D05424D90BE000F76B84 /* UTMQemuSystem.h */,
 				CE03D05024D90B4E00F76B84 /* UTMQemuSystem.m */,
-				841E999728AC817D003C6CB6 /* UTMQemuVirtualMachine.swift */,
-				CE020BB524B14F8400B44AB6 /* UTMVirtualMachine.swift */,
-				CE928C2926ABE6690099F293 /* UTMAppleVirtualMachine.swift */,
+				841E997428AA1191003C6CB6 /* UTMRegistry.swift */,
+				841E997828AA119B003C6CB6 /* UTMRegistryEntry.swift */,
 				848F71E7277A2A4E006A0240 /* UTMSerialPort.swift */,
 				848F71EB277A2F47006A0240 /* UTMSerialPortDelegate.swift */,
 				E2D64BC7241DB24B0034E0C6 /* UTMSpiceIO.h */,
 				E2D64BC8241DB24B0034E0C6 /* UTMSpiceIO.m */,
 				E2D64BE0241EAEBE0034E0C6 /* UTMSpiceIODelegate.h */,
-				CE059DC6243E9E3400338317 /* UTMLocationManager.h */,
-				CE059DC7243E9E3400338317 /* UTMLocationManager.m */,
-				835AA7B026AB7C85007A0411 /* UTMPendingVirtualMachine.swift */,
-				841E997428AA1191003C6CB6 /* UTMRegistry.swift */,
-				841E997828AA119B003C6CB6 /* UTMRegistryEntry.swift */,
+				CE020BB524B14F8400B44AB6 /* UTMVirtualMachine.swift */,
+				CE928C2926ABE6690099F293 /* UTMAppleVirtualMachine.swift */,
+				841E999728AC817D003C6CB6 /* UTMQemuVirtualMachine.swift */,
 			);
-			path = Managers;
+			path = Services;
 			sourceTree = "<group>";
 		};
 		CE6B240925F1F3CE0020D43E /* QEMULauncher */ = {
@@ -2405,14 +2410,9 @@
 				CEF0305526A2AFDD00667B63 /* VMWizardState.swift */,
 				CEBE820A26A4C8E0007AAB12 /* VMWizardSummaryView.swift */,
 				CE611BEA29F50D3E001817BC /* VMReleaseNotesView.swift */,
-				83A004B826A8CC95001AC09E /* UTMDownloadTask.swift */,
-				84B36D2427B704C200C22685 /* UTMDownloadVMTask.swift */,
-				844EC0FA2773EE49003C104A /* UTMDownloadIPSWTask.swift */,
-				843232B628C4816100CFBC97 /* UTMDownloadSupportToolsTask.swift */,
 				83034C0626AB630F006B4BAF /* UTMPendingVMView.swift */,
 				84909A8C27CACD5C005605F1 /* UTMPlaceholderVMView.swift */,
 				84909A9027CADAE0005605F1 /* UTMUnavailableVMView.swift */,
-				CE611BE629F50CAD001817BC /* UTMReleaseHelper.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -3568,7 +3568,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).UTM";
 				PRODUCT_NAME = "$(PROJECT_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "Platform/Swift-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "Services/Swift-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -3592,7 +3592,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).UTM";
 				PRODUCT_NAME = "$(PROJECT_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "Platform/Swift-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "Services/Swift-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -3621,7 +3621,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "$(PROVISIONING_PROFILE_SPECIFIER_MAC:default=)";
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_OBJC_BRIDGING_HEADER = "Platform/Swift-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "Services/Swift-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
@@ -3650,7 +3650,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "$(PROVISIONING_PROFILE_SPECIFIER_MAC:default=)";
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OBJC_BRIDGING_HEADER = "Platform/Swift-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "Services/Swift-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 			};
@@ -3877,7 +3877,7 @@
 				PRODUCT_MODULE_NAME = UTM;
 				PRODUCT_NAME = "UTM SE";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = WITH_QEMU_TCI;
-				SWIFT_OBJC_BRIDGING_HEADER = "Platform/Swift-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "Services/Swift-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -3908,7 +3908,7 @@
 				PRODUCT_MODULE_NAME = UTM;
 				PRODUCT_NAME = "UTM SE";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = WITH_QEMU_TCI;
-				SWIFT_OBJC_BRIDGING_HEADER = "Platform/Swift-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "Services/Swift-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
