@@ -634,16 +634,18 @@ struct AlertMessage: Identifiable {
             return
         }
         listAdd(pendingVM: task.pendingVM)
-        do {
-            if let wrapped = try await task.download() {
-                let vm = VMData(wrapping: wrapped)
-                try await self.save(vm: vm)
-                listAdd(vm: vm)
+        Task {
+            do {
+                if let wrapped = try await task.download() {
+                    let vm = VMData(wrapping: wrapped)
+                    try await self.save(vm: vm)
+                    listAdd(vm: vm)
+                }
+            } catch {
+                showErrorAlert(message: error.localizedDescription)
             }
-        } catch {
-            showErrorAlert(message: error.localizedDescription)
+            listRemove(pendingVM: task.pendingVM)
         }
-        listRemove(pendingVM: task.pendingVM)
     }
     #endif
 
@@ -657,16 +659,18 @@ struct AlertMessage: Identifiable {
         }
         let task = UTMDownloadVMTask(for: url)
         listAdd(pendingVM: task.pendingVM)
-        do {
-            if let wrapped = try await task.download() {
-                let vm = VMData(wrapping: wrapped)
-                try await self.save(vm: vm)
-                listAdd(vm: vm)
+        Task {
+            do {
+                if let wrapped = try await task.download() {
+                    let vm = VMData(wrapping: wrapped)
+                    try await self.save(vm: vm)
+                    listAdd(vm: vm)
+                }
+            } catch {
+                showErrorAlert(message: error.localizedDescription)
             }
-        } catch {
-            showErrorAlert(message: error.localizedDescription)
+            listRemove(pendingVM: task.pendingVM)
         }
-        listRemove(pendingVM: task.pendingVM)
     }
     
     func mountSupportTools(for vm: UTMQemuVirtualMachine) async throws {
@@ -676,13 +680,15 @@ struct AlertMessage: Identifiable {
             _ = try await task.mountTools()
         } else {
             listAdd(pendingVM: task.pendingVM)
-            do {
-                _ = try await task.download()
-            } catch {
-                showErrorAlert(message: error.localizedDescription)
+            Task {
+                do {
+                    _ = try await task.download()
+                } catch {
+                    showErrorAlert(message: error.localizedDescription)
+                }
+                vm.config.qemu.isGuestToolsInstallRequested = false
+                listRemove(pendingVM: task.pendingVM)
             }
-            vm.config.qemu.isGuestToolsInstallRequested = false
-            listRemove(pendingVM: task.pendingVM)
         }
     }
     
