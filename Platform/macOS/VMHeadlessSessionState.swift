@@ -19,10 +19,10 @@ import IOKit.pwr_mgt
 
 /// Represents the UI state for a single headless VM session.
 @MainActor class VMHeadlessSessionState: NSObject, ObservableObject {
-    let vm: UTMVirtualMachine
+    let vm: any UTMVirtualMachine
     var onStop: ((Notification) -> Void)?
     
-    @Published var vmState: UTMVMState = .vmStopped
+    @Published var vmState: UTMVirtualMachineState = .stopped
     
     @Published var fatalError: String?
     
@@ -31,7 +31,7 @@ import IOKit.pwr_mgt
     
     @Setting("PreventIdleSleep") private var isPreventIdleSleep: Bool = false
     
-    init(for vm: UTMVirtualMachine, onStop: ((Notification) -> Void)?) {
+    init(for vm: any UTMVirtualMachine, onStop: ((Notification) -> Void)?) {
         self.vm = vm
         self.onStop = onStop
         super.init()
@@ -45,14 +45,14 @@ import IOKit.pwr_mgt
 }
 
 extension VMHeadlessSessionState: UTMVirtualMachineDelegate {
-    nonisolated func virtualMachine(_ vm: UTMVirtualMachine, didTransitionTo state: UTMVMState) {
+    nonisolated func virtualMachine(_ vm: any UTMVirtualMachine, didTransitionToState state: UTMVirtualMachineState) {
         Task { @MainActor in
             vmState = state
-            if state == .vmStarted {
+            if state == .started {
                 hasStarted = true
                 didStart()
             }
-            if state == .vmStopped {
+            if state == .stopped {
                 if hasStarted {
                     didStop() // graceful exit
                 }
@@ -61,7 +61,7 @@ extension VMHeadlessSessionState: UTMVirtualMachineDelegate {
         }
     }
     
-    nonisolated func virtualMachine(_ vm: UTMVirtualMachine, didErrorWithMessage message: String) {
+    nonisolated func virtualMachine(_ vm: any UTMVirtualMachine, didErrorWithMessage message: String) {
         Task { @MainActor in
             fatalError = message
             NotificationCenter.default.post(name: .vmSessionError, object: nil, userInfo: ["Session": self, "Message": message])
@@ -70,6 +70,14 @@ extension VMHeadlessSessionState: UTMVirtualMachineDelegate {
                 didStop()
             }
         }
+    }
+    
+    nonisolated func virtualMachine(_ vm: any UTMVirtualMachine, didCompleteInstallation success: Bool) {
+        
+    }
+    
+    nonisolated func virtualMachine(_ vm: any UTMVirtualMachine, didUpdateInstallationProgress progress: Double) {
+        
     }
 }
 

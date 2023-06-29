@@ -1,5 +1,5 @@
 //
-// Copyright © 2020 osy. All rights reserved.
+// Copyright © 2023 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,70 +15,346 @@
 //
 
 import Foundation
+import Combine
+#if canImport(AppKit)
+import AppKit
+#elseif canImport(UIKit)
+import UIKit
+#endif
 
-extension UTMVirtualMachine: Identifiable {
-    public var id: UUID {
-        return registryEntry.uuid
+private let kUTMBundleExtension = "utm"
+private let kScreenshotPeriodSeconds = 60.0
+private let kUTMBundleScreenshotFilename = "screenshot.png"
+private let kUTMBundleViewFilename = "view.plist"
+
+/// UTM virtual machine backend
+protocol UTMVirtualMachine: AnyObject, Identifiable {
+    associatedtype Capabilities: UTMVirtualMachineCapabilities
+    associatedtype Configuration: UTMConfiguration
+    
+    /// Path where the .utm is stored
+    var pathUrl: URL { get }
+    
+    /// True if the .utm is loaded outside of the default storage
+    ///
+    /// This indicates that we cannot access outside the container.
+    var isShortcut: Bool { get }
+    
+    /// The VM is running in disposible mode
+    ///
+    /// This indicates that changes should not be saved.
+    var isRunningAsDisposible: Bool { get }
+    
+    /// Set by caller to handle VM events
+    var delegate: (any UTMVirtualMachineDelegate)? { get set }
+    
+    /// Set by caller to handle changes in `config` or `registryEntry`
+    var onConfigurationChange: (() -> Void)? { get set }
+    
+    /// Set by caller to handle changes in `state` or `screenshot`
+    var onStateChange: (() -> Void)?  { get set }
+    
+    /// Configuration for this VM
+    var config: Configuration { get }
+    
+    /// Additional configuration on a short lived, per-host basis
+    ///
+    /// This includes display size, bookmarks to removable drives, etc.
+    var registryEntry: UTMRegistryEntry { get }
+    
+    /// Current VM state
+    var state: UTMVirtualMachineState { get }
+    
+    /// If non-null, is the most recent screenshot of the running VM
+    var screenshot: PlatformImage? { get }
+    
+    static func isVirtualMachine(url: URL) -> Bool
+    
+    /// Get name of UTM virtual machine from a file
+    /// - Parameter url: File URL
+    /// - Returns: The name of the VM
+    static func virtualMachineName(for url: URL) -> String
+    
+    /// Get the path of a UTM virtual machine from a name and parent directory
+    /// - Parameters:
+    ///   - name: VM name
+    ///   - parentUrl: Base directory file URL
+    /// - Returns: URL of virtual machine
+    static func virtualMachinePath(for name: String, in parentUrl: URL) -> URL
+    
+    /// Returns supported capabilities for this backend
+    static var capabilities: Capabilities { get }
+    
+    /// Instantiate a new virtual machine
+    /// - Parameters:
+    ///   - packageUrl: Package where the virtual machine resides
+    ///   - configuration: New virtual machine configuration or nil to load an existing one
+    ///   - isShortcut: Indicate that this package cannot be moved
+    init(packageUrl: URL, configuration: Configuration?, isShortcut: Bool) throws
+    
+    /// Discard any changes to configuration by reloading from disk
+    /// - Parameter packageUrl: URL to reload from, if nil then use the existing package URL
+    func reload(from packageUrl: URL?) throws
+    
+    /// Save .utm bundle to disk
+    ///
+    /// This will create a configuration file and any auxiliary data files if needed.
+    func save() async throws
+    
+    /// Called when we save the config
+    func updateRegistryFromConfig() async throws
+    
+    /// Called whenever the registry entry changes
+    func updateConfigFromRegistry()
+    
+    /// Called when we have a duplicate UUID
+    /// - Parameters:
+    ///   - uuid: New UUID
+    ///   - name: Optionally change name as well
+    ///   - entry: Optionally copy data from an entry
+    func changeUuid(to uuid: UUID, name: String?, copyingEntry entry: UTMRegistryEntry?)
+    
+    /// Starts the VM
+    /// - Parameter options: Options for startup
+    func start(options: UTMVirtualMachineStartOptions) async throws
+    
+    /// Stops the VM
+    /// - Parameter method: How to handle the stop request
+    func stop(usingMethod method: UTMVirtualMachineStopMethod) async throws
+    
+    /// Restarts the VM
+    func restart() async throws
+    
+    /// Pauses the VM
+    func pause() async throws
+    
+    /// Resumes the VM
+    func resume() async throws
+    
+    /// Saves the current VM state
+    /// - Parameter name: Optional snaphot name (default if nil)
+    func saveSnapshot(name: String?) async throws
+    
+    /// Deletes the saved VM state
+    /// - Parameter name: Optional snaphot name (default if nil)
+    func deleteSnapshot(name: String?) async throws
+    
+    /// Restore saved VM state
+    /// - Parameter name: Optional snaphot name (default if nil)
+    func restoreSnapshot(name: String?) async throws
+    
+    /// Request a screenshot of the primary graphics device
+    /// - Returns: true if successful and the screenshot will be in `screenshot`
+    @discardableResult func takeScreenshot() async -> Bool
+}
+
+/// Supported capabilities for a UTM backend
+protocol UTMVirtualMachineCapabilities {
+    /// The backend supports killing the VM process.
+    var supportsProcessKill: Bool { get }
+    
+    /// The backend supports saving/restoring VM state.
+    var supportsSnapshots: Bool { get }
+    
+    /// The backend supports taking screenshots.
+    var supportsScreenshots: Bool { get }
+    
+    /// The backend supports running without persisting changes.
+    var supportsDisposibleMode: Bool { get }
+    
+    /// The backend supports booting into recoveryOS.
+    var supportsRecoveryMode: Bool { get }
+}
+
+/// Delegate for UTMVirtualMachine events
+protocol UTMVirtualMachineDelegate: AnyObject {
+    /// Called when VM state changes
+    ///
+    /// Will always be called from the main thread.
+    /// - Parameters:
+    ///   - vm: Virtual machine
+    ///   - state: New state
+    func virtualMachine(_ vm: any UTMVirtualMachine, didTransitionToState state: UTMVirtualMachineState)
+    
+    /// Called when VM errors
+    ///
+    /// Will always be called from the main thread.
+    /// - Parameters:
+    ///   - vm: Virtual machine
+    ///   - message: Localized error message when supported, English message otherwise
+    func virtualMachine(_ vm: any UTMVirtualMachine, didErrorWithMessage message: String)
+    
+    /// Called when VM installation updates progress
+    /// - Parameters:
+    ///   - vm: Virtual machine
+    ///   - progress: Number between 0.0 and 1.0 indiciating installation progress
+    func virtualMachine(_ vm: any UTMVirtualMachine, didUpdateInstallationProgress progress: Double)
+    
+    /// Called when VM successfully completes installation
+    /// - Parameters:
+    ///   - vm: Virtual machine
+    ///   - success: True if installation is successful
+    func virtualMachine(_ vm: any UTMVirtualMachine, didCompleteInstallation success: Bool)
+}
+
+/// Virtual machine state
+enum UTMVirtualMachineState {
+    case stopped
+    case starting
+    case started
+    case pausing
+    case paused
+    case resuming
+    case saving
+    case restoring
+    case stopping
+}
+
+/// Additional options for VM start
+struct UTMVirtualMachineStartOptions: OptionSet {
+    let rawValue: UInt
+    
+    /// Boot without persisting any changes.
+    static let bootDisposibleMode = Self(rawValue: 1 << 0)
+    /// Boot into recoveryOS (when supported).
+    static let bootRecovery = Self(rawValue: 1 << 1)
+}
+
+/// Method to stop the VM
+enum UTMVirtualMachineStopMethod {
+    /// Sends a request to the guest to shut down gracefully.
+    case request
+    /// Sends a hardware power down signal.
+    case force
+    /// Terminate the VM process.
+    case kill
+}
+
+// MARK: - Class functions
+
+extension UTMVirtualMachine {
+    private static var fileManager: FileManager {
+        FileManager.default
+    }
+    
+    static func isVirtualMachine(url: URL) -> Bool {
+        return url.pathExtension == kUTMBundleExtension
+    }
+    
+    static func virtualMachineName(for url: URL) -> String {
+        (fileManager.displayName(atPath: url.path) as NSString).deletingPathExtension
+    }
+    
+    static func virtualMachinePath(for name: String, in parentUrl: URL) -> URL {
+        let illegalFileNameCharacters = CharacterSet(charactersIn: ",/:\\?%*|\"<>")
+        let name = name.components(separatedBy: illegalFileNameCharacters).joined(separator: "-")
+        return parentUrl.appendingPathComponent(name).appendingPathExtension(kUTMBundleExtension)
+    }
+    
+    /// Instantiate a new VM from a new configuration
+    /// - Parameters:
+    ///   - configuration: New configuration
+    ///   - destinationUrl: Directory to store VM
+    init(newForConfiguration configuration: Self.Configuration, destinationUrl: URL) throws {
+        let packageUrl = Self.virtualMachinePath(for: configuration.information.name, in: destinationUrl)
+        try self.init(packageUrl: packageUrl, configuration: configuration, isShortcut: false)
     }
 }
 
-extension UTMVirtualMachine: ObservableObject {
+// MARK: - Snapshots
+
+extension UTMVirtualMachine {
+    func saveSnapshot(name: String?) async throws {
+        throw UTMVirtualMachineError.notImplemented
+    }
     
+    func deleteSnapshot(name: String?) async throws {
+        throw UTMVirtualMachineError.notImplemented
+    }
+    
+    func restoreSnapshot(name: String?) async throws {
+        throw UTMVirtualMachineError.notImplemented
+    }
 }
 
-@objc extension UTMVirtualMachine {
-    fileprivate static let gibInMib = 1024
-    func subscribeToChildren() {
-        var s: [AnyObject] = []
-        if let config = config.qemuConfig {
-            s.append(config.objectWillChange.sink { [weak self] in
-                self?.objectWillChange.send()
-            })
-        } else if let config = config.appleConfig {
-            s.append(config.objectWillChange.sink { [weak self] in
-                self?.objectWillChange.send()
-            })
+// MARK: - Screenshot
+
+extension UTMVirtualMachine {
+    private var isScreenshotSaveEnabled: Bool {
+        !UserDefaults.standard.bool(forKey: "NoSaveScreenshot")
+    }
+    
+    private var screenshotUrl: URL {
+        pathUrl.appendingPathComponent(kUTMBundleScreenshotFilename)
+    }
+    
+    func startScreenshotTimer() -> Timer {
+        // delete existing screenshot if required
+        if !isScreenshotSaveEnabled && !isRunningAsDisposible {
+            try? deleteScreenshot()
         }
-        s.append(registryEntry.objectWillChange.sink { [weak self] in
+        return Timer.scheduledTimer(withTimeInterval: kScreenshotPeriodSeconds, repeats: true) { [weak self] timer in
             guard let self = self else {
+                timer.invalidate()
                 return
             }
-            self.objectWillChange.send()
-            Task { @MainActor in
-                self.updateConfigFromRegistry()
+            if self.state == .started {
+                Task { @MainActor in
+                    await self.takeScreenshot()
+                }
             }
-        })
-        anyCancellable = s
+        }
     }
     
-    @MainActor func propertyWillChange() -> Void {
-        objectWillChange.send()
+    func loadScreenshot() -> PlatformImage? {
+        #if canImport(AppKit)
+        return NSImage(contentsOf: screenshotUrl)
+        #elseif canImport(UIKit)
+        return UIImage(contentsOfURL: screenshotUrl)
+        #endif
     }
     
-    @nonobjc convenience init<Config: UTMConfiguration>(newConfig: Config, destinationURL: URL) {
-        let packageURL = UTMVirtualMachine.virtualMachinePath(newConfig.information.name, inParentURL: destinationURL)
-        let configuration = UTMConfigurationWrapper(wrapping: newConfig)
-        self.init(configurationWrapper: configuration, packageURL: packageURL)
+    func saveScreenshot() throws {
+        guard isScreenshotSaveEnabled && !isRunningAsDisposible else {
+            return
+        }
+        guard let screenshot = screenshot else {
+            return
+        }
+        #if canImport(AppKit)
+        guard let cgref = screenshot.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
+            return
+        }
+        let newrep = NSBitmapImageRep(cgImage: cgref)
+        newrep.size = screenshot.size
+        let pngdata = newrep.representation(using: .png, properties: [:])
+        try pngdata?.write(to: screenshotUrl)
+        #elseif canImport(UIKit)
+        try screenshot.pngData()?.write(to: screenshotUrl)
+        #endif
+    }
+    
+    func deleteScreenshot() throws {
+        try Self.fileManager.removeItem(at: screenshotUrl)
+    }
+    
+    @MainActor func takeScreenshot() async -> Bool {
+        return false
     }
 }
 
-@objc extension UTMVirtualMachine {
-    @MainActor func reloadConfiguration() throws {
-        try config.reload(from: path)
-        updateConfigFromRegistry()
-    }
-    
-    @MainActor func saveUTM() async throws {
-        let fileManager = FileManager.default
-        let existingPath = path
-        let newPath = UTMVirtualMachine.virtualMachinePath(config.name, inParentURL: existingPath.deletingLastPathComponent())
+// MARK: - Save UTM
+
+@MainActor extension UTMVirtualMachine {
+    func save() async throws {
+        let existingPath = pathUrl
+        let newPath = Self.virtualMachinePath(for: config.information.name, in: existingPath.deletingLastPathComponent())
         try await config.save(to: existingPath)
         let hasRenamed: Bool
         if !isShortcut && existingPath.path != newPath.path {
             try await Task.detached {
-                try fileManager.moveItem(at: existingPath, to: newPath)
+                try Self.fileManager.moveItem(at: existingPath, to: newPath)
             }.value
-            path = newPath
             hasRenamed = true
         } else {
             hasRenamed = false
@@ -86,85 +362,168 @@ extension UTMVirtualMachine: ObservableObject {
         try await updateRegistryFromConfig()
         // reload the config if we renamed in order to point all the URLs to the right path
         if hasRenamed {
-            try config.reload(from: path)
-        }
-    }
-    
-    /// Called when we save the config
-    @MainActor func updateRegistryFromConfig() async throws {
-        if registryEntry.uuid != config.uuid {
-            changeUuid(to: config.uuid)
-        }
-        registryEntry.name = config.name
-        let oldPath = registryEntry.package.path
-        let oldRemoteBookmark = registryEntry.package.remoteBookmark
-        registryEntry.package = try UTMRegistryEntry.File(url: path)
-        if registryEntry.package.path == oldPath {
-            registryEntry.package.remoteBookmark = oldRemoteBookmark
-        }
-    }
-    
-    /// Called whenever the registry entry changes
-    @MainActor func updateConfigFromRegistry() {
-        // implement in subclass
-    }
-    
-    /// Called when we have a duplicate UUID
-    @MainActor func changeUuid(to uuid: UUID, name: String? = nil, copyFromExisting existing: UTMRegistryEntry? = nil) {
-        if let qemuConfig = config.qemuConfig {
-            qemuConfig.information.uuid = uuid
-            if let name = name {
-                qemuConfig.information.name = name
-            }
-        } else if let appleConfig = config.appleConfig {
-            appleConfig.information.uuid = uuid
-            if let name = name {
-                appleConfig.information.name = name
-            }
-        } else {
-            fatalError("Invalid configuration.")
-        }
-        registryEntry = UTMRegistry.shared.entry(for: self)
-        if let existing = existing {
-            registryEntry.update(copying: existing)
+            try reload(from: newPath)
         }
     }
 }
 
-// MARK: - Bookmark handling
-extension URL {
-    private static var defaultCreationOptions: BookmarkCreationOptions {
-        #if os(iOS)
-        return .minimalBookmark
-        #else
-        return .withSecurityScope
-        #endif
+// MARK: - Registry functions
+
+@MainActor extension UTMVirtualMachine {
+    nonisolated func loadRegistry() -> UTMRegistryEntry {
+        let registryEntry = UTMRegistry.shared.entry(for: self)
+        // migrate legacy view state
+        let viewStateUrl = pathUrl.appendingPathComponent(kUTMBundleViewFilename)
+        registryEntry.migrateUnsafe(viewStateURL: viewStateUrl)
+        return registryEntry
     }
     
-    private static var defaultResolutionOptions: BookmarkResolutionOptions {
-        #if os(iOS)
-        return []
-        #else
-        return .withSecurityScope
-        #endif
+    /// Default implementation
+    func updateRegistryFromConfig() async throws {
+        try await updateRegistryBasics()
     }
     
-    func persistentBookmarkData(isReadyOnly: Bool = false) throws -> Data {
-        var options = Self.defaultCreationOptions
-        #if os(macOS)
-        if isReadyOnly {
-            options.insert(.securityScopeAllowOnlyReadAccess)
+    /// Called when we save the config
+    func updateRegistryBasics() async throws {
+        if registryEntry.uuid != id {
+            changeUuid(to: id, name: nil, copyingEntry: registryEntry)
         }
-        #endif
-        return try self.bookmarkData(options: options,
-                                     includingResourceValuesForKeys: nil,
-                                     relativeTo: nil)
+        registryEntry.name = name
+        let oldPath = registryEntry.package.path
+        let oldRemoteBookmark = registryEntry.package.remoteBookmark
+        registryEntry.package = try UTMRegistryEntry.File(url: pathUrl)
+        if registryEntry.package.path == oldPath {
+            registryEntry.package.remoteBookmark = oldRemoteBookmark
+        }
+    }
+}
+
+// MARK: - Identity
+
+extension UTMVirtualMachine {
+    var id: UUID {
+        config.information.uuid
     }
     
-    init(resolvingPersistentBookmarkData bookmark: Data) throws {
-        var stale: Bool = false
-        try self.init(resolvingBookmarkData: bookmark,
-                      options: Self.defaultResolutionOptions,
-                      bookmarkDataIsStale: &stale)
+    var name: String {
+        config.information.name
+    }
+}
+
+// MARK: - Errors
+
+enum UTMVirtualMachineError: Error {
+    case notImplemented
+}
+
+extension UTMVirtualMachineError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case .notImplemented:
+            return NSLocalizedString("Not implemented.", comment: "UTMVirtualMachine")
+        }
+    }
+}
+
+// MARK: - Non-asynchronous version (to be removed)
+
+extension UTMVirtualMachine {
+    func requestVmStart(options: UTMVirtualMachineStartOptions = []) {
+        Task {
+            do {
+                try await start(options: options)
+            } catch {
+                await MainActor.run {
+                    delegate?.virtualMachine(self, didErrorWithMessage: error.localizedDescription)
+                }
+            }
+        }
+    }
+    
+    func requestVmStop(force: Bool = false) {
+        Task {
+            do {
+                try await stop(usingMethod: force ? .kill : .force)
+            } catch {
+                await MainActor.run {
+                    delegate?.virtualMachine(self, didErrorWithMessage: error.localizedDescription)
+                }
+            }
+        }
+    }
+    
+    func requestVmReset() {
+        Task {
+            do {
+                try await restart()
+            } catch {
+                await MainActor.run {
+                    delegate?.virtualMachine(self, didErrorWithMessage: error.localizedDescription)
+                }
+            }
+        }
+    }
+    
+    func requestVmPause(save: Bool = false) {
+        Task {
+            do {
+                try await pause()
+                if save {
+                    try? await saveSnapshot(name: nil)
+                }
+            } catch {
+                await MainActor.run {
+                    delegate?.virtualMachine(self, didErrorWithMessage: error.localizedDescription)
+                }
+            }
+        }
+    }
+    
+    func requestVmSaveState() {
+        Task {
+            do {
+                try await saveSnapshot(name: nil)
+            } catch {
+                await MainActor.run {
+                    delegate?.virtualMachine(self, didErrorWithMessage: error.localizedDescription)
+                }
+            }
+        }
+    }
+    
+    func requestVmDeleteState() {
+        Task {
+            do {
+                try await deleteSnapshot(name: nil)
+            } catch {
+                await MainActor.run {
+                    delegate?.virtualMachine(self, didErrorWithMessage: error.localizedDescription)
+                }
+            }
+        }
+    }
+    
+    func requestVmResume() {
+        Task {
+            do {
+                try await resume()
+            } catch {
+                await MainActor.run {
+                    delegate?.virtualMachine(self, didErrorWithMessage: error.localizedDescription)
+                }
+            }
+        }
+    }
+    
+    func requestGuestPowerDown() {
+        Task {
+            do {
+                try await stop(usingMethod: .request)
+            } catch {
+                await MainActor.run {
+                    delegate?.virtualMachine(self, didErrorWithMessage: error.localizedDescription)
+                }
+            }
+        }
     }
 }

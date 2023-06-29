@@ -30,9 +30,6 @@
 #include "UTMJailbreak.h"
 #include "UTMLogging.h"
 #include "UTMLegacyViewState.h"
-#include "UTMVirtualMachine.h"
-#include "UTMVirtualMachine-Protected.h"
-#include "UTMVirtualMachineDelegate.h"
 #include "UTMSpiceIO.h"
 #if TARGET_OS_IPHONE
 #include "UTMLocationManager.h"

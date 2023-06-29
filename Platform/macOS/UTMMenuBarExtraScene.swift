@@ -66,7 +66,7 @@ private struct VMMenuItem: View {
                     data.stop(vm: vm)
                 }
                 Button("Suspend") {
-                    let isSnapshot = (vm.wrapped as? UTMQemuVirtualMachine)?.isRunningAsSnapshot ?? false
+                    let isSnapshot = (vm.wrapped as? UTMQemuVirtualMachine)?.isRunningAsDisposible ?? false
                     vm.wrapped!.requestVmPause(save: !isSnapshot)
                 }
                 Button("Reset") {

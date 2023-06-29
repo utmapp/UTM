@@ -20,7 +20,7 @@ import SwiftUI
 /// Model wrapping a single UTMVirtualMachine for use in views
 @MainActor class VMData: ObservableObject {
     /// Underlying virtual machine
-    private(set) var wrapped: UTMVirtualMachine? {
+    private(set) var wrapped: (any UTMVirtualMachine)? {
         willSet {
             objectWillChange.send()
         }
@@ -32,13 +32,13 @@ import SwiftUI
     
     /// Virtual machine configuration
     var config: (any UTMConfiguration)? {
-        wrapped?.config.wrappedValue as? (any UTMConfiguration)
+        wrapped?.config
     }
     
     /// Current path of the VM
     var pathUrl: URL {
         if let wrapped = wrapped {
-            return wrapped.path
+            return wrapped.pathUrl
         } else if let registryEntry = registryEntry {
             return registryEntry.package.url
         } else {
@@ -63,6 +63,12 @@ import SwiftUI
     /// This is a workaround for SwiftUI bugs not hiding deleted elements.
     @Published var isDeleted: Bool = false
     
+    /// Copy from wrapped VM
+    @Published var state: UTMVirtualMachineState = .stopped
+    
+    /// Copy from wrapped VM
+    @Published var screenshot: PlatformImage?
+    
     /// Allows changes in the config, registry, and VM to be reflected
     private var observers: [AnyCancellable] = []
     
@@ -73,10 +79,17 @@ import SwiftUI
     
     /// Create a VM from an existing object
     /// - Parameter vm: VM to wrap
-    convenience init(wrapping vm: UTMVirtualMachine) {
+    convenience init(wrapping vm: any UTMVirtualMachine) {
         self.init()
         self.wrapped = vm
         subscribeToChildren()
+    }
+    
+    /// Attempt to a new wrapped UTM VM from a file path
+    /// - Parameter url: File path
+    convenience init(url: URL) throws {
+        self.init()
+        try load(from: url)
     }
     
     /// Create a new wrapped UTM VM from a registry entry
@@ -114,42 +127,62 @@ import SwiftUI
     
     /// Create a new VM from a configuration
     /// - Parameter config: Configuration to create new VM
-    convenience init<Config: UTMConfiguration>(creatingFromConfig config: Config, destinationUrl: URL) {
+    convenience init<Config: UTMConfiguration>(creatingFromConfig config: Config, destinationUrl: URL) throws {
         self.init()
-        if config is UTMQemuConfiguration {
-            wrapped = UTMQemuVirtualMachine(newConfig: config, destinationURL: destinationUrl)
+        if let qemuConfig = config as? UTMQemuConfiguration {
+            wrapped = try UTMQemuVirtualMachine(newForConfiguration: qemuConfig, destinationUrl: destinationUrl)
         }
         #if os(macOS)
-        if config is UTMAppleConfiguration {
-            wrapped = UTMAppleVirtualMachine(newConfig: config, destinationURL: destinationUrl)
+        if let appleConfig = config as? UTMAppleConfiguration {
+            wrapped = try UTMAppleVirtualMachine(newForConfiguration: appleConfig, destinationUrl: destinationUrl)
         }
         #endif
         subscribeToChildren()
     }
     
-    /// Loads the VM from file
+    /// Loads the VM
     ///
     /// If the VM is already loaded, it will return true without doing anything.
+    /// - Parameter url: URL to load from
     /// - Returns: If load was successful
     func load() throws {
+        try load(from: pathUrl)
+    }
+    
+    /// Loads the VM from a path
+    ///
+    /// If the VM is already loaded, it will return true without doing anything.
+    /// - Parameter url: URL to load from
+    /// - Returns: If load was successful
+    private func load(from url: URL) throws {
         guard !isLoaded else {
             return
         }
-        guard let vm = UTMVirtualMachine(url: pathUrl) else {
+        var loaded: (any UTMVirtualMachine)?
+        let config = try UTMQemuConfiguration.load(from: url)
+        if let qemuConfig = config as? UTMQemuConfiguration {
+            loaded = try UTMQemuVirtualMachine(packageUrl: url, configuration: qemuConfig, isShortcut: isShortcut)
+        }
+        #if os(macOS)
+        if let appleConfig = config as? UTMAppleConfiguration {
+            loaded = try UTMAppleVirtualMachine(packageUrl: url, configuration: appleConfig, isShortcut: isShortcut)
+        }
+        #endif
+        guard let vm = loaded else {
             throw VMDataError.virtualMachineNotLoaded
         }
-        vm.isShortcut = isShortcut
         if let oldEntry = registryEntry, oldEntry.uuid != vm.registryEntry.uuid {
             if uuidUnknown {
                 // legacy VMs don't have UUID stored so we made a fake UUID
                 UTMRegistry.shared.remove(entry: oldEntry)
             } else {
                 // persistent uuid does not match indicating a cloned or legacy VM with a duplicate UUID
-                vm.changeUuid(to: oldEntry.uuid, copyFromExisting: oldEntry)
+                vm.changeUuid(to: oldEntry.uuid, name: nil, copyingEntry: oldEntry)
             }
         }
         wrapped = vm
         uuidUnknown = false
+        subscribeToChildren()
     }
     
     /// Saves the VM to file
@@ -157,39 +190,42 @@ import SwiftUI
         guard let wrapped = wrapped else {
             throw VMDataError.virtualMachineNotLoaded
         }
-        try await wrapped.saveUTM()
+        try await wrapped.save()
     }
     
     /// Listen to changes in the underlying object and propogate upwards
     private func subscribeToChildren() {
         var s: [AnyCancellable] = []
-        if let config = config as? UTMQemuConfiguration {
-            s.append(config.objectWillChange.sink { [weak self] in
+        if let wrapped = wrapped {
+            wrapped.onConfigurationChange = { [weak self] in
+                self?.subscribeToChildren()
+                self?.objectWillChange.send()
+            }
+            
+            wrapped.onStateChange = { [weak self] in
+                guard let self = self else {
+                    return
+                }
+                Task { @MainActor in
+                    self.state = wrapped.state
+                    self.screenshot = wrapped.screenshot
+                }
+            }
+        }
+        if let qemuConfig = wrapped?.config as? UTMQemuConfiguration {
+            s.append(qemuConfig.objectWillChange.sink { [weak self] _ in
                 self?.objectWillChange.send()
             })
         }
         #if os(macOS)
-        if let config = config as? UTMAppleConfiguration {
-            s.append(config.objectWillChange.sink { [weak self] in
+        if let appleConfig = wrapped?.config as? UTMAppleConfiguration {
+            s.append(appleConfig.objectWillChange.sink { [weak self] _ in
                 self?.objectWillChange.send()
             })
         }
         #endif
         if let registryEntry = registryEntry {
             s.append(registryEntry.objectWillChange.sink { [weak self] in
-                guard let self = self else {
-                    return
-                }
-                self.objectWillChange.send()
-                self.wrapped?.updateConfigFromRegistry()
-            })
-        }
-        // observe KVO publisher for state changes
-        if let wrapped = wrapped {
-            s.append(wrapped.publisher(for: \.state).sink { [weak self] _ in
-                self?.objectWillChange.send()
-            })
-            s.append(wrapped.publisher(for: \.screenshot).sink { [weak self] _ in
                 self?.objectWillChange.send()
             })
         }
@@ -223,7 +259,7 @@ extension VMData: Identifiable {
 extension VMData: Equatable {
     static func == (lhs: VMData, rhs: VMData) -> Bool {
         if lhs.isLoaded && rhs.isLoaded {
-            return lhs.wrapped == rhs.wrapped
+            return lhs.wrapped === rhs.wrapped
         }
         if let lhsEntry = lhs.registryEntryWrapped, let rhsEntry = rhs.registryEntryWrapped {
             return lhsEntry == rhsEntry
@@ -234,7 +270,7 @@ extension VMData: Equatable {
 
 extension VMData: Hashable {
     func hash(into hasher: inout Hasher) {
-        hasher.combine(wrapped)
+        hasher.combine(pathUrl)
         hasher.combine(registryEntryWrapped)
         hasher.combine(isDeleted)
     }
@@ -244,13 +280,9 @@ extension VMData: Hashable {
 extension VMData {
     /// True if the .utm is loaded outside of the default storage
     var isShortcut: Bool {
-        if let wrapped = wrapped {
-            return wrapped.isShortcut
-        } else {
-            let defaultStorageUrl = UTMData.defaultStorageUrl.standardizedFileURL
-            let parentUrl = pathUrl.deletingLastPathComponent().standardizedFileURL
-            return parentUrl != defaultStorageUrl
-        }
+        let defaultStorageUrl = UTMData.defaultStorageUrl.standardizedFileURL
+        let parentUrl = pathUrl.deletingLastPathComponent().standardizedFileURL
+        return parentUrl != defaultStorageUrl
     }
     
     /// VM is loaded
@@ -260,28 +292,22 @@ extension VMData {
     
     /// VM is stopped
     var isStopped: Bool {
-        if let state = wrapped?.state {
-            return state == .vmStopped || state == .vmPaused
-        } else {
-            return true
-        }
+        state == .stopped || state == .paused
     }
     
     /// VM can be modified
     var isModifyAllowed: Bool {
-        if let state = wrapped?.state {
-            return state == .vmStopped
-        } else {
-            return false
-        }
+        state == .stopped
     }
     
     /// Display VM as "busy" for UI elements
     var isBusy: Bool {
-        wrapped?.state == .vmPausing ||
-        wrapped?.state == .vmResuming ||
-        wrapped?.state == .vmStarting ||
-        wrapped?.state == .vmStopping
+        state == .pausing ||
+        state == .resuming ||
+        state == .starting ||
+        state == .stopping ||
+        state == .saving ||
+        state == .resuming
     }
     
     /// VM has been suspended before
@@ -292,12 +318,6 @@ extension VMData {
 
 // MARK: - Home UI elements
 extension VMData {
-    #if os(macOS)
-    typealias PlatformImage = NSImage
-    #else
-    typealias PlatformImage = UIImage
-    #endif
-    
     /// Unavailable string
     private var unavailable: String {
         NSLocalizedString("Unavailable", comment: "VMData")
@@ -367,35 +387,34 @@ extension VMData {
     
     /// Display current VM state as a string for UI elements
     var stateLabel: String {
-        guard let state = wrapped?.state else {
-            return unavailable
-        }
         switch state {
-        case .vmStopped:
+        case .stopped:
             if registryEntry?.hasSaveState == true {
                 return NSLocalizedString("Suspended", comment: "VMData");
             } else {
                 return NSLocalizedString("Stopped", comment: "VMData");
             }
-        case .vmStarting:
+        case .starting:
             return NSLocalizedString("Starting", comment: "VMData")
-        case .vmStarted:
+        case .started:
             return NSLocalizedString("Started", comment: "VMData")
-        case .vmPausing:
+        case .pausing:
             return NSLocalizedString("Pausing", comment: "VMData")
-        case .vmPaused:
+        case .paused:
             return NSLocalizedString("Paused", comment: "VMData")
-        case .vmResuming:
+        case .resuming:
             return NSLocalizedString("Resuming", comment: "VMData")
-        case .vmStopping:
+        case .stopping:
             return NSLocalizedString("Stopping", comment: "VMData")
-        @unknown default:
-            fatalError()
+        case .saving:
+            return NSLocalizedString("Saving", comment: "VMData")
+        case .restoring:
+            return NSLocalizedString("Restoring", comment: "VMData")
         }
     }
     
     /// If non-null, is the most recent screenshot image of the running VM
     var screenshotImage: PlatformImage? {
-        wrapped?.screenshot?.image
+        wrapped?.screenshot
     }
 }

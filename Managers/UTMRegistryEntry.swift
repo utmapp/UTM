@@ -17,6 +17,9 @@
 import Foundation
 
 @objc class UTMRegistryEntry: NSObject, Codable, ObservableObject {
+    /// Empty registry entry used only as a workaround for object initialization
+    static let empty = UTMRegistryEntry(uuid: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!, name: "", path: "")
+    
     @Published private var _name: String
     
     @Published private var _package: File
@@ -68,9 +71,9 @@ import Foundation
         _hasMigratedConfig = false
     }
     
-    convenience init(newFrom vm: UTMVirtualMachine) {
-        self.init(uuid: vm.config.uuid, name: vm.config.name, path: vm.path.path)
-        if let package = try? File(url: vm.path) {
+    convenience init(newFrom vm: any UTMVirtualMachine) {
+        self.init(uuid: vm.id, name: vm.name, path: vm.pathUrl.path)
+        if let package = try? File(url: vm.pathUrl) {
             _package = package
         }
     }
@@ -111,6 +114,15 @@ import Foundation
         let xml = try encoder.encode(self)
         let dict = try PropertyListSerialization.propertyList(from: xml, format: nil)
         return dict as! [String: Any]
+    }
+    
+    /// Update the UUID
+    ///
+    /// Should only be called from `UTMRegistry`!
+    /// - Parameter uuid: UUID to change to
+    func _updateUuid(_ uuid: UUID) {
+        self.objectWillChange.send()
+        self.uuid = uuid
     }
 }
 

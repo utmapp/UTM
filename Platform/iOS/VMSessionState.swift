@@ -24,11 +24,11 @@ import SwiftUI
     
     let vm: UTMQemuVirtualMachine
     
-    var qemuConfig: UTMQemuConfiguration! {
-        vm.config.qemuConfig
+    var qemuConfig: UTMQemuConfiguration {
+        vm.config
     }
     
-    @Published var vmState: UTMVMState = .vmStopped
+    @Published var vmState: UTMVirtualMachineState = .stopped
     
     @Published var fatalError: String?
     
@@ -123,10 +123,10 @@ import SwiftUI
 }
 
 extension VMSessionState: UTMVirtualMachineDelegate {
-    nonisolated func virtualMachine(_ vm: UTMVirtualMachine, didTransitionTo state: UTMVMState) {
+    nonisolated func virtualMachine(_ vm: any UTMVirtualMachine, didTransitionToState state: UTMVirtualMachineState) {
         Task { @MainActor in
             vmState = state
-            if state == .vmStopped {
+            if state == .stopped {
                 #if !WITH_QEMU_TCI
                 clearDevices()
                 #endif
@@ -134,10 +134,18 @@ extension VMSessionState: UTMVirtualMachineDelegate {
         }
     }
     
-    nonisolated func virtualMachine(_ vm: UTMVirtualMachine, didErrorWithMessage message: String) {
+    nonisolated func virtualMachine(_ vm: any UTMVirtualMachine, didErrorWithMessage message: String) {
         Task { @MainActor in
             fatalError = message
         }
+    }
+    
+    func virtualMachine(_ vm: any UTMVirtualMachine, didCompleteInstallation success: Bool) {
+        
+    }
+    
+    func virtualMachine(_ vm: any UTMVirtualMachine, didUpdateInstallationProgress progress: Double) {
+        
     }
 }
 
@@ -271,7 +279,7 @@ extension VMSessionState: CSUSBManagerDelegate {
     
     nonisolated func spiceUsbManager(_ usbManager: CSUSBManager, deviceAttached device: CSUSBDevice) {
         Task { @MainActor in
-            if vmState == .vmStarted {
+            if vmState == .started {
                 mostRecentConnectedDevice = device
             }
             allUsbDevices.append(device)
@@ -369,7 +377,7 @@ extension VMSessionState: CSUSBManagerDelegate {
 #endif
 
 extension VMSessionState {
-    func start() {
+    func start(options: UTMVirtualMachineStartOptions = []) {
         let audioSession = AVAudioSession.sharedInstance()
         do {
             let preferDeviceMicrophone = UserDefaults.standard.bool(forKey: "PreferDeviceMicrophone")
@@ -384,7 +392,7 @@ extension VMSessionState {
         }
         Self.currentSession = self
         NotificationCenter.default.post(name: .vmSessionCreated, object: nil, userInfo: ["Session": self])
-        vm.requestVmStart()
+        vm.requestVmStart(options: options)
     }
     
     @objc private func suspend() {
@@ -413,19 +421,18 @@ extension VMSessionState {
     }
     
     func powerDown() {
-        vm.requestVmDeleteState()
-        vm.vmStop { _ in
-            Task { @MainActor in
-                self.stop()
-            }
+        Task {
+            try? await vm.deleteSnapshot(name: nil)
+            try await vm.stop(usingMethod: .force)
+            self.stop()
         }
     }
     
     func pauseResume() {
-        let shouldSaveState = !vm.isRunningAsSnapshot
-        if vm.state == .vmStarted {
+        let shouldSaveState = !vm.isRunningAsDisposible
+        if vm.state == .started {
             vm.requestVmPause(save: shouldSaveState)
-        } else if vm.state == .vmPaused {
+        } else if vm.state == .paused {
             vm.requestVmResume()
         }
     }
@@ -439,8 +446,9 @@ extension VMSessionState {
         
         if shouldAutosave {
             logger.info("Saving VM state on low memory warning.")
-            vm.vmSaveState { _ in
+            Task {
                 // ignore error
+                try? await vm.saveSnapshot(name: nil)
             }
         }
     }
@@ -448,7 +456,7 @@ extension VMSessionState {
     func didEnterBackground() {
         logger.info("Entering background")
         let shouldAutosaveBackground = UserDefaults.standard.bool(forKey: "AutosaveBackground")
-        if shouldAutosaveBackground && vmState == .vmStarted {
+        if shouldAutosaveBackground && vmState == .started {
             logger.info("Saving snapshot")
             var task: UIBackgroundTaskIdentifier = .invalid
             task = UIApplication.shared.beginBackgroundTask {
@@ -456,12 +464,13 @@ extension VMSessionState {
                 UIApplication.shared.endBackgroundTask(task)
                 task = .invalid
             }
-            vm.vmSaveState { error in
-                if let error = error {
-                    logger.error("error saving snapshot: \(error)")
-                } else {
+            Task {
+                do {
+                    try await vm.saveSnapshot()
                     self.hasAutosave = true
                     logger.info("Save snapshot complete")
+                } catch {
+                    logger.error("error saving snapshot: \(error)")
                 }
                 UIApplication.shared.endBackgroundTask(task)
                 task = .invalid
@@ -471,7 +480,7 @@ extension VMSessionState {
     
     func didEnterForeground() {
         logger.info("Entering foreground!")
-        if (hasAutosave && vmState == .vmStarted) {
+        if (hasAutosave && vmState == .started) {
             logger.info("Deleting snapshot")
             vm.requestVmDeleteState()
         }

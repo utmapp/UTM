@@ -26,7 +26,7 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
     }
     
     var appleConfig: UTMAppleConfiguration! {
-        vm?.config.appleConfig
+        appleVM?.config
     }
     
     var defaultTitle: String {
@@ -85,24 +85,21 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         startPauseToolbarItem.isEnabled = true
         resizeConsoleToolbarItem.isEnabled = false
         if #available(macOS 12, *) {
-            isPowerForce = false
             sharedFolderToolbarItem.isEnabled = appleConfig.system.boot.operatingSystem == .linux
         } else {
             // stop() not available on macOS 11 for some reason
             restartToolbarItem.isEnabled = false
             sharedFolderToolbarItem.isEnabled = false
-            isPowerForce = true
         }
     }
     
     override func enterSuspended(isBusy busy: Bool) {
-        isPowerForce = true
         super.enterSuspended(isBusy: busy)
     }
     
-    override func virtualMachine(_ vm: UTMVirtualMachine, didTransitionTo state: UTMVMState) {
-        super.virtualMachine(vm, didTransitionTo: state)
-        if state == .vmStopped && isInstallSuccessful {
+    override func virtualMachine(_ vm: any UTMVirtualMachine, didTransitionToState state: UTMVirtualMachineState) {
+        super.virtualMachine(vm, didTransitionToState: state)
+        if state == .stopped && isInstallSuccessful {
             isInstallSuccessful = false
             vm.requestVmStart()
         }
@@ -110,15 +107,6 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
     
     func updateWindowFrame() {
         // implement in subclass
-    }
-    
-    override func stopButtonPressed(_ sender: Any) {
-        if isPowerForce {
-            super.stopButtonPressed(sender)
-        } else {
-            appleVM.requestVmStop(force: false)
-            isPowerForce = true
-        }
     }
     
     override func resizeConsoleButtonPressed(_ sender: Any) {
@@ -142,6 +130,29 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
             }
         } else {
             openShareMenu(sender)
+        }
+    }
+    
+    // MARK: - Installation progress
+    
+    override func virtualMachine(_ vm: any UTMVirtualMachine, didCompleteInstallation success: Bool) {
+        Task { @MainActor in
+            self.window!.subtitle = ""
+            if success {
+                // delete IPSW setting
+                self.enterSuspended(isBusy: true)
+                self.appleConfig.system.boot.macRecoveryIpswURL = nil
+                self.appleVM.registryEntry.macRecoveryIpsw = nil
+                self.isInstallSuccessful = true
+            }
+        }
+    }
+    
+    override func virtualMachine(_ vm: any UTMVirtualMachine, didUpdateInstallationProgress progress: Double) {
+        Task { @MainActor in
+            let installationFormat = NSLocalizedString("Installation: %@", comment: "VMDisplayAppleWindowController")
+            let percentString = NumberFormatter.localizedString(from: progress as NSNumber, number: .percent)
+            self.window!.subtitle = String.localizedStringWithFormat(installationFormat, percentString)
         }
     }
 }
@@ -246,33 +257,10 @@ extension VMDisplayAppleWindowController {
     }
 }
 
-extension VMDisplayAppleWindowController {
-    func virtualMachine(_ vm: UTMVirtualMachine, didCompleteInstallation success: Bool) {
-        DispatchQueue.main.async {
-            self.window!.subtitle = ""
-            if success {
-                // delete IPSW setting
-                self.enterSuspended(isBusy: true)
-                self.appleConfig.system.boot.macRecoveryIpswURL = nil
-                self.appleVM.registryEntry.macRecoveryIpsw = nil
-                self.isInstallSuccessful = true
-            }
-        }
-    }
-    
-    func virtualMachine(_ vm: UTMVirtualMachine, didUpdateInstallationProgress progress: Double) {
-        DispatchQueue.main.async {
-            let installationFormat = NSLocalizedString("Installation: %@", comment: "VMDisplayAppleWindowController")
-            let percentString = NumberFormatter.localizedString(from: progress as NSNumber, number: .percent)
-            self.window!.subtitle = String.localizedStringWithFormat(installationFormat, percentString)
-        }
-    }
-}
-
 extension VMDisplayAppleWindowController: UTMScreenshotProvider {
-    var screenshot: CSScreenshot? {
+    var screenshot: PlatformImage? {
         if let image = mainView?.image() {
-            return CSScreenshot(image: image)
+            return image
         } else {
             return nil
         }

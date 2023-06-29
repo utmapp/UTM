@@ -24,12 +24,12 @@ struct VMDisplayHostedView: UIViewControllerRepresentable {
         @Binding var state: VMWindowState
         var vmStateCancellable: AnyCancellable?
         
-        var vmState: UTMVMState {
+        var vmState: UTMVirtualMachineState {
             vm.state
         }
         
-        var vmConfig: UTMQemuConfiguration! {
-            vm.config.qemuConfig
+        var vmConfig: UTMQemuConfiguration {
+            vm.config
         }
         
         @MainActor var qemuInputLegacy: Bool {
@@ -111,7 +111,7 @@ struct VMDisplayHostedView: UIViewControllerRepresentable {
         }
         
         func displayDidAppear() {
-            if vm.state == .vmStopped {
+            if vm.state == .stopped {
                 vm.requestVmStart()
             }
         }
@@ -147,20 +147,18 @@ struct VMDisplayHostedView: UIViewControllerRepresentable {
             mvc.setDisplayScaling(state.displayScale, origin: state.displayOrigin)
             vc = mvc
         case .serial(let serial, let id):
-            let style = vm.qemuConfig.serials[id].terminal
+            let style = vm.config.serials[id].terminal
             vc = VMDisplayTerminalViewController(port: serial, style: style)
             vc.delegate = context.coordinator
         }
         context.coordinator.vmStateCancellable = session.$vmState.sink { vmState in
             switch vmState {
-            case .vmStopped, .vmPaused:
+            case .stopped, .paused:
                 vc.enterSuspended(isBusy: false)
-            case .vmPausing, .vmStopping, .vmStarting, .vmResuming:
+            case .pausing, .stopping, .starting, .resuming, .saving, .restoring:
                 vc.enterSuspended(isBusy: true)
-            case .vmStarted:
+            case .started:
                 vc.enterLive()
-            @unknown default:
-                break
             }
         }
         return vc

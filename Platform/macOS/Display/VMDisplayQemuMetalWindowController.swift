@@ -142,10 +142,10 @@ class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
     override func enterSuspended(isBusy busy: Bool) {
         if !busy {
             metalView.isHidden = true
-            screenshotView.image = vm.screenshot?.image
+            screenshotView.image = vm.screenshot
             screenshotView.isHidden = false
         }
-        if vm.state == .vmStopped {
+        if vm.state == .stopped {
             vmDisplay = nil
             vmInput = nil
         }

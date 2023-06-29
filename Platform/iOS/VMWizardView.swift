@@ -95,11 +95,10 @@ fileprivate struct WizardWrapper: View {
                             let config = try await wizardState.generateConfig()
                             if let qemuConfig = config.qemuConfig {
                                 let vm = try await data.create(config: qemuConfig)
-                                let wrapped = await vm.wrapped as! UTMQemuVirtualMachine
                                 if #available(iOS 15, *) {
                                     // This is broken on iOS 14
                                     await MainActor.run {
-                                        wrapped.isGuestToolsInstallRequested = wizardState.isGuestToolsInstallRequested
+                                        qemuConfig.qemu.isGuestToolsInstallRequested = wizardState.isGuestToolsInstallRequested
                                     }
                                 }
                             } else {

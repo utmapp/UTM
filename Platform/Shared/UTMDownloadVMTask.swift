@@ -35,7 +35,7 @@ class UTMDownloadVMTask: UTMDownloadTask {
         return nameWithoutZIP
     }
     
-    override func processCompletedDownload(at location: URL) async throws -> UTMVirtualMachine {
+    override func processCompletedDownload(at location: URL) async throws -> any UTMVirtualMachine {
         let tempDir = fileManager.temporaryDirectory
         let originalFilename = url.lastPathComponent
         let downloadedZip = tempDir.appendingPathComponent(originalFilename)
@@ -51,11 +51,8 @@ class UTMDownloadVMTask: UTMDownloadTask {
             /// remove the downloaded ZIP file
             try fileManager.removeItem(at: downloadedZip)
             /// load the downloaded VM into the UI
-            if let vm = UTMVirtualMachine(url: utmURL) {
-                return vm
-            } else {
-                throw CreateUTMFailed()
-            }
+            let vm = try await VMData(url: utmURL)
+            return await vm.wrapped!
         } catch {
             logger.error(Logger.Message(stringLiteral: error.localizedDescription))
             if let fileURL = fileURL {

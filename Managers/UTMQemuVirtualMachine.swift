@@ -21,11 +21,85 @@ private var SpiceIoServiceGuestAgentContext = 0
 private let kSuspendSnapshotName = "suspend"
 
 /// QEMU backend virtual machine
-@objc class UTMQemuVirtualMachine: UTMVirtualMachine {
-    /// Set to true to request guest tools install.
-    ///
-    /// This property is observable and must only be accessed on the main thread.
-    @Published var isGuestToolsInstallRequested: Bool = false
+final class UTMQemuVirtualMachine: UTMVirtualMachine {
+    struct Capabilities: UTMVirtualMachineCapabilities {
+        var supportsProcessKill: Bool {
+            true
+        }
+        
+        var supportsSnapshots: Bool {
+            true
+        }
+        
+        var supportsScreenshots: Bool {
+            true
+        }
+        
+        var supportsDisposibleMode: Bool {
+            true
+        }
+        
+        var supportsRecoveryMode: Bool {
+            false
+        }
+    }
+    
+    static let capabilities = Capabilities()
+    
+    private(set) var pathUrl: URL {
+        didSet {
+            if isScopedAccess {
+                oldValue.stopAccessingSecurityScopedResource()
+            }
+            isScopedAccess = pathUrl.startAccessingSecurityScopedResource()
+        }
+    }
+    
+    private(set) var isShortcut: Bool = false
+    
+    private(set) var isRunningAsDisposible: Bool = false
+    
+    weak var delegate: (any UTMVirtualMachineDelegate)?
+    
+    var onConfigurationChange: (() -> Void)?
+    
+    var onStateChange: (() -> Void)?
+    
+    private(set) var config: UTMQemuConfiguration {
+        willSet {
+            onConfigurationChange?()
+        }
+    }
+    
+    private(set) var registryEntry: UTMRegistryEntry {
+        willSet {
+            onConfigurationChange?()
+        }
+    }
+    
+    private(set) var state: UTMVirtualMachineState = .stopped {
+        willSet {
+            onStateChange?()
+        }
+        
+        didSet {
+            Task { @MainActor in
+                delegate?.virtualMachine(self, didTransitionToState: state)
+            }
+        }
+    }
+    
+    private(set) var screenshot: PlatformImage? {
+        willSet {
+            onStateChange?()
+        }
+    }
+    
+    private var logging: QEMULogging
+    
+    private var isScopedAccess: Bool = false
+    
+    private weak var screenshotTimer: Timer?
     
     /// Handle SPICE IO related events
     weak var ioServiceDelegate: UTMSpiceIODelegate? {
@@ -67,11 +141,53 @@ private let kSuspendSnapshotName = "suspend"
     }
     
     private var startTask: Task<Void, any Error>?
+    
+    @MainActor required init(packageUrl: URL, configuration: UTMQemuConfiguration? = nil, isShortcut: Bool = false) throws {
+        self.isScopedAccess = packageUrl.startAccessingSecurityScopedResource()
+        // load configuration
+        let config: UTMQemuConfiguration
+        if configuration == nil {
+            guard let qemuConfig = try UTMQemuConfiguration.load(from: packageUrl) as? UTMQemuConfiguration else {
+                throw UTMConfigurationError.invalidBackend
+            }
+            config = qemuConfig
+        } else {
+            config = configuration!
+        }
+        #if os(macOS)
+        self.logging = QEMULogging()
+        #else
+        self.logging = QEMULogging.sharedInstance()
+        #endif
+        self.config = config
+        self.pathUrl = packageUrl
+        self.isShortcut = isShortcut
+        self.registryEntry = UTMRegistryEntry.empty
+        self.registryEntry = loadRegistry()
+        self.screenshot = loadScreenshot()
+        updateConfigFromRegistry()
+    }
+    
+    deinit {
+        if isScopedAccess {
+            pathUrl.stopAccessingSecurityScopedResource()
+        }
+    }
+    
+    @MainActor func reload(from packageUrl: URL?) throws {
+        let packageUrl = packageUrl ?? pathUrl
+        guard let qemuConfig = try UTMQemuConfiguration.load(from: packageUrl) as? UTMQemuConfiguration else {
+            throw UTMConfigurationError.invalidBackend
+        }
+        config = qemuConfig
+        pathUrl = packageUrl
+        updateConfigFromRegistry()
+    }
 }
 
 // MARK: - Shortcut access
 extension UTMQemuVirtualMachine {
-    override func accessShortcut() async throws {
+    func accessShortcut() async throws {
         guard isShortcut else {
             return
         }
@@ -81,7 +197,7 @@ extension UTMQemuVirtualMachine {
         let existing = bookmark != nil
         if !existing {
             // create temporary bookmark
-            bookmark = try path.bookmarkData()
+            bookmark = try pathUrl.bookmarkData()
         } else {
             let bookmarkPath = await registryEntry.package.path
             // in case old path is still accessed
@@ -109,34 +225,35 @@ extension UTMQemuVirtualMachine {
     }
     
     @MainActor private func qemuEnsureEfiVarsAvailable() async throws {
-        guard let efiVarsURL = qemuConfig.qemu.efiVarsURL else {
+        guard let efiVarsURL = config.qemu.efiVarsURL else {
             return
         }
-        guard qemuConfig.isLegacy else {
+        guard config.isLegacy else {
             return
         }
-        _ = try await qemuConfig.qemu.saveData(to: efiVarsURL.deletingLastPathComponent(), for: qemuConfig.system)
+        _ = try await config.qemu.saveData(to: efiVarsURL.deletingLastPathComponent(), for: config.system)
     }
     
-    private func _vmStart() async throws {
+    private func _start(options: UTMVirtualMachineStartOptions) async throws {
         // check if we can actually start this VM
-        guard isSupported else {
+        guard await isSupported else {
             throw UTMQemuVirtualMachineError.emulationNotSupported
         }
         // start logging
-        if await qemuConfig.qemu.hasDebugLog, let debugLogURL = await qemuConfig.qemu.debugLogURL {
+        if await config.qemu.hasDebugLog, let debugLogURL = await config.qemu.debugLogURL {
             logging.log(toFile: debugLogURL)
         }
+        let isRunningAsDisposible = options.contains(.bootDisposibleMode)
         await MainActor.run {
-            qemuConfig.qemu.isDisposable = isRunningAsSnapshot
+            config.qemu.isDisposable = isRunningAsDisposible
         }
         
-        let allArguments = await qemuConfig.allArguments
+        let allArguments = await config.allArguments
         let arguments = allArguments.map({ $0.string })
         let resources = allArguments.compactMap({ $0.fileUrls }).flatMap({ $0 })
         let remoteBookmarks = await remoteBookmarks
         
-        let system = await UTMQemuSystem(arguments: arguments, architecture: qemuConfig.system.architecture.rawValue)
+        let system = await UTMQemuSystem(arguments: arguments, architecture: config.system.architecture.rawValue)
         system.resources = resources
         system.remoteBookmarks = remoteBookmarks as NSDictionary
         system.rendererBackend = rendererBackend
@@ -147,7 +264,18 @@ extension UTMQemuVirtualMachine {
             try Task.checkCancellation()
         }
         
-        let ioService = UTMSpiceIO(configuration: config)
+        var options = UTMSpiceIOOptions()
+        if await !config.sound.isEmpty {
+            options.insert(.hasAudio)
+        }
+        if await config.sharing.hasClipboardSharing {
+            options.insert(.hasClipboardSharing)
+        }
+        if await config.sharing.isDirectoryShareReadOnly {
+            options.insert(.isShareReadOnly)
+        }
+        let spiceSocketUrl = await config.spiceSocketURL
+        let ioService = UTMSpiceIO(socketUrl: spiceSocketUrl, options: options)
         try ioService.start()
         try Task.checkCancellation()
         
@@ -163,7 +291,7 @@ extension UTMQemuVirtualMachine {
         try Task.checkCancellation()
         
         // load saved state if requested
-        if !isRunningAsSnapshot, await registryEntry.isSuspended {
+        if !isRunningAsDisposible, await registryEntry.isSuspended {
             try await monitor.qemuRestoreSnapshot(kSuspendSnapshotName)
             try Task.checkCancellation()
         }
@@ -178,62 +306,75 @@ extension UTMQemuVirtualMachine {
         
         // delete saved state
         if await registryEntry.isSuspended {
-            try? await _vmDeleteState()
+            try? await deleteSnapshot()
         }
         
         // save ioService and let it set the delegate
         self.ioService = ioService
+        self.isRunningAsDisposible = isRunningAsDisposible
     }
     
-    override func vmStart() async throws {
-        guard state == .vmStopped else {
+    func start(options: UTMVirtualMachineStartOptions = []) async throws {
+        guard state == .stopped else {
             throw UTMQemuVirtualMachineError.invalidVmState
         }
-        changeState(.vmStarting)
+        state = .starting
         do {
             startTask = Task {
-                try await _vmStart()
+                try await _start(options: options)
             }
             defer {
                 startTask = nil
             }
             try await startTask!.value
-            changeState(.vmStarted)
+            state = .started
+            if screenshotTimer == nil {
+                screenshotTimer = startScreenshotTimer()
+            }
         } catch {
             // delete suspend state on error
             await registryEntry.setIsSuspended(false)
-            changeState(.vmStopped)
+            state = .stopped
             throw error
         }
     }
     
-    override func vmStop(force: Bool) async throws {
-        if force {
+    func stop(usingMethod method: UTMVirtualMachineStopMethod) async throws {
+        if method == .request {
+            guard let monitor = await monitor else {
+                throw UTMQemuVirtualMachineError.invalidVmState
+            }
+            try await monitor.qemuPowerDown()
+            return
+        }
+        let kill = method == .kill
+        if kill {
             // prevent deadlock force stopping during startup
             ioService?.disconnect()
         }
-        guard state != .vmStopped else {
+        guard state != .stopped else {
             return // nothing to do
         }
-        guard force || state == .vmStarted else {
+        guard kill || state == .started || state == .paused else {
             throw UTMQemuVirtualMachineError.invalidVmState
         }
-        if !force {
-            changeState(.vmStopping)
+        if !kill {
+            state = .stopping
         }
         defer {
-            changeState(.vmStopped)
+            state = .stopped
         }
-        if force {
+        if kill {
             await qemuVM.kill()
         } else {
             try await qemuVM.stop()
         }
+        isRunningAsDisposible = false
     }
     
-    private func _vmReset() async throws {
+    private func _restart() async throws {
         if await registryEntry.isSuspended {
-            try? await _vmDeleteState()
+            try? await deleteSnapshot()
         }
         guard let monitor = await qemuVM.monitor else {
             throw UTMQemuVirtualMachineError.invalidVmState
@@ -241,72 +382,77 @@ extension UTMQemuVirtualMachine {
         try await monitor.qemuReset()
     }
     
-    override func vmReset() async throws {
-        guard state == .vmStarted || state == .vmPaused else {
+    func restart() async throws {
+        guard state == .started || state == .paused else {
             throw UTMQemuVirtualMachineError.invalidVmState
         }
-        changeState(.vmStopping)
+        state = .stopping
         do {
-            try await _vmReset()
-            changeState(.vmStarted)
+            try await _restart()
+            state = .started
         } catch {
-            changeState(.vmStopped)
+            state = .stopped
             throw error
         }
     }
     
-    private func _vmPause() async throws {
+    private func _pause() async throws {
         guard let monitor = await monitor else {
             throw UTMQemuVirtualMachineError.invalidVmState
         }
-        await updateScreenshot()
-        await saveScreenshot()
+        await takeScreenshot()
+        try saveScreenshot()
         try await monitor.qemuStop()
     }
     
-    override func vmPause(save: Bool) async throws {
-        guard state == .vmStarted else {
+    func pause() async throws {
+        guard state == .started else {
             throw UTMQemuVirtualMachineError.invalidVmState
         }
-        changeState(.vmPausing)
+        state = .pausing
         do {
-            try await _vmPause()
-            if save {
-                try? await _vmSaveState()
-            }
-            changeState(.vmPaused)
+            try await _pause()
+            state = .paused
         } catch {
-            changeState(.vmStopped)
+            state = .stopped
             throw error
         }
     }
     
-    private func _vmSaveState() async throws {
+    private func _saveSnapshot(name: String) async throws {
         guard let monitor = await monitor else {
             throw UTMQemuVirtualMachineError.invalidVmState
         }
         do {
-            let result = try await monitor.qemuSaveSnapshot(kSuspendSnapshotName)
+            let result = try await monitor.qemuSaveSnapshot(name)
             if result.localizedCaseInsensitiveContains("Error") {
                 throw UTMQemuVirtualMachineError.qemuError(result)
             }
             await registryEntry.setIsSuspended(true)
-            await saveScreenshot()
+            try saveScreenshot()
         } catch {
             throw UTMQemuVirtualMachineError.saveSnapshotFailed(error)
         }
     }
     
-    override func vmSaveState() async throws {
-        guard state == .vmPaused || state == .vmStarted else {
+    func saveSnapshot(name: String? = nil) async throws {
+        guard state == .paused || state == .started else {
             throw UTMQemuVirtualMachineError.invalidVmState
         }
-        try await _vmSaveState()
+        let prev = state
+        state = .saving
+        do {
+            try await _saveSnapshot(name: name ?? kSuspendSnapshotName)
+            state = prev
+        } catch {
+            state = .stopped
+            throw error
+        }
     }
     
-    private func _vmDeleteState() async throws {
+    private func _deleteSnapshot(name: String) async throws {
         if let monitor = await monitor { // if QEMU is running
-            let result = try await monitor.qemuDeleteSnapshot(kSuspendSnapshotName)
+            let result = try await monitor.qemuDeleteSnapshot(name)
             if result.localizedCaseInsensitiveContains("Error") {
                 throw UTMQemuVirtualMachineError.qemuError(result)
             }
@@ -314,39 +460,57 @@ extension UTMQemuVirtualMachine {
         await registryEntry.setIsSuspended(false)
     }
     
-    override func vmDeleteState() async throws {
-        try await _vmDeleteState()
+    func deleteSnapshot(name: String? = nil) async throws {
+        try await _deleteSnapshot(name: name ?? kSuspendSnapshotName)
     }
     
-    private func _vmResume() async throws {
+    private func _resume() async throws {
         guard let monitor = await monitor else {
             throw UTMQemuVirtualMachineError.invalidVmState
         }
         try await monitor.qemuResume()
         if await registryEntry.isSuspended {
-            try? await _vmDeleteState()
+            try? await deleteSnapshot()
         }
     }
     
-    override func vmResume() async throws {
-        guard state == .vmPaused else {
+    func resume() async throws {
+        guard state == .paused else {
             throw UTMQemuVirtualMachineError.invalidVmState
         }
-        changeState(.vmResuming)
+        state = .resuming
         do {
-            try await _vmResume()
-            changeState(.vmStarted)
+            try await _resume()
+            state = .started
         } catch {
-            changeState(.vmStopped)
+            state = .stopped
             throw error
         }
     }
     
-    override func vmGuestPowerDown() async throws {
+    private func _restoreSnapshot(name: String) async throws {
         guard let monitor = await monitor else {
             throw UTMQemuVirtualMachineError.invalidVmState
         }
-        try await monitor.qemuPowerDown()
+        let result = try await monitor.qemuRestoreSnapshot(name)
+        if result.localizedCaseInsensitiveContains("Error") {
+            throw UTMQemuVirtualMachineError.qemuError(result)
+        }
+    }
+    
+    func restoreSnapshot(name: String? = nil) async throws {
+        guard state == .paused || state == .started else {
+            throw UTMQemuVirtualMachineError.invalidVmState
+        }
+        let prev = state
+        state = .restoring
+        do {
+            try await _restoreSnapshot(name: name ?? kSuspendSnapshotName)
+            state = prev
+        } catch {
+            state = .stopped
+            throw error
+        }
     }
     
     /// Attempt to cancel the current operation
@@ -368,11 +532,13 @@ extension UTMQemuVirtualMachine: QEMUVirtualMachineDelegate {
     }
     
     func qemuVMDidStop(_ qemuVM: QEMUVirtualMachine) {
-        changeState(.vmStopped)
+        state = .stopped
     }
     
     func qemuVM(_ qemuVM: QEMUVirtualMachine, didError error: Error) {
-        delegate?.virtualMachine(self, didErrorWithMessage: error.localizedDescription)
+        Task { @MainActor in
+            delegate?.virtualMachine(self, didErrorWithMessage: error.localizedDescription)
+        }
     }
     
     func qemuVM(_ qemuVM: QEMUVirtualMachine, didCreatePttyDevice path: String, label: String) {
@@ -388,11 +554,11 @@ extension UTMQemuVirtualMachine: QEMUVirtualMachineDelegate {
         }
         let index = term
         Task { @MainActor in
-            guard index >= 0 && index < qemuConfig.serials.count else {
+            guard index >= 0 && index < config.serials.count else {
                 logger.error("Serial device '\(path)' out of bounds for index \(index)")
                 return
             }
-            qemuConfig.serials[index].pttyDevice = URL(fileURLWithPath: path)
+            config.serials[index].pttyDevice = URL(fileURLWithPath: path)
         }
     }
 }
@@ -413,52 +579,16 @@ extension UTMQemuVirtualMachine {
 
 // MARK: - Screenshot
 extension UTMQemuVirtualMachine {
-    @MainActor
-    override func updateScreenshot() {
-        ioService?.screenshot(completion: { screenshot in
-            Task { @MainActor in
-                self.screenshot = screenshot
-            }
-        })
-    }
-    
-    @MainActor
-    override func saveScreenshot() {
-        super.saveScreenshot()
+    @MainActor @discardableResult
+    func takeScreenshot() async -> Bool {
+        let screenshot = await ioService?.screenshot()
+        self.screenshot = screenshot?.image
+        return true
     }
 }
 
-// MARK: - Display details
+// MARK: - Architecture supported
 extension UTMQemuVirtualMachine {
-    internal var qemuConfig: UTMQemuConfiguration {
-        config.qemuConfig!
-    }
-    
-    @MainActor override var detailsTitleLabel: String {
-        qemuConfig.information.name
-    }
-    
-    @MainActor override var detailsSubtitleLabel: String {
-        detailsSystemTargetLabel
-    }
-    
-    @MainActor override var detailsNotes: String? {
-        qemuConfig.information.notes
-    }
-    
-    @MainActor override var detailsSystemTargetLabel: String {
-        qemuConfig.system.target.prettyValue
-    }
-    
-    @MainActor override var detailsSystemArchitectureLabel: String {
-        qemuConfig.system.architecture.prettyValue
-    }
-    
-    @MainActor override var detailsSystemMemoryLabel: String {
-        let bytesInMib = Int64(1048576)
-        return ByteCountFormatter.string(fromByteCount: Int64(qemuConfig.system.memorySize) * bytesInMib, countStyle: .binary)
-    }
-    
     /// Check if a QEMU target is supported
     /// - Parameter systemArchitecture: QEMU architecture
     /// - Returns: true if UTM is compiled with the supporting binaries
@@ -478,8 +608,8 @@ extension UTMQemuVirtualMachine {
     }
     
     /// Check if the current VM target is supported by the host
-    @objc var isSupported: Bool {
-        return UTMQemuVirtualMachine.isSupported(systemArchitecture: qemuConfig._system.architecture)
+    @MainActor var isSupported: Bool {
+        return UTMQemuVirtualMachine.isSupported(systemArchitecture: config.system.architecture)
     }
 }
 
@@ -526,7 +656,7 @@ extension UTMQemuVirtualMachine {
         guard await system != nil else {
             throw UTMQemuVirtualMachineError.invalidVmState
         }
-        for drive in await qemuConfig.drives {
+        for drive in await config.drives {
             if !drive.isExternal {
                 continue
             }
@@ -545,7 +675,7 @@ extension UTMQemuVirtualMachine {
         }
     }
     
-    @objc func restoreExternalDrivesAndShares(completion: @escaping (Error?) -> Void) {
+    func restoreExternalDrivesAndShares(completion: @escaping (Error?) -> Void) {
         Task.detached {
             do {
                 try await self.restoreExternalDrives()
@@ -581,13 +711,13 @@ extension UTMQemuVirtualMachine {
         defer {
             url.stopAccessingSecurityScopedResource()
         }
-        let file = try await UTMRegistryEntry.File(url: url, isReadOnly: qemuConfig.sharing.isDirectoryShareReadOnly)
+        let file = try await UTMRegistryEntry.File(url: url, isReadOnly: config.sharing.isDirectoryShareReadOnly)
         await registryEntry.setSingleSharedDirectory(file)
-        if await qemuConfig.sharing.directoryShareMode == .webdav {
+        if await config.sharing.directoryShareMode == .webdav {
             if let ioService = ioService {
                 ioService.changeSharedDirectory(url)
             }
-        } else if await qemuConfig.sharing.directoryShareMode == .virtfs {
+        } else if await config.sharing.directoryShareMode == .virtfs {
             let tempBookmark = try url.bookmarkData()
             try await changeVirtfsSharedDirectory(with: tempBookmark, isSecurityScoped: false)
         }
@@ -606,7 +736,7 @@ extension UTMQemuVirtualMachine {
         guard let share = await registryEntry.sharedDirectories.first else {
             return
         }
-        if await qemuConfig.sharing.directoryShareMode == .virtfs {
+        if await config.sharing.directoryShareMode == .virtfs {
             if let bookmark = share.remoteBookmark {
                 // a share bookmark was saved while QEMU was running
                 try await changeVirtfsSharedDirectory(with: bookmark, isSecurityScoped: true)
@@ -615,7 +745,7 @@ extension UTMQemuVirtualMachine {
                 let url = try URL(resolvingPersistentBookmarkData: share.bookmark)
                 try await changeSharedDirectory(to: url)
             }
-        } else if await qemuConfig.sharing.directoryShareMode == .webdav {
+        } else if await config.sharing.directoryShareMode == .webdav {
             if let ioService = ioService {
                 ioService.changeSharedDirectory(share.url)
             }
@@ -625,11 +755,11 @@ extension UTMQemuVirtualMachine {
 
 // MARK: - Registry syncing
 extension UTMQemuVirtualMachine {
-    @MainActor override func updateRegistryFromConfig() async throws {
+    @MainActor func updateRegistryFromConfig() async throws {
         // save a copy to not collide with updateConfigFromRegistry()
-        let configShare = qemuConfig.sharing.directoryShareUrl
-        let configDrives = qemuConfig.drives
-        try await super.updateRegistryFromConfig()
+        let configShare = config.sharing.directoryShareUrl
+        let configDrives = config.drives
+        try await updateRegistryBasics()
         for drive in configDrives {
             if drive.isExternal, let url = drive.imageURL {
                 try await changeMedium(drive, to: url)
@@ -644,18 +774,28 @@ extension UTMQemuVirtualMachine {
         })
     }
     
-    @MainActor override func updateConfigFromRegistry() {
-        super.updateConfigFromRegistry()
-        qemuConfig.sharing.directoryShareUrl = sharedDirectoryURL
-        for i in qemuConfig.drives.indices {
-            let id = qemuConfig.drives[i].id
-            if qemuConfig.drives[i].isExternal {
-                qemuConfig.drives[i].imageURL = registryEntry.externalDrives[id]?.url
+    @MainActor func updateConfigFromRegistry() {
+        config.sharing.directoryShareUrl = sharedDirectoryURL
+        for i in config.drives.indices {
+            let id = config.drives[i].id
+            if config.drives[i].isExternal {
+                config.drives[i].imageURL = registryEntry.externalDrives[id]?.url
             }
         }
     }
     
-    @MainActor @objc var remoteBookmarks: [URL: Data] {
+    @MainActor func changeUuid(to uuid: UUID, name: String? = nil, copyingEntry entry: UTMRegistryEntry? = nil) {
+        config.information.uuid = uuid
+        if let name = name {
+            config.information.name = name
+        }
+        registryEntry = UTMRegistry.shared.entry(for: self)
+        if let entry = entry {
+            registryEntry.update(copying: entry)
+        }
+    }
+    
+    @MainActor var remoteBookmarks: [URL: Data] {
         var dict = [URL: Data]()
         for file in registryEntry.externalDrives.values {
             if let bookmark = file.remoteBookmark {

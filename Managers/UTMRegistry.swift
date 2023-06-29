@@ -73,8 +73,8 @@ class UTMRegistry: NSObject {
     /// Gets an existing registry entry or create a new entry
     /// - Parameter vm: UTM virtual machine to locate in the registry
     /// - Returns: Either an existing registry entry or a new entry
-    @objc func entry(for vm: UTMVirtualMachine) -> UTMRegistryEntry {
-        if let entry = entries[vm.config.uuid.uuidString] {
+    func entry(for vm: any UTMVirtualMachine) -> UTMRegistryEntry {
+        if let entry = entries[vm.id.uuidString] {
             return entry
         }
         let newEntry = UTMRegistryEntry(newFrom: vm)

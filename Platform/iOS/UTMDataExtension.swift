@@ -18,7 +18,7 @@ import Foundation
 import SwiftUI
 
 extension UTMData {
-    func run(vm: VMData) {
+    func run(vm: VMData, options: UTMVirtualMachineStartOptions = []) {
         guard let wrapped = vm.wrapped else {
             return
         }
@@ -30,7 +30,7 @@ extension UTMData {
         guard let wrapped = vm.wrapped else {
             return
         }
-        if wrapped.hasSaveState {
+        if wrapped.registryEntry.hasSaveState {
             wrapped.requestVmDeleteState()
         }
     }

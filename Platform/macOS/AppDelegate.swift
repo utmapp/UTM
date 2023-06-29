@@ -25,7 +25,7 @@
         guard let vmList = data?.vmWindows.keys else {
             return false
         }
-        return vmList.contains(where: { $0.state == .vmStarted || ($0.state == .vmPaused && !$0.hasSaveState) })
+        return vmList.contains(where: { $0.wrapped?.state == .started || ($0.wrapped?.state == .paused && !$0.hasSuspendState) })
     }
     
     @MainActor
@@ -90,7 +90,7 @@
                 }
             }
             return .terminateLater
-        } else if vmList.allSatisfy({ $0.state == .vmStopped || $0.state == .vmPaused }) { // All VMs are stopped or suspended
+        } else if vmList.allSatisfy({ !$0.isLoaded || $0.wrapped?.state == .stopped || $0.wrapped?.state == .paused }) { // All VMs are stopped or suspended
             return .terminateNow
         } else { // There could be some VMs in other states (starting, pausing, etc.)
             return .terminateCancel

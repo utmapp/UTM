@@ -64,31 +64,29 @@ struct VMContextMenuModifier: ViewModifier {
                 #if os(macOS) && arch(arm64)
                 if #available(macOS 13, *), let appleConfig = vm.config as? UTMAppleConfiguration, appleConfig.system.boot.operatingSystem == .macOS {
                     Button {
-                        appleConfig.system.boot.startUpFromMacOSRecovery = true
-                        data.run(vm: vm)
+                        data.run(vm: vm, options: .bootRecovery)
                     } label: {
                         Label("Run Recovery", systemImage: "play.fill")
                     }.help("Boot into recovery mode.")
                 }
                 #endif
                 
-                if let qemuVM = vm.wrapped as? UTMQemuVirtualMachine {
+                if let _ = vm.wrapped as? UTMQemuVirtualMachine {
                     Button {
-                        qemuVM.isRunningAsSnapshot = true
-                        data.run(vm: vm)
+                        data.run(vm: vm, options: .bootDisposibleMode)
                     } label: {
                         Label("Run without saving changes", systemImage: "play")
                     }.help("Run the VM in the foreground, without saving data changes to disk.")
                 }
                 
                 #if os(iOS)
-                if let qemuVM = vm.wrapped as? UTMQemuVirtualMachine {
+                if let qemuConfig = vm.config as? UTMQemuConfiguration {
                     Button {
-                        qemuVM.isGuestToolsInstallRequested = true
+                        qemuConfig.qemu.isGuestToolsInstallRequested = true
                     } label: {
                         Label("Install Windows Guest Tools…", systemImage: "wrench.and.screwdriver")
                     }.help("Download and mount the guest tools for Windows.")
-                    .disabled(qemuVM.isGuestToolsInstallRequested)
+                    .disabled(qemuConfig.qemu.isGuestToolsInstallRequested)
                 }
                 #endif
                 
@@ -146,7 +144,7 @@ struct VMContextMenuModifier: ViewModifier {
                 showSharePopup.toggle()
             }
         })
-        .onChange(of: (vm.wrapped as? UTMQemuVirtualMachine)?.isGuestToolsInstallRequested) { newValue in
+        .onChange(of: (vm.config as? UTMQemuConfiguration)?.qemu.isGuestToolsInstallRequested) { newValue in
             if newValue == true {
                 data.busyWorkAsync {
                     try await data.mountSupportTools(for: vm.wrapped as! UTMQemuVirtualMachine)

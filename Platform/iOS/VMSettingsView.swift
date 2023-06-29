@@ -242,6 +242,6 @@ struct VMSettingsView_Previews: PreviewProvider {
     @State static private var config = UTMQemuConfiguration()
     
     static var previews: some View {
-        VMSettingsView(vm: VMData(wrapping: UTMVirtualMachine()), config: config)
+        VMSettingsView(vm: VMData(from: .empty), config: config)
     }
 }

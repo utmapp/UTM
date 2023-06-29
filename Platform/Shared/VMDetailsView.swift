@@ -63,15 +63,15 @@ struct VMDetailsView: View {
                     }.padding([.leading, .trailing])
                     #if os(macOS)
                     if let appleVM = vm.wrapped as? UTMAppleVirtualMachine {
-                        VMAppleRemovableDrivesView(vm: appleVM, config: appleVM.appleConfig, registryEntry: appleVM.registryEntry)
+                        VMAppleRemovableDrivesView(vm: vm, config: appleVM.config, registryEntry: appleVM.registryEntry)
                             .padding([.leading, .trailing, .bottom])
                     } else if let qemuVM = vm.wrapped as? UTMQemuVirtualMachine {
-                        VMRemovableDrivesView(vm: qemuVM, config: qemuVM.qemuConfig)
+                        VMRemovableDrivesView(vm: vm, config: qemuVM.config)
                             .padding([.leading, .trailing, .bottom])
                     }
                     #else
                     let qemuVM = vm as! UTMQemuVirtualMachine
-                    VMRemovableDrivesView(vm: qemuVM, config: qemuVM.qemuConfig)
+                    VMRemovableDrivesView(vm: vm, config: qemuVM.config)
                         .padding([.leading, .trailing, .bottom])
                     #endif
                 } else {
@@ -84,13 +84,13 @@ struct VMDetailsView: View {
                         }
                         #if os(macOS)
                         if let appleVM = vm.wrapped as? UTMAppleVirtualMachine {
-                            VMAppleRemovableDrivesView(vm: appleVM, config: appleVM.appleConfig, registryEntry: appleVM.registryEntry)
+                            VMAppleRemovableDrivesView(vm: vm, config: appleVM.config, registryEntry: appleVM.registryEntry)
                         } else if let qemuVM = vm.wrapped as? UTMQemuVirtualMachine {
-                            VMRemovableDrivesView(vm: qemuVM, config: qemuVM.qemuConfig)
+                            VMRemovableDrivesView(vm: vm, config: qemuVM.config)
                         }
                         #else
                         let qemuVM = vm.wrapped as! UTMQemuVirtualMachine
-                        VMRemovableDrivesView(vm: qemuVM, config: qemuVM.qemuConfig)
+                        VMRemovableDrivesView(vm: vm, config: qemuVM.config)
                         #endif
                     }.padding([.leading, .trailing, .bottom])
                 }
@@ -228,14 +228,14 @@ struct Details: View {
                             plainLabel("Serial (Client)", systemImage: "network")
                             Spacer()
                             let address = "\(serial.tcpHostAddress ?? "example.com"):\(serial.tcpPort ?? 1234)"
-                            OptionalSelectableText(vm.wrapped?.state == .vmStarted ? address : nil)
+                            OptionalSelectableText(vm.state == .started ? address : nil)
                         }
                     } else if serial.mode == .tcpServer {
                         HStack {
                             plainLabel("Serial (Server)", systemImage: "network")
                             Spacer()
                             let address = "\(serial.tcpPort ?? 1234)"
-                            OptionalSelectableText(vm.wrapped?.state == .vmStarted ? address : nil)
+                            OptionalSelectableText(vm.state == .started ? address : nil)
                         }
                     }
                     #if os(macOS)
@@ -302,7 +302,7 @@ struct VMDetailsView_Previews: PreviewProvider {
     @State static private var config = UTMQemuConfiguration()
     
     static var previews: some View {
-        VMDetailsView(vm: VMData(wrapping: UTMVirtualMachine(newConfig: config, destinationURL: URL(fileURLWithPath: ""))))
+        VMDetailsView(vm: VMData(from: .empty))
         .onAppear {
             config.sharing.directoryShareMode = .webdav
             var drive = UTMQemuConfigurationDrive()

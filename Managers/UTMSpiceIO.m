@@ -18,11 +18,12 @@
 #import "UTMSpiceIO.h"
 #import "UTM-Swift.h"
 
-extern NSString *const kUTMErrorDomain;
+NSString *const kUTMErrorDomain = @"com.utmapp.utm";
 
 @interface UTMSpiceIO ()
 
-@property (nonatomic, readwrite, nonnull) UTMConfigurationWrapper* configuration;
+@property (nonatomic) NSURL *socketUrl;
+@property (nonatomic) UTMSpiceIOOptions options;
 @property (nonatomic, readwrite, nullable) CSDisplay *primaryDisplay;
 @property (nonatomic) NSMutableArray<CSDisplay *> *mutableDisplays;
 @property (nonatomic, readwrite, nullable) CSInput *primaryInput;
@@ -52,9 +53,10 @@ extern NSString *const kUTMErrorDomain;
     return self.mutableSerials;
 }
 
-- (instancetype)initWithConfiguration:(UTMConfigurationWrapper *)configuration {
+- (instancetype)initWithSocketUrl:(NSURL *)socketUrl options:(UTMSpiceIOOptions)options {
     if (self = [super init]) {
-        self.configuration = configuration;
+        self.socketUrl = socketUrl;
+        self.options = options;
         self.mutableDisplays = [NSMutableArray array];
         self.mutableSerials = [NSMutableArray array];
     }
@@ -64,10 +66,10 @@ extern NSString *const kUTMErrorDomain;
 
 - (void)initializeSpiceIfNeeded {
     if (!self.spiceConnection) {
-        self.spiceConnection = [[CSConnection alloc] initWithUnixSocketFile:self.configuration.qemuSpiceSocketURL];
+        self.spiceConnection = [[CSConnection alloc] initWithUnixSocketFile:self.socketUrl];
         self.spiceConnection.delegate = self;
-        self.spiceConnection.audioEnabled = _configuration.qemuHasAudio;
-        self.spiceConnection.session.shareClipboard = _configuration.qemuHasClipboardSharing;
+        self.spiceConnection.audioEnabled = (self.options & UTMSpiceIOOptionsHasAudio) == UTMSpiceIOOptionsHasAudio;
+        self.spiceConnection.session.shareClipboard = (self.options & UTMSpiceIOOptionsHasClipboardSharing) == UTMSpiceIOOptionsHasClipboardSharing;
         self.spiceConnection.session.pasteboardDelegate = [UTMPasteboard generalPasteboard];
     }
 }
@@ -235,7 +237,7 @@ extern NSString *const kUTMErrorDomain;
     if (self.sharedDirectory) {
         UTMLog(@"setting share directory to %@", self.sharedDirectory.path);
         [self.sharedDirectory startAccessingSecurityScopedResource];
-        [self.spiceConnection.session setSharedDirectory:self.sharedDirectory.path readOnly:self.configuration.qemuIsDirectoryShareReadOnly];
+        [self.spiceConnection.session setSharedDirectory:self.sharedDirectory.path readOnly:(self.options & UTMSpiceIOOptionsIsShareReadOnly) == UTMSpiceIOOptionsIsShareReadOnly];
     }
 }
 

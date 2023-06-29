@@ -73,6 +73,6 @@ fileprivate struct WrappedVMDetailsView: View {
 
 struct UTMUnavailableVMView_Previews: PreviewProvider {
     static var previews: some View {
-        UTMUnavailableVMView(vm: VMData(wrapping: UTMWrappedVirtualMachine(bookmark: Data(), name: "Wrapped VM", path: URL(fileURLWithPath: "/"))))
+        UTMUnavailableVMView(vm: VMData(from: UTMRegistryEntry.empty))
     }
 }

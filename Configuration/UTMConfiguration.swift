@@ -16,6 +16,8 @@
 
 import Foundation
 
+private let kUTMBundleConfigFilename = "config.plist"
+
 protocol UTMConfiguration: Codable, ObservableObject {
     associatedtype Drive: UTMConfigurationDrive
     static var oldestVersion: Int { get }
@@ -91,6 +93,12 @@ extension UTMConfiguration {
     static var dataDirectoryName: String { "Data" }
     
     static func load(from packageURL: URL) throws -> any UTMConfiguration {
+        let scopedAccess = packageURL.startAccessingSecurityScopedResource()
+        defer {
+            if scopedAccess {
+                packageURL.stopAccessingSecurityScopedResource()
+            }
+        }
         let dataURL = packageURL.appendingPathComponent(Self.dataDirectoryName)
         let configURL = packageURL.appendingPathComponent(kUTMBundleConfigFilename)
         let configData = try Data(contentsOf: configURL)
@@ -112,7 +120,7 @@ extension UTMConfiguration {
             #endif
             // is it a legacy QEMU config?
             let dict = try NSDictionary(contentsOf: configURL, error: ()) as! [AnyHashable : Any]
-            let name = UTMVirtualMachine.virtualMachineName(packageURL)
+            let name = UTMQemuVirtualMachine.virtualMachineName(for: packageURL)
             let legacy = UTMLegacyQemuConfiguration(dictionary: dict, name: name, path: packageURL)
             return UTMQemuConfiguration(migrating: legacy)
         } else if stub.backend == .qemu {

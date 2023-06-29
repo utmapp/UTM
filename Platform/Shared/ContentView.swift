@@ -143,44 +143,47 @@ struct ContentView: View {
         if let action = components.host {
             switch action {
             case "start":
-                if let vm = findVM(), vm.wrapped?.state == .vmStopped {
+                if let vm = findVM(), vm.state == .stopped {
                     data.run(vm: vm)
                 }
                 break
             case "stop":
-                if let vm = findVM(), vm.wrapped?.state == .vmStarted {
-                    vm.wrapped!.requestVmStop(force: true)
+                if let vm = findVM(), vm.state == .started {
+                    try await vm.wrapped!.stop(usingMethod: .force)
                     data.stop(vm: vm)
                 }
                 break
             case "restart":
-                if let vm = findVM(), vm.wrapped?.state == .vmStarted {
-                    vm.wrapped!.requestVmReset()
+                if let vm = findVM(), vm.state == .started {
+                    try await vm.wrapped!.restart()
                 }
                 break
             case "pause":
-                if let vm = findVM(), vm.wrapped?.state == .vmStarted {
+                if let vm = findVM(), vm.state == .started {
                     let shouldSaveOnPause: Bool
                     if let vm = vm.wrapped as? UTMQemuVirtualMachine {
-                        shouldSaveOnPause = !vm.isRunningAsSnapshot
+                        shouldSaveOnPause = !vm.isRunningAsDisposible
                     } else {
                         shouldSaveOnPause = true
                     }
-                    vm.wrapped!.requestVmPause(save: shouldSaveOnPause)
+                    try await vm.wrapped!.pause()
+                    if shouldSaveOnPause {
+                        try? await vm.wrapped!.saveSnapshot(name: nil)
+                    }
                 }
             case "resume":
-                if let vm = findVM(), vm.wrapped?.state == .vmPaused {
-                    vm.wrapped!.requestVmResume()
+                if let vm = findVM(), vm.state == .paused {
+                    try await vm.wrapped!.resume()
                 }
                 break
             case "sendText":
-                if let vm = findVM(), vm.wrapped?.state == .vmStarted {
-                    data.automationSendText(to: vm.wrapped!, urlComponents: components)
+                if let vm = findVM(), vm.state == .started {
+                    data.automationSendText(to: vm, urlComponents: components)
                 }
                 break
             case "click":
-                if let vm = findVM(), vm.wrapped?.state == .vmStarted {
-                    data.automationSendMouse(to: vm.wrapped!, urlComponents: components)
+                if let vm = findVM(), vm.state == .started {
+                    data.automationSendMouse(to: vm, urlComponents: components)
                 }
                 break
             case "downloadVM":

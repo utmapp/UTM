@@ -23,13 +23,18 @@
 @import CocoaSpice;
 #endif
 
-@class UTMConfigurationWrapper;
+/// Options for initializing UTMSpiceIO
+typedef NS_OPTIONS(NSUInteger, UTMSpiceIOOptions) {
+    UTMSpiceIOOptionsNone                 = 0,
+    UTMSpiceIOOptionsHasAudio             = (1 << 0),
+    UTMSpiceIOOptionsHasClipboardSharing  = (1 << 1),
+    UTMSpiceIOOptionsIsShareReadOnly      = (1 << 2),
+};
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface UTMSpiceIO : NSObject<CSConnectionDelegate, QEMUInterface>
 
-@property (nonatomic, readonly, nonnull) UTMConfigurationWrapper* configuration;
 @property (nonatomic, readonly, nullable) CSDisplay *primaryDisplay;
 @property (nonatomic, readonly, nullable) CSInput *primaryInput;
 @property (nonatomic, readonly, nullable) CSPort *primarySerial;
@@ -42,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL isConnected;
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithConfiguration:(UTMConfigurationWrapper *)configuration NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithSocketUrl:(NSURL *)socketUrl options:(UTMSpiceIOOptions)options NS_DESIGNATED_INITIALIZER;
 - (void)changeSharedDirectory:(NSURL *)url;
 
 - (BOOL)startWithError:(NSError * _Nullable *)error;

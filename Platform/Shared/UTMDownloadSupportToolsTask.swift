@@ -41,7 +41,7 @@ class UTMDownloadSupportToolsTask: UTMDownloadTask {
         super.init(for: Self.supportToolsDownloadUrl, named: name)
     }
     
-    override func processCompletedDownload(at location: URL) async throws -> UTMVirtualMachine {
+    override func processCompletedDownload(at location: URL) async throws -> any UTMVirtualMachine {
         if !fileManager.fileExists(atPath: supportUrl.path) {
             try fileManager.createDirectory(at: supportUrl, withIntermediateDirectories: true)
         }
@@ -52,13 +52,13 @@ class UTMDownloadSupportToolsTask: UTMDownloadTask {
         return try await mountTools()
     }
     
-    func mountTools() async throws -> UTMVirtualMachine {
+    func mountTools() async throws -> any UTMVirtualMachine {
         for file in await vm.registryEntry.externalDrives.values {
             if file.path == supportToolsLocalUrl.path {
                 throw UTMDownloadSupportToolsTaskError.alreadyMounted
             }
         }
-        guard let drive = await vm.qemuConfig.drives.last(where: { $0.isExternal && $0.imageURL == nil }) else {
+        guard let drive = await vm.config.drives.last(where: { $0.isExternal && $0.imageURL == nil }) else {
             throw UTMDownloadSupportToolsTaskError.driveUnavailable
         }
         try await vm.changeMedium(drive, to: supportToolsLocalUrl)

@@ -70,7 +70,7 @@ struct AlertMessage: Identifiable {
     
     #if os(macOS)
     /// View controller for every VM currently active
-    var vmWindows: [UTMVirtualMachine: Any] = [:]
+    var vmWindows: [VMData: Any] = [:]
     #else
     /// View controller for currently active VM
     var vmVC: Any?
@@ -129,13 +129,11 @@ struct AlertMessage: Identifiable {
                 guard try file.resourceValues(forKeys: [.isDirectoryKey]).isDirectory ?? false else {
                     continue
                 }
-                guard UTMVirtualMachine.isVirtualMachine(url: file) else {
+                guard UTMQemuVirtualMachine.isVirtualMachine(url: file) else {
                     continue
                 }
                 await Task.yield()
-                let vm = UTMVirtualMachine(url: file)
-                if let vm = vm {
-                    let vm = VMData(wrapping: vm)
+                if let vm = try? VMData(url: file) {
                     if uuidHasCollision(with: vm, in: list) {
                         if let index = list.firstIndex(where: { !$0.isLoaded && $0.id == vm.id }) {
                             // we have a stale VM with the same UUID, so we replace that entry with this one
@@ -189,7 +187,11 @@ struct AlertMessage: Identifiable {
                 return nil
             }
             let vm = VMData(from: entry)
-            try? vm.load()
+            do {
+                try vm.load()
+            } catch {
+                logger.error("Error loading '\(entry.uuid)': \(error)")
+            }
             return vm
         }
     }
@@ -201,8 +203,8 @@ struct AlertMessage: Identifiable {
         if let files = defaults.array(forKey: "VMList") as? [String] {
             virtualMachines = files.uniqued().compactMap({ file in
                 let url = documentsURL.appendingPathComponent(file, isDirectory: true)
-                if let wrapped = UTMVirtualMachine(url: url) {
-                    return VMData(wrapping: wrapped)
+                if let vm = try? VMData(url: url) {
+                    return vm
                 } else {
                     return nil
                 }
@@ -310,7 +312,7 @@ struct AlertMessage: Identifiable {
         let nameForId = { (i: Int) in i <= 1 ? base : "\(base) \(i)" }
         for i in 1..<1000 {
             let name = nameForId(i)
-            let file = UTMVirtualMachine.virtualMachinePath(name, inParentURL: documentsURL)
+            let file = UTMQemuVirtualMachine.virtualMachinePath(for: name, in: documentsURL)
             if !fileManager.fileExists(atPath: file.path) {
                 return name
             }
@@ -385,11 +387,10 @@ struct AlertMessage: Identifiable {
             } catch {
                 // if we can't discard changes, recreate the VM from scratch
                 let path = vm.pathUrl
-                guard let newWrapped = UTMVirtualMachine(url: path) else {
+                guard let newVM = try? VMData(url: path) else {
                     logger.debug("Cannot create new object for \(path.path)")
                     throw origError
                 }
-                let newVM = VMData(wrapping: newWrapped)
                 let index = listRemove(vm: vm)
                 listAdd(vm: newVM, at: index)
                 listSelect(vm: newVM)
@@ -402,9 +403,9 @@ struct AlertMessage: Identifiable {
     /// - Parameter vm: VM configuration to discard
     func discardChanges(for vm: VMData) throws {
         if let wrapped = vm.wrapped {
-            try wrapped.reloadConfiguration()
+            try wrapped.reload(from: nil)
             if uuidHasCollision(with: vm) {
-                wrapped.changeUuid(to: UUID())
+                wrapped.changeUuid(to: UUID(), name: nil, copyingEntry: vm.registryEntry)
             }
         }
     }
@@ -416,7 +417,7 @@ struct AlertMessage: Identifiable {
         guard !virtualMachines.contains(where: { !$0.isShortcut && $0.config?.information.name == config.information.name }) else {
             throw UTMDataError.virtualMachineAlreadyExists
         }
-        let vm = VMData(creatingFromConfig: config, destinationUrl: Self.defaultStorageUrl)
+        let vm = try VMData(creatingFromConfig: config, destinationUrl: Self.defaultStorageUrl)
         try await save(vm: vm)
         listAdd(vm: vm)
         listSelect(vm: vm)
@@ -445,14 +446,13 @@ struct AlertMessage: Identifiable {
     /// - Returns: The new VM
     @discardableResult func clone(vm: VMData) async throws -> VMData {
         let newName: String = newDefaultVMName(base: vm.detailsTitleLabel)
-        let newPath = UTMVirtualMachine.virtualMachinePath(newName, inParentURL: documentsURL)
+        let newPath = UTMQemuVirtualMachine.virtualMachinePath(for: newName, in: documentsURL)
         
         try copyItemWithCopyfile(at: vm.pathUrl, to: newPath)
-        guard let wrapped = UTMVirtualMachine(url: newPath) else {
+        guard let newVM = try? VMData(url: newPath) else {
             throw UTMDataError.cloneFailed
         }
-        wrapped.changeUuid(to: UUID(), name: newName)
-        let newVM = VMData(wrapping: wrapped)
+        newVM.wrapped!.changeUuid(to: UUID(), name: newName, copyingEntry: nil)
         try await newVM.save()
         var index = virtualMachines.firstIndex(of: vm)
         if index != nil {
@@ -481,13 +481,10 @@ struct AlertMessage: Identifiable {
     ///   - url: Location to move to (must be writable)
     func move(vm: VMData, to url: URL) async throws {
         try export(vm: vm, to: url)
-        guard let wrapped = UTMVirtualMachine(url: url) else {
+        guard let newVM = try? VMData(url: url) else {
             throw UTMDataError.shortcutCreationFailed
         }
-        wrapped.isShortcut = true
-        try await wrapped.updateRegistryFromConfig()
-        try await wrapped.accessShortcut()
-        let newVM = VMData(wrapping: wrapped)
+        try await newVM.wrapped!.updateRegistryFromConfig()
         
         let oldSelected = selectedVM
         let index = try await delete(vm: vm, alsoRegistry: false)
@@ -592,28 +589,25 @@ struct AlertMessage: Identifiable {
             return
         }
         // check if VM is valid
-        guard let _ = UTMVirtualMachine(url: url) else {
+        guard let _ = try? VMData(url: url) else {
             throw UTMDataError.importFailed
         }
-        let wrapped: UTMVirtualMachine?
+        let vm: VMData?
         if (fileBasePath.resolvingSymlinksInPath().path == documentsURL.appendingPathComponent("Inbox", isDirectory: true).path) {
             logger.info("moving from Inbox")
             try fileManager.moveItem(at: url, to: dest)
-            wrapped = UTMVirtualMachine(url: dest)
+            vm = try VMData(url: dest)
         } else if asShortcut {
             logger.info("loading as a shortcut")
-            wrapped = UTMVirtualMachine(url: url)
-            wrapped?.isShortcut = true
-            try await wrapped?.accessShortcut()
+            vm = try VMData(url: url)
         } else {
             logger.info("copying to Documents")
             try fileManager.copyItem(at: url, to: dest)
-            wrapped = UTMVirtualMachine(url: dest)
+            vm = try VMData(url: dest)
         }
-        guard let wrapped = wrapped else {
+        guard let vm = vm else {
             throw UTMDataError.importParseFailed
         }
-        let vm = VMData(wrapping: wrapped)
         listAdd(vm: vm)
         listSelect(vm: vm)
     }
@@ -678,7 +672,7 @@ struct AlertMessage: Identifiable {
     func mountSupportTools(for vm: UTMQemuVirtualMachine) async throws {
         let task = UTMDownloadSupportToolsTask(for: vm)
         if task.hasExistingSupportTools {
-            vm.isGuestToolsInstallRequested = false
+            vm.config.qemu.isGuestToolsInstallRequested = false
             _ = try await task.mountTools()
         } else {
             listAdd(pendingVM: task.pendingVM)
@@ -687,7 +681,7 @@ struct AlertMessage: Identifiable {
             } catch {
                 showErrorAlert(message: error.localizedDescription)
             }
-            vm.isGuestToolsInstallRequested = false
+            vm.config.qemu.isGuestToolsInstallRequested = false
             listRemove(pendingVM: task.pendingVM)
         }
     }
@@ -750,8 +744,7 @@ struct AlertMessage: Identifiable {
         guard let vm = vm.wrapped else {
             return
         }
-        let previous = vm.registryEntry
-        vm.changeUuid(to: UUID(), copyFromExisting: previous)
+        vm.changeUuid(to: UUID(), name: nil, copyingEntry: vm.registryEntry)
     }
     
     // MARK: - Other utility functions
@@ -806,7 +799,7 @@ struct AlertMessage: Identifiable {
     /// - Parameters:
     ///   - vm: VM to send text to
     ///   - components: Data (see UTM Wiki for details)
-    func automationSendText(to vm: UTMVirtualMachine, urlComponents components: URLComponents) {
+    func automationSendText(to vm: VMData, urlComponents components: URLComponents) {
         guard let queryItems = components.queryItems else { return }
         guard let text = queryItems.first(where: { $0.name == "text" })?.value else { return }
         #if os(macOS)
@@ -820,9 +813,9 @@ struct AlertMessage: Identifiable {
     /// - Parameters:
     ///   - vm: VM to send mouse/tablet coordinates to
     ///   - components: Data (see UTM Wiki for details)
-    func automationSendMouse(to vm: UTMVirtualMachine, urlComponents components: URLComponents) {
-        guard let qemuVm = vm as? UTMQemuVirtualMachine else { return } // FIXME: implement for Apple VM
-        guard !qemuVm.qemuConfig.displays.isEmpty else { return }
+    func automationSendMouse(to vm: VMData, urlComponents components: URLComponents) {
+        guard let qemuVm = vm.wrapped as? UTMQemuVirtualMachine else { return } // FIXME: implement for Apple VM
+        guard !qemuVm.config.displays.isEmpty else { return }
         guard let queryItems = components.queryItems else { return }
         /// Parse targeted position
         var x: CGFloat? = nil
@@ -857,7 +850,7 @@ struct AlertMessage: Identifiable {
         }
         /// All parameters parsed, perform the click
         #if os(macOS)
-        tryClickAtPoint(vm: qemuVm, point: point, button: button)
+        tryClickAtPoint(vm: vm, point: point, button: button)
         #else
         tryClickAtPoint(point: point, button: button)
         #endif

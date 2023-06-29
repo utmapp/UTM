@@ -113,6 +113,6 @@ struct Logo: View {
 
 struct VMCardView_Previews: PreviewProvider {
     static var previews: some View {
-        VMCardView(vm: VMData(wrapping: UTMVirtualMachine(newConfig: UTMQemuConfiguration(), destinationURL: URL(fileURLWithPath: "/"))))
+        VMCardView(vm: VMData(from: .empty))
     }
 }

@@ -18,7 +18,7 @@ import Foundation
 
 @objc extension UTMScriptingVirtualMachineImpl {
     @objc var configuration: [AnyHashable : Any] {
-        let wrapper = UTMScriptingConfigImpl(vm.config.wrappedValue as! any UTMConfiguration, data: data)
+        let wrapper = UTMScriptingConfigImpl(vm.config, data: data)
         return wrapper.serializeConfiguration()
     }
     
@@ -28,10 +28,10 @@ import Foundation
             guard let newConfiguration = newConfiguration else {
                 throw ScriptingError.invalidParameter
             }
-            guard vm.state == .vmStopped else {
+            guard vm.state == .stopped else {
                 throw ScriptingError.notStopped
             }
-            let wrapper = UTMScriptingConfigImpl(vm.config.wrappedValue as! any UTMConfiguration)
+            let wrapper = UTMScriptingConfigImpl(vm.config)
             try wrapper.updateConfiguration(from: newConfiguration)
             try await data.save(vm: box)
         }
