@@ -23,7 +23,7 @@ on:
         default: 'false'
 
 env:
-  BUILD_XCODE_PATH: /Applications/Xcode_14.2.app
+  BUILD_XCODE_PATH: /Applications/Xcode_15.0.app
   RUNNER_IMAGE: macos-13
 
 jobs:
