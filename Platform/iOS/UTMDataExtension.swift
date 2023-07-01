@@ -50,7 +50,9 @@ extension UTMData {
     
     func trySendTextSpice(_ text: String) {
         if let vc = vmVC as? VMDisplayMetalViewController {
+            #if !os(visionOS) // FIXME: broken in visionOS
             vc.keyboardView.insertText(text)
+            #endif
         } else if let vc = vmVC as? VMDisplayTerminalViewController {
             vc.vmSerialPort.write(text.data(using: .nonLossyASCII)!)
         }

@@ -16,7 +16,7 @@
 
 import SwiftUI
 import UniformTypeIdentifiers
-#if !os(macOS)
+#if os(iOS) && !os(visionOS)
 import IQKeyboardManagerSwift
 #endif
 
@@ -75,7 +75,9 @@ struct ContentView: View {
             NSWindow.allowsAutomaticWindowTabbing = false
             #else
             data.triggeriOSNetworkAccessPrompt()
+            #if !os(visionOS)
             IQKeyboardManager.shared.enable = true
+            #endif
             #if !WITH_QEMU_TCI
             if !Main.jitAvailable {
                 data.busyWorkAsync {

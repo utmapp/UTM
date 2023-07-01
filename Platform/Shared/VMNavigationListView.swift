@@ -117,17 +117,19 @@ private struct VMListModifier: ViewModifier {
             ToolbarItem(placement: .navigationBarLeading) {
                 newButton
             }
+            #if !os(visionOS)
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button("Settings") {
                     settingsPresented.toggle()
                 }
             }
+            #endif
             ToolbarItem(placement: .navigationBarTrailing) {
                 EditButton()
             }
             #endif
         }
-        #if os(iOS)
+        #if os(iOS) && !os(visionOS)
         // SwiftUI bug on iOS 14.4 and previous versions prevents multiple .sheet from working
         .sheet(isPresented: $sheetPresented) {
             if data.showNewVMSheet {

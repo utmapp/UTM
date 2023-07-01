@@ -14,8 +14,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/utmapp/CocoaSpice.git",
       "state" : {
-        "branch" : "main",
-        "revision" : "443a7d671940218584facf74774ea21cf5e9eff1"
+        "branch" : "visionos",
+        "revision" : "5405e085b9bc45ab13a862ddea350fdf660db86d"
       }
     },
     {
@@ -66,10 +66,10 @@
     {
       "identity" : "swiftterm",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/migueldeicaza/SwiftTerm.git",
+      "location" : "https://github.com/osy/SwiftTerm.git",
       "state" : {
-        "branch" : "main",
-        "revision" : "1c332c850f06e29a4fd5ceda8e59bec9b41e69cf"
+        "branch" : "visionos",
+        "revision" : "0b034bb577190785e44915ac18e5e3f0ba1c993d"
       }
     },
     {

@@ -34,8 +34,10 @@
 #if TARGET_OS_IPHONE
 #include "UTMLocationManager.h"
 #include "VMDisplayViewController.h"
+#if !defined(TARGET_OS_VISION) || !TARGET_OS_VISION
 #include "VMDisplayMetalViewController.h"
 #include "VMDisplayMetalViewController+Keyboard.h"
+#endif
 #include "VMKeyboardButton.h"
 #include "VMKeyboardView.h"
 #elif TARGET_OS_OSX
