@@ -1,4 +1,6 @@
 
+/** UTM **/
+
 /* Configuration */
 
 // Legacy/UTMLegacyQemuConfiguration+Constants.m
@@ -88,66 +90,34 @@
 "VirtFS" = "VirtFS";
 
 
-/* Managers */
-
-// UTMJSONStream.m
-"Error parsing JSON." = "JSONのパース中にエラーが発生しました。";
-"Port is not connected." = "ポートが接続されていません。";
+/* Services */
 
 // UTMQemu.m
 "Internal error has occurred." = "内部エラーが発生しました。";
 
-// UTMQemuManager.m
-"Timed out waiting for RPC." = "RPCの待機時間がタイムアウトになりました。";
-"Manager being deallocated, killing pending RPC." = "マネージャがメモリ解放されたため、保留中のRPCが強制終了しました。";
+// UTMQemuImage.swift
+"An unknown QEMU error has occurred." = "不明なQEMUエラーが発生しました。";
 
-// UTMQemuMonitor.m
-"Guest panic" = "ゲストがパニック状態に陥りました";
+// UTMSpiceIO.m
+"Failed to start SPICE client." = "SPICEクライアントの開始に失敗しました。";
+"Internal error trying to connect to SPICE server." = "SPICEサーバへの接続試行中に内部エラーが発生しました。";
 
-// UTMQemuGuestAgent.m
-"Mismatched id from guest-sync-delimited." = "guest-sync-delimitedからのIDが一致しません。";
-
-// UTMQemuVirtualMachine.swift
-"Failed to access drive image path." = "ドライブイメージパスのアクセスに失敗しました。";
-"Failed to access shared directory." = "共有ディレクトリのアクセスに失敗しました。";
-"The virtual machine is in an invalid state." = "仮想マシンが無効な状態です。";
-
-// UTMQemuVirtualMachine.m
-"Failed to access data from shortcut." = "ショートカットからデータのアクセスに失敗しました。";
-"This build of UTM does not support emulating the architecture of this VM." = "このビルドのUTMは、この仮想マシンのアーキテクチャのエミュレーションには対応していません。";
-"QEMU exited from an error: %@" = "QEMUがエラーにより終了しました: %@";
-"Error trying to restore external drives and shares: %@" = "外部ドライブおよび共有の復元中にエラーが発生しました: %@";
-"Failed to save VM snapshot. Usually this means at least one device does not support snapshots. %@" = "仮想マシンのスナップショットの保存に失敗しました。これは、通常1台以上のデバイスがスナップショットに対応していないことを意味します。%@";
-
-// UTMQemuVirtualMachine+SPICE.m
-"VM frontend does not support shared directories." = "仮想マシンのフロントエンドが共有ディレクトリに対応していません。";
-"Cannot start shared directory before SPICE starts." = "SPICEが開始する前に共有ディレクトリを開始できません。";
-
-// UTMVirtualMachine.m
-"Suspended" = "サスペンド済み";
-"Stopped" = "停止済み";
-"Starting" = "開始中";
-"Started" = "開始済み";
-"Pausing" = "一時停止中";
-"Paused" = "一時停止済み";
-"Resuming" = "再開中";
-"Stopping" = "停止中";
+// UTMVirtualMachine.swift
+"Not implemented." = "実装されていません。";
 
 // UTMAppleVirtualMachine.swift
 "Cannot create virtual terminal." = "仮想ターミナルを作成できません。";
 "Cannot access resource: %@" = "リソースにアクセスできません: %@";
+"The operating system cannot be installed on this machine." = "そのオペレーティングシステムはこのマシン上ではインストールできません。";
+"The operation is not available." = "その操作は利用できません。";
 
-// UTMSpiceIO.m
-"Failed to start SPICE client." = "SPICEクライアントの開始に失敗しました。";
-"Internal error trying to connect to SPICE server." = "SPICEサーバへの接続中に内部エラーが発生しました。";
-
-// UTMPendingVirtualMachine.swift
-"%@ remaining" = "残り%@";
-"%@/s" = "%@/秒";
-
-// UTMWrappedVirtualMachine.swift
-"Unavailable" = "利用不可";
-"(Unavailable)" = "（利用不可）";
+// UTMQemuVirtualMachine.m
+"Failed to access data from shortcut." = "ショートカットからデータのアクセスに失敗しました。";
+"This build of UTM does not support emulating the architecture of this VM." = "このビルドのUTMは、この仮想マシンのアーキテクチャのエミュレーションには対応していません。";
+"Failed to access drive image path." = "ドライブイメージパスのアクセスに失敗しました。";
+"Failed to access shared directory." = "共有ディレクトリのアクセスに失敗しました。";
+"The virtual machine is in an invalid state." = "仮想マシンが無効な状態です。";
+"Failed to save VM snapshot. Usually this means at least one device does not support snapshots. %@" = "仮想マシンのスナップショットの保存に失敗しました。これは、通常1台以上のデバイスがスナップショットに対応していないことを意味します。%@";
 
 
 /* Platform/iOS */
@@ -401,6 +371,7 @@
 "Random" = "ランダム";
 "Bridged Settings" = "ブリッジ設定";
 "Interface" = "インターフェイス";
+"Automatic" = "自動";
 "Invalid MAC address." = "MACアドレスが無効です。";
 
 // VMConfigAppleSerialView.swift
@@ -834,15 +805,6 @@
 "Show All" = "すべてを表示";
 "\u2022 " = "\u2022 ";
 
-// UTMDownloadVMTask.swift
-"There is no UTM file in the downloaded ZIP archive." = "ダウンロードされたZIPアーカイブ内にUTMファイルがありません。";
-"Failed to parse the downloaded VM." = "ダウンロードされた仮想マシンのパースに失敗しました。";
-
-// UTMDownloadSupportToolsTask.swift
-"Windows Guest Support Tools" = "Windowsゲストサポートツール";
-"No empty removable drive found. Make sure you have at least one removable drive that is not in use." = "空のリムーバブルドライブが見つかりません。使用していないリムーバブルドライブが少なくとも1台あることを確認してください。";
-"The guest support tools have already been mounted." = "ゲストサポートツールはすでにマウントされています。";
-
 // UTMPendingVMView.swift
 "Extracting…" = "展開中…";
 "%1$@ of %2$@ (%3$@)" = "%1$@ / %2$@（%3$@）";
@@ -870,6 +832,34 @@
 "Failed to attach to JitStreamer." = "JitStreamerへのアタッチに失敗しました。";
 "Invalid JitStreamer attach URL:\n%@" = "JitStreamerアタッチURLが無効です:\n%@";
 
+// UTMDownloadVMTask.swift
+"There is no UTM file in the downloaded ZIP archive." = "ダウンロードされたZIPアーカイブ内にUTMファイルがありません。";
+"Failed to parse the downloaded VM." = "ダウンロードされた仮想マシンのパースに失敗しました。";
+
+// UTMDownloadSupportToolsTask.swift
+"Windows Guest Support Tools" = "Windowsゲストサポートツール";
+"No empty removable drive found. Make sure you have at least one removable drive that is not in use." = "空のリムーバブルドライブが見つかりません。使用していないリムーバブルドライブが少なくとも1台あることを確認してください。";
+"The guest support tools have already been mounted." = "ゲストサポートツールはすでにマウントされています。";
+
+// UTMPendingVirtualMachine.swift
+"%@ remaining" = "残り%@";
+"%@/s" = "%@/秒";
+
+// VMData.swift
+"(Unavailable)" = "（利用不可）";
+"Virtual machine not loaded." = "仮想マシンが読み込まれていません。";
+"Unavailable" = "利用不可";
+"Suspended" = "サスペンド済み";
+"Stopped" = "停止済み";
+"Starting" = "開始中";
+"Started" = "開始済み";
+"Pausing" = "一時停止中";
+"Paused" = "一時停止済み";
+"Resuming" = "再開中";
+"Stopping" = "停止中";
+"Saving" = "保存中";
+"Restoring" = "復元中";
+
 
 /* Scripting */
 
@@ -885,7 +875,7 @@
 "Identifier '%@' cannot be found." = "識別子“%@”が見つかりません。";
 "Drive description is invalid." = "ドライブの説明が無効です。";
 "Index %lld cannot be found." = "インデックス%lldが見つかりません。";
-"This device is not supported by the target." = "このデバイスはターゲットでサポートされていません。";
+"This device is not supported by the target." = "このデバイスはターゲットでは対応していません。";
 
 // UTMScriptingCreateCommand.swift
 "UTM is not ready to accept commands." = "UTMはコマンドを受け入れる準備ができていません。";
@@ -894,3 +884,29 @@
 "A valid configuration must be specified." = "有効な構成を指定する必要があります。";
 "No name specified in the configuration." = "構成に名前が指定されていません。";
 "No architecture specified in the configuration." = "構成にアーキテクチャが指定されていません。";
+
+
+
+/** QEMUKit **/
+
+/* Sources/QEMUKit */
+
+// UTMQemuVirtualMachine.swift
+"QEMU exited from an error: %@" = "QEMUがエラーにより終了しました: %@";
+
+
+/* Sources/QEMUKitInternal */
+
+// UTMQemuGuestAgent.m
+"Mismatched id from guest-sync-delimited." = "guest-sync-delimitedからのIDが一致しません。";
+
+// UTMJSONStream.m
+"Error parsing JSON." = "JSONのパース中にエラーが発生しました。";
+"Port is not connected." = "ポートが接続されていません。";
+
+// UTMQemuManager.m
+"Timed out waiting for RPC." = "RPCの待機時間がタイムアウトになりました。";
+"Manager being deallocated, killing pending RPC." = "マネージャがメモリ解放されたため、保留中のRPCが強制終了しました。";
+
+// UTMQemuMonitor.m
+"Guest panic" = "ゲストがパニック状態に陥りました";
