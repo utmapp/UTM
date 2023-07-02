@@ -15,6 +15,9 @@
 //
 
 import Foundation
+#if os(macOS)
+import Virtualization // for getting network interfaces
+#endif
 
 /// Build QEMU arguments from config
 @MainActor extension UTMQemuConfiguration {
@@ -706,6 +709,12 @@ import Foundation
         return (network.vlanDhcpStartAddress ?? firstAddrStr, network.vlanDhcpEndAddress ?? lastAddrStr, netmaskStr)
     }
     
+    #if os(macOS)
+    private var defaultBridgedInterface: String {
+        VZBridgedNetworkInterface.networkInterfaces.first?.identifier ?? "en0"
+    }
+    #endif
+    
     @QEMUArgumentBuilder private var networkArguments: [QEMUArgument] {
         for i in networks.indices {
             if isSparc {
@@ -733,7 +742,7 @@ import Foundation
                 useVMnet = true
                 "vmnet-bridged"
                 "id=net\(i)"
-                "ifname=\(networks[i].bridgeInterface ?? "en0")"
+                "ifname=\(networks[i].bridgeInterface ?? defaultBridgedInterface)"
             } else if networks[i].mode == .host {
                 useVMnet = true
                 "vmnet-host"
