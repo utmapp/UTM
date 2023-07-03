@@ -18,7 +18,7 @@ import Foundation
 
 /// Settings for single QEMU disk device
 struct UTMQemuConfigurationDrive: UTMConfigurationDrive {
-    private static let latestInterfaceVersion = 1
+    static let latestInterfaceVersion = 1
     
     /// If not removable, this is the name of the file in the bundle.
     var imageName: String?
