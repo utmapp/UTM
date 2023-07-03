@@ -519,6 +519,8 @@
 // VMConfigDriveDetailsView.swift
 "(new)" = "（新規）";
 "Image Type" = "イメージの種類";
+"Update Interface" = "インターフェイスをアップデート";
+"Older versions of UTM added each IDE device to a separate bus. Check this to change the configuration to place two units on each bus." = "UTMの古いバージョンでは、IDEデバイスをそれぞれ別のバスに追加していました。これにチェックを入れると、各バスに2つのユニットを配置する構成に変更できます。";
 "Reclaim Space" = "領域を回収";
 "Reclaim disk space by re-converting the disk image." = "ディスクイメージを再変換することでディスク領域を回収します。";
 "Compress" = "圧縮";
