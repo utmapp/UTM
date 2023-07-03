@@ -630,9 +630,9 @@ extension UTMScriptingConfigImpl {
         
         var errorDescription: String? {
             switch self {
-            case .identifierNotFound(let id): return NSLocalizedString("Identifier '\(id)' cannot be found.", comment: "UTMScriptingConfigImpl")
+            case .identifierNotFound(let id): return String.localizedStringWithFormat(NSLocalizedString("Identifier '%@' cannot be found.", comment: "UTMScriptingConfigImpl"), String(describing: id))
             case .invalidDriveDescription: return NSLocalizedString("Drive description is invalid.", comment: "UTMScriptingConfigImpl")
-            case .indexNotFound(let index): return NSLocalizedString("Index \(index) cannot be found.", comment: "UTMScriptingConfigImpl")
+            case .indexNotFound(let index): return String.localizedStringWithFormat(NSLocalizedString("Index %lld cannot be found.", comment: "UTMScriptingConfigImpl"), index)
             case .deviceNotSupported: return NSLocalizedString("This device is not supported by the target.", comment: "UTMScriptingConfigImpl")
             }
         }
