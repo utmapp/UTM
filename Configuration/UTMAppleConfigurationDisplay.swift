@@ -27,21 +27,25 @@ struct UTMAppleConfigurationDisplay: Codable, Identifiable {
     
     var pixelsPerInch: Int = 80
     
+    var isDynamicResolution: Bool = true
+
     let id = UUID()
     
     enum CodingKeys: String, CodingKey {
         case widthInPixels = "WidthPixels"
         case heightInPixels = "HeightPixels"
         case pixelsPerInch = "PixelsPerInch"
+        case isDynamicResolution = "DynamicResolution"
     }
     
     init() {
     }
     
-    init(width: Int, height: Int, ppi: Int = 80) {
+    init(width: Int, height: Int, ppi: Int = 80, dynamicResolution: Bool = true) {
         widthInPixels = width
         heightInPixels = height
         pixelsPerInch = ppi
+        isDynamicResolution = dynamicResolution
     }
     
     init(from decoder: Decoder) throws {
@@ -49,6 +53,7 @@ struct UTMAppleConfigurationDisplay: Codable, Identifiable {
         widthInPixels = try values.decode(Int.self, forKey: .widthInPixels)
         heightInPixels = try values.decode(Int.self, forKey: .heightInPixels)
         pixelsPerInch = try values.decode(Int.self, forKey: .pixelsPerInch)
+        isDynamicResolution = try values.decodeIfPresent(Bool.self, forKey: .isDynamicResolution) ?? false
     }
     
     func encode(to encoder: Encoder) throws {
@@ -56,6 +61,7 @@ struct UTMAppleConfigurationDisplay: Codable, Identifiable {
         try container.encode(widthInPixels, forKey: .widthInPixels)
         try container.encode(heightInPixels, forKey: .heightInPixels)
         try container.encode(pixelsPerInch, forKey: .pixelsPerInch)
+        try container.encode(isDynamicResolution, forKey: .isDynamicResolution)
     }
     
     #if arch(arm64)

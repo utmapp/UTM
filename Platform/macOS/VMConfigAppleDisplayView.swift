@@ -149,6 +149,14 @@ struct VMConfigAppleDisplayView: View {
         }
     }
     
+    private var isDynamicResolution: Binding<Bool> {
+        Binding<Bool> {
+            return config.isDynamicResolution
+        } set: { newValue in
+            config.isDynamicResolution = newValue
+        }
+    }
+
     var body: some View {
         Form {
             Picker("Resolution", selection: displayResolution) {
@@ -156,13 +164,15 @@ struct VMConfigAppleDisplayView: View {
                     Text(item.name)
                         .tag(item)
                 }
-            }
+            }.disabled(isDynamicResolution.wrappedValue)
             if displayResolution.wrappedValue == customResolution {
                 NumberTextField("Width", number: $config.widthInPixels)
                 NumberTextField("Height", number: $config.heightInPixels)
             }
             Toggle("HiDPI (Retina)", isOn: isHidpi)
                 .help("Only available on macOS virtual machines.")
+            Toggle("Dynamic Resolution", isOn: isDynamicResolution)
+                .help("Autoscale display resolution to window.")
         }
     }
 }

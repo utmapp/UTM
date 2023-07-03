@@ -54,6 +54,9 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
         guard let primaryDisplay = appleConfig.displays.first else {
             return //FIXME: add multiple displays
         }
+        if #available(macOS 14.0, *) {
+            appleView.automaticallyReconfiguresDisplay = primaryDisplay.isDynamicResolution
+        }
         let size = windowSize(for: primaryDisplay)
         let frame = window.frameRect(forContentRect: CGRect(origin: window.frame.origin, size: size))
         window.contentAspectRatio = size
