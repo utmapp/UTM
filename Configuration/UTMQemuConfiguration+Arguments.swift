@@ -502,7 +502,12 @@ import Virtualization // for getting network interfaces
             } else {
                 "ide-hd"
             }
-            "bus=ide.\(busindex)"
+            if drive.isIdeInterfaceMultipleUnits {
+                "bus=ide.\(busindex / 2)"
+                "unit=\(busindex % 2)"
+            } else {
+                "bus=ide.\(busindex)"
+            }
             busindex += 1
             "drive=drive\(drive.id)"
             "bootindex=\(bootindex)"
