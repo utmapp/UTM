@@ -275,17 +275,41 @@
 // SettingsView.swift
 "Application" = "Aplikacja";
 "Keep UTM running after last window is closed and all VMs are shut down" = "Zostaw UTM uruchomione nawet jeśli ostatnie okno jest zamknięte i wszystkie maszyny wirtualne są wyłączone.";
+"Show dock icon" = "Pokazuj ikonę w docku";
+"Show menu bar icon" = "Pokazuj ikonę na pasku menu";
+"Prevent system from sleeping when any VM is running" = "Zapobiegaj usypianiu systemu gdy jakakolwiek maszyna wirtualna jest uruchomiona";
+"Do not show confirmation when closing a running VM" = "Nie pokazuj ostrzeżenia podczas zamykania uruchomionej maszyny wirtualnej";
+"Closing a VM without properly shutting it down could result in data loss." = "Zamknięcie maszyny wirtualnej bez poprawnego jej wyłączenia może poskukować utratą danych";
 "VM display size is fixed" = "Rozmiar ekranu wirtualnej maszyny jest zablokowany";
 "If enabled, resizing of the VM window will not be allowed." = "Jeśli zaznaczone, manipulacja rozdzielczością okna maszyny wirtualnej będzie niemożliwa.";
-"Do not save VM screenshot to disk" = "Nie zapisuj migawek maszyny wirtualnej na dysk";
-"If enabled, any existing screenshot will be deleted the next time the VM is started." = "Jeśli zaznaczone, wszystkie istniejące migawki zostaną usunięte przy następnym uruchomieniu.";
+"Do not save VM screenshot to disk" = "Nie zapisuj zrzutu ekranu maszyny wirtualnej na dysk";
+"If enabled, any existing screenshot will be deleted the next time the VM is started." = "Jeśli zaznaczone, wszystkie istniejące zrzuty ekranu zostaną usunięte przy następnym uruchomieniu.";
+"QEMU Graphics Acceleration" = "Akceleracja grafiki QEMU";
+"Renderer Backend" = "Tryb renderowania";
+"ANGLE (OpenGL)" = "ANGLE（OpenGL）";
+"ANGLE (Metal)" = "ANGLE（Metal）";
+"By default, the best renderer for this device will be used. You can override this with to always use a specific renderer. This only applies to QEMU VMs with GPU accelerated graphics." = "Domyślnie, najlepszy tryb renderowania dla tego urządzenia będzie używany. Możesz nadpisać to ustawienie poprzez ustawienie konkretnego trybu. Dotyczy tylko maszyn wirtualnych QEMU ze wspieraną akceracją grafiki.";
+"FPS Limit" = "Limit klatek";
+"If set, a frame limit can improve smoothness in rendering by preventing stutters when set to the lowest value your device can handle." = "Jeśli ustawione, limit klatek może poprawić gładkość renderowania przez zapobieganie zacinaniu się, gdy jest ustawiana na najniższą wartość jaką twoje urządzenie może wytrzymać.";
+"QEMU Sound" = "Dźwięk QEMU";
+"Sound Backend" = "Tryb dźwięku";
+"SPICE with GStreamer (Input & Output)" = "SPICE z GStreamerem (WE/WY)";
+"CoreAudio (Output Only)" = "CoreAudio (tylko wyjście)";
+"Console" = "Konsola";
+"Option (⌥) is Meta key" = "Option（⌥） to klawisz Meta";
+"If enabled, Option will be mapped to the Meta key which can be useful for emacs. Otherwise, option will work as the system intended (such as for entering international text)." = "Jeśli włączone, klawisz Option będzie zmapowany jako klawisz Meta, który może być przydatny dla eMacków. W innym wypadku, ta opcja będzie działać jak system przewiduje (tj: wpisywanie międzynarodowego tekstu).";
+"QEMU Pointer" = "Wskaźnik QEMU";
 "Hold Control (⌃) for right click" = "Przytrzymaj Control (⌃) aby wykonać prawe kliknięcie";
-"Use Command+Option (⌘+⌥) for input capture/release" = "Użyj Command+Option (⌘+⌥) aby przechwycić/uwolnić klawiaturę.";
-"If disabled, the default combination Control+Option (⌃+⌥) will be used." = "Jeśli wyłączone, podstawowa kombinacja Ctrl+Option (⌃+⌥) zostanie użyta.";
-"Caps Lock (⇪) is treated as a key" = "Caps Lock (⇪) jest traktowany jako klawisz.";
-"If enabled, caps lock will be handled like other keys. If disabled, it is treated as a toggle that is synchronized with the host." = "Jeśli włączone, Caps Lock będzie traktowany jak każdy inny klawisz. Jeśli wyłączone, będzie on traktowany jako przełącznik zsynchronizowany z hostem.";
-"Invert scrolling" = "Odwróć kółko myszki";
-"If enabled, scroll whell input will be inverted." = "Jeśli włączone, kółko myszki będzie odwrócone.";
+"Invert scrolling" = "Odwróć przewijanie";
+"If enabled, scroll whell input will be inverted." = "Jeśli włączone, przewijanie będzie odwrócone";
+"QEMU Keyboard" = "Klawiatura QEMU";
+"Use Command+Option (⌘+⌥) for input capture/release" = "Użyj Command＋Option（⌘＋⌥）, aby przechwytywać/uwolnić mysz";
+"If disabled, the default combination Control+Option (⌃+⌥) will be used." = "Jeśli wyłączone, domyślna kombinacja Control＋Option（⌃＋⌥） będzie użyta.";
+"Caps Lock (⇪) is treated as a key" = "Caps Lock（⇪） jest traktowany jako klawisz";
+"If enabled, caps lock will be handled like other keys. If disabled, it is treated as a toggle that is synchronized with the host." = "Jeśli włączone, Caps Lock będzie używany jak każdy inny klawisz. Jeśli wyłączone, jest traktowany jako przełącznik który synchronizuje gościa z hostem.";
+"Num Lock is forced on" = "Wymuszenie włączonego NumLock'a";
+"If enabled, num lock will always be on to the guest. Note this may make your keyboard's num lock indicator out of sync." = "Jeśli włączone, NumLock zawsze będzie włączony w systemie gościa. Pamiętaj, że to może sprawić mylne działanie detektora Num Locka na twojej klawiaturze.";
+"QEMU USB" = "QEMU USB";
 "Do not show prompt when USB device is plugged in" = "Nie pokazuj powiadomienia gdy urządzenie USB zostanie podłączone";
 
 // UTMDataExtension.swift
@@ -414,6 +438,7 @@
 // VMCommands.swift
 "Open…" = "Otwórz...";
 "Virtual Machine Gallery" = "Biblioteka wirtualnych maszyn";
+"What's New" = "Co nowego?";
 "Support" = "Wsparcie";
 "License" = "Licencja";
 
