@@ -26,7 +26,7 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
     }
     
     var vmQemuConfig: UTMQemuConfiguration! {
-        vm?.config.qemuConfig
+        qemuVM?.config
     }
     
     var defaultTitle: String {
@@ -34,7 +34,7 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
     }
     
     var defaultSubtitle: String {
-        if qemuVM.isRunningAsSnapshot {
+        if qemuVM.isRunningAsDisposible {
             return NSLocalizedString("Disposable Mode", comment: "VMDisplayQemuDisplayController")
         } else {
             return ""
@@ -68,12 +68,12 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
     }
     
     override var shouldSaveOnPause: Bool {
-        !qemuVM.isRunningAsSnapshot
+        !qemuVM.isRunningAsDisposible
     }
     
     override func enterLive() {
         if !isSecondary {
-            qemuVM.ioDelegate = self
+            qemuVM.ioServiceDelegate = self
         }
         startPauseToolbarItem.isEnabled = true
         if defaultPauseTooltip == nil {
@@ -92,7 +92,7 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
     }
     
     override func enterSuspended(isBusy busy: Bool) {
-        if vm.state == .vmStopped {
+        if vm.state == .stopped {
             connectedUsbDevices.removeAll()
             allUsbDevices.removeAll()
             if isSecondary {
@@ -130,7 +130,7 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
         } else {
             let item = NSMenuItem()
             item.title = NSLocalizedString("Install Windows Guest Tools…", comment: "VMDisplayWindowController")
-            item.isEnabled = !qemuVM.isGuestToolsInstallRequested
+            item.isEnabled = !vmQemuConfig.qemu.isGuestToolsInstallRequested
             item.target = self
             item.action = #selector(installWindowsGuestTools)
             menu.addItem(item)
@@ -227,7 +227,7 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
     }
     
     @MainActor private func installWindowsGuestTools(sender: AnyObject) {
-        qemuVM.isGuestToolsInstallRequested = true
+        vmQemuConfig.qemu.isGuestToolsInstallRequested = true
     }
 }
 
@@ -353,8 +353,8 @@ extension VMDisplayQemuWindowController: CSUSBManagerDelegate {
     func spiceUsbManager(_ usbManager: CSUSBManager, deviceAttached device: CSUSBDevice) {
         logger.debug("USB device attached: \(device)")
         if !isNoUsbPrompt {
-            DispatchQueue.main.async {
-                if self.window!.isKeyWindow && self.vm.state == .vmStarted {
+            Task { @MainActor in
+                if self.window!.isKeyWindow && self.vm.state == .started {
                     self.showConnectPrompt(for: device)
                 }
             }
@@ -661,5 +661,14 @@ extension VMDisplayQemuWindowController {
         let secondary = VMDisplayQemuTerminalWindowController(secondaryFromSerialPort: serial, vm: qemuVM, id: id)
         registerSecondaryWindow(secondary)
         return secondary
+    }
+}
+
+// MARK: - Computer wakeup
+extension VMDisplayQemuWindowController {
+    @objc override func didWake(_ notification: NSNotification) {
+        Task {
+            try? await qemuVM.guestAgent?.guestSetTime(NSDate.now.timeIntervalSince1970)
+        }
     }
 }

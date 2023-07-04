@@ -24,10 +24,6 @@ import SwiftUI
 #if canImport(AltKit) && !WITH_QEMU_TCI
 import AltKit
 #endif
-#if !os(macOS)
-typealias UTMAppleConfiguration = UTMQemuConfiguration
-typealias UTMAppleVirtualMachine = UTMQemuVirtualMachine
-#endif
 
 struct AlertMessage: Identifiable {
     var message: String
@@ -40,41 +36,41 @@ struct AlertMessage: Identifiable {
     }
 }
 
-class UTMData: ObservableObject {
+@MainActor class UTMData: ObservableObject {
     
     /// Sandbox location for storing .utm bundles
-    static var defaultStorageUrl: URL {
+    nonisolated static var defaultStorageUrl: URL {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     }
     
     /// View: show VM settings
-    @MainActor @Published var showSettingsModal: Bool
+    @Published var showSettingsModal: Bool
     
     /// View: show new VM wizard
-    @MainActor @Published var showNewVMSheet: Bool
+    @Published var showNewVMSheet: Bool
     
     /// View: show an alert message
-    @MainActor @Published var alertMessage: AlertMessage?
+    @Published var alertMessage: AlertMessage?
     
     /// View: show busy spinner
-    @MainActor @Published var busy: Bool
+    @Published var busy: Bool
     
     /// View: currently selected VM
-    @MainActor @Published var selectedVM: UTMVirtualMachine?
+    @Published var selectedVM: VMData?
     
     /// View: all VMs listed, we save a bookmark to each when array is modified
-    @MainActor @Published private(set) var virtualMachines: [UTMVirtualMachine] {
+    @Published private(set) var virtualMachines: [VMData] {
         didSet {
             listSaveToDefaults()
         }
     }
     
     /// View: all pending VMs listed (ZIP and IPSW downloads)
-    @MainActor @Published private(set) var pendingVMs: [UTMPendingVirtualMachine]
+    @Published private(set) var pendingVMs: [UTMPendingVirtualMachine]
     
     #if os(macOS)
     /// View controller for every VM currently active
-    var vmWindows: [UTMVirtualMachine: Any] = [:]
+    var vmWindows: [VMData: Any] = [:]
     #else
     /// View controller for currently active VM
     var vmVC: Any?
@@ -84,19 +80,18 @@ class UTMData: ObservableObject {
     #endif
     
     /// Shortcut for accessing FileManager.default
-    private var fileManager: FileManager {
+    nonisolated private var fileManager: FileManager {
         FileManager.default
     }
     
     /// Shortcut for accessing storage URL from instance
-    private var documentsURL: URL {
+    nonisolated private var documentsURL: URL {
         UTMData.defaultStorageUrl
     }
     
     /// Queue to run `busyWork` tasks
     private var busyQueue: DispatchQueue
     
-    @MainActor
     init() {
         self.busyQueue = DispatchQueue(label: "UTM Busy Queue", qos: .userInitiated)
         self.showSettingsModal = false
@@ -115,11 +110,11 @@ class UTMData: ObservableObject {
     /// This removes stale entries (deleted/not accessible) and duplicate entries
     func listRefresh() async {
         // wrap stale VMs
-        var list = await virtualMachines
+        var list = virtualMachines
         for i in list.indices.reversed() {
             let vm = list[i]
-            if !fileManager.fileExists(atPath: vm.path.path) {
-                list[i] = await UTMWrappedVirtualMachine(from: vm.registryEntry)
+            if let registryEntry = vm.registryEntry, !fileManager.fileExists(atPath: registryEntry.package.path) {
+                list[i] = VMData(from: registryEntry)
             }
         }
         // now look for and add new VMs in default storage
@@ -127,32 +122,31 @@ class UTMData: ObservableObject {
             let files = try fileManager.contentsOfDirectory(at: UTMData.defaultStorageUrl, includingPropertiesForKeys: [.isDirectoryKey], options: .skipsHiddenFiles)
             let newFiles = files.filter { newFile in
                 !list.contains { existingVM in
-                    existingVM.path.standardizedFileURL == newFile.standardizedFileURL
+                    existingVM.pathUrl.standardizedFileURL == newFile.standardizedFileURL
                 }
             }
             for file in newFiles {
                 guard try file.resourceValues(forKeys: [.isDirectoryKey]).isDirectory ?? false else {
                     continue
                 }
-                guard UTMVirtualMachine.isVirtualMachine(url: file) else {
+                guard UTMQemuVirtualMachine.isVirtualMachine(url: file) else {
                     continue
                 }
-                let vm = UTMVirtualMachine(url: file)
-                if let vm = vm {
+                await Task.yield()
+                if let vm = try? VMData(url: file) {
                     if uuidHasCollision(with: vm, in: list) {
-                        if let index = list.firstIndex(where: { $0 is UTMWrappedVirtualMachine && $0.id == vm.id }) {
+                        if let index = list.firstIndex(where: { !$0.isLoaded && $0.id == vm.id }) {
                             // we have a stale VM with the same UUID, so we replace that entry with this one
                             list[index] = vm
                             // update the registry with the new bookmark
-                            try? await vm.updateRegistryFromConfig()
+                            try? await vm.wrapped!.updateRegistryFromConfig()
+                            continue
                         } else {
                             // duplicate is not stale so we need a new UUID
-                            await uuidRegenerate(for: vm)
-                            list.insert(vm, at: 0)
+                            uuidRegenerate(for: vm)
                         }
-                    } else {
-                        list.insert(vm, at: 0)
                     }
+                    list.insert(vm, at: 0)
                 } else {
                     logger.error("Failed to create object for \(file)")
                 }
@@ -161,16 +155,16 @@ class UTMData: ObservableObject {
             logger.error("\(error.localizedDescription)")
         }
         // replace the VM list with our new one
-        if await virtualMachines != list {
-            await listReplace(with: list)
+        if virtualMachines != list {
+            listReplace(with: list)
         }
         // prune the registry
-        let uuids = list.map({ $0.registryEntry.uuid.uuidString })
+        let uuids = list.compactMap({ $0.registryEntry?.uuid.uuidString })
         UTMRegistry.shared.prune(exceptFor: Set(uuids))
     }
     
     /// Load VM list (and order) from persistent storage
-    @MainActor private func listLoadFromDefaults() {
+    private func listLoadFromDefaults() {
         let defaults = UserDefaults.standard
         guard defaults.object(forKey: "VMList") == nil else {
             listLegacyLoadFromDefaults()
@@ -192,66 +186,62 @@ class UTMData: ObservableObject {
             guard let entry = UTMRegistry.shared.entry(for: uuidString) else {
                 return nil
             }
-            let wrappedVM = UTMWrappedVirtualMachine(from: entry)
-            if let vm = wrappedVM.unwrap() {
-                if vm.registryEntry.uuid != wrappedVM.registryEntry.uuid {
-                    // we had a duplicate UUID so we change it
-                    vm.changeUuid(to: wrappedVM.registryEntry.uuid)
-                }
-                return vm
-            } else {
-                return wrappedVM
+            let vm = VMData(from: entry)
+            do {
+                try vm.load()
+            } catch {
+                logger.error("Error loading '\(entry.uuid)': \(error)")
             }
+            return vm
         }
     }
     
     /// Load VM list (and order) from persistent storage (legacy)
-    @MainActor private func listLegacyLoadFromDefaults() {
+    private func listLegacyLoadFromDefaults() {
         let defaults = UserDefaults.standard
         // legacy path list
         if let files = defaults.array(forKey: "VMList") as? [String] {
             virtualMachines = files.uniqued().compactMap({ file in
                 let url = documentsURL.appendingPathComponent(file, isDirectory: true)
-                return UTMVirtualMachine(url: url)
+                if let vm = try? VMData(url: url) {
+                    return vm
+                } else {
+                    return nil
+                }
             })
         }
         // bookmark list
         if let list = defaults.array(forKey: "VMList") {
             virtualMachines = list.compactMap { item in
-                var wrappedVM: UTMWrappedVirtualMachine?
+                let vm: VMData?
                 if let bookmark = item as? Data {
-                    wrappedVM = UTMWrappedVirtualMachine(bookmark: bookmark)
+                    vm = VMData(bookmark: bookmark)
                 } else if let dict = item as? [String: Any] {
-                    wrappedVM = UTMWrappedVirtualMachine(from: dict)
-                }
-                if let wrappedVM = wrappedVM, let vm = wrappedVM.unwrap() {
-                    // legacy VMs don't have UUID stored so we made a fake UUID
-                    if wrappedVM.registryEntry.uuid != vm.registryEntry.uuid {
-                        UTMRegistry.shared.remove(entry: wrappedVM.registryEntry)
-                    }
-                    return vm
+                    vm = VMData(from: dict)
                 } else {
-                    return wrappedVM
+                    vm = nil
                 }
+                try? vm?.load()
+                return vm
             }
         }
     }
     
     /// Save VM list (and order) to persistent storage
-    @MainActor private func listSaveToDefaults() {
+    private func listSaveToDefaults() {
         let defaults = UserDefaults.standard
-        let wrappedVMs = virtualMachines.map { $0.registryEntry.uuid.uuidString }
+        let wrappedVMs = virtualMachines.map { $0.id.uuidString }
         defaults.set(wrappedVMs, forKey: "VMEntryList")
     }
     
-    @MainActor private func listReplace(with vms: [UTMVirtualMachine]) {
+    private func listReplace(with vms: [VMData]) {
         virtualMachines = vms
     }
     
     /// Add VM to list
     /// - Parameter vm: VM to add
     /// - Parameter at: Optional index to add to, otherwise will be added to the end
-    @MainActor private func listAdd(vm: UTMVirtualMachine, at index: Int? = nil) {
+    private func listAdd(vm: VMData, at index: Int? = nil) {
         if uuidHasCollision(with: vm) {
             uuidRegenerate(for: vm)
         }
@@ -264,14 +254,14 @@ class UTMData: ObservableObject {
     
     /// Select VM in list
     /// - Parameter vm: VM to select
-    @MainActor public func listSelect(vm: UTMVirtualMachine) {
+    public func listSelect(vm: VMData) {
         selectedVM = vm
     }
     
     /// Remove a VM from list
     /// - Parameter vm: VM to remove
     /// - Returns: Index of item removed or nil if already removed
-    @MainActor @discardableResult public func listRemove(vm: UTMVirtualMachine) -> Int? {
+    @discardableResult public func listRemove(vm: VMData) -> Int? {
         let index = virtualMachines.firstIndex(of: vm)
         if let index = index {
             virtualMachines.remove(at: index)
@@ -286,7 +276,7 @@ class UTMData: ObservableObject {
     /// Add pending VM to list
     /// - Parameter pendingVM: Pending VM to add
     /// - Parameter at: Optional index to add to, otherwise will be added to the end
-    @MainActor private func listAdd(pendingVM: UTMPendingVirtualMachine, at index: Int? = nil) {
+    private func listAdd(pendingVM: UTMPendingVirtualMachine, at index: Int? = nil) {
         if let index = index {
             pendingVMs.insert(pendingVM, at: index)
         } else {
@@ -297,7 +287,7 @@ class UTMData: ObservableObject {
     /// Remove pending VM from list
     /// - Parameter pendingVM: Pending VM to remove
     /// - Returns: Index of item removed or nil if already removed
-    @MainActor @discardableResult private func listRemove(pendingVM: UTMPendingVirtualMachine) -> Int? {
+    @discardableResult private func listRemove(pendingVM: UTMPendingVirtualMachine) -> Int? {
         let index = pendingVMs.firstIndex(where: { $0.id == pendingVM.id })
         if let index = index {
             pendingVMs.remove(at: index)
@@ -309,7 +299,7 @@ class UTMData: ObservableObject {
     /// - Parameters:
     ///   - fromOffsets: Offsets from move from
     ///   - toOffset: Offsets to move to
-    @MainActor func listMove(fromOffsets: IndexSet, toOffset: Int) {
+    func listMove(fromOffsets: IndexSet, toOffset: Int) {
         virtualMachines.move(fromOffsets: fromOffsets, toOffset: toOffset)
     }
     
@@ -318,11 +308,11 @@ class UTMData: ObservableObject {
     /// Generate a unique VM name
     /// - Parameter base: Base name
     /// - Returns: Unique name for a non-existing item in the default storage path
-    func newDefaultVMName(base: String = NSLocalizedString("Virtual Machine", comment: "UTMData")) -> String {
+    nonisolated func newDefaultVMName(base: String = NSLocalizedString("Virtual Machine", comment: "UTMData")) -> String {
         let nameForId = { (i: Int) in i <= 1 ? base : "\(base) \(i)" }
         for i in 1..<1000 {
             let name = nameForId(i)
-            let file = UTMVirtualMachine.virtualMachinePath(name, inParentURL: documentsURL)
+            let file = UTMQemuVirtualMachine.virtualMachinePath(for: name, in: documentsURL)
             if !fileManager.fileExists(atPath: file.path) {
                 return name
             }
@@ -336,7 +326,7 @@ class UTMData: ObservableObject {
     ///   - destUrl: Destination directory where duplicates will be checked
     ///   - withExtension: Optionally change the file extension
     /// - Returns: Unique filename that is not used in the destUrl
-    static func newImage(from sourceUrl: URL, to destUrl: URL, withExtension: String? = nil) -> URL {
+    nonisolated static func newImage(from sourceUrl: URL, to destUrl: URL, withExtension: String? = nil) -> URL {
         let name = sourceUrl.deletingPathExtension().lastPathComponent
         let ext = withExtension ?? sourceUrl.pathExtension
         let strFromInt = { (i: Int) in i == 1 ? "" : "-\(i)" }
@@ -358,20 +348,20 @@ class UTMData: ObservableObject {
     
     // MARK: - Other view states
     
-    @MainActor private func setBusyIndicator(_ busy: Bool) {
+    private func setBusyIndicator(_ busy: Bool) {
         self.busy = busy
     }
     
-    @MainActor func showErrorAlert(message: String) {
+    func showErrorAlert(message: String) {
         alertMessage = AlertMessage(message)
     }
     
-    @MainActor func newVM() {
+    func newVM() {
         showSettingsModal = false
         showNewVMSheet = true
     }
     
-    @MainActor func showSettingsForCurrentVM() {
+    func showSettingsForCurrentVM() {
         #if os(iOS)
         // SwiftUI bug: cannot show modal at the same time as changing selected VM or it breaks
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
@@ -386,35 +376,36 @@ class UTMData: ObservableObject {
     
     /// Save an existing VM to disk
     /// - Parameter vm: VM to save
-    @MainActor func save(vm: UTMVirtualMachine) async throws {
+    func save(vm: VMData) async throws {
         do {
-            try await vm.saveUTM()
+            try await vm.save()
         } catch {
             // refresh the VM object as it is now stale
+            let origError = error
             do {
                 try discardChanges(for: vm)
             } catch {
                 // if we can't discard changes, recreate the VM from scratch
-                let path = vm.path
-                guard let newVM = UTMVirtualMachine(url: path) else {
+                let path = vm.pathUrl
+                guard let newVM = try? VMData(url: path) else {
                     logger.debug("Cannot create new object for \(path.path)")
-                    return
+                    throw origError
                 }
-                let index = await listRemove(vm: vm)
-                await listAdd(vm: newVM, at: index)
-                await listSelect(vm: newVM)
+                let index = listRemove(vm: vm)
+                listAdd(vm: newVM, at: index)
+                listSelect(vm: newVM)
             }
-            throw error
+            throw origError
         }
     }
     
     /// Discard changes to VM configuration
     /// - Parameter vm: VM configuration to discard
-    @MainActor func discardChanges(for vm: UTMVirtualMachine? = nil) throws {
-        if let vm = vm {
-            try vm.reloadConfiguration()
+    func discardChanges(for vm: VMData) throws {
+        if let wrapped = vm.wrapped {
+            try wrapped.reload(from: nil)
             if uuidHasCollision(with: vm) {
-                vm.changeUuid(to: UUID())
+                wrapped.changeUuid(to: UUID(), name: nil, copyingEntry: vm.registryEntry)
             }
         }
     }
@@ -422,61 +413,53 @@ class UTMData: ObservableObject {
     /// Save a new VM to disk
     /// - Parameters:
     ///   - config: New VM configuration
-    func create<Config: UTMConfiguration>(config: Config) async throws -> UTMVirtualMachine {
-        guard await !virtualMachines.contains(where: { !$0.isShortcut && $0.config.name == config.information.name }) else {
-            throw NSLocalizedString("An existing virtual machine already exists with this name.", comment: "UTMData")
+    func create<Config: UTMConfiguration>(config: Config) async throws -> VMData {
+        guard !virtualMachines.contains(where: { !$0.isShortcut && $0.config?.information.name == config.information.name }) else {
+            throw UTMDataError.virtualMachineAlreadyExists
         }
-        let vm: UTMVirtualMachine
-        if config is UTMQemuConfiguration {
-            vm = UTMQemuVirtualMachine(newConfig: config, destinationURL: Self.defaultStorageUrl)
-        } else if config is UTMAppleConfiguration {
-            vm = UTMAppleVirtualMachine(newConfig: config, destinationURL: Self.defaultStorageUrl)
-        } else {
-            fatalError("Unknown configuration.")
-        }
+        let vm = try VMData(creatingFromConfig: config, destinationUrl: Self.defaultStorageUrl)
         try await save(vm: vm)
-        await listAdd(vm: vm)
-        await listSelect(vm: vm)
+        listAdd(vm: vm)
+        listSelect(vm: vm)
         return vm
     }
     
     /// Delete a VM from disk
     /// - Parameter vm: VM to delete
     /// - Returns: Index of item removed in VM list or nil if not in list
-    @discardableResult func delete(vm: UTMVirtualMachine, alsoRegistry: Bool = true) async throws -> Int? {
-        if let _ = vm as? UTMWrappedVirtualMachine {
-        } else {
-            try fileManager.removeItem(at: vm.path)
+    @discardableResult func delete(vm: VMData, alsoRegistry: Bool = true) async throws -> Int? {
+        if vm.isLoaded {
+            try fileManager.removeItem(at: vm.pathUrl)
         }
         
         // close any open window
         close(vm: vm)
         
-        if alsoRegistry {
-            UTMRegistry.shared.remove(entry: vm.registryEntry)
+        if alsoRegistry, let registryEntry = vm.registryEntry {
+            UTMRegistry.shared.remove(entry: registryEntry)
         }
-        return await listRemove(vm: vm)
+        return listRemove(vm: vm)
     }
     
     /// Save a copy of the VM and all data to default storage location
     /// - Parameter vm: VM to clone
     /// - Returns: The new VM
-    @discardableResult func clone(vm: UTMVirtualMachine) async throws -> UTMVirtualMachine {
+    @discardableResult func clone(vm: VMData) async throws -> VMData {
         let newName: String = newDefaultVMName(base: vm.detailsTitleLabel)
-        let newPath = UTMVirtualMachine.virtualMachinePath(newName, inParentURL: documentsURL)
+        let newPath = UTMQemuVirtualMachine.virtualMachinePath(for: newName, in: documentsURL)
         
-        try copyItemWithCopyfile(at: vm.path, to: newPath)
-        guard let newVM = UTMVirtualMachine(url: newPath) else {
-            throw NSLocalizedString("Failed to clone VM.", comment: "UTMData")
+        try copyItemWithCopyfile(at: vm.pathUrl, to: newPath)
+        guard let newVM = try? VMData(url: newPath) else {
+            throw UTMDataError.cloneFailed
         }
-        await newVM.changeUuid(to: UUID(), name: newName)
-        try await newVM.saveUTM()
-        var index = await virtualMachines.firstIndex(of: vm)
+        newVM.wrapped!.changeUuid(to: UUID(), name: newName, copyingEntry: nil)
+        try await newVM.save()
+        var index = virtualMachines.firstIndex(of: vm)
         if index != nil {
             index! += 1
         }
-        await listAdd(vm: newVM, at: index)
-        await listSelect(vm: newVM)
+        listAdd(vm: newVM, at: index)
+        listSelect(vm: newVM)
         return newVM
     }
     
@@ -484,8 +467,8 @@ class UTMData: ObservableObject {
     /// - Parameters:
     ///   - vm: VM to copy
     ///   - url: Location to copy to (must be writable)
-    func export(vm: UTMVirtualMachine, to url: URL) throws {
-        let sourceUrl = vm.path
+    func export(vm: VMData, to url: URL) throws {
+        let sourceUrl = vm.pathUrl
         if fileManager.fileExists(atPath: url.path) {
             try fileManager.removeItem(at: url)
         }
@@ -496,28 +479,24 @@ class UTMData: ObservableObject {
     /// - Parameters:
     ///   - vm: VM to move
     ///   - url: Location to move to (must be writable)
-    func move(vm: UTMVirtualMachine, to url: URL) async throws {
+    func move(vm: VMData, to url: URL) async throws {
         try export(vm: vm, to: url)
-        guard let newVM = UTMVirtualMachine(url: url) else {
-            throw NSLocalizedString("Unable to add a shortcut to the new location.", comment: "UTMData")
+        guard let newVM = try? VMData(url: url) else {
+            throw UTMDataError.shortcutCreationFailed
         }
-        await MainActor.run {
-            newVM.isShortcut = true
-        }
-        try await newVM.updateRegistryFromConfig()
-        try await newVM.accessShortcut()
+        try await newVM.wrapped!.updateRegistryFromConfig()
         
-        let oldSelected = await selectedVM
+        let oldSelected = selectedVM
         let index = try await delete(vm: vm, alsoRegistry: false)
-        await listAdd(vm: newVM, at: index)
+        listAdd(vm: newVM, at: index)
         if oldSelected == vm {
-            await listSelect(vm: newVM)
+            listSelect(vm: newVM)
         }
     }
     
     /// Open settings modal
     /// - Parameter vm: VM to edit settings
-    @MainActor func edit(vm: UTMVirtualMachine) {
+    func edit(vm: VMData) {
         listSelect(vm: vm)
         showNewVMSheet = false
         showSettingsForCurrentVM()
@@ -525,21 +504,22 @@ class UTMData: ObservableObject {
     
     /// Copy configuration but not data from existing VM to a new VM
     /// - Parameter vm: Existing VM to copy configuration from
-    @MainActor func template(vm: UTMVirtualMachine) async throws {
-        let copy = try UTMQemuConfiguration.load(from: vm.path)
+    func template(vm: VMData) async throws {
+        let copy = try UTMQemuConfiguration.load(from: vm.pathUrl)
         if let copy = copy as? UTMQemuConfiguration {
             copy.information.name = self.newDefaultVMName(base: copy.information.name)
             copy.information.uuid = UUID()
             copy.drives = []
             _ = try await create(config: copy)
-        } else if let copy = copy as? UTMAppleConfiguration {
+        }
+        #if os(macOS)
+        if let copy = copy as? UTMAppleConfiguration {
             copy.information.name = self.newDefaultVMName(base: copy.information.name)
             copy.information.uuid = UUID()
             copy.drives = []
             _ = try await create(config: copy)
-        } else {
-            fatalError()
         }
+        #endif
         showSettingsForCurrentVM()
     }
     
@@ -548,8 +528,8 @@ class UTMData: ObservableObject {
     /// Calculate total size of VM and data
     /// - Parameter vm: VM to calculate size
     /// - Returns: Size in bytes
-    func computeSize(for vm: UTMVirtualMachine) -> Int64 {
-        let path = vm.path
+    func computeSize(for vm: VMData) -> Int64 {
+        let path = vm.pathUrl
         guard let enumerator = fileManager.enumerator(at: path, includingPropertiesForKeys: [.totalFileSizeKey]) else {
             logger.error("failed to create enumerator for \(path)")
             return 0
@@ -588,54 +568,48 @@ class UTMData: ObservableObject {
         defer { url.stopAccessingSecurityScopedResource() }
         
         logger.info("importing: \(url)")
+        // attempt to turn temp URL to presistent bookmark early otherwise,
+        // when stopAccessingSecurityScopedResource() is called, we lose access
+        let bookmark = try url.persistentBookmarkData()
+        let url = try URL(resolvingPersistentBookmarkData: bookmark)
         let fileBasePath = url.deletingLastPathComponent()
         let fileName = url.lastPathComponent
         let dest = documentsURL.appendingPathComponent(fileName, isDirectory: true)
-        if let vm = await virtualMachines.first(where: { vm -> Bool in
-            return vm.path.standardizedFileURL == url.standardizedFileURL
+        if let vm = virtualMachines.first(where: { vm -> Bool in
+            return vm.pathUrl.standardizedFileURL == url.standardizedFileURL
         }) {
             logger.info("found existing vm!")
-            if let wrappedVM = vm as? UTMWrappedVirtualMachine {
+            if !vm.isLoaded {
                 logger.info("existing vm is wrapped")
-                await MainActor.run {
-                    if let unwrappedVM = wrappedVM.unwrap() {
-                        let index = listRemove(vm: wrappedVM)
-                        listAdd(vm: unwrappedVM, at: index)
-                        listSelect(vm: unwrappedVM)
-                    }
-                }
+                try vm.load()
             } else {
                 logger.info("existing vm is not wrapped")
-                await listSelect(vm: vm)
+                listSelect(vm: vm)
             }
             return
         }
         // check if VM is valid
-        guard let _ = UTMVirtualMachine(url: url) else {
-            throw NSLocalizedString("Cannot import this VM. Either the configuration is invalid, created in a newer version of UTM, or on a platform that is incompatible with this version of UTM.", comment: "UTMData")
+        guard let _ = try? VMData(url: url) else {
+            throw UTMDataError.importFailed
         }
-        let vm: UTMVirtualMachine?
+        let vm: VMData?
         if (fileBasePath.resolvingSymlinksInPath().path == documentsURL.appendingPathComponent("Inbox", isDirectory: true).path) {
             logger.info("moving from Inbox")
             try fileManager.moveItem(at: url, to: dest)
-            vm = UTMVirtualMachine(url: dest)
+            vm = try VMData(url: dest)
         } else if asShortcut {
             logger.info("loading as a shortcut")
-            vm = UTMVirtualMachine(url: url)
-            await MainActor.run {
-                vm?.isShortcut = true
-            }
-            try await vm?.accessShortcut()
+            vm = try VMData(url: url)
         } else {
             logger.info("copying to Documents")
             try fileManager.copyItem(at: url, to: dest)
-            vm = UTMVirtualMachine(url: dest)
+            vm = try VMData(url: dest)
         }
         guard let vm = vm else {
-            throw NSLocalizedString("Failed to parse imported VM.", comment: "UTMData")
+            throw UTMDataError.importParseFailed
         }
-        await listAdd(vm: vm)
-        await listSelect(vm: vm)
+        listAdd(vm: vm)
+        listSelect(vm: vm)
     }
 
     func copyItemWithCopyfile(at srcURL: URL, to dstURL: URL) throws {
@@ -653,16 +627,17 @@ class UTMData: ObservableObject {
     /// Create a new VM using configuration and downloaded IPSW
     /// - Parameter config: Apple VM configuration
     @available(macOS 12, *)
-    @MainActor func downloadIPSW(using config: UTMAppleConfiguration) {
+    func downloadIPSW(using config: UTMAppleConfiguration) async {
         let task = UTMDownloadIPSWTask(for: config)
-        guard !virtualMachines.contains(where: { !$0.isShortcut && $0.config.name == config.information.name }) else {
+        guard !virtualMachines.contains(where: { !$0.isShortcut && $0.config?.information.name == config.information.name }) else {
             showErrorAlert(message: NSLocalizedString("An existing virtual machine already exists with this name.", comment: "UTMData"))
             return
         }
         listAdd(pendingVM: task.pendingVM)
         Task {
             do {
-                if let vm = try await task.download() {
+                if let wrapped = try await task.download() {
+                    let vm = VMData(wrapping: wrapped)
                     try await self.save(vm: vm)
                     listAdd(vm: vm)
                 }
@@ -676,7 +651,7 @@ class UTMData: ObservableObject {
 
     /// Create a new VM by downloading a .zip and extracting it
     /// - Parameter components: Download URL components
-    @MainActor func downloadUTMZip(from components: URLComponents) {
+    func downloadUTMZip(from components: URLComponents) async {
         guard let urlParameter = components.queryItems?.first(where: { $0.name == "url" })?.value,
            let url = URL(string: urlParameter) else {
                showErrorAlert(message: NSLocalizedString("Failed to parse download URL.", comment: "UTMData"))
@@ -686,7 +661,9 @@ class UTMData: ObservableObject {
         listAdd(pendingVM: task.pendingVM)
         Task {
             do {
-                if let vm = try await task.download() {
+                if let wrapped = try await task.download() {
+                    let vm = VMData(wrapping: wrapped)
+                    try await self.save(vm: vm)
                     listAdd(vm: vm)
                 }
             } catch {
@@ -696,10 +673,10 @@ class UTMData: ObservableObject {
         }
     }
     
-    @MainActor func mountSupportTools(for vm: UTMQemuVirtualMachine) async throws {
+    func mountSupportTools(for vm: UTMQemuVirtualMachine) async throws {
         let task = UTMDownloadSupportToolsTask(for: vm)
         if task.hasExistingSupportTools {
-            vm.isGuestToolsInstallRequested = false
+            vm.config.qemu.isGuestToolsInstallRequested = false
             _ = try await task.mountTools()
         } else {
             listAdd(pendingVM: task.pendingVM)
@@ -709,7 +686,7 @@ class UTMData: ObservableObject {
                 } catch {
                     showErrorAlert(message: error.localizedDescription)
                 }
-                vm.isGuestToolsInstallRequested = false
+                vm.config.qemu.isGuestToolsInstallRequested = false
                 listRemove(pendingVM: task.pendingVM)
             }
         }
@@ -754,25 +731,26 @@ class UTMData: ObservableObject {
     
     // MARK: - UUID migration
     
-    @MainActor private func uuidHasCollision(with vm: UTMVirtualMachine) -> Bool {
+    private func uuidHasCollision(with vm: VMData) -> Bool {
         return uuidHasCollision(with: vm, in: virtualMachines)
     }
     
-    private func uuidHasCollision(with vm: UTMVirtualMachine, in list: [UTMVirtualMachine]) -> Bool {
+    private func uuidHasCollision(with vm: VMData, in list: [VMData]) -> Bool {
         for otherVM in list {
             if otherVM == vm {
                 return false
-            } else if otherVM.registryEntry.uuid == vm.registryEntry.uuid {
+            } else if let lhs = otherVM.registryEntry?.uuid, let rhs = vm.registryEntry?.uuid, lhs == rhs {
                 return true
             }
         }
         return false
     }
     
-    @MainActor private func uuidRegenerate(for vm: UTMVirtualMachine) {
-        let oldEntry = vm.registryEntry
-        vm.changeUuid(to: UUID())
-        vm.registryEntry.update(copying: oldEntry)
+    private func uuidRegenerate(for vm: VMData) {
+        guard let vm = vm.wrapped else {
+            return
+        }
+        vm.changeUuid(to: UUID(), name: nil, copyingEntry: vm.registryEntry)
     }
     
     // MARK: - Other utility functions
@@ -827,7 +805,7 @@ class UTMData: ObservableObject {
     /// - Parameters:
     ///   - vm: VM to send text to
     ///   - components: Data (see UTM Wiki for details)
-    func automationSendText(to vm: UTMVirtualMachine, urlComponents components: URLComponents) {
+    func automationSendText(to vm: VMData, urlComponents components: URLComponents) {
         guard let queryItems = components.queryItems else { return }
         guard let text = queryItems.first(where: { $0.name == "text" })?.value else { return }
         #if os(macOS)
@@ -841,9 +819,9 @@ class UTMData: ObservableObject {
     /// - Parameters:
     ///   - vm: VM to send mouse/tablet coordinates to
     ///   - components: Data (see UTM Wiki for details)
-    @MainActor func automationSendMouse(to vm: UTMVirtualMachine, urlComponents components: URLComponents) {
-        guard let qemuVm = vm as? UTMQemuVirtualMachine else { return } // FIXME: implement for Apple VM
-        guard !qemuVm.qemuConfig.displays.isEmpty else { return }
+    func automationSendMouse(to vm: VMData, urlComponents components: URLComponents) {
+        guard let qemuVm = vm.wrapped as? UTMQemuVirtualMachine else { return } // FIXME: implement for Apple VM
+        guard !qemuVm.config.displays.isEmpty else { return }
         guard let queryItems = components.queryItems else { return }
         /// Parse targeted position
         var x: CGFloat? = nil
@@ -878,7 +856,7 @@ class UTMData: ObservableObject {
         }
         /// All parameters parsed, perform the click
         #if os(macOS)
-        tryClickAtPoint(vm: qemuVm, point: point, button: button)
+        tryClickAtPoint(vm: vm, point: point, button: button)
         #else
         tryClickAtPoint(point: point, button: button)
         #endif
@@ -933,9 +911,9 @@ class UTMData: ObservableObject {
             ServerManager.shared.stopDiscovering()
         }
         if event.wait(timeout: .now() + 10) == .timedOut {
-            throw NSLocalizedString("Cannot find AltServer for JIT enable. You cannot run VMs until JIT is enabled.", comment: "UTMData")
+            throw UTMDataError.altServerNotFound
         } else if let error = connectError {
-            throw String.localizedStringWithFormat(NSLocalizedString("AltJIT error: %@", comment: "UTMData"), error.localizedDescription)
+            throw UTMDataError.altJitError(error.localizedDescription)
         }
     }
 #endif
@@ -964,15 +942,15 @@ class UTMData: ObservableObject {
                     Main.jitAvailable = true
                 }
             } catch is DecodingError {
-                throw NSLocalizedString("Failed to decode JitStreamer response.", comment: "ContentView")
+                throw UTMDataError.jitStreamerDecodeFailed
             } catch {
-                throw NSLocalizedString("Failed to attach to JitStreamer.", comment: "ContentView")
+                throw UTMDataError.jitStreamerAttachFailed
             }
             if let attachError = attachError {
                 throw attachError
             }
         } else {
-            throw String.localizedStringWithFormat(NSLocalizedString("Invalid JitStreamer attach URL:\n%@", comment: "ContentView"), urlString)
+            throw UTMDataError.jitStreamerUrlInvalid(urlString)
         }
     }
 
@@ -981,4 +959,45 @@ class UTMData: ObservableObject {
         var success: Bool
     }
 #endif
+}
+
+// MARK: - Errors
+enum UTMDataError: Error {
+    case virtualMachineAlreadyExists
+    case cloneFailed
+    case shortcutCreationFailed
+    case importFailed
+    case importParseFailed
+    case altServerNotFound
+    case altJitError(String)
+    case jitStreamerDecodeFailed
+    case jitStreamerAttachFailed
+    case jitStreamerUrlInvalid(String)
+}
+
+extension UTMDataError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case .virtualMachineAlreadyExists:
+            return NSLocalizedString("An existing virtual machine already exists with this name.", comment: "UTMData")
+        case .cloneFailed:
+            return NSLocalizedString("Failed to clone VM.", comment: "UTMData")
+        case .shortcutCreationFailed:
+            return NSLocalizedString("Unable to add a shortcut to the new location.", comment: "UTMData")
+        case .importFailed:
+            return NSLocalizedString("Cannot import this VM. Either the configuration is invalid, created in a newer version of UTM, or on a platform that is incompatible with this version of UTM.", comment: "UTMData")
+        case .importParseFailed:
+            return NSLocalizedString("Failed to parse imported VM.", comment: "UTMData")
+        case .altServerNotFound:
+            return NSLocalizedString("Cannot find AltServer for JIT enable. You cannot run VMs until JIT is enabled.", comment: "UTMData")
+        case .altJitError(let message):
+            return String.localizedStringWithFormat(NSLocalizedString("AltJIT error: %@", comment: "UTMData"), message)
+        case .jitStreamerDecodeFailed:
+            return NSLocalizedString("Failed to decode JitStreamer response.", comment: "UTMData")
+        case .jitStreamerAttachFailed:
+            return NSLocalizedString("Failed to attach to JitStreamer.", comment: "UTMData")
+        case .jitStreamerUrlInvalid(let urlString):
+            return String.localizedStringWithFormat(NSLocalizedString("Invalid JitStreamer attach URL:\n%@", comment: "UTMData"), urlString)
+        }
+    }
 }

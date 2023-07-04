@@ -454,15 +454,15 @@ enum VMWizardOS: String, Identifiable {
         return config
     }
     
-    func generateConfig() throws -> UTMConfigurationWrapper {
+    func generateConfig() throws -> any UTMConfiguration {
         if useVirtualization && useAppleVirtualization {
             #if os(macOS)
-            return UTMConfigurationWrapper(wrapping: try generateAppleConfig())
+            return try generateAppleConfig()
             #else
             throw NSLocalizedString("Unavailable for this platform.", comment: "VMWizardState")
             #endif
         } else {
-            return UTMConfigurationWrapper(wrapping: try generateQemuConfig())
+            return try generateQemuConfig()
         }
     }
     

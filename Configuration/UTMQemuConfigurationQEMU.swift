@@ -60,6 +60,9 @@ struct UTMQemuConfigurationQEMU: Codable {
     /// If true, changes to the VM will not be committed to disk. Not saved.
     var isDisposable: Bool = false
     
+    /// Set to true to request guest tools install. Not saved.
+    var isGuestToolsInstallRequested: Bool = false
+    
     enum CodingKeys: String, CodingKey {
         case hasDebugLog = "DebugLog"
         case hasUefiBoot = "UEFIBoot"

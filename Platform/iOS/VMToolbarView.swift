@@ -82,7 +82,7 @@ struct VMToolbarView: View {
         GeometryReader { geometry in
             Group {
                 Button {
-                    if session.vm.state == .vmStarted {
+                    if session.vm.state == .started {
                         state.alert = .powerDown
                     } else {
                         state.alert = .terminateApp

@@ -18,7 +18,7 @@ import SwiftUI
 
 @available(macOS 11, *)
 struct VMSettingsView<Config: UTMConfiguration>: View {
-    let vm: UTMVirtualMachine?
+    let vm: VMData?
     @ObservedObject var config: Config
     
     @EnvironmentObject private var data: UTMData
@@ -51,7 +51,7 @@ struct VMSettingsView<Config: UTMConfiguration>: View {
     
     func save() {
         data.busyWorkAsync {
-            if let existing = await self.vm {
+            if let existing = self.vm {
                 try await data.save(vm: existing)
             } else {
                 _ = try await data.create(config: self.config)
@@ -64,8 +64,10 @@ struct VMSettingsView<Config: UTMConfiguration>: View {
     
     func cancel() {
         presentationMode.wrappedValue.dismiss()
-        data.busyWorkAsync {
-            try await data.discardChanges(for: self.vm)
+        if let vm = vm {
+            data.busyWorkAsync {
+                try await data.discardChanges(for: vm)
+            }
         }
     }
 }

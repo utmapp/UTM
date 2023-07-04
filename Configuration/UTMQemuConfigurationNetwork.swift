@@ -51,6 +51,9 @@ struct UTMQemuConfigurationNetwork: Codable, Identifiable {
     /// DHCP start address for emulated VLAN.
     var vlanDhcpStartAddress: String?
     
+    /// DHCP end address for Apple VLAN
+    var vlanDhcpEndAddress: String?
+    
     /// DHCP domain for emulated VLAN.
     var vlanDhcpDomain: String?
     
@@ -91,6 +94,7 @@ struct UTMQemuConfigurationNetwork: Codable, Identifiable {
         case vlanHostAddress = "VlanHostAddress"
         case vlanHostAddressIPv6 = "VlanHostAddressIPv6"
         case vlanDhcpStartAddress = "VlanDhcpStartAddress"
+        case vlanDhcpEndAddress = "VlanDhcpEndAddress"
         case vlanDhcpDomain = "VlanDhcpDomain"
         case vlanDnsServerAddress = "VlanDnsServerAddress"
         case vlanDnsServerAddressIPv6 = "VlanDnsServerAddressIPv6"
@@ -113,6 +117,7 @@ struct UTMQemuConfigurationNetwork: Codable, Identifiable {
         vlanHostAddress = try values.decodeIfPresent(String.self, forKey: .vlanHostAddress)
         vlanHostAddressIPv6 = try values.decodeIfPresent(String.self, forKey: .vlanHostAddressIPv6)
         vlanDhcpStartAddress = try values.decodeIfPresent(String.self, forKey: .vlanDhcpStartAddress)
+        vlanDhcpEndAddress = try values.decodeIfPresent(String.self, forKey: .vlanDhcpEndAddress)
         vlanDhcpDomain = try values.decodeIfPresent(String.self, forKey: .vlanDhcpDomain)
         vlanDnsServerAddress = try values.decodeIfPresent(String.self, forKey: .vlanDnsServerAddress)
         vlanDnsServerAddressIPv6 = try values.decodeIfPresent(String.self, forKey: .vlanDnsServerAddressIPv6)
@@ -134,6 +139,7 @@ struct UTMQemuConfigurationNetwork: Codable, Identifiable {
         try container.encodeIfPresent(vlanHostAddress, forKey: .vlanHostAddress)
         try container.encodeIfPresent(vlanHostAddressIPv6, forKey: .vlanHostAddressIPv6)
         try container.encodeIfPresent(vlanDhcpStartAddress, forKey: .vlanDhcpStartAddress)
+        try container.encodeIfPresent(vlanDhcpEndAddress, forKey: .vlanDhcpEndAddress)
         try container.encodeIfPresent(vlanDhcpDomain, forKey: .vlanDhcpDomain)
         try container.encodeIfPresent(vlanDnsServerAddress, forKey: .vlanDnsServerAddress)
         try container.encodeIfPresent(vlanDnsServerAddressIPv6, forKey: .vlanDnsServerAddressIPv6)

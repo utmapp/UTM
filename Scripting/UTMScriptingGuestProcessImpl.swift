@@ -22,12 +22,10 @@ class UTMScriptingGuestProcessImpl: NSObject, UTMScriptable {
     @objc private(set) var id: Int
     
     weak private var parent: UTMScriptingVirtualMachineImpl?
-    weak private var guestAgent: UTMQemuGuestAgent?
     
     init(from pid: Int, parent: UTMScriptingVirtualMachineImpl) {
         self.id = pid
         self.parent = parent
-        self.guestAgent = parent.guestAgent
     }
     
     override var objectSpecifier: NSScriptObjectSpecifier? {
@@ -46,7 +44,7 @@ class UTMScriptingGuestProcessImpl: NSObject, UTMScriptable {
     
     @objc func getResult(_ command: NSScriptCommand) {
         withScriptCommand(command) { [self] in
-            guard let guestAgent = guestAgent else {
+            guard let guestAgent = await parent?.guestAgent else {
                 throw UTMScriptingVirtualMachineImpl.ScriptingError.guestAgentNotRunning
             }
             let status = try await guestAgent.guestExecStatus(id)

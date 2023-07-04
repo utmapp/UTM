@@ -16,7 +16,7 @@
 
 import IOKit.pwr_mgt
 
-class VMDisplayWindowController: NSWindowController {
+class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
     
     @IBOutlet weak var displayView: NSView!
     @IBOutlet weak var screenshotView: NSImageView!
@@ -36,10 +36,9 @@ class VMDisplayWindowController: NSWindowController {
     @IBOutlet weak var resizeConsoleToolbarItem: NSToolbarItem!
     @IBOutlet weak var windowsToolbarItem: NSToolbarItem!
     
-    var isPowerForce: Bool = false
     var shouldAutoStartVM: Bool = true
     var shouldSaveOnPause: Bool { true }
-    var vm: UTMVirtualMachine!
+    var vm: (any UTMVirtualMachine)!
     var onClose: ((Notification) -> Void)?
     private(set) var secondaryWindows: [VMDisplayWindowController] = []
     private(set) weak var primaryWindow: VMDisplayWindowController?
@@ -60,27 +59,36 @@ class VMDisplayWindowController: NSWindowController {
         self
     }
     
-    convenience init(vm: UTMVirtualMachine, onClose: ((Notification) -> Void)?) {
+    convenience init(vm: any UTMVirtualMachine, onClose: ((Notification) -> Void)?) {
         self.init(window: nil)
         self.vm = vm
         self.onClose = onClose
+        NSWorkspace.shared.notificationCenter.addObserver(self, selector: #selector(didWake), name: NSWorkspace.didWakeNotification, object: nil)
     }
     
-    @IBAction func stopButtonPressed(_ sender: Any) {
+    deinit {
+        NSWorkspace.shared.notificationCenter.removeObserver(self, name: NSWorkspace.didWakeNotification, object: nil)
+    }
+    
+    private func stop(isKill: Bool = false) {
         showConfirmAlert(NSLocalizedString("This may corrupt the VM and any unsaved changes will be lost. To quit safely, shut down from the guest.", comment: "VMDisplayWindowController")) {
             self.enterSuspended(isBusy: true) // early indicator
             self.vm.requestVmDeleteState()
-            self.vm.requestVmStop(force: self.isPowerForce)
+            self.vm.requestVmStop(force: isKill)
         }
+    }
+    
+    @IBAction func stopButtonPressed(_ sender: Any) {
+        stop(isKill: false)
     }
     
     @IBAction func startPauseButtonPressed(_ sender: Any) {
         enterSuspended(isBusy: true) // early indicator
-        if vm.state == .vmStarted {
+        if vm.state == .started {
             vm.requestVmPause(save: shouldSaveOnPause)
-        } else if vm.state == .vmPaused {
+        } else if vm.state == .paused {
             vm.requestVmResume()
-        } else if vm.state == .vmStopped {
+        } else if vm.state == .stopped {
             vm.requestVmStart()
         } else {
             logger.error("Invalid state \(vm.state)")
@@ -117,7 +125,7 @@ class VMDisplayWindowController: NSWindowController {
         window!.recalculateKeyViewLoop()
         setupStopButtonMenu()
         
-        if vm.state == .vmStopped {
+        if vm.state == .stopped {
             enterSuspended(isBusy: false)
         } else {
             enterLive()
@@ -126,14 +134,14 @@ class VMDisplayWindowController: NSWindowController {
         super.windowDidLoad()
     }
     
-    public func requestAutoStart() {
+    public func requestAutoStart(options: UTMVirtualMachineStartOptions = []) {
         guard shouldAutoStartVM else {
             return
         }
         DispatchQueue.global(qos: .userInitiated).async {
-            if (self.vm.state == .vmStopped) {
-                self.vm.requestVmStart()
-            } else if (self.vm.state == .vmPaused) {
+            if (self.vm.state == .stopped) {
+                self.vm.requestVmStart(options: options)
+            } else if (self.vm.state == .paused) {
                 self.vm.requestVmResume()
             }
         }
@@ -166,7 +174,7 @@ class VMDisplayWindowController: NSWindowController {
     func enterSuspended(isBusy busy: Bool) {
         overlayView.isHidden = false
         let playDescription = NSLocalizedString("Play", comment: "VMDisplayWindowController")
-        let stopped = vm.state == .vmStopped
+        let stopped = vm.state == .stopped
         startPauseToolbarItem.image = NSImage(systemSymbolName: "play.fill", accessibilityDescription: playDescription)
         startPauseToolbarItem.label = playDescription
         if busy {
@@ -228,7 +236,43 @@ class VMDisplayWindowController: NSWindowController {
         secondaryWindow.primaryWindow = self
         secondaryWindow.showWindow(self)
         self.showWindow(self) // show primary window on top
-        secondaryWindow.virtualMachine(vm, didTransitionTo: vm.state) // show correct starting state
+        secondaryWindow.virtualMachine(vm, didTransitionToState: vm.state) // show correct starting state
+    }
+    
+    // MARK: - Virtual machine delegate
+    
+    func virtualMachine(_ vm: any UTMVirtualMachine, didTransitionToState state: UTMVirtualMachineState) {
+        Task { @MainActor in
+            switch state {
+            case .stopped, .paused:
+                enterSuspended(isBusy: false)
+            case .pausing, .stopping, .starting, .resuming, .saving, .restoring:
+                enterSuspended(isBusy: true)
+            case .started:
+                enterLive()
+            }
+            for subwindow in secondaryWindows {
+                subwindow.virtualMachine(vm, didTransitionToState: state)
+            }
+        }
+    }
+    
+    func virtualMachine(_ vm: any UTMVirtualMachine, didErrorWithMessage message: String) {
+        Task { @MainActor in
+            showErrorAlert(message) { _ in
+                if vm.state != .started && vm.state != .paused {
+                    self.close()
+                }
+            }
+        }
+    }
+    
+    func virtualMachine(_ vm: any UTMVirtualMachine, didCompleteInstallation success: Bool) {
+        
+    }
+    
+    func virtualMachine(_ vm: any UTMVirtualMachine, didUpdateInstallationProgress progress: Double) {
+        
     }
 }
 
@@ -241,7 +285,7 @@ extension VMDisplayWindowController: NSWindowDelegate {
         guard !isSecondary else {
             return true
         }
-        guard !(vm.state == .vmStopped || (vm.state == .vmPaused && vm.hasSaveState)) else {
+        guard !(vm.state == .stopped || (vm.state == .paused && vm.registryEntry.hasSaveState)) else {
             return true
         }
         guard !isNoQuitConfirmation else {
@@ -319,12 +363,14 @@ extension VMDisplayWindowController {
         item2.target = self
         item2.action = #selector(forceShutDown)
         menu.addItem(item2)
-        let item3 = NSMenuItem()
-        item3.title = NSLocalizedString("Force kill", comment: "VMDisplayWindowController")
-        item3.toolTip = NSLocalizedString("Force kill the VM process with high risk of data corruption.", comment: "VMDisplayWindowController")
-        item3.target = self
-        item3.action = #selector(forceKill)
-        menu.addItem(item3)
+        if type(of: vm).capabilities.supportsProcessKill {
+            let item3 = NSMenuItem()
+            item3.title = NSLocalizedString("Force kill", comment: "VMDisplayWindowController")
+            item3.toolTip = NSLocalizedString("Force kill the VM process with high risk of data corruption.", comment: "VMDisplayWindowController")
+            item3.target = self
+            item3.action = #selector(forceKill)
+            menu.addItem(item3)
+        }
         stopToolbarItem.menu = menu
     }
     
@@ -333,44 +379,17 @@ extension VMDisplayWindowController {
     }
     
     @MainActor @objc private func forceShutDown(sender: AnyObject) {
-        let prev = isPowerForce
-        isPowerForce = false
-        stopButtonPressed(sender)
-        isPowerForce = prev
+        stop()
     }
     
     @MainActor @objc private func forceKill(sender: AnyObject) {
-        let prev = isPowerForce
-        isPowerForce = true
-        stopButtonPressed(sender)
-        isPowerForce = prev
+        stop(isKill: true)
     }
 }
 
-// MARK: - VM Delegate
-
-extension VMDisplayWindowController: UTMVirtualMachineDelegate {
-    func virtualMachine(_ vm: UTMVirtualMachine, didTransitionTo state: UTMVMState) {
-        switch state {
-        case .vmStopped, .vmPaused:
-            enterSuspended(isBusy: false)
-        case .vmPausing, .vmStopping, .vmStarting, .vmResuming:
-            enterSuspended(isBusy: true)
-        case .vmStarted:
-            enterLive()
-        @unknown default:
-            break
-        }
-        for subwindow in secondaryWindows {
-            subwindow.virtualMachine(vm, didTransitionTo: state)
-        }
-    }
-    
-    func virtualMachine(_ vm: UTMVirtualMachine, didErrorWithMessage message: String) {
-        showErrorAlert(message) { _ in
-            if vm.state != .vmStarted && vm.state != .vmPaused {
-                self.close()
-            }
-        }
+// MARK: - Computer wakeup
+extension VMDisplayWindowController {
+    @objc func didWake(_ notification: NSNotification) {
+        // do something in subclass
     }
 }

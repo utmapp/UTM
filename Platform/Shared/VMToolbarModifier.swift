@@ -18,7 +18,7 @@ import SwiftUI
 
 // Lots of dirty hacks to work around SwiftUI bugs introduced in Beta 2
 struct VMToolbarModifier: ViewModifier {
-    @ObservedObject var vm: UTMVirtualMachine
+    @ObservedObject var vm: VMData
     let bottom: Bool
     @State private var showSharePopup = false
     @State private var confirmAction: ConfirmAction?
@@ -55,7 +55,7 @@ struct VMToolbarModifier: ViewModifier {
                         Label("Remove", systemImage: "trash")
                             .labelStyle(.iconOnly)
                     }.help("Remove selected shortcut")
-                    .disabled(vm.state != .vmStopped)
+                    .disabled(!vm.isModifyAllowed)
                     .padding(.leading, padding)
                 } else {
                     DestructiveButton {
@@ -64,7 +64,7 @@ struct VMToolbarModifier: ViewModifier {
                         Label("Delete", systemImage: "trash")
                             .labelStyle(.iconOnly)
                     }.help("Delete selected VM")
-                    .disabled(vm.state != .vmStopped)
+                    .disabled(!vm.isModifyAllowed)
                     .padding(.leading, padding)
                 }
                 #if !os(macOS)
@@ -92,7 +92,7 @@ struct VMToolbarModifier: ViewModifier {
                         Label("Move", systemImage: "arrow.down.doc")
                             .labelStyle(.iconOnly)
                     }.help("Move selected VM")
-                    .disabled(vm.state != .vmStopped)
+                    .disabled(!vm.isModifyAllowed)
                     .padding(.leading, padding)
                 }
                 #endif
@@ -109,7 +109,7 @@ struct VMToolbarModifier: ViewModifier {
                     Spacer()
                 }
                 #endif
-                if vm.hasSaveState || vm.state != .vmStopped {
+                if vm.hasSuspendState || !vm.isStopped {
                     Button {
                         confirmAction = .confirmStopVM
                     } label: {
@@ -138,7 +138,7 @@ struct VMToolbarModifier: ViewModifier {
                     Label("Edit", systemImage: "slider.horizontal.3")
                         .labelStyle(.iconOnly)
                 }.help("Edit selected VM")
-                .disabled(vm.hasSaveState || vm.state != .vmStopped)
+                .disabled(vm.hasSuspendState || !vm.isModifyAllowed)
                 .padding(.leading, padding)
             }
         }

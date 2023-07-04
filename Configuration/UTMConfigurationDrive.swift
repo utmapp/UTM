@@ -15,6 +15,7 @@
 //
 
 import Foundation
+import QEMUKitInternal
 
 /// Settings for single disk device
 protocol UTMConfigurationDrive: Codable, Hashable, Identifiable {
@@ -104,7 +105,7 @@ extension UTMConfigurationDrive {
     
     private func createQcow2Image(at newURL: URL, size sizeMib: Int) async throws {
         try await Task.detached {
-            if !GenerateDefaultQcow2File(newURL as CFURL, sizeMib) {
+            if !QEMUGenerateDefaultQcow2File(newURL as CFURL, sizeMib) {
                 throw UTMConfigurationError.cannotCreateDiskImage
             }
         }.value

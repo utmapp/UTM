@@ -17,7 +17,7 @@
 import SwiftUI
 
 struct VMContextMenuModifier: ViewModifier {
-    @ObservedObject var vm: UTMVirtualMachine
+    @ObservedObject var vm: VMData
     @EnvironmentObject private var data: UTMData
     @State private var showSharePopup = false
     @State private var confirmAction: ConfirmAction?
@@ -27,7 +27,7 @@ struct VMContextMenuModifier: ViewModifier {
         content.contextMenu {
             #if os(macOS)
             Button {
-                NSWorkspace.shared.activateFileViewerSelecting([vm.path])
+                NSWorkspace.shared.activateFileViewerSelecting([vm.pathUrl])
             } label: {
                 Label("Show in Finder", systemImage: "folder")
             }.help("Reveal where the VM is stored.")
@@ -38,14 +38,20 @@ struct VMContextMenuModifier: ViewModifier {
                 data.edit(vm: vm)
             } label: {
                 Label("Edit", systemImage: "slider.horizontal.3")
-            }.disabled(vm.hasSaveState || vm.state != .vmStopped)
+            }.disabled(vm.hasSuspendState || !vm.isModifyAllowed)
             .help("Modify settings for this VM.")
-            if vm.hasSaveState || vm.state != .vmStopped {
+            if vm.hasSuspendState || !vm.isStopped {
                 Button {
                     confirmAction = .confirmStopVM
                 } label: {
                     Label("Stop", systemImage: "stop.fill")
                 }.help("Stop the running VM.")
+            } else if !vm.isModifyAllowed { // paused
+                Button {
+                    data.run(vm: vm)
+                } label: {
+                    Label("Resume", systemImage: "playpause.fill")
+                }.help("Resume running VM.")
             } else {
                 Divider()
                 
@@ -56,33 +62,31 @@ struct VMContextMenuModifier: ViewModifier {
                 }.help("Run the VM in the foreground.")
                 
                 #if os(macOS) && arch(arm64)
-                if #available(macOS 13, *), let appleConfig = vm.config.appleConfig, appleConfig.system.boot.operatingSystem == .macOS {
+                if #available(macOS 13, *), let appleConfig = vm.config as? UTMAppleConfiguration, appleConfig.system.boot.operatingSystem == .macOS {
                     Button {
-                        appleConfig.system.boot.startUpFromMacOSRecovery = true
-                        data.run(vm: vm)
+                        data.run(vm: vm, options: .bootRecovery)
                     } label: {
                         Label("Run Recovery", systemImage: "play.fill")
                     }.help("Boot into recovery mode.")
                 }
                 #endif
                 
-                if !vm.config.isAppleVirtualization {
+                if let _ = vm.wrapped as? UTMQemuVirtualMachine {
                     Button {
-                        vm.isRunningAsSnapshot = true
-                        data.run(vm: vm)
+                        data.run(vm: vm, options: .bootDisposibleMode)
                     } label: {
                         Label("Run without saving changes", systemImage: "play")
                     }.help("Run the VM in the foreground, without saving data changes to disk.")
                 }
                 
                 #if os(iOS)
-                if let qemuVM = vm as? UTMQemuVirtualMachine {
+                if let qemuConfig = vm.config as? UTMQemuConfiguration {
                     Button {
-                        qemuVM.isGuestToolsInstallRequested = true
+                        qemuConfig.qemu.isGuestToolsInstallRequested = true
                     } label: {
                         Label("Install Windows Guest Tools…", systemImage: "wrench.and.screwdriver")
                     }.help("Download and mount the guest tools for Windows.")
-                    .disabled(qemuVM.isGuestToolsInstallRequested)
+                    .disabled(qemuConfig.qemu.isGuestToolsInstallRequested)
                 }
                 #endif
                 
@@ -100,7 +104,7 @@ struct VMContextMenuModifier: ViewModifier {
                     confirmAction = .confirmMoveVM
                 } label: {
                     Label("Move…", systemImage: "arrow.down.doc")
-                }.disabled(vm.state != .vmStopped)
+                }.disabled(!vm.isModifyAllowed)
                 .help("Move this VM from internal storage to elsewhere.")
             }
             #endif
@@ -122,14 +126,14 @@ struct VMContextMenuModifier: ViewModifier {
                     confirmAction = .confirmDeleteShortcut
                 } label: {
                     Label("Remove", systemImage: "trash")
-                }.disabled(vm.state != .vmStopped)
+                }.disabled(!vm.isModifyAllowed)
                 .help("Delete this shortcut. The underlying data will not be deleted.")
             } else {
                 DestructiveButton {
                     confirmAction = .confirmDeleteVM
                 } label: {
                     Label("Delete", systemImage: "trash")
-                }.disabled(vm.state != .vmStopped)
+                }.disabled(!vm.isModifyAllowed)
                 .help("Delete this VM and all its data.")
             }
         }
@@ -140,10 +144,10 @@ struct VMContextMenuModifier: ViewModifier {
                 showSharePopup.toggle()
             }
         })
-        .onChange(of: (vm as? UTMQemuVirtualMachine)?.isGuestToolsInstallRequested) { newValue in
+        .onChange(of: (vm.config as? UTMQemuConfiguration)?.qemu.isGuestToolsInstallRequested) { newValue in
             if newValue == true {
                 data.busyWorkAsync {
-                    try await data.mountSupportTools(for: vm as! UTMQemuVirtualMachine)
+                    try await data.mountSupportTools(for: vm.wrapped as! UTMQemuVirtualMachine)
                 }
             }
         }

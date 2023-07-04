@@ -15,6 +15,9 @@
 //
 
 import Foundation
+#if os(macOS)
+import Virtualization // for getting network interfaces
+#endif
 
 /// Build QEMU arguments from config
 @MainActor extension UTMQemuConfiguration {
@@ -67,7 +70,9 @@ import Foundation
         cpuArguments
         machineArguments
         architectureArguments
-        soundArguments
+        if !sound.isEmpty {
+            soundArguments
+        }
         if isUsbUsed {
             usbArguments
         }
@@ -411,10 +416,11 @@ import Foundation
         return false
         #else
         // force CoreAudio backend for mac99 which only supports 44100 Hz
-        if sound.contains(where: { $0.hardware.rawValue == "screamer" }) {
+        // pcspk doesn't work with SPICE audio
+        if sound.contains(where: { $0.hardware.rawValue == "screamer" || $0.hardware.rawValue == "pcspk" }) {
             return true
         }
-        if soundBackend == .qemuSoundBackendDefault || soundBackend == .qemuSoundBackendCoreAudio {
+        if soundBackend == .qemuSoundBackendCoreAudio {
             return true
         }
         return false
@@ -422,12 +428,13 @@ import Foundation
     }
     
     @QEMUArgumentBuilder private var soundArguments: [QEMUArgument] {
-        f("-audiodev")
         if useCoreAudioBackend {
+            f("-audiodev")
             "coreaudio"
-        } else {
-            "spice"
+            f("id=audio1")
         }
+        f("-audiodev")
+        "spice"
         f("id=audio0")
         // screamer has no extra device, pcspk is handled in machineProperties
         for _sound in sound.filter({ $0.hardware.rawValue != "screamer" && $0.hardware.rawValue != "pcspk" }) {
@@ -436,17 +443,22 @@ import Foundation
             if _sound.hardware.rawValue.contains("hda") {
                 f()
                 f("-device")
-                "hda-duplex"
+                if soundBackend == .qemuSoundBackendCoreAudio {
+                    "hda-output"
+                    "audiodev=audio1"
+                } else {
+                    "hda-duplex"
+                    "audiodev=audio0"
+                }
+                f()
+            } else {
+                if soundBackend == .qemuSoundBackendCoreAudio {
+                    f("audiodev=audio1")
+                } else {
+                    f("audiodev=audio0")
+                }
             }
-            f("audiodev=audio0")
         }
-        // pcspk doesn't work with SPICE audio
-        #if os(macOS)
-        if sound.contains(where: { $0.hardware.rawValue == "pcspk" }) {
-            f("-audiodev")
-            f("coreaudio,id=audio1")
-        }
-        #endif
     }
     
     @QEMUArgumentBuilder private var drivesArguments: [QEMUArgument] {
@@ -490,7 +502,12 @@ import Foundation
             } else {
                 "ide-hd"
             }
-            "bus=ide.\(busindex)"
+            if drive.isIdeInterfaceMultipleUnits {
+                "bus=ide.\(busindex / 2)"
+                "unit=\(busindex % 2)"
+            } else {
+                "bus=ide.\(busindex)"
+            }
             busindex += 1
             "drive=drive\(drive.id)"
             "bootindex=\(bootindex)"
@@ -694,8 +711,14 @@ import Foundation
         let firstAddrStr = String(cString: inet_ntoa(firstAddr))
         let lastAddrStr = String(cString: inet_ntoa(lastAddr))
         let netmaskStr = String(cString: inet_ntoa(netmask))
-        return (firstAddrStr, lastAddrStr, netmaskStr)
+        return (network.vlanDhcpStartAddress ?? firstAddrStr, network.vlanDhcpEndAddress ?? lastAddrStr, netmaskStr)
     }
+    
+    #if os(macOS)
+    private var defaultBridgedInterface: String {
+        VZBridgedNetworkInterface.networkInterfaces.first?.identifier ?? "en0"
+    }
+    #endif
     
     @QEMUArgumentBuilder private var networkArguments: [QEMUArgument] {
         for i in networks.indices {
@@ -724,7 +747,7 @@ import Foundation
                 useVMnet = true
                 "vmnet-bridged"
                 "id=net\(i)"
-                "ifname=\(networks[i].bridgeInterface ?? "en0")"
+                "ifname=\(networks[i].bridgeInterface ?? defaultBridgedInterface)"
             } else if networks[i].mode == .host {
                 useVMnet = true
                 "vmnet-host"
@@ -794,14 +817,14 @@ import Foundation
     }
     
     private var isSpiceAgentUsed: Bool {
-        guard system.architecture.hasAgentSupport else {
+        guard system.architecture.hasAgentSupport && system.target.hasAgentSupport else {
             return false
         }
         return sharing.hasClipboardSharing || sharing.directoryShareMode == .webdav || displays.contains(where: { $0.isDynamicResolution })
     }
     
     @QEMUArgumentBuilder private var sharingArguments: [QEMUArgument] {
-        if system.architecture.hasAgentSupport {
+        if system.architecture.hasAgentSupport && system.target.hasAgentSupport {
             f("-device")
             f("virtio-serial")
             f("-device")
@@ -843,9 +866,16 @@ import Foundation
         }
     }
     
+    private func cleanupName(_ name: String) -> String {
+        let allowedCharacterSet = CharacterSet.alphanumerics.union(.whitespaces)
+        let filteredString = name.components(separatedBy: allowedCharacterSet.inverted)
+                                 .joined(separator: "")
+        return filteredString
+    }
+    
     @QEMUArgumentBuilder private var miscArguments: [QEMUArgument] {
         f("-name")
-        f(information.name)
+        f(cleanupName(information.name))
         if qemu.isDisposable {
             f("-snapshot")
         }

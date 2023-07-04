@@ -18,6 +18,8 @@ import Foundation
 
 /// Settings for single QEMU disk device
 struct UTMQemuConfigurationDrive: UTMConfigurationDrive {
+    static let latestInterfaceVersion = 1
+    
     /// If not removable, this is the name of the file in the bundle.
     var imageName: String?
     
@@ -42,16 +44,25 @@ struct UTMQemuConfigurationDrive: UTMConfigurationDrive {
     /// Interface of the image (only valid when type is CD/Disk).
     var interface: QEMUDriveInterface = .none
     
+    /// Interface version for backwards compatibility
+    var interfaceVersion: Int = Self.latestInterfaceVersion
+    
     /// If true, the created image will be raw format and not QCOW2. Not saved.
     var isRawImage: Bool = false
     
     /// If initialized, returns a default interface for an image type. Not saved.
     var defaultInterfaceForImageType: ((QEMUDriveImageType) -> QEMUDriveInterface)?
     
+    /// On older versions of UTM, IDE bus used one unit per bus and this is for compatibility
+    var isIdeInterfaceMultipleUnits: Bool {
+        interfaceVersion >= 1
+    }
+    
     enum CodingKeys: String, CodingKey {
         case imageName = "ImageName"
         case imageType = "ImageType"
         case interface = "Interface"
+        case interfaceVersion = "InterfaceVersion"
         case identifier = "Identifier"
         case isReadOnly = "ReadOnly"
     }
@@ -74,6 +85,7 @@ struct UTMQemuConfigurationDrive: UTMConfigurationDrive {
         isReadOnly = try values.decodeIfPresent(Bool.self, forKey: .isReadOnly) ?? isExternal
         imageType = try values.decode(QEMUDriveImageType.self, forKey: .imageType)
         interface = try values.decode(QEMUDriveInterface.self, forKey: .interface)
+        interfaceVersion = try values.decodeIfPresent(Int.self, forKey: .interfaceVersion) ?? 0
         id = try values.decode(String.self, forKey: .identifier)
     }
     
@@ -89,6 +101,7 @@ struct UTMQemuConfigurationDrive: UTMConfigurationDrive {
         } else {
             try container.encode(QEMUDriveInterface.none, forKey: .interface)
         }
+        try container.encode(interfaceVersion, forKey: .interfaceVersion)
         try container.encode(id, forKey: .identifier)
     }
     
@@ -100,6 +113,7 @@ struct UTMQemuConfigurationDrive: UTMConfigurationDrive {
         id.hash(into: &hasher)
         imageType.hash(into: &hasher)
         interface.hash(into: &hasher)
+        interfaceVersion.hash(into: &hasher)
         isRawImage.hash(into: &hasher)
     }
     
@@ -137,6 +151,7 @@ extension UTMQemuConfigurationDrive {
         imageName = oldConfig.driveImagePath(for: index)
         imageType = convertImageType(from: oldConfig.driveImageType(for: index))
         interface = convertInterface(from: oldConfig.driveInterfaceType(for: index))
+        interfaceVersion = 0
         isExternal = oldConfig.driveRemovable(for: index)
         isReadOnly = isExternal
         var oldId = oldConfig.driveName(for: index) ?? UUID().uuidString
@@ -216,5 +231,6 @@ extension UTMQemuConfigurationDrive {
         self.id = UUID().uuidString
         self.defaultInterfaceForImageType = { Self.defaultInterface(forArchitecture: architecture, target: target, imageType: $0) }
         self.interface = defaultInterfaceForImageType!(imageType)
+        self.interfaceVersion = Self.latestInterfaceVersion
     }
 }

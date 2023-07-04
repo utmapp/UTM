@@ -17,7 +17,7 @@
 import SwiftUI
 
 struct VMRemovableDrivesView: View {
-    @ObservedObject var vm: UTMQemuVirtualMachine
+    @ObservedObject var vm: VMData
     @ObservedObject var config: UTMQemuConfiguration
     @EnvironmentObject private var data: UTMData
     @State private var shareDirectoryFileImportPresented: Bool = false
@@ -26,13 +26,17 @@ struct VMRemovableDrivesView: View {
     @State private var workaroundFileImporterBug: Bool = false
     @State private var currentDrive: UTMQemuConfigurationDrive?
     
+    private var qemuVM: UTMQemuVirtualMachine! {
+        vm.wrapped as? UTMQemuVirtualMachine
+    }
+    
     var fileManager: FileManager {
         FileManager.default
     }
 
 
     // Is a shared directory set?
-    private var hasSharedDir: Bool { vm.sharedDirectoryURL != nil }
+    private var hasSharedDir: Bool { qemuVM.sharedDirectoryURL != nil }
 
     @ViewBuilder private var shareMenuActions: some View {
         Button(action: { shareDirectoryFileImportPresented.toggle() }) {
@@ -55,7 +59,7 @@ struct VMRemovableDrivesView: View {
 
 
         Group {
-            let mode = vm.config.qemuConfig!.sharing.directoryShareMode
+            let mode = config.sharing.directoryShareMode
             if mode != .none {
                 HStack {
                     title
@@ -64,13 +68,13 @@ struct VMRemovableDrivesView: View {
                         Menu {
                             shareMenuActions
                         } label: {
-                            SharedPath(path: vm.sharedDirectoryURL?.path)
+                            SharedPath(path: qemuVM.sharedDirectoryURL?.path)
                         }.fixedSize()
                     } else {
                         Button("Browse…", action: { shareDirectoryFileImportPresented.toggle() })
                     }
                 }.fileImporter(isPresented: $shareDirectoryFileImportPresented, allowedContentTypes: [.folder], onCompletion: selectShareDirectory)
-                .disabled(mode == .virtfs && vm.state != .vmStopped)
+                .disabled(mode == .virtfs && vm.state != .stopped)
             }
             ForEach(config.drives.filter { $0.isExternal }) { drive in
                 HStack {
@@ -106,14 +110,14 @@ struct VMRemovableDrivesView: View {
                             }
                         }
                         // Eject button
-                        if vm.externalImageURL(for: drive) != nil {
+                        if qemuVM.externalImageURL(for: drive) != nil {
                             Button(action: { clearRemovableImage(forDrive: drive) }, label: {
                                 Label("Clear", systemImage: "eject")
                             })
                         }
                     } label: {
-                        DriveLabel(drive: drive, isInserted: vm.externalImageURL(for: drive) != nil)
-                    }.disabled(vm.hasSaveState)
+                        DriveLabel(drive: drive, isInserted: qemuVM.externalImageURL(for: drive) != nil)
+                    }.disabled(vm.hasSuspendState)
                     Spacer()
                     // Disk image path, or (empty)
                     Text(pathFor(drive))
@@ -152,7 +156,7 @@ struct VMRemovableDrivesView: View {
     }
     
     private func pathFor(_ drive: UTMQemuConfigurationDrive) -> String {
-        if let url = vm.externalImageURL(for: drive) {
+        if let url = qemuVM.externalImageURL(for: drive) {
             return url.lastPathComponent
         } else {
             return NSLocalizedString("(empty)", comment: "A removable drive that has no image file inserted.")
@@ -179,7 +183,7 @@ struct VMRemovableDrivesView: View {
         data.busyWorkAsync {
             switch result {
             case .success(let url):
-                try await vm.changeSharedDirectory(to: url)
+                try await qemuVM.changeSharedDirectory(to: url)
                 break
             case .failure(let err):
                 throw err
@@ -189,7 +193,7 @@ struct VMRemovableDrivesView: View {
     
     private func clearShareDirectory() {
         data.busyWorkAsync {
-            await vm.clearSharedDirectory()
+            await qemuVM.clearSharedDirectory()
         }
     }
     
@@ -197,7 +201,7 @@ struct VMRemovableDrivesView: View {
         data.busyWorkAsync {
             switch result {
             case .success(let url):
-                try await vm.changeMedium(drive, to: url)
+                try await qemuVM.changeMedium(drive, to: url)
                 break
             case .failure(let err):
                 throw err
@@ -207,7 +211,7 @@ struct VMRemovableDrivesView: View {
     
     private func clearRemovableImage(forDrive drive: UTMQemuConfigurationDrive) {
         data.busyWorkAsync {
-            try await vm.eject(drive)
+            try await qemuVM.eject(drive)
         }
     }
 }
@@ -216,7 +220,7 @@ struct VMRemovableDrivesView_Previews: PreviewProvider {
     @State static private var config = UTMQemuConfiguration()
     
     static var previews: some View {
-        VMDetailsView(vm: UTMVirtualMachine(newConfig: config, destinationURL: URL(fileURLWithPath: "")))
+        VMDetailsView(vm: VMData(from: .empty))
         .onAppear {
             config.sharing.directoryShareMode = .webdav
             var drive = UTMQemuConfigurationDrive()

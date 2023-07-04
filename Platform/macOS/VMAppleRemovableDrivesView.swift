@@ -22,7 +22,7 @@ struct VMAppleRemovableDrivesView: View {
         case diskImage
     }
     
-    @ObservedObject var vm: UTMAppleVirtualMachine
+    @ObservedObject var vm: VMData
     @ObservedObject var config: UTMAppleConfiguration
     @ObservedObject var registryEntry: UTMRegistryEntry
     @EnvironmentObject private var data: UTMData
@@ -32,6 +32,10 @@ struct VMAppleRemovableDrivesView: View {
     @State private var selectedDiskImage: UTMAppleConfigurationDrive?
     /// Explanation see "SwiftUI FileImporter modal bug" in `showFileImporter`
     @State private var workaroundFileImporterBug: Bool = false
+    
+    private var appleVM: UTMAppleVirtualMachine! {
+        vm.wrapped as? UTMAppleVirtualMachine
+    }
     
     private var hasSharingFeatures: Bool {
         if #available(macOS 13, *) {
@@ -91,7 +95,7 @@ struct VMAppleRemovableDrivesView: View {
                             }
                         } label: {
                             Label("External Drive", systemImage: "externaldrive")
-                        }.disabled(vm.hasSaveState || vm.state != .vmStopped)
+                        }.disabled(vm.hasSuspendState || vm.state != .stopped)
                     } else {
                         Label("\(diskImage.sizeString) Drive", systemImage: "internaldrive")
                     }
@@ -186,7 +190,7 @@ struct VMAppleRemovableDrivesView: View {
     }
     
     private func deleteShareDirectory(_ sharedDirectory: UTMRegistryEntry.File) {
-        vm.registryEntry.sharedDirectories.removeAll { existing in
+        appleVM.registryEntry.sharedDirectories.removeAll { existing in
             existing.url == sharedDirectory.url
         }
     }
@@ -205,10 +209,10 @@ struct VMAppleRemovableDrivesView: View {
 }
 
 struct VMAppleRemovableDrivesView_Previews: PreviewProvider {
-    @StateObject static var vm = UTMAppleVirtualMachine()
+    @StateObject static var vm = VMData(from: .empty)
     @StateObject static var config = UTMAppleConfiguration()
     
     static var previews: some View {
-        VMAppleRemovableDrivesView(vm: vm, config: config, registryEntry: vm.registryEntry)
+        VMAppleRemovableDrivesView(vm: vm, config: config, registryEntry: vm.registryEntry!)
     }
 }

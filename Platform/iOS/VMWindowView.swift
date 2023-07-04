@@ -57,7 +57,7 @@ struct VMWindowView: View {
                             Spacer()
                             if state.isBusy {
                                 Spinner(size: .large)
-                            } else if session.vmState == .vmPaused {
+                            } else if session.vmState == .paused {
                                 Button {
                                     session.vm.requestVmResume()
                                 } label: {
@@ -200,33 +200,31 @@ struct VMWindowView: View {
         }
     }
     
-    private func vmStateUpdated(from oldState: UTMVMState?, to vmState: UTMVMState) {
-        if oldState == .vmStarted {
+    private func vmStateUpdated(from oldState: UTMVirtualMachineState?, to vmState: UTMVirtualMachineState) {
+        if oldState == .started {
             saveWindow()
         }
         switch vmState {
-        case .vmStopped, .vmPaused:
+        case .stopped, .paused:
             withOptionalAnimation {
                 state.isBusy = false
                 state.isRunning = false
             }
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
-                if session.vmState == .vmStopped && session.fatalError == nil {
+                if session.vmState == .stopped && session.fatalError == nil {
                     session.stop()
                 }
             }
-        case .vmPausing, .vmStopping, .vmStarting, .vmResuming:
+        case .pausing, .stopping, .starting, .resuming, .saving, .restoring:
             withOptionalAnimation {
                 state.isBusy = true
                 state.isRunning = false
             }
-        case .vmStarted:
+        case .started:
             withOptionalAnimation {
                 state.isBusy = false
                 state.isRunning = true
             }
-        @unknown default:
-            break
         }
     }
     

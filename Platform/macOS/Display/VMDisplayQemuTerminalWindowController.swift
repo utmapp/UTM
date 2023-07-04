@@ -57,7 +57,7 @@ class VMDisplayQemuTerminalWindowController: VMDisplayQemuWindowController, VMDi
     }
     
     override func enterSuspended(isBusy busy: Bool) {
-        if vm.state == .vmStopped {
+        if vm.state == .stopped {
             vmSerialPort = nil
         }
         super.enterSuspended(isBusy: busy)

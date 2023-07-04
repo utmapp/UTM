@@ -52,25 +52,25 @@ struct UTMMenuBarExtraScene: Scene {
 }
 
 private struct VMMenuItem: View {
-    @ObservedObject var vm: UTMVirtualMachine
+    @ObservedObject var vm: VMData
     @EnvironmentObject private var data: UTMData
     
     var body: some View {
         Menu(vm.detailsTitleLabel) {
-            if vm.state == .vmStopped || vm.state == .vmPaused {
+            if vm.isStopped {
                 Button("Start") {
                     data.run(vm: vm)
                 }
-            } else if vm.state == .vmStarted {
+            } else if !vm.isBusy {
                 Button("Stop") {
                     data.stop(vm: vm)
                 }
                 Button("Suspend") {
-                    let isSnapshot = (vm as? UTMQemuVirtualMachine)?.isRunningAsSnapshot ?? false
-                    vm.requestVmPause(save: !isSnapshot)
+                    let isSnapshot = (vm.wrapped as? UTMQemuVirtualMachine)?.isRunningAsDisposible ?? false
+                    vm.wrapped!.requestVmPause(save: !isSnapshot)
                 }
                 Button("Reset") {
-                    vm.requestVmReset()
+                    vm.wrapped!.requestVmReset()
                 }
             } else {
                 Text("Busy…")

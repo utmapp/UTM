@@ -15,35 +15,39 @@
 //
 
 import Foundation
+import QEMUKitInternal
 
 @MainActor
 @objc(UTMScriptingVirtualMachineImpl)
 class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
-    @nonobjc var vm: UTMVirtualMachine
+    @nonobjc var box: VMData
     @nonobjc var data: UTMData
+    @nonobjc var vm: (any UTMVirtualMachine)! {
+        box.wrapped
+    }
     
     @objc var id: String {
         vm.id.uuidString
     }
     
     @objc var name: String {
-        vm.detailsTitleLabel
+        box.detailsTitleLabel
     }
     
     @objc var notes: String {
-        vm.detailsNotes ?? ""
+        box.detailsNotes ?? ""
     }
     
     @objc var machine: String {
-        vm.detailsSystemTargetLabel
+        box.detailsSystemTargetLabel
     }
     
     @objc var architecture: String {
-        vm.detailsSystemArchitectureLabel
+        box.detailsSystemArchitectureLabel
     }
     
     @objc var memory: String {
-        vm.detailsSystemMemoryLabel
+        box.detailsSystemMemoryLabel
     }
     
     @objc var backend: UTMScriptingBackend {
@@ -58,29 +62,32 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
     
     @objc var status: UTMScriptingStatus {
         switch vm.state {
-        case .vmStopped: return .stopped
-        case .vmStarting: return .starting
-        case .vmStarted: return .started
-        case .vmPausing: return .pausing
-        case .vmPaused: return .paused
-        case .vmResuming: return .resuming
-        case .vmStopping: return .stopping
-        @unknown default: return .stopped
+        case .stopped: return .stopped
+        case .starting: return .starting
+        case .started: return .started
+        case .pausing: return .pausing
+        case .paused: return .paused
+        case .resuming: return .resuming
+        case .stopping: return .stopping
+        case .saving: return .pausing // FIXME: new entries
+        case .restoring: return .resuming // FIXME: new entries
         }
     }
     
     @objc var serialPorts: [UTMScriptingSerialPortImpl] {
-        if let config = vm.config.qemuConfig {
+        if let config = vm.config as? UTMQemuConfiguration {
             return config.serials.indices.map({ UTMScriptingSerialPortImpl(qemuSerial: config.serials[$0], parent: self, index: $0) })
-        } else if let config = vm.config.appleConfig {
+        } else if let config = vm.config as? UTMAppleConfiguration {
             return config.serials.indices.map({ UTMScriptingSerialPortImpl(appleSerial: config.serials[$0], parent: self, index: $0) })
         } else {
             return []
         }
     }
     
-    var guestAgent: UTMQemuGuestAgent? {
-        (vm as? UTMQemuVirtualMachine)?.guestAgent
+    var guestAgent: QEMUGuestAgent! {
+        get async {
+            await (vm as? UTMQemuVirtualMachine)?.guestAgent
+        }
     }
     
     override var objectSpecifier: NSScriptObjectSpecifier? {
@@ -91,8 +98,8 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
                                    uniqueID: id)
     }
     
-    init(for vm: UTMVirtualMachine, data: UTMData) {
-        self.vm = vm
+    init(for vm: VMData, data: UTMData) {
+        self.box = vm
         self.data = data
     }
     
@@ -100,16 +107,15 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
         let shouldSaveState = command.evaluatedArguments?["saveFlag"] as? Bool ?? true
         withScriptCommand(command) { [self] in
             if !shouldSaveState {
-                guard let vm = vm as? UTMQemuVirtualMachine else {
+                guard type(of: vm).capabilities.supportsDisposibleMode else {
                     throw ScriptingError.operationNotSupported
                 }
-                vm.isRunningAsSnapshot = true
             }
-            data.run(vm: vm, startImmediately: false)
-            if vm.state == .vmStopped {
-                try await vm.vmStart()
-            } else if vm.state == .vmPaused {
-                try await vm.vmResume()
+            data.run(vm: box, startImmediately: false)
+            if vm.state == .stopped {
+                try await vm.start(options: shouldSaveState ? [] : .bootDisposibleMode)
+            } else if vm.state == .paused {
+                try await vm.resume()
             } else {
                 throw ScriptingError.operationNotAvailable
             }
@@ -119,10 +125,13 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
     @objc func suspend(_ command: NSScriptCommand) {
         let shouldSaveState = command.evaluatedArguments?["saveFlag"] as? Bool ?? false
         withScriptCommand(command) { [self] in
-            guard vm.state == .vmStarted else {
+            guard vm.state == .started else {
                 throw ScriptingError.notRunning
             }
-            try await vm.vmPause(save: shouldSaveState)
+            try await vm.pause()
+            if shouldSaveState {
+                try await vm.saveSnapshot(name: nil)
+            }
         }
     }
     
@@ -134,38 +143,38 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
             stopMethod = .force
         }
         withScriptCommand(command) { [self] in
-            guard vm.state == .vmStarted || stopMethod == .kill else {
+            guard vm.state == .started || stopMethod == .kill else {
                 throw ScriptingError.notRunning
             }
             switch stopMethod {
             case .force:
-                try await vm.vmStop(force: false)
+                try await vm.stop(usingMethod: .force)
             case .kill:
-                try await vm.vmStop(force: true)
+                try await vm.stop(usingMethod: .kill)
             case .request:
-                vm.requestGuestPowerDown()
+                try await vm.stop(usingMethod: .request)
             }
         }
     }
     
     @objc func delete(_ command: NSDeleteCommand) {
         withScriptCommand(command) { [self] in
-            guard vm.state == .vmStopped else {
+            guard vm.state == .stopped else {
                 throw ScriptingError.notStopped
             }
-            try await data.delete(vm: vm, alsoRegistry: true)
+            try await data.delete(vm: box, alsoRegistry: true)
         }
     }
     
     @objc func clone(_ command: NSCloneCommand) {
         let properties = command.evaluatedArguments?["WithProperties"] as? [AnyHashable : Any]
         withScriptCommand(command) { [self] in
-            guard vm.state == .vmStopped else {
+            guard vm.state == .stopped else {
                 throw ScriptingError.notStopped
             }
-            let newVM = try await data.clone(vm: vm)
+            let newVM = try await data.clone(vm: box)
             if let properties = properties, let newConfiguration = properties["configuration"] as? [AnyHashable : Any] {
-                let wrapper = UTMScriptingConfigImpl(newVM.config.wrappedValue as! any UTMConfiguration)
+                let wrapper = UTMScriptingConfigImpl(newVM.config!)
                 try wrapper.updateConfiguration(from: newConfiguration)
                 try await data.save(vm: newVM)
             }
@@ -175,14 +184,14 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
 
 // MARK: - Guest agent suite
 @objc extension UTMScriptingVirtualMachineImpl {
-    @nonobjc private func withGuestAgent<Result>(_ block: (UTMQemuGuestAgent) async throws -> Result) async throws -> Result {
-        guard vm.state == .vmStarted else {
+    @nonobjc private func withGuestAgent<Result>(_ block: (QEMUGuestAgent) async throws -> Result) async throws -> Result {
+        guard vm.state == .started else {
             throw ScriptingError.notRunning
         }
         guard let vm = vm as? UTMQemuVirtualMachine else {
             throw ScriptingError.operationNotSupported
         }
-        guard let guestAgent = vm.guestAgent else {
+        guard let guestAgent = await vm.guestAgent else {
             throw ScriptingError.guestAgentNotRunning
         }
         return try await block(guestAgent)

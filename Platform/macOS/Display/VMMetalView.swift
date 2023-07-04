@@ -116,10 +116,8 @@ class VMMetalView: MTKView {
         logger.trace("other mouse down: \(event.buttonNumber)")
         switch event.buttonNumber {
         case 2: inputDelegate?.mouseDown(button: .middle)
-        case 3: inputDelegate?.mouseDown(button: .up)
-        case 4: inputDelegate?.mouseDown(button: .down)
-        case 5: inputDelegate?.mouseDown(button: .side)
-        case 6: inputDelegate?.mouseDown(button: .extra)
+        case 3: inputDelegate?.mouseDown(button: .side)
+        case 4: inputDelegate?.mouseDown(button: .extra)
         default: break
         }
     }
@@ -138,10 +136,8 @@ class VMMetalView: MTKView {
         logger.trace("other mouse up: \(event.buttonNumber)")
         switch event.buttonNumber {
         case 2: inputDelegate?.mouseUp(button: .middle)
-        case 3: inputDelegate?.mouseUp(button: .up)
-        case 4: inputDelegate?.mouseUp(button: .down)
-        case 5: inputDelegate?.mouseUp(button: .side)
-        case 6: inputDelegate?.mouseUp(button: .extra)
+        case 3: inputDelegate?.mouseUp(button: .side)
+        case 4: inputDelegate?.mouseUp(button: .extra)
         default: break
         }
     }

@@ -17,20 +17,20 @@
 import SwiftUI
 
 struct UTMUnavailableVMView: View {
-    @ObservedObject var wrappedVM: UTMWrappedVirtualMachine
+    @ObservedObject var vm: VMData
     @EnvironmentObject private var data: UTMData
     
     var body: some View {
-        UTMPlaceholderVMView(title: wrappedVM.detailsTitleLabel,
-                             subtitle: wrappedVM.detailsSubtitleLabel,
+        UTMPlaceholderVMView(title: vm.detailsTitleLabel,
+                             subtitle: vm.detailsSubtitleLabel,
                              progress: nil,
                              imageOverlaySystemName: "questionmark.circle.fill",
-                             popover: { WrappedVMDetailsView(path: wrappedVM.path.path, onRemove: remove) },
+                             popover: { WrappedVMDetailsView(path: vm.pathUrl.path, onRemove: remove) },
                              onRemove: remove)
     }
     
     private func remove() {
-        data.listRemove(vm: wrappedVM)
+        data.listRemove(vm: vm)
     }
 }
 
@@ -73,6 +73,6 @@ fileprivate struct WrappedVMDetailsView: View {
 
 struct UTMUnavailableVMView_Previews: PreviewProvider {
     static var previews: some View {
-        UTMUnavailableVMView(wrappedVM: UTMWrappedVirtualMachine(bookmark: Data(), name: "Wrapped VM", path: URL(fileURLWithPath: "/")))
+        UTMUnavailableVMView(vm: VMData(from: UTMRegistryEntry.empty))
     }
 }

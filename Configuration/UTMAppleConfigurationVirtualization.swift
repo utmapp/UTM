@@ -91,6 +91,7 @@ struct UTMAppleConfigurationVirtualization: Codable {
         try container.encode(hasEntropy, forKey: .hasEntropy)
         try container.encode(hasKeyboard, forKey: .hasKeyboard)
         try container.encode(hasPointer, forKey: .hasPointer)
+        try container.encode(hasTrackpad, forKey: .hasTrackpad)
         try container.encodeIfPresent(hasRosetta, forKey: .rosetta)
         try container.encode(hasClipboardSharing, forKey: .hasClipboardSharing)
     }

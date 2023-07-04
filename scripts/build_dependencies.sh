@@ -585,16 +585,6 @@ remove_shared_gst_plugins () {
     find "$SYSROOT_DIR/lib/gstreamer-1.0" -name '*.dylib' -exec rm \{\} \;
 }
 
-generate_qapi () {
-    DIR="$1"
-    GA_APIS="$DIR/qga/qapi-schema.json"
-    APIS="$DIR/qapi/qapi-schema.json"
-
-    echo "${GREEN}Generating qapi sources from ${APIS}...${NC}"
-    python3 "$BASEDIR/qapi-gen.py" -b -o "$SYSROOT_DIR/qapi" "$APIS"
-    python3 "$BASEDIR/qapi-gen.py" -p 'qga-' -o "$SYSROOT_DIR/qga" "$GA_APIS"
-}
-
 # parse args
 ARCH=
 REBUILD=
@@ -813,6 +803,5 @@ if [ "$PLATFORM" == "ios_simulator" ]; then
     generate_fake_hypervisor
 fi
 remove_shared_gst_plugins # another hack...
-generate_qapi $QEMU_DIR
 echo "${GREEN}All done!${NC}"
 touch "$BUILD_DIR/BUILD_SUCCESS"

@@ -79,6 +79,4 @@ pack_dir "$BASEDIR" "Frameworks" # for all the Info.plist
 pack_all_objs "$BASEDIR" "*/Frameworks/*.framework/*"
 pack_dir "$BASEDIR" "include"
 pack_dir "$BASEDIR" "lib/glib-2.0/include"
-pack_dir "$BASEDIR" "qapi"
-pack_dir "$BASEDIR" "qga"
 pack_dir "$BASEDIR" "share/qemu"

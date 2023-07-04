@@ -17,7 +17,7 @@
 import SwiftUI
 
 struct VMCardView: View {
-    @ObservedObject var vm: UTMVirtualMachine
+    @ObservedObject var vm: VMData
     @EnvironmentObject private var data: UTMData
     
     #if os(macOS)
@@ -47,7 +47,7 @@ struct VMCardView: View {
             }.lineLimit(1)
             .truncationMode(.tail)
             Spacer()
-            if vm.state == .vmStopped {
+            if vm.isStopped {
                 Button {
                     data.run(vm: vm)
                 } label: {
@@ -113,6 +113,6 @@ struct Logo: View {
 
 struct VMCardView_Previews: PreviewProvider {
     static var previews: some View {
-        VMCardView(vm: UTMVirtualMachine(newConfig: UTMQemuConfiguration(), destinationURL: URL(fileURLWithPath: "/")))
+        VMCardView(vm: VMData(from: .empty))
     }
 }

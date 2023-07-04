@@ -132,9 +132,9 @@ struct ContentView: View {
     }
     
     @MainActor private func handleUTMURL(with components: URLComponents) async throws {
-        func findVM() async -> UTMVirtualMachine? {
+        func findVM() -> VMData? {
             if let vmName = components.queryItems?.first(where: { $0.name == "name" })?.value {
-                return await data.virtualMachines.first(where: { $0.detailsTitleLabel == vmName })
+                return data.virtualMachines.first(where: { $0.detailsTitleLabel == vmName })
             } else {
                 return nil
             }
@@ -143,48 +143,51 @@ struct ContentView: View {
         if let action = components.host {
             switch action {
             case "start":
-                if let vm = await findVM(), vm.state == .vmStopped {
+                if let vm = findVM(), vm.state == .stopped {
                     data.run(vm: vm)
                 }
                 break
             case "stop":
-                if let vm = await findVM(), vm.state == .vmStarted {
-                    vm.requestVmStop(force: true)
+                if let vm = findVM(), vm.state == .started {
+                    try await vm.wrapped!.stop(usingMethod: .force)
                     data.stop(vm: vm)
                 }
                 break
             case "restart":
-                if let vm = await findVM(), vm.state == .vmStarted {
-                    vm.requestVmReset()
+                if let vm = findVM(), vm.state == .started {
+                    try await vm.wrapped!.restart()
                 }
                 break
             case "pause":
-                if let vm = await findVM(), vm.state == .vmStarted {
+                if let vm = findVM(), vm.state == .started {
                     let shouldSaveOnPause: Bool
-                    if let vm = vm as? UTMQemuVirtualMachine {
-                        shouldSaveOnPause = !vm.isRunningAsSnapshot
+                    if let vm = vm.wrapped as? UTMQemuVirtualMachine {
+                        shouldSaveOnPause = !vm.isRunningAsDisposible
                     } else {
                         shouldSaveOnPause = true
                     }
-                    vm.requestVmPause(save: shouldSaveOnPause)
+                    try await vm.wrapped!.pause()
+                    if shouldSaveOnPause {
+                        try? await vm.wrapped!.saveSnapshot(name: nil)
+                    }
                 }
             case "resume":
-                if let vm = await findVM(), vm.state == .vmPaused {
-                    vm.requestVmResume()
+                if let vm = findVM(), vm.state == .paused {
+                    try await vm.wrapped!.resume()
                 }
                 break
             case "sendText":
-                if let vm = await findVM(), vm.state == .vmStarted {
+                if let vm = findVM(), vm.state == .started {
                     data.automationSendText(to: vm, urlComponents: components)
                 }
                 break
             case "click":
-                if let vm = await findVM(), vm.state == .vmStarted {
+                if let vm = findVM(), vm.state == .started {
                     data.automationSendMouse(to: vm, urlComponents: components)
                 }
                 break
             case "downloadVM":
-                data.downloadUTMZip(from: components)
+                await data.downloadUTMZip(from: components)
                 break
             default:
                 return
@@ -199,8 +202,9 @@ extension ContentView: DropDelegate {
     }
     
     func performDrop(info: DropInfo) -> Bool {
+        let urls = urlsFrom(info: info)
         data.busyWorkAsync {
-            for url in await urlsFrom(info: info) {
+            for url in urls {
                 
                 try await data.importUTM(from: url)
             }
@@ -217,12 +221,9 @@ extension ContentView: DropDelegate {
 
         providers.forEach { provider in
             group.enter()
-            _ = provider.loadDataRepresentation(forTypeIdentifier: UTType.fileURL.identifier) { (data, error) in
-                if let data = data {
-                    let url = URL(dataRepresentation: data, relativeTo: nil)
-                    if url?.pathExtension == "utm" {
-                        validURLs.append(url!)
-                    }
+            _ = provider.loadObject(ofClass: URL.self) { url, _ in
+                if url?.pathExtension == "utm" {
+                    validURLs.append(url!)
                 }
                 group.leave()
             }

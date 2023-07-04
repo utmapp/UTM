@@ -19,10 +19,10 @@ import IOKit.pwr_mgt
 
 /// Represents the UI state for a single headless VM session.
 @MainActor class VMHeadlessSessionState: NSObject, ObservableObject {
-    let vm: UTMVirtualMachine
+    let vm: any UTMVirtualMachine
     var onStop: ((Notification) -> Void)?
     
-    @Published var vmState: UTMVMState = .vmStopped
+    @Published var vmState: UTMVirtualMachineState = .stopped
     
     @Published var fatalError: String?
     
@@ -31,23 +31,28 @@ import IOKit.pwr_mgt
     
     @Setting("PreventIdleSleep") private var isPreventIdleSleep: Bool = false
     
-    init(for vm: UTMVirtualMachine, onStop: ((Notification) -> Void)?) {
+    init(for vm: any UTMVirtualMachine, onStop: ((Notification) -> Void)?) {
         self.vm = vm
         self.onStop = onStop
         super.init()
         vm.delegate = self
+        NSWorkspace.shared.notificationCenter.addObserver(self, selector: #selector(didWake), name: NSWorkspace.didWakeNotification, object: nil)
+    }
+    
+    deinit {
+        NSWorkspace.shared.notificationCenter.removeObserver(self, name: NSWorkspace.didWakeNotification, object: nil)
     }
 }
 
 extension VMHeadlessSessionState: UTMVirtualMachineDelegate {
-    nonisolated func virtualMachine(_ vm: UTMVirtualMachine, didTransitionTo state: UTMVMState) {
+    nonisolated func virtualMachine(_ vm: any UTMVirtualMachine, didTransitionToState state: UTMVirtualMachineState) {
         Task { @MainActor in
             vmState = state
-            if state == .vmStarted {
+            if state == .started {
                 hasStarted = true
                 didStart()
             }
-            if state == .vmStopped {
+            if state == .stopped {
                 if hasStarted {
                     didStop() // graceful exit
                 }
@@ -56,7 +61,7 @@ extension VMHeadlessSessionState: UTMVirtualMachineDelegate {
         }
     }
     
-    nonisolated func virtualMachine(_ vm: UTMVirtualMachine, didErrorWithMessage message: String) {
+    nonisolated func virtualMachine(_ vm: any UTMVirtualMachine, didErrorWithMessage message: String) {
         Task { @MainActor in
             fatalError = message
             NotificationCenter.default.post(name: .vmSessionError, object: nil, userInfo: ["Session": self, "Message": message])
@@ -65,6 +70,14 @@ extension VMHeadlessSessionState: UTMVirtualMachineDelegate {
                 didStop()
             }
         }
+    }
+    
+    nonisolated func virtualMachine(_ vm: any UTMVirtualMachine, didCompleteInstallation success: Bool) {
+        
+    }
+    
+    nonisolated func virtualMachine(_ vm: any UTMVirtualMachine, didUpdateInstallationProgress progress: Double) {
+        
     }
 }
 
@@ -95,4 +108,15 @@ extension Notification.Name {
     static let vmSessionCreated = Self("VMSessionCreated")
     static let vmSessionEnded = Self("VMSessionEnded")
     static let vmSessionError = Self("VMSessionError")
+}
+
+// MARK: - Computer wakeup
+extension VMHeadlessSessionState {
+    @objc private func didWake(_ notification: NSNotification) {
+        if let qemuVM = vm as? UTMQemuVirtualMachine {
+            Task {
+                try? await qemuVM.guestAgent?.guestSetTime(NSDate.now.timeIntervalSince1970)
+            }
+        }
+    }
 }

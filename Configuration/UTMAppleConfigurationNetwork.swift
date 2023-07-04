@@ -94,12 +94,16 @@ struct UTMAppleConfigurationNetwork: Codable, Identifiable {
             config.attachment = attachment
         case .bridged:
             var found: VZBridgedNetworkInterface?
-            for interface in VZBridgedNetworkInterface.networkInterfaces.reversed() {
-                // this defaults to first interface if not found
-                found = interface
-                if interface.identifier == bridgeInterface {
-                    break
+            if let bridgeInterface = bridgeInterface {
+                for interface in VZBridgedNetworkInterface.networkInterfaces {
+                    if interface.identifier == bridgeInterface {
+                        found = interface
+                        break
+                    }
                 }
+            } else {
+                // default to first interface if unspecified
+                found = VZBridgedNetworkInterface.networkInterfaces.first
             }
             if let found = found {
                 let attachment = VZBridgedNetworkDeviceAttachment(interface: found)

@@ -17,7 +17,6 @@
 import Foundation
 
 @objc protocol VMDisplayViewControllerDelegate {
-    var vmState: UTMVMState { get }
     var qemuInputLegacy: Bool { get }
     var qemuDisplayUpscaler: MTLSamplerMinMagFilter { get }
     var qemuDisplayDownscaler: MTLSamplerMinMagFilter { get }

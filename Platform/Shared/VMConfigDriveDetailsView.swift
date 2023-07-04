@@ -83,13 +83,22 @@ struct VMConfigDriveDetailsView: View {
             if config.imageType == .disk || config.imageType == .cd {
                 VMConfigConstantPicker("Interface", selection: $config.interface)
                     .onChange(of: config.interface) { interface in
+                        config.interfaceVersion = UTMQemuConfigurationDrive.latestInterfaceVersion
                         if interface == .floppy && config.imageType == .cd {
                             config.imageType = .disk
                         }
                     }
             }
+            if config.interface == .ide && config.interfaceVersion != UTMQemuConfigurationDrive.latestInterfaceVersion {
+                Button {
+                    config.interfaceVersion = UTMQemuConfigurationDrive.latestInterfaceVersion
+                } label: {
+                    Text("Update Interface")
+                }.help("Older versions of UTM added each IDE device to a separate bus. Check this to change the configuration to place two units on each bus.")
+            }
             
-            if let imageUrl = config.imageURL, let fileSize = data.computeSize(for: imageUrl) {
+            if let imageUrl = config.imageURL {
+                let fileSize = data.computeSize(for: imageUrl)
                 DefaultTextField("Size", text: .constant(ByteCountFormatter.string(fromByteCount: fileSize, countStyle: .binary))).disabled(true)
             } else if config.sizeMib > 0 {
                 DefaultTextField("Size", text: .constant(ByteCountFormatter.string(fromByteCount: Int64(config.sizeMib) * bytesInMib, countStyle: .binary))).disabled(true)

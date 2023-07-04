@@ -15,7 +15,7 @@
       "location" : "https://github.com/utmapp/CocoaSpice.git",
       "state" : {
         "branch" : "main",
-        "revision" : "eca498d69cbe67e1e2dd9228135f4cdbfdec1ea3"
+        "revision" : "91321425e6f86dcae12782f582fb05c5a8251d72"
       }
     },
     {
@@ -37,12 +37,21 @@
       }
     },
     {
+      "identity" : "qemukit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/utmapp/QEMUKit.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "31196fa75721cbc158b3279fc8e0f5a9bd2d1844"
+      }
+    },
+    {
       "identity" : "swift-argument-parser",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-argument-parser.git",
       "state" : {
-        "revision" : "fddd1c00396eed152c45a46bea9f47b98e59301d",
-        "version" : "1.2.0"
+        "revision" : "fee6933f37fde9a5e12a1e4aeaa93fe60116ff2a",
+        "version" : "1.2.2"
       }
     },
     {
@@ -50,8 +59,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-log",
       "state" : {
-        "revision" : "6fe203dc33195667ce1759bf0182975e4653ba1c",
-        "version" : "1.4.4"
+        "revision" : "32e8d724467f8fe623624570367e3d50c5638e46",
+        "version" : "1.5.2"
       }
     },
     {
@@ -60,7 +69,7 @@
       "location" : "https://github.com/migueldeicaza/SwiftTerm.git",
       "state" : {
         "branch" : "main",
-        "revision" : "bbe1ff65087f5c9a5748e888f9ec2a7e8f78401d"
+        "revision" : "1c332c850f06e29a4fd5ceda8e59bec9b41e69cf"
       }
     },
     {
@@ -77,8 +86,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/weichsel/ZIPFoundation.git",
       "state" : {
-        "revision" : "f6a22e7da26314b38bf9befce34ae8e4b2543090",
-        "version" : "0.9.15"
+        "revision" : "43ec568034b3731101dbf7670765d671c30f54f3",
+        "version" : "0.9.16"
       }
     }
   ],

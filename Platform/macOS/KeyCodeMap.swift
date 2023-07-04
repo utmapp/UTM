@@ -274,9 +274,9 @@ class KeyCodeMap {
         kVK_F20:                .t((down: 0x6b, up: 0xeb)),
         kVK_JIS_Yen:            .t((down: 0x7d, up: 0xfd)),
         kVK_JIS_Underscore:     .t((down: 0x73, up: 0xf3)),
-        kVK_JIS_KeypadComma:    .t((down: 0x5c, up: 0xdc)),
-        kVK_JIS_Eisu:           .t((down: 0x73, up: 0xf3)),
-        kVK_JIS_Kana:           .t((down: 0x70, up: 0xf0)),
+        kVK_JIS_KeypadComma:    .t((down: 0x00, up: 0x00)), /// Not found on IBM
+        kVK_JIS_Eisu:           .t((down: 0x7b, up: 0xfb)), /// Fallback to `muhenkan`
+        kVK_JIS_Kana:           .t((down: 0x79, up: 0xf9)), /// Fallback to `henkan`
         /* The Function and help keys doesn't have a scan code */
         kVK_Function:           .t((down: 0x00, up: 0x00)),
         kVK_Help:               .t((down: 0x00, up: 0x00))

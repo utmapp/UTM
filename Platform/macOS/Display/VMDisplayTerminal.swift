@@ -21,7 +21,7 @@ import SwiftUI
 private let kVMDefaultResizeCmd = "stty cols $COLS rows $ROWS\\n"
 
 protocol VMDisplayTerminal {
-    var vm: UTMVirtualMachine! { get }
+    var vm: (any UTMVirtualMachine)! { get }
     var isOptionAsMetaKey: Bool { get }
     @MainActor func setupTerminal(_ terminalView: TerminalView, using config: UTMConfigurationTerminal, id: Int, for window: NSWindow)
     func resizeCommand(for terminal: TerminalView, using config: UTMConfigurationTerminal) -> String
