@@ -311,6 +311,9 @@
 		CE061CDB289E6DC30000351C /* VMDisplayWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE061CDD289E6DC30000351C /* VMDisplayWindow.xib */; };
 		CE061CE6289EB6250000351C /* VMDisplayMetalViewInputAccessory.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE061CE9289EB6250000351C /* VMDisplayMetalViewInputAccessory.xib */; };
 		CE061CE7289EB6250000351C /* VMDisplayMetalViewInputAccessory.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE061CE9289EB6250000351C /* VMDisplayMetalViewInputAccessory.xib */; };
+		CE064C662A563F4B003C833D /* swtpm.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE064C642A563F4A003C833D /* swtpm.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CE064C6A2A563F6E003C833D /* swtpm.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE064C642A563F4A003C833D /* swtpm.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CE064C6C2A563F75003C833D /* swtpm.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE064C642A563F4A003C833D /* swtpm.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CE0B6CEC24AD532500FE012D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CE550BD52259479D0063E575 /* Assets.xcassets */; };
 		CE0B6CED24AD532A00FE012D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CE550BD52259479D0063E575 /* Assets.xcassets */; };
 		CE0B6CF324AD568400FE012D /* UTMLegacyQemuConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = CE31C244225E555600A965DD /* UTMLegacyQemuConfiguration.m */; };
@@ -1011,6 +1014,7 @@
 				CE03D08E24D9124100F76B84 /* gmodule-2.0.0.framework in Embed Libraries */,
 				CE03D0C524D913AF00F76B84 /* ffi.7.framework in Embed Libraries */,
 				CEF83F8D250094E700557D15 /* gthread-2.0.0.framework in Embed Libraries */,
+				CE064C662A563F4B003C833D /* swtpm.0.framework in Embed Libraries */,
 				CE03D09024D9124800F76B84 /* intl.8.framework in Embed Libraries */,
 				CE03D0C924D9140A00F76B84 /* pixman-1.0.framework in Embed Libraries */,
 				CE0B6F2024AD679F00FE012D /* gstfft-1.0.0.framework in Embed Libraries */,
@@ -1124,6 +1128,7 @@
 				CE2D93AA24AD46670059923A /* spice-client-glib-2.0.8.framework in Embed Libraries */,
 				CE2D93AB24AD46670059923A /* opus.0.framework in Embed Libraries */,
 				CE2D93AD24AD46670059923A /* gstsdp-1.0.0.framework in Embed Libraries */,
+				CE064C6A2A563F6E003C833D /* swtpm.0.framework in Embed Libraries */,
 				CE2D93AE24AD46670059923A /* qemu-nios2-softmmu.framework in Embed Libraries */,
 				CE02C8AB294EE4EB006DFE48 /* qemu-loongarch64-softmmu.framework in Embed Libraries */,
 				CE2D93B024AD46670059923A /* gstaudio-1.0.0.framework in Embed Libraries */,
@@ -1185,6 +1190,7 @@
 				CEA45F97263519B5002FA97D /* qemu-ppc64-softmmu.framework in Embed Libraries */,
 				CEA45F9A263519B5002FA97D /* glib-2.0.0.framework in Embed Libraries */,
 				CEA45F9B263519B5002FA97D /* qemu-x86_64-softmmu.framework in Embed Libraries */,
+				CE064C6C2A563F75003C833D /* swtpm.0.framework in Embed Libraries */,
 				CEA45F9E263519B5002FA97D /* qemu-arm-softmmu.framework in Embed Libraries */,
 				CEA45F9F263519B5002FA97D /* intl.8.framework in Embed Libraries */,
 				CEA45FA0263519B5002FA97D /* gstreamer-1.0.0.framework in Embed Libraries */,
@@ -1408,6 +1414,7 @@
 		CE061CDF289E6DCF0000351C /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/VMDisplayWindow.strings; sourceTree = "<group>"; };
 		CE061CE8289EB6250000351C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/VMDisplayMetalViewInputAccessory.xib; sourceTree = "<group>"; };
 		CE061CEB289EB62E0000351C /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/VMDisplayMetalViewInputAccessory.strings; sourceTree = "<group>"; };
+		CE064C642A563F4A003C833D /* swtpm.0.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = swtpm.0.framework; path = "$(SYSROOT_DIR)/Frameworks/swtpm.0.framework"; sourceTree = "<group>"; };
 		CE0DF17025A80B6300A51894 /* Bootstrap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Bootstrap.h; sourceTree = "<group>"; };
 		CE0DF17125A80B6300A51894 /* Bootstrap.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = Bootstrap.c; sourceTree = "<group>"; };
 		CE0E9B86252FD06B0026E02B /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -1993,6 +2000,7 @@
 		CE2D63D622653C7300FC7E63 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CE064C642A563F4A003C833D /* swtpm.0.framework */,
 				CE02C8A8294EE4EA006DFE48 /* qemu-loongarch64-softmmu.framework */,
 				CE02C8A9294EE4EB006DFE48 /* slirp.0.framework */,
 				84C5068528CA5702007CE8FF /* Hypervisor.framework */,

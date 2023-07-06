@@ -1,0 +1,13 @@
+diff -Naur a/src/tpm12/tpm_crypto.c b/src/tpm12/tpm_crypto.c
+--- a/src/tpm12/tpm_crypto.c	2023-07-04 10:48:24.000000000 -0700
++++ b/src/tpm12/tpm_crypto.c	2023-07-04 15:41:40.000000000 -0700
+@@ -48,6 +48,9 @@
+ #include <openssl/rand.h>
+ #include <openssl/sha.h>
+ #include <openssl/engine.h>
++#include <openssl/rsa.h>
++#include <openssl/evp.h>
++#include <openssl/err.h>
+ 
+ #include "tpm_cryptoh.h"
+ #include "tpm_debug.h"
