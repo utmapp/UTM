@@ -131,7 +131,7 @@
     task.qualityOfService = NSQualityOfServiceUserInitiated;
     task.terminationHandler = ^(NSTask *task) {
         _self.childTask = nil;
-        [_self.connection.remoteObjectProxy qemuHasExited:task.terminationStatus message:nil];
+        [_self.connection.remoteObjectProxy processHasExited:task.terminationStatus message:nil];
     };
     if (![task launchAndReturnError:&err]) {
         NSLog(@"Error starting QEMU: %@", err);

@@ -14,25 +14,65 @@
 // limitations under the License.
 //
 
-#import "UTMQemu.h"
+#import "UTMProcess.h"
 #import "UTMLogging.h"
 #import "QEMUHelperDelegate.h"
+#import "QEMUHelperProtocol.h"
 #import <dlfcn.h>
 #import <pthread.h>
 #import <TargetConditionals.h>
 
 extern NSString *const kUTMErrorDomain;
 
-@interface UTMQemu ()
+@interface UTMProcess ()
 
 @property (nonatomic) dispatch_queue_t completionQueue;
+@property (nonatomic) dispatch_semaphore_t done;
+@property (nonatomic, nullable) NSString *processName;
 
 @end
 
-@implementation UTMQemu {
+@implementation UTMProcess {
     NSMutableArray<NSString *> *_argv;
     NSMutableArray<NSURL *> *_urls;
     NSXPCConnection *_connection;
+}
+
+static void *startProcess(void *args) {
+    UTMProcess *self = (__bridge_transfer UTMProcess *)args;
+    NSArray<NSString *> *processArgv = self.argv;
+    NSMutableArray<NSString *> *environment = [NSMutableArray arrayWithCapacity:self.environment.count];
+    
+    /* set up environment variables */
+    [self.environment enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
+        NSString *combined = [NSString stringWithFormat:@"%@=%@", key, value];
+        [environment addObject:combined];
+        setenv(key.UTF8String, value.UTF8String, 1);
+    }];
+    NSUInteger envc = environment.count;
+    const char *envp[envc + 1];
+    for (NSUInteger i = 0; i < envc; i++) {
+        envp[i] = environment[i].UTF8String;
+    }
+    envp[envc] = NULL;
+    setenv("TMPDIR", NSFileManager.defaultManager.temporaryDirectory.path.UTF8String, 1);
+    
+    int argc = (int)processArgv.count + 1;
+    const char *argv[argc];
+    argv[0] = [self.processName cStringUsingEncoding:NSUTF8StringEncoding];
+    if (!argv[0]) {
+        argv[0] = "process";
+    }
+    for (int i = 0; i < processArgv.count; i++) {
+        argv[i+1] = [processArgv[i] UTF8String];
+    }
+    self.status = self.entry(self, argc, argv, envp);
+    dispatch_semaphore_signal(self.done);
+    return NULL;
+}
+
+static int defaultEntry(UTMProcess *self, int argc, const char *argv[], const char *envp[]) {
+    return -1;
 }
 
 #pragma mark - Properties
@@ -65,12 +105,14 @@ extern NSString *const kUTMErrorDomain;
         }
         dispatch_queue_attr_t attr = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_UTILITY, QOS_MIN_RELATIVE_PRIORITY);
         self.completionQueue = dispatch_queue_create("QEMU Completion Queue", attr);
+        self.entry = defaultEntry;
+        self.done = dispatch_semaphore_create(0);
     }
     return self;
 }
 
 - (void)dealloc {
-    [self stopQemu];
+    [self stopProcess];
 }
 
 #pragma mark - Methods
@@ -110,9 +152,7 @@ extern NSString *const kUTMErrorDomain;
             args = [args stringByAppendingFormat:@" %@", arg];
         }
     }
-    NSString *line = [[NSString alloc] initWithFormat:@"Running: %@\n", args];
-    [self.logging writeLine:line];
-    NSLog(@"%@", line);
+    UTMLog(@"Running: %@", args);
 }
 
 - (BOOL)didLoadDylib:(void *)handle {
@@ -127,7 +167,6 @@ extern NSString *const kUTMErrorDomain;
     
     NSAssert(self.entry != NULL, @"entry is NULL!");
     self.status = self.fatal = 0;
-    self.done = dispatch_semaphore_create(0);
     UTMLog(@"Loading %@", dylib);
     dlctx = dlopen([dylib UTF8String], RTLD_LOCAL);
     if (dlctx == NULL) {
@@ -151,24 +190,24 @@ extern NSString *const kUTMErrorDomain;
             pthread_exit(NULL);
         }
     }) != 0) {
-        completion([self errorWithMessage:NSLocalizedString(@"Internal error has occurred.", @"UTMQemu")]);
+        completion([self errorWithMessage:NSLocalizedString(@"Internal error has occurred.", @"UTMProcess")]);
         return;
     }
     pthread_attr_init(&qosAttribute);
     pthread_attr_set_qos_class_np(&qosAttribute, QOS_CLASS_USER_INTERACTIVE, 0);
-    pthread_create(&qemu_thread, &qosAttribute, self.entry, (__bridge_retained void *)self);
+    pthread_create(&qemu_thread, &qosAttribute, startProcess, (__bridge_retained void *)self);
     dispatch_async(self.completionQueue, ^{
         if (dispatch_semaphore_wait(self.done, DISPATCH_TIME_FOREVER)) {
             dlclose(dlctx);
-            [self qemuHasExited:-1 message:NSLocalizedString(@"Internal error has occurred.", @"UTMQemu")];
+            [self processHasExited:-1 message:NSLocalizedString(@"Internal error has occurred.", @"UTMProcess")];
         } else {
             if (dlclose(dlctx) < 0) {
                 NSString *err = [NSString stringWithUTF8String:dlerror()];
-                [self qemuHasExited:-1 message:err];
+                [self processHasExited:-1 message:err];
             } else if (self.fatal || self.status) {
-                [self qemuHasExited:-1 message:nil];
+                [self processHasExited:-1 message:nil];
             } else {
-                [self qemuHasExited:0 message:nil];
+                [self processHasExited:0 message:nil];
             }
         }
     });
@@ -186,15 +225,15 @@ extern NSString *const kUTMErrorDomain;
         return;
     }
     __weak typeof(self) _self = self;
-    NSFileHandle *standardOutput = self.logging.standardOutput.fileHandleForWriting;
-    NSFileHandle *standardError = self.logging.standardError.fileHandleForWriting;
+    NSFileHandle *standardOutput = self.standardOutput.fileHandleForWriting;
+    NSFileHandle *standardError = self.standardError.fileHandleForWriting;
     [_connection.remoteObjectProxy setEnvironment:self.environment];
     [[_connection remoteObjectProxyWithErrorHandler:^(NSError * _Nonnull error) {
         if (error.domain == NSCocoaErrorDomain && error.code == NSXPCConnectionInvalid) {
             // inhibit this error since we always see it on quit
-            [_self qemuHasExited:0 message:nil];
+            [_self processHasExited:0 message:nil];
         } else {
-            [_self qemuHasExited:error.code message:error.localizedDescription];
+            [_self processHasExited:error.code message:error.localizedDescription];
         }
     }] startQemu:name standardOutput:standardOutput standardError:standardError libraryBookmark:libBookmark argv:self.argv completion:^(BOOL success, NSString *msg){
         if (!success) {
@@ -205,7 +244,7 @@ extern NSString *const kUTMErrorDomain;
     }];
 }
 
-- (void)startQemu:(nonnull NSString *)name completion:(nonnull void (^)(NSError * _Nullable))completion {
+- (void)startProcess:(nonnull NSString *)name completion:(nonnull void (^)(NSError * _Nullable))completion {
     [self printArgv];
 #if TARGET_OS_IPHONE
     NSString *base = @"";
@@ -213,6 +252,7 @@ extern NSString *const kUTMErrorDomain;
     NSString *base = @"Versions/A/";
 #endif
     NSString *dylib = [NSString stringWithFormat:@"%@.framework/%@%@", name, base, name];
+    self.processName = name;
     if (_connection) {
         [self startQemuRemote:dylib completion:completion];
     } else {
@@ -220,7 +260,7 @@ extern NSString *const kUTMErrorDomain;
     }
 }
 
-- (void)stopQemu {
+- (void)stopProcess {
     if (_connection) {
         [[_connection remoteObjectProxy] terminate];
         [_connection invalidate];
@@ -304,7 +344,7 @@ extern NSString *const kUTMErrorDomain;
     return [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: message}];
 }
 
-- (void)qemuHasExited:(NSInteger)exitCode message:(nullable NSString *)message {
+- (void)processHasExited:(NSInteger)exitCode message:(nullable NSString *)message {
     UTMLog(@"QEMU has exited with code %ld and message %@", exitCode, message);
 }
 

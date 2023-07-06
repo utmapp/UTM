@@ -30,42 +30,15 @@
     void (*_qemu_cleanup)(void);
 }
 
-static void *start_qemu(void *args) {
-    UTMQemuSystem *self = (__bridge_transfer UTMQemuSystem *)args;
-    NSArray<NSString *> *qemuArgv = self.argv;
-    NSMutableArray<NSString *> *environment = [NSMutableArray arrayWithCapacity:self.environment.count];
-    
-    NSCAssert(self->_qemu_init != NULL, @"Started thread with invalid function.");
-    NSCAssert(self->_qemu_main_loop != NULL, @"Started thread with invalid function.");
-    NSCAssert(self->_qemu_cleanup != NULL, @"Started thread with invalid function.");
-    NSCAssert(qemuArgv, @"Started thread with invalid argv.");
-    
-    /* set up environment variables */
-    [self.environment enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
-        NSString *combined = [NSString stringWithFormat:@"%@=%@", key, value];
-        [environment addObject:combined];
-        setenv(key.UTF8String, value.UTF8String, 1);
-    }];
-    NSUInteger envc = environment.count;
-    const char *envp[envc + 1];
-    for (NSUInteger i = 0; i < envc; i++) {
-        envp[i] = environment[i].UTF8String;
+static int startQemu(UTMProcess *process, int argc, const char *argv[], const char *envp[]) {
+    UTMQemuSystem *self = (UTMQemuSystem *)process;
+    int ret = self->_qemu_init(argc, argv, envp);
+    if (ret != 0) {
+        return ret;
     }
-    envp[envc] = NULL;
-    setenv("TMPDIR", NSFileManager.defaultManager.temporaryDirectory.path.UTF8String, 1);
-    
-    int argc = (int)qemuArgv.count + 1;
-    const char *argv[argc];
-    argv[0] = "qemu-system";
-    for (int i = 0; i < qemuArgv.count; i++) {
-        argv[i+1] = [qemuArgv[i] UTF8String];
-    }
-    self->_qemu_init(argc, argv, envp);
     self->_qemu_main_loop();
     self->_qemu_cleanup();
-    self.status = 0;
-    dispatch_semaphore_signal(self.done);
-    return NULL;
+    return 0;
 }
 
 - (void)setRendererBackend:(UTMQEMURendererBackend)rendererBackend {
@@ -81,10 +54,26 @@ static void *start_qemu(void *args) {
     }
 }
 
+- (NSPipe *)standardOutput {
+    return self.logging.standardOutput;
+}
+
+- (void)setStandardOutput:(NSPipe *)standardOutput {
+    [self doesNotRecognizeSelector:_cmd];
+}
+
+- (NSPipe *)standardError {
+    return self.logging.standardError;
+}
+
+- (void)setStandardError:(NSPipe *)standardError {
+    [self doesNotRecognizeSelector:_cmd];
+}
+
 - (instancetype)initWithArguments:(NSArray<NSString *> *)arguments architecture:(nonnull NSString *)architecture {
     self = [super initWithArguments:arguments];
     if (self) {
-        self.entry = start_qemu;
+        self.entry = startQemu;
         self.architecture = architecture;
     }
     return self;
@@ -121,11 +110,15 @@ static void *start_qemu(void *args) {
     }
     dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
     NSString *name = [NSString stringWithFormat:@"qemu-%@-softmmu", self.architecture];
-    [self startQemu:name completion:completion];
+    [self startProcess:name completion:completion];
+}
+
+- (void)stopQemu {
+    [self stopProcess];
 }
 
 /// Called by superclass
-- (void)qemuHasExited:(NSInteger)exitCode message:(nullable NSString *)message {
+- (void)processHasExited:(NSInteger)exitCode message:(nullable NSString *)message {
     [self.launcherDelegate qemuLauncher:self didExitWithExitCode:exitCode message:message];
 }
 
