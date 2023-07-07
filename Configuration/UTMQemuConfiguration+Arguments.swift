@@ -489,6 +489,16 @@ import Virtualization // for getting network interfaces
         }
     }
     
+    /// These machines are hard coded to have one IDE unit per bus in QEMU
+    private var isIdeInterfaceSingleUnit: Bool {
+        system.target.rawValue.contains("q35") ||
+        system.target.rawValue == "microvm" ||
+        system.target.rawValue == "cubieboard" ||
+        system.target.rawValue == "highbank" ||
+        system.target.rawValue == "midway" ||
+        system.target.rawValue == "xlnx_zcu102"
+    }
+    
     @QEMUArgumentBuilder private func driveArgument(for drive: UTMQemuConfigurationDrive, busInterfaceMap: inout [String: Int]) -> [QEMUArgument] {
         let isRemovable = drive.imageType == .cd || drive.isExternal
         let isCd = drive.imageType == .cd && drive.interface != .floppy
@@ -502,7 +512,7 @@ import Virtualization // for getting network interfaces
             } else {
                 "ide-hd"
             }
-            if drive.isIdeInterfaceMultipleUnits {
+            if drive.interfaceVersion >= 1 && !isIdeInterfaceSingleUnit {
                 "bus=ide.\(busindex / 2)"
                 "unit=\(busindex % 2)"
             } else {

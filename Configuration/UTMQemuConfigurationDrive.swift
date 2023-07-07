@@ -53,11 +53,6 @@ struct UTMQemuConfigurationDrive: UTMConfigurationDrive {
     /// If initialized, returns a default interface for an image type. Not saved.
     var defaultInterfaceForImageType: ((QEMUDriveImageType) -> QEMUDriveInterface)?
     
-    /// On older versions of UTM, IDE bus used one unit per bus and this is for compatibility
-    var isIdeInterfaceMultipleUnits: Bool {
-        interfaceVersion >= 1
-    }
-    
     enum CodingKeys: String, CodingKey {
         case imageName = "ImageName"
         case imageType = "ImageType"
