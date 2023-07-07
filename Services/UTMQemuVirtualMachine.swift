@@ -530,6 +530,8 @@ extension UTMQemuVirtualMachine: QEMUVirtualMachineDelegate {
     }
     
     func qemuVMDidStop(_ qemuVM: QEMUVirtualMachine) {
+        ioService = nil
+        ioServiceDelegate = nil
         state = .stopped
     }
     
