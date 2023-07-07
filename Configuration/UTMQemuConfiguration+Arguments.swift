@@ -56,6 +56,11 @@ import Virtualization // for getting network interfaces
         socketURL.appendingPathComponent(information.uuid.uuidString).appendingPathExtension("spice")
     }
     
+    /// Return the socket file for communicating with SWTPM
+    var swtpmSocketURL: URL {
+        socketURL.appendingPathComponent(information.uuid.uuidString).appendingPathExtension("swtpm")
+    }
+    
     /// Combined generated and user specified arguments.
     @QEMUArgumentBuilder var allArguments: [QEMUArgument] {
         generatedArguments
@@ -907,6 +912,32 @@ import Virtualization // for getting network interfaces
             f("-device")
             f("virtio-balloon-pci")
         }
+        if qemu.hasTPMDevice {
+            tpmArguments
+        }
+    }
+    
+    @QEMUArgumentBuilder private var tpmArguments: [QEMUArgument] {
+        f("-chardev")
+        "socket"
+        "id=chrtpm0"
+        "path=\(swtpmSocketURL.lastPathComponent)"
+        f()
+        f("-tpmdev")
+        "emulator"
+        "id=tpm0"
+        "chardev=chrtpm0"
+        f()
+        f("-device")
+        if system.target.rawValue.hasPrefix("virt") {
+            "tpm-tis-device"
+        } else if system.architecture == .ppc64 {
+            "tpm-spapr"
+        } else {
+            "tpm-tis"
+        }
+        "tpmdev=tpm0"
+        f()
     }
 }
 

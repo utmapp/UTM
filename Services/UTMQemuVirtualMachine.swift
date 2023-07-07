@@ -138,6 +138,8 @@ final class UTMQemuVirtualMachine: UTMVirtualMachine {
     
     private var startTask: Task<Void, any Error>?
     
+    private var swtpm: UTMSWTPM?
+    
     @MainActor required init(packageUrl: URL, configuration: UTMQemuConfiguration? = nil, isShortcut: Bool = false) throws {
         self.isScopedAccess = packageUrl.startAccessingSecurityScopedResource()
         // load configuration
@@ -239,6 +241,16 @@ extension UTMQemuVirtualMachine {
         let isRunningAsDisposible = options.contains(.bootDisposibleMode)
         await MainActor.run {
             config.qemu.isDisposable = isRunningAsDisposible
+        }
+        
+        // start TPM
+        if await config.qemu.hasTPMDevice {
+            let swtpm = UTMSWTPM()
+            swtpm.ctrlSocketUrl = await config.swtpmSocketURL
+            swtpm.dataUrl = await config.qemu.tpmDataURL
+            swtpm.currentDirectoryUrl = await config.socketURL
+            try await swtpm.start()
+            self.swtpm = swtpm
         }
         
         let allArguments = await config.allArguments
@@ -524,6 +536,8 @@ extension UTMQemuVirtualMachine: QEMUVirtualMachineDelegate {
     }
     
     func qemuVMDidStop(_ qemuVM: QEMUVirtualMachine) {
+        swtpm?.stop()
+        swtpm = nil
         ioService = nil
         ioServiceDelegate = nil
         state = .stopped

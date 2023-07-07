@@ -45,6 +45,7 @@ typedef int (*UTMProcessThreadEntry)(UTMProcess *self, int argc, const char * _N
 - (void)accessDataWithBookmark:(NSData *)bookmark securityScoped:(BOOL)securityScoped completion:(void(^)(BOOL, NSData * _Nullable, NSString * _Nullable))completion;
 - (void)stopAccessingPath:(nullable NSString *)path;
 - (void)processHasExited:(NSInteger)exitCode message:(nullable NSString *)message;
+- (BOOL)didLoadDylib:(void *)handle;
 
 @end
 

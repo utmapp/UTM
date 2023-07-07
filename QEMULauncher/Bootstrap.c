@@ -27,6 +27,7 @@ typedef struct {
     int (*qemu_init)(int, const char *[], const char *[]);
     void (*qemu_main_loop)(void);
     void (*qemu_cleanup)(void);
+    int (*swtpm_main)(int argc, const char *argv[], const char *prgname, const char *iface);
 } qemu_main_t;
 
 // http://mac-os-x.10953.n7.nabble.com/Ensure-NSTask-terminates-when-parent-application-does-td31477.html
@@ -61,7 +62,8 @@ static int loadQemu(const char *dylibPath, qemu_main_t *funcs) {
     funcs->qemu_init = dlsym(dlctx, "qemu_init");
     funcs->qemu_main_loop = dlsym(dlctx, "qemu_main_loop");
     funcs->qemu_cleanup = dlsym(dlctx, "qemu_cleanup");
-    if (funcs->main == NULL && (funcs->qemu_init == NULL || funcs->qemu_main_loop == NULL || funcs->qemu_cleanup == NULL)) {
+    funcs->swtpm_main = dlsym(dlctx, "swtpm_main");
+    if (funcs->main == NULL && funcs->swtpm_main == NULL && (funcs->qemu_init == NULL || funcs->qemu_main_loop == NULL || funcs->qemu_cleanup == NULL)) {
         fprintf(stderr, "Error resolving %s: %s\n", dylibPath, dlerror());
         return -1;
     }
@@ -77,6 +79,8 @@ static void __attribute__((noreturn)) runQemu(qemu_main_t *funcs, int argc, cons
     pthread_detach(thread);
     if (funcs->main) {
         funcs->main(argc, argv);
+    } else if (funcs->swtpm_main) {
+        funcs->swtpm_main(argc, argv, "swtpm", "socket");
     } else {
         funcs->qemu_main_loop();
         funcs->qemu_cleanup();
