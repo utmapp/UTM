@@ -28,10 +28,10 @@ import Virtualization // for getting network interfaces
         QEMUArgumentFragment(final: string)
     }
     
-    /// Return the socket file for communicating with SPICE
-    var spiceSocketURL: URL {
+    /// Shared between helper and main process to store Unix sockets
+    var socketURL: URL {
         #if os(iOS)
-        let parentURL = FileManager.default.temporaryDirectory
+        return FileManager.default.temporaryDirectory
         #else
         let appGroup = Bundle.main.infoDictionary?["AppGroupIdentifier"] as? String
         let helper = Bundle.main.infoDictionary?["HelperIdentifier"] as? String
@@ -44,11 +44,16 @@ import Virtualization // for getting network interfaces
         parentURL.appendPathComponent("tmp")
         if let appGroup = appGroup, !appGroup.hasPrefix("invalid.") {
             if let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup) {
-                parentURL = containerURL
+                return containerURL
             }
         }
+        return parentURL
         #endif
-        return parentURL.appendingPathComponent("\(information.uuid.uuidString).spice")
+    }
+    
+    /// Return the socket file for communicating with SPICE
+    var spiceSocketURL: URL {
+        socketURL.appendingPathComponent(information.uuid.uuidString).appendingPathExtension("spice")
     }
     
     /// Combined generated and user specified arguments.
@@ -100,8 +105,7 @@ import Virtualization // for getting network interfaces
     @QEMUArgumentBuilder private var spiceArguments: [QEMUArgument] {
         f("-spice")
         "unix=on"
-        "addr="
-        spiceSocketURL
+        "addr=\(spiceSocketURL.lastPathComponent)"
         "disable-ticketing=on"
         "image-compression=off"
         "playback-compression=off"

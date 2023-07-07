@@ -28,6 +28,7 @@
 @implementation QEMUHelper
 
 @synthesize environment;
+@synthesize currentDirectoryPath;
 
 - (instancetype)init {
     if (self = [super init]) {
@@ -128,6 +129,9 @@
         [environment addEntriesFromDictionary:self.environment];
     }
     task.environment = environment;
+    if (self.currentDirectoryPath) {
+        task.currentDirectoryURL = [NSURL fileURLWithPath:self.currentDirectoryPath];
+    }
     task.qualityOfService = NSQualityOfServiceUserInitiated;
     task.terminationHandler = ^(NSTask *task) {
         _self.childTask = nil;

@@ -248,6 +248,7 @@ extension UTMQemuVirtualMachine {
         
         let system = await UTMQemuSystem(arguments: arguments, architecture: config.system.architecture.rawValue)
         system.resources = resources
+        system.currentDirectoryUrl = await config.socketURL
         system.remoteBookmarks = remoteBookmarks as NSDictionary
         system.rendererBackend = rendererBackend
         try Task.checkCancellation()

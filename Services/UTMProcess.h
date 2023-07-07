@@ -33,6 +33,7 @@ typedef int (*UTMProcessThreadEntry)(UTMProcess *self, int argc, const char * _N
 @property (nonatomic) UTMProcessThreadEntry entry;
 @property (nonatomic, nullable) NSPipe *standardOutput;
 @property (nonatomic, nullable) NSPipe *standardError;
+@property (nonatomic, nullable) NSURL *currentDirectoryUrl;
 
 - (instancetype)init;
 - (instancetype)initWithArguments:(NSArray<NSString *> *)arguments NS_DESIGNATED_INITIALIZER;

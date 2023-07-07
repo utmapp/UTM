@@ -57,6 +57,11 @@ static void *startProcess(void *args) {
     envp[envc] = NULL;
     setenv("TMPDIR", NSFileManager.defaultManager.temporaryDirectory.path.UTF8String, 1);
     
+    const char *currentDirectoryPath = self.currentDirectoryUrl.path.UTF8String;
+    if (currentDirectoryPath) {
+        chdir(currentDirectoryPath);
+    }
+    
     int argc = (int)processArgv.count + 1;
     const char *argv[argc];
     argv[0] = [self.processName cStringUsingEncoding:NSUTF8StringEncoding];
@@ -228,6 +233,7 @@ static int defaultEntry(UTMProcess *self, int argc, const char *argv[], const ch
     NSFileHandle *standardOutput = self.standardOutput.fileHandleForWriting;
     NSFileHandle *standardError = self.standardError.fileHandleForWriting;
     [_connection.remoteObjectProxy setEnvironment:self.environment];
+    [_connection.remoteObjectProxy setCurrentDirectoryPath:self.currentDirectoryUrl.path];
     [[_connection remoteObjectProxyWithErrorHandler:^(NSError * _Nonnull error) {
         if (error.domain == NSCocoaErrorDomain && error.code == NSXPCConnectionInvalid) {
             // inhibit this error since we always see it on quit
