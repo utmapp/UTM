@@ -113,7 +113,7 @@ struct VMToolbarModifier: ViewModifier {
                     Button {
                         confirmAction = .confirmStopVM
                     } label: {
-                        Label("Stop", systemImage: "stop.fill")
+                        Label("Stop", systemImage: "stop")
                             .labelStyle(.iconOnly)
                     }.help("Stop selected VM")
                     .padding(.leading, padding)
@@ -121,7 +121,7 @@ struct VMToolbarModifier: ViewModifier {
                     Button {
                         data.run(vm: data.selectedVM!)
                     } label: {
-                        Label("Run", systemImage: "play.fill")
+                        Label("Run", systemImage: "play")
                             .labelStyle(.iconOnly)
                     }.help("Run selected VM")
                     .padding(.leading, padding)

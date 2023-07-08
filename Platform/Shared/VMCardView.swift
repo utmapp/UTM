@@ -49,7 +49,7 @@ struct VMCardView: View {
                 Button {
                     data.run(vm: vm)
                 } label: {
-                    Label("Run", systemImage: "play.circle")
+                    Label("Run", systemImage: "play.circle.fill")
                         .font(.largeTitle)
                         .labelStyle(.iconOnly)
                 }
