@@ -21,10 +21,8 @@ struct VMCardView: View {
     @EnvironmentObject private var data: UTMData
     
     #if os(macOS)
-    let buttonColor: Color = .black
     typealias PlatformImage = NSImage
     #else
-    let buttonColor: Color = .accentColor
     typealias PlatformImage = UIImage
     #endif
     
@@ -53,7 +51,6 @@ struct VMCardView: View {
                 } label: {
                     Label("Run", systemImage: "play.circle")
                         .font(.largeTitle)
-                        .foregroundColor(buttonColor)
                         .labelStyle(.iconOnly)
                 }
             } else if vm.isBusy {
