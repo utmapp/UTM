@@ -295,6 +295,10 @@ import Virtualization // for getting network interfaces
         system.architecture.hasUsbSupport && system.target.hasUsbSupport && input.usbBusSupport != .disabled
     }
     
+    private var isSecureBootUsed: Bool {
+        system.architecture.hasSecureBootSupport && system.target.hasSecureBootSupport && qemu.hasTPMDevice
+    }
+    
     @QEMUArgumentBuilder private var machineArguments: [QEMUArgument] {
         f("-machine")
         system.target
@@ -370,7 +374,9 @@ import Virtualization // for getting network interfaces
             f("ICH9-LPC.disable_s3=1") // applies for pc-q35-* types
         }
         if qemu.hasUefiBoot {
-            let bios = resourceURL.appendingPathComponent("edk2-\(system.architecture.rawValue)-code.fd")
+            let secure = isSecureBootUsed ? "-secure" : ""
+            let code = system.target.rawValue == "microvm" ? "microvm" : "code"
+            let bios = resourceURL.appendingPathComponent("edk2-\(system.architecture.rawValue)\(secure)-\(code).fd")
             let vars = qemu.efiVarsURL ?? URL(fileURLWithPath: "/\(QEMUPackageFileName.efiVariables.rawValue)")
             if !hasCustomBios && FileManager.default.fileExists(atPath: bios.path) {
                 f("-drive")
