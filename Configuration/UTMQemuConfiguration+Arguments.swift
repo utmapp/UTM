@@ -15,6 +15,9 @@
 //
 
 import Foundation
+#if os(macOS)
+import Virtualization // for getting network interfaces
+#endif
 
 /// Build QEMU arguments from config
 @MainActor extension UTMQemuConfiguration {
@@ -486,6 +489,16 @@ import Foundation
         }
     }
     
+    /// These machines are hard coded to have one IDE unit per bus in QEMU
+    private var isIdeInterfaceSingleUnit: Bool {
+        system.target.rawValue.contains("q35") ||
+        system.target.rawValue == "microvm" ||
+        system.target.rawValue == "cubieboard" ||
+        system.target.rawValue == "highbank" ||
+        system.target.rawValue == "midway" ||
+        system.target.rawValue == "xlnx_zcu102"
+    }
+    
     @QEMUArgumentBuilder private func driveArgument(for drive: UTMQemuConfigurationDrive, busInterfaceMap: inout [String: Int]) -> [QEMUArgument] {
         let isRemovable = drive.imageType == .cd || drive.isExternal
         let isCd = drive.imageType == .cd && drive.interface != .floppy
@@ -499,7 +512,12 @@ import Foundation
             } else {
                 "ide-hd"
             }
-            "bus=ide.\(busindex)"
+            if drive.interfaceVersion >= 1 && !isIdeInterfaceSingleUnit {
+                "bus=ide.\(busindex / 2)"
+                "unit=\(busindex % 2)"
+            } else {
+                "bus=ide.\(busindex)"
+            }
             busindex += 1
             "drive=drive\(drive.id)"
             "bootindex=\(bootindex)"
@@ -706,6 +724,12 @@ import Foundation
         return (network.vlanDhcpStartAddress ?? firstAddrStr, network.vlanDhcpEndAddress ?? lastAddrStr, netmaskStr)
     }
     
+    #if os(macOS)
+    private var defaultBridgedInterface: String {
+        VZBridgedNetworkInterface.networkInterfaces.first?.identifier ?? "en0"
+    }
+    #endif
+    
     @QEMUArgumentBuilder private var networkArguments: [QEMUArgument] {
         for i in networks.indices {
             if isSparc {
@@ -733,7 +757,7 @@ import Foundation
                 useVMnet = true
                 "vmnet-bridged"
                 "id=net\(i)"
-                "ifname=\(networks[i].bridgeInterface ?? "en0")"
+                "ifname=\(networks[i].bridgeInterface ?? defaultBridgedInterface)"
             } else if networks[i].mode == .host {
                 useVMnet = true
                 "vmnet-host"

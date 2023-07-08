@@ -15,6 +15,9 @@
 //
 
 import SwiftUI
+#if os(macOS)
+import Virtualization
+#endif
 
 struct VMConfigNetworkView: View {
     @Binding var config: UTMQemuConfigurationNetwork
@@ -28,8 +31,14 @@ struct VMConfigNetworkView: View {
                     #if os(macOS)
                     VMConfigConstantPicker("Network Mode", selection: $config.mode)
                     if config.mode == .bridged {
-                        DefaultTextField("Bridged Interface", text: $config.bridgeInterface.bound, prompt: "en0")
-                            .keyboardType(.asciiCapable)
+                        Picker("Bridged Interface", selection: $config.bridgeInterface) {
+                            Text("Automatic")
+                                .tag(nil as String?)
+                            ForEach(VZBridgedNetworkInterface.networkInterfaces, id: \.identifier) { interface in
+                                Text(interface.identifier)
+                                    .tag(interface.identifier as String?)
+                            }
+                        }
                     }
                     #endif
                     VMConfigConstantPicker("Emulated Network Card", selection: $config.hardware, type: system.architecture.networkDeviceType)

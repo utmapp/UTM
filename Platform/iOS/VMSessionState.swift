@@ -140,11 +140,11 @@ extension VMSessionState: UTMVirtualMachineDelegate {
         }
     }
     
-    func virtualMachine(_ vm: any UTMVirtualMachine, didCompleteInstallation success: Bool) {
+    nonisolated func virtualMachine(_ vm: any UTMVirtualMachine, didCompleteInstallation success: Bool) {
         
     }
     
-    func virtualMachine(_ vm: any UTMVirtualMachine, didUpdateInstallationProgress progress: Double) {
+    nonisolated func virtualMachine(_ vm: any UTMVirtualMachine, didUpdateInstallationProgress progress: Double) {
         
     }
 }

@@ -81,9 +81,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         }
         
         didSet {
-            Task { @MainActor in
-                delegate?.virtualMachine(self, didTransitionToState: state)
-            }
+            delegate?.virtualMachine(self, didTransitionToState: state)
         }
     }
     
@@ -431,9 +429,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
                     }
                     let installer = VZMacOSInstaller(virtualMachine: apple, restoringFromImageAt: ipswUrl)
                     self.progressObserver = installer.progress.observe(\.fractionCompleted, options: [.initial, .new]) { progress, change in
-                        Task { @MainActor in
-                            self.delegate?.virtualMachine(self, didUpdateInstallationProgress: progress.fractionCompleted)
-                        }
+                        self.delegate?.virtualMachine(self, didUpdateInstallationProgress: progress.fractionCompleted)
                     }
                     self.installProgress = installer.progress
                     installer.install { result in
@@ -444,16 +440,12 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             state = .started
             progressObserver = nil
             installProgress = nil
-            await MainActor.run {
-                delegate?.virtualMachine(self, didCompleteInstallation: true)
-            }
+            delegate?.virtualMachine(self, didCompleteInstallation: true)
             #else
             throw UTMAppleVirtualMachineError.operatingSystemInstallNotSupported
             #endif
         } catch {
-            await MainActor.run {
-                delegate?.virtualMachine(self, didCompleteInstallation: false)
-            }
+            delegate?.virtualMachine(self, didCompleteInstallation: false)
             state = .stopped
             throw error
         }
@@ -550,9 +542,7 @@ extension UTMAppleVirtualMachine: VZVirtualMachineDelegate {
     
     func virtualMachine(_ virtualMachine: VZVirtualMachine, didStopWithError error: Error) {
         guestDidStop(virtualMachine)
-        Task { @MainActor in
-            self.delegate?.virtualMachine(self, didErrorWithMessage: error.localizedDescription)
-        }
+        delegate?.virtualMachine(self, didErrorWithMessage: error.localizedDescription)
     }
     
     // fake methods to adhere to NSObjectProtocol
@@ -709,9 +699,7 @@ extension UTMAppleVirtualMachine {
             do {
                 try await installVM(with: url)
             } catch {
-                await MainActor.run {
-                    delegate?.virtualMachine(self, didErrorWithMessage: error.localizedDescription)
-                }
+                delegate?.virtualMachine(self, didErrorWithMessage: error.localizedDescription)
             }
         }
     }

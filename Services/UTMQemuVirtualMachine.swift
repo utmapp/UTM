@@ -83,9 +83,7 @@ final class UTMQemuVirtualMachine: UTMVirtualMachine {
         }
         
         didSet {
-            Task { @MainActor in
-                delegate?.virtualMachine(self, didTransitionToState: state)
-            }
+            delegate?.virtualMachine(self, didTransitionToState: state)
         }
     }
     
@@ -532,13 +530,13 @@ extension UTMQemuVirtualMachine: QEMUVirtualMachineDelegate {
     }
     
     func qemuVMDidStop(_ qemuVM: QEMUVirtualMachine) {
+        ioService = nil
+        ioServiceDelegate = nil
         state = .stopped
     }
     
     func qemuVM(_ qemuVM: QEMUVirtualMachine, didError error: Error) {
-        Task { @MainActor in
-            delegate?.virtualMachine(self, didErrorWithMessage: error.localizedDescription)
-        }
+        delegate?.virtualMachine(self, didErrorWithMessage: error.localizedDescription)
     }
     
     func qemuVM(_ qemuVM: QEMUVirtualMachine, didCreatePttyDevice path: String, label: String) {

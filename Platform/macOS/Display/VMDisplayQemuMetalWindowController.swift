@@ -15,6 +15,7 @@
 //
 
 import CocoaSpiceRenderer
+import Carbon.HIToolbox
 
 class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
     var metalView: VMMetalView!
@@ -510,6 +511,11 @@ extension VMDisplayQemuMetalWindowController: VMMetalViewInputDelegate {
             // for some reason, macOS doesn't like to send Cmd+KeyUp
             metalView.keyUp(with: event)
             return false
+        }
+        if event.type == .keyDown && (event.keyCode == kVK_JIS_Eisu || event.keyCode == kVK_JIS_Kana) {
+            // Eisu and Kana keydown events are swallowed and sent directly to IME
+            metalView.keyDown(with: event)
+            return true
         }
         return false
     }

@@ -198,17 +198,16 @@ import SwiftUI
         var s: [AnyCancellable] = []
         if let wrapped = wrapped {
             wrapped.onConfigurationChange = { [weak self] in
-                self?.subscribeToChildren()
                 self?.objectWillChange.send()
+                Task { @MainActor in
+                    self?.subscribeToChildren()
+                }
             }
             
             wrapped.onStateChange = { [weak self] in
-                guard let self = self else {
-                    return
-                }
                 Task { @MainActor in
-                    self.state = wrapped.state
-                    self.screenshot = wrapped.screenshot
+                    self?.state = wrapped.state
+                    self?.screenshot = wrapped.screenshot
                 }
             }
         }

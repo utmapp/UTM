@@ -433,9 +433,7 @@ extension UTMVirtualMachine {
             do {
                 try await start(options: options)
             } catch {
-                await MainActor.run {
-                    delegate?.virtualMachine(self, didErrorWithMessage: error.localizedDescription)
-                }
+                delegate?.virtualMachine(self, didErrorWithMessage: error.localizedDescription)
             }
         }
     }
@@ -445,9 +443,7 @@ extension UTMVirtualMachine {
             do {
                 try await stop(usingMethod: force ? .kill : .force)
             } catch {
-                await MainActor.run {
-                    delegate?.virtualMachine(self, didErrorWithMessage: error.localizedDescription)
-                }
+                delegate?.virtualMachine(self, didErrorWithMessage: error.localizedDescription)
             }
         }
     }
@@ -457,9 +453,7 @@ extension UTMVirtualMachine {
             do {
                 try await restart()
             } catch {
-                await MainActor.run {
-                    delegate?.virtualMachine(self, didErrorWithMessage: error.localizedDescription)
-                }
+                delegate?.virtualMachine(self, didErrorWithMessage: error.localizedDescription)
             }
         }
     }
@@ -472,9 +466,7 @@ extension UTMVirtualMachine {
                     try? await saveSnapshot(name: nil)
                 }
             } catch {
-                await MainActor.run {
-                    delegate?.virtualMachine(self, didErrorWithMessage: error.localizedDescription)
-                }
+                delegate?.virtualMachine(self, didErrorWithMessage: error.localizedDescription)
             }
         }
     }
@@ -484,9 +476,7 @@ extension UTMVirtualMachine {
             do {
                 try await saveSnapshot(name: nil)
             } catch {
-                await MainActor.run {
-                    delegate?.virtualMachine(self, didErrorWithMessage: error.localizedDescription)
-                }
+                delegate?.virtualMachine(self, didErrorWithMessage: error.localizedDescription)
             }
         }
     }
@@ -496,9 +486,7 @@ extension UTMVirtualMachine {
             do {
                 try await deleteSnapshot(name: nil)
             } catch {
-                await MainActor.run {
-                    delegate?.virtualMachine(self, didErrorWithMessage: error.localizedDescription)
-                }
+                delegate?.virtualMachine(self, didErrorWithMessage: error.localizedDescription)
             }
         }
     }
@@ -508,9 +496,7 @@ extension UTMVirtualMachine {
             do {
                 try await resume()
             } catch {
-                await MainActor.run {
-                    delegate?.virtualMachine(self, didErrorWithMessage: error.localizedDescription)
-                }
+                delegate?.virtualMachine(self, didErrorWithMessage: error.localizedDescription)
             }
         }
     }
@@ -520,9 +506,7 @@ extension UTMVirtualMachine {
             do {
                 try await stop(usingMethod: .request)
             } catch {
-                await MainActor.run {
-                    delegate?.virtualMachine(self, didErrorWithMessage: error.localizedDescription)
-                }
+                delegate?.virtualMachine(self, didErrorWithMessage: error.localizedDescription)
             }
         }
     }

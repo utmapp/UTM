@@ -21,7 +21,7 @@ SPICE_SERVER_SRC="https://www.spice-space.org/download/releases/spice-server/spi
 USB_SRC="https://github.com/libusb/libusb/releases/download/v1.0.25/libusb-1.0.25.tar.bz2"
 USBREDIR_SRC="https://www.spice-space.org/download/usbredir/usbredir-0.13.0.tar.xz"
 SLIRP_SRC="https://gitlab.freedesktop.org/slirp/libslirp/-/archive/v4.7.0/libslirp-v4.7.0.tar.gz"
-QEMU_SRC="https://github.com/utmapp/qemu/releases/download/v8.0.0-utm/qemu-8.0.0-utm.tar.bz2"
+QEMU_SRC="https://github.com/utmapp/qemu/releases/download/v8.0.2-utm/qemu-8.0.2-utm.tar.bz2"
 
 # Source files for spice-client
 JSON_GLIB_SRC="https://download.gnome.org/sources/json-glib/1.6/json-glib-1.6.6.tar.xz"
