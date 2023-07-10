@@ -78,6 +78,7 @@ struct UTMQemuConfigurationSerial: Codable, Identifiable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(mode, forKey: .mode)
         try container.encode(target, forKey: .target)
+        try container.encodeIfPresent(hardware?.asAnyQEMUConstant(), forKey: .hardware)
         // only save relevant settings
         switch mode {
         case .builtin:

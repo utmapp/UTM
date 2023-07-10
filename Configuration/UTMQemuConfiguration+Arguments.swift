@@ -185,7 +185,7 @@ import Virtualization // for getting network interfaces
                 f("chardev:term\(i)")
             case .manualDevice:
                 f("-device")
-                f("\(serials[i].hardware!.rawValue),chardev=term\(i)")
+                f("\(serials[i].hardware?.rawValue ?? "invalid"),chardev=term\(i)")
             case .monitor:
                 f("-mon")
                 f("chardev=term\(i),mode=readline")
