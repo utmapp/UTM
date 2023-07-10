@@ -350,6 +350,7 @@ extension UTMVirtualMachine {
         let existingPath = pathUrl
         let newPath = Self.virtualMachinePath(for: config.information.name, in: existingPath.deletingLastPathComponent())
         try await config.save(to: existingPath)
+        try await updateRegistryFromConfig()
         let hasRenamed: Bool
         if !isShortcut && existingPath.path != newPath.path {
             try await Task.detached {
@@ -359,10 +360,10 @@ extension UTMVirtualMachine {
         } else {
             hasRenamed = false
         }
-        try await updateRegistryFromConfig()
         // reload the config if we renamed in order to point all the URLs to the right path
         if hasRenamed {
             try reload(from: newPath)
+            try await updateRegistryBasics() // update bookmark
         }
     }
 }
