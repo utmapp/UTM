@@ -93,8 +93,6 @@ final class UTMQemuVirtualMachine: UTMVirtualMachine {
         }
     }
     
-    private var logging: QEMULogging
-    
     private var isScopedAccess: Bool = false
     
     private weak var screenshotTimer: Timer?
@@ -152,11 +150,6 @@ final class UTMQemuVirtualMachine: UTMVirtualMachine {
         } else {
             config = configuration!
         }
-        #if os(macOS)
-        self.logging = QEMULogging()
-        #else
-        self.logging = QEMULogging.sharedInstance()
-        #endif
         self.config = config
         self.pathUrl = packageUrl
         self.isShortcut = isShortcut
@@ -239,7 +232,9 @@ extension UTMQemuVirtualMachine {
         }
         // start logging
         if await config.qemu.hasDebugLog, let debugLogURL = await config.qemu.debugLogURL {
-            logging.log(toFile: debugLogURL)
+            await qemuVM.setRedirectLog(url: debugLogURL)
+        } else {
+            await qemuVM.setRedirectLog(url: nil)
         }
         let isRunningAsDisposible = options.contains(.bootDisposibleMode)
         await MainActor.run {
