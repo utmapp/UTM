@@ -327,6 +327,7 @@ extension UTMQemuVirtualMachine {
         } catch {
             // delete suspend state on error
             await registryEntry.setIsSuspended(false)
+            await qemuVM.kill()
             state = .stopped
             throw error
         }
@@ -353,9 +354,6 @@ extension UTMQemuVirtualMachine {
         }
         if !kill {
             state = .stopping
-        }
-        defer {
-            state = .stopped
         }
         if kill {
             await qemuVM.kill()
