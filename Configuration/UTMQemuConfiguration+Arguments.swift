@@ -936,11 +936,11 @@ import Virtualization // for getting network interfaces
         f()
         f("-device")
         if system.target.rawValue.hasPrefix("virt") {
-            "tpm-tis-device"
+            "tpm-crb-device"
         } else if system.architecture == .ppc64 {
             "tpm-spapr"
         } else {
-            "tpm-tis"
+            "tpm-crb"
         }
         "tpmdev=tpm0"
         f()
