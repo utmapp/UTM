@@ -182,9 +182,12 @@ extension UTMQemuConfigurationQEMU {
             efiVarsURL = varsURL
             existing.append(varsURL)
         }
+        let possibleTpmDataURL = dataURL.appendingPathComponent(QEMUPackageFileName.tpmData.rawValue)
         if hasTPMDevice {
-            tpmDataURL = dataURL.appendingPathComponent(QEMUPackageFileName.tpmData.rawValue)
+            tpmDataURL = possibleTpmDataURL
             existing.append(tpmDataURL!)
+        } else if FileManager.default.fileExists(atPath: possibleTpmDataURL.path) {
+            existing.append(possibleTpmDataURL) // do not delete any existing TPM data
         }
         if hasDebugLog {
             let debugLogURL = dataURL.appendingPathComponent(QEMUPackageFileName.debugLog.rawValue)
