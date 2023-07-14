@@ -32,8 +32,10 @@ struct VMWizardOSWindowsView: View {
                     .onChange(of: wizardState.isWindows10OrHigher) { newValue in
                         if newValue {
                             wizardState.systemBootUefi = true
+                            wizardState.systemBootTpm = true
                             wizardState.isGuestToolsInstallRequested = true
                         } else {
+                            wizardState.systemBootTpm = false
                             wizardState.isGuestToolsInstallRequested = false
                         }
                     }
@@ -79,6 +81,13 @@ struct VMWizardOSWindowsView: View {
             if !wizardState.isWindows10OrHigher {
                 DetailedSection("", description: "Some older systems do not support UEFI boot, such as Windows 7 and below.") {
                     Toggle("UEFI Boot", isOn: $wizardState.systemBootUefi)
+                        .onChange(of: wizardState.systemBootUefi) { newValue in
+                            if !newValue {
+                                wizardState.systemBootTpm = false
+                            }
+                        }
+                    Toggle("Secure Boot with TPM 2.0", isOn: $wizardState.systemBootTpm)
+                        .disabled(!wizardState.systemBootUefi)
                 }
             }
             
