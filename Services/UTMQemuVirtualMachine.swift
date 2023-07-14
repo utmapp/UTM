@@ -221,10 +221,17 @@ extension UTMQemuVirtualMachine {
         guard let efiVarsURL = config.qemu.efiVarsURL else {
             return
         }
-        guard config.isLegacy else {
-            return
+        var doesVarsExist = FileManager.default.fileExists(atPath: efiVarsURL.path)
+        if config.qemu.isUefiVariableResetRequested {
+            if doesVarsExist {
+                try FileManager.default.removeItem(at: efiVarsURL)
+                doesVarsExist = false
+            }
+            config.qemu.isUefiVariableResetRequested = false
         }
-        _ = try await config.qemu.saveData(to: efiVarsURL.deletingLastPathComponent(), for: config.system)
+        if !doesVarsExist {
+            _ = try await config.qemu.saveData(to: efiVarsURL.deletingLastPathComponent(), for: config.system)
+        }
     }
     
     private func _start(options: UTMVirtualMachineStartOptions) async throws {
@@ -285,8 +292,7 @@ extension UTMQemuVirtualMachine {
         try ioService.start()
         try Task.checkCancellation()
         
-        // create EFI variables for legacy config
-        // this is ugly code and should be removed when legacy config support is removed
+        // create EFI variables for legacy config as well as handle UEFI resets
         try await qemuEnsureEfiVarsAvailable()
         try Task.checkCancellation()
         

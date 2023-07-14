@@ -94,6 +94,11 @@ struct VMConfigQEMUView: View {
                         .disabled(!supportsPs2)
                         .help("Instantiate PS/2 controller even when USB input is supported. Required for older Windows.")
                 }
+                DetailedSection("Maintenance", description: "Options here only apply on next boot and are not saved.") {
+                    Toggle("Reset UEFI Variables", isOn: $config.isUefiVariableResetRequested)
+                        .help("You can use this if your boot options are corrupted or if you wish to re-enroll in the default keys for secure boot.")
+                        .disabled(!config.hasUefiBoot)
+                }
                 DetailedSection("QEMU Machine Properties", description: "This is appended to the -machine argument.") {
                     DefaultTextField("", text: $config.machinePropertyOverride.bound, prompt: "Default")
                 }
