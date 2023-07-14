@@ -27,6 +27,7 @@ typedef int (*UTMProcessThreadEntry)(UTMProcess *self, int argc, const char * _N
 @property (nonatomic, readonly) BOOL hasRemoteProcess;
 @property (nonatomic, readonly) NSURL *libraryURL;
 @property (nonatomic) NSArray<NSString *> *argv;
+@property (nonatomic, readonly) NSString *arguments;
 @property (nonatomic, nullable) NSDictionary<NSString *, NSString *> *environment;
 @property (nonatomic) NSInteger status;
 @property (nonatomic) NSInteger fatal;

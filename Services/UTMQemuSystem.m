@@ -70,6 +70,11 @@ static int startQemu(UTMProcess *process, int argc, const char *argv[], const ch
     [self doesNotRecognizeSelector:_cmd];
 }
 
+- (void)setLogging:(QEMULogging *)logging {
+    _logging = logging;
+    [logging writeLine:[NSString stringWithFormat:@"Launching: qemu-system-%@%@\n", self.architecture, self.arguments]];
+}
+
 - (instancetype)initWithArguments:(NSArray<NSString *> *)arguments architecture:(nonnull NSString *)architecture {
     self = [super initWithArguments:arguments];
     if (self) {

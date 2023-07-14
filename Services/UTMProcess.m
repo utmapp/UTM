@@ -95,6 +95,18 @@ static int defaultEntry(UTMProcess *self, int argc, const char *argv[], const ch
     return _connection != nil;
 }
 
+- (NSString *)arguments {
+    NSString *args = @"";
+    for (NSString *arg in _argv) {
+        if ([arg containsString:@" "]) {
+            args = [args stringByAppendingFormat:@" \"%@\"", arg];
+        } else {
+            args = [args stringByAppendingFormat:@" %@", arg];
+        }
+    }
+    return args;
+}
+
 #pragma mark - Construction
 
 - (instancetype)init {
@@ -149,15 +161,7 @@ static int defaultEntry(UTMProcess *self, int argc, const char *argv[], const ch
 }
 
 - (void)printArgv {
-    NSString *args = @"";
-    for (NSString *arg in _argv) {
-        if ([arg containsString:@" "]) {
-            args = [args stringByAppendingFormat:@" \"%@\"", arg];
-        } else {
-            args = [args stringByAppendingFormat:@" %@", arg];
-        }
-    }
-    UTMLog(@"Running: %@", args);
+    UTMLog(@"Running: %@", self.arguments);
 }
 
 - (BOOL)didLoadDylib:(void *)handle {
