@@ -183,6 +183,10 @@ extension UTMQemuConfigurationQEMU {
             tpmDataURL = dataURL.appendingPathComponent(QEMUPackageFileName.tpmData.rawValue)
             existing.append(tpmDataURL!)
         }
+        if hasDebugLog {
+            let debugLogURL = dataURL.appendingPathComponent(QEMUPackageFileName.debugLog.rawValue)
+            existing.append(debugLogURL)
+        }
         return existing
     }
 }
