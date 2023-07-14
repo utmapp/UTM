@@ -66,7 +66,8 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
 
 - (void)initializeSpiceIfNeeded {
     if (!self.spiceConnection) {
-        self.spiceConnection = [[CSConnection alloc] initWithUnixSocketFile:self.socketUrl];
+        NSURL *relativeSocketFile = [NSURL fileURLWithPath:self.socketUrl.lastPathComponent];
+        self.spiceConnection = [[CSConnection alloc] initWithUnixSocketFile:relativeSocketFile];
         self.spiceConnection.delegate = self;
         self.spiceConnection.audioEnabled = (self.options & UTMSpiceIOOptionsHasAudio) == UTMSpiceIOOptionsHasAudio;
         self.spiceConnection.session.shareClipboard = (self.options & UTMSpiceIOOptionsHasClipboardSharing) == UTMSpiceIOOptionsHasClipboardSharing;
@@ -85,6 +86,14 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
 #endif
     // do not need to encode/decode audio locally
     g_setenv("SPICE_DISABLE_OPUS", "1", TRUE);
+    // need to chdir to workaround AF_UNIX sun_len limitations
+    NSString *curdir = self.socketUrl.URLByDeletingLastPathComponent.path;
+    if (!curdir || ![NSFileManager.defaultManager changeCurrentDirectoryPath:curdir]) {
+        if (error) {
+            *error = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Failed to change current directory.", "UTMSpiceIO")}];
+        }
+        return NO;
+    }
     if (![self.spice spiceStart]) {
         if (error) {
             *error = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Failed to start SPICE client.", "UTMSpiceIO")}];

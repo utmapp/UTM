@@ -15,35 +15,38 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "QEMUHelperProtocol.h"
-@import QEMUKitInternal;
 
-typedef void * _Nullable (* _Nonnull UTMQemuThreadEntry)(void * _Nullable args);
+@class UTMProcess;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMQemu : NSObject
+typedef int (*UTMProcessThreadEntry)(UTMProcess *self, int argc, const char * _Nonnull argv[_Nonnull], const char * _Nonnull envp[_Nonnull]);
+
+@interface UTMProcess : NSObject
 
 @property (nonatomic, readonly) BOOL hasRemoteProcess;
 @property (nonatomic, readonly) NSURL *libraryURL;
 @property (nonatomic) NSArray<NSString *> *argv;
+@property (nonatomic, readonly) NSString *arguments;
 @property (nonatomic, nullable) NSDictionary<NSString *, NSString *> *environment;
-@property (nonatomic) dispatch_semaphore_t done;
 @property (nonatomic) NSInteger status;
 @property (nonatomic) NSInteger fatal;
-@property (nonatomic) UTMQemuThreadEntry entry;
-@property (nonatomic, nullable) QEMULogging *logging;
+@property (nonatomic) UTMProcessThreadEntry entry;
+@property (nonatomic, nullable) NSPipe *standardOutput;
+@property (nonatomic, nullable) NSPipe *standardError;
+@property (nonatomic, nullable) NSURL *currentDirectoryUrl;
 
 - (instancetype)init;
 - (instancetype)initWithArguments:(NSArray<NSString *> *)arguments NS_DESIGNATED_INITIALIZER;
 - (void)pushArgv:(nullable NSString *)arg;
 - (void)clearArgv;
-- (void)startQemu:(nonnull NSString *)name completion:(nonnull void (^)(NSError * _Nullable))completion;
-- (void)stopQemu;
+- (void)startProcess:(nonnull NSString *)name completion:(nonnull void (^)(NSError * _Nullable))completion;
+- (void)stopProcess;
 - (void)accessDataWithBookmark:(NSData *)bookmark;
 - (void)accessDataWithBookmark:(NSData *)bookmark securityScoped:(BOOL)securityScoped completion:(void(^)(BOOL, NSData * _Nullable, NSString * _Nullable))completion;
 - (void)stopAccessingPath:(nullable NSString *)path;
-- (void)qemuHasExited:(NSInteger)exitCode message:(nullable NSString *)message;
+- (void)processHasExited:(NSInteger)exitCode message:(nullable NSString *)message;
+- (BOOL)didLoadDylib:(void *)handle;
 
 @end
 

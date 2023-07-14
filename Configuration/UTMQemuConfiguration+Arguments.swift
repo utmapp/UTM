@@ -28,10 +28,10 @@ import Virtualization // for getting network interfaces
         QEMUArgumentFragment(final: string)
     }
     
-    /// Return the socket file for communicating with SPICE
-    var spiceSocketURL: URL {
+    /// Shared between helper and main process to store Unix sockets
+    var socketURL: URL {
         #if os(iOS)
-        let parentURL = FileManager.default.temporaryDirectory
+        return FileManager.default.temporaryDirectory
         #else
         let appGroup = Bundle.main.infoDictionary?["AppGroupIdentifier"] as? String
         let helper = Bundle.main.infoDictionary?["HelperIdentifier"] as? String
@@ -44,11 +44,21 @@ import Virtualization // for getting network interfaces
         parentURL.appendPathComponent("tmp")
         if let appGroup = appGroup, !appGroup.hasPrefix("invalid.") {
             if let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup) {
-                parentURL = containerURL
+                return containerURL
             }
         }
+        return parentURL
         #endif
-        return parentURL.appendingPathComponent("\(information.uuid.uuidString).spice")
+    }
+    
+    /// Return the socket file for communicating with SPICE
+    var spiceSocketURL: URL {
+        socketURL.appendingPathComponent(information.uuid.uuidString).appendingPathExtension("spice")
+    }
+    
+    /// Return the socket file for communicating with SWTPM
+    var swtpmSocketURL: URL {
+        socketURL.appendingPathComponent(information.uuid.uuidString).appendingPathExtension("swtpm")
     }
     
     /// Combined generated and user specified arguments.
@@ -100,8 +110,7 @@ import Virtualization // for getting network interfaces
     @QEMUArgumentBuilder private var spiceArguments: [QEMUArgument] {
         f("-spice")
         "unix=on"
-        "addr="
-        spiceSocketURL
+        "addr=\(spiceSocketURL.lastPathComponent)"
         "disable-ticketing=on"
         "image-compression=off"
         "playback-compression=off"
@@ -286,6 +295,10 @@ import Virtualization // for getting network interfaces
         system.architecture.hasUsbSupport && system.target.hasUsbSupport && input.usbBusSupport != .disabled
     }
     
+    private var isSecureBootUsed: Bool {
+        system.architecture.hasSecureBootSupport && system.target.hasSecureBootSupport && qemu.hasTPMDevice
+    }
+    
     @QEMUArgumentBuilder private var machineArguments: [QEMUArgument] {
         f("-machine")
         system.target
@@ -361,7 +374,9 @@ import Virtualization // for getting network interfaces
             f("ICH9-LPC.disable_s3=1") // applies for pc-q35-* types
         }
         if qemu.hasUefiBoot {
-            let bios = resourceURL.appendingPathComponent("edk2-\(system.architecture.rawValue)-code.fd")
+            let secure = isSecureBootUsed ? "-secure" : ""
+            let code = system.target.rawValue == "microvm" ? "microvm" : "code"
+            let bios = resourceURL.appendingPathComponent("edk2-\(system.architecture.rawValue)\(secure)-\(code).fd")
             let vars = qemu.efiVarsURL ?? URL(fileURLWithPath: "/\(QEMUPackageFileName.efiVariables.rawValue)")
             if !hasCustomBios && FileManager.default.fileExists(atPath: bios.path) {
                 f("-drive")
@@ -903,6 +918,32 @@ import Virtualization // for getting network interfaces
             f("-device")
             f("virtio-balloon-pci")
         }
+        if qemu.hasTPMDevice {
+            tpmArguments
+        }
+    }
+    
+    @QEMUArgumentBuilder private var tpmArguments: [QEMUArgument] {
+        f("-chardev")
+        "socket"
+        "id=chrtpm0"
+        "path=\(swtpmSocketURL.lastPathComponent)"
+        f()
+        f("-tpmdev")
+        "emulator"
+        "id=tpm0"
+        "chardev=chrtpm0"
+        f()
+        f("-device")
+        if system.target.rawValue.hasPrefix("virt") {
+            "tpm-crb-device"
+        } else if system.architecture == .ppc64 {
+            "tpm-spapr"
+        } else {
+            "tpm-crb"
+        }
+        "tpmdev=tpm0"
+        f()
     }
 }
 

@@ -25,7 +25,7 @@
 #include "UTMLegacyQemuConfiguration+Sharing.h"
 #include "UTMLegacyQemuConfiguration+System.h"
 #include "UTMLegacyQemuConfigurationPortForward.h"
-#include "UTMQemu.h"
+#include "UTMProcess.h"
 #include "UTMQemuSystem.h"
 #include "UTMJailbreak.h"
 #include "UTMLogging.h"

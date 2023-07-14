@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol QEMUHelperProtocol
 
 @property (nonatomic, nullable) NSDictionary<NSString *, NSString *> *environment;
+@property (nonatomic, nullable) NSString *currentDirectoryPath;
 
 - (void)accessDataWithBookmark:(NSData *)bookmark securityScoped:(BOOL)securityScoped completion:(void(^)(BOOL, NSData * _Nullable, NSString * _Nullable))completion;
 - (void)stopAccessingPath:(nullable NSString *)path;

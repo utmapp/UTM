@@ -24,6 +24,9 @@ struct UTMQemuConfigurationQEMU: Codable {
     /// EFI variables if EFI boot is enabled. This property is not saved to file.
     var efiVarsURL: URL?
     
+    /// TPM data file if TPM is enabled. This property is not saved to file.
+    var tpmDataURL: URL?
+    
     /// If true, write standard output to debug.log in the VM bundle.
     var hasDebugLog: Bool = false
     
@@ -63,6 +66,9 @@ struct UTMQemuConfigurationQEMU: Codable {
     /// Set to true to request guest tools install. Not saved.
     var isGuestToolsInstallRequested: Bool = false
     
+    /// Set to true to request UEFI variable reset. Not saved.
+    var isUefiVariableResetRequested: Bool = false
+    
     enum CodingKeys: String, CodingKey {
         case hasDebugLog = "DebugLog"
         case hasUefiBoot = "UEFIBoot"
@@ -94,6 +100,7 @@ struct UTMQemuConfigurationQEMU: Codable {
         if let dataURL = decoder.userInfo[.dataURL] as? URL {
             debugLogURL = dataURL.appendingPathComponent(QEMUPackageFileName.debugLog.rawValue)
             efiVarsURL = dataURL.appendingPathComponent(QEMUPackageFileName.efiVariables.rawValue)
+            tpmDataURL = dataURL.appendingPathComponent(QEMUPackageFileName.tpmData.rawValue)
         }
     }
     
@@ -153,27 +160,36 @@ extension UTMQemuConfigurationQEMU {
 
 extension UTMQemuConfigurationQEMU {
     @MainActor mutating func saveData(to dataURL: URL, for system: UTMQemuConfigurationSystem) async throws -> [URL] {
-        guard hasUefiBoot else {
-            return []
+        var existing: [URL] = []
+        if hasUefiBoot {
+            let fileManager = FileManager.default
+            // save EFI variables
+            let resourceURL = Bundle.main.url(forResource: "qemu", withExtension: nil)!
+            let templateVarsURL: URL
+            if system.architecture == .arm || system.architecture == .aarch64 {
+                templateVarsURL = resourceURL.appendingPathComponent("edk2-arm-vars.fd")
+            } else if system.architecture == .i386 || system.architecture == .x86_64 {
+                templateVarsURL = resourceURL.appendingPathComponent("edk2-i386-vars.fd")
+            } else {
+                throw UTMQemuConfigurationError.uefiNotSupported
+            }
+            let varsURL = dataURL.appendingPathComponent(QEMUPackageFileName.efiVariables.rawValue)
+            if !fileManager.fileExists(atPath: varsURL.path) {
+                try await Task.detached {
+                    try fileManager.copyItem(at: templateVarsURL, to: varsURL)
+                }.value
+            }
+            efiVarsURL = varsURL
+            existing.append(varsURL)
         }
-        let fileManager = FileManager.default
-        // save EFI variables
-        let resourceURL = Bundle.main.url(forResource: "qemu", withExtension: nil)!
-        let templateVarsURL: URL
-        if system.architecture == .arm || system.architecture == .aarch64 {
-            templateVarsURL = resourceURL.appendingPathComponent("edk2-arm-vars.fd")
-        } else if system.architecture == .i386 || system.architecture == .x86_64 {
-            templateVarsURL = resourceURL.appendingPathComponent("edk2-i386-vars.fd")
-        } else {
-            throw UTMQemuConfigurationError.uefiNotSupported
+        if hasTPMDevice {
+            tpmDataURL = dataURL.appendingPathComponent(QEMUPackageFileName.tpmData.rawValue)
+            existing.append(tpmDataURL!)
         }
-        let varsURL = dataURL.appendingPathComponent(QEMUPackageFileName.efiVariables.rawValue)
-        if !fileManager.fileExists(atPath: varsURL.path) {
-            try await Task.detached {
-                try fileManager.copyItem(at: templateVarsURL, to: varsURL)
-            }.value
+        if hasDebugLog {
+            let debugLogURL = dataURL.appendingPathComponent(QEMUPackageFileName.debugLog.rawValue)
+            existing.append(debugLogURL)
         }
-        efiVarsURL = varsURL
-        return [varsURL]
+        return existing
     }
 }

@@ -389,6 +389,7 @@ enum QEMUPackageFileName: String {
     case images = "Images"
     case debugLog = "debug.log"
     case efiVariables = "efi_vars.fd"
+    case tpmData = "tpmdata"
 }
 
 // MARK: Supported features
@@ -444,6 +445,14 @@ extension QEMUArchitecture {
         return false
         #endif
     }
+    
+    var hasSecureBootSupport: Bool {
+        switch self {
+        case .x86_64, .i386: return true
+        case .aarch64: return true
+        default: return false
+        }
+    }
 }
 
 extension QEMUTarget {
@@ -457,6 +466,13 @@ extension QEMUTarget {
     var hasAgentSupport: Bool {
         switch self.rawValue {
         case "isapc": return false
+        default: return true
+        }
+    }
+    
+    var hasSecureBootSupport: Bool {
+        switch self.rawValue {
+        case "microvm": return false
         default: return true
         }
     }
