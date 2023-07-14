@@ -140,6 +140,8 @@ final class UTMQemuVirtualMachine: UTMVirtualMachine {
     
     private var swtpm: UTMSWTPM?
     
+    private var changeCursorRequestInProgress: Bool = false
+    
     @MainActor required init(packageUrl: URL, configuration: UTMQemuConfiguration? = nil, isShortcut: Bool = false) throws {
         self.isScopedAccess = packageUrl.startAccessingSecurityScopedResource()
         // load configuration
@@ -578,7 +580,28 @@ extension UTMQemuVirtualMachine: QEMUVirtualMachineDelegate {
 // MARK: - Input device switching
 extension UTMQemuVirtualMachine {
     func requestInputTablet(_ tablet: Bool) {
-        
+        guard !changeCursorRequestInProgress else {
+            return
+        }
+        guard let spiceIO = ioService else {
+            return
+        }
+        changeCursorRequestInProgress = true
+        Task {
+            defer {
+                changeCursorRequestInProgress = false
+            }
+            guard let monitor = await monitor else {
+                return
+            }
+            do {
+                let index = try await monitor.mouseIndex(forAbsolute: tablet)
+                try await monitor.mouseSelect(index)
+                spiceIO.primaryInput?.requestMouseMode(!tablet)
+            } catch {
+                logger.error("Error changing mouse mode: \(error)")
+            }
+        }
     }
 }
 
