@@ -590,7 +590,7 @@
 "Force PS/2 controller" = "PS/2コントローラを強制";
 "Instantiate PS/2 controller even when USB input is supported. Required for older Windows." = "USB入力に対応している場合でも、PS/2コントローラをインスタンス化します。古いWindowsで必要です。";
 "Maintenance" = "修復";
-"Options here only apply on next boot and are not saved." = "ここのオプションは次回起動時にのみ適用され、保存されません。";
+"Options here only apply on next boot and are not saved." = "これらのオプションは次回起動時にのみ適用され、保存されません。";
 "Reset UEFI Variables" = "UEFI変数をリセット";
 "You can use this if your boot options are corrupted or if you wish to re-enroll in the default keys for secure boot." = "起動オプションが破損している場合や、セキュアブートのデフォルトキーに再登録したい場合に使用できます。";
 "QEMU Machine Properties" = "QEMUマシンプロパティ";
