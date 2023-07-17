@@ -208,37 +208,38 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         }
     }
     
-    private func _stop(usingMethod method: UTMVirtualMachineStopMethod) async throws {
-        if method != .request, #available(macOS 12, *) {
-            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-                vmQueue.async {
-                    guard let apple = self.apple else {
-                        continuation.resume() // already stopped
-                        return
-                    }
-                    apple.stop { error in
-                        if let error = error {
-                            continuation.resume(throwing: error)
-                        } else {
-                            self.guestDidStop(apple)
-                            continuation.resume()
-                        }
+    @available(macOS 12, *)
+    private func _forceStop() async throws {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            vmQueue.async {
+                guard let apple = self.apple else {
+                    continuation.resume() // already stopped
+                    return
+                }
+                apple.stop { error in
+                    if let error = error {
+                        continuation.resume(throwing: error)
+                    } else {
+                        self.guestDidStop(apple)
+                        continuation.resume()
                     }
                 }
             }
-        } else {
-            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-                vmQueue.async {
-                    do {
-                        guard let apple = self.apple else {
-                            continuation.resume() // already stopped
-                            return
-                        }
-                        try apple.requestStop()
-                        continuation.resume()
-                    } catch {
-                        continuation.resume(throwing: error)
-                    }
+        }
+    }
+    
+    private func _requestStop() async throws {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            vmQueue.async {
+                guard let apple = self.apple else {
+                    continuation.resume() // already stopped
+                    return
+                }
+                do {
+                    try apple.requestStop()
+                    continuation.resume()
+                } catch {
+                    continuation.resume(throwing: error)
                 }
             }
         }
@@ -252,9 +253,15 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         guard state == .started || state == .paused else {
             return
         }
+        guard method != .request else {
+            return try await _requestStop()
+        }
+        guard #available(macOS 12, *) else {
+            throw UTMAppleVirtualMachineError.operationNotAvailable
+        }
         state = .stopping
         do {
-            try await _stop(usingMethod: method)
+            try await _forceStop()
             state = .stopped
         } catch {
             state = .stopped
