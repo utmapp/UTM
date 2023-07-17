@@ -44,13 +44,13 @@ struct VMContextMenuModifier: ViewModifier {
                 Button {
                     confirmAction = .confirmStopVM
                 } label: {
-                    Label("Stop", systemImage: "stop.fill")
+                    Label("Stop", systemImage: "stop")
                 }.help("Stop the running VM.")
             } else if !vm.isModifyAllowed { // paused
                 Button {
                     data.run(vm: vm)
                 } label: {
-                    Label("Resume", systemImage: "playpause.fill")
+                    Label("Resume", systemImage: "playpause")
                 }.help("Resume running VM.")
             } else {
                 Divider()
@@ -58,7 +58,7 @@ struct VMContextMenuModifier: ViewModifier {
                 Button {
                     data.run(vm: vm)
                 } label: {
-                    Label("Run", systemImage: "play.fill")
+                    Label("Run", systemImage: "play")
                 }.help("Run the VM in the foreground.")
                 
                 #if os(macOS) && arch(arm64)
@@ -75,7 +75,7 @@ struct VMContextMenuModifier: ViewModifier {
                     Button {
                         data.run(vm: vm, options: .bootDisposibleMode)
                     } label: {
-                        Label("Run without saving changes", systemImage: "play")
+                        Label("Run without saving changes", systemImage: "memories")
                     }.help("Run the VM in the foreground, without saving data changes to disk.")
                 }
                 
