@@ -137,6 +137,8 @@ download_all () {
     download $GCRYPT_SRC
     download $PIXMAN_SRC
     download $OPENSSL_SRC
+    download $TPMS_SRC
+    download $SWTPM_SRC
     download $OPUS_SRC
     download $SPICE_PROTOCOL_SRC
     download $SPICE_SERVER_SRC
@@ -484,6 +486,8 @@ build_qemu_dependencies () {
     build $GCRYPT_SRC
     build $PIXMAN_SRC
     build_openssl $OPENSSL_SRC
+    build $TPMS_SRC --disable-shared
+    build $SWTPM_SRC --enable-shared-lib
     build $OPUS_SRC
     ZSTD_BASENAME="$(basename $ZSTD_SRC)"
     meson_build "$BUILD_DIR/${ZSTD_BASENAME%.tar.*}/build/meson"

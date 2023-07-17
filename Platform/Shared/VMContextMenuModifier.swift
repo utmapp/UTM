@@ -66,7 +66,7 @@ struct VMContextMenuModifier: ViewModifier {
                     Button {
                         data.run(vm: vm, options: .bootRecovery)
                     } label: {
-                        Label("Run Recovery", systemImage: "play")
+                        Label("Run Recovery", systemImage: "lifepreserver.fill")
                     }.help("Boot into recovery mode.")
                 }
                 #endif

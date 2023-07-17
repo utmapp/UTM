@@ -76,10 +76,8 @@ struct VMConfigQEMUView: View {
                         .help("Should be on always unless the guest cannot boot because of this.")
                     Toggle("Balloon Device", isOn: $config.hasBalloonDevice)
                         .help("Should be on always unless the guest cannot boot because of this.")
-                    #if false
-                    Toggle("TPM Device", isOn: $config.hasTPMDevice)
-                        .help("This is required to boot Windows 11.")
-                    #endif
+                    Toggle("TPM 2.0 Device", isOn: $config.hasTPMDevice)
+                        .help("TPM can be used to protect secrets in the guest operating system. Note that the host will always be able to read these secrets and therefore no expectation of physical security is provided.")
                     Toggle("Use Hypervisor", isOn: $config.hasHypervisor)
                         .help("Only available if host architecture matches the target. Otherwise, TCG emulation is used.")
                         .disabled(!system.architecture.hasHypervisorSupport)
@@ -95,6 +93,11 @@ struct VMConfigQEMUView: View {
                     Toggle("Force PS/2 controller", isOn: $config.hasPS2Controller)
                         .disabled(!supportsPs2)
                         .help("Instantiate PS/2 controller even when USB input is supported. Required for older Windows.")
+                }
+                DetailedSection("Maintenance", description: "Options here only apply on next boot and are not saved.") {
+                    Toggle("Reset UEFI Variables", isOn: $config.isUefiVariableResetRequested)
+                        .help("You can use this if your boot options are corrupted or if you wish to re-enroll in the default keys for secure boot.")
+                        .disabled(!config.hasUefiBoot)
                 }
                 DetailedSection("QEMU Machine Properties", description: "This is appended to the -machine argument.") {
                     DefaultTextField("", text: $config.machinePropertyOverride.bound, prompt: "Default")

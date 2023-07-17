@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol QEMUHelperDelegate <NSObject>
 
-- (void)qemuHasExited:(NSInteger)exitCode message:(nullable NSString *)message;
+- (void)processHasExited:(NSInteger)exitCode message:(nullable NSString *)message;
 
 @end
 

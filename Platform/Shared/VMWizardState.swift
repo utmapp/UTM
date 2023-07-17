@@ -59,6 +59,7 @@ enum VMWizardOS: String, Identifiable {
     @Published var alertMessage: AlertMessage?
     @Published var isBusy: Bool = false
     @Published var systemBootUefi: Bool = true
+    @Published var systemBootTpm: Bool = true
     @Published var isGuestToolsInstallRequested: Bool = true
     @Published var useVirtualization: Bool = false {
         didSet {
@@ -369,6 +370,7 @@ enum VMWizardOS: String, Identifiable {
         if operatingSystem == .Windows {
             // only change UEFI settings for Windows
             config.qemu.hasUefiBoot = systemBootUefi
+            config.qemu.hasTPMDevice = systemBootTpm
         }
         if operatingSystem == .Linux && config.displays.first != nil {
             // change default display to virtio-gpu if supported

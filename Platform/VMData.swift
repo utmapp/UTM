@@ -161,11 +161,11 @@ import SwiftUI
         var loaded: (any UTMVirtualMachine)?
         let config = try UTMQemuConfiguration.load(from: url)
         if let qemuConfig = config as? UTMQemuConfiguration {
-            loaded = try UTMQemuVirtualMachine(packageUrl: url, configuration: qemuConfig, isShortcut: isShortcut)
+            loaded = try UTMQemuVirtualMachine(packageUrl: url, configuration: qemuConfig, isShortcut: isShortcut(url))
         }
         #if os(macOS)
         if let appleConfig = config as? UTMAppleConfiguration {
-            loaded = try UTMAppleVirtualMachine(packageUrl: url, configuration: appleConfig, isShortcut: isShortcut)
+            loaded = try UTMAppleVirtualMachine(packageUrl: url, configuration: appleConfig, isShortcut: isShortcut(url))
         }
         #endif
         guard let vm = loaded else {
@@ -279,8 +279,12 @@ extension VMData: Hashable {
 extension VMData {
     /// True if the .utm is loaded outside of the default storage
     var isShortcut: Bool {
+        isShortcut(pathUrl)
+    }
+    
+    func isShortcut(_ url: URL) -> Bool {
         let defaultStorageUrl = UTMData.defaultStorageUrl.standardizedFileURL
-        let parentUrl = pathUrl.deletingLastPathComponent().standardizedFileURL
+        let parentUrl = url.deletingLastPathComponent().standardizedFileURL
         return parentUrl != defaultStorageUrl
     }
     

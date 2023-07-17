@@ -69,4 +69,14 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
     override func captureMouseButtonPressed(_ sender: Any) {
         appleView!.capturesSystemKeys = captureMouseToolbarButton.state == .on
     }
+    
+    func windowDidEnterFullScreen(_ notification: Notification) {
+        captureMouseToolbarButton.state = .on
+        captureMouseButtonPressed(self)
+    }
+    
+    func windowDidExitFullScreen(_ notification: Notification) {
+        captureMouseToolbarButton.state = .off
+        captureMouseButtonPressed(self)
+    }
 }

@@ -17,7 +17,7 @@
 import Foundation
 import QEMUKitInternal
 
-@objc class UTMQemuImage: UTMQemu {
+@objc class UTMQemuImage: UTMProcess {
     private var logOutput: String = ""
     private var processExitContinuation: CheckedContinuation<Void, any Error>?
     
@@ -25,7 +25,7 @@ import QEMUKitInternal
         super.init(arguments: [])
     }
     
-    override func qemuHasExited(_ exitCode: Int, message: String?) {
+    override func processHasExited(_ exitCode: Int, message: String?) {
         if let processExitContinuation = processExitContinuation {
             self.processExitContinuation = nil
             if exitCode != 0 {
@@ -69,7 +69,8 @@ import QEMUKitInternal
         qemuImg.accessData(withBookmark: dstBookmark)
         qemuImg.pushArgv(dest.path)
         let logging = QEMULogging()
-        qemuImg.logging = logging
+        qemuImg.standardOutput = logging.standardOutput
+        qemuImg.standardError = logging.standardError
         try await qemuImg.start()
     }
     
@@ -125,7 +126,8 @@ import QEMUKitInternal
         qemuImg.pushArgv(url.path)
         let logging = QEMULogging()
         logging.delegate = qemuImg
-        qemuImg.logging = logging
+        qemuImg.standardOutput = logging.standardOutput
+        qemuImg.standardError = logging.standardError
         try await qemuImg.start()
 
         let decoder = JSONDecoder()
@@ -148,7 +150,8 @@ import QEMUKitInternal
         qemuImg.pushArgv(String(size))
         let logging = QEMULogging()
         logging.delegate = qemuImg
-        qemuImg.logging = logging
+        qemuImg.standardOutput = logging.standardOutput
+        qemuImg.standardError = logging.standardError
         try await qemuImg.start()
     }
 }

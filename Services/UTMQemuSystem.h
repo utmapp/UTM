@@ -14,7 +14,8 @@
 // limitations under the License.
 //
 
-#import "UTMQemu.h"
+#import "UTMProcess.h"
+@import QEMUKitInternal;
 
 /// Specify the backend renderer for this VM
 typedef NS_ENUM(NSInteger, UTMQEMURendererBackend) {
@@ -34,12 +35,13 @@ typedef NS_ENUM(NSInteger, UTMQEMUSoundBackend) {
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UTMQemuSystem : UTMQemu <QEMULauncher>
+@interface UTMQemuSystem : UTMProcess <QEMULauncher>
 
 @property (nonatomic, nullable, copy) NSArray<NSURL *> *resources;
 @property (nonatomic, nullable, weak) NSDictionary<NSURL *, NSData *> *remoteBookmarks;
 @property (nonatomic) UTMQEMURendererBackend rendererBackend;
 @property (nonatomic, weak) id<QEMULauncherDelegate> launcherDelegate;
+@property (nonatomic, nullable) QEMULogging *logging;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithArguments:(NSArray<NSString *> *)arguments NS_UNAVAILABLE;

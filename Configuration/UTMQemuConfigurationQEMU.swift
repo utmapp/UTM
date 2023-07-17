@@ -24,6 +24,9 @@ struct UTMQemuConfigurationQEMU: Codable {
     /// EFI variables if EFI boot is enabled. This property is not saved to file.
     var efiVarsURL: URL?
     
+    /// TPM data file if TPM is enabled. This property is not saved to file.
+    var tpmDataURL: URL?
+    
     /// If true, write standard output to debug.log in the VM bundle.
     var hasDebugLog: Bool = false
     
@@ -63,6 +66,9 @@ struct UTMQemuConfigurationQEMU: Codable {
     /// Set to true to request guest tools install. Not saved.
     var isGuestToolsInstallRequested: Bool = false
     
+    /// Set to true to request UEFI variable reset. Not saved.
+    var isUefiVariableResetRequested: Bool = false
+    
     enum CodingKeys: String, CodingKey {
         case hasDebugLog = "DebugLog"
         case hasUefiBoot = "UEFIBoot"
@@ -70,6 +76,7 @@ struct UTMQemuConfigurationQEMU: Codable {
         case hasBalloonDevice = "BalloonDevice"
         case hasTPMDevice = "TPMDevice"
         case hasHypervisor = "Hypervisor"
+        case hasTSO = "TSO"
         case hasRTCLocalTime = "RTCLocalTime"
         case hasPS2Controller = "PS2Controller"
         case machinePropertyOverride = "MachinePropertyOverride"
@@ -87,6 +94,7 @@ struct UTMQemuConfigurationQEMU: Codable {
         hasBalloonDevice = try values.decode(Bool.self, forKey: .hasBalloonDevice)
         hasTPMDevice = try values.decode(Bool.self, forKey: .hasTPMDevice)
         hasHypervisor = try values.decode(Bool.self, forKey: .hasHypervisor)
+        hasTSO = try values.decodeIfPresent(Bool.self, forKey: .hasTSO) ?? false
         hasRTCLocalTime = try values.decode(Bool.self, forKey: .hasRTCLocalTime)
         hasPS2Controller = try values.decode(Bool.self, forKey: .hasPS2Controller)
         machinePropertyOverride = try values.decodeIfPresent(String.self, forKey: .machinePropertyOverride)
@@ -94,6 +102,7 @@ struct UTMQemuConfigurationQEMU: Codable {
         if let dataURL = decoder.userInfo[.dataURL] as? URL {
             debugLogURL = dataURL.appendingPathComponent(QEMUPackageFileName.debugLog.rawValue)
             efiVarsURL = dataURL.appendingPathComponent(QEMUPackageFileName.efiVariables.rawValue)
+            tpmDataURL = dataURL.appendingPathComponent(QEMUPackageFileName.tpmData.rawValue)
         }
     }
     
@@ -105,6 +114,7 @@ struct UTMQemuConfigurationQEMU: Codable {
         try container.encode(hasBalloonDevice, forKey: .hasBalloonDevice)
         try container.encode(hasTPMDevice, forKey: .hasTPMDevice)
         try container.encode(hasHypervisor, forKey: .hasHypervisor)
+        try container.encode(hasTSO, forKey: .hasTSO)
         try container.encode(hasRTCLocalTime, forKey: .hasRTCLocalTime)
         try container.encode(hasPS2Controller, forKey: .hasPS2Controller)
         try container.encodeIfPresent(machinePropertyOverride, forKey: .machinePropertyOverride)
@@ -153,27 +163,39 @@ extension UTMQemuConfigurationQEMU {
 
 extension UTMQemuConfigurationQEMU {
     @MainActor mutating func saveData(to dataURL: URL, for system: UTMQemuConfigurationSystem) async throws -> [URL] {
-        guard hasUefiBoot else {
-            return []
+        var existing: [URL] = []
+        if hasUefiBoot {
+            let fileManager = FileManager.default
+            // save EFI variables
+            let resourceURL = Bundle.main.url(forResource: "qemu", withExtension: nil)!
+            let templateVarsURL: URL
+            if system.architecture == .arm || system.architecture == .aarch64 {
+                templateVarsURL = resourceURL.appendingPathComponent("edk2-arm-vars.fd")
+            } else if system.architecture == .i386 || system.architecture == .x86_64 {
+                templateVarsURL = resourceURL.appendingPathComponent("edk2-i386-vars.fd")
+            } else {
+                throw UTMQemuConfigurationError.uefiNotSupported
+            }
+            let varsURL = dataURL.appendingPathComponent(QEMUPackageFileName.efiVariables.rawValue)
+            if !fileManager.fileExists(atPath: varsURL.path) {
+                try await Task.detached {
+                    try fileManager.copyItem(at: templateVarsURL, to: varsURL)
+                }.value
+            }
+            efiVarsURL = varsURL
+            existing.append(varsURL)
         }
-        let fileManager = FileManager.default
-        // save EFI variables
-        let resourceURL = Bundle.main.url(forResource: "qemu", withExtension: nil)!
-        let templateVarsURL: URL
-        if system.architecture == .arm || system.architecture == .aarch64 {
-            templateVarsURL = resourceURL.appendingPathComponent("edk2-arm-vars.fd")
-        } else if system.architecture == .i386 || system.architecture == .x86_64 {
-            templateVarsURL = resourceURL.appendingPathComponent("edk2-i386-vars.fd")
-        } else {
-            throw UTMQemuConfigurationError.uefiNotSupported
+        let possibleTpmDataURL = dataURL.appendingPathComponent(QEMUPackageFileName.tpmData.rawValue)
+        if hasTPMDevice {
+            tpmDataURL = possibleTpmDataURL
+            existing.append(tpmDataURL!)
+        } else if FileManager.default.fileExists(atPath: possibleTpmDataURL.path) {
+            existing.append(possibleTpmDataURL) // do not delete any existing TPM data
         }
-        let varsURL = dataURL.appendingPathComponent(QEMUPackageFileName.efiVariables.rawValue)
-        if !fileManager.fileExists(atPath: varsURL.path) {
-            try await Task.detached {
-                try fileManager.copyItem(at: templateVarsURL, to: varsURL)
-            }.value
+        if hasDebugLog {
+            let debugLogURL = dataURL.appendingPathComponent(QEMUPackageFileName.debugLog.rawValue)
+            existing.append(debugLogURL)
         }
-        efiVarsURL = varsURL
-        return [varsURL]
+        return existing
     }
 }

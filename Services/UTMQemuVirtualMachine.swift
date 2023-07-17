@@ -93,8 +93,6 @@ final class UTMQemuVirtualMachine: UTMVirtualMachine {
         }
     }
     
-    private var logging: QEMULogging
-    
     private var isScopedAccess: Bool = false
     
     private weak var screenshotTimer: Timer?
@@ -140,6 +138,10 @@ final class UTMQemuVirtualMachine: UTMVirtualMachine {
     
     private var startTask: Task<Void, any Error>?
     
+    private var swtpm: UTMSWTPM?
+    
+    private var changeCursorRequestInProgress: Bool = false
+    
     @MainActor required init(packageUrl: URL, configuration: UTMQemuConfiguration? = nil, isShortcut: Bool = false) throws {
         self.isScopedAccess = packageUrl.startAccessingSecurityScopedResource()
         // load configuration
@@ -152,11 +154,6 @@ final class UTMQemuVirtualMachine: UTMVirtualMachine {
         } else {
             config = configuration!
         }
-        #if os(macOS)
-        self.logging = QEMULogging()
-        #else
-        self.logging = QEMULogging.sharedInstance()
-        #endif
         self.config = config
         self.pathUrl = packageUrl
         self.isShortcut = isShortcut
@@ -190,7 +187,7 @@ extension UTMQemuVirtualMachine {
             return
         }
         // if VM has not started yet, we create a temporary process
-        let system = await system ?? UTMQemu()
+        let system = await system ?? UTMProcess()
         var bookmark = await registryEntry.package.remoteBookmark
         let existing = bookmark != nil
         if !existing {
@@ -226,10 +223,17 @@ extension UTMQemuVirtualMachine {
         guard let efiVarsURL = config.qemu.efiVarsURL else {
             return
         }
-        guard config.isLegacy else {
-            return
+        var doesVarsExist = FileManager.default.fileExists(atPath: efiVarsURL.path)
+        if config.qemu.isUefiVariableResetRequested {
+            if doesVarsExist {
+                try FileManager.default.removeItem(at: efiVarsURL)
+                doesVarsExist = false
+            }
+            config.qemu.isUefiVariableResetRequested = false
         }
-        _ = try await config.qemu.saveData(to: efiVarsURL.deletingLastPathComponent(), for: config.system)
+        if !doesVarsExist {
+            _ = try await config.qemu.saveData(to: efiVarsURL.deletingLastPathComponent(), for: config.system)
+        }
     }
     
     private func _start(options: UTMVirtualMachineStartOptions) async throws {
@@ -239,11 +243,23 @@ extension UTMQemuVirtualMachine {
         }
         // start logging
         if await config.qemu.hasDebugLog, let debugLogURL = await config.qemu.debugLogURL {
-            logging.log(toFile: debugLogURL)
+            await qemuVM.setRedirectLog(url: debugLogURL)
+        } else {
+            await qemuVM.setRedirectLog(url: nil)
         }
         let isRunningAsDisposible = options.contains(.bootDisposibleMode)
         await MainActor.run {
             config.qemu.isDisposable = isRunningAsDisposible
+        }
+        
+        // start TPM
+        if await config.qemu.hasTPMDevice {
+            let swtpm = UTMSWTPM()
+            swtpm.ctrlSocketUrl = await config.swtpmSocketURL
+            swtpm.dataUrl = await config.qemu.tpmDataURL
+            swtpm.currentDirectoryUrl = await config.socketURL
+            try await swtpm.start()
+            self.swtpm = swtpm
         }
         
         let allArguments = await config.allArguments
@@ -253,6 +269,7 @@ extension UTMQemuVirtualMachine {
         
         let system = await UTMQemuSystem(arguments: arguments, architecture: config.system.architecture.rawValue)
         system.resources = resources
+        system.currentDirectoryUrl = await config.socketURL
         system.remoteBookmarks = remoteBookmarks as NSDictionary
         system.rendererBackend = rendererBackend
         try Task.checkCancellation()
@@ -277,8 +294,7 @@ extension UTMQemuVirtualMachine {
         try ioService.start()
         try Task.checkCancellation()
         
-        // create EFI variables for legacy config
-        // this is ugly code and should be removed when legacy config support is removed
+        // create EFI variables for legacy config as well as handle UEFI resets
         try await qemuEnsureEfiVarsAvailable()
         try Task.checkCancellation()
         
@@ -332,6 +348,7 @@ extension UTMQemuVirtualMachine {
         } catch {
             // delete suspend state on error
             await registryEntry.setIsSuspended(false)
+            await qemuVM.kill()
             state = .stopped
             throw error
         }
@@ -358,9 +375,6 @@ extension UTMQemuVirtualMachine {
         }
         if !kill {
             state = .stopping
-        }
-        defer {
-            state = .stopped
         }
         if kill {
             await qemuVM.kill()
@@ -530,6 +544,8 @@ extension UTMQemuVirtualMachine: QEMUVirtualMachineDelegate {
     }
     
     func qemuVMDidStop(_ qemuVM: QEMUVirtualMachine) {
+        swtpm?.stop()
+        swtpm = nil
         ioService = nil
         ioServiceDelegate = nil
         state = .stopped
@@ -564,7 +580,31 @@ extension UTMQemuVirtualMachine: QEMUVirtualMachineDelegate {
 // MARK: - Input device switching
 extension UTMQemuVirtualMachine {
     func requestInputTablet(_ tablet: Bool) {
-        
+        guard !changeCursorRequestInProgress else {
+            return
+        }
+        guard let spiceIO = ioService else {
+            return
+        }
+        changeCursorRequestInProgress = true
+        Task {
+            defer {
+                changeCursorRequestInProgress = false
+            }
+            guard state == .started else {
+                return
+            }
+            guard let monitor = await monitor else {
+                return
+            }
+            do {
+                let index = try await monitor.mouseIndex(forAbsolute: tablet)
+                try await monitor.mouseSelect(index)
+                spiceIO.primaryInput?.requestMouseMode(!tablet)
+            } catch {
+                logger.error("Error changing mouse mode: \(error)")
+            }
+        }
     }
 }
 
@@ -639,7 +679,7 @@ extension UTMQemuVirtualMachine {
     }
     
     private func changeMedium(_ drive: UTMQemuConfigurationDrive, with bookmark: Data, url: URL?, isSecurityScoped: Bool) async throws {
-        let system = await system ?? UTMQemu()
+        let system = await system ?? UTMProcess()
         let (success, bookmark, path) = await system.accessData(withBookmark: bookmark, securityScoped: isSecurityScoped)
         guard let bookmark = bookmark, let path = path, success else {
             throw UTMQemuVirtualMachineError.accessDriveImageFailed
@@ -722,7 +762,7 @@ extension UTMQemuVirtualMachine {
     }
     
     func changeVirtfsSharedDirectory(with bookmark: Data, isSecurityScoped: Bool) async throws {
-        let system = await system ?? UTMQemu()
+        let system = await system ?? UTMProcess()
         let (success, bookmark, path) = await system.accessData(withBookmark: bookmark, securityScoped: isSecurityScoped)
         guard let bookmark = bookmark, let _ = path, success else {
             throw UTMQemuVirtualMachineError.accessDriveImageFailed
