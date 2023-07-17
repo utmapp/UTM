@@ -297,10 +297,68 @@ index a7224ef469..e99e7cdda7 100644
 -- 
 2.39.2 (Apple Git-143)
 
-From f549f6577afcb44e683e7b4d0eb2a3894d88be99 Mon Sep 17 00:00:00 2001
+From f1e0d530d3e2892047031c0f37cab5ed6ca2bc85 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Sun, 16 Jul 2023 18:13:52 -0700
+Subject: [PATCH 00/12] *** SUBJECT HERE ***
+
+*** BLURB HERE ***
+
+Joelle van Dyne (11):
+  tpm_crb: refactor common code
+  tpm_crb: CTRL_RSP_ADDR is 64-bits wide
+  tpm_ppi: refactor memory space initialization
+  tpm_crb: use a single read-as-mem/write-as-mmio mapping
+  tpm_crb: use the ISA bus
+  tpm_crb: move ACPI table building to device interface
+  hw/arm/virt: add plug handler for TPM on SysBus
+  hw/loongarch/virt: add plug handler for TPM on SysBus
+  tpm_tis_sysbus: fix crash when PPI is enabled
+  tpm_tis_sysbus: move DSDT AML generation to device
+  tpm_crb_sysbus: introduce TPM CRB SysBus device
+
+osy (1):
+  sysbus-fdt: falsely claim TPM CRB device is TPM TIS
+
+ docs/specs/tpm.rst          |   2 +
+ hw/acpi/aml-build.c         |   7 +-
+ hw/arm/Kconfig              |   1 +
+ hw/arm/virt-acpi-build.c    |  38 +----
+ hw/arm/virt.c               |  37 +++++
+ hw/core/sysbus-fdt.c        |   1 +
+ hw/i386/acpi-build.c        |  23 ---
+ hw/loongarch/acpi-build.c   |  38 +----
+ hw/loongarch/virt.c         |  38 +++++
+ hw/riscv/Kconfig            |   1 +
+ hw/riscv/virt.c             |   1 +
+ hw/tpm/Kconfig              |   7 +-
+ hw/tpm/meson.build          |   3 +
+ hw/tpm/tpm_crb.c            | 307 ++++++++----------------------------
+ hw/tpm/tpm_crb.h            |  74 +++++++++
+ hw/tpm/tpm_crb_common.c     | 226 ++++++++++++++++++++++++++
+ hw/tpm/tpm_crb_sysbus.c     | 178 +++++++++++++++++++++
+ hw/tpm/tpm_ppi.c            |   5 +-
+ hw/tpm/tpm_ppi.h            |  10 +-
+ hw/tpm/tpm_tis_isa.c        |   5 +-
+ hw/tpm/tpm_tis_sysbus.c     |  43 +++++
+ hw/tpm/trace-events         |   2 +-
+ include/hw/acpi/aml-build.h |   1 +
+ include/hw/acpi/tpm.h       |   3 +-
+ include/sysemu/tpm.h        |   3 +
+ tests/qtest/tpm-crb-test.c  |   2 +-
+ tests/qtest/tpm-util.c      |   2 +-
+ 27 files changed, 704 insertions(+), 354 deletions(-)
+ create mode 100644 hw/tpm/tpm_crb.h
+ create mode 100644 hw/tpm/tpm_crb_common.c
+ create mode 100644 hw/tpm/tpm_crb_sysbus.c
+
+-- 
+2.39.2 (Apple Git-143)
+
+From 14b7a453f05de772893f4e19e5c0633f404bd030 Mon Sep 17 00:00:00 2001
 From: Joelle van Dyne <j@getutm.app>
 Date: Mon, 10 Jul 2023 22:52:00 -0700
-Subject: [PATCH 01/13] tpm_crb: refactor common code
+Subject: [PATCH 01/12] tpm_crb: refactor common code
 
 In preparation for the SysBus variant, we move common code styled
 after the TPM TIS devices.
@@ -1028,10 +1086,10 @@ index f17110458e..bfc1f78b0f 100644
 -- 
 2.39.2 (Apple Git-143)
 
-From 502c35697881e008aedda0f6420b93bd9c545454 Mon Sep 17 00:00:00 2001
+From 5b13dacc447a4bf799f1d990c687fb5e4eda7470 Mon Sep 17 00:00:00 2001
 From: Joelle van Dyne <j@getutm.app>
 Date: Mon, 10 Jul 2023 23:08:20 -0700
-Subject: [PATCH 02/13] tpm_crb: CTRL_RSP_ADDR is 64-bits wide
+Subject: [PATCH 02/12] tpm_crb: CTRL_RSP_ADDR is 64-bits wide
 
 The register is actually 64-bits but in order to make this more clear
 than the specification, we define two 32-bit registers:
@@ -1107,10 +1165,10 @@ index a7efe2d0d2..e47c733dd1 100644
 -- 
 2.39.2 (Apple Git-143)
 
-From ca68eea5c27692c089e0d9bcbc9b8b75e94a9884 Mon Sep 17 00:00:00 2001
+From bfdeab6212556ed927395919a9b3a5b74f1621cc Mon Sep 17 00:00:00 2001
 From: Joelle van Dyne <j@getutm.app>
 Date: Tue, 11 Jul 2023 21:18:06 -0700
-Subject: [PATCH 03/13] tpm_ppi: refactor memory space initialization
+Subject: [PATCH 03/12] tpm_ppi: refactor memory space initialization
 
 Instead of calling `memory_region_add_subregion` directly, we defer to
 the caller to do it. This allows us to re-use the code for a SysBus
@@ -1216,10 +1274,10 @@ index 91e3792248..7cd7415f30 100644
 -- 
 2.39.2 (Apple Git-143)
 
-From ebd1b351f56e9c21ea0bd2ae055335705dd06763 Mon Sep 17 00:00:00 2001
+From 6009eeba5384112b151ed73e245c85dc8222ef3f Mon Sep 17 00:00:00 2001
 From: Joelle van Dyne <j@getutm.app>
 Date: Tue, 11 Jul 2023 22:37:34 -0700
-Subject: [PATCH 04/13] tpm_crb: use a single read-as-mem/write-as-mmio mapping
+Subject: [PATCH 04/12] tpm_crb: use a single read-as-mem/write-as-mmio mapping
 
 On Apple Silicon, when Windows performs a LDP on the CRB MMIO space,
 the exception is not decoded by hardware and we cannot trap the MMIO
@@ -1243,8 +1301,8 @@ Signed-off-by: Joelle van Dyne <j@getutm.app>
 ---
  hw/tpm/tpm_crb.c        |   3 -
  hw/tpm/tpm_crb.h        |   2 -
- hw/tpm/tpm_crb_common.c | 124 ++++++++++++++++++++--------------------
- 3 files changed, 63 insertions(+), 66 deletions(-)
+ hw/tpm/tpm_crb_common.c | 126 +++++++++++++++++++++-------------------
+ 3 files changed, 65 insertions(+), 66 deletions(-)
 
 diff --git a/hw/tpm/tpm_crb.c b/hw/tpm/tpm_crb.c
 index 598c3e0161..07c6868d8d 100644
@@ -1282,7 +1340,7 @@ index da3a0cf256..7cdd37335f 100644
      size_t be_buffer_size;
  
 diff --git a/hw/tpm/tpm_crb_common.c b/hw/tpm/tpm_crb_common.c
-index e56e910670..f3e40095e3 100644
+index e56e910670..772ddd9bb1 100644
 --- a/hw/tpm/tpm_crb_common.c
 +++ b/hw/tpm/tpm_crb_common.c
 @@ -33,31 +33,12 @@
@@ -1429,7 +1487,7 @@ index e56e910670..f3e40095e3 100644
  }
  
  enum TPMVersion tpm_crb_get_version(TPMCRBState *s)
-@@ -162,45 +160,48 @@ int tpm_crb_pre_save(TPMCRBState *s)
+@@ -162,45 +160,50 @@ int tpm_crb_pre_save(TPMCRBState *s)
  
  void tpm_crb_reset(TPMCRBState *s, uint64_t baseaddr)
  {
@@ -1448,6 +1506,8 @@ index e56e910670..f3e40095e3 100644
 +    ARRAY_FIELD_DP32(regs, CRB_LOC_STATE,
                       tpmRegValidSts, 1);
 -    ARRAY_FIELD_DP32(s->regs, CRB_CTRL_STS,
++    ARRAY_FIELD_DP32(regs, CRB_LOC_STATE,
++                     tpmEstablished, 1);
 +    ARRAY_FIELD_DP32(regs, CRB_CTRL_STS,
                       tpmIdle, 1);
 -    ARRAY_FIELD_DP32(s->regs, CRB_INTF_ID,
@@ -1497,7 +1557,7 @@ index e56e910670..f3e40095e3 100644
  
      s->be_buffer_size = MIN(tpm_backend_get_buffer_size(s->tpmbe),
                              CRB_CTRL_CMD_SIZE);
-@@ -208,14 +209,15 @@ void tpm_crb_reset(TPMCRBState *s, uint64_t baseaddr)
+@@ -208,14 +211,15 @@ void tpm_crb_reset(TPMCRBState *s, uint64_t baseaddr)
      if (tpm_backend_startup_tpm(s->tpmbe, s->be_buffer_size) < 0) {
          exit(1);
      }
@@ -1520,10 +1580,10 @@ index e56e910670..f3e40095e3 100644
 -- 
 2.39.2 (Apple Git-143)
 
-From 57668c2fcb5c415f66d251290351948721c32cb8 Mon Sep 17 00:00:00 2001
+From a76d3a9f0586cc9ca1156beff70108461a78936c Mon Sep 17 00:00:00 2001
 From: Joelle van Dyne <j@getutm.app>
 Date: Tue, 11 Jul 2023 23:06:38 -0700
-Subject: [PATCH 05/13] tpm_crb: use the ISA bus
+Subject: [PATCH 05/12] tpm_crb: use the ISA bus
 
 Since this device is gated to only build for targets with the PC
 configuration, we should use the ISA bus like with TPM TIS.
@@ -1698,10 +1758,10 @@ index 07c6868d8d..6144081d30 100644
 -- 
 2.39.2 (Apple Git-143)
 
-From 05c9ce98aba0fcbd7a1209896bdb1c6714b562b9 Mon Sep 17 00:00:00 2001
+From e6a6e7ec15da74e20d6103415b36d7c5455d1e4f Mon Sep 17 00:00:00 2001
 From: Joelle van Dyne <j@getutm.app>
 Date: Tue, 11 Jul 2023 23:20:55 -0700
-Subject: [PATCH 06/13] tpm_crb: move ACPI table building to device interface
+Subject: [PATCH 06/12] tpm_crb: move ACPI table building to device interface
 
 This logic is similar to TPM TIS ISA device.
 
@@ -1819,10 +1879,10 @@ index 6144081d30..14feb9857f 100644
 -- 
 2.39.2 (Apple Git-143)
 
-From 1a545e934b5a246bedf04b96bde2578ba562c566 Mon Sep 17 00:00:00 2001
+From b5cc253f1b169809899870d6ccbae8a1e90b9418 Mon Sep 17 00:00:00 2001
 From: Joelle van Dyne <j@getutm.app>
 Date: Wed, 12 Jul 2023 17:24:09 -0700
-Subject: [PATCH 07/13] hw/arm/virt: add plug handler for TPM on SysBus
+Subject: [PATCH 07/12] hw/arm/virt: add plug handler for TPM on SysBus
 
 TPM needs to know its own base address in order to generate its DSDT
 device entry.
@@ -1889,10 +1949,10 @@ index 6ab8f7f16c..bd34cefbb4 100644
 -- 
 2.39.2 (Apple Git-143)
 
-From 2a21002edd8fafbacbfad4a8358a66deacbf6404 Mon Sep 17 00:00:00 2001
+From eaf1c0e30560ef54ef34d94f6b249d636bcfca1c Mon Sep 17 00:00:00 2001
 From: Joelle van Dyne <j@getutm.app>
 Date: Wed, 12 Jul 2023 17:33:11 -0700
-Subject: [PATCH 08/13] hw/loongarch/virt: add plug handler for TPM on SysBus
+Subject: [PATCH 08/12] hw/loongarch/virt: add plug handler for TPM on SysBus
 
 TPM needs to know its own base address in order to generate its DSDT
 device entry.
@@ -1960,10 +2020,10 @@ index f4bf14c1c8..5f49f47917 100644
 -- 
 2.39.2 (Apple Git-143)
 
-From 1221253040bf409ea21cc8354cb39bf9c27a3756 Mon Sep 17 00:00:00 2001
+From a91f8ccc906521d39e0b5acacee99ebddd4c0c93 Mon Sep 17 00:00:00 2001
 From: Joelle van Dyne <j@getutm.app>
 Date: Wed, 12 Jul 2023 17:37:11 -0700
-Subject: [PATCH 09/13] tpm_tis_sysbus: fix crash when PPI is enabled
+Subject: [PATCH 09/12] tpm_tis_sysbus: fix crash when PPI is enabled
 
 If 'ppi' property is set, then `tpm_ppi_reset` is called on reset
 which SEGFAULTs because `tpmppi->buf` is not allocated.
@@ -1991,10 +2051,10 @@ index 45e63efd63..1014d5d993 100644
 -- 
 2.39.2 (Apple Git-143)
 
-From b5695993a6c35bc44a7464f42f56815956ec6da1 Mon Sep 17 00:00:00 2001
+From cdae40315783a593d597df5df9e6cb06e41d3734 Mon Sep 17 00:00:00 2001
 From: Joelle van Dyne <j@getutm.app>
 Date: Wed, 12 Jul 2023 18:30:14 -0700
-Subject: [PATCH 10/13] tpm_tis_sysbus: move DSDT AML generation to device
+Subject: [PATCH 10/12] tpm_tis_sysbus: move DSDT AML generation to device
 
 This reduces redundent code in different machine types with ACPI table
 generation. Additionally, this will allow us to support multiple TPM
@@ -2231,10 +2291,10 @@ index 1014d5d993..a00f1a0105 100644
 -- 
 2.39.2 (Apple Git-143)
 
-From e9216a7e87e858fe61deb894674c0ebac956e0c3 Mon Sep 17 00:00:00 2001
+From 64930d62565e47ad432b2c6a9320b62bbd798341 Mon Sep 17 00:00:00 2001
 From: Joelle van Dyne <j@getutm.app>
 Date: Wed, 12 Jul 2023 18:41:07 -0700
-Subject: [PATCH 11/13] tpm_crb_sysbus: introduce TPM CRB SysBus device
+Subject: [PATCH 11/12] tpm_crb_sysbus: introduce TPM CRB SysBus device
 
 This SysBus variant of the CRB interface supports dynamically locating
 the MMIO interface so that Virt machines can use it. This interface
@@ -2253,10 +2313,11 @@ Signed-off-by: Joelle van Dyne <j@getutm.app>
  hw/riscv/virt.c             |   1 +
  hw/tpm/Kconfig              |   5 +
  hw/tpm/meson.build          |   2 +
+ hw/tpm/tpm_crb_common.c     |   2 +-
  hw/tpm/tpm_crb_sysbus.c     | 178 ++++++++++++++++++++++++++++++++++++
  include/hw/acpi/aml-build.h |   1 +
  include/sysemu/tpm.h        |   3 +
- 13 files changed, 202 insertions(+), 1 deletion(-)
+ 14 files changed, 203 insertions(+), 2 deletions(-)
  create mode 100644 hw/tpm/tpm_crb_sysbus.c
 
 diff --git a/docs/specs/tpm.rst b/docs/specs/tpm.rst
@@ -2404,6 +2465,19 @@ index 822d3a11ca..fc99cde1a6 100644
  softmmu_ss.add(when: 'CONFIG_TPM_TIS', if_true: files('tpm_ppi.c'))
  softmmu_ss.add(when: 'CONFIG_TPM_CRB', if_true: files('tpm_ppi.c'))
  
+diff --git a/hw/tpm/tpm_crb_common.c b/hw/tpm/tpm_crb_common.c
+index 772ddd9bb1..a7600e3aa1 100644
+--- a/hw/tpm/tpm_crb_common.c
++++ b/hw/tpm/tpm_crb_common.c
+@@ -219,7 +219,7 @@ void tpm_crb_reset(TPMCRBState *s, uint64_t baseaddr)
+ void tpm_crb_init_memory(Object *obj, TPMCRBState *s, Error **errp)
+ {
+     memory_region_init_rom_device(&s->mmio, obj, &tpm_crb_memory_ops, s,
+-        "tpm-crb-mmio", TPM_CRB_ADDR_SIZE, errp);
++        "tpm-crb-mmio", ROUND_UP(TPM_CRB_ADDR_SIZE, qemu_host_page_size), errp);
+     if (s->ppi_enabled) {
+         tpm_ppi_init_memory(&s->ppi, obj);
+     }
 diff --git a/hw/tpm/tpm_crb_sysbus.c b/hw/tpm/tpm_crb_sysbus.c
 new file mode 100644
 index 0000000000..1289afcc7e
@@ -2624,10 +2698,10 @@ index fb40e30ff6..ec26f381d2 100644
 -- 
 2.39.2 (Apple Git-143)
 
-From 3232114a9df12f7a623df33bb339c8f76a28b223 Mon Sep 17 00:00:00 2001
+From f1e0d530d3e2892047031c0f37cab5ed6ca2bc85 Mon Sep 17 00:00:00 2001
 From: osy <osy@turing.llc>
 Date: Wed, 12 Jul 2023 23:07:49 -0700
-Subject: [PATCH 12/13] sysbus-fdt: falsely claim TPM CRB device is TPM TIS
+Subject: [PATCH 12/12] sysbus-fdt: falsely claim TPM CRB device is TPM TIS
 
 OVMF firmware is hard coded to recognize a TPM TIS device. If we lie,
 the code will properly detect that it is a CRB device. In Linux, this
@@ -2650,91 +2724,6 @@ index 9c783f88eb..4e4253f736 100644
  #endif
      TYPE_BINDING(TYPE_RAMFB_DEVICE, no_fdt_node),
      TYPE_BINDING("", NULL), /* last element */
--- 
-2.39.2 (Apple Git-143)
-
-From 303c882ffa190b258bc0377b9a7a82ff018658b0 Mon Sep 17 00:00:00 2001
-From: osy <osy@turing.llc>
-Date: Wed, 12 Jul 2023 23:09:29 -0700
-Subject: [PATCH 13/13] hvf: DO NOT MERGE: decode LDP for tpm.sys
-
-This is a workaround for an LDP access by Windows' tpm.sys which
-causes an abort that is not decoded by hardware. The proper way to fix
-this is to fix the read-as-memory/write-as-mmio mapping the device
-uses. Since there is only two instances of these instructions in the
-Windows driver, we hard code a decoder that recognizes that specific
-instruction and handle it manually.
----
- target/arm/hvf/hvf.c | 35 ++++++++++++++++++++++++++++++++++-
- 1 file changed, 34 insertions(+), 1 deletion(-)
-
-diff --git a/target/arm/hvf/hvf.c b/target/arm/hvf/hvf.c
-index 9addee05b5..3b4a149ab0 100644
---- a/target/arm/hvf/hvf.c
-+++ b/target/arm/hvf/hvf.c
-@@ -1327,6 +1327,27 @@ static void hvf_sync_vtimer(CPUState *cpu)
-     }
- }
- 
-+static bool decode_ldp(CPUState *cpu, int *rt1, int *rt2)
-+{
-+    uint64_t addr;
-+    uint32_t instr;
-+    uint64_t val;
-+
-+#define AARCH64_LDP_SIGNED_32_MASK       (0x29400000)
-+#define AARCH64_LDP_SIGNED_32_RT2(inst)  (((inst) >> 10) & 0x1F)
-+#define AARCH64_LDP_SIGNED_32_RT(inst)   (((inst) >>  0) & 0x1F)
-+
-+    flush_cpu_state(cpu);
-+    hv_vcpu_get_reg(cpu->hvf->fd, HV_REG_PC, &addr);
-+    cpu_memory_rw_debug(cpu, addr, &instr, sizeof(instr), false);
-+    if ((instr & AARCH64_LDP_SIGNED_32_MASK) == AARCH64_LDP_SIGNED_32_MASK) {
-+        *rt1 = AARCH64_LDP_SIGNED_32_RT(instr);
-+        *rt2 = AARCH64_LDP_SIGNED_32_RT2(instr);
-+        return true;
-+    }
-+    return false;
-+}
-+
- int hvf_vcpu_exec(CPUState *cpu)
- {
-     ARMCPU *arm_cpu = ARM_CPU(cpu);
-@@ -1381,6 +1402,7 @@ int hvf_vcpu_exec(CPUState *cpu)
-         uint32_t srt = (syndrome >> 16) & 0x1f;
-         uint32_t cm = (syndrome >> 8) & 0x1;
-         uint64_t val = 0;
-+        int rt1, rt2 = -1;
- 
-         trace_hvf_data_abort(env->pc, hvf_exit->exception.virtual_address,
-                              hvf_exit->exception.physical_address, isv,
-@@ -1392,6 +1414,12 @@ int hvf_vcpu_exec(CPUState *cpu)
-             break;
-         }
- 
-+        if (!isv && !iswrite) {
-+            if (decode_ldp(cpu, &rt1, &rt2)) {
-+                isv = true;
-+                len = 8;
-+            }
-+        }
-         assert(isv);
- 
-         if (iswrite) {
-@@ -1403,7 +1431,12 @@ int hvf_vcpu_exec(CPUState *cpu)
-             address_space_read(&address_space_memory,
-                                hvf_exit->exception.physical_address,
-                                MEMTXATTRS_UNSPECIFIED, &val, len);
--            hvf_set_reg(cpu, srt, val);
-+            if (rt1 != -1 && rt2 != -1) {
-+                hvf_set_reg(cpu, rt1, (uint32_t)(val));
-+                hvf_set_reg(cpu, rt2, (uint32_t)(val >> 32));
-+            } else {
-+                hvf_set_reg(cpu, srt, val);
-+            }
-         }
- 
-         advance_pc = true;
 -- 
 2.39.2 (Apple Git-143)
 
