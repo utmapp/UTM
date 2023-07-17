@@ -109,6 +109,10 @@ struct AlertMessage: Identifiable {
     ///
     /// This removes stale entries (deleted/not accessible) and duplicate entries
     func listRefresh() async {
+        // create Documents directory if it doesn't exist
+        if !fileManager.fileExists(atPath: Self.defaultStorageUrl.path) {
+            try? fileManager.createDirectory(at: Self.defaultStorageUrl, withIntermediateDirectories: false)
+        }
         // wrap stale VMs
         var list = virtualMachines
         for i in list.indices.reversed() {
