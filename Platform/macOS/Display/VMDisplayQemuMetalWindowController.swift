@@ -149,6 +149,7 @@ class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
         if vm.state == .stopped {
             vmDisplay = nil
             vmInput = nil
+            displaySize = .zero
         }
         if vmQemuConfig!.sharing.hasClipboardSharing {
             UTMPasteboard.general.releasePollingMode(forHashable: self) // stop clipboard polling
