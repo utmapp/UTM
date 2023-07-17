@@ -272,7 +272,7 @@
 // SettingsView.swift
 "Application" = "アプリケーション";
 "Keep UTM running after last window is closed and all VMs are shut down" = "最後のウインドウが閉じられ、すべての仮想マシンがシステム終了した後もUTMを実行し続ける";
-"Show dock icon" = "ドックアイコンを表示";
+"Show dock icon" = "Dockアイコンを表示";
 "Show menu bar icon" = "メニューバーアイコンを表示";
 "Prevent system from sleeping when any VM is running" = "仮想マシン実行中にシステムがスリープしないようにする";
 "Do not show confirmation when closing a running VM" = "実行中の仮想マシンを閉じるときに確認を表示しない";
@@ -318,7 +318,7 @@
 // UTMMenuBarExtraScene.swift
 "Show UTM" = "UTMを表示";
 "Show the main window." = "メインウインドウを表示します。";
-"Hide dock icon on next launch" = "次回起動時にドックアイコンを非表示にする";
+"Hide dock icon on next launch" = "次回起動時にDockアイコンを非表示にする";
 "Requires restarting UTM to take affect." = "変更を適用するには、UTMを再起動する必要があります。";
 "No virtual machines found." = "仮想マシンが見つかりません。";
 "Terminate UTM and stop all running VMs." = "UTMを終了し、すべての実行中の仮想マシンを停止します。";
@@ -579,8 +579,8 @@
 "RNG Device" = "RNGデバイス";
 "Should be on always unless the guest cannot boot because of this." = "これが原因でゲストが起動できない場合を除き、常にオンにしておくべきです。";
 "Balloon Device" = "バルーンデバイス";
-"TPM Device" = "TPMデバイス";
-"This is required to boot Windows 11." = "Windows 11の起動に必要です。";
+"TPM 2.0 Device" = "TPM 2.0デバイス";
+"TPM can be used to protect secrets in the guest operating system. Note that the host will always be able to read these secrets and therefore no expectation of physical security is provided." = "TPMは、ゲストオペレーティングシステムの秘密を保護するために使用できます。なお、ホストは常にこれらの秘密を読み取ることができるため、物理的なセキュリティは期待できないことに注意してください。";
 "Use Hypervisor" = "ハイパーバイザを使用";
 "Only available if host architecture matches the target. Otherwise, TCG emulation is used." = "ホストアーキテクチャがターゲットと一致する場合のみ利用できます。そうでない場合、TCGエミュレーションが使用されます。";
 "Use TSO" = "TSOを使用";
@@ -589,6 +589,10 @@
 "If checked, use local time for RTC which is required for Windows. Otherwise, use UTC clock." = "チェックを入れると、Windowsで必要とされるRTCにローカル時間を使用します。そうでない場合、UTCクロックを使用します。";
 "Force PS/2 controller" = "PS/2コントローラを強制";
 "Instantiate PS/2 controller even when USB input is supported. Required for older Windows." = "USB入力に対応している場合でも、PS/2コントローラをインスタンス化します。古いWindowsで必要です。";
+"Maintenance" = "修復";
+"Options here only apply on next boot and are not saved." = "これらのオプションは次回起動時にのみ適用され、保存されません。";
+"Reset UEFI Variables" = "UEFI変数をリセット";
+"You can use this if your boot options are corrupted or if you wish to re-enroll in the default keys for secure boot." = "起動オプションが破損している場合や、セキュアブートのデフォルトキーに再登録したい場合に使用できます。";
 "QEMU Machine Properties" = "QEMUマシンプロパティ";
 "This is appended to the -machine argument." = "-machine引数に追加されます。";
 "QEMU Arguments" = "QEMU引数";
@@ -756,8 +760,9 @@
 "Import VHDX Image" = "VHDXイメージを読み込む";
 "Windows Install Guide" = "Windowsインストールガイド";
 "Image File Type" = "イメージファイルの種類";
-"Some older systems do not support UEFI boot, such as Windows 7 and below." = "Windows 7以前など、一部の古いシステムはUEFI起動に対応していません。";
 "Boot VHDX Image" = "起動VHDXイメージ";
+"Some older systems do not support UEFI boot, such as Windows 7 and below." = "Windows 7以前など、一部の古いシステムはUEFI起動に対応していません。";
+"Secure Boot with TPM 2.0" = "TPM 2.0によるセキュアブート";
 "Download and mount the guest support package for Windows. This is required for some features including dynamic resolution and clipboard sharing." = "Windows用ゲストサポートパッケージをダウンロードし、マウントします。ダイナミック解像度やクリップボード共有など、一部の機能を使用する場合に必要です。";
 "Install drivers and SPICE tools" = "ドライバとSPICEツールをインストール";
 
