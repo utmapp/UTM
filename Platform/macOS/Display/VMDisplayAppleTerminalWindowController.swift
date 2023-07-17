@@ -62,6 +62,7 @@ class VMDisplayAppleTerminalWindowController: VMDisplayAppleWindowController, VM
     }
     
     override func updateWindowFrame() {
+        isSizeChangeIgnored = true
         setupTerminal(terminalView, using: serialConfig.terminal!, id: index, for: window!)
         isSizeChangeIgnored = false
         super.updateWindowFrame()

@@ -52,6 +52,7 @@ class VMDisplayQemuTerminalWindowController: VMDisplayQemuWindowController, VMDi
     
     override func enterLive() {
         super.enterLive()
+        isSizeChangeIgnored = true
         setupTerminal(terminalView, using: serialConfig!.terminal!, id: id, for: window!)
         isSizeChangeIgnored = false
     }
