@@ -591,6 +591,9 @@ extension UTMQemuVirtualMachine {
             defer {
                 changeCursorRequestInProgress = false
             }
+            guard state == .started else {
+                return
+            }
             guard let monitor = await monitor else {
                 return
             }
