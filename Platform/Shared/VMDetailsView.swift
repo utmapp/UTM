@@ -70,7 +70,7 @@ struct VMDetailsView: View {
                             .padding([.leading, .trailing, .bottom])
                     }
                     #else
-                    let qemuVM = vm as! UTMQemuVirtualMachine
+                    let qemuVM = vm.wrapped as! UTMQemuVirtualMachine
                     VMRemovableDrivesView(vm: vm, config: qemuVM.config)
                         .padding([.leading, .trailing, .bottom])
                     #endif
