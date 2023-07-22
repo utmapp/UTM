@@ -343,6 +343,8 @@ import Virtualization // for getting network interfaces
                 properties = properties.appendingDefaultPropertyName("pcspk-audiodev", value: "audio1")
             }
             #endif
+            // disable HPET because it causes issues for some OS and also hinders performance
+            properties = properties.appendingDefaultPropertyName("hpet", value: "off")
         }
         if target == "virt" || target.hasPrefix("virt-") && !architecture.hasPrefix("riscv") {
             if #available(macOS 12.4, iOS 15.5, *, *) {
