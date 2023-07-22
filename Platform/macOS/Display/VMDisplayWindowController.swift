@@ -204,6 +204,7 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
     
     // MARK: - Alert
     
+    @MainActor
     func showErrorAlert(_ message: String, completionHandler handler: ((NSApplication.ModalResponse) -> Void)? = nil) {
         let alert = NSAlert()
         alert.alertStyle = .critical
@@ -212,6 +213,7 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
         alert.beginSheetModal(for: window!, completionHandler: handler)
     }
     
+    @MainActor
     func showConfirmAlert(_ message: String, confirmHandler handler: (() -> Void)? = nil) {
         let alert = NSAlert()
         alert.alertStyle = .informational

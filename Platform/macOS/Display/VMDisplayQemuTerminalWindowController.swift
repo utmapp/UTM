@@ -146,7 +146,9 @@ extension VMDisplayQemuTerminalWindowController: CSPortDelegate {
     }
     
     func port(_ port: CSPort, didError error: String) {
-        showErrorAlert(error)
+        Task { @MainActor in
+            showErrorAlert(error)
+        }
     }
     
     func port(_ port: CSPort, didRecieveData data: Data) {
