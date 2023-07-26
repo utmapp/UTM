@@ -226,6 +226,9 @@ import SwiftUI
         if let registryEntry = registryEntry {
             s.append(registryEntry.objectWillChange.sink { [weak self] in
                 self?.objectWillChange.send()
+                Task { @MainActor in
+                    self?.wrapped?.updateConfigFromRegistry()
+                }
             })
         }
         observers = s
