@@ -106,9 +106,13 @@ extension UTMCtl {
         ///   - error: Error
         /// - Returns: nil
         func eventDidFail(_ event: UnsafePointer<AppleEvent>, withError error: Error) -> Any? {
+            let error = error as NSError
             FileHandle.standardError.write("Error from event: \(error.localizedDescription)")
-            if let user = (error as NSError).userInfo["ErrorString"] as? String {
+            if let user = error.userInfo["ErrorString"] as? String {
                 FileHandle.standardError.write(user)
+            }
+            if error.domain == NSOSStatusErrorDomain && error.code == errAEEventNotPermitted {
+                FileHandle.standardError.write("NOTE: utmctl does not work from SSH sessions or before logging in.")
             }
             return nil
         }
