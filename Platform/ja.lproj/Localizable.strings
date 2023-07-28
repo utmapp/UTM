@@ -542,7 +542,7 @@
 
 // VMConfigInputView.swift
 "If enabled, the default input devices will be emulated on the USB bus." = "有効にすると、デフォルトの入力デバイスがUSBバス上でエミュレートされます。";
-"USB Support" = "USB対応";
+"USB Support" = "対応USB";
 "USB Sharing" = "USB共有";
 "USB sharing not supported in this build of UTM." = "USB共有はこのビルドのUTMでは対応していません。";
 "Share USB devices from host" = "ホストからUSBデバイスを共有";
@@ -882,7 +882,7 @@
 "Identifier '%@' cannot be found." = "識別子“%@”が見つかりません。";
 "Drive description is invalid." = "ドライブの説明が無効です。";
 "Index %lld cannot be found." = "インデックス%lldが見つかりません。";
-"This device is not supported by the target." = "このデバイスはターゲットでは対応していません。";
+"This device is not supported by the target." = "このデバイスはターゲットによって対応していません。";
 
 // UTMScriptingCreateCommand.swift
 "UTM is not ready to accept commands." = "UTMはコマンドを受け入れる準備ができていません。";
