@@ -42,6 +42,30 @@ struct VMWizardOSWindowsView: View {
                 
                 if wizardState.isWindows10OrHigher {
                     Toggle("Import VHDX Image", isOn: $useVhdx)
+                    #if os(macOS)
+                    if useVhdx {
+                        #if arch(arm64)
+                        Link(destination: URL(string: "https://www.microsoft.com/en-us/software-download/windowsinsiderpreviewARM64")!) {
+                            Label("Download Windows 11 for ARM64 Preview VHDX", systemImage: "link")
+                        }.buttonStyle(.borderless)
+                        #endif
+                    } else {
+                        Button {
+                            let downloadCrystalFetch = URL(string: "https://mac.getutm.app/crystalfetch/")!
+                            if let crystalFetch = NSWorkspace.shared.urlForApplication(withBundleIdentifier: "llc.turing.CrystalFetch") {
+                                NSWorkspace.shared.openApplication(at: crystalFetch, configuration: .init()) { _, error in
+                                    if error != nil {
+                                        NSWorkspace.shared.open(downloadCrystalFetch)
+                                    }
+                                }
+                            } else {
+                                NSWorkspace.shared.open(downloadCrystalFetch)
+                            }
+                        } label: {
+                            Label("Fetch latest Windows installer…", systemImage: "link")
+                        }.buttonStyle(.link)
+                    }
+                    #endif
                     Link(destination: URL(string: "https://docs.getutm.app/guides/windows/")!) {
                         Label("Windows Install Guide", systemImage: "link")
                     }.buttonStyle(.borderless)
