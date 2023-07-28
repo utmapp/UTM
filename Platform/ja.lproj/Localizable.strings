@@ -758,6 +758,8 @@
 // VMWizardOSWindowsView.swift
 "Install Windows 10 or higher" = "Windows 10以降をインストール";
 "Import VHDX Image" = "VHDXイメージを読み込む";
+"Download Windows 11 for ARM64 Preview VHDX" = "ARM64用のWindows 11プレビューVHDXをダウンロード";
+"Fetch latest Windows installer…" = "最新のWindowsインストーラを取得…";
 "Windows Install Guide" = "Windowsインストールガイド";
 "Image File Type" = "イメージファイルの種類";
 "Boot VHDX Image" = "起動VHDXイメージ";
