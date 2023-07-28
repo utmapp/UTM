@@ -36,6 +36,8 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
     
     override func enterSuspended(isBusy busy: Bool) {
         appleView.virtualMachine = nil
+        captureMouseToolbarButton.state = .off
+        captureMouseButtonPressed(self)
         super.enterSuspended(isBusy: busy)
     }
     
