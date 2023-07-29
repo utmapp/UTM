@@ -49,7 +49,7 @@ struct VMWizardOSWindowsView: View {
                             Label("Download Windows 11 for ARM64 Preview VHDX", systemImage: "link")
                         }.buttonStyle(.borderless)
                         #endif
-                    } else {
+                    } else if #available(macOS 12, *) { // CrystalFetch is only available on macOS 12+
                         Button {
                             let downloadCrystalFetch = URL(string: "https://mac.getutm.app/crystalfetch/")!
                             if let crystalFetch = NSWorkspace.shared.urlForApplication(withBundleIdentifier: "llc.turing.CrystalFetch") {
