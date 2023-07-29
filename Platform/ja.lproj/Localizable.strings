@@ -410,9 +410,14 @@
 "Edit…" = "編集…";
 "New…" = "新規…";
 
-// VMDrivesSettingsView.swift
+// VMConfigQEMUArgumentsView.swift
+"Arguments" = "引数";
+"Export QEMU Command…" = "QEMUコマンドを書き出す…";
+"Export all arguments as a text file. This is only for debugging purposes as UTM's built-in QEMU differs from upstream QEMU in supported arguments." = "すべての引数をテキストファイルとして書き出します。UTMの内蔵QEMUは、対応している引数がアップストリームのQEMUのものと異なるため、この機能はデバッグの目的でのみ使用します。";
 "Move Up" = "上に移動";
 "Move Down" = "下に移動";
+
+// VMDrivesSettingsView.swift
 "Add a new drive." = "新規ドライブを追加します。";
 "Browse…" = "選択…";
 "Import…" = "読み込む…";
@@ -596,7 +601,6 @@
 "QEMU Machine Properties" = "QEMUマシンプロパティ";
 "This is appended to the -machine argument." = "-machine引数に追加されます。";
 "QEMU Arguments" = "QEMU引数";
-"Export QEMU Command…" = "QEMUコマンドを書き出す…";
 "(Delete)" = "（削除）";
 
 // VMConfigSerialView.swift
