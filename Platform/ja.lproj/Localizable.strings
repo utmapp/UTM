@@ -596,7 +596,7 @@
 "QEMU Machine Properties" = "QEMUマシンプロパティ";
 "This is appended to the -machine argument." = "-machine引数に追加されます。";
 "QEMU Arguments" = "QEMU引数";
-"Export QEMU Command" = "QEMUコマンドを書き出す";
+"Export QEMU Command…" = "QEMUコマンドを書き出す…";
 "(Delete)" = "（削除）";
 
 // VMConfigSerialView.swift

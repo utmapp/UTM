@@ -871,7 +871,7 @@
 "Cannot allocate memory" = "无法分配内存";
 
 /* No comment provided by engineer. */
-"Export QEMU Command" = "导出 QEMU 命令";
+"Export QEMU Command…" = "导出 QEMU 命令⋯";
 
 /* No comment provided by engineer. */
 "Random" = "随机生成";

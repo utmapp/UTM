@@ -566,7 +566,7 @@
 "Export Debug Log" = "Exportar registro de depuración";
 
 /* No comment provided by engineer. */
-"Export QEMU Command" = "Exportar comando de QEMU";
+"Export QEMU Command…" = "Exportar comando de QEMU…";
 
 /* Word for decompressing a compressed folder */
 "Extracting…" = "Extrayendo…";

@@ -39,6 +39,12 @@ struct VMQEMUSettingsView: View {
         NavigationLink(destination: VMConfigQEMUView(config: $config.qemu, system: $config.system, fetchFixedArguments: { config.generatedArguments }).scrollable()) {
             Label("QEMU", systemImage: "shippingbox")
         }
+        if #available(macOS 12, *) {
+            NavigationLink(destination: VMConfigQEMUArgumentsView(config: $config.qemu, architecture: config.system.architecture, fixedArguments: config.generatedArguments)) {
+                Label("Arguments", systemImage: "character.textbox")
+                    .padding(.leading)
+            }
+        }
         NavigationLink(destination: VMConfigInputView(config: $config.input).scrollable()) {
             Label("Input", systemImage: "keyboard")
         }

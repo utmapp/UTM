@@ -374,7 +374,7 @@
 "Export Debug Log" = "Vie virheenkorjausloki";
 
 /* No comment provided by engineer. */
-"Export QEMU Command" = "Export QEMU Command";
+"Export QEMU Command…" = "Export QEMU Command…";
 
 /* UTMVirtualMachine+Drives */
 "Failed create bookmark." = "Kirjanmerkin luominen epäonnistui.";

@@ -845,6 +845,7 @@
 		CEBE820B26A4C8E0007AAB12 /* VMWizardSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBE820A26A4C8E0007AAB12 /* VMWizardSummaryView.swift */; };
 		CEBE820C26A4C8E0007AAB12 /* VMWizardSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBE820A26A4C8E0007AAB12 /* VMWizardSummaryView.swift */; };
 		CEBE820D26A4C8E0007AAB12 /* VMWizardSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBE820A26A4C8E0007AAB12 /* VMWizardSummaryView.swift */; };
+		CEC0A30A2A7490D200980857 /* VMConfigQEMUArgumentsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC0A3092A7490D200980857 /* VMConfigQEMUArgumentsView.swift */; };
 		CEC794BA294924E300121A9F /* UTMScriptingSerialPortImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC794B9294924E300121A9F /* UTMScriptingSerialPortImpl.swift */; };
 		CEC794BC2949663C00121A9F /* UTMScripting.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC794BB2949663C00121A9F /* UTMScripting.swift */; };
 		CEC794BD2949663C00121A9F /* UTMScripting.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC794BB2949663C00121A9F /* UTMScripting.swift */; };
@@ -1624,6 +1625,7 @@
 		CEBE820226A4C1B5007AAB12 /* VMWizardDrivesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMWizardDrivesView.swift; sourceTree = "<group>"; };
 		CEBE820626A4C74E007AAB12 /* VMWizardSharingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMWizardSharingView.swift; sourceTree = "<group>"; };
 		CEBE820A26A4C8E0007AAB12 /* VMWizardSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMWizardSummaryView.swift; sourceTree = "<group>"; };
+		CEC0A3092A7490D200980857 /* VMConfigQEMUArgumentsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigQEMUArgumentsView.swift; sourceTree = "<group>"; };
 		CEC794B9294924E300121A9F /* UTMScriptingSerialPortImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMScriptingSerialPortImpl.swift; sourceTree = "<group>"; };
 		CEC794BB2949663C00121A9F /* UTMScripting.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UTMScripting.swift; sourceTree = "<group>"; };
 		CEC9968328AA516000E7A025 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ja; path = ja.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
@@ -2151,6 +2153,7 @@
 				84C584EA268FA6D1000FCABF /* VMConfigAppleSystemView.swift */,
 				848A98C7287206AE006F0550 /* VMConfigAppleVirtualizationView.swift */,
 				CE2D953E24AD4F980059923A /* VMConfigNetworkPortForwardView.swift */,
+				CEC0A3092A7490D200980857 /* VMConfigQEMUArgumentsView.swift */,
 				84A381A9268CB30C0048EE4D /* VMDrivesSettingsView.swift */,
 				CE928C3026ACCDEA0099F293 /* VMAppleRemovableDrivesView.swift */,
 				84C584E4268F8C65000FCABF /* VMAppleSettingsView.swift */,
@@ -3085,6 +3088,7 @@
 				CEECE13C25E47D9500A2AAB8 /* AppDelegate.swift in Sources */,
 				CE0B6CF724AD568400FE012D /* UTMLegacyQemuConfiguration+Display.m in Sources */,
 				CE25125529C80CD4000790AB /* UTMScriptingCreateCommand.swift in Sources */,
+				CEC0A30A2A7490D200980857 /* VMConfigQEMUArgumentsView.swift in Sources */,
 				843232B928C4816100CFBC97 /* UTMDownloadSupportToolsTask.swift in Sources */,
 				8471772A27CD3CAB00D3A50B /* DetailedSection.swift in Sources */,
 				8432329A28C3084A00CFBC97 /* GlobalFileImporter.swift in Sources */,
