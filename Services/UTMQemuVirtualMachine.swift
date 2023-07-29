@@ -314,7 +314,7 @@ extension UTMQemuVirtualMachine {
         
         // set up SPICE sharing and removable drives
         try await self.restoreExternalDrives()
-        try await self.restoreSharedDirectory()
+        try await self.restoreSharedDirectory(for: ioService)
         try Task.checkCancellation()
         
         // continue VM boot
@@ -715,18 +715,6 @@ extension UTMQemuVirtualMachine {
         }
     }
     
-    func restoreExternalDrivesAndShares(completion: @escaping (Error?) -> Void) {
-        Task.detached {
-            do {
-                try await self.restoreExternalDrives()
-                try await self.restoreSharedDirectory()
-                completion(nil)
-            } catch {
-                completion(error)
-            }
-        }
-    }
-    
     @MainActor func externalImageURL(for drive: UTMQemuConfigurationDrive) -> URL? {
         registryEntry.externalDrives[drive.id]?.url
     }
@@ -772,7 +760,7 @@ extension UTMQemuVirtualMachine {
         await registryEntry.updateSingleSharedDirectoryRemoteBookmark(bookmark)
     }
     
-    func restoreSharedDirectory() async throws {
+    func restoreSharedDirectory(for ioService: UTMSpiceIO) async throws {
         guard let share = await registryEntry.sharedDirectories.first else {
             return
         }
@@ -786,9 +774,7 @@ extension UTMQemuVirtualMachine {
                 try await changeSharedDirectory(to: url)
             }
         } else if await config.sharing.directoryShareMode == .webdav {
-            if let ioService = ioService {
-                ioService.changeSharedDirectory(share.url)
-            }
+            ioService.changeSharedDirectory(share.url)
         }
     }
 }
