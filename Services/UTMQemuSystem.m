@@ -21,6 +21,7 @@
 @interface UTMQemuSystem ()
 
 @property (nonatomic) NSString *architecture;
+@property (nonatomic) NSMutableDictionary<NSString *, NSString *> *mutableEnvironment;
 
 @end
 
@@ -45,11 +46,12 @@ static int startQemu(UTMProcess *process, int argc, const char *argv[], const ch
     _rendererBackend = rendererBackend;
     switch (rendererBackend) {
         case kQEMURendererBackendAngleMetal:
-            self.environment = @{@"ANGLE_DEFAULT_PLATFORM": @"metal"};
+            self.mutableEnvironment[@"ANGLE_DEFAULT_PLATFORM"] = @"metal";
             break;
         case kQEMURendererBackendDefault:
         case kQEMURendererBackendAngleGL:
         default:
+            [self.mutableEnvironment removeObjectForKey:@"ANGLE_DEFAULT_PLATFORM"];
             break;
     }
 }
@@ -75,11 +77,20 @@ static int startQemu(UTMProcess *process, int argc, const char *argv[], const ch
     [logging writeLine:[NSString stringWithFormat:@"Launching: qemu-system-%@%@\n", self.architecture, self.arguments]];
 }
 
+- (void)setHasDebugLog:(BOOL)hasDebugLog {
+    _hasDebugLog = hasDebugLog;
+}
+
+- (NSDictionary<NSString *,NSString *> *)environment {
+    return self.mutableEnvironment;
+}
+
 - (instancetype)initWithArguments:(NSArray<NSString *> *)arguments architecture:(nonnull NSString *)architecture {
     self = [super initWithArguments:arguments];
     if (self) {
         self.entry = startQemu;
         self.architecture = architecture;
+        self.mutableEnvironment = [NSMutableDictionary dictionary];
     }
     return self;
 }

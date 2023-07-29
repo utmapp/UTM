@@ -29,6 +29,7 @@ typedef NS_OPTIONS(NSUInteger, UTMSpiceIOOptions) {
     UTMSpiceIOOptionsHasAudio             = (1 << 0),
     UTMSpiceIOOptionsHasClipboardSharing  = (1 << 1),
     UTMSpiceIOOptionsIsShareReadOnly      = (1 << 2),
+    UTMSpiceIOOptionsHasDebugLog          = (1 << 3),
 };
 
 NS_ASSUME_NONNULL_BEGIN
@@ -45,6 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 #endif
 @property (nonatomic, weak, nullable) id<UTMSpiceIODelegate> delegate;
 @property (nonatomic, readonly) BOOL isConnected;
+@property (nonatomic, nullable) LogHandler_t logHandler;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithSocketUrl:(NSURL *)socketUrl options:(UTMSpiceIOOptions)options NS_DESIGNATED_INITIALIZER;

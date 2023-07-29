@@ -42,6 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UTMQEMURendererBackend rendererBackend;
 @property (nonatomic, weak) id<QEMULauncherDelegate> launcherDelegate;
 @property (nonatomic, nullable) QEMULogging *logging;
+@property (nonatomic) BOOL hasDebugLog;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithArguments:(NSArray<NSString *> *)arguments NS_UNAVAILABLE;

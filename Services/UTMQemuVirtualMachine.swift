@@ -243,8 +243,9 @@ extension UTMQemuVirtualMachine {
         guard await isSupported else {
             throw UTMQemuVirtualMachineError.emulationNotSupported
         }
+        let hasDebugLog = await config.qemu.hasDebugLog
         // start logging
-        if await config.qemu.hasDebugLog, let debugLogURL = await config.qemu.debugLogURL {
+        if hasDebugLog, let debugLogURL = await config.qemu.debugLogURL {
             await qemuVM.setRedirectLog(url: debugLogURL)
         } else {
             await qemuVM.setRedirectLog(url: nil)
@@ -274,6 +275,7 @@ extension UTMQemuVirtualMachine {
         system.currentDirectoryUrl = await config.socketURL
         system.remoteBookmarks = remoteBookmarks as NSDictionary
         system.rendererBackend = rendererBackend
+        system.hasDebugLog = hasDebugLog
         try Task.checkCancellation()
         
         if isShortcut {
@@ -291,8 +293,14 @@ extension UTMQemuVirtualMachine {
         if await config.sharing.isDirectoryShareReadOnly {
             options.insert(.isShareReadOnly)
         }
+        if hasDebugLog {
+            options.insert(.hasDebugLog)
+        }
         let spiceSocketUrl = await config.spiceSocketURL
         let ioService = UTMSpiceIO(socketUrl: spiceSocketUrl, options: options)
+        ioService.logHandler = { [weak system] (line: String) -> Void in
+            system?.logging?.writeLine(line)
+        }
         try ioService.start()
         try Task.checkCancellation()
         

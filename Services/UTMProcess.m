@@ -160,10 +160,6 @@ static int defaultEntry(UTMProcess *self, int argc, const char *argv[], const ch
     [_argv removeAllObjects];
 }
 
-- (void)printArgv {
-    UTMLog(@"Running: %@", self.arguments);
-}
-
 - (BOOL)didLoadDylib:(void *)handle {
     return YES;
 }
@@ -255,7 +251,6 @@ static int defaultEntry(UTMProcess *self, int argc, const char *argv[], const ch
 }
 
 - (void)startProcess:(nonnull NSString *)name completion:(nonnull void (^)(NSError * _Nullable))completion {
-    [self printArgv];
 #if TARGET_OS_IPHONE
     NSString *base = @"";
 #else
