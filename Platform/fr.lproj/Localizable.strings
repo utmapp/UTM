@@ -582,7 +582,7 @@
 "QEMU Machine Properties" = "Propriétés de la machine QEMU";
 "This is appended to the -machine argument." = "Ceci est ajouté à l'argument -machine.";
 "QEMU Arguments" = "Arguments pour QEMU";
-"Export QEMU Command" = "Exporter la commande QEMU";
+"Export QEMU Command…" = "Exporter la commande QEMU…";
 "(Delete)" = "（Supprimer）";
 
 // VMConfigSerialView.swift

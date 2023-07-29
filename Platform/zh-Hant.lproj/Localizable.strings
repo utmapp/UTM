@@ -374,7 +374,7 @@
 "Export Debug Log" = "匯出除錯日誌";
 
 /* No comment provided by engineer. */
-"Export QEMU Command" = "匯出 QEMU 命令";
+"Export QEMU Command…" = "匯出 QEMU 命令⋯";
 
 /* UTMVirtualMachine+Drives */
 "Failed create bookmark." = "無法建立書籤。";

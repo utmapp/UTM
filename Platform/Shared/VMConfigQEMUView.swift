@@ -48,14 +48,6 @@ struct VMConfigQEMUView: View {
         }
     }
     
-    private var isMontereyOrHigher: Bool {
-        if #available(macOS 12, *) {
-            return true
-        } else {
-            return false
-        }
-    }
-    
     var body: some View {
         VStack {
             Form {
@@ -102,34 +94,46 @@ struct VMConfigQEMUView: View {
                 DetailedSection("QEMU Machine Properties", description: "This is appended to the -machine argument.") {
                     DefaultTextField("", text: $config.machinePropertyOverride.bound, prompt: "Default")
                 }
-                Section(header: Text("QEMU Arguments")) {
-                    let fixedArgs = fetchFixedArguments()
-                    Button("Export QEMU Command") {
-                        showExportArgs.toggle()
-                    }.modifier(VMShareItemModifier(isPresented: $showExportArgs, shareItem: exportArgs(fixedArgs)))
-                    #if os(macOS)
-                    // SwiftUI bug: on macOS 11, the ForEach crashes during save
-                    if isMontereyOrHigher || !data.busy {
-                        VStack {
-                            ForEach(fixedArgs) { arg in
-                                TextField("", text: .constant(arg.string))
-                            }.disabled(true)
-                            CustomArguments(config: $config)
-                            NewArgumentTextField(config: $config)
-                        }
-                    }
-                    #else
-                    List {
-                        ForEach(fixedArgs) { arg in
-                            Text(arg.string)
-                        }.foregroundColor(.secondary)
-                        CustomArguments(config: $config)
-                        NewArgumentTextField(config: $config)
-                    }
-                    #endif
+                #if os(macOS)
+                // macOS 12+ uses the new VMConfigQEMUArgumentsView
+                if #unavailable(macOS 12) {
+                    additionalArguments
                 }
+                #else
+                additionalArguments
+                #endif
             }.navigationBarItems(trailing: EditButton())
             .disableAutocorrection(true)
+        }
+    }
+    
+    @ViewBuilder
+    var additionalArguments: some View {
+        Section(header: Text("QEMU Arguments")) {
+            let fixedArgs = fetchFixedArguments()
+            Button("Export QEMU Command…") {
+                showExportArgs.toggle()
+            }.modifier(VMShareItemModifier(isPresented: $showExportArgs, shareItem: exportArgs(fixedArgs)))
+            #if os(macOS)
+            // SwiftUI bug: on macOS 11, the ForEach crashes during save
+            if !data.busy {
+                VStack {
+                    ForEach(fixedArgs) { arg in
+                        TextField("", text: .constant(arg.string))
+                    }.disabled(true)
+                    CustomArguments(config: $config)
+                    NewArgumentTextField(config: $config)
+                }
+            }
+            #else
+            List {
+                ForEach(fixedArgs) { arg in
+                    Text(arg.string)
+                }.foregroundColor(.secondary)
+                CustomArguments(config: $config)
+                NewArgumentTextField(config: $config)
+            }
+            #endif
         }
     }
     
