@@ -2727,3 +2727,34 @@ index 9c783f88eb..4e4253f736 100644
 -- 
 2.39.2 (Apple Git-143)
 
+From 605087192b82ec4fa568707dc87891b163ae3570 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Sun, 30 Jul 2023 00:42:13 -0700
+Subject: [PATCH] error-report: disable custom log handler
+
+When using QMP over SPICE, this causes a deadlock.
+---
+ util/error-report.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/util/error-report.c b/util/error-report.c
+index 6e44a55732..800dbc30ad 100644
+--- a/util/error-report.c
++++ b/util/error-report.c
+@@ -394,6 +394,7 @@ void error_init(const char *argv0)
+     /* Set the program name for error_print_loc(). */
+     g_set_prgname(p ? p + 1 : argv0);
+ 
++#if 0 /* QEMU log handler disabled to prevent deadlock with SPICE logging */
+     /*
+      * This sets up glib logging so libraries using it also print their logs
+      * through error_report(), warn_report(), info_report().
+@@ -401,4 +402,5 @@ void error_init(const char *argv0)
+     g_log_set_default_handler(qemu_log_func, NULL);
+     g_warn_if_fail(qemu_glog_domains == NULL);
+     qemu_glog_domains = g_strdup(g_getenv("G_MESSAGES_DEBUG"));
++#endif
+ }
+-- 
+2.39.2 (Apple Git-143)
+

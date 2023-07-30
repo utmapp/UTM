@@ -79,6 +79,11 @@ static int startQemu(UTMProcess *process, int argc, const char *argv[], const ch
 
 - (void)setHasDebugLog:(BOOL)hasDebugLog {
     _hasDebugLog = hasDebugLog;
+    if (hasDebugLog) {
+        self.mutableEnvironment[@"G_MESSAGES_DEBUG"] = @"all";
+    } else {
+        [self.mutableEnvironment removeObjectForKey:@"G_MESSAGES_DEBUG"];
+    }
 }
 
 - (NSDictionary<NSString *,NSString *> *)environment {
