@@ -16,6 +16,8 @@
 
 #import <Foundation/Foundation.h>
 
+typedef void (^tokenCallback_t)(BOOL);
+
 NS_ASSUME_NONNULL_BEGIN
 
 // The protocol that this service will vend as its API. This header file will also need to be visible to the process hosting the service.
@@ -28,6 +30,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)stopAccessingPath:(nullable NSString *)path;
 - (void)startQemu:(NSString *)binName standardOutput:(NSFileHandle *)standardOutput standardError:(NSFileHandle *)standardError libraryBookmark:(NSData *)libBookmark argv:(NSArray<NSString *> *)argv completion:(void(^)(BOOL,NSString *))completion;
 - (void)terminate;
+
+/// Helper holds on to the token to keep this XPC service active
+///
+/// If this is not called after `startQemu`, XNU may terminate this helper as idle.
+/// - Parameter token: Token to hold, result may be discarded.
+- (void)assertActiveWithToken:(tokenCallback_t)token;
 
 @end
 

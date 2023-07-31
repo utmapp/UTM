@@ -20,8 +20,9 @@
 
 @interface QEMUHelper ()
 
-@property NSMutableArray<NSURL *> *urls;
-@property NSTask *childTask;
+@property (nonatomic) NSMutableArray<NSURL *> *urls;
+@property (nonatomic, nullable) NSTask *childTask;
+@property (nonatomic, nullable) tokenCallback_t activeToken;
 
 @end
 
@@ -136,9 +137,11 @@
     task.terminationHandler = ^(NSTask *task) {
         _self.childTask = nil;
         [_self.connection.remoteObjectProxy processHasExited:task.terminationStatus message:nil];
+        [_self invalidateToken];
     };
     if (![task launchAndReturnError:&err]) {
         NSLog(@"Error starting QEMU: %@", err);
+        [self invalidateToken];
         completion(NO, err.localizedDescription);
     } else {
         self.childTask = task;
@@ -149,6 +152,25 @@
 - (void)terminate {
     [self.childTask terminate];
     self.childTask = nil;
+    [self invalidateToken];
+}
+
+- (void)assertActiveWithToken:(tokenCallback_t)token {
+    @synchronized (self) {
+        if (self.activeToken) {
+            self.activeToken(NO);
+        }
+        self.activeToken = token;
+    }
+}
+
+- (void)invalidateToken {
+    @synchronized (self) {
+        if (self.activeToken) {
+            self.activeToken(YES);
+        }
+        self.activeToken = nil;
+    }
 }
 
 @end

@@ -234,6 +234,10 @@ static int defaultEntry(UTMProcess *self, int argc, const char *argv[], const ch
     NSFileHandle *standardError = self.standardError.fileHandleForWriting;
     [_connection.remoteObjectProxy setEnvironment:self.environment];
     [_connection.remoteObjectProxy setCurrentDirectoryPath:self.currentDirectoryUrl.path];
+    // this is needed to prevent XNU from terminating an idle XPC helper
+    [_connection.remoteObjectProxy assertActiveWithToken:^(BOOL ignored) {
+        // do nothing
+    }];
     [[_connection remoteObjectProxyWithErrorHandler:^(NSError * _Nonnull error) {
         if (error.domain == NSCocoaErrorDomain && error.code == NSXPCConnectionInvalid) {
             // inhibit this error since we always see it on quit
