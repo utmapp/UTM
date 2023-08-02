@@ -878,7 +878,7 @@
 
 // UTMScriptingVirtualMachineImpl.swift
 "Operation not available." = "操作は利用できません。";
-"Operation not supported by the backend." = "操作はバックエンドによって対応していません。";
+"Operation not supported by the backend." = "操作はバックエンドが対応していません。";
 "The virtual machine is not running." = "仮想マシンが実行されていません。";
 "The virtual machine must be stopped before this operation can be performed." = "この操作を実行するには、仮想マシンを停止する必要があります。";
 "The QEMU guest agent is not running or not installed on the guest." = "QEMUゲストエージェントが起動していないか、ゲストにインストールされていません。";
@@ -888,7 +888,7 @@
 "Identifier '%@' cannot be found." = "識別子“%@”が見つかりません。";
 "Drive description is invalid." = "ドライブの説明が無効です。";
 "Index %lld cannot be found." = "インデックス%lldが見つかりません。";
-"This device is not supported by the target." = "このデバイスはターゲットによって対応していません。";
+"This device is not supported by the target." = "このデバイスはターゲットが対応していません。";
 
 // UTMScriptingCreateCommand.swift
 "UTM is not ready to accept commands." = "UTMはコマンドを受け入れる準備ができていません。";
