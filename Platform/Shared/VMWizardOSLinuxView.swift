@@ -87,7 +87,7 @@ struct VMWizardOSLinuxView: View {
                 Section {
                     FileBrowseField(url: $wizardState.linuxKernelURL, isFileImporterPresented: $isFileImporterPresented, hasClearButton: false) {
                         selectImage = .kernel
-                    }.disabled(wizardState.isBusy)
+                    }
                 } header: {
                     if wizardState.useAppleVirtualization {
                         Text("Uncompressed Linux kernel (required)")
@@ -99,7 +99,7 @@ struct VMWizardOSLinuxView: View {
                 Section {
                     FileBrowseField(url: $wizardState.linuxInitialRamdiskURL, isFileImporterPresented: $isFileImporterPresented) {
                         selectImage = .initialRamdisk
-                    }.disabled(wizardState.isBusy)
+                    }
                 } header: {
                     if wizardState.useAppleVirtualization {
                         Text("Uncompressed Linux initial ramdisk (optional)")
@@ -111,7 +111,7 @@ struct VMWizardOSLinuxView: View {
                 Section {
                     FileBrowseField(url: $wizardState.linuxRootImageURL, isFileImporterPresented: $isFileImporterPresented) {
                         selectImage = .rootImage
-                    }.disabled(wizardState.isBusy)
+                    }
                 } header: {
                     Text("Linux Root FS Image (optional)")
                 }
@@ -119,7 +119,7 @@ struct VMWizardOSLinuxView: View {
                 Section {
                     FileBrowseField(url: $wizardState.bootImageURL, isFileImporterPresented: $isFileImporterPresented) {
                         selectImage = .bootImage
-                    }.disabled(wizardState.isBusy)
+                    }
                 } header: {
                     Text("Boot ISO Image (optional)")
                 }
@@ -133,7 +133,7 @@ struct VMWizardOSLinuxView: View {
                 Section {
                     FileBrowseField(url: $wizardState.bootImageURL, isFileImporterPresented: $isFileImporterPresented) {
                         selectImage = .bootImage
-                    }.disabled(wizardState.isBusy)
+                    }
                 } header: {
                     Text("Boot ISO Image")
                 }

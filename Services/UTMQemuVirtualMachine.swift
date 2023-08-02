@@ -243,8 +243,9 @@ extension UTMQemuVirtualMachine {
         guard await isSupported else {
             throw UTMQemuVirtualMachineError.emulationNotSupported
         }
+        let hasDebugLog = await config.qemu.hasDebugLog
         // start logging
-        if await config.qemu.hasDebugLog, let debugLogURL = await config.qemu.debugLogURL {
+        if hasDebugLog, let debugLogURL = await config.qemu.debugLogURL {
             await qemuVM.setRedirectLog(url: debugLogURL)
         } else {
             await qemuVM.setRedirectLog(url: nil)
@@ -274,6 +275,9 @@ extension UTMQemuVirtualMachine {
         system.currentDirectoryUrl = await config.socketURL
         system.remoteBookmarks = remoteBookmarks as NSDictionary
         system.rendererBackend = rendererBackend
+        #if os(macOS) // FIXME: verbose logging is broken on iOS
+        system.hasDebugLog = hasDebugLog
+        #endif
         try Task.checkCancellation()
         
         if isShortcut {
@@ -291,8 +295,16 @@ extension UTMQemuVirtualMachine {
         if await config.sharing.isDirectoryShareReadOnly {
             options.insert(.isShareReadOnly)
         }
+        #if os(macOS) // FIXME: verbose logging is broken on iOS
+        if hasDebugLog {
+            options.insert(.hasDebugLog)
+        }
+        #endif
         let spiceSocketUrl = await config.spiceSocketURL
         let ioService = UTMSpiceIO(socketUrl: spiceSocketUrl, options: options)
+        ioService.logHandler = { [weak system] (line: String) -> Void in
+            system?.logging?.writeLine(line)
+        }
         try ioService.start()
         try Task.checkCancellation()
         
@@ -314,7 +326,7 @@ extension UTMQemuVirtualMachine {
         
         // set up SPICE sharing and removable drives
         try await self.restoreExternalDrives()
-        try await self.restoreSharedDirectory()
+        try await self.restoreSharedDirectory(for: ioService)
         try Task.checkCancellation()
         
         // continue VM boot
@@ -715,18 +727,6 @@ extension UTMQemuVirtualMachine {
         }
     }
     
-    func restoreExternalDrivesAndShares(completion: @escaping (Error?) -> Void) {
-        Task.detached {
-            do {
-                try await self.restoreExternalDrives()
-                try await self.restoreSharedDirectory()
-                completion(nil)
-            } catch {
-                completion(error)
-            }
-        }
-    }
-    
     @MainActor func externalImageURL(for drive: UTMQemuConfigurationDrive) -> URL? {
         registryEntry.externalDrives[drive.id]?.url
     }
@@ -772,7 +772,7 @@ extension UTMQemuVirtualMachine {
         await registryEntry.updateSingleSharedDirectoryRemoteBookmark(bookmark)
     }
     
-    func restoreSharedDirectory() async throws {
+    func restoreSharedDirectory(for ioService: UTMSpiceIO) async throws {
         guard let share = await registryEntry.sharedDirectories.first else {
             return
         }
@@ -786,9 +786,7 @@ extension UTMQemuVirtualMachine {
                 try await changeSharedDirectory(to: url)
             }
         } else if await config.sharing.directoryShareMode == .webdav {
-            if let ioService = ioService {
-                ioService.changeSharedDirectory(share.url)
-            }
+            ioService.changeSharedDirectory(share.url)
         }
     }
 }

@@ -15,7 +15,7 @@
       "location" : "https://github.com/utmapp/CocoaSpice.git",
       "state" : {
         "branch" : "main",
-        "revision" : "4a35375f2bd3c3e9815e616e31a8b56bbcb79f08"
+        "revision" : "e0333efed6e9a9dd484e4901f05ffe8aff51f127"
       }
     },
     {
@@ -42,7 +42,7 @@
       "location" : "https://github.com/utmapp/QEMUKit.git",
       "state" : {
         "branch" : "main",
-        "revision" : "d979cb5249f34e18de07e82496a004f8ff3bbd0e"
+        "revision" : "c4a333e382fc7b182a40baa6a28d701d66bbc37e"
       }
     },
     {

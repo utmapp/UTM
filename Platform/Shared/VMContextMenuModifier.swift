@@ -24,6 +24,34 @@ struct VMContextMenuModifier: ViewModifier {
     @State private var shareItem: VMShareItemModifier.ShareItem?
     
     func body(content: Content) -> some View {
+        #if os(macOS)
+        if #unavailable(macOS 12) {
+            bodyBigSur(content: content)
+        } else {
+            bodyFull(content: content)
+        }
+        #else
+        return bodyFull(content: content)
+        #endif
+    }
+    
+    #if os(macOS)
+    @ViewBuilder func bodyBigSur(content: Content) -> some View {
+        content.contextMenu {
+            Button {
+                NSWorkspace.shared.activateFileViewerSelecting([vm.pathUrl])
+            } label: {
+                Label("Show in Finder", systemImage: "folder")
+            }
+        }
+    }
+    #endif
+    
+    /// Full context menu for anything other than Big Sur
+    /// - Parameter content: Content
+    /// - Returns: View
+    @available(macOS 12, *)
+    @ViewBuilder func bodyFull(content: Content) -> some View {
         content.contextMenu {
             #if os(macOS)
             Button {

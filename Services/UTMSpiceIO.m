@@ -53,6 +53,14 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
     return self.mutableSerials;
 }
 
+- (LogHandler_t)logHandler {
+    return CSMain.sharedInstance.logHandler;
+}
+
+- (void)setLogHandler:(LogHandler_t)logHandler {
+    CSMain.sharedInstance.logHandler = logHandler;
+}
+
 - (instancetype)initWithSocketUrl:(NSURL *)socketUrl options:(UTMSpiceIOOptions)options {
     if (self = [super init]) {
         self.socketUrl = socketUrl;
@@ -81,9 +89,9 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
     if (!self.spice) {
         self.spice = [CSMain sharedInstance];
     }
-#ifdef SPICE_DEBUG_LOGGING
-    [self.spice spiceSetDebug:YES];
-#endif
+    if ((self.options & UTMSpiceIOOptionsHasDebugLog) == UTMSpiceIOOptionsHasDebugLog) {
+        [self.spice spiceSetDebug:YES];
+    }
     // do not need to encode/decode audio locally
     g_setenv("SPICE_DISABLE_OPUS", "1", TRUE);
     // need to chdir to workaround AF_UNIX sun_len limitations

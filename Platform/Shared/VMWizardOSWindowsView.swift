@@ -85,10 +85,8 @@ struct VMWizardOSWindowsView: View {
             Section {
                 if useVhdx {
                     FileBrowseField(url: $wizardState.windowsBootVhdx, isFileImporterPresented: $isFileImporterPresented, hasClearButton: false)
-                        .disabled(wizardState.isBusy)
                 } else {
                     FileBrowseField(url: $wizardState.bootImageURL, isFileImporterPresented: $isFileImporterPresented, hasClearButton: false)
-                        .disabled(wizardState.isBusy)
                 }
                 
                 if wizardState.isBusy {

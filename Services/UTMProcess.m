@@ -160,10 +160,6 @@ static int defaultEntry(UTMProcess *self, int argc, const char *argv[], const ch
     [_argv removeAllObjects];
 }
 
-- (void)printArgv {
-    UTMLog(@"Running: %@", self.arguments);
-}
-
 - (BOOL)didLoadDylib:(void *)handle {
     return YES;
 }
@@ -238,6 +234,10 @@ static int defaultEntry(UTMProcess *self, int argc, const char *argv[], const ch
     NSFileHandle *standardError = self.standardError.fileHandleForWriting;
     [_connection.remoteObjectProxy setEnvironment:self.environment];
     [_connection.remoteObjectProxy setCurrentDirectoryPath:self.currentDirectoryUrl.path];
+    // this is needed to prevent XNU from terminating an idle XPC helper
+    [_connection.remoteObjectProxy assertActiveWithToken:^(BOOL ignored) {
+        // do nothing
+    }];
     [[_connection remoteObjectProxyWithErrorHandler:^(NSError * _Nonnull error) {
         if (error.domain == NSCocoaErrorDomain && error.code == NSXPCConnectionInvalid) {
             // inhibit this error since we always see it on quit
@@ -255,7 +255,6 @@ static int defaultEntry(UTMProcess *self, int argc, const char *argv[], const ch
 }
 
 - (void)startProcess:(nonnull NSString *)name completion:(nonnull void (^)(NSError * _Nullable))completion {
-    [self printArgv];
 #if TARGET_OS_IPHONE
     NSString *base = @"";
 #else

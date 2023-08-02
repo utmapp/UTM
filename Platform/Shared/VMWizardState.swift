@@ -112,6 +112,20 @@ enum VMWizardOS: String, Identifiable {
     @Published var name: String?
     @Published var isOpenSettingsAfterCreation: Bool = false
     
+    /// SwiftUI BUG: on macOS 12, when VoiceOver is enabled and isBusy changes the disable state of a button being clicked, 
+    var isNeverDisabledWorkaround: Bool {
+        #if os(macOS)
+        if #available(macOS 12, *) {
+            if #unavailable(macOS 13) {
+                return false
+            }
+        }
+        return true
+        #else
+        return true
+        #endif
+    }
+    
     var hasNextButton: Bool {
         switch currentPage {
         case .start:

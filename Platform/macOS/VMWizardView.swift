@@ -22,6 +22,21 @@ struct VMWizardView: View {
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     @EnvironmentObject private var data: UTMData
     
+    /// SwiftUI BUG: on macOS 12, when VoiceOver is enabled and isBusy changes
+    /// the disable state of a button being clicked, the app crashes
+    private var isNeverDisabledWorkaround: Bool {
+        #if os(macOS)
+        if #available(macOS 12, *) {
+            if #unavailable(macOS 13) {
+                return false
+            }
+        }
+        return true
+        #else
+        return true
+        #endif
+    }
+    
     var body: some View {
         Group {
             switch wizardState.currentPage {
@@ -114,6 +129,7 @@ struct VMWizardView: View {
         }.alert(item: $wizardState.alertMessage) { msg in
             Alert(title: Text(msg.message))
         }
+        .disabled(wizardState.isBusy && isNeverDisabledWorkaround)
     }
 }
 

@@ -23,9 +23,8 @@ void UTMLog(NSString *format, ...) {
     va_list args;
     va_start(args, format);
     NSString *line = [[NSString alloc] initWithFormat:[format stringByAppendingString:@"\n"] arguments:args];
-    [[UTMLogging sharedInstance] writeLine:line];
     va_end(args);
-    NSLog(@"%@", line);
+    [[UTMLogging sharedInstance] writeLine:line];
 }
 
 @implementation UTMLogging
