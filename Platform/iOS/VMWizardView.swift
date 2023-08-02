@@ -122,6 +122,7 @@ fileprivate struct WizardWrapper: View {
             wizardState.currentPage = page
             wizardState.nextPageBinding = $nextPage
         }
+        .disabled(wizardState.isBusy)
     }
 }
 

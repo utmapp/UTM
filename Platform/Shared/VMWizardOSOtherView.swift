@@ -29,7 +29,6 @@ struct VMWizardOSOtherView: View {
             if !wizardState.isSkipBootImage {
                 Section {
                     FileBrowseField(url: $wizardState.bootImageURL, isFileImporterPresented: $isFileImporterPresented, hasClearButton: false)
-                    .disabled(wizardState.isBusy)
                     .padding(.leading, 1)
                     if wizardState.isBusy {
                         Spinner(size: .large)

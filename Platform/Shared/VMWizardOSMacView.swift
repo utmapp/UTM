@@ -41,7 +41,6 @@ struct VMWizardOSMacView: View {
                         .font(.caption)
                 }
                 FileBrowseField(url: $wizardState.macRecoveryIpswURL, isFileImporterPresented: $isFileImporterPresented)
-                    .disabled(wizardState.isBusy)
                 #endif
                 if wizardState.isBusy {
                     Spinner(size: .large)

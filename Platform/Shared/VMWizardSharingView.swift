@@ -28,7 +28,6 @@ struct VMWizardSharingView: View {
         List {
             DetailedSection("Shared Directory Path", description: "Optionally select a directory to make accessible inside the VM. Note that support for shared directories varies by the guest operating system and may require additional guest drivers to be installed. See UTM support pages for more details.") {
                 FileBrowseField(url: $wizardState.sharingDirectoryURL, isFileImporterPresented: $isFileImporterPresented)
-                    .disabled(wizardState.isBusy)
                 
                 if !wizardState.useAppleVirtualization {
                     Toggle("Share is read only", isOn: $wizardState.sharingReadOnly)
