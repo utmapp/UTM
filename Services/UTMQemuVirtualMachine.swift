@@ -275,7 +275,9 @@ extension UTMQemuVirtualMachine {
         system.currentDirectoryUrl = await config.socketURL
         system.remoteBookmarks = remoteBookmarks as NSDictionary
         system.rendererBackend = rendererBackend
+        #if os(macOS) // FIXME: verbose logging is broken on iOS
         system.hasDebugLog = hasDebugLog
+        #endif
         try Task.checkCancellation()
         
         if isShortcut {
@@ -293,9 +295,11 @@ extension UTMQemuVirtualMachine {
         if await config.sharing.isDirectoryShareReadOnly {
             options.insert(.isShareReadOnly)
         }
+        #if os(macOS) // FIXME: verbose logging is broken on iOS
         if hasDebugLog {
             options.insert(.hasDebugLog)
         }
+        #endif
         let spiceSocketUrl = await config.spiceSocketURL
         let ioService = UTMSpiceIO(socketUrl: spiceSocketUrl, options: options)
         ioService.logHandler = { [weak system] (line: String) -> Void in
