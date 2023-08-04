@@ -6929,3 +6929,29 @@ index 9c783f88eb..4e4253f736 100644
 -- 
 2.41.0
 
+From 84ccd8b6a017532f791ed221d0237109ba72637a Mon Sep 17 00:00:00 2001
+From: osy <50960678+osy@users.noreply.github.com>
+Date: Sat, 8 Jul 2023 14:41:16 -0700
+Subject: [PATCH] edk2: add secure boot variant to aarch64 firmware
+
+---
+ pc-bios/edk2-aarch64-secure-code.fd.bz2 | Bin 0 -> 1078184 bytes
+ pc-bios/meson.build                     |   1 +
+ 2 files changed, 1 insertion(+)
+ create mode 100644 pc-bios/edk2-aarch64-secure-code.fd.bz2
+
+diff --git a/pc-bios/meson.build b/pc-bios/meson.build
+index 388e0db6e4..349fa43e0b 100644
+--- a/pc-bios/meson.build
++++ b/pc-bios/meson.build
+@@ -2,6 +2,7 @@ roms = []
+ if unpack_edk2_blobs
+   fds = [
+     'edk2-aarch64-code.fd',
++    'edk2-aarch64-secure-code.fd',
+     'edk2-arm-code.fd',
+     'edk2-arm-vars.fd',
+     'edk2-i386-code.fd',
+-- 
+2.41.0
+
