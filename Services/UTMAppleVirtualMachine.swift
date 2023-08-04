@@ -128,7 +128,9 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         self.registryEntry = UTMRegistryEntry.empty
         self.registryEntry = loadRegistry()
         self.screenshot = loadScreenshot()
-        updateConfigFromRegistry()
+        if configuration == nil {
+            updateConfigFromRegistry()
+        }
     }
     
     deinit {
