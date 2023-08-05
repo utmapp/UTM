@@ -142,27 +142,15 @@ final class UTMQemuVirtualMachine: UTMVirtualMachine {
     
     private var changeCursorRequestInProgress: Bool = false
     
-    @MainActor required init(packageUrl: URL, configuration: UTMQemuConfiguration? = nil, isShortcut: Bool = false) throws {
+    @MainActor required init(packageUrl: URL, configuration: UTMQemuConfiguration, isShortcut: Bool = false) throws {
         self.isScopedAccess = packageUrl.startAccessingSecurityScopedResource()
         // load configuration
-        let config: UTMQemuConfiguration
-        if configuration == nil {
-            guard let qemuConfig = try UTMQemuConfiguration.load(from: packageUrl) as? UTMQemuConfiguration else {
-                throw UTMConfigurationError.invalidBackend
-            }
-            config = qemuConfig
-        } else {
-            config = configuration!
-        }
-        self.config = config
+        self.config = configuration
         self.pathUrl = packageUrl
         self.isShortcut = isShortcut
         self.registryEntry = UTMRegistryEntry.empty
         self.registryEntry = loadRegistry()
         self.screenshot = loadScreenshot()
-        if configuration == nil {
-            updateConfigFromRegistry()
-        }
     }
     
     deinit {

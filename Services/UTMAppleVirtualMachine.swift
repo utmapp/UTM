@@ -110,27 +110,15 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
     
     private var activeResourceUrls: [URL] = []
     
-    @MainActor required init(packageUrl: URL, configuration: UTMAppleConfiguration? = nil, isShortcut: Bool = false) throws {
+    @MainActor required init(packageUrl: URL, configuration: UTMAppleConfiguration, isShortcut: Bool = false) throws {
         self.isScopedAccess = packageUrl.startAccessingSecurityScopedResource()
         // load configuration
-        let config: UTMAppleConfiguration
-        if configuration == nil {
-            guard let appleConfig = try UTMAppleConfiguration.load(from: packageUrl) as? UTMAppleConfiguration else {
-                throw UTMConfigurationError.invalidBackend
-            }
-            config = appleConfig
-        } else {
-            config = configuration!
-        }
-        self.config = config
+        self.config = configuration
         self.pathUrl = packageUrl
         self.isShortcut = isShortcut
         self.registryEntry = UTMRegistryEntry.empty
         self.registryEntry = loadRegistry()
         self.screenshot = loadScreenshot()
-        if configuration == nil {
-            updateConfigFromRegistry()
-        }
     }
     
     deinit {

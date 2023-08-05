@@ -182,6 +182,7 @@ import SwiftUI
         }
         wrapped = vm
         uuidUnknown = false
+        vm.updateConfigFromRegistry()
         subscribeToChildren()
     }
     

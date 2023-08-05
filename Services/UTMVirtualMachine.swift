@@ -88,9 +88,9 @@ protocol UTMVirtualMachine: AnyObject, Identifiable {
     /// Instantiate a new virtual machine
     /// - Parameters:
     ///   - packageUrl: Package where the virtual machine resides
-    ///   - configuration: New virtual machine configuration or nil to load an existing one
+    ///   - configuration: New virtual machine configuration
     ///   - isShortcut: Indicate that this package cannot be moved
-    init(packageUrl: URL, configuration: Configuration?, isShortcut: Bool) throws
+    init(packageUrl: URL, configuration: Configuration, isShortcut: Bool) throws
     
     /// Discard any changes to configuration by reloading from disk
     /// - Parameter packageUrl: URL to reload from, if nil then use the existing package URL
