@@ -78,7 +78,7 @@ extension UTMAPICommand {
     
     /// Find the path to UTM.app
     private var utmAppUrl: URL {
-        if let executableURL = Bundle.main.executableURL {
+        if let executableURL = Bundle.main.executableURL?.resolvingSymlinksInPath() {
             let utmURL = executableURL.deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
             if utmURL.lastPathComponent == "UTM.app" {
                 return utmURL
