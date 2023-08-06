@@ -21,61 +21,31 @@ struct VMWizardView: View {
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
     var body: some View {
-        NavigationView {
-            WizardWrapper(page: .start, wizardState: wizardState) {
+        if #available(iOS 16, visionOS 1.0, *) {
+            WizardNavigationView(wizardState: wizardState) {
                 presentationMode.wrappedValue.dismiss()
             }
-        }.navigationViewStyle(.stack)
-        .alert(item: $wizardState.alertMessage) { msg in
-            Alert(title: Text(msg.message))
+        } else {
+            NavigationView {
+                WizardWrapper(page: .start, wizardState: wizardState) {
+                    presentationMode.wrappedValue.dismiss()
+                }
+            }
+            .navigationViewStyle(.stack)
+            .alert(item: $wizardState.alertMessage) { msg in
+                Alert(title: Text(msg.message))
+            }
         }
     }
 }
 
-fileprivate struct WizardWrapper: View {
-    let page: VMWizardPage
+fileprivate struct WizardToolbar: ViewModifier {
     @ObservedObject var wizardState: VMWizardState
-    @State private var nextPage: VMWizardPage?
     let onDismiss: () -> Void
     @EnvironmentObject private var data: UTMData
-    
-    var body: some View {
-        VStack {
-            switch page {
-            case .start:
-                VMWizardStartView(wizardState: wizardState)
-            case .operatingSystem:
-                VMWizardOSView(wizardState: wizardState)
-            case .macOSBoot:
-                EmptyView()
-            case .linuxBoot:
-                VMWizardOSLinuxView(wizardState: wizardState)
-            case .windowsBoot:
-                VMWizardOSWindowsView(wizardState: wizardState)
-            case .otherBoot:
-                VMWizardOSOtherView(wizardState: wizardState)
-            case .hardware:
-                VMWizardHardwareView(wizardState: wizardState)
-            case .drives:
-                VMWizardDrivesView(wizardState: wizardState)
-            case .sharing:
-                VMWizardSharingView(wizardState: wizardState)
-            case .summary:
-                VMWizardSummaryView(wizardState: wizardState)
-            }
-            NavigationLink(destination: WizardWrapper(page: .start, wizardState: wizardState, onDismiss: onDismiss), tag: .start, selection: $nextPage) {}
-            NavigationLink(destination: WizardWrapper(page: .operatingSystem, wizardState: wizardState, onDismiss: onDismiss), tag: .operatingSystem, selection: $nextPage) {}
-            NavigationLink(destination: WizardWrapper(page: .linuxBoot, wizardState: wizardState, onDismiss: onDismiss), tag: .linuxBoot, selection: $nextPage) {}
-            NavigationLink(destination: WizardWrapper(page: .windowsBoot, wizardState: wizardState, onDismiss: onDismiss), tag: .windowsBoot, selection: $nextPage) {}
-            NavigationLink(destination: WizardWrapper(page: .otherBoot, wizardState: wizardState, onDismiss: onDismiss), tag: .otherBoot, selection: $nextPage) {}
-            NavigationLink(destination: WizardWrapper(page: .hardware, wizardState: wizardState, onDismiss: onDismiss), tag: .hardware, selection: $nextPage) {}
-            NavigationLink(destination: WizardWrapper(page: .drives, wizardState: wizardState, onDismiss: onDismiss), tag: .drives, selection: $nextPage) {}
-            NavigationLink(destination: WizardWrapper(page: .sharing, wizardState: wizardState, onDismiss: onDismiss), tag: .sharing, selection: $nextPage) {}
-            NavigationLink(destination: WizardWrapper(page: .summary, wizardState: wizardState, onDismiss: onDismiss), tag: .summary, selection: $nextPage) {}
-        }
-        .listStyle(.insetGrouped) // needed for iOS 14
-        .textFieldStyle(.roundedBorder)
-        .toolbar {
+
+    func body(content: Content) -> some View {
+        content.toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 if wizardState.currentPage == .start {
                     Button("Cancel") {
@@ -112,6 +82,34 @@ fileprivate struct WizardWrapper: View {
                 }
             }
         }
+    }
+}
+
+@available(iOS, deprecated: 17, message: "Use WizardViewWrapper")
+@available(visionOS, deprecated: 1, message: "Use WizardViewWrapper")
+fileprivate struct WizardWrapper: View {
+    let page: VMWizardPage
+    @ObservedObject var wizardState: VMWizardState
+    @State private var nextPage: VMWizardPage?
+    let onDismiss: () -> Void
+    @EnvironmentObject private var data: UTMData
+    
+    var body: some View {
+        VStack {
+            WizardViewWrapper(page: page, wizardState: wizardState)
+            NavigationLink(destination: WizardWrapper(page: .start, wizardState: wizardState, onDismiss: onDismiss), tag: .start, selection: $nextPage) {}
+            NavigationLink(destination: WizardWrapper(page: .operatingSystem, wizardState: wizardState, onDismiss: onDismiss), tag: .operatingSystem, selection: $nextPage) {}
+            NavigationLink(destination: WizardWrapper(page: .linuxBoot, wizardState: wizardState, onDismiss: onDismiss), tag: .linuxBoot, selection: $nextPage) {}
+            NavigationLink(destination: WizardWrapper(page: .windowsBoot, wizardState: wizardState, onDismiss: onDismiss), tag: .windowsBoot, selection: $nextPage) {}
+            NavigationLink(destination: WizardWrapper(page: .otherBoot, wizardState: wizardState, onDismiss: onDismiss), tag: .otherBoot, selection: $nextPage) {}
+            NavigationLink(destination: WizardWrapper(page: .hardware, wizardState: wizardState, onDismiss: onDismiss), tag: .hardware, selection: $nextPage) {}
+            NavigationLink(destination: WizardWrapper(page: .drives, wizardState: wizardState, onDismiss: onDismiss), tag: .drives, selection: $nextPage) {}
+            NavigationLink(destination: WizardWrapper(page: .sharing, wizardState: wizardState, onDismiss: onDismiss), tag: .sharing, selection: $nextPage) {}
+            NavigationLink(destination: WizardWrapper(page: .summary, wizardState: wizardState, onDismiss: onDismiss), tag: .summary, selection: $nextPage) {}
+        }
+        .listStyle(.insetGrouped) // needed for iOS 14
+        .textFieldStyle(.roundedBorder)
+        .modifier(WizardToolbar(wizardState: wizardState, onDismiss: onDismiss))
         .onChange(of: nextPage) { newPage in
             if newPage == nil {
                 wizardState.currentPage = page
@@ -123,6 +121,69 @@ fileprivate struct WizardWrapper: View {
             wizardState.nextPageBinding = $nextPage
         }
         .disabled(wizardState.isBusy)
+    }
+}
+
+@available(iOS 16, visionOS 1.0, *)
+fileprivate struct WizardNavigationView: View {
+    @StateObject var wizardState = VMWizardState()
+    let onDismiss: () -> Void
+    @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
+    @State private var navigationPath: NavigationPath = .init()
+    @State private var previousPage: VMWizardPage?
+    @State private var isAlertShown: Bool = false
+    
+    var body: some View {
+        NavigationStack(path: $wizardState.pageHistory) {
+            WizardViewWrapper(page: .start, wizardState: wizardState)
+                .modifier(WizardToolbar(wizardState: wizardState, onDismiss: onDismiss))
+                .navigationDestination(for: VMWizardPage.self) { page in
+                    WizardViewWrapper(page: page, wizardState: wizardState)
+                        .modifier(WizardToolbar(wizardState: wizardState, onDismiss: onDismiss))
+                }
+                .textFieldStyle(.roundedBorder)
+                .disabled(wizardState.isBusy)
+        }
+        .alert("Error", isPresented: $isAlertShown) {
+            Button("OK", role: .cancel) {
+                wizardState.alertMessage = nil
+            }
+        } message: {
+            Text(wizardState.alertMessage?.message ?? "")
+        }
+        .onChange(of: wizardState.alertMessage?.message) { newValue in
+            isAlertShown = newValue != nil
+        }
+    }
+}
+
+fileprivate struct WizardViewWrapper: View {
+    let page: VMWizardPage
+    @ObservedObject var wizardState: VMWizardState
+
+    var body: some View {
+        switch page {
+        case .start:
+            VMWizardStartView(wizardState: wizardState)
+        case .operatingSystem:
+            VMWizardOSView(wizardState: wizardState)
+        case .macOSBoot:
+            EmptyView()
+        case .linuxBoot:
+            VMWizardOSLinuxView(wizardState: wizardState)
+        case .windowsBoot:
+            VMWizardOSWindowsView(wizardState: wizardState)
+        case .otherBoot:
+            VMWizardOSOtherView(wizardState: wizardState)
+        case .hardware:
+            VMWizardHardwareView(wizardState: wizardState)
+        case .drives:
+            VMWizardDrivesView(wizardState: wizardState)
+        case .sharing:
+            VMWizardSharingView(wizardState: wizardState)
+        case .summary:
+            VMWizardSummaryView(wizardState: wizardState)
+        }
     }
 }
 

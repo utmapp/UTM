@@ -54,7 +54,11 @@ enum VMWizardOS: String, Identifiable {
     
     @Published var slide: AnyTransition = .identity
     @Published var currentPage: VMWizardPage = .start
-    private var pageHistory = [VMWizardPage]()
+    @Published var pageHistory = [VMWizardPage]() {
+        didSet {
+            currentPage = pageHistory.last ?? .start
+        }
+    }
     @Published var nextPageBinding: Binding<VMWizardPage?> = .constant(nil)
     @Published var alertMessage: AlertMessage?
     @Published var isBusy: Bool = false
@@ -245,18 +249,16 @@ enum VMWizardOS: String, Identifiable {
         }
         slide = slideIn
         withAnimation {
-            pageHistory.append(currentPage)
-            currentPage = nextPage
+            pageHistory.append(nextPage)
             nextPageBinding.wrappedValue = nextPage
             nextPageBinding = .constant(nil)
         }
     }
     
     func back() {
-        let previousPage = pageHistory.popLast() ?? .start
         slide = slideOut
         withAnimation {
-            currentPage = previousPage
+            _ = pageHistory.popLast()
         }
     }
     
