@@ -23,6 +23,7 @@ NC='\033[0m'
 # Knobs
 IOS_SDKMINVER="11.0"
 MAC_SDKMINVER="10.11"
+VISIONOS_SDKMINVER="1.0"
 
 # Build environment
 PLATFORM=
@@ -41,7 +42,7 @@ version_check() {
 usage () {
     echo "Usage: [VARIABLE...] $(basename $0) [-p platform] [-a architecture] [-q qemu_path] [-d] [-r]"
     echo ""
-    echo "  -p platform      Target platform. Default ios. [ios|ios_simulator|ios-tci|ios_simulator-tci|macos]"
+    echo "  -p platform      Target platform. Default ios. [ios|ios_simulator|ios-tci|ios_simulator-tci|macos|visionos|visionos_simulator]"
     echo "  -a architecture  Target architecture. Default arm64. [armv7|armv7s|arm64|i386|x86_64]"
     echo "  -q qemu_path     Do not download QEMU, use qemu_path instead."
     echo "  -d, --download   Force re-download of source even if already downloaded."
@@ -217,7 +218,7 @@ generate_meson_cross() {
     echo "python = ['$(which python3)']" >> $cross
     echo "[host_machine]" >> $cross
     case $PLATFORM in
-    ios* )
+    ios* | visionos* )
         echo "system = 'ios'" >> $cross
         ;;
     macos )
@@ -323,6 +324,12 @@ build_openssl() {
             ;;
         esac
         ;;
+    visionos_simulator )
+        OPENSSL_CROSS=visionos-sim-cross-$ARCH
+        ;;
+    visionos* )
+        OPENSSL_CROSS=visionos-cross-$ARCH
+        ;;
     esac
     if [ -z "$OPENSSL_CROSS" ]; then
         echo "${RED}Unsupported configuration for OpenSSL $PLATFORM, $ARCH${NC}"
@@ -412,6 +419,16 @@ build_angle () {
             IOS_BUILD_ARGS="$IOS_BUILD_ARGS target_environment=\"device\""
         fi
         ;;
+    visionos* )
+        TARGET_OS="ios"
+        CLANG_BASE_PATH="$(dirname $(dirname $OBJCC))"
+        IOS_BUILD_ARGS="ios_enable_code_signing=false ios_deployment_target=\"$VISIONOS_SDKMINVER\" angle_enable_gl=false angle_enable_glsl=true target_platform=\"xros\" clang_base_path=\"$CLANG_BASE_PATH\" clang_use_chrome_plugins=false use_lld=false"
+        if [ "$PLATFORM" == "visionos_simulator" ]; then
+            IOS_BUILD_ARGS="$IOS_BUILD_ARGS target_environment=\"simulator\""
+        else
+            IOS_BUILD_ARGS="$IOS_BUILD_ARGS target_environment=\"device\""
+        fi
+        ;;
     macos )
         TARGET_OS="mac"
         ;;
@@ -430,8 +447,7 @@ build_angle () {
         TARGET_CPU="x64"
         ;;
     esac
-    # FIXME: remove this hack when SwiftShader is fixed
-    sed -i.old 's/"-Wloop-analysis"/"-Wloop-analysis", "-Wno-deprecated-declarations"/g' "build/config/compiler/BUILD.gn"
+    git -C build am "$PATCHES_DIR/angle-toolchain.patch"
     gn gen "--args=is_debug=false angle_build_all=false angle_enable_metal=true $IOS_BUILD_ARGS target_os=\"$TARGET_OS\" target_cpu=\"$TARGET_CPU\"" utm_build
     ninja -C utm_build -j $NCPU
     if [ "$TARGET_OS" == "ios" ]; then
@@ -441,8 +457,6 @@ build_angle () {
         cp -a "utm_build/libEGL.dylib" "$PREFIX/lib/libEGL.dylib"
         cp -a "utm_build/libGLESv2.dylib" "$PREFIX/lib/libGLESv2.dylib"
     fi
-    # FIXME: above
-    mv "build/config/compiler/BUILD.gn.old" "build/config/compiler/BUILD.gn"
     # -headerpad_max_install_names is broken and these still fail on long paths so we just make sure they run at the end with a short path
     #install_name_tool -id "$PREFIX/lib/libEGL.dylib" "$PREFIX/lib/libEGL.dylib"
     #install_name_tool -id "$PREFIX/lib/libGLESv2.dylib" "$PREFIX/lib/libGLESv2.dylib"
@@ -492,7 +506,7 @@ build_qemu_dependencies () {
     ZSTD_BASENAME="$(basename $ZSTD_SRC)"
     meson_build "$BUILD_DIR/${ZSTD_BASENAME%.tar.*}/build/meson"
     meson_build $GST_SRC -Dtests=disabled -Ddefault_library=both -Dregistry=false
-    meson_build $GST_BASE_SRC -Dtests=disabled -Ddefault_library=both
+    meson_build $GST_BASE_SRC -Dtests=disabled -Ddefault_library=both -Dgl=disabled
     meson_build $GST_GOOD_SRC -Dtests=disabled -Ddefault_library=both
     meson_build $SPICE_PROTOCOL_SRC
     meson_build $SPICE_SERVER_SRC -Dlz4=false -Dsasl=false
@@ -652,22 +666,37 @@ CHOST=$CPU-apple-darwin
 export CHOST
 
 case $PLATFORM in
-ios* )
+ios* | visionos* )
     if [ -z "$SDKMINVER" ]; then
-        SDKMINVER="$IOS_SDKMINVER"
+        case $PLATFORM in
+        ios* )
+            SDKMINVER="$IOS_SDKMINVER"
+            ;;
+        visionos* )
+            SDKMINVER="$VISIONOS_SDKMINVER"
+            ;;
+        esac
     fi
+    HVF_FLAGS="--disable-hvf"
     case $PLATFORM in
-    *simulator* )
+    ios_simulator* )
         SDK=iphonesimulator
         CFLAGS_MINVER="-mios-simulator-version-min=$SDKMINVER"
         PLATFORM_FAMILY_PREFIX="iOS_Simulator"
-        HVF_FLAGS="--disable-hvf"
         ;;
-    * )
+    ios* )
         SDK=iphoneos
         CFLAGS_MINVER="-miphoneos-version-min=$SDKMINVER"
         PLATFORM_FAMILY_PREFIX="iOS"
         HVF_FLAGS="--enable-hvf-private"
+        ;;
+    visionos_simulator* )
+        SDK=xrsimulator
+        PLATFORM_FAMILY_PREFIX="visionOS_Simulator"
+        ;;
+    visionos* )
+        SDK=xros
+        PLATFORM_FAMILY_PREFIX="visionOS"
         ;;
     esac
     CFLAGS_TARGET=
@@ -680,7 +709,6 @@ ios* )
         fi
         PLATFORM_FAMILY_NAME="$PLATFORM_FAMILY_PREFIX-TCI"
         SKIP_USB_BUILD=1
-        HVF_FLAGS="--disable-hvf"
         ;;
     * )
         PLATFORM_FAMILY_NAME="$PLATFORM_FAMILY_PREFIX"

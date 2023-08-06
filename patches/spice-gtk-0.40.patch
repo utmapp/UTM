@@ -1434,3 +1434,29 @@ index eb9416b..6d263aa 100644
 -- 
 GitLab
 
+From d5dc89146697d075178fa916253e2a69a25964b8 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Sun, 6 Aug 2023 01:11:31 -0700
+Subject: [PATCH] meson: disable version script
+
+Fails to build on Xcode 15
+---
+ src/meson.build | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/meson.build b/src/meson.build
+index 961779f..5ef1e0d 100644
+--- a/src/meson.build
++++ b/src/meson.build
+@@ -205,7 +205,7 @@ spice_client_glib_lib = library('spice-client-glib-2.0', spice_client_glib_sourc
+                                 version : spice_client_glib_so_version,
+                                 install : true,
+                                 include_directories : spice_gtk_include,
+-                                link_args : [spice_gtk_version_script],
++#                                link_args : [spice_gtk_version_script],
+                                 link_depends : spice_client_glib_syms,
+                                 dependencies : spice_glib_deps)
+ 
+-- 
+2.41.0
+

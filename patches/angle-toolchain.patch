@@ -1,0 +1,119 @@
+From 0287d27a409fb257bdfa6fe1eb38fcba30d7ac70 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Sat, 5 Aug 2023 18:38:51 -0700
+Subject: [PATCH] Add xrOS support
+
+---
+ config/apple/sdk_info.py |  2 +-
+ config/compiler/BUILD.gn |  2 +-
+ config/ios/BUILD.gn      |  5 +----
+ config/ios/codesign.py   |  2 ++
+ config/ios/config.gni    |  3 +++
+ config/ios/ios_sdk.gni   | 18 ++++++++++++++----
+ 6 files changed, 22 insertions(+), 10 deletions(-)
+
+diff --git a/config/apple/sdk_info.py b/config/apple/sdk_info.py
+index 81b06d438..94b260971 100755
+--- a/config/apple/sdk_info.py
++++ b/config/apple/sdk_info.py
+@@ -134,7 +134,7 @@ def main():
+                       default='.',
+                       help='Value of gn $root_build_dir')
+   parser.add_argument('platform',
+-                      choices=['iphoneos', 'iphonesimulator', 'macosx'])
++                      choices=['iphoneos', 'iphonesimulator', 'macosx', 'xros', 'xrsimulator'])
+   args = parser.parse_args()
+   if args.developer_dir:
+     os.environ['DEVELOPER_DIR'] = args.developer_dir
+diff --git a/config/compiler/BUILD.gn b/config/compiler/BUILD.gn
+index 944a039d0..685f79da4 100644
+--- a/config/compiler/BUILD.gn
++++ b/config/compiler/BUILD.gn
+@@ -1592,7 +1592,7 @@ config("default_warnings") {
+ 
+   if (is_clang) {
+     cflags += [
+-      "-Wloop-analysis",
++      "-Wloop-analysis", "-Wno-deprecated-declarations",
+ 
+       # TODO(thakis): This used to be implied by -Wno-unused-function,
+       # which we no longer use. Check if it makes sense to remove
+diff --git a/config/ios/BUILD.gn b/config/ios/BUILD.gn
+index f0b85cc65..9a31fa30d 100644
+--- a/config/ios/BUILD.gn
++++ b/config/ios/BUILD.gn
+@@ -39,13 +39,10 @@ config("compiler") {
+     assert(false, "unsupported environment: $target_environment")
+   }
+ 
+-  # OS.
+-  triplet_os = "apple-ios"
+-
+   # Set target.
+   common_flags = [
+     "-target",
+-    "$triplet_cpu-$triplet_os$ios_deployment_target$triplet_environment",
++    "$triplet_cpu-apple-$target_platform$ios_deployment_target$triplet_environment",
+   ]
+ 
+   # This is here so that all files get recompiled after an Xcode update.
+diff --git a/config/ios/codesign.py b/config/ios/codesign.py
+index a475302e8..ca1cb05ca 100644
+--- a/config/ios/codesign.py
++++ b/config/ios/codesign.py
+@@ -92,6 +92,8 @@ class Bundle(object):
+   def Kind(platform, extension):
+     if platform == 'iphonesimulator' or platform == 'iphoneos':
+       return 'ios'
++    if platform == 'xrsimulator' or platform == 'xros':
++      return 'xros'
+     if platform == 'macosx':
+       if extension == '.framework':
+         return 'mac_framework'
+diff --git a/config/ios/config.gni b/config/ios/config.gni
+index 74d064532..5f3f25ad5 100644
+--- a/config/ios/config.gni
++++ b/config/ios/config.gni
+@@ -14,6 +14,9 @@ declare_args() {
+   # components/cronet/tools/cr_cronet.py as cronet requires specific
+   # gn args to build correctly).
+   is_cronet_build = false
++
++  # Platform to build (ios,xros,tvos,watchos)
++  target_platform = "ios"
+ }
+ 
+ if (target_environment == "") {
+diff --git a/config/ios/ios_sdk.gni b/config/ios/ios_sdk.gni
+index af498ced8..1faab75f3 100644
+--- a/config/ios/ios_sdk.gni
++++ b/config/ios/ios_sdk.gni
+@@ -118,11 +118,21 @@ if (additional_target_cpus != [] && !is_fat_secondary_toolchain) {
+ if (ios_sdk_path == "") {
+   # Compute default target.
+   if (target_environment == "simulator") {
+-    ios_sdk_name = "iphonesimulator"
+-    ios_sdk_platform = "iPhoneSimulator"
++    if (target_platform == "xros") {
++      ios_sdk_name = "xrsimulator"
++      ios_sdk_platform = "XRSimulator"
++    } else {
++      ios_sdk_name = "iphonesimulator"
++      ios_sdk_platform = "iPhoneSimulator"
++    }
+   } else if (target_environment == "device") {
+-    ios_sdk_name = "iphoneos"
+-    ios_sdk_platform = "iPhoneOS"
++    if (target_platform == "xros") {
++      ios_sdk_name = "xros"
++      ios_sdk_platform = "XROS"
++    } else {
++      ios_sdk_name = "iphoneos"
++      ios_sdk_platform = "iPhoneOS"
++    }
+   } else if (target_environment == "catalyst") {
+     ios_sdk_name = "macosx"
+     ios_sdk_platform = "MacOSX"
+-- 
+2.41.0
+
