@@ -36,10 +36,9 @@ PHODAV_SRC="https://download.gnome.org/sources/phodav/2.5/phodav-2.5.tar.xz"
 SPICE_CLIENT_SRC="https://www.spice-space.org/download/gtk/spice-gtk-0.40.tar.xz"
 
 # Source files for GPU acceleration
-DEPOT_TOOLS_REPO="https://chromium.googlesource.com/chromium/tools/depot_tools.git"
-DEPOT_TOOLS_COMMIT="5da65ec20db9b17b03420d928240092e5955a769"
-ANGLE_REPO="https://github.com/utmapp/angle.git"
-ANGLE_COMMIT="18e942b3e66d45d0ac5404eb3cfc89390788e11f"
+WEBKIT_REPO="https://github.com/utmapp/WebKit.git"
+WEBKIT_COMMIT="59f88f623d5547039760848f188ac961b6cc85e2"
+WEBKIT_SUBDIRS="Source/ThirdParty/ANGLE Configurations Tools/ccache"
 EPOXY_REPO="https://github.com/utmapp/libepoxy.git"
 EPOXY_COMMIT="266d2290a437c655f7419e85af06bfbb73a720c4"
 VIRGLRENDERER_REPO="https://github.com/utmapp/virglrenderer.git"

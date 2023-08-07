@@ -110,6 +110,7 @@ download () {
 clone () {
     REPO="$1"
     COMMIT="$2"
+    SUBDIRS="$3"
     NAME="$(basename $REPO)"
     DIR="$BUILD_DIR/$NAME"
     if [ -d "$DIR" -a -z "$REDOWNLOAD" ]; then
@@ -117,11 +118,12 @@ clone () {
     else
         rm -rf "$DIR"
         echo "${GREEN}Cloning ${URL}...${NC}"
-        mkdir "$DIR"
-        git -C "$DIR" init
-        git -C "$DIR" remote add origin "$REPO"
+        git clone --filter=tree:0 --no-checkout "$REPO" "$DIR"
+        if [ ! -z "$SUBDIRS" ]; then
+            git -C "$DIR" sparse-checkout init
+            git -C "$DIR" sparse-checkout set $SUBDIRS
+        fi
     fi
-    git -C "$DIR" fetch --depth 1 origin "$COMMIT"
     git -C "$DIR" checkout "$COMMIT"
 }
 
@@ -158,8 +160,7 @@ download_all () {
         download $USB_SRC
         download $USBREDIR_SRC
     fi
-    clone $DEPOT_TOOLS_REPO $DEPOT_TOOLS_COMMIT
-    clone $ANGLE_REPO $ANGLE_COMMIT
+    clone $WEBKIT_REPO $WEBKIT_COMMIT "$WEBKIT_SUBDIRS"
     clone $EPOXY_REPO $EPOXY_COMMIT
     clone $VIRGLRENDERER_REPO $VIRGLRENDERER_COMMIT
     clone $HYPERVISOR_REPO $HYPERVISOR_COMMIT
@@ -406,60 +407,9 @@ build_angle () {
     OLD_PATH=$PATH
     export PATH="$(realpath "$BUILD_DIR/depot_tools.git"):$OLD_PATH"
     pwd="$(pwd)"
-    cd "$BUILD_DIR/angle.git"
-    DEPOT_TOOLS_UPDATE=0 python3 scripts/bootstrap.py
-    DEPOT_TOOLS_UPDATE=0 gclient sync
-    case $PLATFORM in
-    ios* )
-        TARGET_OS="ios"
-        IOS_BUILD_ARGS="ios_enable_code_signing=false ios_deployment_target=\"$IOS_SDKMINVER\""
-        if [ "$PLATFORM" == "ios_simulator" ]; then
-            IOS_BUILD_ARGS="$IOS_BUILD_ARGS target_environment=\"simulator\""
-        else
-            IOS_BUILD_ARGS="$IOS_BUILD_ARGS target_environment=\"device\""
-        fi
-        ;;
-    visionos* )
-        TARGET_OS="ios"
-        CLANG_BASE_PATH="$(dirname $(dirname $OBJCC))"
-        IOS_BUILD_ARGS="ios_enable_code_signing=false ios_deployment_target=\"$VISIONOS_SDKMINVER\" angle_enable_gl=false angle_enable_glsl=true target_platform=\"xros\" clang_base_path=\"$CLANG_BASE_PATH\" clang_use_chrome_plugins=false use_lld=false"
-        if [ "$PLATFORM" == "visionos_simulator" ]; then
-            IOS_BUILD_ARGS="$IOS_BUILD_ARGS target_environment=\"simulator\""
-        else
-            IOS_BUILD_ARGS="$IOS_BUILD_ARGS target_environment=\"device\""
-        fi
-        ;;
-    macos )
-        TARGET_OS="mac"
-        ;;
-    esac
-    case $ARCH in
-    armv7 | armv7s )
-        TARGET_CPU="arm"
-        ;;
-    arm64 )
-        TARGET_CPU="arm64"
-        ;;
-    i386 )
-        TARGET_CPU="x86"
-        ;;
-    x86_64 )
-        TARGET_CPU="x64"
-        ;;
-    esac
-    git -C build am "$PATCHES_DIR/angle-toolchain.patch"
-    gn gen "--args=is_debug=false angle_build_all=false angle_enable_metal=true $IOS_BUILD_ARGS target_os=\"$TARGET_OS\" target_cpu=\"$TARGET_CPU\"" utm_build
-    ninja -C utm_build -j $NCPU
-    if [ "$TARGET_OS" == "ios" ]; then
-        cp -a "utm_build/libEGL.framework/libEGL" "$PREFIX/lib/libEGL.dylib"
-        cp -a "utm_build/libGLESv2.framework/libGLESv2" "$PREFIX/lib/libGLESv2.dylib"
-    else
-        cp -a "utm_build/libEGL.dylib" "$PREFIX/lib/libEGL.dylib"
-        cp -a "utm_build/libGLESv2.dylib" "$PREFIX/lib/libGLESv2.dylib"
-    fi
-    # -headerpad_max_install_names is broken and these still fail on long paths so we just make sure they run at the end with a short path
-    #install_name_tool -id "$PREFIX/lib/libEGL.dylib" "$PREFIX/lib/libEGL.dylib"
-    #install_name_tool -id "$PREFIX/lib/libGLESv2.dylib" "$PREFIX/lib/libGLESv2.dylib"
+    cd "$BUILD_DIR/WebKit.git/Source/ThirdParty/ANGLE"
+    xcodebuild archive -archivePath "ANGLE" -scheme "ANGLE" -sdk $SDK -arch $ARCH -configuration Release WEBCORE_LIBRARY_DIR="/usr/local/lib" IPHONEOS_DEPLOYMENT_TARGET="14.0" MACOSX_DEPLOYMENT_TARGET="11.0" XROS_DEPLOYMENT_TARGET="1.0"
+    rsync -a "ANGLE.xcarchive/Products/usr/local/lib/" "$PREFIX/lib"
     rsync -a "include/" "$PREFIX/include"
     cd "$pwd"
     export PATH=$OLD_PATH
