@@ -52,14 +52,16 @@ jobs:
     needs: configuration
     strategy:
       matrix:
-        arch: [arm64, x86_64]
-        platform: [ios, ios_simulator, ios-tci, macos]
-        exclude:
-          # x86_64 does not exist on iOS
+        arch: [arm64]
+        platform: [ios, ios_simulator, ios-tci, macos, visionos, visionos_simulator, visionos-tci]
+        include:
+          # x86_64 supported only for macOS and simulators
           - arch: x86_64
-            platform: ios
+            platform: macos
           - arch: x86_64
-            platform: ios-tci
+            platform: ios_simulator
+          - arch: x86_64
+            platform: visionos_simulator
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -152,13 +154,16 @@ jobs:
     needs: [configuration, build-sysroot]
     strategy:
       matrix:
-        arch: [arm64, x86_64]
-        platform: [ios, ios_simulator, ios-tci, macos]
-        exclude:
+        arch: [arm64]
+        platform: [ios, ios_simulator, ios-tci, macos, visionos, visionos_simulator, visionos-tci]
+        include:
+          # x86_64 supported only for macOS and simulators
           - arch: x86_64
-            platform: ios
+            platform: macos
           - arch: x86_64
-            platform: ios-tci
+            platform: ios_simulator
+          - arch: x86_64
+            platform: visionos_simulator
     steps:
       - name: Checkout
         uses: actions/checkout@v3
