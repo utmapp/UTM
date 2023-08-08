@@ -47,7 +47,7 @@ struct VMNavigationListView: View {
             if !vm.isLoaded {
                 UTMUnavailableVMView(vm: vm)
             } else {
-                if #available(iOS 16, macOS 13, *) {
+                if #available(iOS 16, macOS 13, visionOS 1, *) {
                     VMCardView(vm: vm)
                         .modifier(VMContextMenuModifier(vm: vm))
                         .tag(vm)

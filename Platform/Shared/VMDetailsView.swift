@@ -149,17 +149,35 @@ struct Screenshot: View {
             Rectangle()
                 .fill(Color(red: 230/255, green: 229/255, blue: 235/255))
                 .blendMode(.hardLight)
+            #if os(visionOS)
+                .overlay {
+                    if vm.isStopped {
+                        Image(systemName: "play.circle.fill")
+                            .resizable()
+                            .frame(width: 100, height: 100)
+                    }
+                }
+                .hoverEffect()
+                .onTapGesture {
+                    data.run(vm: vm)
+                }
+            #endif
             if vm.isBusy {
                 Spinner(size: .large)
             } else if vm.isStopped {
+                #if !os(visionOS)
                 Button(action: { data.run(vm: vm) }, label: {
                     Label("Run", systemImage: "play.circle.fill")
                         .labelStyle(.iconOnly)
                         .font(Font.system(size: 96))
                         .foregroundColor(Color.black)
                 }).buttonStyle(.plain)
+                #endif
             }
         }.aspectRatio(CGSize(width: 16, height: 9), contentMode: large ? .fill : .fit)
+        #if os(visionOS)
+        .frame(maxWidth: 500)
+        #endif
     }
 }
 

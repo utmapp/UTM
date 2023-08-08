@@ -33,7 +33,7 @@ struct BigButtonStyle: ButtonStyle {
         let foregroundDisabledColor = Color(NSColor.disabledControlTextColor)
         let foregroundPressedColor = Color(NSColor.selectedControlTextColor)
         #else
-        let defaultColor = Color(UIColor.secondarySystemBackground)
+        let defaultColor = Color(UIColor.tertiarySystemFill)
         let pressedColor = Color(UIColor.systemFill)
         let foregroundColor = Color(UIColor.label)
         let foregroundDisabledColor = Color(UIColor.systemGray)
@@ -44,6 +44,10 @@ struct BigButtonStyle: ButtonStyle {
             ZStack {
                 RoundedRectangle(cornerRadius: 10.0)
                     .fill(configuration.isPressed ? pressedColor : defaultColor)
+                    #if os(iOS)
+                    .hoverEffect()
+                    .scaleEffect(configuration.isPressed ? 0.95 : 1)
+                    #endif
                 configuration.label
                     .foregroundColor(isEnabled ? (configuration.isPressed ? foregroundPressedColor : foregroundColor) : foregroundDisabledColor)
             }.frame(width: width, height: height)

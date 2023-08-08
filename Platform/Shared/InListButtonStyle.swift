@@ -53,8 +53,10 @@ struct InListButtonStyle: ButtonStyle {
                 Spacer()
             }
             .foregroundColor(isEnabled ? (configuration.isPressed ? foregroundPressedColor : foregroundColor) : foregroundDisabledColor)
-            .contentShape(Rectangle())
+            .contentShape(RoundedRectangle(cornerRadius: 10.0))
             .listRowBackground(configuration.isPressed ? pressedColor : defaultColor)
+            .hoverEffect()
+            .scaleEffect(configuration.isPressed ? 0.95 : 1)
             #endif
         }
     }
