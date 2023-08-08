@@ -84,10 +84,13 @@ struct VMWindowView: View {
                 }
             }.background(Color.black)
             .ignoresSafeArea()
+            #if !os(visionOS)
             if isInteractive && state.isRunning {
                 VMToolbarView(state: $state)
             }
+            #endif
         }
+        .modifier(VMToolbarOrnamentModifier(state: $state))
         .statusBarHidden(true)
         .alert(item: $state.alert, content: { type in
             switch type {
@@ -254,6 +257,16 @@ private struct HeadlessView: View {
         }
     }
 }
+
+#if !os(visionOS)
+/// Stub for non-Vision platforms
+fileprivate struct VMToolbarOrnamentModifier: ViewModifier {
+    @Binding var state: VMWindowState
+    func body(content: Content) -> some View {
+        content
+    }
+}
+#endif
 
 struct VMWindowView_Previews: PreviewProvider {
     static var previews: some View {

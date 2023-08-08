@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 55;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -814,6 +814,8 @@
 		CEA45FB3263519B5002FA97D /* gcrypt.20.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F322653C7400FC7E63 /* gcrypt.20.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45FB4263519B5002FA97D /* gstfft-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640922653C7500FC7E63 /* gstfft-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45FB5263519B5002FA97D /* gstpbutils-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640E22653C7500FC7E63 /* gstpbutils-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEA51F872A81EAB700DDD7FA /* VMToolbarOrnamentModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA51F862A81EAB700DDD7FA /* VMToolbarOrnamentModifier.swift */; platformFilters = (xros, ); };
+		CEA51F882A81EAB700DDD7FA /* VMToolbarOrnamentModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA51F862A81EAB700DDD7FA /* VMToolbarOrnamentModifier.swift */; platformFilters = (xros, ); };
 		CEA9053825F981E900801E7C /* usb-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEA9053725F981E900801E7C /* usb-1.0.0.framework */; };
 		CEA9053D25F9824700801E7C /* usb-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEA9053725F981E900801E7C /* usb-1.0.0.framework */; };
 		CEA9054225F982C400801E7C /* usb-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CEA9053725F981E900801E7C /* usb-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -1602,6 +1604,7 @@
 		CEA02A972436C7A30087E45F /* UTMLegacyQemuConfiguration+Networking.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMLegacyQemuConfiguration+Networking.h"; sourceTree = "<group>"; };
 		CEA02A982436C7A30087E45F /* UTMLegacyQemuConfiguration+Networking.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMLegacyQemuConfiguration+Networking.m"; sourceTree = "<group>"; };
 		CEA45FB9263519B5002FA97D /* UTM SE.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "UTM SE.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		CEA51F862A81EAB700DDD7FA /* VMToolbarOrnamentModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMToolbarOrnamentModifier.swift; sourceTree = "<group>"; };
 		CEA9053725F981E900801E7C /* usb-1.0.0.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "usb-1.0.0.framework"; path = "$(SYSROOT_DIR)/Frameworks/usb-1.0.0.framework"; sourceTree = "<group>"; };
 		CEA9058725FC69D100801E7C /* usbredirhost.1.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = usbredirhost.1.framework; path = "$(SYSROOT_DIR)/Frameworks/usbredirhost.1.framework"; sourceTree = "<group>"; };
 		CEA9058825FC69D100801E7C /* usbredirparser.1.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = usbredirparser.1.framework; path = "$(SYSROOT_DIR)/Frameworks/usbredirparser.1.framework"; sourceTree = "<group>"; };
@@ -1982,6 +1985,7 @@
 			isa = PBXGroup;
 			children = (
 				846883BE2A506A040054D75E /* Display */,
+				CEA51F862A81EAB700DDD7FA /* VMToolbarOrnamentModifier.swift */,
 			);
 			path = visionOS;
 			sourceTree = "<group>";
@@ -2927,6 +2931,7 @@
 				CE9375A124BBDDD10074066F /* VMConfigDriveDetailsView.swift in Sources */,
 				CE03D05224D90B4E00F76B84 /* UTMQemuSystem.m in Sources */,
 				CED234ED254796E500ED0A57 /* NumberTextField.swift in Sources */,
+				CEA51F872A81EAB700DDD7FA /* VMToolbarOrnamentModifier.swift in Sources */,
 				CE772AB325C8B7B500E4E379 /* VMCommands.swift in Sources */,
 				CE2D92E624AD46670059923A /* UTMLegacyQemuConfiguration+Networking.m in Sources */,
 				CE6D21DC2553A6ED001D29C5 /* VMConfirmActionModifier.swift in Sources */,
@@ -3323,6 +3328,7 @@
 				CEA45F0D263519B5002FA97D /* VMDisplayMetalViewController+Pointer.m in Sources */,
 				84018690288A50B90050AC51 /* VMDisplayViewControllerDelegate.swift in Sources */,
 				CEA45F19263519B5002FA97D /* VMScroll.m in Sources */,
+				CEA51F882A81EAB700DDD7FA /* VMToolbarOrnamentModifier.swift in Sources */,
 				CEA45F1A263519B5002FA97D /* VMConfigNetworkPortForwardView.swift in Sources */,
 				8471772927CD3CAB00D3A50B /* DetailedSection.swift in Sources */,
 				841E58D62893D01B00137A20 /* UTMApp.swift in Sources */,
