@@ -10,7 +10,7 @@ usage () {
     echo "Usage: $(basename $0)  [-t teamid] [-p platform] [-a architecture] [-t targetversion] [-o output]"
     echo ""
     echo "  -t teamid        Team Identifier for app groups. Optional for iOS. Required for macOS."
-    echo "  -p platform      Target platform. Default ios. [ios|ios_simulator|ios-tci|ios_simulator-tci|macos]"
+    echo "  -p platform      Target platform. Default ios. [ios|ios_simulator|ios-tci|ios_simulator-tci|macos|visionos|visionos_simulator]"
     echo "  -a architecture  Target architecture. Default arm64. [armv7|armv7s|arm64|i386|x86_64]"
     echo "  -o output        Output archive path. Default is current directory."
     echo ""
@@ -51,11 +51,11 @@ while [ "x$1" != "x" ]; do
 done
 
 case $PLATFORM in
-ios | ios_simulator )
-    SCHEME="iOS"
-    ;;
 *-tci )
     SCHEME="iOS-TCI"
+    ;;
+ios* | visionos* )
+    SCHEME="iOS"
     ;;
 macos )
     SCHEME="macOS"
@@ -66,11 +66,17 @@ macos )
 esac
 
 case $PLATFORM in
-ios | ios-tci )
-    SDK=iphoneos
+visionos_simulator* )
+    SDK=xrsimulator
     ;;
-*simulator* )
+visionos* )
+    SDK=xros
+    ;;
+ios_simulator* )
     SDK=iphonesimulator
+    ;;
+ios* )
+    SDK=iphoneos
     ;;
 macos )
     SDK=macosx
