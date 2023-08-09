@@ -4095,10 +4095,10 @@
 /* Begin XCRemoteSwiftPackageReference section */
 		8399328E272F4A400059355F /* XCRemoteSwiftPackageReference "ZIPFoundation" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/weichsel/ZIPFoundation.git";
+			repositoryURL = "https://github.com/osy/ZIPFoundation.git";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.9.9;
+				kind = revision;
+				revision = 6793a6e7c587503aa078ec1246d71ef8fb50733b;
 			};
 		};
 		84018693288B66370050AC51 /* XCRemoteSwiftPackageReference "swiftui-visual-effects" */ = {
@@ -4161,8 +4161,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apple/swift-log";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.2.0;
+				kind = revision;
+				revision = 5996c7a1b4a3bc972a43f55c78437f23a8eae465;
 			};
 		};
 		CE93759724BB821F0074066F /* XCRemoteSwiftPackageReference "IQKeyboardManager" */ = {

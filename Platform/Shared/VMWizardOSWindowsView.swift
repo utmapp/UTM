@@ -121,7 +121,7 @@ struct VMWizardOSWindowsView: View {
                 }
             }
         }
-        #if os(iOS)
+        #if os(iOS) || os(visionOS)
         .navigationTitle(Text("Windows"))
         #endif
         .fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.data], onCompletion: processImage)

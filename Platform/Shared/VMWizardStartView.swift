@@ -64,7 +64,7 @@ struct VMWizardStartView: View {
                 }
                 .buttonStyle(.inList)
                 .disabled(!isVirtualizationSupported)
-                #if os(iOS)
+                #if os(iOS) || os(visionOS)
                 if #available(iOS 15, *) {
                     virtButton
                 } else {
@@ -131,7 +131,7 @@ struct VMWizardStartView: View {
             }
 
         }
-        #if os(iOS)
+        #if os(iOS) || os(visionOS)
         .navigationTitle(Text("Start"))
         #endif
     }

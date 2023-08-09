@@ -77,7 +77,7 @@ struct VMWizardOSView: View {
             }
 
         }
-        #if os(iOS)
+        #if os(iOS) || os(visionOS)
         .navigationTitle(Text("Operating System"))
         #endif
         .buttonStyle(.inList)

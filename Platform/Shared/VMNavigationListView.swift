@@ -129,7 +129,7 @@ private struct VMListModifier: ViewModifier {
             }
             #endif
         }
-        #if os(iOS) && !os(visionOS)
+        #if os(iOS)
         // SwiftUI bug on iOS 14.4 and previous versions prevents multiple .sheet from working
         .sheet(isPresented: $sheetPresented) {
             if data.showNewVMSheet {

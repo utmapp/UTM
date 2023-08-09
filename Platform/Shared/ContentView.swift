@@ -16,7 +16,7 @@
 
 import SwiftUI
 import UniformTypeIdentifiers
-#if os(iOS) && !os(visionOS)
+#if os(iOS)
 import IQKeyboardManagerSwift
 #endif
 

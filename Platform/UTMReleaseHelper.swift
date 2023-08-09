@@ -94,7 +94,7 @@ class UTMReleaseHelper: ObservableObject {
                 let range = match.range(at: 1)
                 let platform = nsString.substring(with: range)
                 let description = nsString.substring(from: match.range.location + match.range.length)
-                #if os(iOS)
+                #if os(iOS) || os(visionOS)
                 #if WITH_QEMU_TCI
                 if platform == "iOS SE" {
                     currentSection.body.append(description)

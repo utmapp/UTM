@@ -44,7 +44,7 @@ struct BigButtonStyle: ButtonStyle {
             ZStack {
                 RoundedRectangle(cornerRadius: 10.0)
                     .fill(configuration.isPressed ? pressedColor : defaultColor)
-                    #if os(iOS)
+                    #if os(iOS) || os(visionOS)
                     .hoverEffect()
                     .scaleEffect(configuration.isPressed ? 0.95 : 1)
                     #endif

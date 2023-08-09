@@ -59,8 +59,7 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-log",
       "state" : {
-        "revision" : "32e8d724467f8fe623624570367e3d50c5638e46",
-        "version" : "1.5.2"
+        "revision" : "5996c7a1b4a3bc972a43f55c78437f23a8eae465"
       }
     },
     {
@@ -69,7 +68,7 @@
       "location" : "https://github.com/osy/SwiftTerm.git",
       "state" : {
         "branch" : "visionos",
-        "revision" : "0b034bb577190785e44915ac18e5e3f0ba1c993d"
+        "revision" : "ce8e0f17196e0fafa0f150ce129a91a04a97eb85"
       }
     },
     {
@@ -84,10 +83,9 @@
     {
       "identity" : "zipfoundation",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/weichsel/ZIPFoundation.git",
+      "location" : "https://github.com/osy/ZIPFoundation.git",
       "state" : {
-        "revision" : "43ec568034b3731101dbf7670765d671c30f54f3",
-        "version" : "0.9.16"
+        "revision" : "6793a6e7c587503aa078ec1246d71ef8fb50733b"
       }
     }
   ],
