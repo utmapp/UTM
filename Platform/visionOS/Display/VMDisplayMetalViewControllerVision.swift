@@ -15,7 +15,11 @@
 //
 
 import UIKit
+#if WITH_QEMU_TCI
+import CocoaSpiceNoUsb
+#else
 import CocoaSpice
+#endif
 
 class VMDisplayMetalViewController: VMDisplayViewController {
     @objc dynamic var vmDisplay: CSDisplay {
