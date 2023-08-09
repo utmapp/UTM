@@ -38,7 +38,7 @@
 "FN7-zs-mWC.paletteLabel" = "捕获鼠标";
 
 /* Class = "NSToolbarItem"; toolTip = "Capture mouse cursor"; ObjectID = "FN7-zs-mWC"; */
-"FN7-zs-mWC.toolTip" = "捕获鼠标指针";
+"FN7-zs-mWC.toolTip" = "捕获鼠标光标";
 
 /* Class = "NSToolbarItem"; label = "Restart"; ObjectID = "G7P-HJ-bcy"; */
 "G7P-HJ-bcy.label" = "重新启动";
