@@ -1,11 +1,11 @@
 /* (No Comment) */
-"Apple Pencil Input" = "Apple Pencil输入";
+"Apple Pencil Input" = "Apple Pencil 输入";
 
 /* (No Comment) */
-"Auto save on background" = "后台运行时自动保存";
+"Auto save on background" = "在后台运行时自动保存";
 
 /* (No Comment) */
-"Auto save on low memory" = "内存不足时自动保存";
+"Auto save on low memory" = "在内存不足时自动保存";
 
 /* (No Comment) */
 "Background" = "后台";
@@ -110,10 +110,10 @@
 "Space" = "空格";
 
 /* (No Comment) */
-"Tablet mode (always show cursor)" = "平板模式(显示光标)";
+"Tablet mode (always show cursor)" = "平板模式（显示光标）";
 
 /* (No Comment) */
-"Tablet mode (try hiding cursor)" = "平板模式(隐藏光标)";
+"Tablet mode (try hiding cursor)" = "平板模式（隐藏光标）";
 
 /* (No Comment) */
 "Three Finger Pan" = "三指拖动";
@@ -122,10 +122,10 @@
 "Touch Input" = "触屏输入";
 
 /* (No Comment) */
-"Touch mode (always show cursor)" = "触屏模式(显示光标)";
+"Touch mode (always show cursor)" = "触屏模式（显示光标）";
 
 /* (No Comment) */
-"Touch mode (try hiding cursor)" = "触屏模式(隐藏光标)";
+"Touch mode (try hiding cursor)" = "触屏模式（隐藏光标）";
 
 /* (No Comment) */
 "Touchpad/Mouse Input" = "触控板/鼠标输入";
@@ -147,10 +147,10 @@
 
 "Disable screen dimming when idle" = "闲置时不自动锁定屏幕";
 
-"Do not show prompt when USB device is plugged in" = "USB 设备插入时不弹出提示";
+"Do not show prompt when USB device is plugged in" = "插入 USB 设备时不弹出提示";
 
-"Idle" = "闲置时";
+"Idle" = "闲置";
 
 "Devices" = "设备";
 
-"Cursor - Drag Speed" = "拖动光标时的速度";
+"Cursor - Drag Speed" = "光标 - 拖动速度";
