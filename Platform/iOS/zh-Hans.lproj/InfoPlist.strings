@@ -11,7 +11,7 @@
 "NSLocationWhenInUseUsageDescription" = "UTM 定期请求位置数据，以确保系统保持后台进程处于活动状态。位置数据永远不会离开设备。";
 
 /* Privacy - Microphone Usage Description */
-"NSMicrophoneUsageDescription" = "为使用录制，任何虚拟机都需要使用权限。";
+"NSMicrophoneUsageDescription" = "任何虚拟机都需要获得许可才能从麦克风进行录音。";
 
 /* (No Comment) */
 "UTM virtual machine" = "UTM 虚拟机";
