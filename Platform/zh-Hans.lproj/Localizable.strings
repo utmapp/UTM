@@ -591,7 +591,7 @@
 "Resolution" = "分辨率";
 
 /* No comment provided by engineer. */
-"Retina Mode" = "高分辨率模式";
+"Retina Mode" = "Retina 模式";
 
 /* VMDisplayViewController */
 "Running low on memory! UTM might soon be killed by iOS. You can prevent this by decreasing the amount of memory and/or JIT cache assigned to this VM" = "运行内存不足！UTM 可能很快就会被 iOS 终止。你可以通过减少分配给此虚拟机的内存和 (或) JIT 缓存来防止这种情况。";
