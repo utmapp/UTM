@@ -177,7 +177,7 @@
 "Are you sure you want to stop this VM and exit? Any unsaved changes will be lost." = "您確定要停止這台虛擬機並結束嗎？這樣會遺失所有未儲存更改。";
 
 /* No comment provided by engineer. */
-"Arguments" = "引数";
+"Arguments" = "引數";
 
 /* No comment provided by engineer. */
 "Auto Resolution" = "自動調整解析度";
@@ -186,7 +186,7 @@
 "Automatic" = "自動";
 
 /* UTMQemuConstants */
-"Automatic Serial Device (max 4)" = "自動序列埠裝置（最多 4 個）";
+"Automatic Serial Device (max 4)" = "自動序列裝置（最多 4 個）";
 
 /* No comment provided by engineer. */
 "Background Color" = "背景色彩";
@@ -563,7 +563,7 @@
 "Emulated Network Card" = "模擬網卡";
 
 /* No comment provided by engineer. */
-"Emulated Serial Device" = "模擬序列埠裝置";
+"Emulated Serial Device" = "模擬序列裝置";
 
 /* UTMQemuConstants */
 "Emulated VLAN" = "模擬 VLAN";
@@ -1017,7 +1017,7 @@
 "Maintenance" = "維護";
 
 /* UTMQemuConstants */
-"Manual Serial Device (advanced)" = "手動序列埠裝置（進階）";
+"Manual Serial Device (advanced)" = "手動序列裝置（進階）";
 
 /* No comment provided by engineer. */
 "Maximum Shared USB Devices" = "最大共享 USB 裝置";
@@ -1475,11 +1475,11 @@
 "Sends power down request to the guest. This simulates pressing the power button on a PC." = "將關機請求送往客端，模擬按下 PC 的關機鍵。";
 
 /* No comment provided by engineer. */
-"Serial" = "序列埠";
+"Serial" = "序列裝置";
 
 /* VMDisplayAppleWindowController
    VMDisplayQemuDisplayController */
-"Serial %lld" = "序列埠 %lld";
+"Serial %lld" = "序列裝置 %lld";
 
 /* No comment provided by engineer. */
 "Server Address" = "伺服器位址";
