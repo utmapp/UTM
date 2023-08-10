@@ -113,7 +113,7 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
         let menu = NSMenu()
         menu.autoenablesItems = false
         let item = NSMenuItem()
-        item.title = NSLocalizedString("Querying drives status...", comment: "VMDisplayWindowController")
+        item.title = NSLocalizedString("Querying drives status…", comment: "VMDisplayWindowController")
         item.isEnabled = false
         menu.addItem(item)
         updateDrivesMenu(menu, drives: vmQemuConfig.drives)
@@ -422,7 +422,7 @@ extension VMDisplayQemuWindowController {
         let menu = NSMenu()
         menu.autoenablesItems = false
         let item = NSMenuItem()
-        item.title = NSLocalizedString("Querying USB devices...", comment: "VMQemuDisplayMetalWindowController")
+        item.title = NSLocalizedString("Querying USB devices…", comment: "VMQemuDisplayMetalWindowController")
         item.isEnabled = false
         menu.addItem(item)
         DispatchQueue.global(qos: .userInitiated).async {
