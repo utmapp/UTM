@@ -20,9 +20,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 NS_AVAILABLE_IOS(12.1)
-@interface VMDisplayMetalViewController (Pencil) <UIPencilInteractionDelegate>
+@interface VMDisplayMetalViewController (Pencil) <UIPencilInteractionDelegate, UIGestureRecognizerDelegate>
 
 - (void)initPencilInteraction;
+
+- (BOOL)pencilGestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer;
+- (BOOL)pencilRightClickForTouch:(UITouch *)touch;
 
 @end
 

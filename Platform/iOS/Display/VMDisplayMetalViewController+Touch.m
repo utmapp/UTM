@@ -72,10 +72,6 @@ const CGFloat kScrollResistance = 10.0f;
     self.tap.delegate = self;
     self.tap.allowedTouchTypes = @[ @(UITouchTypeDirect) ];
     self.tap.cancelsTouchesInView = NO;
-    self.tapPencil = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(gestureTapPencil:)];
-    self.tapPencil.delegate = self;
-    self.tapPencil.allowedTouchTypes = @[ @(UITouchTypePencil) ];
-    self.tapPencil.cancelsTouchesInView = NO;
     self.twoTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(gestureTwoTap:)];
     self.twoTap.numberOfTouchesRequired = 2;
     self.twoTap.delegate = self;
@@ -93,7 +89,6 @@ const CGFloat kScrollResistance = 10.0f;
     [self.mtkView addGestureRecognizer:self.twoPan];
     [self.mtkView addGestureRecognizer:self.threePan];
     [self.mtkView addGestureRecognizer:self.tap];
-    [self.mtkView addGestureRecognizer:self.tapPencil];
     [self.mtkView addGestureRecognizer:self.twoTap];
     [self.mtkView addGestureRecognizer:self.longPress];
     [self.mtkView addGestureRecognizer:self.pinch];
@@ -422,23 +417,6 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
     }
 }
 
-- (IBAction)gestureTapPencil:(UITapGestureRecognizer *)sender {
-    if (sender.state == UIGestureRecognizerStateEnded &&
-        self.serverModeCursor) { // otherwise we handle in touchesBegan
-        
-        CSInputButton button = kCSInputButtonLeft;
-        
-        if (@available(iOS 12.1, *)) {
-            if (self.pencilForceRightClickOnce) {
-                button = kCSInputButtonRight;
-                self.pencilForceRightClickOnce = false;
-            }
-        }
-        
-        [self mouseClick:button location:[sender locationInView:sender.view]];
-    }
-}
-
 - (IBAction)gestureTwoTap:(UITapGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateEnded &&
         self.twoFingerTapType == VMGestureTypeRightClick) {
@@ -514,13 +492,7 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
     if (gestureRecognizer == self.tap && otherGestureRecognizer == self.twoTap) {
         return YES;
     }
-    if (gestureRecognizer == self.tapPencil && otherGestureRecognizer == self.twoTap) {
-        return YES;
-    }
     if (gestureRecognizer == self.longPress && otherGestureRecognizer == self.tap) {
-        return YES;
-    }
-    if (gestureRecognizer == self.longPress && otherGestureRecognizer == self.tapPencil) {
         return YES;
     }
     if (gestureRecognizer == self.longPress && otherGestureRecognizer == self.twoTap) {
@@ -553,7 +525,11 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
             return YES;
         }
     }
+#if !defined(TARGET_OS_VISION) || !TARGET_OS_VISION
+    return [self pencilGestureRecognizer:gestureRecognizer shouldRequireFailureOfGestureRecognizer:otherGestureRecognizer];
+#else
     return NO;
+#endif
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
@@ -645,14 +621,15 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
                         middle = (event.buttonMask & 0x4) != 0; // undocumented mask
                     }
                 }
+#if !defined(TARGET_OS_VISION) || !TARGET_OS_VISION
                 // Apple Pencil 2 right click mode
                 if (@available(iOS 12.1, *)) {
-                    if (touch.type == UITouchTypePencil) {
-                        primary = !self.pencilForceRightClickOnce;
-                        secondary = self.pencilForceRightClickOnce;
-                        self.pencilForceRightClickOnce = false;
+                    if ([self pencilRightClickForTouch:touch]) {
+                        primary = NO;
+                        secondary = YES;
                     }
                 }
+#endif
                 [self.cursor startMovement:pos];
                 [self.cursor updateMovement:pos];
                 [self dragCursor:UIGestureRecognizerStateBegan primary:primary secondary:secondary middle:middle];

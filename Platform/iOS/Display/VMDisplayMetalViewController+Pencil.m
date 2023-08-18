@@ -18,11 +18,17 @@
 #import "VMDisplayMetalViewController.h"
 #import "VMDisplayMetalViewController+Private.h"
 #import "VMDisplayMetalViewController+Pencil.h"
+#import "VMDisplayMetalViewController+Touch.h"
 
 NS_AVAILABLE_IOS(12.1)
 @implementation VMDisplayMetalViewController (Pencil)
 
 - (void)initPencilInteraction {
+    self.tapPencil = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(pencilGestureTap:)];
+    self.tapPencil.delegate = self;
+    self.tapPencil.allowedTouchTypes = @[ @(UITouchTypePencil) ];
+    self.tapPencil.cancelsTouchesInView = NO;
+    [self.mtkView addGestureRecognizer:self.tapPencil];
     UIPencilInteraction *interaction = [[UIPencilInteraction alloc] init];
     interaction.delegate = self;
     [self.mtkView addInteraction:interaction];
@@ -33,6 +39,45 @@ NS_AVAILABLE_IOS(12.1)
     // ignore interaction type as we only support one action:
     // switching to right click for the next click
     self.pencilForceRightClickOnce = true;
+}
+
+#pragma mark - UITapGestureRecognizer
+
+- (IBAction)pencilGestureTap:(UITapGestureRecognizer *)sender {
+    if (sender.state == UIGestureRecognizerStateEnded &&
+        self.serverModeCursor) { // otherwise we handle in touchesBegan
+        
+        CSInputButton button = kCSInputButtonLeft;
+        
+        if (@available(iOS 12.1, *)) {
+            if (self.pencilForceRightClickOnce) {
+                button = kCSInputButtonRight;
+                self.pencilForceRightClickOnce = false;
+            }
+        }
+        
+        [self mouseClick:button location:[sender locationInView:sender.view]];
+    }
+}
+
+- (BOOL)pencilGestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    if (gestureRecognizer == self.tapPencil && otherGestureRecognizer == self.twoTap) {
+        return YES;
+    }
+    if (gestureRecognizer == self.longPress && otherGestureRecognizer == self.tapPencil) {
+        return YES;
+    }
+    return NO;
+}
+
+- (BOOL)pencilRightClickForTouch:(UITouch *)touch {
+    if (touch.type == UITouchTypePencil) {
+        BOOL hasRightClick = self.pencilForceRightClickOnce;
+        self.pencilForceRightClickOnce = NO;
+        return hasRightClick;
+    } else {
+        return NO;
+    }
 }
 
 @end
