@@ -62,7 +62,7 @@ NS_ASSUME_NONNULL_END
 
 static inline CGFloat CGPointToPixel(CGFloat point) {
 #if defined(TARGET_OS_VISION) && TARGET_OS_VISION
-    return 2.0;
+    return point * 2.0;
 #else
     return point * [UIScreen mainScreen].scale; // FIXME: multiple screens?
 #endif

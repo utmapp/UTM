@@ -226,6 +226,15 @@
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
     if ([keyPath isEqualToString:@"vmDisplay.displaySize"]) {
         [self.delegate display:self.vmDisplay didResizeTo:self.vmDisplay.displaySize];
+#if defined(TARGET_OS_VISION) && TARGET_OS_VISION
+        dispatch_async(dispatch_get_main_queue(), ^{
+            UIWindowSceneGeometryPreferences *geoPref = [[UIWindowSceneGeometryPreferencesReality alloc] initWithSize:self.vmDisplay.displaySize
+                                                                                                          minimumSize:self.vmDisplay.displaySize
+                                                                                                          maximumSize:CGSizeZero
+                                                                                                 resizingRestrictions:UIWindowSceneResizingRestrictionsUniform];
+            [self.view.window.windowScene requestGeometryUpdateWithPreferences:geoPref errorHandler:nil];
+        });
+#endif
     }
 }
 
