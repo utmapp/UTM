@@ -1650,6 +1650,7 @@
 		CEE0421124418F2E0001680F /* UTMLegacyQemuConfiguration+Miscellaneous.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMLegacyQemuConfiguration+Miscellaneous.m"; sourceTree = "<group>"; };
 		CEE7E934287CFDB100282049 /* UTMLegacyQemuConfiguration+Constants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UTMLegacyQemuConfiguration+Constants.m"; sourceTree = "<group>"; };
 		CEE7E935287CFDB100282049 /* UTMLegacyQemuConfiguration+Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UTMLegacyQemuConfiguration+Constants.h"; sourceTree = "<group>"; };
+		CEE7ED472A90256100E6B4AB /* VMDisplayMetalViewController+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VMDisplayMetalViewController+Private.h"; sourceTree = "<group>"; };
 		CEEB66442284B942002737B2 /* VMKeyboardButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMKeyboardButton.h; sourceTree = "<group>"; };
 		CEEB66452284B942002737B2 /* VMKeyboardButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMKeyboardButton.m; sourceTree = "<group>"; };
 		CEEC811A24E48EC600ACB0B3 /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -2364,6 +2365,7 @@
 				8401868E288A50B90050AC51 /* VMDisplayViewControllerDelegate.swift */,
 				5286EC93243748C3007E6CBC /* VMDisplayMetalViewController.h */,
 				5286EC94243748C3007E6CBC /* VMDisplayMetalViewController.m */,
+				CEE7ED472A90256100E6B4AB /* VMDisplayMetalViewController+Private.h */,
 				CE3ADD65240EFBCA002D6A5F /* VMDisplayMetalViewController+Keyboard.h */,
 				CE3ADD66240EFBCA002D6A5F /* VMDisplayMetalViewController+Keyboard.m */,
 				CE5076D9250AB55D00C26C19 /* VMDisplayMetalViewController+Pencil.h */,

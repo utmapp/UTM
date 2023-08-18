@@ -15,6 +15,7 @@
 //
 
 #import "VMDisplayMetalViewController.h"
+#import "VMDisplayMetalViewController+Private.h"
 #import "VMDisplayMetalViewController+Touch.h"
 #import "VMDisplayMetalViewController+Pointer.h"
 #import "VMCursor.h"
@@ -68,16 +69,16 @@ NS_AVAILABLE_IOS(13.4)
         [self.vmInput sendMouseMotion:self.mouseButtonDown relativePoint:CGPointMake(deltaX, -deltaY)];
     };
     mouse.mouseInput.leftButton.pressedChangedHandler = ^(GCControllerButtonInput * _Nonnull button, float value, BOOL pressed) {
-        self->_mouseLeftDown = pressed;
+        self.mouseLeftDown = pressed;
         [self.vmInput sendMouseButton:kCSInputButtonLeft pressed:pressed];
     };
     mouse.mouseInput.rightButton.pressedChangedHandler = ^(GCControllerButtonInput * _Nonnull button, float value, BOOL pressed) {
-        self->_mouseRightDown = pressed;
+        self.mouseRightDown = pressed;
         [self.vmInput sendMouseButton:kCSInputButtonRight pressed:pressed];
 
     };
     mouse.mouseInput.middleButton.pressedChangedHandler = ^(GCControllerButtonInput * _Nonnull button, float value, BOOL pressed) {
-        self->_mouseMiddleDown = pressed;
+        self.mouseMiddleDown = pressed;
         [self.vmInput sendMouseButton:kCSInputButtonMiddle pressed:pressed];
     };
     for (int i = 0; i < MIN(4, mouse.mouseInput.auxiliaryButtons.count); i++) {
@@ -133,10 +134,6 @@ NS_AVAILABLE_IOS(13.4)
     return nil;
 }
 
-static CGFloat CGPointToPixel(CGFloat point) {
-    return point * [UIScreen mainScreen].scale; // FIXME: multiple screens?
-}
-
 - (bool)isPointOnVMDisplay:(CGPoint)pos {
     CGSize screenSize = self.mtkView.drawableSize;
     CGSize scaledSize = {
@@ -171,7 +168,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
         
         if ([self isPointOnVMDisplay:translated]) {
             // move vm cursor, hide iOS cursor
-            [_cursor updateMovement:location];
+            [self.cursor updateMovement:location];
             return [UIPointerRegion regionWithRect:[self.mtkView bounds] identifier:@"vm view"];
         } else {
             // don't move vm cursor, show iOS cursor

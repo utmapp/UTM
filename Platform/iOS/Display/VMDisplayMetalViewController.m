@@ -15,10 +15,13 @@
 //
 
 #import "VMDisplayMetalViewController.h"
+#import "VMDisplayMetalViewController+Private.h"
 #import "VMDisplayMetalViewController+Keyboard.h"
 #import "VMDisplayMetalViewController+Touch.h"
 #import "VMDisplayMetalViewController+Pointer.h"
+#if !defined(TARGET_OS_VISION) || !TARGET_OS_VISION
 #import "VMDisplayMetalViewController+Pencil.h"
+#endif
 #import "VMDisplayMetalViewController+Gamepad.h"
 #import "VMKeyboardView.h"
 #import "UTMLogging.h"
@@ -46,7 +49,7 @@
 - (void)loadView {
     [super loadView];
     self.keyboardView = [[VMKeyboardView alloc] initWithFrame:CGRectZero];
-    self.mtkView = [[MTKView alloc] initWithFrame:CGRectZero];
+    self.mtkView = [[CSMTKView alloc] initWithFrame:CGRectZero];
     self.keyboardView.delegate = self;
     [self.view insertSubview:self.keyboardView atIndex:0];
     [self.view insertSubview:self.mtkView atIndex:1];
@@ -104,10 +107,12 @@
             [self initPointerInteraction];
         }
     }
+#if !defined(TARGET_OS_VISION) || !TARGET_OS_VISION
     // Apple Pencil 2 double tap support on iOS 12.1+
     if (@available(iOS 12.1, *)) {
         [self initPencilInteraction];
     }
+#endif
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -188,11 +193,15 @@
     UTMLog(@"resizing to (%f, %f)", size.width, size.height);
     CGRect bounds = CGRectMake(0, 0, size.width, size.height);
     if (self.delegate.qemuDisplayIsNativeResolution) {
+#if defined(TARGET_OS_VISION) && TARGET_OS_VISION
+        CGFloat scale = 2.0;
+#else
         UIScreen *screen = self.view.window.screen;
         if (screen == nil) {
             screen = UIScreen.mainScreen;
         }
         CGFloat scale = screen.scale;
+#endif
         CGAffineTransform transform = CGAffineTransformMakeScale(scale, scale);
         bounds = CGRectApplyAffineTransform(bounds, transform);
     }

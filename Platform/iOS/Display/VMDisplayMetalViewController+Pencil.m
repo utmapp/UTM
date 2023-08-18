@@ -16,6 +16,7 @@
 
 #import "UIKit/UIKit.h"
 #import "VMDisplayMetalViewController.h"
+#import "VMDisplayMetalViewController+Private.h"
 #import "VMDisplayMetalViewController+Pencil.h"
 
 NS_AVAILABLE_IOS(12.1)
@@ -31,7 +32,7 @@ NS_AVAILABLE_IOS(12.1)
 - (void)pencilInteractionDidTap:(UIPencilInteraction *)interaction {
     // ignore interaction type as we only support one action:
     // switching to right click for the next click
-    _pencilForceRightClickOnce = true;
+    self.pencilForceRightClickOnce = true;
 }
 
 @end
