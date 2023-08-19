@@ -38,6 +38,20 @@ const CGFloat kScrollResistance = 10.0f;
     self.cursor = [[VMCursor alloc] initWithVMViewController:self];
     self.scroll = [[VMScroll alloc] initWithVMViewController:self];
     
+#if defined(TARGET_OS_VISION) && TARGET_OS_VISION
+    // we only support pan and tap on visionOS
+    self.pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(gesturePan:)];
+    self.pan.minimumNumberOfTouches = 1;
+    self.pan.maximumNumberOfTouches = 1;
+    self.pan.delegate = self;
+    self.pan.cancelsTouchesInView = NO;
+    self.tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(gestureTap:)];
+    self.tap.delegate = self;
+    self.tap.allowedTouchTypes = @[ @(UITouchTypeDirect) ];
+    self.tap.cancelsTouchesInView = NO;
+    [self.mtkView addGestureRecognizer:self.pan];
+    [self.mtkView addGestureRecognizer:self.tap];
+#else
     // Set up gesture recognizers because Storyboards is BROKEN and doing it there crashes!
     self.swipeUp = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(gestureSwipeUp:)];
     self.swipeUp.numberOfTouchesRequired = 3;
@@ -93,7 +107,6 @@ const CGFloat kScrollResistance = 10.0f;
     [self.mtkView addGestureRecognizer:self.longPress];
     [self.mtkView addGestureRecognizer:self.pinch];
     
-#if !defined(TARGET_OS_VISION) || !TARGET_OS_VISION
     // Feedback generator for clicks
     self.clickFeedbackGenerator = [[UISelectionFeedbackGenerator alloc] init];
 #endif

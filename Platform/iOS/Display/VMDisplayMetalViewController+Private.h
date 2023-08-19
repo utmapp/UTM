@@ -31,29 +31,29 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL mouseRightDown;
 @property (nonatomic) BOOL mouseMiddleDown;
 @property (nonatomic) BOOL pencilForceRightClickOnce;
-@property (nonatomic) VMCursor *cursor;
-@property (nonatomic) VMScroll *scroll;
+@property (nonatomic, nullable) VMCursor *cursor;
+@property (nonatomic, nullable) VMScroll *scroll;
 
 // Gestures
-@property (nonatomic) UISwipeGestureRecognizer *swipeUp;
-@property (nonatomic) UISwipeGestureRecognizer *swipeDown;
-@property (nonatomic) UISwipeGestureRecognizer *swipeScrollUp;
-@property (nonatomic) UISwipeGestureRecognizer *swipeScrollDown;
-@property (nonatomic) UIPanGestureRecognizer *pan;
-@property (nonatomic) UIPanGestureRecognizer *twoPan;
-@property (nonatomic) UIPanGestureRecognizer *threePan;
-@property (nonatomic) UITapGestureRecognizer *tap;
-@property (nonatomic) UITapGestureRecognizer *tapPencil;
-@property (nonatomic) UITapGestureRecognizer *twoTap;
-@property (nonatomic) UILongPressGestureRecognizer *longPress;
-@property (nonatomic) UIPinchGestureRecognizer *pinch;
+@property (nonatomic, nullable) UISwipeGestureRecognizer *swipeUp;
+@property (nonatomic, nullable) UISwipeGestureRecognizer *swipeDown;
+@property (nonatomic, nullable) UISwipeGestureRecognizer *swipeScrollUp;
+@property (nonatomic, nullable) UISwipeGestureRecognizer *swipeScrollDown;
+@property (nonatomic, nullable) UIPanGestureRecognizer *pan;
+@property (nonatomic, nullable) UIPanGestureRecognizer *twoPan;
+@property (nonatomic, nullable) UIPanGestureRecognizer *threePan;
+@property (nonatomic, nullable) UITapGestureRecognizer *tap;
+@property (nonatomic, nullable) UITapGestureRecognizer *tapPencil;
+@property (nonatomic, nullable) UITapGestureRecognizer *twoTap;
+@property (nonatomic, nullable) UILongPressGestureRecognizer *longPress;
+@property (nonatomic, nullable) UIPinchGestureRecognizer *pinch;
 
 //Gamepad
-@property (nonatomic) GCController *controller;
+@property (nonatomic, nullable) GCController *controller;
 
 #if !defined(TARGET_OS_VISION) || !TARGET_OS_VISION
 // Feedback generators
-@property (nonatomic) UISelectionFeedbackGenerator *clickFeedbackGenerator;
+@property (nonatomic, nullable) UISelectionFeedbackGenerator *clickFeedbackGenerator;
 #endif
 
 @end
