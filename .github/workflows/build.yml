@@ -228,10 +228,20 @@ jobs:
         with:
           name: UTM-macos-universal
           path: UTM.xcarchive.tgz
-  package-ipa:
-    name: Package (iOS IPA)
+  package-ios:
+    name: Package (iOS)
     runs-on: ${{ fromJSON(needs.configuration.outputs.github-runner) }}
     needs: [configuration, build-utm]
+    strategy:
+      matrix:
+        configuration: [
+          {platform: "ios", mode: "ipa", name: "UTM.ipa", path: "UTM.ipa"},
+          {platform: "ios-tci", mode: "ipa-se", name: "UTM-SE.ipa", path: "UTM SE.ipa"},
+          {platform: "ios", mode: "ipa-hv", name: "UTM-HV.ipa", path: "UTM.ipa"},
+          {platform: "ios", mode: "deb", name: "UTM.deb", path: "UTM.deb"},
+          {platform: "visionos", mode: "ipa", name: "UTM-visionOS.ipa", path: "UTM.ipa"},
+          {platform: "visionos-tci", mode: "ipa-se", name: "UTM-SE-visionOS.ipa", path: "UTM SE.ipa"}
+        ]
     if: github.event_name == 'release' || github.event.inputs.test_release == 'true'
     steps:
       - name: Checkout
@@ -239,138 +249,19 @@ jobs:
       - name: Download Artifact
         uses: actions/download-artifact@v3
         with:
-          name: UTM-ios-arm64
-      - name: Install ldid
-        run: brew install ldid
-      - name: Fakesign IPA
-        run: |
-          tar -xf UTM.xcarchive.tgz
-          ./scripts/package.sh ipa UTM.xcarchive .
-      - name: Upload Artifact
-        if: github.event_name != 'release'
-        uses: actions/upload-artifact@v3
-        with:
-          name: UTM-ipa
-          path: UTM.ipa
-      - name: Upload Release Asset
-        if: github.event_name == 'release'
-        uses: actions/upload-release-asset@v1.0.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: UTM.ipa
-          asset_name: UTM.ipa
-          asset_content_type: application/octet-stream
-      - name: Send Dispatch Event
-        if: github.event_name == 'release'
-        continue-on-error: true
-        uses: peter-evans/repository-dispatch@v1
-        with:
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          repository: ${{ secrets.DISPATCH_ALTSTORE_REPO_NAME }}
-          event-type: new-release
-  package-ipa-se:
-    name: Package (iOS-TCI IPA)
-    runs-on: ${{ fromJSON(needs.configuration.outputs.github-runner) }}
-    needs: [configuration, build-utm]
-    if: github.event_name == 'release' || github.event.inputs.test_release == 'true'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Download Artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: UTM-ios-tci-arm64
-      - name: Install ldid
-        run: brew install ldid
-      - name: Fakesign IPA
-        run: |
-          tar -xf UTM.xcarchive.tgz
-          ./scripts/package.sh ipa-se UTM.xcarchive .
-      - name: Upload Artifact
-        if: github.event_name != 'release'
-        uses: actions/upload-artifact@v3
-        with:
-          name: UTM-SE-ipa
-          path: UTM SE.ipa
-      - name: Upload Release Asset
-        if: github.event_name == 'release'
-        uses: actions/upload-release-asset@v1.0.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: UTM SE.ipa
-          asset_name: UTM SE.ipa
-          asset_content_type: application/octet-stream
-      - name: Send Dispatch Event
-        if: github.event_name == 'release'
-        continue-on-error: true
-        uses: peter-evans/repository-dispatch@v1
-        with:
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          repository: ${{ secrets.DISPATCH_ALTSTORE_REPO_NAME }}
-          event-type: new-release
-  package-hv:
-    name: Package (iOS HV)
-    runs-on: ${{ fromJSON(needs.configuration.outputs.github-runner) }}
-    needs: [configuration, build-utm]
-    if: github.event_name == 'release' || github.event.inputs.test_release == 'true'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Download Artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: UTM-ios-arm64
-      - name: Install ldid
-        run: brew install ldid
-      - name: Fakesign IPA
-        run: |
-          tar -xf UTM.xcarchive.tgz
-          ./scripts/package.sh ipa-hv UTM.xcarchive .
-          mv UTM.ipa UTM.HV.ipa
-      - name: Upload Artifact
-        if: github.event_name != 'release'
-        uses: actions/upload-artifact@v3
-        with:
-          name: UTM-HV-ipa
-          path: UTM.HV.ipa
-      - name: Upload Release Asset
-        if: github.event_name == 'release'
-        uses: actions/upload-release-asset@v1.0.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: UTM.HV.ipa
-          asset_name: UTM.HV.ipa
-          asset_content_type: application/octet-stream
-  package-deb:
-    name: Package (iOS DEB)
-    runs-on: ${{ fromJSON(needs.configuration.outputs.github-runner) }}
-    needs: [configuration, build-utm]
-    if: github.event_name == 'release' || github.event.inputs.test_release == 'true'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Download Artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: UTM-ios-arm64
+          name: UTM-${{ matrix.configuration.platform }}-arm64
       - name: Install ldid + dpkg
         run: brew install ldid dpkg
       - name: Fakesign IPA
         run: |
           tar -xf UTM.xcarchive.tgz
-          ./scripts/package.sh deb UTM.xcarchive .
+          ./scripts/package.sh ${{ matrix.configuration.mode }} UTM.xcarchive .
       - name: Upload Artifact
         if: github.event_name != 'release'
         uses: actions/upload-artifact@v3
         with:
-          name: UTM-deb
-          path: UTM.deb
+          name: ${{ matrix.configuration.name }}
+          path: ${{ matrix.configuration.path }}
       - name: Upload Release Asset
         if: github.event_name == 'release'
         uses: actions/upload-release-asset@v1.0.2
@@ -378,11 +269,23 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: UTM.deb
-          asset_name: UTM.deb
+          asset_path: ${{ matrix.configuration.path }}
+          asset_name: ${{ matrix.configuration.name }}
           asset_content_type: application/octet-stream
-      - name: Send Dispatch Event
-        if: github.event_name == 'release'
+  dispatch-ios:
+    name: Dispatch (iOS)
+    runs-on: ubuntu-latest
+    needs: package-ios
+    if: github.event_name == 'release'
+    steps:
+      - name: Update AltStore Repository
+        continue-on-error: true
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          repository: ${{ secrets.DISPATCH_ALTSTORE_REPO_NAME }}
+          event-type: new-release
+      - name: Update Cydia Repository
         continue-on-error: true
         uses: peter-evans/repository-dispatch@v1
         with:
