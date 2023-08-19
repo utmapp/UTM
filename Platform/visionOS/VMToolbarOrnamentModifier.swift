@@ -53,18 +53,16 @@ struct VMToolbarOrnamentModifier: ViewModifier {
             ToolbarItem(placement: .bottomOrnament) {
                 Divider()
             }
-            ToolbarItem(placement: .bottomOrnament) {
-                Button {
-                    if case .serial(_, _) = state.device {
+            if case .serial(_, _) = state.device {
+                ToolbarItem(placement: .bottomOrnament) {
+                    Button {
                         let template = session.qemuConfig.serials[state.device!.configIndex].terminal?.resizeCommand
                         state.toggleDisplayResize(command: template)
-                    } else {
-                        state.toggleDisplayResize()
+                    } label: {
+                        Label("Zoom", systemImage: state.isViewportChanged ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
                     }
-                } label: {
-                    Label("Zoom", systemImage: state.isViewportChanged ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
+                    .disabled(state.isBusy)
                 }
-                .disabled(state.isBusy)
             }
             #if !WITH_QEMU_TCI
             ToolbarItem(placement: .bottomOrnament) {

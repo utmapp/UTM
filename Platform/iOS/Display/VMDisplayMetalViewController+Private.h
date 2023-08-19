@@ -67,3 +67,11 @@ static inline CGFloat CGPointToPixel(CGFloat point) {
     return point * [UIScreen mainScreen].scale; // FIXME: multiple screens?
 #endif
 }
+
+static inline CGFloat CGPixelToPoint(CGFloat pixel) {
+#if defined(TARGET_OS_VISION) && TARGET_OS_VISION
+    return pixel / 2.0;
+#else
+    return pixel / [UIScreen mainScreen].scale; // FIXME: multiple screens?
+#endif
+}

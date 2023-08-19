@@ -163,8 +163,10 @@ extension VMWindowState {
         }
         var window = UTMRegistryEntry.Window()
         window.scale = displayScale
+        #if !os(visionOS)
         window.origin = displayOrigin
         window.isDisplayZoomLocked = isDisplayZoomLocked
+        #endif
         window.isKeyboardVisible = isKeyboardShown
         registryEntry.windowSettings[id] = window
     }
@@ -175,8 +177,12 @@ extension VMWindowState {
         }
         let window = registryEntry.windowSettings[id] ?? UTMRegistryEntry.Window()
         displayScale = window.scale
+        #if os(visionOS)
+        isDisplayZoomLocked = true
+        #else
         displayOrigin = window.origin
         isDisplayZoomLocked = window.isDisplayZoomLocked
+        #endif
         isKeyboardRequested = window.isKeyboardVisible
     }
 }
