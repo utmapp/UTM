@@ -2,8 +2,8 @@
 "CFBundleName" = "UTM";
 
 /* (No Comment) */
-"UTM virtual machine" = "UTM虚拟机";
+"UTM virtual machine" = "UTM 虚拟机";
 
 /* Privacy - Microphone Usage Description */
-"NSMicrophoneUsageDescription" = "UTM需要您的同意才能使用麦克风。";
+"NSMicrophoneUsageDescription" = "任何虚拟机都需要获得许可才能从麦克风进行录音。";
 

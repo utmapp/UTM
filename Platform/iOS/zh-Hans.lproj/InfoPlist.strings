@@ -1,15 +1,17 @@
+/* Privacy - Local Network Usage Description */
+"NSLocalNetworkUsageDescription" = "虚拟机可以访问本地网络。UTM 还使用本地网络与 AltServer 通信。";
+
 /* Privacy - Location Always and When In Use Usage Description */
-"NSLocationAlwaysAndWhenInUseUsageDescription" = "虚拟机后台运行需要使用定位服务。 位置数据永远不会离开设备。";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "UTM 定期请求位置数据，以确保系统保持后台进程处于活动状态。位置数据永远不会离开设备。";
 
 /* Privacy - Location Always Usage Description */
-"NSLocationAlwaysUsageDescription" = "虚拟机后台运行需要使用定位服务。 位置数据永远不会离开设备。";
+"NSLocationAlwaysUsageDescription" = "UTM 定期请求位置数据，以确保系统保持后台进程处于活动状态。位置数据永远不会离开设备。";
 
 /* Privacy - Location When In Use Usage Description */
-"NSLocationWhenInUseUsageDescription" = "虚拟机后台运行需要使用定位服务。 位置数据永远不会离开设备。";
+"NSLocationWhenInUseUsageDescription" = "UTM 定期请求位置数据，以确保系统保持后台进程处于活动状态。位置数据永远不会离开设备。";
 
 /* Privacy - Microphone Usage Description */
-"NSMicrophoneUsageDescription" = "虚拟机需要访问麦克风。";
+"NSMicrophoneUsageDescription" = "任何虚拟机都需要获得许可才能从麦克风进行录音。";
 
 /* (No Comment) */
-"UTM virtual machine" = "UTM虚拟机";
-
+"UTM virtual machine" = "UTM 虚拟机";
