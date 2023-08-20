@@ -1,9 +1,9 @@
 /* Bundle name */
 "CFBundleName" = "UTM";
 
-/* (No Comment) */
-"UTM virtual machine" = "UTM 虛擬機";
-
 /* Privacy - Microphone Usage Description */
 "NSMicrophoneUsageDescription" = "UTM 需要您的授權才能使用麥克風。";
+
+/* (No Comment) */
+"UTM virtual machine" = "UTM 虛擬機";
 

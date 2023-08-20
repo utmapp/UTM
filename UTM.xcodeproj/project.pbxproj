@@ -920,6 +920,7 @@
 		CEF83F8F250094EE00557D15 /* gcrypt.20.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F322653C7400FC7E63 /* gcrypt.20.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEFE98DF29485237007CB7A8 /* UTM.sdef in Resources */ = {isa = PBXBuildFile; fileRef = CEFE98DE29485237007CB7A8 /* UTM.sdef */; };
 		CEFE98E129485776007CB7A8 /* UTMScriptingVirtualMachineImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEFE98E029485776007CB7A8 /* UTMScriptingVirtualMachineImpl.swift */; };
+		FF0307552A84E3B70049979B /* QEMULauncher-InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = FF0307532A84E3B70049979B /* QEMULauncher-InfoPlist.strings */; };
 		FFB02A8C266CB09C006CD71A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = FFB02A8A266CB09C006CD71A /* InfoPlist.strings */; };
 		FFB02A8D266CB09C006CD71A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = FFB02A8A266CB09C006CD71A /* InfoPlist.strings */; };
 		FFB02A90266CB09C006CD71A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = FFB02A8E266CB09C006CD71A /* InfoPlist.strings */; };
@@ -1682,6 +1683,10 @@
 		E68D492228AC018E00D34C54 /* es-419 */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-419"; path = "es-419.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		E68D492328AC018E00D34C54 /* es-419 */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-419"; path = "es-419.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		E6F791192903EEC6000BAAC9 /* es-419 */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-419"; path = "es-419.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		FF0307542A84E3B70049979B /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/QEMULauncher-InfoPlist.strings"; sourceTree = "<group>"; };
+		FF0307562A84E3B70049979B /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.stringsdict"; sourceTree = "<group>"; };
+		FF0307572A84E3B70049979B /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/VMDisplayMetalViewInputAccessory.strings"; sourceTree = "<group>"; };
+		FF0307582A84E3B70049979B /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/VMDisplayWindow.strings"; sourceTree = "<group>"; };
 		FFB02A8B266CB09C006CD71A /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		FFB02A8F266CB09C006CD71A /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		FFB02A92266CB09C006CD71A /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
@@ -2260,6 +2265,7 @@
 		CE550BC0225947990063E575 = {
 			isa = PBXGroup;
 			children = (
+				FF0307532A84E3B70049979B /* QEMULauncher-InfoPlist.strings */,
 				CE50A41F2637BB200050430F /* Build.xcconfig */,
 				CE258ACC22715F8300E5A333 /* README.md */,
 				CE31C242225E543A00A965DD /* Configuration */,
@@ -2742,6 +2748,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				836CA97F28FCC39700EB9EF0 /* InfoPlist.strings in Resources */,
+				FF0307552A84E3B70049979B /* QEMULauncher-InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3405,6 +3412,7 @@
 				844C73F828BDA96200805313 /* fr */,
 				83FE63B728F617CE0047FFEF /* de */,
 				CEB54C12293009C5000D2AA9 /* pl */,
+				FF0307582A84E3B70049979B /* zh-Hant */,
 			);
 			name = VMDisplayWindow.xib;
 			sourceTree = "<group>";
@@ -3419,6 +3427,7 @@
 				83FE63B628F617CD0047FFEF /* de */,
 				CEB54C11293009C5000D2AA9 /* pl */,
 				84E3A8EB293349370024A740 /* fr */,
+				FF0307572A84E3B70049979B /* zh-Hant */,
 			);
 			name = VMDisplayMetalViewInputAccessory.xib;
 			sourceTree = "<group>";
@@ -3432,8 +3441,17 @@
 				83FE63BB28F617CE0047FFEF /* de */,
 				8441289729005F49002752E3 /* fr */,
 				CEB54C17293009C8000D2AA9 /* pl */,
+				FF0307562A84E3B70049979B /* zh-Hant */,
 			);
 			name = Localizable.stringsdict;
+			sourceTree = "<group>";
+		};
+		FF0307532A84E3B70049979B /* QEMULauncher-InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				FF0307542A84E3B70049979B /* zh-Hant */,
+			);
+			name = "QEMULauncher-InfoPlist.strings";
 			sourceTree = "<group>";
 		};
 		FFB02A8A266CB09C006CD71A /* InfoPlist.strings */ = {
