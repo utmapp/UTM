@@ -46,6 +46,7 @@ struct VMCardView: View {
             .truncationMode(.tail)
             Spacer()
             if vm.isStopped {
+                #if !os(visionOS) // tap target too small
                 Button {
                     data.run(vm: vm)
                 } label: {
@@ -53,6 +54,7 @@ struct VMCardView: View {
                         .font(.largeTitle)
                         .labelStyle(.iconOnly)
                 }
+                #endif
             } else if vm.isBusy {
                 Spinner(size: .large)
             }
@@ -62,6 +64,10 @@ struct VMCardView: View {
         .onDoubleClick {
             data.run(vm: vm)
         }
+        #else
+        .simultaneousGesture(TapGesture(count: 2).onEnded {
+            data.run(vm: vm)
+        })
         #endif
     }
 }

@@ -115,16 +115,12 @@ extension VMWindowState {
         let displaySize = size == .zero ? display.displaySize : size
         let scaled = CGSize(width: viewSize.width / displaySize.width, height: viewSize.height / displaySize.height)
         let viewportScale = min(scaled.width, scaled.height)
-        display.viewportScale = viewportScale
-        display.viewportOrigin = .zero
         // persist this change in viewState
         displayScale = viewportScale
         displayOrigin = .zero
     }
     
     private mutating func resetDisplay(_ display: CSDisplay) {
-        display.viewportScale = 1.0
-        display.viewportOrigin = .zero
         // persist this change in viewState
         displayScale = 1.0
         displayOrigin = .zero
@@ -167,22 +163,26 @@ extension VMWindowState {
         }
         var window = UTMRegistryEntry.Window()
         window.scale = displayScale
+        #if !os(visionOS)
         window.origin = displayOrigin
         window.isDisplayZoomLocked = isDisplayZoomLocked
+        #endif
         window.isKeyboardVisible = isKeyboardShown
         registryEntry.windowSettings[id] = window
     }
     
     mutating func restoreWindow(from registryEntry: UTMRegistryEntry, device: Device?) {
-        guard case let .display(display, id) = device else {
+        guard case let .display(_, id) = device else {
             return
         }
         let window = registryEntry.windowSettings[id] ?? UTMRegistryEntry.Window()
-        display.viewportScale = window.scale
-        display.viewportOrigin = window.origin
         displayScale = window.scale
+        #if os(visionOS)
+        isDisplayZoomLocked = true
+        #else
         displayOrigin = window.origin
         isDisplayZoomLocked = window.isDisplayZoomLocked
+        #endif
         isKeyboardRequested = window.isKeyboardVisible
     }
 }

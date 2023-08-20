@@ -32,7 +32,7 @@ struct DestructiveButton<Label>: View where Label : View {
     
     var body: some View {
         if #available(iOS 15, macOS 12, *) {
-            #if os(iOS)
+            #if os(iOS) || os(visionOS)
             Button(role: .destructive, action: action, label: {
                 label.foregroundColor(.red)
             })
@@ -40,7 +40,7 @@ struct DestructiveButton<Label>: View where Label : View {
             Button(role: .destructive, action: action, label: { label })
             #endif
         } else {
-            #if os(iOS)
+            #if os(iOS) || os(visionOS)
             Button(action: action, label: {
                 label.foregroundColor(.red)
             })

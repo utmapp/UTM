@@ -94,7 +94,7 @@ struct VMConfigSystemView: View {
             return
         }
         var totalDeviceMemory = ProcessInfo.processInfo.physicalMemory
-        #if os(iOS)
+        #if os(iOS) || os(visionOS)
         let availableMemory = UInt64(os_proc_available_memory())
         if availableMemory > 0 {
             totalDeviceMemory = availableMemory

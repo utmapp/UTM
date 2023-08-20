@@ -47,7 +47,7 @@ struct VMNavigationListView: View {
             if !vm.isLoaded {
                 UTMUnavailableVMView(vm: vm)
             } else {
-                if #available(iOS 16, macOS 13, *) {
+                if #available(iOS 16, macOS 13, visionOS 1, *) {
                     VMCardView(vm: vm)
                         .modifier(VMContextMenuModifier(vm: vm))
                         .tag(vm)
@@ -117,11 +117,13 @@ private struct VMListModifier: ViewModifier {
             ToolbarItem(placement: .navigationBarLeading) {
                 newButton
             }
+            #if !os(visionOS)
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button("Settings") {
                     settingsPresented.toggle()
                 }
             }
+            #endif
             ToolbarItem(placement: .navigationBarTrailing) {
                 EditButton()
             }

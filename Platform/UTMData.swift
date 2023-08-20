@@ -366,7 +366,7 @@ struct AlertMessage: Identifiable {
     }
     
     func showSettingsForCurrentVM() {
-        #if os(iOS)
+        #if os(iOS) || os(visionOS)
         // SwiftUI bug: cannot show modal at the same time as changing selected VM or it breaks
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
             self.showSettingsModal = true
@@ -924,7 +924,7 @@ struct AlertMessage: Identifiable {
 
     // MARK - JitStreamer
 
-#if os(iOS)
+#if os(iOS) || os(visionOS)
     @available(iOS 15, *)
     func jitStreamerAttach() async throws {
         let urlString = String(

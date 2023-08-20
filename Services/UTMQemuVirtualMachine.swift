@@ -455,11 +455,12 @@ extension UTMQemuVirtualMachine {
         }
         let prev = state
         state = .saving
+        defer {
+            state = prev
+        }
         do {
             try await _saveSnapshot(name: name ?? kSuspendSnapshotName)
-            state = prev
         } catch {
-            state = .stopped
             throw error
         }
     }

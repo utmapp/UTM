@@ -61,7 +61,7 @@ struct VMReleaseNotesView: View {
                         isShowAll = true
                     } label: {
                         Text("Show All")
-                        #if os(iOS)
+                        #if os(iOS) || os(visionOS)
                             .frame(maxWidth: .infinity)
                         #endif
                     }.buttonStyle(ReleaseButtonStyle())
@@ -70,7 +70,7 @@ struct VMReleaseNotesView: View {
                     presentationMode.wrappedValue.dismiss()
                 } label: {
                     Text("Continue")
-                    #if os(iOS)
+                    #if os(iOS) || os(visionOS)
                         .frame(maxWidth: .infinity)
                     #endif
                 }.keyboardShortcut(.defaultAction)

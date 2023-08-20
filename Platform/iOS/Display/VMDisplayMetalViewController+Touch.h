@@ -38,11 +38,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface VMDisplayMetalViewController (Gestures) <UIGestureRecognizerDelegate>
 
 @property (nonatomic, readonly) CSInputButton mouseButtonDown;
-@property (nonatomic, readonly) VMGestureType longPressType;
-@property (nonatomic, readonly) VMGestureType twoFingerTapType;
-@property (nonatomic, readonly) VMGestureType twoFingerPanType;
-@property (nonatomic, readonly) VMGestureType twoFingerScrollType;
-@property (nonatomic, readonly) VMGestureType threeFingerPanType;
 @property (nonatomic, readonly) VMMouseType touchMouseType;
 @property (nonatomic, readonly) VMMouseType pencilMouseType;
 @property (nonatomic, readonly) VMMouseType indirectMouseType;
@@ -54,17 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGPoint)moveMouseRelative:(CGPoint)translation;
 - (CGPoint)moveMouseScroll:(CGPoint)translation;
 - (void)scrollWithInertia:(UIPanGestureRecognizer *)sender;
-
-- (IBAction)gesturePan:(UIPanGestureRecognizer *)sender;
-- (IBAction)gestureTwoPan:(UIPanGestureRecognizer *)sender;
-- (IBAction)gestureThreePan:(UIPanGestureRecognizer *)sender;
-- (IBAction)gestureTap:(UITapGestureRecognizer *)sender;
-- (IBAction)gestureTwoTap:(UITapGestureRecognizer *)sender;
-- (IBAction)gestureLongPress:(UILongPressGestureRecognizer *)sender;
-- (IBAction)gesturePinch:(UIPinchGestureRecognizer *)sender;
-- (IBAction)gestureSwipeUp:(UISwipeGestureRecognizer *)sender;
-- (IBAction)gestureSwipeDown:(UISwipeGestureRecognizer *)sender;
-- (IBAction)gestureSwipeScroll:(UISwipeGestureRecognizer *)sender;
+- (void)mouseClick:(CSInputButton)button location:(CGPoint)location;
 
 @end
 

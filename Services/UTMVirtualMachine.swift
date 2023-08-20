@@ -464,7 +464,7 @@ extension UTMVirtualMachine {
             do {
                 try await pause()
                 if save {
-                    try? await saveSnapshot(name: nil)
+                    try await saveSnapshot(name: nil)
                 }
             } catch {
                 delegate?.virtualMachine(self, didErrorWithMessage: error.localizedDescription)

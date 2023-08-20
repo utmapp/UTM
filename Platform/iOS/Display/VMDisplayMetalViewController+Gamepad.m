@@ -16,6 +16,7 @@
 
 #import "VMCursor.h"
 #import "VMScroll.h"
+#import "VMDisplayMetalViewController+Private.h"
 #import "VMDisplayMetalViewController+Gamepad.h"
 #import "VMDisplayMetalViewController+Touch.h"
 #import "CSDisplay.h"
@@ -53,7 +54,7 @@ const CGFloat kThumbstickSpeedMultiplier = 1000; // in points per second
 - (void)setupController:(GCController *)controller {
     GCExtendedGamepad *gamepad = controller.extendedGamepad;
     __weak typeof(self) _self = self;
-    _controller = controller;
+    self.controller = controller;
     UTMLog(@"active controller switched to: %@", controller.vendorName);
     
     gamepad.leftTrigger.pressedChangedHandler = ^(GCControllerButtonInput * _Nonnull button, float value, BOOL pressed) {
@@ -107,20 +108,20 @@ const CGFloat kThumbstickSpeedMultiplier = 1000; // in points per second
     gamepad.leftThumbstick.valueChangedHandler = ^(GCControllerDirectionPad * _Nonnull dpad, float xValue, float yValue) {
         VMDisplayMetalViewController *s = _self;
         CGPoint velocity = CGPointMake(xValue * kThumbstickSpeedMultiplier, -yValue * kThumbstickSpeedMultiplier);
-        [s->_scroll startMovement:CGPointZero];
-        [s->_scroll updateMovement:CGPointMake(xValue, yValue)];
-        [s->_scroll endMovementWithVelocity:velocity resistance:0];
+        [s.scroll startMovement:CGPointZero];
+        [s.scroll updateMovement:CGPointMake(xValue, yValue)];
+        [s.scroll endMovementWithVelocity:velocity resistance:0];
     };
     
     gamepad.rightThumbstick.valueChangedHandler = ^(GCControllerDirectionPad * _Nonnull dpad, float xValue, float yValue) {
         NSInteger speed = [_self integerForSetting:@"GCThumbstickRightSpeed"];
         VMDisplayMetalViewController *s = _self;
-        CGPoint center = s->_cursor.center;
+        CGPoint center = s.cursor.center;
         CGPoint start = CGPointMake(xValue * speed, -yValue * speed);
         CGPoint velocity = CGPointMake(xValue * kThumbstickSpeedMultiplier, -yValue * kThumbstickSpeedMultiplier);
-        [s->_cursor startMovement:center];
-        [s->_cursor updateMovement:CGPointMake(center.x + start.x, center.y + start.y)];
-        [s->_cursor endMovementWithVelocity:velocity resistance:0];
+        [s.cursor startMovement:center];
+        [s.cursor updateMovement:CGPointMake(center.x + start.x, center.y + start.y)];
+        [s.cursor endMovementWithVelocity:velocity resistance:0];
     };
     
     if (@available(iOS 13.0, *)) {
@@ -138,15 +139,15 @@ const CGFloat kThumbstickSpeedMultiplier = 1000; // in points per second
             break;
         case -1:
             [self.vmInput sendMouseButton:kCSInputButtonLeft pressed:isPressed];
-            _mouseLeftDown = isPressed;
+            self.mouseLeftDown = isPressed;
             break;
         case -3:
             [self.vmInput sendMouseButton:kCSInputButtonRight pressed:isPressed];
-            _mouseRightDown = isPressed;
+            self.mouseRightDown = isPressed;
             break;
         case -2:
             [self.vmInput sendMouseButton:kCSInputButtonMiddle pressed:isPressed];
-            _mouseMiddleDown = isPressed;
+            self.mouseMiddleDown = isPressed;
             break;
         default:
             [self sendExtendedKey:isPressed ? kCSInputKeyPress : kCSInputKeyRelease code:(int)value];

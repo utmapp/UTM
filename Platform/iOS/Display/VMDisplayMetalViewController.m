@@ -15,10 +15,13 @@
 //
 
 #import "VMDisplayMetalViewController.h"
+#import "VMDisplayMetalViewController+Private.h"
 #import "VMDisplayMetalViewController+Keyboard.h"
 #import "VMDisplayMetalViewController+Touch.h"
 #import "VMDisplayMetalViewController+Pointer.h"
+#if !defined(TARGET_OS_VISION) || !TARGET_OS_VISION
 #import "VMDisplayMetalViewController+Pencil.h"
+#endif
 #import "VMDisplayMetalViewController+Gamepad.h"
 #import "VMKeyboardView.h"
 #import "UTMLogging.h"
@@ -29,6 +32,8 @@
 @interface VMDisplayMetalViewController ()
 
 @property (nonatomic, nullable) CSMetalRenderer *renderer;
+@property (nonatomic) CGFloat windowScaling;
+@property (nonatomic) CGPoint windowOrigin;
 
 @end
 
@@ -38,6 +43,8 @@
     if (self = [super initWithNibName:nil bundle:nil]) {
         self.vmDisplay = display;
         self.vmInput = input;
+        self.windowScaling = 1.0;
+        self.windowOrigin = CGPointZero;
         [self addObserver:self forKeyPath:@"vmDisplay.displaySize" options:NSKeyValueObservingOptionNew context:nil];
     }
     return self;
@@ -46,7 +53,7 @@
 - (void)loadView {
     [super loadView];
     self.keyboardView = [[VMKeyboardView alloc] initWithFrame:CGRectZero];
-    self.mtkView = [[MTKView alloc] initWithFrame:CGRectZero];
+    self.mtkView = [[CSMTKView alloc] initWithFrame:CGRectZero];
     self.keyboardView.delegate = self;
     [self.view insertSubview:self.keyboardView atIndex:0];
     [self.view insertSubview:self.mtkView atIndex:1];
@@ -84,8 +91,6 @@
     }
     
     // Initialize our renderer with the view size
-    CGSize drawableSize = self.view.bounds.size;
-    self.mtkView.drawableSize = drawableSize;
     if ([self integerForSetting:@"QEMURendererFPSLimit"] > 0) {
         self.mtkView.preferredFramesPerSecond = [self integerForSetting:@"QEMURendererFPSLimit"];
     }
@@ -104,10 +109,12 @@
             [self initPointerInteraction];
         }
     }
+#if !defined(TARGET_OS_VISION) || !TARGET_OS_VISION
     // Apple Pencil 2 double tap support on iOS 12.1+
     if (@available(iOS 12.1, *)) {
         [self initPencilInteraction];
     }
+#endif
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -125,13 +132,14 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    self.delegate.displayViewSize = self.mtkView.drawableSize;
+    self.delegate.displayViewSize = [self convertSizeToNative:self.view.bounds.size];
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
     [coordinator animateAlongsideTransition:nil completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
-        self.delegate.displayViewSize = self.mtkView.drawableSize;
+        self.delegate.displayViewSize = [self convertSizeToNative:size];
+        [self.delegate display:self.vmDisplay didResizeTo:self.vmDisplay.displaySize];
     }];
     if (self.delegate.qemuDisplayIsDynamicResolution) {
         [self displayResize:size];
@@ -184,18 +192,18 @@
 
 #pragma mark - Resizing
 
+- (CGSize)convertSizeToNative:(CGSize)size {
+    if (self.delegate.qemuDisplayIsNativeResolution) {
+        size.width = CGPointToPixel(size.width);
+        size.height = CGPointToPixel(size.height);
+    }
+    return size;
+}
+
 - (void)displayResize:(CGSize)size {
     UTMLog(@"resizing to (%f, %f)", size.width, size.height);
+    size = [self convertSizeToNative:size];
     CGRect bounds = CGRectMake(0, 0, size.width, size.height);
-    if (self.delegate.qemuDisplayIsNativeResolution) {
-        UIScreen *screen = self.view.window.screen;
-        if (screen == nil) {
-            screen = UIScreen.mainScreen;
-        }
-        CGFloat scale = screen.scale;
-        CGAffineTransform transform = CGAffineTransformMakeScale(scale, scale);
-        bounds = CGRectApplyAffineTransform(bounds, transform);
-    }
     [self.vmDisplay requestResolution:bounds];
 }
 
@@ -208,7 +216,15 @@
 }
 
 - (void)setDisplayScaling:(CGFloat)scaling origin:(CGPoint)origin {
+    if (scaling == self.windowScaling && CGPointEqualToPoint(origin, self.windowOrigin)) {
+        return;
+    }
     self.vmDisplay.viewportOrigin = origin;
+    self.windowScaling = scaling;
+    self.windowOrigin = origin;
+    if (!self.delegate.qemuDisplayIsNativeResolution) {
+        scaling = CGPointToPixel(scaling);
+    }
     if (scaling) { // cannot be zero
         self.vmDisplay.viewportScale = scaling;
     }
@@ -216,7 +232,24 @@
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
     if ([keyPath isEqualToString:@"vmDisplay.displaySize"]) {
+#if defined(TARGET_OS_VISION) && TARGET_OS_VISION
+        dispatch_async(dispatch_get_main_queue(), ^{
+            CGSize minSize = self.vmDisplay.displaySize;
+            if (self.delegate.qemuDisplayIsNativeResolution) {
+                minSize.width = CGPixelToPoint(minSize.width);
+                minSize.height = CGPixelToPoint(minSize.height);
+            }
+            CGSize displaySize = CGSizeMake(minSize.width * self.windowScaling, minSize.height * self.windowScaling);
+            CGSize maxSize = CGSizeMake(UIProposedSceneSizeNoPreference, UIProposedSceneSizeNoPreference);
+            UIWindowSceneGeometryPreferences *geoPref = [[UIWindowSceneGeometryPreferencesReality alloc] initWithSize:displaySize
+                                                                                                          minimumSize:minSize
+                                                                                                          maximumSize:maxSize
+                                                                                                 resizingRestrictions:UIWindowSceneResizingRestrictionsUniform];
+            [self.view.window.windowScene requestGeometryUpdateWithPreferences:geoPref errorHandler:nil];
+        });
+#else
         [self.delegate display:self.vmDisplay didResizeTo:self.vmDisplay.displaySize];
+#endif
     }
 }
 

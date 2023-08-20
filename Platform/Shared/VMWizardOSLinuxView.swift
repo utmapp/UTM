@@ -144,7 +144,7 @@ struct VMWizardOSLinuxView: View {
             
             
         }
-        #if os(iOS)
+        #if os(iOS) || os(visionOS)
         .navigationTitle(Text("Linux"))
         #endif
         .fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.data], onCompletion: processImage)

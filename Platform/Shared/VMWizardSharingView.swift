@@ -38,7 +38,7 @@ struct VMWizardSharingView: View {
                 }
             }
         }
-        #if os(iOS)
+        #if os(iOS) || os(visionOS)
         .navigationTitle(Text("Shared Directory"))
         #endif
         .fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.folder], onCompletion: processDirectory)

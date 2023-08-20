@@ -15,6 +15,7 @@
 //
 
 #import "VMDisplayMetalViewController+Keyboard.h"
+#import "VMDisplayMetalViewController+Private.h"
 #import "UTMLogging.h"
 #import "VMKeyboardView.h"
 #import "VMKeyboardButton.h"

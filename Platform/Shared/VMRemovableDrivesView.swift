@@ -144,7 +144,7 @@ struct VMRemovableDrivesView: View {
                     Text(url.lastPathComponent)
                         .truncationMode(.head)
                         .lineLimit(1)
-                    #if os(iOS)
+                    #if os(iOS) || os(visionOS)
                     Image(systemName: "chevron.down")
                     #endif
                 }

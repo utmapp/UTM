@@ -16,7 +16,7 @@
 
 import SwiftUI
 import UniformTypeIdentifiers
-#if !os(macOS)
+#if os(iOS)
 import IQKeyboardManagerSwift
 #endif
 
@@ -37,7 +37,7 @@ struct ContentView: View {
     var body: some View {
         VMNavigationListView()
         .overlay(data.showSettingsModal ? AnyView(EmptyView()) : AnyView(BusyOverlay()))
-        #if os(macOS)
+        #if os(macOS) || os(visionOS)
         .frame(minWidth: 800, idealWidth: 1200, minHeight: 600, idealHeight: 800)
         #endif
         .disabled(data.busy && !data.showNewVMSheet && !data.showSettingsModal)
@@ -75,7 +75,9 @@ struct ContentView: View {
             NSWindow.allowsAutomaticWindowTabbing = false
             #else
             data.triggeriOSNetworkAccessPrompt()
+            #if !os(visionOS)
             IQKeyboardManager.shared.enable = true
+            #endif
             #if !WITH_QEMU_TCI
             if !Main.jitAvailable {
                 data.busyWorkAsync {

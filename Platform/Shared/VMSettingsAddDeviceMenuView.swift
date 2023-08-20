@@ -69,7 +69,7 @@ struct VMSettingsAddDeviceMenuView: View {
             } label: {
                 Label("Sound", systemImage: "speaker.wave.2")
             }.disabled(config.system.architecture.soundDeviceType.allRawValues.isEmpty)
-            #if os(iOS)
+            #if os(iOS) || os(visionOS)
             Divider()
             Button {
                 isImportDriveShown.toggle()

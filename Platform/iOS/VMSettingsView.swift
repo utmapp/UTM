@@ -88,7 +88,9 @@ struct VMSettingsView: View {
                     }
                 }
             }
+            #if !os(visionOS)
             .navigationTitle("Settings")
+            #endif
             .navigationViewStyle(.stack)
             .navigationBarItems(leading: HStack {
                 if #available(iOS 15, *) {
@@ -211,6 +213,7 @@ struct RoundRectIconLabelStyle: LabelStyle {
                         .frame(width: 32, height: 32)
                         .foregroundColor(color)
                     configuration.icon.foregroundColor(.white)
+                        .imageScale(.medium)
                 }
             })
     }
