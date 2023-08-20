@@ -23,6 +23,7 @@ NC='\033[0m'
 # Knobs
 IOS_SDKMINVER="11.0"
 MAC_SDKMINVER="10.11"
+VISIONOS_SDKMINVER="1.0"
 
 # Build environment
 PLATFORM=
@@ -41,7 +42,7 @@ version_check() {
 usage () {
     echo "Usage: [VARIABLE...] $(basename $0) [-p platform] [-a architecture] [-q qemu_path] [-d] [-r]"
     echo ""
-    echo "  -p platform      Target platform. Default ios. [ios|ios_simulator|ios-tci|ios_simulator-tci|macos]"
+    echo "  -p platform      Target platform. Default ios. [ios|ios_simulator|ios-tci|ios_simulator-tci|macos|visionos|visionos_simulator]"
     echo "  -a architecture  Target architecture. Default arm64. [armv7|armv7s|arm64|i386|x86_64]"
     echo "  -q qemu_path     Do not download QEMU, use qemu_path instead."
     echo "  -d, --download   Force re-download of source even if already downloaded."
@@ -109,6 +110,7 @@ download () {
 clone () {
     REPO="$1"
     COMMIT="$2"
+    SUBDIRS="$3"
     NAME="$(basename $REPO)"
     DIR="$BUILD_DIR/$NAME"
     if [ -d "$DIR" -a -z "$REDOWNLOAD" ]; then
@@ -116,11 +118,12 @@ clone () {
     else
         rm -rf "$DIR"
         echo "${GREEN}Cloning ${URL}...${NC}"
-        mkdir "$DIR"
-        git -C "$DIR" init
-        git -C "$DIR" remote add origin "$REPO"
+        git clone --filter=tree:0 --no-checkout "$REPO" "$DIR"
+        if [ ! -z "$SUBDIRS" ]; then
+            git -C "$DIR" sparse-checkout init
+            git -C "$DIR" sparse-checkout set $SUBDIRS
+        fi
     fi
-    git -C "$DIR" fetch --depth 1 origin "$COMMIT"
     git -C "$DIR" checkout "$COMMIT"
 }
 
@@ -157,8 +160,7 @@ download_all () {
         download $USB_SRC
         download $USBREDIR_SRC
     fi
-    clone $DEPOT_TOOLS_REPO $DEPOT_TOOLS_COMMIT
-    clone $ANGLE_REPO $ANGLE_COMMIT
+    clone $WEBKIT_REPO $WEBKIT_COMMIT "$WEBKIT_SUBDIRS"
     clone $EPOXY_REPO $EPOXY_COMMIT
     clone $VIRGLRENDERER_REPO $VIRGLRENDERER_COMMIT
     clone $HYPERVISOR_REPO $HYPERVISOR_COMMIT
@@ -217,7 +219,7 @@ generate_meson_cross() {
     echo "python = ['$(which python3)']" >> $cross
     echo "[host_machine]" >> $cross
     case $PLATFORM in
-    ios* )
+    ios* | visionos* )
         echo "system = 'ios'" >> $cross
         ;;
     macos )
@@ -323,6 +325,12 @@ build_openssl() {
             ;;
         esac
         ;;
+    visionos_simulator )
+        OPENSSL_CROSS=visionos-sim-cross-$ARCH
+        ;;
+    visionos* )
+        OPENSSL_CROSS=visionos-cross-$ARCH
+        ;;
     esac
     if [ -z "$OPENSSL_CROSS" ]; then
         echo "${RED}Unsupported configuration for OpenSSL $PLATFORM, $ARCH${NC}"
@@ -399,53 +407,9 @@ build_angle () {
     OLD_PATH=$PATH
     export PATH="$(realpath "$BUILD_DIR/depot_tools.git"):$OLD_PATH"
     pwd="$(pwd)"
-    cd "$BUILD_DIR/angle.git"
-    DEPOT_TOOLS_UPDATE=0 python3 scripts/bootstrap.py
-    DEPOT_TOOLS_UPDATE=0 gclient sync
-    case $PLATFORM in
-    ios* )
-        TARGET_OS="ios"
-        IOS_BUILD_ARGS="ios_enable_code_signing=false ios_deployment_target=\"$IOS_SDKMINVER\""
-        if [ "$PLATFORM" == "ios_simulator" ]; then
-            IOS_BUILD_ARGS="$IOS_BUILD_ARGS target_environment=\"simulator\""
-        else
-            IOS_BUILD_ARGS="$IOS_BUILD_ARGS target_environment=\"device\""
-        fi
-        ;;
-    macos )
-        TARGET_OS="mac"
-        ;;
-    esac
-    case $ARCH in
-    armv7 | armv7s )
-        TARGET_CPU="arm"
-        ;;
-    arm64 )
-        TARGET_CPU="arm64"
-        ;;
-    i386 )
-        TARGET_CPU="x86"
-        ;;
-    x86_64 )
-        TARGET_CPU="x64"
-        ;;
-    esac
-    # FIXME: remove this hack when SwiftShader is fixed
-    sed -i.old 's/"-Wloop-analysis"/"-Wloop-analysis", "-Wno-deprecated-declarations"/g' "build/config/compiler/BUILD.gn"
-    gn gen "--args=is_debug=false angle_build_all=false angle_enable_metal=true $IOS_BUILD_ARGS target_os=\"$TARGET_OS\" target_cpu=\"$TARGET_CPU\"" utm_build
-    ninja -C utm_build -j $NCPU
-    if [ "$TARGET_OS" == "ios" ]; then
-        cp -a "utm_build/libEGL.framework/libEGL" "$PREFIX/lib/libEGL.dylib"
-        cp -a "utm_build/libGLESv2.framework/libGLESv2" "$PREFIX/lib/libGLESv2.dylib"
-    else
-        cp -a "utm_build/libEGL.dylib" "$PREFIX/lib/libEGL.dylib"
-        cp -a "utm_build/libGLESv2.dylib" "$PREFIX/lib/libGLESv2.dylib"
-    fi
-    # FIXME: above
-    mv "build/config/compiler/BUILD.gn.old" "build/config/compiler/BUILD.gn"
-    # -headerpad_max_install_names is broken and these still fail on long paths so we just make sure they run at the end with a short path
-    #install_name_tool -id "$PREFIX/lib/libEGL.dylib" "$PREFIX/lib/libEGL.dylib"
-    #install_name_tool -id "$PREFIX/lib/libGLESv2.dylib" "$PREFIX/lib/libGLESv2.dylib"
+    cd "$BUILD_DIR/WebKit.git/Source/ThirdParty/ANGLE"
+    xcodebuild archive -archivePath "ANGLE" -scheme "ANGLE" -sdk $SDK -arch $ARCH -configuration Release WEBCORE_LIBRARY_DIR="/usr/local/lib" IPHONEOS_DEPLOYMENT_TARGET="14.0" MACOSX_DEPLOYMENT_TARGET="11.0" XROS_DEPLOYMENT_TARGET="1.0"
+    rsync -a "ANGLE.xcarchive/Products/usr/local/lib/" "$PREFIX/lib"
     rsync -a "include/" "$PREFIX/include"
     cd "$pwd"
     export PATH=$OLD_PATH
@@ -492,7 +456,7 @@ build_qemu_dependencies () {
     ZSTD_BASENAME="$(basename $ZSTD_SRC)"
     meson_build "$BUILD_DIR/${ZSTD_BASENAME%.tar.*}/build/meson"
     meson_build $GST_SRC -Dtests=disabled -Ddefault_library=both -Dregistry=false
-    meson_build $GST_BASE_SRC -Dtests=disabled -Ddefault_library=both
+    meson_build $GST_BASE_SRC -Dtests=disabled -Ddefault_library=both -Dgl=disabled
     meson_build $GST_GOOD_SRC -Dtests=disabled -Ddefault_library=both
     meson_build $SPICE_PROTOCOL_SRC
     meson_build $SPICE_SERVER_SRC -Dlz4=false -Dsasl=false
@@ -652,22 +616,37 @@ CHOST=$CPU-apple-darwin
 export CHOST
 
 case $PLATFORM in
-ios* )
+ios* | visionos* )
     if [ -z "$SDKMINVER" ]; then
-        SDKMINVER="$IOS_SDKMINVER"
+        case $PLATFORM in
+        ios* )
+            SDKMINVER="$IOS_SDKMINVER"
+            ;;
+        visionos* )
+            SDKMINVER="$VISIONOS_SDKMINVER"
+            ;;
+        esac
     fi
+    HVF_FLAGS="--disable-hvf"
     case $PLATFORM in
-    *simulator* )
+    ios_simulator* )
         SDK=iphonesimulator
         CFLAGS_MINVER="-mios-simulator-version-min=$SDKMINVER"
         PLATFORM_FAMILY_PREFIX="iOS_Simulator"
-        HVF_FLAGS="--disable-hvf"
         ;;
-    * )
+    ios* )
         SDK=iphoneos
         CFLAGS_MINVER="-miphoneos-version-min=$SDKMINVER"
         PLATFORM_FAMILY_PREFIX="iOS"
         HVF_FLAGS="--enable-hvf-private"
+        ;;
+    visionos_simulator* )
+        SDK=xrsimulator
+        PLATFORM_FAMILY_PREFIX="visionOS_Simulator"
+        ;;
+    visionos* )
+        SDK=xros
+        PLATFORM_FAMILY_PREFIX="visionOS"
         ;;
     esac
     CFLAGS_TARGET=
@@ -680,7 +659,6 @@ ios* )
         fi
         PLATFORM_FAMILY_NAME="$PLATFORM_FAMILY_PREFIX-TCI"
         SKIP_USB_BUILD=1
-        HVF_FLAGS="--disable-hvf"
         ;;
     * )
         PLATFORM_FAMILY_NAME="$PLATFORM_FAMILY_PREFIX"

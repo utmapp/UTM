@@ -331,7 +331,7 @@ struct Setting<T> {
 // MARK: - Bookmark handling
 extension URL {
     private static var defaultCreationOptions: BookmarkCreationOptions {
-        #if os(iOS)
+        #if os(iOS) || os(visionOS)
         return .minimalBookmark
         #else
         return .withSecurityScope
@@ -339,7 +339,7 @@ extension URL {
     }
     
     private static var defaultResolutionOptions: BookmarkResolutionOptions {
-        #if os(iOS)
+        #if os(iOS) || os(visionOS)
         return []
         #else
         return .withSecurityScope

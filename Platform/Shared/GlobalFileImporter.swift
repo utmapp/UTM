@@ -34,12 +34,12 @@ struct GlobalFileImporterViewModifier: ViewModifier {
     @Binding var isPresented: Bool
     let allowedContentTypes: [UTType]
     let onCompletion: (Result<URL, Error>) -> Void
-    #if os(iOS)
+    #if os(iOS) || os(visionOS)
     @EnvironmentObject private var globalFileImporterShim: GlobalFileImporterShim
     #endif
     
     func body(content: Content) -> some View {
-        #if os(iOS)
+        #if os(iOS) || os(visionOS)
         content
             .onChange(of: isPresented) { newValue in
                 if newValue {

@@ -15,8 +15,11 @@
 //
 
 #import "VMDisplayMetalViewController.h"
+#import "VMDisplayMetalViewController+Private.h"
 #import "VMDisplayMetalViewController+Touch.h"
+#if !defined(TARGET_OS_VISION) || !TARGET_OS_VISION
 #import "VMDisplayMetalViewController+Pencil.h"
+#endif
 #import "VMCursor.h"
 #import "VMScroll.h"
 #import "CSDisplay.h"
@@ -32,85 +35,94 @@ const CGFloat kScrollResistance = 10.0f;
 
 - (void)initTouch {
     // mouse cursor
-    _cursor = [[VMCursor alloc] initWithVMViewController:self];
-    _scroll = [[VMScroll alloc] initWithVMViewController:self];
+    self.cursor = [[VMCursor alloc] initWithVMViewController:self];
+    self.scroll = [[VMScroll alloc] initWithVMViewController:self];
     
+#if defined(TARGET_OS_VISION) && TARGET_OS_VISION
+    // we only support pan and tap on visionOS
+    self.pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(gesturePan:)];
+    self.pan.minimumNumberOfTouches = 1;
+    self.pan.maximumNumberOfTouches = 1;
+    self.pan.delegate = self;
+    self.pan.cancelsTouchesInView = NO;
+    self.tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(gestureTap:)];
+    self.tap.delegate = self;
+    self.tap.allowedTouchTypes = @[ @(UITouchTypeDirect) ];
+    self.tap.cancelsTouchesInView = NO;
+    [self.mtkView addGestureRecognizer:self.pan];
+    [self.mtkView addGestureRecognizer:self.tap];
+#else
     // Set up gesture recognizers because Storyboards is BROKEN and doing it there crashes!
-    _swipeUp = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(gestureSwipeUp:)];
-    _swipeUp.numberOfTouchesRequired = 3;
-    _swipeUp.direction = UISwipeGestureRecognizerDirectionUp;
-    _swipeUp.delegate = self;
-    _swipeDown = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(gestureSwipeDown:)];
-    _swipeDown.numberOfTouchesRequired = 3;
-    _swipeDown.direction = UISwipeGestureRecognizerDirectionDown;
-    _swipeDown.delegate = self;
-    _swipeScrollUp = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(gestureSwipeScroll:)];
-    _swipeScrollUp.numberOfTouchesRequired = 2;
-    _swipeScrollUp.direction = UISwipeGestureRecognizerDirectionUp;
-    _swipeScrollUp.delegate = self;
-    _swipeScrollDown = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(gestureSwipeScroll:)];
-    _swipeScrollDown.numberOfTouchesRequired = 2;
-    _swipeScrollDown.direction = UISwipeGestureRecognizerDirectionDown;
-    _swipeScrollDown.delegate = self;
-    _pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(gesturePan:)];
-    _pan.minimumNumberOfTouches = 1;
-    _pan.maximumNumberOfTouches = 1;
-    _pan.delegate = self;
-    _pan.cancelsTouchesInView = NO;
-    _twoPan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(gestureTwoPan:)];
-    _twoPan.minimumNumberOfTouches = 2;
-    _twoPan.maximumNumberOfTouches = 2;
-    _twoPan.delegate = self;
-    _threePan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(gestureThreePan:)];
-    _threePan.minimumNumberOfTouches = 3;
-    _threePan.maximumNumberOfTouches = 3;
-    _threePan.delegate = self;
-    _tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(gestureTap:)];
-    _tap.delegate = self;
-    _tap.allowedTouchTypes = @[ @(UITouchTypeDirect) ];
-    _tap.cancelsTouchesInView = NO;
-    _tapPencil = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(gestureTapPencil:)];
-    _tapPencil.delegate = self;
-    _tapPencil.allowedTouchTypes = @[ @(UITouchTypePencil) ];
-    _tapPencil.cancelsTouchesInView = NO;
-    _twoTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(gestureTwoTap:)];
-    _twoTap.numberOfTouchesRequired = 2;
-    _twoTap.delegate = self;
-    _twoTap.allowedTouchTypes = @[ @(UITouchTypeDirect) ];
-    _longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(gestureLongPress:)];
-    _longPress.delegate = self;
-    _longPress.allowedTouchTypes = @[ @(UITouchTypeDirect) ];
-    _pinch = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(gesturePinch:)];
-    _pinch.delegate = self;
-    [self.mtkView addGestureRecognizer:_swipeUp];
-    [self.mtkView addGestureRecognizer:_swipeDown];
-    [self.mtkView addGestureRecognizer:_swipeScrollUp];
-    [self.mtkView addGestureRecognizer:_swipeScrollDown];
-    [self.mtkView addGestureRecognizer:_pan];
-    [self.mtkView addGestureRecognizer:_twoPan];
-    [self.mtkView addGestureRecognizer:_threePan];
-    [self.mtkView addGestureRecognizer:_tap];
-    [self.mtkView addGestureRecognizer:_tapPencil];
-    [self.mtkView addGestureRecognizer:_twoTap];
-    [self.mtkView addGestureRecognizer:_longPress];
-    [self.mtkView addGestureRecognizer:_pinch];
+    self.swipeUp = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(gestureSwipeUp:)];
+    self.swipeUp.numberOfTouchesRequired = 3;
+    self.swipeUp.direction = UISwipeGestureRecognizerDirectionUp;
+    self.swipeUp.delegate = self;
+    self.swipeDown = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(gestureSwipeDown:)];
+    self.swipeDown.numberOfTouchesRequired = 3;
+    self.swipeDown.direction = UISwipeGestureRecognizerDirectionDown;
+    self.swipeDown.delegate = self;
+    self.swipeScrollUp = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(gestureSwipeScroll:)];
+    self.swipeScrollUp.numberOfTouchesRequired = 2;
+    self.swipeScrollUp.direction = UISwipeGestureRecognizerDirectionUp;
+    self.swipeScrollUp.delegate = self;
+    self.swipeScrollDown = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(gestureSwipeScroll:)];
+    self.swipeScrollDown.numberOfTouchesRequired = 2;
+    self.swipeScrollDown.direction = UISwipeGestureRecognizerDirectionDown;
+    self.swipeScrollDown.delegate = self;
+    self.pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(gesturePan:)];
+    self.pan.minimumNumberOfTouches = 1;
+    self.pan.maximumNumberOfTouches = 1;
+    self.pan.delegate = self;
+    self.pan.cancelsTouchesInView = NO;
+    self.twoPan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(gestureTwoPan:)];
+    self.twoPan.minimumNumberOfTouches = 2;
+    self.twoPan.maximumNumberOfTouches = 2;
+    self.twoPan.delegate = self;
+    self.threePan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(gestureThreePan:)];
+    self.threePan.minimumNumberOfTouches = 3;
+    self.threePan.maximumNumberOfTouches = 3;
+    self.threePan.delegate = self;
+    self.tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(gestureTap:)];
+    self.tap.delegate = self;
+    self.tap.allowedTouchTypes = @[ @(UITouchTypeDirect) ];
+    self.tap.cancelsTouchesInView = NO;
+    self.twoTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(gestureTwoTap:)];
+    self.twoTap.numberOfTouchesRequired = 2;
+    self.twoTap.delegate = self;
+    self.twoTap.allowedTouchTypes = @[ @(UITouchTypeDirect) ];
+    self.longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(gestureLongPress:)];
+    self.longPress.delegate = self;
+    self.longPress.allowedTouchTypes = @[ @(UITouchTypeDirect) ];
+    self.pinch = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(gesturePinch:)];
+    self.pinch.delegate = self;
+    [self.mtkView addGestureRecognizer:self.swipeUp];
+    [self.mtkView addGestureRecognizer:self.swipeDown];
+    [self.mtkView addGestureRecognizer:self.swipeScrollUp];
+    [self.mtkView addGestureRecognizer:self.swipeScrollDown];
+    [self.mtkView addGestureRecognizer:self.pan];
+    [self.mtkView addGestureRecognizer:self.twoPan];
+    [self.mtkView addGestureRecognizer:self.threePan];
+    [self.mtkView addGestureRecognizer:self.tap];
+    [self.mtkView addGestureRecognizer:self.twoTap];
+    [self.mtkView addGestureRecognizer:self.longPress];
+    [self.mtkView addGestureRecognizer:self.pinch];
     
     // Feedback generator for clicks
-    _clickFeedbackGenerator = [[UISelectionFeedbackGenerator alloc] init];
-    _resizeFeedbackGenerator = [[UIImpactFeedbackGenerator alloc] init];
+    self.clickFeedbackGenerator = [[UISelectionFeedbackGenerator alloc] init];
+#endif
 }
 
 #pragma mark - Properties from instance
 
 - (CSInputButton)mouseButtonDown {
     CSInputButton button = kCSInputButtonNone;
-    if (_mouseLeftDown) {
+    if (self.mouseLeftDown) {
         button |= kCSInputButtonLeft;
     }
-    if (_mouseRightDown) {
+    if (self.mouseRightDown) {
         button |= kCSInputButtonRight;
     }
-    if (_mouseMiddleDown) {
+    if (self.mouseMiddleDown) {
         button |= kCSInputButtonMiddle;
     }
     return button;
@@ -192,10 +204,6 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
     return rect2;
 }
 
-static CGFloat CGPointToPixel(CGFloat point) {
-    return point * [UIScreen mainScreen].scale; // FIXME: multiple screens?
-}
-
 - (CGPoint)clipCursorToDisplay:(CGPoint)pos {
     CGSize screenSize = self.mtkView.drawableSize;
     CGSize scaledSize = {
@@ -260,13 +268,13 @@ static CGFloat CGPointToPixel(CGFloat point) {
     CGPoint location = [sender locationInView:sender.view];
     CGPoint velocity = [sender velocityInView:sender.view];
     if (sender.state == UIGestureRecognizerStateBegan) {
-        [_cursor startMovement:location];
+        [self.cursor startMovement:location];
     }
     if (sender.state != UIGestureRecognizerStateCancelled) {
-        [_cursor updateMovement:location];
+        [self.cursor updateMovement:location];
     }
     if (sender.state == UIGestureRecognizerStateEnded) {
-        [_cursor endMovementWithVelocity:velocity resistance:kCursorResistance];
+        [self.cursor endMovementWithVelocity:velocity resistance:kCursorResistance];
     }
 }
 
@@ -274,13 +282,13 @@ static CGFloat CGPointToPixel(CGFloat point) {
     CGPoint location = [sender locationInView:sender.view];
     CGPoint velocity = [sender velocityInView:sender.view];
     if (sender.state == UIGestureRecognizerStateBegan) {
-        [_scroll startMovement:location];
+        [self.scroll startMovement:location];
     }
     if (sender.state != UIGestureRecognizerStateCancelled) {
-        [_scroll updateMovement:location];
+        [self.scroll updateMovement:location];
     }
     if (sender.state == UIGestureRecognizerStateEnded) {
-        [_scroll endMovementWithVelocity:velocity resistance:kScrollResistance];
+        [self.scroll endMovementWithVelocity:velocity resistance:kScrollResistance];
     }
 }
 
@@ -292,13 +300,13 @@ static CGFloat CGPointToPixel(CGFloat point) {
 
 - (void)moveScreen:(UIPanGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateBegan) {
-        _lastTwoPanOrigin = self.vmDisplay.viewportOrigin;
+        self.lastTwoPanOrigin = self.vmDisplay.viewportOrigin;
     }
     if (sender.state != UIGestureRecognizerStateCancelled) {
         CGPoint translation = [sender translationInView:sender.view];
         CGPoint viewport = self.vmDisplay.viewportOrigin;
-        viewport.x = CGPointToPixel(translation.x) + _lastTwoPanOrigin.x;
-        viewport.y = CGPointToPixel(translation.y) + _lastTwoPanOrigin.y;
+        viewport.x = CGPointToPixel(translation.x) + self.lastTwoPanOrigin.x;
+        viewport.y = CGPointToPixel(translation.y) + self.lastTwoPanOrigin.y;
         self.vmDisplay.viewportOrigin = [self clipDisplayToView:viewport];
         // persist this change in viewState
         self.delegate.displayOrigin = self.vmDisplay.viewportOrigin;
@@ -378,35 +386,39 @@ static CGFloat CGPointToPixel(CGFloat point) {
 
 - (void)mouseClick:(CSInputButton)button location:(CGPoint)location {
     if (!self.serverModeCursor) {
-        _cursor.center = location;
+        self.cursor.center = location;
     }
     [self.vmInput sendMouseButton:button pressed:YES];
     [self onDelay:0.05f action:^{
-        self->_mouseLeftDown = NO;
-        self->_mouseRightDown = NO;
-        self->_mouseMiddleDown = NO;
+        self.mouseLeftDown = NO;
+        self.mouseRightDown = NO;
+        self.mouseMiddleDown = NO;
         [self.vmInput sendMouseButton:button pressed:NO];
     }];
-    [_clickFeedbackGenerator selectionChanged];
+#if !defined(TARGET_OS_VISION) || !TARGET_OS_VISION
+    [self.clickFeedbackGenerator selectionChanged];
+#endif
 }
 
 - (void)dragCursor:(UIGestureRecognizerState)state primary:(BOOL)primary secondary:(BOOL)secondary middle:(BOOL)middle {
     if (state == UIGestureRecognizerStateBegan) {
-        [_clickFeedbackGenerator selectionChanged];
+#if !defined(TARGET_OS_VISION) || !TARGET_OS_VISION
+        [self.clickFeedbackGenerator selectionChanged];
+#endif
         if (primary) {
-            _mouseLeftDown = YES;
+            self.mouseLeftDown = YES;
         }
         if (secondary) {
-            _mouseRightDown = YES;
+            self.mouseRightDown = YES;
         }
         if (middle) {
-            _mouseMiddleDown = YES;
+            self.mouseMiddleDown = YES;
         }
         [self.vmInput sendMouseButton:self.mouseButtonDown pressed:YES];
     } else if (state == UIGestureRecognizerStateEnded) {
-        _mouseLeftDown = NO;
-        _mouseRightDown = NO;
-        _mouseMiddleDown = NO;
+        self.mouseLeftDown = NO;
+        self.mouseRightDown = NO;
+        self.mouseMiddleDown = NO;
         [self.vmInput sendMouseButton:self.mouseButtonDown pressed:NO];
     }
 }
@@ -415,23 +427,6 @@ static CGFloat CGPointToPixel(CGFloat point) {
     if (sender.state == UIGestureRecognizerStateEnded &&
         self.serverModeCursor) { // otherwise we handle in touchesBegan
         [self mouseClick:kCSInputButtonLeft location:[sender locationInView:sender.view]];
-    }
-}
-
-- (IBAction)gestureTapPencil:(UITapGestureRecognizer *)sender {
-    if (sender.state == UIGestureRecognizerStateEnded &&
-        self.serverModeCursor) { // otherwise we handle in touchesBegan
-        
-        CSInputButton button = kCSInputButtonLeft;
-        
-        if (@available(iOS 12.1, *)) {
-            if (_pencilForceRightClickOnce) {
-                button = kCSInputButtonRight;
-                _pencilForceRightClickOnce = false;
-            }
-        }
-        
-        [self mouseClick:button location:[sender locationInView:sender.view]];
     }
 }
 
@@ -482,9 +477,9 @@ static CGFloat CGPointToPixel(CGFloat point) {
 - (IBAction)gestureSwipeScroll:(UISwipeGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateEnded &&
         self.twoFingerScrollType == VMGestureTypeMouseWheel) {
-        if (sender == _swipeScrollUp) {
+        if (sender == self.swipeScrollUp) {
             [self.vmInput sendMouseScroll:kCSInputScrollUp button:self.mouseButtonDown dy:0];
-        } else if (sender == _swipeScrollDown) {
+        } else if (sender == self.swipeScrollDown) {
             [self.vmInput sendMouseScroll:kCSInputScrollDown button:self.mouseButtonDown dy:0];
         } else {
             NSAssert(0, @"Invalid call to gestureSwipeScroll");
@@ -495,77 +490,75 @@ static CGFloat CGPointToPixel(CGFloat point) {
 #pragma mark - UIGestureRecognizerDelegate
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
-    if (gestureRecognizer == _twoPan && otherGestureRecognizer == _swipeUp) {
+    if (gestureRecognizer == self.twoPan && otherGestureRecognizer == self.swipeUp) {
         return YES;
     }
-    if (gestureRecognizer == _twoPan && otherGestureRecognizer == _swipeDown) {
+    if (gestureRecognizer == self.twoPan && otherGestureRecognizer == self.swipeDown) {
         return YES;
     }
-    if (gestureRecognizer == _twoTap && otherGestureRecognizer == _swipeDown) {
+    if (gestureRecognizer == self.twoTap && otherGestureRecognizer == self.swipeDown) {
         return YES;
     }
-    if (gestureRecognizer == _twoTap && otherGestureRecognizer == _swipeUp) {
+    if (gestureRecognizer == self.twoTap && otherGestureRecognizer == self.swipeUp) {
         return YES;
     }
-    if (gestureRecognizer == _tap && otherGestureRecognizer == _twoTap) {
+    if (gestureRecognizer == self.tap && otherGestureRecognizer == self.twoTap) {
         return YES;
     }
-    if (gestureRecognizer == _tapPencil && otherGestureRecognizer == _twoTap) {
+    if (gestureRecognizer == self.longPress && otherGestureRecognizer == self.tap) {
         return YES;
     }
-    if (gestureRecognizer == _longPress && otherGestureRecognizer == _tap) {
+    if (gestureRecognizer == self.longPress && otherGestureRecognizer == self.twoTap) {
         return YES;
     }
-    if (gestureRecognizer == _longPress && otherGestureRecognizer == _tapPencil) {
+    if (gestureRecognizer == self.pinch && otherGestureRecognizer == self.swipeDown) {
         return YES;
     }
-    if (gestureRecognizer == _longPress && otherGestureRecognizer == _twoTap) {
+    if (gestureRecognizer == self.pinch && otherGestureRecognizer == self.swipeUp) {
         return YES;
     }
-    if (gestureRecognizer == _pinch && otherGestureRecognizer == _swipeDown) {
+    if (gestureRecognizer == self.pan && otherGestureRecognizer == self.swipeUp) {
         return YES;
     }
-    if (gestureRecognizer == _pinch && otherGestureRecognizer == _swipeUp) {
+    if (gestureRecognizer == self.pan && otherGestureRecognizer == self.swipeDown) {
         return YES;
     }
-    if (gestureRecognizer == _pan && otherGestureRecognizer == _swipeUp) {
+    if (gestureRecognizer == self.threePan && otherGestureRecognizer == self.swipeUp) {
         return YES;
     }
-    if (gestureRecognizer == _pan && otherGestureRecognizer == _swipeDown) {
-        return YES;
-    }
-    if (gestureRecognizer == _threePan && otherGestureRecognizer == _swipeUp) {
-        return YES;
-    }
-    if (gestureRecognizer == _threePan && otherGestureRecognizer == _swipeDown) {
+    if (gestureRecognizer == self.threePan && otherGestureRecognizer == self.swipeDown) {
         return YES;
     }
     // only if we do not disable two finger swipe
     if (self.twoFingerScrollType != VMGestureTypeNone) {
-        if (gestureRecognizer == _twoPan && otherGestureRecognizer == _swipeScrollUp) {
+        if (gestureRecognizer == self.twoPan && otherGestureRecognizer == self.swipeScrollUp) {
             return YES;
         }
-        if (gestureRecognizer == _twoPan && otherGestureRecognizer == _swipeScrollDown) {
+        if (gestureRecognizer == self.twoPan && otherGestureRecognizer == self.swipeScrollDown) {
             return YES;
         }
     }
+#if !defined(TARGET_OS_VISION) || !TARGET_OS_VISION
+    return [self pencilGestureRecognizer:gestureRecognizer shouldRequireFailureOfGestureRecognizer:otherGestureRecognizer];
+#else
     return NO;
+#endif
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
-    if (gestureRecognizer == _twoPan && otherGestureRecognizer == _pinch) {
+    if (gestureRecognizer == self.twoPan && otherGestureRecognizer == self.pinch) {
         if (self.twoFingerPanType == VMGestureTypeMoveScreen) {
             return YES;
         } else {
             return NO;
         }
-    } else if (gestureRecognizer == _pan && otherGestureRecognizer == _longPress) {
+    } else if (gestureRecognizer == self.pan && otherGestureRecognizer == self.longPress) {
         return YES;
-    } else if (self.twoFingerScrollType == VMGestureTypeNone && otherGestureRecognizer == _twoPan) {
+    } else if (self.twoFingerScrollType == VMGestureTypeNone && otherGestureRecognizer == self.twoPan) {
         // if two finger swipe is disabled, we can also recognize two finger pans
-        if (gestureRecognizer == _swipeScrollUp) {
+        if (gestureRecognizer == self.swipeScrollUp) {
             return YES;
-        } else if (gestureRecognizer == _swipeScrollDown) {
+        } else if (gestureRecognizer == self.swipeScrollDown) {
             return YES;
         } else {
             return NO;
@@ -641,16 +634,17 @@ static CGFloat CGPointToPixel(CGFloat point) {
                         middle = (event.buttonMask & 0x4) != 0; // undocumented mask
                     }
                 }
+#if !defined(TARGET_OS_VISION) || !TARGET_OS_VISION
                 // Apple Pencil 2 right click mode
                 if (@available(iOS 12.1, *)) {
-                    if (touch.type == UITouchTypePencil) {
-                        primary = !_pencilForceRightClickOnce;
-                        secondary = _pencilForceRightClickOnce;
-                        _pencilForceRightClickOnce = false;
+                    if ([self pencilRightClickForTouch:touch]) {
+                        primary = NO;
+                        secondary = YES;
                     }
                 }
-                [_cursor startMovement:pos];
-                [_cursor updateMovement:pos];
+#endif
+                [self.cursor startMovement:pos];
+                [self.cursor updateMovement:pos];
                 [self dragCursor:UIGestureRecognizerStateBegan primary:primary secondary:secondary middle:middle];
             }
             break; // handle a single touch only
@@ -665,7 +659,7 @@ static CGFloat CGPointToPixel(CGFloat point) {
     // move cursor in client mode, in server mode we handle in gesturePan
     if (!self.delegate.qemuInputLegacy && !self.vmInput.serverModeCursor) {
         for (UITouch *touch in touches) {
-            [_cursor updateMovement:[touch locationInView:self.mtkView]];
+            [self.cursor updateMovement:[touch locationInView:self.mtkView]];
             break; // handle single touch
         }
     }

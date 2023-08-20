@@ -120,7 +120,7 @@ struct VMWizardHardwareView: View {
                 
             }
         }
-        #if os(iOS)
+        #if os(iOS) || os(visionOS)
         .navigationTitle(Text("Hardware"))
         #endif
         .textFieldStyle(.roundedBorder)

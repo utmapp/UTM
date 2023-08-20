@@ -16,52 +16,23 @@
 
 #import <UIKit/UIKit.h>
 #import "VMDisplayViewController.h"
+#if defined(WITH_QEMU_TCI)
+@import CocoaSpiceNoUsb;
+#else
+@import CocoaSpice;
+#endif
 
-@class UTMVirtualMachine;
-@class VMCursor;
-@class VMScroll;
 @class VMKeyboardView;
 @class VMKeyboardButton;
-@class GCController;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VMDisplayMetalViewController : VMDisplayViewController {
-    // cursor handling
-    CGPoint _lastTwoPanOrigin;
-    BOOL _mouseLeftDown;
-    BOOL _mouseRightDown;
-    BOOL _mouseMiddleDown;
-    BOOL _pencilForceRightClickOnce;
-    VMCursor *_cursor;
-    VMScroll *_scroll;
-    
-    // Gestures
-    UISwipeGestureRecognizer *_swipeUp;
-    UISwipeGestureRecognizer *_swipeDown;
-    UISwipeGestureRecognizer *_swipeScrollUp;
-    UISwipeGestureRecognizer *_swipeScrollDown;
-    UIPanGestureRecognizer *_pan;
-    UIPanGestureRecognizer *_twoPan;
-    UIPanGestureRecognizer *_threePan;
-    UITapGestureRecognizer *_tap;
-    UITapGestureRecognizer *_tapPencil;
-    UITapGestureRecognizer *_twoTap;
-    UILongPressGestureRecognizer *_longPress;
-    UIPinchGestureRecognizer *_pinch;
-    
-    //Gamepad
-    GCController *_controller;
-    
-    // Feedback generators
-    UISelectionFeedbackGenerator *_clickFeedbackGenerator;
-    UIImpactFeedbackGenerator *_resizeFeedbackGenerator;
-}
+@interface VMDisplayMetalViewController : VMDisplayViewController
 
 @property (strong, nonatomic) IBOutlet UIInputView *inputAccessoryView;
 @property (strong, nonatomic) IBOutletCollection(VMKeyboardButton) NSArray *customKeyModifierButtons;
 
-@property (nonatomic) IBOutlet MTKView *mtkView;
+@property (nonatomic) IBOutlet CSMTKView *mtkView;
 @property (nonatomic) IBOutlet VMKeyboardView *keyboardView;
 
 @property (nonatomic, nullable) CSInput *vmInput;

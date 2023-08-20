@@ -182,9 +182,9 @@ struct VMDisplayHostedView: UIViewControllerRepresentable {
             if let vc = uiViewController as? VMDisplayMetalViewController {
                 if vc.vmDisplay != display {
                     vc.vmDisplay = display
-                    // some obscure SwiftUI error means we cannot refer to Coordinator's state binding
-                    vc.setDisplayScaling(state.displayScale, origin: state.displayOrigin)
                 }
+                // some obscure SwiftUI error means we cannot refer to Coordinator's state binding
+                vc.setDisplayScaling(state.displayScale, origin: state.displayOrigin)
             }
         case .serial(let serial, _):
             if let vc = uiViewController as? VMDisplayTerminalViewController {

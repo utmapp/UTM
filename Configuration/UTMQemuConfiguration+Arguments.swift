@@ -30,7 +30,7 @@ import Virtualization // for getting network interfaces
     
     /// Shared between helper and main process to store Unix sockets
     var socketURL: URL {
-        #if os(iOS)
+        #if os(iOS) || os(visionOS)
         return FileManager.default.temporaryDirectory
         #else
         let appGroup = Bundle.main.infoDictionary?["AppGroupIdentifier"] as? String
@@ -429,7 +429,7 @@ import Virtualization // for getting network interfaces
     }
     
     private var useCoreAudioBackend: Bool {
-        #if os(iOS)
+        #if os(iOS) || os(visionOS)
         return false
         #else
         // force CoreAudio backend for mac99 which only supports 44100 Hz

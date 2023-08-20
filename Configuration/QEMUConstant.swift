@@ -439,7 +439,7 @@ extension QEMUArchitecture {
     
     /// TSO is supported on jailbroken iOS devices with Hypervisor support
     var hasTSOSupport: Bool {
-        #if os(iOS)
+        #if os(iOS) || os(visionOS)
         return hasHypervisorSupport
         #else
         return false

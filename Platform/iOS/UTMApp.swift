@@ -23,5 +23,8 @@ struct UTMApp: App {
         }.commands {
             VMCommands()
         }
+        #if os(visionOS)
+        .windowResizability(.contentMinSize)
+        #endif
     }
 }

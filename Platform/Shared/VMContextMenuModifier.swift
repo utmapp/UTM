@@ -107,7 +107,7 @@ struct VMContextMenuModifier: ViewModifier {
                     }.help("Run the VM in the foreground, without saving data changes to disk.")
                 }
                 
-                #if os(iOS)
+                #if os(iOS) || os(visionOS)
                 if let qemuConfig = vm.config as? UTMQemuConfiguration {
                     Button {
                         qemuConfig.qemu.isGuestToolsInstallRequested = true
