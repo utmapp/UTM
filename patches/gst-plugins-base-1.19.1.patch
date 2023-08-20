@@ -66,3 +66,160 @@ index a384e8eb3..6977f11e4 100644
 -- 
 2.28.0
 
+From 63a3609a1b668e5bdab0a0b052bb8a6b1b7f62b8 Mon Sep 17 00:00:00 2001
+From: Jan Schmidt <jan@centricular.com>
+Date: Sat, 19 Aug 2023 01:00:16 +1000
+Subject: [PATCH] audio: Make sure to stop ringbuffer on error
+
+Add gst_audio_ring_buffer_set_errored() that will mark the
+ringbuffer as errored only if it is currently started or paused,
+so gst_audio_ringbuffer_stop() can be sure that the error
+state means that the ringbuffer was started and needs stop called.
+
+Fixes a crash with osxaudiosrc if the source element posts
+an error, because the ringbuffer would not get stopped and CoreAudio
+would continue trying to do callbacks.
+
+Also, anywhere that modifies the ringbuffer state, make sure to
+use atomic operations, to guarantee their visibility
+---
+ girs/GstAudio-1.0.gir                         | 15 ++++++
+ .../gst-libs/gst/audio/gstaudiobasesrc.c      |  2 +-
+ .../gst-libs/gst/audio/gstaudioringbuffer.c   | 50 ++++++++++++++++---
+ .../gst-libs/gst/audio/gstaudioringbuffer.h   |  3 ++
+ 4 files changed, 62 insertions(+), 8 deletions(-)
+
+diff --git a/gst-libs/gst/audio/gstaudiobasesrc.c b/gst-libs/gst/audio/gstaudiobasesrc.c
+index 0dd7654e036..04916f36fdd 100644
+--- a/gst-libs/gst/audio/gstaudiobasesrc.c
++++ b/gst-libs/gst/audio/gstaudiobasesrc.c
+@@ -1229,7 +1229,7 @@ gst_audio_base_src_post_message (GstElement * element, GstMessage * message)
+      * flow error message */
+     ret = GST_ELEMENT_CLASS (parent_class)->post_message (element, message);
+ 
+-    g_atomic_int_set (&ringbuffer->state, GST_AUDIO_RING_BUFFER_STATE_ERROR);
++    gst_audio_ring_buffer_set_errored (ringbuffer);
+     GST_AUDIO_RING_BUFFER_SIGNAL (ringbuffer);
+     gst_object_unref (ringbuffer);
+   } else {
+diff --git a/gst-libs/gst/audio/gstaudioringbuffer.c b/gst-libs/gst/audio/gstaudioringbuffer.c
+index c2319105840..a567f72af0f 100644
+--- a/gst-libs/gst/audio/gstaudioringbuffer.c
++++ b/gst-libs/gst/audio/gstaudioringbuffer.c
+@@ -82,7 +82,7 @@ gst_audio_ring_buffer_init (GstAudioRingBuffer * ringbuffer)
+ {
+   ringbuffer->open = FALSE;
+   ringbuffer->acquired = FALSE;
+-  ringbuffer->state = GST_AUDIO_RING_BUFFER_STATE_STOPPED;
++  g_atomic_int_set (&ringbuffer->state, GST_AUDIO_RING_BUFFER_STATE_STOPPED);
+   g_cond_init (&ringbuffer->cond);
+   ringbuffer->waiting = 0;
+   ringbuffer->empty_seg = NULL;
+@@ -1066,7 +1066,7 @@ gst_audio_ring_buffer_start (GstAudioRingBuffer * buf)
+   }
+ 
+   if (G_UNLIKELY (!res)) {
+-    buf->state = GST_AUDIO_RING_BUFFER_STATE_PAUSED;
++    g_atomic_int_set (&buf->state, GST_AUDIO_RING_BUFFER_STATE_PAUSED);
+     GST_DEBUG_OBJECT (buf, "failed to start");
+   } else {
+     GST_DEBUG_OBJECT (buf, "started");
+@@ -1097,6 +1097,34 @@ may_not_start:
+   }
+ }
+ 
++/**
++ * gst_audio_ring_buffer_set_errored:
++ * @buf: the #GstAudioRingBuffer that has encountered an error
++ *
++ * Mark the ringbuffer as errored after it has started.
++ *
++ * MT safe.
++
++ * Since: 1.24
++ */
++void
++gst_audio_ring_buffer_set_errored (GstAudioRingBuffer * buf)
++{
++  gboolean res;
++
++  /* If started set to errored */
++  res = g_atomic_int_compare_and_exchange (&buf->state,
++      GST_AUDIO_RING_BUFFER_STATE_STARTED, GST_AUDIO_RING_BUFFER_STATE_ERROR);
++  if (!res) {
++    GST_DEBUG_OBJECT (buf, "ringbuffer was not started, checking paused");
++    res = g_atomic_int_compare_and_exchange (&buf->state,
++        GST_AUDIO_RING_BUFFER_STATE_PAUSED, GST_AUDIO_RING_BUFFER_STATE_ERROR);
++  }
++  if (res) {
++    GST_DEBUG_OBJECT (buf, "ringbuffer is errored");
++  }
++}
++
+ static gboolean
+ gst_audio_ring_buffer_pause_unlocked (GstAudioRingBuffer * buf)
+ {
+@@ -1121,7 +1149,8 @@ gst_audio_ring_buffer_pause_unlocked (GstAudioRingBuffer * buf)
+     res = rclass->pause (buf);
+ 
+   if (G_UNLIKELY (!res)) {
+-    buf->state = GST_AUDIO_RING_BUFFER_STATE_STARTED;
++    /* Restore started state */
++    g_atomic_int_set (&buf->state, GST_AUDIO_RING_BUFFER_STATE_STARTED);
+     GST_DEBUG_OBJECT (buf, "failed to pause");
+   } else {
+     GST_DEBUG_OBJECT (buf, "paused");
+@@ -1132,7 +1161,7 @@ gst_audio_ring_buffer_pause_unlocked (GstAudioRingBuffer * buf)
+ not_started:
+   {
+     /* was not started */
+-    GST_DEBUG_OBJECT (buf, "was not started");
++    GST_DEBUG_OBJECT (buf, "was not started (state %d)", buf->state);
+     return TRUE;
+   }
+ }
+@@ -1214,9 +1243,16 @@ gst_audio_ring_buffer_stop (GstAudioRingBuffer * buf)
+         GST_AUDIO_RING_BUFFER_STATE_PAUSED,
+         GST_AUDIO_RING_BUFFER_STATE_STOPPED);
+     if (!res) {
+-      /* was not paused either, must have been stopped then */
++      GST_DEBUG_OBJECT (buf, "was not paused, try errored");
++      res = g_atomic_int_compare_and_exchange (&buf->state,
++          GST_AUDIO_RING_BUFFER_STATE_ERROR,
++          GST_AUDIO_RING_BUFFER_STATE_STOPPED);
++    }
++    if (!res) {
++      /* was not paused or stopped either, must have been stopped then */
+       res = TRUE;
+-      GST_DEBUG_OBJECT (buf, "was not paused, must have been stopped");
++      GST_DEBUG_OBJECT (buf,
++          "was not paused or errored, must have been stopped");
+       goto done;
+     }
+   }
+@@ -1230,7 +1266,7 @@ gst_audio_ring_buffer_stop (GstAudioRingBuffer * buf)
+     res = rclass->stop (buf);
+ 
+   if (G_UNLIKELY (!res)) {
+-    buf->state = GST_AUDIO_RING_BUFFER_STATE_STARTED;
++    g_atomic_int_set (&buf->state, GST_AUDIO_RING_BUFFER_STATE_STARTED);
+     GST_DEBUG_OBJECT (buf, "failed to stop");
+   } else {
+     GST_DEBUG_OBJECT (buf, "stopped");
+diff --git a/gst-libs/gst/audio/gstaudioringbuffer.h b/gst-libs/gst/audio/gstaudioringbuffer.h
+index cde57cb457a..e188636145b 100644
+--- a/gst-libs/gst/audio/gstaudioringbuffer.h
++++ b/gst-libs/gst/audio/gstaudioringbuffer.h
+@@ -379,6 +379,9 @@ gboolean        gst_audio_ring_buffer_pause           (GstAudioRingBuffer *buf);
+ GST_AUDIO_API
+ gboolean        gst_audio_ring_buffer_stop            (GstAudioRingBuffer *buf);
+ 
++GST_AUDIO_API
++void 		gst_audio_ring_buffer_set_errored     (GstAudioRingBuffer *buf);
++
+ /* get status */
+ 
+ GST_AUDIO_API
+-- 
+GitLab
+
