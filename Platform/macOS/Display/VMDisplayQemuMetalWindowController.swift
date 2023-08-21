@@ -59,6 +59,7 @@ class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
     // MARK: - User preferences
     
     @Setting("NoCursorCaptureAlert") private var isCursorCaptureAlertShown: Bool = false
+    @Setting("NoFullscreenCursorCaptureAlert") private var isFullscreenCursorCaptureAlertShown: Bool = false
     @Setting("DisplayFixed") private var isDisplayFixed: Bool = false
     @Setting("CtrlRightClick") private var isCtrlRightClick: Bool = false
     @Setting("AlternativeCaptureKey") private var isAlternativeCaptureKey: Bool = false
@@ -414,7 +415,7 @@ extension VMDisplayQemuMetalWindowController: VMMetalViewInputDelegate {
             self.window?.makeFirstResponder(self.metalView)
             self.syncCapsLock()
         }
-        if isCursorCaptureAlertShown {
+        if !isCursorCaptureAlertShown || (isFullScreen && !isFullscreenCursorCaptureAlertShown) {
             let alert = NSAlert()
             alert.messageText = NSLocalizedString("Captured mouse", comment: "VMDisplayQemuMetalWindowController")
             
@@ -425,7 +426,10 @@ extension VMDisplayQemuMetalWindowController: VMMetalViewInputDelegate {
             alert.showsSuppressionButton = true
             alert.beginSheetModal(for: window!) { _ in
                 if alert.suppressionButton?.state ?? .off == .on {
-                    self.isCursorCaptureAlertShown = false
+                    self.isCursorCaptureAlertShown = true
+                    if self.isFullScreen {
+                        self.isFullscreenCursorCaptureAlertShown = true
+                    }
                 }
                 DispatchQueue.main.async(execute: action)
             }
