@@ -385,8 +385,9 @@ import Virtualization // for getting network interfaces
                 "if=pflash"
                 "format=raw"
                 "unit=0"
-                "file="
+                "file.filename="
                 bios
+                "file.locking=off"
                 "readonly=on"
                 f()
                 f("-drive")
