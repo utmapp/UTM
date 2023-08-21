@@ -35,7 +35,9 @@ class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
     private var isDisplaySizeDynamic: Bool = false
     private var isFullScreen: Bool = false
     private let minDynamicSize = CGSize(width: 800, height: 600)
+    private let resizeDebounceSecs: Double = 1
     private let resizeTimeoutSecs: Double = 5
+    private var debounceResize: DispatchWorkItem?
     private var cancelResize: DispatchWorkItem?
     
     private var localEventMonitor: Any? = nil
@@ -341,11 +343,31 @@ extension VMDisplayQemuMetalWindowController {
         }
     }
     
+    func windowDidResize(_ notification: Notification) {
+        guard self.isDisplaySizeDynamic, let window = self.window else {
+            return
+        }
+        debounceResize?.cancel()
+        debounceResize = DispatchWorkItem {
+            self._handleResizeEnd(for: window)
+        }
+        // when resizing with a mouse drag, we get flooded with this notification
+        // when using accessibility APIs, we do not get a `windowDidEndLiveResize` notification
+        DispatchQueue.main.asyncAfter(deadline: .now() + resizeDebounceSecs, execute: debounceResize!)
+    }
+    
     func windowDidEndLiveResize(_ notification: Notification) {
         guard self.isDisplaySizeDynamic, let window = self.window else {
             return
         }
+        _handleResizeEnd(for: window)
+    }
+    
+    private func _handleResizeEnd(for window: NSWindow) {
+        debounceResize?.cancel()
+        debounceResize = nil
         _ = updateGuestResolution(for: window, frameSize: window.frame.size)
+        cancelResize?.cancel()
         cancelResize = DispatchWorkItem {
             if let vmDisplay = self.vmDisplay {
                 self.displaySizeDidChange(size: vmDisplay.displaySize)
