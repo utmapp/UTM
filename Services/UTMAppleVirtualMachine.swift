@@ -534,6 +534,7 @@ extension UTMAppleVirtualMachine: VZVirtualMachineDelegate {
                 }
             }
         }
+        try? saveScreenshot()
         state = .stopped
     }
     

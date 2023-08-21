@@ -415,7 +415,6 @@ extension UTMQemuVirtualMachine {
             throw UTMQemuVirtualMachineError.invalidVmState
         }
         await takeScreenshot()
-        try saveScreenshot()
         try await monitor.qemuStop()
     }
     
@@ -551,6 +550,7 @@ extension UTMQemuVirtualMachine: QEMUVirtualMachineDelegate {
         swtpm = nil
         ioService = nil
         ioServiceDelegate = nil
+        try? saveScreenshot()
         state = .stopped
     }
     

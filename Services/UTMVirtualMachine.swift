@@ -293,7 +293,7 @@ extension UTMVirtualMachine {
         if !isScreenshotSaveEnabled && !isRunningAsDisposible {
             try? deleteScreenshot()
         }
-        return Timer.scheduledTimer(withTimeInterval: kScreenshotPeriodSeconds, repeats: true) { [weak self] timer in
+        let timer = Timer(timeInterval: kScreenshotPeriodSeconds, repeats: true) { [weak self] timer in
             guard let self = self else {
                 timer.invalidate()
                 return
@@ -304,6 +304,8 @@ extension UTMVirtualMachine {
                 }
             }
         }
+        RunLoop.main.add(timer, forMode: .default)
+        return timer
     }
     
     func loadScreenshot() -> PlatformImage? {
