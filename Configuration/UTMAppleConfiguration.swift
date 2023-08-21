@@ -251,7 +251,13 @@ extension UTMAppleConfiguration {
         let vzconfig = VZVirtualMachineConfiguration()
         try system.fillVZConfiguration(vzconfig)
         if #available(macOS 12, *) {
-            let fsConfig = VZVirtioFileSystemDeviceConfiguration(tag: "share")
+            let tag: String
+            if #available(macOS 13, *), system.boot.operatingSystem == .macOS {
+                tag = VZVirtioFileSystemDeviceConfiguration.macOSGuestAutomountTag
+            } else {
+                tag = "share"
+            }
+            let fsConfig = VZVirtioFileSystemDeviceConfiguration(tag: tag)
             fsConfig.share = UTMAppleConfigurationSharedDirectory.makeDirectoryShare(from: sharedDirectories)
             vzconfig.directorySharingDevices.append(fsConfig)
         } else if !sharedDirectories.isEmpty {
