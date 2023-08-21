@@ -356,10 +356,14 @@ extension VMDisplayQemuMetalWindowController {
     
     func windowDidEnterFullScreen(_ notification: Notification) {
         isFullScreen = true
+        captureMouseToolbarButton.state = .on
+        captureMouse()
     }
     
     func windowDidExitFullScreen(_ notification: Notification) {
         isFullScreen = false
+        captureMouseToolbarButton.state = .off
+        releaseMouse()
     }
     
     override func windowDidResignKey(_ notification: Notification) {
