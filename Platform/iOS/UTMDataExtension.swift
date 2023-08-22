@@ -34,7 +34,7 @@ extension UTMData {
         guard let wrapped = vm.wrapped else {
             return
         }
-        if wrapped.registryEntry.hasSaveState {
+        if wrapped.registryEntry.isSuspended {
             wrapped.requestVmDeleteState()
         }
     }

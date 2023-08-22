@@ -354,20 +354,6 @@ extension UTMRegistryEntry {
     #endif
 }
 
-// MARK: - Objective C bridging
-// FIXME: these are NOT synchronized to the actor
-@objc extension UTMRegistryEntry {
-    var hasSaveState: Bool {
-        get {
-            _isSuspended
-        }
-        
-        set {
-            _isSuspended = newValue
-        }
-    }
-}
-
 extension UTMRegistryEntry {
     struct File: Codable, Identifiable {
         var url: URL

@@ -287,7 +287,7 @@ extension VMDisplayWindowController: NSWindowDelegate {
         guard !isSecondary else {
             return true
         }
-        guard !(vm.state == .stopped || (vm.state == .paused && vm.registryEntry.hasSaveState)) else {
+        guard !(vm.state == .stopped || (vm.state == .paused && vm.registryEntry.isSuspended)) else {
             return true
         }
         guard !isNoQuitConfirmation else {

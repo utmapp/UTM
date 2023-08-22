@@ -396,7 +396,7 @@ extension VMData {
     var stateLabel: String {
         switch state {
         case .stopped:
-            if registryEntry?.hasSaveState == true {
+            if registryEntry?.isSuspended == true {
                 return NSLocalizedString("Suspended", comment: "VMData");
             } else {
                 return NSLocalizedString("Stopped", comment: "VMData");
