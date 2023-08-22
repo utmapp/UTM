@@ -100,6 +100,8 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
     /// This variable MUST be synchronized by `vmQueue`
     private(set) var apple: VZVirtualMachine?
     
+    private var saveSnapshotError: Error?
+    
     private var installProgress: Progress?
     
     private var progressObserver: NSKeyValueObservation?
@@ -138,7 +140,6 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
     }
     
     private func _start(options: UTMVirtualMachineStartOptions) async throws {
-        try await createAppleVM()
         let boot = await config.system.boot
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) -> Void in
             vmQueue.async {
@@ -173,8 +174,14 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         }
         state = .starting
         do {
+            let isSuspended = await registryEntry.isSuspended
             try await beginAccessingResources()
-            try await _start(options: options)
+            try await createAppleVM()
+            if isSuspended && !options.contains(.bootRecovery) {
+                try await restoreSnapshot()
+            } else {
+                try await _start(options: options)
+            }
             if #available(macOS 12, *) {
                 Task { @MainActor in
                     sharedDirectoriesChanged = config.sharedDirectoriesPublisher.sink { [weak self] newShares in
@@ -194,6 +201,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         } catch {
             await stopAccesingResources()
             state = .stopped
+            try? await deleteSnapshot()
             throw error
         }
     }
@@ -328,16 +336,109 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         }
     }
     
+    #if arch(arm64)
+    @available(macOS 14, *)
+    private func _saveSnapshot(url: URL) async throws {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            vmQueue.async {
+                guard let apple = self.apple else {
+                    continuation.resume(throwing: UTMAppleVirtualMachineError.operationNotAvailable)
+                    return
+                }
+                apple.saveMachineStateTo(url: url) { error in
+                    if let error = error {
+                        continuation.resume(throwing: error)
+                    } else {
+                        continuation.resume()
+                    }
+                }
+            }
+        }
+    }
+    #endif
+    
     func saveSnapshot(name: String? = nil) async throws {
-        // FIXME: implement this
+        guard #available(macOS 14, *) else {
+            return
+        }
+        #if arch(arm64)
+        guard let vmSavedStateURL = await config.system.boot.vmSavedStateURL else {
+            return
+        }
+        if let saveSnapshotError = saveSnapshotError {
+            throw saveSnapshotError
+        }
+        if state == .started {
+            try await pause()
+        }
+        guard state == .paused else {
+            return
+        }
+        state = .saving
+        defer {
+            state = .paused
+        }
+        try await _saveSnapshot(url: vmSavedStateURL)
+        await registryEntry.setIsSuspended(true)
+        #endif
     }
     
     func deleteSnapshot(name: String? = nil) async throws {
-        // FIXME: implement this
+        guard let vmSavedStateURL = await config.system.boot.vmSavedStateURL else {
+            return
+        }
+        await registryEntry.setIsSuspended(false)
+        try FileManager.default.removeItem(at: vmSavedStateURL)
     }
     
+    #if arch(arm64)
+    @available(macOS 14, *)
+    private func _restoreSnapshot(url: URL) async throws {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            vmQueue.async {
+                guard let apple = self.apple else {
+                    continuation.resume(throwing: UTMAppleVirtualMachineError.operationNotAvailable)
+                    return
+                }
+                apple.restoreMachineStateFrom(url: url) { error in
+                    if let error = error {
+                        continuation.resume(throwing: error)
+                    } else {
+                        continuation.resume()
+                    }
+                }
+            }
+        }
+    }
+    #endif
+    
     func restoreSnapshot(name: String? = nil) async throws {
-        // FIXME: implement this
+        guard #available(macOS 14, *) else {
+            throw UTMAppleVirtualMachineError.operationNotAvailable
+        }
+        #if arch(arm64)
+        guard let vmSavedStateURL = await config.system.boot.vmSavedStateURL else {
+            throw UTMAppleVirtualMachineError.operationNotAvailable
+        }
+        if state == .started {
+            try await stop(usingMethod: .force)
+        }
+        guard state == .stopped || state == .starting else {
+            throw UTMAppleVirtualMachineError.operationNotAvailable
+        }
+        state = .restoring
+        do {
+            try await _restoreSnapshot(url: vmSavedStateURL)
+            try await _resume()
+        } catch {
+            state = .stopped
+            throw error
+        }
+        state = .started
+        try await deleteSnapshot(name: name)
+        #else
+        throw UTMAppleVirtualMachineError.operationNotAvailable
+        #endif
     }
     
     private func _resume() async throws {
@@ -388,6 +489,17 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         vmQueue.async { [self] in
             apple = VZVirtualMachine(configuration: vzConfig, queue: vmQueue)
             apple!.delegate = self
+            saveSnapshotError = nil
+            #if arch(arm64)
+            if #available(macOS 14, *) {
+                do {
+                    try vzConfig.validateSaveRestoreSupport()
+                } catch {
+                    // save this for later when we want to use snapshots
+                    saveSnapshotError = error
+                }
+            }
+            #endif
         }
     }
     
@@ -521,6 +633,7 @@ extension UTMAppleVirtualMachine: VZVirtualMachineDelegate {
     func guestDidStop(_ virtualMachine: VZVirtualMachine) {
         vmQueue.async { [self] in
             apple = nil
+            saveSnapshotError = nil
         }
         sharedDirectoriesChanged = nil
         Task { @MainActor in

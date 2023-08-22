@@ -498,6 +498,7 @@ extension UTMVirtualMachine {
         Task {
             do {
                 try await resume()
+                try? await deleteSnapshot(name: nil)
             } catch {
                 delegate?.virtualMachine(self, didErrorWithMessage: error.localizedDescription)
             }

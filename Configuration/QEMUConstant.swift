@@ -390,6 +390,7 @@ enum QEMUPackageFileName: String {
     case debugLog = "debug.log"
     case efiVariables = "efi_vars.fd"
     case tpmData = "tpmdata"
+    case vmState = "vmstate"
 }
 
 // MARK: Supported features

@@ -465,13 +465,13 @@ extension UTMQemuVirtualMachine {
     }
     
     private func _deleteSnapshot(name: String) async throws {
+        await registryEntry.setIsSuspended(false)
         if let monitor = await monitor { // if QEMU is running
             let result = try await monitor.qemuDeleteSnapshot(name)
             if result.localizedCaseInsensitiveContains("Error") {
                 throw UTMQemuVirtualMachineError.qemuError(result)
             }
         }
-        await registryEntry.setIsSuspended(false)
     }
     
     func deleteSnapshot(name: String? = nil) async throws {

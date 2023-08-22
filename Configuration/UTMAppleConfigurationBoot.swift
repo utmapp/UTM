@@ -39,6 +39,7 @@ struct UTMAppleConfigurationBoot: Codable {
     var linuxCommandLine: String?
     var linuxInitialRamdiskURL: URL?
     var efiVariableStorageURL: URL?
+    var vmSavedStateURL: URL?
     var hasUefiBoot: Bool = false
     
     /// IPSW for installing macOS. Not saved.
@@ -78,6 +79,7 @@ struct UTMAppleConfigurationBoot: Codable {
         if let efiVariableStoragePath = try container.decodeIfPresent(String.self, forKey: .efiVariableStoragePath) {
             efiVariableStorageURL = dataURL.appendingPathComponent(efiVariableStoragePath)
         }
+        vmSavedStateURL = dataURL.appendingPathComponent(QEMUPackageFileName.vmState.rawValue)
     }
     
     init(for operatingSystem: OperatingSystem, linuxKernelURL: URL? = nil) throws {
@@ -189,6 +191,9 @@ extension UTMAppleConfigurationBoot {
             self.efiVariableStorageURL = efiVariableStorageURL
             urls.append(efiVariableStorageURL)
         }
+        let vmSavedStateURL = dataURL.appendingPathComponent(QEMUPackageFileName.vmState.rawValue)
+        self.vmSavedStateURL = vmSavedStateURL
+        urls.append(vmSavedStateURL)
         return urls
     }
 }
