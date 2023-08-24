@@ -22,7 +22,9 @@ struct VMConfigAppleVirtualizationView: View {
     
     var body: some View {
         Form {
-            Toggle("Enable Balloon Device", isOn: $config.hasBalloon)
+            if operatingSystem == .linux {
+                Toggle("Enable Balloon Device", isOn: $config.hasBalloon)
+            }
             Toggle("Enable Entropy Device", isOn: $config.hasEntropy)
             if #available(macOS 12, *) {
                 Toggle("Enable Sound", isOn: $config.hasAudio)

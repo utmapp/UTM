@@ -120,7 +120,7 @@ extension UTMAppleConfigurationVirtualization {
 @available(macOS 11, *)
 extension UTMAppleConfigurationVirtualization {
     func fillVZConfiguration(_ vzconfig: VZVirtualMachineConfiguration, isMacOSGuest: Bool = false) throws {
-        if hasBalloon {
+        if hasBalloon && !isMacOSGuest {
             vzconfig.memoryBalloonDevices = [VZVirtioTraditionalMemoryBalloonDeviceConfiguration()]
         }
         if hasEntropy {
@@ -140,6 +140,11 @@ extension UTMAppleConfigurationVirtualization {
             }
             if hasKeyboard {
                 vzconfig.keyboards = [VZUSBKeyboardConfiguration()]
+                #if arch(arm64)
+                if #available(macOS 14, *), isMacOSGuest {
+                    vzconfig.keyboards = [VZMacKeyboardConfiguration()]
+                }
+                #endif
             }
             if hasPointer {
                 vzconfig.pointingDevices = [VZUSBScreenCoordinatePointingDeviceConfiguration()]
@@ -168,7 +173,7 @@ extension UTMAppleConfigurationVirtualization {
                 throw UTMAppleConfigurationError.rosettaNotSupported
             }
             #endif
-            if hasClipboardSharing {
+            if hasClipboardSharing && !isMacOSGuest {
                 let spiceClipboardAgent = VZSpiceAgentPortAttachment()
                 spiceClipboardAgent.sharesClipboard = true
                 let consolePort = VZVirtioConsolePortConfiguration()

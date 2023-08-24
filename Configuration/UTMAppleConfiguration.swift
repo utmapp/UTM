@@ -250,7 +250,7 @@ extension UTMAppleConfiguration {
     func appleVZConfiguration(ignoringDrives: Bool = false) throws -> VZVirtualMachineConfiguration {
         let vzconfig = VZVirtualMachineConfiguration()
         try system.fillVZConfiguration(vzconfig)
-        if #available(macOS 12, *) {
+        if #available(macOS 12, *), !sharedDirectories.isEmpty {
             let tag: String
             if #available(macOS 13, *), system.boot.operatingSystem == .macOS {
                 tag = VZVirtioFileSystemDeviceConfiguration.macOSGuestAutomountTag
