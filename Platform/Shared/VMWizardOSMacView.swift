@@ -58,6 +58,12 @@ struct VMWizardOSMacView: View {
         wizardState.busyWorkAsync {
             #if arch(arm64)
             let url = try result.get()
+            let scopedAccess = url.startAccessingSecurityScopedResource()
+            defer {
+                if scopedAccess {
+                    url.stopAccessingSecurityScopedResource()
+                }
+            }
             let image = try await VZMacOSRestoreImage.image(from: url)
             guard let model = image.mostFeaturefulSupportedConfiguration?.hardwareModel else {
                 throw NSLocalizedString("Your machine does not support running this IPSW.", comment: "VMWizardOSMacView")
