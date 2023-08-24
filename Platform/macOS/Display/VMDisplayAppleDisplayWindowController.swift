@@ -23,6 +23,18 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
         mainView as? VZVirtualMachineView
     }
     
+    var supportsReconfiguration: Bool {
+        guard #available(macOS 14, *) else {
+            return false
+        }
+        guard let display = appleVM.apple?.graphicsDevices.first?.displays.first else {
+            return false
+        }
+        return display.value(forKey: "_supportsReconfiguration") as? Bool ?? false
+    }
+    
+    private var aspectRatioLocked: Bool = false
+    
     override func windowDidLoad() {
         mainView = VZVirtualMachineView()
         captureMouseToolbarButton.image = captureMouseToolbarButton.alternateImage // show capture keyboard image
@@ -31,6 +43,9 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
     
     override func enterLive() {
         appleView.virtualMachine = appleVM.apple
+        if #available(macOS 14, *) {
+            appleView.automaticallyReconfiguresDisplay = true
+        }
         super.enterLive()
     }
     
@@ -59,6 +74,7 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
         let size = windowSize(for: primaryDisplay)
         let frame = window.frameRect(forContentRect: CGRect(origin: window.frame.origin, size: size))
         window.contentAspectRatio = size
+        aspectRatioLocked = true
         window.minSize = NSSize(width: 400, height: 400)
         window.setFrame(frame, display: false, animate: true)
         super.updateWindowFrame()
@@ -80,5 +96,12 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
     func windowDidExitFullScreen(_ notification: Notification) {
         captureMouseToolbarButton.state = .off
         captureMouseButtonPressed(self)
+    }
+    
+    func windowDidResize(_ notification: Notification) {
+        if aspectRatioLocked && supportsReconfiguration {
+            window!.resizeIncrements = NSSize(width: 1.0, height: 1.0)
+            aspectRatioLocked = false
+        }
     }
 }
