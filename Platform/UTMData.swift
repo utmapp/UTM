@@ -452,7 +452,7 @@ struct AlertMessage: Identifiable {
         let newName: String = newDefaultVMName(base: vm.detailsTitleLabel)
         let newPath = UTMQemuVirtualMachine.virtualMachinePath(for: newName, in: documentsURL)
         
-        try copyItemWithCopyfile(at: vm.pathUrl, to: newPath)
+        try await copyItemWithCopyfile(at: vm.pathUrl, to: newPath)
         guard let newVM = try? VMData(url: newPath) else {
             throw UTMDataError.cloneFailed
         }
@@ -471,12 +471,12 @@ struct AlertMessage: Identifiable {
     /// - Parameters:
     ///   - vm: VM to copy
     ///   - url: Location to copy to (must be writable)
-    func export(vm: VMData, to url: URL) throws {
+    func export(vm: VMData, to url: URL) async throws {
         let sourceUrl = vm.pathUrl
         if fileManager.fileExists(atPath: url.path) {
             try fileManager.removeItem(at: url)
         }
-        try copyItemWithCopyfile(at: sourceUrl, to: url)
+        try await copyItemWithCopyfile(at: sourceUrl, to: url)
     }
     
     /// Save a copy of the VM and all data to arbitary location and delete the original data
@@ -484,7 +484,7 @@ struct AlertMessage: Identifiable {
     ///   - vm: VM to move
     ///   - url: Location to move to (must be writable)
     func move(vm: VMData, to url: URL) async throws {
-        try export(vm: vm, to: url)
+        try await export(vm: vm, to: url)
         guard let newVM = try? VMData(url: url) else {
             throw UTMDataError.shortcutCreationFailed
         }
@@ -616,13 +616,13 @@ struct AlertMessage: Identifiable {
         listSelect(vm: vm)
     }
 
-    func copyItemWithCopyfile(at srcURL: URL, to dstURL: URL) throws {
-//        let state = copyfile_state_alloc()
-        let status = copyfile(srcURL.path, dstURL.path, nil, copyfile_flags_t(COPYFILE_ALL | COPYFILE_RECURSIVE | COPYFILE_CLONE | COPYFILE_DATA_SPARSE))
-//        copyfile_state_free(state)
-        if status < 0 {
-            throw NSError(domain: NSPOSIXErrorDomain, code: Int(errno))
-        }
+    func copyItemWithCopyfile(at srcURL: URL, to dstURL: URL) async throws {
+        try await Task.detached(priority: .userInitiated) {
+            let status = copyfile(srcURL.path, dstURL.path, nil, copyfile_flags_t(COPYFILE_ALL | COPYFILE_RECURSIVE | COPYFILE_CLONE | COPYFILE_DATA_SPARSE))
+            if status < 0 {
+                throw NSError(domain: NSPOSIXErrorDomain, code: Int(errno))
+            }
+        }.value
     }
     
     // MARK: - Downloading VMs
