@@ -76,17 +76,20 @@ In case of issues in post release that warrants a re-release, follow the same st
 
 ### Secrets
 
-Below is a summary of all the secrets used by GitHub Actions in the release process.
+Below is a summary of all the variables and secrets used by GitHub Actions in the release process.
 
 |Secret                           |Description                                                                        |
 |---------------------------------|-----------------------------------------------------------------------------------|
-|`DISPATCH_ALTSTORE_REPO_NAME`    |`username/repo` path to a [altstore-github][1] repository                          |
-|`DISPATCH_CYDIA_REPO_NAME`       |`username/repo` path to a [silica-package-github][2] repository                    |
 |`PERSONAL_ACCESS_TOKEN`          |GitHub personal token with permission for `repository_dispatch`                    |
 |`SIGNING_CERTIFICATE_P12_DATA`   |Base64 encoded PKCS#12 format containing certificates and private keys for signing |
 |`SIGNING_CERTIFICATE_PASSWORD`   |Password of the PKCS#12 file                                                       |
 |`SIGNING_USERNAME`               |App Store Connect username for notarizing and submission                           |
 |`SIGNING_PASSWORD`               |App Store Connect ["app-specific password"][3]                                     |
+
+|Variable                         |Description                                                                        |
+|---------------------------------|-----------------------------------------------------------------------------------|
+|`DISPATCH_ALTSTORE_REPO_NAME`    |`username/repo` path to a [altstore-github][1] repository                          |
+|`DISPATCH_CYDIA_REPO_NAME`       |`username/repo` path to a [silica-package-github][2] repository                    |
 |`SIGNING_TEAM_ID`                |Team ID associated with signing certificates                                       |
 |`PROFILE_DATA`                   |Base64 encoded provisioning profile of main application                            |
 |`PROFILE_UUID`                   |UUID of provisioning profile above                                                 |
