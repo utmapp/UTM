@@ -164,6 +164,10 @@ extension UTMAppleConfigurationVirtualization {
             #if arch(arm64)
             if hasRosetta == true {
                 let rosettaDirectoryShare = try VZLinuxRosettaDirectoryShare()
+                if #available(macOS 14, *) {
+                    // enable cache if possible
+                    try? rosettaDirectoryShare.setCachingOptions(.defaultUnixSocket)
+                }
                 let fileSystemDevice = VZVirtioFileSystemDeviceConfiguration(tag: "rosetta")
                 fileSystemDevice.share = rosettaDirectoryShare
                 vzconfig.directorySharingDevices.append(fileSystemDevice)
