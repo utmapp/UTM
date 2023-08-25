@@ -64,16 +64,16 @@ struct VMConfigSystemView: View {
             case .overallocatedRam(_, _):
                 return Alert(title: Text(warning.localizedWarningTitle), message: Text(warning.localizedWarningMessage))
             case .resetSystem:
-                return Alert(title: Text(warning.localizedWarningTitle), message: Text(warning.localizedWarningMessage), primaryButton: .cancel(Text("Cancel"), action: {
-                    architecture = config.architecture
-                    target = config.target
-                }), secondaryButton: .destructive(Text("Reset"), action: {
+                return Alert(title: Text(warning.localizedWarningTitle), message: Text(warning.localizedWarningMessage), primaryButton: .destructive(Text("Reset"), action: {
                     config.architecture = architecture
                     if !architecture.targetType.allRawValues.contains(target.rawValue) {
                         target = architecture.targetType.default
                     }
                     config.target = target
                     isResetConfig = true
+                }), secondaryButton: .cancel(Text("Cancel"), action: {
+                    architecture = config.architecture
+                    target = config.target
                 }))
             }
         }.disableAutocorrection(true)

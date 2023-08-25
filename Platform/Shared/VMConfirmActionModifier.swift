@@ -36,35 +36,35 @@ struct VMConfirmActionModifier: ViewModifier {
         content.alert(item: $confirmAction) { action in
             switch action {
             case .confirmCloneVM:
-                return Alert(title: Text("Do you want to duplicate this VM and all its data?"), primaryButton: .cancel(), secondaryButton: .default(Text("Yes")) {
+                return Alert(title: Text("Do you want to duplicate this VM and all its data?"), primaryButton: .default(Text("Yes")) {
                     data.busyWorkAsync {
                         try await data.clone(vm: vm)
                     }
                     onConfirm()
-                })
+                }, secondaryButton: .cancel())
             case .confirmDeleteVM:
-                return Alert(title: Text("Do you want to delete this VM and all its data?"), primaryButton: .cancel(), secondaryButton: .destructive(Text("Delete")) {
+                return Alert(title: Text("Do you want to delete this VM and all its data?"), primaryButton: .destructive(Text("Delete")) {
                     data.busyWorkAsync {
                         try await data.delete(vm: vm)
                     }
                     onConfirm()
-                })
+                }, secondaryButton: .cancel())
             case .confirmDeleteShortcut:
-                return Alert(title: Text("Do you want to remove this shortcut? The data will not be deleted."), primaryButton: .cancel(), secondaryButton: .destructive(Text("Remove")) {
+                return Alert(title: Text("Do you want to remove this shortcut? The data will not be deleted."), primaryButton: .destructive(Text("Remove")) {
                     data.busyWorkAsync {
                         await data.listRemove(vm: vm)
                     }
                     onConfirm()
-                })
+                }, secondaryButton: .cancel())
             case .confirmStopVM:
-                return Alert(title: Text("Do you want to force stop this VM and lose all unsaved data?"), primaryButton: .cancel(), secondaryButton: .destructive(Text("Stop")) {
+                return Alert(title: Text("Do you want to force stop this VM and lose all unsaved data?"), primaryButton: .destructive(Text("Stop")) {
                     data.stop(vm: vm)
                     onConfirm()
-                })
+                }, secondaryButton: .cancel())
             case .confirmMoveVM:
-                return Alert(title: Text("Do you want to move this VM to another location? This will copy the data to the new location, delete the data from the original location, and then create a shortcut."), primaryButton: .cancel(), secondaryButton: .destructive(Text("Confirm")) {
+                return Alert(title: Text("Do you want to move this VM to another location? This will copy the data to the new location, delete the data from the original location, and then create a shortcut."), primaryButton: .destructive(Text("Confirm")) {
                     onConfirm()
-                })
+                }, secondaryButton: .cancel())
             }
         }
     }

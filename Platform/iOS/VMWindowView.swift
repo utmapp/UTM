@@ -95,24 +95,24 @@ struct VMWindowView: View {
         .alert(item: $state.alert, content: { type in
             switch type {
             case .powerDown:
-                return Alert(title: Text("Are you sure you want to stop this VM and exit? Any unsaved changes will be lost."), primaryButton: .cancel(Text("No")), secondaryButton: .destructive(Text("Yes")) {
+                return Alert(title: Text("Are you sure you want to stop this VM and exit? Any unsaved changes will be lost."), primaryButton: .destructive(Text("Yes")) {
                     session.powerDown()
-                })
+                }, secondaryButton: .cancel(Text("No")))
             case .terminateApp:
-                return Alert(title: Text("Are you sure you want to exit UTM?"), primaryButton: .cancel(Text("No")), secondaryButton: .destructive(Text("Yes")) {
+                return Alert(title: Text("Are you sure you want to exit UTM?"), primaryButton: .destructive(Text("Yes")) {
                     session.stop()
-                })
+                }, secondaryButton: .cancel(Text("No")))
             case .restart:
-                return Alert(title: Text("Are you sure you want to reset this VM? Any unsaved changes will be lost."), primaryButton: .cancel(Text("No")), secondaryButton: .destructive(Text("Yes")) {
+                return Alert(title: Text("Are you sure you want to reset this VM? Any unsaved changes will be lost."), primaryButton: .destructive(Text("Yes")) {
                     session.reset()
-                })
+                }, secondaryButton: .cancel(Text("No")))
             #if !WITH_QEMU_TCI
             case .deviceConnected(let device):
-                return Alert(title: Text("Would you like to connect '\(device.name ?? device.description)' to this virtual machine?"), primaryButton: .cancel(Text("No")) {
-                    session.mostRecentConnectedDevice = nil
-                }, secondaryButton: .default(Text("Yes")) {
+                return Alert(title: Text("Would you like to connect '\(device.name ?? device.description)' to this virtual machine?"), primaryButton: .default(Text("Yes")) {
                     session.mostRecentConnectedDevice = nil
                     session.connectDevice(device)
+                }, secondaryButton: .cancel(Text("No")) {
+                    session.mostRecentConnectedDevice = nil
                 })
             #endif
             case .nonfatalError(let message), .fatalError(let message):

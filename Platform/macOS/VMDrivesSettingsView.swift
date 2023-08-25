@@ -59,9 +59,9 @@ struct VMDrivesSettingsView<Drive: UTMConfigurationDrive>: View {
             drives.move(fromOffsets: offsets, toOffset: index)
         }
         .alert(item: $requestDriveDelete) { drive in
-            Alert(title: Text("Are you sure you want to permanently delete this disk image?"), primaryButton: .cancel(), secondaryButton: .destructive(Text("Delete")) {
+            Alert(title: Text("Are you sure you want to permanently delete this disk image?"), primaryButton: .destructive(Text("Delete")) {
                 drives.removeAll(where: { $0 == drive })
-            })
+            }, secondaryButton: .cancel())
         }
         Button {
             newDrivePopover.toggle()

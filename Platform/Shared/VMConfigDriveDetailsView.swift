@@ -140,13 +140,13 @@ struct VMConfigDriveDetailsView: View {
             }.alert(item: $confirmAlert) { item in
                 switch item {
                 case .reclaim(let imageURL):
-                    return Alert(title: Text("Would you like to re-convert this disk image to reclaim unused space? Note this will require enough temporary space to perform the conversion. You are strongly encouraged to back-up this VM before proceeding."), primaryButton: .cancel(), secondaryButton: .destructive(Text("Reclaim")) { reclaimSpace(for: imageURL, withCompression: false) })
+                    return Alert(title: Text("Would you like to re-convert this disk image to reclaim unused space? Note this will require enough temporary space to perform the conversion. You are strongly encouraged to back-up this VM before proceeding."), primaryButton: .destructive(Text("Reclaim")) { reclaimSpace(for: imageURL, withCompression: false) }, secondaryButton: .cancel())
                 case .compress(let imageURL):
-                    return Alert(title: Text("Would you like to re-convert this disk image to reclaim unused space and apply compression? Note this will require enough temporary space to perform the conversion. Compression only applies to existing data and new data will still be written uncompressed. You are strongly encouraged to back-up this VM before proceeding."), primaryButton: .cancel(), secondaryButton: .destructive(Text("Reclaim")) { reclaimSpace(for: imageURL, withCompression: true) })
+                    return Alert(title: Text("Would you like to re-convert this disk image to reclaim unused space and apply compression? Note this will require enough temporary space to perform the conversion. Compression only applies to existing data and new data will still be written uncompressed. You are strongly encouraged to back-up this VM before proceeding."), primaryButton: .destructive(Text("Reclaim")) { reclaimSpace(for: imageURL, withCompression: true) }, secondaryButton: .cancel())
                 case .resize(let imageURL):
-                    return Alert(title: Text("Resizing is experimental and could result in data loss. You are strongly encouraged to back-up this VM before proceeding. Would you like to resize to \(proposedSizeMib / mibInGib) GiB?"), primaryButton: .cancel(), secondaryButton: .destructive(Text("Resize")) {
+                    return Alert(title: Text("Resizing is experimental and could result in data loss. You are strongly encouraged to back-up this VM before proceeding. Would you like to resize to \(proposedSizeMib / mibInGib) GiB?"), primaryButton: .destructive(Text("Resize")) {
                         resizeDrive(for: imageURL, sizeInMib: proposedSizeMib)
-                    })
+                    }, secondaryButton: .cancel())
                 }
             }
             #endif
