@@ -112,7 +112,7 @@ struct VMWizardView: View {
                             }
                             #endif
                             if let qemuConfig = config as? UTMQemuConfiguration {
-                                let vm = try await data.create(config: qemuConfig)
+                                _ = try await data.create(config: qemuConfig)
                                 await MainActor.run {
                                     qemuConfig.qemu.isGuestToolsInstallRequested = wizardState.isGuestToolsInstallRequested
                                 }

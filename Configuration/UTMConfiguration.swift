@@ -189,7 +189,7 @@ extension UTMConfiguration {
         } else {
             let newUrl = UTMData.newImage(from: sourceURL, to: destFolderURL)
             try await Task.detached {
-                try fileManager.copyItem(at: sourceURL, to: newUrl)
+                try FileManager.default.copyItem(at: sourceURL, to: newUrl)
             }.value
             return destURL
         }
@@ -204,7 +204,7 @@ extension UTMConfiguration {
         try await Task.detached {
             for dataFileURL in dataFileURLs {
                 if !existingNames.contains(dataFileURL.lastPathComponent) {
-                    try fileManager.removeItem(at: dataFileURL)
+                    try FileManager.default.removeItem(at: dataFileURL)
                 }
             }
         }.value

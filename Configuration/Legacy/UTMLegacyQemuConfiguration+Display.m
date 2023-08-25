@@ -20,7 +20,7 @@
 #else
 #import <AppKit/AppKit.h>
 #endif
-#import "UTMLegacyQemuConfiguration+Constants.h""
+#import "UTMLegacyQemuConfiguration+Constants.h"
 #import "UTMLegacyQemuConfiguration+Display.h"
 #import "UTMLegacyQemuConfiguration+Sharing.h"
 #import "UTMLegacyQemuConfiguration+System.h"

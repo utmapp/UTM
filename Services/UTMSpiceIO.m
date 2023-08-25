@@ -93,7 +93,7 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
         [self.spice spiceSetDebug:YES];
     }
     // do not need to encode/decode audio locally
-    g_setenv("SPICE_DISABLE_OPUS", "1", TRUE);
+    g_setenv("SPICE_DISABLE_OPUS", "1", YES);
     // need to chdir to workaround AF_UNIX sun_len limitations
     NSString *curdir = self.socketUrl.URLByDeletingLastPathComponent.path;
     if (!curdir || ![NSFileManager.defaultManager changeCurrentDirectoryPath:curdir]) {

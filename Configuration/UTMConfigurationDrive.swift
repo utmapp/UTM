@@ -91,10 +91,9 @@ extension UTMConfigurationDrive {
     }
     
     private func createRawImage(at newURL: URL, size sizeMib: Int) async throws {
-        let fileManager = FileManager.default
         let size = UInt64(sizeMib) * bytesInMib
         try await Task.detached {
-            guard fileManager.createFile(atPath: newURL.path, contents: nil, attributes: nil) else {
+            guard FileManager.default.createFile(atPath: newURL.path, contents: nil, attributes: nil) else {
                 throw UTMConfigurationError.cannotCreateDiskImage
             }
             let handle = try FileHandle(forWritingTo: newURL)
@@ -113,7 +112,6 @@ extension UTMConfigurationDrive {
     
     #if os(macOS)
     private func convertQcow2Image(at sourceURL: URL, to destFolderURL: URL) async throws -> URL {
-        let fileManager = FileManager.default
         let destQcow2 = UTMData.newImage(from: sourceURL,
                                          to: destFolderURL,
                                          withExtension: "qcow2")

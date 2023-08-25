@@ -173,7 +173,7 @@ struct VMAppleRemovableDrivesView: View {
     }
     
     private func selectShareDirectory(for binding: Binding<UTMRegistryEntry.File>, result: Result<URL, Error>) {
-        data.busyWorkAsync {
+        data.busyWork {
             let url = try result.get()
             binding.wrappedValue.url = url
         }

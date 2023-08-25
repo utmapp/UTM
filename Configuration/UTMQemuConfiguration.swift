@@ -321,7 +321,7 @@ extension UTMQemuConfiguration {
                 throw UTMQemuConfigurationError.migrationFailed
             }
             try await Task.detached {
-                try fileManager.moveItem(at: imagesURL, to: dataURL)
+                try FileManager.default.moveItem(at: imagesURL, to: dataURL)
             }.value
         }
         // update any drives
@@ -334,7 +334,7 @@ extension UTMQemuConfiguration {
         if information.isIconCustom, let oldIconURL = information.iconURL {
             let newIconURL = dataURL.appendingPathComponent(oldIconURL.lastPathComponent)
             try await Task.detached {
-                try fileManager.moveItem(at: oldIconURL, to: newIconURL)
+                try FileManager.default.moveItem(at: oldIconURL, to: newIconURL)
             }.value
             information.iconURL = newIconURL
         }
@@ -343,10 +343,10 @@ extension UTMQemuConfiguration {
             let newLogURL = dataURL.appendingPathComponent(oldLogURL.lastPathComponent)
             await Task.detached {
                 do {
-                    try fileManager.moveItem(at: oldLogURL, to: newLogURL)
+                    try FileManager.default.moveItem(at: oldLogURL, to: newLogURL)
                 } catch {
                     // okay to fail
-                    try? fileManager.removeItem(at: oldLogURL)
+                    try? FileManager.default.removeItem(at: oldLogURL)
                 }
             }.value
             qemu.debugLogURL = newLogURL

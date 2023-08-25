@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 
-protocol VMMetalViewInputDelegate: class {
+protocol VMMetalViewInputDelegate: AnyObject {
     var shouldUseCmdOptForCapture: Bool { get }
     func mouseMove(absolutePoint: CGPoint, button: CSInputButton)
     func mouseMove(relativePoint: CGPoint, button: CSInputButton)

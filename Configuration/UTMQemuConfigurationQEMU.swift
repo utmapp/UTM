@@ -179,7 +179,7 @@ extension UTMQemuConfigurationQEMU {
             let varsURL = dataURL.appendingPathComponent(QEMUPackageFileName.efiVariables.rawValue)
             if !fileManager.fileExists(atPath: varsURL.path) {
                 try await Task.detached {
-                    try fileManager.copyItem(at: templateVarsURL, to: varsURL)
+                    try FileManager.default.copyItem(at: templateVarsURL, to: varsURL)
                 }.value
             }
             efiVarsURL = varsURL
