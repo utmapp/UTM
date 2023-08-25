@@ -63,41 +63,75 @@
 
         let vmList = data.vmWindows.keys
         if hasRunningVirtualMachines { // There is at least 1 running VM
-            DispatchQueue.main.async {
-                let alert = NSAlert()
-                alert.alertStyle = .informational
-                alert.messageText = NSLocalizedString("Confirmation", comment: "VMDisplayWindowController")
-                alert.informativeText = NSLocalizedString("Quitting UTM will kill all running VMs.", comment: "VMQemuDisplayMetalWindowController")
-                alert.addButton(withTitle: NSLocalizedString("OK", comment: "VMDisplayWindowController"))
-                alert.addButton(withTitle: NSLocalizedString("Cancel", comment: "VMDisplayWindowController"))
-                alert.showsSuppressionButton = true
-                let confirm = { (response: NSApplication.ModalResponse) in
-                    switch response {
-                    case .alertFirstButtonReturn:
-                        if alert.suppressionButton?.state == .on {
-                            self.isNoQuitConfirmation = true
-                        }
-                        NSApplication.shared.reply(toApplicationShouldTerminate: true)
-                    default:
-                        NSApplication.shared.reply(toApplicationShouldTerminate: false)
-                    }
-                }
-                if let window = sender.keyWindow {
-                    alert.beginSheetModal(for: window, completionHandler: confirm)
-                } else {
-                    let response = alert.runModal()
-                    confirm(response)
+            DispatchQueue.main.async { [self] in
+                if !handleTerminateAfterSaving(allVMs: vmList, sender: sender) {
+                    handleTerminateAfterConfirmation(sender)
                 }
             }
             return .terminateLater
-        } else if vmList.allSatisfy({ !$0.isLoaded || $0.wrapped?.state == .stopped || $0.wrapped?.state == .paused }) { // All VMs are stopped or suspended
+        } else if vmList.allSatisfy({ !$0.isLoaded || $0.wrapped?.state == .stopped }) { // All VMs are stopped or suspended
             return .terminateNow
         } else { // There could be some VMs in other states (starting, pausing, etc.)
             return .terminateCancel
         }
     }
     
+    private func handleTerminateAfterSaving(allVMs: some Sequence<VMData>, sender: NSApplication) -> Bool {
+        let candidates = allVMs.filter({ $0.wrapped?.state == .started || ($0.wrapped?.state == .paused && !$0.hasSuspendState) })
+        guard !candidates.contains(where: { $0.wrapped?.snapshotUnsupportedError != nil }) else {
+            return false
+        }
+        Task {
+            do {
+                try await withThrowingTaskGroup(of: Void.self) { group in
+                    for vm in candidates {
+                        group.addTask {
+                            guard let vm = await vm.wrapped else {
+                                throw UTMVirtualMachineError.notImplemented
+                            }
+                            try await vm.saveSnapshot(name: nil)
+                        }
+                    }
+                    try await group.waitForAll()
+                }
+                NSApplication.shared.reply(toApplicationShouldTerminate: true)
+            } catch {
+                handleTerminateAfterConfirmation(sender)
+            }
+        }
+        return true
+    }
+    
+    private func handleTerminateAfterConfirmation(_ sender: NSApplication) {
+        let alert = NSAlert()
+        alert.alertStyle = .informational
+        alert.messageText = NSLocalizedString("Confirmation", comment: "VMDisplayWindowController")
+        alert.informativeText = NSLocalizedString("Quitting UTM will kill all running VMs.", comment: "VMQemuDisplayMetalWindowController")
+        alert.addButton(withTitle: NSLocalizedString("OK", comment: "VMDisplayWindowController"))
+        alert.addButton(withTitle: NSLocalizedString("Cancel", comment: "VMDisplayWindowController"))
+        alert.showsSuppressionButton = true
+        let confirm = { (response: NSApplication.ModalResponse) in
+            switch response {
+            case .alertFirstButtonReturn:
+                if alert.suppressionButton?.state == .on {
+                    self.isNoQuitConfirmation = true
+                }
+                NSApplication.shared.reply(toApplicationShouldTerminate: true)
+            default:
+                NSApplication.shared.reply(toApplicationShouldTerminate: false)
+            }
+        }
+        if let window = sender.keyWindow {
+            alert.beginSheetModal(for: window, completionHandler: confirm)
+        } else {
+            let response = alert.runModal()
+            confirm(response)
+        }
+    }
+    
     func applicationWillTerminate(_ notification: Notification) {
+        /// Synchronize registry
+        UTMRegistry.shared.sync()
         /// Clean up caches
         let fileManager = FileManager.default
         guard let cacheUrl = fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first else {

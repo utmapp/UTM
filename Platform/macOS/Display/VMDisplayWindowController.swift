@@ -37,12 +37,12 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
     @IBOutlet weak var windowsToolbarItem: NSToolbarItem!
     
     var shouldAutoStartVM: Bool = true
-    var shouldSaveOnPause: Bool { true }
     var vm: (any UTMVirtualMachine)!
     var onClose: ((Notification) -> Void)?
     private(set) var secondaryWindows: [VMDisplayWindowController] = []
     private(set) weak var primaryWindow: VMDisplayWindowController?
     private var preventIdleSleepAssertion: IOPMAssertionID?
+    private var hasSaveSnapshotFailed: Bool = false
     
     @Setting("PreventIdleSleep") private var isPreventIdleSleep: Bool = false
     @Setting("NoQuitConfirmation") private var isNoQuitConfirmation: Bool = false
@@ -85,7 +85,7 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
     @IBAction func startPauseButtonPressed(_ sender: Any) {
         enterSuspended(isBusy: true) // early indicator
         if vm.state == .started {
-            vm.requestVmPause(save: shouldSaveOnPause)
+            vm.requestVmPause()
         } else if vm.state == .paused {
             vm.requestVmResume()
         } else if vm.state == .stopped {
@@ -153,10 +153,7 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
         let pauseDescription = NSLocalizedString("Pause", comment: "VMDisplayWindowController")
         startPauseToolbarItem.image = NSImage(systemSymbolName: "pause", accessibilityDescription: pauseDescription)
         startPauseToolbarItem.label = pauseDescription
-        if let snapshotUnsupportedError = vm.snapshotUnsupportedError {
-            startPauseToolbarItem.isEnabled = false
-            startPauseToolbarItem.toolTip = snapshotUnsupportedError.localizedDescription
-        }
+        startPauseToolbarItem.isEnabled = true
         stopToolbarItem.isEnabled = true
         restartToolbarItem.isEnabled = true
         captureMouseToolbarItem.isEnabled = true
@@ -294,13 +291,30 @@ extension VMDisplayWindowController: NSWindowDelegate {
         guard !(vm.state == .stopped || (vm.state == .paused && vm.registryEntry.isSuspended)) else {
             return true
         }
+        if let snapshotUnsupportedError = vm.snapshotUnsupportedError {
+            return windowWillCloseAfterConfirmation(sender, error: snapshotUnsupportedError)
+        } else if hasSaveSnapshotFailed {
+            return windowWillCloseAfterConfirmation(sender)
+        } else {
+            return windowWillCloseAfterSaving(sender)
+        }
+    }
+    
+    private func windowWillCloseAfterConfirmation(_ sender: NSWindow, error: Error? = nil) -> Bool {
         guard !isNoQuitConfirmation else {
             return true
         }
         let alert = NSAlert()
         alert.alertStyle = .informational
-        alert.messageText = NSLocalizedString("Confirmation", comment: "VMDisplayWindowController")
+        if error == nil {
+            alert.messageText = NSLocalizedString("Confirmation", comment: "VMDisplayWindowController")
+        } else {
+            alert.messageText = NSLocalizedString("Failed to save suspend state", comment: "VMDisplayWindowController")
+        }
         alert.informativeText = NSLocalizedString("Closing this window will kill the VM.", comment: "VMQemuDisplayMetalWindowController")
+        if let error = error {
+            alert.informativeText = error.localizedDescription + "\n" + alert.informativeText
+        }
         alert.addButton(withTitle: NSLocalizedString("OK", comment: "VMDisplayWindowController"))
         alert.addButton(withTitle: NSLocalizedString("Cancel", comment: "VMDisplayWindowController"))
         alert.showsSuppressionButton = true
@@ -313,6 +327,19 @@ extension VMDisplayWindowController: NSWindowDelegate {
                 sender.close()
             default:
                 return
+            }
+        }
+        return false
+    }
+    
+    private func windowWillCloseAfterSaving(_ sender: NSWindow) -> Bool {
+        Task {
+            do {
+                try await vm.saveSnapshot(name: nil)
+                sender.close()
+            } catch {
+                showErrorAlert(error.localizedDescription)
+                hasSaveSnapshotFailed = true
             }
         }
         return false

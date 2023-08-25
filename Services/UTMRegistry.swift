@@ -144,4 +144,9 @@ class UTMRegistry: NSObject {
             }
         }
     }
+    
+    /// Make sure the registry is synchronized when UTM terminates
+    func sync() {
+        commitAll(entries: entries)
+    }
 }

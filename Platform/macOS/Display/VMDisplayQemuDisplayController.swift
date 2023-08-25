@@ -41,23 +41,14 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
         }
     }
     
-    private var defaultPauseTooltip: String?
-    
     convenience init(vm: UTMQemuVirtualMachine, id: Int) {
         self.init(vm: vm, onClose: nil)
         self.id = id
     }
     
-    override var shouldSaveOnPause: Bool {
-        !qemuVM.isRunningAsDisposible
-    }
-    
     override func enterLive() {
         if !isSecondary {
             qemuVM.ioServiceDelegate = self
-        }
-        if defaultPauseTooltip == nil {
-            defaultPauseTooltip = startPauseToolbarItem.toolTip
         }
         drivesToolbarItem.isEnabled = vmQemuConfig.drives.count > 0
         sharedFolderToolbarItem.isEnabled = vmQemuConfig.sharing.directoryShareMode == .webdav // virtfs cannot dynamically change
@@ -74,9 +65,6 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
             if isSecondary {
                 close()
             }
-        }
-        if defaultPauseTooltip != nil {
-            startPauseToolbarItem.toolTip = defaultPauseTooltip
         }
         super.enterSuspended(isBusy: busy)
     }
