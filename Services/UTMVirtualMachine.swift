@@ -68,6 +68,9 @@ protocol UTMVirtualMachine: AnyObject, Identifiable {
     /// If non-null, is the most recent screenshot of the running VM
     var screenshot: PlatformImage? { get }
     
+    /// If non-null, `saveSnapshot` and `restoreSnapshot` will not work due to the reason specified
+    var snapshotUnsupportedError: Error? { get }
+    
     static func isVirtualMachine(url: URL) -> Bool
     
     /// Get name of UTM virtual machine from a file

@@ -82,7 +82,6 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         super.enterLive()
         drivesToolbarItem.isEnabled = false
         usbToolbarItem.isEnabled = false
-        startPauseToolbarItem.isEnabled = true
         resizeConsoleToolbarItem.isEnabled = false
         if #available(macOS 12, *) {
             sharedFolderToolbarItem.isEnabled = appleConfig.system.boot.operatingSystem == .linux

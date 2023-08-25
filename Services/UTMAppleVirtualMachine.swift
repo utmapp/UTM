@@ -91,6 +91,8 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         }
     }
     
+    private(set) var snapshotUnsupportedError: Error?
+    
     private var isScopedAccess: Bool = false
     
     private weak var screenshotTimer: Timer?
@@ -99,8 +101,6 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
     
     /// This variable MUST be synchronized by `vmQueue`
     private(set) var apple: VZVirtualMachine?
-    
-    private var saveSnapshotError: Error?
     
     private var installProgress: Progress?
     
@@ -365,8 +365,8 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         guard let vmSavedStateURL = await config.system.boot.vmSavedStateURL else {
             return
         }
-        if let saveSnapshotError = saveSnapshotError {
-            throw saveSnapshotError
+        if let snapshotUnsupportedError = snapshotUnsupportedError {
+            throw snapshotUnsupportedError
         }
         if state == .started {
             try await pause()
@@ -489,14 +489,15 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         vmQueue.async { [self] in
             apple = VZVirtualMachine(configuration: vzConfig, queue: vmQueue)
             apple!.delegate = self
-            saveSnapshotError = nil
+            snapshotUnsupportedError = UTMAppleVirtualMachineError.operationNotAvailable
             #if arch(arm64)
             if #available(macOS 14, *) {
                 do {
                     try vzConfig.validateSaveRestoreSupport()
+                    snapshotUnsupportedError = nil
                 } catch {
                     // save this for later when we want to use snapshots
-                    saveSnapshotError = error
+                    snapshotUnsupportedError = error
                 }
             }
             #endif
@@ -633,7 +634,7 @@ extension UTMAppleVirtualMachine: VZVirtualMachineDelegate {
     func guestDidStop(_ virtualMachine: VZVirtualMachine) {
         vmQueue.async { [self] in
             apple = nil
-            saveSnapshotError = nil
+            snapshotUnsupportedError = nil
         }
         sharedDirectoriesChanged = nil
         Task { @MainActor in

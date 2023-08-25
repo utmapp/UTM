@@ -93,6 +93,8 @@ final class UTMQemuVirtualMachine: UTMVirtualMachine {
         }
     }
     
+    private(set) var snapshotUnsupportedError: Error?
+    
     private var isScopedAccess: Bool = false
     
     private weak var screenshotTimer: Timer?
@@ -226,6 +228,37 @@ extension UTMQemuVirtualMachine {
         }
     }
     
+    private func determineSnapshotSupport() async -> Error? {
+        // predetermined reasons
+        if isRunningAsDisposible {
+            return UTMQemuVirtualMachineError.qemuError(NSLocalizedString("Suspend state cannot be saved when running in disposible mode.", comment: "UTMQemuVirtualMachine"))
+        }
+        #if arch(x86_64)
+        let hasHypervisor = await config.qemu.hasHypervisor
+        let architecture = await config.system.architecture
+        if hasHypervisor && architecture == .x86_64 {
+            return UTMQemuVirtualMachineError.qemuError(NSLocalizedString("Suspend is not supported for virtualization.", comment: "UTMQemuVirtualMachine"))
+        }
+        #endif
+        for display in await config.displays {
+            if display.hardware.rawValue.contains("-gl-") || display.hardware.rawValue.hasSuffix("-gl") {
+                return UTMQemuVirtualMachineError.qemuError(NSLocalizedString("Suspend is not supported when GPU acceleration is enabled.", comment: "UTMQemuVirtualMachine"))
+            }
+        }
+        for drive in await config.drives {
+            if drive.interface == .nvme {
+                return UTMQemuVirtualMachineError.qemuError(NSLocalizedString("Suspend is not supported when an emulated NVMe device is active.", comment: "UTMQemuVirtualMachine"))
+            }
+        }
+        do {
+            try await _saveSnapshot(name: "tmp-ss-support-probe")
+            try? await _deleteSnapshot(name: "tmp-ss-support-probe")
+        } catch {
+            return error
+        }
+        return nil
+    }
+    
     private func _start(options: UTMVirtualMachineStartOptions) async throws {
         // check if we can actually start this VM
         guard await isSupported else {
@@ -328,6 +361,9 @@ extension UTMQemuVirtualMachine {
         // save ioService and let it set the delegate
         self.ioService = ioService
         self.isRunningAsDisposible = isRunningAsDisposible
+        
+        // test out snapshots
+        self.snapshotUnsupportedError = await determineSnapshotSupport()
     }
     
     func start(options: UTMVirtualMachineStartOptions = []) async throws {
@@ -436,21 +472,18 @@ extension UTMQemuVirtualMachine {
         guard let monitor = await monitor else {
             throw UTMQemuVirtualMachineError.invalidVmState
         }
-        do {
-            let result = try await monitor.qemuSaveSnapshot(name)
-            if result.localizedCaseInsensitiveContains("Error") {
-                throw UTMQemuVirtualMachineError.qemuError(result)
-            }
-            await registryEntry.setIsSuspended(true)
-            try saveScreenshot()
-        } catch {
-            throw UTMQemuVirtualMachineError.saveSnapshotFailed(error)
+        let result = try await monitor.qemuSaveSnapshot(name)
+        if result.localizedCaseInsensitiveContains("Error") {
+            throw UTMQemuVirtualMachineError.qemuError(result)
         }
     }
     
     func saveSnapshot(name: String? = nil) async throws {
         guard state == .paused || state == .started else {
             throw UTMQemuVirtualMachineError.invalidVmState
+        }
+        if let snapshotUnsupportedError = snapshotUnsupportedError {
+            throw UTMQemuVirtualMachineError.saveSnapshotFailed(snapshotUnsupportedError)
         }
         let prev = state
         state = .saving
@@ -459,13 +492,16 @@ extension UTMQemuVirtualMachine {
         }
         do {
             try await _saveSnapshot(name: name ?? kSuspendSnapshotName)
+            if name == nil {
+                await registryEntry.setIsSuspended(true)
+                try saveScreenshot()
+            }
         } catch {
-            throw error
+            throw UTMQemuVirtualMachineError.saveSnapshotFailed(error)
         }
     }
     
     private func _deleteSnapshot(name: String) async throws {
-        await registryEntry.setIsSuspended(false)
         if let monitor = await monitor { // if QEMU is running
             let result = try await monitor.qemuDeleteSnapshot(name)
             if result.localizedCaseInsensitiveContains("Error") {
@@ -475,6 +511,9 @@ extension UTMQemuVirtualMachine {
     }
     
     func deleteSnapshot(name: String? = nil) async throws {
+        if name == nil {
+            await registryEntry.setIsSuspended(false)
+        }
         try await _deleteSnapshot(name: name ?? kSuspendSnapshotName)
     }
     
@@ -550,6 +589,7 @@ extension UTMQemuVirtualMachine: QEMUVirtualMachineDelegate {
         swtpm = nil
         ioService = nil
         ioServiceDelegate = nil
+        snapshotUnsupportedError = nil
         try? saveScreenshot()
         state = .stopped
     }

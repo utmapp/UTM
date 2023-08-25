@@ -153,6 +153,10 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
         let pauseDescription = NSLocalizedString("Pause", comment: "VMDisplayWindowController")
         startPauseToolbarItem.image = NSImage(systemSymbolName: "pause", accessibilityDescription: pauseDescription)
         startPauseToolbarItem.label = pauseDescription
+        if let snapshotUnsupportedError = vm.snapshotUnsupportedError {
+            startPauseToolbarItem.isEnabled = false
+            startPauseToolbarItem.toolTip = snapshotUnsupportedError.localizedDescription
+        }
         stopToolbarItem.isEnabled = true
         restartToolbarItem.isEnabled = true
         captureMouseToolbarItem.isEnabled = true
