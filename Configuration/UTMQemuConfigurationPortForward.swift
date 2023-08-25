@@ -35,6 +35,53 @@ struct UTMQemuConfigurationPortForward: Codable, Identifiable, Hashable {
     
     let id = UUID()
     
+    enum CodingKeys: String, CodingKey {
+        case `protocol` = "Protocol"
+        case hostAddress = "HostAddress"
+        case hostPort = "HostPort"
+        case guestAddress = "GuestAddress"
+        case guestPort = "GuestPort"
+    }
+    
+    enum CodingKeysOld: String, CodingKey {
+        case `protocol` = "protocol"
+        case hostAddress = "hostAddress"
+        case hostPort = "hostPort"
+        case guestAddress = "guestAddress"
+        case guestPort = "guestPort"
+    }
+    
+    init() {
+    }
+    
+    init(from decoder: Decoder) throws {
+        do {
+            let values = try decoder.container(keyedBy: CodingKeys.self)
+            `protocol` = try values.decode(QEMUNetworkProtocol.self, forKey: .protocol)
+            hostAddress = try values.decodeIfPresent(String.self, forKey: .hostAddress)
+            hostPort = try values.decode(Int.self, forKey: .hostPort)
+            guestAddress = try values.decodeIfPresent(String.self, forKey: .guestAddress)
+            guestPort = try values.decode(Int.self, forKey: .guestPort)
+        } catch is DecodingError {
+            // before UTM v4.4, we mistakingly used camel-case in the config.plist
+            let values = try decoder.container(keyedBy: CodingKeysOld.self)
+            `protocol` = try values.decode(QEMUNetworkProtocol.self, forKey: .protocol)
+            hostAddress = try values.decodeIfPresent(String.self, forKey: .hostAddress)
+            hostPort = try values.decode(Int.self, forKey: .hostPort)
+            guestAddress = try values.decodeIfPresent(String.self, forKey: .guestAddress)
+            guestPort = try values.decode(Int.self, forKey: .guestPort)
+        }
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(`protocol`, forKey: .protocol)
+        try container.encodeIfPresent(hostAddress, forKey: .hostAddress)
+        try container.encode(hostPort, forKey: .hostPort)
+        try container.encodeIfPresent(guestAddress, forKey: .guestAddress)
+        try container.encode(guestPort, forKey: .guestPort)
+    }
+    
     func hash(into hasher: inout Hasher) {
         id.hash(into: &hasher)
     }
