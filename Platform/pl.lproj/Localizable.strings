@@ -398,7 +398,7 @@
 
 // VMAppleRemovableDrivesView.swift
 "Remove" = "Usuń";
-"Shared Directory" = "Wspódzielenie katalogu";
+"Shared Directory" = "Współdzielenie katalogu";
 "External Drive" = "Dysk zewnętrzny";
 "New Shared Directory…" = "Nowy współdzielony katalog...";
 "New External Drive…" = "Nowy dysk zewnętrzny...";
@@ -496,7 +496,7 @@
 "Icon" = "Ikona";
 
 // VMConfigInputView.swift
-"If enabled, the default input devices will be emulated on the USB bus." = "Jeśli właczone, domyślne urządzenia wejścia będą emulowane na magistrali USB.";
+"If enabled, the default input devices will be emulated on the USB bus." = "Jeśli włączone, domyślne urządzenia wejścia będą emulowane na magistrali USB.";
 "USB Support" = "Wsparcie USB";
 "USB Sharing" = "Współdzielenie USB";
 "USB sharing not supported in this build of UTM." = "Współdzielenie USB nie jest wspieranę przez tą wersję UTM.";
@@ -542,7 +542,7 @@
 "Balloon Device" = "Urządzenie Balloon";
 "TPM Device" = "Urządzenie TPM";
 "This is required to boot Windows 11." = "To jest wymagane, aby uruchomić Windows 11.";
-"Use Hypervisor" = "Użyj Hipernadzorcy (Hyperviosor)";
+"Use Hypervisor" = "Użyj Hipernadzorcy (Hypervisor)";
 "Only available if host architecture matches the target. Otherwise, TCG emulation is used." = "Dostępne tylko jeśli architektura gospodarza odpowiada architekturze gościa. W innym wypadku, zostanie użyta emulacja TCG.";
 "Use local time for base clock" = "Używaj czasu lokalnego jako podstawowego zegara maszyny wirtualnej";
 "If checked, use local time for RTC which is required for Windows. Otherwise, use UTC clock." = "Jeśli zaznaczone, używaj czasu lokalnego dla RTC, czego wymaga Windows. W innym wypadku, używaj zegara UTC.";
