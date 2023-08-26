@@ -25,7 +25,6 @@ on:
 env:
   BUILD_XCODE_PATH: /Applications/Xcode_15.0.app
   RUNNER_IMAGE: macos-13
-  XCODE_BETA: 'true'
 
 jobs:
   configuration:
@@ -34,7 +33,6 @@ jobs:
     outputs:
       runner: ${{ steps.checker.outputs.runners }}
       github-runner: ${{ steps.checker.outputs.github-runner }}
-      xcode-beta: ${{ steps.checker.outputs.xcode-beta }}
     steps:
     - name: Check for hosted runners
       id: checker
@@ -43,7 +41,6 @@ jobs:
         IS_SELF_HOSTED_RUNNER: ${{ vars.IS_SELF_HOSTED_RUNNER || (github.repository_owner == 'utmapp' && 'true') }}
       run: |
         echo "github-runner='$RUNNER_IMAGE'" >> $GITHUB_OUTPUT
-        echo "xcode-beta='$XCODE_BETA'" >> $GITHUB_OUTPUT
         if [ "$IS_SELF_HOSTED_RUNNER" == "true" ]; then
           echo "runners=['self-hosted', 'macOS']" >> $GITHUB_OUTPUT
         else
@@ -337,13 +334,12 @@ jobs:
           HELPER_PROFILE_UUID: ${{ vars.HELPER_PROFILE_UUID }}
           LAUNCHER_PROFILE_UUID: ${{ vars.LAUNCHER_PROFILE_UUID }}
       - name: Notarize app
-        if: needs.configuration.outputs.xcode-beta != 'true'
         run: npx notarize-cli --file "UTM.dmg" --bundle-id "com.utmapp.UTM"
         env:
           NOTARIZE_USERNAME: ${{ secrets.SIGNING_USERNAME }}
           NOTARIZE_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
       - name: Upload Artifact
-        if: ${{ github.event_name != 'release' }}
+        if: github.event_name != 'release'
         uses: actions/upload-artifact@v3
         with:
           name: UTM-dmg
@@ -362,7 +358,7 @@ jobs:
     name: Submit (macOS)
     runs-on: ${{ fromJSON(needs.configuration.outputs.github-runner) }}
     needs: [configuration, build-universal]
-    if: needs.configuration.outputs.xcode-beta != 'true' && (github.event_name == 'release' || github.event.inputs.test_release == 'true')
+    if: github.event_name == 'release' || github.event.inputs.test_release == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v3
