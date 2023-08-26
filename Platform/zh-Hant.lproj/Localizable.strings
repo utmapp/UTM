@@ -93,7 +93,7 @@
 "A valid configuration must be specified." = "需要指定有效的組態。";
 
 /* UTMAppleConfiguration */
-"A valid kernel image must be specified." = "需要指定有效的內核映像檔。";
+"A valid kernel image must be specified." = "需要指定有效的核心映像檔。";
 
 /* No comment provided by engineer. */
 "Add" = "加入";
@@ -129,7 +129,7 @@
 "Allow Remote Connection" = "允許遠端連線";
 
 /* No comment provided by engineer. */
-"Allows passing through additional input from trackpads. Only supported on macOS 13+ guests." = "只支援 macOS 13 以上的客端系統，可以從觸控板傳遞其他輸入。";
+"Allows passing through additional input from trackpads. Only supported on macOS 13+ guests." = "只支援 macOS 13 以上的客體系統，可以從觸控板傳遞其他輸入。";
 
 /* UTMData */
 "AltJIT error: %@" = "AltJIT 發生錯誤：%@";
@@ -214,7 +214,7 @@
 "Boot Arguments" = "開機引數";
 
 /* No comment provided by engineer. */
-"Boot from kernel image" = "從內核映像檔開機";
+"Boot from kernel image" = "從核心映像檔開機";
 
 /* No comment provided by engineer. */
 "Boot Image" = "開機映像檔";
@@ -509,10 +509,10 @@
 "Done" = "完成";
 
 /* No comment provided by engineer. */
-"Download and mount the guest support package for Windows. This is required for some features including dynamic resolution and clipboard sharing." = "下載並掛接 Windows 的客端支援套件。某些功能如「動態解析度」和「剪貼簿共享」需要這個套件。";
+"Download and mount the guest support package for Windows. This is required for some features including dynamic resolution and clipboard sharing." = "下載並裝載 Windows 的客體支援套件。某些功能如「動態解析度」和「剪貼簿共享」需要這個套件。";
 
 /* No comment provided by engineer. */
-"Download and mount the guest tools for Windows." = "下載並掛接 Windows 的客端支援套件。";
+"Download and mount the guest tools for Windows." = "下載並裝載 Windows 的客體支援套件。";
 
 /* No comment provided by engineer. */
 "Download prebuilt from UTM Gallery…" = "從 UTM 資源庫下載預先建置好的機器⋯";
@@ -554,13 +554,13 @@
 "Emulate" = "模擬";
 
 /* No comment provided by engineer. */
-"Emulated Audio Card" = "模擬聲卡";
+"Emulated Audio Card" = "模擬音效卡";
 
 /* No comment provided by engineer. */
 "Emulated Display Card" = "模擬顯示卡";
 
 /* No comment provided by engineer. */
-"Emulated Network Card" = "模擬網卡";
+"Emulated Network Card" = "模擬網路卡";
 
 /* No comment provided by engineer. */
 "Emulated Serial Device" = "模擬序列裝置";
@@ -593,7 +593,7 @@
 "Enable Rosetta on Linux (x86_64 Emulation)" = "在 Linux 啟用 Rosetta（x86_64 模擬）";
 
 /* No comment provided by engineer. */
-"Enable Sound" = "啟用聲卡";
+"Enable Sound" = "啟用音效卡";
 
 /* No comment provided by engineer. */
 "Engine" = "引擎";
@@ -687,10 +687,10 @@
 "Floppy" = "軟碟機";
 
 /* No comment provided by engineer. */
-"Font" = "字體";
+"Font" = "字型";
 
 /* No comment provided by engineer. */
-"Font Size" = "字體大小";
+"Font Size" = "字型大小";
 
 /* No comment provided by engineer. */
 "Force Disable CPU Flags" = "強制停用 CPU 旗標";
@@ -738,19 +738,19 @@
 "GPU Acceleration Supported" = "支援 GPU 加速";
 
 /* No comment provided by engineer. */
-"Guest Address" = "客端位址";
+"Guest Address" = "客體位址";
 
 /* No comment provided by engineer. */
-"Guest drivers are required for 3D acceleration." = "客端驅動程式需要 3D 加速。";
+"Guest drivers are required for 3D acceleration." = "客體驅動程式需要 3D 加速。";
 
 /* No comment provided by engineer. */
-"Guest Network" = "客端網路";
+"Guest Network" = "客體網路";
 
 /* No comment provided by engineer. */
-"Guest Network (IPv6)" = "客端網路（IPv6）";
+"Guest Network (IPv6)" = "客體網路（IPv6）";
 
 /* No comment provided by engineer. */
-"Guest Port" = "客端連線埠";
+"Guest Port" = "客體連線埠";
 
 /* Configuration boot device */
 "Hard Disk" = "硬碟";
@@ -759,7 +759,7 @@
 "Hardware" = "硬體";
 
 /* No comment provided by engineer. */
-"Hardware interface on the guest used to mount this image. Different operating systems support different interfaces. The default will be the most common interface." = "客端的硬體介面，用來掛接這個映像檔。不同的作業系統支援不同的介面。預設值會是最常見的介面。";
+"Hardware interface on the guest used to mount this image. Different operating systems support different interfaces. The default will be the most common interface." = "客體的硬體介面，用來裝載這個映像檔。不同的作業系統支援不同的介面。預設值會是最常見的介面。";
 
 /* No comment provided by engineer. */
 "Hardware OpenGL Acceleration" = "OpenGL 硬體加速";
@@ -804,7 +804,7 @@
 "Identifier '%@' cannot be found." = "找不到「%@」識別碼。";
 
 /* No comment provided by engineer. */
-"If checked, no drive image will be stored with the VM. Instead you can mount/unmount image while the VM is running." = "核取後虛擬機將不儲存磁碟機映像檔。您可以改在虛擬機執行時掛接（或卸載）映像檔。";
+"If checked, no drive image will be stored with the VM. Instead you can mount/unmount image while the VM is running." = "核取後虛擬機將不儲存磁碟機映像檔。您可以改在虛擬機執行時裝載（或卸除）映像檔。";
 
 /* No comment provided by engineer. */
 "If checked, the CPU flag will be disabled. Otherwise, the default value will be used." = "核取後會停用 CPU 旗標。反之則使用預設值。";
@@ -822,7 +822,7 @@
 "If disabled, the default combination Control+Option (⌃+⌥) will be used." = "停用後會採用預設的按鍵組合 Control+Option (⌃+⌥)。";
 
 /* No comment provided by engineer. */
-"If enabled, a virtiofs share tagged 'rosetta' will be available on the Linux guest for installing Rosetta for emulating x86_64 on ARM64." = "啟用後，標籤是 “rosetta” 的 virtiofs 共享將可以在 Linux 客端使用，用來安裝在 ARM64 模擬 x86_64 的 Rosetta。";
+"If enabled, a virtiofs share tagged 'rosetta' will be available on the Linux guest for installing Rosetta for emulating x86_64 on ARM64." = "啟用後，標籤是 “rosetta” 的 virtiofs 共享將可以在 Linux 客體使用，用來安裝在 ARM64 模擬 x86_64 的 Rosetta。";
 
 /* No comment provided by engineer. */
 "If enabled, any existing screenshot will be deleted the next time the VM is started." = "啟用後，所有現有的螢幕擷圖，將會在下次虛擬機啟動時刪除。";
@@ -831,10 +831,10 @@
 "If enabled, caps lock will be handled like other keys. If disabled, it is treated as a toggle that is synchronized with the host." = "啟用後 Caps Lock 將被視作一般按鍵。若停用 Caps Lock 將會視作和主機端同步的切換開關。";
 
 /* No comment provided by engineer. */
-"If enabled, num lock will always be on to the guest. Note this may make your keyboard's num lock indicator out of sync." = "啟用後 Num Lock 在客端將永遠是 on 的。注意這可能導致您鍵盤的 Num Lock 指示器不同步。";
+"If enabled, num lock will always be on to the guest. Note this may make your keyboard's num lock indicator out of sync." = "啟用後 Num Lock 在客體將永遠是 on 的。注意這可能導致您鍵盤的 Num Lock 指示燈不同步。";
 
 /* No comment provided by engineer. */
-"If enabled, Option will be mapped to the Meta key which can be useful for emacs. Otherwise, option will work as the system intended (such as for entering international text)." = "啟用後 Option 鍵將映射到 Meta 鍵，若要使用 Emacs 這選項會很實用。反之 Option 將會以系統認為的方式運作（比如輸入國際文字）。";
+"If enabled, Option will be mapped to the Meta key which can be useful for emacs. Otherwise, option will work as the system intended (such as for entering international text)." = "啟用後 Option 鍵將對映到 Meta 鍵，若要使用 Emacs 這選項會很實用。反之 Option 將會以系統認為的方式運作（比如輸入國際文字）。";
 
 /* No comment provided by engineer. */
 "If enabled, resizing of the VM window will not be allowed." = "啟用後將不允許調整虛擬機視窗的大小。";
@@ -849,7 +849,7 @@
 "If set, a frame limit can improve smoothness in rendering by preventing stutters when set to the lowest value your device can handle." = "設定後將會限制幀數上限，透過將數值調整到您裝置可以處理過來的最小值來防止卡頓，最終改善算繪的平滑度。";
 
 /* No comment provided by engineer. */
-"If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO." = "設定後將直接從原始內核映像檔或 initrd 開機，否則從支援的 ISO 開機。";
+"If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO." = "設定後將直接從原始核心映像檔或 initrd 開機，否則從支援的 ISO 開機。";
 
 /* No comment provided by engineer. */
 "Image File Type" = "映像檔案類型";
@@ -894,7 +894,7 @@
 "Install Windows 10 or higher" = "安裝 Windows 10 或更新版本";
 
 /* VMDisplayWindowController */
-"Install Windows Guest Tools…" = "安裝 Windows 客端工具…";
+"Install Windows Guest Tools…" = "安裝 Windows 客體工具…";
 
 /* No comment provided by engineer. */
 "Installation Instructions" = "安裝指引";
@@ -951,10 +951,10 @@
 "Keep UTM running after last window is closed and all VMs are shut down" = "即使最後一個視窗已經關閉、所有虛擬機均已關閉，仍繼續執行 UTM";
 
 /* No comment provided by engineer. */
-"Kernel" = "內核";
+"Kernel" = "核心";
 
 /* No comment provided by engineer. */
-"Kernel Image" = "內核映像檔";
+"Kernel Image" = "核心映像檔";
 
 /* No comment provided by engineer. */
 "Keyboard" = "鍵盤";
@@ -980,7 +980,7 @@
 "Linux Kernel" = "Linux 核心";
 
 /* No comment provided by engineer. */
-"Linux kernel (required)" = "Linux 內核（必填）";
+"Linux kernel (required)" = "Linux 核心（必填）";
 
 /* UTMLegacyQemuConfiguration
    UTMQemuConstants */
@@ -1005,7 +1005,7 @@
 "macOS 12+" = "macOS 12+";
 
 /* VMWizardOSMacView */
-"macOS guests are only supported on ARM64 devices." = "macOS 客端僅支援 ARM64 裝置。";
+"macOS guests are only supported on ARM64 devices." = "macOS 客體僅支援 ARM64 裝置。";
 
 /* VMWizardState */
 "macOS is not supported with QEMU." = "macOS 不支援 QEMU。";
@@ -1159,7 +1159,7 @@
 "Only available on macOS virtual machines." = "只能在 macOS 虛擬機上使用。";
 
 /* No comment provided by engineer. */
-"Only available when Hypervisor is used on supported hardware. TSO speeds up Intel emulation in the guest at the cost of decreased performance in general." = "只有 Hypervisor 在支援的硬體上使用時才能使用。TSO 加速客端的 Intel 模擬速度，而降低通常情況下的效能。";
+"Only available when Hypervisor is used on supported hardware. TSO speeds up Intel emulation in the guest at the cost of decreased performance in general." = "只有 Hypervisor 在支援的硬體上使用時才能使用。TSO 加速客體的 Intel 模擬速度，而降低通常情況下的效能。";
 
 /* No comment provided by engineer. */
 "Open VM Settings" = "開啟虛擬機設定";
@@ -1180,7 +1180,7 @@
 "Option (⌥) is Meta key" = "Option (⌥) 即 Meta 鍵";
 
 /* No comment provided by engineer. */
-"Optionally select a directory to make accessible inside the VM. Note that support for shared directories varies by the guest operating system and may require additional guest drivers to be installed. See UTM support pages for more details." = "選擇性選取虛擬機內能夠存取的目錄。注意共享檔案夾的支援度因客端作業系統而異，可能會需要安裝額外的客端驅動程式。請查閱 UTM 支援頁面深入了解。";
+"Optionally select a directory to make accessible inside the VM. Note that support for shared directories varies by the guest operating system and may require additional guest drivers to be installed. See UTM support pages for more details." = "選擇性選取虛擬機內能夠存取的目錄。注意共享檔案夾的支援度因客體作業系統而異，可能會需要安裝額外的客體驅動程式。請查閱 UTM 支援頁面深入了解。";
 
 /* No comment provided by engineer. */
 "Options here only apply on next boot and are not saved." = "這裡的選項只會在下次開機時生效，且不會儲存。";
@@ -1213,13 +1213,13 @@
 "Please select a boot image." = "請選擇開機映像檔。";
 
 /* VMWizardState */
-"Please select a kernel file." = "請選擇內核檔案。";
+"Please select a kernel file." = "請選擇核心檔案。";
 
 /* No comment provided by engineer. */
 "Please select a macOS recovery IPSW." = "請選擇 macOS recovery IPSW 檔。";
 
 /* No comment provided by engineer. */
-"Please select an uncompressed Linux kernel image." = "請選擇未壓縮的 Linux 內核映像檔案。";
+"Please select an uncompressed Linux kernel image." = "請選擇未壓縮的 Linux 核心映像檔案。";
 
 /* No comment provided by engineer. */
 "Port" = "連線埠";
@@ -1273,7 +1273,7 @@
 "QEMU Pointer" = "QEMU 指向裝置";
 
 /* No comment provided by engineer. */
-"QEMU Sound" = "QEMU 聲卡";
+"QEMU Sound" = "QEMU 音效卡";
 
 /* No comment provided by engineer. */
 "QEMU USB" = "QEMU USB";
@@ -1472,7 +1472,7 @@
 "Selected:" = "已選擇：";
 
 /* VMDisplayWindowController */
-"Sends power down request to the guest. This simulates pressing the power button on a PC." = "將關機請求送往客端，模擬按下 PC 的關機鍵。";
+"Sends power down request to the guest. This simulates pressing the power button on a PC." = "將關機請求送往客體，模擬按下 PC 的關機鍵。";
 
 /* No comment provided by engineer. */
 "Serial" = "序列裝置";
@@ -1491,7 +1491,7 @@
 "Share" = "分享";
 
 /* No comment provided by engineer. */
-"Share a copy of this VM and all its data." = "分享虛擬機和其所有資料的拷貝。";
+"Share a copy of this VM and all its data." = "分享虛擬機和其所有資料的複製。";
 
 /* No comment provided by engineer. */
 "Share Directory" = "共享檔案夾";
@@ -1530,7 +1530,7 @@
 "Should be off for older operating systems such as Windows 7 or lower." = "舊版作業系統如 Windows 7 或更舊版本應當 off。";
 
 /* No comment provided by engineer. */
-"Should be on always unless the guest cannot boot because of this." = "除非客端因此無法啟動，否則任何情境下都應當 on。";
+"Should be on always unless the guest cannot boot because of this." = "除非客體因此無法啟動，否則任何情境下都應當 on。";
 
 /* No comment provided by engineer. */
 "Show Advanced Settings" = "顯示進階設定";
@@ -1578,10 +1578,10 @@
 "Some older systems do not support UEFI boot, such as Windows 7 and below." = "部分舊版系統不支援 UEFI 啟動，如 Windows 7 和更舊版本。";
 
 /* No comment provided by engineer. */
-"Sound" = "聲卡";
+"Sound" = "音效卡";
 
 /* No comment provided by engineer. */
-"Sound Backend" = "聲卡後端";
+"Sound Backend" = "音效卡後端";
 
 /* No comment provided by engineer. */
 "Specify the size of the drive where data will be stored into." = "指定存放資料的磁碟機大小。";
@@ -1680,7 +1680,7 @@
 "Text Color" = "文字色彩";
 
 /* No comment provided by engineer. */
-"The amount of storage to allocate for this image. Ignored if importing an image. If this is a raw image, then an empty file of this size will be stored with the VM. Otherwise, the disk image will dynamically expand up to this size." = "為此映像檔配置的儲存空間量。如果是匯入映像檔則忽略。如果是 raw 映像檔，則會將此大小的空檔案儲存在虛擬機器上。否則，磁碟映像檔將會動態擴充至此大小。";
+"The amount of storage to allocate for this image. Ignored if importing an image. If this is a raw image, then an empty file of this size will be stored with the VM. Otherwise, the disk image will dynamically expand up to this size." = "為此映像檔配置的儲存空間量。如果是匯入映像檔則忽略。如果是 raw 映像檔，則會將此大小的空檔案儲存在虛擬機上。否則，磁碟映像檔將會動態擴充至此大小。";
 
 /* UTMConfiguration */
 "The backend for this configuration is not supported." = "不支援本組態的後端。";
@@ -1689,10 +1689,10 @@
 "The drive '%@' already exists and cannot be created." = "「%@」磁碟機已經存在，因此無法建立。";
 
 /* UTMDownloadSupportToolsTaskError */
-"The guest support tools have already been mounted." = "客端支援工具已經掛接。";
+"The guest support tools have already been mounted." = "客體支援工具已經裝載。";
 
 /* UTMAppleConfiguration */
-"The host operating system needs to be updated to support one or more features requested by the guest." = "主機端作業系統需要更新，才能支援客端請求的一或多個功能。";
+"The host operating system needs to be updated to support one or more features requested by the guest." = "主機端作業系統需要更新，才能支援客體請求的一或多個功能。";
 
 /* UTMAppleVirtualMachine */
 "The operating system cannot be installed on this machine." = "此機器無法安裝本作業系統。";
@@ -1701,13 +1701,13 @@
 "The operation is not available." = "無法執行本動作。";
 
 /* UTMScriptingVirtualMachineImpl */
-"The QEMU guest agent is not running or not installed on the guest." = "未執行或未在客端安裝 QEMU 客端代理程式。";
+"The QEMU guest agent is not running or not installed on the guest." = "未執行或未在客體安裝 QEMU 客體代理程式。";
 
 /* No comment provided by engineer. */
 "The selected architecture is unsupported in this version of UTM." = "目前版本的 UTM 不支援選擇的系統架構。";
 
 /* VMWizardState */
-"The selected boot image contains the word '%@' but the guest architecture is '%@'. Please ensure you have selected an image that is compatible with '%@'." = "選擇的開機映像檔包含「%1$@」單字，但客端架構是「%2$@」。請確保您選擇得是相容「%3$@」的映像檔。";
+"The selected boot image contains the word '%@' but the guest architecture is '%@'. Please ensure you have selected an image that is compatible with '%@'." = "選擇的開機映像檔包含「%1$@」單字，但客體架構是「%2$@」。請確保您選擇得是相容「%3$@」的映像檔。";
 
 /* No comment provided by engineer. */
 "The target does not support hardware emulated serial connections." = "目標平台不支援硬體模擬序列連接。";
@@ -1734,7 +1734,7 @@
 "These are advanced settings affecting QEMU which should be kept default unless you are running into issues." = "這裡是影響 QEMU 的進階設定，除非遇到問題否則應當維持預設值。";
 
 /* No comment provided by engineer. */
-"This audio card is not supported." = "不支援此聲卡。";
+"This audio card is not supported." = "不支援此音效卡。";
 
 /* UTMScriptingAppDelegate */
 "This backend is not supported on your machine." = "您的裝置不支援此後端。";
@@ -1767,7 +1767,7 @@
 "This is not a valid Apple Virtualization configuration." = "這不是有效的 Apple Virtualization 組態設定。";
 
 /* VMDisplayWindowController */
-"This may corrupt the VM and any unsaved changes will be lost. To quit safely, shut down from the guest." = "這可能損壞虛擬機，且未儲存的更改將會遺失。如要安全地結束，請從客端系統關機。";
+"This may corrupt the VM and any unsaved changes will be lost. To quit safely, shut down from the guest." = "這可能損壞虛擬機，且未儲存的更改將會遺失。如要安全地結束，請從客體系統關機。";
 
 /* No comment provided by engineer. */
 "This operating system is unsupported on your machine." = "您的裝置不支援本作業系統。";
@@ -1794,7 +1794,7 @@
 "This will reset the VM and any unsaved state will be lost." = "這將重設虛擬機，未儲存的狀態將會遺失。";
 
 /* VMDisplayAppleWindowController */
-"To access the shared directory, the guest OS must have Virtiofs drivers installed. You can then run `sudo mount -t virtiofs share /path/to/share` to mount to the share path." = "若要存取共享檔案夾，客端作業系統必須安裝 Virtiofs 驅動程式。接著您能執行 `sudo mount -t virtiofs share /path/to/share` 來掛接共享路徑。";
+"To access the shared directory, the guest OS must have Virtiofs drivers installed. You can then run `sudo mount -t virtiofs share /path/to/share` to mount to the share path." = "若要存取共享檔案夾，客體作業系統必須安裝 Virtiofs 驅動程式。接著您能執行 `sudo mount -t virtiofs share /path/to/share` 來裝載共享路徑。";
 
 /* VMMetalView */
 "To capture input or to release the capture, press Command and Option at the same time." = "若要擷取輸入或者是釋放擷取，請同時按下 Command 和 Option 鍵。";
@@ -1809,7 +1809,7 @@
 "TPM 2.0 Device" = "TPM 2.0 裝置";
 
 /* No comment provided by engineer. */
-"TPM can be used to protect secrets in the guest operating system. Note that the host will always be able to read these secrets and therefore no expectation of physical security is provided." = "TPM 可以用來保護客端作業系統的秘密資料。注意主機端永遠都能讀取這些秘密資料，因此不要預期有硬體層的安全性。";
+"TPM can be used to protect secrets in the guest operating system. Note that the host will always be able to read these secrets and therefore no expectation of physical security is provided." = "TPM 可以用來保護客體作業系統的秘密資料。注意主機端永遠都能讀取這些秘密資料，因此不要預期有硬體層的安全性。";
 
 /* UTMAppleConfigurationDevices */
 "Trackpad" = "觸控式軌跡板";
@@ -1845,7 +1845,7 @@
 "Uncompressed Linux initial ramdisk (optional)" = "未壓縮的 Linux 初始 ramdisk（選填）";
 
 /* No comment provided by engineer. */
-"Uncompressed Linux kernel (required)" = "未壓縮的 Linux 內核（必填）";
+"Uncompressed Linux kernel (required)" = "未壓縮的 Linux 核心（必填）";
 
 /* No comment provided by engineer. */
 "Update Interface" = "更新介面";
@@ -1966,7 +1966,7 @@
 "Windows" = "Windows";
 
 /* UTMDownloadSupportToolsTask */
-"Windows Guest Support Tools" = "Windows 客端支援工具";
+"Windows Guest Support Tools" = "Windows 客體支援工具";
 
 /* No comment provided by engineer. */
 "Windows Install Guide" = "Windows 安裝指南";
