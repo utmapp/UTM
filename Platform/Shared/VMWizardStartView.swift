@@ -93,7 +93,6 @@ struct VMWizardStartView: View {
                     .padding()
                 }
                 .buttonStyle(.inList)
-                .disabled(!isEmulationSupported)
                 
             } header: {
                 Text("Custom")
