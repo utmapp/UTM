@@ -36,12 +36,21 @@ struct VMConfirmActionModifier: ViewModifier {
         content.alert(item: $confirmAction) { action in
             switch action {
             case .confirmCloneVM:
-                return Alert(title: Text("Do you want to duplicate this VM and all its data?"), primaryButton: .default(Text("Yes")) {
-                    data.busyWorkAsync {
-                        try await data.clone(vm: vm)
-                    }
-                    onConfirm()
-                }, secondaryButton: .cancel())
+                if vm.isShortcut {
+                    return Alert(title: Text("Do you want to copy this VM and all its data to internal storage?"), primaryButton: .default(Text("Yes")) {
+                        data.busyWorkAsync {
+                            try await data.clone(vm: vm)
+                        }
+                        onConfirm()
+                    }, secondaryButton: .cancel())
+                } else {
+                    return Alert(title: Text("Do you want to duplicate this VM and all its data?"), primaryButton: .default(Text("Yes")) {
+                        data.busyWorkAsync {
+                            try await data.clone(vm: vm)
+                        }
+                        onConfirm()
+                    }, secondaryButton: .cancel())
+                }
             case .confirmDeleteVM:
                 return Alert(title: Text("Do you want to delete this VM and all its data?"), primaryButton: .destructive(Text("Delete")) {
                     data.busyWorkAsync {
