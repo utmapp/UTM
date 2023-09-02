@@ -172,6 +172,6 @@ private struct VMListModifier: ViewModifier {
     private var newButton: some View {
         Button(action: { data.newVM() }, label: {
             Label("New VM", systemImage: "plus").labelStyle(.iconOnly)
-        })
+        }).help("Create a new VM")
     }
 }
