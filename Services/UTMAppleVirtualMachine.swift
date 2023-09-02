@@ -774,6 +774,8 @@ extension UTMAppleVirtualMachine {
             _ = url.startAccessingSecurityScopedResource()
             registryEntry.macRecoveryIpsw = try UTMRegistryEntry.File(url: url, isReadOnly: true)
             url.stopAccessingSecurityScopedResource()
+        } else {
+            registryEntry.macRecoveryIpsw = nil
         }
     }
     
