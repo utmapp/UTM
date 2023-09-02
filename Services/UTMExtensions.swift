@@ -353,6 +353,12 @@ extension URL {
             options.insert(.securityScopeAllowOnlyReadAccess)
         }
         #endif
+        let scopedAccess = startAccessingSecurityScopedResource()
+        defer {
+            if scopedAccess {
+                stopAccessingSecurityScopedResource()
+            }
+        }
         return try self.bookmarkData(options: options,
                                      includingResourceValuesForKeys: nil,
                                      relativeTo: nil)
