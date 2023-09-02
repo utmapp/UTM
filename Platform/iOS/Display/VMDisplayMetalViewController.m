@@ -241,10 +241,10 @@
             }
             CGSize displaySize = CGSizeMake(minSize.width * self.windowScaling, minSize.height * self.windowScaling);
             CGSize maxSize = CGSizeMake(UIProposedSceneSizeNoPreference, UIProposedSceneSizeNoPreference);
-            UIWindowSceneGeometryPreferences *geoPref = [[UIWindowSceneGeometryPreferencesReality alloc] initWithSize:displaySize
-                                                                                                          minimumSize:minSize
-                                                                                                          maximumSize:maxSize
-                                                                                                 resizingRestrictions:UIWindowSceneResizingRestrictionsUniform];
+            UIWindowSceneGeometryPreferencesVision *geoPref = [[UIWindowSceneGeometryPreferencesVision alloc] initWithSize:displaySize];
+            geoPref.minimumSize = minSize;
+            geoPref.maximumSize = maxSize;
+            geoPref.resizingRestrictions = UIWindowSceneResizingRestrictionsUniform;
             [self.view.window.windowScene requestGeometryUpdateWithPreferences:geoPref errorHandler:nil];
         });
 #else
