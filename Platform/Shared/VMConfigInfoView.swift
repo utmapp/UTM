@@ -85,6 +85,7 @@ struct VMConfigInfoView: View {
     private var nameField: some View {
         TextField("Name", text: $config.name)
             .keyboardType(.asciiCapable)
+            .lineLimit(1)
     }
 
     private var notesField: some View {

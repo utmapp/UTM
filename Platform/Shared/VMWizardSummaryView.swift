@@ -108,6 +108,7 @@ struct VMWizardSummaryView: View {
     var info: some View {
         Group {
             TextField("Name", text: $wizardState.name.bound)
+                .lineLimit(1)
             #if os(macOS)
             Toggle("Open VM Settings", isOn: $wizardState.isOpenSettingsAfterCreation)
                 .disabled(wizardState.isPendingIPSWDownload)
