@@ -52,6 +52,9 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
     }
     
     override func enterSuspended(isBusy busy: Bool) {
+        if !busy {
+            NSCursor.unhide() // in case it's hidden by the VM view
+        }
         appleView.virtualMachine = nil
         captureMouseToolbarButton.state = .off
         captureMouseButtonPressed(self)
