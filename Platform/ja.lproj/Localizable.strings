@@ -298,7 +298,7 @@
 "QEMU Pointer" = "QEMUポインタ";
 "Hold Control (⌃) for right click" = "Control（⌃）を押している間は右クリックにする";
 "Invert scrolling" = "スクロールを反転";
-"If enabled, scroll whell input will be inverted." = "有効にすると、スクロールホイールの入力が反転します。";
+"If enabled, scroll wheel input will be inverted." = "有効にすると、スクロールホイールの入力が反転します。";
 "QEMU Keyboard" = "QEMUキーボード";
 "Use Command+Option (⌘+⌥) for input capture/release" = "入力のキャプチャ/解放にCommand＋Option（⌘＋⌥）を使用";
 "If disabled, the default combination Control+Option (⌃+⌥) will be used." = "無効にすると、デフォルトのコンビネーションControl＋Option（⌃＋⌥）が使用されます。";

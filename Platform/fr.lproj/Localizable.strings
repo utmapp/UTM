@@ -315,7 +315,7 @@
 "QEMU Pointer" = "Pointeur QEMU";
 "Hold Control (⌃) for right click" = "Appuyer sur Control (⌃) pour un clic droit";
 "Invert scrolling" = "Inverser le défilement de la souris";
-"If enabled, scroll whell input will be inverted." = "Si coché, le défilement de la molette de la souris sera inversé.";
+"If enabled, scroll wheel input will be inverted." = "Si coché, le défilement de la molette de la souris sera inversé.";
 "QEMU Keyboard" = "Clavier QEMU";
 "Use Command+Option (⌘+⌥) for input capture/release" = "Utiliser Command+Option (⌘+⌥) pour capturer ou rendre l’entrée";
 "If disabled, the default combination Control+Option (⌃+⌥) will be used." = "Si décoché, la combinaison par défaut Ctrl+Option (⌃+⌥) sera utilisée.";

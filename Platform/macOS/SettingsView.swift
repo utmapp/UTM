@@ -157,7 +157,7 @@ struct InputSettingsView: View {
                 })
                 Toggle(isOn: $isInvertScroll, label: {
                     Text("Invert scrolling")
-                }).help("If enabled, scroll whell input will be inverted.")
+                }).help("If enabled, scroll wheel input will be inverted.")
             }
             
             Section(header: Text("QEMU Keyboard")) {

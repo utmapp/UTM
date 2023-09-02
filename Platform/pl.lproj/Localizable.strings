@@ -301,7 +301,7 @@
 "QEMU Pointer" = "Wskaźnik QEMU";
 "Hold Control (⌃) for right click" = "Przytrzymaj Control (⌃) aby wykonać prawe kliknięcie";
 "Invert scrolling" = "Odwróć przewijanie";
-"If enabled, scroll whell input will be inverted." = "Jeśli włączone, przewijanie będzie odwrócone";
+"If enabled, scroll wheel input will be inverted." = "Jeśli włączone, przewijanie będzie odwrócone";
 "QEMU Keyboard" = "Klawiatura QEMU";
 "Use Command+Option (⌘+⌥) for input capture/release" = "Użyj Command＋Option（⌘＋⌥）, aby przechwytywać/uwolnić mysz";
 "If disabled, the default combination Control+Option (⌃+⌥) will be used." = "Jeśli wyłączone, domyślna kombinacja Control＋Option（⌃＋⌥） będzie użyta.";

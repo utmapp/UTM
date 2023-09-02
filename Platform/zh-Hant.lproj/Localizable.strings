@@ -840,7 +840,7 @@
 "If enabled, resizing of the VM window will not be allowed." = "啟用後將不允許調整虛擬機視窗的大小。";
 
 /* No comment provided by engineer. */
-"If enabled, scroll whell input will be inverted." = "啟用後會反轉滾輪輸入的方向。";
+"If enabled, scroll wheel input will be inverted." = "啟用後會反轉滾輪輸入的方向。";
 
 /* No comment provided by engineer. */
 "If enabled, the default input devices will be emulated on the USB bus." = "啟用後預設的輸入裝置會模擬插在 USB 匯流排。";
