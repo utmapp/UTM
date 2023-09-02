@@ -646,7 +646,8 @@ import Virtualization // for getting network interfaces
             "file="
             imageURL
         } else if !isCd {
-            "file=/dev/null"
+            "file.filename=/dev/null"
+            "file.locking=off"
         }
         if drive.isReadOnly || isCd {
             "readonly=on"
