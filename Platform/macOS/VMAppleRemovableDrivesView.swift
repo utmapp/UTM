@@ -190,9 +190,7 @@ struct VMAppleRemovableDrivesView: View {
     }
     
     private func deleteShareDirectory(_ sharedDirectory: UTMRegistryEntry.File) {
-        appleVM.registryEntry.sharedDirectories.removeAll { existing in
-            existing.url == sharedDirectory.url
-        }
+        appleVM.registryEntry.sharedDirectories.removeAll(where: { $0.id == sharedDirectory.id })
     }
     
     private func selectRemovableImage(for diskImage: UTMAppleConfigurationDrive, result: Result<URL, Error>) {
