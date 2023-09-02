@@ -77,7 +77,7 @@ struct VMReleaseNotesView: View {
                 .buttonStyle(ReleaseButtonStyle(isProminent: true))
             }
         }
-        #if os(macOS)
+        #if os(macOS) || os(visionOS)
         .frame(width: 450, height: 450)
         #endif
         .onAppear {
@@ -157,7 +157,7 @@ private struct ReleaseButtonStyle: PrimitiveButtonStyle {
     }
     
     func makeBody(configuration: Self.Configuration) -> some View {
-        #if os(macOS)
+        #if os(macOS) || os(visionOS)
         DefaultButtonStyle().makeBody(configuration: configuration)
         #else
         if #available(iOS 15, *) {
