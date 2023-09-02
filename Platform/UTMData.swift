@@ -534,13 +534,13 @@ struct AlertMessage: Identifiable {
     /// - Returns: Size in bytes
     func computeSize(for vm: VMData) -> Int64 {
         let path = vm.pathUrl
-        guard let enumerator = fileManager.enumerator(at: path, includingPropertiesForKeys: [.totalFileSizeKey]) else {
+        guard let enumerator = fileManager.enumerator(at: path, includingPropertiesForKeys: [.totalFileAllocatedSizeKey]) else {
             logger.error("failed to create enumerator for \(path)")
             return 0
         }
         var total: Int64 = 0
         for case let fileURL as URL in enumerator {
-            guard let resourceValues = try? fileURL.resourceValues(forKeys: [.totalFileSizeKey]), let size = resourceValues.totalFileSize else {
+            guard let resourceValues = try? fileURL.resourceValues(forKeys: [.totalFileAllocatedSizeKey]), let size = resourceValues.totalFileAllocatedSize else {
                 continue
             }
             total += Int64(size)
@@ -552,7 +552,7 @@ struct AlertMessage: Identifiable {
     /// - Parameter url: File URL
     /// - Returns: Size in bytes
     func computeSize(for url: URL) -> Int64 {
-        if let resourceValues = try? url.resourceValues(forKeys: [.totalFileSizeKey]), let size = resourceValues.totalFileSize {
+        if let resourceValues = try? url.resourceValues(forKeys: [.totalFileAllocatedSizeKey]), let size = resourceValues.totalFileAllocatedSize {
             return Int64(size)
         } else {
             return 0
