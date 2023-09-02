@@ -529,6 +529,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             defer {
                 ipswUrl.stopAccessingSecurityScopedResource()
             }
+            try await beginAccessingResources()
             try await createAppleVM()
             #if os(macOS) && arch(arm64)
             try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
@@ -555,6 +556,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             throw UTMAppleVirtualMachineError.operatingSystemInstallNotSupported
             #endif
         } catch {
+            await stopAccesingResources()
             delegate?.virtualMachine(self, didCompleteInstallation: false)
             state = .stopped
             throw error
