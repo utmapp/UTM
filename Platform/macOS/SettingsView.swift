@@ -37,7 +37,7 @@ struct SettingsView: View {
                 .tabItem {
                     Label("Input", systemImage: "keyboard")
                 }
-        }.frame(minWidth: 600, minHeight: 300, alignment: .topLeading)
+        }.frame(minWidth: 600, minHeight: 350, alignment: .topLeading)
     }
 }
 
@@ -128,6 +128,7 @@ struct SoundSettingsView: View {
 }
 
 struct InputSettingsView: View {
+    @AppStorage("FullScreenAutoCapture") var isFullScreenAutoCapture = false
     @AppStorage("OptionAsMetaKey") var isOptionAsMetaKey = false
     @AppStorage("CtrlRightClick") var isCtrlRightClick = false
     @AppStorage("AlternativeCaptureKey") var isAlternativeCaptureKey = false
@@ -138,6 +139,12 @@ struct InputSettingsView: View {
     
     var body: some View {
         Form {
+            Section(header: Text("Mouse/Keyboard")) {
+                Toggle(isOn: $isFullScreenAutoCapture) {
+                    Text("Capture input automatically when entering full screen")
+                }.help("If enabled, input capture will toggle automatically when entering and exiting full screen mode.")
+            }
+            
             Section(header: Text("Console")) {
                 Toggle(isOn: $isOptionAsMetaKey, label: {
                     Text("Option (⌥) is Meta key")
@@ -182,6 +189,7 @@ extension UserDefaults {
     @objc dynamic var NoQuitConfirmation: Bool { false }
     @objc dynamic var NoCursorCaptureAlert: Bool { false }
     @objc dynamic var DisplayFixed: Bool { false }
+    @objc dynamic var FullScreenAutoCapture: Bool { false }
     @objc dynamic var OptionAsMetaKey: Bool { false }
     @objc dynamic var CtrlRightClick: Bool { false }
     @objc dynamic var NoUsbPrompt: Bool { false }

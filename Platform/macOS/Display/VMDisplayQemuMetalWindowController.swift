@@ -61,6 +61,7 @@ class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
     @Setting("NoCursorCaptureAlert") private var isCursorCaptureAlertShown: Bool = false
     @Setting("NoFullscreenCursorCaptureAlert") private var isFullscreenCursorCaptureAlertShown: Bool = false
     @Setting("DisplayFixed") private var isDisplayFixed: Bool = false
+    @Setting("FullScreenAutoCapture") private var isFullScreenAutoCapture: Bool = false
     @Setting("CtrlRightClick") private var isCtrlRightClick: Bool = false
     @Setting("AlternativeCaptureKey") private var isAlternativeCaptureKey: Bool = false
     @Setting("IsCapsLockKey") private var isCapsLockKey: Bool = false
@@ -379,14 +380,18 @@ extension VMDisplayQemuMetalWindowController {
     
     func windowDidEnterFullScreen(_ notification: Notification) {
         isFullScreen = true
-        captureMouseToolbarButton.state = .on
-        captureMouse()
+        if isFullScreenAutoCapture {
+            captureMouseToolbarButton.state = .on
+            captureMouse()
+        }
     }
     
     func windowDidExitFullScreen(_ notification: Notification) {
         isFullScreen = false
-        captureMouseToolbarButton.state = .off
-        releaseMouse()
+        if isFullScreenAutoCapture {
+            captureMouseToolbarButton.state = .off
+            releaseMouse()
+        }
     }
     
     override func windowDidResignKey(_ notification: Notification) {

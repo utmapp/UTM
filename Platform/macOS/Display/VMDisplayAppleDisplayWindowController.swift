@@ -35,6 +35,8 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
     
     private var aspectRatioLocked: Bool = false
     
+    @Setting("FullScreenAutoCapture") private var isFullScreenAutoCapture: Bool = false
+    
     override func windowDidLoad() {
         mainView = VZVirtualMachineView()
         captureMouseToolbarButton.image = captureMouseToolbarButton.alternateImage // show capture keyboard image
@@ -89,13 +91,17 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
     }
     
     func windowDidEnterFullScreen(_ notification: Notification) {
-        captureMouseToolbarButton.state = .on
-        captureMouseButtonPressed(self)
+        if isFullScreenAutoCapture {
+            captureMouseToolbarButton.state = .on
+            captureMouseButtonPressed(self)
+        }
     }
     
     func windowDidExitFullScreen(_ notification: Notification) {
-        captureMouseToolbarButton.state = .off
-        captureMouseButtonPressed(self)
+        if isFullScreenAutoCapture {
+            captureMouseToolbarButton.state = .off
+            captureMouseButtonPressed(self)
+        }
     }
     
     func windowDidResize(_ notification: Notification) {
