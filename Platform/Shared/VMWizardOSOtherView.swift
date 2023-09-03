@@ -21,11 +21,7 @@ struct VMWizardOSOtherView: View {
     @State private var isFileImporterPresented: Bool = false
     
     var body: some View {
-#if os(macOS)
-        Text("Other")
-            .font(.largeTitle)
-#endif
-        List {
+        VMWizardContent("Other") {
             if !wizardState.isSkipBootImage {
                 Section {
                     FileBrowseField(url: $wizardState.bootImageURL, isFileImporterPresented: $isFileImporterPresented, hasClearButton: false)
@@ -43,9 +39,6 @@ struct VMWizardOSOtherView: View {
                 Text("Advanced")
             }
         }
-        #if os(iOS) || os(visionOS)
-        .navigationTitle(Text("Other"))
-        #endif
         .fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.data], onCompletion: processImage)
     }
     

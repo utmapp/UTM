@@ -20,11 +20,7 @@ struct VMWizardDrivesView: View {
     @ObservedObject var wizardState: VMWizardState
     
     var body: some View {
-#if os(macOS)
-        Text("Storage")
-            .font(.largeTitle)
-#endif
-        List {
+        VMWizardContent("Storage") {
             Section {
                 HStack {
                     Text("Specify the size of the drive where data will be stored into.")
@@ -43,9 +39,6 @@ struct VMWizardDrivesView: View {
             }
             
         }
-        #if os(iOS) || os(visionOS)
-        .navigationTitle(Text("Storage"))
-        #endif
     }
 }
 

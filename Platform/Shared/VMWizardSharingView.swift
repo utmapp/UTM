@@ -21,11 +21,7 @@ struct VMWizardSharingView: View {
     @State private var isFileImporterPresented: Bool = false
     
     var body: some View {
-#if os(macOS)
-        Text("Shared Directory")
-            .font(.largeTitle)
-#endif
-        List {
+        VMWizardContent("Shared Directory") {
             DetailedSection("Shared Directory Path", description: "Optionally select a directory to make accessible inside the VM. Note that support for shared directories varies by the guest operating system and may require additional guest drivers to be installed. See UTM support pages for more details.") {
                 FileBrowseField(url: $wizardState.sharingDirectoryURL, isFileImporterPresented: $isFileImporterPresented)
                 
@@ -38,9 +34,6 @@ struct VMWizardSharingView: View {
                 }
             }
         }
-        #if os(iOS) || os(visionOS)
-        .navigationTitle(Text("Shared Directory"))
-        #endif
         .fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.folder], onCompletion: processDirectory)
     }
     

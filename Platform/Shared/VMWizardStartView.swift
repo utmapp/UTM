@@ -39,11 +39,7 @@ struct VMWizardStartView: View {
     }
     
     var body: some View {
-        #if os(macOS)
-        Text("Start")
-            .font(.largeTitle)
-        #endif
-        List {
+        VMWizardContent("Start") {
             Section {
                 let virtButton = Button {
                     wizardState.useVirtualization = true
@@ -130,9 +126,6 @@ struct VMWizardStartView: View {
             }
 
         }
-        #if os(iOS) || os(visionOS)
-        .navigationTitle(Text("Start"))
-        #endif
     }
     
     private func processIsTranslated() -> Bool {

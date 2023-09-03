@@ -55,11 +55,7 @@ struct VMWizardHardwareView: View {
     }
     
     var body: some View {
-        #if os(macOS)
-        Text("Hardware")
-            .font(.largeTitle)
-        #endif
-        List {
+        VMWizardContent("Hardware") {
             if !wizardState.useVirtualization {
                 Section {
                     VMConfigConstantPicker(selection: $wizardState.systemArchitecture)
@@ -120,9 +116,6 @@ struct VMWizardHardwareView: View {
                 
             }
         }
-        #if os(iOS) || os(visionOS)
-        .navigationTitle(Text("Hardware"))
-        #endif
         .textFieldStyle(.roundedBorder)
         .onAppear {
             if wizardState.useVirtualization {

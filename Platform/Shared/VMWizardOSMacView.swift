@@ -23,11 +23,7 @@ struct VMWizardOSMacView: View {
     @State private var isFileImporterPresented = false
 
     var body: some View {
-#if os(macOS)
-        Text("macOS")
-            .font(.largeTitle)
-#endif
-        List {
+        VMWizardContent("macOS") {
             Section {
                 Text("To install macOS, you need to download a recovery IPSW. If you do not select an existing IPSW, the latest macOS IPSW will be downloaded from Apple.")
                 Spacer()

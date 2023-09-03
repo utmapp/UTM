@@ -22,11 +22,7 @@ struct VMWizardOSWindowsView: View {
     @State private var useVhdx: Bool = false
     
     var body: some View {
-#if os(macOS)
-        Text("Windows")
-            .font(.largeTitle)
-#endif
-        List {
+        VMWizardContent("Windows") {
             Section {
                 Toggle("Install Windows 10 or higher", isOn: $wizardState.isWindows10OrHigher)
                     .onChange(of: wizardState.isWindows10OrHigher) { newValue in
@@ -121,9 +117,6 @@ struct VMWizardOSWindowsView: View {
                 }
             }
         }
-        #if os(iOS) || os(visionOS)
-        .navigationTitle(Text("Windows"))
-        #endif
         .fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.data], onCompletion: processImage)
     }
     

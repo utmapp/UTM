@@ -19,11 +19,7 @@ import SwiftUI
 struct VMWizardOSView: View {
     @ObservedObject var wizardState: VMWizardState
     var body: some View {
-#if os(macOS)
-        Text("Operating System")
-            .font(.largeTitle)
-#endif
-        List {
+        VMWizardContent("Operating System") {
             Section {
                 #if os(macOS) && arch(arm64)
                 if #available(macOS 12, *), wizardState.useVirtualization {
@@ -77,9 +73,6 @@ struct VMWizardOSView: View {
             }
 
         }
-        #if os(iOS) || os(visionOS)
-        .navigationTitle(Text("Operating System"))
-        #endif
         .buttonStyle(.inList)
     }
 }

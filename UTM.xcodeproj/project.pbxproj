@@ -227,6 +227,9 @@
 		84B36D2A27B790BE00C22685 /* DestructiveButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B36D2827B790BE00C22685 /* DestructiveButton.swift */; };
 		84B36D2B27B790BE00C22685 /* DestructiveButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B36D2827B790BE00C22685 /* DestructiveButton.swift */; };
 		84BB993A2899E8D500DF28B2 /* VMHeadlessSessionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BB99392899E8D500DF28B2 /* VMHeadlessSessionState.swift */; };
+		84C2E8652AA429E800B17308 /* VMWizardContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C2E8642AA429E800B17308 /* VMWizardContent.swift */; };
+		84C2E8662AA429E800B17308 /* VMWizardContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C2E8642AA429E800B17308 /* VMWizardContent.swift */; };
+		84C2E8672AA429E800B17308 /* VMWizardContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C2E8642AA429E800B17308 /* VMWizardContent.swift */; };
 		84C4D9022880CA8A00EC3B2B /* VMSettingsAddDeviceMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C4D9012880CA8A00EC3B2B /* VMSettingsAddDeviceMenuView.swift */; };
 		84C4D9032880CA8A00EC3B2B /* VMSettingsAddDeviceMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C4D9012880CA8A00EC3B2B /* VMSettingsAddDeviceMenuView.swift */; };
 		84C4D9042880CA8A00EC3B2B /* VMSettingsAddDeviceMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C4D9012880CA8A00EC3B2B /* VMSettingsAddDeviceMenuView.swift */; };
@@ -1370,6 +1373,7 @@
 		84B36D2427B704C200C22685 /* UTMDownloadVMTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMDownloadVMTask.swift; sourceTree = "<group>"; };
 		84B36D2827B790BE00C22685 /* DestructiveButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DestructiveButton.swift; sourceTree = "<group>"; };
 		84BB99392899E8D500DF28B2 /* VMHeadlessSessionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMHeadlessSessionState.swift; sourceTree = "<group>"; };
+		84C2E8642AA429E800B17308 /* VMWizardContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMWizardContent.swift; sourceTree = "<group>"; };
 		84C4D9012880CA8A00EC3B2B /* VMSettingsAddDeviceMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMSettingsAddDeviceMenuView.swift; sourceTree = "<group>"; };
 		84C505AB28C588EC007CE8FF /* SizeTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SizeTextField.swift; sourceTree = "<group>"; };
 		84C5068528CA5702007CE8FF /* Hypervisor.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Hypervisor.framework; path = "$(SYSROOT_DIR)/Frameworks/Hypervisor.framework"; sourceTree = "<group>"; };
@@ -2434,6 +2438,7 @@
 				84C4D9012880CA8A00EC3B2B /* VMSettingsAddDeviceMenuView.swift */,
 				CE8813D424CD265700532628 /* VMShareFileModifier.swift */,
 				CE2D953824AD4F980059923A /* VMToolbarModifier.swift */,
+				84C2E8642AA429E800B17308 /* VMWizardContent.swift */,
 				CEBE820226A4C1B5007AAB12 /* VMWizardDrivesView.swift */,
 				CEF0307326A2B40B00667B63 /* VMWizardHardwareView.swift */,
 				CEF0305726A2AFDE00667B63 /* VMWizardOSLinuxView.swift */,
@@ -2945,6 +2950,7 @@
 				84B36D2527B704C200C22685 /* UTMDownloadVMTask.swift in Sources */,
 				8432329828C3017F00CFBC97 /* GlobalFileImporter.swift in Sources */,
 				84CE3DAE2904C17C00FF068B /* IASKAppSettings.swift in Sources */,
+				84C2E8652AA429E800B17308 /* VMWizardContent.swift in Sources */,
 				841E58CB28937EE200137A20 /* UTMExternalSceneDelegate.swift in Sources */,
 				CEB63A7A24F469E300CAF323 /* UTMJailbreak.m in Sources */,
 				841619B228431DA5000034B2 /* UTMQemuConfigurationQEMU.swift in Sources */,
@@ -3139,6 +3145,7 @@
 				848A98BA286A17A8006F0550 /* UTMAppleConfigurationNetwork.swift in Sources */,
 				84018699288B71BF0050AC51 /* BusyIndicator.swift in Sources */,
 				CEB54C852931E32F000D2AA9 /* UTMPatches.swift in Sources */,
+				84C2E8672AA429E800B17308 /* VMWizardContent.swift in Sources */,
 				848A98C0286A20E3006F0550 /* UTMAppleConfigurationBoot.swift in Sources */,
 				848D99B6286300160055C215 /* QEMUArgument.swift in Sources */,
 				CE2D958A24AD4F990059923A /* VMConfigSystemView.swift in Sources */,
@@ -3221,6 +3228,7 @@
 				CEA45E63263519B5002FA97D /* UTMLegacyViewState.m in Sources */,
 				CEA45E64263519B5002FA97D /* UTMLoggingSwift.swift in Sources */,
 				841619A7284315C1000034B2 /* UTMQemuConfiguration.swift in Sources */,
+				84C2E8662AA429E800B17308 /* VMWizardContent.swift in Sources */,
 				CEF0305F26A2AFDF00667B63 /* VMWizardState.swift in Sources */,
 				CEA45E69263519B5002FA97D /* VMConfigQEMUView.swift in Sources */,
 				CEA45E6A263519B5002FA97D /* VMDisplayMetalViewController+Touch.m in Sources */,

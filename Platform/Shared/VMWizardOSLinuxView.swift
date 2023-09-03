@@ -37,11 +37,7 @@ struct VMWizardOSLinuxView: View {
     }
     
     var body: some View {
-#if os(macOS)
-        Text("Linux")
-            .font(.largeTitle)
-#endif
-        List {
+        VMWizardContent("Linux") {
 #if os(macOS)
             if wizardState.useVirtualization {
                 DetailedSection("Virtualization Engine", description: "Apple Virtualization is experimental and only for advanced use cases. Leave unchecked to use QEMU, which is recommended.") {
@@ -144,9 +140,6 @@ struct VMWizardOSLinuxView: View {
             
             
         }
-        #if os(iOS) || os(visionOS)
-        .navigationTitle(Text("Linux"))
-        #endif
         .fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.data], onCompletion: processImage)
     }
     
