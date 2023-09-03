@@ -18,7 +18,7 @@ import SwiftUI
 
 @available(macOS 11, *)
 struct VMSettingsView<Config: UTMConfiguration>: View {
-    let vm: VMData?
+    let vm: VMData
     @ObservedObject var config: Config
     
     @EnvironmentObject private var data: UTMData
@@ -33,8 +33,9 @@ struct VMSettingsView<Config: UTMConfiguration>: View {
                     VMAppleSettingsView(config: config as! UTMAppleConfiguration)
                 }
             }.listStyle(.sidebar)
-        }.frame(minWidth: 800, minHeight: 400, alignment: .leading)
-        .toolbar {
+        }
+        .frame(minWidth: 800, minHeight: 400, alignment: .leading)
+        .legacySettingsToolbar {
             ToolbarItemGroup(placement: .cancellationAction) {
                 Button(action: cancel) {
                     Text("Cancel")
@@ -45,17 +46,15 @@ struct VMSettingsView<Config: UTMConfiguration>: View {
                     Text("Save")
                 }
             }
-        }.disabled(data.busy)
+        }
+        .environmentObject(vm)
+        .disabled(data.busy)
         .overlay(BusyOverlay())
     }
     
     func save() {
         data.busyWorkAsync {
-            if let existing = self.vm {
-                try await data.save(vm: existing)
-            } else {
-                _ = try await data.create(config: self.config)
-            }
+            try await data.save(vm: vm)
             await MainActor.run {
                 presentationMode.wrappedValue.dismiss()
             }
@@ -64,10 +63,8 @@ struct VMSettingsView<Config: UTMConfiguration>: View {
     
     func cancel() {
         presentationMode.wrappedValue.dismiss()
-        if let vm = vm {
-            data.busyWorkAsync {
-                try await data.discardChanges(for: vm)
-            }
+        data.busyWorkAsync {
+            try await data.discardChanges(for: vm)
         }
     }
 }
@@ -94,10 +91,101 @@ struct ScrollableViewModifier: ViewModifier {
     }
 }
 
+fileprivate struct EmptyToolbarContent: ToolbarContent {
+    var body: some ToolbarContent {
+        ToolbarItem {
+            EmptyView()
+        }
+    }
+}
+
+@available(macOS 12, *)
+struct SettingsToolbarViewModifier<AdditionalContent>: ViewModifier where AdditionalContent: ToolbarContent {
+    @EnvironmentObject private var vm: VMData
+    @EnvironmentObject private var data: UTMData
+    @Environment(\.dismiss) private var dismiss
+    
+    let additionalContent: AdditionalContent?
+    
+    fileprivate init() where AdditionalContent == EmptyToolbarContent {
+        self.additionalContent = nil
+    }
+    
+    init(additionalContent: () -> AdditionalContent) {
+        self.additionalContent = additionalContent()
+    }
+    
+    func body(content: Content) -> some View {
+        let view = content.toolbar {
+            ToolbarItemGroup(placement: .cancellationAction) {
+                Button(action: cancel) {
+                    Text("Cancel")
+                }
+            }
+            ToolbarItemGroup(placement: .confirmationAction) {
+                Button(action: save) {
+                    Text("Save")
+                }
+                .buttonStyle(.borderedProminent)
+            }
+        }
+        if let additionalContent = additionalContent {
+            view.toolbar {
+                additionalContent
+            }
+        } else {
+            view
+        }
+    }
+    
+    private func save() {
+        data.busyWorkAsync {
+            try await data.save(vm: vm)
+            await MainActor.run {
+                dismiss()
+            }
+        }
+    }
+    
+    private func cancel() {
+        dismiss()
+        data.busyWorkAsync {
+            try await data.discardChanges(for: vm)
+        }
+    }
+}
+
 @available(macOS 11, *)
 extension View {
     func scrollable() -> some View {
         self.modifier(ScrollableViewModifier())
+    }
+    
+    @ViewBuilder
+    fileprivate func legacySettingsToolbar<Content>(@ToolbarContentBuilder content: () -> Content) -> some View where Content: ToolbarContent {
+        if #available(macOS 12, *) {
+            self
+        } else {
+            self.toolbar(content: content)
+        }
+    }
+    
+    @ViewBuilder
+    func settingsToolbar() -> some View {
+        if #available(macOS 12, *) {
+            self.modifier(SettingsToolbarViewModifier())
+        } else {
+            self
+        }
+    }
+    
+    @ViewBuilder
+    func settingsToolbar<Content>(@ToolbarContentBuilder additionalContent: () -> Content) -> some View where Content: ToolbarContent {
+        if #available(macOS 12, *) {
+            self.modifier(SettingsToolbarViewModifier(additionalContent: additionalContent))
+        } else {
+            self
+        }
     }
 }
 
@@ -108,10 +196,10 @@ struct VMSettingsView_Previews: PreviewProvider {
     @State static private var data = UTMData()
     
     static var previews: some View {
-        VMSettingsView(vm: nil, config: qemuConfig)
+        VMSettingsView(vm: VMData(from: .empty), config: qemuConfig)
             .environmentObject(data)
             .previewDisplayName("QEMU VM Settings")
-        VMSettingsView(vm: nil, config: appleConfig)
+        VMSettingsView(vm: VMData(from: .empty), config: appleConfig)
             .environmentObject(data)
             .previewDisplayName("Apple VM Settings")
     }

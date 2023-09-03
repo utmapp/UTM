@@ -30,21 +30,37 @@ struct VMAppleSettingsView: View {
     }
     
     var body: some View {
-        NavigationLink(destination: VMConfigInfoView(config: $config.information).scrollable(), isActive: $infoActive) {
+        NavigationLink(destination: VMConfigInfoView(config: $config.information).scrollable().settingsToolbar(), isActive: $infoActive) {
             Label("Information", systemImage: "info.circle")
         }
-        NavigationLink(destination: VMConfigAppleSystemView(config: $config.system).scrollable()) {
+        NavigationLink {
+            VMConfigAppleSystemView(config: $config.system)
+                .scrollable()
+                .settingsToolbar()
+        } label: {
             Label("System", systemImage: "cpu")
         }
-        NavigationLink(destination: VMConfigAppleBootView(config: $config.system).scrollable()) {
+        NavigationLink {
+            VMConfigAppleBootView(config: $config.system)
+                .scrollable()
+                .settingsToolbar()
+        } label: {
             Label("Boot", systemImage: "power")
         }
-        NavigationLink(destination: VMConfigAppleVirtualizationView(config: $config.virtualization, operatingSystem: config.system.boot.operatingSystem).scrollable()) {
+        NavigationLink {
+            VMConfigAppleVirtualizationView(config: $config.virtualization, operatingSystem: config.system.boot.operatingSystem)
+                .scrollable()
+                .settingsToolbar()
+        } label: {
             Label("Virtualization", systemImage: "wrench.and.screwdriver")
         }
         if #available(macOS 12, *) {
             if hasVenturaFeatures || config.system.boot.operatingSystem == .linux {
-                NavigationLink(destination: VMConfigAppleSharingView(config: config).scrollable()) {
+                NavigationLink {
+                    VMConfigAppleSharingView(config: config)
+                        .scrollable()
+                        .settingsToolbar()
+                } label: {
                     Label("Sharing", systemImage: "person.crop.circle")
                 }
             }
@@ -53,7 +69,11 @@ struct VMAppleSettingsView: View {
             if #available(macOS 12, *) {
                 if hasVenturaFeatures || config.system.boot.operatingSystem == .macOS {
                     ForEach($config.displays) { $display in
-                        NavigationLink(destination: VMConfigAppleDisplayView(config: $display).scrollable()) {
+                        NavigationLink {
+                            VMConfigAppleDisplayView(config: $display)
+                                .scrollable()
+                                .settingsToolbar()
+                        } label: {
                             Label("Display", systemImage: "rectangle.on.rectangle")
                         }.contextMenu {
                             DestructiveButton("Remove") {
@@ -64,7 +84,11 @@ struct VMAppleSettingsView: View {
                 }
             }
             ForEach($config.serials) { $serial in
-                NavigationLink(destination: VMConfigAppleSerialView(config: $serial).scrollable()) {
+                NavigationLink {
+                    VMConfigAppleSerialView(config: $serial)
+                        .scrollable()
+                        .settingsToolbar()
+                } label: {
                     Label("Serial", systemImage: "rectangle.connected.to.line.below")
                 }.contextMenu {
                     DestructiveButton("Remove") {
@@ -73,7 +97,11 @@ struct VMAppleSettingsView: View {
                 }
             }
             ForEach($config.networks) { $network in
-                NavigationLink(destination: VMConfigAppleNetworkingView(config: $network).scrollable()) {
+                NavigationLink {
+                    VMConfigAppleNetworkingView(config: $network)
+                        .scrollable()
+                        .settingsToolbar()
+                } label: {
                     Label("Network", systemImage: "network")
                 }.contextMenu {
                     DestructiveButton("Remove") {

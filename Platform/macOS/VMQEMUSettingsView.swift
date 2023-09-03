@@ -25,10 +25,14 @@ struct VMQEMUSettingsView: View {
     @State private var isNewDriveShown: Bool = false
     
     var body: some View {
-        NavigationLink(destination: VMConfigInfoView(config: $config.information).scrollable(), isActive: $infoActive) {
+        NavigationLink(destination: VMConfigInfoView(config: $config.information).scrollable().settingsToolbar(), isActive: $infoActive) {
             Label("Information", systemImage: "info.circle")
         }
-        NavigationLink(destination: VMConfigSystemView(config: $config.system, isResetConfig: $isResetConfig).scrollable()) {
+        NavigationLink {
+            VMConfigSystemView(config: $config.system, isResetConfig: $isResetConfig)
+                .scrollable()
+                .settingsToolbar()
+        } label: {
             Label("System", systemImage: "cpu")
         }.onChange(of: isResetConfig) { newValue in
             if newValue {
@@ -36,24 +40,45 @@ struct VMQEMUSettingsView: View {
                 isResetConfig = false
             }
         }
-        NavigationLink(destination: VMConfigQEMUView(config: $config.qemu, system: $config.system, fetchFixedArguments: { config.generatedArguments }).scrollable()) {
+        NavigationLink {
+            VMConfigQEMUView(config: $config.qemu, system: $config.system, fetchFixedArguments: {
+                config.generatedArguments
+            })
+            .scrollable()
+            .settingsToolbar()
+        } label: {
             Label("QEMU", systemImage: "shippingbox")
         }
         if #available(macOS 12, *) {
-            NavigationLink(destination: VMConfigQEMUArgumentsView(config: $config.qemu, architecture: config.system.architecture, fixedArguments: config.generatedArguments)) {
+            NavigationLink {
+                VMConfigQEMUArgumentsView(config: $config.qemu, architecture: config.system.architecture, fixedArguments: config.generatedArguments)
+                    .settingsToolbar()
+            } label: {
                 Label("Arguments", systemImage: "character.textbox")
                     .padding(.leading)
             }
         }
-        NavigationLink(destination: VMConfigInputView(config: $config.input).scrollable()) {
+        NavigationLink {
+            VMConfigInputView(config: $config.input)
+                .scrollable()
+                .settingsToolbar()
+        } label: {
             Label("Input", systemImage: "keyboard")
         }
-        NavigationLink(destination: VMConfigSharingView(config: $config.sharing).scrollable()) {
+        NavigationLink {
+            VMConfigSharingView(config: $config.sharing)
+                .scrollable()
+                .settingsToolbar()
+        } label: {
             Label("Sharing", systemImage: "person.crop.circle")
         }
         Section(header: Text("Devices")) {
             ForEach($config.displays) { $display in
-                NavigationLink(destination: VMConfigDisplayView(config: $display, system: $config.system).scrollable()) {
+                NavigationLink {
+                    VMConfigDisplayView(config: $display, system: $config.system)
+                        .scrollable()
+                        .settingsToolbar()
+                } label: {
                     Label("Display", systemImage: "rectangle.on.rectangle")
                 }.contextMenu {
                     DestructiveButton("Remove") {
@@ -62,7 +87,11 @@ struct VMQEMUSettingsView: View {
                 }
             }
             ForEach($config.serials) { $serial in
-                NavigationLink(destination: VMConfigSerialView(config: $serial, system: $config.system).scrollable()) {
+                NavigationLink {
+                    VMConfigSerialView(config: $serial, system: $config.system)
+                        .scrollable()
+                        .settingsToolbar()
+                } label: {
                     Label("Serial", systemImage: "rectangle.connected.to.line.below")
                 }.contextMenu {
                     DestructiveButton("Remove") {
@@ -71,7 +100,11 @@ struct VMQEMUSettingsView: View {
                 }
             }
             ForEach($config.networks) { $network in
-                NavigationLink(destination: VMConfigNetworkView(config: $network, system: $config.system).scrollable()) {
+                NavigationLink {
+                    VMConfigNetworkView(config: $network, system: $config.system)
+                        .scrollable()
+                        .settingsToolbar()
+                } label: {
                     Label("Network", systemImage: "network")
                 }.contextMenu {
                     DestructiveButton("Remove") {
@@ -79,14 +112,21 @@ struct VMQEMUSettingsView: View {
                     }
                 }
                 if #available(macOS 12, *), network.mode == .emulated {
-                    NavigationLink(destination: VMConfigNetworkPortForwardView(config: $network)) {
+                    NavigationLink {
+                        VMConfigNetworkPortForwardView(config: $network)
+                            .settingsToolbar()
+                    } label: {
                         Label("Port Forward", systemImage: "point.topleft.down.curvedto.point.bottomright.up")
                             .padding(.leading)
                     }
                 }
             }
             ForEach($config.sound) { $sound in
-                NavigationLink(destination: VMConfigSoundView(config: $sound, system: $config.system).scrollable()) {
+                NavigationLink {
+                    VMConfigSoundView(config: $sound, system: $config.system)
+                        .scrollable()
+                        .settingsToolbar()
+                } label: {
                     Label("Sound", systemImage: "speaker.wave.2")
                 }.contextMenu {
                     DestructiveButton("Remove") {

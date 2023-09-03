@@ -34,7 +34,11 @@ struct VMDrivesSettingsView<Drive: UTMConfigurationDrive>: View {
     var body: some View {
         ForEach($drives) { $drive in
             let driveIndex = drives.firstIndex(of: drive)!
-            NavigationLink(destination: DriveDetailsView(config: $drive, requestDriveDelete: $requestDriveDelete).scrollable()) {
+            NavigationLink {
+                DriveDetailsView(config: $drive, requestDriveDelete: $requestDriveDelete)
+                    .scrollable()
+                    .settingsToolbar()
+            } label: {
                 Label(label(for: drive), systemImage: "externaldrive")
             }.contextMenu {
                 DestructiveButton("Delete") {
