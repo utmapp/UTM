@@ -100,6 +100,11 @@ class UTMReleaseHelper: ObservableObject {
                     currentSection.body.append(description)
                 }
                 #endif
+                #if os(visionOS)
+                if platform.hasPrefix("visionOS") {
+                    currentSection.body.append(description)
+                }
+                #endif
                 if platform != "iOS SE" && platform.hasPrefix("iOS") {
                     // should we also parse versions?
                     currentSection.body.append(description)
