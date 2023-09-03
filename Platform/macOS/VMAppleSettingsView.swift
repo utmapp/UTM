@@ -72,7 +72,13 @@ struct VMAppleSettingsView: View {
                         NavigationLink {
                             VMConfigAppleDisplayView(config: $display)
                                 .scrollable()
-                                .settingsToolbar()
+                                .settingsToolbar {
+                                    ToolbarItem(placement: .destructiveAction) {
+                                        Button("Remove") {
+                                            config.displays.removeAll(where: { $0.id == display.id })
+                                        }
+                                    }
+                                }
                         } label: {
                             Label("Display", systemImage: "rectangle.on.rectangle")
                         }.contextMenu {
@@ -87,7 +93,13 @@ struct VMAppleSettingsView: View {
                 NavigationLink {
                     VMConfigAppleSerialView(config: $serial)
                         .scrollable()
-                        .settingsToolbar()
+                        .settingsToolbar {
+                            ToolbarItem(placement: .destructiveAction) {
+                                Button("Remove") {
+                                    config.serials.removeAll(where: { $0.id == serial.id })
+                                }
+                            }
+                        }
                 } label: {
                     Label("Serial", systemImage: "rectangle.connected.to.line.below")
                 }.contextMenu {
@@ -100,7 +112,13 @@ struct VMAppleSettingsView: View {
                 NavigationLink {
                     VMConfigAppleNetworkingView(config: $network)
                         .scrollable()
-                        .settingsToolbar()
+                        .settingsToolbar {
+                            ToolbarItem(placement: .destructiveAction) {
+                                Button("Remove") {
+                                    config.networks.removeAll(where: { $0.id == network.id })
+                                }
+                            }
+                        }
                 } label: {
                     Label("Network", systemImage: "network")
                 }.contextMenu {

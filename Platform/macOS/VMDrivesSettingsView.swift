@@ -37,7 +37,13 @@ struct VMDrivesSettingsView<Drive: UTMConfigurationDrive>: View {
             NavigationLink {
                 DriveDetailsView(config: $drive, requestDriveDelete: $requestDriveDelete)
                     .scrollable()
-                    .settingsToolbar()
+                    .settingsToolbar {
+                        ToolbarItem(placement: .destructiveAction) {
+                            Button("Delete") {
+                                requestDriveDelete = drive
+                            }
+                        }
+                    }
             } label: {
                 Label(label(for: drive), systemImage: "externaldrive")
             }.contextMenu {

@@ -28,12 +28,14 @@ struct VMConfigAppleDriveDetailsView: View {
             TextField("Name", text: .constant(config.imageURL?.lastPathComponent ?? NSLocalizedString("(New Drive)", comment: "VMConfigAppleDriveDetailsView")))
                 .disabled(true)
             Toggle("Read Only?", isOn: $config.isReadOnly)
-            Button {
-                requestDriveDelete = config
-            } label: {
-                Label("Delete Drive", systemImage: "externaldrive.badge.minus")
-                    .foregroundColor(.red)
-            }.help("Delete this drive.")
+            if #unavailable(macOS 12) {
+                Button {
+                    requestDriveDelete = config
+                } label: {
+                    Label("Delete Drive", systemImage: "externaldrive.badge.minus")
+                        .foregroundColor(.red)
+                }.help("Delete this drive.")
+            }
         }
     }
 }

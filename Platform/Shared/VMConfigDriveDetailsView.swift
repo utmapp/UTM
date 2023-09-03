@@ -106,12 +106,14 @@ struct VMConfigDriveDetailsView: View {
             
             #if os(macOS)
             HStack {
-                Button {
-                    requestDriveDelete = config
-                } label: {
-                    Label("Delete Drive", systemImage: "externaldrive.badge.minus")
-                        .foregroundColor(.red)
-                }.help("Delete this drive.")
+                if #unavailable(macOS 12) {
+                    Button {
+                        requestDriveDelete = config
+                    } label: {
+                        Label("Delete Drive", systemImage: "externaldrive.badge.minus")
+                            .foregroundColor(.red)
+                    }.help("Delete this drive.")
+                }
                 
                 if let imageUrl = config.imageURL, FileManager.default.fileExists(atPath: imageUrl.path) {
                     Button {
