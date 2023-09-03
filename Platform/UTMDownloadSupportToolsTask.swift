@@ -20,15 +20,14 @@ import Foundation
 class UTMDownloadSupportToolsTask: UTMDownloadTask {
     private let vm: UTMQemuVirtualMachine
     
-    // TODO: make this dynamic
-    private static let supportToolsDownloadUrl = URL(string: "https://github.com/utmapp/qemu/releases/download/v7.0.0-utm/spice-guest-tools-0.164.4.iso")!
+    private static let supportToolsDownloadUrl = URL(string: "https://getutm.app/downloads/utm-guest-tools-latest.iso")!
     
-    private var supportUrl: URL {
-        fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!.appendingPathComponent("GuestSupportTools")
+    private var cacheUrl: URL {
+        fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first!
     }
     
     private var supportToolsLocalUrl: URL {
-        supportUrl.appendingPathComponent(Self.supportToolsDownloadUrl.lastPathComponent)
+        cacheUrl.appendingPathComponent(Self.supportToolsDownloadUrl.lastPathComponent)
     }
     
     var hasExistingSupportTools: Bool {
@@ -42,8 +41,8 @@ class UTMDownloadSupportToolsTask: UTMDownloadTask {
     }
     
     override func processCompletedDownload(at location: URL) async throws -> any UTMVirtualMachine {
-        if !fileManager.fileExists(atPath: supportUrl.path) {
-            try fileManager.createDirectory(at: supportUrl, withIntermediateDirectories: true)
+        if !fileManager.fileExists(atPath: cacheUrl.path) {
+            try fileManager.createDirectory(at: cacheUrl, withIntermediateDirectories: true)
         }
         if fileManager.fileExists(atPath: supportToolsLocalUrl.path) {
             try fileManager.removeItem(at: supportToolsLocalUrl)
