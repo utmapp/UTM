@@ -123,10 +123,12 @@ struct SettingsToolbarViewModifier<AdditionalContent>: ViewModifier where Additi
                 }
             }
             ToolbarItemGroup(placement: .confirmationAction) {
-                Button(action: save) {
-                    Text("Save")
+                Form {
+                    Button(action: save) {
+                        Text("Save")
+                    }
+                    .buttonStyle(.borderedProminent)
                 }
-                .buttonStyle(.borderedProminent)
             }
         }
         if let additionalContent = additionalContent {
