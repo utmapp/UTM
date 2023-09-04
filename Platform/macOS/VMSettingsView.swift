@@ -33,6 +33,8 @@ struct VMSettingsView<Config: UTMConfiguration>: View {
                     VMAppleSettingsView(config: config as! UTMAppleConfiguration)
                 }
             }.listStyle(.sidebar)
+            Text("")
+                .settingsToolbar()
         }
         .frame(minWidth: 800, minHeight: 400, alignment: .leading)
         .legacySettingsToolbar {
