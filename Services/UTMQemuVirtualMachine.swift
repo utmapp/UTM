@@ -19,6 +19,7 @@ import QEMUKit
 
 private var SpiceIoServiceGuestAgentContext = 0
 private let kSuspendSnapshotName = "suspend"
+private let kProbeSuspendDelay = 1*NSEC_PER_SEC
 
 /// QEMU backend virtual machine
 final class UTMQemuVirtualMachine: UTMVirtualMachine {
@@ -251,6 +252,9 @@ extension UTMQemuVirtualMachine {
             }
         }
         do {
+            // FIXME: some race condition in QEMU causes some VMs to not work when we immedately call save/delete
+            // for now we workaround this with a 1 second delay
+            try await Task.sleep(nanoseconds: kProbeSuspendDelay)
             try await _saveSnapshot(name: "tmp-ss-support-probe")
             try? await _deleteSnapshot(name: "tmp-ss-support-probe")
         } catch {
