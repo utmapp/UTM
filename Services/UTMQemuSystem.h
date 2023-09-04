@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UTMQemuSystem : UTMProcess <QEMULauncher>
 
 @property (nonatomic, nullable, copy) NSArray<NSURL *> *resources;
-@property (nonatomic, nullable, weak) NSDictionary<NSURL *, NSData *> *remoteBookmarks;
+@property (nonatomic, nullable) NSDictionary<NSURL *, NSData *> *remoteBookmarks;
 @property (nonatomic) UTMQEMURendererBackend rendererBackend;
 @property (nonatomic, weak) id<QEMULauncherDelegate> launcherDelegate;
 @property (nonatomic, nullable) QEMULogging *logging;
