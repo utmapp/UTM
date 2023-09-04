@@ -944,7 +944,7 @@ import Virtualization // for getting network interfaces
         } else if system.architecture == .ppc64 {
             "tpm-spapr"
         } else {
-            "tpm-crb"
+            "tpm-tis"
         }
         "tpmdev=tpm0"
         f()
