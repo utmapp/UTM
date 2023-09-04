@@ -111,7 +111,11 @@
 "The operating system cannot be installed on this machine." = "そのオペレーティングシステムはこのマシン上ではインストールできません。";
 "The operation is not available." = "その操作は利用できません。";
 
-// UTMQemuVirtualMachine.m
+// UTMQemuVirtualMachine.swift
+"Suspend state cannot be saved when running in disposible mode." = "使い捨てモードで動作している場合、サスペンド状態を保存することはできません。";
+"Suspend is not supported for virtualization." = "サスペンドは仮想化には対応していません。";
+"Suspend is not supported when GPU acceleration is enabled." = "サスペンドはGPUアクセラレーションが有効な場合には対応していません。";
+"Suspend is not supported when an emulated NVMe device is active." = "サスペンドは仮想NVMeデバイスがアクティブな場合には対応していません。";
 "Failed to access data from shortcut." = "ショートカットからデータのアクセスに失敗しました。";
 "This build of UTM does not support emulating the architecture of this VM." = "このビルドのUTMは、この仮想マシンのアーキテクチャのエミュレーションには対応していません。";
 "Failed to access drive image path." = "ドライブイメージパスのアクセスに失敗しました。";
@@ -212,6 +216,7 @@
 "This will reset the VM and any unsaved state will be lost." = "この操作により、仮想マシンがリセットされ、保存されていない状態が失われます。";
 "Error" = "エラー";
 "Confirmation" = "確認";
+"Failed to save suspend state" = "サスペンド状態の保存に失敗しました";
 "Closing this window will kill the VM." = "このウインドウを閉じると、仮想マシンを強制終了します。";
 "Request power down" = "電源オフを要求";
 "Sends power down request to the guest. This simulates pressing the power button on a PC." = "ゲストに電源オフ要求を送信します。これにより、PCの電源ボタン押下をシミュレートします。";
@@ -236,9 +241,6 @@
 
 // Display/VMDisplayQemuDisplayController.swift
 "Disposable Mode" = "使い捨てモード";
-"Suspend is not supported for virtualization." = "サスペンドは仮想化には対応していません。";
-"Suspend is not supported when GPU acceleration is enabled." = "サスペンドはGPUアクセラレーションが有効な場合には対応していません。";
-"Suspend is not supported when an emulated NVMe device is active." = "サスペンドは仮想NVMeデバイスがアクティブな場合には対応していません。";
 "Querying drives status..." = "ドライブの状態を確認中…";
 "No drives connected." = "デバイスが接続されていません。";
 "Install Windows Guest Tools…" = "Windowsゲストツールをインストール…";
@@ -292,8 +294,11 @@
 "Sound Backend" = "サウンドバックエンド";
 "SPICE with GStreamer (Input & Output)" = "GStreamerを使用したSPICE（入出力）";
 "CoreAudio (Output Only)" = "CoreAudio（出力のみ）";
+"Mouse/Keyboard" = "マウス/キーボード";
+"Capture input automatically when entering full screen" = "フルスクリーンになったときに入力を自動的にキャプチャ";
+"If enabled, input capture will toggle automatically when entering and exiting full screen mode." = "有効にすると、フルスクリーンモードの開始時と解除時に入力キャプチャが自動的に切り替わります。";
 "Console" = "コンソール";
-"Option (⌥) is Meta key" = "Option（⌥）をメタキーにする";
+"Option (⌥) is Meta key" = "メタキーとしてOption（⌥）を使用";
 "If enabled, Option will be mapped to the Meta key which can be useful for emacs. Otherwise, option will work as the system intended (such as for entering international text)." = "有効にすると、OptionがEmacsの利用に便利なメタキーにマッピングされます。そうでない場合、Optionはシステムが意図したとおりに動作します（国際テキストを入力する場合など）。";
 "QEMU Pointer" = "QEMUポインタ";
 "Hold Control (⌃) for right click" = "Control（⌃）を押している間は右クリックにする";
@@ -643,8 +648,9 @@
 "Show All…" = "すべてを表示…";
 
 // VMConfirmActionModifier.swift
-"Do you want to duplicate this VM and all its data?" = "この仮想マシン、およびそのデータをすべて複製しますか?";
-"Do you want to delete this VM and all its data?" = "この仮想マシン、およびそのデータをすべて削除しますか?";
+"Do you want to copy this VM and all its data to internal storage?" = "この仮想マシン、およびそのすべてのデータを内部ストレージにコピーしますか?";
+"Do you want to duplicate this VM and all its data?" = "この仮想マシン、およびそのすべてのデータを複製しますか?";
+"Do you want to delete this VM and all its data?" = "この仮想マシン、およびそのすべてのデータを削除しますか?";
 "Do you want to remove this shortcut? The data will not be deleted." = "このショートカットを削除しますか? データは削除されません。";
 "Do you want to force stop this VM and lose all unsaved data?" = "この仮想マシンを強制停止しますか? 保存されていないデータは失われます。";
 "Do you want to move this VM to another location? This will copy the data to the new location, delete the data from the original location, and then create a shortcut." = "この仮想マシンを別の場所に移動しますか? この操作により、データを新しい場所にコピーし、元の場所のデータを削除した後、ショートカットが作成されます。";
@@ -662,15 +668,15 @@
 "Run the VM in the foreground, without saving data changes to disk." = "データの変更内容をディスクに保存せずに、仮想マシンをフォアグラウンドで実行します。";
 "Download and mount the guest tools for Windows." = "Windows用ゲストツールをダウンロードし、マウントします。";
 "Share…" = "共有…";
-"Share a copy of this VM and all its data." = "この仮想マシン、およびそのデータのコピーをすべて共有します。";
+"Share a copy of this VM and all its data." = "この仮想マシン、およびそのすべてのデータのコピーを共有します。";
 "Move…" = "移動…";
 "Move this VM from internal storage to elsewhere." = "この仮想マシンを内部ストレージからほかの場所に移動します。";
 "Clone…" = "複製…";
-"Duplicate this VM along with all its data." = "この仮想マシン、およびそのデータをすべて複製します。";
+"Duplicate this VM along with all its data." = "この仮想マシン、およびそのすべてのデータを複製します。";
 "New from template…" = "テンプレートから新規作成…";
 "Create a new VM with the same configuration as this one but without any data." = "この仮想マシンと同じ構成の、データを含まない新規仮想マシンを作成します。";
 "Delete this shortcut. The underlying data will not be deleted." = "このショートカットを削除します。リンク先のデータは削除されません。";
-"Delete this VM and all its data." = "この仮想マシン、およびそのデータをすべて削除します。";
+"Delete this VM and all its data." = "この仮想マシン、およびそのすべてのデータを削除します。";
 
 // VMDetailsView.swift
 "This virtual machine has been removed." = "この仮想マシンは削除されました。";
@@ -686,6 +692,7 @@
 // VMNavigationListView.swift
 "Pending" = "保留中";
 "New VM" = "新規仮想マシン";
+"Create a new VM" = "新規仮想マシンを作成します";
 
 // VMPlaceholderView.swift
 "Welcome to UTM" = "ようこそUTMへ";
