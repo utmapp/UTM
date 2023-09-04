@@ -328,6 +328,9 @@ extension UTMQemuVirtualMachine {
         let spiceSocketUrl = await config.spiceSocketURL
         let ioService = UTMSpiceIO(socketUrl: spiceSocketUrl, options: options)
         ioService.logHandler = { [weak system] (line: String) -> Void in
+            guard !line.contains("spice_make_scancode") else {
+                return // do not log key presses for privacy reasons
+            }
             system?.logging?.writeLine(line)
         }
         try ioService.start()
