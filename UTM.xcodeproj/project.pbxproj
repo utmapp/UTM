@@ -617,6 +617,7 @@
 		CE5451A826AF5F10008594E5 /* epoxy.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE5451A226AF5F0F008594E5 /* epoxy.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CE5451AA26AF5F10008594E5 /* GLESv2.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE5451A326AF5F0F008594E5 /* GLESv2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CE5451AC26AF5F10008594E5 /* EGL.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE5451A426AF5F0F008594E5 /* EGL.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CE59A7B02AA69AE400E5FFBD /* UTMScriptingUSBDeviceImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE59A7AF2AA69AE400E5FFBD /* UTMScriptingUSBDeviceImpl.swift */; };
 		CE611BE729F50CAD001817BC /* UTMReleaseHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE611BE629F50CAD001817BC /* UTMReleaseHelper.swift */; };
 		CE611BE829F50CAD001817BC /* UTMReleaseHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE611BE629F50CAD001817BC /* UTMReleaseHelper.swift */; };
 		CE611BE929F50CAD001817BC /* UTMReleaseHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE611BE629F50CAD001817BC /* UTMReleaseHelper.swift */; };
@@ -1554,6 +1555,7 @@
 		CE5451A326AF5F0F008594E5 /* GLESv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLESv2.framework; path = "$(SYSROOT_DIR)/Frameworks/GLESv2.framework"; sourceTree = "<group>"; };
 		CE5451A426AF5F0F008594E5 /* EGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EGL.framework; path = "$(SYSROOT_DIR)/Frameworks/EGL.framework"; sourceTree = "<group>"; };
 		CE550BD52259479D0063E575 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		CE59A7AF2AA69AE400E5FFBD /* UTMScriptingUSBDeviceImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMScriptingUSBDeviceImpl.swift; sourceTree = "<group>"; };
 		CE611BE629F50CAD001817BC /* UTMReleaseHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMReleaseHelper.swift; sourceTree = "<group>"; };
 		CE611BEA29F50D3E001817BC /* VMReleaseNotesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMReleaseNotesView.swift; sourceTree = "<group>"; };
 		CE612AC524D3B50700FA6300 /* VMDisplayWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayWindowController.swift; sourceTree = "<group>"; };
@@ -2481,6 +2483,7 @@
 				CEFE98DE29485237007CB7A8 /* UTM.sdef */,
 				CE25124A29BFE273000790AB /* UTMScriptable.swift */,
 				CEC794BB2949663C00121A9F /* UTMScripting.swift */,
+				CE59A7AF2AA69AE400E5FFBD /* UTMScriptingUSBDeviceImpl.swift */,
 				CEFE98E029485776007CB7A8 /* UTMScriptingVirtualMachineImpl.swift */,
 				CEC794B9294924E300121A9F /* UTMScriptingSerialPortImpl.swift */,
 				CE25124829BFDBA6000790AB /* UTMScriptingGuestFileImpl.swift */,
@@ -3028,6 +3031,7 @@
 				CE611BED29F50D3E001817BC /* VMReleaseNotesView.swift in Sources */,
 				84F90A01289488F90008DBE2 /* MenuLabel.swift in Sources */,
 				CE0B6CFA24AD568400FE012D /* UTMLegacyQemuConfiguration+System.m in Sources */,
+				CE59A7B02AA69AE400E5FFBD /* UTMScriptingUSBDeviceImpl.swift in Sources */,
 				CEBBF1A824B921F000C15049 /* VMDetailsView.swift in Sources */,
 				848D99AA285DB5550055C215 /* VMConfigConstantPicker.swift in Sources */,
 				84A0A8852A47D52E0038F329 /* UTMQemuPort.swift in Sources */,

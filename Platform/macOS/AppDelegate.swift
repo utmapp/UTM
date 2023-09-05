@@ -157,6 +157,7 @@
     func application(_ sender: NSApplication, delegateHandlesKey key: String) -> Bool {
         switch key {
         case "scriptingVirtualMachines": return true
+        case "scriptingUsbDevices": return true
         case "isAutoTerminate": return true
         default: return false
         }

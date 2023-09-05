@@ -620,4 +620,63 @@
               description="The type of serial interface on the host (only PTTY is supported)."/>
         </record-type>
     </suite>
+    
+    <suite name="UTM USB Devices Suite" code="UTMu" description="UTM virtual machine USB devices suite. Use this to connect USB devices from the host to the guest.">
+        <access-group identifier="com.utmapp.UTM.vm-access" />
+        
+        <class-extension extends="application" description="An application's top level scripting object.">
+          <element type="usb device" access="r"
+            description="List of all USB devices currently connected to the host. If there is no running VM with USB sharing supported and enabled, then this will always return an empty list.">
+            <cocoa key="scriptingUsbDevices"/>
+          </element>
+        </class-extension>
+        
+        <class name="usb device" code="UsBd" description="A host USB device that is shared with the guest." plural="usb devices">
+          <cocoa class="UTMScriptingUSBDeviceImpl"/>
+          <property name="id" code="ID  " type="integer" access="r"
+            description="A unique identifier corrosponding to the USB bus and port number."/>
+            
+          <property name="name" code="pnam" type="text" access="r"
+            description="The name of the USB device."/>
+            
+          <property name="manufacturer name" code="UsBM" type="text" access="r"
+            description="The product name described by the iManufacturer descriptor."/>
+            
+          <property name="product name" code="UsBP" type="text" access="r"
+            description="The product name described by the iProduct descriptor."/>
+            
+          <property name="vendor id" code="UsBv" type="integer" access="r"
+            description="The vendor ID described by the idVendor descriptor."/>
+            
+          <property name="product id" code="UsBp" type="integer" access="r"
+            description="The product ID described by the idProduct descriptor."/>
+            
+          <responds-to command="connect">
+            <cocoa method="connect:"/>
+          </responds-to>
+          
+          <responds-to command="disconnect">
+            <cocoa method="disconnect:"/>
+          </responds-to>
+        </class>
+        
+        <class-extension extends="virtual machine" description="Virtual machine USB devices.">
+          <element type="usb device" access="r"
+            description="List of connected USB devices.">
+            <cocoa key="connectedUsbDevices"/>
+          </element>
+        </class-extension>
+        
+        <command name="connect" code="UTMuCoNt" description="Connect a USB device to a running VM and remove it from the host.">
+          <direct-parameter description="The USB device to connect to the VM." type="usb device"/>
+          <parameter name="to" code="UsBn" description="The virtual machine to connect. The virtual machine must be running. Not all backends support USB sharing.">
+            <cocoa key="vm"/>
+            <type type="virtual machine"/>
+          </parameter>
+        </command>
+        
+        <command name="disconnect" code="UTMuDiSc" description="Disconnect a USB device from the guest and re-assign it to the host.">
+          <direct-parameter description="The USB device to disconnect." type="usb device"/>
+        </command>
+    </suite>
 </dictionary>
