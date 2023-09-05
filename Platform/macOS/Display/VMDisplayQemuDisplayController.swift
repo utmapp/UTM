@@ -352,15 +352,15 @@ extension VMDisplayQemuWindowController: CSUSBManagerDelegate {
             guard response == .alertFirstButtonReturn else {
                 return
             }
-            DispatchQueue.global(qos: .utility).async {
-                usbManager.connectUsbDevice(usbDevice) { (result, message) in
-                    DispatchQueue.main.async {
-                        if let msg = message {
-                            self.showErrorAlert(msg)
-                        }
-                        if result {
-                            self.connectedUsbDevices.append(usbDevice)
-                        }
+            Task.detached {
+                do {
+                    try await usbManager.connectUsbDevice(usbDevice)
+                    await MainActor.run {
+                        self.connectedUsbDevices.append(usbDevice)
+                    }
+                } catch {
+                    await MainActor.run {
+                        self.showErrorAlert(error.localizedDescription)
                     }
                 }
             }
@@ -434,15 +434,15 @@ extension VMDisplayQemuWindowController {
             return
         }
         let device = allUsbDevices[menu.tag]
-        DispatchQueue.global(qos: .utility).async {
-            usbManager.connectUsbDevice(device) { (result, message) in
-                DispatchQueue.main.async {
-                    if let msg = message {
-                        self.showErrorAlert(msg)
-                    }
-                    if result {
-                        self.connectedUsbDevices.append(device)
-                    }
+        Task.detached {
+            do {
+                try await usbManager.connectUsbDevice(device)
+                await MainActor.run {
+                    self.connectedUsbDevices.append(device)
+                }
+            } catch {
+                await MainActor.run {
+                    self.showErrorAlert(error.localizedDescription)
                 }
             }
         }
@@ -458,15 +458,13 @@ extension VMDisplayQemuWindowController {
             return
         }
         let device = allUsbDevices[menu.tag]
-        DispatchQueue.global(qos: .utility).async {
-            usbManager.disconnectUsbDevice(device) { (result, message) in
-                DispatchQueue.main.async {
-                    if let msg = message {
-                        self.showErrorAlert(msg)
-                    }
-                    if result {
-                        self.connectedUsbDevices.removeAll(where: { $0 == device })
-                    }
+        connectedUsbDevices.removeAll(where: { $0 == device })
+        Task.detached {
+            do {
+                try await usbManager.disconnectUsbDevice(device)
+            } catch {
+                await MainActor.run {
+                    self.showErrorAlert(error.localizedDescription)
                 }
             }
         }

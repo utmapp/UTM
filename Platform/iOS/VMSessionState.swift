@@ -293,17 +293,24 @@ extension VMSessionState: CSUSBManagerDelegate {
         }
     }
     
-    private func withUsbManagerSerialized<T>(_ task: @escaping () async -> T, onComplete: @escaping @MainActor (T) -> Void) {
+    private func withUsbManagerSerialized<T>(_ task: @escaping () async throws -> T, onSuccess: @escaping @MainActor (T) -> Void = { _ in }, onError: @escaping @MainActor (Error) -> Void = { _ in }) {
         usbManagerQueue.async {
             let event = DispatchSemaphore(value: 0)
             Task.detached { [self] in
                 await MainActor.run {
                     isUsbBusy = true
                 }
-                let result = await task()
-                await MainActor.run {
-                    isUsbBusy = false
-                    onComplete(result)
+                do {
+                    let result = try await task()
+                    await MainActor.run {
+                        isUsbBusy = false
+                        onSuccess(result)
+                    }
+                } catch {
+                    await MainActor.run {
+                        isUsbBusy = false
+                        onError(error)
+                    }
                 }
                 event.signal()
             }
@@ -323,7 +330,7 @@ extension VMSessionState: CSUSBManagerDelegate {
                 logger.debug("found device: \(name ?? "(unknown)")")
             }
             return devices
-        } onComplete: { devices in
+        } onSuccess: { devices in
             self.allUsbDevices = devices
         }
     }
@@ -338,13 +345,11 @@ extension VMSessionState: CSUSBManagerDelegate {
             return
         }
         withUsbManagerSerialized {
-            await usbManager.connectUsbDevice(usbDevice)
-        } onComplete: { success, message in
-            if success {
-                self.connectedUsbDevices.append(usbDevice)
-            } else {
-                self.nonfatalError = message
-            }
+            try await usbManager.connectUsbDevice(usbDevice)
+        } onSuccess: {
+            self.connectedUsbDevices.append(usbDevice)
+        } onError: { error in
+            self.nonfatalError = error.localizedDescription
         }
     }
     
@@ -358,12 +363,10 @@ extension VMSessionState: CSUSBManagerDelegate {
             return
         }
         withUsbManagerSerialized {
-            await usbManager.disconnectUsbDevice(usbDevice)
-        } onComplete: { success, message in
-            if !success {
-                self.nonfatalError = message
-            }
             self.connectedUsbDevices.removeAll(where: { $0 == usbDevice })
+            try await usbManager.disconnectUsbDevice(usbDevice)
+        } onError: { error in
+            self.nonfatalError = error.localizedDescription
         }
     }
     
