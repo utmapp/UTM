@@ -21,6 +21,7 @@ public enum UTMScripting: String {
     case guestFile = "guest file"
     case guestProcess = "guest process"
     case serialPort = "serial port"
+    case usbDevice = "usb device"
     case virtualMachine = "virtual machine"
 }
 
@@ -161,6 +162,7 @@ import ScriptingBridge
     @objc optional func virtualMachines() -> SBElementArray
     @objc optional var autoTerminate: Bool { get } // Auto terminate the application when all windows are closed?
     @objc optional func setAutoTerminate(_ autoTerminate: Bool) // Auto terminate the application when all windows are closed?
+    @objc optional func usbDevices() -> SBElementArray
 }
 extension SBApplication: UTMScriptingApplication {}
 
@@ -204,6 +206,8 @@ extension SBObject: UTMScriptingWindow {}
     @objc optional func startSaving(_ saving: Bool) // Start a virtual machine or resume a suspended virtual machine.
     @objc optional func suspendSaving(_ saving: Bool) // Suspend a running virtual machine to memory.
     @objc optional func stopBy(_ by: UTMScriptingStopMethod) // Shuts down a running virtual machine.
+    @objc optional func delete() // Delete a virtual machine. All data will be deleted, there is no confirmation!
+    @objc optional func duplicateWithProperties(_ withProperties: [AnyHashable : Any]!) // Copy an virtual machine and all its data.
     @objc optional func openFileAt(_ at: String!, for for_: UTMScriptingOpenMode, updating: Bool) -> UTMScriptingGuestFile // Open a file on the guest. You must close the file when you are done to prevent leaking guest resources.
     @objc optional func executeAt(_ at: String!, withArguments: [String]!, withEnvironment: [String]!, usingInput: String!, base64Encoding: Bool, outputCapturing: Bool) -> UTMScriptingGuestProcess // Execute a command or script on the guest.
     @objc optional func queryIp() -> [Any] // Query the guest for all IP addresses on its network interfaces (excluding loopback).
@@ -211,6 +215,7 @@ extension SBObject: UTMScriptingWindow {}
     @objc optional func guestFiles() -> SBElementArray
     @objc optional func guestProcesses() -> SBElementArray
     @objc optional var configuration: Any { get } // The configuration of the virtual machine.
+    @objc optional func usbDevices() -> SBElementArray
 }
 extension SBObject: UTMScriptingVirtualMachine {}
 
@@ -240,4 +245,17 @@ extension SBObject: UTMScriptingGuestFile {}
     @objc optional func getResult() -> [AnyHashable : Any] // Fetch execution result from the guest.
 }
 extension SBObject: UTMScriptingGuestProcess {}
+
+// MARK: UTMScriptingUsbDevice
+@objc public protocol UTMScriptingUsbDevice: SBObjectProtocol, UTMScriptingGenericMethods {
+    @objc optional func id() -> Int // A unique identifier corrosponding to the USB bus and port number.
+    @objc optional var name: String { get } // The name of the USB device.
+    @objc optional var manufacturerName: String { get } // The product name described by the iManufacturer descriptor.
+    @objc optional var productName: String { get } // The product name described by the iProduct descriptor.
+    @objc optional var vendorId: Int { get } // The vendor ID described by the idVendor descriptor.
+    @objc optional var productId: Int { get } // The product ID described by the idProduct descriptor.
+    @objc optional func connectTo(_ to: UTMScriptingVirtualMachine!) // Connect a USB device to a running VM and remove it from the host.
+    @objc optional func disconnect() // Disconnect a USB device from the guest and re-assign it to the host.
+}
+extension SBObject: UTMScriptingUsbDevice {}
 

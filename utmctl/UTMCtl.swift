@@ -24,7 +24,20 @@ struct UTMCtl: ParsableCommand {
     static var configuration = CommandConfiguration(
         commandName: "utmctl",
         abstract: "CLI tool for controlling UTM virtual machines.",
-        subcommands: [List.self, Status.self, Start.self, Suspend.self, Stop.self, Attach.self, File.self, Exec.self, IPAddress.self, Clone.self, Delete.self]
+        subcommands: [
+            List.self,
+            Status.self,
+            Start.self,
+            Suspend.self,
+            Stop.self,
+            Attach.self,
+            File.self,
+            Exec.self,
+            IPAddress.self,
+            Clone.self,
+            Delete.self,
+            USB.self
+        ]
     )
 }
 
@@ -123,11 +136,15 @@ extension UTMCtl {
     enum APIError: Error, LocalizedError {
         case applicationNotFound
         case virtualMachineNotFound
+        case invalidIdentifier(String)
+        case deviceNotFound
         
         var errorDescription: String? {
             switch self {
             case .applicationNotFound: return "Application not found."
             case .virtualMachineNotFound: return "Virtual machine not found."
+            case .invalidIdentifier(let identifier): return "Identifier '\(identifier)' is invalid."
+            case .deviceNotFound: return "Device not found."
             }
         }
     }
@@ -501,6 +518,119 @@ extension UTMCtl {
         func run(with application: UTMScriptingApplication) throws {
             let vm = try virtualMachine(forIdentifier: identifer, in: application)
             vm.delete!()
+        }
+    }
+}
+
+extension UTMCtl {
+    struct USB: ParsableCommand {
+        static var configuration = CommandConfiguration(
+            abstract: "USB device handling.",
+            subcommands: [USBList.self, USBConnect.self, USBDisconnect.self]
+        )
+        
+        /// Find a USB device using an identifier
+        /// - Parameters:
+        ///   - identifier: Either VID:PID or a location
+        ///   - application: Scripting application
+        /// - Returns: USB device
+        static func usbDevice(forIdentifier identifier: String, in application: UTMScriptingApplication) throws -> UTMScriptingUsbDevice {
+            let parts = identifier.split(separator: ":")
+            if parts.count == 2 {
+                let vid = Int(parts[0], radix: 16)
+                let pid = Int(parts[1], radix: 16)
+                if let vid = vid, let pid = pid {
+                    return try usbDevice(forVid: vid, pid: pid, in: application)
+                }
+            }
+            if let location = Int(identifier, radix: 10) {
+                return try usbDevice(forLocation: location, in: application)
+            }
+            throw APIError.invalidIdentifier(identifier)
+        }
+        
+        static private func usbDevice(forVid vid: Int, pid: Int, in application: UTMScriptingApplication) throws -> UTMScriptingUsbDevice {
+            if let list = application.usbDevices!() as? [UTMScriptingUsbDevice] {
+                if let device = list.first(where: { $0.vendorId == vid && $0.productId == pid }) {
+                    return device
+                }
+            }
+            throw APIError.deviceNotFound
+        }
+        
+        static private func usbDevice(forLocation location: Int, in application: UTMScriptingApplication) throws -> UTMScriptingUsbDevice {
+            if let list = application.usbDevices!() as? [UTMScriptingUsbDevice] {
+                if let device = list.first(where: { $0.id!() == location }) {
+                    return device
+                }
+            }
+            throw APIError.deviceNotFound
+        }
+    }
+    
+    struct USBList: UTMAPICommand {
+        static var configuration = CommandConfiguration(
+            commandName: "list",
+            abstract: "List connected devices."
+        )
+        
+        @OptionGroup var environment: EnvironmentOptions
+        
+        func run(with application: UTMScriptingApplication) throws {
+            if let list = application.usbDevices!() as? [UTMScriptingUsbDevice] {
+                printResponse(list)
+            }
+        }
+        
+        func printResponse(_ response: [UTMScriptingUsbDevice]) {
+            guard !response.isEmpty else {
+                print("No devices found. Make sure a USB sharing enabled VM is running.")
+                return
+            }
+            print("Name                             VID :PID  Location")
+            for entry in response {
+                let name = entry.name!.padding(toLength: 32, withPad: " ", startingAt: 0)
+                let vid = String(format: "%04X", entry.vendorId!)
+                let pid = String(format: "%04X", entry.productId!)
+                print("\(name) \(vid):\(pid) \(entry.id!())")
+            }
+        }
+    }
+    
+    struct USBConnect: UTMAPICommand {
+        static var configuration = CommandConfiguration(
+            commandName: "connect",
+            abstract: "Connect a USB device to a virtual machine."
+        )
+        
+        @OptionGroup var environment: EnvironmentOptions
+        
+        @OptionGroup var identifer: VMIdentifier
+        
+        @Argument(help: "Device identifier either as a VID:PID pair (e.g. DEAD:BEEF) or a location (e.g. 4).")
+        var device: String
+        
+        func run(with application: UTMScriptingApplication) throws {
+            let vm = try virtualMachine(forIdentifier: identifer, in: application)
+            let device = try USB.usbDevice(forIdentifier: device, in: application)
+            device.connectTo!(vm)
+        }
+    }
+    
+    struct USBDisconnect: UTMAPICommand {
+        static var configuration = CommandConfiguration(
+            commandName: "disconnect",
+            abstract: "Disconnect a USB device from a virtual machine."
+        )
+        
+        @OptionGroup var environment: EnvironmentOptions
+        
+        @Argument(help: "Device identifier either as a VID:PID pair (e.g. DEAD:BEEF) or a location (e.g. 4).")
+        var device: String
+        
+        func run(with application: UTMScriptingApplication) throws {
+            let device = try USB.usbDevice(forIdentifier: device, in: application)
+            device.disconnect!()
         }
     }
 }
