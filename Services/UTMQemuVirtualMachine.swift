@@ -180,7 +180,7 @@ extension UTMQemuVirtualMachine {
             return
         }
         // if VM has not started yet, we create a temporary process
-        let system = await system ?? UTMProcess()
+        let system = await system ?? UTMProcess()!
         var bookmark = await registryEntry.package.remoteBookmark
         let existing = bookmark != nil
         if !existing {
@@ -191,7 +191,14 @@ extension UTMQemuVirtualMachine {
             // in case old path is still accessed
             system.stopAccessingPath(bookmarkPath)
         }
-        let (success, newBookmark, newPath) = await system.accessData(withBookmark: bookmark!, securityScoped: existing)
+        var success: Bool = false
+        var newBookmark: Data?
+        var newPath: String?
+        system.accessData(bookmark: bookmark!, securityScoped: existing, completion: { successValue, newBookmarkValue, newPathValue in
+            success = successValue
+            newBookmark = newBookmarkValue
+            newPath = newPathValue
+        })
         if success {
             await registryEntry.setPackageRemoteBookmark(newBookmark, path: newPath)
         } else if existing {
@@ -592,7 +599,7 @@ extension UTMQemuVirtualMachine: QEMUVirtualMachineDelegate {
     }
     
     func qemuVMDidStop(_ qemuVM: QEMUVirtualMachine) {
-        swtpm?.stop()
+        swtpm?.stopProcess()
         swtpm = nil
         ioService = nil
         ioServiceDelegate = nil
@@ -729,8 +736,15 @@ extension UTMQemuVirtualMachine {
     }
     
     private func changeMedium(_ drive: UTMQemuConfigurationDrive, with bookmark: Data, url: URL?, isSecurityScoped: Bool) async throws {
-        let system = await system ?? UTMProcess()
-        let (success, bookmark, path) = await system.accessData(withBookmark: bookmark, securityScoped: isSecurityScoped)
+        let system = await system ?? UTMProcess()!
+        var success: Bool = false
+        var path: String?
+        var bookmark: Data? = bookmark
+        system.accessData(bookmark: bookmark!, securityScoped: isSecurityScoped, completion: { successValue, bookmarkValue, pathValue in
+            success = successValue
+            bookmark = bookmarkValue
+            path = pathValue
+        })
         guard let bookmark = bookmark, let path = path, success else {
             throw UTMQemuVirtualMachineError.accessDriveImageFailed
         }
@@ -800,9 +814,14 @@ extension UTMQemuVirtualMachine {
     }
     
     func changeVirtfsSharedDirectory(with bookmark: Data, isSecurityScoped: Bool) async throws {
-        let system = await system ?? UTMProcess()
-        let (success, bookmark, path) = await system.accessData(withBookmark: bookmark, securityScoped: isSecurityScoped)
-        guard let bookmark = bookmark, let _ = path, success else {
+        let system = await system ?? UTMProcess()!
+        var success: Bool = false
+        var bookmark: Data? = bookmark
+        system.accessData(bookmark: bookmark!, securityScoped: isSecurityScoped, completion: { successValue, bookmarkValue, _ in
+            success = successValue
+            bookmark = bookmarkValue
+        })
+        guard let bookmark = bookmark, success else {
             throw UTMQemuVirtualMachineError.accessDriveImageFailed
         }
         await registryEntry.updateSingleSharedDirectoryRemoteBookmark(bookmark)

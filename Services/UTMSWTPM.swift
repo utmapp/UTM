@@ -30,7 +30,7 @@ class UTMSWTPM: UTMProcess {
     var dataUrl: URL?
     
     private override init(arguments: [String]) {
-        super.init(arguments: arguments)
+        super.init(arguments: arguments)!
         entry = { process, argc, argv, envp in
             let _self = process as! UTMSWTPM
             return _self.swtpmMain(argc, argv, "swtpm", "socket")
@@ -77,7 +77,10 @@ class UTMSWTPM: UTMProcess {
             fm.createFile(atPath: dataUrl.path, contents: nil)
         }
         let dataBookmark = try dataUrl.bookmarkData()
-        let (success, _, _) = await accessData(withBookmark: dataBookmark, securityScoped: false)
+        var success: Bool = false
+        accessData(bookmark: dataBookmark, securityScoped: false) { value, _, _ in
+            success = value
+        }
         guard success else {
             throw UTMSWTPMError.cannotAccessTpmData
         }
@@ -89,7 +92,13 @@ class UTMSWTPM: UTMProcess {
         pushArgv("--tpm2")
         hasProcessExited = false
         try? fm.removeItem(at: ctrlSocketUrl)
-        try await start("swtpm.0")
+        var error: Error?
+        startProcess("swtpm.0", completion: { value in
+            error = value
+        })
+        if let error {
+            throw error
+        }
         // monitor for socket to be created
         try await Task {
             let fm = FileManager.default

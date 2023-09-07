@@ -21,7 +21,7 @@ import QEMUKitInternal
     private var logOutput: String = ""
     private var processExitContinuation: CheckedContinuation<Void, any Error>?
     
-    private init() {
+    private init?() {
         super.init(arguments: [])
     }
     
@@ -43,7 +43,7 @@ import QEMUKitInternal
     private func start() async throws {
         try await withCheckedThrowingContinuation { continuation in
             processExitContinuation = continuation
-            start("qemu-img") { error in
+            startProcess("qemu-img") { error in
                 if let error = error {
                     self.processExitContinuation = nil
                     continuation.resume(throwing: error)
@@ -53,7 +53,7 @@ import QEMUKitInternal
     }
     
     static func convert(from url: URL, toQcow2 dest: URL, withCompression compressed: Bool = false) async throws {
-        let qemuImg = UTMQemuImage()
+        let qemuImg = UTMQemuImage()!
         let srcBookmark = try url.bookmarkData()
         let dstBookmark = try dest.deletingLastPathComponent().bookmarkData()
         qemuImg.pushArgv("convert")
@@ -64,9 +64,9 @@ import QEMUKitInternal
         }
         qemuImg.pushArgv("-O")
         qemuImg.pushArgv("qcow2")
-        qemuImg.accessData(withBookmark: srcBookmark)
+        qemuImg.accessData(bookmark: srcBookmark)
         qemuImg.pushArgv(url.path)
-        qemuImg.accessData(withBookmark: dstBookmark)
+        qemuImg.accessData(bookmark: dstBookmark)
         qemuImg.pushArgv(dest.path)
         let logging = QEMULogging()
         qemuImg.standardOutput = logging.standardOutput
@@ -118,11 +118,11 @@ import QEMUKitInternal
     }
 
     static func size(image url: URL) async throws -> Int64 {
-        let qemuImg = UTMQemuImage()
+        let qemuImg = UTMQemuImage()!
         let srcBookmark = try url.bookmarkData()
         qemuImg.pushArgv("info")
         qemuImg.pushArgv("--output=json")
-        qemuImg.accessData(withBookmark: srcBookmark)
+        qemuImg.accessData(bookmark: srcBookmark)
         qemuImg.pushArgv(url.path)
         let logging = QEMULogging()
         logging.delegate = qemuImg
@@ -140,12 +140,12 @@ import QEMUKitInternal
     }
 
     static func resize(image url: URL, size : UInt64) async throws {
-        let qemuImg = UTMQemuImage()
+        let qemuImg = UTMQemuImage()!
         let srcBookmark = try url.bookmarkData()
         qemuImg.pushArgv("resize")
         qemuImg.pushArgv("-f")
         qemuImg.pushArgv("qcow2")
-        qemuImg.accessData(withBookmark: srcBookmark)
+        qemuImg.accessData(bookmark: srcBookmark)
         qemuImg.pushArgv(url.path)
         qemuImg.pushArgv(String(size))
         let logging = QEMULogging()

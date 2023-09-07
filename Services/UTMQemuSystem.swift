@@ -17,7 +17,7 @@
 import Foundation
 
 class UTMQemuSystem: UTMProcess, QEMULauncher {
-    public var rendererBackend: UTMQEMURendererBackend = .kQEMURendererBackendDefault
+    public var rendererBackend: UTMQEMURendererBackend = .qemuRendererBackendDefault
     @objc public var launcherDelegate: QEMULauncherDelegate?
     @objc public var logging: QEMULogging?
     public var hasDebugLog: Bool = false
@@ -29,9 +29,9 @@ class UTMQemuSystem: UTMProcess, QEMULauncher {
     public var resources: [URL] = []
     public var remoteBookmarks: Dictionary<URL, Data> = [:]
 
-    public init?(arguments: [String], architecture: String) {
+    public init(arguments: [String], architecture: String) {
         self.architecture = architecture
-        super.init(arguments: arguments)
+        super.init(arguments: arguments)!
         self.entry = UTMQemuSystem.startQemu
     }
 
@@ -49,8 +49,8 @@ class UTMQemuSystem: UTMProcess, QEMULauncher {
     }
 
     public static func startQemu(process: UTMProcess, argc: Int32, argv: UnsafeMutablePointer<UnsafePointer<Int8>>, envp: UnsafeMutablePointer<UnsafePointer<Int8>>) -> Int32 {
-        var process = process as! UTMQemuSystem
-        var ret: Int32 = process._qemu_init(argc, argv, envp)
+        let process = process as! UTMQemuSystem
+        let ret: Int32 = process._qemu_init(argc, argv, envp)
         if (ret != 0) {
             return ret;
         }
@@ -62,7 +62,7 @@ class UTMQemuSystem: UTMProcess, QEMULauncher {
     public func setRendererBackend(rendererBackend: UTMQEMURendererBackend) {
         self.rendererBackend = rendererBackend
         switch rendererBackend {
-        case .kQEMURendererBackendAngleMetal:
+        case .qemuRendererBackendAngleMetal:
             mutableEnvironemnt["ANGLE_DEFAULT_PLATFORM"] = "metal"
         default:
             mutableEnvironemnt.removeValue(forKey: "ANGLE_DEFAULT_PLATFORM")
@@ -97,7 +97,7 @@ class UTMQemuSystem: UTMProcess, QEMULauncher {
     }
 
     public func startQemu(completion: @escaping (_ error: Error?) -> Void) {
-        var group: DispatchGroup = DispatchGroup()
+        let group: DispatchGroup = DispatchGroup()
         for resourceURL in resources {
             var bookmark: Data? = remoteBookmarks[resourceURL]
             var securityScoped = true
@@ -109,7 +109,7 @@ class UTMQemuSystem: UTMProcess, QEMULauncher {
             }
             if let bookmark = bookmark {
                 group.enter()
-                accessDataWithBookmark(bookmark: bookmark, securityScoped: securityScoped, completion: { success, bookmark, path in
+                accessData(bookmark: bookmark, securityScoped: securityScoped, completion: { success, bookmark, path in
                     if !success {
                         UTMLoggingSwift.log("Access QEMU bookmark failed for: %@", path!)
                     }
@@ -118,31 +118,31 @@ class UTMQemuSystem: UTMProcess, QEMULauncher {
             }
         }
         group.wait()
-        var name = String(format: "qemu-%@-softmmu", architecture)
-        startProcess(name: name, completion: completion)
+        let name = String(format: "qemu-%@-softmmu", architecture)
+        startProcess(name, completion: completion)
     }
 
     @objc public func stopQemu() {
         stopProcess()
     }
     
-    public override func processHasExited(exitCode: Int, message: String?) {
+    public override func processHasExited(_ exitCode: Int, message: String?) {
         launcherDelegate!.qemuLauncher(self, didExitWithExitCode: exitCode, message: message)
     }
 }
 
 /// Specify the backend renderer for this VM
 enum UTMQEMURendererBackend: Int {
-    case kQEMURendererBackendDefault = 0
-    case kQEMURendererBackendAngleGL = 1
-    case kQEMURendererBackendAngleMetal = 2
-    case kQEMURendererBackendMax = 3
+    case qemuRendererBackendDefault = 0
+    case qemuRendererBackendAngleGL = 1
+    case qemuRendererBackendAngleMetal = 2
+    case qemuRendererBackendMax = 3
 }
 
 /// Specify the sound backend for this VM
 enum UTMQEMUSoundBackend: Int {
-    case kQEMUSoundBackendDefault = 0
-    case kQEMUSoundBackendSPICE = 1
-    case kQEMUSoundBackendCoreAudio = 2
-    case kQEMUSoundBackendMax = 3
+    case qemuSoundBackendDefault = 0
+    case qemuSoundBackendSPICE = 1
+    case qemuSoundBackendCoreAudio = 2
+    case qemuSoundBackendMax = 3
 }

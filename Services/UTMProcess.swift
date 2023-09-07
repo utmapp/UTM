@@ -17,16 +17,15 @@
 import Foundation
 
 public func startProcess(ptr: UnsafeMutableRawPointer) -> UnsafeMutableRawPointer? {
-    var process = ptr.load(as: UTMProcess.self)
-    var processArgv = process.argv
+    let process = ptr.load(as: UTMProcess.self)
+    let processArgv = process.argv
     var environment: [String] = []
     
     for (_, item) in process.environemnt!.enumerated() {
-        var combined = String(format: "%@=%@", item.key, item.value)
+        let combined = String(format: "%@=%@", item.key, item.value)
         environment.append(combined)
         setenv(item.key, item.value, 1)
     }
-    var envc = environment.count
     var envp: [UnsafePointer<Int8>] = []
     for env in environment {
         envp.append(UnsafePointer<Int8>(env.cString(using: .utf8)!))
@@ -34,10 +33,10 @@ public func startProcess(ptr: UnsafeMutableRawPointer) -> UnsafeMutableRawPointe
     envp.append(UnsafePointer<Int8>([]))
     setenv("TMPDIR", FileManager.default.temporaryDirectory.path.cString(using: .utf8), 1)
     
-    var currentDirectoryPath = UnsafePointer<Int8>(process.currentDirectoryUrl!.path.cString(using: .utf8))
+    let currentDirectoryPath = UnsafePointer<Int8>(process.currentDirectoryUrl!.path.cString(using: .utf8))
     chdir(currentDirectoryPath)
     
-    var argc: Int32 = Int32(processArgv.count + 1)
+    let argc: Int32 = Int32(processArgv.count + 1)
     var argv: [UnsafePointer<Int8>] = []
     if let name = process.processName {
         argv.append(UnsafePointer<Int8>(name.cString(using: .utf8)!))
@@ -92,7 +91,7 @@ class UTMProcess : NSObject {
     public var completionQueue: DispatchQueue
     public var done: DispatchSemaphore
 
-    init?(arguments: [String]) {
+    init?(arguments: [String] = []) {
         argv = arguments
         urls = []
         completionQueue = DispatchQueue(label: "QEMU Completion Queue", qos: .utility)
@@ -113,9 +112,9 @@ class UTMProcess : NSObject {
     }
     
     public func setupXpc() -> Bool {
-#if os(iOS)
+        #if os(iOS)
         return true;
-#else // Only supported on macOS
+        #else // Only supported on macOS
         var helperIdentifier = Bundle.main.infoDictionary!["HelperIdentifier"]
         if helperIdentifier == nil {
             helperIdentifier = "com.utmapp.QEMUHelper"
@@ -127,10 +126,10 @@ class UTMProcess : NSObject {
         connection!.resume()
         // NSXPCConnection can never be nil in Swift
         return true
-#endif
+        #endif
     }
 
-    public func pushArgv(arg: String) {
+    public func pushArgv(_ arg: String) {
         argv.append(arg)
     }
 
@@ -150,7 +149,7 @@ class UTMProcess : NSObject {
         UTMLoggingSwift.log("Loading %@", dylib)
         if let dlctxPtr = dlopen(dylib, RTLD_LOCAL) {
             if !didLoadDylib(dlctxPtr) {
-                var error = String(utf8String: dlerror())!
+                let error = String(utf8String: dlerror())!
                 completion(errorWithMessage(message: error))
                 return
             }
@@ -165,7 +164,7 @@ class UTMProcess : NSObject {
                 completion(errorWithMessage(message: NSLocalizedString("Internal error has occured", comment: "UTMProcess")))
                 return
             }
-            var pSelf = UnsafeMutablePointer<UTMProcess>.allocate(capacity: 1)
+            let pSelf = UnsafeMutablePointer<UTMProcess>.allocate(capacity: 1)
             pSelf.pointee = self
             pthread_attr_init(&qosAttribute)
             pthread_attr_set_qos_class_np(&qosAttribute, QOS_CLASS_USER_INTERACTIVE, 0)
@@ -174,21 +173,21 @@ class UTMProcess : NSObject {
             completionQueue.async(qos: .userInteractive) {
                 if self.done.wait(timeout: .distantFuture) == .timedOut {
                     dlclose(dlctxPtr)
-                    self.processHasExited(exitCode: -1, message: NSLocalizedString("Internal error has occured.", comment: "UTMProcess"))
+                    self.processHasExited(-1, message: NSLocalizedString("Internal error has occured.", comment: "UTMProcess"))
                 } else {
                     if dlclose(dlctxPtr) < 0 {
-                        var error = String(utf8String: dlerror())!
-                        self.processHasExited(exitCode: -1, message: error)
+                        let error = String(utf8String: dlerror())!
+                        self.processHasExited(-1, message: error)
                     } else if (self.fatal != 0) || (self.status != 0) {
-                        self.processHasExited(exitCode: -1, message: "")
+                        self.processHasExited(-1, message: "")
                     } else {
-                        self.processHasExited(exitCode: 0, message: "")
+                        self.processHasExited(0, message: "")
                     }
                 }
             }
             completion(nil)
         } else {
-            var error = String(utf8String: dlerror())!
+            let error = String(utf8String: dlerror())!
             completion(errorWithMessage(message: error))
             return
         }
@@ -196,9 +195,9 @@ class UTMProcess : NSObject {
     
     public func startQemuRemote(name: String, completion: @escaping (_ error: Error?) -> Void) {
         do {
-            var libBookmark = try self.libraryURL.bookmarkData()
-            var standardOutput = self.standardOutput!.fileHandleForWriting
-            var standardError = self.standardError!.fileHandleForWriting
+            let libBookmark = try self.libraryURL.bookmarkData()
+            let standardOutput = self.standardOutput!.fileHandleForWriting
+            let standardError = self.standardError!.fileHandleForWriting
             var proxy = connection!.remoteObjectProxy as! any QEMUHelperProtocol
             proxy.environment = self.environemnt
             proxy.currentDirectoryPath = self.currentDirectoryUrl!.path
@@ -207,9 +206,9 @@ class UTMProcess : NSObject {
             proxy = connection!.remoteObjectProxyWithErrorHandler({ error in
                 let nsError = error as NSError
                 if nsError.domain == NSCocoaErrorDomain && nsError.code == NSXPCConnectionInvalid {
-                    self.processHasExited(exitCode: 0, message: "")
+                    self.processHasExited(0, message: "")
                 } else {
-                    self.processHasExited(exitCode: nsError.code, message: error.localizedDescription)
+                    self.processHasExited(nsError.code, message: error.localizedDescription)
                 }
             }) as! any QEMUHelperProtocol
             
@@ -226,15 +225,15 @@ class UTMProcess : NSObject {
         }
     }
     
-    public func startProcess(name: String, completion: @escaping (_ error: Error?) -> Void) {
-#if os(iOS)
-        var base = ""
-#else
-        var base = "Versions/A/"
-#endif
-        var dylib = String(format: "%@.framework/%@%@", name, base, name)
+    public func startProcess(_ name: String, completion: @escaping (_ error: Error?) -> Void) {
+        #if os(iOS)
+        let base = ""
+        #else
+        let base = "Versions/A/"
+        #endif
+        let dylib = String(format: "%@.framework/%@%@", name, base, name)
         self.processName = name
-        if let connection = connection {
+        if connection != nil {
             startQemuRemote(name: dylib, completion: completion)
         } else {
             startDylibThread(dylib: dylib, completion: completion)
@@ -255,10 +254,11 @@ class UTMProcess : NSObject {
     
     public func accessDataWithBookmarkThread(bookmark: Data, securityScoped: Bool, completion: @escaping (_ bool: Bool, _ data: Data?, _ path: String?) -> Void) {
         var stale = false
-        var url: URL = URL(string: "")!
+        var bookmark = bookmark
+        var url: URL?
 
         do {
-            var url = try URL(resolvingBookmarkData: bookmark, bookmarkDataIsStale: &stale)
+            url = try URL(resolvingBookmarkData: bookmark, bookmarkDataIsStale: &stale)
         } catch {
             UTMLoggingSwift.log("Failed to access bookmark data.")
             completion(false, nil, nil)
@@ -267,41 +267,40 @@ class UTMProcess : NSObject {
 
         do {
             if stale || !securityScoped {
-                var bookmark = try url.bookmarkData(options: .minimalBookmark)
-                
+                bookmark = try url!.bookmarkData(options: .minimalBookmark)
             }
         } catch {
             UTMLoggingSwift.log("Failed to create new bookmark!")
-            completion(false, bookmark, url.path)
+            completion(false, bookmark, url!.path)
             return
         }
 
-        if url.startAccessingSecurityScopedResource() {
-            urls.append(url)
+        if url!.startAccessingSecurityScopedResource() {
+            urls.append(url!)
         } else {
-            UTMLoggingSwift.log("Failed to access security scoped resource for: %@", url)
+            UTMLoggingSwift.log("Failed to access security scoped resource for: %@", url!)
         }
-        completion(true, bookmark, url.path)
+        completion(true, bookmark, url!.path)
     }
 
-    public func accessDataWithBookmark(bookmark: Data) {
-        self.accessDataWithBookmark(bookmark: bookmark, securityScoped: false, completion: { success, bookmark, path  in
+    public func accessData(bookmark: Data) {
+        self.accessData(bookmark: bookmark, securityScoped: false, completion: { success, bookmark, path  in
             if !success {
                 UTMLoggingSwift.log("Access bookmark failed for %@", path!)
             }
         })
     }
     
-    public func accessDataWithBookmark(bookmark: Data, securityScoped: Bool, completion: @escaping (_ bool: Bool, _ data: Data?, _ string: String?) -> Void) {
+    public func accessData(bookmark: Data, securityScoped: Bool, completion: @escaping (_ bool: Bool, _ data: Data?, _ string: String?) -> Void) {
         if let connection = connection {
             let proxy = connection.remoteObjectProxy as! any QEMUHelperProtocol
             proxy.accessData(withBookmark: bookmark, securityScoped: securityScoped, completion: completion)
         } else {
-            self.accessDataWithBookmark(bookmark: bookmark, securityScoped: securityScoped, completion: completion)
+            self.accessData(bookmark: bookmark, securityScoped: securityScoped, completion: completion)
         }
     }
-    
-    public func stopAccessingPathThread(path: String) {
+
+    public func stopAccessingPathThread(_ path: String) {
         for url in urls {
             if url.path == path {
                 url.stopAccessingSecurityScopedResource()
@@ -313,12 +312,12 @@ class UTMProcess : NSObject {
         UTMLoggingSwift.log("Cannot find '%@' in existing scoped access.", path)
     }
     
-    public func stopAccessingPath(path: String) {
+    public func stopAccessingPath(_ path: String) {
         if let connection = connection {
             let proxy = connection.remoteObjectProxy as! any QEMUHelperProtocol
             proxy.stopAccessingPath(path)
         } else {
-            self.stopAccessingPathThread(path: path)
+            self.stopAccessingPathThread(path)
         }
     }
     
@@ -326,7 +325,7 @@ class UTMProcess : NSObject {
         return NSError(domain: kUTMErrorDomain, code: -1, userInfo: [NSLocalizedDescriptionKey: message])
     }
     
-    public func processHasExited(exitCode: Int, message: String) {
+    public func processHasExited(_ exitCode: Int, message: String) {
         UTMLoggingSwift.log("QEMU has exited with code %ld and message %@", exitCode, message)
     }
 }
