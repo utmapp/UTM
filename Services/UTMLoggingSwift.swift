@@ -54,6 +54,11 @@ struct UTMLoggingSwift: LogHandler {
         return !metadata.isEmpty ? metadata.map { "\($0)=\($1)" }.joined(separator: " ") : nil
     }
     
+    static func log(_ message: String, _ args: Any ...) {
+        let shared = UTMLogging.sharedInstance()
+        shared.writeLine(String(format: message, args))
+    }
+    
     private func timestamp() -> String {
         var buffer = [Int8](repeating: 0, count: 255)
         var timestamp = time(nil)

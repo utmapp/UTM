@@ -311,14 +311,6 @@ static int defaultEntry(UTMProcess *self, int argc, const char *argv[], const ch
     completion(YES, bookmark, url.path);
 }
 
-- (void)accessDataWithBookmark:(NSData *)bookmark {
-    [self accessDataWithBookmark:bookmark securityScoped:NO completion:^(BOOL success, NSData *bookmark, NSString *path) {
-        if (!success) {
-            UTMLog(@"Access bookmark failed for: %@", path);
-        }
-    }];
-}
-
 - (void)accessDataWithBookmark:(NSData *)bookmark securityScoped:(BOOL)securityScoped completion:(void(^)(BOOL, NSData * _Nullable, NSString * _Nullable))completion {
     if (_connection) {
         [[_connection remoteObjectProxy] accessDataWithBookmark:bookmark securityScoped:securityScoped completion:completion];
@@ -327,34 +319,12 @@ static int defaultEntry(UTMProcess *self, int argc, const char *argv[], const ch
     }
 }
 
-- (void)stopAccessingPathThread:(nullable NSString *)path {
-    if (!path) {
-        return;
-    }
-    for (NSURL *url in _urls) {
-        if ([url.path isEqualToString:path]) {
-            [url stopAccessingSecurityScopedResource];
-            [_urls removeObject:url];
-            return;
-        }
-    }
-    UTMLog(@"Cannot find '%@' in existing scoped access.", path);
-}
-
 - (void)stopAccessingPath:(nullable NSString *)path {
     if (_connection) {
         [[_connection remoteObjectProxy] stopAccessingPath:path];
     } else {
         [self stopAccessingPathThread:path];
     }
-}
-
-- (NSError *)errorWithMessage:(nullable NSString *)message {
-    return [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: message}];
-}
-
-- (void)processHasExited:(NSInteger)exitCode message:(nullable NSString *)message {
-    UTMLog(@"QEMU has exited with code %ld and message %@", exitCode, message);
 }
 
 @end
