@@ -34,8 +34,6 @@ typedef NS_OPTIONS(NSUInteger, UTMSpiceIOOptions) {
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const kUTMErrorDomain = @"com.utmapp.utm";
-
 @interface UTMSpiceIO : NSObject<CSConnectionDelegate, QEMUInterface>
 
 @property (nonatomic, readonly, nullable) CSDisplay *primaryDisplay;

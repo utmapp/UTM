@@ -58,6 +58,7 @@ public func startProcess(ptr: UnsafeMutableRawPointer) -> UnsafeMutableRawPointe
 
 class UTMProcess : NSObject {
     typealias UTMProcessThreadEntry = (UTMProcess, Int32, UnsafeMutablePointer<UnsafePointer<Int8>>, UnsafeMutablePointer<UnsafePointer<Int8>>) -> Int32
+    public let UTMErrorDomain: String = "com.utmapp.utm"
 
     public let libraryURL: URL = Bundle.main.bundleURL
                                     .appendingPathComponent("Contents", isDirectory: true)
@@ -322,7 +323,7 @@ class UTMProcess : NSObject {
     }
     
     public func errorWithMessage(message: String) -> NSError {
-        return NSError(domain: kUTMErrorDomain, code: -1, userInfo: [NSLocalizedDescriptionKey: message])
+        return NSError(domain: UTMErrorDomain, code: -1, userInfo: [NSLocalizedDescriptionKey: message])
     }
     
     public func processHasExited(_ exitCode: Int, message: String) {
