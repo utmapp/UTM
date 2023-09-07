@@ -18,8 +18,8 @@ import Foundation
 
 class UTMQemuSystem: UTMProcess, QEMULauncher {
     public var rendererBackend: UTMQEMURendererBackend
-    @objc public var launcherDelegate: QEMULauncherDelegate
-    @objc public var logging: QEMULogging
+    @objc public var launcherDelegate: QEMULauncherDelegate?
+    @objc public var logging: QEMULogging?
     public var hasDebugLog: Bool
     public var architecture: String
     public var mutableEnvironemnt: Dictionary<String, String>
@@ -71,11 +71,11 @@ class UTMQemuSystem: UTMProcess, QEMULauncher {
     }
 
     public func standardOutput() -> Pipe {
-        return logging.standardOutput
+        return logging!.standardOutput
     }
 
     public func standardError() -> Pipe {
-        return logging.standardError
+        return logging!.standardError
     }
     
     public func environment() -> Dictionary<String, String> {
@@ -102,12 +102,14 @@ class UTMQemuSystem: UTMProcess, QEMULauncher {
             var bookmark: Data? = remoteBookmarks[resourceURL]
             var securityScoped = true
             if bookmark == nil {
-                bookmark = resourceURL.bookmarkData()
+                do {
+                    bookmark = try resourceURL.bookmarkData()
+                } catch {}
                 securityScoped = false
             }
             if let bookmark = bookmark {
                 group.enter()
-                accessData(withBookmark: bookmark, securityScoped: securityScoped, completion: { success, bookmark, path in
+                accessDataWithBookmark(bookmark: bookmark, securityScoped: securityScoped, completion: { success, bookmark, path in
                     if !success {
                         UTMLoggingSwift.log("Access QEMU bookmark failed for: %@", path!)
                     }
@@ -125,7 +127,7 @@ class UTMQemuSystem: UTMProcess, QEMULauncher {
     }
     
     public override func processHasExited(exitCode: Int, message: String?) {
-        launcherDelegate.qemuLauncher(self, didExitWithExitCode: exitCode, message: message)
+        launcherDelegate!.qemuLauncher(self, didExitWithExitCode: exitCode, message: message)
     }
 }
 

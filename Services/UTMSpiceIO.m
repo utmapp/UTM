@@ -18,8 +18,6 @@
 #import "UTMSpiceIO.h"
 #import "UTM-Swift.h"
 
-NSString *const kUTMErrorDomain = @"com.utmapp.utm";
-
 @interface UTMSpiceIO ()
 
 @property (nonatomic) NSURL *socketUrl;
