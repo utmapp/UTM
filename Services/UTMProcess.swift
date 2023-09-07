@@ -197,8 +197,8 @@ class UTMProcess : NSObject {
     public func startQemuRemote(name: String, completion: @escaping (_ error: Error?) -> Void) {
         do {
             let libBookmark = try self.libraryURL.bookmarkData()
-            let standardOutput = self.standardOutput!.fileHandleForWriting
-            let standardError = self.standardError!.fileHandleForWriting
+            let standardOutput = self.standardOutput?.fileHandleForWriting ?? FileHandle()
+            let standardError = self.standardError?.fileHandleForWriting ?? FileHandle()
             var proxy = connection!.remoteObjectProxy as! any QEMUHelperProtocol
             proxy.environment = self.environemnt
             proxy.currentDirectoryPath = self.currentDirectoryUrl!.path
