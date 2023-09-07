@@ -113,7 +113,7 @@ class UTMProcess : NSObject {
     }
     
     public func setupXpc() -> Bool {
-#if TARGET_OS_IPHONE
+#if os(iOS)
         return true;
 #else // Only supported on macOS
         var helperIdentifier = Bundle.main.infoDictionary!["HelperIdentifier"]
@@ -227,7 +227,7 @@ class UTMProcess : NSObject {
     }
     
     public func startProcess(name: String, completion: @escaping (_ error: Error?) -> Void) {
-#if TARGET_OS_IPHONE
+#if os(iOS)
         var base = ""
 #else
         var base = "Versions/A/"

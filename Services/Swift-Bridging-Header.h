@@ -15,7 +15,6 @@
 //
 
 #include <os/proc.h>
-#include "TargetConditionals.h"
 #include "UTMLegacyQemuConfiguration.h"
 #include "UTMLegacyQemuConfiguration+Constants.h"
 #include "UTMLegacyQemuConfiguration+Display.h"
