@@ -219,41 +219,6 @@ static int defaultEntry(UTMProcess *self, int argc, const char *argv[], const ch
     completion(nil);
 }
 
-- (void)startQemuRemote:(nonnull NSString *)name completion:(nonnull void (^)(NSError * _Nullable))completion {
-    NSError *error;
-    NSData *libBookmark = [self.libraryURL bookmarkDataWithOptions:0
-                                    includingResourceValuesForKeys:nil
-                                                     relativeToURL:nil
-                                                             error:&error];
-    if (!libBookmark) {
-        completion(error);
-        return;
-    }
-    __weak typeof(self) _self = self;
-    NSFileHandle *standardOutput = self.standardOutput.fileHandleForWriting;
-    NSFileHandle *standardError = self.standardError.fileHandleForWriting;
-    [_connection.remoteObjectProxy setEnvironment:self.environment];
-    [_connection.remoteObjectProxy setCurrentDirectoryPath:self.currentDirectoryUrl.path];
-    // this is needed to prevent XNU from terminating an idle XPC helper
-    [_connection.remoteObjectProxy assertActiveWithToken:^(BOOL ignored) {
-        // do nothing
-    }];
-    [[_connection remoteObjectProxyWithErrorHandler:^(NSError * _Nonnull error) {
-        if (error.domain == NSCocoaErrorDomain && error.code == NSXPCConnectionInvalid) {
-            // inhibit this error since we always see it on quit
-            [_self processHasExited:0 message:nil];
-        } else {
-            [_self processHasExited:error.code message:error.localizedDescription];
-        }
-    }] startQemu:name standardOutput:standardOutput standardError:standardError libraryBookmark:libBookmark argv:self.argv completion:^(BOOL success, NSString *msg){
-        if (!success) {
-            completion([self errorWithMessage:msg]);
-        } else {
-            completion(nil);
-        }
-    }];
-}
-
 - (void)startProcess:(nonnull NSString *)name completion:(nonnull void (^)(NSError * _Nullable))completion {
 #if TARGET_OS_IPHONE
     NSString *base = @"";
@@ -266,16 +231,6 @@ static int defaultEntry(UTMProcess *self, int argc, const char *argv[], const ch
         [self startQemuRemote:dylib completion:completion];
     } else {
         [self startDylibThread:dylib completion:completion];
-    }
-}
-
-- (void)stopProcess {
-    if (_connection) {
-        [[_connection remoteObjectProxy] terminate];
-        [_connection invalidate];
-    }
-    for (NSURL *url in _urls) {
-        [url stopAccessingSecurityScopedResource];
     }
 }
 
@@ -309,22 +264,6 @@ static int defaultEntry(UTMProcess *self, int argc, const char *argv[], const ch
         UTMLog(@"Failed to access security scoped resource for: %@", url);
     }
     completion(YES, bookmark, url.path);
-}
-
-- (void)accessDataWithBookmark:(NSData *)bookmark securityScoped:(BOOL)securityScoped completion:(void(^)(BOOL, NSData * _Nullable, NSString * _Nullable))completion {
-    if (_connection) {
-        [[_connection remoteObjectProxy] accessDataWithBookmark:bookmark securityScoped:securityScoped completion:completion];
-    } else {
-        [self accessDataWithBookmarkThread:bookmark securityScoped:securityScoped completion:completion];
-    }
-}
-
-- (void)stopAccessingPath:(nullable NSString *)path {
-    if (_connection) {
-        [[_connection remoteObjectProxy] stopAccessingPath:path];
-    } else {
-        [self stopAccessingPathThread:path];
-    }
 }
 
 @end

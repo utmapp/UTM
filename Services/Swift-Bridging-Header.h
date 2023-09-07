@@ -26,11 +26,12 @@
 #include "UTMLegacyQemuConfiguration+System.h"
 #include "UTMLegacyQemuConfigurationPortForward.h"
 #include "UTMProcess.h"
-#include "UTMQemuSystem.h"
 #include "UTMJailbreak.h"
 #include "UTMLogging.h"
 #include "UTMLegacyViewState.h"
 #include "UTMSpiceIO.h"
+#include "QEMUHelperProtocol.h"
+#include "QEMUHelperDelegate.h"
 #if TARGET_OS_IPHONE
 #include "UTMLocationManager.h"
 #include "VMDisplayViewController.h"
