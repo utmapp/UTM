@@ -17,22 +17,22 @@
 import Foundation
 
 class UTMQemuSystem: UTMProcess, QEMULauncher {
-    public var rendererBackend: UTMQEMURendererBackend
+    public var rendererBackend: UTMQEMURendererBackend = .kQEMURendererBackendDefault
     @objc public var launcherDelegate: QEMULauncherDelegate?
     @objc public var logging: QEMULogging?
-    public var hasDebugLog: Bool
+    public var hasDebugLog: Bool = false
     public var architecture: String
-    public var mutableEnvironemnt: Dictionary<String, String>
-    public var _qemu_init: @convention(c)(Int32, UnsafeMutablePointer<UnsafePointer<Int8>>, UnsafeMutablePointer<UnsafePointer<Int8>>) -> Int32
-    public var _qemu_main_loop: @convention(c)() -> Void
-    public var _qemu_cleanup: @convention(c)() -> Void
-    public var resources: [URL]
-    public var remoteBookmarks: Dictionary<URL, Data>
+    public var mutableEnvironemnt: Dictionary<String, String> = [:]
+    public var _qemu_init: (@convention(c)(Int32, UnsafeMutablePointer<UnsafePointer<Int8>>, UnsafeMutablePointer<UnsafePointer<Int8>>) -> Int32)!
+    public var _qemu_main_loop: (@convention(c)() -> Void)!
+    public var _qemu_cleanup: (@convention(c)() -> Void)!
+    public var resources: [URL] = []
+    public var remoteBookmarks: Dictionary<URL, Data> = [:]
 
     public init?(arguments: [String], architecture: String) {
+        self.architecture = architecture
         super.init(arguments: arguments)
         self.entry = UTMQemuSystem.startQemu
-        self.architecture = architecture
     }
 
     public override func didLoadDylib(_ handle: UnsafeMutableRawPointer) -> Bool {
@@ -96,7 +96,7 @@ class UTMQemuSystem: UTMProcess, QEMULauncher {
         }
     }
 
-    public func startQemuWithCompletion(completion: @escaping (_ error: Error?) -> Void) {
+    public func startQemu(completion: @escaping (_ error: Error?) -> Void) {
         var group: DispatchGroup = DispatchGroup()
         for resourceURL in resources {
             var bookmark: Data? = remoteBookmarks[resourceURL]

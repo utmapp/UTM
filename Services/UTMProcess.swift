@@ -57,7 +57,7 @@ public func startProcess(ptr: UnsafeMutableRawPointer) -> UnsafeMutableRawPointe
     return nil
 }
 
-class UTMProcess {
+class UTMProcess : NSObject {
     typealias UTMProcessThreadEntry = (UTMProcess, Int32, UnsafeMutablePointer<UnsafePointer<Int8>>, UnsafeMutablePointer<UnsafePointer<Int8>>) -> Int32
 
     public let libraryURL: URL = Bundle.main.bundleURL
@@ -98,6 +98,7 @@ class UTMProcess {
         completionQueue = DispatchQueue(label: "QEMU Completion Queue", qos: .utility)
         entry = UTMProcess.defaultEntry
         done = DispatchSemaphore(value: 0)
+        super.init()
         if !setupXpc() {
             return nil
         }
