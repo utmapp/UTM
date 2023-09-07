@@ -1,5 +1,5 @@
 //
-// Copyright © 2020 osy. All rights reserved.
+// Copyright © 2023 osy. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,18 +14,18 @@
 // limitations under the License.
 //
 
-#import <Foundation/Foundation.h>
+import Foundation
 
-NS_ASSUME_NONNULL_BEGIN
+public func UTMLog(_ format: String, _ args: Any ...) {
+    UTMLogging.shared.writeLine((String(format: format, args) + "\n"))
+}
 
-void UTMLog(NSString *format, ...) NS_FORMAT_FUNCTION(1,2) NS_NO_TAIL_CALL;
-
-@interface UTMLogging : NSObject
-
-+ (UTMLogging *)sharedInstance;
-
-- (void)writeLine:(NSString *)line;
-
-@end
-
-NS_ASSUME_NONNULL_END
+class UTMLogging {
+    static let shared = UTMLogging()
+    
+    private init() {}
+    
+    public func writeLine(_ line: String) {
+        QEMULogging.sharedInstance().writeLine(line)
+    }
+}

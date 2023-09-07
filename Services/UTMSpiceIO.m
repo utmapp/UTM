@@ -252,7 +252,7 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
 
 - (void)startSharingDirectory {
     if (self.sharedDirectory) {
-        UTMLog(@"setting share directory to %@", self.sharedDirectory.path);
+        // UTMLog(@"setting share directory to %@", self.sharedDirectory.path);
         [self.sharedDirectory startAccessingSecurityScopedResource];
         [self.spiceConnection.session setSharedDirectory:self.sharedDirectory.path readOnly:(self.options & UTMSpiceIOOptionsIsShareReadOnly) == UTMSpiceIOOptionsIsShareReadOnly];
     }
@@ -262,7 +262,7 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
     if (self.sharedDirectory) {
         [self.sharedDirectory stopAccessingSecurityScopedResource];
         self.sharedDirectory = nil;
-        UTMLog(@"ended share directory sharing");
+        // UTMLog(@"ended share directory sharing");
     }
 }
 

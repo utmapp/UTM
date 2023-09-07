@@ -111,7 +111,7 @@ class UTMQemuSystem: UTMProcess, QEMULauncher {
                 group.enter()
                 accessData(bookmark: bookmark, securityScoped: securityScoped, completion: { success, bookmark, path in
                     if !success {
-                        UTMLoggingSwift.log("Access QEMU bookmark failed for: %@", path!)
+                        UTMLog("Access QEMU bookmark failed for: %@", path!)
                     }
                     group.leave()
                 })
