@@ -17,10 +17,27 @@
 import Foundation
 
 class UTMProcess {
-    public let hasRemoteProcess: Bool
-    public let libraryURL: URL
+    typealias UTMProcessThreadEntry = (UTMProcess, Int32, UnsafeMutablePointer<UnsafePointer<Int8>>, UnsafeMutablePointer<UnsafePointer<Int8>>) -> Int32
+
+    public let libraryURL: URL = Bundle.main.bundleURL
+                                    .appendingPathComponent("Contents", isDirectory: true)
+                                    .appendingPathComponent("Frameworks", isDirectory: true)
+    public var hasRemoteProcess: Bool {
+        return connection != nil
+    }
+    public var arguments: String {
+        var args = ""
+        for arg in argv {
+            if arg.contains(where: { $0 == " "} ) {
+                args = args.appendingFormat(" \"%@\"", arg)
+            } else {
+                args = args.appendingFormat(" %@", arg)
+            }
+        }
+        return args
+    }
+    
     public var argv: [String]
-    public let arguments: String
     public var environemnt: Dictionary<String, String>?
     public var status: Int
     public var fatal: Int
@@ -30,13 +47,62 @@ class UTMProcess {
     public var currentDirectoryUrl: URL?
     public var urls: [URL]
     public var connection: NSXPCConnection?
+    public var completionQueue: DispatchQueue
+    public var done: DispatchSemaphore
+    public var processName: String?
 
-    init(arguments: [String]) {
-        <#statements#>
+    init?(arguments: [String]) {
+        argv = arguments
+        urls = []
+        if !setupXpc() {
+            return nil
+        }
+        completionQueue = DispatchQueue(label: "QEMU Completion Queue", qos: .utility)
+        entry = UTMProcess.defaultEntry
+        done = DispatchSemaphore(value: 0)
     }
     
-    public static func startProcess(args) {
+    deinit {
+        stopProcess()
+    }
+    
+    public static func startProcess(process: UTMProcess) {
+        var processArgv = process.argv
+        var environment: [String] = []
+
+        for (_, item) in process.environemnt!.enumerated() {
+            var combined = String(format: "%@=%@", item.key, item.value)
+            environment.append(combined)
+            setenv(item.key, item.value, 1)
+        }
+        var envc = environment.count
+        var envp: [UnsafePointer<Int8>] = []
+        for env in environment {
+            envp.append(UnsafePointer<Int8>(env.cString(using: .utf8)!))
+        }
+        envp.append(UnsafePointer<Int8>([]))
+        setenv("TMPDIR", FileManager.default.temporaryDirectory.path.cString(using: .utf8), 1)
+
+        var currentDirectoryPath = UnsafePointer<Int8>(process.currentDirectoryUrl!.path.cString(using: .utf8))
+        chdir(currentDirectoryPath)
+
+        var argc: Int32 = Int32(processArgv.count + 1)
+        var argv: [UnsafePointer<Int8>]
+        if let name = process.processName {
+            argv.append(UnsafePointer<Int8>(name.cString(using: .utf8)!))
+        } else {
+            argv.append(UnsafePointer<Int8>("process".cString(using: .utf8)!))
+        }
+        for arg in processArgv {
+            argv.append(UnsafePointer<Int8>(arg.cString(using: .utf8)!))
+        }
         
+        argv.withUnsafeMutableBufferPointer({ argv in
+            envp.withUnsafeMutableBufferPointer({ envp in
+                process.status = Int(process.entry(process, argc, argv.baseAddress!, envp.baseAddress!))
+            })
+        })
+        process.done.signal()
     }
     
     public static func defaultEntry(process: UTMProcess, argc: Int32, argv: UnsafeMutablePointer<UnsafePointer<Int8>>, envp: UnsafeMutablePointer<UnsafePointer<Int8>>) -> Int32 {
@@ -44,9 +110,9 @@ class UTMProcess {
     }
     
     public func setupXpc() -> Bool {
-        #if TARGET_OS_IPHONE
+#if TARGET_OS_IPHONE
         return true;
-        #else // Only supported on macOS
+#else // Only supported on macOS
         var helperIdentifier = Bundle.main.infoDictionary!["HelperIdentifier"]
         if helperIdentifier == nil {
             helperIdentifier = "com.utmapp.QEMUHelper"
@@ -58,7 +124,7 @@ class UTMProcess {
         connection!.resume()
         // NSXPCConnection can never be nil in Swift
         return true
-        #endif
+#endif
     }
 
     public func pushArgv(arg: String) {
@@ -91,10 +157,11 @@ class UTMProcess {
             proxy.assertActive(token: { _ in })
             
             proxy = connection!.remoteObjectProxyWithErrorHandler({ error in
-                if error.domain == NSCocoaErrorDomain && error.code == NSXPCConnectionInvalid {
-                    self.processHasExited(exitCode: 0, message: nil)
+                let nsError = error as NSError
+                if nsError.domain == NSCocoaErrorDomain && nsError.code == NSXPCConnectionInvalid {
+                    self.processHasExited(exitCode: 0, message: "")
                 } else {
-                    self.processHasExited(exitCode: error.code, message: error.localizedDescription)
+                    self.processHasExited(exitCode: nsError.code, message: error.localizedDescription)
                 }
             }) as! any QEMUHelperProtocol
             
@@ -112,7 +179,18 @@ class UTMProcess {
     }
     
     public func startProcess(name: String, completion: @escaping (_ error: Error?) -> Void) {
-        
+#if TARGET_OS_IPHONE
+        var base = ""
+#else
+        var base = "Versions/A/"
+#endif
+        var dylib = String(format: "%@.framework/%@%@", name, base, name)
+        self.processName = name
+        if let connection = connection {
+            startQemuRemote(name: dylib, completion: completion)
+        } else {
+            startDylibThread(dylib: dylib, completion: completion)
+        }
     }
     
     public func stopProcess() {
@@ -127,10 +205,37 @@ class UTMProcess {
         }
     }
     
-    public func accessDataWithBookmarkThread(bookmark: Data, securityScoped: Bool, completion: @escaping (_ error: Error?) -> Void) {
-        
+    public func accessDataWithBookmarkThread(bookmark: Data, securityScoped: Bool, completion: @escaping (_ bool: Bool, _ data: Data?, _ path: String?) -> Void) {
+        var stale = false
+        var url: URL
+
+        do {
+            var url = try URL(resolvingBookmarkData: bookmark, bookmarkDataIsStale: &stale)
+        } catch {
+            UTMLoggingSwift.log("Failed to access bookmark data.")
+            completion(false, nil, nil)
+            return
+        }
+
+        do {
+            if stale || !securityScoped {
+                var bookmark = try url.bookmarkData(options: .minimalBookmark)
+                
+            }
+        } catch {
+            UTMLoggingSwift.log("Failed to create new bookmark!")
+            completion(false, bookmark, url.path)
+            return
+        }
+
+        if url.startAccessingSecurityScopedResource() {
+            urls.append(url)
+        } else {
+            UTMLoggingSwift.log("Failed to access security scoped resource for: %@", url)
+        }
+        completion(true, bookmark, url.path)
     }
-    
+
     public func accessDataWithBookmark(bookmark: Data) {
         self.accessDataWithBookmark(bookmark: bookmark, securityScoped: false, completion: { success, bookmark, path  in
             if !success {

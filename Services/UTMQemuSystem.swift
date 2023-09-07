@@ -17,14 +17,6 @@
 import Foundation
 
 class UTMQemuSystem: UTMProcess, QEMULauncher {
-    func startQemu(completion: @escaping (Error?) -> Void) {
-        <#code#>
-    }
-    
-    func startQemu() async throws {
-        <#code#>
-    }
-    
     public var rendererBackend: UTMQEMURendererBackend
     @objc public var launcherDelegate: QEMULauncherDelegate
     @objc public var logging: QEMULogging
@@ -37,7 +29,7 @@ class UTMQemuSystem: UTMProcess, QEMULauncher {
     public var resources: [URL]
     public var remoteBookmarks: Dictionary<URL, Data>
 
-    public init(arguments: [String], architecture: String) {
+    public init?(arguments: [String], architecture: String) {
         super.init(arguments: arguments)
         self.entry = UTMQemuSystem.startQemu
         self.architecture = architecture
