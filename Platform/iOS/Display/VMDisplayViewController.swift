@@ -58,7 +58,7 @@ public extension VMDisplayViewController {
         #if !os(visionOS)
         if runInBackground {
             logger.info("Start location tracking to enable running in background")
-            UTMLocationManager.sharedInstance().startUpdatingLocation()
+            UTMLocationManager.shared.startUpdatingLocation()
         }
         #endif
         delegate.displayDidAppear()

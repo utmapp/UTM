@@ -31,7 +31,6 @@
 #include "QEMUHelperProtocol.h"
 #include "QEMUHelperDelegate.h"
 #if TARGET_OS_IPHONE
-#include "UTMLocationManager.h"
 #include "VMDisplayViewController.h"
 //#if !defined(TARGET_OS_VISION) || !TARGET_OS_VISION
 #include "VMDisplayMetalViewController.h"
