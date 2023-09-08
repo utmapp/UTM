@@ -26,9 +26,11 @@
 #include "UTMLegacyQemuConfigurationPortForward.h"
 #include "UTMJailbreak.h"
 #include "UTMLegacyViewState.h"
-#include "UTMSpiceIO.h"
+#include "UTMSpiceIODelegate.h"
 #include "QEMUHelperProtocol.h"
 #include "QEMUHelperDelegate.h"
+#include "QEMUInterface.h"
+#include "CocoaSpice.h"
 #if TARGET_OS_IPHONE
 #include "VMDisplayViewController.h"
 //#if !defined(TARGET_OS_VISION) || !TARGET_OS_VISION
