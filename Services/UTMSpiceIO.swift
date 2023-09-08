@@ -139,7 +139,7 @@ class UTMSpiceIO: NSObject, CSConnectionDelegate, QEMUInterface {
             isConnected = true
             #if !WITH_QEMU_TCI
             primaryUsbManager = connection.usbManager
-            delegate!.spiceDidChangeUsbManager(connection.usbManager)
+            delegate?.spiceDidChangeUsbManager(connection.usbManager)
             #endif
         }
     }
@@ -154,7 +154,7 @@ class UTMSpiceIO: NSObject, CSConnectionDelegate, QEMUInterface {
     func spiceInputUnavailable(_ connection: CSConnection, input: CSInput) {
         if primaryInput == input {
             primaryInput = nil
-            delegate!.spiceDidDestroyInput(input)
+            delegate?.spiceDidDestroyInput(input)
         }
     }
     
@@ -177,20 +177,20 @@ class UTMSpiceIO: NSObject, CSConnectionDelegate, QEMUInterface {
                 primaryDisplay = display
             }
             displays.append(display)
-            delegate!.spiceDidCreateDisplay(display)
+            delegate?.spiceDidCreateDisplay(display)
         }
     }
     
     func spiceDisplayUpdated(_ connection: CSConnection, display: CSDisplay) {
         if connection == spiceConnection {
-            delegate!.spiceDidUpdateDisplay(display)
+            delegate?.spiceDidUpdateDisplay(display)
         }
     }
     
     func spiceDisplayDestroyed(_ connection: CSConnection, display: CSDisplay) {
         if connection == spiceConnection {
             displays.removeAll(where: { $0 == display })
-            delegate!.spiceDidDestroyDisplay(display)
+            delegate?.spiceDidDestroyDisplay(display)
         }
     }
     
