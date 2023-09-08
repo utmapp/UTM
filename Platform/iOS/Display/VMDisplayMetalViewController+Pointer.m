@@ -21,7 +21,6 @@
 #import "VMCursor.h"
 #import "CSDisplay.h"
 #import "VMScroll.h"
-#import "UTMLogging.h"
 #import "UTM-Swift.h"
 
 @interface VMDisplayMetalViewController ()
@@ -59,9 +58,9 @@ NS_AVAILABLE_IOS(13.4)
 
 - (void)mouseDidBecomeCurrent:(NSNotification *)notification API_AVAILABLE(ios(14)) {
     GCMouse *mouse = notification.object;
-    UTMLog(@"mouseDidBecomeCurrent: %p", mouse);
+    // UTMLog(@"mouseDidBecomeCurrent: %p", mouse);
     if (!mouse) {
-        UTMLog(@"invalid mouse object!");
+        // UTMLog(@"invalid mouse object!");
         return;
     }
     mouse.mouseInput.mouseMovedHandler = ^(GCMouseInput * _Nonnull mouse, float deltaX, float deltaY) {
@@ -97,7 +96,7 @@ NS_AVAILABLE_IOS(13.4)
 
 - (void)mouseDidStopBeingCurrent:(NSNotification *)notification API_AVAILABLE(ios(14)) {
     GCMouse *mouse = notification.object;
-    UTMLog(@"mouseDidStopBeingCurrent: %p", mouse);
+    // UTMLog(@"mouseDidStopBeingCurrent: %p", mouse);
     mouse.mouseInput.mouseMovedHandler = nil;
     mouse.mouseInput.leftButton.pressedChangedHandler = nil;
     mouse.mouseInput.rightButton.pressedChangedHandler = nil;

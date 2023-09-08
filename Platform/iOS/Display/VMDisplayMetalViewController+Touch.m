@@ -23,8 +23,6 @@
 #import "VMCursor.h"
 #import "VMScroll.h"
 #import "CSDisplay.h"
-#import "UTMSpiceIO.h"
-#import "UTMLogging.h"
 #import "UTM-Swift.h"
 
 const CGFloat kScrollSpeedReduction = 100.0f;
@@ -359,7 +357,7 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
         [self.vmInput sendMousePosition:self.mouseButtonDown absolutePoint:translated];
         [self.vmDisplay.cursor moveTo:translated]; // required to show cursor on screen
     } else {
-        UTMLog(@"Warning: ignored mouse set (%f, %f) while mouse is in server mode", translated.x, translated.y);
+        // UTMLog(@"Warning: ignored mouse set (%f, %f) while mouse is in server mode", translated.x, translated.y);
     }
     return translated;
 }
@@ -370,7 +368,7 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
     if (self.vmInput.serverModeCursor) {
         [self.vmInput sendMouseMotion:self.mouseButtonDown relativePoint:translation];
     } else {
-        UTMLog(@"Warning: ignored mouse motion (%f, %f) while mouse is in client mode", translation.x, translation.y);
+        // UTMLog(@"Warning: ignored mouse motion (%f, %f) while mouse is in client mode", translation.x, translation.y);
     }
     return translation;
 }
@@ -570,7 +568,7 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveEvent:(UIEvent *)event API_AVAILABLE(ios(13.4)) {
     if (event.type == UIEventTypeTransform) {
-        UTMLog(@"ignoring UIEventTypeTransform");
+        // UTMLog(@"ignoring UIEventTypeTransform");
         return NO;
     } else {
         return YES;
@@ -606,7 +604,7 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
     BOOL shouldUseServerMouse = (type == VMMouseTypeRelative);
     self.vmDisplay.cursor.isInhibited = shouldHideCursor;
     if (shouldUseServerMouse != self.vmInput.serverModeCursor) {
-        UTMLog(@"Switching mouse mode to server:%d for type:%ld", shouldUseServerMouse, type);
+        // UTMLog(@"Switching mouse mode to server:%d for type:%ld", shouldUseServerMouse, type);
         [self.delegate requestInputTablet:!shouldUseServerMouse];
         return YES;
     }

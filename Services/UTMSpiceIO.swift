@@ -15,7 +15,11 @@
 //
 
 import Foundation
+#if WITH_QEMU_TCI
+import CocoaSpiceNoUsb
+#else
 import CocoaSpice
+#endif
 
 class UTMSpiceIO: NSObject, CSConnectionDelegate, QEMUInterface {
     public let UTMErrorDomain: String = "com.utmapp.utm"

@@ -16,7 +16,6 @@
 
 #import "VMDisplayMetalViewController+Keyboard.h"
 #import "VMDisplayMetalViewController+Private.h"
-#import "UTMLogging.h"
 #import "VMKeyboardView.h"
 #import "VMKeyboardButton.h"
 #import "UTM-Swift.h"
@@ -46,10 +45,10 @@
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
     NSString *string = pasteboard.string;
     if (string) {
-        UTMLog(@"Pasting: %@", string);
+        // UTMLog(@"Pasting: %@", string);
         [self.keyboardView insertText:string];
     } else {
-        UTMLog(@"No string to paste.");
+        // UTMLog(@"No string to paste.");
     }
 }
 

@@ -15,7 +15,11 @@
 //
 
 import Foundation
+#if WITH_QEMU_TCI
+import CocoaSpiceNoUsb
+#else
 import CocoaSpice
+#endif
 
 @objc protocol UTMSpiceIODelegate {
     func spiceDidCreateInput(_ input: CSInput)

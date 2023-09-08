@@ -24,7 +24,6 @@
 #endif
 #import "VMDisplayMetalViewController+Gamepad.h"
 #import "VMKeyboardView.h"
-#import "UTMLogging.h"
 #import "CSDisplay.h"
 #import "UTM-Swift.h"
 @import CocoaSpiceRenderer;
@@ -80,13 +79,13 @@
     self.mtkView.frame = self.view.bounds;
     self.mtkView.device = MTLCreateSystemDefaultDevice();
     if (!self.mtkView.device) {
-        UTMLog(@"Metal is not supported on this device");
+        // UTMLog(@"Metal is not supported on this device");
         return;
     }
     
     self.renderer = [[CSMetalRenderer alloc] initWithMetalKitView:self.mtkView];
     if (!self.renderer) {
-        UTMLog(@"Renderer failed initialization");
+        // UTMLog(@"Renderer failed initialization");
         return;
     }
     
@@ -185,7 +184,7 @@
     if ((code & 0xFF00) == 0xE000) {
         code = 0x100 | (code & 0xFF);
     } else if (code >= 0x100) {
-        UTMLog(@"warning: ignored invalid keycode 0x%x", code);
+        // UTMLog(@"warning: ignored invalid keycode 0x%x", code);
     }
     [self.vmInput sendKey:type code:code];
 }
@@ -201,7 +200,7 @@
 }
 
 - (void)displayResize:(CGSize)size {
-    UTMLog(@"resizing to (%f, %f)", size.width, size.height);
+    // UTMLog(@"resizing to (%f, %f)", size.width, size.height);
     size = [self convertSizeToNative:size];
     CGRect bounds = CGRectMake(0, 0, size.width, size.height);
     [self.vmDisplay requestResolution:bounds];
