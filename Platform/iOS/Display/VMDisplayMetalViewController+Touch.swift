@@ -16,11 +16,11 @@
 
 import Foundation
 
-extension VMDisplayMetalViewController: UIGestureRecognizerDelegate {
-    let kScrollSpeedReduction: CGFloat = 100.0
-    let kCursorResistance = 50.0
-    let kScrollResistance = 10.0
+let kScrollSpeedReduction: CGFloat = 100.0
+let kCursorResistance = 50.0
+let kScrollResistance = 10.0
 
+extension VMDisplayMetalViewController: UIGestureRecognizerDelegate {
     var mouseButtonDown: CSInputButton {
         var button = CSInputButton()
         if mouseLeftDown {
@@ -70,6 +70,10 @@ extension VMDisplayMetalViewController: UIGestureRecognizerDelegate {
             // Legacy iOS 13.4 mouse handeling requires absolute
             return .absolute
         }
+    }
+    
+    var isInvertScroll: Bool {
+        return boolForSetting("InvertScroll")
     }
     
     init() {
@@ -195,8 +199,71 @@ extension VMDisplayMetalViewController: UIGestureRecognizerDelegate {
         }
     }
     
+    public func moveScreen(_ sender: UIPanGestureRecognizer) {
+        if sender.state == .began {
+            lastTwoPanOrigin = vmDisplay.viewportOrigin
+        }
+        if sender.state != .cancelled {
+            var translation = sender.translation(in: sender.view)
+            var viewport = vmDisplay.viewportOrigin
+            viewport.x = CGPointToPixel(translation.x) + lastTwoPanOrigin.x
+            viewport.y = CGPointToPixel(translation.y) + lastTwoPanOrigin.y
+            vmDisplay.viewportOrigin = clipDisplayToView(viewport)
+            // Persist this change in viewState
+            delegate.displayOrigin = vmDisplay.viewportOrigin
+        }
+        if sender.state == .ended {
+            // TODO: Decelerate
+        }
+    }
+    
+    @IBAction public func gestureTwoPan(_ sender: UIPanGestureRecognizer) {
+        switch twoFingerPanType {
+        case .moveScreen:
+            moveScreen(sender)
+            break
+        case .dragCursor:
+            dragCursor(sender.state, primary: true, secondary: false, middle: false)
+            moveMouseWithInertia(sender)
+            break
+        case .mouseWheel:
+            scrollWithInertia(sender)
+            break
+        default:
+            break
+        }
+    }
+    
+    @IBAction public func gestureThreePan(_ sender: UIPanGestureRecognizer) {
+        switch threeFingerPanType {
+        case .moveScreen:
+            moveScreen(sender)
+            break
+        case .dragCursor:
+            dragCursor(sender.state, primary: true, secondary: false, middle: false)
+            moveMouseWithInertia(sender)
+            break
+        case .mouseWheel:
+            scrollWithInertia(sender)
+            break
+        default:
+            break
+        }
+    }
+    
     public func moveMouseAbosolute(_ location: CGPoint) -> CGPoint {
-        
+        var translated = location
+        translated.x = CGPointToPixel(translated.x)
+        translated.y = CGPointToPixel(translated.y)
+        translated = clipCursorToDisplay(translated)
+        if !vmInput!.serverModeCursor {
+            vmInput!.sendMousePosition(mouseButtonDown, absolutePoint: translated)
+            // Required to show cursor on screen
+            vmInput!.cursor.moveTo(translated)
+        } else {
+            logger.warning("Ignored mouse set (\(translated.x), \(translated.y)) while mouse is in server mode")
+        }
+        return translated
     }
     
     public func moveMouseRelative(_ translation: CGPoint) -> CGPoint {
@@ -209,6 +276,29 @@ extension VMDisplayMetalViewController: UIGestureRecognizerDelegate {
     
     public func mouseClick(button: CSInputButton, location: CGPoint) {
         
+    }
+    
+    public func dragCursor(_ state: UIGestureRecognizer.State, primary: Bool, secondary: Bool, middle: Bool) {
+        if state == .began {
+            #if os(visionOS)
+            clickFeedbackGenerator.selectionChanged()
+            #endif
+            if primary {
+                mouseLeftDown = true
+            }
+            if secondary {
+                mouseRightDown = true
+            }
+            if middle {
+                mouseMiddleDown = true
+            }
+            vmInput!.sendMouseButton(mouseButtonDown, pressed: true)
+        } else if state == .ended {
+            mouseLeftDown = false
+            mouseRightDown = false
+            mouseMiddleDown = false
+            vmInput!.sendMouseButton(mouseButtonDown, pressed: false)
+        }
     }
 }
 
