@@ -96,7 +96,9 @@ class UTMSpiceIO: NSObject, CSConnectionDelegate, QEMUInterface {
         if options.intersection(.hasDebugLog) == .hasDebugLog {
             spice!.spiceSetDebug(true)
         }
+        // Do not need to encode/decode audio locally
         g_setenv("SPICE_DISABLE_OPUS", "1", 1)
+        // Need to chdir to workaround AF_UNIX sun_len limitations
         let curdir = socketUrl.deletingLastPathComponent().path
         if !FileManager.default.changeCurrentDirectoryPath(curdir) {
             throw NSError(domain: UTMErrorDomain, code: -1, userInfo: [NSLocalizedDescriptionKey: NSLocalizedString("Failed to change current directory.", comment: "UTMSpiceIO")])
