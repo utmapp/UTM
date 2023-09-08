@@ -22,7 +22,12 @@ class UTMSpiceIO: NSObject, CSConnectionDelegate, QEMUInterface {
     var connectDelegate: QEMUInterfaceConnectDelegate?
     
     var logHandler: LogHandler_t {
-        CSMain.shared.logHandler!
+        get {
+            CSMain.shared.logHandler!
+        }
+        set {
+            CSMain.shared.logHandler = newValue
+        }
     }
     
     var socketUrl: URL
@@ -39,30 +44,29 @@ class UTMSpiceIO: NSObject, CSConnectionDelegate, QEMUInterface {
     var spiceConnection: CSConnection?
     var spice: CSMain?
     var sharedDirectory: URL?
-    var port: Int
-    var dynamicResolutionSupported: Bool
-    var isConnected: Bool
+    var dynamicResolutionSupported: Bool = false
+    var isConnected: Bool = false
     
     public init(socketUrl: URL, options: UTMSpiceIOOptions) {
-        super.init()
         self.socketUrl = socketUrl
         self.options = options
         self.displays = []
         self.serials = []
+        super.init()
     }
     
     public func initializeSpiceIfNeeded() {
         if spiceConnection == nil {
-            var relativeSocketFile = URL(fileURLWithPath: socketUrl.lastPathComponent)
+            let relativeSocketFile = URL(fileURLWithPath: socketUrl.lastPathComponent)
             spiceConnection = CSConnection(unixSocketFile: relativeSocketFile)
             spiceConnection!.delegate = self
-            spiceConnection!.audioEnabled = (options.rawValue & UTMSpiceIOOptions.UTMSpiceIOOptionsHasAudio.rawValue) == UTMSpiceIOOptions.UTMSpiceIOOptionsHasAudio.rawValue
-            spiceConnection!.session.shareClipboard = (options.rawValue & UTMSpiceIOOptions.UTMSpiceIOOptionsHasClipboardSharing.rawValue) == UTMSpiceIOOptions.UTMSpiceIOOptionsHasClipboardSharing.rawValue
+            spiceConnection!.audioEnabled = options.intersection(.hasAudio) == .hasAudio
+            spiceConnection!.session.shareClipboard = options.intersection(.hasClipboardSharing) == .hasClipboardSharing
             spiceConnection!.session.pasteboardDelegate = UTMPasteboard.general
         }
     }
     
-    public func changeSharedDirectory(url: URL) {
+    public func changeSharedDirectory(_ url: URL) {
         if sharedDirectory != nil {
             endSharingDirectory()
         }
@@ -72,9 +76,9 @@ class UTMSpiceIO: NSObject, CSConnectionDelegate, QEMUInterface {
     
     public func startSharingDirectory() {
         if sharedDirectory != nil {
-            UTMLog("Setting share directory to %@", sharedDirectory!.path);
+            logger.info("Setting share directory to \(sharedDirectory!.path)");
             _ = sharedDirectory!.startAccessingSecurityScopedResource()
-            spiceConnection!.session.setSharedDirectory(sharedDirectory!.path, readOnly: (options.rawValue & UTMSpiceIOOptions.UTMSpiceIOOptionsIsShareReadOnly.rawValue) == UTMSpiceIOOptions.UTMSpiceIOOptionsIsShareReadOnly.rawValue)
+            spiceConnection!.session.setSharedDirectory(sharedDirectory!.path, readOnly: options.intersection(.isShareReadOnly) == .isShareReadOnly)
         }
     }
     
@@ -85,20 +89,16 @@ class UTMSpiceIO: NSObject, CSConnectionDelegate, QEMUInterface {
         }
     }
     
-    public func setLogHandler(logHandler: @escaping LogHandler_t) {
-        CSMain.shared.logHandler = logHandler
-    }
-    
     public func start() throws {
         if spice == nil {
             spice = CSMain.shared
         }
-        if (options.rawValue & UTMSpiceIOOptions.UTMSpiceIOOptionsHasDebugLog.rawValue) == UTMSpiceIOOptions.UTMSpiceIOOptionsHasDebugLog.rawValue {
+        if options.intersection(.hasDebugLog) == .hasDebugLog {
             spice?.spiceSetDebug(true)
         }
         // TODO: Figure this out in Swift
         // g_setenv("SPICE_DISABLE_OPUS", "1", true)
-        var curdir = socketUrl.deletingLastPathComponent().path
+        let curdir = socketUrl.deletingLastPathComponent().path
         if !FileManager.default.changeCurrentDirectoryPath(curdir) {
             throw NSError(domain: UTMErrorDomain, code: -1, userInfo: [NSLocalizedDescriptionKey: NSLocalizedString("Failed to change current directory.", comment: "UTMSpiceIO")])
         }
@@ -130,22 +130,24 @@ class UTMSpiceIO: NSObject, CSConnectionDelegate, QEMUInterface {
         #endif
     }
     
-    public func screenshotWithCompletion(completion: @escaping screenshotCallback_t) {
-        return primaryDisplay!.screenshot(completion: completion)
+    public func screenshot() async -> CSScreenshot? {
+        return await primaryDisplay!.screenshot()
     }
     
     func spiceConnected(_ connection: CSConnection) {
-        isConnected = true
-        #if !WITH_QEMU_TCI
-        primaryUsbManager = connection.usbManager
-        delegate!.spiceDidChangeUsbManager(connection.usbManager)
-        #endif
+        if connection == spiceConnection {
+            isConnected = true
+            #if !WITH_QEMU_TCI
+            primaryUsbManager = connection.usbManager
+            delegate!.spiceDidChangeUsbManager(connection.usbManager)
+            #endif
+        }
     }
     
     func spiceInputAvailable(_ connection: CSConnection, input: CSInput) {
         if primaryInput == nil {
             primaryInput = input
-            delegate!.spiceDidCreateInput(input)
+            delegate?.spiceDidCreateInput(input)
         }
     }
     
@@ -157,20 +159,26 @@ class UTMSpiceIO: NSObject, CSConnectionDelegate, QEMUInterface {
     }
     
     func spiceDisconnected(_ connection: CSConnection) {
-        isConnected = false
+        if connection == spiceConnection {
+            isConnected = false
+        }
     }
     
     func spiceError(_ connection: CSConnection, code: CSConnectionError, message: String?) {
-        isConnected = false
-        connectDelegate!.qemuInterface(self, didErrorWithMessage: message ?? "")
+        if connection == spiceConnection {
+            isConnected = false
+            connectDelegate!.qemuInterface(self, didErrorWithMessage: message ?? "")
+        }
     }
     
     func spiceDisplayCreated(_ connection: CSConnection, display: CSDisplay) {
-        if display.isPrimaryDisplay {
-            primaryDisplay = display
+        if connection == spiceConnection {
+            if display.isPrimaryDisplay {
+                primaryDisplay = display
+            }
+            displays.append(display)
+            delegate!.spiceDidCreateDisplay(display)
         }
-        displays.append(display)
-        delegate!.spiceDidCreateDisplay(display)
     }
     
     func spiceDisplayUpdated(_ connection: CSConnection, display: CSDisplay) {
@@ -196,11 +204,11 @@ class UTMSpiceIO: NSObject, CSConnectionDelegate, QEMUInterface {
     
     func spiceForwardedPortOpened(_ connection: CSConnection, port: CSPort) {
         if port.name == "org.qemu.monitor.qmp.0" {
-            var qemuPort = UTMQemuPort(from: port)
+            let qemuPort = UTMQemuPort(from: port)
             connectDelegate!.qemuInterface(self, didCreateMonitorPort: qemuPort)
         }
         if port.name == "org.qemu.guest_agent.0" {
-            var qemuPort = UTMQemuPort(from: port)
+            let qemuPort = UTMQemuPort(from: port)
             connectDelegate!.qemuInterface(self, didCreateGuestAgentPort: qemuPort)
         }
         if port.name == "com.utmapp.terminal.0" {
@@ -267,10 +275,12 @@ class UTMSpiceIO: NSObject, CSConnectionDelegate, QEMUInterface {
     }
 }
 
-enum UTMSpiceIOOptions: Int {
-    case UTMSpiceIOOptionsNone = 0
-    case UTMSpiceIOOptionsHasAudio = 1
-    case UTMSpiceIOOptionsHasClipboardSharing = 10
-    case UTMSpiceIOOptionsIsShareReadOnly = 100
-    case UTMSpiceIOOptionsHasDebugLog = 1000
+struct UTMSpiceIOOptions: OptionSet {
+    let rawValue: Int
+
+    static let none = UTMSpiceIOOptions([])
+    static let hasAudio = UTMSpiceIOOptions(rawValue: 1 << 0)
+    static let hasClipboardSharing = UTMSpiceIOOptions(rawValue: 1 << 1)
+    static let isShareReadOnly = UTMSpiceIOOptions(rawValue: 1 << 2)
+    static let hasDebugLog = UTMSpiceIOOptions(rawValue: 1 << 3)
 }

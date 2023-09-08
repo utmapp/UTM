@@ -111,7 +111,7 @@ class UTMQemuSystem: UTMProcess, QEMULauncher {
                 group.enter()
                 accessData(bookmark: bookmark, securityScoped: securityScoped, completion: { success, bookmark, path in
                     if !success {
-                        UTMLog("Access QEMU bookmark failed for: %@", path!)
+                        logger.error("Access QEMU bookmark failed for: \(path!)")
                     }
                     group.leave()
                 })

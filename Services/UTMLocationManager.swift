@@ -31,12 +31,12 @@ class UTMLocationManager: NSObject, CLLocationManagerDelegate {
     public func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) { }
     
     public func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        UTMLog("Location manager failed with: %@", error)
+        logger.error("Location manager failed with: \(error)")
     }
     
     public func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         if manager.authorizationStatus == .denied {
-            UTMLog("Location serivces are disabled in settings.")
+            logger.warning("Location serivces are disabled in settings.")
         } else {
             startUpdatingLocation()
         }

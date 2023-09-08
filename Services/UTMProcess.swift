@@ -147,7 +147,7 @@ class UTMProcess : NSObject {
         var qosAttribute: pthread_attr_t = pthread_attr_t()
         status = 0
         fatal = 0
-        UTMLog("Loading %@", dylib)
+        logger.info("Loading \(dylib)")
         if let dlctxPtr = dlopen(dylib, RTLD_LOCAL) {
             if !didLoadDylib(dlctxPtr) {
                 let error = String(utf8String: dlerror())!
@@ -261,7 +261,7 @@ class UTMProcess : NSObject {
         do {
             url = try URL(resolvingBookmarkData: bookmark, bookmarkDataIsStale: &stale)
         } catch {
-            UTMLog("Failed to access bookmark data.")
+            logger.error("Failed to access bookmark data.")
             completion(false, nil, nil)
             return
         }
@@ -271,7 +271,7 @@ class UTMProcess : NSObject {
                 bookmark = try url!.bookmarkData(options: .minimalBookmark)
             }
         } catch {
-            UTMLog("Failed to create new bookmark!")
+            logger.error("Failed to create new bookmark!")
             completion(false, bookmark, url!.path)
             return
         }
@@ -279,7 +279,7 @@ class UTMProcess : NSObject {
         if url!.startAccessingSecurityScopedResource() {
             urls.append(url!)
         } else {
-            UTMLog("Failed to access security scoped resource for: %@", url!)
+            logger.error("Failed to access security scoped resource for: \(url!)")
         }
         completion(true, bookmark, url!.path)
     }
@@ -287,7 +287,7 @@ class UTMProcess : NSObject {
     public func accessData(bookmark: Data) {
         self.accessData(bookmark: bookmark, securityScoped: false, completion: { success, bookmark, path  in
             if !success {
-                UTMLog("Access bookmark failed for %@", path!)
+                logger.error("Access bookmark failed for \(path!)")
             }
         })
     }
@@ -310,7 +310,7 @@ class UTMProcess : NSObject {
             }
         }
         
-        UTMLog("Cannot find '%@' in existing scoped access.", path)
+        logger.warning("Cannot find '\(path)' in existing scoped access.")
     }
     
     public func stopAccessingPath(_ path: String) {
@@ -327,6 +327,6 @@ class UTMProcess : NSObject {
     }
     
     public func processHasExited(_ exitCode: Int, message: String) {
-        UTMLog("QEMU has exited with code %ld and message %@", exitCode, message)
+        logger.info("QEMU has exited with code \(exitCode) and message \(message)")
     }
 }

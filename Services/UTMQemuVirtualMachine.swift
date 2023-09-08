@@ -317,7 +317,7 @@ extension UTMQemuVirtualMachine {
             try Task.checkCancellation()
         }
         
-        var options = UTMSpiceIOOptions()
+        var options: UTMSpiceIOOptions = .none
         if await !config.sound.isEmpty {
             options.insert(.hasAudio)
         }

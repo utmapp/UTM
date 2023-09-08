@@ -17,7 +17,7 @@
 import Logging
 
 let logger = Logger(label: "com.utmapp.UTM") { label in
-    var utmLogger = UTMLoggingSwift(label: label)
+    var utmLogger = UTMLogging.shared
     var stdOutLogger = StreamLogHandler.standardOutput(label: label)
     #if DEBUG
     utmLogger.logLevel = .debug
