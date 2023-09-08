@@ -23,7 +23,7 @@ class UTMQemuSystem: UTMProcess, QEMULauncher {
     public var hasDebugLog: Bool = false
     public var architecture: String
     public var mutableEnvironemnt: Dictionary<String, String> = [:]
-    public var _qemu_init: (@convention(c)(Int32, UnsafeMutablePointer<UnsafePointer<Int8>>, UnsafeMutablePointer<UnsafePointer<Int8>>) -> Int32)!
+    public var _qemu_init: (@convention(c)(Int32, UnsafeMutablePointer<UnsafePointer<CChar>>, UnsafeMutablePointer<UnsafePointer<CChar>>) -> Int32)!
     public var _qemu_main_loop: (@convention(c)() -> Void)!
     public var _qemu_cleanup: (@convention(c)() -> Void)!
     public var resources: [URL] = []
@@ -40,7 +40,7 @@ class UTMQemuSystem: UTMProcess, QEMULauncher {
         let mainLoopPtr = dlsym(handle, "qemu_main_loop")
         let cleanupPtr = dlsym(handle, "qemu_cleanup")
 
-        _qemu_init = unsafeBitCast(initPtr, to: (@convention(c)(Int32, UnsafeMutablePointer<UnsafePointer<Int8>>, UnsafeMutablePointer<UnsafePointer<Int8>>) -> Int32).self)
+        _qemu_init = unsafeBitCast(initPtr, to: (@convention(c)(Int32, UnsafeMutablePointer<UnsafePointer<CChar>>, UnsafeMutablePointer<UnsafePointer<CChar>>) -> Int32).self)
         _qemu_main_loop = unsafeBitCast(mainLoopPtr, to: (@convention(c)() -> Void).self)
         _qemu_cleanup = unsafeBitCast(cleanupPtr, to: (@convention(c)() -> Void).self)
 
@@ -48,7 +48,7 @@ class UTMQemuSystem: UTMProcess, QEMULauncher {
         return true
     }
 
-    public static func startQemu(process: UTMProcess, argc: Int32, argv: UnsafeMutablePointer<UnsafePointer<Int8>>, envp: UnsafeMutablePointer<UnsafePointer<Int8>>) -> Int32 {
+    public static func startQemu(process: UTMProcess, argc: Int32, argv: UnsafeMutablePointer<UnsafePointer<CChar>>, envp: UnsafeMutablePointer<UnsafePointer<CChar>>) -> Int32 {
         let process = process as! UTMQemuSystem
         let ret: Int32 = process._qemu_init(argc, argv, envp)
         if (ret != 0) {

@@ -26,38 +26,49 @@ public func startProcess(ptr: UnsafeMutableRawPointer) -> UnsafeMutableRawPointe
         environment.append(combined)
         setenv(item.key, item.value, 1)
     }
-    var envp: [UnsafePointer<Int8>] = []
+    var envp: [UnsafePointer<CChar>] = []
     for env in environment {
-        envp.append(UnsafePointer<Int8>(env.cString(using: .utf8)!))
+        env.cString(using: .utf8)!.withUnsafeBufferPointer { ptr in
+            envp.append(ptr.baseAddress!)
+        }
     }
-    envp.append(UnsafePointer<Int8>([]))
+    String().cString(using: .utf8)!.withUnsafeBufferPointer { ptr in
+        envp.append(ptr.baseAddress!)
+    }
     setenv("TMPDIR", FileManager.default.temporaryDirectory.path.cString(using: .utf8), 1)
     
-    let currentDirectoryPath = UnsafePointer<Int8>(process.currentDirectoryUrl!.path.cString(using: .utf8))
-    chdir(currentDirectoryPath)
+    _ = process.currentDirectoryUrl!.path.cString(using: .utf8)!.withUnsafeBufferPointer { ptr in
+        chdir(ptr.baseAddress!)
+    }
     
     let argc: Int32 = Int32(processArgv.count + 1)
-    var argv: [UnsafePointer<Int8>] = []
+    var argv: [UnsafePointer<CChar>] = []
     if let name = process.processName {
-        argv.append(UnsafePointer<Int8>(name.cString(using: .utf8)!))
+        name.cString(using: .utf8)!.withUnsafeBufferPointer { ptr in
+            argv.append(ptr.baseAddress!)
+        }
     } else {
-        argv.append(UnsafePointer<Int8>("process".cString(using: .utf8)!))
+        "process".cString(using: .utf8)!.withUnsafeBufferPointer { ptr in
+            argv.append(ptr.baseAddress!)
+        }
     }
     for arg in processArgv {
-        argv.append(UnsafePointer<Int8>(arg.cString(using: .utf8)!))
+        arg.cString(using: .utf8)!.withUnsafeBufferPointer { ptr in
+            argv.append(ptr.baseAddress!)
+        }
     }
     
-    argv.withUnsafeMutableBufferPointer({ argv in
-        envp.withUnsafeMutableBufferPointer({ envp in
+    argv.withUnsafeMutableBufferPointer { argv in
+        envp.withUnsafeMutableBufferPointer { envp in
             process.status = Int(process.entry(process, argc, argv.baseAddress!, envp.baseAddress!))
-        })
-    })
+        }
+    }
     process.done.signal()
     return nil
 }
 
 class UTMProcess : NSObject {
-    typealias UTMProcessThreadEntry = (UTMProcess, Int32, UnsafeMutablePointer<UnsafePointer<Int8>>, UnsafeMutablePointer<UnsafePointer<Int8>>) -> Int32
+    typealias UTMProcessThreadEntry = (UTMProcess, Int32, UnsafeMutablePointer<UnsafePointer<CChar>>, UnsafeMutablePointer<UnsafePointer<CChar>>) -> Int32
     public let UTMErrorDomain: String = "com.utmapp.utm"
 
     public let libraryURL: URL = Bundle.main.bundleURL
@@ -108,7 +119,7 @@ class UTMProcess : NSObject {
         stopProcess()
     }
     
-    public static func defaultEntry(process: UTMProcess, argc: Int32, argv: UnsafeMutablePointer<UnsafePointer<Int8>>, envp: UnsafeMutablePointer<UnsafePointer<Int8>>) -> Int32 {
+    public static func defaultEntry(process: UTMProcess, argc: Int32, argv: UnsafeMutablePointer<UnsafePointer<CChar>>, envp: UnsafeMutablePointer<UnsafePointer<CChar>>) -> Int32 {
         return -1
     }
     
