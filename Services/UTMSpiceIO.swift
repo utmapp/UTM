@@ -94,10 +94,9 @@ class UTMSpiceIO: NSObject, CSConnectionDelegate, QEMUInterface {
             spice = CSMain.shared
         }
         if options.intersection(.hasDebugLog) == .hasDebugLog {
-            spice?.spiceSetDebug(true)
+            spice!.spiceSetDebug(true)
         }
-        // TODO: Figure this out in Swift
-        // g_setenv("SPICE_DISABLE_OPUS", "1", true)
+        g_setenv("SPICE_DISABLE_OPUS", "1", 1)
         let curdir = socketUrl.deletingLastPathComponent().path
         if !FileManager.default.changeCurrentDirectoryPath(curdir) {
             throw NSError(domain: UTMErrorDomain, code: -1, userInfo: [NSLocalizedDescriptionKey: NSLocalizedString("Failed to change current directory.", comment: "UTMSpiceIO")])

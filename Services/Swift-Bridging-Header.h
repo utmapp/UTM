@@ -31,6 +31,7 @@
 #include "QEMUHelperDelegate.h"
 #include "QEMUInterface.h"
 #include "CocoaSpice.h"
+#include "glib.h"
 #if TARGET_OS_IPHONE
 #include "VMDisplayViewController.h"
 //#if !defined(TARGET_OS_VISION) || !TARGET_OS_VISION
