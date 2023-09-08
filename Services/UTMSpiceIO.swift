@@ -20,6 +20,45 @@ import CocoaSpice
 class UTMSpiceIO: NSObject, CSConnectionDelegate, QEMUInterface {
     public let UTMErrorDomain: String = "com.utmapp.utm"
     var connectDelegate: QEMUInterfaceConnectDelegate?
+    private var _delegate: UTMSpiceIODelegate?
+    
+    var delegate: UTMSpiceIODelegate? {
+        get {
+            return self._delegate
+        }
+        set {
+            self._delegate = newValue
+            if delegate != nil {
+                if let input = primaryInput {
+                    self.delegate!.spiceDidCreateInput(input)
+                }
+                if let display = primaryDisplay {
+                    self.delegate!.spiceDidCreateDisplay(display)
+                }
+                if let serial = primarySerial {
+                    self.delegate!.spiceDidCreateSerial(serial)
+                }
+                #if !WITH_QEMU_TCI
+                if let manager = primaryUsbManager {
+                    self.delegate!.spiceDidChangeUsbManager(manager)
+                }
+                #endif
+                if self.delegate!.responds(to: #selector(UTMSpiceIODelegate.spiceDynamicResolutionSupportDidChange(_:))) {
+                    self.delegate!.spiceDynamicResolutionSupportDidChange!(dynamicResolutionSupported)
+                }
+                for display in displays {
+                    if display != primaryDisplay {
+                        self.delegate!.spiceDidCreateDisplay(display)
+                    }
+                }
+                for port in serials {
+                    if port != primarySerial {
+                        self.delegate!.spiceDidCreateSerial(port)
+                    }
+                }
+            }
+        }
+    }
     
     var logHandler: LogHandler_t {
         get {
@@ -40,7 +79,6 @@ class UTMSpiceIO: NSObject, CSConnectionDelegate, QEMUInterface {
     #if !WITH_QEMU_TCI
     var primaryUsbManager: CSUSBManager?
     #endif
-    var delegate: UTMSpiceIODelegate?
     var spiceConnection: CSConnection?
     var spice: CSMain?
     var sharedDirectory: URL?
@@ -206,18 +244,18 @@ class UTMSpiceIO: NSObject, CSConnectionDelegate, QEMUInterface {
     func spiceForwardedPortOpened(_ connection: CSConnection, port: CSPort) {
         if port.name == "org.qemu.monitor.qmp.0" {
             let qemuPort = UTMQemuPort(from: port)
-            connectDelegate!.qemuInterface(self, didCreateMonitorPort: qemuPort)
+            connectDelegate?.qemuInterface(self, didCreateMonitorPort: qemuPort)
         }
         if port.name == "org.qemu.guest_agent.0" {
             let qemuPort = UTMQemuPort(from: port)
-            connectDelegate!.qemuInterface(self, didCreateGuestAgentPort: qemuPort)
+            connectDelegate?.qemuInterface(self, didCreateGuestAgentPort: qemuPort)
         }
         if port.name == "com.utmapp.terminal.0" {
             primarySerial = port
         }
         if (port.name ?? "").hasPrefix("com.utmapp.terminal.") {
             serials.append(port)
-            delegate!.spiceDidCreateSerial(port)
+            delegate?.spiceDidCreateSerial(port)
         }
     }
     
@@ -231,45 +269,16 @@ class UTMSpiceIO: NSObject, CSConnectionDelegate, QEMUInterface {
         }
         if (port.name ?? "").hasPrefix("com.utmapp.terminal.") {
             serials.removeAll(where: { $0 == port })
-            delegate!.spiceDidDestroySerial(port)
-        }
-    }
-    
-    public func setDelegate(delegate: UTMSpiceIODelegate) {
-        self.delegate = delegate
-        if let input = primaryInput {
-            self.delegate!.spiceDidCreateInput(input)
-        }
-        if let display = primaryDisplay {
-            self.delegate!.spiceDidCreateDisplay(display)
-        }
-        if let serial = primarySerial {
-            self.delegate!.spiceDidCreateSerial(serial)
-        }
-        #if !WITH_QEMU_TCI
-        if let manager = primaryUsbManager {
-            self.delegate!.spiceDidChangeUsbManager(manager)
-        }
-        #endif
-        if self.delegate!.responds(to: #selector(UTMSpiceIODelegate.spiceDynamicResolutionSupportDidChange(_:))) {
-            self.delegate!.spiceDynamicResolutionSupportDidChange!(dynamicResolutionSupported)
-        }
-        for display in displays {
-            if display != primaryDisplay {
-                self.delegate!.spiceDidCreateDisplay(display)
-            }
-        }
-        for port in serials {
-            if port != primarySerial {
-                self.delegate!.spiceDidCreateSerial(port)
-            }
+            delegate?.spiceDidDestroySerial(port)
         }
     }
     
     public func setDynamicResolutionSupported(_ dynamicResolutionSupported: Bool) {
         if self.dynamicResolutionSupported != dynamicResolutionSupported {
-            if self.delegate!.responds(to: #selector(UTMSpiceIODelegate.spiceDynamicResolutionSupportDidChange(_:))) {
-                self.delegate!.spiceDynamicResolutionSupportDidChange!(dynamicResolutionSupported)
+            if delegate != nil {
+                if self.delegate!.responds(to: #selector(UTMSpiceIODelegate.spiceDynamicResolutionSupportDidChange(_:))) {
+                    self.delegate!.spiceDynamicResolutionSupportDidChange!(dynamicResolutionSupported)
+                }
             }
         }
         self.dynamicResolutionSupported = dynamicResolutionSupported
