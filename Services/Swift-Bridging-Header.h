@@ -26,7 +26,6 @@
 #include "UTMLegacyQemuConfigurationPortForward.h"
 #include "UTMJailbreak.h"
 #include "UTMLegacyViewState.h"
-#include "UTMSpiceIODelegate.h"
 #include "QEMUHelperProtocol.h"
 #include "QEMUHelperDelegate.h"
 #include "QEMUInterface.h"

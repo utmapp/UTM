@@ -43,9 +43,7 @@ class UTMSpiceIO: NSObject, CSConnectionDelegate, QEMUInterface {
                     self.delegate!.spiceDidChangeUsbManager(manager)
                 }
                 #endif
-                if self.delegate!.responds(to: #selector(UTMSpiceIODelegate.spiceDynamicResolutionSupportDidChange(_:))) {
-                    self.delegate!.spiceDynamicResolutionSupportDidChange!(dynamicResolutionSupported)
-                }
+                self.delegate!.spiceDynamicResolutionSupportDidChange?(dynamicResolutionSupported)
                 for display in displays {
                     if display != primaryDisplay {
                         self.delegate!.spiceDidCreateDisplay(display)
@@ -275,11 +273,7 @@ class UTMSpiceIO: NSObject, CSConnectionDelegate, QEMUInterface {
     
     public func setDynamicResolutionSupported(_ dynamicResolutionSupported: Bool) {
         if self.dynamicResolutionSupported != dynamicResolutionSupported {
-            if delegate != nil {
-                if self.delegate!.responds(to: #selector(UTMSpiceIODelegate.spiceDynamicResolutionSupportDidChange(_:))) {
-                    self.delegate!.spiceDynamicResolutionSupportDidChange!(dynamicResolutionSupported)
-                }
-            }
+            self.delegate?.spiceDynamicResolutionSupportDidChange?(dynamicResolutionSupported)
         }
         self.dynamicResolutionSupported = dynamicResolutionSupported
     }
