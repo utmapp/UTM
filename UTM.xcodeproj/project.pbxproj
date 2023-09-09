@@ -1262,6 +1262,13 @@
 		5A1746A228BA9C4300278241 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/Localizable.strings; sourceTree = "<group>"; };
 		5A1746A528BA9C4300278241 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/Localizable.strings; sourceTree = "<group>"; };
 		5A1746A628BA9C4300278241 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		61EBDE9F2AACA83100B959A2 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/VMDisplayWindow.strings; sourceTree = "<group>"; };
+		61EBDEA02AACA83100B959A2 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		61EBDEA12AACA83100B959A2 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		61EBDEA22AACA83100B959A2 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
+		61EBDEA32AACA83100B959A2 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ru; path = ru.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
+		61EBDEA42AACA83100B959A2 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
+		61EBDEA52AACA83100B959A2 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		83034C0626AB630F006B4BAF /* UTMPendingVMView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMPendingVMView.swift; sourceTree = "<group>"; };
 		835AA7B026AB7C85007A0411 /* UTMPendingVirtualMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMPendingVirtualMachine.swift; sourceTree = "<group>"; };
 		836CA97E28FCC39700EB9EF0 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -2721,6 +2728,7 @@
 				"es-419",
 				de,
 				pl,
+				ru,
 			);
 			mainGroup = CE550BC0225947990063E575;
 			packageReferences = (
@@ -3400,6 +3408,7 @@
 				E68D491F28AC018D00D34C54 /* es-419 */,
 				83FE63BA28F617CE0047FFEF /* de */,
 				CEB54C16293009C7000D2AA9 /* pl */,
+				61EBDEA22AACA83100B959A2 /* ru */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -3425,6 +3434,7 @@
 				83FE63B728F617CE0047FFEF /* de */,
 				CEB54C12293009C5000D2AA9 /* pl */,
 				FF0307582A84E3B70049979B /* zh-Hant */,
+				61EBDE9F2AACA83100B959A2 /* ru */,
 			);
 			name = VMDisplayWindow.xib;
 			sourceTree = "<group>";
@@ -3454,6 +3464,7 @@
 				8441289729005F49002752E3 /* fr */,
 				CEB54C17293009C8000D2AA9 /* pl */,
 				FF0307562A84E3B70049979B /* zh-Hant */,
+				61EBDEA32AACA83100B959A2 /* ru */,
 			);
 			name = Localizable.stringsdict;
 			sourceTree = "<group>";
@@ -3477,6 +3488,7 @@
 				5A1746A028BA9C4300278241 /* fi */,
 				E68D491D28AC018D00D34C54 /* es-419 */,
 				83FE63B828F617CE0047FFEF /* de */,
+				61EBDEA02AACA83100B959A2 /* ru */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -3493,6 +3505,7 @@
 				E68D491E28AC018D00D34C54 /* es-419 */,
 				83FE63B928F617CE0047FFEF /* de */,
 				CEB54C14293009C6000D2AA9 /* pl */,
+				61EBDEA12AACA83100B959A2 /* ru */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -3509,6 +3522,7 @@
 				83FE63BE28F617CE0047FFEF /* de */,
 				CEB54C1929300C20000D2AA9 /* pl */,
 				9786BB59294056960032B858 /* ja */,
+				61EBDEA52AACA83100B959A2 /* ru */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -3525,6 +3539,7 @@
 				E68D492228AC018E00D34C54 /* es-419 */,
 				83FE63BD28F617CE0047FFEF /* de */,
 				CEB54C1829300C1B000D2AA9 /* pl */,
+				61EBDEA42AACA83100B959A2 /* ru */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
