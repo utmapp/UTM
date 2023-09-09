@@ -23,17 +23,17 @@ class KeyCodeMap {
     private static var keyMapDict: Dictionary<String, Dictionary<String, Int>>!
     private static var modFlagDict: Dictionary<String, UInt>!
     private static var modFlags: [UInt]!
-    
+
     /// Creates the internal key map if needed. Must be called on the main queue!
     static func createKeyMapIfNeeded() {
         if keyMapDict == nil {
             keyMapDict = makeKeyMap()
         }
     }
-    
-    static func characterToKeyCode(character: Character) -> Dictionary<String, Int>? {
+
+    static func characterToKeyCode(character: Character) -> [String: Int]? {
         createKeyMapIfNeeded()
-        
+
         /*
          The returned dictionary contains entries for the virtual key code and boolean flags
          for modifier keys used for the character.
@@ -44,12 +44,12 @@ class KeyCodeMap {
             return tryHandleSpecialChar(character)
         }
     }
-    
-    private static func makeKeyMap() -> Dictionary<String, Dictionary<String, Int>> {
+
+    private static func makeKeyMap() -> [String: [String: Int]] {
         var modifiers: UInt = 0
         
-        // create dictionary of modifier names and keys.
-        if (modFlagDict == nil) {
+        // Create dictionary of modifier names and keys.
+        if modFlagDict == nil {
             modFlagDict = ["option":    NSEvent.ModifierFlags.option.rawValue,
                            "shift":     NSEvent.ModifierFlags.shift.rawValue,
                            "function":  NSEvent.ModifierFlags.function.rawValue,
@@ -57,53 +57,53 @@ class KeyCodeMap {
                            "command":   NSEvent.ModifierFlags.command.rawValue]
             modFlags = Array(modFlagDict.values)
         }
-        var keyMapDict = Dictionary<String, Dictionary<String, Int>>()
-        
-        // run through 128 base key codes to see what they produce
+        var keyMapDict = [String: [String: Int]]()
+
+        // Run through 128 base key codes to see what they produce
         for keyCode: UInt16 in 0..<128 {
-            // create dummy NSEvent from a CGEvent for a keypress
+            // Create dummy NSEvent from a CGEvent for a keypress
             let coreEvent = CGEvent(keyboardEventSource: nil, virtualKey: keyCode, keyDown: true)!
             let keyEvent = NSEvent(cgEvent: coreEvent)!
-            
-            if (keyEvent.type == .keyDown) {
-                // this repeat/while loop through every permutation of modifier keys for a given key code
+
+            if keyEvent.type == .keyDown {
+                // This repeat/while loop through every permutation of modifier keys for a given key code
                 repeat {
-                    var subDict = Dictionary<String, Int>()
-                    // cerate dictionary containing current modifier keys and virtual key code
+                    var subDict = [String: Int]()
+                    // Create dictionary containing current modifier keys and virtual key code
                     for key: String in modFlagDict.keys {
                         let modKeyIsUsed = ((modFlagDict[key]! & modifiers) != 0)
                         subDict[key] = NSNumber(booleanLiteral: modKeyIsUsed).intValue
                     }
                     subDict["virtKeyCode"] = (keyCode as NSNumber).intValue
-                    
-                    // manipulate the NSEvent to get character produce by virtual key code and modifiers
+
+                    // Manipulate the NSEvent to get character produce by virtual key code and modifiers
                     var character: String
                     if modifiers == 0 {
                         character = keyEvent.characters!
                     } else {
                         character = keyEvent.characters(byApplyingModifiers: NSEvent.ModifierFlags(rawValue: modifiers))!
                     }
-                    
-                    // add sub-dictionary to main dictionary using character as key
+
+                    // Add sub-dictionary to main dictionary using character as key
                     if keyMapDict[character] == nil {
                         keyMapDict[character] = subDict
                     }
-                    
-                    // permutate the modifiers
+
+                    // Permutate the modifiers
                     modifiers = permutatateMods(modFlags: modFlags)
                 } while (modifiers != 0)
             }
         }
-        
+
         return keyMapDict
     }
-    
+
     private static let idxSet = NSMutableIndexSet()
-    
+
     private static func permutatateMods(modFlags: [UInt]) -> UInt {
         var modifiers: UInt = 0
         var idx: Int = 0
-        
+
         /*
          Starting at 0, if the index exists, remove it and move up; if the index doesn't exist, add it. Will
          cycle through a standard binary progression. Indexes are then applied to the passed array, and the
@@ -114,7 +114,7 @@ class KeyCodeMap {
             if idxSet.contains([idx]) {
                 idxSet.remove([idx])
                 idx += 1
-                continue;
+                continue
             }
             if idx < modFlags.count {
                 idxSet.add([idx])
@@ -123,27 +123,27 @@ class KeyCodeMap {
             }
             done = true
         }
-        
+
         let modArray = (modFlags as NSArray).objects(at: idxSet as IndexSet) as NSArray
-        
+
         for modObj in modArray {
             modifiers |= (modObj as! NSNumber).uintValue
         }
-        
+
         return modifiers
     }
-    
+
     /// Keyboard scan code for key down and up (which is usually `down + 0x80`)
     struct ScanCodes {
         let down: UInt16
         let up: UInt8
-        
+
         /// Construct a `ScanCodes` from a tuple of `Int`s
         static func t(_ tuple: (down: UInt16, up: UInt8)) -> ScanCodes {
             return ScanCodes(down: tuple.down, up: tuple.up)
         }
     }
-    
+
     // Key Scan Codes mapping from https://www.cs.yale.edu/flint/cs422/doc/art-of-asm/pdf/CH20.PDF
     // Page 1154, Table 72: PC Keyboard Scan Codes (in hex)
     /// Converts macOS key code to IBM scan code for key up and down
@@ -286,7 +286,7 @@ class KeyCodeMap {
 extension KeyCodeMap {
     /// Support ASCII control characters
     /// https://jkorpela.fi/chars/c0.html
-    fileprivate static func tryHandleSpecialChar(_ character: Character) -> Dictionary<String, Int>? {
+    fileprivate static func tryHandleSpecialChar(_ character: Character) -> [String: Int]? {
         if let ascii = character.asciiValue {
             var virtKeyCode: Int?
             if ascii <= 31 {

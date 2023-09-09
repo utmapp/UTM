@@ -33,7 +33,7 @@ struct ContentView: View {
     @State private var newPopupPresented = false
     @State private var openSheetPresented = false
     @Environment(\.openURL) var openURL
-    
+
     var body: some View {
         VMNavigationListView()
         .overlay(data.showSettingsModal ? AnyView(EmptyView()) : AnyView(BusyOverlay()))
@@ -104,7 +104,7 @@ struct ContentView: View {
             #endif
         }
     }
-    
+
     private func handleURL(url: URL) {
         data.busyWorkAsync {
             if url.isFileURL {
@@ -116,14 +116,14 @@ struct ContentView: View {
             }
         }
     }
-    
+
     private func importUTM(url: URL) async throws {
         guard url.isFileURL else {
             return // ignore
         }
         try await data.importUTM(from: url)
     }
-    
+
     private func selectImportedUTM(result: Result<[URL], Error>) {
         data.busyWorkAsync {
             let urls = try result.get()
@@ -132,7 +132,7 @@ struct ContentView: View {
             }
         }
     }
-    
+
     @MainActor private func handleUTMURL(with components: URLComponents) async throws {
         func findVM() -> VMData? {
             if let vmName = components.queryItems?.first(where: { $0.name == "name" })?.value {
@@ -141,25 +141,22 @@ struct ContentView: View {
                 return nil
             }
         }
-        
+
         if let action = components.host {
             switch action {
             case "start":
                 if let vm = findVM(), vm.state == .stopped {
                     data.run(vm: vm)
                 }
-                break
             case "stop":
                 if let vm = findVM(), vm.state == .started {
                     try await vm.wrapped!.stop(usingMethod: .force)
                     data.stop(vm: vm)
                 }
-                break
             case "restart":
                 if let vm = findVM(), vm.state == .started {
                     try await vm.wrapped!.restart()
                 }
-                break
             case "pause":
                 if let vm = findVM(), vm.state == .started {
                     let shouldSaveOnPause: Bool
@@ -177,20 +174,16 @@ struct ContentView: View {
                 if let vm = findVM(), vm.state == .paused {
                     try await vm.wrapped!.resume()
                 }
-                break
             case "sendText":
                 if let vm = findVM(), vm.state == .started {
                     data.automationSendText(to: vm, urlComponents: components)
                 }
-                break
             case "click":
                 if let vm = findVM(), vm.state == .started {
                     data.automationSendMouse(to: vm, urlComponents: components)
                 }
-                break
             case "downloadVM":
                 await data.downloadUTMZip(from: components)
-                break
             default:
                 return
             }
@@ -202,18 +195,17 @@ extension ContentView: DropDelegate {
     func validateDrop(info: DropInfo) -> Bool {
         !urlsFrom(info: info).isEmpty
     }
-    
+
     func performDrop(info: DropInfo) -> Bool {
         let urls = urlsFrom(info: info)
         data.busyWorkAsync {
             for url in urls {
-                
                 try await data.importUTM(from: url)
             }
         }
         return true
     }
-    
+
     private func urlsFrom(info: DropInfo) -> [URL] {
         let providers = info.itemProviders(for: [.fileURL])
 
@@ -230,7 +222,7 @@ extension ContentView: DropDelegate {
                 group.leave()
             }
         }
-        
+
         group.wait()
 
         return validURLs

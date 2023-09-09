@@ -25,7 +25,7 @@ protocol QEMUConstant: Codable, RawRepresentable, CaseIterable where RawValue ==
     static var allPrettyValues: [String] { get }
     var prettyValue: String { get }
     var rawValue: String { get }
-    
+
     init?(rawValue: String)
 }
 
@@ -33,7 +33,7 @@ extension QEMUConstant where Self: CaseIterable, AllCases == [Self] {
     static var allRawValues: [String] {
         allCases.map { value in value.rawValue }
     }
-    
+
     static var allPrettyValues: [String] {
         allCases.map { value in value.prettyValue }
     }
@@ -47,7 +47,7 @@ extension QEMUConstant where Self: RawRepresentable, RawValue == String {
         }
         self = representedValue
     }
-    
+
     func encode(to encoder: Encoder) throws {
         try rawValue.encode(to: encoder)
     }
@@ -66,7 +66,7 @@ extension Optional where Wrapped: QEMUDefaultConstant {
             self = newValue
         }
     }
-    
+
     var bound: Wrapped {
         get {
             return _bound ?? Wrapped.default
@@ -80,19 +80,19 @@ extension Optional where Wrapped: QEMUDefaultConstant {
 /// Type erasure for a QEMU constant useful for serialization/deserialization
 struct AnyQEMUConstant: QEMUConstant, RawRepresentable {
     static var allRawValues: [String] { [] }
-    
+
     static var allPrettyValues: [String] { [] }
-    
+
     static var allCases: [AnyQEMUConstant] { [] }
-    
+
     var prettyValue: String { rawValue }
-    
+
     let rawValue: String
-    
-    init<C>(_ base: C) where C : QEMUConstant {
+
+    init<C>(_ base: C) where C: QEMUConstant {
         self.rawValue = base.rawValue
     }
-    
+
     init?(rawValue: String) {
         self.rawValue = rawValue
     }
@@ -145,14 +145,14 @@ extension AnyQEMUConstant: QEMUSerialDevice {}
 enum QEMUScaler: String, CaseIterable, QEMUConstant {
     case linear = "Linear"
     case nearest = "Nearest"
-    
+
     var prettyValue: String {
         switch self {
         case .linear: return NSLocalizedString("Linear", comment: "UTMQemuConstants")
         case .nearest: return NSLocalizedString("Nearest Neighbor", comment: "UTMQemuConstants")
         }
     }
-    
+
     var metalSamplerMinMagFilter: MTLSamplerMinMagFilter {
         switch self {
         case .linear: return .linear
@@ -167,7 +167,7 @@ enum QEMUUSBBus: String, CaseIterable, QEMUConstant {
     case disabled = "Disabled"
     case usb2_0 = "2.0"
     case usb3_0 = "3.0"
-    
+
     var prettyValue: String {
         switch self {
         case .disabled: return NSLocalizedString("Disabled", comment: "UTMQemuConstants")
@@ -184,7 +184,7 @@ enum QEMUNetworkMode: String, CaseIterable, QEMUConstant {
     case shared = "Shared"
     case host = "Host"
     case bridged = "Bridged"
-    
+
     var prettyValue: String {
         switch self {
         case .emulated: return NSLocalizedString("Emulated VLAN", comment: "UTMQemuConstants")
@@ -198,7 +198,7 @@ enum QEMUNetworkMode: String, CaseIterable, QEMUConstant {
 enum QEMUNetworkProtocol: String, CaseIterable, QEMUConstant {
     case tcp = "TCP"
     case udp = "UDP"
-    
+
     var prettyValue: String {
         switch self {
         case .tcp: return NSLocalizedString("TCP", comment: "UTMQemuConstants")
@@ -211,7 +211,7 @@ enum QEMUNetworkProtocol: String, CaseIterable, QEMUConstant {
 
 enum QEMUTerminalTheme: String, CaseIterable, QEMUDefaultConstant {
     case `default` = "Default"
-    
+
     var prettyValue: String {
         switch self {
         case .`default`: return NSLocalizedString("Default", comment: "UTMQemuConstants")
@@ -224,7 +224,7 @@ struct QEMUTerminalFont: QEMUConstant {
     static var allRawValues: [String] = {
         NSFontManager.shared.availableFontNames(with: .fixedPitchFontMask) ?? []
     }()
-    
+
     static var allPrettyValues: [String] = {
         allRawValues.map { name in
             NSFont(name: name, size: 1)?.displayName ?? name
@@ -243,7 +243,7 @@ struct QEMUTerminalFont: QEMUConstant {
             }
         }
     }()
-    
+
     static var allPrettyValues: [String] = {
         allRawValues.map { name in
             guard let font = UIFont(name: name, size: 1) else {
@@ -264,18 +264,18 @@ struct QEMUTerminalFont: QEMUConstant {
         }
     }()
     #endif
-    
+
     static var allCases: [QEMUTerminalFont] {
         Self.allRawValues.map { Self(rawValue: $0) }
     }
-    
+
     var prettyValue: String {
         guard let index = Self.allRawValues.firstIndex(of: rawValue) else {
             return rawValue
         }
         return Self.allPrettyValues[index]
     }
-    
+
     let rawValue: String
 }
 
@@ -286,7 +286,7 @@ enum QEMUSerialMode: String, CaseIterable, QEMUConstant {
     #if os(macOS)
     case ptty = "Ptty"
     #endif
-    
+
     var prettyValue: String {
         switch self {
         case .builtin: return NSLocalizedString("Built-in Terminal", comment: "UTMQemuConstants")
@@ -304,7 +304,7 @@ enum QEMUSerialTarget: String, CaseIterable, QEMUConstant {
     case manualDevice = "Manual"
     case gdb = "GDB"
     case monitor = "Monitor"
-    
+
     var prettyValue: String {
         switch self {
         case .autoDevice: return NSLocalizedString("Automatic Serial Device (max 4)", comment: "UTMQemuConstants")
@@ -325,7 +325,7 @@ enum QEMUDriveImageType: String, CaseIterable, QEMUConstant {
     case linuxKernel = "LinuxKernel"
     case linuxInitrd = "LinuxInitrd"
     case linuxDtb = "LinuxDTB"
-    
+
     var prettyValue: String {
         switch self {
         case .none: return NSLocalizedString("None", comment: "UTMQemuConstants")
@@ -350,7 +350,7 @@ enum QEMUDriveInterface: String, CaseIterable, QEMUConstant {
     case virtio = "VirtIO"
     case nvme = "NVMe"
     case usb = "USB"
-    
+
     var prettyValue: String {
         switch self {
         case .none: return NSLocalizedString("None (Advanced)", comment: "UTMQemuConstants")
@@ -373,7 +373,7 @@ enum QEMUFileShareMode: String, CaseIterable, QEMUConstant {
     case none = "None"
     case webdav = "WebDAV"
     case virtfs = "VirtFS"
-    
+
     var prettyValue: String {
         switch self {
         case .none: return NSLocalizedString("None", comment: "UTMQemuConstants")
@@ -409,14 +409,14 @@ extension QEMUArchitecture {
         default: return true
         }
     }
-    
+
     var hasSharingSupport: Bool {
         switch self {
         case .sparc, .sparc64: return false
         default: return true
         }
     }
-    
+
     var hasUsbSupport: Bool {
         switch self {
         case .s390x: return false
@@ -424,7 +424,7 @@ extension QEMUArchitecture {
         default: return true
         }
     }
-    
+
     var hasHypervisorSupport: Bool {
         guard jb_has_hypervisor() else {
             return false
@@ -437,7 +437,7 @@ extension QEMUArchitecture {
         return false
         #endif
     }
-    
+
     /// TSO is supported on jailbroken iOS devices with Hypervisor support
     var hasTSOSupport: Bool {
         #if os(iOS) || os(visionOS)
@@ -446,7 +446,7 @@ extension QEMUArchitecture {
         return false
         #endif
     }
-    
+
     var hasSecureBootSupport: Bool {
         switch self {
         case .x86_64, .i386: return true
@@ -463,14 +463,14 @@ extension QEMUTarget {
         default: return true
         }
     }
-    
+
     var hasAgentSupport: Bool {
         switch self.rawValue {
         case "isapc": return false
         default: return true
         }
     }
-    
+
     var hasSecureBootSupport: Bool {
         switch self.rawValue {
         case "microvm": return false

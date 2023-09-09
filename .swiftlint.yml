@@ -1,2 +1,7 @@
-opt_in_rules:
-  - force_unwrapping
+disabled_rules:
+  - identifier_name
+  - type_name
+  - file_length
+
+excluded:
+  - .build

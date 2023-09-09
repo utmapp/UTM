@@ -10274,5 +10274,3 @@ extension QEMUArchitecture {
     }
 
 }
-
-
