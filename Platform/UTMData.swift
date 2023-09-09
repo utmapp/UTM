@@ -30,68 +30,68 @@ struct AlertMessage: Identifiable {
     public var id: String {
         message
     }
-    
+
     init(_ message: String) {
         self.message = message
     }
 }
 
 @MainActor class UTMData: ObservableObject {
-    
+
     /// Sandbox location for storing .utm bundles
     nonisolated static var defaultStorageUrl: URL {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     }
-    
+
     /// View: show VM settings
     @Published var showSettingsModal: Bool
-    
+
     /// View: show new VM wizard
     @Published var showNewVMSheet: Bool
-    
+
     /// View: show an alert message
     @Published var alertMessage: AlertMessage?
-    
+
     /// View: show busy spinner
     @Published var busy: Bool
-    
+
     /// View: currently selected VM
     @Published var selectedVM: VMData?
-    
+
     /// View: all VMs listed, we save a bookmark to each when array is modified
     @Published private(set) var virtualMachines: [VMData] {
         didSet {
             listSaveToDefaults()
         }
     }
-    
+
     /// View: all pending VMs listed (ZIP and IPSW downloads)
     @Published private(set) var pendingVMs: [UTMPendingVirtualMachine]
-    
+
     #if os(macOS)
     /// View controller for every VM currently active
     var vmWindows: [VMData: Any] = [:]
     #else
     /// View controller for currently active VM
     var vmVC: Any?
-    
+
     /// View state for active VM primary display
     @State var vmPrimaryWindowState: VMWindowState?
     #endif
-    
+
     /// Shortcut for accessing FileManager.default
     nonisolated private var fileManager: FileManager {
         FileManager.default
     }
-    
+
     /// Shortcut for accessing storage URL from instance
     nonisolated private var documentsURL: URL {
         UTMData.defaultStorageUrl
     }
-    
+
     /// Queue to run `busyWork` tasks
     private var busyQueue: DispatchQueue
-    
+
     init() {
         self.busyQueue = DispatchQueue(label: "UTM Busy Queue", qos: .userInitiated)
         self.showSettingsModal = false
@@ -102,9 +102,9 @@ struct AlertMessage: Identifiable {
         self.selectedVM = nil
         listLoadFromDefaults()
     }
-    
+
     // MARK: - VM listing
-    
+
     /// Re-loads UTM bundles from default path
     ///
     /// This removes stale entries (deleted/not accessible) and duplicate entries
@@ -166,17 +166,15 @@ struct AlertMessage: Identifiable {
         let uuids = list.compactMap({ $0.registryEntry?.uuid.uuidString })
         UTMRegistry.shared.prune(exceptFor: Set(uuids))
     }
-    
+
     /// Load VM list (and order) from persistent storage
     private func listLoadFromDefaults() {
         let defaults = UserDefaults.standard
         guard defaults.object(forKey: "VMList") == nil else {
             listLegacyLoadFromDefaults()
             // fix collisions
-            for vm in virtualMachines {
-                if uuidHasCollision(with: vm) {
-                    uuidRegenerate(for: vm)
-                }
+            for vm in virtualMachines where uuidHasCollision(with: vm) {
+                uuidRegenerate(for: vm)
             }
             // delete legacy
             defaults.removeObject(forKey: "VMList")
@@ -199,7 +197,7 @@ struct AlertMessage: Identifiable {
             return vm
         }
     }
-    
+
     /// Load VM list (and order) from persistent storage (legacy)
     private func listLegacyLoadFromDefaults() {
         let defaults = UserDefaults.standard
@@ -230,18 +228,18 @@ struct AlertMessage: Identifiable {
             }
         }
     }
-    
+
     /// Save VM list (and order) to persistent storage
     private func listSaveToDefaults() {
         let defaults = UserDefaults.standard
         let wrappedVMs = virtualMachines.map { $0.id.uuidString }
         defaults.set(wrappedVMs, forKey: "VMEntryList")
     }
-    
+
     private func listReplace(with vms: [VMData]) {
         virtualMachines = vms
     }
-    
+
     /// Add VM to list
     /// - Parameter vm: VM to add
     /// - Parameter at: Optional index to add to, otherwise will be added to the end
@@ -255,13 +253,13 @@ struct AlertMessage: Identifiable {
             virtualMachines.append(vm)
         }
     }
-    
+
     /// Select VM in list
     /// - Parameter vm: VM to select
     public func listSelect(vm: VMData) {
         selectedVM = vm
     }
-    
+
     /// Remove a VM from list
     /// - Parameter vm: VM to remove
     /// - Returns: Index of item removed or nil if already removed
@@ -276,7 +274,7 @@ struct AlertMessage: Identifiable {
         vm.isDeleted = true // alert views to update
         return index
     }
-    
+
     /// Add pending VM to list
     /// - Parameter pendingVM: Pending VM to add
     /// - Parameter at: Optional index to add to, otherwise will be added to the end
@@ -287,7 +285,7 @@ struct AlertMessage: Identifiable {
             pendingVMs.append(pendingVM)
         }
     }
-    
+
     /// Remove pending VM from list
     /// - Parameter pendingVM: Pending VM to remove
     /// - Returns: Index of item removed or nil if already removed
@@ -298,7 +296,7 @@ struct AlertMessage: Identifiable {
         }
         return index
     }
-    
+
     /// Move items in VM list
     /// - Parameters:
     ///   - fromOffsets: Offsets from move from
@@ -306,9 +304,9 @@ struct AlertMessage: Identifiable {
     func listMove(fromOffsets: IndexSet, toOffset: Int) {
         virtualMachines.move(fromOffsets: fromOffsets, toOffset: toOffset)
     }
-    
+
     // MARK: - New name
-    
+
     /// Generate a unique VM name
     /// - Parameter base: Base name
     /// - Returns: Unique name for a non-existing item in the default storage path
@@ -323,7 +321,7 @@ struct AlertMessage: Identifiable {
         }
         return ProcessInfo.processInfo.globallyUniqueString
     }
-    
+
     /// Generate a filename for an imported file, avoiding duplicate names
     /// - Parameters:
     ///   - sourceUrl: Source image where name will come from
@@ -349,22 +347,22 @@ struct AlertMessage: Identifiable {
             }
         } while true
     }
-    
+
     // MARK: - Other view states
-    
+
     private func setBusyIndicator(_ busy: Bool) {
         self.busy = busy
     }
-    
+
     func showErrorAlert(message: String) {
         alertMessage = AlertMessage(message)
     }
-    
+
     func newVM() {
         showSettingsModal = false
         showNewVMSheet = true
     }
-    
+
     func showSettingsForCurrentVM() {
         #if os(iOS) || os(visionOS)
         // SwiftUI bug: cannot show modal at the same time as changing selected VM or it breaks
@@ -375,9 +373,9 @@ struct AlertMessage: Identifiable {
         showSettingsModal = true
         #endif
     }
-    
+
     // MARK: - VM operations
-    
+
     /// Save an existing VM to disk
     /// - Parameter vm: VM to save
     func save(vm: VMData) async throws {
@@ -402,7 +400,7 @@ struct AlertMessage: Identifiable {
             throw origError
         }
     }
-    
+
     /// Discard changes to VM configuration
     /// - Parameter vm: VM configuration to discard
     func discardChanges(for vm: VMData) throws {
@@ -413,7 +411,7 @@ struct AlertMessage: Identifiable {
             }
         }
     }
-    
+
     /// Save a new VM to disk
     /// - Parameters:
     ///   - config: New VM configuration
@@ -427,7 +425,7 @@ struct AlertMessage: Identifiable {
         listSelect(vm: vm)
         return vm
     }
-    
+
     /// Delete a VM from disk
     /// - Parameter vm: VM to delete
     /// - Returns: Index of item removed in VM list or nil if not in list
@@ -435,23 +433,23 @@ struct AlertMessage: Identifiable {
         if vm.isLoaded {
             try fileManager.removeItem(at: vm.pathUrl)
         }
-        
+
         // close any open window
         close(vm: vm)
-        
+
         if alsoRegistry, let registryEntry = vm.registryEntry {
             UTMRegistry.shared.remove(entry: registryEntry)
         }
         return listRemove(vm: vm)
     }
-    
+
     /// Save a copy of the VM and all data to default storage location
     /// - Parameter vm: VM to clone
     /// - Returns: The new VM
     @discardableResult func clone(vm: VMData) async throws -> VMData {
         let newName: String = newDefaultVMName(base: vm.detailsTitleLabel)
         let newPath = UTMQemuVirtualMachine.virtualMachinePath(for: newName, in: documentsURL)
-        
+
         try await copyItemWithCopyfile(at: vm.pathUrl, to: newPath)
         guard let newVM = try? VMData(url: newPath) else {
             throw UTMDataError.cloneFailed
@@ -466,7 +464,7 @@ struct AlertMessage: Identifiable {
         listSelect(vm: newVM)
         return newVM
     }
-    
+
     /// Save a copy of the VM and all data to arbitary location
     /// - Parameters:
     ///   - vm: VM to copy
@@ -478,7 +476,7 @@ struct AlertMessage: Identifiable {
         }
         try await copyItemWithCopyfile(at: sourceUrl, to: url)
     }
-    
+
     /// Save a copy of the VM and all data to arbitary location and delete the original data
     /// - Parameters:
     ///   - vm: VM to move
@@ -489,7 +487,7 @@ struct AlertMessage: Identifiable {
             throw UTMDataError.shortcutCreationFailed
         }
         try await newVM.wrapped!.updateRegistryFromConfig()
-        
+
         let oldSelected = selectedVM
         let index = try await delete(vm: vm, alsoRegistry: false)
         listAdd(vm: newVM, at: index)
@@ -497,7 +495,7 @@ struct AlertMessage: Identifiable {
             listSelect(vm: newVM)
         }
     }
-    
+
     /// Open settings modal
     /// - Parameter vm: VM to edit settings
     func edit(vm: VMData) {
@@ -505,7 +503,7 @@ struct AlertMessage: Identifiable {
         showNewVMSheet = false
         showSettingsForCurrentVM()
     }
-    
+
     /// Copy configuration but not data from existing VM to a new VM
     /// - Parameter vm: Existing VM to copy configuration from
     func template(vm: VMData) async throws {
@@ -526,9 +524,9 @@ struct AlertMessage: Identifiable {
         #endif
         showSettingsForCurrentVM()
     }
-    
+
     // MARK: - File I/O related
-    
+
     /// Calculate total size of VM and data
     /// - Parameter vm: VM to calculate size
     /// - Returns: Size in bytes
@@ -547,7 +545,7 @@ struct AlertMessage: Identifiable {
         }
         return total
     }
-    
+
     /// Calculate size of a single file URL
     /// - Parameter url: File URL
     /// - Returns: Size in bytes
@@ -558,7 +556,7 @@ struct AlertMessage: Identifiable {
             return 0
         }
     }
-    
+
     /// Handles UTM file URLs
     ///
     /// If .utm is already in the list, select it
@@ -570,7 +568,7 @@ struct AlertMessage: Identifiable {
         guard url.isFileURL else { return }
         _ = url.startAccessingSecurityScopedResource()
         defer { url.stopAccessingSecurityScopedResource() }
-        
+
         logger.info("importing: \(url)")
         // attempt to turn temp URL to presistent bookmark early otherwise,
         // when stopAccessingSecurityScopedResource() is called, we lose access
@@ -597,7 +595,7 @@ struct AlertMessage: Identifiable {
             throw UTMDataError.importFailed
         }
         let vm: VMData?
-        if (fileBasePath.resolvingSymlinksInPath().path == documentsURL.appendingPathComponent("Inbox", isDirectory: true).path) {
+        if fileBasePath.resolvingSymlinksInPath().path == documentsURL.appendingPathComponent("Inbox", isDirectory: true).path {
             logger.info("moving from Inbox")
             try fileManager.moveItem(at: url, to: dest)
             vm = try VMData(url: dest)
@@ -624,9 +622,9 @@ struct AlertMessage: Identifiable {
             }
         }.value
     }
-    
+
     // MARK: - Downloading VMs
-    
+
     #if os(macOS) && arch(arm64)
     /// Create a new VM using configuration and downloaded IPSW
     /// - Parameter config: Apple VM configuration
@@ -676,7 +674,7 @@ struct AlertMessage: Identifiable {
             listRemove(pendingVM: task.pendingVM)
         }
     }
-    
+
     func mountSupportTools(for vm: UTMQemuVirtualMachine) async throws {
         let task = UTMDownloadSupportToolsTask(for: vm)
         if task.hasExistingSupportTools {
@@ -695,15 +693,15 @@ struct AlertMessage: Identifiable {
             }
         }
     }
-    
+
     /// Cancel a download and discard any data
     /// - Parameter pendingVM: Pending VM to cancel
     func cancelDownload(for pendingVM: UTMPendingVirtualMachine) {
         pendingVM.cancel()
     }
-    
+
     // MARK: - Reclaim space
-    
+
     #if os(macOS)
     /// Reclaim empty space in a file by (re)-converting it to QCOW2
     ///
@@ -722,7 +720,7 @@ struct AlertMessage: Identifiable {
             throw error
         }
     }
-    
+
     func qcow2DriveSize(for driveUrl: URL) async -> Int64 {
         return (try? await UTMQemuImage.size(image: driveUrl)) ?? 0
     }
@@ -732,13 +730,13 @@ struct AlertMessage: Identifiable {
         try await UTMQemuImage.resize(image: driveUrl, size: UInt64(sizeInMib * bytesinMib))
     }
     #endif
-    
+
     // MARK: - UUID migration
-    
+
     private func uuidHasCollision(with vm: VMData) -> Bool {
         return uuidHasCollision(with: vm, in: virtualMachines)
     }
-    
+
     private func uuidHasCollision(with vm: VMData, in list: [VMData]) -> Bool {
         for otherVM in list {
             if otherVM == vm {
@@ -749,22 +747,22 @@ struct AlertMessage: Identifiable {
         }
         return false
     }
-    
+
     private func uuidRegenerate(for vm: VMData) {
         guard let vm = vm.wrapped else {
             return
         }
         vm.changeUuid(to: UUID(), name: nil, copyingEntry: vm.registryEntry)
     }
-    
+
     // MARK: - Other utility functions
-    
+
     /// In some regions, iOS will prompt the user for network access
     func triggeriOSNetworkAccessPrompt() {
         let task = URLSession.shared.dataTask(with: URL(string: "http://captive.apple.com")!)
         task.resume()
     }
-    
+
     /// Execute a task with spinning progress indicator
     /// - Parameter work: Function to execute
     func busyWork(_ work: @escaping () throws -> Void) {
@@ -787,7 +785,7 @@ struct AlertMessage: Identifiable {
             }
         }
     }
-    
+
     /// Execute a task with spinning progress indicator (Swift concurrency version)
     /// - Parameter work: Function to execute
     func busyWorkAsync(_ work: @escaping @Sendable () async throws -> Void) {
@@ -802,9 +800,9 @@ struct AlertMessage: Identifiable {
             await self.setBusyIndicator(false)
         }
     }
-    
+
     // MARK: - Automation Features
-    
+
     /// Send text as keyboard input to VM
     /// - Parameters:
     ///   - vm: VM to send text to
@@ -818,7 +816,7 @@ struct AlertMessage: Identifiable {
         trySendTextSpice(text)
         #endif
     }
-    
+
     /// Send mouse/tablet coordinates to VM
     /// - Parameters:
     ///   - vm: VM to send mouse/tablet coordinates to
@@ -828,8 +826,8 @@ struct AlertMessage: Identifiable {
         guard !qemuVm.config.displays.isEmpty else { return }
         guard let queryItems = components.queryItems else { return }
         /// Parse targeted position
-        var x: CGFloat? = nil
-        var y: CGFloat? = nil
+        var x: CGFloat?
+        var y: CGFloat?
         let nf = NumberFormatter()
         nf.allowsFloats = false
         if let xStr = components.queryItems?.first(where: { item in
@@ -850,10 +848,8 @@ struct AlertMessage: Identifiable {
             switch buttonStr {
             case "middle":
                 button = .middle
-                break
             case "right":
                 button = .right
-                break
             default:
                 break
             }
@@ -867,7 +863,7 @@ struct AlertMessage: Identifiable {
     }
 
     // MARK: - AltKit
-    
+
 #if canImport(AltKit) && !WITH_QEMU_TCI
     /// Detect if we are installed from AltStore and can use AltJIT
     var isAltServerCompatible: Bool {
@@ -879,23 +875,21 @@ struct AlertMessage: Identifiable {
         }
         return true
     }
-    
+
     /// Find and run AltJIT to enable JIT
     func startAltJIT() throws {
         let event = DispatchSemaphore(value: 0)
         var connectError: Error?
         DispatchQueue.main.async {
             ServerManager.shared.autoconnect { result in
-                switch result
-                {
+                switch result {
                 case .failure(let error):
                     logger.error("Could not auto-connect to server. \(error.localizedDescription)")
                     connectError = error
                     event.signal()
                 case .success(let connection):
                     connection.enableUnsignedCodeExecution { result in
-                        switch result
-                        {
+                        switch result {
                         case .failure(let error):
                             logger.error("Could not enable JIT compilation. \(error.localizedDescription)")
                             connectError = error
@@ -903,7 +897,7 @@ struct AlertMessage: Identifiable {
                             logger.debug("Successfully enabled JIT compilation!")
                             Main.jitAvailable = true
                         }
-                        
+
                         connection.disconnect()
                         event.signal()
                     }
@@ -922,7 +916,7 @@ struct AlertMessage: Identifiable {
     }
 #endif
 
-    // MARK - JitStreamer
+    // MARK: - JitStreamer
 
 #if os(iOS) || os(visionOS)
     @available(iOS 15, *)

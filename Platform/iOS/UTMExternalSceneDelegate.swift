@@ -19,10 +19,10 @@ import SwiftUI
 class UTMExternalSceneDelegate: NSObject, UIWindowSceneDelegate, ObservableObject {
     var window: UIWindow?
     var screen: UIScreen?
-    
+
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
-        
+
         if session.role == .windowExternalDisplay {
             let window = UIWindow(windowScene: windowScene)
             let viewController = UIHostingController(rootView: UTMMainView(isInteractive: false))
@@ -32,7 +32,7 @@ class UTMExternalSceneDelegate: NSObject, UIWindowSceneDelegate, ObservableObjec
             setupDisplayLinkIfNecessary()
         }
     }
-    
+
     func windowScene(_ windowScene: UIWindowScene, didUpdate previousCoordinateSpace: UICoordinateSpace, interfaceOrientation previousInterfaceOrientation: UIInterfaceOrientation, traitCollection previousTraitCollection: UITraitCollection) {
         setupDisplayLinkIfNecessary()
     }

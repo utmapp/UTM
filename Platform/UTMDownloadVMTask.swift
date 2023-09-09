@@ -23,7 +23,7 @@ class UTMDownloadVMTask: UTMDownloadTask {
     init(for url: URL) {
         super.init(for: url, named: UTMDownloadVMTask.name(for: url))
     }
-    
+
     static private func name(for url: URL) -> String {
         /// try to detect the filename from the URL
         let filename = url.lastPathComponent
@@ -34,12 +34,12 @@ class UTMDownloadVMTask: UTMDownloadTask {
         }
         return nameWithoutZIP
     }
-    
+
     override func processCompletedDownload(at location: URL) async throws -> any UTMVirtualMachine {
         let tempDir = fileManager.temporaryDirectory
         let originalFilename = url.lastPathComponent
         let downloadedZip = tempDir.appendingPathComponent(originalFilename)
-        var fileURL: URL? = nil
+        var fileURL: URL?
         do {
             if fileManager.fileExists(atPath: downloadedZip.path) {
                 try fileManager.removeItem(at: downloadedZip)
@@ -65,7 +65,7 @@ class UTMDownloadVMTask: UTMDownloadTask {
             throw error
         }
     }
-    
+
     private func partialUnzipOnlyUtmVM(zipFileURL: URL, destinationFolder: URL, fileManager: FileManager) throws -> URL {
         let utmFileEnding = ".utm"
         let utmDirectoryEnding = "\(utmFileEnding)/"
@@ -97,13 +97,13 @@ class UTMDownloadVMTask: UTMDownloadTask {
             throw UnzipNoUTMFileError()
         }
     }
-    
+
     private class UnzipNoUTMFileError: Error {
         var errorDescription: String? {
             NSLocalizedString("There is no UTM file in the downloaded ZIP archive.", comment: "Error shown when importing a ZIP file from web that doesn't contain a UTM Virtual Machine.")
         }
     }
-    
+
     private class CreateUTMFailed: Error {
         var errorDescription: String? {
             NSLocalizedString("Failed to parse the downloaded VM.", comment: "UTMDownloadVMTask")

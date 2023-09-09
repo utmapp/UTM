@@ -22,21 +22,21 @@ import Virtualization
 @available(macOS 12, *)
 class UTMDownloadIPSWTask: UTMDownloadTask {
     let config: UTMAppleConfiguration
-    
+
     private var cacheUrl: URL {
         fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first!
     }
-    
+
     @MainActor init(for config: UTMAppleConfiguration) {
         self.config = config
         super.init(for: config.system.boot.macRecoveryIpswURL!, named: config.information.name)
     }
-    
+
     override func processCompletedDownload(at location: URL) async throws -> any UTMVirtualMachine {
         if !fileManager.fileExists(atPath: cacheUrl.path) {
             try fileManager.createDirectory(at: cacheUrl, withIntermediateDirectories: false)
         }
-        
+
         let cacheIpsw = cacheUrl.appendingPathComponent(url.lastPathComponent)
         if fileManager.fileExists(atPath: cacheIpsw.path) {
             try fileManager.removeItem(at: cacheIpsw)

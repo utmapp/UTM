@@ -19,27 +19,27 @@ import Foundation
 /// Downloads support tools ISO
 class UTMDownloadSupportToolsTask: UTMDownloadTask {
     private let vm: UTMQemuVirtualMachine
-    
+
     private static let supportToolsDownloadUrl = URL(string: "https://getutm.app/downloads/utm-guest-tools-latest.iso")!
-    
+
     private var cacheUrl: URL {
         fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first!
     }
-    
+
     private var supportToolsLocalUrl: URL {
         cacheUrl.appendingPathComponent(Self.supportToolsDownloadUrl.lastPathComponent)
     }
-    
+
     var hasExistingSupportTools: Bool {
         fileManager.fileExists(atPath: supportToolsLocalUrl.path)
     }
-    
+
     init(for vm: UTMQemuVirtualMachine) {
         self.vm = vm
         let name = NSLocalizedString("Windows Guest Support Tools", comment: "UTMDownloadSupportToolsTask")
         super.init(for: Self.supportToolsDownloadUrl, named: name)
     }
-    
+
     override func processCompletedDownload(at location: URL) async throws -> any UTMVirtualMachine {
         if !fileManager.fileExists(atPath: cacheUrl.path) {
             try fileManager.createDirectory(at: cacheUrl, withIntermediateDirectories: true)
@@ -50,12 +50,10 @@ class UTMDownloadSupportToolsTask: UTMDownloadTask {
         try fileManager.moveItem(at: location, to: supportToolsLocalUrl)
         return try await mountTools()
     }
-    
+
     func mountTools() async throws -> any UTMVirtualMachine {
-        for file in await vm.registryEntry.externalDrives.values {
-            if file.path == supportToolsLocalUrl.path {
-                throw UTMDownloadSupportToolsTaskError.alreadyMounted
-            }
+        for file in await vm.registryEntry.externalDrives.values where file.path == supportToolsLocalUrl.path {
+            throw UTMDownloadSupportToolsTaskError.alreadyMounted
         }
         guard let drive = await vm.config.drives.last(where: { $0.isExternal && $0.imageURL == nil }) else {
             throw UTMDownloadSupportToolsTaskError.driveUnavailable

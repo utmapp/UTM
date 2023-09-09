@@ -20,39 +20,39 @@ import Foundation
 @available(macOS 11, *)
 final class UTMLegacyAppleConfiguration: Codable {
     private let currentVersion = 3
-    
+
     var version: Int
-    
+
     var isAppleVirtualization: Bool
-    
+
     var name: String
-    
+
     var architecture: String
-    
+
     var iconBasePath: URL?
-    
+
     var selectedCustomIconPath: URL?
-    
+
     var icon: String?
-    
+
     var iconCustom: Bool
-    
+
     var notes: String?
-    
+
     var consoleTheme: String?
-    
+
     var consoleTextColor: String?
-    
+
     var consoleBackgroundColor: String?
-    
+
     var consoleFont: String?
-    
+
     var consoleFontSize: NSNumber?
-    
+
     var consoleCursorBlink: Bool
-    
+
     var consoleResizeCommand: String?
-    
+
     var iconUrl: URL? {
         if self.iconCustom {
             if let current = self.selectedCustomIconPath {
@@ -72,39 +72,39 @@ final class UTMLegacyAppleConfiguration: Codable {
             return Bundle.main.url(forResource: icon, withExtension: "png", subdirectory: "Icons")
         }
     }
-    
+
     var cpuCount: Int
-    
+
     var memorySize: UInt64
-    
+
     var bootLoader: Bootloader?
-    
+
     var macPlatform: MacPlatform?
-    
+
     var macRecoveryIpswURL: URL?
-    
+
     var networkDevices: [Network]
-    
+
     var displays: [Display]
-    
+
     var diskImages: [DiskImage] = []
-    
+
     var sharedDirectories: [SharedDirectory] = []
-    
+
     var isAudioEnabled: Bool
-    
+
     var isBalloonEnabled: Bool
-    
+
     var isEntropyEnabled: Bool
-    
+
     var isSerialEnabled: Bool
-    
+
     var isConsoleDisplay: Bool
-    
+
     var isKeyboardEnabled: Bool
-    
+
     var isPointingEnabled: Bool
-    
+
     enum CodingKeys: String, CodingKey {
         case version
         case isAppleVirtualization
@@ -135,7 +135,7 @@ final class UTMLegacyAppleConfiguration: Codable {
         case isKeyboardEnabled
         case isPointingEnabled
     }
-    
+
     required init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         version = try values.decodeIfPresent(Int.self, forKey: .version) ?? 0
@@ -174,7 +174,7 @@ final class UTMLegacyAppleConfiguration: Codable {
         consoleCursorBlink = try values.decode(Bool.self, forKey: .consoleCursorBlink)
         consoleResizeCommand = try values.decodeIfPresent(String.self, forKey: .consoleResizeCommand)
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(version, forKey: .version)
@@ -220,19 +220,19 @@ struct Bootloader: Codable {
         case Linux
         case macOS
     }
-    
+
     var operatingSystem: OperatingSystem
     var linuxKernelURL: URL?
     var linuxCommandLine: String?
     var linuxInitialRamdiskURL: URL?
-    
+
     private enum CodingKeys: String, CodingKey {
         case operatingSystem
         case linuxKernelPath
         case linuxCommandLine
         case linuxInitialRamdiskPath
     }
-    
+
     init(from decoder: Decoder) throws {
         guard let dataURL = decoder.userInfo[.dataURL] as? URL else {
             throw UTMConfigurationError.invalidDataURL
@@ -247,7 +247,7 @@ struct Bootloader: Codable {
             linuxInitialRamdiskURL = dataURL.appendingPathComponent(linuxInitialRamdiskPath)
         }
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(operatingSystem, forKey: .operatingSystem)
@@ -265,7 +265,7 @@ struct Network: Codable {
         case Shared
         case Bridged
     }
-    
+
     var networkMode: NetworkMode
     var bridgeInterfaceIdentifier: String?
     var macAddress: String
@@ -281,13 +281,13 @@ struct MacPlatform: Codable {
     var hardwareModel: Data
     var machineIdentifier: Data
     var auxiliaryStorageURL: URL?
-    
+
     private enum CodingKeys: String, CodingKey {
         case hardwareModel
         case machineIdentifier
         case auxiliaryStoragePath
     }
-    
+
     init(from decoder: Decoder) throws {
         guard let dataURL = decoder.userInfo[.dataURL] as? URL else {
             throw UTMConfigurationError.invalidDataURL
@@ -299,7 +299,7 @@ struct MacPlatform: Codable {
             auxiliaryStorageURL = dataURL.appendingPathComponent(auxiliaryStoragePath)
         }
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(hardwareModel, forKey: .hardwareModel)
@@ -310,13 +310,13 @@ struct MacPlatform: Codable {
 
 struct DiskImage: Codable, Hashable, Identifiable {
     private let bytesInMib = 1048576
-    
+
     var sizeMib: Int
     var isReadOnly: Bool
     var isExternal: Bool
     var imageURL: URL?
     private var uuid = UUID() // for identifiable
-    
+
     private enum CodingKeys: String, CodingKey {
         case sizeMib
         case isReadOnly
@@ -324,19 +324,19 @@ struct DiskImage: Codable, Hashable, Identifiable {
         case imagePath
         case imageBookmark
     }
-    
+
     var id: Int {
         hashValue
     }
-    
+
     var sizeBytes: Int64 {
         Int64(sizeMib) * Int64(bytesInMib)
     }
-    
+
     var sizeString: String {
         ByteCountFormatter.string(fromByteCount: sizeBytes, countStyle: .file)
     }
-    
+
     init(from decoder: Decoder) throws {
         guard let dataURL = decoder.userInfo[.dataURL] as? URL else {
             throw UTMConfigurationError.invalidDataURL
@@ -352,7 +352,7 @@ struct DiskImage: Codable, Hashable, Identifiable {
             imageURL = try? URL(resolvingBookmarkData: bookmark, options: .withSecurityScope, bookmarkDataIsStale: &stale)
         }
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(sizeMib, forKey: .sizeMib)
@@ -373,7 +373,7 @@ struct DiskImage: Codable, Hashable, Identifiable {
             try container.encodeIfPresent(bookmark, forKey: .imageBookmark)
         }
     }
-    
+
     func hash(into hasher: inout Hasher) {
         if let imageURL = imageURL {
             imageURL.lastPathComponent.hash(into: &hasher)
@@ -386,16 +386,16 @@ struct DiskImage: Codable, Hashable, Identifiable {
 struct SharedDirectory: Codable, Hashable, Identifiable {
     var directoryURL: URL?
     var isReadOnly: Bool
-    
+
     var id: SharedDirectory {
         self
     }
-    
+
     private enum CodingKeys: String, CodingKey {
         case directoryBookmark
         case isReadOnly
     }
-    
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         isReadOnly = try container.decode(Bool.self, forKey: .isReadOnly)
@@ -403,7 +403,7 @@ struct SharedDirectory: Codable, Hashable, Identifiable {
         var stale: Bool = false
         directoryURL = try? URL(resolvingBookmarkData: bookmark, options: .withSecurityScope, bookmarkDataIsStale: &stale)
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(isReadOnly, forKey: .isReadOnly)
@@ -418,7 +418,7 @@ struct SharedDirectory: Codable, Hashable, Identifiable {
         let bookmark = try directoryURL?.bookmarkData(options: options)
         try container.encodeIfPresent(bookmark, forKey: .directoryBookmark)
     }
-    
+
     func hash(into hasher: inout Hasher) {
         directoryURL.hash(into: &hasher)
     }

@@ -20,19 +20,19 @@ import Foundation
 struct UTMConfigurationInfo: Codable {
     /// VM name displayed to user.
     var name: String = NSLocalizedString("Virtual Machine", comment: "UTMConfigurationInfo")
-    
+
     /// Path to the icon.
     var iconURL: URL?
-    
+
     /// If true, the icon is stored in the bundle. Otherwise, the icon is built-in.
     var isIconCustom: Bool = false
-    
+
     /// User specified notes to be displayed when the VM is selected.
     var notes: String?
-    
+
     /// Random identifier not accessible by the user.
     var uuid: UUID = UUID()
-    
+
     enum CodingKeys: String, CodingKey {
         case name = "Name"
         case icon = "Icon"
@@ -40,10 +40,10 @@ struct UTMConfigurationInfo: Codable {
         case notes = "Notes"
         case uuid = "UUID"
     }
-    
+
     init() {
     }
-    
+
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         name = try values.decode(String.self, forKey: .name)
@@ -60,7 +60,7 @@ struct UTMConfigurationInfo: Codable {
         notes = try values.decodeIfPresent(String.self, forKey: .notes)
         uuid = try values.decode(UUID.self, forKey: .uuid)
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(name, forKey: .name)
@@ -76,7 +76,7 @@ struct UTMConfigurationInfo: Codable {
         try container.encodeIfPresent(notes, forKey: .notes)
         try container.encode(uuid, forKey: .uuid)
     }
-    
+
     static func builtinIcon(named name: String) -> URL? {
         Bundle.main.url(forResource: name, withExtension: "png", subdirectory: "Icons")
     }
@@ -104,7 +104,7 @@ extension UTMConfigurationInfo {
             iconURL = Self.builtinIcon(named: name)
         }
     }
-    
+
     #if os(macOS)
     init(migrating oldConfig: UTMLegacyAppleConfiguration, dataURL: URL) {
         self.init()

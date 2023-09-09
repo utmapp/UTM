@@ -44,7 +44,7 @@ struct UTMCtl: ParsableCommand {
 /// Common interface for all subcommands
 protocol UTMAPICommand: ParsableCommand {
     var environment: UTMCtl.EnvironmentOptions { get }
-    
+
     func run(with application: UTMScriptingApplication) throws
 }
 
@@ -60,17 +60,15 @@ extension UTMAPICommand {
         if environment.hide {
             utmApp.setAutoTerminate!(false)
             if let windows = utmApp.windows!() as? [UTMScriptingWindow] {
-                for window in windows {
-                    if window.name == "UTM" {
-                        window.closeSaving!(.no, savingIn: nil)
-                        break
-                    }
+                for window in windows where window.name == "UTM" {
+                    window.closeSaving!(.no, savingIn: nil)
+                    break
                 }
             }
         }
         try run(with: utmApp)
     }
-    
+
     /// Get a virtual machine from an identifier
     /// - Parameters:
     ///   - identifier: Identifier
@@ -88,7 +86,7 @@ extension UTMAPICommand {
             }
         }
     }
-    
+
     /// Find the path to UTM.app
     private var utmAppUrl: URL {
         if let executableURL = Bundle.main.executableURL?.resolvingSymlinksInPath() {
@@ -99,7 +97,7 @@ extension UTMAPICommand {
         }
         return URL(fileURLWithPath: "/Applications/UTM.app")
     }
-    
+
     func withErrorsSilenced<Result>(_ application: UTMScriptingApplication, body: () throws -> Result) rethrows -> Result {
         let delegate = application.delegate
         application.delegate = nil
@@ -112,7 +110,7 @@ extension UTMAPICommand {
 extension UTMCtl {
     @objc class EventErrorHandler: NSObject, SBApplicationDelegate {
         static let shared = EventErrorHandler()
-        
+
         /// Error handler for scripting events
         /// - Parameters:
         ///   - event: Event that caused the error
@@ -138,7 +136,7 @@ extension UTMCtl {
         case virtualMachineNotFound
         case invalidIdentifier(String)
         case deviceNotFound
-        
+
         var errorDescription: String? {
             switch self {
             case .applicationNotFound: return "Application not found."
@@ -170,15 +168,15 @@ extension UTMCtl {
         static var configuration = CommandConfiguration(
             abstract: "Enumerate all registered virtual machines."
         )
-        
+
         @OptionGroup var environment: EnvironmentOptions
-        
+
         func run(with application: UTMScriptingApplication) throws {
             if let list = application.virtualMachines!() as? [UTMScriptingVirtualMachine] {
                 printResponse(list)
             }
         }
-        
+
         func printResponse(_ response: [UTMScriptingVirtualMachine]) {
             print("UUID                                 Status   Name")
             for entry in response {
@@ -194,17 +192,16 @@ extension UTMCtl {
         static var configuration = CommandConfiguration(
             abstract: "Query the status of a virtual machine."
         )
-        
+
         @OptionGroup var environment: EnvironmentOptions
-        
+
         @OptionGroup var identifer: VMIdentifier
-        
+
         func run(with application: UTMScriptingApplication) throws {
             let vm = try virtualMachine(forIdentifier: identifer, in: application)
             printResponse(vm)
-            
         }
-        
+
         func printResponse(_ vm: UTMScriptingVirtualMachine) {
             print(vm.status!.asString)
         }
@@ -216,17 +213,17 @@ extension UTMCtl {
         static var configuration = CommandConfiguration(
             abstract: "Start a virtual machine or resume a suspended virtual machine."
         )
-        
+
         @OptionGroup var environment: EnvironmentOptions
-        
+
         @OptionGroup var identifer: VMIdentifier
-        
+
         @Flag(name: .shortAndLong, help: "Attach to the first serial port after start.")
         var attach: Bool = false
-        
+
         @Flag(help: "Run VM as a snapshot and do not save changes to disk.")
         var disposable: Bool = false
-        
+
         func run(with application: UTMScriptingApplication) throws {
             let vm = try virtualMachine(forIdentifier: identifer, in: application)
             vm.startSaving!(!disposable)
@@ -242,14 +239,14 @@ extension UTMCtl {
         static var configuration = CommandConfiguration(
             abstract: "Suspend running a virtual machine to memory."
         )
-        
+
         @OptionGroup var environment: EnvironmentOptions
-        
+
         @OptionGroup var identifer: VMIdentifier
-        
+
         @Flag(name: .shortAndLong, help: "Save the VM state to disk after suspending.")
         var saveState: Bool = false
-        
+
         func run(with application: UTMScriptingApplication) throws {
             let vm = try virtualMachine(forIdentifier: identifer, in: application)
             vm.suspendSaving!(saveState)
@@ -262,23 +259,23 @@ extension UTMCtl {
         static var configuration = CommandConfiguration(
             abstract: "Shuts down a running virtual machine."
         )
-        
+
         struct Style: ParsableArguments {
             @Flag(name: .long, help: "Force stop by sending a power off event (default)")
             var force: Bool = false
-            
+
             @Flag(name: .long, help: "Force kill the VM process")
             var kill: Bool = false
-            
+
             @Flag(name: .long, help: "Request power down from guest operating system")
             var request: Bool = false
-            
+
             struct InvalidStyleError: LocalizedError {
                 var errorDescription: String? {
                     "You can only specify one of: --force, --kill, or --request"
                 }
             }
-            
+
             mutating func validate() throws {
                 let count = [force, kill, request].filter({ $0 }).count
                 guard count <= 1 else {
@@ -289,13 +286,13 @@ extension UTMCtl {
                 }
             }
         }
-        
+
         @OptionGroup var environment: EnvironmentOptions
-        
+
         @OptionGroup var identifer: VMIdentifier
-        
+
         @OptionGroup var style: Style
-        
+
         func run(with application: UTMScriptingApplication) throws {
             let vm = try virtualMachine(forIdentifier: identifer, in: application)
             var stopMethod: UTMScriptingStopMethod = .force
@@ -316,14 +313,14 @@ extension UTMCtl {
         static var configuration = CommandConfiguration(
             abstract: "Redirect the serial input/output to this terminal."
         )
-        
+
         @OptionGroup var environment: EnvironmentOptions
-        
+
         @OptionGroup var identifer: VMIdentifier
-        
+
         @Option(help: "Index of the serial device to attach to.")
         var index: Int?
-        
+
         func run(with application: UTMScriptingApplication) throws {
             let vm = try virtualMachine(forIdentifier: identifer, in: application)
             guard let serialPorts = vm.serialPorts!() as? [UTMScriptingSerialPort] else {
@@ -342,7 +339,7 @@ extension UTMCtl {
                 }
             }
         }
-        
+
         func printResponse(_ serialPort: UTMScriptingSerialPort) {
             // TODO: spawn a terminal emulator
             if serialPort.interface == .ptty {
@@ -361,20 +358,20 @@ extension UTMCtl {
             subcommands: [FilePull.self, FilePush.self]
         )
     }
-    
+
     struct FilePull: UTMAPICommand {
         static var configuration = CommandConfiguration(
             commandName: "pull",
             abstract: "Fetches a file from the guest and output it to stdout."
         )
-        
+
         @OptionGroup var environment: EnvironmentOptions
-        
+
         @OptionGroup var identifer: VMIdentifier
-        
+
         @Argument(help: "Path of the file to pull on the guest.")
         var path: String
-        
+
         func run(with application: UTMScriptingApplication) throws {
             let vm = try virtualMachine(forIdentifier: identifer, in: application)
             let file = vm.openFileAt!(path, for: .reading, updating: false)
@@ -387,20 +384,20 @@ extension UTMCtl {
             file.close!()
         }
     }
-    
+
     struct FilePush: UTMAPICommand {
         static var configuration = CommandConfiguration(
             commandName: "push",
             abstract: "Uploads the contents of stdin to the guest."
         )
-        
+
         @OptionGroup var environment: EnvironmentOptions
-        
+
         @OptionGroup var identifer: VMIdentifier
-        
+
         @Argument(help: "Destination path on the guest.")
         var path: String
-        
+
         func run(with application: UTMScriptingApplication) throws {
             let vm = try virtualMachine(forIdentifier: identifer, in: application)
             let file = vm.openFileAt!(path, for: .writing, updating: false)
@@ -420,20 +417,20 @@ extension UTMCtl {
             abstract: "Execute an application on the guest.",
             discussion: "The return value of the command will be returned from this tool."
         )
-        
+
         @OptionGroup var environment: EnvironmentOptions
-        
+
         @OptionGroup var identifer: VMIdentifier
-        
+
         @Flag(name: .long, help: "Read in standard input and forward it to the guest.")
         var input: Bool = false
-        
+
         @Option(name: .long, parsing: .singleValue, help: "Set a single environment variable in the format NAME=VALUE")
         var env: [String] = []
-        
+
         @Option(parsing: .remaining, help: "Command line to execute on the guest.")
         var cmd: [String]
-        
+
         func run(with application: UTMScriptingApplication) throws {
             let vm = try virtualMachine(forIdentifier: identifer, in: application)
             let path = cmd.first!
@@ -467,11 +464,11 @@ extension UTMCtl {
             abstract: "List all IP addresses associated with network interfaces on the guest.",
             discussion: "IPv4 addresses (if available) will be listed before any IPv6 address."
         )
-        
+
         @OptionGroup var environment: EnvironmentOptions
-        
+
         @OptionGroup var identifer: VMIdentifier
-        
+
         func run(with application: UTMScriptingApplication) throws {
             let vm = try virtualMachine(forIdentifier: identifer, in: application)
             let addresses = vm.queryIp!()
@@ -487,13 +484,13 @@ extension UTMCtl {
         static var configuration = CommandConfiguration(
             abstract: "Clone an existing virtual machine."
         )
-        
+
         @OptionGroup var environment: EnvironmentOptions
-        
+
         @OptionGroup var identifer: VMIdentifier
-        
+
         @Option var name: String?
-        
+
         func run(with application: UTMScriptingApplication) throws {
             let vm = try virtualMachine(forIdentifier: identifer, in: application)
             var properties = ["configuration": [:]]
@@ -510,11 +507,11 @@ extension UTMCtl {
         static var configuration = CommandConfiguration(
             abstract: "Delete a virtual machine (there is no confirmation)."
         )
-        
+
         @OptionGroup var environment: EnvironmentOptions
-        
+
         @OptionGroup var identifer: VMIdentifier
-        
+
         func run(with application: UTMScriptingApplication) throws {
             let vm = try virtualMachine(forIdentifier: identifer, in: application)
             vm.delete!()
@@ -528,7 +525,7 @@ extension UTMCtl {
             abstract: "USB device handling.",
             subcommands: [USBList.self, USBConnect.self, USBDisconnect.self]
         )
-        
+
         /// Find a USB device using an identifier
         /// - Parameters:
         ///   - identifier: Either VID:PID or a location
@@ -548,7 +545,7 @@ extension UTMCtl {
             }
             throw APIError.invalidIdentifier(identifier)
         }
-        
+
         static private func usbDevice(forVid vid: Int, pid: Int, in application: UTMScriptingApplication) throws -> UTMScriptingUsbDevice {
             if let list = application.usbDevices!() as? [UTMScriptingUsbDevice] {
                 if let device = list.first(where: { $0.vendorId == vid && $0.productId == pid }) {
@@ -557,7 +554,7 @@ extension UTMCtl {
             }
             throw APIError.deviceNotFound
         }
-        
+
         static private func usbDevice(forLocation location: Int, in application: UTMScriptingApplication) throws -> UTMScriptingUsbDevice {
             if let list = application.usbDevices!() as? [UTMScriptingUsbDevice] {
                 if let device = list.first(where: { $0.id!() == location }) {
@@ -567,21 +564,21 @@ extension UTMCtl {
             throw APIError.deviceNotFound
         }
     }
-    
+
     struct USBList: UTMAPICommand {
         static var configuration = CommandConfiguration(
             commandName: "list",
             abstract: "List connected devices."
         )
-        
+
         @OptionGroup var environment: EnvironmentOptions
-        
+
         func run(with application: UTMScriptingApplication) throws {
             if let list = application.usbDevices!() as? [UTMScriptingUsbDevice] {
                 printResponse(list)
             }
         }
-        
+
         func printResponse(_ response: [UTMScriptingUsbDevice]) {
             guard !response.isEmpty else {
                 print("No devices found. Make sure a USB sharing enabled VM is running.")
@@ -596,38 +593,38 @@ extension UTMCtl {
             }
         }
     }
-    
+
     struct USBConnect: UTMAPICommand {
         static var configuration = CommandConfiguration(
             commandName: "connect",
             abstract: "Connect a USB device to a virtual machine."
         )
-        
+
         @OptionGroup var environment: EnvironmentOptions
-        
+
         @OptionGroup var identifer: VMIdentifier
-        
+
         @Argument(help: "Device identifier either as a VID:PID pair (e.g. DEAD:BEEF) or a location (e.g. 4).")
         var device: String
-        
+
         func run(with application: UTMScriptingApplication) throws {
             let vm = try virtualMachine(forIdentifier: identifer, in: application)
             let device = try USB.usbDevice(forIdentifier: device, in: application)
             device.connectTo!(vm)
         }
     }
-    
+
     struct USBDisconnect: UTMAPICommand {
         static var configuration = CommandConfiguration(
             commandName: "disconnect",
             abstract: "Disconnect a USB device from a virtual machine."
         )
-        
+
         @OptionGroup var environment: EnvironmentOptions
-        
+
         @Argument(help: "Device identifier either as a VID:PID pair (e.g. DEAD:BEEF) or a location (e.g. 4).")
         var device: String
-        
+
         func run(with application: UTMScriptingApplication) throws {
             let device = try USB.usbDevice(forIdentifier: device, in: application)
             device.disconnect!()
@@ -640,11 +637,11 @@ extension UTMCtl {
         @Argument(help: "Either the UUID or the complete name of the virtual machine.")
         var identifier: String
     }
-    
+
     struct EnvironmentOptions: ParsableArguments {
         @Flag(name: .shortAndLong, help: "Show debug logging.")
         var debug: Bool = false
-        
+
         @Flag(help: "Hide the main UTM window.")
         var hide: Bool = false
     }
@@ -658,7 +655,7 @@ private extension String {
 
 extension FileHandle: TextOutputStream {
     private static var newLine = Data("\n".utf8)
-    
+
     public func write(_ string: String) {
         let data = Data(string.utf8)
         self.write(data)

@@ -21,25 +21,25 @@ import QEMUKitInternal
 protocol UTMConfigurationDrive: Codable, Hashable, Identifiable {
     /// If not removable, this is the name of the file in the bundle.
     var imageName: String? { get set }
-    
+
     /// Size of the image when creating a new image (in MiB).
     var sizeMib: Int { get }
-    
+
     /// If true, the drive image will be mounted as read-only.
     var isReadOnly: Bool { get }
-    
+
     /// If true, a bookmark is stored in the package.
     var isExternal: Bool { get }
-    
+
     /// If true, the created image will be raw format and not QCOW2. Not saved.
     var isRawImage: Bool { get }
-    
+
     /// If valid, will point to the actual location of the drive image. Not saved.
     var imageURL: URL? { get set }
-    
+
     /// Unique identifier for this drive
     var id: String { get }
-    
+
     /// Create a new copy with a unique ID
     /// - Returns: Copy
     func clone() -> Self
@@ -55,7 +55,7 @@ extension UTMConfigurationDrive {
 
 extension UTMConfigurationDrive {
     private var bytesInMib: UInt64 { 1048576 }
-    
+
     @MainActor mutating func saveData(to dataURL: URL) async throws -> [URL] {
         guard !isExternal else {
             return [] // nothing to save
@@ -89,7 +89,7 @@ extension UTMConfigurationDrive {
             return [existingURL]
         }
     }
-    
+
     private func createRawImage(at newURL: URL, size sizeMib: Int) async throws {
         let size = UInt64(sizeMib) * bytesInMib
         try await Task.detached {
@@ -101,7 +101,7 @@ extension UTMConfigurationDrive {
             try handle.close()
         }.value
     }
-    
+
     private func createQcow2Image(at newURL: URL, size sizeMib: Int) async throws {
         try await Task.detached {
             if !QEMUGenerateDefaultQcow2File(newURL as CFURL, sizeMib) {
@@ -109,7 +109,7 @@ extension UTMConfigurationDrive {
             }
         }.value
     }
-    
+
     #if os(macOS)
     private func convertQcow2Image(at sourceURL: URL, to destFolderURL: URL) async throws -> URL {
         let destQcow2 = UTMData.newImage(from: sourceURL,

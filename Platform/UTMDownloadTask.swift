@@ -24,26 +24,26 @@ class UTMDownloadTask: NSObject, URLSessionDelegate, URLSessionDownloadDelegate 
     private var downloadTask: Task<(any UTMVirtualMachine)?, Error>!
     private var taskContinuation: CheckedContinuation<(any UTMVirtualMachine)?, Error>?
     @MainActor private(set) lazy var pendingVM: UTMPendingVirtualMachine = createPendingVM()
-    
+
     private let kMaxRetries = 5
     private var retries = 0
-    
+
     var fileManager: FileManager {
         FileManager.default
     }
-    
+
     init(for url: URL, named name: String) {
         self.url = url
         self.name = name
     }
-    
+
     /// Called by subclass when download is completed
     /// - Parameter location: Downloaded file location
     /// - Returns: Processed UTM virtual machine
     func processCompletedDownload(at location: URL) async throws -> any UTMVirtualMachine {
         throw "Not Implemented"
     }
-    
+
     internal func urlSession(_ session: URLSession, downloadTask sessionTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
         guard !downloadTask.isCancelled else {
             sessionTask.cancel()
@@ -78,7 +78,7 @@ class UTMDownloadTask: NSObject, URLSessionDelegate, URLSessionDownloadDelegate 
 #endif
         }
     }
-    
+
     /// received when the download progresses
     internal func urlSession(_ session: URLSession, downloadTask sessionTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
         guard !downloadTask.isCancelled else {
@@ -92,7 +92,7 @@ class UTMDownloadTask: NSObject, URLSessionDelegate, URLSessionDownloadDelegate 
                                                 estimatedTotal: totalBytesExpectedToWrite)
         }
     }
-    
+
     /// when the session ends with an error, it could be cancelled or an actual error
     internal func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         let error = error as? NSError
@@ -123,7 +123,7 @@ class UTMDownloadTask: NSObject, URLSessionDelegate, URLSessionDownloadDelegate 
             taskContinuation.resume(returning: nil)
         }
     }
-    
+
     internal func urlSession(_ session: URLSession, didBecomeInvalidWithError error: Error?) {
         guard let taskContinuation = taskContinuation else {
             return
@@ -135,7 +135,7 @@ class UTMDownloadTask: NSObject, URLSessionDelegate, URLSessionDownloadDelegate 
             taskContinuation.resume(returning: nil)
         }
     }
-    
+
     /// Create a placeholder object to show
     /// - Returns: Pending VM
     @MainActor private func createPendingVM() -> UTMPendingVirtualMachine {
@@ -143,8 +143,7 @@ class UTMDownloadTask: NSObject, URLSessionDelegate, URLSessionDownloadDelegate 
             self.cancel()
         }
     }
-    
-    
+
     /// Starts the download
     /// - Returns: Completed download or nil if canceled
     func download() async throws -> (any UTMVirtualMachine)? {
@@ -160,7 +159,7 @@ class UTMDownloadTask: NSObject, URLSessionDelegate, URLSessionDownloadDelegate 
         }
         return try await downloadTask.value
     }
-    
+
     /// Try to cancel the download
     func cancel() {
         downloadTask?.cancel()

@@ -20,27 +20,27 @@ import Foundation
 struct UTMConfigurationTerminal: Codable, Identifiable {
     /// Terminal color scheme. Mutually exclusive with foreground/background colors.
     var theme: QEMUTerminalTheme?
-    
+
     /// Terminal foreground color if a theme is not used.
     var foregroundColor: String? = "#ffffff"
-    
+
     /// Terminal background color if a theme is not used.
     var backgroundColor: String? = "#000000"
-    
+
     /// Terminal text font.
     var font: QEMUTerminalFont = .init(rawValue: "Menlo")
-    
+
     /// Terminal text font size.
     var fontSize: Int = 12
-    
+
     /// Command to send when the console is resized.
     var resizeCommand: String?
-    
+
     /// Terminal has a blinking cursor.
     var hasCursorBlink: Bool = true
-    
+
     let id = UUID()
-    
+
     enum CodingKeys: String, CodingKey {
         case theme = "Theme"
         case foregroundColor = "ForegroundColor"
@@ -50,10 +50,10 @@ struct UTMConfigurationTerminal: Codable, Identifiable {
         case resizeCommand = "ResizeCommand"
         case hasCursorBlink = "CursorBlink"
     }
-    
+
     init() {
     }
-    
+
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         theme = try values.decodeIfPresent(QEMUTerminalTheme.self, forKey: .theme)
@@ -64,7 +64,7 @@ struct UTMConfigurationTerminal: Codable, Identifiable {
         resizeCommand = try values.decodeIfPresent(String.self, forKey: .resizeCommand)
         hasCursorBlink = try values.decodeIfPresent(Bool.self, forKey: .hasCursorBlink) ?? true
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         if let theme = theme {
@@ -96,7 +96,7 @@ extension UTMConfigurationTerminal {
         resizeCommand = oldConfig.consoleResizeCommand
         hasCursorBlink = oldConfig.consoleCursorBlink
     }
-    
+
     #if os(macOS)
     init(migrating oldConfig: UTMLegacyAppleConfiguration) {
         self.init()
