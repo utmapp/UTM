@@ -76,8 +76,16 @@ extension VMDisplayMetalViewController: UIGestureRecognizerDelegate {
         return boolForSetting("InvertScroll")
     }
     
-    init() {
+    public func initTouch() {
+        // Mouse Cursor
+        cursor = VMCursor(self)
+        scroll = VMScroll(self)
         
+        #if os(visionOS)
+        // We only support pan and tap on visionOS
+        pan = UIPanGestureRecognizer(target: self, action: #selector(gesturePan))
+        #else
+        #endif
     }
     
     public func gestureTypeForSetting(_ key: String) -> VMGestureType {
@@ -192,7 +200,7 @@ extension VMDisplayMetalViewController: UIGestureRecognizerDelegate {
         }
     }
     
-    @IBAction public func gesturePan(_ sender: UIPanGestureRecognizer) {
+    @objc @IBAction public func gesturePan(_ sender: UIPanGestureRecognizer) {
         // Otherwise we handle in touchesMoved
         if serverModeCursor {
             moveMouseWithInertia(sender)
@@ -267,15 +275,41 @@ extension VMDisplayMetalViewController: UIGestureRecognizerDelegate {
     }
     
     public func moveMouseRelative(_ translation: CGPoint) -> CGPoint {
-        
+        var translation = translation
+        translation.x = CGPointToPixel(translation.x) / vmDisplay.viewportScale
+        translation.y = CGPointToPixel(translation.y) / vmDisplay.viewportScale
+        if vmInput!.serverModeCursor {
+            vmInput!.sendMouseMotion(mouseButtonDown, relativePoint: translation)
+        } else {
+            logger.warning("Ignored mouse mation (\(translation.x), \(translation.y)) while mouse is in client mode")
+        }
+        return translation
     }
     
-    public func moveMouseScroll(_ translation: CGPoint) -> CGFloat {
-        
+    public func moveMouseScroll(_ translation: CGPoint) -> CGPoint {
+        var translation = translation
+        translation.y = CGPointToPixel(translation.y) / kScrollSpeedReduction
+        if isInvertScroll {
+            translation.y = -translation.y
+        }
+        vmInput!.sendMouseScroll(.smooth, button: mouseButtonDown, dy: translation.y)
+        return translation
     }
     
     public func mouseClick(button: CSInputButton, location: CGPoint) {
-        
+        if !serverModeCursor {
+            cursor.center = location
+        }
+        vmInput!.sendMouseButton(button, pressed: true)
+        onDelay(0.05) {
+            mouseLeftDown = false
+            mouseRightDown = false
+            mouseMiddleDown = false
+            vmInput!.sendMouseButton(button, pressed: false)
+        }
+        #if os(visionOS)
+        clickFeedbackGenerator.selectionChanged()
+        #endif
     }
     
     public func dragCursor(_ state: UIGestureRecognizer.State, primary: Bool, secondary: Bool, middle: Bool) {
@@ -298,6 +332,156 @@ extension VMDisplayMetalViewController: UIGestureRecognizerDelegate {
             mouseRightDown = false
             mouseMiddleDown = false
             vmInput!.sendMouseButton(mouseButtonDown, pressed: false)
+        }
+    }
+    
+    @IBAction public func gestureTap(_ sender: UITapGestureRecognizer) {
+        if sender.state == .ended && serverModeCursor {
+            mouseClick(button: .left, location: sender.location(in: sender.view))
+        }
+    }
+    
+    @IBAction public func gestureTwoTap(_ sender: UITapGestureRecognizer) {
+        if sender.state == .ended && twoFingerTapType == .rightClick {
+            mouseClick(button: .right, location: sender.location(in: sender.view))
+        }
+    }
+    
+    @IBAction public func gestureLongPress(_ sender: UITapGestureRecognizer) {
+        if sender.state == .ended && longPressType == .rightClick {
+            mouseClick(button: .right, location: sender.location(in: sender.view))
+        } else if longPressType == .dragCursor {
+            dragCursor(sender.state, primary: true, secondary: false, middle: false)
+        }
+    }
+    
+    @IBAction public func gesturePinch(_ sender: UIPinchGestureRecognizer) {
+        // Disable pinch if move screen on pan is disabled
+        if !(twoFingerPanType == .moveScreen || threeFingerPanType == .moveScreen) {
+            return
+        }
+        if sender.state == .began || sender.state == .changed || sender.state == .ended {
+            if sender.scale > 0 {
+                vmDisplay.viewportScale *= sender.scale
+                // Persist this change in viewState
+                delegate.displayScale = vmDisplay.viewportScale
+                sender.scale = 1.0
+            } else {
+                logger.error("Sender.scale cannot be 0")
+            }
+        }
+    }
+    
+    @IBAction public func gestureSwipeUp(_ sender: UISwipeGestureRecognizer) {
+        if sender.state == .ended {
+            showKeyboard()
+        }
+    }
+    
+    @IBAction public func gestureSwipeDown(_ sender: UISwipeGestureRecognizer) {
+        if sender.state == .ended {
+            hideKeyboard()
+        }
+    }
+    
+    @IBAction public func gestureSwipeScroll(_ sender: UISwipeGestureRecognizer) {
+        if sender.state == .ended && twoFingerScollType == .mouseWheel {
+            if sender == swipeScrollUp {
+                vmInput!.sendMouseScroll(.up, button: mouseButtonDown, dy: 0)
+            } else if sender == swipeScrollDown {
+                vmInput!.sendMouseScroll(.down, button: mouseButtonDown, dy: 0)
+            } else {
+                logger.error("Invalid call to gestureSwipeScroll")
+            }
+        }
+    }
+    
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRequireFailureOf otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        if gestureRecognizer == twoPan && otherGestureRecognizer == swipeUp {
+            return true
+        }
+        if gestureRecognizer == twoPan && otherGestureRecognizer == swipeDown {
+            return true
+        }
+        if gestureRecognizer == twoTap && otherGestureRecognizer == swipeDown {
+            return true
+        }
+        if gestureRecognizer == twoTap && otherGestureRecognizer == swipeUp {
+            return true
+        }
+        if gestureRecognizer == tap && otherGestureRecognizer == twoTap {
+            return true
+        }
+        if gestureRecognizer == longPress && otherGestureRecognizer == tap {
+            return true
+        }
+        if gestureRecognizer == longPress && otherGestureRecognizer == twoTap {
+            return true
+        }
+        if gestureRecognizer == pinch && otherGestureRecognizer == swipeDown {
+            return true
+        }
+        if gestureRecognizer == pinch && otherGestureRecognizer == swipeUp {
+            return true
+        }
+        if gestureRecognizer == pan && otherGestureRecognizer == swipeUp {
+            return true
+        }
+        if gestureRecognizer == pan && otherGestureRecognizer == swipeDown {
+            return true
+        }
+        if gestureRecognizer == threePan && otherGestureRecognizer == swipeUp {
+            return true
+        }
+        if gestureRecognizer == threePan && otherGestureRecognizer == swipeDown {
+            return true
+        }
+        // Only if we do not disable two finger swipe
+        if twoFingerScollType != .none {
+            if gestureRecognizer == twoPan && otherGestureRecognizer == swipeScrollUp {
+                return true
+            }
+            if gestureRecognizer == twoPan && otherGestureRecognizer == swipeScrollDown {
+                return true
+            }
+        }
+        #if os(visionOS)
+        return pencilGestureRecognizer(gestureRecognizer, shouldRequireFailureOf: otherGestureRecognizer)
+        #else
+        return false
+        #endif
+    }
+    
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        if gestureRecognizer == twoPan && otherGestureRecognizer == pinch {
+            if twoFingerPanType == .moveScreen {
+                return true
+            } else {
+                return false
+            }
+        } else if gestureRecognizer == pan && otherGestureRecognizer == longPress {
+            return true
+        } else if twoFingerScollType == .none && otherGestureRecognizer == twoPan {
+            // If two finger swipe is disabled, we can also recognise two finger pans
+            if gestureRecognizer == scrollSwipeUp {
+                return true
+            } else if gestureRecognizer == swipeScrollDown {
+                return true
+            } else {
+                return false
+            }
+        } else {
+            return false
+        }
+    }
+    
+    @available(iOS 13.4, *)
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive event: UIEvent) -> Bool {
+        if event.type == .transform {
+            logger.info("Ignoring UIEventTypeTransform")
+            return false
+        } else {
+            return true
         }
     }
 }

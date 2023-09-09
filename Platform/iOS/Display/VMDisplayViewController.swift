@@ -15,16 +15,50 @@
 //
 
 import SwiftUI
+import UIKit
 
 private var memoryAlertOnce = false
 
-@objc public extension VMDisplayViewController {
+public class VMDisplayViewController: UIViewController {
+    var delegate: VMDisplayViewControllerDelegate!
+    var hasAutoSave: Bool = false
+    
+    private var _prefersHomeIndicatorAutoHidden: Bool = false
+    private var _prefersPointerLocked: Bool = false
+    
+    public override var prefersHomeIndicatorAutoHidden: Bool {
+        get {
+            _prefersHomeIndicatorAutoHidden
+        }
+        set {
+            _prefersHomeIndicatorAutoHidden = newValue
+            setNeedsUpdateOfHomeIndicatorAutoHidden()
+        }
+    }
+    public override var prefersPointerLocked: Bool {
+        get {
+            _prefersPointerLocked
+        }
+        set {
+            _prefersPointerLocked = newValue
+            setNeedsUpdateOfPrefersPointerLocked()
+        }
+    }
+    
     var runInBackground: Bool {
         boolForSetting("RunInBackground")
     }
     
     var disableIdleTimer: Bool {
         boolForSetting("DisableIdleTimer")
+    }
+    
+    public func showKeyboard() {
+        view.window!.makeKey()
+    }
+
+    public func hideKeyboard() {
+        view.window!.resignKey()
     }
 }
 

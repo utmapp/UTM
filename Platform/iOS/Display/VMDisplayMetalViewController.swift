@@ -18,6 +18,18 @@ import Foundation
 import CocoaSpiceRenderer
 
 class VMDisplayMetalViewController: VMDisplayViewController {
+    // Cursor handeling
+    var lastTwoPanOrigin: CGPoint = CGPoint()
+    var mouseLeftDown: Bool = false
+    var mouseRightDown: Bool = false
+    var mouseMiddleDown: Bool = false
+    var pencilForceRightClickOnce: Bool = false
+    var cursor: VMCursor! = nil
+    var scroll: VMScroll! = nil
+    
+    // Gestures
+    var swipeUp: UISwipeGestureRecognizer?
+    
     var renderer: CSMetalRenderer?
     var windowScaling: CGFloat
     var windowOrigin: CGPoint

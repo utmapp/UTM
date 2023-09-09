@@ -63,8 +63,6 @@
 		8401868A288A44C20050AC51 /* VMWindowState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84018688288A44C20050AC51 /* VMWindowState.swift */; };
 		8401868F288A50B90050AC51 /* VMDisplayViewControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8401868E288A50B90050AC51 /* VMDisplayViewControllerDelegate.swift */; };
 		84018690288A50B90050AC51 /* VMDisplayViewControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8401868E288A50B90050AC51 /* VMDisplayViewControllerDelegate.swift */; };
-		84018691288A73300050AC51 /* VMDisplayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE72B4AC2463579D00716A11 /* VMDisplayViewController.m */; };
-		84018692288A73310050AC51 /* VMDisplayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE72B4AC2463579D00716A11 /* VMDisplayViewController.m */; };
 		84018695288B66370050AC51 /* SwiftUIVisualEffects in Frameworks */ = {isa = PBXBuildFile; productRef = 84018694288B66370050AC51 /* SwiftUIVisualEffects */; };
 		84018697288B71BF0050AC51 /* BusyIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84018696288B71BF0050AC51 /* BusyIndicator.swift */; };
 		84018698288B71BF0050AC51 /* BusyIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84018696288B71BF0050AC51 /* BusyIndicator.swift */; };
@@ -1560,8 +1558,6 @@
 		CE6D21DB2553A6ED001D29C5 /* VMConfirmActionModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfirmActionModifier.swift; sourceTree = "<group>"; };
 		CE6EDCDD241C4A6800A719DC /* UTMLegacyViewState.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMLegacyViewState.h; sourceTree = "<group>"; };
 		CE6EDCDE241C4A6800A719DC /* UTMLegacyViewState.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMLegacyViewState.m; sourceTree = "<group>"; };
-		CE72B4AB2463579D00716A11 /* VMDisplayViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMDisplayViewController.h; sourceTree = "<group>"; };
-		CE72B4AC2463579D00716A11 /* VMDisplayViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMDisplayViewController.m; sourceTree = "<group>"; };
 		CE772AAB25C8B0F600E4E379 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		CE772AB225C8B7B500E4E379 /* VMCommands.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VMCommands.swift; sourceTree = "<group>"; };
 		CE7D972B24B2B17D0080CB69 /* BusyOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusyOverlay.swift; sourceTree = "<group>"; };
@@ -2340,8 +2336,6 @@
 				6ED11DBB2AAACAC7001D097C /* VMCursor.swift */,
 				6ED11DBD2AAACE1C001D097C /* VMScroll.swift */,
 				84C60FB9268269D700B58C00 /* VMDisplayViewController.swift */,
-				CE72B4AB2463579D00716A11 /* VMDisplayViewController.h */,
-				CE72B4AC2463579D00716A11 /* VMDisplayViewController.m */,
 				8401868E288A50B90050AC51 /* VMDisplayViewControllerDelegate.swift */,
 				6ED11DC12AAAD117001D097C /* VMDisplayMetalViewController.swift */,
 				CEE7ED472A90256100E6B4AB /* VMDisplayMetalViewController+Private.h */,
@@ -2966,7 +2960,6 @@
 				CEDF83F9258AE24E0030E4AC /* UTMPasteboard.swift in Sources */,
 				848D99B4286300160055C215 /* QEMUArgument.swift in Sources */,
 				CE2D956924AD4F990059923A /* VMPlaceholderView.swift in Sources */,
-				84018692288A73310050AC51 /* VMDisplayViewController.m in Sources */,
 				845F95E32A57628400A016D7 /* UTMSWTPM.swift in Sources */,
 				84CE3DB12904C7A100FF068B /* UTMSettingsView.swift in Sources */,
 				843BF83428450C0B0029D60D /* UTMQemuConfigurationSound.swift in Sources */,
@@ -3287,7 +3280,6 @@
 				841E997628AA1191003C6CB6 /* UTMRegistry.swift in Sources */,
 				CEF0304F26A2AFBF00667B63 /* BigButtonStyle.swift in Sources */,
 				6ED11DB12AAA9456001D097C /* UTMSpiceIO.swift in Sources */,
-				84018691288A73300050AC51 /* VMDisplayViewController.m in Sources */,
 				847BF9AB2A49C783000BD9AA /* VMData.swift in Sources */,
 				84909A8E27CACD5C005605F1 /* UTMPlaceholderVMView.swift in Sources */,
 				CEA45EF4263519B5002FA97D /* VMConfigSoundView.swift in Sources */,
