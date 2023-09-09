@@ -22,19 +22,19 @@ struct VMDetailsView: View {
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     #if !os(macOS)
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass: UserInterfaceSizeClass?
-    
+
     private var regularScreenSizeClass: Bool {
         horizontalSizeClass == .regular
     }
     #else
     private let regularScreenSizeClass: Bool = true
     #endif
-    
+
     private var sizeLabel: String {
         let size = data.computeSize(for: vm)
         return ByteCountFormatter.string(fromByteCount: size, countStyle: .binary)
     }
-    
+
     var body: some View {
         if vm.isDeleted {
             VStack {
@@ -116,7 +116,7 @@ struct VMDetailsView: View {
 /// Returns just the content under macOS but adds the title on iOS. #3099
 private struct VMOptionalNavigationTitleModifier: ViewModifier {
     @ObservedObject var vm: VMData
-    
+
     func body(content: Content) -> some View {
         #if os(macOS)
         return content.navigationSubtitle(vm.detailsTitleLabel)
@@ -130,7 +130,7 @@ struct Screenshot: View {
     @ObservedObject var vm: VMData
     let large: Bool
     @EnvironmentObject private var data: UTMData
-    
+
     var body: some View {
         ZStack {
             Rectangle()
@@ -185,7 +185,7 @@ struct Details: View {
     @ObservedObject var vm: VMData
     let sizeLabel: String
     @EnvironmentObject private var data: UTMData
-    
+
     var body: some View {
         VStack {
             if vm.isShortcut {
@@ -270,7 +270,7 @@ struct Details: View {
         }.lineLimit(1)
         .truncationMode(.tail)
     }
-    
+
     private func plainLabel(_ text: String, systemImage: String) -> some View {
         return Label {
             Text(LocalizedStringKey(text))
@@ -282,7 +282,7 @@ struct Details: View {
 
 struct DetailsLabelStyle: LabelStyle {
     var color: Color = .accentColor
-    
+
     func makeBody(configuration: Configuration) -> some View {
         Label(
             title: { configuration.title.font(.headline) },
@@ -299,11 +299,11 @@ struct DetailsLabelStyle: LabelStyle {
 
 private struct OptionalSelectableText: View {
     var content: String?
-    
+
     init(_ content: String?) {
         self.content = content
     }
-    
+
     var body: some View {
         if #available(iOS 15, macOS 12, *) {
             (content.map { Text($0) } ?? Text("Inactive", comment: "VMDetailsView"))
@@ -318,7 +318,7 @@ private struct OptionalSelectableText: View {
 
 struct VMDetailsView_Previews: PreviewProvider {
     @State static private var config = UTMQemuConfiguration()
-    
+
     static var previews: some View {
         VMDetailsView(vm: VMData(from: .empty))
         .onAppear {

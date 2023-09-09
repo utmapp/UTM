@@ -25,31 +25,31 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
     @nonobjc var vm: (any UTMVirtualMachine)! {
         box.wrapped
     }
-    
+
     @objc var id: String {
         vm.id.uuidString
     }
-    
+
     @objc var name: String {
         box.detailsTitleLabel
     }
-    
+
     @objc var notes: String {
         box.detailsNotes ?? ""
     }
-    
+
     @objc var machine: String {
         box.detailsSystemTargetLabel
     }
-    
+
     @objc var architecture: String {
         box.detailsSystemArchitectureLabel
     }
-    
+
     @objc var memory: String {
         box.detailsSystemMemoryLabel
     }
-    
+
     @objc var backend: UTMScriptingBackend {
         if vm is UTMQemuVirtualMachine {
             return .qemu
@@ -59,7 +59,7 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
             return .unavailable
         }
     }
-    
+
     @objc var status: UTMScriptingStatus {
         switch vm.state {
         case .stopped: return .stopped
@@ -73,7 +73,7 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
         case .restoring: return .resuming // FIXME: new entries
         }
     }
-    
+
     @objc var serialPorts: [UTMScriptingSerialPortImpl] {
         if let config = vm.config as? UTMQemuConfiguration {
             return config.serials.indices.map({ UTMScriptingSerialPortImpl(qemuSerial: config.serials[$0], parent: self, index: $0) })
@@ -83,13 +83,13 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
             return []
         }
     }
-    
+
     var guestAgent: QEMUGuestAgent! {
         get async {
             await (vm as? UTMQemuVirtualMachine)?.guestAgent
         }
     }
-    
+
     override var objectSpecifier: NSScriptObjectSpecifier? {
         let appDescription = NSApplication.classDescription() as! NSScriptClassDescription
         return NSUniqueIDSpecifier(containerClassDescription: appDescription,
@@ -97,12 +97,12 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
                                    key: "scriptingVirtualMachines",
                                    uniqueID: id)
     }
-    
+
     init(for vm: VMData, data: UTMData) {
         self.box = vm
         self.data = data
     }
-    
+
     @objc func start(_ command: NSScriptCommand) {
         let shouldSaveState = command.evaluatedArguments?["saveFlag"] as? Bool ?? true
         withScriptCommand(command) { [self] in
@@ -121,7 +121,7 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
             }
         }
     }
-    
+
     @objc func suspend(_ command: NSScriptCommand) {
         let shouldSaveState = command.evaluatedArguments?["saveFlag"] as? Bool ?? false
         withScriptCommand(command) { [self] in
@@ -134,7 +134,7 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
             }
         }
     }
-    
+
     @objc func stop(_ command: NSScriptCommand) {
         let stopMethod: UTMScriptingStopMethod
         if let stopMethodValue = command.evaluatedArguments?["stopBy"] as? AEKeyword {
@@ -156,7 +156,7 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
             }
         }
     }
-    
+
     @objc func delete(_ command: NSDeleteCommand) {
         withScriptCommand(command) { [self] in
             guard vm.state == .stopped else {
@@ -165,7 +165,7 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
             try await data.delete(vm: box, alsoRegistry: true)
         }
     }
-    
+
     @objc func clone(_ command: NSCloneCommand) {
         let properties = command.evaluatedArguments?["WithProperties"] as? [AnyHashable : Any]
         withScriptCommand(command) { [self] in
@@ -173,7 +173,7 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
                 throw ScriptingError.notStopped
             }
             let newVM = try await data.clone(vm: box)
-            if let properties = properties, let newConfiguration = properties["configuration"] as? [AnyHashable : Any] {
+            if let properties = properties, let newConfiguration = properties["configuration"] as? [AnyHashable: Any] {
                 let wrapper = UTMScriptingConfigImpl(newVM.config!)
                 try wrapper.updateConfiguration(from: newConfiguration)
                 try await data.save(vm: newVM)
@@ -196,12 +196,12 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
         }
         return try await block(guestAgent)
     }
-    
-    @objc func valueInOpenFilesWithUniqueID(_ id: Int) -> UTMScriptingGuestFileImpl {
+
+    func valueInOpenFilesWithUniqueID(_ id: Int) -> UTMScriptingGuestFileImpl {
         UTMScriptingGuestFileImpl(from: id, parent: self)
     }
-    
-    @objc func openFile(_ command: NSScriptCommand) {
+
+    func openFile(_ command: NSScriptCommand) {
         let path = command.evaluatedArguments?["path"] as? String
         let mode = command.evaluatedArguments?["mode"] as? AEKeyword
         let isUpdate = command.evaluatedArguments?["isUpdate"] as? Bool ?? false
@@ -226,12 +226,12 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
             }
         }
     }
-    
-    @objc func valueInProcessesWithUniqueID(_ id: Int) -> UTMScriptingGuestProcessImpl {
+
+    func valueInProcessesWithUniqueID(_ id: Int) -> UTMScriptingGuestProcessImpl {
         UTMScriptingGuestProcessImpl(from: id, parent: self)
     }
-    
-    @objc func execute(_ command: NSScriptCommand) {
+
+    func execute(_ command: NSScriptCommand) {
         let path = command.evaluatedArguments?["path"] as? String
         let argv = command.evaluatedArguments?["argv"] as? [String]
         let envp = command.evaluatedArguments?["envp"] as? [String]
@@ -249,8 +249,8 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
             }
         }
     }
-    
-    @objc func queryIp(_ command: NSScriptCommand) {
+
+    func queryIp(_ command: NSScriptCommand) {
         withScriptCommand(command) { [self] in
             try await withGuestAgent { guestAgent in
                 let interfaces = try await guestAgent.guestNetworkGetInterfaces()
@@ -284,7 +284,7 @@ extension UTMScriptingVirtualMachineImpl {
         case notStopped
         case guestAgentNotRunning
         case invalidParameter
-        
+
         var errorDescription: String? {
             switch self {
             case .operationNotAvailable: return NSLocalizedString("Operation not available.", comment: "UTMScriptingVirtualMachineImpl")

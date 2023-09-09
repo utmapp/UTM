@@ -25,13 +25,13 @@ class UTMSWTPM: UTMProcess {
     private var swtpmMain: SwtpmMainFunction!
     private var hasProcessExited: Bool = false
     private var lastErrorLine: String?
-    
+
     var ctrlSocketUrl: URL?
     var dataUrl: URL?
-    
+
     private override init(arguments: [String]) {
         super.init(arguments: arguments)
-        entry = { process, argc, argv, envp in
+        entry = { process, argc, argv, _ in
             let _self = process as! UTMSWTPM
             return _self.swtpmMain(argc, argv, "swtpm", "socket")
         }
@@ -47,24 +47,24 @@ class UTMSWTPM: UTMProcess {
             logger.debug("\(string)")
         }
     }
-    
+
     convenience init() {
         self.init(arguments: [])
     }
-    
+
     override func didLoadDylib(_ handle: UnsafeMutableRawPointer) -> Bool {
         let sym = dlsym(handle, "swtpm_main")
         swtpmMain = unsafeBitCast(sym, to: SwtpmMainFunction.self)
         return swtpmMain != nil
     }
-    
+
     override func processHasExited(_ exitCode: Int, message: String?) {
         hasProcessExited = true
         if let message = message {
             logger.error("SWTPM exited: \(message)")
         }
     }
-    
+
     func start() async throws {
         guard let ctrlSocketUrl = ctrlSocketUrl else {
             throw UTMSWTPMError.socketNotSpecified

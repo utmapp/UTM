@@ -24,7 +24,7 @@ struct VMDrivesSettingsView<Drive: UTMConfigurationDrive>: View {
     @State private var newDrivePopover: Bool = false
     @State private var importDrivePresented: Bool = false
     @State private var requestDriveDelete: Drive?
-    
+
     init(drives: Binding<[Drive]>, template: Drive) {
         self._drives = drives
         self._newDrive = State<Drive>(initialValue: template)
@@ -112,7 +112,7 @@ struct VMDrivesSettingsView<Drive: UTMConfigurationDrive>: View {
             }.padding()
         }
     }
-    
+
     private func label(for drive: Drive) -> String {
         if let qemuDrive = drive as? UTMQemuConfigurationDrive {
             if qemuDrive.interface == .none && qemuDrive.imageName == QEMUPackageFileName.efiVariables.rawValue {
@@ -136,7 +136,6 @@ struct VMDrivesSettingsView<Drive: UTMConfigurationDrive>: View {
                     drive.imageURL = url
                     drives.append(drive)
                 }
-                break
             case .failure(let err):
                 throw err
             }
@@ -156,7 +155,7 @@ struct VMDrivesSettingsView<Drive: UTMConfigurationDrive>: View {
 private struct DriveDetailsView<Drive: UTMConfigurationDrive>: View {
     @Binding var config: Drive
     @Binding var requestDriveDelete: Drive?
-    
+
     var body: some View {
         if config is UTMQemuConfigurationDrive {
             VMConfigDriveDetailsView(config: $config as Any as! Binding<UTMQemuConfigurationDrive>, requestDriveDelete: $requestDriveDelete as Any as! Binding<UTMQemuConfigurationDrive?>)

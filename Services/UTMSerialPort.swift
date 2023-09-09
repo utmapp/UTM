@@ -21,7 +21,7 @@ import Foundation
     private let readFileHandle: FileHandle
     private let writeFileHandle: FileHandle
     private let terminalFileHandle: FileHandle?
-    
+
     public weak var delegate: UTMSerialPortDelegate? {
         didSet {
             if let delegate = delegate {
@@ -33,18 +33,18 @@ import Foundation
             }
         }
     }
-    
+
     init(portNamed name: String, readFileHandle: FileHandle, writeFileHandle: FileHandle, terminalFileHandle: FileHandle? = nil) {
         self.name = name
         self.readFileHandle = readFileHandle
         self.writeFileHandle = writeFileHandle
         self.terminalFileHandle = terminalFileHandle
     }
-    
+
     deinit {
         close()
     }
-    
+
     public func write(data: Data) {
         if #available(iOS 13.4, macOS 10.15, *) {
             try! writeFileHandle.write(contentsOf: data)
@@ -52,7 +52,7 @@ import Foundation
             writeFileHandle.write(data)
         }
     }
-    
+
     public func close() {
         if #available(iOS 13, macOS 10.15, *) {
             try? readFileHandle.close()

@@ -20,10 +20,10 @@ import SwiftUI
 struct VMSettingsView<Config: UTMConfiguration>: View {
     let vm: VMData
     @ObservedObject var config: Config
-    
+
     @EnvironmentObject private var data: UTMData
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
-    
+
     var body: some View {
         NavigationView {
             List {
@@ -53,7 +53,7 @@ struct VMSettingsView<Config: UTMConfiguration>: View {
         .disabled(data.busy)
         .overlay(BusyOverlay())
     }
-    
+
     func save() {
         data.busyWorkAsync {
             try await data.save(vm: vm)
@@ -62,7 +62,7 @@ struct VMSettingsView<Config: UTMConfiguration>: View {
             }
         }
     }
-    
+
     func cancel() {
         presentationMode.wrappedValue.dismiss()
         data.busyWorkAsync {
@@ -74,7 +74,7 @@ struct VMSettingsView<Config: UTMConfiguration>: View {
 @available(macOS 11, *)
 struct ScrollableViewModifier: ViewModifier {
     @State private var scrollViewContentSize: CGSize = .zero
-    
+
     func body(content: Content) -> some View {
         ScrollView {
             content
@@ -93,7 +93,7 @@ struct ScrollableViewModifier: ViewModifier {
     }
 }
 
-fileprivate struct EmptyToolbarContent: ToolbarContent {
+private struct EmptyToolbarContent: ToolbarContent {
     var body: some ToolbarContent {
         ToolbarItem {
             EmptyView()

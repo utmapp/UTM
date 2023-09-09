@@ -18,31 +18,31 @@ import Foundation
 
 class VMDisplayAppleWindowController: VMDisplayWindowController {
     var mainView: NSView?
-    
+
     var isInstallSuccessful: Bool = false
-    
+
     var appleVM: UTMAppleVirtualMachine! {
         vm as? UTMAppleVirtualMachine
     }
-    
+
     var appleConfig: UTMAppleConfiguration! {
         appleVM?.config
     }
-    
+
     var defaultTitle: String {
         appleConfig.information.name
     }
-    
+
     var defaultSubtitle: String {
         ""
     }
-    
+
     private var isSharePathAlertShownOnce = false
-    
+
     // MARK: - User preferences
-    
+
     @Setting("SharePathAlertShown") private var isSharePathAlertShownPersistent: Bool = false
-    
+
     override func windowDidLoad() {
         mainView!.translatesAutoresizingMaskIntoConstraints = false
         displayView.addSubview(mainView!)
@@ -74,7 +74,7 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
             }
         }
     }
-    
+
     override func enterLive() {
         window!.title = defaultTitle
         window!.subtitle = defaultSubtitle
@@ -91,11 +91,11 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
             sharedFolderToolbarItem.isEnabled = false
         }
     }
-    
+
     override func enterSuspended(isBusy busy: Bool) {
         super.enterSuspended(isBusy: busy)
     }
-    
+
     override func virtualMachine(_ vm: any UTMVirtualMachine, didTransitionToState state: UTMVirtualMachineState) {
         super.virtualMachine(vm, didTransitionToState: state)
         if state == .stopped && isInstallSuccessful {
@@ -103,15 +103,15 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
             vm.requestVmStart()
         }
     }
-    
+
     func updateWindowFrame() {
         // implement in subclass
     }
-    
+
     override func resizeConsoleButtonPressed(_ sender: Any) {
         // implement in subclass
     }
-    
+
     @IBAction override func sharedFolderButtonPressed(_ sender: Any) {
         guard #available(macOS 12, *) else {
             return
@@ -131,9 +131,9 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
             openShareMenu(sender)
         }
     }
-    
+
     // MARK: - Installation progress
-    
+
     override func virtualMachine(_ vm: any UTMVirtualMachine, didCompleteInstallation success: Bool) {
         Task { @MainActor in
             self.window!.subtitle = ""
@@ -146,7 +146,7 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
             }
         }
     }
-    
+
     override func virtualMachine(_ vm: any UTMVirtualMachine, didUpdateInstallationProgress progress: Double) {
         Task { @MainActor in
             let installationFormat = NSLocalizedString("Installation: %@", comment: "VMDisplayAppleWindowController")
@@ -196,7 +196,7 @@ extension VMDisplayAppleWindowController {
         menu.addItem(add)
         menu.popUp(positioning: nil, at: NSEvent.mouseLocation, in: nil)
     }
-    
+
     @objc func addShare(sender: AnyObject) {
         pickShare { url in
             if let sharedDirectory = try? UTMRegistryEntry.File(url: url) {
@@ -204,7 +204,7 @@ extension VMDisplayAppleWindowController {
             }
         }
     }
-    
+
     @objc func changeShare(sender: AnyObject) {
         guard let menu = sender as? NSMenuItem else {
             logger.error("wrong sender for changeShare")
@@ -218,7 +218,7 @@ extension VMDisplayAppleWindowController {
             }
         }
     }
-    
+
     @objc func flipReadOnlyShare(sender: AnyObject) {
         guard let menu = sender as? NSMenuItem else {
             logger.error("wrong sender for changeShare")
@@ -228,7 +228,7 @@ extension VMDisplayAppleWindowController {
         let isReadOnly = appleVM.registryEntry.sharedDirectories[i].isReadOnly
         appleVM.registryEntry.sharedDirectories[i].isReadOnly = !isReadOnly
     }
-    
+
     @objc func removeShare(sender: AnyObject) {
         guard let menu = sender as? NSMenuItem else {
             logger.error("wrong sender for removeShare")
@@ -237,7 +237,7 @@ extension VMDisplayAppleWindowController {
         let i = menu.tag
         appleVM.registryEntry.sharedDirectories.remove(at: i)
     }
-    
+
     func pickShare(_ onComplete: @escaping (URL) -> Void) {
         let openPanel = NSOpenPanel()
         openPanel.title = NSLocalizedString("Select Shared Folder", comment: "VMDisplayAppleWindowController")
@@ -299,7 +299,7 @@ extension VMDisplayAppleWindowController {
         }
         menu.popUp(positioning: nil, at: NSEvent.mouseLocation, in: nil)
     }
-    
+
     @available(macOS 12, *)
     @objc private func showWindowFromDisplay(sender: AnyObject) {
         if self is VMDisplayAppleDisplayWindowController {
@@ -309,7 +309,7 @@ extension VMDisplayAppleWindowController {
             window.showWindow(self)
         }
     }
-    
+
     @objc private func showWindowFromSerial(sender: AnyObject) {
         let item = sender as! NSMenuItem
         let id = item.tag
@@ -323,11 +323,9 @@ extension VMDisplayAppleWindowController {
         } else {
             secondaryWindows = self.secondaryWindows
         }
-        for window in secondaryWindows {
-            if (window as? VMDisplayAppleTerminalWindowController)?.index == id {
-                window.showWindow(self)
-                return
-            }
+        for window in secondaryWindows where (window as? VMDisplayAppleTerminalWindowController)?.index == id {
+            window.showWindow(self)
+            return
         }
         // create new serial window
         let vc = VMDisplayAppleTerminalWindowController(secondaryForIndex: id, vm: appleVM)

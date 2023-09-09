@@ -21,27 +21,27 @@ import CocoaSpice
 @objc(UTMScriptingUSBDeviceImpl)
 class UTMScriptingUSBDeviceImpl: NSObject, UTMScriptable {
     @nonobjc var box: CSUSBDevice
-    
+
     private var data: UTMData? {
         (NSApp.scriptingDelegate as? AppDelegate)?.data
     }
-    
+
     @objc var id: Int {
         box.usbBusNumber << 16 | box.usbPortNumber
     }
-    
+
     @objc var name: String {
         box.name ?? String(format: "%04X:%04X", box.usbVendorId, box.usbProductId)
     }
-    
+
     @objc var manufacturerName: String {
         box.usbManufacturerName ?? name
     }
-    
+
     @objc var productName: String {
         box.usbProductName ?? name
     }
-    
+
     @objc var vendorId: Int {
         box.usbVendorId
     }
@@ -57,11 +57,11 @@ class UTMScriptingUSBDeviceImpl: NSObject, UTMScriptable {
                                    key: "scriptingUsbDevices",
                                    uniqueID: id)
     }
-    
+
     init(for usbDevice: CSUSBDevice) {
         self.box = usbDevice
     }
-    
+
     /// Return the same USB device in context of a USB manager
     ///
     /// This is required because we may be using `CSUSBDevice` objects returned from a different `CSUSBManager`
@@ -70,14 +70,12 @@ class UTMScriptingUSBDeviceImpl: NSObject, UTMScriptable {
     ///   - usbManager: USB manager
     /// - Returns: USB device in same context as the manager
     private func same(usbDevice: CSUSBDevice, for usbManager: CSUSBManager) -> CSUSBDevice? {
-        for other in usbManager.usbDevices {
-            if other.isEqual(to: usbDevice) {
-                return other
-            }
+        for other in usbManager.usbDevices where other.isEqual(to: usbDevice) {
+            return other
         }
         return nil
     }
-    
+
     @objc func connect(_ command: NSScriptCommand) {
         let scriptingVM = command.evaluatedArguments?["vm"] as? UTMScriptingVirtualMachineImpl
         withScriptCommand(command) { [self] in
@@ -93,7 +91,7 @@ class UTMScriptingUSBDeviceImpl: NSObject, UTMScriptable {
             try await usbManager.connectUsbDevice(usbDevice)
         }
     }
-    
+
     @objc func disconnect(_ command: NSScriptCommand) {
         withScriptCommand(command) { [self] in
             guard let data = data else {
@@ -128,7 +126,7 @@ extension UTMScriptingUSBDeviceImpl {
         case notReady
         case deviceNotFound
         case deviceNotConnected
-        
+
         var errorDescription: String? {
             switch self {
             case .notReady: return NSLocalizedString("UTM is not ready to accept commands.", comment: "UTMScriptingUSBDeviceImpl")

@@ -22,7 +22,7 @@ struct VMContextMenuModifier: ViewModifier {
     @State private var showSharePopup = false
     @State private var confirmAction: ConfirmAction?
     @State private var shareItem: VMShareItemModifier.ShareItem?
-    
+
     func body(content: Content) -> some View {
         #if os(macOS)
         if #unavailable(macOS 12) {
@@ -34,7 +34,7 @@ struct VMContextMenuModifier: ViewModifier {
         return bodyFull(content: content)
         #endif
     }
-    
+
     #if os(macOS)
     @ViewBuilder func bodyBigSur(content: Content) -> some View {
         content.contextMenu {
@@ -46,7 +46,7 @@ struct VMContextMenuModifier: ViewModifier {
         }
     }
     #endif
-    
+
     /// Full context menu for anything other than Big Sur
     /// - Parameter content: Content
     /// - Returns: View
@@ -82,13 +82,13 @@ struct VMContextMenuModifier: ViewModifier {
                 }.help("Resume running VM.")
             } else {
                 Divider()
-                
+
                 Button {
                     data.run(vm: vm)
                 } label: {
                     Label("Run", systemImage: "play")
                 }.help("Run the VM in the foreground.")
-                
+
                 #if os(macOS) && arch(arm64)
                 if #available(macOS 13, *), let appleConfig = vm.config as? UTMAppleConfiguration, appleConfig.system.boot.operatingSystem == .macOS {
                     Button {
@@ -98,15 +98,15 @@ struct VMContextMenuModifier: ViewModifier {
                     }.help("Boot into recovery mode.")
                 }
                 #endif
-                
-                if let _ = vm.wrapped as? UTMQemuVirtualMachine {
+
+                if vm.wrapped as? UTMQemuVirtualMachine != nil {
                     Button {
                         data.run(vm: vm, options: .bootDisposibleMode)
                     } label: {
                         Label("Run without saving changes", systemImage: "memories")
                     }.help("Run the VM in the foreground, without saving data changes to disk.")
                 }
-                
+
                 #if os(iOS) || os(visionOS)
                 if let qemuConfig = vm.config as? UTMQemuConfiguration {
                     Button {
@@ -117,7 +117,7 @@ struct VMContextMenuModifier: ViewModifier {
                     .disabled(qemuConfig.qemu.isGuestToolsInstallRequested)
                 }
                 #endif
-                
+
                 Divider()
             }
             Button {
