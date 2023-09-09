@@ -45,7 +45,7 @@ struct UTMApp: App {
             SettingsView()
         }
     }
-    
+
     @available(macOS 13, *)
     @SceneBuilder
     var newBody: some Scene {

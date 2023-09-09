@@ -16,18 +16,18 @@
 
 @MainActor class AppDelegate: NSObject, NSApplicationDelegate {
     var data: UTMData?
-    
+
     @Setting("KeepRunningAfterLastWindowClosed") private var isKeepRunningAfterLastWindowClosed: Bool = false
     @Setting("HideDockIcon") private var isDockIconHidden: Bool = false
     @Setting("NoQuitConfirmation") private var isNoQuitConfirmation: Bool = false
-    
+
     private var hasRunningVirtualMachines: Bool {
         guard let vmList = data?.vmWindows.keys else {
             return false
         }
         return vmList.contains(where: { $0.wrapped?.state == .started || ($0.wrapped?.state == .paused && !$0.hasSuspendState) })
     }
-    
+
     @MainActor
     @objc var scriptingVirtualMachines: [UTMScriptingVirtualMachineImpl] {
         guard let data = data else {
@@ -37,22 +37,22 @@
             UTMScriptingVirtualMachineImpl(for: vm, data: data)
         }
     }
-    
+
     @MainActor
     @objc var isAutoTerminate: Bool {
         get {
             !isKeepRunningAfterLastWindowClosed
         }
-        
+
         set {
             isKeepRunningAfterLastWindowClosed = !newValue
         }
     }
-    
+
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         !isKeepRunningAfterLastWindowClosed && !hasRunningVirtualMachines
     }
-    
+
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
         guard let data = data else {
             return .terminateNow
@@ -75,7 +75,7 @@
             return .terminateCancel
         }
     }
-    
+
     private func handleTerminateAfterSaving(allVMs: some Sequence<VMData>, sender: NSApplication) -> Bool {
         let candidates = allVMs.filter({ $0.wrapped?.state == .started || ($0.wrapped?.state == .paused && !$0.hasSuspendState) })
         guard !candidates.contains(where: { $0.wrapped?.snapshotUnsupportedError != nil }) else {
@@ -101,7 +101,7 @@
         }
         return true
     }
-    
+
     private func handleTerminateAfterConfirmation(_ sender: NSApplication) {
         let alert = NSAlert()
         alert.alertStyle = .informational
@@ -128,7 +128,7 @@
             confirm(response)
         }
     }
-    
+
     func applicationWillTerminate(_ notification: Notification) {
         /// Synchronize registry
         UTMRegistry.shared.sync()
@@ -147,13 +147,13 @@
             }
         }
     }
-    
+
     func applicationDidFinishLaunching(_ notification: Notification) {
         if isDockIconHidden {
             NSApp.setActivationPolicy(.accessory)
         }
     }
-    
+
     func application(_ sender: NSApplication, delegateHandlesKey key: String) -> Bool {
         switch key {
         case "scriptingVirtualMachines": return true

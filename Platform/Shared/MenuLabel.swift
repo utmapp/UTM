@@ -18,15 +18,15 @@ import SwiftUI
 
 struct MenuLabel: View {
     private let label: Label<Text, Image>
-    
+
     init(_ titleKey: LocalizedStringKey, systemImage name: String) {
         label = Label(titleKey, systemImage: name)
     }
-    
-    init<S>(_ title: S, systemImage name: String) where S : StringProtocol {
+
+    init<S>(_ title: S, systemImage name: String) where S: StringProtocol {
         label = Label(title, systemImage: name)
     }
-    
+
     var body: some View {
         if #available(iOS 14.5, *) {
             label.labelStyle(.titleAndIcon)

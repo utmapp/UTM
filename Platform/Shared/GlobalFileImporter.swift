@@ -24,9 +24,9 @@ import UniformTypeIdentifiers
 /// and then add a .fileImporter() on its instance variables.
 class GlobalFileImporterShim: ObservableObject {
     @Published var isPresented: Bool = false
-    
+
     @Published var allowedContentTypes: [UTType] = []
-    
+
     @Published var onCompletion: (Result<URL, Error>) -> Void = { _ in }
 }
 
@@ -37,7 +37,7 @@ struct GlobalFileImporterViewModifier: ViewModifier {
     #if os(iOS) || os(visionOS)
     @EnvironmentObject private var globalFileImporterShim: GlobalFileImporterShim
     #endif
-    
+
     func body(content: Content) -> some View {
         #if os(iOS) || os(visionOS)
         content

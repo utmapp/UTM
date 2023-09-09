@@ -21,14 +21,14 @@ struct DefaultTextField: View {
     private let text: Binding<String>
     private let prompt: LocalizedStringKey
     private let onEditingChanged: (Bool) -> Void
-    
+
     init(_ titleKey: LocalizedStringKey, text: Binding<String>, prompt: LocalizedStringKey = "", onEditingChanged: @escaping (Bool) -> Void = { _ in }) {
         self.titleKey = titleKey
         self.text = text
         self.prompt = prompt
         self.onEditingChanged = onEditingChanged
     }
-    
+
     var body: some View {
         let stack = HStack {
             Text(titleKey)
@@ -56,18 +56,18 @@ struct DefaultTextFieldNew: View {
     private let prompt: LocalizedStringKey
     private let onEditingChanged: (Bool) -> Void
     @FocusState private var focused: Bool
-    
+
     init(_ titleKey: LocalizedStringKey, text: Binding<String>, prompt: LocalizedStringKey = "", onEditingChanged: @escaping (Bool) -> Void = { _ in }) {
         self.titleKey = titleKey
         self._text = text
         self.prompt = prompt
         self.onEditingChanged = onEditingChanged
     }
-    
+
     var body: some View {
         TextField(titleKey, text: $text, prompt: Text(prompt))
             .focused($focused)
-            .onChange(of: text) { newValue in
+            .onChange(of: text) { _ in
                 onEditingChanged(focused)
             }
             .onSubmit {

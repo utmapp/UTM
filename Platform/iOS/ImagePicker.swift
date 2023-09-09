@@ -23,16 +23,16 @@ struct ImagePicker: UIViewControllerRepresentable {
         init(_ parent: ImagePicker) {
             self.parent = parent
         }
-        
+
         func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
             if let imageURL = info[.imageURL] as? URL {
                 parent.onImageSelected(imageURL)
             }
         }
     }
-    
+
     let onImageSelected: (URL?) -> Void
-    
+
     func makeUIViewController(context: Context) -> UIImagePickerController {
         let picker = UIImagePickerController()
         picker.delegate = context.coordinator
@@ -43,7 +43,7 @@ struct ImagePicker: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {
 
     }
-    
+
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
@@ -51,8 +51,8 @@ struct ImagePicker: UIViewControllerRepresentable {
 
 struct ImagePicker_Previews: PreviewProvider {
     static var previews: some View {
-        ImagePicker() { _ in
-            
+        ImagePicker { _ in
+
         }
     }
 }

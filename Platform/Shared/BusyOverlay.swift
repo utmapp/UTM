@@ -18,7 +18,7 @@ import SwiftUI
 
 struct BusyOverlay: View {
     @EnvironmentObject private var data: UTMData
-    
+
     var body: some View {
         Group {
             if data.busy {

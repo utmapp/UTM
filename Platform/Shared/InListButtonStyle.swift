@@ -33,7 +33,7 @@ struct InListButtonStyle: ButtonStyle {
         let foregroundDisabledColor = Color(UIColor.systemGray)
         let foregroundPressedColor = Color(UIColor.secondaryLabel)
         #endif
-        
+
         var body: some View {
             #if os(macOS)
             ZStack {
@@ -45,8 +45,6 @@ struct InListButtonStyle: ButtonStyle {
                 configuration.label
                     .foregroundColor(isEnabled ? (configuration.isPressed ? foregroundPressedColor : foregroundColor) : foregroundDisabledColor)
             }
-            
-            
             #else
             HStack {
                 configuration.label
@@ -60,7 +58,7 @@ struct InListButtonStyle: ButtonStyle {
             #endif
         }
     }
-    
+
     func makeBody(configuration: Configuration) -> some View {
         InListButtonView(configuration: configuration)
     }

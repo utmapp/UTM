@@ -311,12 +311,12 @@ extension UTMAppleConfiguration {
     func prepareSave(for packageURL: URL) async throws {
         try await virtualization.prepareSave(for: packageURL)
     }
-    
+
     func saveData(to dataURL: URL) async throws -> [URL] {
         var existingDataURLs = [URL]()
         existingDataURLs += try await _information.saveData(to: dataURL)
         existingDataURLs += try await _system.boot.saveData(to: dataURL)
-        
+
         #if arch(arm64)
         if #available(macOS 12, *), system.macPlatform != nil {
             existingDataURLs += try await _system.macPlatform!.saveData(to: dataURL)
@@ -329,7 +329,7 @@ extension UTMAppleConfiguration {
         for i in 0..<drives.count {
             existingDataURLs += try await _drives[i].saveData(to: dataURL)
         }
-        
+
         return existingDataURLs
     }
 }

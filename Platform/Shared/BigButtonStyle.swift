@@ -19,13 +19,13 @@ import SwiftUI
 struct BigButtonStyle: ButtonStyle {
     let width: CGFloat
     let height: CGFloat
-    
+
     fileprivate struct BigButtonView: View {
         let width: CGFloat
         let height: CGFloat
         let configuration: BigButtonStyle.Configuration
         @Environment(\.isEnabled) private var isEnabled: Bool
-        
+
         #if os(macOS)
         let defaultColor = Color(NSColor.controlColor)
         let pressedColor = Color(NSColor.controlAccentColor)
@@ -39,7 +39,7 @@ struct BigButtonStyle: ButtonStyle {
         let foregroundDisabledColor = Color(UIColor.systemGray)
         let foregroundPressedColor = Color(UIColor.secondaryLabel)
         #endif
-        
+
         var body: some View {
             ZStack {
                 RoundedRectangle(cornerRadius: 10.0)
@@ -53,7 +53,7 @@ struct BigButtonStyle: ButtonStyle {
             }.frame(width: width, height: height)
         }
     }
-    
+
     func makeBody(configuration: Configuration) -> some View {
         BigButtonView(width: width, height: height, configuration: configuration)
     }

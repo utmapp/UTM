@@ -21,7 +21,7 @@ struct IASKAppSettings: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> IASKAppSettingsViewController {
         return IASKAppSettingsViewController()
     }
-    
+
     func updateUIViewController(_ uiViewController: IASKAppSettingsViewController, context: Context) {
         uiViewController.neverShowPrivacySettings = !context.environment.showPrivacyLink
         uiViewController.showCreditsFooter = false

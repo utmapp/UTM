@@ -32,7 +32,7 @@ let logger = Logger(label: "com.utmapp.UTM") { label in
 @main
 class Main {
     static var jitAvailable = true
-    
+
     static func main() {
         #if (os(iOS) || os(visionOS)) && !WITH_QEMU_TCI
         // check if we have jailbreak
@@ -63,7 +63,7 @@ class Main {
         #endif
         UTMApp.main()
     }
-    
+
     // https://stackoverflow.com/a/44675628
     static private func registerDefaultsFromSettingsBundle() {
         let userDefaults = UserDefaults.standard
@@ -81,7 +81,7 @@ class Main {
                     logger.debug("registerDefaultsFromSettingsBundle: (\(key), \(value)) \(type(of: value))")
                 }
             }
-            
+
             // register version numbers
             if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] {
                 userDefaults.set(version, forKey: "LastBootedVersion")

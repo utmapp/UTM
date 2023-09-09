@@ -31,17 +31,17 @@ struct SavePanel: NSViewRepresentable {
             guard let shareItem = shareItem else {
                 return
             }
-            
+
             guard let window = nsView.window else {
                 return
             }
-            
+
             // Initializing the SavePanel and setting its properties
             let savePanel = NSSavePanel()
             if let downloadsUrl = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first {
                 savePanel.directoryURL = downloadsUrl
             }
-            
+
             switch shareItem {
             case .debugLog:
                 savePanel.title = NSLocalizedString("Select where to save debug log:", comment: "SavePanel")
@@ -56,7 +56,7 @@ struct SavePanel: NSViewRepresentable {
                 savePanel.nameFieldStringValue = "command"
                 savePanel.allowedContentTypes = [.plainText]
             }
-            
+
             // Calling savePanel.begin with the appropriate completion handlers
             // SwiftUI BUG: if we don't wait, there is a crash due to an access issue
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
@@ -67,14 +67,14 @@ struct SavePanel: NSViewRepresentable {
                             if let destUrl = savePanel.url {
                                 data.busyWorkAsync {
                                     let fileManager = FileManager.default
-                                    
+
                                     // All this mess is because FileManager.replaceItemAt deletes the source item
                                     let tempUrl = fileManager.temporaryDirectory.appendingPathComponent(sourceUrl.lastPathComponent)
                                     if fileManager.fileExists(atPath: tempUrl.path) {
                                         try fileManager.removeItem(at: tempUrl)
                                     }
                                     try fileManager.copyItem(at: sourceUrl, to: tempUrl)
-                                    
+
                                     _ = try fileManager.replaceItemAt(destUrl, withItemAt: tempUrl)
                                 }
                             }
@@ -86,7 +86,7 @@ struct SavePanel: NSViewRepresentable {
                         if result == .OK {
                             if let destUrl = savePanel.url {
                                 data.busyWorkAsync {
-                                    if case .utmMove(_) = shareItem {
+                                    if case .utmMove = shareItem {
                                         try await data.move(vm: vm, to: destUrl)
                                     } else {
                                         try await data.export(vm: vm, to: destUrl)

@@ -22,7 +22,7 @@ struct FileBrowseField: View {
     @Binding var isFileImporterPresented: Bool
     let hasClearButton: Bool
     let onBrowse: () -> Void
-    
+
     init(_ titleKey: LocalizedStringKey = "Path", url: Binding<URL?>, isFileImporterPresented: Binding<Bool>, hasClearButton: Bool = true, onBrowse: @escaping () -> Void = {}) {
         self.titleKey = titleKey
         self._url = url
@@ -30,7 +30,7 @@ struct FileBrowseField: View {
         self.hasClearButton = hasClearButton
         self.onBrowse = onBrowse
     }
-    
+
     var body: some View {
         #if os(macOS)
         HStack {

@@ -25,7 +25,7 @@ struct UTMAppleConfigurationVirtualization: Codable {
         case disabled = "Disabled"
         case mouse = "Mouse"
         case trackpad = "Trackpad"
-        
+
         var prettyValue: String {
             switch self {
             case .disabled: return NSLocalizedString("Disabled", comment: "UTMAppleConfigurationDevices")
@@ -34,23 +34,23 @@ struct UTMAppleConfigurationVirtualization: Codable {
             }
         }
     }
-    
+
     var hasAudio: Bool = false
-    
+
     var hasBalloon: Bool = true
-    
+
     var hasEntropy: Bool = true
-    
+
     var hasKeyboard: Bool = false
-    
+
     var hasPointer: Bool = false
-    
+
     var hasTrackpad: Bool = false
-    
+
     var hasRosetta: Bool?
-    
+
     var hasClipboardSharing: Bool = false
-    
+
     enum CodingKeys: String, CodingKey {
         case hasAudio = "Audio"
         case hasBalloon = "Balloon"
@@ -61,10 +61,10 @@ struct UTMAppleConfigurationVirtualization: Codable {
         case rosetta = "Rosetta"
         case hasClipboardSharing = "ClipboardSharing"
     }
-    
+
     init() {
     }
-    
+
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         hasAudio = try values.decode(Bool.self, forKey: .hasAudio)
@@ -83,7 +83,7 @@ struct UTMAppleConfigurationVirtualization: Codable {
             hasClipboardSharing = try values.decodeIfPresent(Bool.self, forKey: .hasClipboardSharing) ?? false
         }
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(hasAudio, forKey: .hasAudio)
@@ -203,7 +203,7 @@ extension UTMAppleConfigurationVirtualization {
             try await installRosetta()
         }
     }
-    
+
     @available(macOS 13, *)
     private func installRosetta() async throws {
         #if arch(arm64)

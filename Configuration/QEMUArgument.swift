@@ -19,29 +19,29 @@ import Foundation
 struct QEMUArgument: Hashable, Identifiable, Codable {
     /// Argument string passed to QEMU
     var string: String
-    
+
     /// Optional URL resource that must be accessed
     var fileUrls: [URL]?
-    
+
     let id = UUID()
-    
+
     init(_ string: String) {
         self.string = string
     }
-    
+
     init(from fragment: QEMUArgumentFragment) {
         string = fragment.string
         fileUrls = fragment.fileUrls
     }
-    
+
     init(from decoder: Decoder) throws {
         string = try String(from: decoder)
     }
-    
+
     func encode(to encoder: Encoder) throws {
         try string.encode(to: encoder)
     }
-    
+
     func hash(into hasher: inout Hasher) {
         id.hash(into: &hasher)
     }
@@ -50,38 +50,38 @@ struct QEMUArgument: Hashable, Identifiable, Codable {
 struct QEMUArgumentFragment: Hashable {
     /// String representing this fragment
     var string: String
-    
+
     /// Optional URL resource(s) that must be accessed
     var fileUrls: [URL]?
-    
+
     /// If false, this fragment will be merged with the preceding one
     var isFinal: Bool
-    
+
     /// Separate the previous fragment if non-empty
     var seperator: String = ","
-    
+
     init(_ fragment: String = "") {
         string = fragment
         isFinal = false
     }
-    
+
     init(final fragment: String) {
         string = fragment
         isFinal = true
     }
-    
+
     init(from argument: QEMUArgument) {
         string = argument.string
         fileUrls = argument.fileUrls
         isFinal = true
     }
-    
+
     func hash(into hasher: inout Hasher) {
         string.hash(into: &hasher)
         fileUrls?.hash(into: &hasher)
         isFinal.hash(into: &hasher)
     }
-    
+
     mutating func merge(_ other: QEMUArgumentFragment) {
         if self.string.count > 0 && other.string.count > 0 {
             self.string += other.seperator

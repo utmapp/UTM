@@ -16,20 +16,20 @@
 
 import SwiftUI
 
-struct DestructiveButton<Label>: View where Label : View {
+struct DestructiveButton<Label>: View where Label: View {
     private let action: () -> Void
     private let label: Label
-    
+
     init(action: @escaping () -> Void, label: () -> Label) {
         self.action = action
         self.label = label()
     }
-    
+
     init(_ titleKey: LocalizedStringKey, action: @escaping () -> Void) where Label == Text {
         self.action = action
         self.label = Text(titleKey)
     }
-    
+
     var body: some View {
         if #available(iOS 15, macOS 12, *) {
             #if os(iOS) || os(visionOS)
@@ -54,7 +54,7 @@ struct DestructiveButton<Label>: View where Label : View {
 struct DestructiveButton_Previews: PreviewProvider {
     static var previews: some View {
         DestructiveButton {
-            
+
         } label: {
             Text("Test")
         }

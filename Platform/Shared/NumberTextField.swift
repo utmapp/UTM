@@ -22,7 +22,7 @@ struct NumberTextFieldOld: View {
     private var promptKey: LocalizedStringKey
     private var onEditingChanged: (Bool) -> Void
     private let formatter: NumberFormatter
-    
+
     init(_ titleKey: LocalizedStringKey, number: Binding<NSNumber?>, prompt: LocalizedStringKey, onEditingChanged: @escaping (Bool) -> Void = { _ in }) {
         self.titleKey = titleKey
         self._number = number
@@ -32,7 +32,7 @@ struct NumberTextFieldOld: View {
         self.formatter.usesSignificantDigits = false
         self.promptKey = prompt
     }
-    
+
     var body: some View {
         HStack {
             Text(titleKey)
@@ -58,18 +58,18 @@ struct NumberTextFieldNew: View {
     @Binding private var number: NSNumber?
     private var promptKey: LocalizedStringKey
     private var onEditingChanged: (Bool) -> Void
-    
+
     // Due to FB9581726 we cannot make `focused` available only on newer APIs.
     // Therefore we have to mark the availability on the entire struct.
     @FocusState private var focused: Bool
-    
+
     init(_ titleKey: LocalizedStringKey, number: Binding<NSNumber?>, prompt: LocalizedStringKey, onEditingChanged: @escaping (Bool) -> Void = { _ in }) {
         self.titleKey = titleKey
         self._number = number
         self.onEditingChanged = onEditingChanged
         self.promptKey = prompt
     }
-    
+
     var body: some View {
         Group {
             #if os(macOS)
@@ -100,14 +100,14 @@ struct NumberTextField: View {
     @Binding private var number: NSNumber?
     private var promptKey: LocalizedStringKey
     private var onEditingChanged: (Bool) -> Void
-    
+
     init(_ titleKey: LocalizedStringKey, number: Binding<NSNumber?>, prompt: LocalizedStringKey = "0", onEditingChanged: @escaping (Bool) -> Void = { _ in }) {
         self.titleKey = titleKey
         self._number = number
         self.onEditingChanged = onEditingChanged
         self.promptKey = prompt
     }
-    
+
     init(_ titleKey: LocalizedStringKey, number: Binding<Int>, prompt: LocalizedStringKey = "0", onEditingChanged: @escaping (Bool) -> Void = { _ in }) {
         let nsnumber = Binding<NSNumber?> {
             return number.wrappedValue as NSNumber
@@ -116,7 +116,7 @@ struct NumberTextField: View {
         }
         self.init(titleKey, number: nsnumber, prompt: prompt, onEditingChanged: onEditingChanged)
     }
-    
+
     var body: some View {
         if #available(iOS 15, macOS 12, *) {
             NumberTextFieldNew(titleKey, number: $number, prompt: promptKey, onEditingChanged: onEditingChanged)
@@ -132,7 +132,7 @@ extension NSNumber {
         var parseStrategy: StringParseStrategy {
             return StringParseStrategy()
         }
-        
+
         func format(_ value: NSNumber) -> String {
             let formatter = NumberFormatter()
             formatter.usesGroupingSeparator = false
@@ -141,7 +141,7 @@ extension NSNumber {
             return value.intValue == 0 ? "" : string
         }
     }
-    
+
     struct StringParseStrategy: ParseStrategy {
         func parse(_ value: String) throws -> NSNumber {
             let formatter = NumberFormatter()

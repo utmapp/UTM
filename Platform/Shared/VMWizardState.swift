@@ -24,7 +24,7 @@ enum VMWizardPage: Int, Identifiable {
     var id: Int {
         return self.rawValue
     }
-    
+
     case start
     case operatingSystem
     case macOSBoot
@@ -41,7 +41,7 @@ enum VMWizardOS: String, Identifiable {
     var id: String {
         return self.rawValue
     }
-    
+
     case Other
     case macOS
     case Linux
@@ -51,7 +51,7 @@ enum VMWizardOS: String, Identifiable {
 @MainActor class VMWizardState: ObservableObject {
     let bytesInMib = 1048576
     let bytesInGib = 1073741824
-    
+
     @Published var slide: AnyTransition = .identity
     @Published var currentPage: VMWizardPage = .start
     @Published var pageHistory = [VMWizardPage]() {
@@ -115,7 +115,7 @@ enum VMWizardOS: String, Identifiable {
     @Published var sharingReadOnly: Bool = false
     @Published var name: String?
     @Published var isOpenSettingsAfterCreation: Bool = false
-    
+
     /// SwiftUI BUG: on macOS 12, when VoiceOver is enabled and isBusy changes the disable state of a button being clicked, 
     var isNeverDisabledWorkaround: Bool {
         #if os(macOS)
@@ -129,7 +129,7 @@ enum VMWizardOS: String, Identifiable {
         return true
         #endif
     }
-    
+
     var hasNextButton: Bool {
         switch currentPage {
         case .start:
@@ -142,7 +142,7 @@ enum VMWizardOS: String, Identifiable {
             return true
         }
     }
-    
+
     #if os(macOS) && arch(arm64)
     var isPendingIPSWDownload: Bool {
         guard #available(macOS 12, *), useAppleVirtualization && operatingSystem == .macOS else {
@@ -156,15 +156,15 @@ enum VMWizardOS: String, Identifiable {
     #else
     let isPendingIPSWDownload: Bool = false
     #endif
-    
+
     var slideIn: AnyTransition {
         .asymmetric(insertion: .move(edge: .trailing), removal: .opacity)
     }
-    
+
     var slideOut: AnyTransition {
         .asymmetric(insertion: .move(edge: .leading), removal: .opacity)
     }
-    
+
     func next() {
         var nextPage = currentPage
         switch currentPage {
@@ -254,14 +254,14 @@ enum VMWizardOS: String, Identifiable {
             nextPageBinding = .constant(nil)
         }
     }
-    
+
     func back() {
         slide = slideOut
         withAnimation {
             _ = pageHistory.popLast()
         }
     }
-    
+
     #if os(macOS)
     private func generateAppleConfig() throws -> UTMAppleConfiguration {
         let config = UTMAppleConfiguration()
@@ -340,7 +340,7 @@ enum VMWizardOS: String, Identifiable {
         }
         return config
     }
-    
+
     #if arch(arm64)
     @available(macOS 12, *)
     private func fetchLatestPlatform() {
@@ -365,7 +365,7 @@ enum VMWizardOS: String, Identifiable {
     }
     #endif
     #endif
-    
+
     private func generateQemuConfig() throws -> UTMQemuConfiguration {
         let config = UTMQemuConfiguration()
         config.information.name = name!
@@ -471,7 +471,7 @@ enum VMWizardOS: String, Identifiable {
         }
         return config
     }
-    
+
     func generateConfig() throws -> any UTMConfiguration {
         if useVirtualization && useAppleVirtualization {
             #if os(macOS)
@@ -483,7 +483,7 @@ enum VMWizardOS: String, Identifiable {
             return try generateQemuConfig()
         }
     }
-    
+
     /// Execute a task with spinning progress indicator (Swift concurrency version)
     /// - Parameter work: Function to execute
     func busyWorkAsync(_ work: @escaping @Sendable () async throws -> Void) {
@@ -512,7 +512,7 @@ extension VMWizardState {
             }
         }
     }
-    
+
     private func confusedUserCheckBootImage() throws {
         guard let path = bootImageURL?.path.lowercased() else {
             return

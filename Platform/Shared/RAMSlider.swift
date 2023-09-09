@@ -18,11 +18,11 @@ import SwiftUI
 
 struct RAMSlider: View {
     let validMemoryValues = [32, 64, 128, 256, 512, 768, 1024, 1536, 2048, 3072, 4096, 6144, 8192, 10240, 12288, 14336, 16384, 32768]
-    
+
     let validateMemorySize: (Bool) -> Void
     @Binding var systemMemory: NSNumber?
     @State private var memorySizeIndex: Float = 0
-    
+
     var memorySizeIndexObserver: Binding<Float> {
         Binding<Float>(
             get: {
@@ -33,12 +33,12 @@ struct RAMSlider: View {
             }
         )
     }
-    
+
     init(systemMemory: Binding<NSNumber?>, onValidate: @escaping (Bool) -> Void = { _ in }) {
         validateMemorySize = onValidate
         _systemMemory = systemMemory
     }
-    
+
     init<T: FixedWidthInteger>(systemMemory: Binding<T>, onValidate: @escaping (Bool) -> Void = { _ in }) {
         validateMemorySize = onValidate
         _systemMemory = Binding<NSNumber?>(get: {
@@ -47,9 +47,9 @@ struct RAMSlider: View {
             systemMemory.wrappedValue = T(newValue?.uint64Value ?? 0)
         })
     }
-    
+
     var body: some View {
-        GeometryReader { geo in
+        GeometryReader { _ in
             HStack {
                 Slider(value: memorySizeIndexObserver, in: 0...Float(validMemoryValues.count-1), step: 1) { start in
                     if !start {
@@ -64,19 +64,17 @@ struct RAMSlider: View {
             }
         }.frame(height: 30)
     }
-    
+
     func memorySizePickerIndex(size: NSNumber?) -> Float {
         guard let sizeUnwrap = size else {
             return 0
         }
-        for (i, s) in validMemoryValues.enumerated() {
-            if s >= Int(truncating: sizeUnwrap) {
-                return Float(i)
-            }
+        for (i, s) in validMemoryValues.enumerated() where s >= Int(truncating: sizeUnwrap) {
+            return Float(i)
         }
         return Float(validMemoryValues.count - 1)
     }
-    
+
     func memorySize(pickerIndex: Float) -> NSNumber {
         let i = Int(pickerIndex)
         guard i >= 0 && i < validMemoryValues.count else {
@@ -89,7 +87,7 @@ struct RAMSlider: View {
 struct RAMSlider_Previews: PreviewProvider {
     static var previews: some View {
         RAMSlider(systemMemory: .constant(1024)) { _ in
-            
+
         }
     }
 }

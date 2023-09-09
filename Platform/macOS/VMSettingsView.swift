@@ -106,17 +106,17 @@ struct SettingsToolbarViewModifier<AdditionalContent>: ViewModifier where Additi
     @EnvironmentObject private var vm: VMData
     @EnvironmentObject private var data: UTMData
     @Environment(\.dismiss) private var dismiss
-    
+
     let additionalContent: AdditionalContent?
-    
+
     fileprivate init() where AdditionalContent == EmptyToolbarContent {
         self.additionalContent = nil
     }
-    
+
     init(additionalContent: () -> AdditionalContent) {
         self.additionalContent = additionalContent()
     }
-    
+
     func body(content: Content) -> some View {
         let view = content.toolbar {
             ToolbarItemGroup(placement: .cancellationAction) {
@@ -141,7 +141,7 @@ struct SettingsToolbarViewModifier<AdditionalContent>: ViewModifier where Additi
             view
         }
     }
-    
+
     private func save() {
         data.busyWorkAsync {
             try await data.save(vm: vm)
@@ -150,7 +150,7 @@ struct SettingsToolbarViewModifier<AdditionalContent>: ViewModifier where Additi
             }
         }
     }
-    
+
     private func cancel() {
         dismiss()
         data.busyWorkAsync {
@@ -164,7 +164,7 @@ extension View {
     func scrollable() -> some View {
         self.modifier(ScrollableViewModifier())
     }
-    
+
     @ViewBuilder
     fileprivate func legacySettingsToolbar<Content>(@ToolbarContentBuilder content: () -> Content) -> some View where Content: ToolbarContent {
         if #available(macOS 12, *) {
@@ -173,7 +173,7 @@ extension View {
             self.toolbar(content: content)
         }
     }
-    
+
     @ViewBuilder
     func settingsToolbar() -> some View {
         if #available(macOS 12, *) {
@@ -182,7 +182,7 @@ extension View {
             self
         }
     }
-    
+
     @ViewBuilder
     func settingsToolbar<Content>(@ToolbarContentBuilder additionalContent: () -> Content) -> some View where Content: ToolbarContent {
         if #available(macOS 12, *) {
@@ -198,7 +198,7 @@ struct VMSettingsView_Previews: PreviewProvider {
     @State static private var qemuConfig = UTMQemuConfiguration()
     @State static private var appleConfig = UTMAppleConfiguration()
     @State static private var data = UTMData()
-    
+
     static var previews: some View {
         VMSettingsView(vm: VMData(from: .empty), config: qemuConfig)
             .environmentObject(data)

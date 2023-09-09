@@ -23,25 +23,25 @@ import Virtualization
 struct UTMAppleConfigurationSharedDirectory: Codable, Hashable, Identifiable {
     var directoryURL: URL?
     var isReadOnly: Bool
-    
+
     let id = UUID()
-    
+
     private enum CodingKeys: String, CodingKey {
         case bookmark = "Bookmark"
         case isReadOnly = "ReadOnly"
     }
-    
+
     init(directoryURL: URL?, isReadOnly: Bool = false) {
         self.directoryURL = directoryURL
         self.isReadOnly = isReadOnly
     }
-    
+
     @available(macOS 12, *)
     init(from config: VZSharedDirectory) {
         self.isReadOnly = config.isReadOnly
         self.directoryURL = config.url
     }
-    
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         isReadOnly = try container.decode(Bool.self, forKey: .isReadOnly)
@@ -49,7 +49,7 @@ struct UTMAppleConfigurationSharedDirectory: Codable, Hashable, Identifiable {
         var stale: Bool = false
         directoryURL = try? URL(resolvingBookmarkData: bookmark, options: .withSecurityScope, bookmarkDataIsStale: &stale)
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(isReadOnly, forKey: .isReadOnly)
@@ -64,7 +64,7 @@ struct UTMAppleConfigurationSharedDirectory: Codable, Hashable, Identifiable {
         let bookmark = try directoryURL?.bookmarkData(options: options)
         try container.encodeIfPresent(bookmark, forKey: .bookmark)
     }
-    
+
     @available(macOS 12, *)
     func vzSharedDirectory() -> VZSharedDirectory? {
         if let directoryURL = directoryURL {
@@ -73,7 +73,7 @@ struct UTMAppleConfigurationSharedDirectory: Codable, Hashable, Identifiable {
             return nil
         }
     }
-    
+
     @available(macOS 12, *)
     static func makeDirectoryShare(from sharedDirectories: [UTMAppleConfigurationSharedDirectory]) -> VZDirectoryShare {
         let vzSharedDirectories = sharedDirectories.compactMap { sharedDirectory in

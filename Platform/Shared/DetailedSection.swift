@@ -20,13 +20,13 @@ struct DetailedSection<Content>: View where Content: View {
     private let titleKey: LocalizedStringKey
     private let description: LocalizedStringKey
     private let content: Content
-    
+
     init(_ titleKey: LocalizedStringKey, description: LocalizedStringKey = "", @ViewBuilder content: () -> Content) {
         self.titleKey = titleKey
         self.description = description
         self.content = content()
     }
-    
+
     var body: some View {
         #if os(macOS)
         Section(content: {

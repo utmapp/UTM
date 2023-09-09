@@ -34,58 +34,58 @@ struct QEMUArgumentBuilder {
         }
         return combined
     }
-    
+
     static func buildExpression(_ fragment: QEMUArgumentFragment) -> [QEMUArgumentFragment] {
         [fragment]
     }
-    
+
     static func buildExpression(_ fragments: [QEMUArgumentFragment]) -> [QEMUArgumentFragment] {
         fragments
     }
-    
+
     static func buildExpression(_ arguments: [QEMUArgument]) -> [QEMUArgumentFragment] {
         arguments.map { QEMUArgumentFragment(from: $0) }
     }
-    
+
     static func buildExpression(_ string: String) -> [QEMUArgumentFragment] {
         [.init(string)]
     }
-    
+
     static func buildExpression(_ constant: any QEMUConstant) -> [QEMUArgumentFragment] {
         [.init(constant.rawValue)]
     }
-    
+
     static func buildExpression(_ assignment: ()) -> [QEMUArgumentFragment] {
         []
     }
-    
+
     static func buildExpression(_ url: URL) -> [QEMUArgumentFragment] {
         var arg = QEMUArgumentFragment(url.path)
         arg.fileUrls = [url]
         arg.seperator = ""
         return [arg]
     }
-    
+
     static func buildExpression<I: FixedWidthInteger>(_ int: I) -> [QEMUArgumentFragment] {
         [.init("\(int)")]
     }
-    
+
     static func buildEither(first component: [QEMUArgumentFragment]) -> [QEMUArgumentFragment] {
         component
     }
-    
+
     static func buildEither(second component: [QEMUArgumentFragment]) -> [QEMUArgumentFragment] {
         component
     }
-    
+
     static func buildArray(_ components: [[QEMUArgumentFragment]]) -> [QEMUArgumentFragment] {
         components.flatMap { $0 }
     }
-    
+
     static func buildOptional(_ component: [QEMUArgumentFragment]?) -> [QEMUArgumentFragment] {
         component ?? []
     }
-    
+
     static func buildFinalResult(_ component: [QEMUArgumentFragment]) -> [QEMUArgument] {
         component.map { QEMUArgument(from: $0) }
     }

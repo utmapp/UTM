@@ -24,7 +24,7 @@ struct VMToolbarModifier: ViewModifier {
     @State private var confirmAction: ConfirmAction?
     @EnvironmentObject private var data: UTMData
     @State private var shareItem: VMShareItemModifier.ShareItem?
-    
+
     #if os(macOS)
     let buttonPlacement: ToolbarItemPlacement = .automatic
     let padding: CGFloat = 0
@@ -44,7 +44,7 @@ struct VMToolbarModifier: ViewModifier {
         }
     }
     #endif
-    
+
     func body(content: Content) -> some View {
         content.toolbar {
             ToolbarItemGroup(placement: buttonPlacement) {

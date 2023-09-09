@@ -24,26 +24,26 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         var supportsProcessKill: Bool {
             false
         }
-        
+
         var supportsSnapshots: Bool {
             false
         }
-        
+
         var supportsScreenshots: Bool {
             true
         }
-        
+
         var supportsDisposibleMode: Bool {
             false
         }
-        
+
         var supportsRecoveryMode: Bool {
             true
         }
     }
-    
+
     static let capabilities = Capabilities()
-    
+
     private(set) var pathUrl: URL {
         didSet {
             if isScopedAccess {
@@ -52,66 +52,66 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             isScopedAccess = pathUrl.startAccessingSecurityScopedResource()
         }
     }
-    
+
     private(set) var isShortcut: Bool = false
-    
+
     let isRunningAsDisposible: Bool = false
-    
+
     weak var delegate: (any UTMVirtualMachineDelegate)?
-    
+
     var onConfigurationChange: (() -> Void)?
-    
+
     var onStateChange: (() -> Void)?
-    
+
     private(set) var config: UTMAppleConfiguration {
         willSet {
             onConfigurationChange?()
         }
     }
-    
+
     private(set) var registryEntry: UTMRegistryEntry {
         willSet {
             onConfigurationChange?()
         }
     }
-    
+
     private(set) var state: UTMVirtualMachineState = .stopped {
         willSet {
             onStateChange?()
         }
-        
+
         didSet {
             delegate?.virtualMachine(self, didTransitionToState: state)
         }
     }
-    
+
     private(set) var screenshot: PlatformImage? {
         willSet {
             onStateChange?()
         }
     }
-    
+
     private(set) var snapshotUnsupportedError: Error?
-    
+
     private var isScopedAccess: Bool = false
-    
+
     private weak var screenshotTimer: Timer?
-    
+
     private let vmQueue = DispatchQueue(label: "VZVirtualMachineQueue", qos: .userInteractive)
-    
+
     /// This variable MUST be synchronized by `vmQueue`
     private(set) var apple: VZVirtualMachine?
-    
+
     private var installProgress: Progress?
-    
+
     private var progressObserver: NSKeyValueObservation?
-    
+
     private var sharedDirectoriesChanged: AnyCancellable?
-    
+
     weak var screenshotDelegate: UTMScreenshotProvider?
-    
+
     private var activeResourceUrls: [URL] = []
-    
+
     @MainActor required init(packageUrl: URL, configuration: UTMAppleConfiguration, isShortcut: Bool = false) throws {
         self.isScopedAccess = packageUrl.startAccessingSecurityScopedResource()
         // load configuration
@@ -122,13 +122,13 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         self.registryEntry = loadRegistry()
         self.screenshot = loadScreenshot()
     }
-    
+
     deinit {
         if isScopedAccess {
             pathUrl.stopAccessingSecurityScopedResource()
         }
     }
-    
+
     @MainActor func reload(from packageUrl: URL?) throws {
         let packageUrl = packageUrl ?? pathUrl
         guard let newConfig = try UTMAppleConfiguration.load(from: packageUrl) as? UTMAppleConfiguration else {
@@ -138,7 +138,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         pathUrl = packageUrl
         updateConfigFromRegistry()
     }
-    
+
     private func _start(options: UTMVirtualMachineStartOptions) async throws {
         let boot = await config.system.boot
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) -> Void in
@@ -167,7 +167,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             }
         }
     }
-    
+
     func start(options: UTMVirtualMachineStartOptions = []) async throws {
         guard state == .stopped else {
             return
@@ -205,7 +205,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             throw error
         }
     }
-    
+
     @available(macOS 12, *)
     private func _forceStop() async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
@@ -225,7 +225,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             }
         }
     }
-    
+
     private func _requestStop() async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             vmQueue.async {
@@ -242,7 +242,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             }
         }
     }
-    
+
     func stop(usingMethod method: UTMVirtualMachineStopMethod = .request) async throws {
         if let installProgress = installProgress {
             installProgress.cancel()
@@ -266,7 +266,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             throw error
         }
     }
-    
+
     private func _restart() async throws {
         guard #available(macOS 12, *) else {
             return
@@ -289,7 +289,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             }
         }
     }
-    
+
     func restart() async throws {
         guard state == .started || state == .paused else {
             return
@@ -303,7 +303,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             throw error
         }
     }
-    
+
     private func _pause() async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             vmQueue.async {
@@ -321,7 +321,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             }
         }
     }
-    
+
     func pause() async throws {
         guard state == .started else {
             return
@@ -335,7 +335,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             throw error
         }
     }
-    
+
     #if arch(arm64)
     @available(macOS 14, *)
     private func _saveSnapshot(url: URL) async throws {
@@ -356,7 +356,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         }
     }
     #endif
-    
+
     func saveSnapshot(name: String? = nil) async throws {
         guard #available(macOS 14, *) else {
             return
@@ -382,7 +382,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         await registryEntry.setIsSuspended(true)
         #endif
     }
-    
+
     func deleteSnapshot(name: String? = nil) async throws {
         guard let vmSavedStateURL = await config.system.boot.vmSavedStateURL else {
             return
@@ -390,7 +390,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         await registryEntry.setIsSuspended(false)
         try FileManager.default.removeItem(at: vmSavedStateURL)
     }
-    
+
     #if arch(arm64)
     @available(macOS 14, *)
     private func _restoreSnapshot(url: URL) async throws {
@@ -411,7 +411,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         }
     }
     #endif
-    
+
     func restoreSnapshot(name: String? = nil) async throws {
         guard #available(macOS 14, *) else {
             throw UTMAppleVirtualMachineError.operationNotAvailable
@@ -440,7 +440,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         throw UTMAppleVirtualMachineError.operationNotAvailable
         #endif
     }
-    
+
     private func _resume() async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             vmQueue.async {
@@ -454,7 +454,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             }
         }
     }
-    
+
     func resume() async throws {
         guard state == .paused else {
             return
@@ -468,21 +468,21 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             throw error
         }
     }
-    
+
     @discardableResult @MainActor
     func takeScreenshot() async -> Bool {
         screenshot = screenshotDelegate?.screenshot
         return true
     }
-    
+
     @MainActor private func createAppleVM() throws {
         for i in config.serials.indices {
             let (fd, sfd, name) = try createPty()
             let terminalTtyHandle = FileHandle(fileDescriptor: fd, closeOnDealloc: false)
-            let slaveTtyHandle = FileHandle(fileDescriptor: sfd, closeOnDealloc: false)
+            let utmTtyHandle = FileHandle(fileDescriptor: sfd, closeOnDealloc: false)
             config.serials[i].fileHandleForReading = terminalTtyHandle
             config.serials[i].fileHandleForWriting = terminalTtyHandle
-            let serialPort = UTMSerialPort(portNamed: name, readFileHandle: slaveTtyHandle, writeFileHandle: slaveTtyHandle, terminalFileHandle: terminalTtyHandle)
+            let serialPort = UTMSerialPort(portNamed: name, readFileHandle: utmTtyHandle, writeFileHandle: utmTtyHandle, terminalFileHandle: terminalTtyHandle)
             config.serials[i].interface = serialPort
         }
         let vzConfig = try config.appleVZConfiguration()
@@ -503,7 +503,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             #endif
         }
     }
-    
+
     @available(macOS 12, *)
     private func updateSharedDirectories(with newShares: [UTMAppleConfigurationSharedDirectory]) {
         guard let fsConfig = apple?.directorySharingDevices.first(where: { device in
@@ -517,7 +517,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         }
         fsConfig.share = UTMAppleConfigurationSharedDirectory.makeDirectoryShare(from: newShares)
     }
-    
+
     @available(macOS 12, *)
     func installVM(with ipswUrl: URL) async throws {
         guard state == .stopped else {
@@ -539,7 +539,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
                         return
                     }
                     let installer = VZMacOSInstaller(virtualMachine: apple, restoringFromImageAt: ipswUrl)
-                    self.progressObserver = installer.progress.observe(\.fractionCompleted, options: [.initial, .new]) { progress, change in
+                    self.progressObserver = installer.progress.observe(\.fractionCompleted, options: [.initial, .new]) { progress, _ in
                         self.delegate?.virtualMachine(self, didUpdateInstallationProgress: progress.fractionCompleted)
                     }
                     self.installProgress = installer.progress
@@ -562,7 +562,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             throw error
         }
     }
-    
+
     // taken from https://github.com/evansm7/vftool/blob/main/vftool/main.m
     private func createPty() throws -> (Int32, Int32, String) {
         let errMsg = NSLocalizedString("Cannot create virtual terminal.", comment: "UTMAppleVirtualMachine")
@@ -574,30 +574,30 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             logger.error("openpty failed: \(errno)")
             throw errMsg
         }
-        
+
         guard tcgetattr(mfd, &tos) >= 0 else {
             logger.error("tcgetattr failed: \(errno)")
             throw errMsg
         }
-        
+
         cfmakeraw(&tos)
         guard tcsetattr(mfd, TCSAFLUSH, &tos) >= 0 else {
             logger.error("tcsetattr failed: \(errno)")
             throw errMsg
         }
-        
+
         let f = fcntl(mfd, F_GETFL)
         guard fcntl(mfd, F_SETFL, f | O_NONBLOCK) >= 0 else {
             logger.error("fnctl failed: \(errno)")
             throw errMsg
         }
-        
+
         let name = String(cString: cname)
         logger.info("fd \(mfd) connected to \(name)")
-        
+
         return (mfd, sfd, name)
     }
-    
+
     @MainActor private func beginAccessingResources() throws {
         for i in config.drives.indices {
             let drive = config.drives[i]
@@ -622,7 +622,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             }
         }
     }
-    
+
     @MainActor private func stopAccesingResources() {
         for url in activeResourceUrls {
             url.stopAccessingSecurityScopedResource()
@@ -653,58 +653,58 @@ extension UTMAppleVirtualMachine: VZVirtualMachineDelegate {
         try? saveScreenshot()
         state = .stopped
     }
-    
+
     func virtualMachine(_ virtualMachine: VZVirtualMachine, didStopWithError error: Error) {
         guestDidStop(virtualMachine)
         delegate?.virtualMachine(self, didErrorWithMessage: error.localizedDescription)
     }
-    
+
     // fake methods to adhere to NSObjectProtocol
-    
+
     func isEqual(_ object: Any?) -> Bool {
         self === object as? UTMAppleVirtualMachine
     }
-    
+
     var hash: Int {
         0
     }
-    
+
     var superclass: AnyClass? {
         nil
     }
-    
+
     func `self`() -> Self {
         self
     }
-    
+
     func perform(_ aSelector: Selector!) -> Unmanaged<AnyObject>! {
         nil
     }
-    
+
     func perform(_ aSelector: Selector!, with object: Any!) -> Unmanaged<AnyObject>! {
         nil
     }
-    
+
     func perform(_ aSelector: Selector!, with object1: Any!, with object2: Any!) -> Unmanaged<AnyObject>! {
         nil
     }
-    
+
     func isProxy() -> Bool {
         false
     }
-    
+
     func isKind(of aClass: AnyClass) -> Bool {
         false
     }
-    
+
     func isMember(of aClass: AnyClass) -> Bool {
         false
     }
-    
+
     func conforms(to aProtocol: Protocol) -> Bool {
         aProtocol is VZVirtualMachineDelegate
     }
-    
+
     func responds(to aSelector: Selector!) -> Bool {
         if aSelector == #selector(VZVirtualMachineDelegate.guestDidStop(_:)) {
             return true
@@ -714,7 +714,7 @@ extension UTMAppleVirtualMachine: VZVirtualMachineDelegate {
         }
         return false
     }
-    
+
     var description: String {
         ""
     }
@@ -774,7 +774,7 @@ extension UTMAppleVirtualMachine {
             registryEntry.macRecoveryIpsw = nil
         }
     }
-    
+
     @MainActor func updateConfigFromRegistry() {
         config.sharedDirectories = registryEntry.sharedDirectories.map({ UTMAppleConfigurationSharedDirectory(directoryURL: $0.url, isReadOnly: $0.isReadOnly )})
         for i in config.drives.indices {
@@ -787,7 +787,7 @@ extension UTMAppleVirtualMachine {
             config.system.boot.macRecoveryIpswURL = file.url
         }
     }
-    
+
     @MainActor func changeUuid(to uuid: UUID, name: String? = nil, copyingEntry entry: UTMRegistryEntry? = nil) {
         config.information.uuid = uuid
         if let name = name {
