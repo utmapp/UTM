@@ -19,7 +19,7 @@ import SwiftUI
 struct VMWizardView: View {
     @StateObject var wizardState = VMWizardState()
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
-    
+
     var body: some View {
         if #available(iOS 16, visionOS 1.0, *) {
             WizardNavigationView(wizardState: wizardState) {
@@ -39,7 +39,7 @@ struct VMWizardView: View {
     }
 }
 
-fileprivate struct WizardToolbar: ViewModifier {
+private struct WizardToolbar: ViewModifier {
     @ObservedObject var wizardState: VMWizardState
     let onDismiss: () -> Void
     @EnvironmentObject private var data: UTMData
@@ -87,13 +87,13 @@ fileprivate struct WizardToolbar: ViewModifier {
 
 @available(iOS, deprecated: 17, message: "Use WizardViewWrapper")
 @available(visionOS, deprecated: 1, message: "Use WizardViewWrapper")
-fileprivate struct WizardWrapper: View {
+private struct WizardWrapper: View {
     let page: VMWizardPage
     @ObservedObject var wizardState: VMWizardState
     @State private var nextPage: VMWizardPage?
     let onDismiss: () -> Void
     @EnvironmentObject private var data: UTMData
-    
+
     var body: some View {
         VStack {
             WizardViewWrapper(page: page, wizardState: wizardState)
@@ -125,14 +125,14 @@ fileprivate struct WizardWrapper: View {
 }
 
 @available(iOS 16, visionOS 1.0, *)
-fileprivate struct WizardNavigationView: View {
+private struct WizardNavigationView: View {
     @StateObject var wizardState = VMWizardState()
     let onDismiss: () -> Void
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     @State private var navigationPath: NavigationPath = .init()
     @State private var previousPage: VMWizardPage?
     @State private var isAlertShown: Bool = false
-    
+
     var body: some View {
         NavigationStack(path: $wizardState.pageHistory) {
             WizardViewWrapper(page: .start, wizardState: wizardState)
@@ -157,7 +157,7 @@ fileprivate struct WizardNavigationView: View {
     }
 }
 
-fileprivate struct WizardViewWrapper: View {
+private struct WizardViewWrapper: View {
     let page: VMWizardPage
     @ObservedObject var wizardState: VMWizardState
 

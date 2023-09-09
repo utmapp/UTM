@@ -430,18 +430,18 @@ extension UTMRegistryEntry {
             try container.encodeIfPresent(remoteBookmark, forKey: .remoteBookmark)
         }
     }
-    
+
     struct Window: Codable, Equatable {
         var scale: CGFloat = 1.0
-        
+
         var origin: CGPoint = .zero
-        
+
         var isToolbarVisible: Bool = true
-        
+
         var isKeyboardVisible: Bool = false
-        
+
         var isDisplayZoomLocked: Bool = true
-        
+
         private enum CodingKeys: String, CodingKey {
             case scale = "Scale"
             case origin = "Origin"
@@ -449,10 +449,10 @@ extension UTMRegistryEntry {
             case isKeyboardVisible = "KeyboardVisible"
             case isDisplayZoomLocked = "DisplayZoomLocked"
         }
-        
+
         init() {
         }
-        
+
         init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             scale = try container.decode(CGFloat.self, forKey: .scale)
@@ -461,7 +461,7 @@ extension UTMRegistryEntry {
             isKeyboardVisible = try container.decode(Bool.self, forKey: .isKeyboardVisible)
             isDisplayZoomLocked = try container.decode(Bool.self, forKey: .isDisplayZoomLocked)
         }
-        
+
         func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
             try container.encode(scale, forKey: .scale)
@@ -471,28 +471,28 @@ extension UTMRegistryEntry {
             try container.encode(isDisplayZoomLocked, forKey: .isDisplayZoomLocked)
         }
     }
-    
+
     struct Terminal: Codable, Equatable {
         var columns: Int
-        
+
         var rows: Int
-        
+
         private enum CodingKeys: String, CodingKey {
             case columns = "Columns"
             case rows = "Rows"
         }
-        
+
         init(columns: Int = 80, rows: Int = 24) {
             self.columns = columns
             self.rows = rows
         }
-        
+
         init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             columns = try container.decode(Int.self, forKey: .columns)
             rows = try container.decode(Int.self, forKey: .rows)
         }
-        
+
         func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
             try container.encode(columns, forKey: .columns)

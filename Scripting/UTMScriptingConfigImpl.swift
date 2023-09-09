@@ -43,15 +43,15 @@ class UTMScriptingConfigImpl {
     private var bytesInMib: Int64 {
         1048576
     }
-    
+
     private(set) var config: any UTMConfiguration
     private weak var data: UTMData?
-    
+
     init(_ config: any UTMConfiguration, data: UTMData? = nil) {
         self.config = config
         self.data = data
     }
-    
+
     func serializeConfiguration() -> [AnyHashable : Any] {
         if let qemuConfig = config as? UTMQemuConfiguration {
             return serializeQemuConfiguration(qemuConfig)
@@ -61,7 +61,7 @@ class UTMScriptingConfigImpl {
             fatalError()
         }
     }
-    
+
     func updateConfiguration(from record: [AnyHashable : Any]) throws {
         if let _ = config as? UTMQemuConfiguration {
             try updateQemuConfiguration(from: record)
@@ -71,7 +71,7 @@ class UTMScriptingConfigImpl {
             fatalError()
         }
     }
-    
+
     private func size(of drive: any UTMConfigurationDrive) -> Int {
         guard let data = data else {
             return 0
@@ -92,7 +92,7 @@ extension UTMScriptingConfigImpl {
         case .virtfs: return .virtFS
         }
     }
-    
+
     private func serializeQemuConfiguration(_ config: UTMQemuConfiguration) -> [AnyHashable : Any] {
         [
             "name": config.information.name,
@@ -109,7 +109,7 @@ extension UTMScriptingConfigImpl {
             "serialPorts": config.serials.enumerated().map({ serializeQemuSerial($1, index: $0) }),
         ]
     }
-    
+
     private func qemuDriveInterface(from interface: QEMUDriveInterface) -> UTMScriptingQemuDriveInterface {
         switch interface {
         case .none: return .none

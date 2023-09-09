@@ -23,7 +23,7 @@ struct UTMAppleConfigurationSerial: Codable, Identifiable {
     enum SerialMode: String, CaseIterable, QEMUConstant {
         case builtin = "Terminal"
         case ptty = "Ptty"
-        
+
         var prettyValue: String {
             switch self {
             case .builtin: return NSLocalizedString("Built-in Terminal", comment: "UTMAppleConfigurationTerminal")
@@ -31,37 +31,37 @@ struct UTMAppleConfigurationSerial: Codable, Identifiable {
             }
         }
     }
-    
+
     var mode: SerialMode = .builtin
-    
+
     /// Terminal settings for built-in mode.
     var terminal: UTMConfigurationTerminal? = .init()
-    
+
     /// Set to read handle before starting VM. Not saved.
     var fileHandleForReading: FileHandle?
-    
+
     /// Set to write handle before starting VM. Not saved.
     var fileHandleForWriting: FileHandle?
-    
+
     /// Serial interface used by the VM. Not saved.
     var interface: UTMSerialPort?
-    
+
     let id = UUID()
-    
+
     enum CodingKeys: String, CodingKey {
         case mode = "Mode"
         case terminal = "Terminal"
     }
-    
+
     init() {
     }
-    
+
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         mode = try values.decode(SerialMode.self, forKey: .mode)
         terminal = try values.decodeIfPresent(UTMConfigurationTerminal.self, forKey: .terminal)
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(mode, forKey: .mode)
@@ -73,7 +73,7 @@ struct UTMAppleConfigurationSerial: Codable, Identifiable {
             break
         }
     }
-    
+
     func vzSerial() -> VZSerialPortConfiguration? {
         guard let fileHandleForReading = fileHandleForReading, let fileHandleForWriting = fileHandleForWriting else {
             return nil

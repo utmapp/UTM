@@ -19,7 +19,7 @@ import SwiftUI
 struct VMWizardSummaryView: View {
     @ObservedObject var wizardState: VMWizardState
     @EnvironmentObject private var data: UTMData
-    
+
     var storageDescription: String {
         var size = Int64(wizardState.storageSizeGib * wizardState.bytesInGib)
         #if arch(arm64)
@@ -31,7 +31,7 @@ struct VMWizardSummaryView: View {
         #endif
         return ByteCountFormatter.string(fromByteCount: size, countStyle: .binary)
     }
-    
+
     var coreDescription: String {
         let cores = wizardState.systemCpuCount
         if cores == 0 {
@@ -40,7 +40,7 @@ struct VMWizardSummaryView: View {
             return String.localizedStringWithFormat(NSLocalizedString("%lld Cores", comment: "VMWizardSummaryView"), cores)
         }
     }
-    
+
     var body: some View {
         VStack {
             #if os(macOS)
@@ -104,7 +104,7 @@ struct VMWizardSummaryView: View {
             }
         }
     }
-    
+
     var info: some View {
         Group {
             TextField("Name", text: $wizardState.name.bound)
@@ -115,7 +115,7 @@ struct VMWizardSummaryView: View {
             #endif
         }
     }
-    
+
     var system: some View {
         Group {
             TextField("Engine", text: .constant(NSLocalizedString(wizardState.useAppleVirtualization ? "Apple Virtualization" : "QEMU", comment: "VMWizardSummaryView")))
@@ -132,7 +132,7 @@ struct VMWizardSummaryView: View {
             }
         }
     }
-    
+
     var boot: some View {
         Group {
             TextField("Operating System", text: .constant(NSLocalizedString(wizardState.operatingSystem.rawValue, comment: "VMWizardSummaryView")))
@@ -164,7 +164,7 @@ struct VMWizardSummaryView: View {
             }
         }
     }
-    
+
     var sharing: some View {
         Group {
             Toggle("Share Directory", isOn: .constant(wizardState.sharingDirectoryURL != nil))
@@ -178,7 +178,7 @@ struct VMWizardSummaryView: View {
 
 struct VMWizardSummaryView_Previews: PreviewProvider {
     @StateObject static var wizardState = VMWizardState()
-    
+
     static var previews: some View {
         VMWizardSummaryView(wizardState: wizardState)
     }

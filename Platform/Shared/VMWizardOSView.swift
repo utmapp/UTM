@@ -80,12 +80,12 @@ struct VMWizardOSView: View {
 struct OperatingSystem: View {
     let imageName: String
     let name: LocalizedStringKey
-    
+
     private var imageURL: URL {
         let path = Bundle.main.path(forResource: imageName, ofType: "png", inDirectory: "Icons")!
         return URL(fileURLWithPath: path)
     }
-    
+
 #if os(macOS)
     private var icon: Image {
         Image(nsImage: NSImage(byReferencing: imageURL))
@@ -95,7 +95,7 @@ struct OperatingSystem: View {
         Image(uiImage: UIImage(contentsOfURL: imageURL)!)
     }
 #endif
-    
+
     var body: some View {
         HStack {
             icon
@@ -111,7 +111,7 @@ struct OperatingSystem: View {
 
 struct VMWizardOSView_Previews: PreviewProvider {
     @StateObject static var wizardState = VMWizardState()
-    
+
     static var previews: some View {
         VMWizardOSView(wizardState: wizardState)
     }

@@ -27,7 +27,7 @@ import Virtualization // for getting network interfaces
     private func f(_ string: String = "") -> QEMUArgumentFragment {
         QEMUArgumentFragment(final: string)
     }
-    
+
     /// Shared between helper and main process to store Unix sockets
     var socketURL: URL {
         #if os(iOS) || os(visionOS)
@@ -50,23 +50,23 @@ import Virtualization // for getting network interfaces
         return parentURL
         #endif
     }
-    
+
     /// Return the socket file for communicating with SPICE
     var spiceSocketURL: URL {
         socketURL.appendingPathComponent(information.uuid.uuidString).appendingPathExtension("spice")
     }
-    
+
     /// Return the socket file for communicating with SWTPM
     var swtpmSocketURL: URL {
         socketURL.appendingPathComponent(information.uuid.uuidString).appendingPathExtension("swtpm")
     }
-    
+
     /// Combined generated and user specified arguments.
     @QEMUArgumentBuilder var allArguments: [QEMUArgument] {
         generatedArguments
         userArguments
     }
-    
+
     /// Only UTM generated arguments.
     @QEMUArgumentBuilder var generatedArguments: [QEMUArgument] {
         f("-L")
@@ -106,7 +106,7 @@ import Virtualization // for getting network interfaces
             }
         }
     }
-    
+
     @QEMUArgumentBuilder private var spiceArguments: [QEMUArgument] {
         f("-spice")
         "unix=on"
@@ -129,7 +129,7 @@ import Virtualization // for getting network interfaces
             f("none")
         }
     }
-    
+
     @QEMUArgumentBuilder private var displayArguments: [QEMUArgument] {
         if displays.isEmpty {
             f("-nographic")
@@ -151,17 +151,17 @@ import Virtualization // for getting network interfaces
             }
         }
     }
-    
+
     private var isGLOn: Bool {
         displays.contains { display in
             display.hardware.rawValue.contains("-gl-") || display.hardware.rawValue.hasSuffix("-gl")
         }
     }
-    
+
     private var isSparc: Bool {
         system.architecture == .sparc || system.architecture == .sparc64
     }
-    
+
     @QEMUArgumentBuilder private var serialArguments: [QEMUArgument] {
         for i in serials.indices {
             f("-chardev")
@@ -204,7 +204,7 @@ import Virtualization // for getting network interfaces
             }
         }
     }
-    
+
     @QEMUArgumentBuilder private var cpuArguments: [QEMUArgument] {
         if system.cpu.rawValue == system.architecture.cpuType.default.rawValue {
             // if default and not hypervisor, we don't pass any -cpu argument for x86 and use host for ARM
@@ -241,14 +241,14 @@ import Virtualization // for getting network interfaces
         "threads=\(emulatedCpuCount.1/emulatedCpuCount.0)"
         f()
     }
-    
+
     private static func sysctlIntRead(_ name: String) -> UInt64 {
         var value: UInt64 = 0
         var size = MemoryLayout<UInt64>.size
         sysctlbyname(name, &value, &size, nil, 0)
         return value
     }
-    
+
     private var emulatedCpuCount: (Int, Int) {
         let singleCpu = (1, 1)
         let hostPhysicalCpu = Int(Self.sysctlIntRead("hw.physicalcpu"))
@@ -282,23 +282,23 @@ import Virtualization // for getting network interfaces
         return singleCpu
         #endif
     }
-    
+
     private var isHypervisorUsed: Bool {
         system.architecture.hasHypervisorSupport && qemu.hasHypervisor
     }
-    
+
     private var isTSOUsed: Bool {
         system.architecture.hasTSOSupport && qemu.hasTSO
     }
-    
+
     private var isUsbUsed: Bool {
         system.architecture.hasUsbSupport && system.target.hasUsbSupport && input.usbBusSupport != .disabled
     }
-    
+
     private var isSecureBootUsed: Bool {
         system.architecture.hasSecureBootSupport && system.target.hasSecureBootSupport && qemu.hasTPMDevice
     }
-    
+
     @QEMUArgumentBuilder private var machineArguments: [QEMUArgument] {
         f("-machine")
         system.target
@@ -327,7 +327,7 @@ import Virtualization // for getting network interfaces
             f()
         }
     }
-    
+
     private var machineProperties: String {
         let target = system.target.rawValue
         let architecture = system.architecture.rawValue
@@ -367,7 +367,7 @@ import Virtualization // for getting network interfaces
         }
         return properties
     }
-    
+
     @QEMUArgumentBuilder private var architectureArguments: [QEMUArgument] {
         if system.architecture == .x86_64 || system.architecture == .i386 {
             f("-global")
@@ -402,7 +402,7 @@ import Virtualization // for getting network interfaces
         system.memorySize
         f()
     }
-    
+
     private var hasCustomBios: Bool {
         for drive in drives {
             if drive.imageType == .disk || drive.imageType == .cd {
@@ -415,11 +415,11 @@ import Virtualization // for getting network interfaces
         }
         return false
     }
-    
+
     private var resourceURL: URL {
         Bundle.main.url(forResource: "qemu", withExtension: nil)!
     }
-    
+
     private var soundBackend: UTMQEMUSoundBackend {
         let value = UserDefaults.standard.integer(forKey: "QEMUSoundBackend")
         if let backend = UTMQEMUSoundBackend(rawValue: value), backend != .qemuSoundBackendMax {
@@ -428,7 +428,7 @@ import Virtualization // for getting network interfaces
             return .qemuSoundBackendDefault
         }
     }
-    
+
     private var useCoreAudioBackend: Bool {
         #if os(iOS) || os(visionOS)
         return false
@@ -444,7 +444,7 @@ import Virtualization // for getting network interfaces
         return false
         #endif
     }
-    
+
     @QEMUArgumentBuilder private var soundArguments: [QEMUArgument] {
         if useCoreAudioBackend {
             f("-audiodev")
@@ -478,7 +478,7 @@ import Virtualization // for getting network interfaces
             }
         }
     }
-    
+
     @QEMUArgumentBuilder private var drivesArguments: [QEMUArgument] {
         var busInterfaceMap: [String: Int] = [:]
         for drive in drives {
@@ -506,7 +506,7 @@ import Virtualization // for getting network interfaces
             }
         }
     }
-    
+
     /// These machines are hard coded to have one IDE unit per bus in QEMU
     private var isIdeInterfaceSingleUnit: Bool {
         system.target.rawValue.contains("q35") ||
@@ -516,7 +516,7 @@ import Virtualization // for getting network interfaces
         system.target.rawValue == "midway" ||
         system.target.rawValue == "xlnx_zcu102"
     }
-    
+
     @QEMUArgumentBuilder private func driveArgument(for drive: UTMQemuConfigurationDrive, busInterfaceMap: inout [String: Int]) -> [QEMUArgument] {
         let isRemovable = drive.imageType == .cd || drive.isExternal
         let isCd = drive.imageType == .cd && drive.interface != .floppy
@@ -657,7 +657,7 @@ import Virtualization // for getting network interfaces
         }
         f()
     }
-    
+
     @QEMUArgumentBuilder private var usbArguments: [QEMUArgument] {
         if system.target.rawValue.hasPrefix("virt") {
             f("-device")
@@ -704,7 +704,7 @@ import Virtualization // for getting network interfaces
         }
         #endif
     }
-    
+
     private func parseNetworkSubnet(from network: UTMQemuConfigurationNetwork) -> (start: String, end: String, mask: String)? {
         guard let net = network.vlanGuestAddress else {
             return nil
@@ -742,13 +742,13 @@ import Virtualization // for getting network interfaces
         let netmaskStr = String(cString: inet_ntoa(netmask))
         return (network.vlanDhcpStartAddress ?? firstAddrStr, network.vlanDhcpEndAddress ?? lastAddrStr, netmaskStr)
     }
-    
+
     #if os(macOS)
     private var defaultBridgedInterface: String {
         VZBridgedNetworkInterface.networkInterfaces.first?.identifier ?? "en0"
     }
     #endif
-    
+
     @QEMUArgumentBuilder private var networkArguments: [QEMUArgument] {
         for i in networks.indices {
             if isSparc {
@@ -844,14 +844,14 @@ import Virtualization // for getting network interfaces
             f("none")
         }
     }
-    
+
     private var isSpiceAgentUsed: Bool {
         guard system.architecture.hasAgentSupport && system.target.hasAgentSupport else {
             return false
         }
         return sharing.hasClipboardSharing || sharing.directoryShareMode == .webdav || displays.contains(where: { $0.isDynamicResolution })
     }
-    
+
     @QEMUArgumentBuilder private var sharingArguments: [QEMUArgument] {
         if system.architecture.hasAgentSupport && system.target.hasAgentSupport {
             f("-device")
@@ -894,14 +894,14 @@ import Virtualization // for getting network interfaces
             "mount_tag=share"
         }
     }
-    
+
     private func cleanupName(_ name: String) -> String {
         let allowedCharacterSet = CharacterSet.alphanumerics.union(.whitespaces)
         let filteredString = name.components(separatedBy: allowedCharacterSet.inverted)
                                  .joined(separator: "")
         return filteredString
     }
-    
+
     @QEMUArgumentBuilder private var miscArguments: [QEMUArgument] {
         f("-name")
         f(cleanupName(information.name))
@@ -926,7 +926,7 @@ import Virtualization // for getting network interfaces
             tpmArguments
         }
     }
-    
+
     @QEMUArgumentBuilder private var tpmArguments: [QEMUArgument] {
         f("-chardev")
         "socket"

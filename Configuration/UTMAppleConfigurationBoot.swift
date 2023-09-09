@@ -24,7 +24,7 @@ struct UTMAppleConfigurationBoot: Codable {
         case none = "None"
         case linux = "Linux"
         case macOS = "macOS"
-        
+
         var prettyValue: String {
             switch self {
             case .none: return NSLocalizedString("None", comment: "UTMAppleConfigurationBoot")
@@ -33,7 +33,7 @@ struct UTMAppleConfigurationBoot: Codable {
             }
         }
     }
-    
+
     var operatingSystem: OperatingSystem
     var linuxKernelURL: URL?
     var linuxCommandLine: String?
@@ -41,10 +41,10 @@ struct UTMAppleConfigurationBoot: Codable {
     var efiVariableStorageURL: URL?
     var vmSavedStateURL: URL?
     var hasUefiBoot: Bool = false
-    
+
     /// IPSW for installing macOS. Not saved.
     var macRecoveryIpswURL: URL?
-    
+
     private enum CodingKeys: String, CodingKey {
         case operatingSystem = "OperatingSystem"
         case linuxKernelPath = "LinuxKernelPath"
@@ -53,7 +53,7 @@ struct UTMAppleConfigurationBoot: Codable {
         case efiVariableStoragePath = "EfiVariableStoragePath"
         case hasUefiBoot = "UEFIBoot"
     }
-    
+
     init(from decoder: Decoder) throws {
         guard let dataURL = decoder.userInfo[.dataURL] as? URL else {
             throw UTMConfigurationError.invalidDataURL
@@ -81,7 +81,7 @@ struct UTMAppleConfigurationBoot: Codable {
         }
         vmSavedStateURL = dataURL.appendingPathComponent(QEMUPackageFileName.vmState.rawValue)
     }
-    
+
     init(for operatingSystem: OperatingSystem, linuxKernelURL: URL? = nil) throws {
         self.operatingSystem = operatingSystem
         self.linuxKernelURL = linuxKernelURL
@@ -89,14 +89,14 @@ struct UTMAppleConfigurationBoot: Codable {
             self.hasUefiBoot = true
         }
     }
-    
+
     init(from linux: VZLinuxBootLoader) {
         self.operatingSystem = .linux
         self.linuxKernelURL = linux.kernelURL
         self.linuxCommandLine = linux.commandLine
         self.linuxInitialRamdiskURL = linux.initialRamdiskURL
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(operatingSystem, forKey: .operatingSystem)
@@ -108,7 +108,7 @@ struct UTMAppleConfigurationBoot: Codable {
             try container.encodeIfPresent(efiVariableStorageURL?.lastPathComponent, forKey: .efiVariableStoragePath)
         }
     }
-    
+
     func vzBootloader() -> VZBootLoader? {
         switch operatingSystem {
         case .none:

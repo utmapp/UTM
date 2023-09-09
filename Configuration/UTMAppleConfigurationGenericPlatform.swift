@@ -21,27 +21,27 @@ import Virtualization
 @available(macOS 11, *)
 struct UTMAppleConfigurationGenericPlatform: Codable {
     var machineIdentifier: Data?
-    
+
     private enum CodingKeys: String, CodingKey {
         case machineIdentifier
     }
-    
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         machineIdentifier = try container.decodeIfPresent(Data.self, forKey: .machineIdentifier)
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encodeIfPresent(machineIdentifier, forKey: .machineIdentifier)
     }
-    
+
     init() {
         if #available(macOS 13, *) {
             machineIdentifier = VZGenericMachineIdentifier().dataRepresentation
         }
     }
-    
+
     @available(macOS 12, *)
     func vzGenericPlatform() -> VZGenericPlatformConfiguration? {
         let config = VZGenericPlatformConfiguration()

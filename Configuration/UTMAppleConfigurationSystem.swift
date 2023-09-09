@@ -22,7 +22,7 @@ import Virtualization
 @available(macOS 11, *)
 struct UTMAppleConfigurationSystem: Codable {
     private let bytesInMib = UInt64(1048576)
-    
+
     static var currentArchitecture: String {
         #if arch(arm64)
         "aarch64"
@@ -32,21 +32,21 @@ struct UTMAppleConfigurationSystem: Codable {
         #error("Unsupported architecture.")
         #endif
     }
-    
+
     var architecture: String = Self.currentArchitecture
-    
+
     /// Number of CPU cores to emulate. Set to 0 to match the number of available cores on the host.
     var cpuCount: Int = 0
-    
+
     /// The RAM of the guest in MiB.
     var memorySize: Int = 4096
-    
+
     var boot: UTMAppleConfigurationBoot = try! .init(for: .none)
-    
+
     var macPlatform: UTMAppleConfigurationMacPlatform?
-    
+
     var genericPlatform: UTMAppleConfigurationGenericPlatform?
-    
+
     enum CodingKeys: String, CodingKey {
         case architecture = "Architecture"
         case cpuCount = "CPUCount"
@@ -55,10 +55,10 @@ struct UTMAppleConfigurationSystem: Codable {
         case macPlatform = "MacPlatform"
         case genericPlatform = "GenericPlatform"
     }
-    
+
     init() {
     }
-    
+
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         architecture = try values.decode(String.self, forKey: .architecture)
@@ -68,7 +68,7 @@ struct UTMAppleConfigurationSystem: Codable {
         macPlatform = try values.decodeIfPresent(UTMAppleConfigurationMacPlatform.self, forKey: .macPlatform)
         genericPlatform = try values.decodeIfPresent(UTMAppleConfigurationGenericPlatform.self, forKey: .genericPlatform)
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(architecture, forKey: .architecture)

@@ -66,7 +66,7 @@ extension Optional where Wrapped == Bool {
             self = newValue
         }
     }
-    
+
     public var bound: Wrapped {
         get {
             return _bound ?? false
@@ -90,11 +90,9 @@ extension Binding where Value == Bool {
 extension LocalizedStringKey {
     var localizedString: String {
         let mirror = Mirror(reflecting: self)
-        var key: String? = nil
-        for property in mirror.children {
-            if property.label == "key" {
-                key = property.value as? String
-            }
+        var key: String?
+        for property in mirror.children where property.label == "key" {
+            key = property.value as? String
         }
         guard let goodKey = key else {
             logger.error("Failed to get localization key")
@@ -120,13 +118,11 @@ extension IndexSet: Identifiable {
 
 extension Array {
     subscript(indicies: IndexSet) -> [Element] {
-        get {
-            var slice = [Element]()
-            for i in indicies {
-                slice.append(self[i])
-            }
-            return slice
+        var slice = [Element]()
+        for i in indicies {
+            slice.append(self[i])
         }
+        return slice
     }
 }
 
@@ -143,10 +139,10 @@ extension View {
 
 extension UTType {
     static let UTM = UTType(exportedAs: "com.utmapp.utm")
-    
+
     // SwiftUI BUG: exportedAs: "com.utmapp.utm" doesn't work on macOS and older iOS
     static let UTMextension = UTType(exportedAs: "utm")
-    
+
     static let appleLog = UTType(filenameExtension: "log")!
 
     static let ipsw = UTType(filenameExtension: "ipsw")!
@@ -164,20 +160,20 @@ extension Color {
         if hex.count != 7 { // The '#' included
             return nil
         }
-            
+
         let hexColor = String(hex.dropFirst())
-        
+
         let scanner = Scanner(string: hexColor)
         var hexNumber: UInt64 = 0
-        
+
         if !scanner.scanHexInt64(&hexNumber) {
             return nil
         }
-        
+
         let r = CGFloat((hexNumber & 0xff0000) >> 16) / 255
         let g = CGFloat((hexNumber & 0x00ff00) >> 8) / 255
         let b = CGFloat(hexNumber & 0x0000ff) / 255
-        
+
         self.init(.displayP3, red: r, green: g, blue: b, opacity: 1.0)
     }
 }
@@ -186,11 +182,11 @@ extension CGColor {
     var hexString: String? {
         hexString(for: .init(name: CGColorSpace.displayP3)!)
     }
-    
+
     var sRGBhexString: String? {
         hexString(for: .init(name: CGColorSpace.sRGB)!)
     }
-    
+
     private func hexString(for colorSpace: CGColorSpace) -> String? {
         guard let rgbColor = self.converted(to: colorSpace, intent: .defaultIntent, options: nil),
               let components = rgbColor.components else {
@@ -241,23 +237,23 @@ extension UIImage {
         if hex.count != 7 { // The '#' included
             return nil
         }
-            
+
         let hexColor = String(hex.dropFirst())
-        
+
         let scanner = Scanner(string: hexColor)
         var hexNumber: UInt64 = 0
-        
+
         if !scanner.scanHexInt64(&hexNumber) {
             return nil
         }
-        
+
         let r = CGFloat((hexNumber & 0xff0000) >> 16) / 255
         let g = CGFloat((hexNumber & 0x00ff00) >> 8) / 255
         let b = CGFloat(hexNumber & 0x0000ff) / 255
-        
+
         self.init(displayP3Red: r, green: g, blue: b, alpha: 1.0)
     }
-    
+
     var sRGBhexString: String? {
         cgColor.sRGBhexString
     }
@@ -271,21 +267,19 @@ typealias PlatformImage = UIImage
 #endif
 
 #if os(macOS)
-enum FakeKeyboardType : Int {
+enum FakeKeyboardType: Int {
     case asciiCapable
     case decimalPad
     case numberPad
 }
 
-struct EditButton {
-    
-}
+struct EditButton {}
 
 extension View {
     func keyboardType(_ type: FakeKeyboardType) -> some View {
         return self
     }
-    
+
     func navigationBarItems(trailing: EditButton) -> some View {
         return self
     }
@@ -306,7 +300,7 @@ extension NSImage {
 struct Setting<T> {
     private(set) var keyName: String
     private var defaultValue: T
-    
+
     var wrappedValue: T {
         get {
             let defaults = UserDefaults.standard
@@ -315,13 +309,13 @@ struct Setting<T> {
             }
             return value as! T
         }
-        
+
         set {
             let defaults = UserDefaults.standard
             defaults.set(newValue, forKey: keyName)
         }
     }
-    
+
     init(wrappedValue: T, _ keyName: String) {
         self.defaultValue = wrappedValue
         self.keyName = keyName
@@ -337,7 +331,7 @@ extension URL {
         return .withSecurityScope
         #endif
     }
-    
+
     private static var defaultResolutionOptions: BookmarkResolutionOptions {
         #if os(iOS) || os(visionOS)
         return []
@@ -345,7 +339,7 @@ extension URL {
         return .withSecurityScope
         #endif
     }
-    
+
     func persistentBookmarkData(isReadyOnly: Bool = false) throws -> Data {
         var options = Self.defaultCreationOptions
         #if os(macOS)
@@ -363,7 +357,7 @@ extension URL {
                                      includingResourceValuesForKeys: nil,
                                      relativeTo: nil)
     }
-    
+
     init(resolvingPersistentBookmarkData bookmark: Data) throws {
         var stale: Bool = false
         try self.init(resolvingBookmarkData: bookmark,

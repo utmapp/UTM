@@ -22,25 +22,25 @@ import Virtualization
 final class UTMAppleConfiguration: UTMConfiguration {
     /// Basic information and icon
     @Published var _information: UTMConfigurationInfo = .init()
-    
+
     @Published private var _system: UTMAppleConfigurationSystem = .init()
-    
+
     @Published private var _virtualization: UTMAppleConfigurationVirtualization = .init()
-    
+
     @Published private var _sharedDirectories: [UTMAppleConfigurationSharedDirectory] = []
-    
+
     @Published private var _displays: [UTMAppleConfigurationDisplay] = []
-    
+
     @Published private var _drives: [UTMAppleConfigurationDrive] = []
-    
+
     @Published private var _networks: [UTMAppleConfigurationNetwork] = [.init()]
-    
+
     @Published private var _serials: [UTMAppleConfigurationSerial] = []
-    
+
     var backend: UTMBackend {
         .apple
     }
-    
+
     enum CodingKeys: String, CodingKey {
         case information = "Information"
         case system = "System"
@@ -53,10 +53,10 @@ final class UTMAppleConfiguration: UTMConfiguration {
         case backend = "Backend"
         case configurationVersion = "ConfigurationVersion"
     }
-    
+
     init() {
     }
-    
+
     required init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         let backend = try values.decodeIfPresent(UTMBackend.self, forKey: .backend) ?? .unknown
@@ -79,7 +79,7 @@ final class UTMAppleConfiguration: UTMConfiguration {
         _networks = try values.decode([UTMAppleConfigurationNetwork].self, forKey: .networks)
         _serials = try values.decode([UTMAppleConfigurationSerial].self, forKey: .serials)
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(_information, forKey: .information)
@@ -129,83 +129,81 @@ extension UTMAppleConfigurationError: LocalizedError {
         get {
             _information
         }
-        
+
         set {
             _information = newValue
         }
     }
-    
+
     var system: UTMAppleConfigurationSystem {
         get {
             _system
         }
-        
+
         set {
             _system = newValue
         }
     }
-    
+
     var virtualization: UTMAppleConfigurationVirtualization {
         get {
             _virtualization
         }
-        
+
         set {
             _virtualization = newValue
         }
     }
-    
+
     var sharedDirectories: [UTMAppleConfigurationSharedDirectory] {
         get {
             _sharedDirectories
         }
-        
+
         set {
             _sharedDirectories = newValue
         }
     }
-    
+
     var sharedDirectoriesPublisher: Published<[UTMAppleConfigurationSharedDirectory]>.Publisher {
-        get {
-            $_sharedDirectories
-        }
+        $_sharedDirectories
     }
-    
+
     var displays: [UTMAppleConfigurationDisplay] {
         get {
             _displays
         }
-        
+
         set {
             _displays = newValue
         }
     }
-    
+
     var drives: [UTMAppleConfigurationDrive] {
         get {
             _drives
         }
-        
+
         set {
             _drives = newValue
         }
     }
-    
+
     var networks: [UTMAppleConfigurationNetwork] {
         get {
             _networks
         }
-        
+
         set {
             _networks = newValue
         }
     }
-    
+
     var serials: [UTMAppleConfigurationSerial] {
         get {
             _serials
         }
-        
+
         set {
             _serials = newValue
         }

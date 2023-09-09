@@ -23,13 +23,13 @@ struct UTMAppleConfigurationMacPlatform: Codable {
     var hardwareModel: Data
     var machineIdentifier: Data
     var auxiliaryStorageURL: URL?
-    
+
     private enum CodingKeys: String, CodingKey {
         case hardwareModel = "HardwareModel"
         case machineIdentifier = "MachineIdentifier"
         case auxiliaryStoragePath = "AuxiliaryStoragePath"
     }
-    
+
     init(from decoder: Decoder) throws {
         guard let dataURL = decoder.userInfo[.dataURL] as? URL else {
             throw UTMConfigurationError.invalidDataURL
@@ -41,28 +41,28 @@ struct UTMAppleConfigurationMacPlatform: Codable {
             auxiliaryStorageURL = dataURL.appendingPathComponent(auxiliaryStoragePath)
         }
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(hardwareModel, forKey: .hardwareModel)
         try container.encode(machineIdentifier, forKey: .machineIdentifier)
         try container.encodeIfPresent(auxiliaryStorageURL?.lastPathComponent, forKey: .auxiliaryStoragePath)
     }
-    
+
     #if arch(arm64)
     @available(macOS 12, *)
     init(newHardware: VZMacHardwareModel) {
         hardwareModel = newHardware.dataRepresentation
         machineIdentifier = VZMacMachineIdentifier().dataRepresentation
     }
-    
+
     @available(macOS 12, *)
     init(from config: VZMacPlatformConfiguration) {
         hardwareModel = config.hardwareModel.dataRepresentation
         machineIdentifier = config.machineIdentifier.dataRepresentation
         auxiliaryStorageURL = config.auxiliaryStorage?.url
     }
-    
+
     @available(macOS 12, *)
     func vzMacPlatform() -> VZMacPlatformConfiguration? {
         guard let vzHardwareModel = VZMacHardwareModel(dataRepresentation: hardwareModel) else {

@@ -22,14 +22,14 @@ struct Spinner: NSViewRepresentable {
     enum Size: RawRepresentable {
         case regular
         case large
-        
+
         var rawValue: NSControl.ControlSize {
             switch self {
             case .regular: return .regular
             case .large: return .large
             }
         }
-        
+
         init?(rawValue: NSControl.ControlSize) {
             switch rawValue {
             case .regular:
@@ -41,9 +41,9 @@ struct Spinner: NSViewRepresentable {
             }
         }
     }
-    
+
     let size: Size
-    
+
     func makeNSView(context: Context) -> NSProgressIndicator {
         let view = NSProgressIndicator()
         view.controlSize = size.rawValue
@@ -51,7 +51,7 @@ struct Spinner: NSViewRepresentable {
         view.startAnimation(self)
         return view
     }
-    
+
     func updateNSView(_ nsView: NSProgressIndicator, context: Context) {
     }
 }
@@ -60,14 +60,14 @@ struct Spinner: UIViewRepresentable {
     enum Size: RawRepresentable {
         case regular
         case large
-        
+
         var rawValue: UIActivityIndicatorView.Style {
             switch self {
             case .regular: return .medium
             case .large: return .large
             }
         }
-        
+
         init?(rawValue: UIActivityIndicatorView.Style) {
             switch rawValue {
             case .medium:
@@ -79,16 +79,16 @@ struct Spinner: UIViewRepresentable {
             }
         }
     }
-    
+
     let size: Size
-    
+
     func makeUIView(context: Context) -> UIActivityIndicatorView {
         let view = UIActivityIndicatorView(style: size.rawValue)
         view.color = .white
         view.startAnimating()
         return view
     }
-    
+
     func updateUIView(_ uiView: UIActivityIndicatorView, context: Context) {
     }
 }

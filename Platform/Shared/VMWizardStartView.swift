@@ -21,7 +21,7 @@ import Virtualization
 
 struct VMWizardStartView: View {
     @ObservedObject var wizardState: VMWizardState
-    
+
     var isVirtualizationSupported: Bool {
         #if os(macOS)
         VZVirtualMachine.isSupported && !processIsTranslated()
@@ -29,7 +29,7 @@ struct VMWizardStartView: View {
         jb_has_hypervisor()
         #endif
     }
-    
+
     var isEmulationSupported: Bool {
         #if WITH_QEMU_TCI
         true
@@ -37,7 +37,7 @@ struct VMWizardStartView: View {
         Main.jitAvailable
         #endif
     }
-    
+
     var body: some View {
         VMWizardContent("Start") {
             Section {
@@ -127,7 +127,7 @@ struct VMWizardStartView: View {
 
         }
     }
-    
+
     private func processIsTranslated() -> Bool {
         let key = "sysctl.proc_translated"
         var ret = Int32(0)
@@ -143,7 +143,7 @@ struct VMWizardStartView: View {
 
 struct VMWizardStartView_Previews: PreviewProvider {
     @StateObject static var wizardState = VMWizardState()
-    
+
     static var previews: some View {
         VMWizardStartView(wizardState: wizardState)
     }

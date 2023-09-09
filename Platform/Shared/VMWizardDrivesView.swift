@@ -18,7 +18,7 @@ import SwiftUI
 
 struct VMWizardDrivesView: View {
     @ObservedObject var wizardState: VMWizardState
-    
+
     var body: some View {
         VMWizardContent("Storage") {
             Section {
@@ -37,14 +37,13 @@ struct VMWizardDrivesView: View {
             } header: {
                 Text("Size")
             }
-            
         }
     }
 }
 
 struct VMWizardDrivesView_Previews: PreviewProvider {
     @StateObject static var wizardState = VMWizardState()
-    
+
     static var previews: some View {
         VMWizardDrivesView(wizardState: wizardState)
     }

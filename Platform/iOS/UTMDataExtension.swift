@@ -29,7 +29,7 @@ extension UTMData {
         let session = VMSessionState(for: wrapped as! UTMQemuVirtualMachine)
         session.start()
     }
-    
+
     func stop(vm: VMData) {
         guard let wrapped = vm.wrapped else {
             return
@@ -38,11 +38,11 @@ extension UTMData {
             wrapped.requestVmDeleteState()
         }
     }
-    
+
     func close(vm: VMData) {
         // do nothing
     }
-    
+
     func tryClickAtPoint(point: CGPoint, button: CSInputButton) {
         if let vc = vmVC as? VMDisplayMetalViewController, let input = vc.vmInput {
             input.sendMouseButton(button, pressed: true)
@@ -51,7 +51,7 @@ extension UTMData {
             }
         }
     }
-    
+
     func trySendTextSpice(_ text: String) {
         if let vc = vmVC as? VMDisplayMetalViewController {
             #if !os(visionOS) // FIXME: broken in visionOS

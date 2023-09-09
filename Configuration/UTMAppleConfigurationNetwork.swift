@@ -23,7 +23,7 @@ struct UTMAppleConfigurationNetwork: Codable, Identifiable {
     enum NetworkMode: String, CaseIterable, QEMUConstant {
         case shared = "Shared"
         case bridged = "Bridged"
-        
+
         var prettyValue: String {
             switch self {
             case .shared: return NSLocalizedString("Shared Network", comment: "UTMAppleConfigurationNetwork")
@@ -31,33 +31,33 @@ struct UTMAppleConfigurationNetwork: Codable, Identifiable {
             }
         }
     }
-    
+
     var mode: NetworkMode = .shared
-    
+
     /// Unique MAC address.
     var macAddress: String = VZMACAddress.randomLocallyAdministered().string
-    
+
     /// In bridged mode this is the physical interface to bridge.
     var bridgeInterface: String?
-    
+
     let id = UUID()
-    
+
     enum CodingKeys: String, CodingKey {
         case mode = "Mode"
         case macAddress = "MacAddress"
         case bridgeInterface = "BridgeInterface"
     }
-    
+
     init() {
     }
-    
+
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         mode = try values.decode(NetworkMode.self, forKey: .mode)
         macAddress = try values.decode(String.self, forKey: .macAddress)
         bridgeInterface = try values.decodeIfPresent(String.self, forKey: .bridgeInterface)
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(mode, forKey: .mode)
@@ -66,7 +66,7 @@ struct UTMAppleConfigurationNetwork: Codable, Identifiable {
             try container.encodeIfPresent(bridgeInterface, forKey: .bridgeInterface)
         }
     }
-    
+
     init?(from config: VZNetworkDeviceConfiguration) {
         guard let virtioConfig = config as? VZVirtioNetworkDeviceConfiguration else {
             return nil
@@ -75,13 +75,13 @@ struct UTMAppleConfigurationNetwork: Codable, Identifiable {
         if let attachment = virtioConfig.attachment as? VZBridgedNetworkDeviceAttachment {
             mode = .bridged
             bridgeInterface = attachment.interface.identifier
-        } else if let _ = virtioConfig.attachment as? VZNATNetworkDeviceAttachment {
+        } else if virtioConfig.attachment as? VZNATNetworkDeviceAttachment != nil {
             mode = .shared
         } else {
             return nil
         }
     }
-    
+
     func vzNetworking() -> VZNetworkDeviceConfiguration? {
         let config = VZVirtioNetworkDeviceConfiguration()
         guard let macAddress = VZMACAddress(string: macAddress) else {
@@ -95,11 +95,9 @@ struct UTMAppleConfigurationNetwork: Codable, Identifiable {
         case .bridged:
             var found: VZBridgedNetworkInterface?
             if let bridgeInterface = bridgeInterface {
-                for interface in VZBridgedNetworkInterface.networkInterfaces {
-                    if interface.identifier == bridgeInterface {
-                        found = interface
-                        break
-                    }
+                for interface in VZBridgedNetworkInterface.networkInterfaces where interface.identifier == bridgeInterface {
+                    found = interface
+                    break
                 }
             } else {
                 // default to first interface if unspecified

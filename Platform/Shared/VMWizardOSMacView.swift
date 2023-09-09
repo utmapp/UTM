@@ -49,7 +49,7 @@ struct VMWizardOSMacView: View {
         .fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.ipsw], onCompletion: processIpsw)
         .onDrop(of: [.fileURL], delegate: self)
     }
-    
+
     private func processIpsw(_ result: Result<URL, Error>) {
         wizardState.busyWorkAsync {
             #if arch(arm64)
@@ -120,7 +120,7 @@ extension VMWizardOSMacView: DropDelegate {
 @available(macOS 12, *)
 struct VMWizardOSMacView_Previews: PreviewProvider {
     @StateObject static var wizardState = VMWizardState()
-    
+
     static var previews: some View {
         VMWizardOSMacView(wizardState: wizardState)
     }

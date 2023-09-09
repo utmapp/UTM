@@ -76,12 +76,12 @@ extension UTMConfigurationError: LocalizedError {
 private final class UTMConfigurationStub: Decodable {
     var backend: UTMBackend
     var configurationVersion: Int
-    
+
     enum CodingKeys: String, CodingKey {
         case backend = "Backend"
         case configurationVersion = "ConfigurationVersion"
     }
-    
+
     required init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         backend = try values.decodeIfPresent(UTMBackend.self, forKey: .backend) ?? .unknown
@@ -91,7 +91,7 @@ private final class UTMConfigurationStub: Decodable {
 
 extension UTMConfiguration {
     static var dataDirectoryName: String { "Data" }
-    
+
     static func load(from packageURL: URL) throws -> any UTMConfiguration {
         let scopedAccess = packageURL.startAccessingSecurityScopedResource()
         defer {

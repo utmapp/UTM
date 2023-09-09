@@ -20,7 +20,7 @@ struct VMWizardOSWindowsView: View {
     @ObservedObject var wizardState: VMWizardState
     @State private var isFileImporterPresented: Bool = false
     @State private var useVhdx: Bool = false
-    
+
     var body: some View {
         VMWizardContent("Windows") {
             Section {
@@ -35,7 +35,7 @@ struct VMWizardOSWindowsView: View {
                             wizardState.isGuestToolsInstallRequested = false
                         }
                     }
-                
+
                 if wizardState.isWindows10OrHigher {
                     Toggle("Import VHDX Image", isOn: $useVhdx)
                     #if os(macOS)
@@ -77,14 +77,14 @@ struct VMWizardOSWindowsView: View {
                     }
                 }
             }
-            
+
             Section {
                 if useVhdx {
                     FileBrowseField(url: $wizardState.windowsBootVhdx, isFileImporterPresented: $isFileImporterPresented, hasClearButton: false)
                 } else {
                     FileBrowseField(url: $wizardState.bootImageURL, isFileImporterPresented: $isFileImporterPresented, hasClearButton: false)
                 }
-                
+
                 if wizardState.isBusy {
                     Spinner(size: .large)
                 }
@@ -108,7 +108,7 @@ struct VMWizardOSWindowsView: View {
                         .disabled(!wizardState.systemBootUefi)
                 }
             }
-            
+
             // Disabled on iOS 14 due to a SwiftUI layout bug
             // Disabled for non-Windows 10 installs due to autounattend version
             if #available(iOS 15, *), wizardState.isWindows10OrHigher {
@@ -119,7 +119,7 @@ struct VMWizardOSWindowsView: View {
         }
         .fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.data], onCompletion: processImage)
     }
-    
+
     private func processImage(_ result: Result<URL, Error>) {
         wizardState.busyWorkAsync {
             let url = try result.get()
@@ -140,7 +140,7 @@ struct VMWizardOSWindowsView: View {
 
 struct VMWizardOSWindowsView_Previews: PreviewProvider {
     @StateObject static var wizardState = VMWizardState()
-    
+
     static var previews: some View {
         VMWizardOSWindowsView(wizardState: wizardState)
     }

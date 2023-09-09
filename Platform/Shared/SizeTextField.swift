@@ -19,15 +19,15 @@ import SwiftUI
 struct SizeTextField: View {
     @Binding var sizeMib: Int
     @State private var isGiB: Bool = true
-    
+
     private let mibToGib = 1024
     let minSizeMib: Int
-    
+
     init(_ sizeMib: Binding<Int>, minSizeMib: Int = 1) {
         _sizeMib = sizeMib
         self.minSizeMib = minSizeMib
     }
-    
+
     var body: some View {
         HStack {
             NumberTextField("Size", number: Binding<Int>(get: {
@@ -48,7 +48,7 @@ struct SizeTextField: View {
             }).buttonStyle(.plain)
         }
     }
-    
+
     private func validateSize(editing: Bool) {
         guard !editing else {
             return
@@ -57,7 +57,7 @@ struct SizeTextField: View {
             sizeMib = minSizeMib
         }
     }
-    
+
     private func convertToMib(fromSize size: Int) -> Int {
         if isGiB {
             return size * mibToGib
@@ -65,7 +65,7 @@ struct SizeTextField: View {
             return size
         }
     }
-    
+
     private func convertToDisplay(fromSizeMib sizeMib: Int) -> Int {
         if isGiB {
             return sizeMib / mibToGib

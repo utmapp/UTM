@@ -19,7 +19,7 @@ import SwiftUI
 struct VMWizardOSOtherView: View {
     @ObservedObject var wizardState: VMWizardState
     @State private var isFileImporterPresented: Bool = false
-    
+
     var body: some View {
         VMWizardContent("Other") {
             if !wizardState.isSkipBootImage {
@@ -41,7 +41,7 @@ struct VMWizardOSOtherView: View {
         }
         .fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.data], onCompletion: processImage)
     }
-    
+
     private func processImage(_ result: Result<URL, Error>) {
         wizardState.busyWorkAsync {
             let url = try result.get()
@@ -54,7 +54,7 @@ struct VMWizardOSOtherView: View {
 
 struct VMWizardOSOtherView_Previews: PreviewProvider {
     @StateObject static var wizardState = VMWizardState()
-    
+
     static var previews: some View {
         VMWizardOSOtherView(wizardState: wizardState)
     }

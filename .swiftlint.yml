@@ -2,6 +2,8 @@ disabled_rules:
   - identifier_name
   - type_name
   - file_length
+  - type_body_length
+  - line_length
 
 excluded:
   - .build

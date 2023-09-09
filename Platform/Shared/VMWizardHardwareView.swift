@@ -21,7 +21,7 @@ import Virtualization
 
 struct VMWizardHardwareView: View {
     @ObservedObject var wizardState: VMWizardState
-    
+
     var minCores: Int {
         #if canImport(Virtualization)
         VZVirtualMachineConfiguration.minimumAllowedCPUCount
@@ -29,7 +29,7 @@ struct VMWizardHardwareView: View {
         1
         #endif
     }
-    
+
     var maxCores: Int {
         #if canImport(Virtualization)
         VZVirtualMachineConfiguration.maximumAllowedCPUCount
@@ -37,7 +37,7 @@ struct VMWizardHardwareView: View {
         Int(sysctlIntRead("hw.ncpu"))
         #endif
     }
-    
+
     var minMemoryMib: Int {
         #if canImport(Virtualization)
         Int(VZVirtualMachineConfiguration.minimumAllowedMemorySize / UInt64(wizardState.bytesInMib))
@@ -45,7 +45,7 @@ struct VMWizardHardwareView: View {
         8
         #endif
     }
-    
+
     var maxMemoryMib: Int {
         #if canImport(Virtualization)
         Int(VZVirtualMachineConfiguration.maximumAllowedMemorySize / UInt64(wizardState.bytesInMib))
@@ -53,7 +53,7 @@ struct VMWizardHardwareView: View {
         sysctlIntRead("hw.memsize")
         #endif
     }
-    
+
     var body: some View {
         VMWizardContent("Hardware") {
             if !wizardState.useVirtualization {
@@ -65,7 +65,7 @@ struct VMWizardHardwareView: View {
                 } header: {
                     Text("Architecture")
                 }
-                
+
                 Section {
                     VMConfigConstantPicker(selection: $wizardState.systemTarget, type: wizardState.systemArchitecture.targetType)
                 } header: {
@@ -84,7 +84,7 @@ struct VMWizardHardwareView: View {
             } header: {
                 Text("Memory")
             }
-            
+
             Section {
                 HStack {
                     Stepper(value: $wizardState.systemCpuCount, in: minCores...maxCores) {
@@ -106,14 +106,11 @@ struct VMWizardHardwareView: View {
             } header: {
                 Text("CPU")
             }
-            
-            
-            
+
             if !wizardState.useAppleVirtualization && wizardState.operatingSystem == .Linux {
                 DetailedSection("Hardware OpenGL Acceleration", description: "There are known issues in some newer Linux drivers including black screen, broken compositing, and apps failing to render.") {
                     Toggle("Enable hardware OpenGL acceleration", isOn: $wizardState.isGLEnabled)
                 }
-                
             }
         }
         .textFieldStyle(.roundedBorder)
@@ -130,7 +127,7 @@ struct VMWizardHardwareView: View {
             }
         }
     }
-    
+
     private func sysctlIntRead(_ name: String) -> Int {
         var value: Int = 0
         var size = MemoryLayout<UInt64>.size
@@ -141,7 +138,7 @@ struct VMWizardHardwareView: View {
 
 struct VMWizardHardwareView_Previews: PreviewProvider {
     @StateObject static var wizardState = VMWizardState()
-    
+
     static var previews: some View {
         VMWizardHardwareView(wizardState: wizardState)
     }

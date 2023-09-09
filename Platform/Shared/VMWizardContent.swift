@@ -19,12 +19,12 @@ import SwiftUI
 struct VMWizardContent<Content>: View where Content: View {
     let titleKey: LocalizedStringKey
     let content: Content
-    
+
     init(_ titleKey: LocalizedStringKey, @ViewBuilder content: () -> Content) {
         self.titleKey = titleKey
         self.content = content()
     }
-    
+
     var body: some View {
         #if os(macOS)
         Text(titleKey)

@@ -23,7 +23,7 @@ struct VMWizardOSLinuxView: View {
         case rootImage
         case bootImage
     }
-    
+
     @ObservedObject var wizardState: VMWizardState
     @State private var isFileImporterPresented: Bool = false
     @State private var selectImage: SelectImage = .kernel
@@ -35,7 +35,7 @@ struct VMWizardOSLinuxView: View {
             return false
         }
     }
-    
+
     var body: some View {
         VMWizardContent("Linux") {
 #if os(macOS)
@@ -45,7 +45,7 @@ struct VMWizardOSLinuxView: View {
                 }
             }
 #endif
-            
+
             Section {
                 Toggle("Boot from kernel image", isOn: $wizardState.useLinuxKernel)
                     .help("If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO.")
@@ -64,7 +64,7 @@ struct VMWizardOSLinuxView: View {
             } header: {
                 Text("Boot Image Type")
             }
-            
+
             #if arch(arm64)
             if #available(macOS 13, *), wizardState.useAppleVirtualization {
                 Section {
@@ -77,9 +77,9 @@ struct VMWizardOSLinuxView: View {
                 }
             }
             #endif
-            
+
             if wizardState.useLinuxKernel {
-                
+
                 Section {
                     FileBrowseField(url: $wizardState.linuxKernelURL, isFileImporterPresented: $isFileImporterPresented, hasClearButton: false) {
                         selectImage = .kernel
@@ -91,7 +91,7 @@ struct VMWizardOSLinuxView: View {
                         Text("Linux kernel (required)")
                     }
                 }
-                
+
                 Section {
                     FileBrowseField(url: $wizardState.linuxInitialRamdiskURL, isFileImporterPresented: $isFileImporterPresented) {
                         selectImage = .initialRamdisk
@@ -103,7 +103,7 @@ struct VMWizardOSLinuxView: View {
                         Text("Linux initial ramdisk (optional)")
                     }
                 }
-                
+
                 Section {
                     FileBrowseField(url: $wizardState.linuxRootImageURL, isFileImporterPresented: $isFileImporterPresented) {
                         selectImage = .rootImage
@@ -119,7 +119,7 @@ struct VMWizardOSLinuxView: View {
                 } header: {
                     Text("Boot ISO Image (optional)")
                 }
-                
+
                 Section {
                     TextField("Boot Arguments", text: $wizardState.linuxBootArguments)
                 } header: {
@@ -137,12 +137,10 @@ struct VMWizardOSLinuxView: View {
             if wizardState.isBusy {
                 Spinner(size: .large)
             }
-            
-            
         }
         .fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.data], onCompletion: processImage)
     }
-    
+
     private func processImage(_ result: Result<URL, Error>) {
         wizardState.busyWorkAsync {
             let url = try result.get()
@@ -165,7 +163,7 @@ struct VMWizardOSLinuxView: View {
 
 struct VMWizardOSLinuxView_Previews: PreviewProvider {
     @StateObject static var wizardState = VMWizardState()
-    
+
     static var previews: some View {
         VMWizardOSLinuxView(wizardState: wizardState)
     }

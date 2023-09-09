@@ -20,44 +20,44 @@ import Virtualization
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
 @available(macOS 11, *)
 struct UTMAppleConfigurationDisplay: Codable, Identifiable {
-    
+
     var widthInPixels: Int = 1920
-    
+
     var heightInPixels: Int = 1200
-    
+
     var pixelsPerInch: Int = 80
-    
+
     let id = UUID()
-    
+
     enum CodingKeys: String, CodingKey {
         case widthInPixels = "WidthPixels"
         case heightInPixels = "HeightPixels"
         case pixelsPerInch = "PixelsPerInch"
     }
-    
+
     init() {
     }
-    
+
     init(width: Int, height: Int, ppi: Int = 80) {
         widthInPixels = width
         heightInPixels = height
         pixelsPerInch = ppi
     }
-    
+
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         widthInPixels = try values.decode(Int.self, forKey: .widthInPixels)
         heightInPixels = try values.decode(Int.self, forKey: .heightInPixels)
         pixelsPerInch = try values.decode(Int.self, forKey: .pixelsPerInch)
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(widthInPixels, forKey: .widthInPixels)
         try container.encode(heightInPixels, forKey: .heightInPixels)
         try container.encode(pixelsPerInch, forKey: .pixelsPerInch)
     }
-    
+
     #if arch(arm64)
     @available(macOS 12, *)
     init(from config: VZMacGraphicsDisplayConfiguration) {
@@ -65,7 +65,7 @@ struct UTMAppleConfigurationDisplay: Codable, Identifiable {
         heightInPixels = config.heightInPixels
         pixelsPerInch = config.pixelsPerInch
     }
-    
+
     @available(macOS 12, *)
     func vzMacDisplay() -> VZMacGraphicsDisplayConfiguration {
         VZMacGraphicsDisplayConfiguration(widthInPixels: widthInPixels,
@@ -73,7 +73,7 @@ struct UTMAppleConfigurationDisplay: Codable, Identifiable {
                                           pixelsPerInch: pixelsPerInch)
     }
     #endif
-    
+
     @available(macOS 13, *)
     func vzVirtioDisplay() -> VZVirtioGraphicsScanoutConfiguration {
         VZVirtioGraphicsScanoutConfiguration(widthInPixels: widthInPixels,

@@ -24,14 +24,14 @@ struct VMToolbarView: View {
     @State private var isIdle: Bool = false
     @State private var dragPosition: CGPoint = .zero
     @State private var shortIdleTask: DispatchWorkItem?
-    
+
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.verticalSizeClass) private var verticalSizeClass
     @EnvironmentObject private var session: VMSessionState
     @StateObject private var longIdleTimeout = LongIdleTimeout()
-    
+
     @Binding var state: VMWindowState
-    
+
     private var spacing: CGFloat {
         let direction: CGFloat
         let distance: CGFloat
@@ -47,7 +47,7 @@ struct VMToolbarView: View {
         }
         return direction * distance
     }
-    
+
     private var nameOfHideIcon: String {
         if location == .topLeft || location == .bottomLeft {
             return "chevron.right"
@@ -55,7 +55,7 @@ struct VMToolbarView: View {
             return "chevron.left"
         }
     }
-    
+
     private var nameOfShowIcon: String {
         if location == .topLeft || location == .bottomLeft {
             return "chevron.left"
@@ -63,7 +63,7 @@ struct VMToolbarView: View {
             return "chevron.right"
         }
     }
-    
+
     private var toolbarToggleOpacity: Double {
         if state.device != nil && !state.isBusy && state.isRunning && isCollapsed && !isMoving {
             if !longIdleTimeout.isUserInteracting {
@@ -77,7 +77,7 @@ struct VMToolbarView: View {
             return 1
         }
     }
-    
+
     var body: some View {
         GeometryReader { geometry in
             Group {
@@ -101,7 +101,7 @@ struct VMToolbarView: View {
                     Label("Restart", systemImage: "restart")
                 }.offset(offset(for: 6))
                 Button {
-                    if case .serial(_, _) = state.device {
+                    if case .serial = state.device {
                         let template = session.qemuConfig.serials[state.device!.configIndex].terminal?.resizeCommand
                         state.toggleDisplayResize(command: template)
                     } else {
@@ -178,7 +178,7 @@ struct VMToolbarView: View {
             }
         }
     }
-    
+
     private func withOptionalAnimation<Result>(_ animation: Animation? = .default, _ body: () throws -> Result) rethrows -> Result {
         if UIAccessibility.isReduceMotionEnabled {
             return try body()
@@ -186,7 +186,7 @@ struct VMToolbarView: View {
             return try withAnimation(animation, body)
         }
     }
-    
+
     private func position(for geometry: GeometryProxy) -> CGPoint {
         let yoffset: CGFloat = 48
         var xoffset: CGFloat = 48
@@ -207,7 +207,7 @@ struct VMToolbarView: View {
             return CGPoint(x: xoffset, y: geometry.size.height - yoffset)
         }
     }
-    
+
     private func closestLocation(to point: CGPoint, for geometry: GeometryProxy) -> ToolbarLocation {
         if point.x < geometry.size.width/2 && point.y < geometry.size.height/2 {
             return .topLeft
@@ -219,7 +219,7 @@ struct VMToolbarView: View {
             return .topRight
         }
     }
-    
+
     private func offset(for index: Int) -> CGSize {
         var sub = 0
         if !session.vm.hasUsbRedirection && index >= 4 {
@@ -228,7 +228,7 @@ struct VMToolbarView: View {
         let x = isCollapsed ? 0 : -CGFloat(index-sub)*spacing
         return CGSize(width: x, height: 0)
     }
-    
+
     private func resetIdle() {
         if let task = shortIdleTask {
             task.cancel()
@@ -254,10 +254,10 @@ enum ToolbarLocation: Int {
 protocol ToolbarButtonBaseStyle<Label, Content> {
     associatedtype Label: View
     associatedtype Content: View
-    
+
     var horizontalSizeClass: UserInterfaceSizeClass? { get }
     var verticalSizeClass: UserInterfaceSizeClass? { get }
-    
+
     func makeBodyBase(label: Label, isPressed: Bool) -> Content
 }
 
@@ -265,7 +265,7 @@ extension ToolbarButtonBaseStyle {
     private var size: CGFloat {
         (horizontalSizeClass == .compact || verticalSizeClass == .compact) ? 32 : 48
     }
-    
+
     func makeBodyBase(label: Label, isPressed: Bool) -> some View {
         ZStack {
             Circle()
@@ -283,16 +283,15 @@ extension ToolbarButtonBaseStyle {
     }
 }
 
-
 struct ToolbarButtonStyle: ButtonStyle, ToolbarButtonBaseStyle {
     typealias Label = Configuration.Label
-    
+
     @Environment(\.horizontalSizeClass) private var horizontalSizeClassEnvironment
     @Environment(\.verticalSizeClass) private var verticalSizeClassEnvironment
-    
+
     var horizontalSizeClass: UserInterfaceSizeClass?
     var verticalSizeClass: UserInterfaceSizeClass?
-    
+
     init(horizontalSizeClass: UserInterfaceSizeClass? = nil, verticalSizeClass: UserInterfaceSizeClass? = nil) {
         if horizontalSizeClass != nil {
             self.horizontalSizeClass = horizontalSizeClass
@@ -313,10 +312,10 @@ struct ToolbarButtonStyle: ButtonStyle, ToolbarButtonBaseStyle {
 
 struct ToolbarMenuStyle: MenuStyle, ToolbarButtonBaseStyle {
     typealias Label = Menu<Configuration.Label, Configuration.Content>
-    
+
     @Environment(\.horizontalSizeClass) internal var horizontalSizeClass
     @Environment(\.verticalSizeClass) internal var verticalSizeClass
-    
+
     func makeBody(configuration: Configuration) -> some View {
         return makeBodyBase(label: Menu(configuration), isPressed: false)
     }
@@ -327,7 +326,7 @@ struct Shake: GeometryEffect {
     var amount: CGFloat = 8
     var shakesPerUnit = 3
     var animatableData: CGFloat
-    
+
     init(shake: Bool) {
         animatableData = shake ? 1.0 : 0.0
     }
@@ -343,8 +342,8 @@ extension ButtonStyle where Self == ToolbarButtonStyle {
     static var toolbar: ToolbarButtonStyle {
         ToolbarButtonStyle()
     }
-    
-    // this is needed to workaround a SwiftUI bug on < iOS 15
+
+    // This is needed to workaround a SwiftUI bug on < iOS 15
     static func toolbar(horizontalSizeClass: UserInterfaceSizeClass?, verticalSizeClass: UserInterfaceSizeClass?) -> ToolbarButtonStyle {
         ToolbarButtonStyle(horizontalSizeClass: horizontalSizeClass, verticalSizeClass: verticalSizeClass)
     }
@@ -358,9 +357,9 @@ extension MenuStyle where Self == ToolbarMenuStyle {
 
 @MainActor private class LongIdleTimeout: ObservableObject {
     private var longIdleTask: DispatchWorkItem?
-    
+
     @Published var isUserInteracting: Bool = true
-    
+
     private func setIsUserInteracting(_ value: Bool) {
         if !UIAccessibility.isReduceMotionEnabled {
             withAnimation {
@@ -370,7 +369,7 @@ extension MenuStyle where Self == ToolbarMenuStyle {
             self.isUserInteracting = value
         }
     }
-    
+
     func assertUserInteraction() {
         if let task = longIdleTask {
             task.cancel()
@@ -386,7 +385,7 @@ extension MenuStyle where Self == ToolbarMenuStyle {
 
 struct VMToolbarView_Previews: PreviewProvider {
     @State static var state = VMWindowState()
-    
+
     static var previews: some View {
         VMToolbarView(state: $state)
     }

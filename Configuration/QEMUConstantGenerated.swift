@@ -10272,5 +10272,4 @@ extension QEMUArchitecture {
         case .xtensaeb: return QEMUSerialDevice_xtensaeb.self
         }
     }
-
 }

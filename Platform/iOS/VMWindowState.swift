@@ -21,55 +21,55 @@ struct VMWindowState: Identifiable {
     enum Device: Identifiable, Hashable {
         case display(CSDisplay, Int)
         case serial(CSPort, Int)
-        
+
         var configIndex: Int {
             switch self {
             case .display(_, let index): return index
             case .serial(_, let index): return index
             }
         }
-        
+
         var id: Self {
             self
         }
     }
-    
+
     let id = UUID()
-    
+
     var device: Device?
-    
+
     private var shouldViewportChange: Bool {
         !(displayScale == 1.0 && displayOrigin == .zero)
     }
-    
+
     var displayScale: CGFloat = 1.0 {
         didSet {
             isViewportChanged = shouldViewportChange
         }
     }
-    
+
     var displayOrigin: CGPoint = CGPoint(x: 0, y: 0) {
         didSet {
             isViewportChanged = shouldViewportChange
         }
     }
-    
+
     var displayViewSize: CGSize = .zero
-    
+
     var isDisplayZoomLocked: Bool = false
-    
+
     var isKeyboardRequested: Bool = false
-    
+
     var isKeyboardShown: Bool = false
-    
+
     var isViewportChanged: Bool = false
-    
+
     var isUserInteracting: Bool = false
-    
+
     var isBusy: Bool = false
-    
+
     var isRunning: Bool = false
-    
+
     var alert: Alert?
 }
 
@@ -83,14 +83,14 @@ extension VMWindowState {
             case .terminateApp: return 1
             case .restart: return 2
             #if !WITH_QEMU_TCI
-            case .deviceConnected(_): return 3
+            case .deviceConnected: return 3
             #endif
-            case .nonfatalError(_): return 4
-            case .fatalError(_): return 5
+            case .nonfatalError: return 4
+            case .fatalError: return 5
             case .memoryWarning: return 6
             }
         }
-        
+
         case powerDown
         case terminateApp
         case restart
@@ -109,7 +109,7 @@ extension VMWindowState {
     private var kVMDefaultResizeCmd: String {
         "stty cols $COLS rows $ROWS\\n"
     }
-    
+
     mutating func resizeDisplayToFit(_ display: CSDisplay, size: CGSize = .zero) {
         let viewSize = displayViewSize
         let displaySize = size == .zero ? display.displaySize : size
@@ -119,13 +119,13 @@ extension VMWindowState {
         displayScale = viewportScale
         displayOrigin = .zero
     }
-    
+
     private mutating func resetDisplay(_ display: CSDisplay) {
         // persist this change in viewState
         displayScale = 1.0
         displayOrigin = .zero
     }
-    
+
     private mutating func resetConsole(_ serial: CSPort, command: String? = nil) {
         let cols = Int(displayViewSize.width)
         let rows = Int(displayViewSize.height)
@@ -136,7 +136,7 @@ extension VMWindowState {
             .replacingOccurrences(of: "\\n", with: "\n")
         serial.write(cmd.data(using: .nonLossyASCII)!)
     }
-    
+
     mutating func toggleDisplayResize(command: String? = nil) {
         if case let .display(display, _) = device {
             if isViewportChanged {
@@ -170,7 +170,7 @@ extension VMWindowState {
         window.isKeyboardVisible = isKeyboardShown
         registryEntry.windowSettings[id] = window
     }
-    
+
     mutating func restoreWindow(from registryEntry: UTMRegistryEntry, device: Device?) {
         guard case let .display(_, id) = device else {
             return

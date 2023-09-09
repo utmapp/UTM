@@ -18,7 +18,6 @@ import SwiftUI
 
 @available(macOS 11, *)
 struct SettingsView: View {
-    
     var body: some View {
         TabView {
             ApplicationSettingsView().padding()
@@ -47,7 +46,7 @@ struct ApplicationSettingsView: View {
     @AppStorage("ShowMenuIcon") var isMenuIconShown = false
     @AppStorage("PreventIdleSleep") var isPreventIdleSleep = false
     @AppStorage("NoQuitConfirmation") var isNoQuitConfirmation = false
-    
+
     var body: some View {
         Form {
             Toggle(isOn: $isKeepRunningAfterLastWindowClosed, label: {
@@ -81,7 +80,7 @@ struct DisplaySettingsView: View {
     @AppStorage("NoSaveScreenshot") var isNoSaveScreenshot = false
     @AppStorage("QEMURendererBackend") var qemuRendererBackend: UTMQEMURendererBackend = .qemuRendererBackendDefault
     @AppStorage("QEMURendererFPSLimit") var qemuRendererFpsLimit: Int = 0
-    
+
     var body: some View {
         Form {
             Section(header: Text("Display")) {
@@ -92,7 +91,7 @@ struct DisplaySettingsView: View {
                     Text("Do not save VM screenshot to disk")
                 }.help("If enabled, any existing screenshot will be deleted the next time the VM is started.")
             }
-            
+
             Section(header: Text("QEMU Graphics Acceleration")) {
                 Picker("Renderer Backend", selection: $qemuRendererBackend) {
                     Text("Default").tag(UTMQEMURendererBackend.qemuRendererBackendDefault)
@@ -113,7 +112,7 @@ struct DisplaySettingsView: View {
 
 struct SoundSettingsView: View {
     @AppStorage("QEMUSoundBackend") var qemuSoundBackend: UTMQEMUSoundBackend = .qemuSoundBackendDefault
-    
+
     var body: some View {
         Form {
             Section(header: Text("QEMU Sound")) {
@@ -136,7 +135,7 @@ struct InputSettingsView: View {
     @AppStorage("IsNumLockForced") var isNumLockForced = false
     @AppStorage("InvertScroll") var isInvertScroll = false
     @AppStorage("NoUsbPrompt") var isNoUsbPrompt = false
-    
+
     var body: some View {
         Form {
             Section(header: Text("Mouse/Keyboard")) {
@@ -144,13 +143,13 @@ struct InputSettingsView: View {
                     Text("Capture input automatically when entering full screen")
                 }.help("If enabled, input capture will toggle automatically when entering and exiting full screen mode.")
             }
-            
+
             Section(header: Text("Console")) {
                 Toggle(isOn: $isOptionAsMetaKey, label: {
                     Text("Option (⌥) is Meta key")
                 }).help("If enabled, Option will be mapped to the Meta key which can be useful for emacs. Otherwise, option will work as the system intended (such as for entering international text).")
             }
-            
+
             Section(header: Text("QEMU Pointer")) {
                 Toggle(isOn: $isCtrlRightClick, label: {
                     Text("Hold Control (⌃) for right click")
@@ -159,7 +158,7 @@ struct InputSettingsView: View {
                     Text("Invert scrolling")
                 }).help("If enabled, scroll wheel input will be inverted.")
             }
-            
+
             Section(header: Text("QEMU Keyboard")) {
                 Toggle(isOn: $isAlternativeCaptureKey, label: {
                     Text("Use Command+Option (⌘+⌥) for input capture/release")
@@ -171,7 +170,7 @@ struct InputSettingsView: View {
                     Text("Num Lock is forced on")
                 }).help("If enabled, num lock will always be on to the guest. Note this may make your keyboard's num lock indicator out of sync.")
             }
-            
+
             Section(header: Text("QEMU USB")) {
                 Toggle(isOn: $isNoUsbPrompt, label: {
                     Text("Do not show prompt when USB device is plugged in")

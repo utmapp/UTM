@@ -19,7 +19,7 @@ import SwiftUI
 struct UTMApp: App {
     @State var data = UTMData()
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate: AppDelegate
-    
+
     @ViewBuilder
     var homeWindow: some View {
         ContentView().environmentObject(data)
@@ -33,7 +33,7 @@ struct UTMApp: App {
                 }
             }
     }
-    
+
     @SceneBuilder
     var oldBody: some Scene {
         WindowGroup {
@@ -59,7 +59,7 @@ struct UTMApp: App {
         }
         UTMMenuBarExtraScene(data: data)
     }
-    
+
     // HACK: SwiftUI doesn't provide if-statement support in SceneBuilder
     var body: some Scene {
         if #available(macOS 13, *) {

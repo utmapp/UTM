@@ -22,11 +22,11 @@ struct VMWindowView: View {
     @State private var state = VMWindowState()
     @EnvironmentObject private var session: VMSessionState
     @Environment(\.scenePhase) private var scenePhase
-    
+
     private let keyboardDidShowNotification = NotificationCenter.default.publisher(for: UIResponder.keyboardDidShowNotification)
     private let keyboardDidHideNotification = NotificationCenter.default.publisher(for: UIResponder.keyboardDidHideNotification)
     private let didReceiveMemoryWarningNotification = NotificationCenter.default.publisher(for: UIApplication.didReceiveMemoryWarningNotification)
-    
+
     private func withOptionalAnimation<Result>(_ animation: Animation? = .default, _ body: () throws -> Result) rethrows -> Result {
         if UIAccessibility.isReduceMotionEnabled {
             return try body()
@@ -34,19 +34,19 @@ struct VMWindowView: View {
             return try withAnimation(animation, body)
         }
     }
-    
+
     var body: some View {
         ZStack {
             ZStack {
                 if let device = state.device {
                     switch device {
-                    case .display(_, _):
+                    case .display:
                         VMDisplayHostedView(vm: session.vm, device: device, state: $state)
-                    case .serial(_, _):
+                    case .serial:
                         VMDisplayHostedView(vm: session.vm, device: device, state: $state)
                     }
                 } else if !state.isBusy && state.isRunning {
-                    // headless
+                    // Headless
                     HeadlessView()
                 }
                 if state.isBusy || !state.isRunning {
@@ -117,7 +117,7 @@ struct VMWindowView: View {
             #endif
             case .nonfatalError(let message), .fatalError(let message):
                 return Alert(title: Text(message), dismissButton: .cancel(Text("OK")) {
-                    if case .fatalError(_) = type {
+                    if case .fatalError = type {
                         session.stop()
                     } else {
                         session.nonfatalError = nil
@@ -202,7 +202,7 @@ struct VMWindowView: View {
             }
         }
     }
-    
+
     private func vmStateUpdated(from oldState: UTMVirtualMachineState?, to vmState: UTMVirtualMachineState) {
         if oldState == .started {
             saveWindow()
@@ -260,7 +260,7 @@ private struct HeadlessView: View {
 
 #if !os(visionOS)
 /// Stub for non-Vision platforms
-fileprivate struct VMToolbarOrnamentModifier: ViewModifier {
+private struct VMToolbarOrnamentModifier: ViewModifier {
     @Binding var state: VMWindowState
     func body(content: Content) -> some View {
         content

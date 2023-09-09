@@ -21,26 +21,26 @@ import Virtualization
 @available(macOS 11, *)
 struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
     private let bytesInMib = 1048576
-    
+
     var sizeMib: Int = 0
     var isReadOnly: Bool
     var isExternal: Bool
     var imageURL: URL?
     var imageName: String?
-    
+
     private(set) var id = UUID().uuidString
-    
+
     var isRawImage: Bool {
         true // always true for Apple VMs
     }
-    
+
     private enum CodingKeys: String, CodingKey {
         case isReadOnly = "ReadOnly"
         case imageName = "ImageName"
         case bookmark = "Bookmark" // legacy only
         case identifier = "Identifier"
     }
-    
+
     var sizeString: String {
         let sizeBytes: Int64
         if let attributes = try? imageURL?.resourceValues(forKeys: [.fileSizeKey]), let fileSize = attributes.fileSize {
@@ -50,19 +50,19 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
         }
         return ByteCountFormatter.string(fromByteCount: sizeBytes, countStyle: .binary)
     }
-    
+
     init(newSize: Int) {
         sizeMib = newSize
         isReadOnly = false
         isExternal = false
     }
-    
+
     init(existingURL url: URL?, isExternal: Bool = false) {
         self.imageURL = url
         self.isReadOnly = isExternal
         self.isExternal = isExternal
     }
-    
+
     init(from decoder: Decoder) throws {
         guard let dataURL = decoder.userInfo[.dataURL] as? URL else {
             throw UTMConfigurationError.invalidDataURL
@@ -85,7 +85,7 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
         isReadOnly = try container.decodeIfPresent(Bool.self, forKey: .isReadOnly) ?? isExternal
         id = try container.decode(String.self, forKey: .identifier)
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         if !isExternal {
@@ -94,7 +94,7 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
         try container.encode(isReadOnly, forKey: .isReadOnly)
         try container.encode(id, forKey: .identifier)
     }
-    
+
     func vzDiskImage() throws -> VZDiskImageStorageDeviceAttachment? {
         if let imageURL = imageURL {
             return try VZDiskImageStorageDeviceAttachment(url: imageURL, readOnly: isReadOnly)
@@ -102,7 +102,7 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
             return nil
         }
     }
-    
+
     func hash(into hasher: inout Hasher) {
         imageName?.hash(into: &hasher)
         sizeMib.hash(into: &hasher)
@@ -110,7 +110,7 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
         isExternal.hash(into: &hasher)
         id.hash(into: &hasher)
     }
-    
+
     func clone() -> UTMAppleConfigurationDrive {
         var cloned = self
         cloned.id = UUID().uuidString
