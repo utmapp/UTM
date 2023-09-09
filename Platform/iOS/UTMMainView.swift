@@ -19,17 +19,17 @@ import SwiftUI
 @MainActor
 struct UTMMainView: View {
     let isInteractive: Bool
-    
+
     @State private var data: UTMData = UTMData()
     @State private var session: VMSessionState?
-    
+
     private let vmSessionCreatedNotification = NotificationCenter.default.publisher(for: .vmSessionCreated)
     private let vmSessionEndedNotification = NotificationCenter.default.publisher(for: .vmSessionEnded)
-    
+
     init(isInteractive: Bool = true) {
         self.isInteractive = isInteractive
     }
-    
+
     var body: some View {
         ZStack {
             if let session = session {

@@ -26,7 +26,7 @@ extension Optional where Wrapped == String {
             self = newValue
         }
     }
-    
+
     public var bound: String {
         get {
             return _bound ?? ""
@@ -46,7 +46,7 @@ extension Optional where Wrapped: FixedWidthInteger {
             self = newValue
         }
     }
-    
+
     public var bound: Wrapped {
         get {
             return _bound ?? 0

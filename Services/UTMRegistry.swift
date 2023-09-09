@@ -19,21 +19,21 @@ import Foundation
 
 class UTMRegistry: NSObject {
     @objc static let shared = UTMRegistry()
-    
+
     private var serializedEntries: [String: Any] {
         get {
             UserDefaults.standard.dictionary(forKey: "Registry") ?? [:]
         }
-        
+
         set {
             UserDefaults.standard.setValue(newValue, forKey: "Registry")
         }
     }
-    
+
     private var registryListener: AnyCancellable?
-    
+
     private var changeListeners: [String: AnyCancellable] = [:]
-    
+
     @Published private var entries: [String: UTMRegistryEntry] {
         didSet {
             let toAdd = entries.keys.filter({ !changeListeners.keys.contains($0) })
@@ -53,7 +53,7 @@ class UTMRegistry: NSObject {
             }
         }
     }
-    
+
     private override init() {
         entries = [:]
         super.init()
@@ -69,7 +69,7 @@ class UTMRegistry: NSObject {
                 self?.commitAll(entries: newEntries)
             }
     }
-    
+
     /// Gets an existing registry entry or create a new entry
     /// - Parameter vm: UTM virtual machine to locate in the registry
     /// - Returns: Either an existing registry entry or a new entry
@@ -81,7 +81,7 @@ class UTMRegistry: NSObject {
         entries[newEntry.uuid.uuidString] = newEntry
         return newEntry
     }
-    
+
     /// Gets an existing registry entry or create a new entry for a legacy bookmark
     /// - Parameters:
     ///   - uuid: UUID
@@ -97,14 +97,14 @@ class UTMRegistry: NSObject {
         entries[uuid.uuidString] = newEntry
         return newEntry
     }
-    
+
     /// Get an existing registry entry for a UUID
     /// - Parameter uuidString: UUID
     /// - Returns: An existing registry entry or nil if it does not exist
     func entry(for uuidString: String) -> UTMRegistryEntry? {
         return entries[uuidString]
     }
-    
+
     /// Commit the entry to persistent storage
     /// This runs in a background queue.
     /// - Parameter entry: Entry to commit
@@ -116,7 +116,7 @@ class UTMRegistry: NSObject {
             logger.error("Failed to commit entry for \(uuid)")
         }
     }
-    
+
     /// Commit all entries to persistent storage
     /// This runs in a background queue.
     /// - Parameter entries: All entries to commit
@@ -128,23 +128,21 @@ class UTMRegistry: NSObject {
         }
         serializedEntries = newSerializedEntries
     }
-    
+
     /// Remove an entry from the registry
     /// - Parameter entry: Entry to remove
     func remove(entry: UTMRegistryEntry) {
         entries.removeValue(forKey: entry.uuid.uuidString)
     }
-    
+
     /// Remove all entries from the registry except for the specified set
     /// - Parameter uuidStrings: Keys to NOT remove
     func prune(exceptFor uuidStrings: Set<String>) {
-        for key in entries.keys {
-            if !uuidStrings.contains(key) {
-                entries.removeValue(forKey: key)
-            }
+        for key in entries.keys where !uuidStrings.contains(key) {
+            entries.removeValue(forKey: key)
         }
     }
-    
+
     /// Make sure the registry is synchronized when UTM terminates
     func sync() {
         commitAll(entries: entries)

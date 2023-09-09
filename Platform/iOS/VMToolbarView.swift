@@ -172,7 +172,7 @@ struct VMToolbarView: View {
                     }
                 }
             }
-            .onChange(of: state.isUserInteracting) { newValue in
+            .onChange(of: state.isUserInteracting) { _ in
                 longIdleTimeout.assertUserInteraction()
                 session.activeWindow = state.id
             }
@@ -304,7 +304,7 @@ struct ToolbarButtonStyle: ButtonStyle, ToolbarButtonBaseStyle {
             self.verticalSizeClass = verticalSizeClassEnvironment
         }
     }
-    
+
     func makeBody(configuration: Configuration) -> some View {
         return makeBodyBase(label: configuration.label, isPressed: configuration.isPressed)
     }

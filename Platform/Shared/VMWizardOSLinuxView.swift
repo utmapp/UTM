@@ -27,7 +27,7 @@ struct VMWizardOSLinuxView: View {
     @ObservedObject var wizardState: VMWizardState
     @State private var isFileImporterPresented: Bool = false
     @State private var selectImage: SelectImage = .kernel
-    
+
     private var hasVenturaFeatures: Bool {
         if #available(macOS 13, *) {
             return true
@@ -111,7 +111,7 @@ struct VMWizardOSLinuxView: View {
                 } header: {
                     Text("Linux Root FS Image (optional)")
                 }
-                
+
                 Section {
                     FileBrowseField(url: $wizardState.bootImageURL, isFileImporterPresented: $isFileImporterPresented) {
                         selectImage = .bootImage

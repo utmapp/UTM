@@ -143,7 +143,7 @@ extension UTMAppleConfigurationSystem {
             vzconfig.platform = platform
         }
     }
-    
+
     private static func sysctlIntRead(_ name: String) -> UInt64 {
         var value: UInt64 = 0
         var size = MemoryLayout<UInt64>.size

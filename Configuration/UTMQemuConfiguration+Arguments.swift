@@ -90,7 +90,7 @@ import Virtualization // for getting network interfaces
         sharingArguments
         miscArguments
     }
-    
+
     @QEMUArgumentBuilder private var userArguments: [QEMUArgument] {
         let regex = try! NSRegularExpression(pattern: "((?:[^\"\\s]*\"[^\"]*\"[^\"\\s]*)+|[^\"\\s]+)")
         for arg in qemu.additionalArguments {

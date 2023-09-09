@@ -119,7 +119,7 @@ extension UTMConfiguration {
             }
             #endif
             // is it a legacy QEMU config?
-            let dict = try NSDictionary(contentsOf: configURL, error: ()) as! [AnyHashable : Any]
+            let dict = try NSDictionary(contentsOf: configURL, error: ()) as! [AnyHashable: Any]
             let name = UTMQemuVirtualMachine.virtualMachineName(for: packageURL)
             let legacy = UTMLegacyQemuConfiguration(dictionary: dict, name: name, path: packageURL)
             return UTMQemuConfiguration(migrating: legacy)
@@ -137,7 +137,7 @@ extension UTMConfiguration {
             throw UTMConfigurationError.invalidBackend
         }
     }
-    
+
     func save(to packageURL: URL) async throws {
         let fileManager = FileManager.default
 
@@ -162,7 +162,7 @@ extension UTMConfiguration {
         let settingsData = try encoder.encode(self)
         try settingsData.write(to: packageURL.appendingPathComponent(kUTMBundleConfigFilename))
     }
-    
+
     /// Check if a file has changed and if so, copy the new file to the bundle
     /// - Parameters:
     ///   - sourceURL: File to copy
@@ -194,7 +194,7 @@ extension UTMConfiguration {
             return destURL
         }
     }
-    
+
     private static func cleanupAllFiles(at dataURL: URL, notIncluding urls: [URL]) async throws {
         let fileManager = FileManager.default
         let existingNames = urls.map { url in
@@ -202,10 +202,8 @@ extension UTMConfiguration {
         }
         let dataFileURLs = try fileManager.contentsOfDirectory(at: dataURL, includingPropertiesForKeys: nil)
         try await Task.detached {
-            for dataFileURL in dataFileURLs {
-                if !existingNames.contains(dataFileURL.lastPathComponent) {
-                    try FileManager.default.removeItem(at: dataFileURL)
-                }
+            for dataFileURL in dataFileURLs where !existingNames.contains(dataFileURL.lastPathComponent) {
+                try FileManager.default.removeItem(at: dataFileURL)
             }
         }.value
     }

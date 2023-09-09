@@ -230,7 +230,7 @@ struct VMWindowView: View {
             }
         }
     }
-    
+
     private func saveWindow() {
         state.saveWindow(to: session.vm.registryEntry, device: state.device)
     }

@@ -19,7 +19,7 @@ import Foundation
 /// Handles Obj-C patches to fix AppKit issues
 final class UTMPatches {
     static private var isPatched: Bool = false
-    
+
     /// Installs the patches
     /// TODO: Some thread safety/race issues etc
     static func patchAll() {
@@ -49,7 +49,7 @@ extension NSKeyedUnarchiver {
         default: return xxx_decodeObject(forKey: key)
         }
     }
-    
+
     /// Workaround for exception when creating NSMenuToolbarItem from XIB
     fileprivate static func patchToolbarItem() {
         patch(#selector(Self.decodeObject(forKey:)),
@@ -65,12 +65,12 @@ private var ScriptingDelegateHandle: Int = 0
 extension NSApplication {
     /// Set this, at startup, to the delegate used for scripting
     weak var scriptingDelegate: NSApplicationDelegate? {
-        set {
-            objc_setAssociatedObject(self, &ScriptingDelegateHandle, newValue, .OBJC_ASSOCIATION_ASSIGN)
-        }
-        
         get {
             objc_getAssociatedObject(self, &ScriptingDelegateHandle) as? NSApplicationDelegate
+        }
+
+        set {
+            objc_setAssociatedObject(self, &ScriptingDelegateHandle, newValue, .OBJC_ASSOCIATION_ASSIGN)
         }
     }
     
@@ -84,7 +84,7 @@ extension NSApplication {
             return xxx_value(forKey: key)
         }
     }
-    
+
     /// Set KVO value in scripting delegate if implemented
     /// - Parameters:
     ///   - value: Value to set to
@@ -96,7 +96,7 @@ extension NSApplication {
             return xxx_setValue(value, forKey: key)
         }
     }
-    
+
     /// Get KVO value from scripting delegate if implemented
     /// - Parameters:
     ///   - index: Index of item
@@ -109,7 +109,7 @@ extension NSApplication {
             return xxx_value(at: index, inPropertyWithKey: key)
         }
     }
-    
+
     /// Set KVO value in scripting delegate if implemented
     /// - Parameters:
     ///   - index: Index of item
@@ -122,7 +122,7 @@ extension NSApplication {
             return xxx_replaceValue(at: index, inPropertyWithKey: key, withValue: value)
         }
     }
-    
+
     fileprivate static func patchApplicationScripting() {
         patch(#selector(Self.value(forKey:)),
               with: #selector(Self.xxx_value(forKey:)),

@@ -17,13 +17,13 @@
 import Foundation
 
 @objc extension UTMScriptingVirtualMachineImpl {
-    @objc var configuration: [AnyHashable : Any] {
+    var configuration: [AnyHashable: Any] {
         let wrapper = UTMScriptingConfigImpl(vm.config, data: data)
         return wrapper.serializeConfiguration()
     }
-    
-    @objc func updateConfiguration(_ command: NSScriptCommand) {
-        let newConfiguration = command.evaluatedArguments?["newConfiguration"] as? [AnyHashable : Any]
+
+    func updateConfiguration(_ command: NSScriptCommand) {
+        let newConfiguration = command.evaluatedArguments?["newConfiguration"] as? [AnyHashable: Any]
         withScriptCommand(command) { [self] in
             guard let newConfiguration = newConfiguration else {
                 throw ScriptingError.invalidParameter
@@ -52,7 +52,7 @@ class UTMScriptingConfigImpl {
         self.data = data
     }
 
-    func serializeConfiguration() -> [AnyHashable : Any] {
+    func serializeConfiguration() -> [AnyHashable: Any] {
         if let qemuConfig = config as? UTMQemuConfiguration {
             return serializeQemuConfiguration(qemuConfig)
         } else if let appleConfig = config as? UTMAppleConfiguration {
@@ -62,10 +62,10 @@ class UTMScriptingConfigImpl {
         }
     }
 
-    func updateConfiguration(from record: [AnyHashable : Any]) throws {
-        if let _ = config as? UTMQemuConfiguration {
+    func updateConfiguration(from record: [AnyHashable: Any]) throws {
+        if config as? UTMQemuConfiguration != nil {
             try updateQemuConfiguration(from: record)
-        } else if let _ = config as? UTMAppleConfiguration {
+        } else if config as? UTMAppleConfiguration != nil {
             try updateAppleConfiguration(from: record)
         } else {
             fatalError()
@@ -93,7 +93,7 @@ extension UTMScriptingConfigImpl {
         }
     }
 
-    private func serializeQemuConfiguration(_ config: UTMQemuConfiguration) -> [AnyHashable : Any] {
+    private func serializeQemuConfiguration(_ config: UTMQemuConfiguration) -> [AnyHashable: Any] {
         [
             "name": config.information.name,
             "notes": config.information.notes ?? "",
@@ -106,7 +106,7 @@ extension UTMScriptingConfigImpl {
             "directoryShareMode": qemuDirectoryShareMode(from: config.sharing.directoryShareMode).rawValue,
             "drives": config.drives.map({ serializeQemuDriveExisting($0) }),
             "networkInterfaces": config.networks.enumerated().map({ serializeQemuNetwork($1, index: $0) }),
-            "serialPorts": config.serials.enumerated().map({ serializeQemuSerial($1, index: $0) }),
+            "serialPorts": config.serials.enumerated().map({ serializeQemuSerial($1, index: $0) })
         ]
     }
 
@@ -124,16 +124,16 @@ extension UTMScriptingConfigImpl {
         case .usb: return .usb
         }
     }
-    
-    private func serializeQemuDriveExisting(_ config: UTMQemuConfigurationDrive) -> [AnyHashable : Any] {
+
+    private func serializeQemuDriveExisting(_ config: UTMQemuConfigurationDrive) -> [AnyHashable: Any] {
         [
             "id": config.id,
             "removable": config.isExternal,
             "interface": qemuDriveInterface(from: config.interface).rawValue,
-            "hostSize": size(of: config),
+            "hostSize": size(of: config)
         ]
     }
-    
+
     private func qemuNetworkMode(from mode: QEMUNetworkMode) -> UTMScriptingQemuNetworkMode {
         switch mode {
         case .emulated: return .emulated
@@ -142,35 +142,35 @@ extension UTMScriptingConfigImpl {
         case .bridged: return .bridged
         }
     }
-    
-    private func serializeQemuNetwork(_ config: UTMQemuConfigurationNetwork, index: Int) -> [AnyHashable : Any] {
+
+    private func serializeQemuNetwork(_ config: UTMQemuConfigurationNetwork, index: Int) -> [AnyHashable: Any] {
         [
             "index": index,
             "hardware": config.hardware.rawValue,
             "mode": qemuNetworkMode(from: config.mode).rawValue,
             "address": config.macAddress,
             "hostInterface": config.bridgeInterface ?? "",
-            "portForwards": config.portForward.map({ serializeQemuPortForward($0) }),
+            "portForwards": config.portForward.map({ serializeQemuPortForward($0) })
         ]
     }
-    
+
     private func networkProtocol(from protc: QEMUNetworkProtocol) -> UTMScriptingNetworkProtocol {
         switch protc {
         case .tcp: return .tcp
         case .udp: return .udp
         }
     }
-    
-    private func serializeQemuPortForward(_ config: UTMQemuConfigurationPortForward) -> [AnyHashable : Any] {
+
+    private func serializeQemuPortForward(_ config: UTMQemuConfigurationPortForward) -> [AnyHashable: Any] {
         [
             "protocol": networkProtocol(from: config.protocol).rawValue,
             "hostAddress": config.hostAddress ?? "",
             "hostPort": config.hostPort,
             "guestAddress": config.guestAddress ?? "",
-            "guestPort": config.guestPort,
+            "guestPort": config.guestPort
         ]
     }
-    
+
     private func qemuSerialInterface(from mode: QEMUSerialMode) -> UTMScriptingSerialInterface {
         switch mode {
         case .ptty: return .ptty
@@ -178,17 +178,17 @@ extension UTMScriptingConfigImpl {
         default: return .unavailable
         }
     }
-    
-    private func serializeQemuSerial(_ config: UTMQemuConfigurationSerial, index: Int) -> [AnyHashable : Any] {
+
+    private func serializeQemuSerial(_ config: UTMQemuConfigurationSerial, index: Int) -> [AnyHashable: Any] {
         [
             "index": index,
             "hardware": config.hardware?.rawValue ?? "",
             "interface": qemuSerialInterface(from: config.mode).rawValue,
-            "port": config.tcpPort ?? 0,
+            "port": config.tcpPort ?? 0
         ]
     }
-    
-    private func serializeAppleConfiguration(_ config: UTMAppleConfiguration) -> [AnyHashable : Any] {
+
+    private func serializeAppleConfiguration(_ config: UTMAppleConfiguration) -> [AnyHashable: Any] {
         [
             "name": config.information.name,
             "notes": config.information.notes ?? "",
@@ -197,59 +197,59 @@ extension UTMScriptingConfigImpl {
             "directoryShares": config.sharedDirectories.enumerated().map({ serializeAppleDirectoryShare($1, index: $0) }),
             "drives": config.drives.map({ serializeAppleDriveExisting($0) }),
             "networkInterfaces": config.networks.enumerated().map({ serializeAppleNetwork($1, index: $0) }),
-            "serialPorts": config.serials.enumerated().map({ serializeAppleSerial($1, index: $0) }),
+            "serialPorts": config.serials.enumerated().map({ serializeAppleSerial($1, index: $0) })
         ]
     }
-    
-    private func serializeAppleDirectoryShare(_ config: UTMAppleConfigurationSharedDirectory, index: Int) -> [AnyHashable : Any] {
+
+    private func serializeAppleDirectoryShare(_ config: UTMAppleConfigurationSharedDirectory, index: Int) -> [AnyHashable: Any] {
         [
             "index": index,
             "readOnly": config.isReadOnly
         ]
     }
-    
-    private func serializeAppleDriveExisting(_ config: UTMAppleConfigurationDrive) -> [AnyHashable : Any] {
+
+    private func serializeAppleDriveExisting(_ config: UTMAppleConfigurationDrive) -> [AnyHashable: Any] {
         [
             "id": config.id,
             "removable": config.isExternal,
-            "hostSize": size(of: config),
+            "hostSize": size(of: config)
         ]
     }
-    
+
     private func appleNetworkMode(from mode: UTMAppleConfigurationNetwork.NetworkMode) -> UTMScriptingAppleNetworkMode {
         switch mode {
         case .shared: return .shared
         case .bridged: return .bridged
         }
     }
-    
-    private func serializeAppleNetwork(_ config: UTMAppleConfigurationNetwork, index: Int) -> [AnyHashable : Any] {
+
+    private func serializeAppleNetwork(_ config: UTMAppleConfigurationNetwork, index: Int) -> [AnyHashable: Any] {
         [
             "index": index,
             "mode": appleNetworkMode(from: config.mode).rawValue,
             "address": config.macAddress,
-            "hostInterface": config.bridgeInterface ?? "",
+            "hostInterface": config.bridgeInterface ?? ""
         ]
     }
-    
+
     private func appleSerialInterface(from mode: UTMAppleConfigurationSerial.SerialMode) -> UTMScriptingSerialInterface {
         switch mode {
         case .ptty: return .ptty
         default: return .unavailable
         }
     }
-    
-    private func serializeAppleSerial(_ config: UTMAppleConfigurationSerial, index: Int) -> [AnyHashable : Any] {
+
+    private func serializeAppleSerial(_ config: UTMAppleConfigurationSerial, index: Int) -> [AnyHashable: Any] {
         [
             "index": index,
-            "interface": appleSerialInterface(from: config.mode).rawValue,
+            "interface": appleSerialInterface(from: config.mode).rawValue
         ]
     }
 }
 
 @MainActor
 extension UTMScriptingConfigImpl {
-    private func updateElements<T>(_ array: inout [T], with records: [[AnyHashable : Any]], onExisting: @MainActor (inout T, [AnyHashable : Any]) throws -> Void, onNew: @MainActor ([AnyHashable : Any]) throws -> T) throws {
+    private func updateElements<T>(_ array: inout [T], with records: [[AnyHashable: Any]], onExisting: @MainActor (inout T, [AnyHashable: Any]) throws -> Void, onNew: @MainActor ([AnyHashable: Any]) throws -> T) throws {
         var unseenIndicies = IndexSet(integersIn: array.indices)
         for record in records {
             if let index = record["index"] as? Int {
@@ -264,8 +264,8 @@ extension UTMScriptingConfigImpl {
         }
         array.remove(atOffsets: unseenIndicies)
     }
-    
-    private func updateIdentifiedElements<T: Identifiable>(_ array: inout [T], with records: [[AnyHashable : Any]], onExisting: @MainActor (inout T, [AnyHashable : Any]) throws -> Void, onNew: @MainActor ([AnyHashable : Any]) throws -> T) throws {
+
+    private func updateIdentifiedElements<T: Identifiable>(_ array: inout [T], with records: [[AnyHashable: Any]], onExisting: @MainActor (inout T, [AnyHashable: Any]) throws -> Void, onNew: @MainActor ([AnyHashable: Any]) throws -> T) throws {
         var unseenIndicies = IndexSet(integersIn: array.indices)
         for record in records {
             if let id = record["id"] as? T.ID {
@@ -280,7 +280,7 @@ extension UTMScriptingConfigImpl {
         }
         array.remove(atOffsets: unseenIndicies)
     }
-    
+
     private func parseQemuDirectoryShareMode(_ value: AEKeyword?) -> QEMUFileShareMode? {
         guard let value = value, let parsed = UTMScriptingQemuDirectoryShareMode(rawValue: value) else {
             return Optional.none
@@ -292,8 +292,8 @@ extension UTMScriptingConfigImpl {
         default: return Optional.none
         }
     }
-    
-    private func updateQemuConfiguration(from record: [AnyHashable : Any]) throws {
+
+    private func updateQemuConfiguration(from record: [AnyHashable: Any]) throws {
         let config = config as! UTMQemuConfiguration
         if let name = record["name"] as? String, !name.isEmpty {
             config.information.name = name
@@ -329,17 +329,17 @@ extension UTMScriptingConfigImpl {
         if let directoryShareMode = parseQemuDirectoryShareMode(record["directoryShareMode"] as? AEKeyword) {
             config.sharing.directoryShareMode = directoryShareMode
         }
-        if let drives = record["drives"] as? [[AnyHashable : Any]] {
+        if let drives = record["drives"] as? [[AnyHashable: Any]] {
             try updateQemuDrives(from: drives)
         }
-        if let networkInterfaces = record["networkInterfaces"] as? [[AnyHashable : Any]] {
+        if let networkInterfaces = record["networkInterfaces"] as? [[AnyHashable: Any]] {
             try updateQemuNetworks(from: networkInterfaces)
         }
-        if let serialPorts = record["serialPorts"] as? [[AnyHashable : Any]] {
+        if let serialPorts = record["serialPorts"] as? [[AnyHashable: Any]] {
             try updateQemuSerials(from: serialPorts)
         }
     }
-    
+
     private func parseQemuDriveInterface(_ value: AEKeyword?) -> QEMUDriveInterface? {
         guard let value = value, let parsed = UTMScriptingQemuDriveInterface(rawValue: value) else {
             return Optional.none
@@ -358,13 +358,13 @@ extension UTMScriptingConfigImpl {
         default: return Optional.none
         }
     }
-    
-    private func updateQemuDrives(from records: [[AnyHashable : Any]]) throws {
+
+    private func updateQemuDrives(from records: [[AnyHashable: Any]]) throws {
         let config = config as! UTMQemuConfiguration
         try updateIdentifiedElements(&config.drives, with: records, onExisting: updateQemuExistingDrive, onNew: unserializeQemuDriveNew)
     }
-    
-    private func updateQemuExistingDrive(_ drive: inout UTMQemuConfigurationDrive, from record: [AnyHashable : Any]) throws {
+
+    private func updateQemuExistingDrive(_ drive: inout UTMQemuConfigurationDrive, from record: [AnyHashable: Any]) throws {
         if let interface = parseQemuDriveInterface(record["interface"] as? AEKeyword) {
             drive.interface = interface
         }
@@ -372,8 +372,8 @@ extension UTMScriptingConfigImpl {
             drive.imageURL = source
         }
     }
-    
-    private func unserializeQemuDriveNew(from record: [AnyHashable : Any]) throws -> UTMQemuConfigurationDrive {
+
+    private func unserializeQemuDriveNew(from record: [AnyHashable: Any]) throws -> UTMQemuConfigurationDrive {
         let config = config as! UTMQemuConfiguration
         let removable = record["removable"] as? Bool ?? false
         var newDrive = UTMQemuConfigurationDrive(forArchitecture: config.system.architecture, target: config.system.target, isExternal: removable)
@@ -390,8 +390,8 @@ extension UTMScriptingConfigImpl {
         }
         return newDrive
     }
-    
-    private func updateQemuNetworks(from records: [[AnyHashable : Any]]) throws {
+
+    private func updateQemuNetworks(from records: [[AnyHashable: Any]]) throws {
         let config = config as! UTMQemuConfiguration
         try updateElements(&config.networks, with: records, onExisting: updateQemuExistingNetwork, onNew: { record in
             guard var newNetwork = UTMQemuConfigurationNetwork(forArchitecture: config.system.architecture, target: config.system.target) else {
@@ -401,7 +401,7 @@ extension UTMScriptingConfigImpl {
             return newNetwork
         })
     }
-    
+
     private func parseQemuNetworkMode(_ value: AEKeyword?) -> QEMUNetworkMode? {
         guard let value = value, let parsed = UTMScriptingQemuNetworkMode(rawValue: value) else {
             return Optional.none
@@ -414,8 +414,8 @@ extension UTMScriptingConfigImpl {
         default: return .none
         }
     }
-    
-    private func updateQemuExistingNetwork(_ network: inout UTMQemuConfigurationNetwork, from record: [AnyHashable : Any]) throws {
+
+    private func updateQemuExistingNetwork(_ network: inout UTMQemuConfigurationNetwork, from record: [AnyHashable: Any]) throws {
         let config = config as! UTMQemuConfiguration
         if let hardware = record["hardware"] as? String, let hardware = config.system.architecture.networkDeviceType.init(rawValue: hardware) {
             network.hardware = hardware
@@ -429,11 +429,11 @@ extension UTMScriptingConfigImpl {
         if let interface = record["hostInterface"] as? String, !interface.isEmpty {
             network.bridgeInterface = interface
         }
-        if let portForwards = record["portForwards"] as? [[AnyHashable : Any]] {
+        if let portForwards = record["portForwards"] as? [[AnyHashable: Any]] {
             network.portForward = portForwards.map({ unserializeQemuPortForward(from: $0) })
         }
     }
-    
+
     private func parseNetworkProtocol(_ value: AEKeyword?) -> QEMUNetworkProtocol? {
         guard let value = value, let parsed = UTMScriptingNetworkProtocol(rawValue: value) else {
             return Optional.none
@@ -444,8 +444,8 @@ extension UTMScriptingConfigImpl {
         default: return Optional.none
         }
     }
-    
-    private func unserializeQemuPortForward(from record: [AnyHashable : Any]) -> UTMQemuConfigurationPortForward {
+
+    private func unserializeQemuPortForward(from record: [AnyHashable: Any]) -> UTMQemuConfigurationPortForward {
         var forward = UTMQemuConfigurationPortForward()
         if let protoc = parseNetworkProtocol(record["protocol"] as? AEKeyword) {
             forward.protocol = protoc
@@ -464,8 +464,8 @@ extension UTMScriptingConfigImpl {
         }
         return forward
     }
-    
-    private func updateQemuSerials(from records: [[AnyHashable : Any]]) throws {
+
+    private func updateQemuSerials(from records: [[AnyHashable: Any]]) throws {
         let config = config as! UTMQemuConfiguration
         try updateElements(&config.serials, with: records, onExisting: updateQemuExistingSerial, onNew: { record in
             guard var newSerial = UTMQemuConfigurationSerial(forArchitecture: config.system.architecture, target: config.system.target) else {
@@ -475,7 +475,7 @@ extension UTMScriptingConfigImpl {
             return newSerial
         })
     }
-    
+
     private func parseQemuSerialInterface(_ value: AEKeyword?) -> QEMUSerialMode? {
         guard let value = value, let parsed = UTMScriptingSerialInterface(rawValue: value) else {
             return Optional.none
@@ -486,8 +486,8 @@ extension UTMScriptingConfigImpl {
         default: return Optional.none
         }
     }
-    
-    private func updateQemuExistingSerial(_ serial: inout UTMQemuConfigurationSerial, from record: [AnyHashable : Any]) throws {
+
+    private func updateQemuExistingSerial(_ serial: inout UTMQemuConfigurationSerial, from record: [AnyHashable: Any]) throws {
         let config = config as! UTMQemuConfiguration
         if let hardware = record["hardware"] as? String, let hardware = config.system.architecture.serialDeviceType.init(rawValue: hardware) {
             serial.hardware = hardware
@@ -499,8 +499,8 @@ extension UTMScriptingConfigImpl {
             serial.tcpPort = port
         }
     }
-    
-    private func updateAppleConfiguration(from record: [AnyHashable : Any]) throws {
+
+    private func updateAppleConfiguration(from record: [AnyHashable: Any]) throws {
         let config = config as! UTMAppleConfiguration
         if let name = record["name"] as? String, !name.isEmpty {
             config.information.name = name
@@ -514,21 +514,21 @@ extension UTMScriptingConfigImpl {
         if let cpuCores = record["cpuCores"] as? Int {
             config.system.cpuCount = cpuCores
         }
-        if let directoryShares = record["directoryShares"] as? [[AnyHashable : Any]] {
+        if let directoryShares = record["directoryShares"] as? [[AnyHashable: Any]] {
             try updateAppleDirectoryShares(from: directoryShares)
         }
-        if let drives = record["drives"] as? [[AnyHashable : Any]] {
+        if let drives = record["drives"] as? [[AnyHashable: Any]] {
             try updateAppleDrives(from: drives)
         }
-        if let networkInterfaces = record["networkInterfaces"] as? [[AnyHashable : Any]] {
+        if let networkInterfaces = record["networkInterfaces"] as? [[AnyHashable: Any]] {
             try updateAppleNetworks(from: networkInterfaces)
         }
-        if let serialPorts = record["serialPorts"] as? [[AnyHashable : Any]] {
+        if let serialPorts = record["serialPorts"] as? [[AnyHashable: Any]] {
             try updateAppleSerials(from: serialPorts)
         }
     }
-    
-    private func updateAppleDirectoryShares(from records: [[AnyHashable : Any]]) throws {
+
+    private func updateAppleDirectoryShares(from records: [[AnyHashable: Any]]) throws {
         let config = config as! UTMAppleConfiguration
         try updateElements(&config.sharedDirectories, with: records, onExisting: updateAppleExistingDirectoryShare, onNew: { record in
             var newShare = UTMAppleConfigurationSharedDirectory(directoryURL: nil, isReadOnly: false)
@@ -536,25 +536,25 @@ extension UTMScriptingConfigImpl {
             return newShare
         })
     }
-    
-    private func updateAppleExistingDirectoryShare(_ share: inout UTMAppleConfigurationSharedDirectory, from record: [AnyHashable : Any]) throws {
+
+    private func updateAppleExistingDirectoryShare(_ share: inout UTMAppleConfigurationSharedDirectory, from record: [AnyHashable: Any]) throws {
         if let readOnly = record["readOnly"] as? Bool {
             share.isReadOnly = readOnly
         }
     }
-    
-    private func updateAppleDrives(from records: [[AnyHashable : Any]]) throws {
+
+    private func updateAppleDrives(from records: [[AnyHashable: Any]]) throws {
         let config = config as! UTMAppleConfiguration
         try updateIdentifiedElements(&config.drives, with: records, onExisting: updateAppleExistingDrive, onNew: unserializeAppleNewDrive)
     }
-    
-    private func updateAppleExistingDrive(_ drive: inout UTMAppleConfigurationDrive, from record: [AnyHashable : Any]) throws {
+
+    private func updateAppleExistingDrive(_ drive: inout UTMAppleConfigurationDrive, from record: [AnyHashable: Any]) throws {
         if let source = record["source"] as? URL {
             drive.imageURL = source
         }
     }
-    
-    private func unserializeAppleNewDrive(from record: [AnyHashable : Any]) throws -> UTMAppleConfigurationDrive {
+
+    private func unserializeAppleNewDrive(from record: [AnyHashable: Any]) throws -> UTMAppleConfigurationDrive {
         let removable = record["removable"] as? Bool ?? false
         var newDrive: UTMAppleConfigurationDrive
         if let size = record["guestSize"] as? Int {
@@ -564,8 +564,8 @@ extension UTMScriptingConfigImpl {
         }
         return newDrive
     }
-    
-    private func updateAppleNetworks(from records: [[AnyHashable : Any]]) throws {
+
+    private func updateAppleNetworks(from records: [[AnyHashable: Any]]) throws {
         let config = config as! UTMAppleConfiguration
         try updateElements(&config.networks, with: records, onExisting: updateAppleExistingNetwork, onNew: { record in
             var newNetwork = UTMAppleConfigurationNetwork()
@@ -573,7 +573,7 @@ extension UTMScriptingConfigImpl {
             return newNetwork
         })
     }
-    
+
     private func parseAppleNetworkMode(_ value: AEKeyword?) -> UTMAppleConfigurationNetwork.NetworkMode? {
         guard let value = value, let parsed = UTMScriptingQemuNetworkMode(rawValue: value) else {
             return Optional.none
@@ -584,8 +584,8 @@ extension UTMScriptingConfigImpl {
         default: return Optional.none
         }
     }
-    
-    private func updateAppleExistingNetwork(_ network: inout UTMAppleConfigurationNetwork, from record: [AnyHashable : Any]) throws {
+
+    private func updateAppleExistingNetwork(_ network: inout UTMAppleConfigurationNetwork, from record: [AnyHashable: Any]) throws {
         if let mode = parseAppleNetworkMode(record["mode"] as? AEKeyword) {
             network.mode = mode
         }
@@ -596,8 +596,8 @@ extension UTMScriptingConfigImpl {
             network.bridgeInterface = interface
         }
     }
-    
-    private func updateAppleSerials(from records: [[AnyHashable : Any]]) throws {
+
+    private func updateAppleSerials(from records: [[AnyHashable: Any]]) throws {
         let config = config as! UTMAppleConfiguration
         try updateElements(&config.serials, with: records, onExisting: updateAppleExistingSerial, onNew: { record in
             var newSerial = UTMAppleConfigurationSerial()
@@ -605,7 +605,7 @@ extension UTMScriptingConfigImpl {
             return newSerial
         })
     }
-    
+
     private func parseAppleSerialInterface(_ value: AEKeyword?) -> UTMAppleConfigurationSerial.SerialMode? {
         guard let value = value, let parsed = UTMScriptingSerialInterface(rawValue: value) else {
             return Optional.none
@@ -615,19 +615,19 @@ extension UTMScriptingConfigImpl {
         default: return Optional.none
         }
     }
-    
-    private func updateAppleExistingSerial(_ serial: inout UTMAppleConfigurationSerial, from record: [AnyHashable : Any]) throws {
+
+    private func updateAppleExistingSerial(_ serial: inout UTMAppleConfigurationSerial, from record: [AnyHashable: Any]) throws {
         if let interface = parseAppleSerialInterface(record["interface"] as? AEKeyword) {
             serial.mode = interface
         }
     }
-    
+
     enum ConfigurationError: Error, LocalizedError {
         case identifierNotFound(id: any Hashable)
         case invalidDriveDescription
         case indexNotFound(index: Int)
         case deviceNotSupported
-        
+
         var errorDescription: String? {
             switch self {
             case .identifierNotFound(let id): return String.localizedStringWithFormat(NSLocalizedString("Identifier '%@' cannot be found.", comment: "UTMScriptingConfigImpl"), String(describing: id))

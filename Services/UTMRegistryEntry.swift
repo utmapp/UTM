@@ -19,27 +19,27 @@ import Foundation
 @objc class UTMRegistryEntry: NSObject, Codable, ObservableObject {
     /// Empty registry entry used only as a workaround for object initialization
     static let empty = UTMRegistryEntry(uuid: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!, name: "", path: "")
-    
+
     @Published private var _name: String
-    
+
     @Published private var _package: File
-    
+
     private(set) var uuid: UUID
-    
+
     @Published private var _isSuspended: Bool
-    
+
     @Published private var _externalDrives: [String: File]
-    
+
     @Published private var _sharedDirectories: [File]
-    
+
     @Published private var _windowSettings: [Int: Window]
-    
+
     @Published private var _terminalSettings: [Int: Terminal]
-    
+
     @Published private var _hasMigratedConfig: Bool
-    
+
     @Published private var _macRecoveryIpsw: File?
-    
+
     private enum CodingKeys: String, CodingKey {
         case name = "Name"
         case package = "Package"
@@ -52,7 +52,7 @@ import Foundation
         case hasMigratedConfig = "MigratedConfig"
         case macRecoveryIpsw = "MacRecoveryIpsw"
     }
-    
+
     init(uuid: UUID, name: String, path: String, bookmark: Data? = nil) {
         _name = name
         let package: File?
@@ -70,14 +70,14 @@ import Foundation
         _terminalSettings = [:]
         _hasMigratedConfig = false
     }
-    
+
     convenience init(newFrom vm: any UTMVirtualMachine) {
         self.init(uuid: vm.id, name: vm.name, path: vm.pathUrl.path)
         if let package = try? File(url: vm.pathUrl) {
             _package = package
         }
     }
-    
+
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         _name = try container.decode(String.self, forKey: .name)
@@ -91,7 +91,7 @@ import Foundation
         _hasMigratedConfig = try container.decodeIfPresent(Bool.self, forKey: .hasMigratedConfig) ?? false
         _macRecoveryIpsw = try container.decodeIfPresent(File.self, forKey: .macRecoveryIpsw)
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(_name, forKey: .name)
@@ -107,7 +107,7 @@ import Foundation
         }
         try container.encodeIfPresent(_macRecoveryIpsw, forKey: .macRecoveryIpsw)
     }
-    
+
     func asDictionary() throws -> [String: Any] {
         let encoder = PropertyListEncoder()
         encoder.outputFormat = .xml
@@ -115,7 +115,7 @@ import Foundation
         let dict = try PropertyListSerialization.propertyList(from: xml, format: nil)
         return dict as! [String: Any]
     }
-    
+
     /// Update the UUID
     ///
     /// Should only be called from `UTMRegistry`!
@@ -142,118 +142,118 @@ extension UTMRegistryEntryDecodable {
         get {
             _name
         }
-        
+
         set {
             _name = newValue
         }
     }
-    
+
     var package: File {
         get {
             _package
         }
-        
+
         set {
             _package = newValue
         }
     }
-    
+
     var isSuspended: Bool {
         get {
             _isSuspended
         }
-        
+
         set {
             _isSuspended = newValue
         }
     }
-    
+
     var externalDrives: [String: File] {
         get {
             _externalDrives
         }
-        
+
         set {
             _externalDrives = newValue
         }
     }
-    
+
     var sharedDirectories: [File] {
         get {
             _sharedDirectories
         }
-        
+
         set {
             _sharedDirectories = newValue
         }
     }
-    
+
     var windowSettings: [Int: Window] {
         get {
             _windowSettings
         }
-        
+
         set {
             _windowSettings = newValue
         }
     }
-    
+
     var terminalSettings: [Int: Terminal] {
         get {
             _terminalSettings
         }
-        
+
         set {
             _terminalSettings = newValue
         }
     }
-    
+
     var hasMigratedConfig: Bool {
         get {
             _hasMigratedConfig
         }
-        
+
         set {
             _hasMigratedConfig = newValue
         }
     }
-    
+
     var macRecoveryIpsw: File? {
         get {
             _macRecoveryIpsw
         }
-        
+
         set {
             _macRecoveryIpsw = newValue
         }
     }
-    
+
     func setExternalDrive(_ file: File, forId id: String) {
         externalDrives[id] = file
     }
-    
+
     func updateExternalDriveRemoteBookmark(_ bookmark: Data, forId id: String) {
         externalDrives[id]?.remoteBookmark = bookmark
     }
-    
+
     func removeExternalDrive(forId id: String) {
         externalDrives.removeValue(forKey: id)
     }
-    
+
     func setSingleSharedDirectory(_ file: File) {
         sharedDirectories = [file]
     }
-    
+
     func updateSingleSharedDirectoryRemoteBookmark(_ bookmark: Data) {
         if !sharedDirectories.isEmpty {
             sharedDirectories[0].remoteBookmark = bookmark
         }
     }
-    
+
     func removeAllSharedDirectories() {
         sharedDirectories = []
     }
-    
+
     func update(copying other: UTMRegistryEntry) {
         isSuspended = other.isSuspended
         externalDrives = other.externalDrives
@@ -262,11 +262,11 @@ extension UTMRegistryEntryDecodable {
         terminalSettings = other.terminalSettings
         hasMigratedConfig = other.hasMigratedConfig
     }
-    
+
     func setIsSuspended(_ isSuspended: Bool) {
         self.isSuspended = isSuspended
     }
-    
+
     func setPackageRemoteBookmark(_ remoteBookmark: Data?, path: String? = nil) {
         package.remoteBookmark = remoteBookmark
         if let path = path {
@@ -313,7 +313,7 @@ extension UTMRegistryEntry {
             }
         }
     }
-    
+
     /// Try to migrate from a view.plist or does nothing if it does not exist.
     /// - Parameter viewStateURL: URL to view.plist
     @objc func migrateUnsafe(viewStateURL: URL) {
@@ -321,7 +321,7 @@ extension UTMRegistryEntry {
         guard fileManager.fileExists(atPath: viewStateURL.path) else {
             return
         }
-        guard let dict = try? NSDictionary(contentsOf: viewStateURL, error: ()) as? [AnyHashable : Any] else {
+        guard let dict = try? NSDictionary(contentsOf: viewStateURL, error: ()) as? [AnyHashable: Any] else {
             logger.error("Failed to parse legacy \(viewStateURL)")
             return
         }
@@ -329,7 +329,7 @@ extension UTMRegistryEntry {
         migrate(viewState: viewState)
         try? fileManager.removeItem(at: viewStateURL) // delete view.plist
     }
-    
+
     #if os(macOS)
     /// Try to migrate bookmarks from an Apple VM config.
     /// - Parameter config: Apple config to migrate
@@ -357,26 +357,26 @@ extension UTMRegistryEntry {
 extension UTMRegistryEntry {
     struct File: Codable, Identifiable {
         var url: URL
-        
+
         var path: String
-        
+
         var bookmark: Data
-        
+
         var remoteBookmark: Data?
-        
+
         var isReadOnly: Bool
-        
+
         let id: UUID = UUID()
-        
+
         fileprivate var isValid: Bool
-        
+
         private enum CodingKeys: String, CodingKey {
             case path = "Path"
             case bookmark = "Bookmark"
             case remoteBookmark = "BookmarkRemote"
             case isReadOnly = "ReadOnly"
         }
-        
+
         init(path: String, bookmark: Data, isReadOnly: Bool = false) throws {
             self.path = path
             self.bookmark = bookmark
@@ -384,7 +384,7 @@ extension UTMRegistryEntry {
             self.url = try URL(resolvingPersistentBookmarkData: bookmark)
             self.isValid = true
         }
-        
+
         init(url: URL, isReadOnly: Bool = false) throws {
             self.path = url.path
             self.bookmark = try url.persistentBookmarkData(isReadyOnly: isReadOnly)
@@ -401,7 +401,7 @@ extension UTMRegistryEntry {
             self.remoteBookmark = remoteBookmark
             self.isValid = true
         }
-        
+
         init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             path = try container.decode(String.self, forKey: .path)
@@ -421,7 +421,7 @@ extension UTMRegistryEntry {
                 }
             }
         }
-        
+
         func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
             try container.encode(path, forKey: .path)
