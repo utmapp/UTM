@@ -31,13 +31,13 @@
 /* Class = "NSToolbarItem"; paletteLabel = "Toolbar Item"; ObjectID = "C8Y-BQ-Y6m"; */
 "C8Y-BQ-Y6m.paletteLabel" = "工具栏项目";
 
-/* Class = "NSToolbarItem"; label = "Capture Mouse"; ObjectID = "FN7-zs-mWC"; */
-"FN7-zs-mWC.label" = "捕获鼠标";
+/* Class = "NSToolbarItem"; label = "Capture Input"; ObjectID = "FN7-zs-mWC"; */
+"FN7-zs-mWC.label" = "捕获输入";
 
-/* Class = "NSToolbarItem"; paletteLabel = "Capture Mouse"; ObjectID = "FN7-zs-mWC"; */
-"FN7-zs-mWC.paletteLabel" = "捕获鼠标";
+/* Class = "NSToolbarItem"; paletteLabel = "Capture Input"; ObjectID = "FN7-zs-mWC"; */
+"FN7-zs-mWC.paletteLabel" = "捕获输入";
 
-/* Class = "NSToolbarItem"; toolTip = "Capture mouse cursor"; ObjectID = "FN7-zs-mWC"; */
+/* Class = "NSToolbarItem"; toolTip = "Capture input devices"; ObjectID = "FN7-zs-mWC"; */
 "FN7-zs-mWC.toolTip" = "捕获鼠标光标";
 
 /* Class = "NSToolbarItem"; label = "Restart"; ObjectID = "G7P-HJ-bcy"; */
@@ -90,3 +90,4 @@
 
 /* Class = "NSButton"; ibShadowedToolTip = "Starts/resumes the VM"; ObjectID = "ZTi-Hs-ge6"; */
 "ZTi-Hs-ge6.ibShadowedToolTip" = "启动/恢复虚拟机";
+
