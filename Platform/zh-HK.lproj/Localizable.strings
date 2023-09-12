@@ -8,7 +8,7 @@
 "(new)" = "(新)";
 
 /* VMData */
-"(Unavailable)" = "(無法使用)";
+"(Unavailable)" = "(不可用)";
 
 /* QEMUConstant */
 "%@ (%@)" = "%1$@ (%2$@)";
@@ -36,7 +36,7 @@
 "%@ Image" = "%@ 映像檔";
 
 /* Format string for remaining time until a download finishes */
-"%@ remaining" = "%@ 可用";
+"%@ remaining" = "剩餘時間 %@";
 
 /* Format string for the 'per second' part of a download speed. */
 "%@/s" = "%@/s";
