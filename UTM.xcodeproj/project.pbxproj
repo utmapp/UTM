@@ -1700,6 +1700,8 @@
 		F6DA2DAD2AAFEDAC0070DCD1 /* zh-HK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-HK"; path = "zh-HK.lproj/QEMULauncher-InfoPlist.strings"; sourceTree = "<group>"; };
 		F6DA2DAE2AAFEE060070DCD1 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/VMDisplayMetalViewInputAccessory.strings"; sourceTree = "<group>"; };
 		F6DA2DAF2AAFEE060070DCD1 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/VMDisplayWindow.strings"; sourceTree = "<group>"; };
+		F6DA2DB02AAFF0640070DCD1 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/QEMULauncher-InfoPlist.strings"; sourceTree = "<group>"; };
+		F6DA2DB12AAFF0640070DCD1 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.stringsdict"; sourceTree = "<group>"; };
 		FF0307542A84E3B70049979B /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/QEMULauncher-InfoPlist.strings"; sourceTree = "<group>"; };
 		FF0307562A84E3B70049979B /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.stringsdict"; sourceTree = "<group>"; };
 		FF0307572A84E3B70049979B /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/VMDisplayMetalViewInputAccessory.strings"; sourceTree = "<group>"; };
@@ -3472,6 +3474,7 @@
 				CEB54C17293009C8000D2AA9 /* pl */,
 				FF0307562A84E3B70049979B /* zh-Hant */,
 				F6DA2DAA2AAFED5F0070DCD1 /* zh-HK */,
+				F6DA2DB12AAFF0640070DCD1 /* zh-Hans */,
 			);
 			name = Localizable.stringsdict;
 			sourceTree = "<group>";
@@ -3481,6 +3484,7 @@
 			children = (
 				FF0307542A84E3B70049979B /* zh-Hant */,
 				F6DA2DAD2AAFEDAC0070DCD1 /* zh-HK */,
+				F6DA2DB02AAFF0640070DCD1 /* zh-Hans */,
 			);
 			name = "QEMULauncher-InfoPlist.strings";
 			sourceTree = "<group>";

@@ -184,6 +184,9 @@
 /* VMMetalView */
 "Capture Input" = "捕获输入";
 
+/* No comment provided by engineer. */
+"Capture input automatically when entering full screen" = "进入全屏时自动捕获输入";
+
 /* VMDisplayQemuMetalWindowController */
 "Captured mouse" = "鼠标已捕获";
 
@@ -293,6 +296,9 @@
 "Do not show prompt when USB device is plugged in" = "插入 USB 设备时不显示提示";
 
 /* No comment provided by engineer. */
+"Do you want to copy this VM and all its data to internal storage?" = "要将此虚拟机及其所有数据拷贝到内部存储吗？";
+
+/* No comment provided by engineer. */
 "Do you want to delete this VM and all its data?" = "要删除此虚拟机及其所有数据吗？";
 
 /* No comment provided by engineer. */
@@ -384,6 +390,9 @@
 
 /* UTMDownloadVMTask */
 "Failed to parse the downloaded VM." = "解析下载的虚拟机失败。";
+
+/* VMDisplayWindowController */
+"Failed to save suspend state" = "无法保存挂起状态。";
 
 /* UTMQemuVirtualMachine */
 "Failed to save VM snapshot. Usually this means at least one device does not support snapshots. %@" = "保存虚拟机快照失败。通常这意味着至少有一台设备不支持快照。%@";
@@ -580,6 +589,9 @@
 
 /* UTMAppleConfigurationDevices */
 "Mouse" = "鼠标";
+
+/* No comment provided by engineer. */
+"Mouse/Keyboard" = "鼠标/键盘";
 
 /* No comment provided by engineer. */
 "Move Down" = "下移";
@@ -935,6 +947,9 @@
 /* UTMQemuVirtualMachine */
 "Suspend is not supported when GPU acceleration is enabled." = "启用 GPU 加速时不支持挂起。";
 
+/* UTMQemuVirtualMachine */
+"Suspend state cannot be saved when running in disposible mode." = "在一次性模式下运行时，无法保存挂起状态。";
+
 /* VMData */
 "Suspended" = "已挂起";
 
@@ -959,8 +974,20 @@
 /* No comment provided by engineer. */
 "Test" = "测试";
 
+/* No comment provided by engineer. */
+"Test 1" = "测试 1";
+
+/* No comment provided by engineer. */
+"Test 2" = "测试 2";
+
 /* UTMConfiguration */
 "The backend for this configuration is not supported." = "不支持此配置的后端。";
+
+/* UTMScriptingUSBDeviceImpl */
+"The device cannot be found." = "找不到该设备。";
+
+/* UTMScriptingUSBDeviceImpl */
+"The device is not currently connected." = "设备目前尚未连接。";
 
 /* UTMConfiguration */
 "The drive '%@' already exists and cannot be created." = "驱动器 '%@' 已存在，无法创建。";
@@ -1152,6 +1179,9 @@
 
 /* No comment provided by engineer. */
 "VM display size is fixed" = "虚拟机显示大小为固定";
+
+/* No comment provided by engineer. */
+"Waiting for VM to connect to display..." = "等待虚拟机连接到显示...";
 
 /* No comment provided by engineer. */
 "Welcome to UTM" = "欢迎使用 UTM";
