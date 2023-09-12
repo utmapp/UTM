@@ -1,1 +1,9 @@
-"" = "";
+/* Bundle name */
+"CFBundleName" = "UTM";
+
+/* Privacy - Microphone Usage Description */
+"NSMicrophoneUsageDescription" = "任何虛擬電腦都需要許可才能由咪高風進行錄製。";
+
+/* (No Comment) */
+"UTM virtual machine" = "UTM 虛擬電腦";
+

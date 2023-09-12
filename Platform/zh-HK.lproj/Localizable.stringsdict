@@ -12,10 +12,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>lld</string>
-			<key>one</key>
-			<string>%lld Core</string>
 			<key>other</key>
-			<string>%lld Cores</string>
+			<string>%lld 個核心</string>
 		</dict>
 	</dict>
 </dict>

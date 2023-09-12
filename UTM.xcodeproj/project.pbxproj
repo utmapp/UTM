@@ -1697,6 +1697,7 @@
 		F6DA2DAA2AAFED5F0070DCD1 /* zh-HK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = "zh-HK"; path = "zh-HK.lproj/Localizable.stringsdict"; sourceTree = "<group>"; };
 		F6DA2DAB2AAFED5F0070DCD1 /* zh-HK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-HK"; path = "zh-HK.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F6DA2DAC2AAFED5F0070DCD1 /* zh-HK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-HK"; path = "zh-HK.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		F6DA2DAD2AAFEDAC0070DCD1 /* zh-HK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-HK"; path = "zh-HK.lproj/QEMULauncher-InfoPlist.strings"; sourceTree = "<group>"; };
 		FF0307542A84E3B70049979B /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/QEMULauncher-InfoPlist.strings"; sourceTree = "<group>"; };
 		FF0307562A84E3B70049979B /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.stringsdict"; sourceTree = "<group>"; };
 		FF0307572A84E3B70049979B /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/VMDisplayMetalViewInputAccessory.strings"; sourceTree = "<group>"; };
@@ -3475,6 +3476,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				FF0307542A84E3B70049979B /* zh-Hant */,
+				F6DA2DAD2AAFEDAC0070DCD1 /* zh-HK */,
 			);
 			name = "QEMULauncher-InfoPlist.strings";
 			sourceTree = "<group>";
