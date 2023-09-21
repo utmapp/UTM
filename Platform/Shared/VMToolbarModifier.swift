@@ -47,6 +47,9 @@ struct VMToolbarModifier: ViewModifier {
     
     func body(content: Content) -> some View {
         content.toolbar {
+            #if os(visionOS)
+            UTMPreferenceButtonToolbarContent()
+            #endif
             ToolbarItemGroup(placement: buttonPlacement) {
                 if vm.isShortcut {
                     DestructiveButton {
@@ -151,3 +154,18 @@ struct VMToolbarModifier: ViewModifier {
         })
     }
 }
+
+#if os(visionOS)
+struct UTMPreferenceButtonToolbarContent: ToolbarContent {
+    var body: some ToolbarContent {
+        ToolbarItem(placement: .topBarLeading) {
+            Button {
+                UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!, options: [:], completionHandler: nil)
+            } label: {
+                Label("Preferences", systemImage: "gear")
+                    .labelStyle(.iconOnly)
+            }.help("Show UTM preferences")
+        }
+    }
+}
+#endif

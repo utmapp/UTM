@@ -30,6 +30,11 @@ struct VMNavigationListView: View {
                     VMDetailsView(vm: vm)
                 } else {
                     VMPlaceholderView()
+                    #if os(visionOS)
+                        .toolbar {
+                            UTMPreferenceButtonToolbarContent()
+                        }
+                    #endif
                 }
             }
         } else {
