@@ -2553,6 +2553,7 @@
 				CE2D926924AD46670059923A /* Sources */,
 				CE2D932B24AD46670059923A /* Frameworks */,
 				CE2D936924AD46670059923A /* Resources */,
+				CE59A7B12ABCC75F00E5FFBD /* Patch Settings bundle */,
 				CE2D937524AD46670059923A /* Embed Libraries */,
 			);
 			buildRules = (
@@ -2632,6 +2633,7 @@
 				CEA45E24263519B5002FA97D /* Sources */,
 				CEA45F23263519B5002FA97D /* Frameworks */,
 				CEA45F63263519B5002FA97D /* Resources */,
+				CE59A7B22ABCCB7C00E5FFBD /* Patch Settings bundle */,
 				CEA45F71263519B5002FA97D /* Embed Libraries */,
 			);
 			buildRules = (
@@ -2822,6 +2824,51 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		CE59A7B12ABCC75F00E5FFBD /* Patch Settings bundle */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Platform/iOS/Settings.bundle",
+			);
+			name = "Patch Settings bundle";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(TARGET_BUILD_DIR)/$(CONTENTS_FOLDER_PATH)/Settings.bundle/Root.plist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#!/bin/sh\n\nPLISTBUDDY=/usr/libexec/PlistBuddy\nROOT_PLIST=\"$SCRIPT_OUTPUT_FILE_0\"\n\nCOUNT=$($PLISTBUDDY -c \"Print :PreferenceSpecifiers\" \"$ROOT_PLIST\" | grep -c '^    }$')\n\nfor ((i = 0; i < COUNT; i++)); do\n    platform=$($PLISTBUDDY -c \"Print :PreferenceSpecifiers:$i:Platform\" \"$ROOT_PLIST\" 2> /dev/null)\n    if [ ! -z \"$platform\" ]; then\n        if [ \"$platform\" == \"$PLATFORM_FAMILY_NAME\" ]; then\n            echo \"Found entry $i for $platform\"\n            $PLISTBUDDY -c \"Delete :PreferenceSpecifiers:$i:Platform\" \"$ROOT_PLIST\"\n        else\n            echo \"Found entry $i for $platform, removing entry\"\n            $PLISTBUDDY -c \"Delete :PreferenceSpecifiers:$i\" \"$ROOT_PLIST\"\n            ((COUNT--))\n            ((i--))\n        fi\n    fi\ndone\n";
+			showEnvVarsInLog = 0;
+		};
+		CE59A7B22ABCCB7C00E5FFBD /* Patch Settings bundle */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Platform/iOS/Settings.bundle",
+			);
+			name = "Patch Settings bundle";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(TARGET_BUILD_DIR)/$(CONTENTS_FOLDER_PATH)/Settings.bundle/Root.plist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#!/bin/sh\n\nPLISTBUDDY=/usr/libexec/PlistBuddy\nROOT_PLIST=\"$SCRIPT_OUTPUT_FILE_0\"\n\nCOUNT=$($PLISTBUDDY -c \"Print :PreferenceSpecifiers\" \"$ROOT_PLIST\" | grep -c '^    }$')\n\nfor ((i = 0; i < COUNT; i++)); do\n    platform=$($PLISTBUDDY -c \"Print :PreferenceSpecifiers:$i:Platform\" \"$ROOT_PLIST\" 2> /dev/null)\n    if [ ! -z \"$platform\" ]; then\n        if [ \"$platform\" == \"$PLATFORM_FAMILY_NAME\" ]; then\n            echo \"Found entry $i for $platform\"\n            $PLISTBUDDY -c \"Delete :PreferenceSpecifiers:$i:Platform\" \"$ROOT_PLIST\"\n        else\n            echo \"Found entry $i for $platform, removing entry\"\n            $PLISTBUDDY -c \"Delete :PreferenceSpecifiers:$i\" \"$ROOT_PLIST\"\n            ((COUNT--))\n            ((i--))\n        fi\n    fi\ndone\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		8401FD5E269BE9C500265F0D /* Sources */ = {

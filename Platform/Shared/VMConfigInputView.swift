@@ -74,7 +74,7 @@ fileprivate enum UsbSupport: Int, Identifiable {
     }
 }
 
-#if os(macOS)
+#if os(macOS) || os(visionOS)
 @available(macOS 11, *)
 struct GestureSettingsSection: View {
     var body: some View {
