@@ -161,6 +161,8 @@
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
 			<string>Gestures</string>
+			<key>Platform</key>
+			<string>iOS</string>
 		</dict>
 		<dict>
 			<key>Type</key>
@@ -169,6 +171,8 @@
 			<string>Long Press</string>
 			<key>Key</key>
 			<string>GestureLongPress</string>
+			<key>Platform</key>
+			<string>iOS</string>
 			<key>DefaultValue</key>
 			<integer>1</integer>
 			<key>Titles</key>
@@ -191,6 +195,8 @@
 			<string>Two Finger Tap</string>
 			<key>Key</key>
 			<string>GestureTwoTap</string>
+			<key>Platform</key>
+			<string>iOS</string>
 			<key>DefaultValue</key>
 			<integer>2</integer>
 			<key>Titles</key>
@@ -211,6 +217,8 @@
 			<string>Two Finger Pan</string>
 			<key>Key</key>
 			<string>GestureTwoPan</string>
+			<key>Platform</key>
+			<string>iOS</string>
 			<key>DefaultValue</key>
 			<integer>3</integer>
 			<key>Titles</key>
@@ -235,6 +243,8 @@
 			<string>Two Finger Swipe</string>
 			<key>Key</key>
 			<string>GestureTwoScroll</string>
+			<key>Platform</key>
+			<string>iOS</string>
 			<key>DefaultValue</key>
 			<integer>0</integer>
 			<key>Titles</key>
@@ -255,6 +265,8 @@
 			<string>Three Finger Pan</string>
 			<key>Key</key>
 			<string>GestureThreePan</string>
+			<key>Platform</key>
+			<string>iOS</string>
 			<key>DefaultValue</key>
 			<integer>0</integer>
 			<key>Titles</key>
@@ -285,6 +297,8 @@
 			<string>Touch Input</string>
 			<key>Key</key>
 			<string>MouseTouchType</string>
+			<key>Platform</key>
+			<string>iOS</string>
 			<key>DefaultValue</key>
 			<integer>0</integer>
 			<key>Titles</key>
@@ -304,9 +318,33 @@
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
+			<string>Visibility</string>
+			<key>Key</key>
+			<string>MouseTouchType</string>
+			<key>Platform</key>
+			<string>xrOS</string>
+			<key>DefaultValue</key>
+			<integer>2</integer>
+			<key>Titles</key>
+			<array>
+				<string>Always show cursor</string>
+				<string>Try hiding cursor</string>
+			</array>
+			<key>Values</key>
+			<array>
+				<integer>1</integer>
+				<integer>2</integer>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
 			<string>Apple Pencil Input</string>
 			<key>Key</key>
 			<string>MousePencilType</string>
+			<key>Platform</key>
+			<string>iOS</string>
 			<key>DefaultValue</key>
 			<integer>2</integer>
 			<key>Titles</key>
