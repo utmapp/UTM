@@ -87,6 +87,14 @@ If you have a free Apple Developer account, you need to generate a new signing c
 
 Set `DEVELOPER_ACCOUNT_PAID = YES` if you used a paid Apple Developer account in order to automatically request the increased memory limit entitlement from Apple.
 
+Sign executables in dependencies to run the project on a real device:
+
+codesign --sign - --deep /path/to/EGL --force
+
+codesign --sign - --deep /path/to/GLESv2 --force
+
+etc.
+
 ### Tethered Launch
 
 For JIT to work on the latest version of iOS, it must be launched through the debugger. You can do it from Xcode (and detach the debugger after launching) or you can follow [these instructions](TetheredLaunch.md) for an easier way.
