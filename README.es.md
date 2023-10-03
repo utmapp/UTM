@@ -6,7 +6,7 @@
 
 -- <cite>Alan Turing, 1936</cite>
 
-UTM es un emulador de sistemas completo y un host de máquinas virtuales para iOS y macOS, que está basado directamente en QEMU. En otras palabras, te permite ejecutar Windows, Linux y más en tu Mac, iPhone y iPad. Puedes ver más información en https://getutm.app y https://mac.getutm.app.
+UTM es un emulador de sistemas completo y un host de máquinas virtuales para iOS y macOS, que está basado directamente en QEMU. En otras palabras, te permite ejecutar Windows, Linux y más en tu Mac, iPhone e iPad. Puedes ver más información en https://getutm.app y https://mac.getutm.app.
 
 <p align="center">
   <img width="450px" alt="UTM ejecutando en un iPhone" src="screen.png">
@@ -22,7 +22,7 @@ UTM es un emulador de sistemas completo y un host de máquinas virtuales para iO
 * Modo de terminal de texto.
 * Dispositivos USB.
 * Aceleración basada en JIT con QEMU TCG.
-* Interfaz diseñada desde cero para macOS 11 y iOS 11+ usando las mejores y más recientes APIs.
+* Interfaz diseñada desde cero para macOS 11 e iOS 11+ usando las mejores y más recientes APIs.
 * Crea, gestiona y ejecuta máquinas virtuales (VM) directamente desde tu dispositivo.
 
 ## Características adicionales de macOS
@@ -32,7 +32,7 @@ UTM es un emulador de sistemas completo y un host de máquinas virtuales para iO
 
 ## UTM SE
 
-UTM/QEMU requiere de la generaciónd e código dinámico (JIT) para un máximo rendimiento. En dispositivos iOS, Jit requiere ya sea de un dispositivo con Jailbreak o cualquiera de las soluciones encontradas para versiones específicas de iOS (consulte "Instalar" para más detalles).
+UTM/QEMU requiere de la generación de código dinámico (JIT) para un máximo rendimiento. En dispositivos iOS, Jit requiere ya sea de un dispositivo con Jailbreak o cualquiera de las soluciones encontradas para versiones específicas de iOS (consulte "Instalar" para más detalles).
 
 UTM SE ("slow edition", edición lenta) usa un [intérprete de subprocesos][3] que funciona mejor que un intérprete tradicional pero aún más lento que JIT. Esta técnica es similar a lo que [iSH][4] realiza para la ejecución dinámica. Como resultado, UTM SE no requiere de Jailbreak ni ninguna solución alterna de JIT, además que puede ser descargada como una aplicación normal (a través del sideloading).
 
