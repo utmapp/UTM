@@ -23,8 +23,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/futuretap/InAppSettingsKit.git",
       "state" : {
-        "revision" : "1c5122f51206ea86b2301ea8a93e7703617a9b40",
-        "version" : "3.3.6"
+        "revision" : "2957af57ff10294eaa013d7378a7c95b24aeaddd",
+        "version" : "3.4.1"
       }
     },
     {
@@ -50,8 +50,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-argument-parser.git",
       "state" : {
-        "revision" : "fee6933f37fde9a5e12a1e4aeaa93fe60116ff2a",
-        "version" : "1.2.2"
+        "revision" : "8f4d2753f0e4778c76d5f05ad16c74f707390531",
+        "version" : "1.2.3"
       }
     },
     {
@@ -59,16 +59,17 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-log",
       "state" : {
-        "revision" : "5996c7a1b4a3bc972a43f55c78437f23a8eae465"
+        "revision" : "532d8b529501fb73a2455b179e0bbb6d49b652ed",
+        "version" : "1.5.3"
       }
     },
     {
       "identity" : "swiftterm",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/osy/SwiftTerm.git",
+      "location" : "https://github.com/migueldeicaza/SwiftTerm.git",
       "state" : {
-        "branch" : "visionos",
-        "revision" : "ce8e0f17196e0fafa0f150ce129a91a04a97eb85"
+        "branch" : "main",
+        "revision" : "e2b431dbf73f775fb4807a33e4572ffd3dc6933a"
       }
     },
     {
@@ -83,9 +84,10 @@
     {
       "identity" : "zipfoundation",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/osy/ZIPFoundation.git",
+      "location" : "https://github.com/weichsel/ZIPFoundation.git",
       "state" : {
-        "revision" : "6793a6e7c587503aa078ec1246d71ef8fb50733b"
+        "revision" : "a3f5c2bae0f04b0bce9ef3c4ba6bd1031a0564c4",
+        "version" : "0.9.17"
       }
     }
   ],

@@ -4181,10 +4181,10 @@
 /* Begin XCRemoteSwiftPackageReference section */
 		8399328E272F4A400059355F /* XCRemoteSwiftPackageReference "ZIPFoundation" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/osy/ZIPFoundation.git";
+			repositoryURL = "https://github.com/weichsel/ZIPFoundation.git";
 			requirement = {
-				kind = revision;
-				revision = 6793a6e7c587503aa078ec1246d71ef8fb50733b;
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.17;
 			};
 		};
 		84018693288B66370050AC51 /* XCRemoteSwiftPackageReference "swiftui-visual-effects" */ = {
@@ -4197,9 +4197,9 @@
 		};
 		848F71E4277A2466006A0240 /* XCRemoteSwiftPackageReference "SwiftTerm" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/osy/SwiftTerm.git";
+			repositoryURL = "https://github.com/migueldeicaza/SwiftTerm.git";
 			requirement = {
-				branch = visionos;
+				branch = main;
 				kind = branch;
 			};
 		};
@@ -4247,8 +4247,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apple/swift-log";
 			requirement = {
-				kind = revision;
-				revision = 5996c7a1b4a3bc972a43f55c78437f23a8eae465;
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.5.3;
 			};
 		};
 		CE93759724BB821F0074066F /* XCRemoteSwiftPackageReference "IQKeyboardManager" */ = {
