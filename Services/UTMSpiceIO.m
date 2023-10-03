@@ -141,7 +141,12 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
 }
 
 - (void)screenshotWithCompletion:(screenshotCallback_t)completion {
-    return [self.primaryDisplay screenshotWithCompletion:completion];
+    CSDisplay *primaryDisplay = self.primaryDisplay;
+    if (primaryDisplay) {
+        [self.primaryDisplay screenshotWithCompletion:completion];
+    } else {
+        completion(nil);
+    }
 }
 
 #pragma mark - CSConnectionDelegate
