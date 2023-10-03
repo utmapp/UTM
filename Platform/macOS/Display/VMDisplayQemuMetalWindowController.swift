@@ -111,8 +111,10 @@ class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
     }
     
     override func windowWillClose(_ notification: Notification) {
-        super.windowWillClose(notification)
         vmDisplay?.removeRenderer(renderer!)
+        stopAllCapture()
+        settingObservations = []
+        super.windowWillClose(notification)
     }
     
     override func enterLive() {
@@ -155,6 +157,11 @@ class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
             vmInput = nil
             displaySize = .zero
         }
+        stopAllCapture()
+        super.enterSuspended(isBusy: busy)
+    }
+
+    private func stopAllCapture() {
         if vmQemuConfig!.sharing.hasClipboardSharing {
             UTMPasteboard.general.releasePollingMode(forHashable: self) // stop clipboard polling
         }
@@ -167,9 +174,8 @@ class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
             self.globalEventMonitor = nil
         }
         releaseMouse()
-        super.enterSuspended(isBusy: busy)
     }
-    
+
     override func captureMouseButtonPressed(_ sender: Any) {
         captureMouse()
     }
