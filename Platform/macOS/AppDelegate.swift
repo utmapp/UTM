@@ -89,6 +89,7 @@
                             guard let vm = await vm.wrapped else {
                                 throw UTMVirtualMachineError.notImplemented
                             }
+                            try await vm.pause()
                             try await vm.saveSnapshot(name: nil)
                         }
                     }

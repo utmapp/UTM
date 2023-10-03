@@ -335,6 +335,7 @@ extension VMDisplayWindowController: NSWindowDelegate {
     private func windowWillCloseAfterSaving(_ sender: NSWindow) -> Bool {
         Task {
             do {
+                try await vm.pause()
                 try await vm.saveSnapshot(name: nil)
                 sender.close()
             } catch {
