@@ -74,7 +74,9 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
     private func stop(isKill: Bool = false) {
         showConfirmAlert(NSLocalizedString("This may corrupt the VM and any unsaved changes will be lost. To quit safely, shut down from the guest.", comment: "VMDisplayWindowController")) {
             self.enterSuspended(isBusy: true) // early indicator
-            self.vm.requestVmDeleteState()
+            if self.vm.registryEntry.isSuspended {
+                self.vm.requestVmDeleteState()
+            }
             self.vm.requestVmStop(force: isKill)
         }
     }
