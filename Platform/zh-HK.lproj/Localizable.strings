@@ -1,0 +1,1219 @@
+/* A removable drive that has no image file inserted. */
+"(empty)" = "(空)";
+
+/* VMConfigAppleDriveDetailsView */
+"(New Drive)" = "(新磁碟)";
+
+/* No comment provided by engineer. */
+"(new)" = "(新)";
+
+/* VMData */
+"(Unavailable)" = "(不可用)";
+
+/* QEMUConstant */
+"%@ (%@)" = "%1$@ (%2$@)";
+
+/* VMToolbarDriveMenuView */
+"%@ (%@): %@" = "%1$@ (%2$@): %3$@";
+
+/* VMDisplayMetalWindowController */
+"%@ (Display %lld)" = "%1$@ (顯示 %2$lld)";
+
+/* VMDisplayAppleTerminalWindowController
+   VMDisplayQemuTerminalWindowController */
+"%@ (Terminal %lld)" = "%1$@ (終端機 %2$lld)";
+
+/* VMRemovableDrivesView */
+"%@ %@" = "%1$@ %2$@";
+
+/* No comment provided by engineer. */
+"%@ ➡️ %@" = "%1$@ ➡️ %2$@";
+
+/* VMDrivesSettingsView */
+"%@ Drive" = "%@ 磁碟";
+
+/* VMDrivesSettingsView */
+"%@ Image" = "%@ 映像檔";
+
+/* Format string for remaining time until a download finishes */
+"%@ remaining" = "剩餘時間 %@";
+
+/* Format string for the 'per second' part of a download speed. */
+"%@/s" = "%@/s";
+
+/* Format string for download progress and speed, e. g. 5 MB of 6 GB (200 kbit/s) */
+"%1$@ of %2$@ (%3$@)" = "%1$@ / %2$@ (%3$@)";
+
+/* UTMScriptingAppDelegate */
+"A valid backend must be specified." = "必須指定有效的後端。";
+
+/* UTMScriptingAppDelegate */
+"A valid configuration must be specified." = "必須指定有效的配置。";
+
+/* UTMAppleConfiguration */
+"A valid kernel image must be specified." = "必須指定有效的內核映像檔。";
+
+/* VMDisplayAppleController */
+"Add…" = "新增⋯";
+
+/* No comment provided by engineer. */
+"Additional Options" = "附加項目";
+
+/* No comment provided by engineer. */
+"Additional Settings" = "附加設定";
+
+/* No comment provided by engineer. */
+"Advanced" = "進階";
+
+/* VMConfigSystemView */
+"Allocating too much memory will crash the VM." = "分配過多記憶體會使虛擬電腦當機。";
+
+/* UTMData */
+"AltJIT error: %@" = "AltJIT 錯誤：%@";
+
+/* UTMData */
+"An existing virtual machine already exists with this name." = "已經存在有此名稱的虛擬電腦。";
+
+/* UTMConfiguration */
+"An internal error has occurred." = "發生內部錯誤。";
+
+/* UTMConfiguration */
+"An invalid value of '%@' is used in the configuration file." = "設定檔裡使用了無效值「%@」。";
+
+/* UTMQemuImage */
+"An unknown QEMU error has occurred." = "發生未知的 QEMU 錯誤。";
+
+/* No comment provided by engineer. */
+"ANGLE (Metal)" = "ANGLE (Metal)";
+
+/* No comment provided by engineer. */
+"ANGLE (OpenGL)" = "ANGLE (OpenGL)";
+
+/* VMConfigSystemView */
+"Any unsaved changes will be lost." = "任何未儲存的變更都將丟失。";
+
+/* No comment provided by engineer. */
+"Architecture" = "體系結構";
+
+/* No comment provided by engineer. */
+"Are you sure you want to exit UTM?" = "確定要退出 UTM 嗎？";
+
+/* No comment provided by engineer. */
+"Are you sure you want to permanently delete this disk image?" = "確定要永久刪除此磁碟映像檔嗎？";
+
+/* No comment provided by engineer. */
+"Are you sure you want to reset this VM? Any unsaved changes will be lost." = "確定要重設此虛擬電腦嗎？任何未儲存的變更都將丟失。";
+
+/* No comment provided by engineer. */
+"Are you sure you want to stop this VM and exit? Any unsaved changes will be lost." = "確定要停止此虛擬電腦並退出嗎？任何未儲存的變更都將丟失。";
+
+/* No comment provided by engineer. */
+"Automatic" = "自動";
+
+/* UTMQemuConstants */
+"Automatic Serial Device (max 4)" = "自動序列裝置 (最大值為 4)";
+
+/* UTMLegacyQemuConfiguration
+   UTMQemuConstants */
+"BIOS" = "BIOS";
+
+/* UTMQemuConstants */
+"Bold" = "粗體";
+
+/* No comment provided by engineer. */
+"Boot" = "啟動";
+
+/* No comment provided by engineer. */
+"Boot Arguments" = "啟動參數";
+
+/* No comment provided by engineer. */
+"Boot Image Type" = "啟動映像檔種類";
+
+/* No comment provided by engineer. */
+"Boot ISO Image" = "啟動 ISO 映像檔";
+
+/* No comment provided by engineer. */
+"Boot ISO Image (optional)" = "啟動 ISO 映像檔 (可選)";
+
+/* No comment provided by engineer. */
+"Boot VHDX Image" = "啟動 VHDX 映像檔 (可選)";
+
+/* UTMQemuConstants */
+"Bridged (Advanced)" = "橋連 (進階)";
+
+/* No comment provided by engineer. */
+"Bridged Settings" = "橋連設定";
+
+/* Welcome view */
+"Browse UTM Gallery" = "瀏覽 UTM 虛擬電腦庫";
+
+/* No comment provided by engineer. */
+"Browse…" = "瀏覽⋯";
+
+/* No comment provided by engineer. */
+"Build" = "構建";
+
+/* UTMQemuConstants */
+"Built-in Terminal" = "內置終端機";
+
+/* No comment provided by engineer. */
+"Busy…" = "正忙⋯";
+
+/* VMDisplayWindowController
+   VMQemuDisplayMetalWindowController */
+"Cancel" = "取消";
+
+/* UTMAppleVirtualMachine */
+"Cannot access resource: %@" = "無法取用資源：%@";
+
+/* UTMSWTPM */
+"Cannot access TPM data." = "無法取用 TPM 資料。";
+
+/* UTMAppleVirtualMachine */
+"Cannot create virtual terminal." = "無法製作虛擬終端機。";
+
+/* UTMData */
+"Cannot find AltServer for JIT enable. You cannot run VMs until JIT is enabled." = "無法找到 JIT 啟用的 AltServer。在啟用 JIT 之前，你無法執行虛擬電腦。";
+
+/* UTMData */
+"Cannot import this VM. Either the configuration is invalid, created in a newer version of UTM, or on a platform that is incompatible with this version of UTM." = "無法輸入此虛擬電腦。可能設定無效，或是在較新版本的 UTM 上製作，或是在與此版本的 UTM 不相容的平台上製作。";
+
+/* No comment provided by engineer. */
+"Caps Lock (⇪) is treated as a key" = "將 Caps Lock (⇪) 視為按鍵";
+
+/* VMMetalView */
+"Capture Input" = "截取輸入";
+
+/* No comment provided by engineer. */
+"Capture input automatically when entering full screen" = "進入全螢幕時自動截取輸入";
+
+/* VMDisplayQemuMetalWindowController */
+"Captured mouse" = "已截取滑鼠";
+
+/* Configuration boot device */
+"CD/DVD" = "CD/DVD";
+
+/* UTMLegacyQemuConfiguration
+   UTMQemuConstants */
+"CD/DVD (ISO) Image" = "CD/DVD (ISO) 映像檔";
+
+/* VMDisplayWindowController */
+"Change" = "變更";
+
+/* VMDisplayAppleController */
+"Change…" = "變更⋯";
+
+/* No comment provided by engineer. */
+"Clear" = "清除";
+
+/* VMQemuDisplayMetalWindowController */
+"Closing this window will kill the VM." = "關閉此視窗會結束虛擬電腦。";
+
+/* VMQemuDisplayMetalWindowController */
+"Confirm" = "確認";
+
+/* No comment provided by engineer. */
+"Confirm Delete" = "確認刪除";
+
+/* VMDisplayWindowController */
+"Confirmation" = "確認";
+
+/* No comment provided by engineer. */
+"Connection" = "連線";
+
+/* No comment provided by engineer. */
+"Console" = "主控台";
+
+/* No comment provided by engineer. */
+"Continue" = "繼續";
+
+/* No comment provided by engineer. */
+"CoreAudio (Output Only)" = "CoreAudio (僅輸出)";
+
+/* No comment provided by engineer. */
+"Cores" = "核心";
+
+/* No comment provided by engineer. */
+"CPU" = "CPU";
+
+/* No comment provided by engineer. */
+"CPU Cores" = "CPU 核心";
+
+/* No comment provided by engineer. */
+"Create" = "製作";
+
+/* Welcome view */
+"Create a New Virtual Machine" = "製作一個新虛擬電腦";
+
+/* VMConfigAppleDisplayView */
+"Custom" = "自訂";
+
+/* UTMSWTPM */
+"Data not specified." = "未指定資料。";
+
+/* No comment provided by engineer. */
+"Debug Logging" = "除錯記錄";
+
+/* QEMUConstantGenerated
+   UTMQemuConstants */
+"Default" = "預設";
+
+/* VMWizardSummaryView */
+"Default Cores" = "預設核心";
+
+/* No comment provided by engineer. */
+"Delete" = "刪除";
+
+/* No comment provided by engineer. */
+"Devices" = "裝置";
+
+/* VMDisplayAppleWindowController */
+"Directory sharing" = "目錄共享";
+
+/* UTMQemuConstants */
+"Disabled" = "禁用";
+
+/* UTMLegacyQemuConfiguration
+   UTMQemuConstants */
+"Disk Image" = "磁碟映像檔";
+
+/* VMDisplayAppleWindowController */
+"Display" = "顯示";
+
+/* VMDisplayQemuDisplayController */
+"Display %lld: %@" = "顯示 %1$lld：%2$@";
+
+/* VMDisplayQemuDisplayController */
+"Disposable Mode" = "即拋式模式";
+
+/* No comment provided by engineer. */
+"Do not save VM screenshot to disk" = "不要將虛擬電腦快照儲存到磁碟";
+
+/* No comment provided by engineer. */
+"Do not show confirmation when closing a running VM" = "關閉正在執行的虛擬電腦時不顯示確認";
+
+/* No comment provided by engineer. */
+"Do not show prompt when USB device is plugged in" = "插入 USB 裝置時不顯示提示";
+
+/* No comment provided by engineer. */
+"Do you want to copy this VM and all its data to internal storage?" = "你要複製此虛擬電腦及其所有資料到內部儲存空間嗎？";
+
+/* No comment provided by engineer. */
+"Do you want to delete this VM and all its data?" = "你要刪除此虛擬電腦及其所有資料嗎？";
+
+/* No comment provided by engineer. */
+"Do you want to duplicate this VM and all its data?" = "你要製作此虛擬電腦及其所有資料的副本嗎？";
+
+/* No comment provided by engineer. */
+"Do you want to force stop this VM and lose all unsaved data?" = "你要強制停止此虛擬電腦並丟失所有未儲存的資料嗎？";
+
+/* No comment provided by engineer. */
+"Do you want to move this VM to another location? This will copy the data to the new location, delete the data from the original location, and then create a shortcut." = "你要將此虛擬電腦移動到其他位置嗎？這將會複製資料到新位置，刪除原先位置資料，並製作捷徑。";
+
+/* No comment provided by engineer. */
+"Do you want to remove this shortcut? The data will not be deleted." = "你要刪除此捷徑嗎？資料不會被刪除。";
+
+/* No comment provided by engineer. */
+"Download prebuilt from UTM Gallery…" = "從 UTM 虛擬電腦庫下載預構建⋯";
+
+/* No comment provided by engineer. */
+"Drag and drop IPSW file here" = "拖移 IPSW 檔到此";
+
+/* UTMScriptingConfigImpl */
+"Drive description is invalid." = "磁碟描述無效。";
+
+/* No comment provided by engineer. */
+"Drives" = "磁碟";
+
+/* VMDrivesSettingsView */
+"EFI Variables" = "EFI 變數";
+
+/* VMDisplayWindowController */
+"Eject" = "退出";
+
+/* No comment provided by engineer. */
+"Emulate" = "模擬";
+
+/* UTMQemuConstants */
+"Emulated VLAN" = "模擬 VLAN";
+
+/* No comment provided by engineer. */
+"Enable Clipboard Sharing" = "啟用剪貼板共享";
+
+/* VMDisplayWindowController */
+"Error" = "錯誤";
+
+/* No comment provided by engineer. */
+"Existing" = "已經存在";
+
+/* No comment provided by engineer. */
+"Export QEMU Command…" = "輸出 QEMU 指令⋯";
+
+/* Word for decompressing a compressed folder */
+"Extracting…" = "正在解壓縮⋯";
+
+/* UTMQemuVirtualMachine */
+"Failed to access data from shortcut." = "無法從捷徑取用資料。";
+
+/* UTMQemuVirtualMachine */
+"Failed to access drive image path." = "無法取用磁碟映像檔路徑。";
+
+/* UTMQemuVirtualMachine */
+"Failed to access shared directory." = "無法取用共享目錄。";
+
+/* ContentView */
+"Failed to attach to JitStreamer:\n%@" = "無法附加至 JitStreamer：%@";
+
+/* UTMData */
+"Failed to attach to JitStreamer." = "無法附加至 JitStreamer。";
+
+/* UTMSpiceIO */
+"Failed to change current directory." = "無法變更當前目錄。";
+
+/* UTMData */
+"Failed to clone VM." = "無法克隆虛擬電腦。";
+
+/* UTMData */
+"Failed to decode JitStreamer response." = "無法解碼 JitStreamer 回應。";
+
+/* VMWizardState */
+"Failed to get latest macOS version from Apple." = "無法從 Apple 取得最新的 macOS 版本。";
+
+/* UTMQemuConfigurationError */
+"Failed to migrate configuration from a previous UTM version." = "無法從以前版本的 UTM 轉移設定。";
+
+/* UTMData */
+"Failed to parse download URL." = "無法解析已經下載的 URL。";
+
+/* UTMData */
+"Failed to parse imported VM." = "無法解析已經輸入的虛擬電腦。";
+
+/* UTMDownloadVMTask */
+"Failed to parse the downloaded VM." = "無法解析已經下載的虛擬電腦。";
+
+/* VMDisplayWindowController */
+"Failed to save suspend state" = "無法儲存暫停狀態。";
+
+/* UTMQemuVirtualMachine */
+"Failed to save VM snapshot. Usually this means at least one device does not support snapshots. %@" = "無法儲存虛擬電腦快照。通常這意味著至少有一個裝置不支援快照。%@";
+
+/* UTMSpiceIO */
+"Failed to start SPICE client." = "無法啟動 SPICE 客戶端。";
+
+/* No comment provided by engineer. */
+"Faster, but can only run the native CPU architecture." = "較快，但只能執行原生 CPU 體系結構。";
+
+/* Configuration boot device
+   UTMQemuConstants */
+"Floppy" = "軟碟";
+
+/* No comment provided by engineer. */
+"Font Size" = "字體大小";
+
+/* VMDisplayWindowController */
+"Force kill" = "強制結束";
+
+/* VMDisplayWindowController */
+"Force kill the VM process with high risk of data corruption." = "強制結束虛擬電腦程序 (會有高風險使資料損壞)。";
+
+/* No comment provided by engineer. */
+"Force Multicore" = "強制多核心";
+
+/* VMDisplayWindowController */
+"Force shut down" = "強制關機";
+
+/* No comment provided by engineer. */
+"GB" = "GB";
+
+/* UTMQemuConstants */
+"GDB Debug Stub" = "GDB Debug Stub";
+
+/* No comment provided by engineer. */
+"Generic" = "一般";
+
+/* No comment provided by engineer. */
+"Gesture and Cursor Settings" = "手勢與指標設定";
+
+/* No comment provided by engineer. */
+"Guest drivers are required for 3D acceleration." = "需要客戶端驅動程式才能使用 3D 加速。";
+
+/* Configuration boot device */
+"Hard Disk" = "硬碟";
+
+/* No comment provided by engineer. */
+"Hardware" = "硬件";
+
+/* No comment provided by engineer. */
+"Hello" = "你好";
+
+/* No comment provided by engineer. */
+"Hide Unused…" = "隱藏未使用的⋯";
+
+/* No comment provided by engineer. */
+"Hold Control (⌃) for right click" = "按住 Control (⌃) 來右鍵點按";
+
+/* UTMQemuConstants */
+"Host Only" = "僅主機";
+
+/* No comment provided by engineer. */
+"Icon" = "圖示";
+
+/* UTMQemuConstants */
+"IDE" = "IDE";
+
+/* UTMScriptingConfigImpl */
+"Identifier '%@' cannot be found." = "識別碼「%@」未找到。";
+
+/* No comment provided by engineer. */
+"Image File Type" = "映像檔種類";
+
+/* No comment provided by engineer. */
+"Import IPSW" = "輸入 IPSW";
+
+/* No comment provided by engineer. */
+"Import…" = "輸入⋯";
+
+/* VMDetailsView */
+"Inactive" = "未啟用";
+
+/* UTMScriptingConfigImpl */
+"Index %lld cannot be found." = "索引 %lld 未找到。";
+
+/* No comment provided by engineer. */
+"Information" = "訊息";
+
+/* VMDisplayWindowController */
+"Install Windows Guest Tools…" = "安裝 Windows 客戶端工具⋯";
+
+/* VMDisplayAppleWindowController */
+"Installation: %@" = "安裝：%@";
+
+/* UTMProcess */
+"Internal error has occurred." = "發生內部錯誤。";
+
+/* UTMSpiceIO */
+"Internal error trying to connect to SPICE server." = "在連線 SPICE 伺服器時發生內部錯誤。";
+
+/* VMDisplayMetalWindowController */
+"Internal error." = "內部錯誤。";
+
+/* UTMData */
+"Invalid JitStreamer attach URL:\n%@" = "無效的 JitStreamer 附加 URL：%@";
+
+/* VMConfigAppleNetworkingView */
+"Invalid MAC address." = "無效的 MAC 位址。";
+
+/* No comment provided by engineer. */
+"Invert scrolling" = "反轉捲動";
+
+/* No comment provided by engineer. */
+"IP Configuration" = "IP 設定";
+
+/* No comment provided by engineer. */
+"Isolate Guest from Host" = "將客戶端與主機隔離";
+
+/* UTMQemuConstants */
+"Italic" = "斜體";
+
+/* UTMQemuConstants */
+"Italic, Bold" = "斜體，粗體";
+
+/* No comment provided by engineer. */
+"Keep UTM running after last window is closed and all VMs are shut down" = "在最後一個視窗關閉並且所有虛擬電腦關機時保持 UTM 執行";
+
+/* No comment provided by engineer. */
+"License" = "許可協議";
+
+/* UTMQemuConstants */
+"Linear" = "線性";
+
+/* UTMAppleConfigurationBoot */
+"Linux" = "Linux";
+
+/* UTMLegacyQemuConfiguration
+   UTMQemuConstants */
+"Linux Device Tree Binary" = "Linux 裝置樹二進位檔";
+
+/* No comment provided by engineer. */
+"Linux initial ramdisk (optional)" = "Linux 起始 ramdisk (可選)";
+
+/* UTMLegacyQemuConfiguration
+   UTMQemuConstants */
+"Linux Kernel" = "Linux 核心";
+
+/* No comment provided by engineer. */
+"Linux kernel (required)" = "Linux 核心 (必填)";
+
+/* UTMLegacyQemuConfiguration
+   UTMQemuConstants */
+"Linux RAM Disk" = "Linux ramdisk";
+
+/* No comment provided by engineer. */
+"Linux Root FS Image (optional)" = "Linux rootfs 映像檔 (可選)";
+
+/* No comment provided by engineer. */
+"Linux Settings" = "Linux 設定";
+
+/* No comment provided by engineer. */
+"Logging" = "日誌";
+
+/* UTMAppleConfigurationBoot */
+"macOS" = "macOS";
+
+/* VMWizardOSMacView */
+"macOS guests are only supported on ARM64 devices." = "macOS 客戶端僅支援 ARM64 裝置。";
+
+/* VMWizardState */
+"macOS is not supported with QEMU." = "macOS 不支援 QEMU。";
+
+/* No comment provided by engineer. */
+"macOS Settings" = "macOS 設定";
+
+/* UTMQemuConstants */
+"Manual Serial Device (advanced)" = "手動序列裝置 (進階)";
+
+/* No comment provided by engineer. */
+"Maximum Shared USB Devices" = "最大共享 USB 裝置數";
+
+/* No comment provided by engineer. */
+"MB" = "MB";
+
+/* No comment provided by engineer. */
+"Memory" = "記憶體";
+
+/* VMDisplayMetalWindowController */
+"Metal is not supported on this device. Cannot render display." = "此裝置不支援 Metal，無法呈送顯示內容。";
+
+/* No comment provided by engineer. */
+"Minimum size: %@" = "最小大小：%@";
+
+/* UTMAppleConfigurationDevices */
+"Mouse" = "滑鼠";
+
+/* No comment provided by engineer. */
+"Mouse/Keyboard" = "滑鼠/鍵盤";
+
+/* No comment provided by engineer. */
+"Move Down" = "向下移動";
+
+/* No comment provided by engineer. */
+"Move Up" = "向上移動";
+
+/* UTMQemuConstants */
+"MTD (NAND/NOR)" = "MTD (NAND/NOR)";
+
+/* No comment provided by engineer. */
+"Name" = "名稱";
+
+/* UTMQemuConstants */
+"Nearest Neighbor" = "近鄰取樣";
+
+/* No comment provided by engineer. */
+"New" = "新增";
+
+/* No comment provided by engineer. */
+"New…" = "新增⋯";
+
+/* No comment provided by engineer. */
+"No" = "否";
+
+/* UTMScriptingAppDelegate */
+"No architecture specified in the configuration." = "未在設定裡指定體系結構。";
+
+/* VMDisplayWindowController */
+"No drives connected." = "無已經連線的磁碟。";
+
+/* UTMDownloadSupportToolsTaskError */
+"No empty removable drive found. Make sure you have at least one removable drive that is not in use." = "無法找到空的可移除式磁碟。請確定你至少有一個未使用的可移除式磁碟。";
+
+/* UTMScriptingAppDelegate */
+"No name specified in the configuration." = "設定裡沒有指定名稱。";
+
+/* No comment provided by engineer. */
+"No output device is selected for this window." = "在此視窗內未選取任何輸出裝置。";
+
+/* No comment provided by engineer. */
+"No release notes found for version %@." = "無法找到版本 %@ 的版本附註。";
+
+/* VMQemuDisplayMetalWindowController */
+"No USB devices detected." = "未偵測到 USB 裝置。";
+
+/* No comment provided by engineer. */
+"No virtual machines found." = "未找到虛擬電腦。";
+
+/* VMToolbarDriveMenuView */
+"none" = "無";
+
+/* UTMLegacyQemuConfiguration
+   UTMQemuConstants */
+"None" = "無";
+
+/* UTMQemuConstants */
+"None (Advanced)" = "無 (進階)";
+
+/* UTMVirtualMachine */
+"Not implemented." = "此功能未實現。";
+
+/* No comment provided by engineer. */
+"Notes" = "注意";
+
+/* No comment provided by engineer. */
+"Num Lock is forced on" = "Num Lock 強制開啟";
+
+/* UTMQemuConstants */
+"NVMe" = "NVMe";
+
+/* VMDisplayWindowController */
+"OK" = "好";
+
+/* UTMScriptingVirtualMachineImpl */
+"One or more required parameters are missing or invalid." = "一個或多個必需參數缺失或無效。";
+
+/* No comment provided by engineer. */
+"Open…" = "開啟⋯";
+
+/* No comment provided by engineer. */
+"Operating System" = "作業系統";
+
+/* UTMScriptingVirtualMachineImpl */
+"Operation not available." = "操作不可用。";
+
+/* UTMScriptingVirtualMachineImpl */
+"Operation not supported by the backend." = "操作不受後端支援。";
+
+/* No comment provided by engineer. */
+"Option (⌥) is Meta key" = "將 Option (⌥) 作為 Meta 鍵";
+
+/* No comment provided by engineer. */
+"Other" = "其他";
+
+/* VMDisplayWindowController */
+"Pause" = "暫停";
+
+/* VMData */
+"Paused" = "已經暫停";
+
+/* VMData */
+"Pausing" = "正在暫停";
+
+/* UTMQemuConstants */
+"PC System Flash" = "PC 系統快閃記憶體";
+
+/* No comment provided by engineer. */
+"Pending" = "待定";
+
+/* VMDisplayWindowController */
+"Play" = "播放";
+
+/* VMWizardState */
+"Please select a boot image." = "請選取一個啟動檔。";
+
+/* VMWizardState */
+"Please select a kernel file." = "請選取一個內核檔。";
+
+/* No comment provided by engineer. */
+"Please select a macOS recovery IPSW." = "請選取 IPSW 恢復檔。";
+
+/* No comment provided by engineer. */
+"Please select an uncompressed Linux kernel image." = "請選取未壓縮的 Linux 核心映像檔。";
+
+/* No comment provided by engineer. */
+"Port Forward" = "連線埠轉送";
+
+/* No comment provided by engineer. */
+"Preconfigured" = "預設定";
+
+/* A download process is about to begin. */
+"Preparing…" = "正在準備...";
+
+/* VMDisplayQemuMetalWindowController */
+"Press %@ to release cursor" = "按下 %@ 來放開指標";
+
+/* No comment provided by engineer. */
+"Prevent system from sleeping when any VM is running" = "在任何虛擬電腦執行時防止系統睡眠";
+
+/* UTMQemuConstants */
+"Pseudo-TTY Device" = "Pseudo-TTY 裝置";
+
+/* No comment provided by engineer. */
+"QEMU Arguments" = "QEMU 參數";
+
+/* No comment provided by engineer. */
+"QEMU Graphics Acceleration" = "QEMU 圖形加速";
+
+/* No comment provided by engineer. */
+"QEMU Keyboard" = "QEMU 鍵盤";
+
+/* UTMQemuConstants */
+"QEMU Monitor (HMP)" = "QEMU 顯示器 (HMP)";
+
+/* No comment provided by engineer. */
+"QEMU Pointer" = "QEMU 指標";
+
+/* No comment provided by engineer. */
+"QEMU Sound" = "QEMU 聲音";
+
+/* No comment provided by engineer. */
+"QEMU USB" = "QEMU USB";
+
+/* VMDisplayWindowController */
+"Querying drives status..." = "正在搜尋磁碟狀態⋯";
+
+/* VMQemuDisplayMetalWindowController */
+"Querying USB devices..." = "正在搜尋 USB 裝置⋯";
+
+/* VMQemuDisplayMetalWindowController */
+"Quitting UTM will kill all running VMs." = "退出 UTM 會結束所有執行的虛擬電腦。";
+
+/* No comment provided by engineer. */
+"Raw Image" = "Raw 映像檔";
+
+/* VMDisplayAppleController */
+"Read Only" = "唯讀";
+
+/* No comment provided by engineer. */
+"Reclaim" = "回收空間";
+
+/* UTMQemuConstants */
+"Regular" = "一般";
+
+/* VMRemovableDrivesView */
+"Removable" = "可移除";
+
+/* No comment provided by engineer. */
+"Removable Drive" = "可移除式磁碟";
+
+/* No comment provided by engineer. */
+"Remove" = "刪除";
+
+/* VMDisplayAppleController */
+"Remove…" = "刪除⋯";
+
+/* VMDisplayWindowController */
+"Request power down" = "請求關閉電源";
+
+/* No comment provided by engineer. */
+"Reset" = "重設";
+
+/* No comment provided by engineer. */
+"Resize" = "調整大小";
+
+/* No comment provided by engineer. */
+"Resize display to screen size and orientation automatically" = "自動將顯示大小調整為螢幕大小與方向";
+
+/* No comment provided by engineer. */
+"Resize display to window size automatically" = "自動將顯示大小調整為視窗大小";
+
+/* No comment provided by engineer. */
+"Resizing is experimental and could result in data loss. You are strongly encouraged to back-up this VM before proceeding. Would you like to resize to %@ GiB?" = "調整空間大小屬於實驗性功能，可能會導致資料丟失。強烈建議你先備份此虛擬電腦，然後再繼續操作。你要調整大小為 %@ GB 嗎？";
+
+/* VMData */
+"Restoring" = "正在還原";
+
+/* VMData */
+"Resuming" = "正在繼續";
+
+/* No comment provided by engineer. */
+"Retina Mode" = "Retina 模式";
+
+/* UTMAppleConfiguration */
+"Rosetta is not supported on the current host machine." = "當前主機不支援 Rosetta。";
+
+/* No comment provided by engineer. */
+"Running low on memory! UTM might soon be killed by iOS. You can prevent this by decreasing the amount of memory and/or JIT cache assigned to this VM" = "記憶體不足！UTM 可能很快會被 iOS 結束。你可以透過減少分配給此虛擬電腦的記憶體和/或 JIT 快取來防止這種情況。";
+
+/* No comment provided by engineer. */
+"Save" = "儲存";
+
+/* VMData */
+"Saving" = "正在儲存";
+
+/* No comment provided by engineer. */
+"Scaling" = "比例縮放";
+
+/* UTMQemuConstants */
+"SCSI" = "SCSI";
+
+/* UTMQemuConstants */
+"SD Card" = "SD 卡";
+
+/* No comment provided by engineer. */
+"Select a file." = "選取一個檔案。";
+
+/* VMDisplayWindowController */
+"Select Drive Image" = "選取磁碟映像檔";
+
+/* VMDisplayAppleWindowController
+   VMDisplayWindowController */
+"Select Shared Folder" = "選取共享的資料夾";
+
+/* SavePanel */
+"Select where to export QEMU command:" = "選取輸出 QEMU 指令的位置：";
+
+/* SavePanel */
+"Select where to save debug log:" = "選取儲存除錯記錄的位置：";
+
+/* SavePanel */
+"Select where to save UTM Virtual Machine:" = "選取儲存 UTM 虛擬電腦的位置：";
+
+/* No comment provided by engineer. */
+"Selected:" = "已選取：";
+
+/* VMDisplayWindowController */
+"Sends power down request to the guest. This simulates pressing the power button on a PC." = "向客戶端發送關閉電源請求。此操作模擬了按下 PC 上的電源按鈕。";
+
+/* VMDisplayAppleWindowController
+   VMDisplayQemuDisplayController */
+"Serial %lld" = "序列裝置 %lld";
+
+/* No comment provided by engineer. */
+"Share USB devices from host" = "從主機共享 USB 裝置";
+
+/* No comment provided by engineer. */
+"Shared directories in macOS VMs are only available in macOS 13 and later." = "macOS 虛擬電腦共享目錄僅在 macOS 13 及更高版本可用。";
+
+/* No comment provided by engineer. */
+"Shared Directory" = "已共享目錄";
+
+/* UTMQemuConstants */
+"Shared Network" = "共享網絡";
+
+/* No comment provided by engineer. */
+"Sharing" = "共享";
+
+/* No comment provided by engineer. */
+"Show Advanced Settings" = "顯示進階設定";
+
+/* No comment provided by engineer. */
+"Show All" = "顯示全部";
+
+/* No comment provided by engineer. */
+"Show All…" = "顯示全部⋯";
+
+/* No comment provided by engineer. */
+"Show dock icon" = "顯示 Dock 圖示";
+
+/* No comment provided by engineer. */
+"Show menu bar icon" = "顯示選單列圖示";
+
+/* No comment provided by engineer. */
+"Size" = "大小";
+
+/* No comment provided by engineer. */
+"Slower, but can run other CPU architectures." = "較慢，但可以執行其他 CPU 體系結構。";
+
+/* UTMSWTPM */
+"Socket not specified." = "未指定 socket。";
+
+/* No comment provided by engineer. */
+"Specify the size of the drive where data will be stored into." = "指定資料儲存到的磁碟的大小。";
+
+/* UTMQemuConstants */
+"SPICE WebDAV" = "SPICE WebDAV";
+
+/* No comment provided by engineer. */
+"SPICE with GStreamer (Input & Output)" = "SPICE with GStreamer (輸入與輸出)";
+
+/* VMData */
+"Started" = "已經啟動";
+
+/* VMData */
+"Starting" = "正在啟動";
+
+/* No comment provided by engineer. */
+"Stop" = "停止";
+
+/* VMData */
+"Stopped" = "已停止";
+
+/* VMData */
+"Stopping" = "正在停止";
+
+/* No comment provided by engineer. */
+"Style" = "樣式";
+
+/* No comment provided by engineer. */
+"Summary" = "概要";
+
+/* Welcome view */
+"Support" = "支援";
+
+/* UTMQemuVirtualMachine */
+"Suspend is not supported for virtualization." = "暫停功能不支援虛擬化。";
+
+/* UTMQemuVirtualMachine */
+"Suspend is not supported when an emulated NVMe device is active." = "当模擬 NVMe 裝置處於啟用狀態時，不支援暫停功能。";
+
+/* UTMQemuVirtualMachine */
+"Suspend is not supported when GPU acceleration is enabled." = "当 GPU 加速處於啟用狀態時，不支援暫停功能。";
+
+/* UTMQemuVirtualMachine */
+"Suspend state cannot be saved when running in disposible mode." = "在即拋式模式下執行虛擬電腦時，無法儲存暫停狀態。";
+
+/* VMData */
+"Suspended" = "暫停";
+
+/* UTMSWTPM */
+"SW TPM failed to start. %@" = "SW TPM 啟動失敗。%@";
+
+/* No comment provided by engineer. */
+"System" = "系統";
+
+/* UTMQemuConstants */
+"TCP" = "TCP";
+
+/* UTMQemuConstants */
+"TCP Client Connection" = "TCP 客戶端連線";
+
+/* UTMQemuConstants */
+"TCP Server Connection" = "TCP 伺服器連線";
+
+/* VMDisplayWindowController */
+"Tells the VM process to shut down with risk of data corruption. This simulates holding down the power button on a PC." = "告知關閉虛擬電腦程序（有損毀資料的風險）。此操作模擬了按下 PC 上的電源按鈕。";
+
+/* No comment provided by engineer. */
+"Test" = "測試";
+
+/* No comment provided by engineer. */
+"Test 1" = "測試 1";
+
+/* No comment provided by engineer. */
+"Test 2" = "測試 2";
+
+/* UTMConfiguration */
+"The backend for this configuration is not supported." = "不支援此設定的後端。";
+
+/* UTMScriptingUSBDeviceImpl */
+"The device cannot be found." = "無法找到此裝置。";
+
+/* UTMScriptingUSBDeviceImpl */
+"The device is not currently connected." = "此裝置當前未連線。";
+
+/* UTMConfiguration */
+"The drive '%@' already exists and cannot be created." = "磁碟「%@」已經存在，無法製作。";
+
+/* UTMDownloadSupportToolsTaskError */
+"The guest support tools have already been mounted." = "此客戶端支援工具已經被裝載。";
+
+/* UTMAppleConfiguration */
+"The host operating system needs to be updated to support one or more features requested by the guest." = "需要更新主機的作業系統以支援客戶端請求的一個或多個功能。";
+
+/* UTMAppleVirtualMachine */
+"The operating system cannot be installed on this machine." = "無法在此電腦上安裝該作業系統。";
+
+/* UTMAppleVirtualMachine */
+"The operation is not available." = "此操作不可用。";
+
+/* UTMScriptingVirtualMachineImpl */
+"The QEMU guest agent is not running or not installed on the guest." = "QEMU 客戶端代理程式未執行或未在客戶端上安裝。";
+
+/* No comment provided by engineer. */
+"The selected architecture is unsupported in this version of UTM." = "此版本的 UTM 不支援所選取的體系結構。";
+
+/* VMWizardState */
+"The selected boot image contains the word '%@' but the guest architecture is '%@'. Please ensure you have selected an image that is compatible with '%@'." = "選取的啟動映像檔包含單字「%1$@」，但客戶端體系結構為「%2$@」。請確保你選取了與「%3$@」體系結構相容的映像檔。";
+
+/* No comment provided by engineer. */
+"The target does not support hardware emulated serial connections." = "目標平台不支援硬件模擬序列連線。";
+
+/* UTMQemuVirtualMachine */
+"The virtual machine is in an invalid state." = "虛擬電腦處於無效狀態。";
+
+/* UTMScriptingVirtualMachineImpl */
+"The virtual machine is not running." = "虛擬電腦未在執行。";
+
+/* UTMScriptingVirtualMachineImpl */
+"The virtual machine must be stopped before this operation can be performed." = "必須先停止虛擬電腦，然後才能執行此操作。";
+
+/* Error shown when importing a ZIP file from web that doesn't contain a UTM Virtual Machine. */
+"There is no UTM file in the downloaded ZIP archive." = "在已下載的 ZIP 封存檔裡無 UTM 檔案。";
+
+/* No comment provided by engineer. */
+"This audio card is not supported." = "此聲卡不支援。";
+
+/* UTMScriptingAppDelegate */
+"This backend is not supported on your machine." = "你的電腦不支援此後端。";
+
+/* No comment provided by engineer. */
+"This build does not emulation." = "此 UTM 構建不支援模擬。";
+
+/* UTMQemuVirtualMachine */
+"This build of UTM does not support emulating the architecture of this VM." = "此 UTM 構建不支援模擬該虛擬電腦的體系結構。";
+
+/* VMConfigSystemView */
+"This change will reset all settings" = "此變更會重設所有設定";
+
+/* UTMConfiguration */
+"This configuration is saved with a newer version of UTM and is not compatible with this version." = "此設定使用較新版本的 UTM 儲存，與此版本不相容。";
+
+/* UTMConfiguration */
+"This configuration is too old and is not supported." = "此設定過舊，無法支援。";
+
+/* UTMScriptingConfigImpl */
+"This device is not supported by the target." = "目標不支援此裝置。";
+
+/* VMConfigAppleSharingView */
+"This directory is already being shared." = "此目錄已經被共享。";
+
+/* UTMAppleConfiguration */
+"This is not a valid Apple Virtualization configuration." = "並非有效的 Apple 虛擬化設定。";
+
+/* VMDisplayWindowController */
+"This may corrupt the VM and any unsaved changes will be lost. To quit safely, shut down from the guest." = "這可能會損毀虛擬電腦，任何未儲存的變更都將丟失。如要安全退出，請從客戶端關機。";
+
+/* No comment provided by engineer. */
+"This operating system is unsupported on your machine." = "你的電腦不支援此作業系統。";
+
+/* UTMDataExtension */
+"This virtual machine cannot be run on this machine." = "此虛擬電腦無法在該電腦上執行。";
+
+/* UTMAppleConfiguration */
+"This virtual machine cannot run on the current host machine." = "此虛擬電腦無法在當前主機上執行。";
+
+/* UTMAppleConfiguration */
+"This virtual machine contains an invalid hardware model. The configuration may be corrupted or is outdated." = "此虛擬電腦含有無效的硬體型號。其設定可能損毀或是過時。";
+
+/* No comment provided by engineer. */
+"This virtual machine has been removed." = "此虛擬電腦已經被刪除。";
+
+/* VMDisplayWindowController */
+"This will reset the VM and any unsaved state will be lost." = "這將重設虛擬電腦，任何未儲存的狀態都將丟失。";
+
+/* VMDisplayAppleWindowController */
+"To access the shared directory, the guest OS must have Virtiofs drivers installed. You can then run `sudo mount -t virtiofs share /path/to/share` to mount to the share path." = "要取用共享目錄，客戶端作業系統必須安裝 VirtioFS 驅動程式。然後，你可以執行「sudo mount -t virtiofs share /path/to/share」來裝載到共享路徑。";
+
+/* VMMetalView */
+"To capture input or to release the capture, press Command and Option at the same time." = "要截取或放開輸入，請同時按下 Command + Option。";
+
+/* No comment provided by engineer. */
+"To install macOS, you need to download a recovery IPSW. If you do not select an existing IPSW, the latest macOS IPSW will be downloaded from Apple." = "如要安裝 macOS，你需要下載 IPSW 恢復檔。如你未選取現有的 IPSW，將從 Apple 下載最新的 macOS IPSW。";
+
+/* VMDisplayQemuMetalWindowController */
+"To release the mouse cursor, press %@ at the same time." = "如要放開滑鼠指標，請同時按下 %@。";
+
+/* UTMAppleConfigurationDevices */
+"Trackpad" = "觸控板";
+
+/* No comment provided by engineer. */
+"u{2022} " = "u{2022}";
+
+/* UTMQemuConstants */
+"UDP" = "UDP";
+
+/* No comment provided by engineer. */
+"UEFI" = "UEFI";
+
+/* UTMQemuConfigurationError */
+"UEFI is not supported with this architecture." = "此體系結構不支援 UEFI。";
+
+/* UTMData */
+"Unable to add a shortcut to the new location." = "無法向新位置新增捷徑。";
+
+/* VMData */
+"Unavailable" = "無法使用";
+
+/* VMWizardState */
+"Unavailable for this platform." = "無法用於此平台。";
+
+/* No comment provided by engineer. */
+"Uncompressed Linux initial ramdisk (optional)" = "未壓縮的 Linux 起始 ramdisk (可選)";
+
+/* No comment provided by engineer. */
+"Uncompressed Linux kernel (required)" = "未壓縮的 Linux 核心映像檔 (必填)";
+
+/* No comment provided by engineer. */
+"Update Interface" = "更新介面";
+
+/* UTMQemuConstants */
+"USB" = "USB";
+
+/* UTMQemuConstants */
+"USB 2.0" = "USB 2.0";
+
+/* UTMQemuConstants */
+"USB 3.0 (XHCI)" = "USB 3.0 (XHCI)";
+
+/* VMQemuDisplayMetalWindowController */
+"USB Device" = "USB 裝置";
+
+/* No comment provided by engineer. */
+"USB Sharing" = "USB 共享";
+
+/* No comment provided by engineer. */
+"USB sharing not supported in this build of UTM." = "此 UTM 構建不支援 USB 共享。";
+
+/* No comment provided by engineer. */
+"Use Command+Option (⌘+⌥) for input capture/release" = "使用 Command + Option (⌘ + ⌥) 來截取/放開輸入";
+
+/* Welcome view */
+"User Guide" = "用戶指南";
+
+/* UTMScriptingAppDelegate
+   UTMScriptingUSBDeviceImpl */
+"UTM is not ready to accept commands." = "UTM 尚未準備好接受指令。";
+
+/* No comment provided by engineer. */
+"Version" = "版本";
+
+/* UTMQemuConstants */
+"VirtFS" = "VirtFS";
+
+/* UTMQemuConstants */
+"VirtIO" = "VirtIO";
+
+/* UTMConfigurationInfo
+   UTMData */
+"Virtual Machine" = "虛擬電腦";
+
+/* No comment provided by engineer. */
+"Virtual Machine Gallery" = "虛擬電腦庫";
+
+/* VMData */
+"Virtual machine not loaded." = "未載入虛擬電腦。";
+
+/* No comment provided by engineer. */
+"Virtualization is not supported on your system." = "你的電腦系統不支援虛擬化。";
+
+/* No comment provided by engineer. */
+"Virtualize" = "虛擬化";
+
+/* No comment provided by engineer. */
+"VM display size is fixed" = "虛擬電腦顯示大小固定";
+
+/* No comment provided by engineer. */
+"Waiting for VM to connect to display..." = "正在等待虛擬電腦連線到顯示...";
+
+/* No comment provided by engineer. */
+"Welcome to UTM" = "歡迎使用 UTM";
+
+/* No comment provided by engineer. */
+"What's New" = "新功能";
+
+/* UTMDownloadSupportToolsTask */
+"Windows Guest Support Tools" = "Windows 客戶端支援工具";
+
+/* VMQemuDisplayMetalWindowController */
+"Would you like to connect '%@' to this virtual machine?" = "你要連線「%@」到此虛擬電腦嗎？";
+
+/* VMDisplayAppleWindowController */
+"Would you like to install macOS? If an existing operating system is already installed on the primary drive of this VM, then it will be erased." = "你要安裝 macOS 嗎？如果此虛擬電腦的主磁碟上已經安裝了現有的作業系統，則會將其清除。";
+
+/* No comment provided by engineer. */
+"Would you like to re-convert this disk image to reclaim unused space and apply compression? Note this will require enough temporary space to perform the conversion. Compression only applies to existing data and new data will still be written uncompressed. You are strongly encouraged to back-up this VM before proceeding." = "你要重新轉換此磁碟映像檔以回收未使用的空間並應用壓縮嗎？請注意，這將需要足夠的臨時空間來執行轉換，壓縮僅適用於現有資料，新資料仍將以未壓縮寫入。強烈建議你先備份此虛擬電腦，然後再繼續操作。";
+
+/* No comment provided by engineer. */
+"Would you like to re-convert this disk image to reclaim unused space? Note this will require enough temporary space to perform the conversion. You are strongly encouraged to back-up this VM before proceeding." = "你要重新轉換此磁碟映像檔以回收未使用的空間嗎？請注意，這將需要足夠的臨時空間來執行轉換。強烈建議你先備份此虛擬電腦，然後再繼續操作。";
+
+/* No comment provided by engineer. */
+"Yes" = "是";
+
+/* VMConfigSystemView */
+"Your device has %llu MB of memory and the estimated usage is %llu MB." = "你的裝置有 %1$llu MB 的記憶體，大約使用量為 %2$llu MB。";
+
+/* VMConfigAppleBootView
+   VMWizardOSMacView */
+"Your machine does not support running this IPSW." = "你的電腦不支援執行此 IPSW。";
+
+/* ContentView */
+"Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached. See https://getutm.app/install/ for more details." = "你的 iOS 版本不支援在未作更動的情況下執行虛擬電腦，必須在越獄 (jailbreak) 時執行 UTM，或是在附加遠程除錯器的情況下執行 UTM。有關更多詳細訊息，請參閲 https://getutm.app/install/。";
+

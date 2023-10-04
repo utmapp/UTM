@@ -1,0 +1,21 @@
+/* Bundle name */
+"CFBundleName" = "UTM SE";
+
+/* Privacy - Local Network Usage Description */
+"NSLocalNetworkUsageDescription" = "虛擬電腦可以訪問本地網絡。UTM 還會使用本地網絡與 AltServer 進行通信。";
+
+/* Privacy - Location Always and When In Use Usage Description */
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "UTM 定期請求位置資料，以確保系統保持背景程序處於啟用狀態。位置資料永不會離開設備。";
+
+/* Privacy - Location Always Usage Description */
+"NSLocationAlwaysUsageDescription" = "UTM 定期請求位置資料，以確保系統保持背景程序處於啟用狀態。位置資料永不會離開設備。";
+
+/* Privacy - Location When In Use Usage Description */
+"NSLocationWhenInUseUsageDescription" = "UTM 定期請求位置資料，以確保系統保持背景程序處於啟用狀態。位置資料永遠不會離開設備。";
+
+/* Privacy - Microphone Usage Description */
+"NSMicrophoneUsageDescription" = "任何虛擬電腦都需要許可才能由咪高風進行錄製。";
+
+/* (No Comment) */
+"UTM virtual machine" = "UTM 虛擬電腦";
+

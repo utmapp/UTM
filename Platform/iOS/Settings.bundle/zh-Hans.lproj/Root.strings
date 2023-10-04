@@ -145,12 +145,3 @@
 /* (No Comment) */
 "Up" = "上";
 
-"Disable screen dimming when idle" = "闲置时禁用屏幕变暗";
-
-"Do not show prompt when USB device is plugged in" = "插入 USB 设备时不弹出提示";
-
-"Idle" = "闲置";
-
-"Devices" = "设备";
-
-"Cursor - Drag Speed" = "光标 - 拖动速度";

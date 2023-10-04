@@ -1,0 +1,147 @@
+/* (No Comment) */
+"Apple Pencil Input" = "Apple Pencil 輸入";
+
+/* (No Comment) */
+"Auto save on background" = "於背景自動儲存";
+
+/* (No Comment) */
+"Auto save on low memory" = "在記憶體不足時自動儲存";
+
+/* (No Comment) */
+"Background" = "背景";
+
+/* (No Comment) */
+"Backspace" = "Backspace";
+
+/* (No Comment) */
+"Caps" = "Caps";
+
+/* (No Comment) */
+"Click & Hold" = "按一下並按住";
+
+/* (No Comment) */
+"Continue running VM in the background" = "在背景執行虛擬電腦";
+
+/* (No Comment) */
+"Cursor" = "指標";
+
+/* (No Comment) */
+"D-DOWN" = "下方向鍵";
+
+/* (No Comment) */
+"D-LEFT" = "左方向鍵";
+
+/* (No Comment) */
+"D-RIGHT" = "右方向鍵";
+
+/* (No Comment) */
+"D-UP" = "上方向鍵";
+
+/* (No Comment) */
+"Disabled" = "已禁用";
+
+/* (No Comment) */
+"Down" = "下";
+
+/* (No Comment) */
+"Drag cursor" = "拖動指標";
+
+/* (No Comment) */
+"Enabled" = "已啟用";
+
+/* (No Comment) */
+"Enter" = "Enter";
+
+/* (No Comment) */
+"Follow cursor" = "跟隨指標";
+
+/* (No Comment) */
+"Gamepad" = "遊戲手柄";
+
+/* (No Comment) */
+"Gamepad - Cursor Speed" = "遊戲手柄 - 指標速度";
+
+/* (No Comment) */
+"Gestures" = "手勢";
+
+/* A single strings file, whose title is specified in your preferences schema. The strings files provide the localized content to display to the user for each of your preferences. */
+"Group" = "組";
+
+/* (No Comment) */
+"Left" = "左";
+
+/* (No Comment) */
+"Long Press" = "長按";
+
+/* (No Comment) */
+"Menu" = "選單";
+
+/* (No Comment) */
+"Mouse Left Button" = "滑鼠左鍵";
+
+/* (No Comment) */
+"Mouse Middle Button" = "滑鼠中鍵";
+
+/* (No Comment) */
+"Mouse Right Button" = "滑鼠右鍵";
+
+/* (No Comment) */
+"Mouse Wheel" = "滑鼠滾輪";
+
+/* (No Comment) */
+"Mouse Wheel (per swipe)" = "滑鼠滾輪（每次滑動）";
+
+/* (No Comment) */
+"Move Screen" = "移動螢幕";
+
+/* (No Comment) */
+"Name" = "名稱";
+
+/* (No Comment) */
+"none given" = "未給出";
+
+/* (No Comment) */
+"Right" = "右";
+
+/* (No Comment) */
+"Right Click" = "右鍵單擊";
+
+/* (No Comment) */
+"Space" = "空格";
+
+/* (No Comment) */
+"Tablet mode (always show cursor)" = "平板電腦模式（始終隱藏指標）";
+
+/* (No Comment) */
+"Tablet mode (try hiding cursor)" = "平板電腦模式（嘗試隱藏指標）";
+
+/* (No Comment) */
+"Three Finger Pan" = "三指平移";
+
+/* (No Comment) */
+"Touch Input" = "觸控輸入";
+
+/* (No Comment) */
+"Touch mode (always show cursor)" = "觸控模式（始終顯示指標）";
+
+/* (No Comment) */
+"Touch mode (try hiding cursor)" = "觸控模式（嘗試隱藏指標）";
+
+/* (No Comment) */
+"Touchpad/Mouse Input" = "觸控板/滑鼠輸入";
+
+/* (No Comment) */
+"Two Finger Pan" = "兩指平移";
+
+/* (No Comment) */
+"Two Finger Scroll" = "兩指捲動";
+
+/* (No Comment) */
+"Two Finger Swipe" = "兩指輕掃";
+
+/* (No Comment) */
+"Two Finger Tap" = "兩指輕按";
+
+/* (No Comment) */
+"Up" = "上";
+

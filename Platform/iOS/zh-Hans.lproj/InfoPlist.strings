@@ -1,3 +1,6 @@
+/* Bundle name */
+"CFBundleName" = "UTM SE";
+
 /* Privacy - Local Network Usage Description */
 "NSLocalNetworkUsageDescription" = "虚拟机可以访问本地网络。UTM 还使用本地网络与 AltServer 通信。";
 
@@ -15,3 +18,4 @@
 
 /* (No Comment) */
 "UTM virtual machine" = "UTM 虚拟机";
+
