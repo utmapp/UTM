@@ -251,15 +251,6 @@ extension UTMQemuVirtualMachine {
                 return UTMQemuVirtualMachineError.qemuError(NSLocalizedString("Suspend is not supported when an emulated NVMe device is active.", comment: "UTMQemuVirtualMachine"))
             }
         }
-        do {
-            // FIXME: some race condition in QEMU causes some VMs to not work when we immedately call save/delete
-            // for now we workaround this with a 1 second delay
-            try await Task.sleep(nanoseconds: kProbeSuspendDelay)
-            try await _saveSnapshot(name: "tmp-ss-support-probe")
-            try? await _deleteSnapshot(name: "tmp-ss-support-probe")
-        } catch {
-            return error
-        }
         return nil
     }
     
@@ -837,10 +828,14 @@ extension UTMQemuVirtualMachine {
         for drive in configDrives {
             if drive.isExternal, let url = drive.imageURL {
                 try await changeMedium(drive, to: url)
+            } else if drive.isExternal {
+                try await eject(drive)
             }
         }
         if let url = configShare {
             try await changeSharedDirectory(to: url)
+        } else {
+            await clearSharedDirectory()
         }
         // remove any unreferenced drives
         registryEntry.externalDrives = registryEntry.externalDrives.filter({ element in

@@ -1,0 +1,93 @@
+
+/* Class = "NSToolbarItem"; label = "Shared Folder"; ObjectID = "7EC-GE-fIl"; */
+"7EC-GE-fIl.label" = "Общая папка";
+
+/* Class = "NSToolbarItem"; paletteLabel = "Shared Folder"; ObjectID = "7EC-GE-fIl"; */
+"7EC-GE-fIl.paletteLabel" = "Общая папка";
+
+/* Class = "NSToolbarItem"; toolTip = "Shared folder"; ObjectID = "7EC-GE-fIl"; */
+"7EC-GE-fIl.toolTip" = "Общая папка";
+
+/* Class = "NSToolbarItem"; label = "Stop"; ObjectID = "Bkx-Ph-j0D"; */
+"Bkx-Ph-j0D.label" = "Остановить";
+
+/* Class = "NSToolbarItem"; paletteLabel = "Stop"; ObjectID = "Bkx-Ph-j0D"; */
+"Bkx-Ph-j0D.paletteLabel" = "Остановить";
+
+/* Class = "NSToolbarItem"; toolTip = "Shuts down and stops the VM"; ObjectID = "Bkx-Ph-j0D"; */
+"Bkx-Ph-j0D.toolTip" = "Завершение работы и остановка ВМ";
+
+/* Class = "NSToolbarItem"; label = "Toolbar Item"; ObjectID = "C8Y-BQ-Y6m"; */
+"C8Y-BQ-Y6m.label" = "Элемент на панели инструментов";
+
+/* Class = "NSToolbarItem"; paletteLabel = "Toolbar Item"; ObjectID = "C8Y-BQ-Y6m"; */
+"C8Y-BQ-Y6m.paletteLabel" = "Элемент на панели инструментов";
+
+/* Class = "NSToolbarItem"; label = "Capture Input"; ObjectID = "FN7-zs-mWC"; */
+"FN7-zs-mWC.label" = "Захват ввода";
+
+/* Class = "NSToolbarItem"; paletteLabel = "Capture Input"; ObjectID = "FN7-zs-mWC"; */
+"FN7-zs-mWC.paletteLabel" = "Захват ввода";
+
+/* Class = "NSToolbarItem"; toolTip = "Capture input devices"; ObjectID = "FN7-zs-mWC"; */
+"FN7-zs-mWC.toolTip" = "Захват устройств ввода";
+
+/* Class = "NSToolbarItem"; label = "Restart"; ObjectID = "G7P-HJ-bcy"; */
+"G7P-HJ-bcy.label" = "Перезапуск";
+
+/* Class = "NSToolbarItem"; paletteLabel = "Restart"; ObjectID = "G7P-HJ-bcy"; */
+"G7P-HJ-bcy.paletteLabel" = "Перезапуск";
+
+/* Class = "NSToolbarItem"; toolTip = "Restarts the VM"; ObjectID = "G7P-HJ-bcy"; */
+"G7P-HJ-bcy.toolTip" = "Перезапускает ВМ";
+
+/* Class = "NSToolbarItem"; label = "Windows"; ObjectID = "MQ2-L1-yl7"; */
+"MQ2-L1-yl7.label" = "Windows";
+
+/* Class = "NSToolbarItem"; paletteLabel = "Windows"; ObjectID = "MQ2-L1-yl7"; */
+"MQ2-L1-yl7.paletteLabel" = "Windows";
+
+/* Class = "NSToolbarItem"; toolTip = "Windows"; ObjectID = "MQ2-L1-yl7"; */
+"MQ2-L1-yl7.toolTip" = "Windows";
+
+/* Class = "NSWindow"; title = "UTM"; ObjectID = "QvC-M9-y7g"; */
+"QvC-M9-y7g.title" = "UTM";
+
+/* Class = "NSToolbarItem"; label = "Resize Console"; ObjectID = "Ulf-oT-4cP"; */
+"Ulf-oT-4cP.label" = "Изменить размер консоли";
+
+/* Class = "NSToolbarItem"; paletteLabel = "Resize Console"; ObjectID = "Ulf-oT-4cP"; */
+"Ulf-oT-4cP.paletteLabel" = "Изменить размер консоли";
+
+/* Class = "NSToolbarItem"; toolTip = "Send console resize command"; ObjectID = "Ulf-oT-4cP"; */
+"Ulf-oT-4cP.toolTip" = "Отправить команду на изменение размера консоли";
+
+/* Class = "NSButton"; ibShadowedToolTip = "Starts/resumes the VM"; ObjectID = "ZTi-Hs-ge6"; */
+"ZTi-Hs-ge6.ibShadowedToolTip" = "Запуск/возобновление работы виртуальной машины";
+
+/* Class = "NSToolbarItem"; label = "Drives"; ObjectID = "bKL-Th-FFw"; */
+"bKL-Th-FFw.label" = "Диски";
+
+/* Class = "NSToolbarItem"; paletteLabel = "Drives"; ObjectID = "bKL-Th-FFw"; */
+"bKL-Th-FFw.paletteLabel" = "Диски";
+
+/* Class = "NSToolbarItem"; toolTip = "Drive image options"; ObjectID = "bKL-Th-FFw"; */
+"bKL-Th-FFw.toolTip" = "Опции образов дисков";
+
+/* Class = "NSToolbarItem"; label = "Start/Pause"; ObjectID = "kT2-2U-cYm"; */
+"kT2-2U-cYm.label" = "Запуск/возобновление";
+
+/* Class = "NSToolbarItem"; paletteLabel = "Start/Pause"; ObjectID = "kT2-2U-cYm"; */
+"kT2-2U-cYm.paletteLabel" = "Запуск/возобновление";
+
+/* Class = "NSToolbarItem"; toolTip = "Start/pause the VM"; ObjectID = "kT2-2U-cYm"; */
+"kT2-2U-cYm.toolTip" = "Запуск/возобновление работы ВМ";
+
+/* Class = "NSToolbarItem"; label = "USB"; ObjectID = "tlw-Fb-ne3"; */
+"tlw-Fb-ne3.label" = "USB";
+
+/* Class = "NSToolbarItem"; paletteLabel = "USB"; ObjectID = "tlw-Fb-ne3"; */
+"tlw-Fb-ne3.paletteLabel" = "USB";
+
+/* Class = "NSToolbarItem"; toolTip = "USB devices"; ObjectID = "tlw-Fb-ne3"; */
+"tlw-Fb-ne3.toolTip" = "USB устройства";

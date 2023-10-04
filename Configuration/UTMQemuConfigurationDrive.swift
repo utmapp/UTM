@@ -124,7 +124,7 @@ struct UTMQemuConfigurationDrive: UTMConfigurationDrive {
 extension UTMQemuConfigurationDrive {
     static func defaultInterface(forArchitecture architecture: QEMUArchitecture, target: any QEMUTarget, imageType: QEMUDriveImageType) -> QEMUDriveInterface {
         let rawTarget = target.rawValue
-        if rawTarget.hasPrefix("virt-") || rawTarget == "virt" {
+        if rawTarget.hasPrefix("virt-") || rawTarget == "virt" || rawTarget.hasPrefix("pseries") {
             if imageType == .cd {
                 return .usb
             } else {

@@ -23,7 +23,7 @@ on:
         default: 'false'
 
 env:
-  BUILD_XCODE_PATH: /Applications/Xcode_15.0.app
+  BUILD_XCODE_PATH: /Applications/Xcode_15.1.app
   RUNNER_IMAGE: macos-13
 
 jobs:
@@ -60,8 +60,6 @@ jobs:
             platform: macos
           - arch: x86_64
             platform: ios_simulator
-          - arch: x86_64
-            platform: visionos_simulator
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -162,8 +160,6 @@ jobs:
             platform: macos
           - arch: x86_64
             platform: ios_simulator
-          - arch: x86_64
-            platform: visionos_simulator
     steps:
       - name: Checkout
         uses: actions/checkout@v3

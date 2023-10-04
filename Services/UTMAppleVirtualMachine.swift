@@ -761,6 +761,8 @@ extension UTMAppleVirtualMachine {
             if drive.isExternal, let url = drive.imageURL {
                 let file = try UTMRegistryEntry.File(url: url, isReadOnly: drive.isReadOnly)
                 registryEntry.externalDrives[drive.id] = file
+            } else if drive.isExternal {
+                registryEntry.externalDrives.removeValue(forKey: drive.id)
             }
         }
         // remove any unreferenced drives

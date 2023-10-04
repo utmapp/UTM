@@ -1262,6 +1262,13 @@
 		5A1746A228BA9C4300278241 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/Localizable.strings; sourceTree = "<group>"; };
 		5A1746A528BA9C4300278241 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/Localizable.strings; sourceTree = "<group>"; };
 		5A1746A628BA9C4300278241 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		61EBDE9F2AACA83100B959A2 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/VMDisplayWindow.strings; sourceTree = "<group>"; };
+		61EBDEA02AACA83100B959A2 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		61EBDEA12AACA83100B959A2 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		61EBDEA22AACA83100B959A2 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
+		61EBDEA32AACA83100B959A2 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ru; path = ru.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
+		61EBDEA42AACA83100B959A2 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
+		61EBDEA52AACA83100B959A2 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		83034C0626AB630F006B4BAF /* UTMPendingVMView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMPendingVMView.swift; sourceTree = "<group>"; };
 		835AA7B026AB7C85007A0411 /* UTMPendingVirtualMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMPendingVirtualMachine.swift; sourceTree = "<group>"; };
 		836CA97E28FCC39700EB9EF0 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -2737,6 +2744,7 @@
 				de,
 				pl,
 				"zh-HK",
+				ru,
 			);
 			mainGroup = CE550BC0225947990063E575;
 			packageReferences = (
@@ -3462,6 +3470,7 @@
 				83FE63BA28F617CE0047FFEF /* de */,
 				CEB54C16293009C7000D2AA9 /* pl */,
 				F6DA2DA92AAFED5F0070DCD1 /* zh-HK */,
+				61EBDEA22AACA83100B959A2 /* ru */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -3489,6 +3498,7 @@
 				FF0307582A84E3B70049979B /* zh-Hant */,
 				F6DA2DA62AAFED5F0070DCD1 /* zh-HK */,
 				F6DA2DAF2AAFEE060070DCD1 /* zh-Hans */,
+				61EBDE9F2AACA83100B959A2 /* ru */,
 			);
 			name = VMDisplayWindow.xib;
 			sourceTree = "<group>";
@@ -3522,6 +3532,7 @@
 				FF0307562A84E3B70049979B /* zh-Hant */,
 				F6DA2DAA2AAFED5F0070DCD1 /* zh-HK */,
 				F6DA2DB12AAFF0640070DCD1 /* zh-Hans */,
+				61EBDEA32AACA83100B959A2 /* ru */,
 			);
 			name = Localizable.stringsdict;
 			sourceTree = "<group>";
@@ -3548,6 +3559,7 @@
 				E68D491D28AC018D00D34C54 /* es-419 */,
 				83FE63B828F617CE0047FFEF /* de */,
 				F6DA2DA72AAFED5F0070DCD1 /* zh-HK */,
+				61EBDEA02AACA83100B959A2 /* ru */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -3565,6 +3577,7 @@
 				83FE63B928F617CE0047FFEF /* de */,
 				CEB54C14293009C6000D2AA9 /* pl */,
 				F6DA2DA82AAFED5F0070DCD1 /* zh-HK */,
+				61EBDEA12AACA83100B959A2 /* ru */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -3582,6 +3595,7 @@
 				CEB54C1929300C20000D2AA9 /* pl */,
 				9786BB59294056960032B858 /* ja */,
 				F6DA2DAC2AAFED5F0070DCD1 /* zh-HK */,
+				61EBDEA52AACA83100B959A2 /* ru */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -3599,6 +3613,7 @@
 				83FE63BD28F617CE0047FFEF /* de */,
 				CEB54C1829300C1B000D2AA9 /* pl */,
 				F6DA2DAB2AAFED5F0070DCD1 /* zh-HK */,
+				61EBDEA42AACA83100B959A2 /* ru */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -4208,10 +4223,10 @@
 /* Begin XCRemoteSwiftPackageReference section */
 		8399328E272F4A400059355F /* XCRemoteSwiftPackageReference "ZIPFoundation" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/osy/ZIPFoundation.git";
+			repositoryURL = "https://github.com/weichsel/ZIPFoundation.git";
 			requirement = {
-				kind = revision;
-				revision = 6793a6e7c587503aa078ec1246d71ef8fb50733b;
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.17;
 			};
 		};
 		84018693288B66370050AC51 /* XCRemoteSwiftPackageReference "swiftui-visual-effects" */ = {
@@ -4274,8 +4289,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apple/swift-log";
 			requirement = {
-				kind = revision;
-				revision = 5996c7a1b4a3bc972a43f55c78437f23a8eae465;
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.5.3;
 			};
 		};
 		CE93759724BB821F0074066F /* XCRemoteSwiftPackageReference "IQKeyboardManager" */ = {

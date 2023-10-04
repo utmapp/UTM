@@ -100,8 +100,12 @@ struct VMConfigAppleDisplayView: View {
                         resolution: Resolution(width: 2560, height: 1440)),
         NamedResolution(name: "2560 × 1600 — MacBook Pro/Air (13-inch, 2012/2018)",
                         resolution: Resolution(width: 2560, height: 1600)), // ppi: 227
+        NamedResolution(name: "2560 × 1664 — MacBook Air (13-inch, 2022)",
+                        resolution: Resolution(width: 2560, height: 1664)), // ppi: 224
         NamedResolution(name: "2880 × 1800 — MacBook Pro (15-inch, 2012)",
                         resolution: Resolution(width: 2880, height: 1800)), // ppi: 220
+        NamedResolution(name: "2880 × 1864 — MacBook Air (15-inch, 2022)",
+                        resolution: Resolution(width: 2880, height: 1864)), // ppi: 224
         NamedResolution(name: "3024 × 1890 — MacBook Pro (14-inch, 2021) Full Screen Window",
                         resolution: Resolution(width: 3024, height: 1890)), // ppi: 254
         NamedResolution(name: "3024 × 1964 — MacBook Pro (14-inch, 2021)",

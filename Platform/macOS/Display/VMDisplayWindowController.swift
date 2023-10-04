@@ -43,7 +43,8 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
     private(set) weak var primaryWindow: VMDisplayWindowController?
     private var preventIdleSleepAssertion: IOPMAssertionID?
     private var hasSaveSnapshotFailed: Bool = false
-    
+    private var isFinalizing: Bool = false
+
     @Setting("PreventIdleSleep") private var isPreventIdleSleep: Bool = false
     @Setting("NoQuitConfirmation") private var isNoQuitConfirmation: Bool = false
     
@@ -73,7 +74,9 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
     private func stop(isKill: Bool = false) {
         showConfirmAlert(NSLocalizedString("This may corrupt the VM and any unsaved changes will be lost. To quit safely, shut down from the guest.", comment: "VMDisplayWindowController")) {
             self.enterSuspended(isBusy: true) // early indicator
-            self.vm.requestVmDeleteState()
+            if self.vm.registryEntry.isSuspended {
+                self.vm.requestVmDeleteState()
+            }
             self.vm.requestVmStop(force: isKill)
         }
     }
@@ -246,6 +249,9 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
     
     func virtualMachine(_ vm: any UTMVirtualMachine, didTransitionToState state: UTMVirtualMachineState) {
         Task { @MainActor in
+            guard !isFinalizing else {
+                return
+            }
             switch state {
             case .stopped, .paused:
                 enterSuspended(isBusy: false)
@@ -262,6 +268,9 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
     
     func virtualMachine(_ vm: any UTMVirtualMachine, didErrorWithMessage message: String) {
         Task { @MainActor in
+            guard !isFinalizing else {
+                return
+            }
             showErrorAlert(message) { _ in
                 if vm.state != .started && vm.state != .paused {
                     self.close()
@@ -336,10 +345,12 @@ extension VMDisplayWindowController: NSWindowDelegate {
         Task {
             do {
                 try await vm.saveSnapshot(name: nil)
+                vm.delegate = nil
+                self.enterSuspended(isBusy: false)
                 sender.close()
             } catch {
-                showErrorAlert(error.localizedDescription)
                 hasSaveSnapshotFailed = true
+                _ = windowWillCloseAfterConfirmation(sender, error: error)
             }
         }
         return false
@@ -355,6 +366,7 @@ extension VMDisplayWindowController: NSWindowDelegate {
         if let preventIdleSleepAssertion = preventIdleSleepAssertion {
             IOPMAssertionRelease(preventIdleSleepAssertion)
         }
+        isFinalizing = true
         onClose?(notification)
     }
     

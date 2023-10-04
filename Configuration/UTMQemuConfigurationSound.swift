@@ -47,7 +47,7 @@ extension UTMQemuConfigurationSound {
     init?(forArchitecture architecture: QEMUArchitecture, target: any QEMUTarget) {
         self.init()
         let rawTarget = target.rawValue
-        if rawTarget.hasPrefix("pc") {
+        if rawTarget.hasPrefix("pc") || rawTarget.hasPrefix("pseries") {
             hardware = QEMUSoundDevice_x86_64.AC97
         } else if rawTarget.hasPrefix("q35") || rawTarget.hasPrefix("virt-") || rawTarget == "virt" {
             hardware = QEMUSoundDevice_x86_64.intel_hda

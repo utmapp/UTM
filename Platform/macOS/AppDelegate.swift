@@ -15,17 +15,21 @@
 //
 
 @MainActor class AppDelegate: NSObject, NSApplicationDelegate {
+    private enum TerminateError: Error {
+        case wrapped(originalError: any Error, window: NSWindow?)
+    }
+
     var data: UTMData?
     
     @Setting("KeepRunningAfterLastWindowClosed") private var isKeepRunningAfterLastWindowClosed: Bool = false
     @Setting("HideDockIcon") private var isDockIconHidden: Bool = false
     @Setting("NoQuitConfirmation") private var isNoQuitConfirmation: Bool = false
     
-    private var hasRunningVirtualMachines: Bool {
+    private var runningVirtualMachines: [VMData] {
         guard let vmList = data?.vmWindows.keys else {
-            return false
+            return []
         }
-        return vmList.contains(where: { $0.wrapped?.state == .started || ($0.wrapped?.state == .paused && !$0.hasSuspendState) })
+        return vmList.filter({ $0.wrapped?.state == .started || ($0.wrapped?.state == .paused && !$0.hasSuspendState) })
     }
     
     @MainActor
@@ -50,7 +54,7 @@
     }
     
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
-        !isKeepRunningAfterLastWindowClosed && !hasRunningVirtualMachines
+        !isKeepRunningAfterLastWindowClosed && runningVirtualMachines.isEmpty
     }
     
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
@@ -62,12 +66,9 @@
         }
 
         let vmList = data.vmWindows.keys
-        if hasRunningVirtualMachines { // There is at least 1 running VM
-            DispatchQueue.main.async { [self] in
-                if !handleTerminateAfterSaving(allVMs: vmList, sender: sender) {
-                    handleTerminateAfterConfirmation(sender)
-                }
-            }
+        let runningList = runningVirtualMachines
+        if !runningList.isEmpty { // There is at least 1 running VM
+            handleTerminateAfterSaving(candidates: runningList, sender: sender)
             return .terminateLater
         } else if vmList.allSatisfy({ !$0.isLoaded || $0.wrapped?.state == .stopped }) { // All VMs are stopped or suspended
             return .terminateNow
@@ -76,37 +77,52 @@
         }
     }
     
-    private func handleTerminateAfterSaving(allVMs: some Sequence<VMData>, sender: NSApplication) -> Bool {
-        let candidates = allVMs.filter({ $0.wrapped?.state == .started || ($0.wrapped?.state == .paused && !$0.hasSuspendState) })
-        guard !candidates.contains(where: { $0.wrapped?.snapshotUnsupportedError != nil }) else {
-            return false
-        }
+    private func handleTerminateAfterSaving(candidates: some Sequence<VMData>, sender: NSApplication) {
         Task {
             do {
                 try await withThrowingTaskGroup(of: Void.self) { group in
                     for vm in candidates {
                         group.addTask {
+                            let vc = await self.data?.vmWindows[vm] as? VMDisplayWindowController
+                            let window = await vc?.window
                             guard let vm = await vm.wrapped else {
                                 throw UTMVirtualMachineError.notImplemented
                             }
-                            try await vm.saveSnapshot(name: nil)
+                            do {
+                                try await vm.saveSnapshot(name: nil)
+                                vm.delegate = nil
+                                await vc?.enterSuspended(isBusy: false)
+                                if let window = window {
+                                    await window.close()
+                                }
+                            } catch {
+                                throw TerminateError.wrapped(originalError: error, window: window)
+                            }
                         }
                     }
                     try await group.waitForAll()
                 }
                 NSApplication.shared.reply(toApplicationShouldTerminate: true)
+            } catch TerminateError.wrapped(let originalError, let window) {
+                handleTerminateAfterConfirmation(sender, window: window, error: originalError)
             } catch {
-                handleTerminateAfterConfirmation(sender)
+                handleTerminateAfterConfirmation(sender, error: error)
             }
         }
-        return true
     }
     
-    private func handleTerminateAfterConfirmation(_ sender: NSApplication) {
+    private func handleTerminateAfterConfirmation(_ sender: NSApplication, window: NSWindow? = nil, error: Error? = nil) {
         let alert = NSAlert()
         alert.alertStyle = .informational
-        alert.messageText = NSLocalizedString("Confirmation", comment: "VMDisplayWindowController")
+        if error == nil {
+            alert.messageText = NSLocalizedString("Confirmation", comment: "AppDelegate")
+        } else {
+            alert.messageText = NSLocalizedString("Failed to save suspend state", comment: "AppDelegate")
+        }
         alert.informativeText = NSLocalizedString("Quitting UTM will kill all running VMs.", comment: "VMQemuDisplayMetalWindowController")
+        if let error = error {
+            alert.informativeText = error.localizedDescription + "\n" + alert.informativeText
+        }
         alert.addButton(withTitle: NSLocalizedString("OK", comment: "VMDisplayWindowController"))
         alert.addButton(withTitle: NSLocalizedString("Cancel", comment: "VMDisplayWindowController"))
         alert.showsSuppressionButton = true
@@ -121,7 +137,7 @@
                 NSApplication.shared.reply(toApplicationShouldTerminate: false)
             }
         }
-        if let window = sender.keyWindow {
+        if let window = window {
             alert.beginSheetModal(for: window, completionHandler: confirm)
         } else {
             let response = alert.runModal()
