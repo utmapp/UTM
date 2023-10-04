@@ -507,7 +507,7 @@
 "Emulated Display Card" = "Эмулируемая видеокарта";
 
 /* No comment provided by engineer. */
-"Emulated Network Card" = "Эмулируемая аудиокарта";
+"Emulated Network Card" = "Эмулируемая сетевая карта";
 
 /* UTMQemuConfiguration */
 "Emulated VLAN" = "Эмулированный VLAN";
