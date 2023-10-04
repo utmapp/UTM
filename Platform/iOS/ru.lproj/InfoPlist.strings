@@ -1,0 +1,21 @@
+/* Bundle name */
+"CFBundleName" = "UTM";
+
+/* Privacy - Local Network Usage Description */
+"NSLocalNetworkUsageDescription" = "UTM использует собственную сеть для поиска и обмена данными с AltServer.";
+
+/* Privacy - Location Always and When In Use Usage Description */
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "Для фонового доступа к виртуальной машине требуются службы определения местоположения. Данные о местоположении не передаются за пределы устройства.";
+
+/* Privacy - Location Always Usage Description */
+"NSLocationAlwaysUsageDescription" = "";
+
+/* Privacy - Location When In Use Usage Description */
+"NSLocationWhenInUseUsageDescription" = "Для фонового доступа к виртуальной машине требуются службы определения местоположения. Данные о местоположении не передаются за пределы устройства.";
+
+/* Privacy - Microphone Usage Description */
+"NSMicrophoneUsageDescription" = "Виртуальной машине необходим доступ к микрофону.";
+
+/* (No Comment) */
+"UTM virtual machine" = "Виртуальная машина UTM";
+

@@ -1,0 +1,1861 @@
+/* A removable drive that has no image file inserted. */
+"(empty)" = "(пусто)";
+
+/* VMConfigAppleDriveDetailsView */
+"(New Drive)" = "(Новый Диск)";
+
+/* No comment provided by engineer. */
+"(new)" = "(новый)";
+
+/* UTMWrappedVirtualMachine */
+"(Unavailable)" = "(Недоступно)";
+
+/* QEMUConstant */
+"%@ (%@)" = "%1$@ (%2$@)";
+
+/* VMToolbarDriveMenuView */
+"%@ (%@): %@" = "%1$@ (%2$@): %3$@";
+
+/* VMDisplayMetalWindowController */
+"%@ (Display %lld)" = "%1$@ (Экран %2$lld)";
+
+/* VMDisplayAppleTerminalWindowController
+   VMDisplayQemuTerminalWindowController */
+"%@ (Terminal %lld)" = "%1$@ (Терминал %2$lld)";
+
+/* No comment provided by engineer. */
+"%@ ➡️ %@" = "%1$@ ➡️ %2$@";
+
+/* VMDrivesSettingsView */
+"%@ Drive" = "Диск %@";
+
+/* VMDrivesSettingsView */
+"%@ Image" = "Образ %@";
+
+/* Format string for remaining time until a download finishes */
+"%@ remaining" = "%@ осталось";
+
+/* Format string for the 'per second' part of a download speed. */
+"%@/s" = "%@/с";
+
+/* Format string for download progress and speed, e. g. 5 MB of 6 GB (200 kbit/s) */
+"%1$@ of %2$@ (%3$@)" = "%1$@ из %2$@ (%3$@)";
+
+/* UTMAppleConfiguration */
+"A valid kernel image must be specified." = "Должен быть указан корректный образ ядра.";
+
+/* VMConfigDriveCreateViewController */
+"A file already exists for this name, if you proceed, it will be replaced." = "Файл с таким именем уже существует, если вы продолжите, то он будет заменен.";
+"Cannot create directory for disk image." = "Не удается создать каталог для образа диска.";
+
+/* VMListViewController */
+"A VM already exists with this name." = "ВМ с таким именем уже существует.";
+"Cannot find VM." = "Неудается найти ВМ.";
+
+/* VMDisplayAppleController */
+"Add…" = "Добавить…";
+
+/* No comment provided by engineer. */
+"Additional Options" = "Дополнительные опции";
+
+/* No comment provided by engineer. */
+"Additional Settings" = "Дополнительные параметры";
+
+/* No comment provided by engineer. */
+"Advanced: Bypass configuration and manually specify arguments" = "Дополнительно: Обход конфигурации и ручное указание аргументов";
+
+/* No comment provided by engineer. */
+"Advanced" = "Дополнительно";
+
+/* VMConfigSystemView */
+"Allocating too much memory will crash the VM." = "Выделение слишком большого объема памяти приведет к вылету ВМ.";
+"Allocating too much memory will crash the VM. Your device has %llu MB of memory and the estimated usage is %llu MB." = "Выделение слишком большого объема памяти приведет к вылету ВМ. На вашем устройстве имеется %llu МБ памяти, а предполагаемое использование составляет %llu МБ.";
+
+/* VMConfigDirectoryPickerViewController */
+"Are you sure you want to delete this directory? All files and subdirectories WILL be deleted." = "Вы уверены, что хотите удалить этот каталог? Все файлы и подкаталоги БУДУТ удалены.";
+
+/* Delete confirmation */
+"Are you sure you want to delete this VM? Any drives associated will also be deleted." = "Вы уверены, что хотите удалить эту ВМ? Все связанные с ней диски также будут удалены.";
+
+/* No comment provided by engineer. */
+"Auto Resolution" = "Авто разрешение";
+
+/* UTMData */
+"AltJIT error: %@" = "Ошибка AltJIT: %@";
+"AltJIT error: (error.localizedDescription)" = "Ошибка AltJIT: (error.localizedDescription)";
+
+/* No comment provided by engineer. */
+"Always use native (HiDPI) resolution" = "Всегда использовать нативное разрешение (HiDPI)";
+
+/* UTMData */
+"An existing virtual machine already exists with this name." = "Виртуальная машина с таким именем уже существует.";
+
+/* CSConnection */
+"An error occurred trying to connect to SPICE." = "При попытке подключения к SPICE возникла ошибка.";
+
+/* VMDrivesSettingsView */
+"An image already exists with that name." = "Образ с таким именем уже существует.";
+
+/* UTMConfiguration
+   UTMVirtualMachine */
+"An internal error has occurred." = "Произошла внутренняя ошибка.";
+"An internal error has occured. UTM will terminate." = "Произошла внутренняя ошибка. Работа UTM будет завершина.";
+"Cannot start shared directory before SPICE starts." = "Невозможно запустить общий каталог до запуска SPICE.";
+
+/* No comment provided by engineer. */
+"Argument" = "Аргумент";
+
+/* No comment provided by engineer. */
+"Arguments" = "Аргументы";
+
+/* UTMConfiguration */
+"An invalid value of '%@' is used in the configuration file." = "В конфигурационном файле используется недопустимое значение '%@'.";
+
+/* VMConfigSystemView */
+"Any unsaved changes will be lost." = "Любые несохраненные изменения будут потеряны.";
+
+/* No comment provided by engineer. */
+"Application" = "Приложение";
+
+/* New VM window. */
+"Apple Virtualization is experimental and only for advanced use cases. Leave unchecked to use QEMU, which is recommended." = "Виртуализация Apple является экспериментальной и предназначена только для продвинутых пользователей. Оставьте флажок без изменений, чтобы использовать QEMU, что рекомендуется.";
+
+/* No comment provided by engineer. */
+"Architecture" = "Архитектура";
+
+/* No comment provided by engineer. */
+"Are you sure you want to exit UTM?" = "Вы уверены что хотите выйти из UTM?";
+
+/* No comment provided by engineer. */
+"Are you sure you want to permanently delete this disk image?" = "Вы уверены что хотите навсегда удалить этот образ диска?";
+
+/* No comment provided by engineer. */
+"Are you sure you want to reset this VM? Any unsaved changes will be lost." = "Вы уверены, что хотите перезапустить эту ВМ? Все несохраненные изменения будут потеряны.";
+
+/* No comment provided by engineer. */
+"Are you sure you want to stop this VM and exit? Any unsaved changes will be lost." = "Вы уверены, что хотите остановить эту ВМ и выйти? Все несохраненные изменения будут потеряны.";
+
+/* UTMQemuConstants */
+"Automatic Serial Device (max 4)" = "Автоматическое последовательное устройство (не более 4)";
+
+/* No comment provided by engineer. */
+"Background Color" = "Цвет фона";
+
+/* No comment provided by engineer. */
+"Balloon Device" = "Устройство для раздувания памяти";
+
+/* UTMLegacyQemuConfiguration
+   UTMQemuConstants */
+"BIOS" = "BIOS";
+
+/* No comment provided by engineer. */
+"Blinking Cursor" = "Мигающий курсор";
+
+/* UTMQemuConstants */
+"Bold" = "Жирный";
+
+/* No comment provided by engineer. */
+"Boot" = "Загрузка";
+
+/* No comment provided by engineer. */
+"Boot from kernel image" = "Загрузка с образа ядра";
+
+/* No comment provided by engineer. */
+"Boot Arguments" = "Аргументы загрузки";
+
+/* No comment provided by engineer. */
+"Boot Image" = "Загрузочный образ";
+
+/* No comment provided by engineer. */
+"Boot Image Type" = "Тип загрузочный образа";
+
+/* No comment provided by engineer. */
+"Boot ISO Image" = "Загрузить ISO образ";
+
+/* No comment provided by engineer. */
+"Boot ISO Image (optional)" = "Загрузить ISO образ (опционально)";
+
+/* No comment provided by engineer. */
+"Boot VHDX Image" = "Загрузить VHDX образ";
+
+/* No comment provided by engineer. */
+"Boot into recovery mode." = "Загрузиться в режим восстановления.";
+
+/* UTMQemuConstants */
+"Bridged (Advanced)" = "Сеть с мостом (расширенная)";
+
+/* No comment provided by engineer. */
+"Bridged Settings" = "Параметры сети с мостом";
+
+/* No comment provided by engineer. */
+"Bridged Interface" = "Мостовой интерфейс";
+
+/* Welcome view */
+"Browse UTM Gallery" = "Просмотр галереи UTM";
+
+/* No comment provided by engineer. */
+"Browse" = "Обзор";
+
+/* No comment provided by engineer. */
+"Browse…" = "Обзор…";
+
+/* UTMQemuConstants */
+"Built-in Terminal" = "Встроенный терминал";
+
+/* VMDisplayWindowController
+   VMQemuDisplayMetalWindowController */
+"Cancel" = "Отмена";
+
+/* No comment provided by engineer. */
+"Cancel download" = "Отменить загрузку";
+
+/* UTMAppleVirtualMachine */
+"Cannot access resource: %@" = "Невозможно получить доступ к ресурсу: %@";
+
+/* UTMAppleVirtualMachine */
+"Cannot create virtual terminal." = "Не удается создать виртуальный терминал.";
+
+/* UTMData */
+"Cannot find AltServer for JIT enable. You cannot run VMs until JIT is enabled." = "Не удается найти AltServer для включения JIT. Запуск виртуальных машин невозможен до тех пор, пока не будет включена функция JIT.";
+
+/* UTMData */
+"Cannot import this VM. Either the configuration is invalid, created in a newer version of UTM, or on a platform that is incompatible with this version of UTM." = "Невозможно импортировать данную ВМ. Либо конфигурация недействительна, либо создана в более новой версии UTM, либо на платформе, несовместимой с данной версией UTM.";
+
+/* No comment provided by engineer. */
+"Caps Lock (⇪) is treated as a key" = "Caps Lock (⇪) обрабатывается как клавиша";
+
+/* VMMetalView */
+"Capture Input" = "Захват ввода";
+
+/* VMDisplayQemuMetalWindowController */
+"Captured mouse" = "Захват мышки";
+
+/* Configuration boot device */
+"CD/DVD" = "CD/DVD";
+
+/* UTMLegacyQemuConfiguration
+   UTMQemuConstants */
+"CD/DVD (ISO) Image" = "CD/DVD (ISO) Образ";
+
+/* VMDisplayWindowController */
+"Change" = "Изменить";
+
+/* VMDisplayAppleController */
+"Change…" = "Изменить…";
+
+/* No comment provided by engineer. */
+"Clear" = "Отчистить";
+
+/* No comment provided by engineer. */
+"Clipboard Sharing" = "Обмен буфером обмена";
+
+/* VMQemuDisplayMetalWindowController */
+"Closing this window will kill the VM." = "Закрытие этого окна приведет к завершению работы ВМ.";
+
+/* Clone context menu */
+"Clone" = "Клонировать";
+
+/* No comment provided by engineer. */
+"Clone selected VM" = "Клонировать выбранную виртуальную машину";
+
+/* No comment provided by engineer. */
+"Clone…" = "Клонировать…";
+
+/* No comment provided by engineer. */
+"Close" = "Закрыть";
+
+/* No comment provided by engineer. */
+"Command to send when resizing the console. Placeholder $COLS is the number of columns and $ROWS is the number of rows." = "Команда, передаваемая при изменении размера консоли. Поле $COLS - это количество столбцов, а $ROWS - количество строк.";
+
+/* UTMVirtualMachine */
+"Config format incorrect." = "Неверный формат конфигурации.";
+
+/* VMQemuDisplayMetalWindowController */
+"Confirm" = "Подтвердить";
+
+/* No comment provided by engineer. */
+"Confirm Delete" = "Подтвердить удаление";
+
+/* VMDisplayWindowController */
+"Confirmation" = "Подтверждение";
+
+/* No comment provided by engineer. */
+"Connection" = "Соединение";
+
+/* No comment provided by engineer. */
+"Console Only" = "Только консоль";
+
+/* VMWizardSummaryView */
+"Core" = "Ядро";
+
+/* No comment provided by engineer. */
+"Cores" = "Ядра";
+
+/* No comment provided by engineer. */
+"Continue" = "Продолжить";
+
+/* No comment provided by engineer. */
+"CPU" = "CPU";
+
+/* No comment provided by engineer. */
+"CPU Cores" = "Ядра CPU";
+
+/* No comment provided by engineer. */
+"CPU Flags" = "Флаги CPU";
+
+/* No comment provided by engineer. */
+"Create" = "Создать";
+
+/* Welcome view */
+"Create a New Virtual Machine" = "Создать новую Виртуальную Машину";
+
+/* No comment provided by engineer. */
+"Create a new VM with the same configuration as this one but without any data." = "Создайте новую ВМ с той же конфигурацией, что и эта, но без каких-либо данных.";
+
+/* No comment provided by engineer. */
+"Custom" = "Пользовательская";
+
+/* VMConfigDirectoryPickerViewController */
+"Create Directory" = "Создать каталог";
+
+/* VMConfigDriveCreateViewController */
+"Creating disk…" = "Создание диска…";
+
+/* No comment provided by engineer. */
+"Debug Logging" = "Ведение журнала отладки";
+
+/* QEMUConstantGenerated
+   UTMQemuConstants */
+"Default" = "По умолчанию";
+
+/* VMWizardSummaryView */
+"Default Cores" = "Ядра по умолчанию";
+
+/* No comment provided by engineer. */
+"Default is 1/4 of the RAM size (above). The JIT cache size is additive to the RAM size in the total memory usage!" = "По умолчанию - 1/4 от объема оперативной памяти (см. выше). Размер JIT-кэша аддитивен к размеру оперативной памяти в общем объеме используемой памяти!";
+
+/* No comment provided by engineer. */
+"Delete" = "Удалить";
+
+/* VMConfigDrivesViewController */
+"Delete Data" = "Удалить данные";
+
+/* No comment provided by engineer. */
+"Delete Drive" = "Удалить диск";
+
+/* No comment provided by engineer. */
+"Delete selected VM" = "Удалить выбранную ВМ";
+
+/* No comment provided by engineer. */
+"Delete…" = "Удалить…";
+
+/* No comment provided by engineer. */
+"Delete this shortcut. The underlying data will not be deleted." = "Удалить этот ярлык. При этом основные данные не будут удалены.";
+
+/* No comment provided by engineer. */
+"Delete this VM and all its data." = "Удалите эту ВМ и все её данные.";
+
+/* Delete VM overlay */
+"Deleting %@…" = "Удаление %@…";
+
+/* No comment provided by engineer. */
+"DHCP Domain Name" = "Доменное имя DHCP";
+
+/* No comment provided by engineer. */
+"DHCP Host" = "Хост DHCP";
+
+/* No comment provided by engineer. */
+"DHCP Start" = "Старт DHCP";
+
+/* No comment provided by engineer. */
+"Directory" = "";
+
+/* VMConfigDirectoryPickerViewController */
+"Directory Name" = "Название каталога";
+
+/* No comment provided by engineer. */
+"Devices" = "Устройства";
+
+/* VMDisplayAppleWindowController */
+"Directory sharing" = "Совместное использование каталогов";
+
+/* No comment provided by engineer. */
+"Directory Share Mode" = "Режим совместного доступа к каталогам";
+
+/* UTMQemuConstants */
+"Disabled" = "Отключено";
+
+/* VMDisplayTerminalViewController */
+"Disable this bar in Settings -> General -> Keyboards -> Shortcuts" = "Отключите эту панель в разделе Параметры -> Общие -> Клавиатура -> Ярлыки";
+
+/* No comment provided by engineer. */
+"Disk" = "Диск";
+
+/* UTMData
+   VMConfigDriveCreateViewController
+   VMWizardState */
+"Disk creation failed." = "Не удалось создать диск";
+
+/* UTMLegacyQemuConfiguration
+   UTMQemuConstants */
+"Disk Image" = "Образ диска";
+
+/* VMDisplayAppleWindowController */
+"Display" = "Дисплей";
+
+/* VMDisplayQemuDisplayController */
+"Display %lld: %@" = "Дисплей %1$lld: %2$@";
+
+/* VMDisplayQemuDisplayController */
+"Disposable Mode" = "Режим одноразовой работы";
+
+/* No comment provided by engineer. */
+"DNS Search Domains" = "DNS-поиск доменов";
+
+/* No comment provided by engineer. */
+"DNS Server" = "DNS сервер";
+
+/* No comment provided by engineer. */
+"DNS Server (IPv6)" = "DNS сервер (IPv6)";
+
+/* No comment provided by engineer. */
+"Do not save VM screenshot to disk" = "Не сохранять снимок экрана ВМ на диск";
+
+/* VMDisplayMetalWindowController */
+"Do Not Show Again" = "Больше не показывать";
+
+/* No comment provided by engineer. */
+"Do not show prompt when USB device is plugged in" = "Не показывать подсказку при подключении USB-устройства";
+
+/* VMConfigDrivesViewController */
+"Do you want to also delete the disk image data? If yes, the data will be lost. Otherwise, you can create a new drive with the existing data." = "Хотите ли вы также удалить данные образа диска? Если да, то данные будут потеряны. В противном случае можно создать новый диск с имеющимися данными.";
+
+/* No comment provided by engineer. */
+"Do you want to delete this VM and all its data?" = "Хотите ли вы удалить эту ВМ и все её данные?";
+
+/* No comment provided by engineer. */
+"Do you want to duplicate this VM and all its data?" = "Хотите ли вы дублировать эту ВМ и все её данные?";
+
+/* No comment provided by engineer. */
+"Do you want to force stop this VM and lose all unsaved data?" = "Хотите ли вы принудительно остановить эту ВМ и потерять все несохраненные данные?";
+
+/* No comment provided by engineer. */
+"Do you want to move this VM to another location? This will copy the data to the new location, delete the data from the original location, and then create a shortcut." = "Вы хотите переместить эту ВМ в другое место? При этом данные будут скопированы в новое место, данные из исходного места будут удалены, а затем будет создан ярлык.";
+
+/* No comment provided by engineer. */
+"Do you want to remove this shortcut? The data will not be deleted." = "Вы хотите удалить этот ярлык? Данные не будут удалены.";
+
+/* VMConfigDirectoryPickerViewController
+   VMConfigPortForwardingViewController */
+"Done" = "Готово";
+
+/* No comment provided by engineer. */
+"Download and mount the guest support package for Windows. This is required for some features including dynamic resolution and clipboard sharing." = "Загрузите и смонтируйте пакет гостевой поддержки для Windows. Он необходим для работы некоторых функций, включая динамическое разрешение и общий доступ к буферу обмена.";
+
+/* No comment provided by engineer. */
+"Download and mount the guest tools for Windows." = "Загрузите и смонтируйте гостевые инструменты для Windows.";
+
+/* No comment provided by engineer. */
+"Download prebuilt from UTM Gallery…" = "Загрузите готовые сборки из галереи UTM…";
+
+/* No comment provided by engineer. */
+"Download Ubuntu Server for ARM" = "Скачать Ubuntu Server для ARM";
+
+/* No comment provided by engineer. */
+"Download Windows 11 for ARM64 Preview VHDX" = "Скачать Windows 11 Preview VHDX для ARM64";
+
+/* No comment provided by engineer. */
+"Downscaling" = "Уменьшение масштаба";
+
+/* No comment provided by engineer. */
+"Drag and drop IPSW file here" = "Перетащите сюда файл IPSW";
+
+/* VMRemovableDrivesViewController */
+"Drive Options" = "Опции дисков";
+
+/* No comment provided by engineer. */
+"Drives" = "Диски";
+
+/* No comment provided by engineer. */
+"Duplicate this VM along with all its data." = "Дублируйте эту ВМ вместе со всеми её данными.";
+
+/* No comment provided by engineer. */
+"Edit" = "Изменить";
+
+/* No comment provided by engineer. */
+"Edit…" = "Изменить…";
+
+/* No comment provided by engineer. */
+"Edit selected VM" = "Изменить выбранную ВМ";
+
+/* VMDrivesSettingsView */
+"EFI Variables" = "Переменные EFI";
+
+/* VMDisplayWindowController */
+"Eject" = "Извлечь";
+
+/* New VM window. */
+"Empty" = "Пусто";
+
+/* No comment provided by engineer. */
+"Emulate" = "Эмулировать";
+
+/* No comment provided by engineer. */
+"Emulated Audio Card" = "Эмулируемая аудиокарта";
+
+/* No comment provided by engineer. */
+"Emulated Display Card" = "Эмулируемая видеокарта";
+
+/* No comment provided by engineer. */
+"Emulated Network Card" = "Эмулируемая аудиокарта";
+
+/* UTMQemuConfiguration */
+"Emulated VLAN" = "Эмулированный VLAN";
+
+/* No comment provided by engineer. */
+"Emulated Serial Device" = "Эмулированный последовательный порт";
+
+/* No comment provided by engineer. */
+"Enable Balloon Device" = "Включить устройство для раздувания памяти";
+
+/* No comment provided by engineer. */
+"Enable Entropy Device" = "Включить энтропийное устройство";
+
+/* No comment provided by engineer. */
+"Enable Clipboard Sharing" = "Включить обмен буфером обмена";
+
+/* No comment provided by engineer. */
+"Enable Directory Sharing" = "Включить совместное использование каталогов";
+
+/* No comment provided by engineer. */
+"Enable Keyboard" = "Включить клавиатуру";
+
+/* No comment provided by engineer. */
+"Enable Sound" = "Включить звук";
+
+/* No comment provided by engineer. */
+"Enable Pointer" = "Включить указатель";
+
+"Enable Rosetta on Linux (x86_64 Emulation)" = "Включение Rosetta в Linux (эмуляция x86_64)";
+
+/* No comment provided by engineer. */
+"Enable hardware OpenGL acceleration" = "Включить аппаратное ускорение OpenGL";
+
+/* No comment provided by engineer. */
+"Enabled" = "Включено";
+
+/* No comment provided by engineer. */
+"Engine" = "Движок";
+
+/* VMDisplayWindowController */
+"Error" = "Ошибка";
+
+/* UTMJSONStream */
+"Error parsing JSON." = "Ошибка при анализе JSON.";
+
+/* VMConfigDriveCreateViewController */
+"Error renaming file" = "Ошибка при переименовании файла";
+
+/* UTMVirtualMachine */
+"Error trying to restore external drives and shares: %@" = "Ошибка при попытке восстановления внешних дисков и общих ресурсов: %@";
+
+/* UTMVirtualMachine */
+"Error trying to start shared directory: %@" = "Ошибка при попытке запуска общего каталога: %@";
+
+/* No comment provided by engineer. */
+"Existing" = "Существующий";
+
+/* No comment provided by engineer. */
+"Export Debug Log" = "Экспорт журнала отладки";
+
+/* No comment provided by engineer. */
+"Export QEMU Command…" = "Экспортировать команду QEMU…";
+
+/* Word for decompressing a compressed folder */
+"Extracting…" = "Извлечение…";
+
+/* UTMVirtualMachine+Drives */
+"Failed create bookmark." = "Не удалось создать закладку.";
+
+/* UTMQemuVirtualMachine */
+"Failed to access data from shortcut." = "Не удалось получить доступ к данным из ярлыка.";
+
+/* UTMQemuVirtualMachine */
+"Failed to access drive image path." = "Не удалось получить доступ к пути образа диска.";
+
+/* UTMQemuVirtualMachine */
+"Failed to access shared directory." = "Не удалось получить доступ к общему каталогу.";
+
+/* ContentView */
+"Failed to attach to JitStreamer:\n%@" = "Не удалось подключиться к JitStreamer:\n%@";
+
+/* ContentView */
+"Failed to attach to JitStreamer." = "Не удалось подключиться к JitStreamer.";
+
+/* VMConfigInfoView */
+"Failed to check name." = "Не удалось проверить имя.";
+
+/* UTMData */
+"Failed to clone VM." = "Не удалось клонировать ВМ.";
+
+/* UTMSpiceIO */
+"Failed to connect to SPICE server." = "Не удалось подключиться к серверу SPICE.";
+
+/* ContentView */
+"Failed to decode JitStreamer response." = "Не удалось декодировать ответ JitStreamer.";
+
+/* UTMDataExtension */
+"Failed to delete saved state." = "Не удалось удалить сохраненное состояние.";
+
+/* VMWizardState */
+"Failed to get latest macOS version from Apple." = "Не удалось получить последнюю версию macOS от Apple.";
+
+/* VMRemovableDrivesViewController */
+"Failed to get VM object." = "Не удалось получить объект ВМ.";
+
+/* UTMVirtualMachine */
+"Failed to load plist" = "Не удалось загрузить plist";
+
+/* UTMQemuConfigurationError */
+"Failed to migrate configuration from a previous UTM version." = "Не удалось перенести конфигурацию из предыдущей версии UTM.";
+
+/* UTMData */
+"Failed to parse download URL." = "Не удалось разобрать URL-адрес загрузки.";
+
+/* UTMData */
+"Failed to parse imported VM." = "Не удалось разобрать импортированную ВМ.";
+
+/* UTMDownloadVMTask */
+"Failed to parse the downloaded VM." = "Не удалось разобрать загруженную ВМ.";
+
+/* UTMQemuVirtualMachine */
+"Failed to save VM snapshot. Usually this means at least one device does not support snapshots. %@" = "Не удалось сохранить моментальный снимок ВМ. Обычно это означает, что по крайней мере одно устройство не поддерживает моментальные снимки. %@";
+"Failed to save VM snapshot. Usually this means at least one device does not support snapshots." = "Не удалось сохранить моментальный снимок ВМ. Обычно это означает, что по крайней мере одно устройство не поддерживает моментальные снимки.";
+
+/* UTMSpiceIO */
+"Failed to start SPICE client." = "Не удалось запустить клиент SPICE.";
+
+/* No comment provided by engineer. */
+"Faster, but can only run the native CPU architecture." = "Быстрее, но может работать только с нативной архитектурой процессора.";
+
+/* No comment provided by engineer. */
+"Fit To Screen" = "Адаптировать под экран";
+
+/* Configuration boot device
+   UTMQemuConstants */
+"Floppy" = "Дискета";
+
+/* No comment provided by engineer. */
+"Font" = "Шрифт";
+
+/* No comment provided by engineer. */
+"Font Size" = "Размер шрифта";
+
+/* VMDisplayQemuDisplayController */
+"Force kill" = "Принудительно убить";
+
+/* No comment provided by engineer. */
+"Force Multicore" = "Принудительно включить многоядерность";
+
+/* No comment provided by engineer. */
+"Force multicore may improve speed of emulation but also might result in unstable and incorrect emulation." = "Принудительная многоядерность может повысить скорость эмуляции, но при этом может привести к нестабильной и некорректной эмуляции.";
+
+/* No comment provided by engineer. */
+"Force PS/2 controller" = "Принудительно включить PS/2 контроллер";
+
+/* No comment provided by engineer. */
+"Force Enable CPU Flags" = "Принудительно включить флаги CPU";
+
+/* No comment provided by engineer. */
+"Force Disable CPU Flags" = "Принудительно выключить флаги CPU";
+
+/* VMDisplayQemuDisplayController */
+"Force shut down" = "Принудительно выключить";
+
+"Force kill the VM process with high risk of data corruption." = "Принудительное завершение процесса ВМ с высоким риском повреждения данных.";
+
+/* No comment provided by engineer. */
+"Full Graphics" = "Полная графика";
+
+/* No comment provided by engineer. */
+"GB" = "ГБ";
+
+/* UTMQemuConstants */
+"GDB Debug Stub" = "Плагин отладки GDB";
+
+/* No comment provided by engineer. */
+"Generate Windows Installer ISO" = "Создать установочный образ ISO Windows";
+
+/* No comment provided by engineer. */
+"Generic" = "Обычный";
+
+/* No comment provided by engineer. */
+"Gesture and Cursor Settings" = "Параметры жестов и курсора";
+
+/* VMWizardView */
+"Go Back" = "Назад";
+
+/* No comment provided by engineer. */
+"Guest Address" = "Гостевой адрес";
+
+/* VMConfigPortForwardingViewController */
+"Guest address (optional)" = "Гостевой адрес (опционально)";
+
+/* No comment provided by engineer. */
+"Guest Network" = "Гостевая сеть";
+
+/* No comment provided by engineer. */
+"Guest Network (IPv6)" = "Гостевая сеть (IPv6)";
+
+/* UTMQemuManager */
+"Guest panic" = "Гостевая паника";
+
+/* No comment provided by engineer. */
+"Guest Port" = "Гостевой порт";
+
+/* VMConfigPortForwardingViewController */
+"Guest port (required)" = "Гостевой порт (обязательно)";
+
+/* Configuration boot device */
+"Hard Disk" = "Жесткий диск";
+
+/* No comment provided by engineer. */
+"Hardware" = "Оборудование";
+
+/* No comment provided by engineer. */
+"Hardware OpenGL Acceleration" = "Аппаратное ускорение OpenGL";
+
+/* No comment provided by engineer. */
+"Hello" = "Здравствуйте";
+
+/* No comment provided by engineer. */
+"Hide" = "Скрыть";
+
+/* No comment provided by engineer. */
+"Hide Unused…" = "Скрыть неиспользуемые…";
+
+/* VMDisplayViewController */
+"Hint: To show the toolbar again, use a three-finger swipe down on the screen." = "Подсказка: Чтобы снова отобразить панель инструментов, проведите по экрану тремя пальцами вниз.";
+
+/* No comment provided by engineer. */
+"Hold Control (⌃) for right click" = "Удерживайте Control (⌃) для щелчка правой кнопкой мыши";
+
+/* No comment provided by engineer. */
+"Host Address" = "Адрес хоста";
+
+/* No comment provided by engineer. */
+"Host Address (IPv6)" = "Адрес хоста (IPv6)";
+
+/* VMConfigPortForwardingViewController */
+"Host address (optional)" = "Адрес хоста (опционально)";
+
+/* UTMQemuConstants */
+"Host Only" = "Только хост";
+
+/* No comment provided by engineer. */
+"Host Port" = "Порт хоста";
+
+/* VMConfigPortForwardingViewController */
+"Host port (required)" = "Порт хоста (обязательно)";
+
+/* No comment provided by engineer. */
+"Hypervisor" = "Гипервизор";
+
+/* No comment provided by engineer. */
+"I want to…" = "Я хочу…";
+
+/* No comment provided by engineer. */
+"If enabled, the default input devices will be emulated on the USB bus." = "Если эта опция включена, то на шине USB будут эмулироваться устройства ввода по умолчанию.";
+
+"If enabled, a virtiofs share tagged 'rosetta' will be available on the Linux guest for installing Rosetta for emulating x86_64 on ARM64." = "Если эта опция включена, то на гостевом компьютере Linux будет доступен каталог virtiofs с меткой 'rosetta' для установки Rosetta для эмуляции x86_64 на ARM64.";
+
+/* No comment provided by engineer. */
+"If checked, use local time for RTC which is required for Windows. Otherwise, use UTC clock." = "Если флажок установлен, то для RTC используется местное время, что необходимо для Windows. В противном случае используются часы UTC.";
+
+/* No comment provided by engineer. */
+"If checked, the CPU flag will be enabled. Otherwise, the default value will be used." = "Если флажок установлен, то флаг CPU будет включен. В противном случае будет использоваться значение по умолчанию";
+
+/* No comment provided by engineer. */
+"If checked, the CPU flag will be disabled. Otherwise, the default value will be used." = "Если флажок установлен, то флаг CPU будет отключен. В противном случае будет использоваться значение по умолчанию.";
+
+/* No comment provided by engineer. */
+"Icon" = "Иконка";
+
+/* UTMQemuConstants */
+"IDE" = "IDE";
+
+/* No comment provided by engineer. */
+"If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO." = "Если значение установлено, то загрузка будет производиться непосредственно с образа ядра и initrd. В противном случае загрузка производится из поддерживаемого ISO.";
+
+/* No comment provided by engineer. */
+"Image File Type" = "Тип файла образа";
+
+/* No comment provided by engineer. */
+"Image Type" = "Тип образа";
+
+/* No comment provided by engineer. */
+"Import IPSW" = "Импорт IPSW";
+
+/* No comment provided by engineer. */
+"Import…" = "Импорт…";
+
+/* No comment provided by engineer. */
+"Import Drive" = "Импортировать диск";
+
+/* No comment provided by engineer. */
+"Import VHDX Image" = "Импортировать образ VHDX";
+
+/* No comment provided by engineer. */
+"Import Virtual Machine…" = "Импортировать виртуальную машину…";
+
+/* Save VM overlay */
+"Importing %@…" = "Импортирование %@…";
+
+/* VMDetailsView */
+"Inactive" = "Неактивный";
+
+/* No comment provided by engineer. */
+"Information" = "Информация";
+
+/* No comment provided by engineer. */
+"Initial Ramdisk" = "Первоначальный ramdisk";
+
+/* No comment provided by engineer. */
+"Input" = "Ввод";
+
+/* No comment provided by engineer. */
+"Interface" = "Интерфейс";
+
+/* VMDisplayWindowController */
+"Install Windows Guest Tools…" = "Установка гостевых средств Windows…";
+
+/* No comment provided by engineer. */
+"Install Windows 10 or higher" = "Установить Windows 10 или новее";
+
+/* No comment provided by engineer. */
+"Install drivers and SPICE tools" = "Установить драйвера и инструменты SPICE";
+
+/* VMDisplayAppleWindowController */
+"Installation: %@" = "Установка: %@";
+
+/* No comment provided by engineer. */
+"Instantiate PS/2 controller even when USB input is supported. Required for older Windows." = "Инстанцировать контроллер PS/2, даже если поддерживается USB ввод. Требуется для старых версий Windows.";
+
+/* UTMQemu */
+"Internal error has occurred." = "Произошла внутренняя ошибка.";
+
+/* UTMSpiceIO */
+"Internal error trying to connect to SPICE server." = "Внутренняя ошибка при попытке подключения к серверу SPICE.";
+
+/* UTMVirtualMachine */
+"Internal error starting main loop." = "Внутренняя ошибка при запуске основного цикла.";
+
+/* UTMVirtualMachine */
+"Internal error starting VM." = "Внутренняя ошибка при запуске ВМ.";
+
+/* VMDisplayMetalWindowController */
+"Internal error." = "Внутренняя ошибка.";
+
+/* ContentView */
+"Invalid JitStreamer attach URL:\n%@" = "Неверный URL-адрес подключения JitStreamer:\n%@";
+
+/* VMConfigAppleNetworkingView */
+"Invalid MAC address." = "Неверный MAC-адрес.";
+
+/* VMConfigSystemViewController */
+"Invalid core count." = "Недопустимое количество ядер.";
+
+/* UTMData */
+"Invalid drive size." = "Недопустимый размер диска.";
+
+/* VMRemovableDrivesViewController */
+"Invalid file selected." = "Выбран недопустимый файл";
+
+/* VMConfigSystemViewController */
+"Invalid memory size." = "Недопустимый объем памяти.";
+
+/* VMConfigDriveCreateViewController */
+"Invalid name" = "Недопустимое имя";
+
+/* VMConfigDriveCreateViewController */
+"Invalid size" = "Недопустимый размер";
+
+/* VMListViewController */
+"Invalid UTM not imported." = "Недопустимый UTM не импортирован.";
+
+/* No comment provided by engineer. */
+"Invert Mouse Scroll" = "Инвертировать прокрутку мыши";
+
+/* No comment provided by engineer. */
+"Invert scrolling" = "Инвертировать прокрутку";
+
+/* No comment provided by engineer. */
+"IP Configuration" = "Конфигурация IP";
+
+/* No comment provided by engineer. */
+"Isolate Guest from Host" = "Изолировать гостя от хоста";
+
+/* UTMQemuConstants */
+"Italic" = "Курсив";
+
+/* UTMQemuConstants */
+"Italic, Bold" = "Курсив, Жирный";
+
+/* No comment provided by engineer. */
+"JIT Cache" = "Кэш JIT";
+
+/* VMConfigSystemViewController */
+"JIT cache size cannot be larger than 2GB." = "Размер JIT-кэша не может быть больше 2 ГБ.";
+
+/* VMConfigSystemViewController */
+"JIT cache size too small." = "Размер кэша JIT слишком мал.";
+
+/* No comment provided by engineer. */
+"Kernel" = "Ядро (Kernel)";
+
+/* No comment provided by engineer. */
+"Keyboard" = "Клавиатура";
+
+/* No comment provided by engineer. */
+"Keep UTM running after last window is closed and all VMs are shut down" = "Продолжение работы UTM после закрытия последнего окна и выключения всех ВМ";
+
+/* No comment provided by engineer. */
+"Legacy" = "Устаревший";
+
+/* No comment provided by engineer. */
+"Legacy (PS/2) Mode" = "Устаревший режим (PS/2)";
+
+/* No comment provided by engineer. */
+"License" = "Лицензия";
+
+/* UTMQemuConstants */
+"Linear" = "Линейный";
+
+/* UTMAppleConfigurationBoot */
+"Linux" = "Linux";
+
+/* UTMLegacyQemuConfiguration
+   UTMQemuConstants */
+"Linux Device Tree Binary" = "Двоичный файл дерева устройств Linux (DTB)";
+
+/* No comment provided by engineer. */
+"Linux initial ramdisk:" = "Первоначальный ramdisk Linux:";
+
+/* No comment provided by engineer. */
+"Linux initial ramdisk (optional)" = "Первоначальный ramdisk Linux (опционально)";
+
+/* UTMLegacyQemuConfiguration
+   UTMQemuConstants */
+"Linux Kernel" = "Ядро Linux";
+
+/* No comment provided by engineer. */
+"Linux kernel (required)" = "Ядро Linux (обязательно)";
+
+/* UTMLegacyQemuConfiguration
+   UTMQemuConstants */
+"Linux RAM Disk" = "Linux Ramdisk";
+
+/* No comment provided by engineer. */
+"Linux Root FS Image (optional)" = "Образ корневой ФС Linux (опционально)";
+
+/* No comment provided by engineer. */
+"Linux Settings" = "Параметры Linux";
+
+/* No comment provided by engineer. */
+"Logging" = "Ведение журналов";
+
+/* No comment provided by engineer. */
+"MAC Address" = "MAC Адрес";
+
+/* No comment provided by engineer. */
+"Machine" = "Машина";
+
+/* UTMAppleConfigurationBoot */
+"macOS" = "macOS";
+
+/* VMWizardOSMacView */
+"macOS guests are only supported on ARM64 devices." = "Гостевая macOS поддерживается только на устройствах ARM64.";
+
+/* VMWizardState */
+"macOS is not supported with QEMU." = "macOS не поддерживается в QEMU.";
+
+/* No comment provided by engineer. */
+"macOS Settings" = "Параметры macOS";
+
+/* No comment provided by engineer. */
+"Maintenance" = "Обслуживание";
+
+/* UTMQemuManager */
+"Manager being deallocated, killing pending RPC." = "Менеджер освобождается, что приводит к завершению работы RPC";
+
+/* UTMQemuConstants */
+"Manual Serial Device (advanced)" = "Ручное последовательное устройство (дополнительно)";
+
+/* No comment provided by engineer. */
+"Maximum Shared USB Devices" = "Максимальное кол-во совместно используемых USB-устройств";
+
+/* No comment provided by engineer. */
+"MB" = "МБ";
+
+/* No comment provided by engineer. */
+"Memory" = "Память";
+
+/* VMDisplayMetalWindowController */
+"Metal is not supported on this device. Cannot render display." = "Metal не поддерживается на этом устройстве. Невозможно отрендерить дисплей.";
+
+/* No comment provided by engineer. */
+"Minimum size: %@" = "Минимальный размер: %@";
+
+/* No comment provided by engineer. */
+"Mode" = "Режим";
+
+/* No comment provided by engineer. */
+"Modify settings for this VM." = "Изменить параметры этой ВМ";
+
+/* UTMAppleConfigurationDevices */
+"Mouse" = "Мышь";
+
+/* No comment provided by engineer. */
+"Mouse Wheel" = "Колесо мыши";
+
+/* No comment provided by engineer. */
+"Move…" = "Переместить…";
+
+/* No comment provided by engineer. */
+"Move this VM from internal storage to elsewhere." = "Переместите эту ВМ из внутреннего хранилища в другое место.";
+
+/* No comment provided by engineer. */
+"Move Up" = "Поднять";
+
+/* No comment provided by engineer. */
+"Move Down" = "Опустить";
+
+/* No comment provided by engineer. */
+"Move selected VM" = "Переместить выбранную ВМ";
+
+/* Save VM overlay */
+"Moving %@…" = "Перемещение %@…";
+
+/* UTMQemuConstants */
+"MTD (NAND/NOR)" = "MTD (NAND/NOR)";
+
+/* No comment provided by engineer. */
+"Name" = "Имя";
+
+/* VMConfigInfoView */
+"Name is an invalid filename." = "Имя является недопустимым именем файла";
+
+/* UTMQemuConstants */
+"Nearest Neighbor" = "Ближайший сосед";
+
+/* No comment provided by engineer. */
+"Network" = "Сеть";
+
+/* No comment provided by engineer. */
+"Network Mode" = "Сетевой режим";
+
+/* No comment provided by engineer. */
+"New" = "Новая";
+
+/* No comment provided by engineer. */
+"New…" = "Новый…";
+
+/* No comment provided by engineer. */
+"New Drive" = "Новый диск";
+
+/* No comment provided by engineer. */
+"New from template…" = "Новая из шаблона…";
+
+/* VMConfigPortForwardingViewController */
+"New port forward" = "Новое перенаправление портов";
+
+/* No comment provided by engineer. */
+"New Virtual Machine" = "Новая Виртуальная Машина";
+
+/* No comment provided by engineer. */
+"New VM" = "Новая ВМ";
+
+/* Clone VM name prompt message */
+"New VM name" = "Имя новой ВМ";
+
+/* No comment provided by engineer. */
+"No" = "Нет";
+
+/* UTMQemuManager */
+"No connection for RPC." = "Отсутствует соединение для RPC.";
+
+/* VMConfigExistingViewController */
+"No debug log found!" = "Журнал отладки не найден!";
+
+/* No comment provided by engineer. */
+"No drives added." = "Нет добавленных дисков.";
+
+/* VMDisplayWindowController */
+"No drives connected." = "Нет подключенных дисков.";
+
+/* UTMDownloadSupportToolsTaskError */
+"No empty removable drive found. Make sure you have at least one removable drive that is not in use." = "Пустой съемный диск не найден. Убедитесь, что у вас есть хотя бы один неиспользуемый съемный диск.";
+
+/* UTMData */
+"No log found!" = "Журнал не найден!";
+
+/* No comment provided by engineer. */
+"No output device is selected for this window." = "Для данного окна устройство вывода не выбрано.";
+
+/* VMQemuDisplayMetalWindowController */
+"No USB devices detected." = "Устройства USB не обнаружены.";
+
+/* VMToolbarDriveMenuView */
+"none" = "отсутствует";
+
+/* UTMLegacyQemuConfiguration
+   UTMQemuConstants */
+"None" = "Отсутствует";
+
+/* UTMQemuConstants */
+"None (Advanced)" = "Отсутствует (дополнительно)";
+
+/* No comment provided by engineer. */
+"Not running" = "Не запущена";
+
+/* No comment provided by engineer. */
+"Note: Boot order is as listed." = "Примечание: Порядок загрузки соответствует указанному.";
+
+/* No comment provided by engineer. */
+"Note: select the path to share from the main screen." = "Примечание: выберите путь для общего доступа на главном экране.";
+
+/* No comment provided by engineer. */
+"Note: Shared directories will not be saved and will be reset when UTM quits." = "Примечание: Общие каталоги не сохраняются и сбрасываются при выходе из UTM.";
+
+/* No comment provided by engineer. */
+"Notes" = "Примечания";
+
+/* UTMQemuConstants */
+"NVMe" = "NVMe";
+
+/* VMDisplayWindowController */
+"OK" = "OK";
+
+/* No comment provided by engineer. */
+"Only available if host architecture matches the target. Otherwise, TCG emulation is used." = "Доступно только в том случае, если архитектура хоста совпадает с целевой. В противном случае используется эмуляция TCG.";
+
+/* No comment provided by engineer. */
+"Open VM Settings" = "Открыть параметры ВМ";
+
+/* No comment provided by engineer. */
+"Open…" = "Открыть…";
+
+/* No comment provided by engineer. */
+"Operating System" = "Операционная система";
+
+/* No comment provided by engineer. */
+"Optionally select a directory to make accessible inside the VM. Note that support for shared directories varies by the guest operating system and may require additional guest drivers to be installed. See UTM support pages for more details." = "Опционально выберите каталог, который будет доступен внутри ВМ. Обратите внимание, что поддержка общих каталогов зависит от гостевой операционной системы и может потребовать установки дополнительных гостевых драйверов. Дополнительные сведения см. на страницах поддержки UTM.";
+
+/* No comment provided by engineer. */
+"Options here only apply on next boot and are not saved." = "Установленные здесь параметры применяются только при следующей загрузке и не сохраняются.";
+
+/* No comment provided by engineer. */
+"Other" = "Другое";
+
+/* No comment provided by engineer. */
+"Path" = "Путь";
+
+/* VMDisplayWindowController */
+"Pause" = "Пауза";
+
+/* UTMVirtualMachine */
+"Paused" = "Приостановлено";
+
+/* UTMVirtualMachine */
+"Pausing" = "Приостановка";
+
+/* UTMQemuConstants */
+"PC System Flash" = "Системная флэш-память ПК";
+
+/* No comment provided by engineer. */
+"Pending" = "В ожидании";
+
+/* VMDisplayWindowController */
+"Play" = "Запуск";
+
+/* VMWizardState */
+"Please select a boot image." = "Пожалуйста, выберите загрузочный образ.";
+
+/* VMWizardState */
+"Please select a kernel file." = "Пожалуйста, выберите файл ядра.";
+
+/* No comment provided by engineer. */
+"Please select a macOS recovery IPSW." = "Пожалуйста, выберите macOS recovery IPSW.";
+
+/* VMWizardState */
+"Please select a system to emulate." = "Пожалуйста, выберите систему для эмуляции.";
+
+/* No comment provided by engineer. */
+"Please select an uncompressed Linux kernel image." = "Пожалуйста, выберите несжатый образ ядра Linux.";
+
+/* No comment provided by engineer. */
+"Port Forward" = "Перенаправление портов";
+
+/* UTMJSONStream */
+"Port is not connected." = "Порт не подключен";
+
+/* No comment provided by engineer. */
+"Power Off" = "Выключить";
+
+/* No comment provided by engineer. */
+"Preconfigured" = "Предварительно сконфигурированный";
+
+/* No comment provided by engineer. */
+"Protocol" = "Протокол";
+
+/* A download process is about to begin. */
+"Preparing…" = "Идет подготовка…";
+
+/* VMDisplayQemuMetalWindowController */
+"Press %@ to release cursor" = "Нажмите %@, чтобы освободить курсор";
+
+/* UTMQemuConstants */
+"Pseudo-TTY Device" = "Псевдо-TTY устройство";
+
+/* No comment provided by engineer. */
+"PS/2 has higher compatibility with older operating systems but does not support custom cursor settings." = "PS/2 имеет более высокую совместимость со старыми операционными системами, но не поддерживает пользовательские настройки курсора.";
+
+/* No comment provided by engineer. */
+"QEMU" = "QEMU";
+
+/* No comment provided by engineer. */
+"QEMU Arguments" = "Аргументы QEMU";
+
+/* UTMQemuVirtualMachine */
+"QEMU exited from an error: %@" = "QEMU завершила работу с ошибкой: %@";
+
+/* No comment provided by engineer. */
+"QEMU Machine Properties" = "Свойства машины QEMU";
+
+/* UTMQemuConstants */
+"QEMU Monitor (HMP)" = "Монитор QEMU (HMP)";
+
+/* VMDisplayWindowController */
+"Querying drives status..." = "Опрос состояния дисков…";
+
+/* VMQemuDisplayMetalWindowController */
+"Querying USB devices..." = "Опрос состояния USB накопителей…";
+
+/* No comment provided by engineer. */
+"Quit" = "Выйти";
+
+/* VMQemuDisplayMetalWindowController */
+"Quitting UTM will kill all running VMs." = "Выход из UTM приведет к уничтожению всех работающих ВМ.";
+
+/* No comment provided by engineer. */
+"RAM" = "ОЗУ";
+
+/* No comment provided by engineer. */
+"Random" = "Случайный";
+
+/* No comment provided by engineer. */
+"Raw Image" = "Необработанный образ";
+
+/* VMDisplayAppleController */
+"Read Only" = "Только для чтения";
+
+/* No comment provided by engineer. */
+"Reclaim" = "Освободить";
+
+/* No comment provided by engineer. */
+"Reclaim Space" = "Освободить пространство";
+
+/* No comment provided by engineer. */
+"Reclaim disk space by re-converting the disk image." = "Освободить место на диске путем повторного преобразования образа диска.";
+
+/* UTMQemuConstants */
+"Regular" = "Обычный";
+
+/* No comment provided by engineer. */
+"Removable" = "Съемный";
+
+/* No comment provided by engineer. */
+"Removable Drive" = "Съемный диск";
+
+/* No comment provided by engineer. */
+"Remove" = "Удалить";
+
+/* VMDisplayAppleController */
+"Remove…" = "Удалить…";
+
+/* VMDisplayQemuDisplayController */
+"Request power down" = "Запрос на отключение питания";
+
+/* No comment provided by engineer. */
+"Requires SPICE guest agent tools to be installed." = "Требуется установка средств гостевого агента SPICE.";
+
+/* No comment provided by engineer. */
+"Requires SPICE guest agent tools to be installed. Retina Mode is recommended only if the guest OS supports HiDPI." = "Требуется установка средств гостевого агента SPICE. Режим Retina Mode рекомендуется использовать только в том случае, если гостевая ОС поддерживает HiDPI.";
+
+/* No comment provided by engineer. */
+"Requires SPICE WebDAV service to be installed." = "Требуется установка сервиса SPICE WebDAV.";
+
+/* No comment provided by engineer. */
+"Reset" = "Сбросить";
+
+/* No comment provided by engineer. */
+"Reset UEFI Variables" = "Сбрасывать переменные UEFI";
+
+/* No comment provided by engineer. */
+"Resize" = "Изменить размер";
+
+/* No comment provided by engineer. */
+"Resize Console Command" = "Изменение размера консоли";
+
+/* No comment provided by engineer. */
+"Resize display to screen size and orientation automatically" = "Автоматическое изменение размера и ориентации экрана";
+
+/* No comment provided by engineer. */
+"Resize display to window size automatically" = "Автоматическое изменение размера экрана в соответствии с размером окна";
+
+/* No comment provided by engineer. */
+"Resizing is experimental and could result in data loss. You are strongly encouraged to back-up this VM before proceeding. Would you like to resize to %@ GiB?" = "Изменение размера является экспериментальным и может привести к потере данных. Перед началом работы настоятельно рекомендуется создать резервную копию этой ВМ. Вы хотите изменить размер до %@ ГиБ?";
+
+/* No comment provided by engineer. */
+"Resolution" = "Разрешение";
+
+/* No comment provided by engineer. */
+"Restart" = "Перезапустить";
+
+/* UTMVirtualMachine */
+"Resuming" = "Возобновление";
+
+/* No comment provided by engineer. */
+"Retina Mode" = "Режим Retina";
+
+/* No comment provided by engineer. */
+"Reveal where the VM is stored." = "Показать место хранения виртуальной машины.";
+
+/* UTMAppleConfiguration */
+"Rosetta is not supported on the current host machine." = "Rosetta не поддерживается на текущей хост-машине.";
+
+/* No comment provided by engineer. */
+"Root Image" = "Корневой образ";
+
+/* No comment provided by engineer. */
+"RNG Device" = "RNG устройство";
+
+/* No comment provided by engineer. */
+"Run" = "Запустить";
+
+/* No comment provided by engineer. */
+"Run without saving changes" = "Запустить без сохранения настроек";
+
+/* No comment provided by engineer. */
+"Run Recovery" = "Запустить восстановление";
+
+/* No comment provided by engineer. */
+"Run selected VM" = "Запустить выбранную ВМ";
+
+/* No comment provided by engineer. */
+"Run the VM in the foreground." = "Запуск виртуальной машины на переднем плане.";
+
+/* No comment provided by engineer. */
+"Run the VM in the foreground, without saving data changes to disk." = "Запуск ВМ в фоновом режиме без сохранения изменений данных на диск.";
+
+/* No comment provided by engineer. */
+"Running" = "Работает";
+
+/* No comment provided by engineer. */
+"Running low on memory! UTM might soon be killed by iOS. You can prevent this by decreasing the amount of memory and/or JIT cache assigned to this VM" = "Не хватает памяти! UTM может быть вскоре убит iOS. Это можно предотвратить, уменьшив объем памяти и/или JIT-кэша, выделенного этой ВМ";
+
+/* No comment provided by engineer. */
+"Save" = "Сохранить";
+
+/* Save VM overlay */
+"Saving %@…" = "Сохранение %@…";
+
+/* No comment provided by engineer. */
+"Scaling" = "Масштабирование";
+
+/* No comment provided by engineer. */
+"Selected:" = "Выбранное:";
+
+/* No comment provided by engineer. */
+"Set to 0 for default which is 1/4 of the allocated Memory size. This is in addition to the host memory!" = "По умолчанию установлено значение 0, что составляет 1/4 от объема выделенной памяти. Это в дополнение к памяти хоста!";
+
+/* No comment provided by engineer. */
+"Set to 0 to use maximum supported CPUs. Force multicore might result in incorrect emulation." = "Установите значение 0, чтобы использовать максимальное количество процессоров. Принудительное использование многоядерности может привести к некорректной эмуляции.";
+
+/* UTMQemuConstants */
+"SCSI" = "SCSI";
+
+/* UTMQemuConstants */
+"SD Card" = "SD карта";
+
+/* No comment provided by engineer. */
+"Select a file." = "Выбрать файл.";
+
+/* VMDisplayWindowController */
+"Select Drive Image" = "Выбрать образ диска";
+
+/* VMDisplayAppleWindowController
+   VMDisplayWindowController */
+"Select Shared Folder" = "Выбрать общую папку";
+
+/* SavePanel */
+"Select where to export QEMU command:" = "Выберите, куда экспортировать команду QEMU:";
+
+/* SavePanel */
+"Select where to save debug log:" = "Выберите, куда сохранять журнал отладки:";
+
+/* SavePanel */
+"Select where to save UTM Virtual Machine:" = "Выберите, куда сохранять виртуальную машину UTM:";
+
+/* No comment provided by engineer. */
+"Selected:" = "Выбранное:";
+
+/* VMDisplayQemuDisplayController */
+"Sends power down request to the guest. This simulates pressing the power button on a PC." = "Отправляет гостю запрос на выключение питания. Это имитирует нажатие кнопки питания на ПК.";
+
+/* No comment provided by engineer. */
+"Serial" = "Последовательный";
+
+/* VMDisplayAppleWindowController
+   VMDisplayQemuDisplayController */
+"Serial %lld" = "Последовательный %lld";
+
+/* No comment provided by engineer. */
+"Server Address" = "Адрес сервера";
+
+/* No comment provided by engineer. */
+"Settings" = "Параметры";
+
+/* Share context menu */
+"Share" = "Поделиться";
+
+/* Share context menu */
+"Share…" = "Поделиться…";
+
+/* No comment provided by engineer. */
+"Share a copy of this VM and all its data." = "Поделиться копией этой ВМ и всех её данных";
+
+/* No comment provided by engineer. */
+"Share Directory" = "Включить общий доступ к каталогу";
+
+/* No comment provided by engineer. */
+"Share is read only" = "Общий доступ только для чтения";
+
+/* No comment provided by engineer. */
+"Share USB devices from host" = "Включить общий доступ USB устройств из хоста";
+
+/* No comment provided by engineer. */
+"Shared Directory" = "Каталог общего доступа";
+
+/* VMConfigAppleSharingView */
+"Shared directories in macOS VMs are only available in macOS 13 and later." = "Общие каталоги в виртуальных машинах macOS доступны только в macOS 13 и более поздних версиях.";
+
+/* UTMQemuConstants */
+"Shared Network" = "Общая сеть";
+
+/* VMConfigSharingViewController */
+"Shared path has moved. Please re-choose." = "Общий путь переместился. Пожалуйста, выберите повторно.";
+
+/* VMConfigSharingViewController */
+"Shared path is no longer valid. Please re-choose." = "Общий путь больше не действителен. Пожалуйста, выберите повторно.";
+
+/* No comment provided by engineer. */
+"Share selected VM" = "Поделиться выбранной ВМ";
+
+/* No comment provided by engineer. */
+"Sharing" = "Общий доступ";
+
+/* No comment provided by engineer. */
+"Show Advanced Settings" = "Показать расширенные параметры";
+
+/* No comment provided by engineer. */
+"Show All…" = "Показать все…";
+
+/* No comment provided by engineer. */
+"Show in Finder" = "Показать в Finder";
+
+/* No comment provided by engineer. */
+"Should be off for older operating systems such as Windows 7 or lower." = "Для старых операционных систем, таких как Windows 7 или ниже, его следует отключить.";
+
+/* No comment provided by engineer. */
+"Should be on always unless the guest cannot boot because of this." = "Должно быть включено всегда, если только гость не может загрузиться из-за этого.";
+
+/* No comment provided by engineer. */
+"Size" = "Размер";
+
+/* No comment provided by engineer. */
+"Skip Boot Image" = "Пропустить загрузочный образ";
+
+/* New VM window. */
+"Skip ISO boot" = "Пропустить загрузку ISO";
+
+/* No comment provided by engineer. */
+"Skip ISO boot (advanced)" = "Пропустить загрузку ISO (дополнительно)";
+
+/* No comment provided by engineer. */
+"Slower, but can run other CPU architectures." = "Медленнее, но может работать с другими архитектурами процессоров.";
+
+/* No comment provided by engineer. */
+"Sound" = "Звук";
+
+/* New VM window. */
+"Some older systems do not support UEFI boot, such as Windows 7 and below." = "Некоторые старые системы не поддерживают загрузку UEFI, например, Windows 7 и ниже.";
+
+/* No comment provided by engineer. */
+"Specify the size of the drive where data will be stored into." = "Укажите размер диска, на котором будут храниться данные.";
+
+/* UTMQemuConstants */
+"SPICE WebDAV" = "SPICE WebDAV";
+
+/* No comment provided by engineer. */
+"Start" = "Запуск";
+
+/* UTMVirtualMachine */
+"Started" = "Запущенно";
+
+/* UTMVirtualMachine */
+"Starting" = "Запускается";
+
+/* No comment provided by engineer. */
+"Stop" = "Остановить";
+
+/* No comment provided by engineer. */
+"Stop the running VM." = "Остановить работу ВМ.";
+
+/* No comment provided by engineer. */
+"Stop selected VM" = "Остановить выбранную ВМ.";
+
+/* No comment provided by engineer. */
+"Stop…" = "Остановить…";
+
+/* UTMVirtualMachine */
+"Stopped" = "Остановлена";
+
+/* UTMVirtualMachine */
+"Stopping" = "Останавлевается";
+
+/* No comment provided by engineer. */
+"Storage" = "Хранилище";
+
+/* No comment provided by engineer. */
+"stty cols $COLS rows $ROWS\n" = "stty cols $COLS rows $ROWS\n";
+
+/* No comment provided by engineer. */
+"Style" = "Стиль";
+
+/* No comment provided by engineer. */
+"Summary" = "Краткая информация";
+
+/* Welcome view */
+"Support" = "Поддержка";
+
+/* UTMVirtualMachine */
+"Suspended" = "Приостановлено";
+
+/* No comment provided by engineer. */
+"Status" = "Статус";
+
+/* No comment provided by engineer. */
+"System" = "Система";
+
+/* No comment provided by engineer. */
+"Target" = "Цель";
+
+/* UTMQemuConstants */
+"TCP" = "TCP";
+
+/* UTMQemuConstants */
+"TCP Client Connection" = "Подключение клиента TCP";
+
+/* VMConfigPortForwardingViewController */
+"TCP Forward" = "Проброс TCP";
+
+/* UTMQemuConstants */
+"TCP Server Connection" = "Подключение сервера TCP";
+
+/* No comment provided by engineer. */
+"Test" = "Тест";
+
+/* No comment provided by engineer. */
+"Text Color" = "Тестовый цвет";
+
+/* VMDisplayQemuDisplayController */
+"Tells the VM process to shut down with risk of data corruption. This simulates holding down the power button on a PC." = "Дает команду на завершение процесса ВМ с риском повреждения данных. Это имитирует нажатие кнопки питания на ПК:";
+
+/* SizeTextField */
+"The amount of storage to allocate for this image. Ignored if importing an image. If this is a raw image, then an empty file of this size will be stored with the VM. Otherwise, the disk image will dynamically expand up to this size." = "Объем памяти, выделяемый для данного образа. Игнорируется при импорте образа. Если это необработанный образ, то вместе с ВМ будет сохранен пустой файл такого размера. В противном случае образ диска будет динамически расширяться до этого размера.";
+
+/* SizeTextField */
+"The amount of storage to allocate for this image. An empty file of this size will be stored with the VM." = "Объем памяти, выделяемый для данного образа. Пустой файл такого размера будет храниться вместе с ВМ.";
+
+/* UTMConfiguration */
+"The backend for this configuration is not supported." = "Бэкэнд для данной конфигурации не поддерживается.";
+
+/* UTMConfiguration */
+"The drive '%@' already exists and cannot be created." = "Диск '%@' уже существует и его нельзя создать.";
+
+/* UTMDownloadSupportToolsTaskError */
+"The guest support tools have already been mounted." = "Инструменты для поддержки гостей уже смонтированы.";
+
+/* UTMAppleConfiguration */
+"The host operating system needs to be updated to support one or more features requested by the guest." = "Операционная система хоста должна быть обновлена для поддержки одной или нескольких функций, запрашиваемых гостем.";
+
+/* No comment provided by engineer. */
+"The selected architecture is unsupported in this version of UTM." = "Выбранная архитектура не поддерживается в данной версии UTM.";
+
+/* VMWizardState */
+"The selected boot image contains the word '%@' but the guest architecture is '%@'. Please ensure you have selected an image that is compatible with '%@'." = "Выбранный загрузочный образ содержит слово “%1$@“, но гостевая архитектура -  “%2$@“. Убедитесь, что выбран образ, совместимый с “%3$@“.";
+
+/* VMConfigSystemViewController */
+"The total memory usage is close to your device's limit. iOS will kill the VM if it consumes too much memory." = "Общее потребление памяти близко к пределу, установленному на устройстве. iOS убьет виртуальную машину, если она потребляет слишком много памяти.";
+
+/* No comment provided by engineer. */
+"The target does not support hardware emulated serial connections." = "Цель не поддерживает аппаратную эмуляцию последовательных соединений.";
+
+/* UTMQemuVirtualMachine */
+"The virtual machine is in an invalid state." = "Виртуальная машина находится в недопустимом состоянии.";
+
+/* No comment provided by engineer. */
+"Theme" = "Тема";
+
+/* Error shown when importing a ZIP file from web that doesn't contain a UTM Virtual Machine. */
+"There is no UTM file in the downloaded ZIP archive." = "В скачанном ZIP-архиве отсутствует файл UTM.";
+
+/* No comment provided by engineer. */
+"These are advanced settings affecting QEMU which should be kept default unless you are running into issues." = "Это расширенные параметры, влияющие на работу QEMU, которые следует оставить по умолчанию, если вы не сталкиваетесь с проблемами.";
+
+/* No comment provided by engineer. */
+"These settings are unavailable in console display mode." = "Эти настройки недоступны в режиме отображения консоли.";
+
+/* No comment provided by engineer. */
+"This build does not emulation." = "В данной сборке эмуляция не производится.";
+
+/* UTMQemuVirtualMachine */
+"This build of UTM does not support emulating the architecture of this VM." = "Данная сборка UTM не поддерживает эмуляцию архитектуры этой ВМ.";
+
+/* VMConfigSystemView */
+"This change will reset all settings" = "Это изменение приведет к сбросу всех настроек";
+
+/* UTMConfiguration */
+"This configuration is saved with a newer version of UTM and is not compatible with this version." = "Данная конфигурация сохранена в более новой версии UTM и не совместима с этой версией.";
+
+/* UTMConfiguration */
+"This configuration is too old and is not supported." = "Данная конфигурация слишком устарела и не поддерживается.";
+
+/* VMConfigAppleSharingView */
+"This directory is already being shared." = "Этот каталог уже находится в общем доступе.";
+
+/* UTMQemuSystem */
+"This version of macOS does not support audio in console mode. Please change the VM configuration or upgrade macOS." = "Данная версия macOS не поддерживает звук в режиме консоли. Измените конфигурацию ВМ или обновите macOS..";
+
+/* UTMQemuSystem */
+"This version of macOS does not support GPU acceleration. Please change the VM configuration or upgrade macOS." = "Данная версия macOS не поддерживает ускорение GPU. Измените конфигурацию ВМ или обновите macOS.";
+
+/* No comment provided by engineer. */
+"This is appended to the -machine argument." = "Это значение добавляется к аргументу -machine.";
+
+/* UTMAppleConfiguration */
+"This is not a valid Apple Virtualization configuration." = "Это недопустимая конфигурация Apple Virtualization.";
+
+/* VMDisplayWindowController */
+"This may corrupt the VM and any unsaved changes will be lost. To quit safely, shut down from the guest." = "Это может привести к повреждению виртуальной машины, и все несохраненные изменения будут потеряны. Для безопасного выхода из системы выключите ее из гостевой ОС.";
+
+/* No comment provided by engineer. */
+"This operating system is unsupported on your machine." = "Данная операционная система не поддерживается на вашем компьютере.";
+
+/* UTMDataExtension */
+"This virtual machine cannot be run on this machine." = "Эта виртуальная машина не может быть запущена на данной машине.";
+
+/* UTMAppleConfiguration */
+"This virtual machine cannot run on the current host machine." = "Эта виртуальная машина не может работать на текущей хост-машине.";
+
+/* UTMAppleConfiguration */
+"This virtual machine contains an invalid hardware model. The configuration may be corrupted or is outdated." = "Эта виртуальная машина содержит недопустимую аппаратную модель. Конфигурация может быть испорченной или устаревшей.";
+
+/* No comment provided by engineer. */
+"This virtual machine has been removed." = "Эта виртуальная машина была удалена.";
+
+/* VMDisplayWindowController */
+"This will reset the VM and any unsaved state will be lost." = "Это приведет к перезагрузке ВМ, и все несохраненные состояния будут потеряны.";
+
+/* UTMQemuManager */
+"Timed out waiting for RPC." = "Время ожидания RPC истекло.";
+
+/* VMDisplayAppleWindowController */
+"To access the shared directory, the guest OS must have Virtiofs drivers installed. You can then run `sudo mount -t virtiofs share /path/to/share` to mount to the share path." = "Для доступа к общему каталогу в гостевой ОС должны быть установлены драйверы Virtiofs. Для подключения к общему каталогу можно выполнить команду `sudo mount -t virtiofs share /path/to/share";
+
+/* VMMetalView */
+"To capture input or to release the capture, press Command and Option at the same time." = "Для захвата ввода или снятия захвата одновременно нажмите Command и Option.";
+
+/* No comment provided by engineer. */
+"To install macOS, you need to download a recovery IPSW. If you do not select an existing IPSW, the latest macOS IPSW will be downloaded from Apple." = "Для установки macOS необходимо загрузить IPSW. Если вы не выберете существующий IPSW, то с сайта Apple будет загружена последняя версия IPSW.";
+
+/* VMDisplayQemuMetalWindowController */
+"To release the mouse cursor, press %@ at the same time." = "Чтобы отпустить курсор мыши, одновременно нажмите %@.";
+
+/* No comment provided by engineer. */
+"TPM 2.0 Device" = "Устройство TPM 2.0";
+
+/* No comment provided by engineer. */
+"TPM can be used to protect secrets in the guest operating system. Note that the host will always be able to read these secrets and therefore no expectation of physical security is provided." = "TPM может использоваться для защиты секретов в гостевой операционной системе. Отметим, что хост всегда сможет прочитать эти секреты, поэтому ожидать физической защиты не приходится.";
+
+/* UTMAppleConfigurationDevices */
+"Trackpad" = "Трекпад";
+
+/* No comment provided by engineer. */
+"Tweaks" = "Твики";
+
+/* No comment provided by engineer. */
+"Type" = "Тип";
+
+/* UTMQemuConstants */
+"UDP" = "UDP";
+
+/* VMConfigPortForwardingViewController */
+"UDP Forward" = "Проброс UDP";
+
+/* No comment provided by engineer. */
+"UEFI" = "UEFI";
+
+/* No comment provided by engineer. */
+"UEFI Boot" = "UEFI загрузка";
+
+/* UTMQemuConfigurationError */
+"UEFI is not supported with this architecture." = "UEFI не поддерживается на этой архитектуре.";
+
+/* UTMData */
+"Unable to add a shortcut to the new location." = "Невозможно добавить ярлык в новое местоположение.";
+
+/* UTMUnavailableVirtualMachine */
+"Unavailable" = "Недоступно";
+
+/* VMWizardState */
+"Unavailable for this platform." = "Недоступно для этой платформы.";
+
+/* No comment provided by engineer. */
+"Uncompressed Linux initial ramdisk (optional)" = "Несжатый первоначальный ramdisk Linux (опционально)";
+
+/* No comment provided by engineer. */
+"Uncompressed Linux kernel (required)" = "Несжатое первоначальное ядро Linux (обязательно)";
+
+/* UTMVirtualMachineExtension */
+"Unknown" = "Неизвестно";
+
+/* No comment provided by engineer. */
+"Upscaling" = "Апскейлинг";
+
+/* UTMQemuConstants */
+"USB" = "USB";
+
+/* UTMQemuConstants */
+"USB 2.0" = "USB 2.0";
+
+/* UTMQemuConstants */
+"USB 3.0 (XHCI)" = "USB 3.0 (XHCI)";
+
+/* VMQemuDisplayMetalWindowController */
+"USB Device" = "Устройство USB";
+
+/* No comment provided by engineer. */
+"USB Sharing" = "Общий доступ USB";
+
+/* No comment provided by engineer. */
+"USB sharing not supported in this build of UTM." = "Общий доступ USB недоступен в этой сборке UTM.";
+
+/* No comment provided by engineer. */
+"USB Support" = "Поддержка USB";
+
+/* No comment provided by engineer. */
+"Use Apple Virtualization" = "Использовать виртуализацию Apple";
+
+/* No comment provided by engineer. */
+"Use Command+Option (⌘+⌥) for input capture/release" = "Для захвата/отмены ввода используйте Command+Option (⌘+⌥)";
+
+/* No comment provided by engineer. */
+"Use Hypervisor" = "Использовать гипервизор";
+
+/* No comment provided by engineer. */
+"Use local time for base clock" = "Использовать местное время в качестве базовых часов";
+
+/* No comment provided by engineer. */
+"Use Virtualization" = "Использовать виртуализацию";
+
+/* Welcome view */
+"User Guide" = "Руководство пользователя";
+
+/* No comment provided by engineer. */
+"VGA Device RAM (MB)" = "Память VGA (МБ)";
+
+/* UTMQemuConstants */
+"VirtFS" = "VirtFS";
+
+/* UTMQemuConstants */
+"VirtIO" = "VirtIO";
+
+/* UTMConfigurationInfo
+   UTMData */
+"Virtual Machine" = "Виртуальная Машина";
+
+/* No comment provided by engineer. */
+"Virtual Machine Gallery" = "Галерея виртуальных машин";
+
+/* New VM window. */
+"Virtualization Engine" = "Движок виртуализации";
+
+/* No comment provided by engineer. */
+"Virtualization is not supported on your system." = "Виртуализация не поддерживается на вашей системе.";
+
+/* No comment provided by engineer. */
+"Virtualize" = "Виртуализировать";
+
+/* No comment provided by engineer. */
+"VM display size is fixed" = "Размер экрана ВМ фиксирован";
+
+/* UTMVirtualMachine+Sharing */
+"VM frontend does not support shared directories." = "Фронтенд VM не поддерживает общие каталоги.";
+
+/* No comment provided by engineer. */
+"Waiting for VM to connect to display…" = "Ожидание подключения ВМ к дисплею…";
+
+/* No comment provided by engineer. */
+"Welcome to UTM" = "Добро пожаловать в UTM";
+
+/* No comment provided by engineer. */
+"WebDAV requires installing SPICE daemon. VirtFS requires installing device drivers." = "WebDAV требует установки демона SPICE. VirtFS требует установки драйверов устройств.";
+
+/* No comment provided by engineer. */
+"Windows" = "Windows";
+
+/* No comment provided by engineer. */
+"Wait for Connection" = "Ожидание подключения";
+
+/* UTMDownloadSupportToolsTask */
+"Windows Guest Support Tools" = "Средства поддержки гостей Windows";
+
+/* VMQemuDisplayMetalWindowController */
+"Would you like to connect '%@' to this virtual machine?" = "Хотите ли вы подключить '%@' к этой виртуальной машине?";
+
+/* VMDisplayAppleWindowController */
+"Would you like to install macOS? If an existing operating system is already installed on the primary drive of this VM, then it will be erased." = "Желаете ли вы установить macOS? Если на первичном диске этой ВМ уже установлена операционная система, то она будет удалена.";
+
+/* No comment provided by engineer. */
+"Would you like to re-convert this disk image to reclaim unused space and apply compression? Note this will require enough temporary space to perform the conversion. Compression only applies to existing data and new data will still be written uncompressed. You are strongly encouraged to back-up this VM before proceeding." = "Хотите ли вы повторно преобразовать этот образ диска, чтобы освободить неиспользуемое пространство и применить сжатие? Обратите внимание, что для этого потребуется достаточное количество временного пространства для выполнения преобразования. Сжатие применяется только к существующим данным, новые данные по-прежнему будут записываться без сжатия. Перед началом работы настоятельно рекомендуется создать резервную копию этой виртуальной машины.";
+
+/* No comment provided by engineer. */
+"Would you like to re-convert this disk image to reclaim unused space? Note this will require enough temporary space to perform the conversion. You are strongly encouraged to back-up this VM before proceeding." = "Хотите ли вы переконвертировать этот образ диска, чтобы освободить неиспользуемое пространство? Обратите внимание, что для выполнения преобразования потребуется достаточное количество временного пространства. Перед началом работы настоятельно рекомендуется создать резервную копию этой виртуальной машины.";
+
+/* No comment provided by engineer. */
+"Yes" = "Да";
+
+/* VMConfigSystemView */
+"Your device has %llu MB of memory and the estimated usage is %llu MB." = "На вашем устройстве имеется %llu МБ памяти, а предполагаемое использование составляет %llu МБ.";
+
+/* VMConfigAppleBootView
+   VMWizardOSMacView */
+"Your machine does not support running this IPSW." = "Ваша машина не поддерживает запуск этого IPSW.";
+
+/* ContentView */
+"Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached. See https://getutm.app/install/ for more details." = "Ваша версия iOS не поддерживает запуск виртуальных машин в немодифицированном состоянии. Вы должны запускать UTM c jailbrake, либо с подключенным удаленным отладчиком. Более подробную информацию см. на сайте https://getutm.app/install/.";
+
+/* No comment provided by engineer. */
+"Zoom" = "Приблизить";
