@@ -66,10 +66,10 @@
     {
       "identity" : "swiftterm",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/migueldeicaza/SwiftTerm.git",
+      "location" : "https://github.com/osy/SwiftTerm.git",
       "state" : {
-        "branch" : "main",
-        "revision" : "e2b431dbf73f775fb4807a33e4572ffd3dc6933a"
+        "branch" : "visionos",
+        "revision" : "8b0900a4c516eb8c87813f11e797f349e7fca014"
       }
     },
     {
