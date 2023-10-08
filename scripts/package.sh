@@ -130,7 +130,7 @@ Package: com.utmapp.UTM
 Version: ${VERSION}
 Section: Productivity
 Architecture: iphoneos-arm
-Depends: firmware (>=11.0), firmware-sbin, net.angelxwind.appsyncunified
+Depends: firmware (>=14.0), firmware-sbin, net.angelxwind.appsyncunified
 Installed-Size: ${SIZE_KIB}
 Maintainer: osy <dev@getutm.app>
 Description: Virtual machines for iOS
@@ -141,7 +141,7 @@ Depiction: https://cydia.getutm.app/depiction/web/com.utmapp.UTM.html
 Icon: https://cydia.getutm.app/assets/com.utmapp.UTM/icon.png
 Moderndepiction: https://cydia.getutm.app/depiction/native/com.utmapp.UTM.json
 Sileodepiction: https://cydia.getutm.app/depiction/native/com.utmapp.UTM.json
-Tags: compatible_min::ios11.0
+Tags: compatible_min::ios14.0
 EOL
 	xcrun -sdk iphoneos clang -arch arm64 -fobjc-arc -miphoneos-version-min=11.0 "$BASEDIR/deb/postinst.m" "$BASEDIR/deb/MobileCoreServices.tbd" -o "$DEB_TMP/DEBIAN/postinst"
 	strip "$DEB_TMP/DEBIAN/postinst"
