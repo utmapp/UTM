@@ -338,13 +338,14 @@ extension UTMQemuVirtualMachine {
         try Task.checkCancellation()
         
         // load saved state if requested
-        if !isRunningAsDisposible, await registryEntry.isSuspended {
+        let isSuspended = await registryEntry.isSuspended
+        if !isRunningAsDisposible && isSuspended {
             try await monitor.qemuRestoreSnapshot(kSuspendSnapshotName)
             try Task.checkCancellation()
         }
         
         // set up SPICE sharing and removable drives
-        try await self.restoreExternalDrives()
+        try await self.restoreExternalDrives(withMounting: !isSuspended)
         try await self.restoreSharedDirectory(for: ioService)
         try Task.checkCancellation()
         
@@ -352,7 +353,7 @@ extension UTMQemuVirtualMachine {
         try await monitor.continueBoot()
         
         // delete saved state
-        if await registryEntry.isSuspended {
+        if isSuspended {
             try? await deleteSnapshot()
         }
         
@@ -707,7 +708,7 @@ extension UTMQemuVirtualMachine {
         await registryEntry.removeExternalDrive(forId: drive.id)
     }
     
-    func changeMedium(_ drive: UTMQemuConfigurationDrive, to url: URL) async throws {
+    func changeMedium(_ drive: UTMQemuConfigurationDrive, to url: URL, isAccessOnly: Bool = false) async throws {
         _ = url.startAccessingSecurityScopedResource()
         defer {
             url.stopAccessingSecurityScopedResource()
@@ -716,22 +717,22 @@ extension UTMQemuVirtualMachine {
         try await eject(drive, isForced: true)
         let file = try UTMRegistryEntry.File(url: url, isReadOnly: drive.isReadOnly)
         await registryEntry.setExternalDrive(file, forId: drive.id)
-        try await changeMedium(drive, with: tempBookmark, url: url, isSecurityScoped: false)
+        try await changeMedium(drive, with: tempBookmark, url: url, isSecurityScoped: false, isAccessOnly: isAccessOnly)
     }
     
-    private func changeMedium(_ drive: UTMQemuConfigurationDrive, with bookmark: Data, url: URL?, isSecurityScoped: Bool) async throws {
+    private func changeMedium(_ drive: UTMQemuConfigurationDrive, with bookmark: Data, url: URL?, isSecurityScoped: Bool, isAccessOnly: Bool) async throws {
         let system = await system ?? UTMProcess()
         let (success, bookmark, path) = await system.accessData(withBookmark: bookmark, securityScoped: isSecurityScoped)
         guard let bookmark = bookmark, let path = path, success else {
             throw UTMQemuVirtualMachineError.accessDriveImageFailed
         }
         await registryEntry.updateExternalDriveRemoteBookmark(bookmark, forId: drive.id)
-        if let qemu = await monitor, qemu.isConnected {
+        if let qemu = await monitor, qemu.isConnected && !isAccessOnly {
             try qemu.changeMedium(forDrive: "drive\(drive.id)", path: path)
         }
     }
     
-    func restoreExternalDrives() async throws {
+    func restoreExternalDrives(withMounting isMounting: Bool) async throws {
         guard await system != nil else {
             throw UTMQemuVirtualMachineError.invalidVmState
         }
@@ -742,12 +743,12 @@ extension UTMQemuVirtualMachine {
             let id = drive.id
             if let bookmark = await registryEntry.externalDrives[id]?.remoteBookmark {
                 // an image bookmark was saved while QEMU was running
-                try await changeMedium(drive, with: bookmark, url: nil, isSecurityScoped: true)
+                try await changeMedium(drive, with: bookmark, url: nil, isSecurityScoped: true, isAccessOnly: !isMounting)
             } else if let localBookmark = await registryEntry.externalDrives[id]?.bookmark {
                 // an image bookmark was saved while QEMU was NOT running
                 let url = try URL(resolvingPersistentBookmarkData: localBookmark)
-                try await changeMedium(drive, to: url)
-            } else {
+                try await changeMedium(drive, to: url, isAccessOnly: !isMounting)
+            } else if isMounting {
                 // a placeholder image might have been mounted
                 try await eject(drive)
             }
