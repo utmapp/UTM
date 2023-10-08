@@ -22,16 +22,24 @@ class UTMDownloadSupportToolsTask: UTMDownloadTask {
     
     private static let supportToolsDownloadUrl = URL(string: "https://getutm.app/downloads/utm-guest-tools-latest.iso")!
     
-    private var cacheUrl: URL {
-        fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first!
+    private var toolsUrl: URL {
+        fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!.appendingPathComponent("GuestSupportTools")
     }
     
     private var supportToolsLocalUrl: URL {
-        cacheUrl.appendingPathComponent(Self.supportToolsDownloadUrl.lastPathComponent)
+        toolsUrl.appendingPathComponent(Self.supportToolsDownloadUrl.lastPathComponent)
     }
-    
+
+    @Setting("LastDownloadedGuestTools")
+    private var lastDownloadGuestTools: Int = 0
+
     var hasExistingSupportTools: Bool {
-        fileManager.fileExists(atPath: supportToolsLocalUrl.path)
+        get async {
+            guard fileManager.fileExists(atPath: supportToolsLocalUrl.path) else {
+                return false
+            }
+            return await lastModifiedTimestamp <= lastDownloadGuestTools
+        }
     }
     
     init(for vm: UTMQemuVirtualMachine) {
@@ -40,14 +48,15 @@ class UTMDownloadSupportToolsTask: UTMDownloadTask {
         super.init(for: Self.supportToolsDownloadUrl, named: name)
     }
     
-    override func processCompletedDownload(at location: URL) async throws -> any UTMVirtualMachine {
-        if !fileManager.fileExists(atPath: cacheUrl.path) {
-            try fileManager.createDirectory(at: cacheUrl, withIntermediateDirectories: true)
+    override func processCompletedDownload(at location: URL, response: URLResponse?) async throws -> any UTMVirtualMachine {
+        if !fileManager.fileExists(atPath: toolsUrl.path) {
+            try fileManager.createDirectory(at: toolsUrl, withIntermediateDirectories: true)
         }
         if fileManager.fileExists(atPath: supportToolsLocalUrl.path) {
             try fileManager.removeItem(at: supportToolsLocalUrl)
         }
         try fileManager.moveItem(at: location, to: supportToolsLocalUrl)
+        lastDownloadGuestTools = lastModifiedTimestamp(for: response) ?? 0
         return try await mountTools()
     }
     

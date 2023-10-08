@@ -679,7 +679,7 @@ struct AlertMessage: Identifiable {
     
     func mountSupportTools(for vm: UTMQemuVirtualMachine) async throws {
         let task = UTMDownloadSupportToolsTask(for: vm)
-        if task.hasExistingSupportTools {
+        if await task.hasExistingSupportTools {
             vm.config.qemu.isGuestToolsInstallRequested = false
             _ = try await task.mountTools()
         } else {

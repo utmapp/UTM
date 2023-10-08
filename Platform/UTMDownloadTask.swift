@@ -32,6 +32,18 @@ class UTMDownloadTask: NSObject, URLSessionDelegate, URLSessionDownloadDelegate 
         FileManager.default
     }
     
+    /// Find the Last-Modified date as a Unix timestamp
+    var lastModifiedTimestamp: Int {
+        get async {
+            var request = URLRequest(url: url)
+            request.httpMethod = "HEAD"
+            guard let (_, response) = try? await URLSession.shared.data(for: request) else {
+                return 0
+            }
+            return lastModifiedTimestamp(for: response) ?? 0
+        }
+    }
+
     init(for url: URL, named name: String) {
         self.url = url
         self.name = name
@@ -39,8 +51,9 @@ class UTMDownloadTask: NSObject, URLSessionDelegate, URLSessionDownloadDelegate 
     
     /// Called by subclass when download is completed
     /// - Parameter location: Downloaded file location
+    /// - Parameter response: URL response of the download
     /// - Returns: Processed UTM virtual machine
-    func processCompletedDownload(at location: URL) async throws -> any UTMVirtualMachine {
+    func processCompletedDownload(at location: URL, response: URLResponse?) async throws -> any UTMVirtualMachine {
         throw "Not Implemented"
     }
     
@@ -67,7 +80,7 @@ class UTMDownloadTask: NSObject, URLSessionDelegate, URLSessionDownloadDelegate 
         Task {
             await pendingVM.setDownloadFinishedNowProcessing()
             do {
-                let vm = try await processCompletedDownload(at: tmpUrl)
+                let vm = try await processCompletedDownload(at: tmpUrl, response: sessionTask.response)
                 taskContinuation.resume(returning: vm)
             } catch {
                 taskContinuation.resume(throwing: error)
@@ -164,5 +177,20 @@ class UTMDownloadTask: NSObject, URLSessionDelegate, URLSessionDownloadDelegate 
     /// Try to cancel the download
     func cancel() {
         downloadTask?.cancel()
+    }
+    
+    /// Get the Last-Modified header as a Unix timestamp
+    /// - Parameter response: URL response
+    /// - Returns: Unix timestamp
+    func lastModifiedTimestamp(for response: URLResponse?) -> Int? {
+        guard let headers = (response as? HTTPURLResponse)?.allHeaderFields, let lastModified = headers["Last-Modified"] as? String else {
+            return nil
+        }
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss zzz"
+        guard let lastModifiedDate = dateFormatter.date(from: lastModified) else {
+            return nil
+        }
+        return Int(lastModifiedDate.timeIntervalSince1970)
     }
 }
