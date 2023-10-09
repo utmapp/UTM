@@ -17,6 +17,9 @@
 #import "QEMUHelper.h"
 #import "QEMUHelperDelegate.h"
 #import <stdio.h>
+#import <signal.h>
+
+static const int64_t kProcessTerminateTimeoutSeconds = 1;
 
 @interface QEMUHelper ()
 
@@ -150,8 +153,21 @@
 }
 
 - (void)terminate {
-    [self.childTask terminate];
+    NSTask *childTask = self.childTask;
     self.childTask = nil;
+    if (childTask) {
+        void (^terminationHandler)(NSTask *) = childTask.terminationHandler;
+        dispatch_semaphore_t terminatedEvent = dispatch_semaphore_create(0);
+        childTask.terminationHandler = ^(NSTask *task) {
+            terminationHandler(task);
+            dispatch_semaphore_signal(terminatedEvent);
+        };
+        [childTask terminate];
+        if (childTask.isRunning && dispatch_semaphore_wait(terminatedEvent, dispatch_time(DISPATCH_TIME_NOW, kProcessTerminateTimeoutSeconds*NSEC_PER_SEC)) != 0) {
+            NSLog(@"Process %d failed to respond to SIGTERM, sending SIGKILL...", childTask.processIdentifier);
+            kill(childTask.processIdentifier, SIGKILL);
+        }
+    }
     [self invalidateToken];
 }
 
