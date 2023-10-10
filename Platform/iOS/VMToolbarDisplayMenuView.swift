@@ -19,7 +19,15 @@ import SwiftUI
 struct VMToolbarDisplayMenuView: View {
     @Binding var state: VMWindowState
     @EnvironmentObject private var session: VMSessionState
-    
+    #if os(visionOS)
+    @Environment(\.supportsMultipleWindows) private var supportsMultipleWindows
+    @Environment(\.openWindow) private var openWindow
+    #else
+    private var supportsMultipleWindows: Bool {
+        UIApplication.shared.supportsMultipleScenes
+    }
+    #endif
+
     var body: some View {
         Menu {
             Menu {
@@ -56,10 +64,14 @@ struct VMToolbarDisplayMenuView: View {
                     MenuLabel("External Monitor", systemImage: "rectangle.on.rectangle")
                 }
             }
-            if UIApplication.shared.supportsMultipleScenes {
+            if supportsMultipleWindows {
                 Divider()
                 Button {
+                    #if os(visionOS)
+                    openWindow(value: session.newWindow())
+                    #else
                     UIApplication.shared.requestSceneSessionActivation(nil, userActivity: nil, options: nil, errorHandler: nil)
+                    #endif
                 } label: {
                     MenuLabel("New Window…", systemImage: "plus.rectangle.on.rectangle")
                 }
@@ -85,12 +97,5 @@ private struct Badge: View {
         } else {
             EmptyView()
         }
-    }
-}
-
-struct VMToolbarDisplayMenuView_Previews: PreviewProvider {
-    @State private static var state = VMWindowState()
-    static var previews: some View {
-        VMToolbarDisplayMenuView(state: $state)
     }
 }

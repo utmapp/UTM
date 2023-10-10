@@ -25,7 +25,7 @@ class UTMExternalSceneDelegate: NSObject, UIWindowSceneDelegate, ObservableObjec
         
         if session.role == .windowExternalDisplay {
             let window = UIWindow(windowScene: windowScene)
-            let viewController = UIHostingController(rootView: UTMMainView(isInteractive: false))
+            let viewController = UIHostingController(rootView: UTMSingleWindowView(isInteractive: false))
             window.rootViewController = viewController
             self.window = window
             window.isHidden = false

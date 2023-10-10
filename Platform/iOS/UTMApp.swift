@@ -19,12 +19,9 @@ import SwiftUI
 struct UTMApp: App {
     var body: some Scene {
         WindowGroup {
-            UTMMainView()
+            UTMSingleWindowView()
         }.commands {
             VMCommands()
         }
-        #if os(visionOS)
-        .windowResizability(.contentMinSize)
-        #endif
     }
 }

@@ -383,11 +383,3 @@ extension MenuStyle where Self == ToolbarMenuStyle {
         DispatchQueue.main.asyncAfter(deadline: .now() + 15, execute: longIdleTask!)
     }
 }
-
-struct VMToolbarView_Previews: PreviewProvider {
-    @State static var state = VMWindowState()
-    
-    static var previews: some View {
-        VMToolbarView(state: $state)
-    }
-}

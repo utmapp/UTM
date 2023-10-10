@@ -34,7 +34,7 @@ struct VMWindowState: Identifiable {
         }
     }
     
-    let id = UUID()
+    let id: VMSessionState.WindowID
     
     var device: Device?
     

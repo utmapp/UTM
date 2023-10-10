@@ -20,8 +20,23 @@ import SwiftUI
 
 /// Represents the UI state for a single VM session.
 @MainActor class VMSessionState: NSObject, ObservableObject {
-    static private(set) var currentSession: VMSessionState?
-    
+    struct ID: Hashable, Codable {
+        private var id = UUID()
+    }
+
+    struct WindowID: Hashable, Codable {
+        private var id = UUID()
+    }
+
+    struct GlobalWindowID: Hashable, Codable {
+        private(set) var sessionID: VMSessionState.ID
+        private(set) var windowID: VMSessionState.WindowID
+    }
+
+    static private(set) var allActiveSessions: [ID: VMSessionState] = [:]
+
+    let id: ID = ID()
+
     let vm: UTMQemuVirtualMachine
     
     var qemuConfig: UTMQemuConfiguration {
@@ -52,29 +67,34 @@ import SwiftUI
     
     @Published var devices: [VMWindowState.Device] = []
     
-    @Published var windows: [UUID] = []
-    
-    @Published var primaryWindow: UUID?
-    
-    @Published var activeWindow: UUID?
-    
-    @Published var windowDeviceMap: [UUID: VMWindowState.Device] = [:]
-    
+    @Published var windows: [GlobalWindowID] = []
+
+    @Published var primaryWindow: WindowID?
+
+    @Published var activeWindow: WindowID?
+
+    @Published var windowDeviceMap: [WindowID: VMWindowState.Device] = [:]
+
     @Published var externalWindowBinding: Binding<VMWindowState>?
     
     @Published var hasShownMemoryWarning: Bool = false
     
     private var hasAutosave: Bool = false
-    
+
     init(for vm: UTMQemuVirtualMachine) {
         self.vm = vm
         super.init()
         vm.delegate = self
         vm.ioServiceDelegate = self
     }
-    
-    func registerWindow(_ window: UUID, isExternal: Bool = false) {
-        windows.append(window)
+
+    func newWindow() -> GlobalWindowID {
+        GlobalWindowID(sessionID: id, windowID: WindowID())
+    }
+
+    func registerWindow(_ window: WindowID, isExternal: Bool = false) {
+        let globalWindow = GlobalWindowID(sessionID: id, windowID: window)
+        windows.append(globalWindow)
         if !isExternal, primaryWindow == nil {
             primaryWindow = window
         }
@@ -84,18 +104,19 @@ import SwiftUI
         assignDefaultDisplay(for: window, isExternal: isExternal)
     }
     
-    func removeWindow(_ window: UUID) {
-        windows.removeAll { $0 == window }
+    func removeWindow(_ window: WindowID) {
+        let globalWindow = GlobalWindowID(sessionID: id, windowID: window)
+        windows.removeAll { $0 == globalWindow }
         if primaryWindow == window {
-            primaryWindow = windows.first
+            primaryWindow = windows.first?.windowID
         }
         if activeWindow == window {
-            activeWindow = windows.first
+            activeWindow = windows.first?.windowID
         }
         windowDeviceMap.removeValue(forKey: window)
     }
     
-    private func assignDefaultDisplay(for window: UUID, isExternal: Bool) {
+    private func assignDefaultDisplay(for window: WindowID, isExternal: Bool) {
         // default first to next GUI, then to next serial
         let filtered = devices.filter {
             if case .display(_, _) = $0 {
@@ -174,7 +195,8 @@ extension VMSessionState: UTMSpiceIODelegate {
             let device = VMWindowState.Device.display(display, display.monitorID)
             devices.append(device)
             // associate with the next available window
-            for windowId in windows {
+            for window in windows {
+                let windowId = window.windowID
                 if windowDeviceMap[windowId] == nil {
                     if windowId == primaryWindow && !display.isPrimaryDisplay {
                         // prefer the primary display for the primary window
@@ -194,7 +216,8 @@ extension VMSessionState: UTMSpiceIODelegate {
         Task { @MainActor in
             let device = VMWindowState.Device.display(display, display.monitorID)
             devices.removeAll { $0 == device }
-            for windowId in windows {
+            for window in windows {
+                let windowId = window.windowID
                 if windowDeviceMap[windowId] == device {
                     windowDeviceMap[windowId] = nil
                 }
@@ -225,7 +248,8 @@ extension VMSessionState: UTMSpiceIODelegate {
             assert(qemuConfig.serials[id].mode == .builtin && qemuConfig.serials[id].terminal != nil)
             devices.append(device)
             // associate with the next available window
-            for windowId in windows {
+            for window in windows {
+                let windowId = window.windowID
                 if windowDeviceMap[windowId] == nil {
                     if windowId == primaryWindow && !qemuConfig.displays.isEmpty {
                         // prefer a GUI display over console for primary if both are available
@@ -248,7 +272,8 @@ extension VMSessionState: UTMSpiceIODelegate {
             }
             let device = VMWindowState.Device.serial(serial, id)
             devices.removeAll { $0 == device }
-            for windowId in windows {
+            for window in windows {
+                let windowId = window.windowID
                 if windowDeviceMap[windowId] == device {
                     windowDeviceMap[windowId] = nil
                 }
@@ -393,7 +418,7 @@ extension VMSessionState {
         } catch {
             logger.warning("Error starting audio session: \(error.localizedDescription)")
         }
-        Self.currentSession = self
+        Self.allActiveSessions[id] = self
         NotificationCenter.default.post(name: .vmSessionCreated, object: nil, userInfo: ["Session": self])
         vm.requestVmStart(options: options)
     }
@@ -410,7 +435,7 @@ extension VMSessionState {
             logger.warning("Error stopping audio session: \(error.localizedDescription)")
         }
         // tell other screens to shut down
-        Self.currentSession = nil
+        Self.allActiveSessions.removeValue(forKey: id)
         NotificationCenter.default.post(name: .vmSessionEnded, object: nil, userInfo: ["Session": self])
         // animate to home screen
         let app = UIApplication.shared

@@ -19,7 +19,7 @@ import SwiftUI
 
 extension UTMData {
     func run(vm: VMData, options: UTMVirtualMachineStartOptions = []) {
-        guard VMSessionState.currentSession == nil else {
+        guard VMSessionState.allActiveSessions.count == 0 else {
             logger.error("Session already started")
             return
         }

@@ -17,12 +17,13 @@
 import SwiftUI
 
 @MainActor
-struct UTMMainView: View {
+struct UTMSingleWindowView: View {
     let isInteractive: Bool
     
     @State private var data: UTMData = UTMData()
     @State private var session: VMSessionState?
-    
+    @State private var identifier: VMSessionState.WindowID?
+
     private let vmSessionCreatedNotification = NotificationCenter.default.publisher(for: .vmSessionCreated)
     private let vmSessionEndedNotification = NotificationCenter.default.publisher(for: .vmSessionEnded)
     
@@ -33,7 +34,7 @@ struct UTMMainView: View {
     var body: some View {
         ZStack {
             if let session = session {
-                VMWindowView(isInteractive: isInteractive).environmentObject(session)
+                VMWindowView(id: identifier!, isInteractive: isInteractive).environmentObject(session)
             } else if isInteractive {
                 ContentView().environmentObject(data)
             } else {
@@ -45,12 +46,16 @@ struct UTMMainView: View {
             }
         }
         .onAppear {
-            session = VMSessionState.currentSession
+            session = VMSessionState.allActiveSessions.first?.value
+            if let session = session {
+                identifier = session.newWindow().windowID
+            }
         }
         .onReceive(vmSessionCreatedNotification) { output in
             let newSession = output.userInfo!["Session"] as! VMSessionState
             withAnimation {
                 session = newSession
+                identifier = newSession.newWindow().windowID
             }
         }
         .onReceive(vmSessionEndedNotification) { output in
@@ -64,8 +69,8 @@ struct UTMMainView: View {
     }
 }
 
-struct UTMMainView_Previews: PreviewProvider {
+struct UTMSingleWindowView_Previews: PreviewProvider {
     static var previews: some View {
-        UTMMainView()
+        UTMSingleWindowView()
     }
 }

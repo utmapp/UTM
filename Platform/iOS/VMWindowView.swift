@@ -18,15 +18,23 @@ import SwiftUI
 import SwiftUIVisualEffects
 
 struct VMWindowView: View {
+    let id: VMSessionState.WindowID
+
     @State var isInteractive = true
-    @State private var state = VMWindowState()
+    @State private var state: VMWindowState
     @EnvironmentObject private var session: VMSessionState
     @Environment(\.scenePhase) private var scenePhase
     
     private let keyboardDidShowNotification = NotificationCenter.default.publisher(for: UIResponder.keyboardDidShowNotification)
     private let keyboardDidHideNotification = NotificationCenter.default.publisher(for: UIResponder.keyboardDidHideNotification)
     private let didReceiveMemoryWarningNotification = NotificationCenter.default.publisher(for: UIApplication.didReceiveMemoryWarningNotification)
-    
+
+    init(id: VMSessionState.WindowID, isInteractive: Bool = true) {
+        self.id = id
+        self._isInteractive = State<Bool>(initialValue: isInteractive)
+        self._state = State<VMWindowState>(initialValue: VMWindowState(id: id))
+    }
+
     private func withOptionalAnimation<Result>(_ animation: Animation? = .default, _ body: () throws -> Result) rethrows -> Result {
         if UIAccessibility.isReduceMotionEnabled {
             return try body()
@@ -267,9 +275,3 @@ fileprivate struct VMToolbarOrnamentModifier: ViewModifier {
     }
 }
 #endif
-
-struct VMWindowView_Previews: PreviewProvider {
-    static var previews: some View {
-        VMWindowView()
-    }
-}
