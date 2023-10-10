@@ -216,9 +216,6 @@
 }
 
 - (void)setDisplayScaling:(CGFloat)scaling origin:(CGPoint)origin {
-    if (scaling == self.windowScaling && CGPointEqualToPoint(origin, self.windowOrigin)) {
-        return;
-    }
     self.vmDisplay.viewportOrigin = origin;
     self.windowScaling = scaling;
     self.windowOrigin = origin;
