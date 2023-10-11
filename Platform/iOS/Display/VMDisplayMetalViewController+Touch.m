@@ -613,12 +613,31 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
     return NO;
 }
 
+#if TARGET_OS_VISION
+- (BOOL)isTouchGazeGesture:(UITouch *)touch {
+    id manipulator = [touch valueForKey:@"_manipulator"];
+    SEL selector = NSSelectorFromString(@"_type");
+    if ([manipulator respondsToSelector:selector]) {
+        IMP imp = [manipulator methodForSelector:selector];
+        if (imp) {
+            return ((NSInteger (*)(id, SEL))imp)(manipulator, selector) == 2;
+        }
+    }
+    return NO;
+}
+#endif
+
 #pragma mark - Touch event handling
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     if (!self.delegate.qemuInputLegacy) {
         for (UITouch *touch in touches) {
             VMMouseType type = [self touchTypeToMouseType:touch.type];
+#if TARGET_OS_VISION
+            if ([self isTouchGazeGesture:touch]) {
+                type = self.indirectMouseType;
+            }
+#endif
             if ([self switchMouseType:type]) {
                 [self dragCursor:UIGestureRecognizerStateEnded primary:YES secondary:YES middle:YES]; // reset drag
             } else if (!self.vmInput.serverModeCursor) { // start click for client mode
