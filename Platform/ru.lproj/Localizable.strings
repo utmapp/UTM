@@ -267,6 +267,9 @@
 /* No comment provided by engineer. */
 "Command to send when resizing the console. Placeholder $COLS is the number of columns and $ROWS is the number of rows." = "Команда, передаваемая при изменении размера консоли. Поле $COLS - это количество столбцов, а $ROWS - количество строк.";
 
+/* No comment provided by engineer. */
+"Compress" = "Сжать";
+
 /* UTMVirtualMachine */
 "Config format incorrect." = "Неверный формат конфигурации.";
 
@@ -507,7 +510,7 @@
 "Emulated Display Card" = "Эмулируемая видеокарта";
 
 /* No comment provided by engineer. */
-"Emulated Network Card" = "Эмулируемая аудиокарта";
+"Emulated Network Card" = "Эмулируемая сетевая карта";
 
 /* UTMQemuConfiguration */
 "Emulated VLAN" = "Эмулированный VLAN";
@@ -695,11 +698,17 @@
 /* VMWizardView */
 "Go Back" = "Назад";
 
+/* VMWizardView */
+"GPU Acceleration Supported" = "Поддержка ускорения с помощью GPU";
+
 /* No comment provided by engineer. */
 "Guest Address" = "Гостевой адрес";
 
 /* VMConfigPortForwardingViewController */
 "Guest address (optional)" = "Гостевой адрес (опционально)";
+
+/* VMConfigPortForwardingViewController */
+"Guest drivers are required for 3D acceleration." = "Требуются драйверы в гостевой ОС для 3D ускорения.";
 
 /* No comment provided by engineer. */
 "Guest Network" = "Гостевая сеть";
@@ -1260,6 +1269,9 @@
 "Read Only" = "Только для чтения";
 
 /* No comment provided by engineer. */
+"Read Only?" = "Только для чтения?";
+
+/* No comment provided by engineer. */
 "Reclaim" = "Освободить";
 
 /* No comment provided by engineer. */
@@ -1303,6 +1315,9 @@
 
 /* No comment provided by engineer. */
 "Resize" = "Изменить размер";
+
+/* No comment provided by engineer. */
+"Resize…" = "Изменить размер…";
 
 /* No comment provided by engineer. */
 "Resize Console Command" = "Изменение размера консоли";
@@ -1740,6 +1755,9 @@
 
 /* UTMVirtualMachineExtension */
 "Unknown" = "Неизвестно";
+
+/* No comment provided by engineer. */
+"Update Interface" = "Обновить интерфейс";
 
 /* No comment provided by engineer. */
 "Upscaling" = "Апскейлинг";
