@@ -182,7 +182,7 @@ extension VMWindowState {
         #else
         displayOrigin = window.origin
         isDisplayZoomLocked = window.isDisplayZoomLocked
-        #endif
         isKeyboardRequested = window.isKeyboardVisible
+        #endif
     }
 }

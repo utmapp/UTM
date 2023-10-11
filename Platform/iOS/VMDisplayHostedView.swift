@@ -175,6 +175,11 @@ struct VMDisplayHostedView: UIViewControllerRepresentable {
                 } else {
                     uiViewController.hideKeyboard()
                 }
+                #if os(visionOS)
+                // UIKeyboardDidShowNotification is never posted on visionOS
+                // so we cannot determine the keyboard state
+                state.isKeyboardRequested = false
+                #endif
             }
         }
         switch state.device {

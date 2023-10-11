@@ -82,7 +82,7 @@ struct VMToolbarOrnamentModifier: ViewModifier {
             }
             ToolbarItem(placement: .bottomOrnament) {
                 Button {
-                    state.isKeyboardRequested = !state.isKeyboardShown
+                    state.isKeyboardRequested = true
                 } label: {
                     Label("Keyboard", systemImage: "keyboard")
                 }
