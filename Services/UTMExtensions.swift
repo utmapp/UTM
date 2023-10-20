@@ -371,3 +371,16 @@ extension URL {
                       bookmarkDataIsStale: &stale)
     }
 }
+
+extension String {
+    func integerPrefix() -> Int? {
+        var numeric = ""
+        for char in self {
+            if !char.isNumber {
+                break
+            }
+            numeric.append(char)
+        }
+        return Int(numeric)
+    }
+}

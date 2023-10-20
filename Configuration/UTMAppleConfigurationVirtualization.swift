@@ -29,8 +29,22 @@ struct UTMAppleConfigurationVirtualization: Codable {
         var prettyValue: String {
             switch self {
             case .disabled: return NSLocalizedString("Disabled", comment: "UTMAppleConfigurationDevices")
-            case .mouse: return NSLocalizedString("Mouse", comment: "UTMAppleConfigurationDevices")
-            case .trackpad: return NSLocalizedString("Trackpad", comment: "UTMAppleConfigurationDevices")
+            case .mouse: return NSLocalizedString("Generic Mouse", comment: "UTMAppleConfigurationDevices")
+            case .trackpad: return NSLocalizedString("Mac Trackpad (macOS 13+)", comment: "UTMAppleConfigurationDevices")
+            }
+        }
+    }
+    
+    enum KeyboardDevice: String, CaseIterable, QEMUConstant {
+        case disabled = "Disabled"
+        case generic = "Generic"
+        case mac = "Mac"
+        
+        var prettyValue: String {
+            switch self {
+            case .disabled: return NSLocalizedString("Disabled", comment: "UTMAppleConfigurationDevices")
+            case .generic: return NSLocalizedString("Generic USB", comment: "UTMAppleConfigurationDevices")
+            case .mac: return NSLocalizedString("Mac Keyboard (macOS 14+)", comment: "UTMAppleConfigurationDevices")
             }
         }
     }
@@ -41,11 +55,9 @@ struct UTMAppleConfigurationVirtualization: Codable {
     
     var hasEntropy: Bool = true
     
-    var hasKeyboard: Bool = false
+    var keyboard: KeyboardDevice = .disabled
     
-    var hasPointer: Bool = false
-    
-    var hasTrackpad: Bool = false
+    var pointer: PointerDevice = .disabled
     
     var hasRosetta: Bool?
     
@@ -55,8 +67,8 @@ struct UTMAppleConfigurationVirtualization: Codable {
         case hasAudio = "Audio"
         case hasBalloon = "Balloon"
         case hasEntropy = "Entropy"
-        case hasKeyboard = "Keyboard"
-        case hasPointer = "Pointer"
+        case keyboard = "Keyboard"
+        case pointer = "Pointer"
         case hasTrackpad = "Trackpad"
         case rosetta = "Rosetta"
         case hasClipboardSharing = "ClipboardSharing"
@@ -70,13 +82,16 @@ struct UTMAppleConfigurationVirtualization: Codable {
         hasAudio = try values.decode(Bool.self, forKey: .hasAudio)
         hasBalloon = try values.decode(Bool.self, forKey: .hasBalloon)
         hasEntropy = try values.decode(Bool.self, forKey: .hasEntropy)
-        hasKeyboard = try values.decode(Bool.self, forKey: .hasKeyboard)
-        if let legacyPointer = try? values.decode(PointerDevice.self, forKey: .hasPointer) {
-            hasPointer = legacyPointer != .disabled
-            hasTrackpad = legacyPointer == .trackpad
+        if let hasKeyboard = try? values.decode(Bool.self, forKey: .keyboard) {
+            keyboard = hasKeyboard ? .generic : .disabled
         } else {
-            hasPointer = try values.decode(Bool.self, forKey: .hasPointer)
-            hasTrackpad = try values.decodeIfPresent(Bool.self, forKey: .hasTrackpad) ?? false
+            keyboard = try values.decode(KeyboardDevice.self, forKey: .keyboard)
+        }
+        if let hasPointer = try? values.decode(Bool.self, forKey: .pointer) {
+            let hasTrackpad = try values.decodeIfPresent(Bool.self, forKey: .hasTrackpad) ?? false
+            pointer = hasTrackpad ? .trackpad : hasPointer ? .mouse : .disabled
+        } else {
+            pointer = try values.decode(PointerDevice.self, forKey: .pointer)
         }
         if #available(macOS 13, *) {
             hasRosetta = try values.decodeIfPresent(Bool.self, forKey: .rosetta)
@@ -89,9 +104,8 @@ struct UTMAppleConfigurationVirtualization: Codable {
         try container.encode(hasAudio, forKey: .hasAudio)
         try container.encode(hasBalloon, forKey: .hasBalloon)
         try container.encode(hasEntropy, forKey: .hasEntropy)
-        try container.encode(hasKeyboard, forKey: .hasKeyboard)
-        try container.encode(hasPointer, forKey: .hasPointer)
-        try container.encode(hasTrackpad, forKey: .hasTrackpad)
+        try container.encode(keyboard, forKey: .keyboard)
+        try container.encode(pointer, forKey: .pointer)
         try container.encodeIfPresent(hasRosetta, forKey: .rosetta)
         try container.encode(hasClipboardSharing, forKey: .hasClipboardSharing)
     }
@@ -108,8 +122,8 @@ extension UTMAppleConfigurationVirtualization {
         hasEntropy = oldConfig.isEntropyEnabled
         if #available(macOS 12, *) {
             hasAudio = oldConfig.isAudioEnabled
-            hasKeyboard = oldConfig.isKeyboardEnabled
-            hasPointer = oldConfig.isPointingEnabled
+            keyboard = oldConfig.isKeyboardEnabled ? .generic : .disabled
+            pointer = oldConfig.isPointingEnabled ? .mouse : .disabled
         }
     }
 }
@@ -138,25 +152,25 @@ extension UTMAppleConfigurationVirtualization {
                 audioOutputConfiguration.streams = [audioOutput]
                 vzconfig.audioDevices = [audioInputConfiguration, audioOutputConfiguration]
             }
-            if hasKeyboard {
+            if keyboard != .disabled {
                 vzconfig.keyboards = [VZUSBKeyboardConfiguration()]
                 #if arch(arm64)
-                if #available(macOS 14, *), isMacOSGuest {
+                if #available(macOS 14, *), isMacOSGuest && keyboard == .mac {
                     vzconfig.keyboards = [VZMacKeyboardConfiguration()]
                 }
                 #endif
             }
-            if hasPointer {
+            if pointer != .disabled {
                 vzconfig.pointingDevices = [VZUSBScreenCoordinatePointingDeviceConfiguration()]
                 #if arch(arm64)
-                if #available(macOS 13, *), isMacOSGuest && hasTrackpad {
+                if #available(macOS 13, *), isMacOSGuest && pointer == .trackpad {
                     // replace with trackpad device
                     vzconfig.pointingDevices = [VZMacTrackpadConfiguration()]
                 }
                 #endif
             }
         } else {
-            if hasAudio || hasKeyboard || hasPointer {
+            if hasAudio || keyboard != .disabled || pointer != .disabled {
                 throw UTMAppleConfigurationError.featureNotSupported
             }
         }
