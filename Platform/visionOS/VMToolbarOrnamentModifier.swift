@@ -19,9 +19,10 @@ import SwiftUI
 struct VMToolbarOrnamentModifier: ViewModifier {
     @Binding var state: VMWindowState
     @EnvironmentObject private var session: VMSessionState
-    
+    @AppStorage("ToolbarIsCollapsed") private var isCollapsed: Bool = false
+
     func body(content: Content) -> some View {
-        content.ornament(attachmentAnchor: .scene(.top)) {
+        content.ornament(visibility: isCollapsed ? .hidden : .visible, attachmentAnchor: .scene(.top)) {
             HStack {
                 Button {
                     if session.vm.state == .started {
@@ -71,13 +72,34 @@ struct VMToolbarOrnamentModifier: ViewModifier {
                     Label("Keyboard", systemImage: "keyboard")
                 }
                 .disabled(state.isBusy)
+                Divider()
+                Button {
+                    isCollapsed = true
+                } label: {
+                    Label("Hide Controls", systemImage: "chevron.right")
+                }
             }
-            // the following was suggested by Apple via Feedback to look close to .toolbar() with .bottomOrnament
+            .modifier(ToolbarOrnamentViewModifier())
+        }
+        .ornament(visibility: isCollapsed ? .visible : .hidden, attachmentAnchor: .scene(.topTrailing)) {
+                Button {
+                    isCollapsed = false
+                } label: {
+                    Label("Show Controls", systemImage: "chevron.left")
+                }
+                .modifier(ToolbarOrnamentViewModifier())
+        }
+    }
+}
+
+// the following was suggested by Apple via Feedback to look close to .toolbar() with .bottomOrnament
+private struct ToolbarOrnamentViewModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        content
             .buttonBorderShape(.capsule)
             .buttonStyle(.borderless)
             .labelStyle(.iconOnly)
             .padding(12)
             .glassBackgroundEffect()
-        }
     }
 }
