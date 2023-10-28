@@ -23,7 +23,7 @@ on:
         default: 'false'
 
 env:
-  BUILD_XCODE_PATH: /Applications/Xcode_15.0.app
+  BUILD_XCODE_PATH: /Applications/Xcode_15.1.app
   RUNNER_IMAGE: macos-13
 
 jobs:
@@ -53,7 +53,7 @@ jobs:
     strategy:
       matrix:
         arch: [arm64]
-        platform: [ios, ios_simulator, ios-tci, macos]
+        platform: [ios, ios_simulator, ios-tci, macos, visionos, visionos_simulator, visionos-tci]
         include:
           # x86_64 supported only for macOS and simulators
           - arch: x86_64
@@ -153,7 +153,7 @@ jobs:
     strategy:
       matrix:
         arch: [arm64]
-        platform: [ios, ios_simulator, ios-tci, macos]
+        platform: [ios, ios_simulator, ios-tci, macos, visionos, visionos_simulator, visionos-tci]
         include:
           # x86_64 supported only for macOS and simulators
           - arch: x86_64
@@ -235,6 +235,8 @@ jobs:
           {platform: "ios-tci", mode: "ipa-se", name: "UTM-SE.ipa", path: "UTM SE.ipa"},
           {platform: "ios", mode: "ipa-hv", name: "UTM-HV.ipa", path: "UTM.ipa"},
           {platform: "ios", mode: "deb", name: "UTM.deb", path: "UTM.deb"},
+          {platform: "visionos", mode: "ipa", name: "UTM-visionOS.ipa", path: "UTM.ipa"},
+          {platform: "visionos-tci", mode: "ipa-se", name: "UTM-SE-visionOS.ipa", path: "UTM SE.ipa"}
         ]
     if: github.event_name == 'release' || github.event.inputs.test_release == 'true'
     steps:
