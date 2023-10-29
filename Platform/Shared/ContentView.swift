@@ -22,6 +22,8 @@ import IQKeyboardManagerSwift
 
 #if WITH_QEMU_TCI
 let productName = "UTM SE"
+#elseif WITH_REMOTE
+let productName = "UTM Remote"
 #else
 let productName = "UTM"
 #endif

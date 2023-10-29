@@ -913,6 +913,266 @@
 		CEF78EEB26B99F530022CAF4 /* GLESv2.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE5451A326AF5F0F008594E5 /* GLESv2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CEF78EEF26B9B7870022CAF4 /* virglrenderer.1.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE5451A126AF5F0F008594E5 /* virglrenderer.1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CEF78EF026B9B7910022CAF4 /* virglrenderer.1.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE5451A126AF5F0F008594E5 /* virglrenderer.1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CEF7F5972AEEDCC400E34952 /* VMDisplayMetalViewController+Pointer.h in Sources */ = {isa = PBXBuildFile; fileRef = 83FBDD53242FA71900D2C5D7 /* VMDisplayMetalViewController+Pointer.h */; };
+		CEF7F5982AEEDCC400E34952 /* VMSettingsAddDeviceMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C4D9012880CA8A00EC3B2B /* VMSettingsAddDeviceMenuView.swift */; };
+		CEF7F5992AEEDCC400E34952 /* VMRemovableDrivesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D954524AD4F980059923A /* VMRemovableDrivesView.swift */; };
+		CEF7F59A2AEEDCC400E34952 /* UTMQemuConfigurationDrive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8443EFF12845641600B2E6E2 /* UTMQemuConfigurationDrive.swift */; };
+		CEF7F59B2AEEDCC400E34952 /* UTMQemuConfigurationSharing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8443EFF928456F3B00B2E6E2 /* UTMQemuConfigurationSharing.swift */; };
+		CEF7F59C2AEEDCC400E34952 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE772AAB25C8B0F600E4E379 /* ContentView.swift */; };
+		CEF7F59D2AEEDCC400E34952 /* VMData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847BF9A92A49C783000BD9AA /* VMData.swift */; };
+		CEF7F59E2AEEDCC400E34952 /* UTMLegacyQemuConfiguration+System.m in Sources */ = {isa = PBXBuildFile; fileRef = CE5425332437C22A00E520F7 /* UTMLegacyQemuConfiguration+System.m */; };
+		CEF7F59F2AEEDCC400E34952 /* UTMQemuConfigurationNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843BF82F2844853E0029D60D /* UTMQemuConfigurationNetwork.swift */; };
+		CEF7F5A02AEEDCC400E34952 /* UTMProcess.m in Sources */ = {isa = PBXBuildFile; fileRef = CE9D197B226542FE00355E14 /* UTMProcess.m */; };
+		CEF7F5A12AEEDCC400E34952 /* VMWizardDrivesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBE820226A4C1B5007AAB12 /* VMWizardDrivesView.swift */; };
+		CEF7F5A22AEEDCC400E34952 /* VMWindowState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84018688288A44C20050AC51 /* VMWindowState.swift */; };
+		CEF7F5A42AEEDCC400E34952 /* UTMLegacyQemuConfigurationPortForward.m in Sources */ = {isa = PBXBuildFile; fileRef = CE54252D2436E48D00E520F7 /* UTMLegacyQemuConfigurationPortForward.m */; };
+		CEF7F5A52AEEDCC400E34952 /* VMWizardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0307026A2B04300667B63 /* VMWizardView.swift */; };
+		CEF7F5A62AEEDCC400E34952 /* UTMPlaceholderVMView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84909A8C27CACD5C005605F1 /* UTMPlaceholderVMView.swift */; };
+		CEF7F5A72AEEDCC400E34952 /* BusyOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7D972B24B2B17D0080CB69 /* BusyOverlay.swift */; };
+		CEF7F5A82AEEDCC400E34952 /* UTMConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848A98C3286F332D006F0550 /* UTMConfiguration.swift */; };
+		CEF7F5A92AEEDCC400E34952 /* UTMConfigurationInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841619A9284315F9000034B2 /* UTMConfigurationInfo.swift */; };
+		CEF7F5AA2AEEDCC400E34952 /* VMConfigDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D953724AD4F980059923A /* VMConfigDisplayView.swift */; };
+		CEF7F5AB2AEEDCC400E34952 /* VMWizardOSWindowsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0305626A2AFDD00667B63 /* VMWizardOSWindowsView.swift */; };
+		CEF7F5AC2AEEDCC400E34952 /* UTMDownloadTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83A004B826A8CC95001AC09E /* UTMDownloadTask.swift */; };
+		CEF7F5AD2AEEDCC400E34952 /* UTMApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841E58D02893AF5400137A20 /* UTMApp.swift */; platformFilter = ios; };
+		CEF7F5AE2AEEDCC400E34952 /* VMConfigAdvancedNetworkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EC516327CC8C98004A51DE /* VMConfigAdvancedNetworkView.swift */; };
+		CEF7F5AF2AEEDCC400E34952 /* UTMLegacyQemuConfiguration+Miscellaneous.m in Sources */ = {isa = PBXBuildFile; fileRef = CEE0421124418F2E0001680F /* UTMLegacyQemuConfiguration+Miscellaneous.m */; };
+		CEF7F5B02AEEDCC400E34952 /* UTMRegistryEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841E997828AA119B003C6CB6 /* UTMRegistryEntry.swift */; };
+		CEF7F5B12AEEDCC400E34952 /* UTMDataExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBBF1A424B56A2900C15049 /* UTMDataExtension.swift */; };
+		CEF7F5B22AEEDCC400E34952 /* VMDisplayHostedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CF5DD2288DCE6400D01721 /* VMDisplayHostedView.swift */; };
+		CEF7F5B32AEEDCC400E34952 /* QEMUArgumentBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848D99BF2866D9CE0055C215 /* QEMUArgumentBuilder.swift */; };
+		CEF7F5B42AEEDCC400E34952 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED814EE24C7EB760042F0F1 /* ImagePicker.swift */; };
+		CEF7F5B52AEEDCC400E34952 /* VMConfigSystemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D955324AD4F980059923A /* VMConfigSystemView.swift */; };
+		CEF7F5B62AEEDCC400E34952 /* FileBrowseField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8432329328C2ED9000CFBC97 /* FileBrowseField.swift */; };
+		CEF7F5B72AEEDCC400E34952 /* VMShareFileModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE8813D424CD265700532628 /* VMShareFileModifier.swift */; };
+		CEF7F5B82AEEDCC400E34952 /* UTMQemuConfigurationSerial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843BF83B2845494C0029D60D /* UTMQemuConfigurationSerial.swift */; };
+		CEF7F5B92AEEDCC400E34952 /* Spinner.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0304D26A2AFBE00667B63 /* Spinner.swift */; };
+		CEF7F5BA2AEEDCC400E34952 /* UTMQemuConfigurationPortForward.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843BF83F284555E70029D60D /* UTMQemuConfigurationPortForward.swift */; };
+		CEF7F5BB2AEEDCC400E34952 /* UTMReleaseHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE611BE629F50CAD001817BC /* UTMReleaseHelper.swift */; };
+		CEF7F5BC2AEEDCC400E34952 /* VMConfigNetworkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D955024AD4F980059923A /* VMConfigNetworkView.swift */; };
+		CEF7F5BD2AEEDCC400E34952 /* UTMLegacyViewState.m in Sources */ = {isa = PBXBuildFile; fileRef = CE6EDCDE241C4A6800A719DC /* UTMLegacyViewState.m */; };
+		CEF7F5BE2AEEDCC400E34952 /* UTMLoggingSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE020BAA24AEE00000B44AB6 /* UTMLoggingSwift.swift */; };
+		CEF7F5BF2AEEDCC400E34952 /* VMWizardOSLinuxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0305726A2AFDE00667B63 /* VMWizardOSLinuxView.swift */; };
+		CEF7F5C02AEEDCC400E34952 /* VMWizardSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBE820A26A4C8E0007AAB12 /* VMWizardSummaryView.swift */; };
+		CEF7F5C12AEEDCC400E34952 /* VMConfigQEMUView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D953924AD4F980059923A /* VMConfigQEMUView.swift */; };
+		CEF7F5C22AEEDCC400E34952 /* VMDisplayMetalViewController+Touch.m in Sources */ = {isa = PBXBuildFile; fileRef = CE056CA5242454100004B68A /* VMDisplayMetalViewController+Touch.m */; };
+		CEF7F5C32AEEDCC400E34952 /* UTMLegacyQemuConfiguration+Display.m in Sources */ = {isa = PBXBuildFile; fileRef = CEE0420B244117040001680F /* UTMLegacyQemuConfiguration+Display.m */; };
+		CEF7F5C42AEEDCC400E34952 /* BigButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0304C26A2AFBE00667B63 /* BigButtonStyle.swift */; };
+		CEF7F5C52AEEDCC400E34952 /* UTMVirtualMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE020BB524B14F8400B44AB6 /* UTMVirtualMachine.swift */; };
+		CEF7F5C62AEEDCC400E34952 /* UTMQemuConfigurationSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841619AD28431952000034B2 /* UTMQemuConfigurationSystem.swift */; };
+		CEF7F5C72AEEDCC400E34952 /* VMWizardSharingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBE820626A4C74E007AAB12 /* VMWizardSharingView.swift */; };
+		CEF7F5C82AEEDCC400E34952 /* VMConfigInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED814EB24C7C2850042F0F1 /* VMConfigInfoView.swift */; };
+		CEF7F5C92AEEDCC400E34952 /* MenuLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F909FE289488F90008DBE2 /* MenuLabel.swift */; };
+		CEF7F5CA2AEEDCC400E34952 /* VMKeyboardView.m in Sources */ = {isa = PBXBuildFile; fileRef = CE4507D1226A5BE200A28D22 /* VMKeyboardView.m */; };
+		CEF7F5CB2AEEDCC400E34952 /* VMWizardOSView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0305A26A2AFDE00667B63 /* VMWizardOSView.swift */; };
+		CEF7F5CC2AEEDCC400E34952 /* DestructiveButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B36D2827B790BE00C22685 /* DestructiveButton.swift */; };
+		CEF7F5CD2AEEDCC400E34952 /* UTMConfigurationTerminal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843BF83728451B380029D60D /* UTMConfigurationTerminal.swift */; };
+		CEF7F5CE2AEEDCC400E34952 /* VMWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84018682288A3B2E0050AC51 /* VMWindowView.swift */; };
+		CEF7F5CF2AEEDCC400E34952 /* UTMPendingVMView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83034C0626AB630F006B4BAF /* UTMPendingVMView.swift */; };
+		CEF7F5D02AEEDCC400E34952 /* UTMSpiceIO.m in Sources */ = {isa = PBXBuildFile; fileRef = E2D64BC8241DB24B0034E0C6 /* UTMSpiceIO.m */; };
+		CEF7F5D12AEEDCC400E34952 /* UTMUnavailableVMView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84909A9027CADAE0005605F1 /* UTMUnavailableVMView.swift */; };
+		CEF7F5D22AEEDCC400E34952 /* VMDrivesSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D955124AD4F980059923A /* VMDrivesSettingsView.swift */; };
+		CEF7F5D32AEEDCC400E34952 /* UTMConfigurationDrive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848D99BB28636AC90055C215 /* UTMConfigurationDrive.swift */; };
+		CEF7F5D42AEEDCC400E34952 /* VMConfigDriveCreateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED814E824C79F070042F0F1 /* VMConfigDriveCreateView.swift */; };
+		CEF7F5D52AEEDCC400E34952 /* UTMPatches.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B9F8C28CC58B700031EE7 /* UTMPatches.swift */; };
+		CEF7F5D62AEEDCC400E34952 /* RAMSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE19392526DCB093005CEC17 /* RAMSlider.swift */; };
+		CEF7F5D72AEEDCC400E34952 /* VMReleaseNotesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE611BEA29F50D3E001817BC /* VMReleaseNotesView.swift */; };
+		CEF7F5D82AEEDCC400E34952 /* UTMLegacyQemuConfiguration+Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = CEE7E934287CFDB100282049 /* UTMLegacyQemuConfiguration+Constants.m */; };
+		CEF7F5D92AEEDCC400E34952 /* InListButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B224B9C279D4D8100B63CFF /* InListButtonStyle.swift */; };
+		CEF7F5DA2AEEDCC400E34952 /* VMContextMenuModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C33B3A82566C9B100A954A6 /* VMContextMenuModifier.swift */; };
+		CEF7F5DB2AEEDCC400E34952 /* VMDisplayMetalViewController+Pencil.m in Sources */ = {isa = PBXBuildFile; fileRef = CE5076DA250AB55D00C26C19 /* VMDisplayMetalViewController+Pencil.m */; platformFilter = ios; };
+		CEF7F5DC2AEEDCC400E34952 /* VMDisplayTerminalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8401865D2887B1620050AC51 /* VMDisplayTerminalViewController.swift */; };
+		CEF7F5DD2AEEDCC400E34952 /* UTMLegacyQemuConfiguration+Drives.m in Sources */ = {isa = PBXBuildFile; fileRef = CE5425302437C09C00E520F7 /* UTMLegacyQemuConfiguration+Drives.m */; };
+		CEF7F5DE2AEEDCC400E34952 /* UTMPendingVirtualMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 835AA7B026AB7C85007A0411 /* UTMPendingVirtualMachine.swift */; };
+		CEF7F5DF2AEEDCC400E34952 /* BusyIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84018696288B71BF0050AC51 /* BusyIndicator.swift */; };
+		CEF7F5E02AEEDCC400E34952 /* VMSessionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84018685288A3B5B0050AC51 /* VMSessionState.swift */; };
+		CEF7F5E12AEEDCC400E34952 /* VMConfigSharingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D954724AD4F980059923A /* VMConfigSharingView.swift */; };
+		CEF7F5E22AEEDCC400E34952 /* VMConfigInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D954824AD4F980059923A /* VMConfigInputView.swift */; };
+		CEF7F5E32AEEDCC400E34952 /* VMWizardOSOtherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0305426A2AFDD00667B63 /* VMWizardOSOtherView.swift */; };
+		CEF7F5E42AEEDCC400E34952 /* VMToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C60FB62681A41B00B58C00 /* VMToolbarView.swift */; };
+		CEF7F5E52AEEDCC400E34952 /* VMDisplayMetalViewController+Gamepad.m in Sources */ = {isa = PBXBuildFile; fileRef = 5286EC8F2437488E007E6CBC /* VMDisplayMetalViewController+Gamepad.m */; };
+		CEF7F5E62AEEDCC400E34952 /* VMWizardHardwareView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0307326A2B40B00667B63 /* VMWizardHardwareView.swift */; };
+		CEF7F5E72AEEDCC400E34952 /* UTMRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841E997428AA1191003C6CB6 /* UTMRegistry.swift */; };
+		CEF7F5E82AEEDCC400E34952 /* VMDisplayViewControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8401868E288A50B90050AC51 /* VMDisplayViewControllerDelegate.swift */; };
+		CEF7F5E92AEEDCC400E34952 /* UTMLogging.m in Sources */ = {isa = PBXBuildFile; fileRef = CE6EDCE1241DA0E900A719DC /* UTMLogging.m */; };
+		CEF7F5EA2AEEDCC400E34952 /* VMConfigConstantPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848D99A7285DB5550055C215 /* VMConfigConstantPicker.swift */; };
+		CEF7F5EB2AEEDCC400E34952 /* UTMQemuImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8453DCB3278CE5410037A0DA /* UTMQemuImage.swift */; };
+		CEF7F5EC2AEEDCC400E34952 /* VMToolbarModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D953824AD4F980059923A /* VMToolbarModifier.swift */; };
+		CEF7F5ED2AEEDCC400E34952 /* VMCursor.m in Sources */ = {isa = PBXBuildFile; fileRef = CE3ADD692411C661002D6A5F /* VMCursor.m */; };
+		CEF7F5EE2AEEDCC400E34952 /* VMConfigDriveDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9375A024BBDDD10074066F /* VMConfigDriveDetailsView.swift */; };
+		CEF7F5EF2AEEDCC400E34952 /* UTMQemuSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = CE03D05024D90B4E00F76B84 /* UTMQemuSystem.m */; };
+		CEF7F5F02AEEDCC400E34952 /* NumberTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED234EC254796E500ED0A57 /* NumberTextField.swift */; };
+		CEF7F5F12AEEDCC400E34952 /* VMToolbarOrnamentModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA51F862A81EAB700DDD7FA /* VMToolbarOrnamentModifier.swift */; platformFilters = (xros, ); };
+		CEF7F5F22AEEDCC400E34952 /* VMCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE772AB225C8B7B500E4E379 /* VMCommands.swift */; };
+		CEF7F5F32AEEDCC400E34952 /* UTMLegacyQemuConfiguration+Networking.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA02A982436C7A30087E45F /* UTMLegacyQemuConfiguration+Networking.m */; };
+		CEF7F5F42AEEDCC400E34952 /* VMConfirmActionModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6D21DB2553A6ED001D29C5 /* VMConfirmActionModifier.swift */; };
+		CEF7F5F52AEEDCC400E34952 /* QEMUConstant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841619B52843226B000034B2 /* QEMUConstant.swift */; };
+		CEF7F5F62AEEDCC400E34952 /* VMConfigPortForwardForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D955224AD4F980059923A /* VMConfigPortForwardForm.swift */; };
+		CEF7F5F72AEEDCC400E34952 /* UTMLocationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CE059DC7243E9E3400338317 /* UTMLocationManager.m */; platformFilter = ios; };
+		CEF7F5F82AEEDCC400E34952 /* DetailedSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8471772727CD3CAB00D3A50B /* DetailedSection.swift */; };
+		CEF7F5F92AEEDCC400E34952 /* VMToolbarDriveMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CF5DF4288F558400D01721 /* VMToolbarDriveMenuView.swift */; };
+		CEF7F5FA2AEEDCC400E34952 /* VMSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D954C24AD4F980059923A /* VMSettingsView.swift */; };
+		CEF7F5FB2AEEDCC400E34952 /* VMDisplayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C60FB9268269D700B58C00 /* VMDisplayViewController.swift */; };
+		CEF7F5FC2AEEDCC400E34952 /* VMWizardStartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0305926A2AFDE00667B63 /* VMWizardStartView.swift */; };
+		CEF7F5FD2AEEDCC400E34952 /* QEMUConstantGenerated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843BF82728441FAF0029D60D /* QEMUConstantGenerated.swift */; };
+		CEF7F5FE2AEEDCC400E34952 /* VMKeyboardButton.m in Sources */ = {isa = PBXBuildFile; fileRef = CEEB66452284B942002737B2 /* VMKeyboardButton.m */; };
+		CEF7F5FF2AEEDCC400E34952 /* UTMDownloadVMTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B36D2427B704C200C22685 /* UTMDownloadVMTask.swift */; };
+		CEF7F6002AEEDCC400E34952 /* GlobalFileImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8432329728C3017F00CFBC97 /* GlobalFileImporter.swift */; };
+		CEF7F6012AEEDCC400E34952 /* IASKAppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CE3DAD2904C17C00FF068B /* IASKAppSettings.swift */; platformFilter = ios; };
+		CEF7F6022AEEDCC400E34952 /* VMWizardContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C2E8642AA429E800B17308 /* VMWizardContent.swift */; };
+		CEF7F6032AEEDCC400E34952 /* UTMExternalSceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841E58CA28937EE200137A20 /* UTMExternalSceneDelegate.swift */; platformFilter = ios; };
+		CEF7F6042AEEDCC400E34952 /* UTMJailbreak.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB63A7924F469E300CAF323 /* UTMJailbreak.m */; };
+		CEF7F6052AEEDCC400E34952 /* UTMQemuConfigurationQEMU.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841619B128431DA5000034B2 /* UTMQemuConfigurationQEMU.swift */; };
+		CEF7F6062AEEDCC400E34952 /* UTMQemuConfigurationDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843BF82328441EAD0029D60D /* UTMQemuConfigurationDisplay.swift */; };
+		CEF7F6072AEEDCC400E34952 /* UTMApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE80111F2AD4E9E8009001C2 /* UTMApp.swift */; platformFilters = (xros, ); };
+		CEF7F6082AEEDCC400E34952 /* VMConfigDisplayConsoleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8401FDA5269D44E400265F0D /* VMConfigDisplayConsoleView.swift */; };
+		CEF7F6092AEEDCC400E34952 /* UTMQemuPort.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A0A8822A47D52E0038F329 /* UTMQemuPort.swift */; };
+		CEF7F60A2AEEDCC400E34952 /* VMConfigSerialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848D99B728630A780055C215 /* VMConfigSerialView.swift */; };
+		CEF7F60B2AEEDCC400E34952 /* VMWizardState.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0305526A2AFDD00667B63 /* VMWizardState.swift */; };
+		CEF7F60C2AEEDCC400E34952 /* UTMQemuConfigurationInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843BF82B284482C10029D60D /* UTMQemuConfigurationInput.swift */; };
+		CEF7F60D2AEEDCC400E34952 /* VMDisplayMetalViewController+Keyboard.m in Sources */ = {isa = PBXBuildFile; fileRef = CE3ADD66240EFBCA002D6A5F /* VMDisplayMetalViewController+Keyboard.m */; };
+		CEF7F60E2AEEDCC400E34952 /* UTMExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D954624AD4F980059923A /* UTMExtensions.swift */; };
+		CEF7F60F2AEEDCC400E34952 /* UTMData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE020BA224AEDC7C00B44AB6 /* UTMData.swift */; };
+		CEF7F6102AEEDCC400E34952 /* UTMSerialPortDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848F71EB277A2F47006A0240 /* UTMSerialPortDelegate.swift */; };
+		CEF7F6112AEEDCC400E34952 /* VMConfigSoundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D953A24AD4F980059923A /* VMConfigSoundView.swift */; };
+		CEF7F6122AEEDCC400E34952 /* UTMLegacyQemuConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = CE31C244225E555600A965DD /* UTMLegacyQemuConfiguration.m */; };
+		CEF7F6132AEEDCC400E34952 /* UTMQemuVirtualMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841E999728AC817D003C6CB6 /* UTMQemuVirtualMachine.swift */; };
+		CEF7F6142AEEDCC400E34952 /* VMDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D954B24AD4F980059923A /* VMDetailsView.swift */; };
+		CEF7F6152AEEDCC400E34952 /* VMDisplayMetalViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5286EC94243748C3007E6CBC /* VMDisplayMetalViewController.m */; };
+		CEF7F6162AEEDCC400E34952 /* UTMQemuConfiguration+Arguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848D99C328670F650055C215 /* UTMQemuConfiguration+Arguments.swift */; };
+		CEF7F6172AEEDCC400E34952 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB63A7524F4654400CAF323 /* Main.swift */; };
+		CEF7F6182AEEDCC400E34952 /* UTMSerialPort.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848F71E7277A2A4E006A0240 /* UTMSerialPort.swift */; };
+		CEF7F6192AEEDCC400E34952 /* VMCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D954324AD4F980059923A /* VMCardView.swift */; };
+		CEF7F61A2AEEDCC400E34952 /* VMNavigationListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8432328F28C2CDAD00CFBC97 /* VMNavigationListView.swift */; };
+		CEF7F61B2AEEDCC400E34952 /* UTMSingleWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841E58CD28937FED00137A20 /* UTMSingleWindowView.swift */; };
+		CEF7F61C2AEEDCC400E34952 /* UTMLegacyQemuConfiguration+Sharing.m in Sources */ = {isa = PBXBuildFile; fileRef = CE059DC4243BFA3200338317 /* UTMLegacyQemuConfiguration+Sharing.m */; };
+		CEF7F61D2AEEDCC400E34952 /* SizeTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C505AB28C588EC007CE8FF /* SizeTextField.swift */; };
+		CEF7F61E2AEEDCC400E34952 /* DefaultTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8471770527CC974F00D3A50B /* DefaultTextField.swift */; };
+		CEF7F61F2AEEDCC400E34952 /* VMToolbarDisplayMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E6F6FC289319AE00080EEF /* VMToolbarDisplayMenuView.swift */; };
+		CEF7F6202AEEDCC400E34952 /* ActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE8813D224CD230300532628 /* ActivityView.swift */; };
+		CEF7F6212AEEDCC400E34952 /* UTMPasteboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEDF83F8258AE24E0030E4AC /* UTMPasteboard.swift */; };
+		CEF7F6222AEEDCC400E34952 /* QEMUArgument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848D99B3286300160055C215 /* QEMUArgument.swift */; };
+		CEF7F6232AEEDCC400E34952 /* VMPlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D954224AD4F980059923A /* VMPlaceholderView.swift */; };
+		CEF7F6242AEEDCC400E34952 /* VMDisplayMetalViewController+Pointer.m in Sources */ = {isa = PBXBuildFile; fileRef = 83FBDD55242FA7BC00D2C5D7 /* VMDisplayMetalViewController+Pointer.m */; };
+		CEF7F6252AEEDCC400E34952 /* VMDisplayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE72B4AC2463579D00716A11 /* VMDisplayViewController.m */; };
+		CEF7F6262AEEDCC400E34952 /* UTMSWTPM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845F95E22A57628400A016D7 /* UTMSWTPM.swift */; };
+		CEF7F6272AEEDCC400E34952 /* UTMSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CE3DB02904C7A100FF068B /* UTMSettingsView.swift */; platformFilter = ios; };
+		CEF7F6282AEEDCC400E34952 /* UTMQemuConfigurationSound.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843BF83328450C0B0029D60D /* UTMQemuConfigurationSound.swift */; };
+		CEF7F6292AEEDCC400E34952 /* VMScroll.m in Sources */ = {isa = PBXBuildFile; fileRef = CE20FAE72448D2BE0059AE11 /* VMScroll.m */; };
+		CEF7F62A2AEEDCC400E34952 /* VMConfigNetworkPortForwardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D954D24AD4F980059923A /* VMConfigNetworkPortForwardView.swift */; };
+		CEF7F62B2AEEDCC400E34952 /* UTMDownloadSupportToolsTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843232B628C4816100CFBC97 /* UTMDownloadSupportToolsTask.swift */; };
+		CEF7F62C2AEEDCC400E34952 /* UTMQemuConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841619A5284315C1000034B2 /* UTMQemuConfiguration.swift */; };
+		CEF7F62E2AEEDCC400E34952 /* libgstautodetect.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19522265425900355E14 /* libgstautodetect.a */; };
+		CEF7F62F2AEEDCC400E34952 /* libgstaudiotestsrc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19532265425900355E14 /* libgstaudiotestsrc.a */; };
+		CEF7F6302AEEDCC400E34952 /* libgstvideoconvert.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19542265425900355E14 /* libgstvideoconvert.a */; };
+		CEF7F6312AEEDCC400E34952 /* libgstaudioconvert.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19552265425900355E14 /* libgstaudioconvert.a */; };
+		CEF7F6322AEEDCC400E34952 /* libgstvideoscale.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19562265425900355E14 /* libgstvideoscale.a */; };
+		CEF7F6332AEEDCC400E34952 /* IQKeyboardManagerSwift in Frameworks */ = {isa = PBXBuildFile; platformFilter = ios; productRef = CEF7F5862AEEDCC400E34952 /* IQKeyboardManagerSwift */; };
+		CEF7F6342AEEDCC400E34952 /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE66450C2269313200B0849A /* MetalKit.framework */; };
+		CEF7F6352AEEDCC400E34952 /* libgstvolume.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19572265425900355E14 /* libgstvolume.a */; };
+		CEF7F6362AEEDCC400E34952 /* libgstcoreelements.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19582265425900355E14 /* libgstcoreelements.a */; };
+		CEF7F6372AEEDCC400E34952 /* libgstvideorate.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19592265425900355E14 /* libgstvideorate.a */; };
+		CEF7F6382AEEDCC400E34952 /* libgstjpeg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D195A2265425900355E14 /* libgstjpeg.a */; };
+		CEF7F6392AEEDCC400E34952 /* libgstaudioresample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D195B2265425900355E14 /* libgstaudioresample.a */; };
+		CEF7F63A2AEEDCC400E34952 /* libgstplayback.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D195C2265425900355E14 /* libgstplayback.a */; };
+		CEF7F63B2AEEDCC400E34952 /* QEMUKit in Frameworks */ = {isa = PBXBuildFile; productRef = CEF7F5942AEEDCC400E34952 /* QEMUKit */; };
+		CEF7F63C2AEEDCC400E34952 /* libgstadder.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D195D2265425900355E14 /* libgstadder.a */; };
+		CEF7F63D2AEEDCC400E34952 /* libgstaudiorate.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D195F2265425900355E14 /* libgstaudiorate.a */; };
+		CEF7F63F2AEEDCC400E34952 /* libgstvideofilter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19602265425900355E14 /* libgstvideofilter.a */; };
+		CEF7F6402AEEDCC400E34952 /* SwiftUIVisualEffects in Frameworks */ = {isa = PBXBuildFile; productRef = CEF7F5902AEEDCC400E34952 /* SwiftUIVisualEffects */; };
+		CEF7F6422AEEDCC400E34952 /* libgstapp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19612265425900355E14 /* libgstapp.a */; };
+		CEF7F6432AEEDCC400E34952 /* libgstgio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19622265425A00355E14 /* libgstgio.a */; };
+		CEF7F6442AEEDCC400E34952 /* libgsttypefindfunctions.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19632265425A00355E14 /* libgsttypefindfunctions.a */; };
+		CEF7F6452AEEDCC400E34952 /* libgstvideotestsrc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19642265425A00355E14 /* libgstvideotestsrc.a */; };
+		CEF7F6462AEEDCC400E34952 /* libgstosxaudio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19652265425A00355E14 /* libgstosxaudio.a */; };
+		CEF7F6472AEEDCC400E34952 /* gmodule-2.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63D822653C7300FC7E63 /* gmodule-2.0.0.framework */; };
+		CEF7F6482AEEDCC400E34952 /* jpeg.62.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63D922653C7300FC7E63 /* jpeg.62.framework */; };
+		CEF7F6492AEEDCC400E34952 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = CEF7F5882AEEDCC400E34952 /* ZIPFoundation */; };
+		CEF7F64A2AEEDCC400E34952 /* intl.8.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63DA22653C7300FC7E63 /* intl.8.framework */; };
+		CEF7F64B2AEEDCC400E34952 /* gstapp-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63DB22653C7300FC7E63 /* gstapp-1.0.0.framework */; };
+		CEF7F64C2AEEDCC400E34952 /* gthread-2.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63DC22653C7300FC7E63 /* gthread-2.0.0.framework */; };
+		CEF7F64D2AEEDCC400E34952 /* gstrtp-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63DD22653C7400FC7E63 /* gstrtp-1.0.0.framework */; };
+		CEF7F64E2AEEDCC400E34952 /* gstriff-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63DE22653C7400FC7E63 /* gstriff-1.0.0.framework */; };
+		CEF7F6512AEEDCC400E34952 /* AVFAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84818C0B2898A07A009EDB67 /* AVFAudio.framework */; };
+		CEF7F6522AEEDCC400E34952 /* gstreamer-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E022653C7400FC7E63 /* gstreamer-1.0.0.framework */; };
+		CEF7F6532AEEDCC400E34952 /* json-glib-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E222653C7400FC7E63 /* json-glib-1.0.0.framework */; };
+		CEF7F6542AEEDCC400E34952 /* ffi.7.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E322653C7400FC7E63 /* ffi.7.framework */; };
+		CEF7F6552AEEDCC400E34952 /* gstnet-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E522653C7400FC7E63 /* gstnet-1.0.0.framework */; };
+		CEF7F6562AEEDCC400E34952 /* gstbase-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E822653C7400FC7E63 /* gstbase-1.0.0.framework */; };
+		CEF7F6572AEEDCC400E34952 /* Logging in Frameworks */ = {isa = PBXBuildFile; productRef = CEF7F5842AEEDCC400E34952 /* Logging */; };
+		CEF7F6582AEEDCC400E34952 /* SwiftTerm in Frameworks */ = {isa = PBXBuildFile; productRef = CEF7F58E2AEEDCC400E34952 /* SwiftTerm */; };
+		CEF7F65A2AEEDCC400E34952 /* phodav-2.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* phodav-2.0.0.framework */; };
+		CEF7F65C2AEEDCC400E34952 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE0E9B86252FD06B0026E02B /* SwiftUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		CEF7F65D2AEEDCC400E34952 /* gstcontroller-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63EE22653C7400FC7E63 /* gstcontroller-1.0.0.framework */; };
+		CEF7F65E2AEEDCC400E34952 /* gstaudio-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63EF22653C7400FC7E63 /* gstaudio-1.0.0.framework */; };
+		CEF7F65F2AEEDCC400E34952 /* gpg-error.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63F122653C7400FC7E63 /* gpg-error.0.framework */; };
+		CEF7F6602AEEDCC400E34952 /* gcrypt.20.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63F322653C7400FC7E63 /* gcrypt.20.framework */; };
+		CEF7F6612AEEDCC400E34952 /* InAppSettingsKit in Frameworks */ = {isa = PBXBuildFile; platformFilter = ios; productRef = CEF7F5922AEEDCC400E34952 /* InAppSettingsKit */; };
+		CEF7F6622AEEDCC400E34952 /* gobject-2.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63F522653C7400FC7E63 /* gobject-2.0.0.framework */; };
+		CEF7F6642AEEDCC400E34952 /* gsttag-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63F622653C7400FC7E63 /* gsttag-1.0.0.framework */; };
+		CEF7F6652AEEDCC400E34952 /* gio-2.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63F822653C7400FC7E63 /* gio-2.0.0.framework */; };
+		CEF7F6662AEEDCC400E34952 /* gstvideo-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63F922653C7400FC7E63 /* gstvideo-1.0.0.framework */; };
+		CEF7F6672AEEDCC400E34952 /* spice-client-glib-2.0.8.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63FE22653C7500FC7E63 /* spice-client-glib-2.0.8.framework */; };
+		CEF7F6682AEEDCC400E34952 /* gstrtsp-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640122653C7500FC7E63 /* gstrtsp-1.0.0.framework */; };
+		CEF7F6692AEEDCC400E34952 /* opus.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640322653C7500FC7E63 /* opus.0.framework */; };
+		CEF7F66A2AEEDCC400E34952 /* glib-2.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640422653C7500FC7E63 /* glib-2.0.0.framework */; };
+		CEF7F66B2AEEDCC400E34952 /* png16.16.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640522653C7500FC7E63 /* png16.16.framework */; };
+		CEF7F66C2AEEDCC400E34952 /* gstfft-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640922653C7500FC7E63 /* gstfft-1.0.0.framework */; };
+		CEF7F66D2AEEDCC400E34952 /* crypto.1.1.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640A22653C7500FC7E63 /* crypto.1.1.framework */; };
+		CEF7F66E2AEEDCC400E34952 /* gstpbutils-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640E22653C7500FC7E63 /* gstpbutils-1.0.0.framework */; };
+		CEF7F66F2AEEDCC400E34952 /* gstallocators-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641122653C7500FC7E63 /* gstallocators-1.0.0.framework */; };
+		CEF7F6702AEEDCC400E34952 /* gstcheck-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641422653C7500FC7E63 /* gstcheck-1.0.0.framework */; };
+		CEF7F6712AEEDCC400E34952 /* iconv.2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641522653C7500FC7E63 /* iconv.2.framework */; };
+		CEF7F6722AEEDCC400E34952 /* gstsdp-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641622653C7500FC7E63 /* gstsdp-1.0.0.framework */; };
+		CEF7F6742AEEDCC400E34952 /* ssl.1.1.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641722653C7500FC7E63 /* ssl.1.1.framework */; };
+		CEF7F6762AEEDCC400E34952 /* pixman-1.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641922653C7600FC7E63 /* pixman-1.0.framework */; };
+		CEF7F6792AEEDCC400E34952 /* Icons in Resources */ = {isa = PBXBuildFile; fileRef = CE4698F824C8FBD9008C1BD6 /* Icons */; };
+		CEF7F67A2AEEDCC400E34952 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = FFB02A8A266CB09C006CD71A /* InfoPlist.strings */; };
+		CEF7F67B2AEEDCC400E34952 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 521F3EFB2414F73800130500 /* Localizable.strings */; };
+		CEF7F67C2AEEDCC400E34952 /* qemu in Resources */ = {isa = PBXBuildFile; fileRef = CE9D18F72265410E00355E14 /* qemu */; };
+		CEF7F67D2AEEDCC400E34952 /* VMDisplayMetalViewInputAccessory.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE061CE9289EB6250000351C /* VMDisplayMetalViewInputAccessory.xib */; };
+		CEF7F67E2AEEDCC400E34952 /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = CED8DF7928A120C100C34345 /* Localizable.stringsdict */; };
+		CEF7F67F2AEEDCC400E34952 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 5286EC91243748AC007E6CBC /* Settings.bundle */; };
+		CEF7F6802AEEDCC400E34952 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CE550BD52259479D0063E575 /* Assets.xcassets */; };
+		CEF7F6832AEEDCC400E34952 /* gpg-error.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F122653C7400FC7E63 /* gpg-error.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEF7F6852AEEDCC400E34952 /* gstcontroller-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63EE22653C7400FC7E63 /* gstcontroller-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEF7F6862AEEDCC400E34952 /* gstallocators-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641122653C7500FC7E63 /* gstallocators-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEF7F6872AEEDCC400E34952 /* gstbase-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E822653C7400FC7E63 /* gstbase-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEF7F6882AEEDCC400E34952 /* ffi.7.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E322653C7400FC7E63 /* ffi.7.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEF7F6892AEEDCC400E34952 /* ssl.1.1.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641722653C7500FC7E63 /* ssl.1.1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEF7F68B2AEEDCC400E34952 /* gio-2.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F822653C7400FC7E63 /* gio-2.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEF7F68D2AEEDCC400E34952 /* png16.16.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640522653C7500FC7E63 /* png16.16.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEF7F68E2AEEDCC400E34952 /* gstnet-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E522653C7400FC7E63 /* gstnet-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEF7F6902AEEDCC400E34952 /* crypto.1.1.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640A22653C7500FC7E63 /* crypto.1.1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEF7F6922AEEDCC400E34952 /* gstapp-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DB22653C7300FC7E63 /* gstapp-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEF7F6962AEEDCC400E34952 /* gsttag-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F622653C7400FC7E63 /* gsttag-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEF7F6982AEEDCC400E34952 /* gstrtp-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DD22653C7400FC7E63 /* gstrtp-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEF7F6992AEEDCC400E34952 /* gstriff-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DE22653C7400FC7E63 /* gstriff-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEF7F69C2AEEDCC400E34952 /* phodav-2.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* phodav-2.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEF7F69D2AEEDCC400E34952 /* gthread-2.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DC22653C7300FC7E63 /* gthread-2.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEF7F6A22AEEDCC400E34952 /* gobject-2.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F522653C7400FC7E63 /* gobject-2.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEF7F6A32AEEDCC400E34952 /* gmodule-2.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63D822653C7300FC7E63 /* gmodule-2.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEF7F6AD2AEEDCC400E34952 /* glib-2.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640422653C7500FC7E63 /* glib-2.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEF7F6AE2AEEDCC400E34952 /* EGL.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE5451A426AF5F0F008594E5 /* EGL.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CEF7F6B42AEEDCC400E34952 /* intl.8.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DA22653C7300FC7E63 /* intl.8.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEF7F6B52AEEDCC400E34952 /* gstreamer-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E022653C7400FC7E63 /* gstreamer-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEF7F6B62AEEDCC400E34952 /* GLESv2.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE5451A326AF5F0F008594E5 /* GLESv2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CEF7F6B72AEEDCC400E34952 /* gstvideo-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F922653C7400FC7E63 /* gstvideo-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEF7F6B82AEEDCC400E34952 /* json-glib-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E222653C7400FC7E63 /* json-glib-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEF7F6B92AEEDCC400E34952 /* pixman-1.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641922653C7600FC7E63 /* pixman-1.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEF7F6BA2AEEDCC400E34952 /* jpeg.62.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63D922653C7300FC7E63 /* jpeg.62.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEF7F6BE2AEEDCC400E34952 /* spice-client-glib-2.0.8.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FE22653C7500FC7E63 /* spice-client-glib-2.0.8.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEF7F6BF2AEEDCC400E34952 /* opus.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640322653C7500FC7E63 /* opus.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEF7F6C02AEEDCC400E34952 /* gstsdp-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641622653C7500FC7E63 /* gstsdp-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEF7F6C12AEEDCC400E34952 /* swtpm.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE064C642A563F4A003C833D /* swtpm.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CEF7F6C42AEEDCC400E34952 /* gstaudio-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63EF22653C7400FC7E63 /* gstaudio-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEF7F6C52AEEDCC400E34952 /* gstcheck-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641422653C7500FC7E63 /* gstcheck-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEF7F6C72AEEDCC400E34952 /* iconv.2.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641522653C7500FC7E63 /* iconv.2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEF7F6C92AEEDCC400E34952 /* gstrtsp-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640122653C7500FC7E63 /* gstrtsp-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEF7F6CB2AEEDCC400E34952 /* gcrypt.20.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F322653C7400FC7E63 /* gcrypt.20.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEF7F6CC2AEEDCC400E34952 /* gstfft-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640922653C7500FC7E63 /* gstfft-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEF7F6CE2AEEDCC400E34952 /* gstpbutils-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640E22653C7500FC7E63 /* gstpbutils-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEF7F6D62AEEEF7D00E34952 /* CocoaSpiceNoUsb in Frameworks */ = {isa = PBXBuildFile; productRef = CEF7F6D52AEEEF7D00E34952 /* CocoaSpiceNoUsb */; };
 		CEF83F262500901300557D15 /* qemu in Resources */ = {isa = PBXBuildFile; fileRef = CE9D18F72265410E00355E14 /* qemu */; };
 		CEF83F862500947D00557D15 /* gcrypt.20.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63F322653C7400FC7E63 /* gcrypt.20.framework */; };
 		CEF83F872500948800557D15 /* gpg-error.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63F122653C7400FC7E63 /* gpg-error.0.framework */; };
@@ -1241,6 +1501,54 @@
 				CEBDA1E524D8BDDB0010B5EC /* QEMUHelper.xpc in Embed XPC Services */,
 			);
 			name = "Embed XPC Services";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CEF7F6822AEEDCC400E34952 /* Embed Libraries */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				CEF7F6832AEEDCC400E34952 /* gpg-error.0.framework in Embed Libraries */,
+				CEF7F6852AEEDCC400E34952 /* gstcontroller-1.0.0.framework in Embed Libraries */,
+				CEF7F6862AEEDCC400E34952 /* gstallocators-1.0.0.framework in Embed Libraries */,
+				CEF7F6872AEEDCC400E34952 /* gstbase-1.0.0.framework in Embed Libraries */,
+				CEF7F6882AEEDCC400E34952 /* ffi.7.framework in Embed Libraries */,
+				CEF7F6892AEEDCC400E34952 /* ssl.1.1.framework in Embed Libraries */,
+				CEF7F68B2AEEDCC400E34952 /* gio-2.0.0.framework in Embed Libraries */,
+				CEF7F68D2AEEDCC400E34952 /* png16.16.framework in Embed Libraries */,
+				CEF7F68E2AEEDCC400E34952 /* gstnet-1.0.0.framework in Embed Libraries */,
+				CEF7F6902AEEDCC400E34952 /* crypto.1.1.framework in Embed Libraries */,
+				CEF7F6922AEEDCC400E34952 /* gstapp-1.0.0.framework in Embed Libraries */,
+				CEF7F6962AEEDCC400E34952 /* gsttag-1.0.0.framework in Embed Libraries */,
+				CEF7F6982AEEDCC400E34952 /* gstrtp-1.0.0.framework in Embed Libraries */,
+				CEF7F6992AEEDCC400E34952 /* gstriff-1.0.0.framework in Embed Libraries */,
+				CEF7F69C2AEEDCC400E34952 /* phodav-2.0.0.framework in Embed Libraries */,
+				CEF7F69D2AEEDCC400E34952 /* gthread-2.0.0.framework in Embed Libraries */,
+				CEF7F6A22AEEDCC400E34952 /* gobject-2.0.0.framework in Embed Libraries */,
+				CEF7F6A32AEEDCC400E34952 /* gmodule-2.0.0.framework in Embed Libraries */,
+				CEF7F6AD2AEEDCC400E34952 /* glib-2.0.0.framework in Embed Libraries */,
+				CEF7F6AE2AEEDCC400E34952 /* EGL.framework in Embed Libraries */,
+				CEF7F6B42AEEDCC400E34952 /* intl.8.framework in Embed Libraries */,
+				CEF7F6B52AEEDCC400E34952 /* gstreamer-1.0.0.framework in Embed Libraries */,
+				CEF7F6B62AEEDCC400E34952 /* GLESv2.framework in Embed Libraries */,
+				CEF7F6B72AEEDCC400E34952 /* gstvideo-1.0.0.framework in Embed Libraries */,
+				CEF7F6B82AEEDCC400E34952 /* json-glib-1.0.0.framework in Embed Libraries */,
+				CEF7F6B92AEEDCC400E34952 /* pixman-1.0.framework in Embed Libraries */,
+				CEF7F6BA2AEEDCC400E34952 /* jpeg.62.framework in Embed Libraries */,
+				CEF7F6BE2AEEDCC400E34952 /* spice-client-glib-2.0.8.framework in Embed Libraries */,
+				CEF7F6BF2AEEDCC400E34952 /* opus.0.framework in Embed Libraries */,
+				CEF7F6C02AEEDCC400E34952 /* gstsdp-1.0.0.framework in Embed Libraries */,
+				CEF7F6C12AEEDCC400E34952 /* swtpm.0.framework in Embed Libraries */,
+				CEF7F6C42AEEDCC400E34952 /* gstaudio-1.0.0.framework in Embed Libraries */,
+				CEF7F6C52AEEDCC400E34952 /* gstcheck-1.0.0.framework in Embed Libraries */,
+				CEF7F6C72AEEDCC400E34952 /* iconv.2.framework in Embed Libraries */,
+				CEF7F6C92AEEDCC400E34952 /* gstrtsp-1.0.0.framework in Embed Libraries */,
+				CEF7F6CB2AEEDCC400E34952 /* gcrypt.20.framework in Embed Libraries */,
+				CEF7F6CC2AEEDCC400E34952 /* gstfft-1.0.0.framework in Embed Libraries */,
+				CEF7F6CE2AEEDCC400E34952 /* gstpbutils-1.0.0.framework in Embed Libraries */,
+			);
+			name = "Embed Libraries";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -1684,6 +1992,7 @@
 		CEF6F5EA26DDD60500BC434D /* macOS-unsigned.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "macOS-unsigned.entitlements"; sourceTree = "<group>"; };
 		CEF6F5EB26DDD63100BC434D /* QEMUHelper-unsigned.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "QEMUHelper-unsigned.entitlements"; sourceTree = "<group>"; };
 		CEF6F5EC26DDD65700BC434D /* QEMULauncher-unsigned.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "QEMULauncher-unsigned.entitlements"; sourceTree = "<group>"; };
+		CEF7F6D32AEEDCC400E34952 /* UTM Remote.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "UTM Remote.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CEF84ADA2887D7D300578F41 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
 		CEFE98DE29485237007CB7A8 /* UTM.sdef */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = UTM.sdef; sourceTree = "<group>"; };
 		CEFE98E029485776007CB7A8 /* UTMScriptingVirtualMachineImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMScriptingVirtualMachineImpl.swift; sourceTree = "<group>"; };
@@ -1978,6 +2287,78 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CEF7F62D2AEEDCC400E34952 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CEF7F62E2AEEDCC400E34952 /* libgstautodetect.a in Frameworks */,
+				CEF7F62F2AEEDCC400E34952 /* libgstaudiotestsrc.a in Frameworks */,
+				CEF7F6302AEEDCC400E34952 /* libgstvideoconvert.a in Frameworks */,
+				CEF7F6312AEEDCC400E34952 /* libgstaudioconvert.a in Frameworks */,
+				CEF7F6322AEEDCC400E34952 /* libgstvideoscale.a in Frameworks */,
+				CEF7F6332AEEDCC400E34952 /* IQKeyboardManagerSwift in Frameworks */,
+				CEF7F6342AEEDCC400E34952 /* MetalKit.framework in Frameworks */,
+				CEF7F6352AEEDCC400E34952 /* libgstvolume.a in Frameworks */,
+				CEF7F6362AEEDCC400E34952 /* libgstcoreelements.a in Frameworks */,
+				CEF7F6372AEEDCC400E34952 /* libgstvideorate.a in Frameworks */,
+				CEF7F6382AEEDCC400E34952 /* libgstjpeg.a in Frameworks */,
+				CEF7F6392AEEDCC400E34952 /* libgstaudioresample.a in Frameworks */,
+				CEF7F63A2AEEDCC400E34952 /* libgstplayback.a in Frameworks */,
+				CEF7F63B2AEEDCC400E34952 /* QEMUKit in Frameworks */,
+				CEF7F63C2AEEDCC400E34952 /* libgstadder.a in Frameworks */,
+				CEF7F63D2AEEDCC400E34952 /* libgstaudiorate.a in Frameworks */,
+				CEF7F63F2AEEDCC400E34952 /* libgstvideofilter.a in Frameworks */,
+				CEF7F6402AEEDCC400E34952 /* SwiftUIVisualEffects in Frameworks */,
+				CEF7F6422AEEDCC400E34952 /* libgstapp.a in Frameworks */,
+				CEF7F6432AEEDCC400E34952 /* libgstgio.a in Frameworks */,
+				CEF7F6442AEEDCC400E34952 /* libgsttypefindfunctions.a in Frameworks */,
+				CEF7F6452AEEDCC400E34952 /* libgstvideotestsrc.a in Frameworks */,
+				CEF7F6462AEEDCC400E34952 /* libgstosxaudio.a in Frameworks */,
+				CEF7F6472AEEDCC400E34952 /* gmodule-2.0.0.framework in Frameworks */,
+				CEF7F6482AEEDCC400E34952 /* jpeg.62.framework in Frameworks */,
+				CEF7F6492AEEDCC400E34952 /* ZIPFoundation in Frameworks */,
+				CEF7F64A2AEEDCC400E34952 /* intl.8.framework in Frameworks */,
+				CEF7F64B2AEEDCC400E34952 /* gstapp-1.0.0.framework in Frameworks */,
+				CEF7F64C2AEEDCC400E34952 /* gthread-2.0.0.framework in Frameworks */,
+				CEF7F64D2AEEDCC400E34952 /* gstrtp-1.0.0.framework in Frameworks */,
+				CEF7F64E2AEEDCC400E34952 /* gstriff-1.0.0.framework in Frameworks */,
+				CEF7F6512AEEDCC400E34952 /* AVFAudio.framework in Frameworks */,
+				CEF7F6522AEEDCC400E34952 /* gstreamer-1.0.0.framework in Frameworks */,
+				CEF7F6532AEEDCC400E34952 /* json-glib-1.0.0.framework in Frameworks */,
+				CEF7F6542AEEDCC400E34952 /* ffi.7.framework in Frameworks */,
+				CEF7F6552AEEDCC400E34952 /* gstnet-1.0.0.framework in Frameworks */,
+				CEF7F6562AEEDCC400E34952 /* gstbase-1.0.0.framework in Frameworks */,
+				CEF7F6572AEEDCC400E34952 /* Logging in Frameworks */,
+				CEF7F6582AEEDCC400E34952 /* SwiftTerm in Frameworks */,
+				CEF7F65A2AEEDCC400E34952 /* phodav-2.0.0.framework in Frameworks */,
+				CEF7F65C2AEEDCC400E34952 /* SwiftUI.framework in Frameworks */,
+				CEF7F65D2AEEDCC400E34952 /* gstcontroller-1.0.0.framework in Frameworks */,
+				CEF7F65E2AEEDCC400E34952 /* gstaudio-1.0.0.framework in Frameworks */,
+				CEF7F65F2AEEDCC400E34952 /* gpg-error.0.framework in Frameworks */,
+				CEF7F6602AEEDCC400E34952 /* gcrypt.20.framework in Frameworks */,
+				CEF7F6612AEEDCC400E34952 /* InAppSettingsKit in Frameworks */,
+				CEF7F6622AEEDCC400E34952 /* gobject-2.0.0.framework in Frameworks */,
+				CEF7F6642AEEDCC400E34952 /* gsttag-1.0.0.framework in Frameworks */,
+				CEF7F6652AEEDCC400E34952 /* gio-2.0.0.framework in Frameworks */,
+				CEF7F6662AEEDCC400E34952 /* gstvideo-1.0.0.framework in Frameworks */,
+				CEF7F6672AEEDCC400E34952 /* spice-client-glib-2.0.8.framework in Frameworks */,
+				CEF7F6D62AEEEF7D00E34952 /* CocoaSpiceNoUsb in Frameworks */,
+				CEF7F6682AEEDCC400E34952 /* gstrtsp-1.0.0.framework in Frameworks */,
+				CEF7F6692AEEDCC400E34952 /* opus.0.framework in Frameworks */,
+				CEF7F66A2AEEDCC400E34952 /* glib-2.0.0.framework in Frameworks */,
+				CEF7F66B2AEEDCC400E34952 /* png16.16.framework in Frameworks */,
+				CEF7F66C2AEEDCC400E34952 /* gstfft-1.0.0.framework in Frameworks */,
+				CEF7F66D2AEEDCC400E34952 /* crypto.1.1.framework in Frameworks */,
+				CEF7F66E2AEEDCC400E34952 /* gstpbutils-1.0.0.framework in Frameworks */,
+				CEF7F66F2AEEDCC400E34952 /* gstallocators-1.0.0.framework in Frameworks */,
+				CEF7F6702AEEDCC400E34952 /* gstcheck-1.0.0.framework in Frameworks */,
+				CEF7F6712AEEDCC400E34952 /* iconv.2.framework in Frameworks */,
+				CEF7F6722AEEDCC400E34952 /* gstsdp-1.0.0.framework in Frameworks */,
+				CEF7F6742AEEDCC400E34952 /* ssl.1.1.framework in Frameworks */,
+				CEF7F6762AEEDCC400E34952 /* pixman-1.0.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2324,6 +2705,7 @@
 				CE9A352D26533A51005077CF /* JailbreakInterposer.framework */,
 				8401FD62269BE9C500265F0D /* QEMULauncher.app */,
 				84E3A8F0293DB37E0024A740 /* utmctl */,
+				CEF7F6D32AEEDCC400E34952 /* UTM Remote.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2698,6 +3080,35 @@
 			productReference = CEBDA1DA24D8BDDA0010B5EC /* QEMUHelper.xpc */;
 			productType = "com.apple.product-type.xpc-service";
 		};
+		CEF7F5812AEEDCC400E34952 /* iOS-Remote */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CEF7F6D02AEEDCC400E34952 /* Build configuration list for PBXNativeTarget "iOS-Remote" */;
+			buildPhases = (
+				CEF7F5962AEEDCC400E34952 /* Sources */,
+				CEF7F62D2AEEDCC400E34952 /* Frameworks */,
+				CEF7F6782AEEDCC400E34952 /* Resources */,
+				CEF7F6812AEEDCC400E34952 /* Patch Settings bundle */,
+				CEF7F6822AEEDCC400E34952 /* Embed Libraries */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "iOS-Remote";
+			packageProductDependencies = (
+				CEF7F5842AEEDCC400E34952 /* Logging */,
+				CEF7F5862AEEDCC400E34952 /* IQKeyboardManagerSwift */,
+				CEF7F5882AEEDCC400E34952 /* ZIPFoundation */,
+				CEF7F58E2AEEDCC400E34952 /* SwiftTerm */,
+				CEF7F5902AEEDCC400E34952 /* SwiftUIVisualEffects */,
+				CEF7F5922AEEDCC400E34952 /* InAppSettingsKit */,
+				CEF7F5942AEEDCC400E34952 /* QEMUKit */,
+				CEF7F6D52AEEEF7D00E34952 /* CocoaSpiceNoUsb */,
+			);
+			productName = UTM;
+			productReference = CEF7F6D32AEEDCC400E34952 /* UTM Remote.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -2769,6 +3180,7 @@
 			targets = (
 				CE2D926824AD46670059923A /* iOS */,
 				CEA45E1F263519B5002FA97D /* iOS-TCI */,
+				CEF7F5812AEEDCC400E34952 /* iOS-Remote */,
 				CE2D951B24AD48BE0059923A /* macOS */,
 				CEBDA1D924D8BDDA0010B5EC /* QEMUHelper */,
 				8401FD61269BE9C500265F0D /* QEMULauncher */,
@@ -2849,6 +3261,21 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CEF7F6782AEEDCC400E34952 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CEF7F6792AEEDCC400E34952 /* Icons in Resources */,
+				CEF7F67A2AEEDCC400E34952 /* InfoPlist.strings in Resources */,
+				CEF7F67B2AEEDCC400E34952 /* Localizable.strings in Resources */,
+				CEF7F67C2AEEDCC400E34952 /* qemu in Resources */,
+				CEF7F67D2AEEDCC400E34952 /* VMDisplayMetalViewInputAccessory.xib in Resources */,
+				CEF7F67E2AEEDCC400E34952 /* Localizable.stringsdict in Resources */,
+				CEF7F67F2AEEDCC400E34952 /* Settings.bundle in Resources */,
+				CEF7F6802AEEDCC400E34952 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
@@ -2874,6 +3301,27 @@
 			showEnvVarsInLog = 0;
 		};
 		CE59A7B22ABCCB7C00E5FFBD /* Patch Settings bundle */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Platform/iOS/Settings.bundle",
+			);
+			name = "Patch Settings bundle";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(TARGET_BUILD_DIR)/$(CONTENTS_FOLDER_PATH)/Settings.bundle/Root.plist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#!/bin/sh\n\nPLISTBUDDY=/usr/libexec/PlistBuddy\nROOT_PLIST=\"$SCRIPT_OUTPUT_FILE_0\"\n\nCOUNT=$($PLISTBUDDY -c \"Print :PreferenceSpecifiers\" \"$ROOT_PLIST\" | grep -c '^    }$')\n\nfor ((i = 0; i < COUNT; i++)); do\n    platform=$($PLISTBUDDY -c \"Print :PreferenceSpecifiers:$i:Platform\" \"$ROOT_PLIST\" 2> /dev/null)\n    if [ ! -z \"$platform\" ]; then\n        if [ \"$platform\" == \"$PLATFORM_FAMILY_NAME\" ]; then\n            echo \"Found entry $i for $platform\"\n            $PLISTBUDDY -c \"Delete :PreferenceSpecifiers:$i:Platform\" \"$ROOT_PLIST\"\n        else\n            echo \"Found entry $i for $platform, removing entry\"\n            $PLISTBUDDY -c \"Delete :PreferenceSpecifiers:$i\" \"$ROOT_PLIST\"\n            ((COUNT--))\n            ((i--))\n        fi\n    fi\ndone\n";
+			showEnvVarsInLog = 0;
+		};
+		CEF7F6812AEEDCC400E34952 /* Patch Settings bundle */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -3424,6 +3872,162 @@
 			files = (
 				CEBDA1E124D8BDDB0010B5EC /* main.m in Sources */,
 				CEBDA1DF24D8BDDB0010B5EC /* QEMUHelper.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CEF7F5962AEEDCC400E34952 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CEF7F5972AEEDCC400E34952 /* VMDisplayMetalViewController+Pointer.h in Sources */,
+				CEF7F5982AEEDCC400E34952 /* VMSettingsAddDeviceMenuView.swift in Sources */,
+				CEF7F5992AEEDCC400E34952 /* VMRemovableDrivesView.swift in Sources */,
+				CEF7F59A2AEEDCC400E34952 /* UTMQemuConfigurationDrive.swift in Sources */,
+				CEF7F59B2AEEDCC400E34952 /* UTMQemuConfigurationSharing.swift in Sources */,
+				CEF7F59C2AEEDCC400E34952 /* ContentView.swift in Sources */,
+				CEF7F59D2AEEDCC400E34952 /* VMData.swift in Sources */,
+				CEF7F59E2AEEDCC400E34952 /* UTMLegacyQemuConfiguration+System.m in Sources */,
+				CEF7F59F2AEEDCC400E34952 /* UTMQemuConfigurationNetwork.swift in Sources */,
+				CEF7F5A02AEEDCC400E34952 /* UTMProcess.m in Sources */,
+				CEF7F5A12AEEDCC400E34952 /* VMWizardDrivesView.swift in Sources */,
+				CEF7F5A22AEEDCC400E34952 /* VMWindowState.swift in Sources */,
+				CEF7F5A42AEEDCC400E34952 /* UTMLegacyQemuConfigurationPortForward.m in Sources */,
+				CEF7F5A52AEEDCC400E34952 /* VMWizardView.swift in Sources */,
+				CEF7F5A62AEEDCC400E34952 /* UTMPlaceholderVMView.swift in Sources */,
+				CEF7F5A72AEEDCC400E34952 /* BusyOverlay.swift in Sources */,
+				CEF7F5A82AEEDCC400E34952 /* UTMConfiguration.swift in Sources */,
+				CEF7F5A92AEEDCC400E34952 /* UTMConfigurationInfo.swift in Sources */,
+				CEF7F5AA2AEEDCC400E34952 /* VMConfigDisplayView.swift in Sources */,
+				CEF7F5AB2AEEDCC400E34952 /* VMWizardOSWindowsView.swift in Sources */,
+				CEF7F5AC2AEEDCC400E34952 /* UTMDownloadTask.swift in Sources */,
+				CEF7F5AD2AEEDCC400E34952 /* UTMApp.swift in Sources */,
+				CEF7F5AE2AEEDCC400E34952 /* VMConfigAdvancedNetworkView.swift in Sources */,
+				CEF7F5AF2AEEDCC400E34952 /* UTMLegacyQemuConfiguration+Miscellaneous.m in Sources */,
+				CEF7F5B02AEEDCC400E34952 /* UTMRegistryEntry.swift in Sources */,
+				CEF7F5B12AEEDCC400E34952 /* UTMDataExtension.swift in Sources */,
+				CEF7F5B22AEEDCC400E34952 /* VMDisplayHostedView.swift in Sources */,
+				CEF7F5B32AEEDCC400E34952 /* QEMUArgumentBuilder.swift in Sources */,
+				CEF7F5B42AEEDCC400E34952 /* ImagePicker.swift in Sources */,
+				CEF7F5B52AEEDCC400E34952 /* VMConfigSystemView.swift in Sources */,
+				CEF7F5B62AEEDCC400E34952 /* FileBrowseField.swift in Sources */,
+				CEF7F5B72AEEDCC400E34952 /* VMShareFileModifier.swift in Sources */,
+				CEF7F5B82AEEDCC400E34952 /* UTMQemuConfigurationSerial.swift in Sources */,
+				CEF7F5B92AEEDCC400E34952 /* Spinner.swift in Sources */,
+				CEF7F5BA2AEEDCC400E34952 /* UTMQemuConfigurationPortForward.swift in Sources */,
+				CEF7F5BB2AEEDCC400E34952 /* UTMReleaseHelper.swift in Sources */,
+				CEF7F5BC2AEEDCC400E34952 /* VMConfigNetworkView.swift in Sources */,
+				CEF7F5BD2AEEDCC400E34952 /* UTMLegacyViewState.m in Sources */,
+				CEF7F5BE2AEEDCC400E34952 /* UTMLoggingSwift.swift in Sources */,
+				CEF7F5BF2AEEDCC400E34952 /* VMWizardOSLinuxView.swift in Sources */,
+				CEF7F5C02AEEDCC400E34952 /* VMWizardSummaryView.swift in Sources */,
+				CEF7F5C12AEEDCC400E34952 /* VMConfigQEMUView.swift in Sources */,
+				CEF7F5C22AEEDCC400E34952 /* VMDisplayMetalViewController+Touch.m in Sources */,
+				CEF7F5C32AEEDCC400E34952 /* UTMLegacyQemuConfiguration+Display.m in Sources */,
+				CEF7F5C42AEEDCC400E34952 /* BigButtonStyle.swift in Sources */,
+				CEF7F5C52AEEDCC400E34952 /* UTMVirtualMachine.swift in Sources */,
+				CEF7F5C62AEEDCC400E34952 /* UTMQemuConfigurationSystem.swift in Sources */,
+				CEF7F5C72AEEDCC400E34952 /* VMWizardSharingView.swift in Sources */,
+				CEF7F5C82AEEDCC400E34952 /* VMConfigInfoView.swift in Sources */,
+				CEF7F5C92AEEDCC400E34952 /* MenuLabel.swift in Sources */,
+				CEF7F5CA2AEEDCC400E34952 /* VMKeyboardView.m in Sources */,
+				CEF7F5CB2AEEDCC400E34952 /* VMWizardOSView.swift in Sources */,
+				CEF7F5CC2AEEDCC400E34952 /* DestructiveButton.swift in Sources */,
+				CEF7F5CD2AEEDCC400E34952 /* UTMConfigurationTerminal.swift in Sources */,
+				CEF7F5CE2AEEDCC400E34952 /* VMWindowView.swift in Sources */,
+				CEF7F5CF2AEEDCC400E34952 /* UTMPendingVMView.swift in Sources */,
+				CEF7F5D02AEEDCC400E34952 /* UTMSpiceIO.m in Sources */,
+				CEF7F5D12AEEDCC400E34952 /* UTMUnavailableVMView.swift in Sources */,
+				CEF7F5D22AEEDCC400E34952 /* VMDrivesSettingsView.swift in Sources */,
+				CEF7F5D32AEEDCC400E34952 /* UTMConfigurationDrive.swift in Sources */,
+				CEF7F5D42AEEDCC400E34952 /* VMConfigDriveCreateView.swift in Sources */,
+				CEF7F5D52AEEDCC400E34952 /* UTMPatches.swift in Sources */,
+				CEF7F5D62AEEDCC400E34952 /* RAMSlider.swift in Sources */,
+				CEF7F5D72AEEDCC400E34952 /* VMReleaseNotesView.swift in Sources */,
+				CEF7F5D82AEEDCC400E34952 /* UTMLegacyQemuConfiguration+Constants.m in Sources */,
+				CEF7F5D92AEEDCC400E34952 /* InListButtonStyle.swift in Sources */,
+				CEF7F5DA2AEEDCC400E34952 /* VMContextMenuModifier.swift in Sources */,
+				CEF7F5DB2AEEDCC400E34952 /* VMDisplayMetalViewController+Pencil.m in Sources */,
+				CEF7F5DC2AEEDCC400E34952 /* VMDisplayTerminalViewController.swift in Sources */,
+				CEF7F5DD2AEEDCC400E34952 /* UTMLegacyQemuConfiguration+Drives.m in Sources */,
+				CEF7F5DE2AEEDCC400E34952 /* UTMPendingVirtualMachine.swift in Sources */,
+				CEF7F5DF2AEEDCC400E34952 /* BusyIndicator.swift in Sources */,
+				CEF7F5E02AEEDCC400E34952 /* VMSessionState.swift in Sources */,
+				CEF7F5E12AEEDCC400E34952 /* VMConfigSharingView.swift in Sources */,
+				CEF7F5E22AEEDCC400E34952 /* VMConfigInputView.swift in Sources */,
+				CEF7F5E32AEEDCC400E34952 /* VMWizardOSOtherView.swift in Sources */,
+				CEF7F5E42AEEDCC400E34952 /* VMToolbarView.swift in Sources */,
+				CEF7F5E52AEEDCC400E34952 /* VMDisplayMetalViewController+Gamepad.m in Sources */,
+				CEF7F5E62AEEDCC400E34952 /* VMWizardHardwareView.swift in Sources */,
+				CEF7F5E72AEEDCC400E34952 /* UTMRegistry.swift in Sources */,
+				CEF7F5E82AEEDCC400E34952 /* VMDisplayViewControllerDelegate.swift in Sources */,
+				CEF7F5E92AEEDCC400E34952 /* UTMLogging.m in Sources */,
+				CEF7F5EA2AEEDCC400E34952 /* VMConfigConstantPicker.swift in Sources */,
+				CEF7F5EB2AEEDCC400E34952 /* UTMQemuImage.swift in Sources */,
+				CEF7F5EC2AEEDCC400E34952 /* VMToolbarModifier.swift in Sources */,
+				CEF7F5ED2AEEDCC400E34952 /* VMCursor.m in Sources */,
+				CEF7F5EE2AEEDCC400E34952 /* VMConfigDriveDetailsView.swift in Sources */,
+				CEF7F5EF2AEEDCC400E34952 /* UTMQemuSystem.m in Sources */,
+				CEF7F5F02AEEDCC400E34952 /* NumberTextField.swift in Sources */,
+				CEF7F5F12AEEDCC400E34952 /* VMToolbarOrnamentModifier.swift in Sources */,
+				CEF7F5F22AEEDCC400E34952 /* VMCommands.swift in Sources */,
+				CEF7F5F32AEEDCC400E34952 /* UTMLegacyQemuConfiguration+Networking.m in Sources */,
+				CEF7F5F42AEEDCC400E34952 /* VMConfirmActionModifier.swift in Sources */,
+				CEF7F5F52AEEDCC400E34952 /* QEMUConstant.swift in Sources */,
+				CEF7F5F62AEEDCC400E34952 /* VMConfigPortForwardForm.swift in Sources */,
+				CEF7F5F72AEEDCC400E34952 /* UTMLocationManager.m in Sources */,
+				CEF7F5F82AEEDCC400E34952 /* DetailedSection.swift in Sources */,
+				CEF7F5F92AEEDCC400E34952 /* VMToolbarDriveMenuView.swift in Sources */,
+				CEF7F5FA2AEEDCC400E34952 /* VMSettingsView.swift in Sources */,
+				CEF7F5FB2AEEDCC400E34952 /* VMDisplayViewController.swift in Sources */,
+				CEF7F5FC2AEEDCC400E34952 /* VMWizardStartView.swift in Sources */,
+				CEF7F5FD2AEEDCC400E34952 /* QEMUConstantGenerated.swift in Sources */,
+				CEF7F5FE2AEEDCC400E34952 /* VMKeyboardButton.m in Sources */,
+				CEF7F5FF2AEEDCC400E34952 /* UTMDownloadVMTask.swift in Sources */,
+				CEF7F6002AEEDCC400E34952 /* GlobalFileImporter.swift in Sources */,
+				CEF7F6012AEEDCC400E34952 /* IASKAppSettings.swift in Sources */,
+				CEF7F6022AEEDCC400E34952 /* VMWizardContent.swift in Sources */,
+				CEF7F6032AEEDCC400E34952 /* UTMExternalSceneDelegate.swift in Sources */,
+				CEF7F6042AEEDCC400E34952 /* UTMJailbreak.m in Sources */,
+				CEF7F6052AEEDCC400E34952 /* UTMQemuConfigurationQEMU.swift in Sources */,
+				CEF7F6062AEEDCC400E34952 /* UTMQemuConfigurationDisplay.swift in Sources */,
+				CEF7F6072AEEDCC400E34952 /* UTMApp.swift in Sources */,
+				CEF7F6082AEEDCC400E34952 /* VMConfigDisplayConsoleView.swift in Sources */,
+				CEF7F6092AEEDCC400E34952 /* UTMQemuPort.swift in Sources */,
+				CEF7F60A2AEEDCC400E34952 /* VMConfigSerialView.swift in Sources */,
+				CEF7F60B2AEEDCC400E34952 /* VMWizardState.swift in Sources */,
+				CEF7F60C2AEEDCC400E34952 /* UTMQemuConfigurationInput.swift in Sources */,
+				CEF7F60D2AEEDCC400E34952 /* VMDisplayMetalViewController+Keyboard.m in Sources */,
+				CEF7F60E2AEEDCC400E34952 /* UTMExtensions.swift in Sources */,
+				CEF7F60F2AEEDCC400E34952 /* UTMData.swift in Sources */,
+				CEF7F6102AEEDCC400E34952 /* UTMSerialPortDelegate.swift in Sources */,
+				CEF7F6112AEEDCC400E34952 /* VMConfigSoundView.swift in Sources */,
+				CEF7F6122AEEDCC400E34952 /* UTMLegacyQemuConfiguration.m in Sources */,
+				CEF7F6132AEEDCC400E34952 /* UTMQemuVirtualMachine.swift in Sources */,
+				CEF7F6142AEEDCC400E34952 /* VMDetailsView.swift in Sources */,
+				CEF7F6152AEEDCC400E34952 /* VMDisplayMetalViewController.m in Sources */,
+				CEF7F6162AEEDCC400E34952 /* UTMQemuConfiguration+Arguments.swift in Sources */,
+				CEF7F6172AEEDCC400E34952 /* Main.swift in Sources */,
+				CEF7F6182AEEDCC400E34952 /* UTMSerialPort.swift in Sources */,
+				CEF7F6192AEEDCC400E34952 /* VMCardView.swift in Sources */,
+				CEF7F61A2AEEDCC400E34952 /* VMNavigationListView.swift in Sources */,
+				CEF7F61B2AEEDCC400E34952 /* UTMSingleWindowView.swift in Sources */,
+				CEF7F61C2AEEDCC400E34952 /* UTMLegacyQemuConfiguration+Sharing.m in Sources */,
+				CEF7F61D2AEEDCC400E34952 /* SizeTextField.swift in Sources */,
+				CEF7F61E2AEEDCC400E34952 /* DefaultTextField.swift in Sources */,
+				CEF7F61F2AEEDCC400E34952 /* VMToolbarDisplayMenuView.swift in Sources */,
+				CEF7F6202AEEDCC400E34952 /* ActivityView.swift in Sources */,
+				CEF7F6212AEEDCC400E34952 /* UTMPasteboard.swift in Sources */,
+				CEF7F6222AEEDCC400E34952 /* QEMUArgument.swift in Sources */,
+				CEF7F6232AEEDCC400E34952 /* VMPlaceholderView.swift in Sources */,
+				CEF7F6242AEEDCC400E34952 /* VMDisplayMetalViewController+Pointer.m in Sources */,
+				CEF7F6252AEEDCC400E34952 /* VMDisplayViewController.m in Sources */,
+				CEF7F6262AEEDCC400E34952 /* UTMSWTPM.swift in Sources */,
+				CEF7F6272AEEDCC400E34952 /* UTMSettingsView.swift in Sources */,
+				CEF7F6282AEEDCC400E34952 /* UTMQemuConfigurationSound.swift in Sources */,
+				CEF7F6292AEEDCC400E34952 /* VMScroll.m in Sources */,
+				CEF7F62A2AEEDCC400E34952 /* VMConfigNetworkPortForwardView.swift in Sources */,
+				CEF7F62B2AEEDCC400E34952 /* UTMDownloadSupportToolsTask.swift in Sources */,
+				CEF7F62C2AEEDCC400E34952 /* UTMQemuConfiguration.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4174,6 +4778,75 @@
 			};
 			name = Release;
 		};
+		CEF7F6D12AEEDCC400E34952 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = "$(IOS_CODE_SIGN_ENTITLEMENTS)";
+				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_IOS:default=Apple Development)";
+				ENABLE_BITCODE = NO;
+				ENABLE_PREVIEWS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"WITH_REMOTE=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = Platform/iOS/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PLATFORM_SUFFIX = "-TCI";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).UTM-Remote";
+				PRODUCT_MODULE_NAME = UTM;
+				PRODUCT_NAME = "UTM Remote";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator xros xrsimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "WITH_REMOTE $(inherited)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Services/Swift-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+			};
+			name = Debug;
+		};
+		CEF7F6D22AEEDCC400E34952 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = "$(IOS_CODE_SIGN_ENTITLEMENTS)";
+				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_IOS:default=Apple Development)";
+				ENABLE_BITCODE = NO;
+				ENABLE_PREVIEWS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"WITH_REMOTE=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = Platform/iOS/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PLATFORM_SUFFIX = "-TCI";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).UTM-Remote";
+				PRODUCT_MODULE_NAME = UTM;
+				PRODUCT_NAME = "UTM Remote";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator xros xrsimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "WITH_REMOTE $(inherited)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Services/Swift-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -4245,6 +4918,15 @@
 			buildConfigurations = (
 				CEBDA1E724D8BDDB0010B5EC /* Debug */,
 				CEBDA1E824D8BDDB0010B5EC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CEF7F6D02AEEDCC400E34952 /* Build configuration list for PBXNativeTarget "iOS-Remote" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CEF7F6D12AEEDCC400E34952 /* Debug */,
+				CEF7F6D22AEEDCC400E34952 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -4346,6 +5028,62 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 6.5.6;
+			};
+		};
+		CEF7F5852AEEDCC400E34952 /* XCRemoteSwiftPackageReference "swift-log" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-log";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.5.3;
+			};
+		};
+		CEF7F5872AEEDCC400E34952 /* XCRemoteSwiftPackageReference "IQKeyboardManager" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/hackiftekhar/IQKeyboardManager.git";
+			requirement = {
+				kind = exactVersion;
+				version = 6.5.6;
+			};
+		};
+		CEF7F5892AEEDCC400E34952 /* XCRemoteSwiftPackageReference "ZIPFoundation" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/weichsel/ZIPFoundation.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.17;
+			};
+		};
+		CEF7F58F2AEEDCC400E34952 /* XCRemoteSwiftPackageReference "SwiftTerm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/osy/SwiftTerm.git";
+			requirement = {
+				branch = visionos;
+				kind = branch;
+			};
+		};
+		CEF7F5912AEEDCC400E34952 /* XCRemoteSwiftPackageReference "swiftui-visual-effects" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/lucasbrown/swiftui-visual-effects.git";
+			requirement = {
+				kind = exactVersion;
+				version = 1.0.3;
+			};
+		};
+		CEF7F5932AEEDCC400E34952 /* XCRemoteSwiftPackageReference "InAppSettingsKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/futuretap/InAppSettingsKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
+			};
+		};
+		CEF7F5952AEEDCC400E34952 /* XCRemoteSwiftPackageReference "QEMUKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/utmapp/QEMUKit.git";
+			requirement = {
+				branch = main;
+				kind = branch;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -4479,6 +5217,46 @@
 			isa = XCSwiftPackageProductDependency;
 			package = CEA45E23263519B5002FA97D /* XCRemoteSwiftPackageReference "IQKeyboardManager" */;
 			productName = IQKeyboardManagerSwift;
+		};
+		CEF7F5842AEEDCC400E34952 /* Logging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CEF7F5852AEEDCC400E34952 /* XCRemoteSwiftPackageReference "swift-log" */;
+			productName = Logging;
+		};
+		CEF7F5862AEEDCC400E34952 /* IQKeyboardManagerSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CEF7F5872AEEDCC400E34952 /* XCRemoteSwiftPackageReference "IQKeyboardManager" */;
+			productName = IQKeyboardManagerSwift;
+		};
+		CEF7F5882AEEDCC400E34952 /* ZIPFoundation */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CEF7F5892AEEDCC400E34952 /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
+			productName = ZIPFoundation;
+		};
+		CEF7F58E2AEEDCC400E34952 /* SwiftTerm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CEF7F58F2AEEDCC400E34952 /* XCRemoteSwiftPackageReference "SwiftTerm" */;
+			productName = SwiftTerm;
+		};
+		CEF7F5902AEEDCC400E34952 /* SwiftUIVisualEffects */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CEF7F5912AEEDCC400E34952 /* XCRemoteSwiftPackageReference "swiftui-visual-effects" */;
+			productName = SwiftUIVisualEffects;
+		};
+		CEF7F5922AEEDCC400E34952 /* InAppSettingsKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CEF7F5932AEEDCC400E34952 /* XCRemoteSwiftPackageReference "InAppSettingsKit" */;
+			productName = InAppSettingsKit;
+		};
+		CEF7F5942AEEDCC400E34952 /* QEMUKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CEF7F5952AEEDCC400E34952 /* XCRemoteSwiftPackageReference "QEMUKit" */;
+			productName = QEMUKit;
+		};
+		CEF7F6D52AEEEF7D00E34952 /* CocoaSpiceNoUsb */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 84B36D1C27B3261E00C22685 /* XCRemoteSwiftPackageReference "CocoaSpice" */;
+			productName = CocoaSpiceNoUsb;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
