@@ -21,7 +21,7 @@ import AppKit
 import UIKit
 import SwiftUI
 #endif
-#if canImport(AltKit) && !WITH_QEMU_TCI
+#if canImport(AltKit) && WITH_JIT
 import AltKit
 #endif
 
@@ -868,7 +868,7 @@ struct AlertMessage: Identifiable {
 
     // MARK: - AltKit
     
-#if canImport(AltKit) && !WITH_QEMU_TCI
+#if canImport(AltKit) && WITH_JIT
     /// Detect if we are installed from AltStore and can use AltJIT
     var isAltServerCompatible: Bool {
         guard let _ = Bundle.main.infoDictionary?["ALTServerID"] else {

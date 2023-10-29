@@ -17,7 +17,7 @@
 #import <Foundation/Foundation.h>
 #import "UTMSpiceIODelegate.h"
 @import QEMUKitInternal;
-#if defined(WITH_QEMU_TCI)
+#if !defined(WITH_USB)
 @import CocoaSpiceNoUsb;
 #else
 @import CocoaSpice;
@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) CSPort *primarySerial;
 @property (nonatomic, readonly) NSArray<CSDisplay *> *displays;
 @property (nonatomic, readonly) NSArray<CSPort *> *serials;
-#if !defined(WITH_QEMU_TCI)
+#if defined(WITH_USB)
 @property (nonatomic, readonly, nullable) CSUSBManager *primaryUsbManager;
 #endif
 @property (nonatomic, weak, nullable) id<UTMSpiceIODelegate> delegate;

@@ -29,7 +29,7 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
 @property (nonatomic, readwrite, nullable) CSInput *primaryInput;
 @property (nonatomic, readwrite, nullable) CSPort *primarySerial;
 @property (nonatomic) NSMutableArray<CSPort *> *mutableSerials;
-#if !defined(WITH_QEMU_TCI)
+#if defined(WITH_USB)
 @property (nonatomic, readwrite, nullable) CSUSBManager *primaryUsbManager;
 #endif
 @property (nonatomic, nullable) CSConnection *spiceConnection;
@@ -135,7 +135,7 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
     self.primaryInput = nil;
     self.primarySerial = nil;
     [self.mutableSerials removeAllObjects];
-#if !defined(WITH_QEMU_TCI)
+#if defined(WITH_USB)
     self.primaryUsbManager = nil;
 #endif
 }
@@ -154,7 +154,7 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
 - (void)spiceConnected:(CSConnection *)connection {
     NSAssert(connection == self.spiceConnection, @"Unknown connection");
     self.isConnected = YES;
-#if !defined(WITH_QEMU_TCI)
+#if defined(WITH_USB)
     self.primaryUsbManager = connection.usbManager;
     [self.delegate spiceDidChangeUsbManager:connection.usbManager];
 #endif
@@ -285,7 +285,7 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
     if (self.primarySerial) {
         [self.delegate spiceDidCreateSerial:self.primarySerial];
     }
-#if !defined(WITH_QEMU_TCI)
+#if defined(WITH_USB)
     if (self.primaryUsbManager) {
         [self.delegate spiceDidChangeUsbManager:self.primaryUsbManager];
     }

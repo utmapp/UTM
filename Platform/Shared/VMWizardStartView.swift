@@ -31,7 +31,7 @@ struct VMWizardStartView: View {
     }
     
     var isEmulationSupported: Bool {
-        #if WITH_QEMU_TCI
+        #if !WITH_JIT
         true
         #else
         Main.jitAvailable

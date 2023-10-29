@@ -16,7 +16,7 @@
 
 #import <UIKit/UIKit.h>
 #import "VMDisplayViewController.h"
-#if defined(WITH_QEMU_TCI)
+#if !defined(WITH_USB)
 @import CocoaSpiceNoUsb;
 #else
 @import CocoaSpice;

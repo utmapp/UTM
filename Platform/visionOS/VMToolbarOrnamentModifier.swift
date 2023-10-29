@@ -56,7 +56,7 @@ struct VMToolbarOrnamentModifier: ViewModifier {
                     }
                     .disabled(state.isBusy)
                 }
-                #if !WITH_QEMU_TCI
+                #if WITH_USB
                 if session.vm.hasUsbRedirection {
                     VMToolbarUSBMenuView()
                         .disabled(state.isBusy)

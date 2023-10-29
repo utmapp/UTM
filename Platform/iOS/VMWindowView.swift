@@ -114,7 +114,7 @@ struct VMWindowView: View {
                 return Alert(title: Text("Are you sure you want to reset this VM? Any unsaved changes will be lost."), primaryButton: .destructive(Text("Yes")) {
                     session.reset()
                 }, secondaryButton: .cancel(Text("No")))
-            #if !WITH_QEMU_TCI
+            #if WITH_USB
             case .deviceConnected(let device):
                 return Alert(title: Text("Would you like to connect '\(device.name ?? device.description)' to this virtual machine?"), primaryButton: .default(Text("Yes")) {
                     session.mostRecentConnectedDevice = nil
@@ -151,7 +151,7 @@ struct VMWindowView: View {
             state.saveWindow(to: session.vm.registryEntry, device: oldDevice)
             state.restoreWindow(from: session.vm.registryEntry, device: newDevice)
         }
-        #if !WITH_QEMU_TCI
+        #if WITH_USB
         .onChange(of: session.mostRecentConnectedDevice) { newValue in
             if session.activeWindow == state.id, let device = newValue {
                 state.alert = .deviceConnected(device)

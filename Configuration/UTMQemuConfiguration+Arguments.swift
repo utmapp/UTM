@@ -318,7 +318,7 @@ import Virtualization // for getting network interfaces
             }
             let tbSize = system.jitCacheSize > 0 ? system.jitCacheSize : system.memorySize / 4
             "tb-size=\(tbSize)"
-            #if !WITH_QEMU_TCI
+            #if WITH_JIT
             // use mirror mapping when we don't have JIT entitlements
             if !jb_has_jit_entitlement() {
                 "split-wx=on"
@@ -671,7 +671,7 @@ import Virtualization // for getting network interfaces
         f("usb-mouse,bus=usb-bus.0")
         f("-device")
         f("usb-kbd,bus=usb-bus.0")
-        #if !WITH_QEMU_TCI
+        #if WITH_USB
         let maxDevices = input.maximumUsbShare
         let buses = (maxDevices + 2) / 3
         if input.usbBusSupport == .usb3_0 {

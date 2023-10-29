@@ -15,7 +15,7 @@
 //
 
 import QEMUKitInternal
-#if WITH_QEMU_TCI
+#if !WITH_USB
 import CocoaSpiceNoUsb
 #else
 import CocoaSpice

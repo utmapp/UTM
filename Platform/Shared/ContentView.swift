@@ -78,7 +78,7 @@ struct ContentView: View {
             #if !os(visionOS)
             IQKeyboardManager.shared.enable = true
             #endif
-            #if !WITH_QEMU_TCI
+            #if WITH_JIT
             if !Main.jitAvailable {
                 data.busyWorkAsync {
                     let jitStreamerAttach = UserDefaults.standard.bool(forKey: "JitStreamerAttach")

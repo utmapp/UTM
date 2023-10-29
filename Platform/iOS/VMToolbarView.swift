@@ -110,7 +110,7 @@ struct VMToolbarView: View {
                 } label: {
                     Label("Zoom", systemImage: state.isViewportChanged ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
                 }.offset(offset(for: 5))
-                #if !WITH_QEMU_TCI
+                #if WITH_USB
                 if session.vm.hasUsbRedirection {
                     VMToolbarUSBMenuView()
                     .offset(offset(for: 4))

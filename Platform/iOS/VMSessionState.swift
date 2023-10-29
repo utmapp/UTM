@@ -51,7 +51,7 @@ import SwiftUI
     
     @Published var primaryInput: CSInput?
     
-    #if !WITH_QEMU_TCI
+    #if WITH_USB
     private var primaryUsbManager: CSUSBManager?
     
     private var usbManagerQueue = DispatchQueue(label: "USB Manager Queue", qos: .utility)
@@ -148,7 +148,7 @@ extension VMSessionState: UTMVirtualMachineDelegate {
         Task { @MainActor in
             vmState = state
             if state == .stopped {
-                #if !WITH_QEMU_TCI
+                #if WITH_USB
                 clearDevices()
                 #endif
             }
@@ -281,7 +281,7 @@ extension VMSessionState: UTMSpiceIODelegate {
         }
     }
     
-    #if !WITH_QEMU_TCI
+    #if WITH_USB
     nonisolated func spiceDidChangeUsbManager(_ usbManager: CSUSBManager?) {
         Task { @MainActor in
             primaryUsbManager?.delegate = nil
@@ -293,7 +293,7 @@ extension VMSessionState: UTMSpiceIODelegate {
     #endif
 }
 
-#if !WITH_QEMU_TCI
+#if WITH_USB
 extension VMSessionState: CSUSBManagerDelegate {
     nonisolated func spiceUsbManager(_ usbManager: CSUSBManager, deviceError error: String, for device: CSUSBDevice) {
         Task { @MainActor in
