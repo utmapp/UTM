@@ -3032,9 +3032,9 @@
 			productReference = CE9A352D26533A51005077CF /* JailbreakInterposer.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		CEA45E1F263519B5002FA97D /* iOS-TCI */ = {
+		CEA45E1F263519B5002FA97D /* iOS-SE */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = CEA45FB6263519B5002FA97D /* Build configuration list for PBXNativeTarget "iOS-TCI" */;
+			buildConfigurationList = CEA45FB6263519B5002FA97D /* Build configuration list for PBXNativeTarget "iOS-SE" */;
 			buildPhases = (
 				CEA45E24263519B5002FA97D /* Sources */,
 				CEA45F23263519B5002FA97D /* Frameworks */,
@@ -3046,7 +3046,7 @@
 			);
 			dependencies = (
 			);
-			name = "iOS-TCI";
+			name = "iOS-SE";
 			packageProductDependencies = (
 				CEA45E20263519B5002FA97D /* Logging */,
 				CEA45E22263519B5002FA97D /* IQKeyboardManagerSwift */,
@@ -3179,7 +3179,7 @@
 			projectRoot = "";
 			targets = (
 				CE2D926824AD46670059923A /* iOS */,
-				CEA45E1F263519B5002FA97D /* iOS-TCI */,
+				CEA45E1F263519B5002FA97D /* iOS-SE */,
 				CEF7F5812AEEDCC400E34952 /* iOS-Remote */,
 				CE2D951B24AD48BE0059923A /* macOS */,
 				CEBDA1D924D8BDDA0010B5EC /* QEMUHelper */,
@@ -4904,7 +4904,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		CEA45FB6263519B5002FA97D /* Build configuration list for PBXNativeTarget "iOS-TCI" */ = {
+		CEA45FB6263519B5002FA97D /* Build configuration list for PBXNativeTarget "iOS-SE" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				CEA45FB7263519B5002FA97D /* Debug */,
