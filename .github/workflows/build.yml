@@ -53,7 +53,7 @@ jobs:
     strategy:
       matrix:
         arch: [arm64]
-        platform: [ios, ios_simulator, ios-tci, macos, visionos, visionos_simulator, visionos-tci]
+        platform: [ios, ios_simulator, ios-tci, ios_simulator-tci, macos, visionos, visionos_simulator, visionos-tci, visionos_simulator-tci]
         include:
           # x86_64 supported only for macOS and simulators
           - arch: x86_64
@@ -91,7 +91,7 @@ jobs:
         if: steps.cache-sysroot.outputs.cache-hit != 'true' || github.event.inputs.rebuild_sysroot == 'true'
         run: ./scripts/build_dependencies.sh -p ${{ matrix.platform }} -a ${{ matrix.arch }}
         env:
-          NCPU: ${{ matrix.platform == 'ios-tci' && '2' || '0' }} # limit 2 CPU for TCI build due to memory issues, 0 = unlimited for other builds
+          NCPU: ${{ endsWith(matrix.platform, '-tci') && '4' || '0' }} # limit 4 CPU for TCI build due to memory issues, 0 = unlimited for other builds
       - name: Compress Sysroot
         if: steps.cache-sysroot.outputs.cache-hit != 'true' || github.event_name == 'release' || github.event.inputs.test_release == 'true'
         run: tar -acf sysroot.tgz sysroot*
@@ -152,14 +152,16 @@ jobs:
     needs: [configuration, build-sysroot]
     strategy:
       matrix:
-        arch: [arm64]
-        platform: [ios, ios_simulator, ios-tci, macos, visionos, visionos_simulator, visionos-tci]
-        include:
-          # x86_64 supported only for macOS and simulators
-          - arch: x86_64
-            platform: macos
-          - arch: x86_64
-            platform: ios_simulator
+        configuration: [
+          {arch: "arm64", sdk: "iphoneos", platform: "ios", scheme: "iOS"},
+          {arch: "arm64", sdk: "iphoneos", platform: "ios-tci", scheme: "iOS-SE"},
+          {arch: "arm64", sdk: "iphoneos", platform: "ios-tci", scheme: "iOS-Remote"},
+          {arch: "arm64", sdk: "xros", platform: "visionos", scheme: "iOS"},
+          {arch: "arm64", sdk: "xros", platform: "visionos-tci", scheme: "iOS-SE"},
+          {arch: "arm64", sdk: "xros", platform: "visionos-tci", scheme: "iOS-Remote"},
+          {arch: "arm64", sdk: "macosx", platform: "macos", scheme: "macOS"},
+          {arch: "x86_64", sdk: "macosx", platform: "macos", scheme: "macOS"},
+        ]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -169,8 +171,8 @@ jobs:
         id: cache-sysroot
         uses: osy/actions-cache@v3
         with:
-          path: sysroot-${{ matrix.platform }}-${{ matrix.arch }}
-          key: ${{ matrix.platform }}-${{ matrix.arch }}-${{ hashFiles('scripts/build_dependencies.sh') }}-${{ hashFiles('patches/**') }}
+          path: sysroot-${{ matrix.configuration.platform }}-${{ matrix.configuration.arch }}
+          key: ${{ matrix.configuration.platform }}-${{ matrix.configuration.arch }}-${{ hashFiles('scripts/build_dependencies.sh') }}-${{ hashFiles('patches/**') }}
       - name: Check Cache
         if: steps.cache-sysroot.outputs.cache-hit != 'true'
         uses: actions/github-script@v6
@@ -182,12 +184,12 @@ jobs:
           [[ "$(xcode-select -p)" == "${{ env.BUILD_XCODE_PATH }}"* ]] || sudo xcode-select -s "${{ env.BUILD_XCODE_PATH }}"
       - name: Build UTM
         run: |
-          ./scripts/build_utm.sh -p ${{ matrix.platform }} -a ${{ matrix.arch }} -o UTM
+          ./scripts/build_utm.sh -k ${{ matrix.configuration.sdk }} -s ${{ matrix.configuration.scheme }} -a ${{ matrix.configuration.arch }} -o UTM
           tar -acf UTM.xcarchive.tgz UTM.xcarchive
       - name: Upload UTM
         uses: actions/upload-artifact@v3
         with:
-          name: UTM-${{ matrix.platform }}-${{ matrix.arch }}
+          name: UTM-${{ matrix.configuration.scheme }}-${{ matrix.configuration.platform }}-${{ matrix.configuration.arch }}
           path: UTM.xcarchive.tgz
   build-universal:
     name: Build UTM (Universal Mac)
@@ -215,7 +217,7 @@ jobs:
           [[ "$(xcode-select -p)" == "${{ env.BUILD_XCODE_PATH }}"* ]] || sudo xcode-select -s "${{ env.BUILD_XCODE_PATH }}"
       - name: Build UTM
         run: |
-          ./scripts/build_utm.sh -t "$SIGNING_TEAM_ID" -p macos -a "arm64 x86_64" -o UTM
+          ./scripts/build_utm.sh -t "$SIGNING_TEAM_ID" -k macosx -s macOS -a "arm64 x86_64" -o UTM
           tar -acf UTM.xcarchive.tgz UTM.xcarchive
         env:
           SIGNING_TEAM_ID: ${{ vars.SIGNING_TEAM_ID }}
@@ -231,12 +233,14 @@ jobs:
     strategy:
       matrix:
         configuration: [
-          {platform: "ios", mode: "ipa", name: "UTM.ipa", path: "UTM.ipa"},
-          {platform: "ios-tci", mode: "ipa-se", name: "UTM-SE.ipa", path: "UTM SE.ipa"},
-          {platform: "ios", mode: "ipa-hv", name: "UTM-HV.ipa", path: "UTM.ipa"},
-          {platform: "ios", mode: "deb", name: "UTM.deb", path: "UTM.deb"},
-          {platform: "visionos", mode: "ipa", name: "UTM-visionOS.ipa", path: "UTM.ipa"},
-          {platform: "visionos-tci", mode: "ipa-se", name: "UTM-SE-visionOS.ipa", path: "UTM SE.ipa"}
+          {platform: "ios", scheme: "iOS", mode: "ipa", name: "UTM.ipa", path: "UTM.ipa"},
+          {platform: "ios-tci", scheme: "iOS-SE", mode: "ipa-se", name: "UTM-SE.ipa", path: "UTM SE.ipa"},
+          {platform: "ios", scheme: "iOS", mode: "ipa-hv", name: "UTM-HV.ipa", path: "UTM.ipa"},
+          {platform: "ios", scheme: "iOS", mode: "deb", name: "UTM.deb", path: "UTM.deb"},
+          {platform: "visionos", scheme: "iOS", mode: "ipa", name: "UTM-visionOS.ipa", path: "UTM.ipa"},
+          {platform: "visionos-tci", scheme: "iOS-SE", mode: "ipa-se", name: "UTM-SE-visionOS.ipa", path: "UTM SE.ipa"},
+          {platform: "ios-tci", scheme: "iOS-Remote", mode: "ipa-remote", name: "UTM-Remote.ipa", path: "UTM Remote.ipa"},
+          {platform: "visionos-tci", scheme: "iOS-Remote", mode: "ipa-remote", name: "UTM-Remote-visionOS.ipa", path: "UTM Remote.ipa"},
         ]
     if: github.event_name == 'release' || github.event.inputs.test_release == 'true'
     steps:
@@ -245,7 +249,7 @@ jobs:
       - name: Download Artifact
         uses: actions/download-artifact@v3
         with:
-          name: UTM-${{ matrix.configuration.platform }}-arm64
+          name: UTM-${{ matrix.configuration.scheme }}-${{ matrix.configuration.platform }}-arm64
       - name: Install ldid + dpkg
         run: brew install ldid dpkg
       - name: Fakesign IPA
