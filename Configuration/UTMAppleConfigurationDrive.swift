@@ -24,6 +24,7 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
     
     var sizeMib: Int = 0
     var isReadOnly: Bool
+    var isSparse: Bool
     var isExternal: Bool
     var imageURL: URL?
     var imageName: String?
@@ -36,6 +37,7 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
     
     private enum CodingKeys: String, CodingKey {
         case isReadOnly = "ReadOnly"
+        case isSparse = "Sparse"
         case imageName = "ImageName"
         case bookmark = "Bookmark" // legacy only
         case identifier = "Identifier"
@@ -54,13 +56,22 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
     init(newSize: Int) {
         sizeMib = newSize
         isReadOnly = false
+        isSparse = true
         isExternal = false
+    }
+    
+    init(newSize: Int, isSparse: Bool = true) {
+        sizeMib = newSize
+        isReadOnly = false
+        isExternal = false
+        self.isSparse = isSparse
     }
     
     init(existingURL url: URL?, isExternal: Bool = false) {
         self.imageURL = url
         self.isReadOnly = isExternal
         self.isExternal = isExternal
+        self.isSparse = true
     }
     
     init(from decoder: Decoder) throws {
@@ -83,6 +94,7 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
             isExternal = true
         }
         isReadOnly = try container.decodeIfPresent(Bool.self, forKey: .isReadOnly) ?? isExternal
+        isSparse = try container.decodeIfPresent(Bool.self, forKey: .isSparse) ?? true
         id = try container.decode(String.self, forKey: .identifier)
     }
     
@@ -92,6 +104,7 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
             try container.encodeIfPresent(imageName, forKey: .imageName)
         }
         try container.encode(isReadOnly, forKey: .isReadOnly)
+        try container.encode(isSparse, forKey: .isSparse)
         try container.encode(id, forKey: .identifier)
     }
     
@@ -107,6 +120,7 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
         imageName?.hash(into: &hasher)
         sizeMib.hash(into: &hasher)
         isReadOnly.hash(into: &hasher)
+        isSparse.hash(into: &hasher)
         isExternal.hash(into: &hasher)
         id.hash(into: &hasher)
     }
@@ -126,6 +140,7 @@ extension UTMAppleConfigurationDrive {
     init(migrating oldDrive: DiskImage) {
         sizeMib = oldDrive.sizeMib
         isReadOnly = oldDrive.isReadOnly
+        isSparse = oldDrive.isSparse
         isExternal = oldDrive.isExternal
         imageURL = oldDrive.imageURL
     }

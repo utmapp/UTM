@@ -22,13 +22,24 @@ struct VMConfigAppleDriveCreateView: View {
     
     @Binding var config: UTMAppleConfigurationDrive
     @State private var isGiB: Bool = true
+    var allocNow: Binding<Bool> {
+        return Binding(get: {
+            return !config.isSparse
+        }, set: { newValue in
+            config.isSparse = !newValue
+        })
+    }
     
     var body: some View {
+        
         Form {
             VStack {
                 Toggle(isOn: $config.isExternal.animation(), label: {
                     Text("Removable")
                 }).help("If checked, the drive image will be stored with the VM.")
+                Toggle(isOn: allocNow, label: {
+                    Text("Allocate all disk space now")
+                }).help("If checked, allocate all disk space immediately rather than allow the disk space to gradually grow to the maximum amount.")
                 .onChange(of: config.isExternal) { newValue in
                     if newValue {
                         config.sizeMib = 0

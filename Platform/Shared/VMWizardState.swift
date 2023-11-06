@@ -109,6 +109,8 @@ enum VMWizardOS: String, Identifiable {
     @Published var systemMemoryMib: Int = 512
     @Published var storageSizeGib: Int = 8
     #endif
+    @Published var allocateAllDiskSpaceNow = false
+    
     @Published var systemCpuCount: Int = 0
     @Published var isGLEnabled: Bool = false
     @Published var sharingDirectoryURL: URL?
@@ -231,6 +233,10 @@ enum VMWizardOS: String, Identifiable {
                     }
                 }
             }
+            // for AppleVirtualization set allocateAllDiskSpaceNow true
+            if useAppleVirtualization && nextPage == .drives {
+                allocateAllDiskSpaceNow = true;
+            }
         case .drives:
             nextPage = .sharing
             if useAppleVirtualization {
@@ -311,7 +317,7 @@ enum VMWizardOS: String, Identifiable {
             }
         }
         if !isSkipDiskCreate {
-            config.drives.append(UTMAppleConfigurationDrive(newSize: storageSizeGib * bytesInGib / bytesInMib))
+            config.drives.append(UTMAppleConfigurationDrive(newSize: storageSizeGib * bytesInGib / bytesInMib, isSparse: !allocateAllDiskSpaceNow))
         }
         if #available(macOS 12, *), let sharingDirectoryURL = sharingDirectoryURL {
             config.sharedDirectories = [UTMAppleConfigurationSharedDirectory(directoryURL: sharingDirectoryURL, isReadOnly: sharingReadOnly)]

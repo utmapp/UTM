@@ -28,6 +28,9 @@ protocol UTMConfigurationDrive: Codable, Hashable, Identifiable {
     /// If true, the drive image will be mounted as read-only.
     var isReadOnly: Bool { get }
     
+    /// If true, the drive image is sparse file.
+    var isSparse: Bool { get }
+    
     /// If true, a bookmark is stored in the package.
     var isExternal: Bool { get }
     
@@ -77,7 +80,7 @@ extension UTMConfigurationDrive {
                 throw UTMConfigurationError.driveAlreadyExists(newURL)
             }
             if isRawImage {
-                try await createRawImage(at: newURL, size: sizeMib)
+                try await createRawImage(at: newURL, size: sizeMib, sparse: isSparse)
             } else {
                 try await createQcow2Image(at: newURL, size: sizeMib)
             }
@@ -90,14 +93,36 @@ extension UTMConfigurationDrive {
         }
     }
     
-    private func createRawImage(at newURL: URL, size sizeMib: Int) async throws {
+    private func createRawImage(at newURL: URL, size sizeMib: Int, sparse isSparse: Bool) async throws {
         let size = UInt64(sizeMib) * bytesInMib
         try await Task.detached {
             guard FileManager.default.createFile(atPath: newURL.path, contents: nil, attributes: nil) else {
                 throw UTMConfigurationError.cannotCreateDiskImage
             }
             let handle = try FileHandle(forWritingTo: newURL)
-            try handle.truncate(atOffset: size)
+            if(isSparse) {
+                /* truncate command make a sparse file, the space will not alloc before really used
+                 * this should be better at most time.
+                 * but maybe not suitable for virtual machines, especially in the case of heavy IO loads
+                 * this may give extra time delay and operational interruptions when system do really space alloc
+                 * this behavior may cause later write completed before previous write
+                 * the incorrect write order may cause file system corrputed
+                 */
+                try handle.truncate(atOffset: size)
+            } else {
+                var val = 0
+                let scale = 100; // write large block will be faster, but too large may cause OOM
+                let data = NSMutableData(length: NSNumber(value: bytesInMib).intValue * scale) // 100MB
+                while val < (sizeMib / scale) {
+                    try handle.write(contentsOf: data!)
+                    val += 1;
+                }
+                val = sizeMib % scale
+                if(val > 0) {
+                    val = val * NSNumber(value: bytesInMib).intValue
+                    try handle.write(contentsOf: data!.subdata(with: NSRange(location: 0, length: val)))
+                }
+            }
             try handle.close()
         }.value
     }

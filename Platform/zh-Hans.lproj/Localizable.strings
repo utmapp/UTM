@@ -779,6 +779,8 @@
 
 /* VMRemovableDrivesView */
 "Removable" = "可移除";
+"Allocate all disk space now" = "立即分配所有磁盘空间";
+"If checked, allocate all disk space immediately rather than allow the disk space to gradually grow to the maximum amount." = "立即分配所有磁盘空间，而不是允许磁盘空间逐渐增长到最大。";
 
 /* No comment provided by engineer. */
 "Removable Drive" = "可移除驱动器";
