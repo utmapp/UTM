@@ -19,10 +19,11 @@ import SwiftUI
 struct VMToolbarOrnamentModifier: ViewModifier {
     @Binding var state: VMWindowState
     @EnvironmentObject private var session: VMSessionState
-    
+    @AppStorage("ToolbarIsCollapsed") private var isCollapsed: Bool = false
+
     func body(content: Content) -> some View {
-        content.toolbar {
-            ToolbarItem(placement: .bottomOrnament) {
+        content.ornament(visibility: isCollapsed ? .hidden : .visible, attachmentAnchor: .scene(.top)) {
+            HStack {
                 Button {
                     if session.vm.state == .started {
                         state.alert = .powerDown
@@ -33,28 +34,20 @@ struct VMToolbarOrnamentModifier: ViewModifier {
                     Label(state.isRunning ? "Power Off" : "Quit", systemImage: state.isRunning ? "power" : "xmark")
                 }
                 .disabled(state.isBusy)
-            }
-            ToolbarItem(placement: .bottomOrnament) {
                 Button {
                     session.pauseResume()
                 } label: {
                     Label(state.isRunning ? "Pause" : "Play", systemImage: state.isRunning ? "pause" : "play")
                 }
                 .disabled(state.isBusy)
-            }
-            ToolbarItem(placement: .bottomOrnament) {
                 Button {
                     state.alert = .restart
                 } label: {
                     Label("Restart", systemImage: "restart")
                 }
                 .disabled(state.isBusy)
-            }
-            ToolbarItem(placement: .bottomOrnament) {
                 Divider()
-            }
-            if case .serial(_, _) = state.device {
-                ToolbarItem(placement: .bottomOrnament) {
+                if case .serial(_, _) = state.device {
                     Button {
                         let template = session.qemuConfig.serials[state.device!.configIndex].terminal?.resizeCommand
                         state.toggleDisplayResize(command: template)
@@ -63,31 +56,50 @@ struct VMToolbarOrnamentModifier: ViewModifier {
                     }
                     .disabled(state.isBusy)
                 }
-            }
-            #if !WITH_QEMU_TCI
-            ToolbarItem(placement: .bottomOrnament) {
+                #if !WITH_QEMU_TCI
                 if session.vm.hasUsbRedirection {
                     VMToolbarUSBMenuView()
                         .disabled(state.isBusy)
                 }
-            }
-            #endif
-            ToolbarItem(placement: .bottomOrnament) {
+                #endif
                 VMToolbarDriveMenuView(config: session.qemuConfig)
                     .disabled(state.isBusy)
-            }
-            ToolbarItem(placement: .bottomOrnament) {
                 VMToolbarDisplayMenuView(state: $state)
                     .disabled(state.isBusy)
-            }
-            ToolbarItem(placement: .bottomOrnament) {
                 Button {
                     state.isKeyboardRequested = true
                 } label: {
                     Label("Keyboard", systemImage: "keyboard")
                 }
                 .disabled(state.isBusy)
+                Divider()
+                Button {
+                    isCollapsed = true
+                } label: {
+                    Label("Hide Controls", systemImage: "chevron.right")
+                }
             }
+            .modifier(ToolbarOrnamentViewModifier())
         }
+        .ornament(visibility: isCollapsed ? .visible : .hidden, attachmentAnchor: .scene(.topTrailing)) {
+                Button {
+                    isCollapsed = false
+                } label: {
+                    Label("Show Controls", systemImage: "chevron.left")
+                }
+                .modifier(ToolbarOrnamentViewModifier())
+        }
+    }
+}
+
+// the following was suggested by Apple via Feedback to look close to .toolbar() with .bottomOrnament
+private struct ToolbarOrnamentViewModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .buttonBorderShape(.capsule)
+            .buttonStyle(.borderless)
+            .labelStyle(.iconOnly)
+            .padding(12)
+            .glassBackgroundEffect()
     }
 }

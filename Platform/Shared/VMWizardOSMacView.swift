@@ -67,7 +67,7 @@ struct VMWizardOSMacView: View {
             await MainActor.run {
                 wizardState.macPlatform = UTMAppleConfigurationMacPlatform(newHardware: model)
                 wizardState.macRecoveryIpswURL = url
-                wizardState.macIsMonterey = image.buildVersion.hasPrefix("21")
+                wizardState.macPlatformVersion = image.buildVersion.integerPrefix()
                 wizardState.isSkipBootImage = true
                 wizardState.bootImageURL = nil
                 wizardState.next()

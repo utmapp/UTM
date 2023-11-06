@@ -83,7 +83,21 @@ enum VMWizardOS: String, Identifiable {
     #if os(macOS) && arch(arm64)
     @Published var macPlatform: UTMAppleConfigurationMacPlatform?
     @Published var macRecoveryIpswURL: URL?
-    @Published var macIsMonterey: Bool = false
+    @Published var macPlatformVersion: Int?
+    var macIsLeastVentura: Bool {
+        if let macPlatformVersion = macPlatformVersion {
+            return macPlatformVersion >= 22
+        } else {
+            return false
+        }
+    }
+    var macIsLeastSonoma: Bool {
+        if let macPlatformVersion = macPlatformVersion {
+            return macPlatformVersion >= 23
+        } else {
+            return false
+        }
+    }
     #endif
     @Published var isSkipBootImage: Bool = false
     @Published var bootImageURL: URL?
@@ -288,7 +302,6 @@ enum VMWizardOS: String, Identifiable {
                 config.system.boot = try! UTMAppleConfigurationBoot(for: .macOS)
                 config.system.boot.macRecoveryIpswURL = macRecoveryIpswURL
                 config.system.macPlatform = macPlatform
-                config.virtualization.hasTrackpad = !macIsMonterey
             }
             #endif
         case .Linux:
@@ -324,16 +337,25 @@ enum VMWizardOS: String, Identifiable {
         }
         // some meaningful defaults
         if #available(macOS 12, *) {
-            var hasDisplay = operatingSystem == .macOS
+            let isMac = operatingSystem == .macOS
+            var hasDisplay = isMac
             if #available(macOS 13, *) {
                 hasDisplay = hasDisplay || (operatingSystem == .Linux)
             }
             if hasDisplay {
                 config.displays = [UTMAppleConfigurationDisplay(width: 1920, height: 1200)]
                 config.virtualization.hasAudio = true
-                config.virtualization.hasKeyboard = true
-                config.virtualization.hasPointer = true
+                config.virtualization.keyboard = .generic
+                config.virtualization.pointer = .mouse
             }
+            #if arch(arm64)
+            if isMac && macIsLeastVentura {
+                config.virtualization.pointer = .trackpad
+            }
+            if isMac && macIsLeastSonoma {
+                config.virtualization.keyboard = .mac
+            }
+            #endif
         }
         config.virtualization.hasBalloon = true
         config.virtualization.hasEntropy = true
@@ -357,7 +379,7 @@ enum VMWizardOS: String, Identifiable {
                     if let hardwareModel = restoreImage.mostFeaturefulSupportedConfiguration?.hardwareModel {
                         self.macPlatform = UTMAppleConfigurationMacPlatform(newHardware: hardwareModel)
                         self.macRecoveryIpswURL = restoreImage.url
-                        self.macIsMonterey = restoreImage.buildVersion.hasPrefix("21")
+                        self.macPlatformVersion = restoreImage.buildVersion.integerPrefix()
                     } else {
                         self.alertMessage = AlertMessage(NSLocalizedString("Failed to get latest macOS version from Apple.", comment: "VMWizardState"))
                     }

@@ -748,7 +748,7 @@ extension UTMQemuVirtualMachine {
                 // an image bookmark was saved while QEMU was NOT running
                 let url = try URL(resolvingPersistentBookmarkData: localBookmark)
                 try await changeMedium(drive, to: url, isAccessOnly: !isMounting)
-            } else if isMounting {
+            } else if isMounting && (drive.imageType == .cd || drive.imageType == .disk) {
                 // a placeholder image might have been mounted
                 try await eject(drive)
             }
