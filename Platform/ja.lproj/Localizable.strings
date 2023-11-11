@@ -737,7 +737,7 @@
 
 // VMWizardHardwareView.swift
 "Hardware OpenGL Acceleration" = "ハードウェアOpenGLアクセラレーション";
-"There are known issues in some newer Linux drivers including black screen, broken compositing, and apps failing to render." = "一部の新しいLinuxドライバの中には、画面が黒くなる、表示が乱れる、Appのレンダリングに失敗するといった既知の問題があります。";
+"There are known issues in some newer Linux drivers including black screen, broken compositing, and apps failing to render." = "一部の新しいLinuxドライバの中には、画面が黒くなる、表示が乱れる、アプリのレンダリングに失敗するといった既知の問題があります。";
 "Enable hardware OpenGL acceleration" = "ハードウェアOpenGLアクセラレーションを有効にする";
 
 // VMWizardOSLinuxView.swift
