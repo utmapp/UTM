@@ -6,7 +6,7 @@ This document describes the steps to build and debug UTM on iOS and simulator de
 
 Make sure you perform a recursive clone to get all the submodules:
 ```
-git clone --recursive https://github.com/utmapp/UTM.git
+
 ```
 
 Alternatively, run `git submodule update --init --recursive` after cloning if you did not do a recursive clone.
