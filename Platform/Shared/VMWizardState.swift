@@ -247,10 +247,6 @@ enum VMWizardOS: String, Identifiable {
                     }
                 }
             }
-            // for AppleVirtualization set allocateAllDiskSpaceNow true
-            if useAppleVirtualization && nextPage == .drives {
-                allocateAllDiskSpaceNow = true;
-            }
         case .drives:
             nextPage = .sharing
             if useAppleVirtualization {

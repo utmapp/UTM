@@ -110,7 +110,16 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
     
     func vzDiskImage() throws -> VZDiskImageStorageDeviceAttachment? {
         if let imageURL = imageURL {
-            return try VZDiskImageStorageDeviceAttachment(url: imageURL, readOnly: isReadOnly)
+            if #available(macOS 12, *) {
+                /*
+                 * virtual disk cache mode have bugs,
+                 * when it is enabled or set to auto (default value)
+                 * may cause linux file system corrputed, especially in the case of heavy IO loads
+                 */
+                return try VZDiskImageStorageDeviceAttachment(url: imageURL, readOnly: isReadOnly, cachingMode:VZDiskImageCachingMode.uncached, synchronizationMode: VZDiskImageSynchronizationMode.full)
+            } else {
+                return try VZDiskImageStorageDeviceAttachment(url: imageURL, readOnly: isReadOnly)
+            }
         } else {
             return nil
         }
