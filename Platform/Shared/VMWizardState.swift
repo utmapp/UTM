@@ -119,6 +119,7 @@ enum VMWizardOS: String, Identifiable {
     #if os(macOS)
     @Published var systemMemoryMib: Int = 4096
     @Published var storageSizeGib: Int = 64
+    @Published var useNvmeAsDiskInterface = false
     #else
     @Published var systemMemoryMib: Int = 512
     @Published var storageSizeGib: Int = 8
@@ -251,6 +252,11 @@ enum VMWizardOS: String, Identifiable {
                 if #available(macOS 12, *) {
                     if operatingSystem != .Linux {
                         nextPage = .summary // only support linux currently
+                    } else {
+                        if #available(macOS 14, *) {
+                            // Use NVMe as the default disk interface to avoid filesystem corruption on macOS 14+, only available for Linux
+                            useNvmeAsDiskInterface = true
+                        }
                     }
                 } else {
                     nextPage = .summary
@@ -324,7 +330,11 @@ enum VMWizardOS: String, Identifiable {
             }
         }
         if !isSkipDiskCreate {
-            config.drives.append(UTMAppleConfigurationDrive(newSize: storageSizeGib * bytesInGib / bytesInMib))
+            var newDisk = UTMAppleConfigurationDrive(newSize: storageSizeGib * bytesInGib / bytesInMib)
+            if #available(macOS 14, *), useNvmeAsDiskInterface {
+                newDisk.isNvme = true
+            }
+            config.drives.append(newDisk)
         }
         if #available(macOS 12, *), let sharingDirectoryURL = sharingDirectoryURL {
             config.sharedDirectories = [UTMAppleConfigurationSharedDirectory(directoryURL: sharingDirectoryURL, isReadOnly: sharingReadOnly)]

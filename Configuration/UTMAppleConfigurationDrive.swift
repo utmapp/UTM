@@ -25,6 +25,7 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
     var sizeMib: Int = 0
     var isReadOnly: Bool
     var isExternal: Bool
+    var isNvme: Bool
     var imageURL: URL?
     var imageName: String?
     
@@ -36,6 +37,7 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
     
     private enum CodingKeys: String, CodingKey {
         case isReadOnly = "ReadOnly"
+        case isNvme = "Nvme"
         case imageName = "ImageName"
         case bookmark = "Bookmark" // legacy only
         case identifier = "Identifier"
@@ -55,12 +57,14 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
         sizeMib = newSize
         isReadOnly = false
         isExternal = false
+        isNvme = false
     }
     
-    init(existingURL url: URL?, isExternal: Bool = false) {
+    init(existingURL url: URL?, isExternal: Bool = false, isNvme: Bool = false) {
         self.imageURL = url
         self.isReadOnly = isExternal
         self.isExternal = isExternal
+        self.isNvme = isNvme
     }
     
     init(from decoder: Decoder) throws {
@@ -83,6 +87,7 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
             isExternal = true
         }
         isReadOnly = try container.decodeIfPresent(Bool.self, forKey: .isReadOnly) ?? isExternal
+        isNvme = try container.decodeIfPresent(Bool.self, forKey: .isNvme) ?? false
         id = try container.decode(String.self, forKey: .identifier)
     }
     
@@ -92,6 +97,7 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
             try container.encodeIfPresent(imageName, forKey: .imageName)
         }
         try container.encode(isReadOnly, forKey: .isReadOnly)
+        try container.encode(isNvme, forKey: .isNvme)
         try container.encode(id, forKey: .identifier)
     }
     
@@ -107,6 +113,7 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
         imageName?.hash(into: &hasher)
         sizeMib.hash(into: &hasher)
         isReadOnly.hash(into: &hasher)
+        isNvme.hash(into: &hasher)
         isExternal.hash(into: &hasher)
         id.hash(into: &hasher)
     }
@@ -127,6 +134,7 @@ extension UTMAppleConfigurationDrive {
         sizeMib = oldDrive.sizeMib
         isReadOnly = oldDrive.isReadOnly
         isExternal = oldDrive.isExternal
+        isNvme = false
         imageURL = oldDrive.imageURL
     }
 }

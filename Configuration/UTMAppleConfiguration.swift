@@ -270,6 +270,8 @@ extension UTMAppleConfiguration {
                 }
                 if #available(macOS 13, *), drive.isExternal {
                     return VZUSBMassStorageDeviceConfiguration(attachment: attachment)
+                } else if #available(macOS 14, *), drive.isNvme, system.boot.operatingSystem == .linux {
+                    return VZNVMExpressControllerDeviceConfiguration(attachment: attachment)
                 } else {
                     return VZVirtioBlockDeviceConfiguration(attachment: attachment)
                 }
