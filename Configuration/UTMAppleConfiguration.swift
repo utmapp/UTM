@@ -265,7 +265,7 @@ extension UTMAppleConfiguration {
         }
         if !ignoringDrives {
             vzconfig.storageDevices = try drives.compactMap { drive in
-                guard let attachment = try drive.vzDiskImage() else {
+                guard let attachment = try drive.vzDiskImage(useFsWorkAround: system.boot.operatingSystem == .linux) else {
                     return nil
                 }
                 if #available(macOS 13, *), drive.isExternal {

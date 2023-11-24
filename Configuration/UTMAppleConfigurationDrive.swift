@@ -101,9 +101,14 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
         try container.encode(id, forKey: .identifier)
     }
     
-    func vzDiskImage() throws -> VZDiskImageStorageDeviceAttachment? {
+    func vzDiskImage(useFsWorkAround: Bool = false) throws -> VZDiskImageStorageDeviceAttachment? {
         if let imageURL = imageURL {
-            return try VZDiskImageStorageDeviceAttachment(url: imageURL, readOnly: isReadOnly)
+            // Use cached caching mode for virtio drive to prevent fs corruption on linux when possible
+            if #available(macOS 12.0, *), !isNvme, useFsWorkAround {
+                return try VZDiskImageStorageDeviceAttachment(url: imageURL, readOnly: isReadOnly, cachingMode: .cached, synchronizationMode: .fsync)
+            } else {
+                return try VZDiskImageStorageDeviceAttachment(url: imageURL, readOnly: isReadOnly)
+            }
         } else {
             return nil
         }
