@@ -105,7 +105,7 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
         if let imageURL = imageURL {
             // Use cached caching mode for virtio drive to prevent fs corruption on linux when possible
             if #available(macOS 12.0, *), !isNvme, useFsWorkAround {
-                return try VZDiskImageStorageDeviceAttachment(url: imageURL, readOnly: isReadOnly, cachingMode: .cached, synchronizationMode: .fsync)
+                return try VZDiskImageStorageDeviceAttachment(url: imageURL, readOnly: isReadOnly, cachingMode: .cached, synchronizationMode: .full)
             } else {
                 return try VZDiskImageStorageDeviceAttachment(url: imageURL, readOnly: isReadOnly)
             }
