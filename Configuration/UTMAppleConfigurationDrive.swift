@@ -113,10 +113,10 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
             if #available(macOS 12, *) {
                 /*
                  * virtual disk cache mode have bugs,
-                 * when it is enabled or set to auto (default value)
+                 * when it is disabled or set to auto (default value)
                  * may cause linux file system corrputed, especially in the case of heavy IO loads
                  */
-                return try VZDiskImageStorageDeviceAttachment(url: imageURL, readOnly: isReadOnly, cachingMode:VZDiskImageCachingMode.uncached, synchronizationMode: VZDiskImageSynchronizationMode.full)
+                return try VZDiskImageStorageDeviceAttachment(url: imageURL, readOnly: isReadOnly, cachingMode:VZDiskImageCachingMode.cached, synchronizationMode: VZDiskImageSynchronizationMode.full)
             } else {
                 return try VZDiskImageStorageDeviceAttachment(url: imageURL, readOnly: isReadOnly)
             }
