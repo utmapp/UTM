@@ -119,7 +119,6 @@ enum VMWizardOS: String, Identifiable {
     #if os(macOS)
     @Published var systemMemoryMib: Int = 4096
     @Published var storageSizeGib: Int = 64
-    @Published var useNvmeAsDiskInterface = false
     #else
     @Published var systemMemoryMib: Int = 512
     @Published var storageSizeGib: Int = 8
@@ -130,6 +129,7 @@ enum VMWizardOS: String, Identifiable {
     @Published var sharingReadOnly: Bool = false
     @Published var name: String?
     @Published var isOpenSettingsAfterCreation: Bool = false
+    @Published var useNvmeAsDiskInterface = false
     
     /// SwiftUI BUG: on macOS 12, when VoiceOver is enabled and isBusy changes the disable state of a button being clicked, 
     var isNeverDisabledWorkaround: Bool {
