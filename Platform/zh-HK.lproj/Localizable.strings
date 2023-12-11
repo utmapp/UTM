@@ -1217,3 +1217,7 @@
 /* ContentView */
 "Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached. See https://getutm.app/install/ for more details." = "你的 iOS 版本不支援在未作更動的情況下執行虛擬電腦，必須在越獄 (jailbreak) 時執行 UTM，或是在附加遠程除錯器的情況下執行 UTM。有關更多詳細訊息，請參閲 https://getutm.app/install/。";
 
+/* VMConfigAppleDriveDetailsView
+ VMConfigAppleDriveCreateView*/
+"Use NVMe Interface" = "使用 NVMe 磁碟介面";
+"If checked, use NVMe instead of virtio as the disk interface, available on macOS 14+ for Linux guests only. This interface is slower but less likely to encounter filesystem errors." = "如果勾選，將使用 NVMe 而非 virtio 作為磁碟介面，僅在 macOS 14+ 中適用於 Linux 客戶機器。這個介面速度較慢，但較不容易遇到檔案系統錯誤。";

@@ -28,6 +28,12 @@ struct VMConfigAppleDriveDetailsView: View {
             TextField("Name", text: .constant(config.imageURL?.lastPathComponent ?? NSLocalizedString("(New Drive)", comment: "VMConfigAppleDriveDetailsView")))
                 .disabled(true)
             Toggle("Read Only?", isOn: $config.isReadOnly)
+            if #available(macOS 14, *), !config.isExternal {
+                Toggle(isOn: $config.isNvme,
+                       label: {
+                    Text("Use NVMe Interface")
+                }).help("If checked, use NVMe instead of virtio as the disk interface, available on macOS 14+ for Linux guests only. This interface is slower but less likely to encounter filesystem errors.")
+            }
             if #unavailable(macOS 12) {
                 Button {
                     requestDriveDelete = config

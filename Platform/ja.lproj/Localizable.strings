@@ -930,3 +930,9 @@
 
 // UTMQemuMonitor.m
 "Guest panic" = "ゲストがパニック状態に陥りました";
+
+/* VMConfigAppleDriveDetailsView
+ VMConfigAppleDriveCreateView*/
+"Use NVMe Interface" = "NVMe を使用します";
+"If checked, use NVMe instead of virtio as the disk interface, available on macOS 14+ for Linux guests only. This interface is slower but less likely to encounter filesystem errors." = "チェックされている場合、ディスクインターフェースとして virtio の代わりに NVMe を使用します。macOS 14+ では Linux ゲストのみ利用可能です。このインターフェースは遅いですが、ファイルシステムエラーが発生する可能性が低いです。";
+

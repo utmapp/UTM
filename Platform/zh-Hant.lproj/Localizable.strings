@@ -2002,3 +2002,8 @@
 /* No comment provided by engineer. */
 "Zoom" = "縮放";
 
+/* VMConfigAppleDriveDetailsView
+ VMConfigAppleDriveCreateView*/
+"Use NVMe Interface" = "使用 NVMe 磁碟介面";
+"If checked, use NVMe instead of virtio as the disk interface, available on macOS 14+ for Linux guests only. This interface is slower but less likely to encounter filesystem errors." = "如果選取，將使用 NVMe 而非 virtio 作為磁碟介面，僅在 macOS 14+ 中適用於 Linux 客戶機器。這個介面速度較慢，但較不容易遇到檔案系統錯誤。";
+

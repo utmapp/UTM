@@ -33,10 +33,16 @@ struct VMConfigAppleDriveCreateView: View {
                     if newValue {
                         config.sizeMib = 0
                         config.isReadOnly = true
+                        config.isNvme = false
                     } else {
                         config.sizeMib = 10240
                         config.isReadOnly = false
                     }
+                }
+                if #available(macOS 14, *), !config.isExternal {
+                    Toggle(isOn: $config.isNvme.animation(), label: {
+                        Text("Use NVMe Interface")
+                    }).help("If checked, use NVMe instead of virtio as the disk interface, available on macOS 14+ for Linux guests only. This interface is slower but less likely to encounter filesystem errors.")
                 }
                 if !config.isExternal {
                     SizeTextField($config.sizeMib)
