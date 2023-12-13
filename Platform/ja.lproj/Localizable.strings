@@ -48,8 +48,10 @@
 
 // UTMAppleConfigurationVirtualization.swift
 "Disabled" = "無効";
-"Mouse" = "マウス";
-"Trackpad" = "トラックパッド";
+"Generic Mouse" = "汎用マウス";
+"Mac Trackpad (macOS 13+)" = "Macトラックパッド（macOS 13以降）";
+"Generic USB" = "汎用USB";
+"Mac Keyboard (macOS 14+)" = "Macキーボード（macOS 14以降）";
 
 // UTMQemuConfiguration.swift
 "Failed to migrate configuration from a previous UTM version." = "以前のUTMバージョンからの構成の移行に失敗しました。";
@@ -397,8 +399,7 @@
 "Enable Balloon Device" = "バルーンデバイスを有効にする";
 "Enable Entropy Device" = "エントロピデバイスを有効にする";
 "Enable Sound" = "サウンドを有効にする";
-"Enable Keyboard" = "キーボードを有効にする";
-"Enable Pointer" = "ポインタを有効にする";
+"Pointer" = "ポインタ";
 "Use Trackpad" = "トラックパッドを使用";
 "Allows passing through additional input from trackpads. Only supported on macOS 13+ guests." = "トラックパッドからの追加の入力をパススルーできるようになります。macOS 13以降のゲストでのみ対応しています。";
 "Enable Rosetta on Linux (x86_64 Emulation)" = "Linux上でRosettaを有効にする（x86_64エミュレーション）";
@@ -452,6 +453,13 @@
 "Select where to save debug log:" = "デバッグログの保存先を選択してください:";
 "Select where to save UTM Virtual Machine:" = "UTM仮想マシンの保存先を選択してください:";
 "Select where to export QEMU command:" = "QEMUコマンドの書き出し先を選択してください:";
+
+
+/* Platform/visionOS */
+
+// VMToolbarOrnamentModifier.swift
+"Hide Controls" = "コントロールを非表示";
+"Show Controls" = "コントロールを表示";
 
 
 /* Platform/Shared */
@@ -720,6 +728,8 @@
 "Stop selected VM" = "選択した仮想マシンを停止します";
 "Run selected VM" = "選択した仮想マシンを実行します";
 "Edit selected VM" = "選択した仮想マシンを編集します";
+"Preferences" = "環境設定";
+"Show UTM preferences" = "UTM環境設定を表示します";
 
 // VMWizardDrivesView.swift
 "Storage" = "ストレージ";
@@ -883,6 +893,11 @@
 
 /* Scripting */
 
+// UTMScriptingUSBDeviceImpl.swift
+"UTM is not ready to accept commands." = "UTMはコマンドを受け入れる準備ができていません。";
+"The device cannot be found." = "デバイスが見つかりません。";
+"The device is not currently connected." = "デバイスが現在接続されていません。";
+
 // UTMScriptingVirtualMachineImpl.swift
 "Operation not available." = "操作は利用できません。";
 "Operation not supported by the backend." = "操作はバックエンドが対応していません。";
@@ -898,7 +913,6 @@
 "This device is not supported by the target." = "このデバイスはターゲットが対応していません。";
 
 // UTMScriptingCreateCommand.swift
-"UTM is not ready to accept commands." = "UTMはコマンドを受け入れる準備ができていません。";
 "A valid backend must be specified." = "有効なバックエンドを指定する必要があります。";
 "This backend is not supported on your machine." = "このバックエンドはお使いのマシンでは対応していません。";
 "A valid configuration must be specified." = "有効な構成を指定する必要があります。";
