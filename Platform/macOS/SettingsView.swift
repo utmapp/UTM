@@ -129,6 +129,7 @@ struct SoundSettingsView: View {
 
 struct InputSettingsView: View {
     @AppStorage("FullScreenAutoCapture") var isFullScreenAutoCapture = false
+    @AppStorage("WindowFocusAutoCapture") var isWindowFocusAutoCapture = false
     @AppStorage("OptionAsMetaKey") var isOptionAsMetaKey = false
     @AppStorage("CtrlRightClick") var isCtrlRightClick = false
     @AppStorage("AlternativeCaptureKey") var isAlternativeCaptureKey = false
@@ -143,6 +144,9 @@ struct InputSettingsView: View {
                 Toggle(isOn: $isFullScreenAutoCapture) {
                     Text("Capture input automatically when entering full screen")
                 }.help("If enabled, input capture will toggle automatically when entering and exiting full screen mode.")
+                Toggle(isOn: $isWindowFocusAutoCapture) {
+                    Text("Capture input automatically when window is focused")
+                }.help("If enabled, input capture will toggle automatically when the VM's window is focused.")
             }
             
             Section(header: Text("Console")) {
