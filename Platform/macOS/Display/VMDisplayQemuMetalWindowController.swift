@@ -402,17 +402,20 @@ extension VMDisplayQemuMetalWindowController {
     }
     
     func windowDidBecomeMain(_ notification: Notification) {
-        if isWindowFocusAutoCapture {
-            captureMouseToolbarButton.state = .on
-            captureMouse()
+        // Do not capture mouse if user did not clicked inside the metalView because the window will be draged if user hold the mouse button.
+        guard let window = window,
+              window.mouseLocationOutsideOfEventStream.y < metalView.frame.height,
+              captureMouseToolbarButton.state == .off,
+              isWindowFocusAutoCapture else {
+            return
         }
+        captureMouseToolbarButton.state = .on
+        captureMouse()
     }
     
     func windowDidResignMain(_ notification: Notification) {
-        if isWindowFocusAutoCapture {
-            captureMouseToolbarButton.state = .off
-            releaseMouse()
-        }
+        captureMouseToolbarButton.state = .off
+        releaseMouse()
     }
     
     override func windowDidResignKey(_ notification: Notification) {
