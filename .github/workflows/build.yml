@@ -315,7 +315,9 @@ jobs:
           LAUNCHER_PROFILE_DATA: ${{ vars.LAUNCHER_PROFILE_DATA }}
           LAUNCHER_PROFILE_UUID: ${{ vars.LAUNCHER_PROFILE_UUID }}
       - name: Install appdmg
-        run: npm install -g appdmg
+        run: |
+          python3 -m pip install setuptools
+          npm install -g appdmg
       - name: Download Artifact
         uses: actions/download-artifact@v3
         with:

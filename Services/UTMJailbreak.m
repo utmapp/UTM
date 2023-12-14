@@ -397,7 +397,7 @@ bool jb_spawn_ptrace_child(int argc, char **argv) {
         return false;
     }
     childArgv[0] = argv[0];
-    if ((ret = posix_spawnp(&pid, argv[0], NULL, NULL, (void *)childArgv, (void *)environ)) != 0) {
+    if ((ret = posix_spawnp(&pid, argv[0], NULL, NULL, (void *)childArgv, NULL)) != 0) {
         return false;
     }
     return true;
