@@ -66,13 +66,13 @@
 "Advanced" = "高级";
 
 /* VMConfigSystemView */
-"Allocating too much memory will crash the VM." = "分配过多的内存会导致虚拟机崩溃。";
+"Allocating too much memory will crash the VM." = "分配过多内存会使虚拟机崩溃。";
 
 /* UTMData */
-"AltJIT error: %@" = "AltJIT 错误: %@";
+"AltJIT error: %@" = "AltJIT 错误：%@";
 
 /* UTMData */
-"An existing virtual machine already exists with this name." = "已经存在一个具有此名称的虚拟机。";
+"An existing virtual machine already exists with this name." = "已存在了一个有此名称的虚拟机。";
 
 /* UTMConfiguration */
 "An internal error has occurred." = "发生了内部错误。";
@@ -164,7 +164,7 @@
 "Cancel" = "取消";
 
 /* UTMAppleVirtualMachine */
-"Cannot access resource: %@" = "无法访问资源: %@";
+"Cannot access resource: %@" = "无法访问资源：%@";
 
 /* UTMSWTPM */
 "Cannot access TPM data." = "无法访问 TPM 数据。";
@@ -173,10 +173,10 @@
 "Cannot create virtual terminal." = "无法创建虚拟终端。";
 
 /* UTMData */
-"Cannot find AltServer for JIT enable. You cannot run VMs until JIT is enabled." = "找不到用于 JIT 启用的 AltServer。在启用 JIT 之前，你无法运行虚拟机。";
+"Cannot find AltServer for JIT enable. You cannot run VMs until JIT is enabled." = "找不到用于 JIT 启用的 AltServer。在启用 JIT 之前，你将无法运行虚拟机。";
 
 /* UTMData */
-"Cannot import this VM. Either the configuration is invalid, created in a newer version of UTM, or on a platform that is incompatible with this version of UTM." = "无法导入此虚拟机。此虚拟机配置无效，或是在较新版本的 UTM 中创建，或是在与此版本的 UTM 不兼容的平台上创建。";
+"Cannot import this VM. Either the configuration is invalid, created in a newer version of UTM, or on a platform that is incompatible with this version of UTM." = "无法导入此虚拟机。此虚拟机可能配置无效，或者可能是在较新版本的 UTM 中创建的，也可能是在与此版本的 UTM 不兼容的平台上创建的。";
 
 /* No comment provided by engineer. */
 "Caps Lock (⇪) is treated as a key" = "将 Caps Lock (⇪) 视为按键";
@@ -188,7 +188,7 @@
 "Capture input automatically when entering full screen" = "进入全屏时自动捕获输入";
 
 /* VMDisplayQemuMetalWindowController */
-"Captured mouse" = "鼠标已捕获";
+"Captured mouse" = "已捕获鼠标";
 
 /* Configuration boot device */
 "CD/DVD" = "CD/DVD";
@@ -215,7 +215,8 @@
 /* No comment provided by engineer. */
 "Confirm Delete" = "确认删除";
 
-/* VMDisplayWindowController */
+/* AppDelegate
+   VMDisplayWindowController */
 "Confirmation" = "确认";
 
 /* No comment provided by engineer. */
@@ -281,13 +282,13 @@
 "Display" = "显示";
 
 /* VMDisplayQemuDisplayController */
-"Display %lld: %@" = "显示 %1$lld: %2$@";
+"Display %lld: %@" = "显示 %1$lld：%2$@";
 
 /* VMDisplayQemuDisplayController */
 "Disposable Mode" = "一次性模式";
 
 /* No comment provided by engineer. */
-"Do not save VM screenshot to disk" = "不要将虚拟机屏幕截图保存到磁盘";
+"Do not save VM screenshot to disk" = "不将虚拟机的屏幕截图保存到磁盘";
 
 /* No comment provided by engineer. */
 "Do not show confirmation when closing a running VM" = "关闭正在运行的虚拟机时不显示确认";
@@ -308,16 +309,16 @@
 "Do you want to force stop this VM and lose all unsaved data?" = "要强制停止此虚拟机并丢失所有未保存的数据吗？";
 
 /* No comment provided by engineer. */
-"Do you want to move this VM to another location? This will copy the data to the new location, delete the data from the original location, and then create a shortcut." = "要将此虚拟机移动到别处吗？这将把数据复制到新位置，从原始位置删除数据，然后创建一个快捷方式。";
+"Do you want to move this VM to another location? This will copy the data to the new location, delete the data from the original location, and then create a shortcut." = "要将此虚拟机移动到别处吗？这将会复制数据到新位置，删除原始位置的数据，然后创建一个快捷方式。";
 
 /* No comment provided by engineer. */
-"Do you want to remove this shortcut? The data will not be deleted." = "要删除这个快捷方式吗？数据不会被删除。";
+"Do you want to remove this shortcut? The data will not be deleted." = "要删除此快捷方式吗？数据不会被删除。";
 
 /* No comment provided by engineer. */
-"Download prebuilt from UTM Gallery…" = "从 UTM 库中下载预构建的虚拟机…";
+"Download prebuilt from UTM Gallery…" = "从 UTM 库中下载预构建虚拟机…";
 
 /* No comment provided by engineer. */
-"Drag and drop IPSW file here" = "在此处拖放 IPSW 文件";
+"Drag and drop IPSW file here" = "拖放 IPSW 文件到此处";
 
 /* UTMScriptingConfigImpl */
 "Drive description is invalid." = "驱动器描述无效。";
@@ -362,7 +363,7 @@
 "Failed to access shared directory." = "无法访问共享目录。";
 
 /* ContentView */
-"Failed to attach to JitStreamer:\n%@" = "未能附加到 JitStreamer: %@";
+"Failed to attach to JitStreamer:\n%@" = "未能附加到 JitStreamer：%@";
 
 /* UTMData */
 "Failed to attach to JitStreamer." = "未能附加到 JitStreamer。";
@@ -383,19 +384,20 @@
 "Failed to migrate configuration from a previous UTM version." = "无法从以前的 UTM 版本迁移配置。";
 
 /* UTMData */
-"Failed to parse download URL." = "未能解析下载 URL。";
+"Failed to parse download URL." = "无法解析下载 URL。";
 
 /* UTMData */
 "Failed to parse imported VM." = "无法解析导入的虚拟机。";
 
 /* UTMDownloadVMTask */
-"Failed to parse the downloaded VM." = "解析下载的虚拟机失败。";
+"Failed to parse the downloaded VM." = "无法解析下载的虚拟机。";
 
-/* VMDisplayWindowController */
+/* AppDelegate
+   VMDisplayWindowController */
 "Failed to save suspend state" = "无法保存挂起状态。";
 
 /* UTMQemuVirtualMachine */
-"Failed to save VM snapshot. Usually this means at least one device does not support snapshots. %@" = "保存虚拟机快照失败。通常这意味着至少有一台设备不支持快照。%@";
+"Failed to save VM snapshot. Usually this means at least one device does not support snapshots. %@" = "保存虚拟机快照失败。通常这意味着至少有一个设备不支持快照。%@";
 
 /* UTMSpiceIO */
 "Failed to start SPICE client." = "无法启动 SPICE 客户端。";
@@ -414,7 +416,7 @@
 "Force kill" = "强制终止";
 
 /* VMDisplayWindowController */
-"Force kill the VM process with high risk of data corruption." = "强制杀死具有高数据损坏风险的虚拟机进程。";
+"Force kill the VM process with high risk of data corruption." = "强制杀死虚拟机进程 (会有高风险数据损坏)。";
 
 /* No comment provided by engineer. */
 "Force Multicore" = "强制多核";
@@ -430,6 +432,12 @@
 
 /* No comment provided by engineer. */
 "Generic" = "通用";
+
+/* UTMAppleConfigurationDevices */
+"Generic Mouse" = "通用鼠标";
+
+/* UTMAppleConfigurationDevices */
+"Generic USB" = "通用 USB";
 
 /* No comment provided by engineer. */
 "Gesture and Cursor Settings" = "手势和光标设置";
@@ -486,7 +494,7 @@
 "Install Windows Guest Tools…" = "安装 Windows 客户机工具…";
 
 /* VMDisplayAppleWindowController */
-"Installation: %@" = "安装: %@";
+"Installation: %@" = "安装：%@";
 
 /* UTMProcess */
 "Internal error has occurred." = "发生内部错误。";
@@ -498,7 +506,7 @@
 "Internal error." = "内部错误。";
 
 /* UTMData */
-"Invalid JitStreamer attach URL:\n%@" = "无效的 JitStreamer 附加 URL: %@";
+"Invalid JitStreamer attach URL:\n%@" = "无效的 JitStreamer 附加 URL：%@";
 
 /* VMConfigAppleNetworkingView */
 "Invalid MAC address." = "MAC 地址无效。";
@@ -557,6 +565,12 @@
 /* No comment provided by engineer. */
 "Logging" = "日志";
 
+/* UTMAppleConfigurationDevices */
+"Mac Keyboard (macOS 14+)" = "Mac 键盘 (macOS 14+)";
+
+/* UTMAppleConfigurationDevices */
+"Mac Trackpad (macOS 13+)" = "Mac 触控板 (macOS 14+)";
+
 /* UTMAppleConfigurationBoot */
 "macOS" = "macOS";
 
@@ -585,10 +599,7 @@
 "Metal is not supported on this device. Cannot render display." = "此设备不支持 Metal。无法渲染显示。";
 
 /* No comment provided by engineer. */
-"Minimum size: %@" = "最小文件大小: %@";
-
-/* UTMAppleConfigurationDevices */
-"Mouse" = "鼠标";
+"Minimum size: %@" = "最小文件大小：%@";
 
 /* No comment provided by engineer. */
 "Mouse/Keyboard" = "鼠标/键盘";
@@ -618,19 +629,19 @@
 "No" = "否";
 
 /* UTMScriptingAppDelegate */
-"No architecture specified in the configuration." = "未在配置中指定架构。";
+"No architecture specified in the configuration." = "配置中未指定架构。";
 
 /* VMDisplayWindowController */
-"No drives connected." = "未连接驱动器。";
+"No drives connected." = "没有连接的驱动器。";
 
 /* UTMDownloadSupportToolsTaskError */
 "No empty removable drive found. Make sure you have at least one removable drive that is not in use." = "未找到空的可移动驱动器。确保你至少有一个未使用的可移动驱动器。";
 
 /* UTMScriptingAppDelegate */
-"No name specified in the configuration." = "未在配置中指定名称。";
+"No name specified in the configuration." = "配置中未指定名称。";
 
 /* No comment provided by engineer. */
-"No output device is selected for this window." = "没有为此窗口选择输出设备。";
+"No output device is selected for this window." = "此窗口未选择输出设备。";
 
 /* No comment provided by engineer. */
 "No release notes found for version %@." = "未找到 %@ 版本的发布说明。";
@@ -682,7 +693,7 @@
 "Operation not supported by the backend." = "操作不受后端支持。";
 
 /* No comment provided by engineer. */
-"Option (⌥) is Meta key" = "将 Option (⌥) 键作为 Meta 键";
+"Option (⌥) is Meta key" = "Option (⌥) 键作为 Meta 键";
 
 /* No comment provided by engineer. */
 "Other" = "其他";
@@ -700,7 +711,7 @@
 "PC System Flash" = "PC 系统闪存";
 
 /* No comment provided by engineer. */
-"Pending" = "正在队列";
+"Pending" = "等待中";
 
 /* VMDisplayWindowController */
 "Play" = "启动";
@@ -805,7 +816,7 @@
 "Resize display to window size automatically" = "自动将显示调整为窗口大小";
 
 /* No comment provided by engineer. */
-"Resizing is experimental and could result in data loss. You are strongly encouraged to back-up this VM before proceeding. Would you like to resize to %@ GiB?" = "调整驱动器大小是实验性功能，可能导致数据丢失。在继续操作之前，强烈建议你备份此虚拟机。要将大小调整为 %@ GB 吗？";
+"Resizing is experimental and could result in data loss. You are strongly encouraged to back-up this VM before proceeding. Would you like to resize to %@ GiB?" = "调整驱动器大小是实验性功能，可能会导致数据丢失。在继续操作之前，强烈建议你备份此虚拟机。要将大小调整为 %@ GB 吗？";
 
 /* VMData */
 "Restoring" = "正在恢复";
@@ -848,16 +859,16 @@
 "Select Shared Folder" = "选择共享的文件夹";
 
 /* SavePanel */
-"Select where to export QEMU command:" = "选择导出 QEMU 命令的位置:";
+"Select where to export QEMU command:" = "选择导出 QEMU 命令的位置：";
 
 /* SavePanel */
-"Select where to save debug log:" = "选择保存调试日志的位置:";
+"Select where to save debug log:" = "选择保存调试日志的位置：";
 
 /* SavePanel */
-"Select where to save UTM Virtual Machine:" = "选择保存 UTM 虚拟机的位置:";
+"Select where to save UTM Virtual Machine:" = "选择保存 UTM 虚拟机的位置：";
 
 /* No comment provided by engineer. */
-"Selected:" = "已选择:";
+"Selected:" = "已选择：";
 
 /* VMDisplayWindowController */
 "Sends power down request to the guest. This simulates pressing the power button on a PC." = "向客户机发送关闭电源请求。此操作模拟了按住 PC 上的电源按钮。";
@@ -939,7 +950,7 @@
 "Support" = "支持";
 
 /* UTMQemuVirtualMachine */
-"Suspend is not supported for virtualization." = "虚拟化不支持挂起。";
+"Suspend is not supported for virtualization." = "挂起功能不支持虚拟化。";
 
 /* UTMQemuVirtualMachine */
 "Suspend is not supported when an emulated NVMe device is active." = "当模拟的 NVMe 设备处于活动状态时不支持挂起。";
@@ -1011,7 +1022,7 @@
 "The selected architecture is unsupported in this version of UTM." = "此版本的 UTM 不支持所选架构。";
 
 /* VMWizardState */
-"The selected boot image contains the word '%@' but the guest architecture is '%@'. Please ensure you have selected an image that is compatible with '%@'." = "所选的引导映像名称包含 '%@'，但客户机的架构为 %@。请确保你选择了与 '%@' 兼容的映像。";
+"The selected boot image contains the word '%@' but the guest architecture is '%@'. Please ensure you have selected an image that is compatible with '%@'." = "所选的引导映像名称包含 '%@'，但客户机的架构为 '%@'。请确保你选择了与 '%@' 兼容的映像。";
 
 /* No comment provided by engineer. */
 "The target does not support hardware emulated serial connections." = "此目标系统不支持硬件模拟串行连接。";
@@ -1044,10 +1055,10 @@
 "This change will reset all settings" = "此更改将重置所有设置。";
 
 /* UTMConfiguration */
-"This configuration is saved with a newer version of UTM and is not compatible with this version." = "此配置是使用较新版本的 UTM 保存的，并且与此版本不兼容。";
+"This configuration is saved with a newer version of UTM and is not compatible with this version." = "此配置是用较新版本的 UTM 保存的，并且与此版本不兼容。";
 
 /* UTMConfiguration */
-"This configuration is too old and is not supported." = "此配置因太旧而无法支持。";
+"This configuration is too old and is not supported." = "此配置过旧，无法支持。";
 
 /* UTMScriptingConfigImpl */
 "This device is not supported by the target." = "目标不支持此设备。";
@@ -1056,7 +1067,7 @@
 "This directory is already being shared." = "此目录已被共享。";
 
 /* UTMAppleConfiguration */
-"This is not a valid Apple Virtualization configuration." = "这不是有效的 Apple 虚拟化配置。";
+"This is not a valid Apple Virtualization configuration." = "并非有效的 Apple 虚拟化配置。";
 
 /* VMDisplayWindowController */
 "This may corrupt the VM and any unsaved changes will be lost. To quit safely, shut down from the guest." = "这可能会损坏虚拟机，任何未保存的更改都将丢失。为了安全退出，请从客户机操作系统关闭。";
@@ -1090,9 +1101,6 @@
 
 /* VMDisplayQemuMetalWindowController */
 "To release the mouse cursor, press %@ at the same time." = "要释放鼠标光标，请同时按 %@。";
-
-/* UTMAppleConfigurationDevices */
-"Trackpad" = "触控板";
 
 /* No comment provided by engineer. */
 "u{2022} " = "u{2022}";
