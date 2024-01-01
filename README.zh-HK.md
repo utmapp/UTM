@@ -4,7 +4,7 @@
 > 發明一台可用於計算任何可計算序列的機器是可行的。
 -- <cite>艾倫·圖靈（Alan Turing）, 1936 年</cite>
 
-UTM 是一個功能完备的系統模擬工具和虛擬电脑主機，適用於 iOS 和 macOS。它以 QEMU 為基礎。簡言之，它允許你在 Mac、iPhone 和 iPad 上執行 Windows、Linux 等。更多訊息請參閱 https://getutm.app/ 與 https://mac.getutm.app/。
+UTM 是一個功能完备的系統模擬工具與虛擬电脑主機，適用於 iOS 和 macOS。它基於 QEMU。簡言之，它允許你在 Mac、iPhone 和 iPad 上執行 Windows、Linux 等。更多訊息請見 https://getutm.app/ 與 https://mac.getutm.app/。
 
 <p align="center">
   <img width="450px" alt=「在 iPhone 上執行 UTM" src="screen.png">
@@ -14,7 +14,7 @@ UTM 是一個功能完备的系統模擬工具和虛擬电脑主機，適用於 
 
 ## 特性
 
-* 使用 QEMU 進行全作業系統模擬（MMU、設備等）
+* 使用 QEMU 進行全作業系統模擬（MMU、裝置等）
 * 支援逾三十種體系結構 CPU，包括 x86_64、ARM64 和 RISC-V
 * 使用 SPICE 與 QXL 的 VGA 圖形模式
 * 文本終端機模式
@@ -23,14 +23,14 @@ UTM 是一個功能完备的系統模擬工具和虛擬电脑主機，適用於 
 * 採用了最新最靚的 API，從零開始設計前端，支援 macOS 11+ 與 iOS 11+
 * 從你的裝置上直接製作、管理和執行虛擬機
 
-## macOS 的附加功能
+## 於 macOS 的附加功能
 
 * 使用 Hypervisor.framework 與 QEMU 實現硬件加速虛擬化
 * 在 macOS 12+ 上使用 Virtualization.framework 來啓動 macOS 客戶端
 
 ## UTM SE
 
-UTM/QEMU 需要動態程式碼生成（JIT）以得到最大性能。iOS 上的 JIT 需要已經越獄（Jailbreak）的裝置（iOS 11.0~14.3 無需越獄，iOS 14.4+ 需要），或者為特定版本的 iOS 找到其他變通方法之一（有關更多詳細訊息，請參閱「安裝」）。
+UTM/QEMU 需要動態程式碼生成（JIT）以得到最大性能。iOS 上的 JIT 需要已經越獄（Jailbreak）的裝置（iOS 11.0~14.3 毋需越獄，iOS 14.4+ 需要），或者為特定版本的 iOS 找到其他變通方法之一（有關更多詳細訊息，請參閱「安裝」）。
 
 UTM SE（「較慢版」）使用了「[執行緒解釋器][3]」，其性能優於傳統解釋器，但仍然比 JIT 要慢。此種技術類似於 [iSH][4] 的動態執行。因此，UTM SE 無需越獄或任何 JIT 的變通方法，可以作為常規應用程式側載（Sideload）。
 
@@ -55,7 +55,7 @@ UTM 同時支援 macOS：https://mac.getutm.app/
 
 ## 許可證
 
-UTM 於 Apache 2.0 許可證下發佈，但它採用了若干 GPL 與 LGPL 元件。這其中，大多數元件是動態連接的，但 gstreamer 元件是靜態連接的，部分程式碼來自 QEMU。如果你打算重新分發此應用程式，請務必謹記這一點。
+UTM 於 Apache 2.0 許可證下發佈，但它採用了若干 GPL 與 LGPL 元件。這其中，大多數元件為動態連接，但 gstreamer 元件為靜態連接，部分程式碼來自 QEMU。如果你打算重新分發此應用程式，請務必緊記這一點。
 
 某些图示由 [Freepik](https://www.freepik.com) 從 [www.flaticon.com](https://www.flaticon.com/) 製作。
 
