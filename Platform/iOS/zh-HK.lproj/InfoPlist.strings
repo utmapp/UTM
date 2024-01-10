@@ -1,5 +1,5 @@
 /* Bundle name */
-"CFBundleName" = "UTM SE";
+"CFBundleName" = "UTM";
 
 /* Privacy - Local Network Usage Description */
 "NSLocalNetworkUsageDescription" = "虛擬電腦可以訪問本地網絡。UTM 還會使用本地網絡與 AltServer 進行通信。";
