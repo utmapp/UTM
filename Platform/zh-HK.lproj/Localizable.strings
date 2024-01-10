@@ -735,7 +735,7 @@
 "Preconfigured" = "預設定";
 
 /* A download process is about to begin. */
-"Preparing…" = "正在準備...";
+"Preparing…" = "正在準備⋯";
 
 /* VMDisplayQemuMetalWindowController */
 "Press %@ to release cursor" = "按下 %@ 來放開指標";
