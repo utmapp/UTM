@@ -372,7 +372,7 @@
 "Failed to change current directory." = "無法變更當前目錄。";
 
 /* UTMData */
-"Failed to clone VM." = "無法克隆虛擬電腦。";
+"Failed to clone VM." = "無法複製虛擬電腦。";
 
 /* UTMData */
 "Failed to decode JitStreamer response." = "無法解碼 JitStreamer 回應。";
@@ -980,7 +980,7 @@
 "TCP Server Connection" = "TCP 伺服器連線";
 
 /* VMDisplayWindowController */
-"Tells the VM process to shut down with risk of data corruption. This simulates holding down the power button on a PC." = "告知關閉虛擬電腦程序（有損毀資料的風險）。此操作模擬了在 PC 上按下電源按鈕。";
+"Tells the VM process to shut down with risk of data corruption. This simulates holding down the power button on a PC." = "告知虛擬電腦程序關閉，並有損毀資料的風險。此操作模擬了在 PC 上按下電源按鈕。";
 
 /* No comment provided by engineer. */
 "Test" = "測試";
@@ -1037,7 +1037,7 @@
 "The virtual machine must be stopped before this operation can be performed." = "必須先停止虛擬電腦，然後才能執行此操作。";
 
 /* Error shown when importing a ZIP file from web that doesn't contain a UTM Virtual Machine. */
-"There is no UTM file in the downloaded ZIP archive." = "在已下載的 ZIP 封存檔內未有 UTM 檔案。";
+"There is no UTM file in the downloaded ZIP archive." = "在已經下載的 ZIP 封存檔內未有 UTM 檔案。";
 
 /* No comment provided by engineer. */
 "This audio card is not supported." = "此聲卡不支援。";
@@ -1207,16 +1207,16 @@
 "Would you like to install macOS? If an existing operating system is already installed on the primary drive of this VM, then it will be erased." = "你要安裝 macOS 嗎？如果此虛擬電腦的主磁碟上已經安裝了現有的作業系統，則會將其清除。";
 
 /* No comment provided by engineer. */
-"Would you like to re-convert this disk image to reclaim unused space and apply compression? Note this will require enough temporary space to perform the conversion. Compression only applies to existing data and new data will still be written uncompressed. You are strongly encouraged to back-up this VM before proceeding." = "你要重新轉換此磁碟映像檔以回收未使用的空間並應用壓縮嗎？請注意，這將需要足夠的臨時空間來執行轉換，壓縮僅適用於現有資料，新資料仍將以未壓縮寫入。強烈建議你先備份此虛擬電腦，然後再繼續操作。";
+"Would you like to re-convert this disk image to reclaim unused space and apply compression? Note this will require enough temporary space to perform the conversion. Compression only applies to existing data and new data will still be written uncompressed. You are strongly encouraged to back-up this VM before proceeding." = "你要重新轉換此磁碟映像檔以回收未使用的空間並應用壓縮嗎？請緊記，這將需要足夠的臨時空間來執行轉換，壓縮僅適用於現有資料，新資料仍將以未壓縮寫入。強烈建議你先備份此虛擬電腦，然後再繼續操作。";
 
 /* No comment provided by engineer. */
-"Would you like to re-convert this disk image to reclaim unused space? Note this will require enough temporary space to perform the conversion. You are strongly encouraged to back-up this VM before proceeding." = "你要重新轉換此磁碟映像檔以回收未使用的空間嗎？請注意，這將需要足夠的臨時空間來執行轉換。強烈建議你先備份此虛擬電腦，然後再繼續操作。";
+"Would you like to re-convert this disk image to reclaim unused space? Note this will require enough temporary space to perform the conversion. You are strongly encouraged to back-up this VM before proceeding." = "你要重新轉換此磁碟映像檔以回收未使用的空間嗎？請緊記，這將需要足夠的臨時空間來執行轉換。強烈建議你先備份此虛擬電腦，然後再繼續操作。";
 
 /* No comment provided by engineer. */
 "Yes" = "是";
 
 /* VMConfigSystemView */
-"Your device has %llu MB of memory and the estimated usage is %llu MB." = "你的裝置有 %1$llu MB 的記憶體，大約使用量為 %2$llu MB。";
+"Your device has %llu MB of memory and the estimated usage is %llu MB." = "你的裝置有 %1$llu MB 大小的記憶體，大約使用量為 %2$llu MB。";
 
 /* VMConfigAppleBootView
    VMWizardOSMacView */
