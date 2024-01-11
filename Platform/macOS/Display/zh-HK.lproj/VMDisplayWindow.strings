@@ -1,11 +1,11 @@
 /* Class = "NSToolbarItem"; label = "Shared Folder"; ObjectID = "7EC-GE-fIl"; */
-"7EC-GE-fIl.label" = "共享資料夾";
+"7EC-GE-fIl.label" = "分享資料夾";
 
 /* Class = "NSToolbarItem"; paletteLabel = "Shared Folder"; ObjectID = "7EC-GE-fIl"; */
-"7EC-GE-fIl.paletteLabel" = "共享資料夾";
+"7EC-GE-fIl.paletteLabel" = "分享資料夾";
 
 /* Class = "NSToolbarItem"; toolTip = "Shared folder"; ObjectID = "7EC-GE-fIl"; */
-"7EC-GE-fIl.toolTip" = "共享資料夾";
+"7EC-GE-fIl.toolTip" = "分享資料夾";
 
 /* Class = "NSToolbarItem"; label = "Drives"; ObjectID = "bKL-Th-FFw"; */
 "bKL-Th-FFw.label" = "磁碟";
