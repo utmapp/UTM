@@ -887,7 +887,7 @@
 "Shared Directory" = "已分享目錄";
 
 /* UTMQemuConstants */
-"Shared Network" = "分享網絡";
+"Shared Network" = "已分享網絡";
 
 /* No comment provided by engineer. */
 "Sharing" = "分享";
@@ -1064,7 +1064,7 @@
 "This device is not supported by the target." = "目標不支援此裝置。";
 
 /* VMConfigAppleSharingView */
-"This directory is already being shared." = "此目錄已經被分享。";
+"This directory is already being shared." = "此目錄已被分享。";
 
 /* UTMAppleConfiguration */
 "This is not a valid Apple Virtualization configuration." = "並非有效的 Apple 虛擬化設定。";
@@ -1285,7 +1285,7 @@
 "Boot Arguments" = "啟動參數";
 
 /* No comment provided by engineer. */
-"Boot from kernel image" = "從核心映像檔啟動";
+"Boot from kernel image" = "由核心映像檔啟動";
 
 /* No comment provided by engineer. */
 "Boot Image" = "啟動映像檔";
@@ -1306,7 +1306,7 @@
 "Bridged Settings" = "橋連設定";
 
 /* No comment provided by engineer. */
-"By default, the best backend for the target will be used. If the selected backend is not available for any reason, an alternative will automatically be selected." = "於預設情況下，將會使用目標的最好後端。如果所選後端由於任何原因不可用，將會自動選擇替代方案。";
+"By default, the best backend for the target will be used. If the selected backend is not available for any reason, an alternative will automatically be selected." = "於預設情況下，將會使用目標的最好後端。如果所選後端由於任何原因不可用，將會自動選取替代方案。";
 
 /* No comment provided by engineer. */
 "By default, the best renderer for this device will be used. You can override this with to always use a specific renderer. This only applies to QEMU VMs with GPU accelerated graphics." = "於預設情況下，將會使用最適合此裝置的渲染器。你可以覆蓋它以始終使用特定的渲染器，這僅適用於具有 GPU 加速圖形的 QEMU 虛擬電腦。";
@@ -1390,7 +1390,7 @@
 "DHCP Domain Name" = "DHCP 網域名稱";
 
 /* No comment provided by engineer. */
-"DHCP End" = "DHCP 結束位址";
+"DHCP End" = "DHCP 結束";
 
 /* No comment provided by engineer. */
 "DNS Search Domains" = "DNS 搜尋網域";
@@ -1402,7 +1402,7 @@
 "DNS Server (IPv6)" = "DNS 伺服器 (IPv6)";
 
 /* No comment provided by engineer. */
-"DHCP Start" = "DHCP 開始位址";
+"DHCP Start" = "DHCP 開始";
 
 /* No comment provided by engineer. */
 "Done" = "完成";
@@ -1435,10 +1435,10 @@
 "Emulated Audio Card" = "模擬聲卡";
 
 /* No comment provided by engineer. */
-"Emulated Display Card" = "模擬顯示卡";
+"Emulated Display Card" = "模擬顯卡";
 
 /* No comment provided by engineer. */
-"Emulated Network Card" = "模擬網絡卡";
+"Emulated Network Card" = "模擬網卡";
 
 /* No comment provided by engineer. */
 "Emulated Serial Device" = "模擬序列裝置";
@@ -1522,7 +1522,7 @@
 "Hardware interface on the guest used to mount this image. Different operating systems support different interfaces. The default will be the most common interface." = "用作裝載此映像的客戶端硬體介面。不同的作業系統支援不同的介面。預設將會設定為最常見的介面。";
 
 /* No comment provided by engineer. */
-"Hardware OpenGL Acceleration" = "OpenGL 硬體加速";
+"Hardware OpenGL Acceleration" = "硬體 OpenGL 加速";
 
 /* No comment provided by engineer. */
 "Height" = "高度";
@@ -1543,16 +1543,16 @@
 "Host Port" = "主機埠";
 
 /* No comment provided by engineer. */
-"If checked, no drive image will be stored with the VM. Instead you can mount/unmount image while the VM is running." = "如選取，將不會儲存磁碟映像至虛擬電腦內。然而，你可以於虛擬電腦執行時裝載/卸除安裝映像。";
+"If checked, no drive image will be stored with the VM. Instead you can mount/unmount image while the VM is running." = "如選取，將不會儲存磁碟映像檔至虛擬電腦內。然而，你可以於虛擬電腦執行時裝載/卸除安裝映像。";
 
 /* No comment provided by engineer. */
-"If checked, the CPU flag will be enabled. Otherwise, the default value will be used." = "如選取，此 CPU 標誌將會啟用。否則將會使用預設值。";
+"If checked, the CPU flag will be enabled. Otherwise, the default value will be used." = "如選取，將會啟用此 CPU 標誌。否則將會使用預設值。";
 
 /* No comment provided by engineer. */
-"If checked, the CPU flag will be disabled. Otherwise, the default value will be used." = "如選取，此 CPU 標誌將會停用。否則將會使用預設值。";
+"If checked, the CPU flag will be disabled. Otherwise, the default value will be used." = "如選取，將會停用此 CPU 標誌。否則將會使用預設值。";
 
 /* No comment provided by engineer. */
-"If checked, the drive image will be stored with the VM." = "如果選取，磁碟映像將會與虛擬電腦一齊儲存。";
+"If checked, the drive image will be stored with the VM." = "如選取，磁碟映像檔將會與虛擬電腦一齊儲存。";
 
 /* No comment provided by engineer. */
 "If checked, use local time for RTC which is required for Windows. Otherwise, use UTC clock." = "如選取，將會使用 Windows 所需要的 RTC 本地時間。否則將會使用 UTC 時鐘。";
@@ -1561,7 +1561,7 @@
 "If disabled, the default combination Control+Option (⌃+⌥) will be used." = "如停用，將會使用預設組合鍵 Control + Option (⌃ + ⌥)。";
 
 /* No comment provided by engineer. */
-"If enabled, a virtiofs share tagged 'rosetta' will be available on the Linux guest for installing Rosetta for emulating x86_64 on ARM64." = "如啟用，標記為「rosetta」的 virtiofs 分享將會於 Linux 客戶端上可用，用於安裝 Rosetta，於 arm64 上模擬 x86_64。";
+"If enabled, a virtiofs share tagged 'rosetta' will be available on the Linux guest for installing Rosetta for emulating x86_64 on ARM64." = "如啟用，標記為「rosetta」的 virtiofs 分享將會於 Linux 客戶端上可用，用作安裝 Rosetta，可以於 arm64 上模擬 x86_64。";
 
 /* No comment provided by engineer. */
 "If enabled, any existing screenshot will be deleted the next time the VM is started." = "如啟用，下次啟動虛擬電腦時，任何現存的快照將會被刪除。";
@@ -1723,7 +1723,7 @@
 "Prompt" = "提示";
 
 /* No comment provided by engineer. */
-"Protocol" = "通訊協定";
+"Protocol" = "協定";
 
 /* No comment provided by engineer. */
 "QEMU Machine Properties" = "QEMU 電腦屬性";
@@ -1840,10 +1840,10 @@
 "Share a copy of this VM and all its data." = "分享此虛擬電腦與其所有資料的複製。";
 
 /* No comment provided by engineer. */
-"Share Directory" = "分享檔案夾";
+"Share Directory" = "分享目錄";
 
 /* No comment provided by engineer. */
-"Share is read only" = "分享的資料是唯讀的";
+"Share is read only" = "分享資料唯讀";
 
 /* No comment provided by engineer. */
 "Share selected VM" = "分享已選取的虛擬電腦";
@@ -1924,7 +1924,7 @@
 "Text Color" = "文字顏色";
 
 /* No comment provided by engineer. */
-"The amount of storage to allocate for this image. Ignored if importing an image. If this is a raw image, then an empty file of this size will be stored with the VM. Otherwise, the disk image will dynamically expand up to this size." = "為此映像檔分配的儲存量。於匯入映像檔時會忽略此參數。如果此為一個 Raw 映像檔，則此大小的空檔案將會與虛擬電腦一齊儲存。否則，磁碟映像檔將會動態擴充至此大小。";
+"The amount of storage to allocate for this image. Ignored if importing an image. If this is a raw image, then an empty file of this size will be stored with the VM. Otherwise, the disk image will dynamically expand up to this size." = "為此映像檔分配的儲存量。於輸入映像檔時會忽略此參數。如果此為一個 Raw 映像檔，則此大小的空檔案將會與虛擬電腦一齊儲存。否則，磁碟映像檔將會動態擴充至此大小。";
 
 /* No comment provided by engineer. */
 "Theme" = "主題";
