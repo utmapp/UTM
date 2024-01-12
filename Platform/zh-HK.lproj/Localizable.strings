@@ -333,10 +333,10 @@
 "Eject" = "退出";
 
 /* No comment provided by engineer. */
-"Emulate" = "模擬";
+"Emulate" = "仿真";
 
 /* UTMQemuConstants */
-"Emulated VLAN" = "模擬 VLAN";
+"Emulated VLAN" = "仿真 VLAN";
 
 /* No comment provided by engineer. */
 "Enable Clipboard Sharing" = "啟用剪貼板分享";
@@ -871,7 +871,7 @@
 "Selected:" = "已選取：";
 
 /* VMDisplayWindowController */
-"Sends power down request to the guest. This simulates pressing the power button on a PC." = "向客戶端發送關閉電源請求。此操作模擬了按下 PC 上的電源按鈕。";
+"Sends power down request to the guest. This simulates pressing the power button on a PC." = "向客戶端發送關閉電源請求。此操作仿真了按下 PC 上的電源按鈕。";
 
 /* VMDisplayAppleWindowController
    VMDisplayQemuDisplayController */
@@ -953,7 +953,7 @@
 "Suspend is not supported for virtualization." = "暫停功能不支援虛擬化。";
 
 /* UTMQemuVirtualMachine */
-"Suspend is not supported when an emulated NVMe device is active." = "当模擬 NVMe 裝置處於啟用狀態時，不支援暫停功能。";
+"Suspend is not supported when an emulated NVMe device is active." = "当仿真 NVMe 裝置處於啟用狀態時，不支援暫停功能。";
 
 /* UTMQemuVirtualMachine */
 "Suspend is not supported when GPU acceleration is enabled." = "当 GPU 加速處於啟用狀態時，不支援暫停功能。";
@@ -980,7 +980,7 @@
 "TCP Server Connection" = "TCP 伺服器連線";
 
 /* VMDisplayWindowController */
-"Tells the VM process to shut down with risk of data corruption. This simulates holding down the power button on a PC." = "告知虛擬電腦程序關閉，並有損毀資料的風險。此操作模擬了在 PC 上按下電源按鈕。";
+"Tells the VM process to shut down with risk of data corruption. This simulates holding down the power button on a PC." = "告知虛擬電腦程序關閉，並有損毀資料的風險。此操作仿真了在 PC 上按下電源按鈕。";
 
 /* No comment provided by engineer. */
 "Test" = "測試";
@@ -1025,7 +1025,7 @@
 "The selected boot image contains the word '%@' but the guest architecture is '%@'. Please ensure you have selected an image that is compatible with '%@'." = "選取的啟動映像檔包含單字「%1$@」，但客戶端體系結構為「%2$@」。請確保你選取了與「%3$@」體系結構相容的映像檔。";
 
 /* No comment provided by engineer. */
-"The target does not support hardware emulated serial connections." = "目標平台不支援硬件模擬序列連線。";
+"The target does not support hardware emulated serial connections." = "目標平台不支援硬件仿真序列連線。";
 
 /* UTMQemuVirtualMachine */
 "The virtual machine is in an invalid state." = "虛擬電腦處於無效狀態。";
@@ -1046,10 +1046,10 @@
 "This backend is not supported on your machine." = "你的電腦不支援此後端。";
 
 /* No comment provided by engineer. */
-"This build does not emulation." = "此 UTM 構建不支援模擬。";
+"This build does not emulation." = "此 UTM 構建不支援仿真。";
 
 /* UTMQemuVirtualMachine */
-"This build of UTM does not support emulating the architecture of this VM." = "此 UTM 構建不支援模擬該虛擬電腦的體系結構。";
+"This build of UTM does not support emulating the architecture of this VM." = "此 UTM 構建不支援仿真該虛擬電腦的體系結構。";
 
 /* VMConfigSystemView */
 "This change will reset all settings" = "此變更會重設所有設定";
@@ -1432,16 +1432,16 @@
 "Edit…" = "編輯⋯";
 
 /* No comment provided by engineer. */
-"Emulated Audio Card" = "模擬聲卡";
+"Emulated Audio Card" = "仿真聲卡";
 
 /* No comment provided by engineer. */
-"Emulated Display Card" = "模擬顯卡";
+"Emulated Display Card" = "仿真顯卡";
 
 /* No comment provided by engineer. */
-"Emulated Network Card" = "模擬網卡";
+"Emulated Network Card" = "仿真網卡";
 
 /* No comment provided by engineer. */
-"Emulated Serial Device" = "模擬序列裝置";
+"Emulated Serial Device" = "仿真序列裝置";
 
 /* No comment provided by engineer. */
 "Enable Balloon Device" = "啟用 Balloon 裝置";
@@ -1450,7 +1450,7 @@
 "Enable Entropy Device" = "啟用 Entropy 裝置";
 
 /* No comment provided by engineer. */
-"Enable hardware OpenGL acceleration" = "啟用 OpenGL 硬體加速";
+"Enable hardware OpenGL acceleration" = "啟用硬體 OpenGL 加速";
 
 /* No comment provided by engineer. */
 "Enable Keyboard" = "啟用鍵盤";
@@ -1459,10 +1459,10 @@
 "Enable Pointer" = "啟用指標";
 
 /* No comment provided by engineer. */
-"Enable Rosetta (x86_64 Emulation)" = "啟用 Rosetta (x86_64 模擬)";
+"Enable Rosetta (x86_64 Emulation)" = "啟用 Rosetta (x86_64 仿真)";
 
 /* No comment provided by engineer. */
-"Enable Rosetta on Linux (x86_64 Emulation)" = "於 Linux 中啟用 Rosetta (x86_64 模擬)";
+"Enable Rosetta on Linux (x86_64 Emulation)" = "於 Linux 中啟用 Rosetta (x86_64 仿真)";
 
 /* No comment provided by engineer. */
 "Enable Sound" = "啟用聲音";
@@ -1486,13 +1486,13 @@
 "Font" = "字體";
 
 /* No comment provided by engineer. */
-"Force Disable CPU Flags" = "強制停用 CPU 標誌";
+"Force Disable CPU Flags" = "強制停用 CPU 標記";
 
 /* No comment provided by engineer. */
-"Force Enable CPU Flags" = "強制啟用 CPU 標誌";
+"Force Enable CPU Flags" = "強制啟用 CPU 標記";
 
 /* No comment provided by engineer. */
-"Force multicore may improve speed of emulation but also might result in unstable and incorrect emulation." = "強行多核心可能會提高模擬速度，但也會導致不穩定與錯誤的模擬。";
+"Force multicore may improve speed of emulation but also might result in unstable and incorrect emulation." = "強行多核心可能會提高仿真速度，但也會導致不穩定與錯誤的仿真。";
 
 /* No comment provided by engineer. */
 "Force PS/2 controller" = "強行使用 PS/2 控制器";
@@ -1546,10 +1546,10 @@
 "If checked, no drive image will be stored with the VM. Instead you can mount/unmount image while the VM is running." = "如選取，將不會儲存磁碟映像檔至虛擬電腦內。然而，你可以於虛擬電腦執行時裝載/卸除安裝映像。";
 
 /* No comment provided by engineer. */
-"If checked, the CPU flag will be enabled. Otherwise, the default value will be used." = "如選取，將會啟用此 CPU 標誌。否則將會使用預設值。";
+"If checked, the CPU flag will be enabled. Otherwise, the default value will be used." = "如選取，將會啟用此 CPU 標記。否則將會使用預設值。";
 
 /* No comment provided by engineer. */
-"If checked, the CPU flag will be disabled. Otherwise, the default value will be used." = "如選取，將會停用此 CPU 標誌。否則將會使用預設值。";
+"If checked, the CPU flag will be disabled. Otherwise, the default value will be used." = "如選取，將會停用此 CPU 標記。否則將會使用預設值。";
 
 /* No comment provided by engineer. */
 "If checked, the drive image will be stored with the VM." = "如選取，磁碟映像檔將會與虛擬電腦一齊儲存。";
@@ -1561,7 +1561,7 @@
 "If disabled, the default combination Control+Option (⌃+⌥) will be used." = "如停用，將會使用預設組合鍵 Control + Option (⌃ + ⌥)。";
 
 /* No comment provided by engineer. */
-"If enabled, a virtiofs share tagged 'rosetta' will be available on the Linux guest for installing Rosetta for emulating x86_64 on ARM64." = "如啟用，標記為「rosetta」的 virtiofs 分享將會於 Linux 客戶端上可用，用作安裝 Rosetta，可以於 arm64 上模擬 x86_64。";
+"If enabled, a virtiofs share tagged 'rosetta' will be available on the Linux guest for installing Rosetta for emulating x86_64 on ARM64." = "如啟用，標記為「rosetta」的 virtiofs 分享將會於 Linux 客戶端上可用，用作安裝 Rosetta，可以於 arm64 上仿真 x86_64。";
 
 /* No comment provided by engineer. */
 "If enabled, any existing screenshot will be deleted the next time the VM is started." = "如啟用，下次啟動虛擬電腦時，任何現存的快照將會被刪除。";
@@ -1585,7 +1585,7 @@
 "If enabled, scroll wheel input will be inverted." = "如啟用，將會反轉滾輪輸入。";
 
 /* No comment provided by engineer. */
-"If enabled, the default input devices will be emulated on the USB bus." = "如啟用，預設輸入裝置將會於 USB 匯流排上模擬。";
+"If enabled, the default input devices will be emulated on the USB bus." = "如啟用，預設輸入裝置將會於 USB 匯流排上仿真。";
 
 /* No comment provided by engineer. */
 "If set, a frame limit can improve smoothness in rendering by preventing stutters when set to the lowest value your device can handle." = "如設定了幀限制，則當設定為你的裝置可以處理的最低值時，幀限制可以防止卡頓，藉此提升渲染的平滑度。";
@@ -1687,19 +1687,19 @@
 "New Shared Directory…" = "新增分享目錄⋯";
 
 /* No comment provided by engineer. */
-"New VM" = "新增虛擬機";
+"New VM" = "新增虛擬電腦";
 
 /* No comment provided by engineer. */
 "Older versions of UTM added each IDE device to a separate bus. Check this to change the configuration to place two units on each bus." = "舊版本的 UTM 將每個 IDE 裝置加至單獨的匯流排中。檢查此項以更改配置，以便於每個匯流排上放置兩個單元。";
 
 /* No comment provided by engineer. */
-"Only available if host architecture matches the target. Otherwise, TCG emulation is used." = "僅當主機架構與目標匹配時才可用。否則，將使用 TCG 模擬。";
+"Only available if host architecture matches the target. Otherwise, TCG emulation is used." = "僅當主機架構與目標匹配時才可用。否則，將使用 TCG 仿真。";
 
 /* No comment provided by engineer. */
 "Only available on macOS virtual machines." = "僅可用於 macOS 虛擬電腦。";
 
 /* No comment provided by engineer. */
-"Only available when Hypervisor is used on supported hardware. TSO speeds up Intel emulation in the guest at the cost of decreased performance in general." = "僅當於受支援的硬體上使用 Hypervisor 時才可用。TSO 提升了客戶端的 Intel 模擬速度，但以總體的效能降低為代價。";
+"Only available when Hypervisor is used on supported hardware. TSO speeds up Intel emulation in the guest at the cost of decreased performance in general." = "僅當於受支援的硬體上使用 Hypervisor 時才可用。TSO 提升了客戶端的 Intel 仿真速度，但以總體的效能降低為代價。";
 
 /* No comment provided by engineer. */
 "Open VM Settings" = "開啟虛擬電腦設定";
