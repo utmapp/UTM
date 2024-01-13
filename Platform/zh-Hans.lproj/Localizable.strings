@@ -527,7 +527,7 @@
 "Italic, Bold" = "斜体，粗体";
 
 /* No comment provided by engineer. */
-"Keep UTM running after last window is closed and all VMs are shut down" = "最后一个窗口关闭且所有虚拟机关机后保持 UTM 运行";
+"Keep UTM running after last window is closed and all VMs are shut down" = "在关闭最后一个窗口和关闭所有虚拟机后继续运行 UTM";
 
 /* No comment provided by engineer. */
 "License" = "许可";
@@ -1004,7 +1004,7 @@
 "The drive '%@' already exists and cannot be created." = "驱动器 '%@' 已存在，无法创建。";
 
 /* UTMDownloadSupportToolsTaskError */
-"The guest support tools have already been mounted." = "客户机支持工具已在挂载。";
+"The guest support tools have already been mounted." = "客户机支持工具已挂载。";
 
 /* UTMAppleConfiguration */
 "The host operating system needs to be updated to support one or more features requested by the guest." = "需要更新主机的操作系统，以支持客户机请求的一个或多个功能。";
