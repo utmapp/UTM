@@ -72,7 +72,7 @@
 "AltJIT error: %@" = "AltJIT 错误：%@";
 
 /* UTMData */
-"An existing virtual machine already exists with this name." = "已存在了一个有此名称的虚拟机。";
+"An existing virtual machine already exists with this name." = "已存在一个有此名称的虚拟机。";
 
 /* UTMConfiguration */
 "An internal error has occurred." = "发生了内部错误。";
@@ -372,7 +372,7 @@
 "Failed to change current directory." = "更改当前目录失败。";
 
 /* UTMData */
-"Failed to clone VM." = "克隆虚拟机失败。";
+"Failed to clone VM." = "复制虚拟机失败。";
 
 /* UTMData */
 "Failed to decode JitStreamer response." = "未能解码 JitStreamer 响应。";
@@ -1420,7 +1420,7 @@
 "Download Windows 11 for ARM64 Preview VHDX" = "下载 Windows 11 ARM64 Preview VHDX 映像";
 
 /* No comment provided by engineer. */
-"Downscaling" = "近邻取样";
+"Downscaling" = "细化";
 
 /* No comment provided by engineer. */
 "Edit" = "编辑";
@@ -1582,7 +1582,7 @@
 "If enabled, resizing of the VM window will not be allowed." = "若启用，将不允许调整虚拟机窗口的大小。";
 
 /* No comment provided by engineer. */
-"If enabled, scroll wheel input will be inverted." = "若启用，滚轮输入将反转。";
+"If enabled, scroll wheel input will be inverted." = "若启用，将反转滚轮输入。";
 
 /* No comment provided by engineer. */
 "If enabled, the default input devices will be emulated on the USB bus." = "若启用，默认输入设备将在 USB 总线上模拟。";
@@ -1819,7 +1819,7 @@
 "Secure Boot with TPM 2.0" = "使用 TPM 2.0 的安全启动";
 
 /* No comment provided by engineer. */
-"Select an existing disk image." = "选中一个现有的磁盘映像。";
+"Select an existing disk image." = "选择一个现有的磁盘映像。";
 
 /* No comment provided by engineer. */
 "Serial" = "序列";
@@ -1843,7 +1843,7 @@
 "Share Directory" = "共享目录";
 
 /* No comment provided by engineer. */
-"Share is read only" = "共享的数据为只读";
+"Share is read only" = "共享为只读";
 
 /* No comment provided by engineer. */
 "Share selected VM" = "共享已选中的虚拟机";
@@ -1906,7 +1906,7 @@
 "Storage" = "存储空间";
 
 /* No comment provided by engineer. */
-"stty cols $COLS rows $ROWS\n" = "stty cols $COLS rows $ROWS\n";
+"stty cols $COLS rows $ROWS\n" = "stty 行 $ROWS 列 $COLS\n";
 
 /* No comment provided by engineer. */
 "Suspend" = "挂起";
