@@ -19,6 +19,15 @@
       }
     },
     {
+      "identity" : "cod",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/saagarjha/Cod.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "9ab61a00a5d9e4d21ed15af36734ea435cb4cf8c"
+      }
+    },
+    {
       "identity" : "inappsettingskit",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/futuretap/InAppSettingsKit.git",
@@ -61,6 +70,15 @@
       "state" : {
         "revision" : "532d8b529501fb73a2455b179e0bbb6d49b652ed",
         "version" : "1.5.3"
+      }
+    },
+    {
+      "identity" : "swiftconnect",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/utmapp/SwiftConnect",
+      "state" : {
+        "branch" : "main",
+        "revision" : "853f37a2071bf4ea3d225f7b538325cf6342edf2"
       }
     },
     {

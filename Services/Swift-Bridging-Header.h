@@ -31,6 +31,7 @@
 #include "UTMLogging.h"
 #include "UTMLegacyViewState.h"
 #include "UTMSpiceIO.h"
+#include "GenerateKey.h"
 #if TARGET_OS_IPHONE
 #include "UTMLocationManager.h"
 #include "VMDisplayViewController.h"
