@@ -58,6 +58,9 @@ struct UTMApp: App {
             SettingsView()
         }
         UTMMenuBarExtraScene(data: data)
+        Window("UTM Server", id: "server") {
+            UTMServerView().environmentObject(data.remoteServer.state)
+        }
     }
     
     // HACK: SwiftUI doesn't provide if-statement support in SceneBuilder

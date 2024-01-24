@@ -882,6 +882,7 @@
 		CED8DF7728A120C100C34345 /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = CED8DF7928A120C100C34345 /* Localizable.stringsdict */; };
 		CEDF83F9258AE24E0030E4AC /* UTMPasteboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEDF83F8258AE24E0030E4AC /* UTMPasteboard.swift */; };
 		CEDF83FA258AE24E0030E4AC /* UTMPasteboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEDF83F8258AE24E0030E4AC /* UTMPasteboard.swift */; };
+		CEE06B272B2FC89400A811AE /* UTMServerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE06B262B2FC89400A811AE /* UTMServerView.swift */; };
 		CEE7E936287CFDB100282049 /* UTMLegacyQemuConfiguration+Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = CEE7E934287CFDB100282049 /* UTMLegacyQemuConfiguration+Constants.m */; };
 		CEE7E937287CFDB100282049 /* UTMLegacyQemuConfiguration+Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = CEE7E934287CFDB100282049 /* UTMLegacyQemuConfiguration+Constants.m */; };
 		CEE7E938287CFDB100282049 /* UTMLegacyQemuConfiguration+Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = CEE7E934287CFDB100282049 /* UTMLegacyQemuConfiguration+Constants.m */; };
@@ -1987,6 +1988,7 @@
 		CEE0420B244117040001680F /* UTMLegacyQemuConfiguration+Display.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMLegacyQemuConfiguration+Display.m"; sourceTree = "<group>"; };
 		CEE0421024418F2E0001680F /* UTMLegacyQemuConfiguration+Miscellaneous.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMLegacyQemuConfiguration+Miscellaneous.h"; sourceTree = "<group>"; };
 		CEE0421124418F2E0001680F /* UTMLegacyQemuConfiguration+Miscellaneous.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMLegacyQemuConfiguration+Miscellaneous.m"; sourceTree = "<group>"; };
+		CEE06B262B2FC89400A811AE /* UTMServerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMServerView.swift; sourceTree = "<group>"; };
 		CEE7E934287CFDB100282049 /* UTMLegacyQemuConfiguration+Constants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UTMLegacyQemuConfiguration+Constants.m"; sourceTree = "<group>"; };
 		CEE7E935287CFDB100282049 /* UTMLegacyQemuConfiguration+Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UTMLegacyQemuConfiguration+Constants.h"; sourceTree = "<group>"; };
 		CEE7ED472A90256100E6B4AB /* VMDisplayMetalViewController+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VMDisplayMetalViewController+Private.h"; sourceTree = "<group>"; };
@@ -2593,6 +2595,7 @@
 				CEBBF1A624B5730F00C15049 /* UTMDataExtension.swift */,
 				84E3A91A2946D2590024A740 /* UTMMenuBarExtraScene.swift */,
 				CEB54C802931C43F000D2AA9 /* UTMPatches.swift */,
+				CEE06B262B2FC89400A811AE /* UTMServerView.swift */,
 				8401FD9F269D266E00265F0D /* VMConfigAppleBootView.swift */,
 				8401FDA3269D43CF00265F0D /* VMConfigAppleDisplayView.swift */,
 				8401FDAF269E1F7F00265F0D /* VMConfigAppleDriveCreateView.swift */,
@@ -3564,6 +3567,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CEE06B272B2FC89400A811AE /* UTMServerView.swift in Sources */,
 				CEB63A7724F4654400CAF323 /* Main.swift in Sources */,
 				84E3A91B2946D2590024A740 /* UTMMenuBarExtraScene.swift in Sources */,
 				CEB63A7B24F469E300CAF323 /* UTMJailbreak.m in Sources */,
