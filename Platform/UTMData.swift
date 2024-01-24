@@ -94,6 +94,11 @@ struct AlertMessage: Identifiable {
     private(set) var remoteServer: UTMRemoteServer!
     #endif
 
+    #if WITH_REMOTE
+    /// Remote access client
+    private(set) var remoteClient: UTMRemoteClient!
+    #endif
+
     /// Queue to run `busyWork` tasks
     private var busyQueue: DispatchQueue
     
@@ -107,6 +112,9 @@ struct AlertMessage: Identifiable {
         self.selectedVM = nil
         #if os(macOS)
         self.remoteServer = UTMRemoteServer(data: self)
+        #endif
+        #if WITH_REMOTE
+        self.remoteClient = UTMRemoteClient()
         #endif
         listLoadFromDefaults()
     }

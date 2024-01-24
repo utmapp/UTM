@@ -610,6 +610,7 @@
 		CE2D958E24AD4F990059923A /* UTMApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D955524AD4F980059923A /* UTMApp.swift */; };
 		CE2D958F24AD4FF00059923A /* VMCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D954324AD4F980059923A /* VMCardView.swift */; };
 		CE2D959024AD50D50059923A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 521F3EFB2414F73800130500 /* Localizable.strings */; };
+		CE38EC692B5DB3AE008B324B /* UTMRemoteClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE38EC682B5DB3AE008B324B /* UTMRemoteClient.swift */; };
 		CE4698F924C8FBD9008C1BD6 /* Icons in Resources */ = {isa = PBXBuildFile; fileRef = CE4698F824C8FBD9008C1BD6 /* Icons */; };
 		CE4698FA24C8FBD9008C1BD6 /* Icons in Resources */ = {isa = PBXBuildFile; fileRef = CE4698F824C8FBD9008C1BD6 /* Icons */; };
 		CE5076DB250AB55D00C26C19 /* VMDisplayMetalViewController+Pencil.m in Sources */ = {isa = PBXBuildFile; fileRef = CE5076DA250AB55D00C26C19 /* VMDisplayMetalViewController+Pencil.m */; platformFilter = ios; };
@@ -1864,6 +1865,7 @@
 		CE2D955624AD4F980059923A /* Swift-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Swift-Bridging-Header.h"; sourceTree = "<group>"; };
 		CE31C243225E553500A965DD /* UTMLegacyQemuConfiguration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMLegacyQemuConfiguration.h; sourceTree = "<group>"; };
 		CE31C244225E555600A965DD /* UTMLegacyQemuConfiguration.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMLegacyQemuConfiguration.m; sourceTree = "<group>"; };
+		CE38EC682B5DB3AE008B324B /* UTMRemoteClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMRemoteClient.swift; sourceTree = "<group>"; };
 		CE3ADD65240EFBCA002D6A5F /* VMDisplayMetalViewController+Keyboard.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VMDisplayMetalViewController+Keyboard.h"; sourceTree = "<group>"; };
 		CE3ADD66240EFBCA002D6A5F /* VMDisplayMetalViewController+Keyboard.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "VMDisplayMetalViewController+Keyboard.m"; sourceTree = "<group>"; };
 		CE3ADD682411C661002D6A5F /* VMCursor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMCursor.h; sourceTree = "<group>"; };
@@ -2831,6 +2833,7 @@
 			isa = PBXGroup;
 			children = (
 				CE9B15402B11A74E003A32DD /* UTMRemoteKeyManager.swift */,
+				CE38EC682B5DB3AE008B324B /* UTMRemoteClient.swift */,
 				CE9B153E2B11A63E003A32DD /* UTMRemoteServer.swift */,
 				CE9B15452B12A87E003A32DD /* GenerateKey.h */,
 				CE9B15462B12A87E003A32DD /* GenerateKey.c */,
@@ -4045,6 +4048,7 @@
 				CEF7F6082AEEDCC400E34952 /* VMConfigDisplayConsoleView.swift in Sources */,
 				CEF7F6092AEEDCC400E34952 /* UTMQemuPort.swift in Sources */,
 				CEF7F60A2AEEDCC400E34952 /* VMConfigSerialView.swift in Sources */,
+				CE38EC692B5DB3AE008B324B /* UTMRemoteClient.swift in Sources */,
 				CEF7F60B2AEEDCC400E34952 /* VMWizardState.swift in Sources */,
 				CEF7F60C2AEEDCC400E34952 /* UTMQemuConfigurationInput.swift in Sources */,
 				CEF7F60D2AEEDCC400E34952 /* VMDisplayMetalViewController+Keyboard.m in Sources */,
