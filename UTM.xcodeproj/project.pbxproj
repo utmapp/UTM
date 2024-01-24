@@ -652,6 +652,7 @@
 		CE9B15382B11A4A7003A32DD /* SwiftConnect in Frameworks */ = {isa = PBXBuildFile; productRef = CE9B15372B11A4A7003A32DD /* SwiftConnect */; };
 		CE9B153A2B11A4AE003A32DD /* SwiftConnect in Frameworks */ = {isa = PBXBuildFile; productRef = CE9B15392B11A4AE003A32DD /* SwiftConnect */; };
 		CE9B153C2B11A4B4003A32DD /* SwiftConnect in Frameworks */ = {isa = PBXBuildFile; productRef = CE9B153B2B11A4B4003A32DD /* SwiftConnect */; };
+		CE9B153F2B11A63E003A32DD /* UTMRemoteServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9B153E2B11A63E003A32DD /* UTMRemoteServer.swift */; };
 		CE9B15412B11A74E003A32DD /* UTMRemoteKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9B15402B11A74E003A32DD /* UTMRemoteKeyManager.swift */; };
 		CE9B15422B11A74E003A32DD /* UTMRemoteKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9B15402B11A74E003A32DD /* UTMRemoteKeyManager.swift */; };
 		CE9B15432B11A74E003A32DD /* UTMRemoteKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9B15402B11A74E003A32DD /* UTMRemoteKeyManager.swift */; };
@@ -1912,6 +1913,7 @@
 		CE9A352D26533A51005077CF /* JailbreakInterposer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = JailbreakInterposer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE9A353026533A52005077CF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CE9A353F26533AE6005077CF /* JailbreakInterposer.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = JailbreakInterposer.c; sourceTree = "<group>"; };
+		CE9B153E2B11A63E003A32DD /* UTMRemoteServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMRemoteServer.swift; sourceTree = "<group>"; };
 		CE9B15402B11A74E003A32DD /* UTMRemoteKeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMRemoteKeyManager.swift; sourceTree = "<group>"; };
 		CE9B15452B12A87E003A32DD /* GenerateKey.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GenerateKey.h; sourceTree = "<group>"; };
 		CE9B15462B12A87E003A32DD /* GenerateKey.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = GenerateKey.c; sourceTree = "<group>"; };
@@ -2826,6 +2828,7 @@
 			isa = PBXGroup;
 			children = (
 				CE9B15402B11A74E003A32DD /* UTMRemoteKeyManager.swift */,
+				CE9B153E2B11A63E003A32DD /* UTMRemoteServer.swift */,
 				CE9B15452B12A87E003A32DD /* GenerateKey.h */,
 				CE9B15462B12A87E003A32DD /* GenerateKey.c */,
 			);
@@ -3732,6 +3735,7 @@
 				CE020BA424AEDC7C00B44AB6 /* UTMData.swift in Sources */,
 				CE25124929BFDBA6000790AB /* UTMScriptingGuestFileImpl.swift in Sources */,
 				848A98C8287206AE006F0550 /* VMConfigAppleVirtualizationView.swift in Sources */,
+				CE9B153F2B11A63E003A32DD /* UTMRemoteServer.swift in Sources */,
 				847BF9AC2A49C783000BD9AA /* VMData.swift in Sources */,
 				CE25124729BFDB87000790AB /* UTMScriptingGuestProcessImpl.swift in Sources */,
 				CE2D958824AD4F990059923A /* VMConfigPortForwardForm.swift in Sources */,

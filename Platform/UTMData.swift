@@ -88,7 +88,12 @@ struct AlertMessage: Identifiable {
     nonisolated private var documentsURL: URL {
         UTMData.defaultStorageUrl
     }
-    
+
+    #if os(macOS)
+    /// Remote access server
+    private(set) var remoteServer: UTMRemoteServer!
+    #endif
+
     /// Queue to run `busyWork` tasks
     private var busyQueue: DispatchQueue
     
@@ -100,6 +105,9 @@ struct AlertMessage: Identifiable {
         self.virtualMachines = []
         self.pendingVMs = []
         self.selectedVM = nil
+        #if os(macOS)
+        self.remoteServer = UTMRemoteServer(data: self)
+        #endif
         listLoadFromDefaults()
     }
     

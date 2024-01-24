@@ -384,3 +384,20 @@ extension String {
         return Int(numeric)
     }
 }
+
+extension Encodable {
+    func propertyList() throws -> Any {
+        let encoder = PropertyListEncoder()
+        encoder.outputFormat = .xml
+        let xml = try encoder.encode(self)
+        return try PropertyListSerialization.propertyList(from: xml, format: nil)
+    }
+}
+
+extension Decodable {
+    init(fromPropertyList propertyList: Any) throws {
+        let data = try PropertyListSerialization.data(fromPropertyList: propertyList, format: .xml, options: 0)
+        let decoder = PropertyListDecoder()
+        self = try decoder.decode(Self.self, from: data)
+    }
+}

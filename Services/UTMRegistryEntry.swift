@@ -109,11 +109,7 @@ import Foundation
     }
     
     func asDictionary() throws -> [String: Any] {
-        let encoder = PropertyListEncoder()
-        encoder.outputFormat = .xml
-        let xml = try encoder.encode(self)
-        let dict = try PropertyListSerialization.propertyList(from: xml, format: nil)
-        return dict as! [String: Any]
+        return try propertyList() as! [String: Any]
     }
     
     /// Update the UUID
@@ -128,13 +124,6 @@ import Foundation
 
 protocol UTMRegistryEntryDecodable: Decodable {}
 extension UTMRegistryEntry: UTMRegistryEntryDecodable {}
-extension UTMRegistryEntryDecodable {
-    init(from dictionary: [String: Any]) throws {
-        let data = try PropertyListSerialization.data(fromPropertyList: dictionary, format: .xml, options: 0)
-        let decoder = PropertyListDecoder()
-        self = try decoder.decode(Self.self, from: data)
-    }
-}
 
 // MARK: - Accessors
 @MainActor extension UTMRegistryEntry {
