@@ -122,6 +122,8 @@ extension UTMRemoteClient {
 
         @Published var isScanning: Bool = false
 
+        @Published private(set) var isConnected: Bool = false
+
         @Published var alertMessage: AlertMessage?
 
         init() {

@@ -884,6 +884,7 @@
 		CEDF83F9258AE24E0030E4AC /* UTMPasteboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEDF83F8258AE24E0030E4AC /* UTMPasteboard.swift */; };
 		CEDF83FA258AE24E0030E4AC /* UTMPasteboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEDF83F8258AE24E0030E4AC /* UTMPasteboard.swift */; };
 		CEE06B272B2FC89400A811AE /* UTMServerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE06B262B2FC89400A811AE /* UTMServerView.swift */; };
+		CEE06B292B30013500A811AE /* UTMRemoteConnectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE06B282B30013500A811AE /* UTMRemoteConnectView.swift */; };
 		CEE7E936287CFDB100282049 /* UTMLegacyQemuConfiguration+Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = CEE7E934287CFDB100282049 /* UTMLegacyQemuConfiguration+Constants.m */; };
 		CEE7E937287CFDB100282049 /* UTMLegacyQemuConfiguration+Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = CEE7E934287CFDB100282049 /* UTMLegacyQemuConfiguration+Constants.m */; };
 		CEE7E938287CFDB100282049 /* UTMLegacyQemuConfiguration+Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = CEE7E934287CFDB100282049 /* UTMLegacyQemuConfiguration+Constants.m */; };
@@ -1991,6 +1992,7 @@
 		CEE0421024418F2E0001680F /* UTMLegacyQemuConfiguration+Miscellaneous.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMLegacyQemuConfiguration+Miscellaneous.h"; sourceTree = "<group>"; };
 		CEE0421124418F2E0001680F /* UTMLegacyQemuConfiguration+Miscellaneous.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMLegacyQemuConfiguration+Miscellaneous.m"; sourceTree = "<group>"; };
 		CEE06B262B2FC89400A811AE /* UTMServerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMServerView.swift; sourceTree = "<group>"; };
+		CEE06B282B30013500A811AE /* UTMRemoteConnectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMRemoteConnectView.swift; sourceTree = "<group>"; };
 		CEE7E934287CFDB100282049 /* UTMLegacyQemuConfiguration+Constants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UTMLegacyQemuConfiguration+Constants.m"; sourceTree = "<group>"; };
 		CEE7E935287CFDB100282049 /* UTMLegacyQemuConfiguration+Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UTMLegacyQemuConfiguration+Constants.h"; sourceTree = "<group>"; };
 		CEE7ED472A90256100E6B4AB /* VMDisplayMetalViewController+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VMDisplayMetalViewController+Private.h"; sourceTree = "<group>"; };
@@ -2639,6 +2641,7 @@
 				841E58CA28937EE200137A20 /* UTMExternalSceneDelegate.swift */,
 				841E58CD28937FED00137A20 /* UTMSingleWindowView.swift */,
 				842B9F8C28CC58B700031EE7 /* UTMPatches.swift */,
+				CEE06B282B30013500A811AE /* UTMRemoteConnectView.swift */,
 				84CE3DB02904C7A100FF068B /* UTMSettingsView.swift */,
 				CE2D954D24AD4F980059923A /* VMConfigNetworkPortForwardView.swift */,
 				84CF5DD2288DCE6400D01721 /* VMDisplayHostedView.swift */,
@@ -3935,6 +3938,7 @@
 				CEF7F5982AEEDCC400E34952 /* VMSettingsAddDeviceMenuView.swift in Sources */,
 				CEF7F5992AEEDCC400E34952 /* VMRemovableDrivesView.swift in Sources */,
 				CEF7F59A2AEEDCC400E34952 /* UTMQemuConfigurationDrive.swift in Sources */,
+				CEE06B292B30013500A811AE /* UTMRemoteConnectView.swift in Sources */,
 				CEF7F59B2AEEDCC400E34952 /* UTMQemuConfigurationSharing.swift in Sources */,
 				CEF7F59C2AEEDCC400E34952 /* ContentView.swift in Sources */,
 				CEF7F59D2AEEDCC400E34952 /* VMData.swift in Sources */,

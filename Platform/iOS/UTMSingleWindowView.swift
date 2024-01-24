@@ -36,7 +36,11 @@ struct UTMSingleWindowView: View {
             if let session = session {
                 VMWindowView(id: identifier!, isInteractive: isInteractive).environmentObject(session)
             } else if isInteractive {
+                #if WITH_REMOTE
+                RemoteContentView(remoteClientState: data.remoteClient.state).environmentObject(data)
+                #else
                 ContentView().environmentObject(data)
+                #endif
             } else {
                 VStack {
                     Text("Waiting for VM to connect to display...")
@@ -68,6 +72,22 @@ struct UTMSingleWindowView: View {
         }
     }
 }
+
+#if WITH_REMOTE
+struct RemoteContentView: View {
+    @ObservedObject var remoteClientState: UTMRemoteClient.State
+
+    var body: some View {
+        if remoteClientState.isConnected {
+            ContentView()
+                .transition(.move(edge: .trailing))
+        } else {
+            UTMRemoteConnectView(remoteClientState: remoteClientState)
+                .transition(.move(edge: .leading))
+        }
+    }
+}
+#endif
 
 struct UTMSingleWindowView_Previews: PreviewProvider {
     static var previews: some View {
