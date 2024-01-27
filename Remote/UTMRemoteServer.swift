@@ -22,7 +22,7 @@ import UserNotifications
 let service = "_utm_server._tcp"
 
 actor UTMRemoteServer {
-    private let data: UTMData
+    fileprivate let data: UTMData
     private let keyManager = UTMRemoteKeyManager(forClient: false)
     private let center = UNUserNotificationCenter.current()
     let state: State
@@ -31,7 +31,8 @@ actor UTMRemoteServer {
     private var notificationDelegate: NotificationDelegate?
     private var listener: Task<Void, Error>?
     private var pendingConnections: [State.ClientFingerprint: Connection] = [:]
-    private var establishedConnections: [State.ClientFingerprint: Connection] = [:]
+    private var establishedConnections: [State.ClientFingerprint: Remote] = [:]
+    private var local: Local!
 
     private func _replaceCancellables(with set: Set<AnyCancellable>) {
         cancellables = set
@@ -109,25 +110,30 @@ actor UTMRemoteServer {
             }
             try await keyManager.load()
             registerNotifications()
+            local = Local(server: self)
             listener = Task {
                 await withErrorNotification {
                     for try await connection in Connection.advertise(forServiceType: service, identity: keyManager.identity) {
-                        await withErrorNotification {
-                            let connection = try await Connection(connection: connection)
+                        if let connection = try? await Connection(connection: connection) {
                             await newRemoteConnection(connection)
                         }
                     }
                 }
-                await state.setServerActive(false)
+                await stop()
             }
             await state.setServerActive(true)
         }
     }
 
     func stop() async {
+        await state.disconnectAll()
         unregisterNotifications()
-        listener?.cancel()
-        listener = nil
+        if let listener = listener {
+            self.listener = nil
+            listener.cancel()
+            _ = await listener.result
+        }
+        local = nil
         await state.setServerActive(false)
     }
 
@@ -169,8 +175,8 @@ actor UTMRemoteServer {
 
     private func connectedClientsHasChanged(_ connectedClients: Set<State.ClientFingerprint>) {
         for connectedClient in connectedClients {
-            if let connection = establishedConnections.removeValue(forKey: connectedClient) {
-                connection.close()
+            if let remote = establishedConnections.removeValue(forKey: connectedClient) {
+                remote.close()
             }
         }
     }
@@ -181,6 +187,15 @@ actor UTMRemoteServer {
             return
         }
         await withErrorNotification {
+            let peer = Peer(connection: connection, localInterface: local)
+            let remote = Remote(peer: peer)
+            do {
+                try await remote.handshake()
+            } catch {
+                peer.close()
+                throw error
+            }
+            establishedConnections.updateValue(remote, forKey: fingerprint)
             await state.connect(fingerprint)
         }
     }
@@ -278,12 +293,17 @@ extension UTMRemoteServer {
                                             trigger: nil)
         do {
             try await center.add(request)
+            if !isUnknown {
+                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(15)) {
+                    self.center.removeDeliveredNotifications(withIdentifiers: [fingerprint])
+                }
+            }
         } catch {
             logger.error("Error sending remote connection request: \(error.localizedDescription)")
         }
     }
 
-    private func notifyError(_ error: Error) async {
+    fileprivate func notifyError(_ error: Error) async {
         logger.error("UTM Remote Server error: '\(error)'")
         let settings = await center.notificationSettings()
         guard settings.authorizationStatus == .authorized else {
@@ -430,6 +450,10 @@ extension UTMRemoteServer {
             connectedClients.remove(fingerprint)
         }
 
+        func disconnectAll() {
+            connectedClients.removeAll()
+        }
+
         func approve(_ fingerprint: ClientFingerprint) {
             let (_, client) = client(forFingerprint: fingerprint)
             approvedClients.insert(client)
@@ -440,6 +464,77 @@ extension UTMRemoteServer {
             let (_, client) = client(forFingerprint: fingerprint)
             approvedClients.remove(client)
             blockedClients.insert(client)
+        }
+    }
+}
+
+extension UTMRemoteServer {
+    class Local: LocalInterface {
+        typealias M = UTMRemoteMessageServer
+
+        private let server: UTMRemoteServer
+
+        private var data: UTMData {
+            server.data
+        }
+
+        init(server: UTMRemoteServer) {
+            self.server = server
+        }
+
+        func handle(message: M, data: Data) async throws -> Data {
+            switch message {
+            case .serverHandshake:
+                return try await _handshake(parameters: .decode(data)).encode()
+            }
+        }
+
+        func handle(error: Error) {
+            Task {
+                await server.notifyError(error)
+            }
+        }
+
+        private func _handshake(parameters: M.ServerHandshake.Request) async throws -> M.ServerHandshake.Reply {
+            return .init(version: UTMRemoteMessageServer.version)
+        }
+    }
+}
+
+extension UTMRemoteServer {
+    class Remote {
+        typealias M = UTMRemoteMessageClient
+        private let peer: Peer<UTMRemoteMessageServer>
+
+        init(peer: Peer<UTMRemoteMessageServer>) {
+            self.peer = peer
+        }
+
+        func close() {
+            peer.close()
+        }
+
+        func handshake() async throws {
+            guard try await _handshake(parameters: .init(version: UTMRemoteMessageClient.version)).version == UTMRemoteMessageClient.version else {
+                throw ServerError.versionMismatch
+            }
+        }
+
+        private func _handshake(parameters: M.ClientHandshake.Request) async throws -> M.ClientHandshake.Reply {
+            try await M.ClientHandshake.send(parameters, to: peer)
+        }
+    }
+}
+
+extension UTMRemoteServer {
+    enum ServerError: LocalizedError {
+        case versionMismatch
+
+        var errorDescription: String? {
+            switch self {
+            case .versionMismatch:
+                return NSLocalizedString("The client interface version does not match the server.", comment: "UTMRemoteServer")
+            }
         }
     }
 }

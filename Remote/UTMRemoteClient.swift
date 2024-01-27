@@ -23,13 +23,17 @@ let service = "_utm_server._tcp"
 actor UTMRemoteClient {
     let state: State
     private let keyManager = UTMRemoteKeyManager(forClient: true)
+    private var local: Local
 
     private var scanTask: Task<Void, Error>?
     private var endpoints: [String: NWEndpoint] = [:]
 
+    private var server: Remote!
+
     @MainActor
-    init() {
+    init(data: UTMData) {
         self.state = State()
+        self.local = Local(data: data)
     }
 
     private func withErrorAlert(_ body: () async throws -> Void) async {
@@ -80,6 +84,17 @@ actor UTMRemoteClient {
         let connection = try await Connection.init(endpoint: endpoint, identity: keyManager.identity) { certs in
             return true
         }
+        try Task.checkCancellation()
+        let peer = Peer(connection: connection, localInterface: local)
+        let remote = Remote(peer: peer)
+        do {
+            try await remote.handshake()
+        } catch {
+            peer.close()
+            throw error
+        }
+        self.server = remote
+        await state.setConnected(true)
     }
 }
 
@@ -143,6 +158,64 @@ extension UTMRemoteClient {
         func updateFoundServers(_ servers: [Server]) {
             foundServers = servers
         }
+
+        fileprivate func setConnected(_ connected: Bool) {
+            isConnected = connected
+        }
+    }
+}
+
+extension UTMRemoteClient {
+    class Local: LocalInterface {
+        typealias M = UTMRemoteMessageClient
+
+        private let data: UTMData
+
+        init(data: UTMData) {
+            self.data = data
+        }
+
+        func handle(message: M, data: Data) async throws -> Data {
+            switch message {
+            case .clientHandshake:
+                return try await _handshake(parameters: .decode(data)).encode()
+            }
+        }
+
+        func handle(error: Error) {
+            Task {
+                await data.showErrorAlert(message: error.localizedDescription)
+            }
+        }
+
+        private func _handshake(parameters: M.ClientHandshake.Request) async throws -> M.ClientHandshake.Reply {
+            return .init(version: UTMRemoteMessageClient.version)
+        }
+    }
+}
+
+extension UTMRemoteClient {
+    class Remote {
+        typealias M = UTMRemoteMessageServer
+        private let peer: Peer<UTMRemoteMessageClient>
+
+        init(peer: Peer<UTMRemoteMessageClient>) {
+            self.peer = peer
+        }
+
+        func close() {
+            peer.close()
+        }
+
+        func handshake() async throws {
+            guard try await _handshake(parameters: .init(version: UTMRemoteMessageServer.version)).version == UTMRemoteMessageServer.version else {
+                throw ClientError.versionMismatch
+            }
+        }
+
+        private func _handshake(parameters: M.ServerHandshake.Request) async throws -> M.ServerHandshake.Reply {
+            try await M.ServerHandshake.send(parameters, to: peer)
+        }
     }
 }
 
@@ -160,6 +233,17 @@ extension UTMRemoteClient {
                 return NSLocalizedString("Password is required.", comment: "UTMRemoteClient")
             case .passwordInvalid:
                 return NSLocalizedString("Password is incorrect.", comment: "UTMRemoteClient")
+            }
+        }
+    }
+
+    enum ClientError: LocalizedError {
+        case versionMismatch
+
+        var errorDescription: String? {
+            switch self {
+            case .versionMismatch:
+                return NSLocalizedString("The server interface version does not match the client.", comment: "UTMRemoteClient")
             }
         }
     }

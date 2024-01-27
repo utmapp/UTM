@@ -110,7 +110,10 @@ private struct ServerConnectView: View {
     @EnvironmentObject private var data: UTMData
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
 
-    @State private var isConnecting: Bool = false
+    @State private var connectionTask: Task<Void, Error>?
+    private var isConnecting: Bool {
+        connectionTask != nil
+    }
     @State private var isPasswordRequired: Bool = false
     @State private var willBeSaved: Bool = true
 
@@ -157,7 +160,7 @@ private struct ServerConnectView: View {
                         if isConnecting {
                             ProgressView().progressViewStyle(.circular)
                             Button {
-                                connect()
+                                connectionTask?.cancel()
                             } label: {
                                 Text("Cancel")
                             }
@@ -183,8 +186,10 @@ private struct ServerConnectView: View {
     }
 
     private func connect() {
-        Task {
-            isConnecting = true
+        guard connectionTask == nil else {
+            return
+        }
+        connectionTask = Task {
             do {
                 try await remoteClient.connect(server, shouldSaveDetails: willBeSaved)
             } catch {
@@ -192,11 +197,13 @@ private struct ServerConnectView: View {
                     withAnimation {
                         isPasswordRequired = true
                     }
+                } else if error is CancellationError {
+                    // ignore it
                 } else {
                     remoteClientState.showErrorAlert(error.localizedDescription)
                 }
             }
-            isConnecting = false
+            connectionTask = nil
         }
     }
 }

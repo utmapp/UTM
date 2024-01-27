@@ -114,7 +114,7 @@ struct AlertMessage: Identifiable {
         self.remoteServer = UTMRemoteServer(data: self)
         #endif
         #if WITH_REMOTE
-        self.remoteClient = UTMRemoteClient()
+        self.remoteClient = UTMRemoteClient(data: self)
         #endif
         listLoadFromDefaults()
     }
