@@ -22,7 +22,7 @@ private let kSuspendSnapshotName = "suspend"
 private let kProbeSuspendDelay = 1*NSEC_PER_SEC
 
 /// QEMU backend virtual machine
-final class UTMQemuVirtualMachine: UTMQemuSpiceVirtualMachine {
+final class UTMQemuVirtualMachine: UTMSpiceVirtualMachine {
     struct Capabilities: UTMVirtualMachineCapabilities {
         var supportsProcessKill: Bool {
             true
@@ -143,8 +143,8 @@ final class UTMQemuVirtualMachine: UTMQemuSpiceVirtualMachine {
     
     private var swtpm: UTMSWTPM?
     
-    var changeCursorRequestInProgress: Bool = false
-    
+    private var changeCursorRequestInProgress: Bool = false
+
     @MainActor required init(packageUrl: URL, configuration: UTMQemuConfiguration, isShortcut: Bool = false) throws {
         self.isScopedAccess = packageUrl.startAccessingSecurityScopedResource()
         // load configuration
@@ -615,6 +615,37 @@ extension UTMQemuVirtualMachine: QEMUVirtualMachineDelegate {
                 return
             }
             config.serials[index].pttyDevice = URL(fileURLWithPath: path)
+        }
+    }
+}
+
+// MARK: - Input device switching
+extension UTMQemuVirtualMachine {
+    func requestInputTablet(_ tablet: Bool) {
+        guard !changeCursorRequestInProgress else {
+            return
+        }
+        guard let spiceIO = ioService else {
+            return
+        }
+        changeCursorRequestInProgress = true
+        Task {
+            defer {
+                changeCursorRequestInProgress = false
+            }
+            guard state == .started else {
+                return
+            }
+            guard let monitor = await monitor else {
+                return
+            }
+            do {
+                let index = try await monitor.mouseIndex(forAbsolute: tablet)
+                try await monitor.mouseSelect(index)
+                spiceIO.primaryInput?.requestMouseMode(!tablet)
+            } catch {
+                logger.error("Error changing mouse mode: \(error)")
+            }
         }
     }
 }

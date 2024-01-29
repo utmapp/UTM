@@ -17,8 +17,8 @@
 import Foundation
 import QEMUKit
 
-/// Common methods for all SPICE+QEMU virtual machines
-protocol UTMQemuSpiceVirtualMachine: UTMVirtualMachine where Configuration == UTMQemuConfiguration {
+/// Common methods for all SPICE virtual machines
+protocol UTMSpiceVirtualMachine: UTMVirtualMachine where Configuration == UTMQemuConfiguration {
     /// Set when VM is running with saving changes
     var isRunningAsDisposible: Bool { get }
     
@@ -31,15 +31,10 @@ protocol UTMQemuSpiceVirtualMachine: UTMVirtualMachine where Configuration == UT
     /// SPICE interface
     var ioService: UTMSpiceIO? { get }
     
-    /// QEMU monitor interface
-    var monitor: QEMUMonitor? { get async }
-    
-    /// QEMU GA interface
-    var guestAgent: QEMUGuestAgent? { get async }
-    
-    /// Set when cursor change is requested (to debounce the request)
-    var changeCursorRequestInProgress: Bool { get set }
-    
+    /// Change input mode
+    /// - Parameter tablet: If true, mouse events will be absolute
+    func requestInputTablet(_ tablet: Bool)
+
     /// Eject a removable drive
     /// - Parameter drive: Removable drive
     func eject(_ drive: UTMQemuConfigurationDrive) async throws
@@ -63,46 +58,15 @@ protocol UTMQemuSpiceVirtualMachine: UTMVirtualMachine where Configuration == UT
     func changeVirtfsSharedDirectory(with bookmark: Data, isSecurityScoped: Bool) async throws
 }
 
-// MARK: - Input device switching
-extension UTMQemuSpiceVirtualMachine {
-    func requestInputTablet(_ tablet: Bool) {
-        guard !changeCursorRequestInProgress else {
-            return
-        }
-        guard let spiceIO = ioService else {
-            return
-        }
-        changeCursorRequestInProgress = true
-        Task {
-            defer {
-                changeCursorRequestInProgress = false
-            }
-            guard state == .started else {
-                return
-            }
-            guard let monitor = await monitor else {
-                return
-            }
-            do {
-                let index = try await monitor.mouseIndex(forAbsolute: tablet)
-                try await monitor.mouseSelect(index)
-                spiceIO.primaryInput?.requestMouseMode(!tablet)
-            } catch {
-                logger.error("Error changing mouse mode: \(error)")
-            }
-        }
-    }
-}
-
 // MARK: - USB redirection
-extension UTMQemuSpiceVirtualMachine {
+extension UTMSpiceVirtualMachine {
     var hasUsbRedirection: Bool {
         return jb_has_usb_entitlement()
     }
 }
 
 // MARK: - Screenshot
-extension UTMQemuSpiceVirtualMachine {
+extension UTMSpiceVirtualMachine {
     @MainActor @discardableResult
     func takeScreenshot() async -> Bool {
         let screenshot = await ioService?.screenshot()
@@ -112,14 +76,14 @@ extension UTMQemuSpiceVirtualMachine {
 }
 
 // MARK: - External drives
-extension UTMQemuSpiceVirtualMachine {
+extension UTMSpiceVirtualMachine {
     @MainActor func externalImageURL(for drive: UTMQemuConfigurationDrive) -> URL? {
         registryEntry.externalDrives[drive.id]?.url
     }
 }
 
 // MARK: - Shared directory
-extension UTMQemuSpiceVirtualMachine {
+extension UTMSpiceVirtualMachine {
     @MainActor var sharedDirectoryURL: URL? {
         registryEntry.sharedDirectories.first?.url
     }
@@ -169,7 +133,7 @@ extension UTMQemuSpiceVirtualMachine {
 }
 
 // MARK: - Registry syncing
-extension UTMQemuSpiceVirtualMachine {
+extension UTMSpiceVirtualMachine {
     @MainActor func updateRegistryFromConfig() async throws {
         // save a copy to not collide with updateConfigFromRegistry()
         let configShare = config.sharing.directoryShareUrl

@@ -165,7 +165,7 @@ struct ContentView: View {
             case "pause":
                 if let vm = findVM(), vm.state == .started {
                     let shouldSaveOnPause: Bool
-                    if let vm = vm.wrapped as? (any UTMQemuSpiceVirtualMachine) {
+                    if let vm = vm.wrapped as? (any UTMSpiceVirtualMachine) {
                         shouldSaveOnPause = !vm.isRunningAsDisposible
                     } else {
                         shouldSaveOnPause = true

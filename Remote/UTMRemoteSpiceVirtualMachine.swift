@@ -16,7 +16,7 @@
 
 import Foundation
 
-final class UTMRemoteQemuVirtualMachine: UTMQemuSpiceVirtualMachine {
+final class UTMRemoteSpiceVirtualMachine: UTMSpiceVirtualMachine {
     struct Capabilities: UTMVirtualMachineCapabilities {
         var supportsProcessKill: Bool {
             true
@@ -91,10 +91,6 @@ final class UTMRemoteQemuVirtualMachine: UTMQemuSpiceVirtualMachine {
         }
     }
 
-    private(set) var monitor: QEMUMonitor?
-
-    private(set) var guestAgent: QEMUGuestAgent?
-
     var changeCursorRequestInProgress: Bool = false
 
     func reload(from packageUrl: URL?) throws {
@@ -110,7 +106,7 @@ final class UTMRemoteQemuVirtualMachine: UTMQemuSpiceVirtualMachine {
     }
 }
 
-extension UTMRemoteQemuVirtualMachine {
+extension UTMRemoteSpiceVirtualMachine {
     func start(options: UTMVirtualMachineStartOptions) async throws {
 
     }
@@ -132,7 +128,13 @@ extension UTMRemoteQemuVirtualMachine {
     }
 }
 
-extension UTMRemoteQemuVirtualMachine {
+extension UTMRemoteSpiceVirtualMachine {
+    func requestInputTablet(_ tablet: Bool) {
+
+    }
+}
+
+extension UTMRemoteSpiceVirtualMachine {
     func eject(_ drive: UTMQemuConfigurationDrive) async throws {
 
     }
@@ -143,7 +145,7 @@ extension UTMRemoteQemuVirtualMachine {
 
 }
 
-extension UTMRemoteQemuVirtualMachine {
+extension UTMRemoteSpiceVirtualMachine {
     func stopAccessingPath(_ path: String) async {
 
     }
@@ -153,7 +155,7 @@ extension UTMRemoteQemuVirtualMachine {
     }
 }
 
-extension UTMRemoteQemuVirtualMachine {
+extension UTMRemoteSpiceVirtualMachine {
     enum VMError: LocalizedError {
     }
 }

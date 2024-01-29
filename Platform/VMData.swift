@@ -456,7 +456,7 @@ class VMRemoteData: VMData {
         }
         let entry = registryEntryWrapped!
         let config = try await server.getQEMUConfiguration(for: entry.uuid)
-        let vm = UTMRemoteQemuVirtualMachine(forRemoteServer: server, remotePath: entry.package.path, entry: entry, config: config)
+        let vm = UTMRemoteSpiceVirtualMachine(forRemoteServer: server, remotePath: entry.package.path, entry: entry, config: config)
         wrapped = vm
         vm.updateConfigFromRegistry()
         subscribeToChildren()
