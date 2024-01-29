@@ -99,7 +99,7 @@ struct VMContextMenuModifier: ViewModifier {
                 }
                 #endif
                 
-                if let _ = vm.wrapped as? UTMQemuVirtualMachine {
+                if let _ = vm.config as? UTMQemuConfiguration {
                     Button {
                         data.run(vm: vm, options: .bootDisposibleMode)
                     } label: {
@@ -175,7 +175,7 @@ struct VMContextMenuModifier: ViewModifier {
         .onChange(of: (vm.config as? UTMQemuConfiguration)?.qemu.isGuestToolsInstallRequested) { newValue in
             if newValue == true {
                 data.busyWorkAsync {
-                    try await data.mountSupportTools(for: vm.wrapped as! UTMQemuVirtualMachine)
+                    try await data.mountSupportTools(for: vm.wrapped!)
                 }
             }
         }

@@ -21,10 +21,10 @@
     {
       "identity" : "cod",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/saagarjha/Cod.git",
+      "location" : "https://github.com/osy/Cod.git",
       "state" : {
         "branch" : "main",
-        "revision" : "9ab61a00a5d9e4d21ed15af36734ea435cb4cf8c"
+        "revision" : "a9880a8934a7ffce620941c418e6823f37cbb3f7"
       }
     },
     {
@@ -78,7 +78,7 @@
       "location" : "https://github.com/utmapp/SwiftConnect",
       "state" : {
         "branch" : "main",
-        "revision" : "7d8a5181bb882cf6faffed1cd4dfe3b169eeedfb"
+        "revision" : "c8c5584be464065688b6674f04510f38d4f4adb0"
       }
     },
     {

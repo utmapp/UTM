@@ -18,7 +18,11 @@ import SwiftUI
 
 @MainActor
 struct UTMApp: App {
+    #if WITH_REMOTE
+    @State private var data: UTMRemoteData = UTMRemoteData()
+    #else
     @State private var data: UTMData = UTMData()
+    #endif
     @Environment(\.openWindow) private var openWindow
     @Environment(\.dismissWindow) private var dismissWindow
 

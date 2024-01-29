@@ -19,8 +19,12 @@ import SwiftUI
 @MainActor
 struct UTMSingleWindowView: View {
     let isInteractive: Bool
-    
+
+    #if WITH_REMOTE
+    @State private var data: UTMRemoteData = UTMRemoteData()
+    #else
     @State private var data: UTMData = UTMData()
+    #endif
     @State private var session: VMSessionState?
     @State private var identifier: VMSessionState.WindowID?
 
@@ -76,10 +80,12 @@ struct UTMSingleWindowView: View {
 #if WITH_REMOTE
 struct RemoteContentView: View {
     @ObservedObject var remoteClientState: UTMRemoteClient.State
+    @EnvironmentObject private var data: UTMRemoteData
 
     var body: some View {
         if remoteClientState.isConnected {
             ContentView()
+                .environmentObject(data as UTMData)
                 .transition(.move(edge: .trailing))
         } else {
             UTMRemoteConnectView(remoteClientState: remoteClientState)

@@ -26,8 +26,8 @@ struct VMRemovableDrivesView: View {
     @State private var workaroundFileImporterBug: Bool = false
     @State private var currentDrive: UTMQemuConfigurationDrive?
     
-    private var qemuVM: UTMQemuVirtualMachine! {
-        vm.wrapped as? UTMQemuVirtualMachine
+    private var qemuVM: (any UTMQemuSpiceVirtualMachine)! {
+        vm.wrapped as? any UTMQemuSpiceVirtualMachine
     }
     
     var fileManager: FileManager {

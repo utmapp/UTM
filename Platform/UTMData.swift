@@ -94,11 +94,6 @@ struct AlertMessage: Identifiable {
     private(set) var remoteServer: UTMRemoteServer!
     #endif
 
-    #if WITH_REMOTE
-    /// Remote access client
-    private(set) var remoteClient: UTMRemoteClient!
-    #endif
-
     /// Queue to run `busyWork` tasks
     private var busyQueue: DispatchQueue
     
@@ -112,9 +107,6 @@ struct AlertMessage: Identifiable {
         self.selectedVM = nil
         #if os(macOS)
         self.remoteServer = UTMRemoteServer(data: self)
-        #endif
-        #if WITH_REMOTE
-        self.remoteClient = UTMRemoteClient(data: self)
         #endif
         listLoadFromDefaults()
     }
@@ -184,7 +176,7 @@ struct AlertMessage: Identifiable {
     }
     
     /// Load VM list (and order) from persistent storage
-    private func listLoadFromDefaults() {
+    fileprivate func listLoadFromDefaults() {
         let defaults = UserDefaults.standard
         guard defaults.object(forKey: "VMList") == nil else {
             listLegacyLoadFromDefaults()
@@ -254,7 +246,9 @@ struct AlertMessage: Identifiable {
         defaults.set(wrappedVMs, forKey: "VMEntryList")
     }
     
-    private func listReplace(with vms: [VMData]) {
+    /// Replace current VM list with a new list
+    /// - Parameter vms: List to replace with
+    fileprivate func listReplace(with vms: [VMData]) {
         virtualMachines = vms
     }
     
@@ -693,7 +687,10 @@ struct AlertMessage: Identifiable {
         }
     }
     
-    func mountSupportTools(for vm: UTMQemuVirtualMachine) async throws {
+    func mountSupportTools(for vm: any UTMVirtualMachine) async throws {
+        guard let vm = vm as? UTMQemuVirtualMachine else {
+            throw UTMDataError.unsupportedBackend
+        }
         let task = UTMDownloadSupportToolsTask(for: vm)
         if await task.hasExistingSupportTools {
             vm.config.qemu.isGuestToolsInstallRequested = false
@@ -984,6 +981,7 @@ struct AlertMessage: Identifiable {
 // MARK: - Errors
 enum UTMDataError: Error {
     case virtualMachineAlreadyExists
+    case unsupportedBackend
     case cloneFailed
     case shortcutCreationFailed
     case importFailed
@@ -1000,6 +998,8 @@ extension UTMDataError: LocalizedError {
         switch self {
         case .virtualMachineAlreadyExists:
             return NSLocalizedString("An existing virtual machine already exists with this name.", comment: "UTMData")
+        case .unsupportedBackend:
+            return NSLocalizedString("Operation not supported by the backend.", comment: "UTMData")
         case .cloneFailed:
             return NSLocalizedString("Failed to clone VM.", comment: "UTMData")
         case .shortcutCreationFailed:
@@ -1021,3 +1021,41 @@ extension UTMDataError: LocalizedError {
         }
     }
 }
+
+// MARK: - Remote Client
+#if WITH_REMOTE
+@MainActor
+class UTMRemoteData: UTMData {
+    /// Remote access client
+    private(set) var remoteClient: UTMRemoteClient!
+
+    override init() {
+        super.init()
+        self.remoteClient = UTMRemoteClient(data: self)
+    }
+
+    override func listLoadFromDefaults() {
+        // do nothing since we do not load from VMList
+    }
+
+    override func listRefresh() async {
+        busyWorkAsync {
+            try await self.listRefreshFromRemote()
+        }
+    }
+
+    private func listRefreshFromRemote() async throws {
+        let items = try await remoteClient.server.listVirtualMachines()
+        listReplace(with: items.map({ VMRemoteData(fromRemoteItem: $0) }))
+        for vm in virtualMachines {
+            let remoteVM = vm as! VMRemoteData
+            do {
+                try await remoteVM.load(withRemoteServer: remoteClient.server)
+            } catch {
+                remoteVM.unavailableReason = error.localizedDescription
+            }
+            await Task.yield()
+        }
+    }
+}
+#endif

@@ -19,7 +19,7 @@ import SwiftUI
 struct UTMRemoteConnectView: View {
     @ObservedObject var remoteClientState: UTMRemoteClient.State
     @Environment(\.openURL) private var openURL
-    @EnvironmentObject private var data: UTMData
+    @EnvironmentObject private var data: UTMRemoteData
     @State private var selectedServer: UTMRemoteClient.State.Server?
     @State private var isAutoConnect: Bool = false
 
@@ -107,7 +107,7 @@ private struct ServerConnectView: View {
     @State var server: UTMRemoteClient.State.Server
     @Binding var isAutoConnect: Bool
 
-    @EnvironmentObject private var data: UTMData
+    @EnvironmentObject private var data: UTMRemoteData
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
 
     @State private var connectionTask: Task<Void, Error>?

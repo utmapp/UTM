@@ -20,7 +20,7 @@ import SwiftUI
 /// Model wrapping a single UTMVirtualMachine for use in views
 @MainActor class VMData: ObservableObject {
     /// Underlying virtual machine
-    private(set) var wrapped: (any UTMVirtualMachine)? {
+    fileprivate(set) var wrapped: (any UTMVirtualMachine)? {
         willSet {
             objectWillChange.send()
         }
@@ -53,8 +53,8 @@ import SwiftUI
     }
     
     /// Registry entry before loading
-    private var registryEntryWrapped: UTMRegistryEntry?
-    
+    fileprivate var registryEntryWrapped: UTMRegistryEntry?
+
     /// Set when we use a temporary UUID because we loaded a legacy entry
     private var uuidUnknown: Bool = false
     
@@ -72,9 +72,14 @@ import SwiftUI
     /// Allows changes in the config, registry, and VM to be reflected
     private var observers: [AnyCancellable] = []
     
+    /// True if the .utm is loaded outside of the default storage
+    var isShortcut: Bool {
+        isShortcut(pathUrl)
+    }
+
     /// No default init
-    private init() {
-        
+    fileprivate init() {
+
     }
     
     /// Create a VM from an existing object
@@ -195,7 +200,7 @@ import SwiftUI
     }
     
     /// Listen to changes in the underlying object and propogate upwards
-    private func subscribeToChildren() {
+    fileprivate func subscribeToChildren() {
         var s: [AnyCancellable] = []
         if let wrapped = wrapped {
             wrapped.onConfigurationChange = { [weak self] in
@@ -281,11 +286,6 @@ extension VMData: Hashable {
 
 // MARK: - VM State
 extension VMData {
-    /// True if the .utm is loaded outside of the default storage
-    var isShortcut: Bool {
-        isShortcut(pathUrl)
-    }
-    
     func isShortcut(_ url: URL) -> Bool {
         let defaultStorageUrl = UTMData.defaultStorageUrl.standardizedFileURL
         let parentUrl = url.deletingLastPathComponent().standardizedFileURL
@@ -425,3 +425,57 @@ extension VMData {
         wrapped?.screenshot
     }
 }
+
+#if WITH_REMOTE
+@MainActor
+class VMRemoteData: VMData {
+    private var backend: UTMBackend
+    private var _isShortcut: Bool
+    override var isShortcut: Bool {
+        _isShortcut
+    }
+    
+    /// Set by caller when VM is unavailable and there is a reason for it.
+    @Published var unavailableReason: String?
+
+    init(fromRemoteItem item: UTMRemoteMessageServer.ListVirtualMachines.Information) {
+        self.backend = item.backend
+        self._isShortcut = item.isShortcut
+        super.init()
+        self.registryEntryWrapped = UTMRegistry.shared.entry(uuid: item.id, name: item.name, path: item.path)
+        self.registryEntryWrapped!.isSuspended = item.isSuspended
+    }
+
+    override func load() throws {
+        throw VMRemoteDataError.notImplemented
+    }
+
+    func load(withRemoteServer server: UTMRemoteClient.Remote) async throws {
+        guard backend == .qemu else {
+            throw VMRemoteDataError.backendNotSupported
+        }
+        let entry = registryEntryWrapped!
+        let config = try await server.getQEMUConfiguration(for: entry.uuid)
+        let vm = UTMRemoteQemuVirtualMachine(forRemoteServer: server, remotePath: entry.package.path, entry: entry, config: config)
+        wrapped = vm
+        vm.updateConfigFromRegistry()
+        subscribeToChildren()
+    }
+}
+
+enum VMRemoteDataError: Error {
+    case notImplemented
+    case backendNotSupported
+}
+
+extension VMRemoteDataError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case .notImplemented:
+            return NSLocalizedString("This function is not implemented.", comment: "VMData")
+        case .backendNotSupported:
+            return NSLocalizedString("This VM is configured for a backend that does not support remote clients.", comment: "VMData")
+        }
+    }
+}
+#endif

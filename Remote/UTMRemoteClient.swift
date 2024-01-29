@@ -28,10 +28,10 @@ actor UTMRemoteClient {
     private var scanTask: Task<Void, Error>?
     private var endpoints: [String: NWEndpoint] = [:]
 
-    private var server: Remote!
+    private(set) var server: Remote!
 
     @MainActor
-    init(data: UTMData) {
+    init(data: UTMRemoteData) {
         self.state = State()
         self.local = Local(data: data)
     }
@@ -169,9 +169,9 @@ extension UTMRemoteClient {
     class Local: LocalInterface {
         typealias M = UTMRemoteMessageClient
 
-        private let data: UTMData
+        private let data: UTMRemoteData
 
-        init(data: UTMData) {
+        init(data: UTMRemoteData) {
             self.data = data
         }
 
@@ -179,6 +179,12 @@ extension UTMRemoteClient {
             switch message {
             case .clientHandshake:
                 return try await _handshake(parameters: .decode(data)).encode()
+            case .listHasChangedOrder:
+                return .init()
+            case .QEMUConfigurationHasChanged:
+                return .init()
+            case .packageFileHasChanged:
+                return .init()
             }
         }
 
@@ -213,8 +219,24 @@ extension UTMRemoteClient {
             }
         }
 
+        func listVirtualMachines() async throws -> [M.ListVirtualMachines.Information] {
+            try await _listVirtualMachines(parameters: .init()).items
+        }
+
+        func getQEMUConfiguration(for id: UUID) async throws -> UTMQemuConfiguration {
+            try await _getQEMUConfiguration(parameters: .init(id: id)).configuration
+        }
+
         private func _handshake(parameters: M.ServerHandshake.Request) async throws -> M.ServerHandshake.Reply {
             try await M.ServerHandshake.send(parameters, to: peer)
+        }
+
+        private func _listVirtualMachines(parameters: M.ListVirtualMachines.Request) async throws -> M.ListVirtualMachines.Reply {
+            try await M.ListVirtualMachines.send(parameters, to: peer)
+        }
+
+        private func _getQEMUConfiguration(parameters: M.GetQEMUConfiguration.Request) async throws -> M.GetQEMUConfiguration.Reply {
+            try await M.GetQEMUConfiguration.send(parameters, to: peer)
         }
     }
 }

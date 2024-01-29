@@ -148,11 +148,11 @@ actor UTMRemoteServer {
             return
         }
         await state.seen(fingerprint, name: remoteAddress)
-        pendingConnections[fingerprint] = connection
         if await state.isApproved(fingerprint) {
             await notifyNewConnection(remoteAddress: remoteAddress, fingerprint: fingerprint)
             await establishConnection(connection)
         } else {
+            pendingConnections[fingerprint] = connection
             await notifyNewConnection(remoteAddress: remoteAddress, fingerprint: fingerprint, isUnknown: true)
         }
     }
@@ -174,9 +174,11 @@ actor UTMRemoteServer {
     }
 
     private func connectedClientsHasChanged(_ connectedClients: Set<State.ClientFingerprint>) {
-        for connectedClient in connectedClients {
-            if let remote = establishedConnections.removeValue(forKey: connectedClient) {
-                remote.close()
+        for client in establishedConnections.keys {
+            if !connectedClients.contains(client) {
+                if let remote = establishedConnections.removeValue(forKey: client) {
+                    remote.close()
+                }
             }
         }
     }
@@ -486,6 +488,14 @@ extension UTMRemoteServer {
             switch message {
             case .serverHandshake:
                 return try await _handshake(parameters: .decode(data)).encode()
+            case .listVirtualMachines:
+                return try await _listVirtualMachines(parameters: .decode(data)).encode()
+            case .getQEMUConfiguration:
+                return try await _getQEMUConfiguration(parameters: .decode(data)).encode()
+            case .updateQEMUConfiguration:
+                return try await _updateQEMUConfiguration(parameters: .decode(data)).encode()
+            case .getPackageFile:
+                return try await _getPackageFile(parameters: .decode(data)).encode()
             }
         }
 
@@ -495,8 +505,51 @@ extension UTMRemoteServer {
             }
         }
 
+        private func findVM(withId id: UUID) async throws -> VMData {
+            let vm = await Task { @MainActor in
+                data.virtualMachines.first(where: { $0.id == id })
+            }.value
+            if let vm = vm {
+                return vm
+            } else {
+                throw UTMRemoteServer.ServerError.notFound(id)
+            }
+        }
+
         private func _handshake(parameters: M.ServerHandshake.Request) async throws -> M.ServerHandshake.Reply {
             return .init(version: UTMRemoteMessageServer.version)
+        }
+
+        private func _listVirtualMachines(parameters: M.ListVirtualMachines.Request) async throws -> M.ListVirtualMachines.Reply {
+            let vms = await data.virtualMachines
+            let items = await Task { @MainActor in
+                vms.map { vmdata in
+                    M.ListVirtualMachines.Information(id: vmdata.id,
+                                                      name: vmdata.detailsTitleLabel,
+                                                      path: vmdata.pathUrl.path,
+                                                      isShortcut: vmdata.isShortcut,
+                                                      isSuspended: vmdata.registryEntry?.isSuspended ?? false,
+                                                      backend: vmdata.wrapped is UTMQemuVirtualMachine ? .qemu : .unknown)
+                }
+            }.value
+            return .init(items: items)
+        }
+
+        private func _getQEMUConfiguration(parameters: M.GetQEMUConfiguration.Request) async throws -> M.GetQEMUConfiguration.Reply {
+            let vm = try await findVM(withId: parameters.id)
+            if let config = await vm.config as? UTMQemuConfiguration {
+                return .init(configuration: config)
+            } else {
+                throw ServerError.invalidBackend
+            }
+        }
+
+        private func _updateQEMUConfiguration(parameters: M.UpdateQEMUConfiguration.Request) async throws -> M.UpdateQEMUConfiguration.Reply {
+            return .init()
+        }
+
+        private func _getPackageFile(parameters: M.GetPackageFile.Request) async throws -> M.GetPackageFile.Reply {
+            return .init(data: nil)
         }
     }
 }
@@ -529,11 +582,17 @@ extension UTMRemoteServer {
 extension UTMRemoteServer {
     enum ServerError: LocalizedError {
         case versionMismatch
+        case notFound(UUID)
+        case invalidBackend
 
         var errorDescription: String? {
             switch self {
             case .versionMismatch:
                 return NSLocalizedString("The client interface version does not match the server.", comment: "UTMRemoteServer")
+            case .notFound(let id):
+                return String.localizedStringWithFormat(NSLocalizedString("Cannot find VM with ID: %@", comment: "UTMRemoteServer"), id.uuidString)
+            case .invalidBackend:
+                return NSLocalizedString("Invalid backend.", comment: "UTMRemoteServer")
             }
         }
     }

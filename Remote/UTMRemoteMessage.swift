@@ -20,12 +20,19 @@ import SwiftConnect
 enum UTMRemoteMessageServer: UInt8, MessageID {
     static let version = 1
     case serverHandshake
+    case listVirtualMachines
+    case getQEMUConfiguration
+    case updateQEMUConfiguration
+    case getPackageFile
 }
 
 
 enum UTMRemoteMessageClient: UInt8, MessageID {
     static let version = 1
     case clientHandshake
+    case listHasChangedOrder
+    case QEMUConfigurationHasChanged
+    case packageFileHasChanged
 }
 
 extension UTMRemoteMessageServer {
@@ -39,6 +46,71 @@ extension UTMRemoteMessageServer {
         struct Reply: Serializable, Codable {
             let version: Int
         }
+    }
+
+    struct ListVirtualMachines: Message {
+        static let id = UTMRemoteMessageServer.listVirtualMachines
+
+        struct Request: Serializable, Codable {}
+
+        struct Information: Serializable, Codable {
+            let id: UUID
+            let name: String
+            let path: String
+            let isShortcut: Bool
+            let isSuspended: Bool
+            let backend: UTMBackend
+        }
+
+        struct Reply: Serializable, Codable {
+            let items: [Information]
+        }
+    }
+
+    struct GetQEMUConfiguration: Message {
+        static let id = UTMRemoteMessageServer.getQEMUConfiguration
+
+        struct Request: Serializable, Codable {
+            let id: UUID
+        }
+
+        struct Reply: Serializable, Codable {
+            let configuration: UTMQemuConfiguration
+        }
+    }
+
+    struct UpdateQEMUConfiguration: Message {
+        static let id = UTMRemoteMessageServer.updateQEMUConfiguration
+
+        struct Request: Serializable, Codable {
+            let id: UUID
+            let configuration: UTMQemuConfiguration
+            let files: [String: Data]
+        }
+
+        struct Reply: Serializable, Codable {}
+    }
+
+    struct GetPackageFile: Message {
+        static let id = UTMRemoteMessageServer.getPackageFile
+
+        struct Request: Serializable, Codable {
+            let id: UUID
+            let path: String
+            let existingCrc: Int32?
+        }
+
+        struct Reply: Serializable, Codable {
+            let data: Data?
+        }
+    }
+}
+
+extension Serializable where Self == UTMRemoteMessageServer.GetQEMUConfiguration.Reply {
+    static func decode(_ data: Data) throws -> Self {
+        let decoder = Decoder()
+        decoder.userInfo[.dataURL] = URL(fileURLWithPath: "/")
+        return try decoder.decode(Self.self, from: data)
     }
 }
 
