@@ -22,7 +22,7 @@ private let kSuspendSnapshotName = "suspend"
 private let kProbeSuspendDelay = 1*NSEC_PER_SEC
 
 /// QEMU backend virtual machine
-final class UTMQemuVirtualMachine: UTMVirtualMachine {
+final class UTMQemuVirtualMachine: UTMQemuSpiceVirtualMachine {
     struct Capabilities: UTMVirtualMachineCapabilities {
         var supportsProcessKill: Bool {
             true
@@ -88,7 +88,7 @@ final class UTMQemuVirtualMachine: UTMVirtualMachine {
         }
     }
     
-    private(set) var screenshot: PlatformImage? {
+    var screenshot: PlatformImage? {
         willSet {
             onStateChange?()
         }
@@ -143,7 +143,7 @@ final class UTMQemuVirtualMachine: UTMVirtualMachine {
     
     private var swtpm: UTMSWTPM?
     
-    private var changeCursorRequestInProgress: Bool = false
+    var changeCursorRequestInProgress: Bool = false
     
     @MainActor required init(packageUrl: URL, configuration: UTMQemuConfiguration, isShortcut: Bool = false) throws {
         self.isScopedAccess = packageUrl.startAccessingSecurityScopedResource()
@@ -619,54 +619,6 @@ extension UTMQemuVirtualMachine: QEMUVirtualMachineDelegate {
     }
 }
 
-// MARK: - Input device switching
-extension UTMQemuVirtualMachine {
-    func requestInputTablet(_ tablet: Bool) {
-        guard !changeCursorRequestInProgress else {
-            return
-        }
-        guard let spiceIO = ioService else {
-            return
-        }
-        changeCursorRequestInProgress = true
-        Task {
-            defer {
-                changeCursorRequestInProgress = false
-            }
-            guard state == .started else {
-                return
-            }
-            guard let monitor = await monitor else {
-                return
-            }
-            do {
-                let index = try await monitor.mouseIndex(forAbsolute: tablet)
-                try await monitor.mouseSelect(index)
-                spiceIO.primaryInput?.requestMouseMode(!tablet)
-            } catch {
-                logger.error("Error changing mouse mode: \(error)")
-            }
-        }
-    }
-}
-
-// MARK: - USB redirection
-extension UTMQemuVirtualMachine {
-    var hasUsbRedirection: Bool {
-        return jb_has_usb_entitlement()
-    }
-}
-
-// MARK: - Screenshot
-extension UTMQemuVirtualMachine {
-    @MainActor @discardableResult
-    func takeScreenshot() async -> Bool {
-        let screenshot = await ioService?.screenshot()
-        self.screenshot = screenshot?.image
-        return true
-    }
-}
-
 // MARK: - Architecture supported
 extension UTMQemuVirtualMachine {
     /// Check if a QEMU target is supported
@@ -695,7 +647,11 @@ extension UTMQemuVirtualMachine {
 
 // MARK: - External drives
 extension UTMQemuVirtualMachine {
-    func eject(_ drive: UTMQemuConfigurationDrive, isForced: Bool = false) async throws {
+    func eject(_ drive: UTMQemuConfigurationDrive) async throws {
+        try await eject(drive, isForced: false)
+    }
+
+    private func eject(_ drive: UTMQemuConfigurationDrive, isForced: Bool) async throws {
         guard drive.isExternal else {
             return
         }
@@ -707,8 +663,12 @@ extension UTMQemuVirtualMachine {
         }
         await registryEntry.removeExternalDrive(forId: drive.id)
     }
-    
-    func changeMedium(_ drive: UTMQemuConfigurationDrive, to url: URL, isAccessOnly: Bool = false) async throws {
+
+    func changeMedium(_ drive: UTMQemuConfigurationDrive, to url: URL) async throws {
+        try await changeMedium(drive, to: url, isAccessOnly: false)
+    }
+
+    private func changeMedium(_ drive: UTMQemuConfigurationDrive, to url: URL, isAccessOnly: Bool) async throws {
         _ = url.startAccessingSecurityScopedResource()
         defer {
             url.stopAccessingSecurityScopedResource()
@@ -719,7 +679,7 @@ extension UTMQemuVirtualMachine {
         await registryEntry.setExternalDrive(file, forId: drive.id)
         try await changeMedium(drive, with: tempBookmark, url: url, isSecurityScoped: false, isAccessOnly: isAccessOnly)
     }
-    
+
     private func changeMedium(_ drive: UTMQemuConfigurationDrive, with bookmark: Data, url: URL?, isSecurityScoped: Bool, isAccessOnly: Bool) async throws {
         let system = await system ?? UTMProcess()
         let (success, bookmark, path) = await system.accessData(withBookmark: bookmark, securityScoped: isSecurityScoped)
@@ -731,8 +691,8 @@ extension UTMQemuVirtualMachine {
             try qemu.changeMedium(forDrive: "drive\(drive.id)", path: path)
         }
     }
-    
-    func restoreExternalDrives(withMounting isMounting: Bool) async throws {
+
+    private func restoreExternalDrives(withMounting isMounting: Bool) async throws {
         guard await system != nil else {
             throw UTMQemuVirtualMachineError.invalidVmState
         }
@@ -754,43 +714,14 @@ extension UTMQemuVirtualMachine {
             }
         }
     }
-    
-    @MainActor func externalImageURL(for drive: UTMQemuConfigurationDrive) -> URL? {
-        registryEntry.externalDrives[drive.id]?.url
-    }
 }
 
 // MARK: - Shared directory
 extension UTMQemuVirtualMachine {
-    @MainActor var sharedDirectoryURL: URL? {
-        registryEntry.sharedDirectories.first?.url
+    func stopAccessingPath(_ path: String) async {
+        await system?.stopAccessingPath(path)
     }
-    
-    func clearSharedDirectory() async {
-        if let oldPath = await registryEntry.sharedDirectories.first?.path {
-            await system?.stopAccessingPath(oldPath)
-        }
-        await registryEntry.removeAllSharedDirectories()
-    }
-    
-    func changeSharedDirectory(to url: URL) async throws {
-        await clearSharedDirectory()
-        _ = url.startAccessingSecurityScopedResource()
-        defer {
-            url.stopAccessingSecurityScopedResource()
-        }
-        let file = try await UTMRegistryEntry.File(url: url, isReadOnly: config.sharing.isDirectoryShareReadOnly)
-        await registryEntry.setSingleSharedDirectory(file)
-        if await config.sharing.directoryShareMode == .webdav {
-            if let ioService = ioService {
-                ioService.changeSharedDirectory(url)
-            }
-        } else if await config.sharing.directoryShareMode == .virtfs {
-            let tempBookmark = try url.bookmarkData()
-            try await changeVirtfsSharedDirectory(with: tempBookmark, isSecurityScoped: false)
-        }
-    }
-    
+
     func changeVirtfsSharedDirectory(with bookmark: Data, isSecurityScoped: Bool) async throws {
         let system = await system ?? UTMProcess()
         let (success, bookmark, path) = await system.accessData(withBookmark: bookmark, securityScoped: isSecurityScoped)
@@ -799,61 +730,10 @@ extension UTMQemuVirtualMachine {
         }
         await registryEntry.updateSingleSharedDirectoryRemoteBookmark(bookmark)
     }
-    
-    func restoreSharedDirectory(for ioService: UTMSpiceIO) async throws {
-        guard let share = await registryEntry.sharedDirectories.first else {
-            return
-        }
-        if await config.sharing.directoryShareMode == .virtfs {
-            if let bookmark = share.remoteBookmark {
-                // a share bookmark was saved while QEMU was running
-                try await changeVirtfsSharedDirectory(with: bookmark, isSecurityScoped: true)
-            } else {
-                // a share bookmark was saved while QEMU was NOT running
-                let url = try URL(resolvingPersistentBookmarkData: share.bookmark)
-                try await changeSharedDirectory(to: url)
-            }
-        } else if await config.sharing.directoryShareMode == .webdav {
-            ioService.changeSharedDirectory(share.url)
-        }
-    }
 }
 
 // MARK: - Registry syncing
 extension UTMQemuVirtualMachine {
-    @MainActor func updateRegistryFromConfig() async throws {
-        // save a copy to not collide with updateConfigFromRegistry()
-        let configShare = config.sharing.directoryShareUrl
-        let configDrives = config.drives
-        try await updateRegistryBasics()
-        for drive in configDrives {
-            if drive.isExternal, let url = drive.imageURL {
-                try await changeMedium(drive, to: url)
-            } else if drive.isExternal {
-                try await eject(drive)
-            }
-        }
-        if let url = configShare {
-            try await changeSharedDirectory(to: url)
-        } else {
-            await clearSharedDirectory()
-        }
-        // remove any unreferenced drives
-        registryEntry.externalDrives = registryEntry.externalDrives.filter({ element in
-            configDrives.contains(where: { $0.id == element.key && $0.isExternal })
-        })
-    }
-    
-    @MainActor func updateConfigFromRegistry() {
-        config.sharing.directoryShareUrl = sharedDirectoryURL
-        for i in config.drives.indices {
-            let id = config.drives[i].id
-            if config.drives[i].isExternal {
-                config.drives[i].imageURL = registryEntry.externalDrives[id]?.url
-            }
-        }
-    }
-    
     @MainActor func changeUuid(to uuid: UUID, name: String? = nil, copyingEntry entry: UTMRegistryEntry? = nil) {
         config.information.uuid = uuid
         if let name = name {
@@ -864,7 +744,7 @@ extension UTMQemuVirtualMachine {
             registryEntry.update(copying: entry)
         }
     }
-    
+
     @MainActor var remoteBookmarks: [URL: Data] {
         var dict = [URL: Data]()
         for file in registryEntry.externalDrives.values {
