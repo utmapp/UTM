@@ -204,7 +204,7 @@ protocol UTMVirtualMachineDelegate: AnyObject {
 }
 
 /// Virtual machine state
-enum UTMVirtualMachineState {
+enum UTMVirtualMachineState: Codable {
     case stopped
     case starting
     case started
@@ -217,7 +217,7 @@ enum UTMVirtualMachineState {
 }
 
 /// Additional options for VM start
-struct UTMVirtualMachineStartOptions: OptionSet {
+struct UTMVirtualMachineStartOptions: OptionSet, Codable {
     let rawValue: UInt
     
     /// Boot without persisting any changes.

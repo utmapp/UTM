@@ -185,6 +185,10 @@ extension UTMRemoteClient {
                 return .init()
             case .packageFileHasChanged:
                 return .init()
+            case .virtualMachineDidTransition:
+                return .init()
+            case .virtualMachineDidError:
+                return .init()
             }
         }
 
@@ -227,6 +231,10 @@ extension UTMRemoteClient {
             try await _getQEMUConfiguration(parameters: .init(id: id)).configuration
         }
 
+        func startVirtualMachine(id: UUID, options: UTMVirtualMachineStartOptions) async throws -> UInt16 {
+            try await _startVirtualMachine(parameters: .init(id: id, options: options)).spiceServerPort
+        }
+
         private func _handshake(parameters: M.ServerHandshake.Request) async throws -> M.ServerHandshake.Reply {
             try await M.ServerHandshake.send(parameters, to: peer)
         }
@@ -237,6 +245,10 @@ extension UTMRemoteClient {
 
         private func _getQEMUConfiguration(parameters: M.GetQEMUConfiguration.Request) async throws -> M.GetQEMUConfiguration.Reply {
             try await M.GetQEMUConfiguration.send(parameters, to: peer)
+        }
+
+        private func _startVirtualMachine(parameters: M.StartVirtualMachine.Request) async throws -> M.StartVirtualMachine.Reply {
+            try await M.StartVirtualMachine.send(parameters, to: peer)
         }
     }
 }

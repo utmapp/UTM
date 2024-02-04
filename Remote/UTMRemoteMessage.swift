@@ -24,6 +24,7 @@ enum UTMRemoteMessageServer: UInt8, MessageID {
     case getQEMUConfiguration
     case updateQEMUConfiguration
     case getPackageFile
+    case startVirtualMachine
 }
 
 
@@ -33,6 +34,8 @@ enum UTMRemoteMessageClient: UInt8, MessageID {
     case listHasChangedOrder
     case QEMUConfigurationHasChanged
     case packageFileHasChanged
+    case virtualMachineDidTransition
+    case virtualMachineDidError
 }
 
 extension UTMRemoteMessageServer {
@@ -104,6 +107,19 @@ extension UTMRemoteMessageServer {
             let data: Data?
         }
     }
+
+    struct StartVirtualMachine: Message {
+        static let id = UTMRemoteMessageServer.startVirtualMachine
+
+        struct Request: Serializable, Codable {
+            let id: UUID
+            let options: UTMVirtualMachineStartOptions
+        }
+
+        struct Reply: Serializable, Codable {
+            let spiceServerPort: UInt16
+        }
+    }
 }
 
 extension Serializable where Self == UTMRemoteMessageServer.GetQEMUConfiguration.Reply {
@@ -125,5 +141,27 @@ extension UTMRemoteMessageClient {
         struct Reply: Serializable, Codable {
             let version: Int
         }
+    }
+
+    struct VirtualMachineDidTransition: Message {
+        static let id = UTMRemoteMessageClient.virtualMachineDidTransition
+
+        struct Request: Serializable, Codable {
+            let id: UUID
+            let state: UTMVirtualMachineState
+        }
+
+        struct Reply: Serializable, Codable {}
+    }
+
+    struct VirtualMachineDidError: Message {
+        static let id = UTMRemoteMessageClient.virtualMachineDidError
+
+        struct Request: Serializable, Codable {
+            let id: UUID
+            let errorMessage: String
+        }
+
+        struct Reply: Serializable, Codable {}
     }
 }

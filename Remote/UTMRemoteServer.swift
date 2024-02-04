@@ -16,6 +16,7 @@
 
 import Foundation
 import Combine
+import Network
 import SwiftConnect
 import UserNotifications
 
@@ -205,6 +206,59 @@ actor UTMRemoteServer {
     private func resetServer() async {
         await withErrorNotification {
             try await keyManager.reset()
+        }
+    }
+    
+    /// Send message to every connected remote client.
+    ///
+    /// If any are disconnected, we will gracefully handle the disconnect.
+    /// If every remote user is disconnected, then we throw an error.
+    /// If `body` throws an error for any remote client (excluding NWError), then we throw an error.
+    /// - Parameter body: <#body description#>
+    func broadcast(_ body: @escaping (Remote) async throws -> Void) async rethrows {
+        enum BroadcastError: Error {
+            case connectionError(NWError, State.ClientFingerprint)
+        }
+        try await withThrowingTaskGroup(of: Void.self) { group in
+            for (fingerprint, remote) in establishedConnections {
+                if Task.isCancelled {
+                    break
+                }
+                group.addTask {
+                    do {
+                        try await body(remote)
+                    } catch {
+                        if let error = error as? NWError {
+                            throw BroadcastError.connectionError(error, fingerprint)
+                        } else {
+                            throw error
+                        }
+                    }
+                }
+            }
+            var hasAnySuccess = false
+            var lastError: Error?
+            while !group.isEmpty {
+                switch await group.nextResult() {
+                case .failure(let error):
+                    if case BroadcastError.connectionError(let error, let fingerprint) = error {
+                        // disconnect any clients who failed to respond
+                        await notifyError(error)
+                        await state.disconnect(fingerprint)
+                        lastError = error
+                    } else {
+                        // if any client returned an error, we fail the entire broadcast
+                        throw error
+                    }
+                default:
+                    hasAnySuccess = true
+                    break
+                }
+            }
+            // if we have all connection errors, then broadcast has failed
+            if !hasAnySuccess, let error = lastError {
+                throw error
+            }
         }
     }
 }
@@ -496,6 +550,8 @@ extension UTMRemoteServer {
                 return try await _updateQEMUConfiguration(parameters: .decode(data)).encode()
             case .getPackageFile:
                 return try await _getPackageFile(parameters: .decode(data)).encode()
+            case .startVirtualMachine:
+                return try await _startVirtualMachine(parameters: .decode(data)).encode()
             }
         }
 
@@ -505,10 +561,9 @@ extension UTMRemoteServer {
             }
         }
 
+        @MainActor
         private func findVM(withId id: UUID) async throws -> VMData {
-            let vm = await Task { @MainActor in
-                data.virtualMachines.first(where: { $0.id == id })
-            }.value
+            let vm = data.virtualMachines.first(where: { $0.id == id })
             if let vm = vm {
                 return vm
             } else {
@@ -551,6 +606,12 @@ extension UTMRemoteServer {
         private func _getPackageFile(parameters: M.GetPackageFile.Request) async throws -> M.GetPackageFile.Reply {
             return .init(data: nil)
         }
+
+        private func _startVirtualMachine(parameters: M.StartVirtualMachine.Request) async throws -> M.StartVirtualMachine.Reply {
+            let vm = try await findVM(withId: parameters.id)
+            let port = try await data.startRemote(vm: vm, options: parameters.options, forServer: server)
+            return .init(spiceServerPort: port)
+        }
     }
 }
 
@@ -575,6 +636,24 @@ extension UTMRemoteServer {
 
         private func _handshake(parameters: M.ClientHandshake.Request) async throws -> M.ClientHandshake.Reply {
             try await M.ClientHandshake.send(parameters, to: peer)
+        }
+
+        func virtualMachine(id: UUID, didTransitionToState state: UTMVirtualMachineState) async throws {
+            try await _virtualMachineDidTransition(parameters: .init(id: id, state: state))
+        }
+
+        @discardableResult
+        private func _virtualMachineDidTransition(parameters: M.VirtualMachineDidTransition.Request) async throws -> M.VirtualMachineDidTransition.Reply {
+            try await M.VirtualMachineDidTransition.send(parameters, to: peer)
+        }
+
+        func virtualMachine(id: UUID, didErrorWithMessage message: String) async throws {
+            try await _virtualMachineDidError(parameters: .init(id: id, errorMessage: message))
+        }
+
+        @discardableResult
+        private func _virtualMachineDidError(parameters: M.VirtualMachineDidError.Request) async throws -> M.VirtualMachineDidError.Reply {
+            try await M.VirtualMachineDidError.send(parameters, to: peer)
         }
     }
 }
