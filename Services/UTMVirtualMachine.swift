@@ -167,6 +167,9 @@ protocol UTMVirtualMachineCapabilities {
     
     /// The backend supports booting into recoveryOS.
     var supportsRecoveryMode: Bool { get }
+    
+    /// The backend supports remote sessions.
+    var supportsRemoteSession: Bool { get }
 }
 
 /// Delegate for UTMVirtualMachine events
@@ -221,6 +224,8 @@ struct UTMVirtualMachineStartOptions: OptionSet {
     static let bootDisposibleMode = Self(rawValue: 1 << 0)
     /// Boot into recoveryOS (when supported).
     static let bootRecovery = Self(rawValue: 1 << 1)
+    /// Start VDI session where a remote client will connect to.
+    static let remoteSession = Self(rawValue: 1 << 2)
 }
 
 /// Method to stop the VM

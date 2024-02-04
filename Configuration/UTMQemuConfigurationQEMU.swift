@@ -69,6 +69,9 @@ struct UTMQemuConfigurationQEMU: Codable {
     /// Set to true to request UEFI variable reset. Not saved.
     var isUefiVariableResetRequested: Bool = false
     
+    /// Set to open a port for remote SPICE session. Not saved.
+    var spiceServerPort: UInt16?
+
     enum CodingKeys: String, CodingKey {
         case hasDebugLog = "DebugLog"
         case hasUefiBoot = "UEFIBoot"

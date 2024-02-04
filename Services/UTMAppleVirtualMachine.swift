@@ -40,6 +40,10 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         var supportsRecoveryMode: Bool {
             true
         }
+
+        var supportsRemoteSession: Bool {
+            false
+        }
     }
     
     static let capabilities = Capabilities()

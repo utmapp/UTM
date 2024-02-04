@@ -981,6 +981,7 @@ struct AlertMessage: Identifiable {
 // MARK: - Errors
 enum UTMDataError: Error {
     case virtualMachineAlreadyExists
+    case virtualMachineUnavailable
     case unsupportedBackend
     case cloneFailed
     case shortcutCreationFailed
@@ -998,6 +999,8 @@ extension UTMDataError: LocalizedError {
         switch self {
         case .virtualMachineAlreadyExists:
             return NSLocalizedString("An existing virtual machine already exists with this name.", comment: "UTMData")
+        case .virtualMachineUnavailable:
+            return NSLocalizedString("This virtual machine is currently unavailable, make sure it is not open in another session.", comment: "UTMData")
         case .unsupportedBackend:
             return NSLocalizedString("Operation not supported by the backend.", comment: "UTMData")
         case .cloneFailed:

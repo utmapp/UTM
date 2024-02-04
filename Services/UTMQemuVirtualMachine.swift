@@ -43,6 +43,10 @@ final class UTMQemuVirtualMachine: UTMSpiceVirtualMachine {
         var supportsRecoveryMode: Bool {
             false
         }
+
+        var supportsRemoteSession: Bool {
+            true
+        }
     }
     
     static let capabilities = Capabilities()

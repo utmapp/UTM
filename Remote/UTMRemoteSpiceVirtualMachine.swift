@@ -37,6 +37,10 @@ final class UTMRemoteSpiceVirtualMachine: UTMSpiceVirtualMachine {
         var supportsRecoveryMode: Bool {
             false
         }
+
+        var supportsRemoteSession: Bool {
+            false
+        }
     }
 
     static let capabilities = Capabilities()
