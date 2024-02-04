@@ -121,6 +121,9 @@ final class UTMQemuVirtualMachine: UTMSpiceVirtualMachine {
         }
     }
     
+    /// Pipe interface (alternative to UTMSpiceIO)
+    private var pipeInterface: UTMPipeInterface?
+
     private let qemuVM = QEMUVirtualMachine()
     
     private var system: UTMQemuSystem? {
@@ -271,10 +274,13 @@ extension UTMQemuVirtualMachine {
             await qemuVM.setRedirectLog(url: nil)
         }
         let isRunningAsDisposible = options.contains(.bootDisposibleMode)
+        let isRemoteSession = options.contains(.remoteSession)
+        let spicePort = isRemoteSession ? try UTMSocketUtils.reservePort() : nil
         await MainActor.run {
             config.qemu.isDisposable = isRunningAsDisposible
+            config.qemu.spiceServerPort = spicePort
         }
-        
+
         // start TPM
         if await config.qemu.hasTPMDevice {
             let swtpm = UTMSWTPM()
@@ -284,12 +290,12 @@ extension UTMQemuVirtualMachine {
             try await swtpm.start()
             self.swtpm = swtpm
         }
-        
+
         let allArguments = await config.allArguments
         let arguments = allArguments.map({ $0.string })
         let resources = allArguments.compactMap({ $0.fileUrls }).flatMap({ $0 })
         let remoteBookmarks = await remoteBookmarks
-        
+
         let system = await UTMQemuSystem(arguments: arguments, architecture: config.system.architecture.rawValue)
         system.resources = resources
         system.currentDirectoryUrl = await config.socketURL
@@ -299,12 +305,12 @@ extension UTMQemuVirtualMachine {
         system.hasDebugLog = hasDebugLog
         #endif
         try Task.checkCancellation()
-        
+
         if isShortcut {
             try await accessShortcut()
             try Task.checkCancellation()
         }
-        
+
         var options = UTMSpiceIOOptions()
         if await !config.sound.isEmpty {
             options.insert(.hasAudio)
@@ -321,14 +327,28 @@ extension UTMQemuVirtualMachine {
         }
         #endif
         let spiceSocketUrl = await config.spiceSocketURL
-        let ioService = UTMSpiceIO(socketUrl: spiceSocketUrl, options: options)
-        ioService.logHandler = { [weak system] (line: String) -> Void in
-            guard !line.contains("spice_make_scancode") else {
-                return // do not log key presses for privacy reasons
+        let interface: any QEMUInterface
+        if isRemoteSession {
+            let pipeInterface = UTMPipeInterface()
+            await MainActor.run {
+                pipeInterface.monitorInPipeURL = config.monitorPipeURL.appendingPathExtension("in")
+                pipeInterface.monitorOutPipeURL = config.monitorPipeURL.appendingPathExtension("out")
+                pipeInterface.guestAgentInPipeURL = config.guestAgentPipeURL.appendingPathExtension("in")
+                pipeInterface.guestAgentOutPipeURL = config.guestAgentPipeURL.appendingPathExtension("out")
             }
-            system?.logging?.writeLine(line)
+            try pipeInterface.start()
+            interface = pipeInterface
+        } else {
+            let ioService = UTMSpiceIO(socketUrl: spiceSocketUrl, options: options)
+            ioService.logHandler = { [weak system] (line: String) -> Void in
+                guard !line.contains("spice_make_scancode") else {
+                    return // do not log key presses for privacy reasons
+                }
+                system?.logging?.writeLine(line)
+            }
+            try ioService.start()
+            interface = ioService
         }
-        try ioService.start()
         try Task.checkCancellation()
         
         // create EFI variables for legacy config as well as handle UEFI resets
@@ -337,7 +357,7 @@ extension UTMQemuVirtualMachine {
         
         // start QEMU
         await qemuVM.setDelegate(self)
-        try await qemuVM.start(launcher: system, interface: ioService)
+        try await qemuVM.start(launcher: system, interface: interface)
         let monitor = await monitor!
         try Task.checkCancellation()
         
@@ -350,7 +370,11 @@ extension UTMQemuVirtualMachine {
         
         // set up SPICE sharing and removable drives
         try await self.restoreExternalDrives(withMounting: !isSuspended)
-        try await self.restoreSharedDirectory(for: ioService)
+        if let ioService = interface as? UTMSpiceIO {
+            try await self.restoreSharedDirectory(for: ioService)
+        } else {
+            // TODO: implement shared directory in remote interface
+        }
         try Task.checkCancellation()
         
         // continue VM boot
@@ -362,7 +386,8 @@ extension UTMQemuVirtualMachine {
         }
         
         // save ioService and let it set the delegate
-        self.ioService = ioService
+        self.ioService = interface as? UTMSpiceIO
+        self.pipeInterface = interface as? UTMPipeInterface
         self.isRunningAsDisposible = isRunningAsDisposible
         
         // test out snapshots
@@ -592,6 +617,8 @@ extension UTMQemuVirtualMachine: QEMUVirtualMachineDelegate {
         swtpm = nil
         ioService = nil
         ioServiceDelegate = nil
+        pipeInterface?.disconnect()
+        pipeInterface = nil
         snapshotUnsupportedError = nil
         try? saveScreenshot()
         state = .stopped
