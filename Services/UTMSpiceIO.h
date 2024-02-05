@@ -16,7 +16,11 @@
 
 #import <Foundation/Foundation.h>
 #import "UTMSpiceIODelegate.h"
+#if defined(WITH_REMOTE)
+#import "UTMRemoteConnectInterface.h"
+#else
 @import QEMUKitInternal;
+#endif
 #if !defined(WITH_USB)
 @import CocoaSpiceNoUsb;
 #else
@@ -34,7 +38,11 @@ typedef NS_OPTIONS(NSUInteger, UTMSpiceIOOptions) {
 
 NS_ASSUME_NONNULL_BEGIN
 
+#if defined(WITH_REMOTE)
+@interface UTMSpiceIO : NSObject<CSConnectionDelegate, UTMRemoteConnectInterface>
+#else
 @interface UTMSpiceIO : NSObject<CSConnectionDelegate, QEMUInterface>
+#endif
 
 @property (nonatomic, readonly, nullable) CSDisplay *primaryDisplay;
 @property (nonatomic, readonly, nullable) CSInput *primaryInput;
@@ -50,6 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithSocketUrl:(NSURL *)socketUrl options:(UTMSpiceIOOptions)options NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithHost:(NSString *)host port:(NSInteger)port options:(UTMSpiceIOOptions)options NS_DESIGNATED_INITIALIZER;
 - (void)changeSharedDirectory:(NSURL *)url;
 
 - (BOOL)startWithError:(NSError * _Nullable *)error;

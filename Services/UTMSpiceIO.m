@@ -22,7 +22,9 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
 
 @interface UTMSpiceIO ()
 
-@property (nonatomic) NSURL *socketUrl;
+@property (nonatomic, nullable) NSURL *socketUrl;
+@property (nonatomic, nullable) NSString *host;
+@property (nonatomic) NSInteger port;
 @property (nonatomic) UTMSpiceIOOptions options;
 @property (nonatomic, readwrite, nullable) CSDisplay *primaryDisplay;
 @property (nonatomic) NSMutableArray<CSDisplay *> *mutableDisplays;
@@ -35,7 +37,6 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
 @property (nonatomic, nullable) CSConnection *spiceConnection;
 @property (nonatomic, nullable) CSMain *spice;
 @property (nonatomic, nullable, copy) NSURL *sharedDirectory;
-@property (nonatomic) NSInteger port;
 @property (nonatomic) BOOL dynamicResolutionSupported;
 @property (nonatomic, readwrite) BOOL isConnected;
 
@@ -72,10 +73,26 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
     return self;
 }
 
+- (instancetype)initWithHost:(NSString *)host port:(NSInteger)port options:(UTMSpiceIOOptions)options {
+    if (self = [super init]) {
+        self.host = host;
+        self.port = port;
+        self.options = options;
+        self.mutableDisplays = [NSMutableArray array];
+        self.mutableSerials = [NSMutableArray array];
+    }
+
+    return self;
+}
+
 - (void)initializeSpiceIfNeeded {
     if (!self.spiceConnection) {
-        NSURL *relativeSocketFile = [NSURL fileURLWithPath:self.socketUrl.lastPathComponent];
-        self.spiceConnection = [[CSConnection alloc] initWithUnixSocketFile:relativeSocketFile];
+        if (self.socketUrl) {
+            NSURL *relativeSocketFile = [NSURL fileURLWithPath:self.socketUrl.lastPathComponent];
+            self.spiceConnection = [[CSConnection alloc] initWithUnixSocketFile:relativeSocketFile];
+        } else {
+            self.spiceConnection = [[CSConnection alloc] initWithHost:self.host port:[@(self.port) stringValue]];
+        }
         self.spiceConnection.delegate = self;
         self.spiceConnection.audioEnabled = (self.options & UTMSpiceIOOptionsHasAudio) == UTMSpiceIOOptionsHasAudio;
         self.spiceConnection.session.shareClipboard = (self.options & UTMSpiceIOOptionsHasClipboardSharing) == UTMSpiceIOOptionsHasClipboardSharing;
@@ -94,13 +111,15 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
     }
     // do not need to encode/decode audio locally
     g_setenv("SPICE_DISABLE_OPUS", "1", YES);
-    // need to chdir to workaround AF_UNIX sun_len limitations
-    NSString *curdir = self.socketUrl.URLByDeletingLastPathComponent.path;
-    if (!curdir || ![NSFileManager.defaultManager changeCurrentDirectoryPath:curdir]) {
-        if (error) {
-            *error = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Failed to change current directory.", "UTMSpiceIO")}];
+    if (self.socketUrl) {
+        // need to chdir to workaround AF_UNIX sun_len limitations
+        NSString *curdir = self.socketUrl.URLByDeletingLastPathComponent.path;
+        if (!curdir || ![NSFileManager.defaultManager changeCurrentDirectoryPath:curdir]) {
+            if (error) {
+                *error = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Failed to change current directory.", "UTMSpiceIO")}];
+            }
+            return NO;
         }
-        return NO;
     }
     if (![self.spice spiceStart]) {
         if (error) {
@@ -158,6 +177,9 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
     self.primaryUsbManager = connection.usbManager;
     [self.delegate spiceDidChangeUsbManager:connection.usbManager];
 #endif
+#if defined(WITH_REMOTE)
+    [self.connectDelegate remoteInterfaceDidConnect:self];
+#endif
 }
 
 - (void)spiceInputAvailable:(CSConnection *)connection input:(CSInput *)input {
@@ -182,7 +204,11 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
 - (void)spiceError:(CSConnection *)connection code:(CSConnectionError)code message:(nullable NSString *)message {
     NSAssert(connection == self.spiceConnection, @"Unknown connection");
     self.isConnected = NO;
+#if defined(WITH_REMOTE)
+    [self.connectDelegate remoteInterface:self didErrorWithMessage:message];
+#else
     [self.connectDelegate qemuInterface:self didErrorWithMessage:message];
+#endif
 }
 
 - (void)spiceDisplayCreated:(CSConnection *)connection display:(CSDisplay *)display {
@@ -216,11 +242,15 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
 - (void)spiceForwardedPortOpened:(CSConnection *)connection port:(CSPort *)port {
     if ([port.name isEqualToString:@"org.qemu.monitor.qmp.0"]) {
         UTMQemuPort *qemuPort = [[UTMQemuPort alloc] initFrom:port];
+#if !defined(WITH_REMOTE)
         [self.connectDelegate qemuInterface:self didCreateMonitorPort:qemuPort];
+#endif
     }
     if ([port.name isEqualToString:@"org.qemu.guest_agent.0"]) {
         UTMQemuPort *qemuPort = [[UTMQemuPort alloc] initFrom:port];
+#if !defined(WITH_REMOTE)
         [self.connectDelegate qemuInterface:self didCreateGuestAgentPort:qemuPort];
+#endif
     }
     if ([port.name isEqualToString:@"com.utmapp.terminal.0"]) {
         self.primarySerial = port;

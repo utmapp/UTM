@@ -1996,6 +1996,7 @@
 		CEC794B9294924E300121A9F /* UTMScriptingSerialPortImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMScriptingSerialPortImpl.swift; sourceTree = "<group>"; };
 		CEC794BB2949663C00121A9F /* UTMScripting.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UTMScripting.swift; sourceTree = "<group>"; };
 		CEC9968328AA516000E7A025 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ja; path = ja.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
+		CECF02562B706ADD00409FC0 /* UTMRemoteConnectInterface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMRemoteConnectInterface.h; sourceTree = "<group>"; };
 		CED234EC254796E500ED0A57 /* NumberTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberTextField.swift; sourceTree = "<group>"; };
 		CED814E824C79F070042F0F1 /* VMConfigDriveCreateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigDriveCreateView.swift; sourceTree = "<group>"; };
 		CED814EB24C7C2850042F0F1 /* VMConfigInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigInfoView.swift; sourceTree = "<group>"; };
@@ -2868,6 +2869,7 @@
 				CE9B153E2B11A63E003A32DD /* UTMRemoteServer.swift */,
 				CE9B15452B12A87E003A32DD /* GenerateKey.h */,
 				CE9B15462B12A87E003A32DD /* GenerateKey.c */,
+				CECF02562B706ADD00409FC0 /* UTMRemoteConnectInterface.h */,
 			);
 			path = Remote;
 			sourceTree = "<group>";
