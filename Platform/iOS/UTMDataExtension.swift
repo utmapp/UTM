@@ -26,7 +26,7 @@ extension UTMData {
         guard let wrapped = vm.wrapped else {
             return
         }
-        let session = VMSessionState(for: wrapped as! UTMQemuVirtualMachine)
+        let session = VMSessionState(for: wrapped as! (any UTMSpiceVirtualMachine))
         session.start()
     }
     

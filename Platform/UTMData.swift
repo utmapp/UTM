@@ -25,6 +25,13 @@ import SwiftUI
 import AltKit
 #endif
 
+#if WITH_REMOTE
+import CocoaSpiceNoUsb
+typealias ConcreteVirtualMachine = UTMRemoteSpiceVirtualMachine
+#else
+typealias ConcreteVirtualMachine = UTMQemuVirtualMachine
+#endif
+
 struct AlertMessage: Identifiable {
     var message: String
     public var id: String {
@@ -141,7 +148,7 @@ struct AlertMessage: Identifiable {
                 guard try file.resourceValues(forKeys: [.isDirectoryKey]).isDirectory ?? false else {
                     continue
                 }
-                guard UTMQemuVirtualMachine.isVirtualMachine(url: file) else {
+                guard ConcreteVirtualMachine.isVirtualMachine(url: file) else {
                     continue
                 }
                 await Task.yield()
@@ -326,7 +333,7 @@ struct AlertMessage: Identifiable {
         let nameForId = { (i: Int) in i <= 1 ? base : "\(base) \(i)" }
         for i in 1..<1000 {
             let name = nameForId(i)
-            let file = UTMQemuVirtualMachine.virtualMachinePath(for: name, in: documentsURL)
+            let file = ConcreteVirtualMachine.virtualMachinePath(for: name, in: documentsURL)
             if !fileManager.fileExists(atPath: file.path) {
                 return name
             }
@@ -460,8 +467,8 @@ struct AlertMessage: Identifiable {
     /// - Returns: The new VM
     @discardableResult func clone(vm: VMData) async throws -> VMData {
         let newName: String = newDefaultVMName(base: vm.detailsTitleLabel)
-        let newPath = UTMQemuVirtualMachine.virtualMachinePath(for: newName, in: documentsURL)
-        
+        let newPath = ConcreteVirtualMachine.virtualMachinePath(for: newName, in: documentsURL)
+
         try await copyItemWithCopyfile(at: vm.pathUrl, to: newPath)
         guard let newVM = try? VMData(url: newPath) else {
             throw UTMDataError.cloneFailed
@@ -688,7 +695,7 @@ struct AlertMessage: Identifiable {
     }
     
     func mountSupportTools(for vm: any UTMVirtualMachine) async throws {
-        guard let vm = vm as? UTMQemuVirtualMachine else {
+        guard let vm = vm as? any UTMSpiceVirtualMachine else {
             throw UTMDataError.unsupportedBackend
         }
         let task = UTMDownloadSupportToolsTask(for: vm)
@@ -837,7 +844,7 @@ struct AlertMessage: Identifiable {
     ///   - vm: VM to send mouse/tablet coordinates to
     ///   - components: Data (see UTM Wiki for details)
     func automationSendMouse(to vm: VMData, urlComponents components: URLComponents) {
-        guard let qemuVm = vm.wrapped as? UTMQemuVirtualMachine else { return } // FIXME: implement for Apple VM
+        guard let qemuVm = vm.wrapped as? any UTMSpiceVirtualMachine else { return } // FIXME: implement for Apple VM
         guard !qemuVm.config.displays.isEmpty else { return }
         guard let queryItems = components.queryItems else { return }
         /// Parse targeted position

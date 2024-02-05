@@ -134,9 +134,11 @@ import SwiftUI
     /// - Parameter config: Configuration to create new VM
     convenience init<Config: UTMConfiguration>(creatingFromConfig config: Config, destinationUrl: URL) throws {
         self.init()
+        #if !WITH_REMOTE
         if let qemuConfig = config as? UTMQemuConfiguration {
             wrapped = try UTMQemuVirtualMachine(newForConfiguration: qemuConfig, destinationUrl: destinationUrl)
         }
+        #endif
         #if os(macOS)
         if let appleConfig = config as? UTMAppleConfiguration {
             wrapped = try UTMAppleVirtualMachine(newForConfiguration: appleConfig, destinationUrl: destinationUrl)
@@ -165,9 +167,11 @@ import SwiftUI
         }
         var loaded: (any UTMVirtualMachine)?
         let config = try UTMQemuConfiguration.load(from: url)
+        #if !WITH_REMOTE
         if let qemuConfig = config as? UTMQemuConfiguration {
             loaded = try UTMQemuVirtualMachine(packageUrl: url, configuration: qemuConfig, isShortcut: isShortcut(url))
         }
+        #endif
         #if os(macOS)
         if let appleConfig = config as? UTMAppleConfiguration {
             loaded = try UTMAppleVirtualMachine(packageUrl: url, configuration: appleConfig, isShortcut: isShortcut(url))

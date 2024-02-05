@@ -19,7 +19,7 @@ import SwiftUI
 
 struct VMDisplayHostedView: UIViewControllerRepresentable {
     internal class Coordinator: VMDisplayViewControllerDelegate {
-        let vm: UTMQemuVirtualMachine
+        let vm: any UTMSpiceVirtualMachine
         let device: VMWindowState.Device
         @Binding var state: VMWindowState
         var vmStateCancellable: AnyCancellable?
@@ -100,7 +100,7 @@ struct VMDisplayHostedView: UIViewControllerRepresentable {
             }
         }
         
-        init(with vm: UTMQemuVirtualMachine, device: VMWindowState.Device, state: Binding<VMWindowState>) {
+        init(with vm: any UTMSpiceVirtualMachine, device: VMWindowState.Device, state: Binding<VMWindowState>) {
             self.vm = vm
             self.device = device
             self._state = state
@@ -131,7 +131,7 @@ struct VMDisplayHostedView: UIViewControllerRepresentable {
         }
     }
     
-    let vm: UTMQemuVirtualMachine
+    let vm: any UTMSpiceVirtualMachine
     let device: VMWindowState.Device
     
     @Binding var state: VMWindowState

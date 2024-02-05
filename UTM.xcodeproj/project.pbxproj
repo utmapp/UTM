@@ -1063,7 +1063,6 @@
 		CEF7F6102AEEDCC400E34952 /* UTMSerialPortDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848F71EB277A2F47006A0240 /* UTMSerialPortDelegate.swift */; };
 		CEF7F6112AEEDCC400E34952 /* VMConfigSoundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D953A24AD4F980059923A /* VMConfigSoundView.swift */; };
 		CEF7F6122AEEDCC400E34952 /* UTMLegacyQemuConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = CE31C244225E555600A965DD /* UTMLegacyQemuConfiguration.m */; };
-		CEF7F6132AEEDCC400E34952 /* UTMQemuVirtualMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841E999728AC817D003C6CB6 /* UTMQemuVirtualMachine.swift */; };
 		CEF7F6142AEEDCC400E34952 /* VMDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D954B24AD4F980059923A /* VMDetailsView.swift */; };
 		CEF7F6152AEEDCC400E34952 /* VMDisplayMetalViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5286EC94243748C3007E6CBC /* VMDisplayMetalViewController.m */; };
 		CEF7F6162AEEDCC400E34952 /* UTMQemuConfiguration+Arguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848D99C328670F650055C215 /* UTMQemuConfiguration+Arguments.swift */; };
@@ -4108,7 +4107,6 @@
 				CEF7F6102AEEDCC400E34952 /* UTMSerialPortDelegate.swift in Sources */,
 				CEF7F6112AEEDCC400E34952 /* VMConfigSoundView.swift in Sources */,
 				CEF7F6122AEEDCC400E34952 /* UTMLegacyQemuConfiguration.m in Sources */,
-				CEF7F6132AEEDCC400E34952 /* UTMQemuVirtualMachine.swift in Sources */,
 				CEF7F6142AEEDCC400E34952 /* VMDetailsView.swift in Sources */,
 				CEF7F6152AEEDCC400E34952 /* VMDisplayMetalViewController.m in Sources */,
 				CEF7F6162AEEDCC400E34952 /* UTMQemuConfiguration+Arguments.swift in Sources */,

@@ -177,7 +177,7 @@ private struct HardwareOptions: View {
                     }
                 }
                 .onChange(of: config.architecture) { newValue in
-                    isArchitectureSupported = UTMQemuVirtualMachine.isSupported(systemArchitecture: newValue)
+                    isArchitectureSupported = ConcreteVirtualMachine.isSupported(systemArchitecture: newValue)
                     if newValue != architecture {
                         architecture = newValue
                     }

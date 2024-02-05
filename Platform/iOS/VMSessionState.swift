@@ -37,8 +37,8 @@ import SwiftUI
 
     let id: ID = ID()
 
-    let vm: UTMQemuVirtualMachine
-    
+    let vm: any UTMSpiceVirtualMachine
+
     var qemuConfig: UTMQemuConfiguration {
         vm.config
     }
@@ -81,7 +81,7 @@ import SwiftUI
     
     private var hasAutosave: Bool = false
 
-    init(for vm: UTMQemuVirtualMachine) {
+    init(for vm: any UTMSpiceVirtualMachine) {
         self.vm = vm
         super.init()
         vm.delegate = self
@@ -494,7 +494,7 @@ extension VMSessionState {
             }
             Task {
                 do {
-                    try await vm.saveSnapshot()
+                    try await vm.saveSnapshot(name: nil)
                     self.hasAutosave = true
                     logger.info("Save snapshot complete")
                 } catch {
