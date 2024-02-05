@@ -1997,6 +1997,7 @@
 		CEC794BB2949663C00121A9F /* UTMScripting.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UTMScripting.swift; sourceTree = "<group>"; };
 		CEC9968328AA516000E7A025 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ja; path = ja.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		CECF02562B706ADD00409FC0 /* UTMRemoteConnectInterface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMRemoteConnectInterface.h; sourceTree = "<group>"; };
+		CECF02572B70909900409FC0 /* Info-Remote.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-Remote.plist"; sourceTree = "<group>"; };
 		CED234EC254796E500ED0A57 /* NumberTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberTextField.swift; sourceTree = "<group>"; };
 		CED814E824C79F070042F0F1 /* VMConfigDriveCreateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigDriveCreateView.swift; sourceTree = "<group>"; };
 		CED814EB24C7C2850042F0F1 /* VMConfigInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigInfoView.swift; sourceTree = "<group>"; };
@@ -2681,6 +2682,7 @@
 				CEF0307026A2B04300667B63 /* VMWizardView.swift */,
 				CE95877426D74C2A0086BDE8 /* iOS.entitlements */,
 				CE2D954F24AD4F980059923A /* Info.plist */,
+				CECF02572B70909900409FC0 /* Info-Remote.plist */,
 				FFB02A8A266CB09C006CD71A /* InfoPlist.strings */,
 				5286EC91243748AC007E6CBC /* Settings.bundle */,
 			);
@@ -4889,7 +4891,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = "$(IOS_CODE_SIGN_ENTITLEMENTS)";
 				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_IOS:default=Apple Development)";
 				ENABLE_BITCODE = NO;
 				ENABLE_PREVIEWS = YES;
@@ -4897,7 +4898,7 @@
 					"WITH_REMOTE=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = Platform/iOS/Info.plist;
+				INFOPLIST_FILE = "Platform/iOS/Info-Remote.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -4924,7 +4925,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = "$(IOS_CODE_SIGN_ENTITLEMENTS)";
 				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_IOS:default=Apple Development)";
 				ENABLE_BITCODE = NO;
 				ENABLE_PREVIEWS = YES;
@@ -4932,7 +4932,7 @@
 					"WITH_REMOTE=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = Platform/iOS/Info.plist;
+				INFOPLIST_FILE = "Platform/iOS/Info-Remote.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
