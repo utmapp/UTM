@@ -45,6 +45,38 @@ final class UTMRemoteSpiceVirtualMachine: UTMSpiceVirtualMachine {
 
     static let capabilities = Capabilities()
 
+    actor State {
+        let vm: UTMRemoteSpiceVirtualMachine
+        private(set) var state: UTMVirtualMachineState = .stopped {
+            didSet {
+                vm.state = state
+            }
+        }
+
+        init(vm: UTMRemoteSpiceVirtualMachine) {
+            self.vm = vm
+        }
+
+        func operation(before: UTMVirtualMachineState, during: UTMVirtualMachineState, after: UTMVirtualMachineState, body: () async throws -> Void) async throws {
+            try await operation(before: [before], during: during, after: after, body: body)
+        }
+
+        func operation(before: Set<UTMVirtualMachineState>, during: UTMVirtualMachineState, after: UTMVirtualMachineState, body: () async throws -> Void) async throws {
+            guard before.contains(state) else {
+                throw VMError.operationInProgress
+            }
+            let previous = state
+            state = during
+            do {
+                try await body()
+            } catch {
+                state = previous
+                throw error
+            }
+            state = after
+        }
+    }
+
     private let server: UTMRemoteClient.Remote
 
     init(packageUrl: URL, configuration: UTMQemuConfiguration, isShortcut: Bool) throws {
@@ -56,6 +88,7 @@ final class UTMRemoteSpiceVirtualMachine: UTMSpiceVirtualMachine {
         self.config = config
         self.registryEntry = entry
         self.server = server
+        _state = State(vm: self)
     }
 
     private(set) var pathUrl: URL
@@ -64,19 +97,41 @@ final class UTMRemoteSpiceVirtualMachine: UTMSpiceVirtualMachine {
 
     private(set) var isRunningAsDisposible: Bool = false
 
-    var delegate: (UTMVirtualMachineDelegate)?
-    
+    weak var delegate: (UTMVirtualMachineDelegate)?
+
     var onConfigurationChange: (() -> Void)?
     
     var onStateChange: (() -> Void)?
 
-    private(set) var config: UTMQemuConfiguration
+    private(set) var config: UTMQemuConfiguration {
+        willSet {
+            onConfigurationChange?()
+        }
+    }
 
-    private(set) var registryEntry: UTMRegistryEntry
+    private(set) var registryEntry: UTMRegistryEntry {
+        willSet {
+            onConfigurationChange?()
+        }
+    }
 
-    private(set) var state: UTMVirtualMachineState = .stopped
+    private var _state: State!
 
-    var screenshot: PlatformImage?
+    private(set) var state: UTMVirtualMachineState = .stopped {
+        willSet {
+            onStateChange?()
+        }
+
+        didSet {
+            delegate?.virtualMachine(self, didTransitionToState: state)
+        }
+    }
+
+    var screenshot: PlatformImage? {
+        willSet {
+            onStateChange?()
+        }
+    }
 
     private(set) var snapshotUnsupportedError: Error?
 
@@ -111,8 +166,63 @@ final class UTMRemoteSpiceVirtualMachine: UTMSpiceVirtualMachine {
 }
 
 extension UTMRemoteSpiceVirtualMachine {
-    func start(options: UTMVirtualMachineStartOptions) async throws {
+    private class ConnectCoordinator: NSObject, UTMRemoteConnectDelegate {
+        var continuation: CheckedContinuation<Void, Error>?
 
+        func remoteInterface(_ remoteInterface: UTMRemoteConnectInterface, didErrorWithMessage message: String) {
+            remoteInterface.connectDelegate = nil
+            continuation?.resume(throwing: VMError.spiceConnectError(message))
+            continuation = nil
+        }
+
+        func remoteInterfaceDidConnect(_ remoteInterface: UTMRemoteConnectInterface) {
+            remoteInterface.connectDelegate = nil
+            continuation?.resume()
+            continuation = nil
+        }
+    }
+}
+
+extension UTMRemoteSpiceVirtualMachine {
+    func start(options: UTMVirtualMachineStartOptions) async throws {
+        try await _state.operation(before: .stopped, during: .starting, after: .started) {
+            let port = try await server.startVirtualMachine(id: id, options: options)
+            var options = UTMSpiceIOOptions()
+            if await !config.sound.isEmpty {
+                options.insert(.hasAudio)
+            }
+            if await config.sharing.hasClipboardSharing {
+                options.insert(.hasClipboardSharing)
+            }
+            if await config.sharing.isDirectoryShareReadOnly {
+                options.insert(.isShareReadOnly)
+            }
+            #if false // FIXME: verbose logging is broken on iOS
+            if hasDebugLog {
+                options.insert(.hasDebugLog)
+            }
+            #endif
+            let ioService = UTMSpiceIO(host: server.host, port: Int(port), options: options)
+            ioService.logHandler = { (line: String) -> Void in
+                guard !line.contains("spice_make_scancode") else {
+                    return // do not log key presses for privacy reasons
+                }
+                NSLog("%@", line) // FIXME: log to file
+            }
+            try ioService.start()
+            let coordinator = ConnectCoordinator()
+            try await withCheckedThrowingContinuation { continuation in
+                coordinator.continuation = continuation
+                ioService.connectDelegate = coordinator
+                do {
+                    try ioService.connect()
+                } catch {
+                    ioService.connectDelegate = nil
+                    continuation.resume(throwing: error)
+                }
+            }
+            self.ioService = ioService
+        }
     }
 
     func stop(usingMethod method: UTMVirtualMachineStopMethod) async throws {
@@ -129,6 +239,12 @@ extension UTMRemoteSpiceVirtualMachine {
 
     func resume() async throws {
 
+    }
+}
+
+extension UTMRemoteSpiceVirtualMachine {
+    static func isSupported(systemArchitecture: QEMUArchitecture) -> Bool {
+        true // FIXME: somehow determine which architectures are supported
     }
 }
 
@@ -161,5 +277,16 @@ extension UTMRemoteSpiceVirtualMachine {
 
 extension UTMRemoteSpiceVirtualMachine {
     enum VMError: LocalizedError {
+        case spiceConnectError(String)
+        case operationInProgress
+
+        var errorDescription: String? {
+            switch self {
+            case .spiceConnectError(let message):
+                return String.localizedStringWithFormat(NSLocalizedString("Failed to connect to SPICE: %@", comment: "UTMRemoteSpiceVirtualMachine"), message)
+            case .operationInProgress:
+                return NSLocalizedString("An operation is already in progress.", comment: "UTMRemoteSpiceVirtualMachine")
+            }
+        }
     }
 }

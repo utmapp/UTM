@@ -16,6 +16,7 @@
 
 import SwiftUI
 import UniformTypeIdentifiers
+import Network
 
 extension Optional where Wrapped == String {
     var _bound: String? {
@@ -399,5 +400,23 @@ extension Decodable {
         let data = try PropertyListSerialization.data(fromPropertyList: propertyList, format: .xml, options: 0)
         let decoder = PropertyListDecoder()
         self = try decoder.decode(Self.self, from: data)
+    }
+}
+
+extension NWEndpoint {
+    var hostname: String? {
+        if case .hostPort(let host, _) = self {
+            switch host {
+            case .name(let hostname, _):
+                return hostname
+            case .ipv4(let address):
+                return "\(address)"
+            case .ipv6(let address):
+                return "\(address)"
+            @unknown default:
+                break
+            }
+        }
+        return nil
     }
 }

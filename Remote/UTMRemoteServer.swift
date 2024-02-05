@@ -139,7 +139,7 @@ actor UTMRemoteServer {
     }
 
     private func newRemoteConnection(_ connection: Connection) async {
-        let remoteAddress = connection.connection.endpoint.debugDescription
+        let remoteAddress = connection.connection.endpoint.hostname ?? "\(connection.connection.endpoint)"
         guard let fingerprint = connection.peerCertificateChain.first?.fingerprint().hexString() else {
             connection.close()
             return

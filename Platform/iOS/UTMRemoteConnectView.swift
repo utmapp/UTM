@@ -86,6 +86,9 @@ struct UTMRemoteConnectView: View {
                 }
             }.listStyle(.plain)
         }.frame(maxWidth: idiom == .pad ? 600 : nil)
+        .alert(item: $remoteClientState.alertMessage) { item in
+            Alert(title: Text(item.message))
+        }
         .sheet(item: $selectedServer) { server in
             ServerConnectView(remoteClientState: remoteClientState, server: server, isAutoConnect: $isAutoConnect)
         }
@@ -174,9 +177,6 @@ private struct ServerConnectView: View {
                     }
                 }
             }
-        }
-        .alert(item: $remoteClientState.alertMessage) { item in
-            Alert(title: Text(item.message))
         }
         .onAppear {
             if isAutoConnect {

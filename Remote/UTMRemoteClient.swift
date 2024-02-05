@@ -84,9 +84,12 @@ actor UTMRemoteClient {
         let connection = try await Connection.init(endpoint: endpoint, identity: keyManager.identity) { certs in
             return true
         }
+        guard let host = connection.connection.currentPath?.remoteEndpoint?.hostname else {
+            throw ConnectionError.cannotDetermineHost
+        }
         try Task.checkCancellation()
         let peer = Peer(connection: connection, localInterface: local)
-        let remote = Remote(peer: peer)
+        let remote = Remote(peer: peer, host: host)
         do {
             try await remote.handshake()
         } catch {
@@ -186,9 +189,9 @@ extension UTMRemoteClient {
             case .packageFileHasChanged:
                 return .init()
             case .virtualMachineDidTransition:
-                return .init()
+                return try await _virtualMachineDidTransition(parameters: .decode(data)).encode()
             case .virtualMachineDidError:
-                return .init()
+                return try await _virtualMachineDidError(parameters: .decode(data)).encode()
             }
         }
 
@@ -201,6 +204,14 @@ extension UTMRemoteClient {
         private func _handshake(parameters: M.ClientHandshake.Request) async throws -> M.ClientHandshake.Reply {
             return .init(version: UTMRemoteMessageClient.version)
         }
+
+        private func _virtualMachineDidTransition(parameters: M.VirtualMachineDidTransition.Request) async throws -> M.VirtualMachineDidTransition.Reply {
+            return .init()
+        }
+
+        private func _virtualMachineDidError(parameters: M.VirtualMachineDidError.Request) async throws -> M.VirtualMachineDidError.Reply {
+            return .init()
+        }
     }
 }
 
@@ -208,9 +219,11 @@ extension UTMRemoteClient {
     class Remote {
         typealias M = UTMRemoteMessageServer
         private let peer: Peer<UTMRemoteMessageClient>
+        let host: String
 
-        init(peer: Peer<UTMRemoteMessageClient>) {
+        init(peer: Peer<UTMRemoteMessageClient>, host: String) {
             self.peer = peer
+            self.host = host
         }
 
         func close() {
@@ -256,6 +269,7 @@ extension UTMRemoteClient {
 extension UTMRemoteClient {
     enum ConnectionError: LocalizedError {
         case cannotFindEndpoint
+        case cannotDetermineHost
         case passwordRequired
         case passwordInvalid
 
@@ -263,6 +277,8 @@ extension UTMRemoteClient {
             switch self {
             case .cannotFindEndpoint:
                 return NSLocalizedString("The server has disappeared.", comment: "UTMRemoteClient")
+            case .cannotDetermineHost:
+                return NSLocalizedString("Failed to determine host name.", comment: "UTMRemoteClient")
             case .passwordRequired:
                 return NSLocalizedString("Password is required.", comment: "UTMRemoteClient")
             case .passwordInvalid:
