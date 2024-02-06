@@ -45,38 +45,6 @@ final class UTMRemoteSpiceVirtualMachine: UTMSpiceVirtualMachine {
 
     static let capabilities = Capabilities()
 
-    actor State {
-        let vm: UTMRemoteSpiceVirtualMachine
-        private(set) var state: UTMVirtualMachineState = .stopped {
-            didSet {
-                vm.state = state
-            }
-        }
-
-        init(vm: UTMRemoteSpiceVirtualMachine) {
-            self.vm = vm
-        }
-
-        func operation(before: UTMVirtualMachineState, during: UTMVirtualMachineState, after: UTMVirtualMachineState, body: () async throws -> Void) async throws {
-            try await operation(before: [before], during: during, after: after, body: body)
-        }
-
-        func operation(before: Set<UTMVirtualMachineState>, during: UTMVirtualMachineState, after: UTMVirtualMachineState, body: () async throws -> Void) async throws {
-            guard before.contains(state) else {
-                throw VMError.operationInProgress
-            }
-            let previous = state
-            state = during
-            do {
-                try await body()
-            } catch {
-                state = previous
-                throw error
-            }
-            state = after
-        }
-    }
-
     private let server: UTMRemoteClient.Remote
 
     init(packageUrl: URL, configuration: UTMQemuConfiguration, isShortcut: Bool) throws {
@@ -226,19 +194,92 @@ extension UTMRemoteSpiceVirtualMachine {
     }
 
     func stop(usingMethod method: UTMVirtualMachineStopMethod) async throws {
-
+        try await _state.operation(before: [.started, .paused], during: .stopping, after: .stopped) {
+            try await server.stopVirtualMachine(id: id, method: method)
+        }
     }
 
     func restart() async throws {
-
+        try await _state.operation(before: [.started, .paused], during: .stopping, after: .started) {
+            try await server.restartVirtualMachine(id: id)
+        }
     }
 
     func pause() async throws {
-
+        try await _state.operation(before: .started, during: .pausing, after: .paused) {
+            try await server.pauseVirtualMachine(id: id)
+        }
     }
 
     func resume() async throws {
+        try await _state.operation(before: .paused, during: .resuming, after: .started) {
+            try await server.resumeVirtualMachine(id: id)
+        }
+    }
 
+    func saveSnapshot(name: String?) async throws {
+        try await _state.operation(before: [.started, .paused], during: .saving) {
+            try await server.saveSnapshotVirtualMachine(id: id, name: name)
+        }
+    }
+
+    func deleteSnapshot(name: String?) async throws {
+        try await server.deleteSnapshotVirtualMachine(id: id, name: name)
+    }
+
+    func restoreSnapshot(name: String?) async throws {
+        try await _state.operation(before: [.started, .paused], during: .saving) {
+            try await server.restoreSnapshotVirtualMachine(id: id, name: name)
+        }
+    }
+}
+
+extension UTMRemoteSpiceVirtualMachine {
+    actor State {
+        let vm: UTMRemoteSpiceVirtualMachine
+        private var isInOperation: Bool = false
+        private(set) var state: UTMVirtualMachineState = .stopped {
+            didSet {
+                vm.state = state
+            }
+        }
+
+        init(vm: UTMRemoteSpiceVirtualMachine) {
+            self.vm = vm
+        }
+
+        func operation(before: UTMVirtualMachineState, during: UTMVirtualMachineState, after: UTMVirtualMachineState? = nil, body: () async throws -> Void) async throws {
+            try await operation(before: [before], during: during, after: after, body: body)
+        }
+
+        func operation(before: Set<UTMVirtualMachineState>, during: UTMVirtualMachineState, after: UTMVirtualMachineState? = nil, body: () async throws -> Void) async throws {
+            guard before.contains(state) else {
+                throw VMError.operationInProgress
+            }
+            let previous = state
+            state = during
+            isInOperation = true
+            do {
+                try await body()
+            } catch {
+                state = previous
+                throw error
+            }
+            state = after ?? previous
+            isInOperation = false
+        }
+
+        func updateRemoteState(_ state: UTMVirtualMachineState) {
+            if !isInOperation {
+                self.state = state
+            } else {
+                logger.debug("ignoring remote state update for \(vm.id) because it is currently in an operation")
+            }
+        }
+    }
+
+    func updateRemoteState(_ state: UTMVirtualMachineState) async {
+        await _state.updateRemoteState(state)
     }
 }
 
@@ -250,7 +291,17 @@ extension UTMRemoteSpiceVirtualMachine {
 
 extension UTMRemoteSpiceVirtualMachine {
     func requestInputTablet(_ tablet: Bool) {
-
+        guard !changeCursorRequestInProgress else {
+            return
+        }
+        changeCursorRequestInProgress = true
+        Task {
+            defer {
+                changeCursorRequestInProgress = false
+            }
+            try await server.changePointerTypeVirtualMachine(id: id, toTabletMode: tablet)
+            ioService?.primaryInput?.requestMouseMode(!tablet)
+        }
     }
 }
 

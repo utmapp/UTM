@@ -25,6 +25,14 @@ enum UTMRemoteMessageServer: UInt8, MessageID {
     case updateQEMUConfiguration
     case getPackageFile
     case startVirtualMachine
+    case stopVirtualMachine
+    case restartVirtualMachine
+    case pauseVirtualMachine
+    case resumeVirtualMachine
+    case saveSnapshotVirtualMachine
+    case deleteSnapshotVirtualMachine
+    case restoreSnapshotVirtualMachine
+    case changePointerTypeVirtualMachine
 }
 
 
@@ -119,6 +127,91 @@ extension UTMRemoteMessageServer {
         struct Reply: Serializable, Codable {
             let spiceServerPort: UInt16
         }
+    }
+
+    struct StopVirtualMachine: Message {
+        static let id = UTMRemoteMessageServer.stopVirtualMachine
+
+        struct Request: Serializable, Codable {
+            let id: UUID
+            let method: UTMVirtualMachineStopMethod
+        }
+
+        struct Reply: Serializable, Codable {}
+    }
+
+    struct RestartVirtualMachine: Message {
+        static let id = UTMRemoteMessageServer.restartVirtualMachine
+
+        struct Request: Serializable, Codable {
+            let id: UUID
+        }
+
+        struct Reply: Serializable, Codable {}
+    }
+
+    struct PauseVirtualMachine: Message {
+        static let id = UTMRemoteMessageServer.pauseVirtualMachine
+
+        struct Request: Serializable, Codable {
+            let id: UUID
+        }
+
+        struct Reply: Serializable, Codable {}
+    }
+
+    struct ResumeVirtualMachine: Message {
+        static let id = UTMRemoteMessageServer.resumeVirtualMachine
+
+        struct Request: Serializable, Codable {
+            let id: UUID
+        }
+
+        struct Reply: Serializable, Codable {}
+    }
+
+    struct SaveSnapshotVirtualMachine: Message {
+        static let id = UTMRemoteMessageServer.saveSnapshotVirtualMachine
+
+        struct Request: Serializable, Codable {
+            let id: UUID
+            let name: String?
+        }
+
+        struct Reply: Serializable, Codable {}
+    }
+
+    struct DeleteSnapshotVirtualMachine: Message {
+        static let id = UTMRemoteMessageServer.deleteSnapshotVirtualMachine
+
+        struct Request: Serializable, Codable {
+            let id: UUID
+            let name: String?
+        }
+
+        struct Reply: Serializable, Codable {}
+    }
+
+    struct RestoreSnapshotVirtualMachine: Message {
+        static let id = UTMRemoteMessageServer.restoreSnapshotVirtualMachine
+
+        struct Request: Serializable, Codable {
+            let id: UUID
+            let name: String?
+        }
+
+        struct Reply: Serializable, Codable {}
+    }
+
+    struct ChangePointerTypeVirtualMachine: Message {
+        static let id = UTMRemoteMessageServer.changePointerTypeVirtualMachine
+
+        struct Request: Serializable, Codable {
+            let id: UUID
+            let isTabletMode: Bool
+        }
+
+        struct Reply: Serializable, Codable {}
     }
 }
 

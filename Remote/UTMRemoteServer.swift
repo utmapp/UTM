@@ -552,6 +552,22 @@ extension UTMRemoteServer {
                 return try await _getPackageFile(parameters: .decode(data)).encode()
             case .startVirtualMachine:
                 return try await _startVirtualMachine(parameters: .decode(data)).encode()
+            case .stopVirtualMachine:
+                return try await _stopVirtualMachine(parameters: .decode(data)).encode()
+            case .restartVirtualMachine:
+                return try await _restartVirtualMachine(parameters: .decode(data)).encode()
+            case .pauseVirtualMachine:
+                return try await _pauseVirtualMachine(parameters: .decode(data)).encode()
+            case .resumeVirtualMachine:
+                return try await _resumeVirtualMachine(parameters: .decode(data)).encode()
+            case .saveSnapshotVirtualMachine:
+                return try await _saveSnapshotVirtualMachine(parameters: .decode(data)).encode()
+            case .deleteSnapshotVirtualMachine:
+                return try await _deleteSnapshotVirtualMachine(parameters: .decode(data)).encode()
+            case .restoreSnapshotVirtualMachine:
+                return try await _restoreSnapshotVirtualMachine(parameters: .decode(data)).encode()
+            case .changePointerTypeVirtualMachine:
+                return try await _changePointerTypeVirtualMachine(parameters: .decode(data)).encode()
             }
         }
 
@@ -564,7 +580,7 @@ extension UTMRemoteServer {
         @MainActor
         private func findVM(withId id: UUID) async throws -> VMData {
             let vm = data.virtualMachines.first(where: { $0.id == id })
-            if let vm = vm {
+            if let vm = vm, let _ = vm.wrapped {
                 return vm
             } else {
                 throw UTMRemoteServer.ServerError.notFound(id)
@@ -611,6 +627,57 @@ extension UTMRemoteServer {
             let vm = try await findVM(withId: parameters.id)
             let port = try await data.startRemote(vm: vm, options: parameters.options, forServer: server)
             return .init(spiceServerPort: port)
+        }
+
+        private func _stopVirtualMachine(parameters: M.StopVirtualMachine.Request) async throws -> M.StopVirtualMachine.Reply {
+            let vm = try await findVM(withId: parameters.id)
+            try await vm.wrapped!.stop(usingMethod: parameters.method)
+            return .init()
+        }
+
+        private func _restartVirtualMachine(parameters: M.RestartVirtualMachine.Request) async throws -> M.RestartVirtualMachine.Reply {
+            let vm = try await findVM(withId: parameters.id)
+            try await vm.wrapped!.restart()
+            return .init()
+        }
+
+        private func _pauseVirtualMachine(parameters: M.PauseVirtualMachine.Request) async throws -> M.PauseVirtualMachine.Reply {
+            let vm = try await findVM(withId: parameters.id)
+            try await vm.wrapped!.pause()
+            return .init()
+        }
+
+        private func _resumeVirtualMachine(parameters: M.ResumeVirtualMachine.Request) async throws -> M.ResumeVirtualMachine.Reply {
+            let vm = try await findVM(withId: parameters.id)
+            try await vm.wrapped!.resume()
+            return .init()
+        }
+
+        private func _saveSnapshotVirtualMachine(parameters: M.SaveSnapshotVirtualMachine.Request) async throws -> M.SaveSnapshotVirtualMachine.Reply {
+            let vm = try await findVM(withId: parameters.id)
+            try await vm.wrapped!.saveSnapshot(name: parameters.name)
+            return .init()
+        }
+
+        private func _deleteSnapshotVirtualMachine(parameters: M.DeleteSnapshotVirtualMachine.Request) async throws -> M.DeleteSnapshotVirtualMachine.Reply {
+            let vm = try await findVM(withId: parameters.id)
+            try await vm.wrapped!.deleteSnapshot(name: parameters.name)
+            return .init()
+        }
+
+        private func _restoreSnapshotVirtualMachine(parameters: M.RestoreSnapshotVirtualMachine.Request) async throws -> M.RestoreSnapshotVirtualMachine.Reply {
+            let vm = try await findVM(withId: parameters.id)
+            try await vm.wrapped!.restoreSnapshot(name: parameters.name)
+            return .init()
+        }
+
+        private func _changePointerTypeVirtualMachine(parameters: M.ChangePointerTypeVirtualMachine.Request) async throws -> M.ChangePointerTypeVirtualMachine.Reply {
+            let vm = try await findVM(withId: parameters.id)
+            guard let wrapped = await vm.wrapped as? UTMQemuVirtualMachine else {
+                throw ServerError.invalidBackend
+            }
+            try await wrapped.changeInputTablet(parameters.isTabletMode)
+            return .init()
         }
     }
 }

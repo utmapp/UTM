@@ -229,7 +229,7 @@ struct UTMVirtualMachineStartOptions: OptionSet, Codable {
 }
 
 /// Method to stop the VM
-enum UTMVirtualMachineStopMethod {
+enum UTMVirtualMachineStopMethod: Codable {
     /// Sends a request to the guest to shut down gracefully.
     case request
     /// Sends a hardware power down signal.

@@ -86,7 +86,6 @@ struct RemoteContentView: View {
         if remoteClientState.isConnected {
             ContentView()
                 .environmentObject(data as UTMData)
-                .transition(.move(edge: .trailing))
         } else {
             UTMRemoteConnectView(remoteClientState: remoteClientState)
                 .transition(.move(edge: .leading))

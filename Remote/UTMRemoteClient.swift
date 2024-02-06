@@ -206,10 +206,12 @@ extension UTMRemoteClient {
         }
 
         private func _virtualMachineDidTransition(parameters: M.VirtualMachineDidTransition.Request) async throws -> M.VirtualMachineDidTransition.Reply {
+            await data.remoteVirtualMachineDidTransition(id: parameters.id, state: parameters.state)
             return .init()
         }
 
         private func _virtualMachineDidError(parameters: M.VirtualMachineDidError.Request) async throws -> M.VirtualMachineDidError.Reply {
+            await data.remoteVirtualMachineDidError(id: parameters.id, message: parameters.errorMessage)
             return .init()
         }
     }
@@ -248,6 +250,38 @@ extension UTMRemoteClient {
             try await _startVirtualMachine(parameters: .init(id: id, options: options)).spiceServerPort
         }
 
+        func stopVirtualMachine(id: UUID, method: UTMVirtualMachineStopMethod) async throws {
+            try await _stopVirtualMachine(parameters: .init(id: id, method: method))
+        }
+
+        func restartVirtualMachine(id: UUID) async throws {
+            try await _restartVirtualMachine(parameters: .init(id: id))
+        }
+
+        func pauseVirtualMachine(id: UUID) async throws {
+            try await _pauseVirtualMachine(parameters: .init(id: id))
+        }
+
+        func resumeVirtualMachine(id: UUID) async throws {
+            try await _resumeVirtualMachine(parameters: .init(id: id))
+        }
+
+        func saveSnapshotVirtualMachine(id: UUID, name: String?) async throws {
+            try await _saveSnapshotVirtualMachine(parameters: .init(id: id, name: name))
+        }
+
+        func deleteSnapshotVirtualMachine(id: UUID, name: String?) async throws {
+            try await _deleteSnapshotVirtualMachine(parameters: .init(id: id, name: name))
+        }
+
+        func restoreSnapshotVirtualMachine(id: UUID, name: String?) async throws {
+            try await _restoreSnapshotVirtualMachine(parameters: .init(id: id, name: name))
+        }
+
+        func changePointerTypeVirtualMachine(id: UUID, toTabletMode tablet: Bool) async throws {
+            try await _changePointerTypeVirtualMachine(parameters: .init(id: id, isTabletMode: tablet))
+        }
+
         private func _handshake(parameters: M.ServerHandshake.Request) async throws -> M.ServerHandshake.Reply {
             try await M.ServerHandshake.send(parameters, to: peer)
         }
@@ -262,6 +296,46 @@ extension UTMRemoteClient {
 
         private func _startVirtualMachine(parameters: M.StartVirtualMachine.Request) async throws -> M.StartVirtualMachine.Reply {
             try await M.StartVirtualMachine.send(parameters, to: peer)
+        }
+
+        @discardableResult
+        private func _stopVirtualMachine(parameters: M.StopVirtualMachine.Request) async throws -> M.StopVirtualMachine.Reply {
+            try await M.StopVirtualMachine.send(parameters, to: peer)
+        }
+
+        @discardableResult
+        private func _restartVirtualMachine(parameters: M.RestartVirtualMachine.Request) async throws -> M.RestartVirtualMachine.Reply {
+            try await M.RestartVirtualMachine.send(parameters, to: peer)
+        }
+
+        @discardableResult
+        private func _pauseVirtualMachine(parameters: M.PauseVirtualMachine.Request) async throws -> M.PauseVirtualMachine.Reply {
+            try await M.PauseVirtualMachine.send(parameters, to: peer)
+        }
+
+        @discardableResult
+        private func _resumeVirtualMachine(parameters: M.ResumeVirtualMachine.Request) async throws -> M.ResumeVirtualMachine.Reply {
+            try await M.ResumeVirtualMachine.send(parameters, to: peer)
+        }
+
+        @discardableResult
+        private func _saveSnapshotVirtualMachine(parameters: M.SaveSnapshotVirtualMachine.Request) async throws -> M.SaveSnapshotVirtualMachine.Reply {
+            try await M.SaveSnapshotVirtualMachine.send(parameters, to: peer)
+        }
+
+        @discardableResult
+        private func _deleteSnapshotVirtualMachine(parameters: M.DeleteSnapshotVirtualMachine.Request) async throws -> M.DeleteSnapshotVirtualMachine.Reply {
+            try await M.DeleteSnapshotVirtualMachine.send(parameters, to: peer)
+        }
+
+        @discardableResult
+        private func _restoreSnapshotVirtualMachine(parameters: M.RestoreSnapshotVirtualMachine.Request) async throws -> M.RestoreSnapshotVirtualMachine.Reply {
+            try await M.RestoreSnapshotVirtualMachine.send(parameters, to: peer)
+        }
+
+        @discardableResult
+        private func _changePointerTypeVirtualMachine(parameters: M.ChangePointerTypeVirtualMachine.Request) async throws -> M.ChangePointerTypeVirtualMachine.Reply {
+            try await M.ChangePointerTypeVirtualMachine.send(parameters, to: peer)
         }
     }
 }

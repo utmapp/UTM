@@ -652,11 +652,27 @@ extension UTMQemuVirtualMachine: QEMUVirtualMachineDelegate {
 
 // MARK: - Input device switching
 extension UTMQemuVirtualMachine {
-    func requestInputTablet(_ tablet: Bool) {
-        guard !changeCursorRequestInProgress else {
+    func changeInputTablet(_ tablet: Bool) async throws {
+        defer {
+            changeCursorRequestInProgress = false
+        }
+        guard state == .started else {
             return
         }
-        guard let spiceIO = ioService else {
+        guard let monitor = await monitor else {
+            return
+        }
+        do {
+            let index = try await monitor.mouseIndex(forAbsolute: tablet)
+            try await monitor.mouseSelect(index)
+            ioService?.primaryInput?.requestMouseMode(!tablet)
+        } catch {
+            logger.error("Error changing mouse mode: \(error)")
+        }
+    }
+
+    func requestInputTablet(_ tablet: Bool) {
+        guard !changeCursorRequestInProgress else {
             return
         }
         changeCursorRequestInProgress = true
@@ -664,19 +680,7 @@ extension UTMQemuVirtualMachine {
             defer {
                 changeCursorRequestInProgress = false
             }
-            guard state == .started else {
-                return
-            }
-            guard let monitor = await monitor else {
-                return
-            }
-            do {
-                let index = try await monitor.mouseIndex(forAbsolute: tablet)
-                try await monitor.mouseSelect(index)
-                spiceIO.primaryInput?.requestMouseMode(!tablet)
-            } catch {
-                logger.error("Error changing mouse mode: \(error)")
-            }
+            try await changeInputTablet(tablet)
         }
     }
 }

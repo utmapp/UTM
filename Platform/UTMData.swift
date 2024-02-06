@@ -1067,5 +1067,20 @@ class UTMRemoteData: UTMData {
             await Task.yield()
         }
     }
+
+    func remoteVirtualMachineDidTransition(id: UUID, state: UTMVirtualMachineState) async {
+        guard let vm = virtualMachines.first(where: { $0.id == id }) else {
+            return
+        }
+        let remoteVM = vm as! VMRemoteData
+        let wrapped = remoteVM.wrapped as! UTMRemoteSpiceVirtualMachine
+        await wrapped.updateRemoteState(state)
+    }
+
+    func remoteVirtualMachineDidError(id: UUID, message: String) async {
+        if let session = VMSessionState.allActiveSessions.values.first(where: { $0.vm.id == id }) {
+            session.fatalError = message
+        }
+    }
 }
 #endif
