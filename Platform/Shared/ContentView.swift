@@ -97,7 +97,7 @@ struct ContentView: View {
                     #endif
 
                     // ignore error when we are running on a HV only build
-                    if !jb_has_hypervisor() {
+                    if !UTMCapabilities.current.contains(.hasHypervisorSupport) {
                         throw NSLocalizedString("Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached. See https://getutm.app/install/ for more details.", comment: "ContentView")
                     }
                 }

@@ -362,7 +362,7 @@ import Virtualization // for getting network interfaces
             "tb-size=\(tbSize)"
             #if WITH_JIT
             // use mirror mapping when we don't have JIT entitlements
-            if !jb_has_jit_entitlement() {
+            if !UTMCapabilities.current.contains(.hasJitEntitlements) {
                 "split-wx=on"
             }
             #endif

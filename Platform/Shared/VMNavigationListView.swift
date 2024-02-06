@@ -122,7 +122,7 @@ private struct VMListModifier: ViewModifier {
             ToolbarItem(placement: .navigationBarLeading) {
                 newButton
             }
-            #if !os(visionOS)
+            #if !os(visionOS) && !WITH_REMOTE
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button("Settings") {
                     settingsPresented.toggle()
@@ -140,7 +140,9 @@ private struct VMListModifier: ViewModifier {
             if data.showNewVMSheet {
                 VMWizardView()
             } else if settingsPresented {
+                #if !WITH_REMOTE
                 UTMSettingsView()
+                #endif
             }
         }
         .onChange(of: data.showNewVMSheet) { newValue in

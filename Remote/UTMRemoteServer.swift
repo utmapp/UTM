@@ -588,7 +588,7 @@ extension UTMRemoteServer {
         }
 
         private func _handshake(parameters: M.ServerHandshake.Request) async throws -> M.ServerHandshake.Reply {
-            return .init(version: UTMRemoteMessageServer.version)
+            return .init(version: UTMRemoteMessageServer.version, capabilities: .current)
         }
 
         private func _listVirtualMachines(parameters: M.ListVirtualMachines.Request) async throws -> M.ListVirtualMachines.Reply {

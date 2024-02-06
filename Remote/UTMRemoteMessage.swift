@@ -56,6 +56,7 @@ extension UTMRemoteMessageServer {
 
         struct Reply: Serializable, Codable {
             let version: Int
+            let capabilities: UTMCapabilities
         }
     }
 
@@ -71,6 +72,7 @@ extension UTMRemoteMessageServer {
             let isShortcut: Bool
             let isSuspended: Bool
             let backend: UTMBackend
+            let state: UTMVirtualMachineState
         }
 
         struct Reply: Serializable, Codable {
@@ -233,6 +235,7 @@ extension UTMRemoteMessageClient {
 
         struct Reply: Serializable, Codable {
             let version: Int
+            let capabilities: UTMCapabilities
         }
     }
 

@@ -26,7 +26,7 @@ struct VMWizardStartView: View {
         #if os(macOS)
         VZVirtualMachine.isSupported && !processIsTranslated()
         #else
-        jb_has_hypervisor()
+        UTMCapabilities.current.contains(.hasHypervisorSupport)
         #endif
     }
     

@@ -15,7 +15,6 @@
 //
 
 import Foundation
-import QEMUKit
 
 /// Common methods for all SPICE virtual machines
 protocol UTMSpiceVirtualMachine: UTMVirtualMachine where Configuration == UTMQemuConfiguration {
@@ -61,7 +60,11 @@ protocol UTMSpiceVirtualMachine: UTMVirtualMachine where Configuration == UTMQem
 // MARK: - USB redirection
 extension UTMSpiceVirtualMachine {
     var hasUsbRedirection: Bool {
+        #if HAS_USB
         return jb_has_usb_entitlement()
+        #else
+        return false
+        #endif
     }
 }
 

@@ -1033,6 +1033,43 @@ extension UTMDataError: LocalizedError {
 }
 
 // MARK: - Remote Client
+
+/// Declare host capabilities to any remote client
+struct UTMCapabilities: OptionSet, Codable {
+    let rawValue: UInt
+
+    /// If set, no trick is needed to get JIT working as the process is entitled.
+    static let hasJitEntitlements = Self(rawValue: 1 << 0)
+
+    /// If set, virtualization is supported by this host.
+    static let hasHypervisorSupport = Self(rawValue: 1 << 1)
+    
+    /// If set, host is aarch64
+    static let isAarch64 = Self(rawValue: 1 << 2)
+    
+    /// If set, host is x86_64
+    static let isX86_64 = Self(rawValue: 1 << 3)
+
+    static fileprivate(set) var current: Self = {
+        var current = Self()
+        #if WITH_JIT
+        if jb_has_jit_entitlement() {
+            current.insert(.hasJitEntitlements)
+        }
+        if jb_has_hypervisor() {
+            current.insert(.hasHypervisorSupport)
+        }
+        #endif
+        #if arch(arm64)
+        current.insert(.isAarch64)
+        #endif
+        #if arch(x86_64)
+        current.insert(.isX86_64)
+        #endif
+        return current
+    }()
+}
+
 #if WITH_REMOTE
 @MainActor
 class UTMRemoteData: UTMData {
@@ -1050,6 +1087,9 @@ class UTMRemoteData: UTMData {
 
     override func listRefresh() async {
         busyWorkAsync {
+            if let capabilities = await self.remoteClient.server.capabilities {
+                UTMCapabilities.current = capabilities
+            }
             try await self.listRefreshFromRemote()
         }
     }

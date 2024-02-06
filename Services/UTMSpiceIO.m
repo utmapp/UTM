@@ -241,14 +241,14 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
 
 - (void)spiceForwardedPortOpened:(CSConnection *)connection port:(CSPort *)port {
     if ([port.name isEqualToString:@"org.qemu.monitor.qmp.0"]) {
-        UTMQemuPort *qemuPort = [[UTMQemuPort alloc] initFrom:port];
 #if !defined(WITH_REMOTE)
+        UTMQemuPort *qemuPort = [[UTMQemuPort alloc] initFrom:port];
         [self.connectDelegate qemuInterface:self didCreateMonitorPort:qemuPort];
 #endif
     }
     if ([port.name isEqualToString:@"org.qemu.guest_agent.0"]) {
-        UTMQemuPort *qemuPort = [[UTMQemuPort alloc] initFrom:port];
 #if !defined(WITH_REMOTE)
+        UTMQemuPort *qemuPort = [[UTMQemuPort alloc] initFrom:port];
         [self.connectDelegate qemuInterface:self didCreateGuestAgentPort:qemuPort];
 #endif
     }

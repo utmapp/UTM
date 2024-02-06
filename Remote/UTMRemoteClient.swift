@@ -202,7 +202,7 @@ extension UTMRemoteClient {
         }
 
         private func _handshake(parameters: M.ClientHandshake.Request) async throws -> M.ClientHandshake.Reply {
-            return .init(version: UTMRemoteMessageClient.version)
+            return .init(version: UTMRemoteMessageClient.version, capabilities: .current)
         }
 
         private func _virtualMachineDidTransition(parameters: M.VirtualMachineDidTransition.Request) async throws -> M.VirtualMachineDidTransition.Reply {
@@ -222,6 +222,7 @@ extension UTMRemoteClient {
         typealias M = UTMRemoteMessageServer
         private let peer: Peer<UTMRemoteMessageClient>
         let host: String
+        private(set) var capabilities: UTMCapabilities?
 
         init(peer: Peer<UTMRemoteMessageClient>, host: String) {
             self.peer = peer
@@ -233,9 +234,11 @@ extension UTMRemoteClient {
         }
 
         func handshake() async throws {
-            guard try await _handshake(parameters: .init(version: UTMRemoteMessageServer.version)).version == UTMRemoteMessageServer.version else {
+            let reply = try await _handshake(parameters: .init(version: UTMRemoteMessageServer.version))
+            guard reply.version == UTMRemoteMessageServer.version else {
                 throw ClientError.versionMismatch
             }
+            capabilities = reply.capabilities
         }
 
         func listVirtualMachines() async throws -> [M.ListVirtualMachines.Information] {
