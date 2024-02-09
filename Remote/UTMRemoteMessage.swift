@@ -23,7 +23,7 @@ enum UTMRemoteMessageServer: UInt8, MessageID {
     case listVirtualMachines
     case getQEMUConfiguration
     case updateQEMUConfiguration
-    case getPackageFile
+    case getPackageDataFile
     case startVirtualMachine
     case stopVirtualMachine
     case restartVirtualMachine
@@ -41,7 +41,7 @@ enum UTMRemoteMessageClient: UInt8, MessageID {
     case clientHandshake
     case listHasChangedOrder
     case QEMUConfigurationHasChanged
-    case packageFileHasChanged
+    case packageDataFileHasChanged
     case virtualMachineDidTransition
     case virtualMachineDidError
 }
@@ -104,17 +104,18 @@ extension UTMRemoteMessageServer {
         struct Reply: Serializable, Codable {}
     }
 
-    struct GetPackageFile: Message {
-        static let id = UTMRemoteMessageServer.getPackageFile
+    struct GetPackageDataFile: Message {
+        static let id = UTMRemoteMessageServer.getPackageDataFile
 
         struct Request: Serializable, Codable {
             let id: UUID
-            let path: String
-            let existingCrc: Int32?
+            let name: String
+            let lastModified: Date?
         }
 
         struct Reply: Serializable, Codable {
             let data: Data?
+            let lastModified: Date
         }
     }
 

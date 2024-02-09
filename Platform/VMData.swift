@@ -462,6 +462,11 @@ class VMRemoteData: VMData {
         }
         let entry = registryEntryWrapped!
         let config = try await server.getQEMUConfiguration(for: entry.uuid)
+        if config.information.isIconCustom, let iconName = config.information.iconURL?.lastPathComponent {
+            if let iconUrl = try? await server.getPackageDataFile(for: entry.uuid, name: iconName) {
+                config.information.iconURL = iconUrl
+            }
+        }
         let vm = UTMRemoteSpiceVirtualMachine(forRemoteServer: server, remotePath: entry.package.path, entry: entry, config: config)
         wrapped = vm
         vm.updateConfigFromRegistry()

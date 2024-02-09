@@ -186,7 +186,7 @@ extension UTMRemoteClient {
                 return .init()
             case .QEMUConfigurationHasChanged:
                 return .init()
-            case .packageFileHasChanged:
+            case .packageDataFileHasChanged:
                 return .init()
             case .virtualMachineDidTransition:
                 return try await _virtualMachineDidTransition(parameters: .decode(data)).encode()
@@ -249,6 +249,25 @@ extension UTMRemoteClient {
             try await _getQEMUConfiguration(parameters: .init(id: id)).configuration
         }
 
+        func getPackageDataFile(for id: UUID, name: String) async throws -> URL {
+            let fm = FileManager.default
+            let cacheUrl = try fm.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+            let packageUrl = cacheUrl.appendingPathComponent(id.uuidString)
+            if !fm.fileExists(atPath: packageUrl.path) {
+                try fm.createDirectory(at: packageUrl, withIntermediateDirectories: false)
+            }
+            let fileUrl = packageUrl.appendingPathComponent(name)
+            var lastModified: Date?
+            if fm.fileExists(atPath: fileUrl.path) {
+                lastModified = try? fm.attributesOfItem(atPath: fileUrl.path)[.modificationDate] as? Date
+            }
+            let reply = try await _getPackageDataFile(parameters: .init(id: id, name: name, lastModified: lastModified))
+            if let data = reply.data {
+                fm.createFile(atPath: fileUrl.path, contents: data, attributes: [.modificationDate: reply.lastModified])
+            }
+            return fileUrl
+        }
+
         func startVirtualMachine(id: UUID, options: UTMVirtualMachineStartOptions) async throws -> UInt16 {
             try await _startVirtualMachine(parameters: .init(id: id, options: options)).spiceServerPort
         }
@@ -295,6 +314,10 @@ extension UTMRemoteClient {
 
         private func _getQEMUConfiguration(parameters: M.GetQEMUConfiguration.Request) async throws -> M.GetQEMUConfiguration.Reply {
             try await M.GetQEMUConfiguration.send(parameters, to: peer)
+        }
+
+        private func _getPackageDataFile(parameters: M.GetPackageDataFile.Request) async throws -> M.GetPackageDataFile.Reply {
+            try await M.GetPackageDataFile.send(parameters, to: peer)
         }
 
         private func _startVirtualMachine(parameters: M.StartVirtualMachine.Request) async throws -> M.StartVirtualMachine.Reply {

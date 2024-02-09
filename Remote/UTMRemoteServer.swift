@@ -539,8 +539,8 @@ extension UTMRemoteServer {
                 return try await _getQEMUConfiguration(parameters: .decode(data)).encode()
             case .updateQEMUConfiguration:
                 return try await _updateQEMUConfiguration(parameters: .decode(data)).encode()
-            case .getPackageFile:
-                return try await _getPackageFile(parameters: .decode(data)).encode()
+            case .getPackageDataFile:
+                return try await _getPackageDataFile(parameters: .decode(data)).encode()
             case .startVirtualMachine:
                 return try await _startVirtualMachine(parameters: .decode(data)).encode()
             case .stopVirtualMachine:
@@ -611,8 +611,22 @@ extension UTMRemoteServer {
             return .init()
         }
 
-        private func _getPackageFile(parameters: M.GetPackageFile.Request) async throws -> M.GetPackageFile.Reply {
-            return .init(data: nil)
+        private func _getPackageDataFile(parameters: M.GetPackageDataFile.Request) async throws -> M.GetPackageDataFile.Reply {
+            let vm = try await findVM(withId: parameters.id)
+            let fm = FileManager.default
+            let fileUrl = await vm.pathUrl.appendingPathComponent(UTMQemuConfiguration.dataDirectoryName).appendingPathComponent(parameters.name)
+            guard let lastModified = try fm.attributesOfItem(atPath: fileUrl.path)[.modificationDate] as? Date else {
+                throw ServerError.failedToAccessFile
+            }
+            if let requestLastModified = parameters.lastModified {
+                if lastModified.distance(to: requestLastModified).rounded(.towardZero) == 0 {
+                    return .init(data: nil, lastModified: lastModified)
+                }
+            }
+            guard let data = fm.contents(atPath: fileUrl.path) else {
+                throw ServerError.failedToAccessFile
+            }
+            return .init(data: data, lastModified: lastModified)
         }
 
         private func _startVirtualMachine(parameters: M.StartVirtualMachine.Request) async throws -> M.StartVirtualMachine.Reply {
@@ -718,6 +732,7 @@ extension UTMRemoteServer {
         case versionMismatch
         case notFound(UUID)
         case invalidBackend
+        case failedToAccessFile
 
         var errorDescription: String? {
             switch self {
@@ -727,6 +742,8 @@ extension UTMRemoteServer {
                 return String.localizedStringWithFormat(NSLocalizedString("Cannot find VM with ID: %@", comment: "UTMRemoteServer"), id.uuidString)
             case .invalidBackend:
                 return NSLocalizedString("Invalid backend.", comment: "UTMRemoteServer")
+            case .failedToAccessFile:
+                return NSLocalizedString("Failed to access file.", comment: "UTMRemoteServer")
             }
         }
     }
