@@ -19,10 +19,10 @@ import IOKit.pwr_mgt
 
 /// Represents the UI state for a single headless VM session.
 class VMRemoteSessionState: VMHeadlessSessionState {
-    let server: UTMRemoteServer
+    let client: UTMRemoteServer.Remote
 
-    init(for vm: any UTMVirtualMachine, server: UTMRemoteServer, onStop: (() -> Void)?) {
-        self.server = server
+    init(for vm: any UTMVirtualMachine, client: UTMRemoteServer.Remote, onStop: (() -> Void)?) {
+        self.client = client
         super.init(for: vm, onStop: onStop)
     }
     
@@ -30,9 +30,7 @@ class VMRemoteSessionState: VMHeadlessSessionState {
         Task {
             do {
                 super.virtualMachine(vm, didTransitionToState: state)
-                try await server.broadcast { remote in
-                    try await remote.virtualMachine(id: vm.id, didTransitionToState: state)
-                }
+                try await client.virtualMachine(id: vm.id, didTransitionToState: state)
             } catch {
                 if state != .stopped {
                     try? await vm.stop(usingMethod: .kill)
@@ -43,9 +41,7 @@ class VMRemoteSessionState: VMHeadlessSessionState {
 
     override func virtualMachine(_ vm: any UTMVirtualMachine, didErrorWithMessage message: String) {
         Task {
-            await server.broadcast { remote in
-                try? await remote.virtualMachine(id: vm.id, didErrorWithMessage: message)
-            }
+            try? await client.virtualMachine(id: vm.id, didErrorWithMessage: message)
             super.virtualMachine(vm, didErrorWithMessage: message)
         }
     }

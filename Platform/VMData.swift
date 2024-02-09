@@ -438,13 +438,15 @@ class VMRemoteData: VMData {
     override var isShortcut: Bool {
         _isShortcut
     }
-    
+    private var initialState: UTMVirtualMachineState
+
     /// Set by caller when VM is unavailable and there is a reason for it.
     @Published var unavailableReason: String?
 
     init(fromRemoteItem item: UTMRemoteMessageServer.ListVirtualMachines.Information) {
         self.backend = item.backend
         self._isShortcut = item.isShortcut
+        self.initialState = item.state
         super.init()
         self.registryEntryWrapped = UTMRegistry.shared.entry(uuid: item.id, name: item.name, path: item.path)
         self.registryEntryWrapped!.isSuspended = item.isSuspended
@@ -464,6 +466,7 @@ class VMRemoteData: VMData {
         wrapped = vm
         vm.updateConfigFromRegistry()
         subscribeToChildren()
+        await vm.updateRemoteState(initialState)
     }
 }
 

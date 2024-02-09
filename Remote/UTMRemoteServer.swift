@@ -33,7 +33,6 @@ actor UTMRemoteServer {
     private var listener: Task<Void, Error>?
     private var pendingConnections: [State.ClientFingerprint: Connection] = [:]
     private var establishedConnections: [State.ClientFingerprint: Remote] = [:]
-    private var local: Local!
 
     private func _replaceCancellables(with set: Set<AnyCancellable>) {
         cancellables = set
@@ -111,7 +110,6 @@ actor UTMRemoteServer {
             }
             try await keyManager.load()
             registerNotifications()
-            local = Local(server: self)
             listener = Task {
                 await withErrorNotification {
                     for try await connection in Connection.advertise(forServiceType: service, identity: keyManager.identity) {
@@ -134,7 +132,6 @@ actor UTMRemoteServer {
             listener.cancel()
             _ = await listener.result
         }
-        local = nil
         await state.setServerActive(false)
     }
 
@@ -190,8 +187,10 @@ actor UTMRemoteServer {
             return
         }
         await withErrorNotification {
+            let remote = Remote()
+            let local = Local(server: self, client: remote)
             let peer = Peer(connection: connection, localInterface: local)
-            let remote = Remote(peer: peer)
+            remote.peer = peer
             do {
                 try await remote.handshake()
             } catch {
@@ -212,14 +211,13 @@ actor UTMRemoteServer {
     /// Send message to every connected remote client.
     ///
     /// If any are disconnected, we will gracefully handle the disconnect.
-    /// If every remote user is disconnected, then we throw an error.
-    /// If `body` throws an error for any remote client (excluding NWError), then we throw an error.
-    /// - Parameter body: <#body description#>
-    func broadcast(_ body: @escaping (Remote) async throws -> Void) async rethrows {
+    /// If `body` throws an error for any remote client (excluding NWError), then we ignore it.
+    /// - Parameter body: What to broadcast
+    func broadcast(_ body: @escaping (Remote) async throws -> Void) async {
         enum BroadcastError: Error {
             case connectionError(NWError, State.ClientFingerprint)
         }
-        try await withThrowingTaskGroup(of: Void.self) { group in
+        await withThrowingTaskGroup(of: Void.self) { group in
             for (fingerprint, remote) in establishedConnections {
                 if Task.isCancelled {
                     break
@@ -236,8 +234,6 @@ actor UTMRemoteServer {
                     }
                 }
             }
-            var hasAnySuccess = false
-            var lastError: Error?
             while !group.isEmpty {
                 switch await group.nextResult() {
                 case .failure(let error):
@@ -245,19 +241,12 @@ actor UTMRemoteServer {
                         // disconnect any clients who failed to respond
                         await notifyError(error)
                         await state.disconnect(fingerprint)
-                        lastError = error
                     } else {
-                        // if any client returned an error, we fail the entire broadcast
-                        throw error
+                        logger.error("client returned error on broadcast: \(error)")
                     }
                 default:
-                    hasAnySuccess = true
                     break
                 }
-            }
-            // if we have all connection errors, then broadcast has failed
-            if !hasAnySuccess, let error = lastError {
-                throw error
             }
         }
     }
@@ -529,13 +518,15 @@ extension UTMRemoteServer {
         typealias M = UTMRemoteMessageServer
 
         private let server: UTMRemoteServer
+        private let client: UTMRemoteServer.Remote
 
         private var data: UTMData {
             server.data
         }
 
-        init(server: UTMRemoteServer) {
+        init(server: UTMRemoteServer, client: UTMRemoteServer.Remote) {
             self.server = server
+            self.client = client
         }
 
         func handle(message: M, data: Data) async throws -> Data {
@@ -600,7 +591,8 @@ extension UTMRemoteServer {
                                                       path: vmdata.pathUrl.path,
                                                       isShortcut: vmdata.isShortcut,
                                                       isSuspended: vmdata.registryEntry?.isSuspended ?? false,
-                                                      backend: vmdata.wrapped is UTMQemuVirtualMachine ? .qemu : .unknown)
+                                                      backend: vmdata.wrapped is UTMQemuVirtualMachine ? .qemu : .unknown,
+                                                      state: vmdata.wrapped?.state ?? .stopped)
                 }
             }.value
             return .init(items: items)
@@ -625,7 +617,7 @@ extension UTMRemoteServer {
 
         private func _startVirtualMachine(parameters: M.StartVirtualMachine.Request) async throws -> M.StartVirtualMachine.Reply {
             let vm = try await findVM(withId: parameters.id)
-            let port = try await data.startRemote(vm: vm, options: parameters.options, forServer: server)
+            let port = try await data.startRemote(vm: vm, options: parameters.options, forClient: client)
             return .init(spiceServerPort: port)
         }
 
@@ -685,11 +677,7 @@ extension UTMRemoteServer {
 extension UTMRemoteServer {
     class Remote {
         typealias M = UTMRemoteMessageClient
-        private let peer: Peer<UTMRemoteMessageServer>
-
-        init(peer: Peer<UTMRemoteMessageServer>) {
-            self.peer = peer
-        }
+        fileprivate(set) var peer: Peer<UTMRemoteMessageServer>!
 
         func close() {
             peer.close()
