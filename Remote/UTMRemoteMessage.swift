@@ -57,6 +57,7 @@ extension UTMRemoteMessageServer {
         struct Reply: Serializable, Codable {
             let version: Int
             let capabilities: UTMCapabilities
+            let model: String
         }
     }
 

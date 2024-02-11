@@ -424,6 +424,8 @@
 		CE19392626DCB094005CEC17 /* RAMSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE19392526DCB093005CEC17 /* RAMSlider.swift */; };
 		CE19392726DCB094005CEC17 /* RAMSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE19392526DCB093005CEC17 /* RAMSlider.swift */; };
 		CE19392826DCB094005CEC17 /* RAMSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE19392526DCB093005CEC17 /* RAMSlider.swift */; };
+		CE1AEC3F2B78B30700992AFC /* MacDeviceLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1AEC3E2B78B30700992AFC /* MacDeviceLabel.swift */; };
+		CE1AEC402B78B30700992AFC /* MacDeviceLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1AEC3E2B78B30700992AFC /* MacDeviceLabel.swift */; };
 		CE25124729BFDB87000790AB /* UTMScriptingGuestProcessImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE25124629BFDB87000790AB /* UTMScriptingGuestProcessImpl.swift */; };
 		CE25124929BFDBA6000790AB /* UTMScriptingGuestFileImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE25124829BFDBA6000790AB /* UTMScriptingGuestFileImpl.swift */; };
 		CE25124B29BFE273000790AB /* UTMScriptable.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE25124A29BFE273000790AB /* UTMScriptable.swift */; };
@@ -1765,6 +1767,7 @@
 		CE0DF17125A80B6300A51894 /* Bootstrap.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = Bootstrap.c; sourceTree = "<group>"; };
 		CE0E9B86252FD06B0026E02B /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		CE19392526DCB093005CEC17 /* RAMSlider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RAMSlider.swift; sourceTree = "<group>"; };
+		CE1AEC3E2B78B30700992AFC /* MacDeviceLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacDeviceLabel.swift; sourceTree = "<group>"; };
 		CE20FAE62448D2BE0059AE11 /* VMScroll.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMScroll.h; sourceTree = "<group>"; };
 		CE20FAE72448D2BE0059AE11 /* VMScroll.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMScroll.m; sourceTree = "<group>"; };
 		CE25124629BFDB87000790AB /* UTMScriptingGuestProcessImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMScriptingGuestProcessImpl.swift; sourceTree = "<group>"; };
@@ -2876,6 +2879,7 @@
 				CE772AAB25C8B0F600E4E379 /* ContentView.swift */,
 				8471770527CC974F00D3A50B /* DefaultTextField.swift */,
 				8432329328C2ED9000CFBC97 /* FileBrowseField.swift */,
+				CE1AEC3E2B78B30700992AFC /* MacDeviceLabel.swift */,
 				84F909FE289488F90008DBE2 /* MenuLabel.swift */,
 				CED234EC254796E500ED0A57 /* NumberTextField.swift */,
 				CE19392526DCB093005CEC17 /* RAMSlider.swift */,
@@ -3603,6 +3607,7 @@
 				2C6D9E03256EE454003298E6 /* VMDisplayQemuTerminalWindowController.swift in Sources */,
 				CE6D21DD2553A6ED001D29C5 /* VMConfirmActionModifier.swift in Sources */,
 				85EC516627CC8D10004A51DE /* VMConfigAdvancedNetworkView.swift in Sources */,
+				CE1AEC402B78B30700992AFC /* MacDeviceLabel.swift in Sources */,
 				CE020BB724B14F8400B44AB6 /* UTMVirtualMachine.swift in Sources */,
 				845F170B289CB07200944904 /* VMDisplayAppleDisplayWindowController.swift in Sources */,
 				CE772AAD25C8B0F600E4E379 /* ContentView.swift in Sources */,
@@ -4025,6 +4030,7 @@
 				CEF7F5D22AEEDCC400E34952 /* VMDrivesSettingsView.swift in Sources */,
 				CEF7F5D32AEEDCC400E34952 /* UTMConfigurationDrive.swift in Sources */,
 				CEF7F5D42AEEDCC400E34952 /* VMConfigDriveCreateView.swift in Sources */,
+				CE1AEC3F2B78B30700992AFC /* MacDeviceLabel.swift in Sources */,
 				CEF7F5D52AEEDCC400E34952 /* UTMPatches.swift in Sources */,
 				CEF7F5D62AEEDCC400E34952 /* RAMSlider.swift in Sources */,
 				CEF7F5D72AEEDCC400E34952 /* VMReleaseNotesView.swift in Sources */,

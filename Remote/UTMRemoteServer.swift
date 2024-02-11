@@ -98,6 +98,10 @@ actor UTMRemoteServer {
         }
     }
 
+    private var metadata: NWTXTRecord {
+        NWTXTRecord(["Model": MacDevice.current.model])
+    }
+
     func start() async {
         do {
             try await center.requestAuthorization(options: .alert)
@@ -112,7 +116,7 @@ actor UTMRemoteServer {
             registerNotifications()
             listener = Task {
                 await withErrorNotification {
-                    for try await connection in Connection.advertise(forServiceType: service, identity: keyManager.identity) {
+                    for try await connection in Connection.advertise(forServiceType: service, txtRecord: metadata, identity: keyManager.identity) {
                         if let connection = try? await Connection(connection: connection) {
                             await newRemoteConnection(connection)
                         }
@@ -579,7 +583,7 @@ extension UTMRemoteServer {
         }
 
         private func _handshake(parameters: M.ServerHandshake.Request) async throws -> M.ServerHandshake.Reply {
-            return .init(version: UTMRemoteMessageServer.version, capabilities: .current)
+            return .init(version: UTMRemoteMessageServer.version, capabilities: .current, model: MacDevice.current.model)
         }
 
         private func _listVirtualMachines(parameters: M.ListVirtualMachines.Request) async throws -> M.ListVirtualMachines.Reply {

@@ -20,9 +20,10 @@ import UniformTypeIdentifiers
 import IQKeyboardManagerSwift
 #endif
 
-#if WITH_QEMU_TCI
+// on visionOS, there is no text to show more than UTM
+#if WITH_QEMU_TCI && !os(visionOS)
 let productName = "UTM SE"
-#elseif WITH_REMOTE
+#elseif WITH_REMOTE && !os(visionOS)
 let productName = "UTM Remote"
 #else
 let productName = "UTM"

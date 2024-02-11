@@ -23,10 +23,6 @@ struct UTMRemoteConnectView: View {
     @State private var selectedServer: UTMRemoteClient.State.Server?
     @State private var isAutoConnect: Bool = false
 
-    private var idiom: UIUserInterfaceIdiom {
-        UIDevice.current.userInterfaceIdiom
-    }
-
     private var remoteClient: UTMRemoteClient {
         data.remoteClient
     }
@@ -35,6 +31,9 @@ struct UTMRemoteConnectView: View {
         VStack {
             HStack {
                 ProgressView().progressViewStyle(.circular)
+                Spacer()
+                Text("Select a UTM Server")
+                    .font(.headline)
                 Spacer()
                 Button {
                     openURL(URL(string: "https://docs.getutm.app/remote/")!)
@@ -52,41 +51,43 @@ struct UTMRemoteConnectView: View {
                 }
             }.padding()
             List {
-                Section(header: Text("Saved")) {
-                    ForEach(remoteClientState.savedServers) { server in
-                        Button {
-                            isAutoConnect = true
-                            selectedServer = server
-                        } label: {
-                            Text(server.name)
-                        }.contextMenu {
+                if remoteClientState.savedServers.count > 0 {
+                    Section(header: Text("Saved")) {
+                        ForEach(remoteClientState.savedServers) { server in
                             Button {
-                                isAutoConnect = false
+                                isAutoConnect = true
                                 selectedServer = server
                             } label: {
-                                Label("Edit…", systemImage: "slider.horizontal.3")
-                            }
-                            DestructiveButton("Delete") {
+                                MacDeviceLabel(server.name, device: .init(model: server.model))
+                            }.foregroundColor(.primary)
+                            .contextMenu {
+                                Button {
+                                    isAutoConnect = false
+                                    selectedServer = server
+                                } label: {
+                                    Label("Edit…", systemImage: "slider.horizontal.3")
+                                }
+                                DestructiveButton("Delete") {
 
+                                }
                             }
+                        }.onDelete { indexSet in
+
                         }
-                    }.onDelete { indexSet in
-
                     }
                 }
-                Section(header: Text("Found")) {
+                Section(header: Text("Discovered")) {
                     ForEach(remoteClientState.foundServers) { server in
                         Button {
                             isAutoConnect = true
                             selectedServer = server
                         } label: {
-                            Text(server.name)
-                        }
+                            MacDeviceLabel(server.name, device: .init(model: server.model))
+                        }.foregroundColor(.primary)
                     }
                 }
-            }.listStyle(.plain)
-        }.frame(maxWidth: idiom == .pad ? 600 : nil)
-        .alert(item: $remoteClientState.alertMessage) { item in
+            }.listStyle(.insetGrouped)
+        }.alert(item: $remoteClientState.alertMessage) { item in
             Alert(title: Text(item.message))
         }
         .sheet(item: $selectedServer) { server in

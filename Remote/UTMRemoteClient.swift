@@ -47,8 +47,8 @@ actor UTMRemoteClient {
     func startScanning() {
         scanTask = Task {
             await withErrorAlert {
-                for try await endpoints in Connection.endpoints(forServiceType: service) {
-                    await self.didFindEndpoints(endpoints)
+                for try await results in Connection.browse(forServiceType: service) {
+                    await self.didFindResults(results)
                 }
             }
         }
@@ -59,16 +59,23 @@ actor UTMRemoteClient {
         scanTask = nil
     }
 
-    func didFindEndpoints(_ endpoints: [NWEndpoint]) async {
-        self.endpoints = endpoints.reduce(into: [String: NWEndpoint]()) { map, endpoint in
-            map[endpoint.debugDescription] = endpoint
+    func didFindResults(_ results: Set<NWBrowser.Result>) async {
+        self.endpoints = results.reduce(into: [String: NWEndpoint]()) { map, result in
+            map[result.endpoint.debugDescription] = result.endpoint
         }
-        let servers = endpoints.compactMap { endpoint in
-            switch endpoint {
+        let servers = results.compactMap { result in
+            let model: String?
+            if case .bonjour(let txtRecord) = result.metadata,
+                case .string(let value) = txtRecord.getEntry(for: "Model") {
+                model = value
+            } else {
+                model = nil
+            }
+            switch result.endpoint {
             case .hostPort(let host, _):
-                return State.Server(hostname: host.debugDescription, name: host.debugDescription, lastSeen: Date())
+                return State.Server(hostname: result.endpoint.hostname!, model: model, name: host.debugDescription, lastSeen: Date())
             case .service(let name, _, _, _):
-                return State.Server(hostname: endpoint.debugDescription, name: name, lastSeen: Date())
+                return State.Server(hostname: result.endpoint.debugDescription, model: model, name: name, lastSeen: Date())
             default:
                 return nil
             }
@@ -107,6 +114,7 @@ extension UTMRemoteClient {
         typealias ServerFingerprint = String
         struct Server: Codable, Identifiable, Hashable {
             let hostname: String
+            var model: String?
             var fingerprint: ServerFingerprint?
             var name: String
             var lastSeen: Date
