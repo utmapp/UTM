@@ -28,6 +28,6 @@
 ///   - serial: Serial number of the certificate
 ///   - days: Validity in days from today
 ///   - isClient: If 0 then a TLS Server certificate is generated, otherwise a TLS Client certificate is generated
-_Nullable CFDataRef GenerateRSACertificate(CFStringRef _Nonnull commonName, CFStringRef _Nonnull organizationName, CFNumberRef _Nullable serial, CFNumberRef _Nullable days, CFBooleanRef _Nonnull isClient);
+_Nullable CFArrayRef GenerateRSACertificate(CFStringRef _Nonnull commonName, CFStringRef _Nonnull organizationName, CFNumberRef _Nullable serial, CFNumberRef _Nullable days, CFBooleanRef _Nonnull isClient);
 
 #endif /* GenerateKey_h */

@@ -82,7 +82,7 @@ extension UTMData {
     ///   - options: Start options
     ///   - server: Remote server
     /// - Returns: Port number to SPICE server
-    func startRemote(vm: VMData, options: UTMVirtualMachineStartOptions, forClient client: UTMRemoteServer.Remote) async throws -> UInt16 {
+    func startRemote(vm: VMData, options: UTMVirtualMachineStartOptions, forClient client: UTMRemoteServer.Remote) async throws -> (port: UInt16, publicKey: Data) {
         guard let wrapped = vm.wrapped as? UTMQemuVirtualMachine, type(of: wrapped).capabilities.supportsRemoteSession else {
             throw UTMDataError.unsupportedBackend
         }
@@ -94,7 +94,7 @@ extension UTMData {
         }
         try await wrapped.start(options: options.union(.remoteSession))
         vmWindows[vm] = session
-        return wrapped.config.qemu.spiceServerPort!
+        return (wrapped.config.qemu.spiceServerPort!, wrapped.config.qemu.spiceServerPublicKey!)
     }
 
     func stop(vm: VMData) {

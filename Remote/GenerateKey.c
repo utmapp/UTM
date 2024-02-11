@@ -132,7 +132,95 @@ err:
     return 0;
 }
 
-_Nullable CFDataRef GenerateRSACertificate(CFStringRef _Nonnull commonName, CFStringRef _Nonnull organizationName, CFNumberRef _Nullable serial, CFNumberRef _Nullable days, CFBooleanRef _Nonnull isClient) {
+static _Nullable CFDataRef CreateP12FromKey(EVP_PKEY *pkey, X509 *cert) {
+    PKCS12 *p12;
+    BIO *mem;
+    char *ptr;
+    long length;
+    CFDataRef data;
+
+    p12 = PKCS12_create("password", NULL, pkey, cert, NULL, NID_pbe_WithSHA1And3_Key_TripleDES_CBC, NID_pbe_WithSHA1And40BitRC2_CBC, PKCS12_DEFAULT_ITER, 1, 0);
+    if (!p12) {
+        ERR_print_errors_fp(stderr);
+        return NULL;
+    }
+    mem = BIO_new(BIO_s_mem());
+    if (!mem || !i2d_PKCS12_bio(mem, p12)) {
+        ERR_print_errors_fp(stderr);
+        PKCS12_free(p12);
+        BIO_free(mem);
+        return NULL;
+    }
+    PKCS12_free(p12);
+    length = BIO_get_mem_data(mem, &ptr);
+    data = CFDataCreate(kCFAllocatorDefault, (void *)ptr, length);
+    BIO_free(mem);
+    return data;
+}
+
+static _Nullable CFDataRef CreatePrivatePEMFromKey(EVP_PKEY *pkey) {
+    BIO *mem;
+    char *ptr;
+    long length;
+    CFDataRef data;
+
+    mem = BIO_new(BIO_s_mem());
+    if (!mem || !PEM_write_bio_PrivateKey(mem, pkey, NULL, NULL, 0, NULL, NULL)) {
+        ERR_print_errors_fp(stderr);
+        BIO_free(mem);
+        return NULL;
+    }
+    length = BIO_get_mem_data(mem, &ptr);
+    data = CFDataCreate(kCFAllocatorDefault, (void *)ptr, length);
+    BIO_free(mem);
+    return data;
+}
+
+static _Nullable CFDataRef CreatePublicPEMFromCert(X509 *cert) {
+    BIO *mem;
+    char *ptr;
+    long length;
+    CFDataRef data;
+
+    mem = BIO_new(BIO_s_mem());
+    if (!mem || !PEM_write_bio_X509(mem, cert)) {
+        ERR_print_errors_fp(stderr);
+        BIO_free(mem);
+        return NULL;
+    }
+    length = BIO_get_mem_data(mem, &ptr);
+    data = CFDataCreate(kCFAllocatorDefault, (void *)ptr, length);
+    BIO_free(mem);
+    return data;
+}
+
+static _Nullable CFDataRef CreatePublicKeyFromCert(X509 *cert) {
+    EVP_PKEY* pubkey;
+    BIO *mem;
+    char *ptr;
+    long length;
+    CFDataRef data;
+
+    pubkey = X509_get_pubkey(cert);
+    if (!pubkey) {
+        ERR_print_errors_fp(stderr);
+        return NULL;
+    }
+    mem = BIO_new(BIO_s_mem());
+    if (!mem || !i2d_PUBKEY_bio(mem, pubkey)) {
+        ERR_print_errors_fp(stderr);
+        EVP_PKEY_free(pubkey);
+        BIO_free(mem);
+        return NULL;
+    }
+    length = BIO_get_mem_data(mem, &ptr);
+    data = CFDataCreate(kCFAllocatorDefault, (void *)ptr, length);
+    BIO_free(mem);
+    EVP_PKEY_free(pubkey);
+    return data;
+}
+
+_Nullable CFArrayRef GenerateRSACertificate(CFStringRef _Nonnull commonName, CFStringRef _Nonnull organizationName, CFNumberRef _Nullable serial, CFNumberRef _Nullable days, CFBooleanRef _Nonnull isClient) {
     char _commonName[X509_ENTRY_MAX_LENGTH];
     char _organizationName[X509_ENTRY_MAX_LENGTH];
     long _serial = 0;
@@ -140,11 +228,8 @@ _Nullable CFDataRef GenerateRSACertificate(CFStringRef _Nonnull commonName, CFSt
     int _isClient = 0;
     X509 *cert;
     EVP_PKEY *pkey;
-    PKCS12 *p12;
-    BIO *mem;
-    char *ptr;
-    long length;
-    CFDataRef data;
+    CFDataRef arr[4] = {NULL};
+    CFArrayRef cfarr = NULL;
 
     if (!CFStringGetCString(commonName, _commonName, X509_ENTRY_MAX_LENGTH, kCFStringEncodingUTF8)) {
         return NULL;
@@ -166,22 +251,26 @@ _Nullable CFDataRef GenerateRSACertificate(CFStringRef _Nonnull commonName, CFSt
         ERR_print_errors_fp(stderr);
         return NULL;
     }
-    p12 = PKCS12_create("password", NULL, pkey, cert, NULL, NID_pbe_WithSHA1And3_Key_TripleDES_CBC, NID_pbe_WithSHA1And40BitRC2_CBC, PKCS12_DEFAULT_ITER, 1, 0);
+    arr[0] = CreateP12FromKey(pkey, cert);
+    arr[1] = CreatePrivatePEMFromKey(pkey);
+    arr[2] = CreatePublicPEMFromCert(cert);
+    arr[3] = CreatePublicKeyFromCert(cert);
+    if (arr[0] && arr[1] && arr[2] && arr[3]) {
+        cfarr = CFArrayCreate(kCFAllocatorDefault, (const void **)arr, 4, &kCFTypeArrayCallBacks);
+    }
+    if (arr[0]) {
+        CFRelease(arr[0]);
+    }
+    if (arr[1]) {
+        CFRelease(arr[1]);
+    }
+    if (arr[2]) {
+        CFRelease(arr[2]);
+    }
+    if (arr[3]) {
+        CFRelease(arr[3]);
+    }
     EVP_PKEY_free(pkey);
     X509_free(cert);
-    if (!p12) {
-        ERR_print_errors_fp(stderr);
-        return NULL;
-    }
-    mem = BIO_new(BIO_s_mem());
-    if (!mem || !i2d_PKCS12_bio(mem, p12)) {
-        ERR_print_errors_fp(stderr);
-        PKCS12_free(p12);
-        return NULL;
-    }
-    PKCS12_free(p12);
-    length = BIO_get_mem_data(mem, &ptr);
-    data = CFDataCreate(kCFAllocatorDefault, (void *)ptr, length);
-    BIO_free(mem);
-    return data;
+    return cfarr;
 }

@@ -71,6 +71,16 @@ import Virtualization // for getting network interfaces
         socketURL.appendingPathComponent(information.uuid.uuidString).appendingPathExtension("qga")
     }
 
+    /// Used only if in remote sever mode.
+    var spiceTlsKeyUrl: URL {
+        socketURL.appendingPathComponent(information.uuid.uuidString).appendingPathExtension("pem")
+    }
+
+    /// Used only if in remote sever mode.
+    var spiceTlsCertUrl: URL {
+        socketURL.appendingPathComponent(information.uuid.uuidString).appendingPathExtension("crt")
+    }
+
     /// Combined generated and user specified arguments.
     @QEMUArgumentBuilder var allArguments: [QEMUArgument] {
         generatedArguments
@@ -120,15 +130,30 @@ import Virtualization // for getting network interfaces
     @QEMUArgumentBuilder private var spiceArguments: [QEMUArgument] {
         f("-spice")
         if let port = qemu.spiceServerPort {
-            "port=\(port)"
+            if qemu.isSpiceServerTlsEnabled {
+                "tls-port=\(port)"
+                "tls-channel=default"
+                "x509-key-file="
+                spiceTlsKeyUrl
+                "x509-cert-file="
+                spiceTlsCertUrl
+                "x509-cacert-file="
+                spiceTlsCertUrl
+            } else {
+                "port=\(port)"
+            }
         } else {
             "unix=on"
             "addr=\(spiceSocketURL.lastPathComponent)"
         }
         "disable-ticketing=on"
-        "image-compression=off"
-        "playback-compression=off"
-        "streaming-video=off"
+        if !isRemoteSpice {
+            "image-compression=off"
+            "playback-compression=off"
+            "streaming-video=off"
+        } else {
+            "streaming-video=filter"
+        }
         "gl=\(isGLSupported && !isRemoteSpice ? "on" : "off")"
         f()
         f("-chardev")

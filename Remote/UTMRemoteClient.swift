@@ -268,8 +268,9 @@ extension UTMRemoteClient {
             return fileUrl
         }
 
-        func startVirtualMachine(id: UUID, options: UTMVirtualMachineStartOptions) async throws -> UInt16 {
-            try await _startVirtualMachine(parameters: .init(id: id, options: options)).spiceServerPort
+        func startVirtualMachine(id: UUID, options: UTMVirtualMachineStartOptions) async throws -> (port: UInt16, publicKey: Data) {
+            let reply = try await _startVirtualMachine(parameters: .init(id: id, options: options))
+            return (reply.spiceServerPort, reply.spiceServerPublicKey)
         }
 
         func stopVirtualMachine(id: UUID, method: UTMVirtualMachineStopMethod) async throws {

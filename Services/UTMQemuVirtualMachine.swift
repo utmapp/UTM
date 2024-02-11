@@ -279,6 +279,7 @@ extension UTMQemuVirtualMachine {
         await MainActor.run {
             config.qemu.isDisposable = isRunningAsDisposible
             config.qemu.spiceServerPort = spicePort
+            config.qemu.isSpiceServerTlsEnabled = true
         }
 
         // start TPM
@@ -338,6 +339,19 @@ extension UTMQemuVirtualMachine {
             }
             try pipeInterface.start()
             interface = pipeInterface
+            // generate a TLS key for this session
+            guard let key = GenerateRSACertificate("UTM Remote SPICE Server" as CFString,
+                                                   "UTM" as CFString,
+                                                   Int.random(in: 1..<CLong.max) as CFNumber,
+                                                   1 as CFNumber,
+                                                   false as CFBoolean)?.takeUnretainedValue() as? [Data] else {
+                throw UTMQemuVirtualMachineError.keyGenerationFailed
+            }
+            try await key[1].write(to: config.spiceTlsKeyUrl)
+            try await key[2].write(to: config.spiceTlsCertUrl)
+            await MainActor.run {
+                config.qemu.spiceServerPublicKey = key[3]
+            }
         } else {
             let ioService = UTMSpiceIO(socketUrl: spiceSocketUrl, options: options)
             ioService.logHandler = { [weak system] (line: String) -> Void in
@@ -835,6 +849,7 @@ enum UTMQemuVirtualMachineError: Error {
     case accessShareFailed
     case invalidVmState
     case saveSnapshotFailed(Error)
+    case keyGenerationFailed
 }
 
 extension UTMQemuVirtualMachineError: LocalizedError {
@@ -851,6 +866,8 @@ extension UTMQemuVirtualMachineError: LocalizedError {
         case .invalidVmState: return NSLocalizedString("The virtual machine is in an invalid state.", comment: "UTMQemuVirtualMachine")
         case .saveSnapshotFailed(let error):
             return String.localizedStringWithFormat(NSLocalizedString("Failed to save VM snapshot. Usually this means at least one device does not support snapshots. %@", comment: "UTMQemuVirtualMachine"), error.localizedDescription)
+        case .keyGenerationFailed:
+            return NSLocalizedString("Failed to generate TLS key for server.", comment: "UTMQemuVirtualMachine")
         }
     }
 }

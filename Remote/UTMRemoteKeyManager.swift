@@ -49,12 +49,12 @@ class UTMRemoteKeyManager {
         let organizationName = "UTM" as CFString
         let serialNumber = Int.random(in: 1..<CLong.max) as CFNumber
         let days = 3650 as CFNumber
-        guard let p12Data = GenerateRSACertificate(commonName, organizationName, serialNumber, days, isClient as CFBoolean)?.takeUnretainedValue() else {
+        guard let data = GenerateRSACertificate(commonName, organizationName, serialNumber, days, isClient as CFBoolean)?.takeUnretainedValue() as? [CFData] else {
             throw UTMRemoteKeyManagerError.generateKeyFailure
         }
         let importOptions = [ kSecImportExportPassphrase as String: "password" ] as CFDictionary
         var rawItems: CFArray?
-        try withSecurityThrow(SecPKCS12Import(p12Data, importOptions, &rawItems))
+        try withSecurityThrow(SecPKCS12Import(data[0], importOptions, &rawItems))
         guard let items = (rawItems! as! [[String: Any]]).first else {
             throw UTMRemoteKeyManagerError.parseKeyFailure
         }

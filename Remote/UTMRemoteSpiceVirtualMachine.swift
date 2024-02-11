@@ -154,7 +154,7 @@ extension UTMRemoteSpiceVirtualMachine {
 extension UTMRemoteSpiceVirtualMachine {
     func start(options: UTMVirtualMachineStartOptions) async throws {
         try await _state.operation(before: .stopped, during: .starting, after: .started) {
-            let port = try await server.startVirtualMachine(id: id, options: options)
+            let spiceServer = try await server.startVirtualMachine(id: id, options: options)
             var options = UTMSpiceIOOptions()
             if await !config.sound.isEmpty {
                 options.insert(.hasAudio)
@@ -170,7 +170,7 @@ extension UTMRemoteSpiceVirtualMachine {
                 options.insert(.hasDebugLog)
             }
             #endif
-            let ioService = UTMSpiceIO(host: server.host, port: Int(port), options: options)
+            let ioService = UTMSpiceIO(host: server.host, tlsPort: Int(spiceServer.port), serverPublicKey: spiceServer.publicKey, options: options)
             ioService.logHandler = { (line: String) -> Void in
                 guard !line.contains("spice_make_scancode") else {
                     return // do not log key presses for privacy reasons

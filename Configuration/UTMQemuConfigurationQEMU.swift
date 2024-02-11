@@ -72,6 +72,12 @@ struct UTMQemuConfigurationQEMU: Codable {
     /// Set to open a port for remote SPICE session. Not saved.
     var spiceServerPort: UInt16?
 
+    /// If true, all SPICE channels will be over TLS. Not saved.
+    var isSpiceServerTlsEnabled: Bool = false
+
+    /// Set to TLS public key for SPICE server in SubjectPublicKey. Not saved.
+    var spiceServerPublicKey: Data?
+
     enum CodingKeys: String, CodingKey {
         case hasDebugLog = "DebugLog"
         case hasUefiBoot = "UEFIBoot"
