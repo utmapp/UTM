@@ -77,23 +77,6 @@ struct UTMSingleWindowView: View {
     }
 }
 
-#if WITH_REMOTE
-struct RemoteContentView: View {
-    @ObservedObject var remoteClientState: UTMRemoteClient.State
-    @EnvironmentObject private var data: UTMRemoteData
-
-    var body: some View {
-        if remoteClientState.isConnected {
-            ContentView()
-                .environmentObject(data as UTMData)
-        } else {
-            UTMRemoteConnectView(remoteClientState: remoteClientState)
-                .transition(.move(edge: .leading))
-        }
-    }
-}
-#endif
-
 struct UTMSingleWindowView_Previews: PreviewProvider {
     static var previews: some View {
         UTMSingleWindowView()

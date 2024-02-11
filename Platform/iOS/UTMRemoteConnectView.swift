@@ -183,6 +183,9 @@ private struct ServerConnectView: View {
                 connect()
             }
         }
+        .alert(item: $remoteClientState.alertMessage) { item in
+            Alert(title: Text(item.message))
+        }
     }
 
     private func connect() {

@@ -29,9 +29,17 @@ struct UTMApp: App {
     private let vmSessionCreatedNotification = NotificationCenter.default.publisher(for: .vmSessionCreated)
     private let vmSessionEndedNotification = NotificationCenter.default.publisher(for: .vmSessionEnded)
 
+    private var contentView: some View {
+        #if WITH_REMOTE
+        RemoteContentView(remoteClientState: data.remoteClient.state)
+        #else
+        ContentView()
+        #endif
+    }
+
     var body: some Scene {
         WindowGroup(id: "home") {
-            ContentView()
+            contentView
             .environmentObject(data)
             .onReceive(vmSessionCreatedNotification) { output in
                 let newSession = output.userInfo!["Session"] as! VMSessionState

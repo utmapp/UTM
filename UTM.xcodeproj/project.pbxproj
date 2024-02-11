@@ -320,6 +320,7 @@
 		CE064C662A563F4B003C833D /* swtpm.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE064C642A563F4A003C833D /* swtpm.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CE064C6A2A563F6E003C833D /* swtpm.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE064C642A563F4A003C833D /* swtpm.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CE064C6C2A563F75003C833D /* swtpm.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE064C642A563F4A003C833D /* swtpm.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CE08334B2B784FD400522C03 /* RemoteContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE08334A2B784FD400522C03 /* RemoteContentView.swift */; };
 		CE0B6CEC24AD532500FE012D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CE550BD52259479D0063E575 /* Assets.xcassets */; };
 		CE0B6CED24AD532A00FE012D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CE550BD52259479D0063E575 /* Assets.xcassets */; };
 		CE0B6CF324AD568400FE012D /* UTMLegacyQemuConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = CE31C244225E555600A965DD /* UTMLegacyQemuConfiguration.m */; };
@@ -1759,6 +1760,7 @@
 		CE061CE8289EB6250000351C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/VMDisplayMetalViewInputAccessory.xib; sourceTree = "<group>"; };
 		CE061CEB289EB62E0000351C /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/VMDisplayMetalViewInputAccessory.strings; sourceTree = "<group>"; };
 		CE064C642A563F4A003C833D /* swtpm.0.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = swtpm.0.framework; path = "$(SYSROOT_DIR)/Frameworks/swtpm.0.framework"; sourceTree = "<group>"; };
+		CE08334A2B784FD400522C03 /* RemoteContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteContentView.swift; sourceTree = "<group>"; };
 		CE0DF17025A80B6300A51894 /* Bootstrap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Bootstrap.h; sourceTree = "<group>"; };
 		CE0DF17125A80B6300A51894 /* Bootstrap.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = Bootstrap.c; sourceTree = "<group>"; };
 		CE0E9B86252FD06B0026E02B /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -2643,6 +2645,7 @@
 				CE8813D224CD230300532628 /* ActivityView.swift */,
 				CED814EE24C7EB760042F0F1 /* ImagePicker.swift */,
 				84CE3DAD2904C17C00FF068B /* IASKAppSettings.swift */,
+				CE08334A2B784FD400522C03 /* RemoteContentView.swift */,
 				841E58D02893AF5400137A20 /* UTMApp.swift */,
 				CEBBF1A424B56A2900C15049 /* UTMDataExtension.swift */,
 				841E58CA28937EE200137A20 /* UTMExternalSceneDelegate.swift */,
@@ -4056,6 +4059,7 @@
 				CEF7F5F62AEEDCC400E34952 /* VMConfigPortForwardForm.swift in Sources */,
 				CEF7F5F82AEEDCC400E34952 /* DetailedSection.swift in Sources */,
 				CEF7F5F92AEEDCC400E34952 /* VMToolbarDriveMenuView.swift in Sources */,
+				CE08334B2B784FD400522C03 /* RemoteContentView.swift in Sources */,
 				CEF7F5FA2AEEDCC400E34952 /* VMSettingsView.swift in Sources */,
 				CEF7F5FB2AEEDCC400E34952 /* VMDisplayViewController.swift in Sources */,
 				CEF7F5FC2AEEDCC400E34952 /* VMWizardStartView.swift in Sources */,
