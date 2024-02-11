@@ -170,7 +170,11 @@ extension UTMRemoteSpiceVirtualMachine {
                 options.insert(.hasDebugLog)
             }
             #endif
-            let ioService = UTMSpiceIO(host: server.host, tlsPort: Int(spiceServer.port), serverPublicKey: spiceServer.publicKey, options: options)
+            let ioService = UTMSpiceIO(host: server.host,
+                                       tlsPort: Int(spiceServer.port),
+                                       serverPublicKey: spiceServer.publicKey,
+                                       password: spiceServer.password,
+                                       options: options)
             ioService.logHandler = { (line: String) -> Void in
                 guard !line.contains("spice_make_scancode") else {
                     return // do not log key presses for privacy reasons

@@ -26,6 +26,7 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
 @property (nonatomic, nullable) NSString *host;
 @property (nonatomic) NSInteger tlsPort;
 @property (nonatomic, nullable) NSData *serverPublicKey;
+@property (nonatomic, nullable) NSString *password;
 @property (nonatomic) UTMSpiceIOOptions options;
 @property (nonatomic, readwrite, nullable) CSDisplay *primaryDisplay;
 @property (nonatomic) NSMutableArray<CSDisplay *> *mutableDisplays;
@@ -74,11 +75,12 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
     return self;
 }
 
-- (instancetype)initWithHost:(NSString *)host tlsPort:(NSInteger)tlsPort serverPublicKey:(NSData *)serverPublicKey options:(UTMSpiceIOOptions)options {
+- (instancetype)initWithHost:(NSString *)host tlsPort:(NSInteger)tlsPort serverPublicKey:(NSData *)serverPublicKey password:(NSString *)password options:(UTMSpiceIOOptions)options {
     if (self = [super init]) {
         self.host = host;
         self.tlsPort = tlsPort;
         self.serverPublicKey = serverPublicKey;
+        self.password = password;
         self.options = options;
         self.mutableDisplays = [NSMutableArray array];
         self.mutableSerials = [NSMutableArray array];
@@ -94,6 +96,7 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
             self.spiceConnection = [[CSConnection alloc] initWithUnixSocketFile:relativeSocketFile];
         } else {
             self.spiceConnection = [[CSConnection alloc] initWithHost:self.host tlsPort:[@(self.tlsPort) stringValue] serverPublicKey:self.serverPublicKey];
+            self.spiceConnection.password = self.password;
         }
         self.spiceConnection.delegate = self;
         self.spiceConnection.audioEnabled = (self.options & UTMSpiceIOOptionsHasAudio) == UTMSpiceIOOptionsHasAudio;

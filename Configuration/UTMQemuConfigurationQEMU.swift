@@ -77,6 +77,9 @@ struct UTMQemuConfigurationQEMU: Codable {
 
     /// Set to TLS public key for SPICE server in SubjectPublicKey. Not saved.
     var spiceServerPublicKey: Data?
+    
+    /// Set to a password shared with the client. Not saved.
+    var spiceServerPassword: String?
 
     enum CodingKeys: String, CodingKey {
         case hasDebugLog = "DebugLog"

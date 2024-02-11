@@ -146,7 +146,11 @@ import Virtualization // for getting network interfaces
             "unix=on"
             "addr=\(spiceSocketURL.lastPathComponent)"
         }
-        "disable-ticketing=on"
+        if let _ = qemu.spiceServerPassword {
+            "password-secret=secspice0"
+        } else {
+            "disable-ticketing=on"
+        }
         if !isRemoteSpice {
             "image-compression=off"
             "playback-compression=off"
@@ -175,6 +179,11 @@ import Virtualization // for getting network interfaces
             f("-nodefaults")
             f("-vga")
             f("none")
+        }
+        if let password = qemu.spiceServerPassword {
+            // assume anyone who can read this is in our trust domain
+            f("-object")
+            f("secret,id=secspice0,data=\(password)")
         }
     }
 

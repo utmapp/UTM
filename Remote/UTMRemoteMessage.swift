@@ -130,6 +130,7 @@ extension UTMRemoteMessageServer {
         struct Reply: Serializable, Codable {
             let spiceServerPort: UInt16
             let spiceServerPublicKey: Data
+            let spiceServerPassword: String
         }
     }
 

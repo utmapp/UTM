@@ -276,10 +276,12 @@ extension UTMQemuVirtualMachine {
         let isRunningAsDisposible = options.contains(.bootDisposibleMode)
         let isRemoteSession = options.contains(.remoteSession)
         let spicePort = isRemoteSession ? try UTMSocketUtils.reservePort() : nil
+        let spicePassword = isRemoteSession ? String.random(length: 32) : nil
         await MainActor.run {
             config.qemu.isDisposable = isRunningAsDisposible
             config.qemu.spiceServerPort = spicePort
             config.qemu.isSpiceServerTlsEnabled = true
+            config.qemu.spiceServerPassword = spicePassword
         }
 
         // start TPM
