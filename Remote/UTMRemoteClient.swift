@@ -19,7 +19,6 @@ import Network
 import SwiftConnect
 
 let service = "_utm_server._tcp"
-let defaultServerPort = 21589
 
 actor UTMRemoteClient {
     let state: State
@@ -86,9 +85,7 @@ actor UTMRemoteClient {
     func connect(_ server: State.SavedServer) async throws {
         var server = server
         var isSuccessful = false
-        guard let endpoint = server.endpoint else {
-            throw ConnectionError.cannotFindEndpoint
-        }
+        let endpoint = server.endpoint ?? NWEndpoint.hostPort(host: .init(server.hostname), port: .init(integerLiteral: UInt16(server.port ?? 0)))
         try await keyManager.load()
         let connection = try await Connection(endpoint: endpoint, identity: keyManager.identity)
         defer {
@@ -110,13 +107,17 @@ actor UTMRemoteClient {
         try Task.checkCancellation()
         let peer = Peer(connection: connection, localInterface: local)
         let remote = Remote(peer: peer, host: host)
-        try await remote.handshake()
+        let device = try await remote.handshake()
         self.server = remote
         await state.setConnected(true)
         if !server.shouldSavePassword {
             server.password = nil
         }
+        if server.name.isEmpty {
+            server.name = server.hostname
+        }
         server.lastSeen = Date()
+        server.model = device.model
         await state.save(server: server)
         isSuccessful = true
     }
@@ -158,12 +159,11 @@ extension UTMRemoteClient {
             }
 
             var isAvailable: Bool {
-                endpoint != nil || port != nil
+                endpoint != nil || (port != nil && port != 0)
             }
 
             init() {
                 self.hostname = ""
-                self.port = defaultServerPort
                 self.name = ""
                 self.lastSeen = Date()
                 self.fingerprint = ""
@@ -309,12 +309,13 @@ extension UTMRemoteClient {
             peer.close()
         }
 
-        func handshake() async throws {
+        func handshake() async throws -> MacDevice {
             let reply = try await _handshake(parameters: .init(version: UTMRemoteMessageServer.version))
             guard reply.version == UTMRemoteMessageServer.version else {
                 throw ClientError.versionMismatch
             }
             capabilities = reply.capabilities
+            return MacDevice(model: reply.model)
         }
 
         func listVirtualMachines() async throws -> [M.ListVirtualMachines.Information] {
@@ -445,7 +446,6 @@ extension UTMRemoteClient {
 
 extension UTMRemoteClient {
     enum ConnectionError: LocalizedError {
-        case cannotFindEndpoint
         case cannotDetermineHost
         case cannotFindFingerprint
         case passwordRequired
@@ -455,8 +455,6 @@ extension UTMRemoteClient {
 
         var errorDescription: String? {
             switch self {
-            case .cannotFindEndpoint:
-                return NSLocalizedString("The server has disappeared.", comment: "UTMRemoteClient")
             case .cannotDetermineHost:
                 return NSLocalizedString("Failed to determine host name.", comment: "UTMRemoteClient")
             case .cannotFindFingerprint:

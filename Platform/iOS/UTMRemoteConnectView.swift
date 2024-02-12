@@ -142,7 +142,11 @@ private struct ServerConnectView: View {
         NavigationView {
             Form {
                 Section {
-                    DefaultTextField("", text: $server.name, prompt: "Name")
+                    if #available(iOS 15, *) {
+                        TextField("", text: $server.name, prompt: Text("Name (optional)"))
+                    } else {
+                        DefaultTextField("", text: $server.name, prompt: "Name (optional)")
+                    }
                 } header: {
                     Text("Name")
                 }
@@ -150,8 +154,19 @@ private struct ServerConnectView: View {
                     if server.endpoint != nil {
                         Text(server.hostname)
                     } else {
-                        DefaultTextField("", text: $server.hostname, prompt: "Hostname or IP address")
-                        NumberTextField("", number: $server.port, prompt: "Port")
+                        if #available(iOS 15, *) {
+                            TextField("", text: $server.hostname, prompt: Text("Hostname or IP address"))
+                                .keyboardType(.asciiCapable)
+                                .autocorrectionDisabled()
+                                .textInputAutocapitalization(.never)
+                            TextField("", value: $server.port, format: .number.grouping(.never), prompt: Text("Port"))
+                                .keyboardType(.decimalPad)
+                        } else {
+                            DefaultTextField("", text: $server.hostname, prompt: "Hostname or IP address")
+                                .keyboardType(.asciiCapable)
+                                .autocorrectionDisabled()
+                            NumberTextField("", number: $server.port, prompt: "Port")
+                        }
                     }
                 } header: {
                     Text("Host")
@@ -202,7 +217,7 @@ private struct ServerConnectView: View {
                                 } else {
                                     Text("Connect")
                                 }
-                            }
+                            }.disabled(server.hostname.isEmpty || !server.isAvailable)
                         }
                     }
                 }
