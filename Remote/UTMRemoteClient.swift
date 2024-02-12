@@ -29,6 +29,10 @@ actor UTMRemoteClient {
 
     private(set) var server: Remote!
 
+    nonisolated var fingerprint: [UInt8] {
+        keyManager.fingerprint ?? []
+    }
+
     @MainActor
     init(data: UTMRemoteData) {
         self.state = State()
@@ -96,7 +100,7 @@ actor UTMRemoteClient {
         guard let host = connection.connection.currentPath?.remoteEndpoint?.hostname else {
             throw ConnectionError.cannotDetermineHost
         }
-        guard let fingerprint = connection.peerCertificateChain.first?.fingerprint().hexString() else {
+        guard let fingerprint = connection.peerCertificateChain.first?.fingerprint() else {
             throw ConnectionError.cannotFindFingerprint
         }
         if server.fingerprint.isEmpty {
@@ -126,7 +130,7 @@ actor UTMRemoteClient {
 extension UTMRemoteClient {
     @MainActor
     class State: ObservableObject {
-        typealias ServerFingerprint = String
+        typealias ServerFingerprint = [UInt8]
 
         struct DiscoveredServer: Identifiable {
             let hostname: String
@@ -154,7 +158,7 @@ extension UTMRemoteClient {
                 case fingerprint, hostname, port, model, name, lastSeen, password
             }
 
-            var id: String {
+            var id: ServerFingerprint {
                 fingerprint
             }
 
@@ -166,7 +170,7 @@ extension UTMRemoteClient {
                 self.hostname = ""
                 self.name = ""
                 self.lastSeen = Date()
-                self.fingerprint = ""
+                self.fingerprint = []
             }
 
             init(from discovered: DiscoveredServer) {
@@ -175,7 +179,7 @@ extension UTMRemoteClient {
                 self.name = discovered.name
                 self.lastSeen = Date()
                 self.endpoint = discovered.endpoint
-                self.fingerprint = ""
+                self.fingerprint = []
             }
         }
 
@@ -465,8 +469,8 @@ extension UTMRemoteClient {
                 return NSLocalizedString("Password is incorrect.", comment: "UTMRemoteClient")
             case .fingerprintUntrusted(_):
                 return NSLocalizedString("This host is not yet trusted. You should verify that the fingerprints match what is displayed on the host and then select Trust to continue.", comment: "UTMRemoteClient")
-            case .fingerprintMismatch(let fingerprint):
-                return String.localizedStringWithFormat(NSLocalizedString("The fingerprint '\(fingerprint)' does not match the saved value for this host. This means that the UTM Server was reset, a different host is using the same name, or an attacker is pretending to be the host. For your protection, you need to delete this saved host to continue.", comment: "UTMRemoteClient"), fingerprint)
+            case .fingerprintMismatch(_):
+                return String.localizedStringWithFormat(NSLocalizedString("The host fingerprint does not match the saved value. This means that UTM Server was reset, a different host is using the same name, or an attacker is pretending to be the host. For your protection, you need to delete this saved host to continue.", comment: "UTMRemoteClient"))
             }
         }
     }

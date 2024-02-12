@@ -85,8 +85,9 @@ fileprivate struct ServerOverview: View {
             }.width(16)
             TableColumn("Name", value: \.name)
                 .width(ideal: 200)
-            TableColumn("Fingerprint", value: \.fingerprint)
-                .width(ideal: 300)
+            TableColumn("Fingerprint") { client in
+                Text((client.fingerprint ^ remoteServer.serverFingerprint).hexString())
+            }.width(ideal: 300)
             TableColumn("Last Seen", value: \.lastSeen) { client in
                 Text(DateFormatter.localizedString(from: client.lastSeen, dateStyle: .short, timeStyle: .short))
             }.width(ideal: 150)

@@ -148,6 +148,32 @@ extension Array where Element == UInt8 {
     func hexString() -> String {
         self.map({ String(format: "%02X", $0) }).joined(separator: ":")
     }
+
+    init?(hexString: String) {
+        let cleanString = hexString.replacingOccurrences(of: ":", with: "")
+        guard cleanString.count % 2 == 0 else {
+            return nil
+        }
+
+        var byteArray = [UInt8]()
+        var index = cleanString.startIndex
+
+        while index < cleanString.endIndex {
+            let nextIndex = cleanString.index(index, offsetBy: 2)
+            if let byte = UInt8(cleanString[index..<nextIndex], radix: 16) {
+                byteArray.append(byte)
+            } else {
+                return nil // Invalid hex character
+            }
+            index = nextIndex
+        }
+        self = byteArray
+    }
+
+    static func ^(lhs: Self, rhs: Self) -> Self {
+        let length = Swift.min(lhs.count, rhs.count)
+        return (0..<length).map({ lhs[$0] ^ rhs[$0] })
+    }
 }
 
 enum UTMRemoteKeyManagerError: Error {

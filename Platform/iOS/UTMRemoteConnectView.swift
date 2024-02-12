@@ -173,9 +173,14 @@ private struct ServerConnectView: View {
                 }
                 if !server.fingerprint.isEmpty {
                     Section {
-                        Text(server.fingerprint)
+                        let fingerprint = (server.fingerprint ^ remoteClient.fingerprint).hexString()
+                        if #available(iOS 16.4, *) {
+                            Text(fingerprint).monospaced()
+                        } else {
+                            Text(fingerprint)
+                        }
                     } header: {
-                        Text("Server Fingerprint")
+                        Text("Fingerprint")
                     }
                 }
                 if isPasswordRequired {

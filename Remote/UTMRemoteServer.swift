@@ -117,6 +117,7 @@ actor UTMRemoteServer {
                 return
             }
             try await keyManager.load()
+            await state.setServerFingerprint(keyManager.fingerprint!)
             registerNotifications()
             listener = Task {
                 await withErrorNotification {
@@ -145,7 +146,7 @@ actor UTMRemoteServer {
 
     private func newRemoteConnection(_ connection: Connection) async {
         let remoteAddress = connection.connection.endpoint.hostname ?? "\(connection.connection.endpoint)"
-        guard let fingerprint = connection.peerCertificateChain.first?.fingerprint().hexString() else {
+        guard let fingerprint = connection.peerCertificateChain.first?.fingerprint() else {
             connection.close()
             return
         }
@@ -190,7 +191,7 @@ actor UTMRemoteServer {
     }
 
     private func establishConnection(_ connection: Connection) async {
-        guard let fingerprint = connection.peerCertificateChain.first?.fingerprint().hexString() else {
+        guard let fingerprint = connection.peerCertificateChain.first?.fingerprint() else {
             connection.close()
             return
         }
@@ -217,6 +218,7 @@ actor UTMRemoteServer {
     private func resetServer() async {
         await withErrorNotification {
             try await keyManager.reset()
+            await state.setServerFingerprint(keyManager.fingerprint!)
         }
     }
     
@@ -279,7 +281,7 @@ extension UTMRemoteServer {
         func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
             Task {
                 let userInfo = response.notification.request.content.userInfo
-                guard let fingerprint = userInfo["FINGERPRINT"] as? String else {
+                guard let hexString = userInfo["FINGERPRINT"] as? String, let fingerprint = State.ClientFingerprint(hexString: hexString) else {
                     return
                 }
                 switch response.actionIdentifier {
@@ -328,31 +330,33 @@ extension UTMRemoteServer {
         center.delegate = nil
     }
 
-    private func notifyNewConnection(remoteAddress: String, fingerprint: String, isUnknown: Bool = false) async {
+    private func notifyNewConnection(remoteAddress: String, fingerprint: State.ClientFingerprint, isUnknown: Bool = false) async {
         let settings = await center.notificationSettings()
+        let combinedFingerprint = (fingerprint ^ keyManager.fingerprint!).hexString()
         guard settings.authorizationStatus == .authorized else {
-            logger.info("Notifications disabled, ignoring connection request from '\(remoteAddress)' with fingerprint '\(fingerprint)'")
+            logger.info("Notifications disabled, ignoring connection request from '\(remoteAddress)' with fingerprint '\(combinedFingerprint)'")
             return
         }
         let content = UNMutableNotificationContent()
         if isUnknown {
             content.title = NSString.localizedUserNotificationString(forKey: "Unknown Remote Client", arguments: nil)
-            content.body = NSString.localizedUserNotificationString(forKey: "A client with fingerprint '%@' is attempting to connect.", arguments: [fingerprint])
+            content.body = NSString.localizedUserNotificationString(forKey: "A client with fingerprint '%@' is attempting to connect.", arguments: [combinedFingerprint])
             content.categoryIdentifier = "UNKNOWN_REMOTE_CLIENT"
         } else {
             content.title = NSString.localizedUserNotificationString(forKey: "Remote Client Connected", arguments: nil)
             content.body = NSString.localizedUserNotificationString(forKey: "Established connection from %@.", arguments: [remoteAddress])
             content.categoryIdentifier = "TRUSTED_REMOTE_CLIENT"
         }
-        content.userInfo = ["FINGERPRINT": fingerprint]
-        let request = UNNotificationRequest(identifier: fingerprint,
+        let clientFingerprint = fingerprint.hexString()
+        content.userInfo = ["FINGERPRINT": clientFingerprint]
+        let request = UNNotificationRequest(identifier: clientFingerprint,
                                             content: content,
                                             trigger: nil)
         do {
             try await center.add(request)
             if !isUnknown {
                 DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(15)) {
-                    self.center.removeDeliveredNotifications(withIdentifiers: [fingerprint])
+                    self.center.removeDeliveredNotifications(withIdentifiers: [clientFingerprint])
                 }
             }
         } catch {
@@ -383,13 +387,14 @@ extension UTMRemoteServer {
 extension UTMRemoteServer {
     @MainActor
     class State: ObservableObject {
-        typealias ClientFingerprint = String
+        typealias ClientFingerprint = [UInt8]
+        typealias ServerFingerprint = [UInt8]
         struct Client: Codable, Identifiable, Hashable {
             let fingerprint: ClientFingerprint
             var name: String
             var lastSeen: Date
 
-            var id: String {
+            var id: ClientFingerprint {
                 fingerprint
             }
 
@@ -440,6 +445,12 @@ extension UTMRemoteServer {
 
         @Published private(set) var isServerActive = false
 
+        @Published private(set) var serverFingerprint: ServerFingerprint = [] {
+            didSet {
+                UserDefaults.standard.setValue(serverFingerprint.hexString(), forKey: "ServerFingerprint")
+            }
+        }
+
         init() {
             var _approvedClients = Set<Client>()
             if let array = UserDefaults.standard.array(forKey: "TrustedClients") {
@@ -456,6 +467,9 @@ extension UTMRemoteServer {
             }
             self.blockedClients = _blockedClients
             self.allClients = Array(_approvedClients) + Array(_blockedClients)
+            if let value = UserDefaults.standard.string(forKey: "ServerFingerprint"), let serverFingerprint = ServerFingerprint(hexString: value) {
+                self.serverFingerprint = serverFingerprint
+            }
         }
 
         func isConnected(_ fingerprint: ClientFingerprint) -> Bool {
@@ -521,6 +535,10 @@ extension UTMRemoteServer {
             let (_, client) = client(forFingerprint: fingerprint)
             approvedClients.remove(client)
             blockedClients.insert(client)
+        }
+
+        fileprivate func setServerFingerprint(_ fingerprint: ServerFingerprint) {
+            serverFingerprint = fingerprint
         }
     }
 }
