@@ -37,6 +37,10 @@ struct SettingsView: View {
                 .tabItem {
                     Label("Input", systemImage: "keyboard")
                 }
+            ServerSettingsView().padding()
+                .tabItem {
+                    Label("Server", systemImage: "server.rack")
+                }
         }.frame(minWidth: 600, minHeight: 350, alignment: .topLeading)
     }
 }
@@ -176,6 +180,62 @@ struct InputSettingsView: View {
                 Toggle(isOn: $isNoUsbPrompt, label: {
                     Text("Do not show prompt when USB device is plugged in")
                 })
+            }
+        }
+    }
+}
+
+struct ServerSettingsView: View {
+    private let defaultPort = 21589
+
+    @AppStorage("ServerAutostart") var isServerAutostart: Bool = false
+    @AppStorage("ServerExternal") var isServerExternal: Bool = false
+    @AppStorage("ServerPort") var serverPort: Int = 0
+    @AppStorage("ServerPasswordRequired") var isServerPasswordRequired: Bool = false
+    @AppStorage("ServerPassword") var serverPassword: String = ""
+
+    // note it is okay to store the server password in plaintext in the settings plist because if the attacker is able to see the password,
+    // they can gain execution in UTM application context... which is the context needed to read the password.
+
+    var body: some View {
+        Form {
+            Section(header: Text("Startup")) {
+                Toggle("Automatically start UTM server", isOn: $isServerAutostart)
+            }
+            Section(header: Text("Network")) {
+                Toggle("Allow access from external clients", isOn: $isServerExternal)
+                    .help("By default, the server is only available on LAN but setting this will use UPnP/NAT-PMP to port forward to WAN.")
+                    .onChange(of: isServerExternal) { newValue in
+                        if newValue {
+                            if serverPort == 0 {
+                                serverPort = defaultPort
+                            }
+                            if !isServerPasswordRequired {
+                                isServerPasswordRequired = true
+                            }
+                        }
+                    }
+                NumberTextField("", number: $serverPort, prompt: "Any")
+                    .frame(width: 80)
+                    .multilineTextAlignment(.trailing)
+                    .help("Specify a port number to listen on. This is required if external clients are permitted.")
+                    .onChange(of: serverPort) { newValue in
+                        if serverPort == 0 {
+                            isServerExternal = false
+                        }
+                    }
+            }
+            Section(header: Text("Authentication")) {
+                Toggle("Require Password", isOn: $isServerPasswordRequired)
+                    .disabled(isServerExternal)
+                    .help("If enabled, clients must enter a password. This is required if you want to access the server externally.")
+                    .onChange(of: isServerPasswordRequired) { newValue in
+                        if newValue && serverPassword.count == 0 {
+                            serverPassword = .random(length: 32)
+                        }
+                    }
+                TextField("Password", text: $serverPassword)
+                    .disabled(!isServerPasswordRequired)
             }
         }
     }
