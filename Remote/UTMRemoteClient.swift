@@ -111,7 +111,14 @@ actor UTMRemoteClient {
         try Task.checkCancellation()
         let peer = Peer(connection: connection, localInterface: local)
         let remote = Remote(peer: peer, host: host)
-        let device = try await remote.handshake()
+        let (isAuthenticated, device) = try await remote.handshake(password: server.password)
+        if !isAuthenticated {
+            if server.password == nil {
+                throw ConnectionError.passwordRequired
+            } else {
+                throw ConnectionError.passwordInvalid
+            }
+        }
         self.server = remote
         await state.setConnected(true)
         if !server.shouldSavePassword {
@@ -313,13 +320,13 @@ extension UTMRemoteClient {
             peer.close()
         }
 
-        func handshake() async throws -> MacDevice {
-            let reply = try await _handshake(parameters: .init(version: UTMRemoteMessageServer.version))
+        func handshake(password: String?) async throws -> (isAuthenticated: Bool, device: MacDevice) {
+            let reply = try await _handshake(parameters: .init(version: UTMRemoteMessageServer.version, password: password))
             guard reply.version == UTMRemoteMessageServer.version else {
                 throw ClientError.versionMismatch
             }
             capabilities = reply.capabilities
-            return MacDevice(model: reply.model)
+            return (isAuthenticated: reply.isAuthenticated, device: MacDevice(model: reply.model))
         }
 
         func listVirtualMachines() async throws -> [M.ListVirtualMachines.Information] {

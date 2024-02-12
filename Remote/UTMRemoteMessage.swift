@@ -52,10 +52,12 @@ extension UTMRemoteMessageServer {
 
         struct Request: Serializable, Codable {
             let version: Int
+            let password: String?
         }
 
         struct Reply: Serializable, Codable {
             let version: Int
+            let isAuthenticated: Bool
             let capabilities: UTMCapabilities
             let model: String
         }

@@ -38,6 +38,12 @@ actor UTMRemoteServer {
         cancellables = set
     }
 
+    @Setting("ServerAutostart") private var isServerAutostart: Bool = false
+    @Setting("ServerExternal") private var isServerExternal: Bool = false
+    @Setting("ServerPort") private var serverPort: Int = 0
+    @Setting("ServerPasswordRequired") private var isServerPasswordRequired: Bool = false
+    @Setting("ServerPassword") private var serverPassword: String = ""
+
     @MainActor
     init(data: UTMData) {
         let _state = State()
@@ -549,6 +555,7 @@ extension UTMRemoteServer {
 
         private let server: UTMRemoteServer
         private let client: UTMRemoteServer.Remote
+        private var isAuthenticated: Bool = false
 
         private var data: UTMData {
             server.data
@@ -560,6 +567,9 @@ extension UTMRemoteServer {
         }
 
         func handle(message: M, data: Data) async throws -> Data {
+            guard isAuthenticated || message == .serverHandshake else {
+                throw ServerError.notAuthenticated
+            }
             switch message {
             case .serverHandshake:
                 return try await _handshake(parameters: .decode(data)).encode()
@@ -609,7 +619,15 @@ extension UTMRemoteServer {
         }
 
         private func _handshake(parameters: M.ServerHandshake.Request) async throws -> M.ServerHandshake.Reply {
-            return .init(version: UTMRemoteMessageServer.version, capabilities: .current, model: MacDevice.current.model)
+            let serverPassword = await server.serverPassword
+            if await server.isServerPasswordRequired && !serverPassword.isEmpty {
+                if serverPassword == parameters.password {
+                    isAuthenticated = true
+                }
+            } else {
+                isAuthenticated = true
+            }
+            return .init(version: UTMRemoteMessageServer.version, isAuthenticated: isAuthenticated, capabilities: .current, model: MacDevice.current.model)
         }
 
         private func _listVirtualMachines(parameters: M.ListVirtualMachines.Request) async throws -> M.ListVirtualMachines.Reply {
@@ -760,6 +778,7 @@ extension UTMRemoteServer {
 extension UTMRemoteServer {
     enum ServerError: LocalizedError {
         case silentError(Error)
+        case notAuthenticated
         case versionMismatch
         case notFound(UUID)
         case invalidBackend
@@ -769,6 +788,8 @@ extension UTMRemoteServer {
             switch self {
             case .silentError(let error):
                 return error.localizedDescription
+            case .notAuthenticated:
+                return NSLocalizedString("Not authenticated.", comment: "UTMRemoteServer")
             case .versionMismatch:
                 return NSLocalizedString("The client interface version does not match the server.", comment: "UTMRemoteServer")
             case .notFound(let id):

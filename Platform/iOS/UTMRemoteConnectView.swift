@@ -171,9 +171,9 @@ private struct ServerConnectView: View {
                 } header: {
                     Text("Host")
                 }
-                if !server.fingerprint.isEmpty {
+                let fingerprint = (server.fingerprint ^ remoteClient.fingerprint).hexString()
+                if !fingerprint.isEmpty {
                     Section {
-                        let fingerprint = (server.fingerprint ^ remoteClient.fingerprint).hexString()
                         if #available(iOS 16.4, *) {
                             Text(fingerprint).monospaced()
                         } else {
