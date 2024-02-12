@@ -107,7 +107,16 @@ struct NumberTextField: View {
         self.onEditingChanged = onEditingChanged
         self.promptKey = prompt
     }
-    
+
+    init(_ titleKey: LocalizedStringKey, number: Binding<Int?>, prompt: LocalizedStringKey = "0", onEditingChanged: @escaping (Bool) -> Void = { _ in }) {
+        let nsnumber = Binding<NSNumber?> {
+            return number.wrappedValue as NSNumber?
+        } set: { newValue in
+            number.wrappedValue = newValue?.intValue
+        }
+        self.init(titleKey, number: nsnumber, prompt: prompt, onEditingChanged: onEditingChanged)
+    }
+
     init(_ titleKey: LocalizedStringKey, number: Binding<Int>, prompt: LocalizedStringKey = "0", onEditingChanged: @escaping (Bool) -> Void = { _ in }) {
         let nsnumber = Binding<NSNumber?> {
             return number.wrappedValue as NSNumber

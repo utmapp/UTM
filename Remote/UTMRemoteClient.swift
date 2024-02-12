@@ -19,6 +19,7 @@ import Network
 import SwiftConnect
 
 let service = "_utm_server._tcp"
+let defaultServerPort = 21589
 
 actor UTMRemoteClient {
     let state: State
@@ -26,7 +27,6 @@ actor UTMRemoteClient {
     private var local: Local
 
     private var scanTask: Task<Void, Error>?
-    private var endpoints: [String: NWEndpoint] = [:]
 
     private(set) var server: Remote!
 
@@ -59,10 +59,12 @@ actor UTMRemoteClient {
         scanTask = nil
     }
 
+    func refresh() {
+        stopScanning()
+        startScanning()
+    }
+
     func didFindResults(_ results: Set<NWBrowser.Result>) async {
-        self.endpoints = results.reduce(into: [String: NWEndpoint]()) { map, result in
-            map[result.endpoint.debugDescription] = result.endpoint
-        }
         let servers = results.compactMap { result in
             let model: String?
             if case .bonjour(let txtRecord) = result.metadata,
@@ -72,10 +74,8 @@ actor UTMRemoteClient {
                 model = nil
             }
             switch result.endpoint {
-            case .hostPort(let host, _):
-                return State.Server(hostname: result.endpoint.hostname!, model: model, name: host.debugDescription, lastSeen: Date())
             case .service(let name, _, _, _):
-                return State.Server(hostname: result.endpoint.debugDescription, model: model, name: name, lastSeen: Date())
+                return State.DiscoveredServer(hostname: result.endpoint.debugDescription, model: model, name: name, endpoint: result.endpoint)
             default:
                 return nil
             }
@@ -83,28 +83,42 @@ actor UTMRemoteClient {
         await state.updateFoundServers(servers)
     }
 
-    func connect(_ server: State.Server, shouldSaveDetails: Bool = false) async throws {
-        guard let endpoint = endpoints[server.hostname] else {
+    func connect(_ server: State.SavedServer) async throws {
+        var server = server
+        var isSuccessful = false
+        guard let endpoint = server.endpoint else {
             throw ConnectionError.cannotFindEndpoint
         }
         try await keyManager.load()
-        let connection = try await Connection.init(endpoint: endpoint, identity: keyManager.identity) { certs in
-            return true
+        let connection = try await Connection(endpoint: endpoint, identity: keyManager.identity)
+        defer {
+            if !isSuccessful {
+                connection.close()
+            }
         }
         guard let host = connection.connection.currentPath?.remoteEndpoint?.hostname else {
             throw ConnectionError.cannotDetermineHost
         }
+        guard let fingerprint = connection.peerCertificateChain.first?.fingerprint().hexString() else {
+            throw ConnectionError.cannotFindFingerprint
+        }
+        if server.fingerprint.isEmpty {
+            throw ConnectionError.fingerprintUntrusted(fingerprint)
+        } else if server.fingerprint != fingerprint {
+            throw ConnectionError.fingerprintMismatch(fingerprint)
+        }
         try Task.checkCancellation()
         let peer = Peer(connection: connection, localInterface: local)
         let remote = Remote(peer: peer, host: host)
-        do {
-            try await remote.handshake()
-        } catch {
-            peer.close()
-            throw error
-        }
+        try await remote.handshake()
         self.server = remote
         await state.setConnected(true)
+        if !server.shouldSavePassword {
+            server.password = nil
+        }
+        server.lastSeen = Date()
+        await state.save(server: server)
+        isSuccessful = true
     }
 }
 
@@ -112,24 +126,56 @@ extension UTMRemoteClient {
     @MainActor
     class State: ObservableObject {
         typealias ServerFingerprint = String
-        struct Server: Codable, Identifiable, Hashable {
+
+        struct DiscoveredServer: Identifiable {
             let hostname: String
             var model: String?
-            var fingerprint: ServerFingerprint?
             var name: String
-            var lastSeen: Date
-            var password: String?
+            var endpoint: NWEndpoint
 
             var id: String {
                 hostname
             }
+        }
 
-            func hash(into hasher: inout Hasher) {
-                hasher.combine(hostname)
+        struct SavedServer: Codable, Identifiable {
+            var fingerprint: ServerFingerprint
+            var hostname: String
+            var port: Int?
+            var model: String?
+            var name: String
+            var lastSeen: Date
+            var password: String?
+            var endpoint: NWEndpoint?
+            var shouldSavePassword: Bool = false
+
+            private enum CodingKeys: String, CodingKey {
+                case fingerprint, hostname, port, model, name, lastSeen, password
             }
 
-            static func == (lhs: Server, rhs: Server) -> Bool {
-                lhs.hashValue == rhs.hashValue
+            var id: String {
+                fingerprint
+            }
+
+            var isAvailable: Bool {
+                endpoint != nil || port != nil
+            }
+
+            init() {
+                self.hostname = ""
+                self.port = defaultServerPort
+                self.name = ""
+                self.lastSeen = Date()
+                self.fingerprint = ""
+            }
+
+            init(from discovered: DiscoveredServer) {
+                self.hostname = discovered.hostname
+                self.model = discovered.model
+                self.name = discovered.name
+                self.lastSeen = Date()
+                self.endpoint = discovered.endpoint
+                self.fingerprint = ""
             }
         }
 
@@ -138,13 +184,13 @@ extension UTMRemoteClient {
             let message: String
         }
 
-        @Published var savedServers: [Server] {
+        @Published var savedServers: [SavedServer] {
             didSet {
                 UserDefaults.standard.setValue(try! savedServers.propertyList(), forKey: "TrustedServers")
             }
         }
 
-        @Published var foundServers: [Server] = []
+        @Published var foundServers: [DiscoveredServer] = []
 
         @Published var isScanning: Bool = false
 
@@ -153,9 +199,9 @@ extension UTMRemoteClient {
         @Published var alertMessage: AlertMessage?
 
         init() {
-            var _savedServers = Array<Server>()
+            var _savedServers = Array<SavedServer>()
             if let array = UserDefaults.standard.array(forKey: "TrustedServers") {
-                if let servers = try? Array<Server>(fromPropertyList: array) {
+                if let servers = try? Array<SavedServer>(fromPropertyList: array) {
                     _savedServers = servers
                 }
             }
@@ -166,8 +212,30 @@ extension UTMRemoteClient {
             alertMessage = AlertMessage(message: message)
         }
 
-        func updateFoundServers(_ servers: [Server]) {
-            foundServers = servers
+        func updateFoundServers(_ servers: [DiscoveredServer]) {
+            for idx in savedServers.indices {
+                savedServers[idx].endpoint = nil
+            }
+            foundServers = servers.filter { server in
+                if let idx = savedServers.firstIndex(where: { $0.port == nil && $0.hostname == server.hostname }) {
+                    savedServers[idx].endpoint = server.endpoint
+                    return false
+                } else {
+                    return true
+                }
+            }
+        }
+
+        func save(server: SavedServer) {
+            if let idx = savedServers.firstIndex(where: { $0.fingerprint == server.fingerprint }) {
+                savedServers[idx] = server
+            } else {
+                savedServers.append(server)
+            }
+        }
+
+        func delete(server: SavedServer) {
+            savedServers.removeAll(where: { $0.fingerprint == server.fingerprint })
         }
 
         fileprivate func setConnected(_ connected: Bool) {
@@ -379,8 +447,11 @@ extension UTMRemoteClient {
     enum ConnectionError: LocalizedError {
         case cannotFindEndpoint
         case cannotDetermineHost
+        case cannotFindFingerprint
         case passwordRequired
         case passwordInvalid
+        case fingerprintUntrusted(State.ServerFingerprint)
+        case fingerprintMismatch(State.ServerFingerprint)
 
         var errorDescription: String? {
             switch self {
@@ -388,10 +459,16 @@ extension UTMRemoteClient {
                 return NSLocalizedString("The server has disappeared.", comment: "UTMRemoteClient")
             case .cannotDetermineHost:
                 return NSLocalizedString("Failed to determine host name.", comment: "UTMRemoteClient")
+            case .cannotFindFingerprint:
+                return NSLocalizedString("Failed to get host fingerprint.", comment: "UTMRemoteClient")
             case .passwordRequired:
                 return NSLocalizedString("Password is required.", comment: "UTMRemoteClient")
             case .passwordInvalid:
                 return NSLocalizedString("Password is incorrect.", comment: "UTMRemoteClient")
+            case .fingerprintUntrusted(_):
+                return NSLocalizedString("This host is not yet trusted. You should verify that the fingerprints match what is displayed on the host and then select Trust to continue.", comment: "UTMRemoteClient")
+            case .fingerprintMismatch(let fingerprint):
+                return String.localizedStringWithFormat(NSLocalizedString("The fingerprint '\(fingerprint)' does not match the saved value for this host. This means that the UTM Server was reset, a different host is using the same name, or an attacker is pretending to be the host. For your protection, you need to delete this saved host to continue.", comment: "UTMRemoteClient"), fingerprint)
             }
         }
     }

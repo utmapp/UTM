@@ -20,7 +20,7 @@ struct UTMRemoteConnectView: View {
     @ObservedObject var remoteClientState: UTMRemoteClient.State
     @Environment(\.openURL) private var openURL
     @EnvironmentObject private var data: UTMRemoteData
-    @State private var selectedServer: UTMRemoteClient.State.Server?
+    @State private var selectedServer: UTMRemoteClient.State.SavedServer?
     @State private var isAutoConnect: Bool = false
 
     private var remoteClient: UTMRemoteClient {
@@ -43,7 +43,7 @@ struct UTMRemoteConnectView: View {
                         .font(.title2)
                 }
                 Button {
-
+                    selectedServer = .init()
                 } label: {
                     Label("New Connection", systemImage: "plus")
                         .labelStyle(.iconOnly)
@@ -58,8 +58,8 @@ struct UTMRemoteConnectView: View {
                                 isAutoConnect = true
                                 selectedServer = server
                             } label: {
-                                MacDeviceLabel(server.name, device: .init(model: server.model))
-                            }.foregroundColor(.primary)
+                                MacDeviceLabel(server.name.isEmpty ? server.hostname : server.name, device: .init(model: server.model))
+                            }.disabled(!server.isAvailable)
                             .contextMenu {
                                 Button {
                                     isAutoConnect = false
@@ -68,22 +68,28 @@ struct UTMRemoteConnectView: View {
                                     Label("Edit…", systemImage: "slider.horizontal.3")
                                 }
                                 DestructiveButton("Delete") {
-
+                                    remoteClientState.delete(server: server)
+                                    Task {
+                                        await remoteClient.refresh()
+                                    }
                                 }
                             }
                         }.onDelete { indexSet in
-
+                            remoteClientState.savedServers.remove(atOffsets: indexSet)
+                            Task {
+                                await remoteClient.refresh()
+                            }
                         }
                     }
                 }
-                Section(header: Text("Discovered")) {
+                Section(header: Text("Discovered"), footer: helpText) {
                     ForEach(remoteClientState.foundServers) { server in
                         Button {
                             isAutoConnect = true
-                            selectedServer = server
+                            selectedServer = UTMRemoteClient.State.SavedServer(from: server)
                         } label: {
                             MacDeviceLabel(server.name, device: .init(model: server.model))
-                        }.foregroundColor(.primary)
+                        }
                     }
                 }
             }.listStyle(.insetGrouped)
@@ -104,11 +110,18 @@ struct UTMRemoteConnectView: View {
             }
         }
     }
+
+    @ViewBuilder
+    private var helpText: some View {
+        if remoteClientState.foundServers.isEmpty {
+            Text("Make sure the latest version of UTM is running on your Mac and UTM Server is enabled. You can download UTM from the Mac App Store.")
+        }
+    }
 }
 
 private struct ServerConnectView: View {
     @ObservedObject var remoteClientState: UTMRemoteClient.State
-    @State var server: UTMRemoteClient.State.Server
+    @State var server: UTMRemoteClient.State.SavedServer
     @Binding var isAutoConnect: Bool
 
     @EnvironmentObject private var data: UTMRemoteData
@@ -119,7 +132,7 @@ private struct ServerConnectView: View {
         connectionTask != nil
     }
     @State private var isPasswordRequired: Bool = false
-    @State private var willBeSaved: Bool = true
+    @State private var isTrustButton: Bool = false
 
     private var remoteClient: UTMRemoteClient {
         data.remoteClient
@@ -129,10 +142,26 @@ private struct ServerConnectView: View {
         NavigationView {
             Form {
                 Section {
-                    TextField("Name", text: $server.name)
-                    TextField("Server", text: .constant(server.hostname))
+                    DefaultTextField("", text: $server.name, prompt: "Name")
                 } header: {
-                    Text("Connection")
+                    Text("Name")
+                }
+                Section {
+                    if server.endpoint != nil {
+                        Text(server.hostname)
+                    } else {
+                        DefaultTextField("", text: $server.hostname, prompt: "Hostname or IP address")
+                        NumberTextField("", number: $server.port, prompt: "Port")
+                    }
+                } header: {
+                    Text("Host")
+                }
+                if !server.fingerprint.isEmpty {
+                    Section {
+                        Text(server.fingerprint)
+                    } header: {
+                        Text("Server Fingerprint")
+                    }
                 }
                 if isPasswordRequired {
                     Section {
@@ -141,14 +170,10 @@ private struct ServerConnectView: View {
                         } else {
                             SecureField("Password", text: $server.password.bound)
                         }
+                        Toggle("Save Password", isOn: $server.shouldSavePassword)
                     } header: {
-                        Text("Authentication")
+                        Text("Password")
                     }
-                }
-                Section {
-                    Toggle("Save Connection", isOn: $willBeSaved)
-                } header: {
-                    Text("Options")
                 }
             }.disabled(isConnecting)
             .toolbar {
@@ -172,7 +197,11 @@ private struct ServerConnectView: View {
                             Button {
                                 connect()
                             } label: {
-                                Text("Connect")
+                                if isTrustButton {
+                                    Text("Trust")
+                                } else {
+                                    Text("Connect")
+                                }
                             }
                         }
                     }
@@ -195,12 +224,18 @@ private struct ServerConnectView: View {
         }
         connectionTask = Task {
             do {
-                try await remoteClient.connect(server, shouldSaveDetails: willBeSaved)
+                try await remoteClient.connect(server)
             } catch {
                 if case UTMRemoteClient.ConnectionError.passwordRequired = error {
                     withAnimation {
                         isPasswordRequired = true
                     }
+                } else if case UTMRemoteClient.ConnectionError.fingerprintUntrusted(let fingerprint) = error, server.fingerprint.isEmpty {
+                    withAnimation {
+                        server.fingerprint = fingerprint
+                        isTrustButton = true
+                    }
+                    remoteClientState.showErrorAlert(error.localizedDescription)
                 } else if error is CancellationError {
                     // ignore it
                 } else {

@@ -94,7 +94,11 @@ actor UTMRemoteServer {
         do {
             try await body()
         } catch {
-            await notifyError(error)
+            if case .silentError(let error) = error as? ServerError {
+                logger.error("Error message inhibited: \(error)")
+            } else {
+                await notifyError(error)
+            }
         }
     }
 
@@ -198,6 +202,10 @@ actor UTMRemoteServer {
             do {
                 try await remote.handshake()
             } catch {
+                if let error = error as? NWError, case .posix(let code) = error, code == .ECONNRESET {
+                    // if the user canceled the connection, we don't do anything
+                    throw ServerError.silentError(error)
+                }
                 peer.close()
                 throw error
             }
@@ -733,6 +741,7 @@ extension UTMRemoteServer {
 
 extension UTMRemoteServer {
     enum ServerError: LocalizedError {
+        case silentError(Error)
         case versionMismatch
         case notFound(UUID)
         case invalidBackend
@@ -740,6 +749,8 @@ extension UTMRemoteServer {
 
         var errorDescription: String? {
             switch self {
+            case .silentError(let error):
+                return error.localizedDescription
             case .versionMismatch:
                 return NSLocalizedString("The client interface version does not match the server.", comment: "UTMRemoteServer")
             case .notFound(let id):
