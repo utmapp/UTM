@@ -16,6 +16,8 @@
 
 import SwiftUI
 
+private let kTimeoutSeconds: UInt64 = 15
+
 struct UTMRemoteConnectView: View {
     @ObservedObject var remoteClientState: UTMRemoteClient.State
     @Environment(\.openURL) private var openURL
@@ -243,6 +245,11 @@ private struct ServerConnectView: View {
             return
         }
         connectionTask = Task {
+            let timeoutTask = Task {
+                try await Task.sleep(nanoseconds: kTimeoutSeconds * NSEC_PER_SEC)
+                connectionTask?.cancel()
+                remoteClientState.showErrorAlert(NSLocalizedString("Timed out trying to connect.", comment: "UTMRemoteConnectView"))
+            }
             do {
                 try await remoteClient.connect(server)
             } catch {
@@ -262,6 +269,7 @@ private struct ServerConnectView: View {
                     remoteClientState.showErrorAlert(error.localizedDescription)
                 }
             }
+            timeoutTask.cancel()
             connectionTask = nil
         }
     }
