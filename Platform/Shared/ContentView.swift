@@ -36,7 +36,8 @@ struct ContentView: View {
     @State private var newPopupPresented = false
     @State private var openSheetPresented = false
     @Environment(\.openURL) var openURL
-    
+    @AppStorage("ServerAutostart") private var isServerAutostart: Bool = false
+
     var body: some View {
         VMNavigationListView()
         .overlay(data.showSettingsModal ? AnyView(EmptyView()) : AnyView(BusyOverlay()))
@@ -70,6 +71,11 @@ struct ContentView: View {
         .onAppear {
             Task {
                 await data.listRefresh()
+                #if os(macOS)
+                if isServerAutostart {
+                    await data.remoteServer.start()
+                }
+                #endif
             }
             Task {
                 await releaseHelper.fetchReleaseNotes()

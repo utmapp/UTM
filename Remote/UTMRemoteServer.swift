@@ -40,6 +40,7 @@ actor UTMRemoteServer {
 
     @Setting("ServerAutostart") private var isServerAutostart: Bool = false
     @Setting("ServerExternal") private var isServerExternal: Bool = false
+    @Setting("ServerAutoblock") private var isServerAutoblock: Bool = false
     @Setting("ServerPort") private var serverPort: Int = 0
     @Setting("ServerPasswordRequired") private var isServerPasswordRequired: Bool = false
     @Setting("ServerPassword") private var serverPassword: String = ""
@@ -127,7 +128,8 @@ actor UTMRemoteServer {
             registerNotifications()
             listener = Task {
                 await withErrorNotification {
-                    for try await connection in Connection.advertise(forServiceType: service, txtRecord: metadata, identity: keyManager.identity) {
+                    let port = serverPort > 0 ? NWEndpoint.Port(integerLiteral: UInt16(serverPort)) : .any
+                    for try await connection in Connection.advertise(on: port, forServiceType: service, txtRecord: metadata, identity: keyManager.identity) {
                         if let connection = try? await Connection(connection: connection) {
                             await newRemoteConnection(connection)
                         }
@@ -164,6 +166,9 @@ actor UTMRemoteServer {
         if await state.isApproved(fingerprint) {
             await notifyNewConnection(remoteAddress: remoteAddress, fingerprint: fingerprint)
             await establishConnection(connection)
+        } else if isServerAutoblock {
+            await state.block(fingerprint)
+            connection.close()
         } else {
             pendingConnections[fingerprint] = connection
             await notifyNewConnection(remoteAddress: remoteAddress, fingerprint: fingerprint, isUnknown: true)

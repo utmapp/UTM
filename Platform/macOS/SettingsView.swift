@@ -190,6 +190,7 @@ struct ServerSettingsView: View {
 
     @AppStorage("ServerAutostart") var isServerAutostart: Bool = false
     @AppStorage("ServerExternal") var isServerExternal: Bool = false
+    @AppStorage("ServerAutoblock") var isServerAutoblock: Bool = false
     @AppStorage("ServerPort") var serverPort: Int = 0
     @AppStorage("ServerPasswordRequired") var isServerPasswordRequired: Bool = false
     @AppStorage("ServerPassword") var serverPassword: String = ""
@@ -203,6 +204,8 @@ struct ServerSettingsView: View {
                 Toggle("Automatically start UTM server", isOn: $isServerAutostart)
             }
             Section(header: Text("Network")) {
+                Toggle("Reject unknown connections by default", isOn: $isServerAutoblock)
+                    .help("If checked, you will not be prompted about any unknown connection and they will be rejected.")
                 Toggle("Allow access from external clients", isOn: $isServerExternal)
                     .help("By default, the server is only available on LAN but setting this will use UPnP/NAT-PMP to port forward to WAN.")
                     .onChange(of: isServerExternal) { newValue in
