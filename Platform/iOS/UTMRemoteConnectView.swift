@@ -256,6 +256,7 @@ private struct ServerConnectView: View {
                 if case UTMRemoteClient.ConnectionError.passwordRequired = error {
                     withAnimation {
                         isPasswordRequired = true
+                        isTrustButton = false
                     }
                 } else if case UTMRemoteClient.ConnectionError.fingerprintUntrusted(let fingerprint) = error, server.fingerprint.isEmpty {
                     withAnimation {
