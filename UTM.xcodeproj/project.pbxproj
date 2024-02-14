@@ -886,6 +886,7 @@
 		CED8DF7528A120C100C34345 /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = CED8DF7928A120C100C34345 /* Localizable.stringsdict */; };
 		CED8DF7628A120C100C34345 /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = CED8DF7928A120C100C34345 /* Localizable.stringsdict */; };
 		CED8DF7728A120C100C34345 /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = CED8DF7928A120C100C34345 /* Localizable.stringsdict */; };
+		CEDD11C12B7C74D7004DDAC6 /* SwiftPortmap in Frameworks */ = {isa = PBXBuildFile; productRef = CEDD11C02B7C74D7004DDAC6 /* SwiftPortmap */; };
 		CEDF83F9258AE24E0030E4AC /* UTMPasteboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEDF83F8258AE24E0030E4AC /* UTMPasteboard.swift */; };
 		CEDF83FA258AE24E0030E4AC /* UTMPasteboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEDF83F8258AE24E0030E4AC /* UTMPasteboard.swift */; };
 		CEE06B272B2FC89400A811AE /* UTMServerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEE06B262B2FC89400A811AE /* UTMServerView.swift */; };
@@ -2196,6 +2197,7 @@
 				CE03D0CE24D9A30100F76B84 /* iconv.2.framework in Frameworks */,
 				CE0B6EF124AD677200FE012D /* libgstplayback.a in Frameworks */,
 				CE0B6EF424AD677200FE012D /* json-glib-1.0.0.framework in Frameworks */,
+				CEDD11C12B7C74D7004DDAC6 /* SwiftPortmap in Frameworks */,
 				CE0B6ED124AD677200FE012D /* phodav-2.0.0.framework in Frameworks */,
 				CEF83F862500947D00557D15 /* gcrypt.20.framework in Frameworks */,
 				CE0B6ECB24AD677200FE012D /* gstcheck-1.0.0.framework in Frameworks */,
@@ -3075,6 +3077,7 @@
 				84B36D2127B3265400C22685 /* CocoaSpice */,
 				84A0A8872A47D5C50038F329 /* QEMUKit */,
 				CE9B15352B11A491003A32DD /* SwiftConnect */,
+				CEDD11C02B7C74D7004DDAC6 /* SwiftPortmap */,
 			);
 			productName = UTM;
 			productReference = CE2D951C24AD48BE0059923A /* UTM.app */;
@@ -3241,6 +3244,7 @@
 				84E3A8FE293DBC290024A740 /* XCRemoteSwiftPackageReference "swift-argument-parser" */,
 				84A0A8862A47D5C50038F329 /* XCRemoteSwiftPackageReference "QEMUKit" */,
 				CE9B15342B11A491003A32DD /* XCRemoteSwiftPackageReference "SwiftConnect" */,
+				CEDD11BF2B7C74D7004DDAC6 /* XCRemoteSwiftPackageReference "SwiftPortmap" */,
 			);
 			productRefGroup = CE550BCA225947990063E575 /* Products */;
 			projectDirPath = "";
@@ -5120,6 +5124,14 @@
 				minimumVersion = 6.5.6;
 			};
 		};
+		CEDD11BF2B7C74D7004DDAC6 /* XCRemoteSwiftPackageReference "SwiftPortmap" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/osy/SwiftPortmap.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		CEF7F5852AEEDCC400E34952 /* XCRemoteSwiftPackageReference "swift-log" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apple/swift-log";
@@ -5319,6 +5331,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = CEA45E23263519B5002FA97D /* XCRemoteSwiftPackageReference "IQKeyboardManager" */;
 			productName = IQKeyboardManagerSwift;
+		};
+		CEDD11C02B7C74D7004DDAC6 /* SwiftPortmap */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CEDD11BF2B7C74D7004DDAC6 /* XCRemoteSwiftPackageReference "SwiftPortmap" */;
+			productName = SwiftPortmap;
 		};
 		CEF7F5842AEEDCC400E34952 /* Logging */ = {
 			isa = XCSwiftPackageProductDependency;

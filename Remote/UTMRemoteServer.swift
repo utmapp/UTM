@@ -18,6 +18,7 @@ import Foundation
 import Combine
 import Network
 import SwiftConnect
+import SwiftPortmap
 import UserNotifications
 
 let service = "_utm_server._tcp"
@@ -33,6 +34,7 @@ actor UTMRemoteServer {
     private var listener: Task<Void, Error>?
     private var pendingConnections: [State.ClientFingerprint: Connection] = [:]
     private var establishedConnections: [State.ClientFingerprint: Remote] = [:]
+    private var natPort: SwiftPortmap.Port?
 
     private func _replaceCancellables(with set: Set<AnyCancellable>) {
         cancellables = set
@@ -128,6 +130,21 @@ actor UTMRemoteServer {
             registerNotifications()
             listener = Task {
                 await withErrorNotification {
+                    if isServerExternal && serverPort > 0 {
+                        natPort = Port.TCP(internalPort: UInt16(serverPort))
+                        natPort!.mappingChangedHandler = { port in
+                            Task {
+                                let address = try? await port.externalIpv4Address
+                                let port = try? await port.externalPort
+                                await self.state.setExternalAddress(address, port: port)
+                            }
+                        }
+                        await withErrorNotification {
+                            guard try await natPort!.externalPort == serverPort else {
+                                throw ServerError.natReservationMismatch(serverPort)
+                            }
+                        }
+                    }
                     let port = serverPort > 0 ? NWEndpoint.Port(integerLiteral: UInt16(serverPort)) : .any
                     for try await connection in Connection.advertise(on: port, forServiceType: service, txtRecord: metadata, identity: keyManager.identity) {
                         if let connection = try? await Connection(connection: connection) {
@@ -135,6 +152,7 @@ actor UTMRemoteServer {
                         }
                     }
                 }
+                natPort = nil
                 await stop()
             }
             await state.setServerActive(true)
@@ -149,6 +167,7 @@ actor UTMRemoteServer {
             listener.cancel()
             _ = await listener.result
         }
+        await state.setExternalAddress()
         await state.setServerActive(false)
     }
 
@@ -462,6 +481,10 @@ extension UTMRemoteServer {
             }
         }
 
+        @Published private(set) var externalIPAddress: String?
+
+        @Published private(set) var externalPort: UInt16?
+
         init() {
             var _approvedClients = Set<Client>()
             if let array = UserDefaults.standard.array(forKey: "TrustedClients") {
@@ -550,6 +573,11 @@ extension UTMRemoteServer {
 
         fileprivate func setServerFingerprint(_ fingerprint: ServerFingerprint) {
             serverFingerprint = fingerprint
+        }
+
+        fileprivate func setExternalAddress(_ address: String? = nil, port: UInt16? = nil) {
+            externalIPAddress = address
+            externalPort = port
         }
     }
 }
@@ -783,6 +811,7 @@ extension UTMRemoteServer {
 extension UTMRemoteServer {
     enum ServerError: LocalizedError {
         case silentError(Error)
+        case natReservationMismatch(Int)
         case notAuthenticated
         case versionMismatch
         case notFound(UUID)
@@ -793,6 +822,8 @@ extension UTMRemoteServer {
             switch self {
             case .silentError(let error):
                 return error.localizedDescription
+            case .natReservationMismatch(let port):
+                return String.localizedStringWithFormat(NSLocalizedString("Cannot reserve port '%@' for external access from NAT. Make sure no other device on the network has reserved it.", comment: "UTMRemoteServer"), port)
             case .notAuthenticated:
                 return NSLocalizedString("Not authenticated.", comment: "UTMRemoteServer")
             case .versionMismatch:

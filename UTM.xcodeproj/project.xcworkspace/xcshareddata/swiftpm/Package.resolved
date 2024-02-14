@@ -82,6 +82,15 @@
       }
     },
     {
+      "identity" : "swiftportmap",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/osy/SwiftPortmap.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "72782141ab6f6f6db58bd16bac96d4e7ce901e9a"
+      }
+    },
+    {
       "identity" : "swiftterm",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/osy/SwiftTerm.git",

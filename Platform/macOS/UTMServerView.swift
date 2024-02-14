@@ -53,6 +53,10 @@ struct UTMServerView: View {
             ServerOverview()
             Divider()
             HStack {
+                if let address = remoteServer.externalIPAddress, let port = remoteServer.externalPort {
+                    Text("Server IP: \(address), Port: \(String(port))")
+                        .textSelection(.enabled)
+                }
                 Spacer()
                 if remoteServer.isServerActive {
                     Image(systemName: "circle.fill")
