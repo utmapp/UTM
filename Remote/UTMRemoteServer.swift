@@ -712,8 +712,8 @@ extension UTMRemoteServer {
 
         private func _startVirtualMachine(parameters: M.StartVirtualMachine.Request) async throws -> M.StartVirtualMachine.Reply {
             let vm = try await findVM(withId: parameters.id)
-            let (port, publicKey, password) = try await data.startRemote(vm: vm, options: parameters.options, forClient: client)
-            return .init(spiceServerPort: port, spiceServerPublicKey: publicKey, spiceServerPassword: password)
+            let serverInfo = try await data.startRemote(vm: vm, options: parameters.options, forClient: client)
+            return .init(serverInfo: serverInfo)
         }
 
         private func _stopVirtualMachine(parameters: M.StopVirtualMachine.Request) async throws -> M.StopVirtualMachine.Reply {

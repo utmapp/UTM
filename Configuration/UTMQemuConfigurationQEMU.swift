@@ -74,9 +74,6 @@ struct UTMQemuConfigurationQEMU: Codable {
 
     /// If true, all SPICE channels will be over TLS. Not saved.
     var isSpiceServerTlsEnabled: Bool = false
-
-    /// Set to TLS public key for SPICE server in SubjectPublicKey. Not saved.
-    var spiceServerPublicKey: Data?
     
     /// Set to a password shared with the client. Not saved.
     var spiceServerPassword: String?

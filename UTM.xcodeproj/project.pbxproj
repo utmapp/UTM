@@ -1199,9 +1199,6 @@
 		CEF83F8D250094E700557D15 /* gthread-2.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DC22653C7300FC7E63 /* gthread-2.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEF83F8E250094EC00557D15 /* gpg-error.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F122653C7400FC7E63 /* gpg-error.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEF83F8F250094EE00557D15 /* gcrypt.20.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F322653C7400FC7E63 /* gcrypt.20.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CEFE96722B699954000F00C9 /* UTMSocketUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEFE96712B699954000F00C9 /* UTMSocketUtils.swift */; };
-		CEFE96732B699954000F00C9 /* UTMSocketUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEFE96712B699954000F00C9 /* UTMSocketUtils.swift */; };
-		CEFE96752B699954000F00C9 /* UTMSocketUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEFE96712B699954000F00C9 /* UTMSocketUtils.swift */; };
 		CEFE96772B69A7CC000F00C9 /* VMRemoteSessionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEFE96762B69A7CC000F00C9 /* VMRemoteSessionState.swift */; };
 		CEFE98DF29485237007CB7A8 /* UTM.sdef in Resources */ = {isa = PBXBuildFile; fileRef = CEFE98DE29485237007CB7A8 /* UTM.sdef */; };
 		CEFE98E129485776007CB7A8 /* UTMScriptingVirtualMachineImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEFE98E029485776007CB7A8 /* UTMScriptingVirtualMachineImpl.swift */; };
@@ -2028,7 +2025,6 @@
 		CEF6F5EC26DDD65700BC434D /* QEMULauncher-unsigned.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "QEMULauncher-unsigned.entitlements"; sourceTree = "<group>"; };
 		CEF7F6D32AEEDCC400E34952 /* UTM Remote.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "UTM Remote.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CEF84ADA2887D7D300578F41 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
-		CEFE96712B699954000F00C9 /* UTMSocketUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMSocketUtils.swift; sourceTree = "<group>"; };
 		CEFE96762B69A7CC000F00C9 /* VMRemoteSessionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMRemoteSessionState.swift; sourceTree = "<group>"; };
 		CEFE98DE29485237007CB7A8 /* UTM.sdef */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = UTM.sdef; sourceTree = "<group>"; };
 		CEFE98E029485776007CB7A8 /* UTMScriptingVirtualMachineImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMScriptingVirtualMachineImpl.swift; sourceTree = "<group>"; };
@@ -2781,7 +2777,6 @@
 				841E997828AA119B003C6CB6 /* UTMRegistryEntry.swift */,
 				848F71E7277A2A4E006A0240 /* UTMSerialPort.swift */,
 				848F71EB277A2F47006A0240 /* UTMSerialPortDelegate.swift */,
-				CEFE96712B699954000F00C9 /* UTMSocketUtils.swift */,
 				E2D64BC7241DB24B0034E0C6 /* UTMSpiceIO.h */,
 				E2D64BC8241DB24B0034E0C6 /* UTMSpiceIO.m */,
 				E2D64BE0241EAEBE0034E0C6 /* UTMSpiceIODelegate.h */,
@@ -3580,7 +3575,6 @@
 				8471770627CC974F00D3A50B /* DefaultTextField.swift in Sources */,
 				84E6F6FD289319AE00080EEF /* VMToolbarDisplayMenuView.swift in Sources */,
 				CE9B15472B12A87E003A32DD /* GenerateKey.c in Sources */,
-				CEFE96722B699954000F00C9 /* UTMSocketUtils.swift in Sources */,
 				CE8813D324CD230300532628 /* ActivityView.swift in Sources */,
 				CEDF83F9258AE24E0030E4AC /* UTMPasteboard.swift in Sources */,
 				848D99B4286300160055C215 /* QEMUArgument.swift in Sources */,
@@ -3603,7 +3597,6 @@
 			files = (
 				CEE06B272B2FC89400A811AE /* UTMServerView.swift in Sources */,
 				CEB63A7724F4654400CAF323 /* Main.swift in Sources */,
-				CEFE96752B699954000F00C9 /* UTMSocketUtils.swift in Sources */,
 				84E3A91B2946D2590024A740 /* UTMMenuBarExtraScene.swift in Sources */,
 				CEB63A7B24F469E300CAF323 /* UTMJailbreak.m in Sources */,
 				83A004BB26A8CC95001AC09E /* UTMDownloadTask.swift in Sources */,
@@ -3894,7 +3887,6 @@
 				CEF01DB32B6724A300725A0F /* UTMSpiceVirtualMachine.swift in Sources */,
 				843232B828C4816100CFBC97 /* UTMDownloadSupportToolsTask.swift in Sources */,
 				CEF0306526A2AFDF00667B63 /* VMWizardOSLinuxView.swift in Sources */,
-				CEFE96732B699954000F00C9 /* UTMSocketUtils.swift in Sources */,
 				CEA45EC3263519B5002FA97D /* VMCommands.swift in Sources */,
 				84CE3DB22904C7A100FF068B /* UTMSettingsView.swift in Sources */,
 				8443EFF32845641600B2E6E2 /* UTMQemuConfigurationDrive.swift in Sources */,
@@ -4483,6 +4475,7 @@
 				ENABLE_PREVIEWS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"WITH_JIT=1",
+					"WITH_SERVER=1",
 					"WITH_USB=1",
 					"$(inherited)",
 				);
@@ -4495,7 +4488,7 @@
 				PRODUCT_NAME = "$(PROJECT_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "$(PROVISIONING_PROFILE_SPECIFIER_MAC:default=)";
 				SUPPORTED_PLATFORMS = macosx;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "WITH_JIT WITH_USB $(inherited)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "WITH_JIT WITH_SERVER WITH_USB $(inherited)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Services/Swift-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -4516,6 +4509,7 @@
 				ENABLE_PREVIEWS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"WITH_JIT=1",
+					"WITH_SERVER=1",
 					"WITH_USB=1",
 					"$(inherited)",
 				);
@@ -4528,7 +4522,7 @@
 				PRODUCT_NAME = "$(PROJECT_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "$(PROVISIONING_PROFILE_SPECIFIER_MAC:default=)";
 				SUPPORTED_PLATFORMS = macosx;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "WITH_JIT WITH_USB $(inherited)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "WITH_JIT WITH_SERVER WITH_USB $(inherited)";
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OBJC_BRIDGING_HEADER = "Services/Swift-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";

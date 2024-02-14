@@ -130,10 +130,16 @@ extension UTMRemoteMessageServer {
             let options: UTMVirtualMachineStartOptions
         }
 
+        struct ServerInformation: Serializable, Codable {
+            let spicePortInternal: UInt16
+            let spicePortExternal: UInt16?
+            let spiceHostExternal: String?
+            let spicePublicKey: Data
+            let spicePassword: String
+        }
+
         struct Reply: Serializable, Codable {
-            let spiceServerPort: UInt16
-            let spiceServerPublicKey: Data
-            let spiceServerPassword: String
+            let serverInfo: ServerInformation
         }
     }
 

@@ -152,6 +152,33 @@ extension UTMRemoteSpiceVirtualMachine {
 }
 
 extension UTMRemoteSpiceVirtualMachine {
+    private func connect(_ serverInfo: UTMRemoteMessageServer.StartVirtualMachine.ServerInformation, options: UTMSpiceIOOptions, remoteConnection: Bool) async throws -> UTMSpiceIO {
+        let ioService = UTMSpiceIO(host: remoteConnection ? serverInfo.spiceHostExternal! : server.host,
+                                   tlsPort: Int(remoteConnection ? serverInfo.spicePortExternal! : serverInfo.spicePortInternal),
+                                   serverPublicKey: serverInfo.spicePublicKey,
+                                   password: serverInfo.spicePassword,
+                                   options: options)
+        ioService.logHandler = { (line: String) -> Void in
+            guard !line.contains("spice_make_scancode") else {
+                return // do not log key presses for privacy reasons
+            }
+            NSLog("%@", line) // FIXME: log to file
+        }
+        try ioService.start()
+        let coordinator = ConnectCoordinator()
+        try await withCheckedThrowingContinuation { continuation in
+            coordinator.continuation = continuation
+            ioService.connectDelegate = coordinator
+            do {
+                try ioService.connect()
+            } catch {
+                ioService.connectDelegate = nil
+                continuation.resume(throwing: error)
+            }
+        }
+        return ioService
+    }
+
     func start(options: UTMVirtualMachineStartOptions) async throws {
         try await _state.operation(before: .stopped, during: .starting, after: .started) {
             let spiceServer = try await server.startVirtualMachine(id: id, options: options)
@@ -170,30 +197,16 @@ extension UTMRemoteSpiceVirtualMachine {
                 options.insert(.hasDebugLog)
             }
             #endif
-            let ioService = UTMSpiceIO(host: server.host,
-                                       tlsPort: Int(spiceServer.port),
-                                       serverPublicKey: spiceServer.publicKey,
-                                       password: spiceServer.password,
-                                       options: options)
-            ioService.logHandler = { (line: String) -> Void in
-                guard !line.contains("spice_make_scancode") else {
-                    return // do not log key presses for privacy reasons
-                }
-                NSLog("%@", line) // FIXME: log to file
-            }
-            try ioService.start()
-            let coordinator = ConnectCoordinator()
-            try await withCheckedThrowingContinuation { continuation in
-                coordinator.continuation = continuation
-                ioService.connectDelegate = coordinator
-                do {
-                    try ioService.connect()
-                } catch {
-                    ioService.connectDelegate = nil
-                    continuation.resume(throwing: error)
+            do {
+                self.ioService = try await connect(spiceServer, options: options, remoteConnection: false)
+            } catch {
+                if spiceServer.spiceHostExternal != nil && spiceServer.spicePortExternal != nil {
+                    // retry with external port
+                    self.ioService = try await connect(spiceServer, options: options, remoteConnection: true)
+                } else {
+                    throw error
                 }
             }
-            self.ioService = ioService
         }
     }
 

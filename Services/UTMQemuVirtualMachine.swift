@@ -16,6 +16,9 @@
 
 import Foundation
 import QEMUKit
+#if os(macOS)
+import SwiftPortmap
+#endif
 
 private var SpiceIoServiceGuestAgentContext = 0
 private let kSuspendSnapshotName = "suspend"
@@ -152,6 +155,11 @@ final class UTMQemuVirtualMachine: UTMSpiceVirtualMachine {
     
     private var changeCursorRequestInProgress: Bool = false
 
+    #if WITH_SERVER
+    private var spicePort: SwiftPortmap.Port?
+    private(set) var spiceServerInfo: UTMRemoteMessageServer.StartVirtualMachine.ServerInformation?
+    #endif
+
     @MainActor required init(packageUrl: URL, configuration: UTMQemuConfiguration, isShortcut: Bool = false) throws {
         self.isScopedAccess = packageUrl.startAccessingSecurityScopedResource()
         // load configuration
@@ -275,13 +283,21 @@ extension UTMQemuVirtualMachine {
         }
         let isRunningAsDisposible = options.contains(.bootDisposibleMode)
         let isRemoteSession = options.contains(.remoteSession)
-        let spicePort = isRemoteSession ? try UTMSocketUtils.reservePort() : nil
+        #if WITH_SERVER
         let spicePassword = isRemoteSession ? String.random(length: 32) : nil
+        let spicePort = isRemoteSession ? try SwiftPortmap.Port.TCP() : nil
+        #else
+        if isRemoteSession {
+            throw UTMVirtualMachineError.notImplemented
+        }
+        #endif
         await MainActor.run {
             config.qemu.isDisposable = isRunningAsDisposible
-            config.qemu.spiceServerPort = spicePort
-            config.qemu.isSpiceServerTlsEnabled = true
+            #if WITH_SERVER
+            config.qemu.spiceServerPort = spicePort?.internalPort
             config.qemu.spiceServerPassword = spicePassword
+            config.qemu.isSpiceServerTlsEnabled = true
+            #endif
         }
 
         // start TPM
@@ -331,6 +347,7 @@ extension UTMQemuVirtualMachine {
         #endif
         let spiceSocketUrl = await config.spiceSocketURL
         let interface: any QEMUInterface
+        let spicePublicKey: Data?
         if isRemoteSession {
             let pipeInterface = UTMPipeInterface()
             await MainActor.run {
@@ -351,9 +368,7 @@ extension UTMQemuVirtualMachine {
             }
             try await key[1].write(to: config.spiceTlsKeyUrl)
             try await key[2].write(to: config.spiceTlsCertUrl)
-            await MainActor.run {
-                config.qemu.spiceServerPublicKey = key[3]
-            }
+            spicePublicKey = key[3]
         } else {
             let ioService = UTMSpiceIO(socketUrl: spiceSocketUrl, options: options)
             ioService.logHandler = { [weak system] (line: String) -> Void in
@@ -364,6 +379,7 @@ extension UTMQemuVirtualMachine {
             }
             try ioService.start()
             interface = ioService
+            spicePublicKey = nil
         }
         try Task.checkCancellation()
         
@@ -408,6 +424,18 @@ extension UTMQemuVirtualMachine {
         
         // test out snapshots
         self.snapshotUnsupportedError = await determineSnapshotSupport()
+
+        #if WITH_SERVER
+        // save server details
+        if let spicePort = spicePort, let spicePublicKey = spicePublicKey, let spicePassword = spicePassword {
+            self.spiceServerInfo = .init(spicePortInternal: spicePort.internalPort,
+                                         spicePortExternal: try? await spicePort.externalPort,
+                                         spiceHostExternal: try? await spicePort.externalIpv4Address,
+                                         spicePublicKey: spicePublicKey,
+                                         spicePassword: spicePassword)
+            self.spicePort = spicePort
+        }
+        #endif
     }
     
     func start(options: UTMVirtualMachineStartOptions = []) async throws {
@@ -629,6 +657,10 @@ extension UTMQemuVirtualMachine: QEMUVirtualMachineDelegate {
     }
     
     func qemuVMDidStop(_ qemuVM: QEMUVirtualMachine) {
+        #if WITH_SERVER
+        spicePort = nil
+        spiceServerInfo = nil
+        #endif
         swtpm?.stop()
         swtpm = nil
         ioService = nil
