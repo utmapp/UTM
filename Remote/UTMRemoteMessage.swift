@@ -21,8 +21,9 @@ enum UTMRemoteMessageServer: UInt8, MessageID {
     static let version = 1
     case serverHandshake
     case listVirtualMachines
+    case reorderVirtualMachines
     case getQEMUConfiguration
-    case updateQEMUConfiguration
+    case getPackageSize
     case getPackageDataFile
     case startVirtualMachine
     case stopVirtualMachine
@@ -83,6 +84,17 @@ extension UTMRemoteMessageServer {
         }
     }
 
+    struct ReorderVirtualMachines: Message {
+        static let id = UTMRemoteMessageServer.reorderVirtualMachines
+
+        struct Request: Serializable, Codable {
+            let ids: [UUID]
+            let offset: Int
+        }
+
+        struct Reply: Serializable, Codable {}
+    }
+
     struct GetQEMUConfiguration: Message {
         static let id = UTMRemoteMessageServer.getQEMUConfiguration
 
@@ -95,16 +107,16 @@ extension UTMRemoteMessageServer {
         }
     }
 
-    struct UpdateQEMUConfiguration: Message {
-        static let id = UTMRemoteMessageServer.updateQEMUConfiguration
+    struct GetPackageSize: Message {
+        static let id = UTMRemoteMessageServer.getPackageSize
 
         struct Request: Serializable, Codable {
             let id: UUID
-            let configuration: UTMQemuConfiguration
-            let files: [String: Data]
         }
 
-        struct Reply: Serializable, Codable {}
+        struct Reply: Serializable, Codable {
+            let size: Int64
+        }
     }
 
     struct GetPackageDataFile: Message {

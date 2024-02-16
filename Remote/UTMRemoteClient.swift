@@ -333,8 +333,16 @@ extension UTMRemoteClient {
             try await _listVirtualMachines(parameters: .init()).items
         }
 
+        func reorderVirtualMachines(fromIds ids: [UUID], toOffset offset: Int) async throws {
+            try await _reorderVirtualMachines(parameters: .init(ids: ids, offset: offset))
+        }
+
         func getQEMUConfiguration(for id: UUID) async throws -> UTMQemuConfiguration {
             try await _getQEMUConfiguration(parameters: .init(id: id)).configuration
+        }
+
+        func getPackageSize(for id: UUID) async throws -> Int64 {
+            try await _getPackageSize(parameters: .init(id: id)).size
         }
 
         func getPackageDataFile(for id: UUID, name: String) async throws -> URL {
@@ -400,8 +408,17 @@ extension UTMRemoteClient {
             try await M.ListVirtualMachines.send(parameters, to: peer)
         }
 
+        @discardableResult
+        private func _reorderVirtualMachines(parameters: M.ReorderVirtualMachines.Request) async throws -> M.ReorderVirtualMachines.Reply {
+            try await M.ReorderVirtualMachines.send(parameters, to: peer)
+        }
+
         private func _getQEMUConfiguration(parameters: M.GetQEMUConfiguration.Request) async throws -> M.GetQEMUConfiguration.Reply {
             try await M.GetQEMUConfiguration.send(parameters, to: peer)
+        }
+
+        private func _getPackageSize(parameters: M.GetPackageSize.Request) async throws -> M.GetPackageSize.Reply {
+            try await M.GetPackageSize.send(parameters, to: peer)
         }
 
         private func _getPackageDataFile(parameters: M.GetPackageDataFile.Request) async throws -> M.GetPackageDataFile.Reply {

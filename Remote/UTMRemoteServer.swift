@@ -608,10 +608,12 @@ extension UTMRemoteServer {
                 return try await _handshake(parameters: .decode(data)).encode()
             case .listVirtualMachines:
                 return try await _listVirtualMachines(parameters: .decode(data)).encode()
+            case .reorderVirtualMachines:
+                return try await _reorderVirtualMachines(parameters: .decode(data)).encode()
             case .getQEMUConfiguration:
                 return try await _getQEMUConfiguration(parameters: .decode(data)).encode()
-            case .updateQEMUConfiguration:
-                return try await _updateQEMUConfiguration(parameters: .decode(data)).encode()
+            case .getPackageSize:
+                return try await _getPackageSize(parameters: .decode(data)).encode()
             case .getPackageDataFile:
                 return try await _getPackageDataFile(parameters: .decode(data)).encode()
             case .startVirtualMachine:
@@ -679,6 +681,20 @@ extension UTMRemoteServer {
             return .init(items: items)
         }
 
+        private func _reorderVirtualMachines(parameters: M.ReorderVirtualMachines.Request) async throws -> M.ReorderVirtualMachines.Reply {
+            await Task { @MainActor in
+                let vms = data.virtualMachines
+                let source = parameters.ids.reduce(into: IndexSet(), { indexSet, id in
+                    if let index = vms.firstIndex(where: { $0.id == id }) {
+                        indexSet.insert(index)
+                    }
+                })
+                let destination = min(max(0, parameters.offset), vms.count)
+                data.listMove(fromOffsets: source, toOffset: destination)
+                return .init()
+            }.value
+        }
+
         private func _getQEMUConfiguration(parameters: M.GetQEMUConfiguration.Request) async throws -> M.GetQEMUConfiguration.Reply {
             let vm = try await findVM(withId: parameters.id)
             if let config = await vm.config as? UTMQemuConfiguration {
@@ -688,8 +704,10 @@ extension UTMRemoteServer {
             }
         }
 
-        private func _updateQEMUConfiguration(parameters: M.UpdateQEMUConfiguration.Request) async throws -> M.UpdateQEMUConfiguration.Reply {
-            return .init()
+        private func _getPackageSize(parameters: M.GetPackageSize.Request) async throws -> M.GetPackageSize.Reply {
+            let vm = try await findVM(withId: parameters.id)
+            let size = await data.computeSize(for: vm)
+            return .init(size: size)
         }
 
         private func _getPackageDataFile(parameters: M.GetPackageDataFile.Request) async throws -> M.GetPackageDataFile.Reply {

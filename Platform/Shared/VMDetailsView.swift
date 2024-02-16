@@ -29,9 +29,10 @@ struct VMDetailsView: View {
     #else
     private let regularScreenSizeClass: Bool = true
     #endif
-    
+
+    @State private var size: Int64 = 0
+
     private var sizeLabel: String {
-        let size = data.computeSize(for: vm)
         return ByteCountFormatter.string(fromByteCount: size, countStyle: .binary)
     }
     
@@ -108,6 +109,11 @@ struct VMDetailsView: View {
                         .environmentObject(data)
                 }
                 #endif
+            }
+            .onAppear {
+                Task {
+                    size = await data.computeSize(for: vm)
+                }
             }
         }
     }

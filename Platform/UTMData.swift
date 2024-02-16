@@ -549,7 +549,7 @@ struct AlertMessage: Identifiable {
     /// Calculate total size of VM and data
     /// - Parameter vm: VM to calculate size
     /// - Returns: Size in bytes
-    func computeSize(for vm: VMData) -> Int64 {
+    func computeSize(for vm: VMData) async -> Int64 {
         let path = vm.pathUrl
         guard let enumerator = fileManager.enumerator(at: path, includingPropertiesForKeys: [.totalFileAllocatedSizeKey]) else {
             logger.error("failed to create enumerator for \(path)")
@@ -633,7 +633,7 @@ struct AlertMessage: Identifiable {
         listSelect(vm: vm)
     }
 
-    func copyItemWithCopyfile(at srcURL: URL, to dstURL: URL) async throws {
+    private func copyItemWithCopyfile(at srcURL: URL, to dstURL: URL) async throws {
         try await Task.detached(priority: .userInitiated) {
             let status = copyfile(srcURL.path, dstURL.path, nil, copyfile_flags_t(COPYFILE_ALL | COPYFILE_RECURSIVE | COPYFILE_CLONE | COPYFILE_DATA_SPARSE))
             if status < 0 {
@@ -999,6 +999,7 @@ enum UTMDataError: Error {
     case jitStreamerDecodeFailed
     case jitStreamerAttachFailed
     case jitStreamerUrlInvalid(String)
+    case notImplemented
 }
 
 extension UTMDataError: LocalizedError {
@@ -1028,6 +1029,8 @@ extension UTMDataError: LocalizedError {
             return NSLocalizedString("Failed to attach to JitStreamer.", comment: "UTMData")
         case .jitStreamerUrlInvalid(let urlString):
             return String.localizedStringWithFormat(NSLocalizedString("Invalid JitStreamer attach URL:\n%@", comment: "UTMData"), urlString)
+        case .notImplemented:
+            return NSLocalizedString("This functionality is not yet implemented.", comment: "UTMData")
         }
     }
 }
@@ -1121,6 +1124,60 @@ class UTMRemoteData: UTMData {
         if let session = VMSessionState.allActiveSessions.values.first(where: { $0.vm.id == id }) {
             session.fatalError = message
         }
+    }
+
+    override func listMove(fromOffsets: IndexSet, toOffset: Int) {
+        let ids = fromOffsets.map({ virtualMachines[$0].id })
+        Task {
+            try await remoteClient.server.reorderVirtualMachines(fromIds: ids, toOffset: toOffset)
+        }
+        super.listMove(fromOffsets: fromOffsets, toOffset: toOffset)
+    }
+
+    override func save(vm: VMData) async throws {
+        throw UTMDataError.notImplemented
+    }
+
+    override func discardChanges(for vm: VMData) throws {
+        throw UTMDataError.notImplemented
+    }
+
+    override func create<Config: UTMConfiguration>(config: Config) async throws -> VMData {
+        throw UTMDataError.notImplemented
+    }
+
+    @discardableResult
+    override func delete(vm: VMData, alsoRegistry: Bool) async throws -> Int? {
+        throw UTMDataError.notImplemented
+    }
+
+    @discardableResult
+    override func clone(vm: VMData) async throws -> VMData {
+        throw UTMDataError.notImplemented
+    }
+
+    override func export(vm: VMData, to url: URL) async throws {
+        throw UTMDataError.notImplemented
+    }
+
+    override func move(vm: VMData, to url: URL) async throws {
+        throw UTMDataError.notImplemented
+    }
+
+    override func template(vm: VMData) async throws {
+        throw UTMDataError.notImplemented
+    }
+
+    override func computeSize(for vm: VMData) async -> Int64 {
+        (try? await remoteClient.server.getPackageSize(for: vm.id)) ?? 0
+    }
+
+    override func importUTM(from url: URL, asShortcut: Bool) async throws {
+        throw UTMDataError.notImplemented
+    }
+
+    override func mountSupportTools(for vm: any UTMVirtualMachine) async throws {
+        throw UTMDataError.notImplemented
     }
 }
 #endif
