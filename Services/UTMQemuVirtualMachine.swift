@@ -156,6 +156,7 @@ final class UTMQemuVirtualMachine: UTMSpiceVirtualMachine {
     private var changeCursorRequestInProgress: Bool = false
 
     #if WITH_SERVER
+    @Setting("ServerPort") private var serverPort: Int = 0
     private var spicePort: SwiftPortmap.Port?
     private(set) var spiceServerInfo: UTMRemoteMessageServer.StartVirtualMachine.ServerInformation?
     #endif
@@ -285,7 +286,7 @@ extension UTMQemuVirtualMachine {
         let isRemoteSession = options.contains(.remoteSession)
         #if WITH_SERVER
         let spicePassword = isRemoteSession ? String.random(length: 32) : nil
-        let spicePort = isRemoteSession ? try SwiftPortmap.Port.TCP() : nil
+        let spicePort = isRemoteSession ? try SwiftPortmap.Port.TCP(unusedPortStartingAt: UInt16(serverPort)) : nil
         #else
         if isRemoteSession {
             throw UTMVirtualMachineError.notImplemented
