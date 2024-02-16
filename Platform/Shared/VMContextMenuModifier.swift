@@ -61,6 +61,7 @@ struct VMContextMenuModifier: ViewModifier {
             }.help("Reveal where the VM is stored.")
             Divider()
             #endif
+            #if !WITH_REMOTE // FIXME: implement remote feature
             Button {
                 data.close(vm: vm) // close window
                 data.edit(vm: vm)
@@ -68,6 +69,7 @@ struct VMContextMenuModifier: ViewModifier {
                 Label("Edit", systemImage: "slider.horizontal.3")
             }.disabled(vm.hasSuspendState || !vm.isModifyAllowed)
             .help("Modify settings for this VM.")
+            #endif
             if vm.hasSuspendState || !vm.isStopped {
                 Button {
                     confirmAction = .confirmStopVM
@@ -120,6 +122,7 @@ struct VMContextMenuModifier: ViewModifier {
                 
                 Divider()
             }
+            #if !WITH_REMOTE // FIXME: implement remote feature
             Button {
                 shareItem = .utmCopy(vm)
                 showSharePopup.toggle()
@@ -164,6 +167,7 @@ struct VMContextMenuModifier: ViewModifier {
                 }.disabled(!vm.isModifyAllowed)
                 .help("Delete this VM and all its data.")
             }
+            #endif
         }
         .modifier(VMShareItemModifier(isPresented: $showSharePopup, shareItem: shareItem))
         .modifier(VMConfirmActionModifier(vm: vm, confirmAction: $confirmAction) {
