@@ -453,7 +453,7 @@ extension UTMQemuVirtualMachine {
             }
             try await startTask!.value
             state = .started
-            if screenshotTimer == nil {
+            if screenshotTimer == nil && !options.contains(.remoteSession) {
                 screenshotTimer = startScreenshotTimer()
             }
         } catch {

@@ -24,6 +24,9 @@ import SwiftUI
 #if canImport(AltKit) && WITH_JIT
 import AltKit
 #endif
+#if WITH_SERVER
+import Combine
+#endif
 
 #if WITH_REMOTE
 import CocoaSpiceNoUsb
@@ -96,9 +99,12 @@ struct AlertMessage: Identifiable {
         UTMData.defaultStorageUrl
     }
 
-    #if os(macOS)
+    #if WITH_SERVER
     /// Remote access server
     private(set) var remoteServer: UTMRemoteServer!
+
+    /// Listeners for remote access
+    private var remoteChangeListeners: [VMData: Set<AnyCancellable>] = [:]
     #endif
 
     /// Queue to run `busyWork` tasks
@@ -201,7 +207,7 @@ struct AlertMessage: Identifiable {
         guard let list = defaults.stringArray(forKey: "VMEntryList") else {
             return
         }
-        virtualMachines = list.uniqued().compactMap { uuidString in
+        let virtualMachines: [VMData] = list.uniqued().compactMap { uuidString in
             guard let entry = UTMRegistry.shared.entry(for: uuidString) else {
                 return nil
             }
@@ -213,6 +219,7 @@ struct AlertMessage: Identifiable {
             }
             return vm
         }
+        listReplace(with: virtualMachines)
     }
     
     /// Load VM list (and order) from persistent storage (legacy)
@@ -220,7 +227,7 @@ struct AlertMessage: Identifiable {
         let defaults = UserDefaults.standard
         // legacy path list
         if let files = defaults.array(forKey: "VMList") as? [String] {
-            virtualMachines = files.uniqued().compactMap({ file in
+            let virtualMachines = files.uniqued().compactMap({ file in
                 let url = documentsURL.appendingPathComponent(file, isDirectory: true)
                 if let vm = try? VMData(url: url) {
                     return vm
@@ -228,10 +235,11 @@ struct AlertMessage: Identifiable {
                     return nil
                 }
             })
+            listReplace(with: virtualMachines)
         }
         // bookmark list
         if let list = defaults.array(forKey: "VMList") {
-            virtualMachines = list.compactMap { item in
+            let virtualMachines = list.compactMap { item in
                 let vm: VMData?
                 if let bookmark = item as? Data {
                     vm = VMData(bookmark: bookmark)
@@ -243,6 +251,7 @@ struct AlertMessage: Identifiable {
                 try? vm?.load()
                 return vm
             }
+            listReplace(with: virtualMachines)
         }
     }
     
@@ -256,7 +265,9 @@ struct AlertMessage: Identifiable {
     /// Replace current VM list with a new list
     /// - Parameter vms: List to replace with
     fileprivate func listReplace(with vms: [VMData]) {
+        virtualMachines.forEach({ endObservingChanges(for: $0) })
         virtualMachines = vms
+        vms.forEach({ beginObservingChanges(for: $0) })
     }
     
     /// Add VM to list
@@ -271,6 +282,7 @@ struct AlertMessage: Identifiable {
         } else {
             virtualMachines.append(vm)
         }
+        beginObservingChanges(for: vm)
     }
     
     /// Select VM in list
@@ -284,6 +296,7 @@ struct AlertMessage: Identifiable {
     /// - Returns: Index of item removed or nil if already removed
     @discardableResult public func listRemove(vm: VMData) -> Int? {
         let index = virtualMachines.firstIndex(of: vm)
+        endObservingChanges(for: vm)
         if let index = index {
             virtualMachines.remove(at: index)
         }
@@ -400,6 +413,13 @@ struct AlertMessage: Identifiable {
     func save(vm: VMData) async throws {
         do {
             try await vm.save()
+            #if WITH_SERVER
+            if let qemuConfig = vm.config as? UTMQemuConfiguration {
+                await remoteServer.broadcast { remote in
+                    try await remote.qemuConfigurationHasChanged(id: vm.id, configuration: qemuConfig)
+                }
+            }
+            #endif
         } catch {
             // refresh the VM object as it is now stale
             let origError = error
@@ -776,7 +796,51 @@ struct AlertMessage: Identifiable {
         }
         vm.changeUuid(to: UUID(), name: nil, copyingEntry: vm.registryEntry)
     }
-    
+
+    // MARK: - Change listener
+
+    private func beginObservingChanges(for vm: VMData) {
+        #if WITH_SERVER
+        var observers = Set<AnyCancellable>()
+        observers.insert($virtualMachines.sink { vms in
+            Task {
+                await self.remoteServer.broadcast { remote in
+                    try await remote.listHasChanged(ids: vms.map({ $0.id }))
+                }
+            }
+        })
+        observers.insert(vm.objectWillChange.sink { [self] _ in
+            // reset observers when object changes
+            endObservingChanges(for: vm)
+            beginObservingChanges(for: vm)
+        })
+        observers.insert(vm.$state.sink { state in
+            Task {
+                await self.remoteServer.broadcast { remote in
+                    try await remote.virtualMachine(id: vm.id, didTransitionToState: state)
+                }
+            }
+        })
+        if let registryEntry = vm.registryEntry {
+            observers.insert(registryEntry.externalDrivePublisher.sink { drives in
+                let mountedDrives = drives.mapValues({ $0.path })
+                Task {
+                    await self.remoteServer.broadcast { remote in
+                        try await remote.mountedDrivesHasChanged(id: vm.id, mountedDrives: mountedDrives)
+                    }
+                }
+            })
+        }
+        remoteChangeListeners[vm] = observers
+        #endif
+    }
+
+    private func endObservingChanges(for vm: VMData) {
+        #if WITH_SERVER
+        remoteChangeListeners.removeValue(forKey: vm)
+        #endif
+    }
+
     // MARK: - Other utility functions
     
     /// In some regions, iOS will prompt the user for network access
@@ -1098,10 +1162,18 @@ class UTMRemoteData: UTMData {
     }
 
     private func listRefreshFromRemote() async throws {
-        let items = try await remoteClient.server.listVirtualMachines()
-        listReplace(with: items.map({ VMRemoteData(fromRemoteItem: $0) }))
-        for vm in virtualMachines {
+        let ids = try await remoteClient.server.listVirtualMachines()
+        let items = try await remoteClient.server.getVirtualMachineInformation(for: ids)
+        await loadVirtualMachines(items.map({ VMRemoteData(fromRemoteItem: $0) }))
+    }
+
+    private func loadVirtualMachines(_ vms: [VMData]) async {
+        listReplace(with: vms)
+        for vm in vms {
             let remoteVM = vm as! VMRemoteData
+            if remoteVM.isLoaded {
+                continue
+            }
             do {
                 try await remoteVM.load(withRemoteServer: remoteClient.server)
             } catch {
@@ -1109,6 +1181,40 @@ class UTMRemoteData: UTMData {
             }
             await Task.yield()
         }
+    }
+
+    func remoteListHasChanged(ids: [UUID]) async {
+        var existing = virtualMachines.reduce(into: [:]) { partialResult, vm in
+            partialResult[vm.id] = vm
+        }
+        let new = ids.compactMap { id in
+            if existing[id] == nil {
+                return id
+            } else {
+                return nil
+            }
+        }
+        if !new.isEmpty, let newItems = try? await remoteClient.server.getVirtualMachineInformation(for: new) {
+            newItems.map({ VMRemoteData(fromRemoteItem: $0) }).forEach { vm in
+                existing[vm.id] = vm
+            }
+        }
+        let vms = ids.compactMap({ existing[$0] })
+        await loadVirtualMachines(vms)
+    }
+
+    func remoteQemuConfigurationHasChanged(id: UUID, configuration: UTMQemuConfiguration) async {
+        guard let vm = virtualMachines.first(where: { $0.id == id }) as? VMRemoteData else {
+            return
+        }
+        await vm.reloadConfiguration(withRemoteServer: remoteClient.server, config: configuration)
+    }
+
+    func remoteMountedDrivesHasChanged(id: UUID, mountedDrives: [String: String]) async {
+        guard let vm = virtualMachines.first(where: { $0.id == id }) as? VMRemoteData else {
+            return
+        }
+        vm.updateMountedDrives(mountedDrives)
     }
 
     func remoteVirtualMachineDidTransition(id: UUID, state: UTMVirtualMachineState) async {

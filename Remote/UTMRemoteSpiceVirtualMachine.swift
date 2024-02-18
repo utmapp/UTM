@@ -120,16 +120,24 @@ final class UTMRemoteSpiceVirtualMachine: UTMSpiceVirtualMachine {
 
     var changeCursorRequestInProgress: Bool = false
 
+    private weak var screenshotTimer: Timer?
+
     func reload(from packageUrl: URL?) throws {
-
+        throw UTMVirtualMachineError.notImplemented
     }
-    
-    func updateConfigFromRegistry() {
 
+    @MainActor
+    func reload(usingConfiguration config: UTMQemuConfiguration) {
+        self.config = config
+        updateConfigFromRegistry()
+    }
+
+    func updateConfigFromRegistry() {
+        // not needed
     }
     
     func changeUuid(to uuid: UUID, name: String?, copyingEntry entry: UTMRegistryEntry?) {
-
+        // not needed
     }
 }
 
@@ -207,11 +215,15 @@ extension UTMRemoteSpiceVirtualMachine {
                     throw error
                 }
             }
+            if screenshotTimer == nil {
+                screenshotTimer = startScreenshotTimer()
+            }
         }
     }
 
     func stop(usingMethod method: UTMVirtualMachineStopMethod) async throws {
         try await _state.operation(before: [.started, .paused], during: .stopping, after: .stopped) {
+            await saveScreenshot()
             try await server.stopVirtualMachine(id: id, method: method)
         }
     }
@@ -236,6 +248,7 @@ extension UTMRemoteSpiceVirtualMachine {
 
     func saveSnapshot(name: String?) async throws {
         try await _state.operation(before: [.started, .paused], during: .saving) {
+            await saveScreenshot()
             try await server.saveSnapshotVirtualMachine(id: id, name: name)
         }
     }
@@ -247,6 +260,22 @@ extension UTMRemoteSpiceVirtualMachine {
     func restoreSnapshot(name: String?) async throws {
         try await _state.operation(before: [.started, .paused], during: .saving) {
             try await server.restoreSnapshotVirtualMachine(id: id, name: name)
+        }
+    }
+
+    func loadScreenshotFromServer() async {
+        if let url = try? await server.getPackageFile(for: id, relativePathComponents: [kUTMBundleScreenshotFilename]) {
+            loadScreenshot(from: url)
+        }
+    }
+
+    func loadScreenshot(from url: URL) {
+        screenshot = UIImage(contentsOfURL: url)
+    }
+
+    func saveScreenshot() async {
+        if let data = screenshot?.pngData() {
+            try? await server.sendPackageFile(for: id, relativePathComponents: [kUTMBundleScreenshotFilename], data: data)
         }
     }
 }
@@ -287,6 +316,9 @@ extension UTMRemoteSpiceVirtualMachine {
         }
 
         func updateRemoteState(_ state: UTMVirtualMachineState) {
+            guard self.state != state else {
+                return // same state, no need to update
+            }
             if !isInOperation {
                 self.state = state
             } else {
@@ -324,22 +356,24 @@ extension UTMRemoteSpiceVirtualMachine {
 
 extension UTMRemoteSpiceVirtualMachine {
     func eject(_ drive: UTMQemuConfigurationDrive) async throws {
-
+        // FIXME: implement remote feature
+        throw UTMVirtualMachineError.notImplemented
     }
 
     func changeMedium(_ drive: UTMQemuConfigurationDrive, to url: URL) async throws {
-
+        // FIXME: implement remote feature
+        throw UTMVirtualMachineError.notImplemented
     }
 
 }
 
 extension UTMRemoteSpiceVirtualMachine {
     func stopAccessingPath(_ path: String) async {
-
+        // not needed
     }
 
     func changeVirtfsSharedDirectory(with bookmark: Data, isSecurityScoped: Bool) async throws {
-
+        throw UTMVirtualMachineError.notImplemented
     }
 }
 

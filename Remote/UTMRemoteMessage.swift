@@ -22,9 +22,12 @@ enum UTMRemoteMessageServer: UInt8, MessageID {
     case serverHandshake
     case listVirtualMachines
     case reorderVirtualMachines
+    case getVirtualMachineInformation
     case getQEMUConfiguration
     case getPackageSize
-    case getPackageDataFile
+    case getPackageFile
+    case sendPackageFile
+    case deletePackageFile
     case startVirtualMachine
     case stopVirtualMachine
     case restartVirtualMachine
@@ -40,9 +43,9 @@ enum UTMRemoteMessageServer: UInt8, MessageID {
 enum UTMRemoteMessageClient: UInt8, MessageID {
     static let version = 1
     case clientHandshake
-    case listHasChangedOrder
-    case QEMUConfigurationHasChanged
-    case packageDataFileHasChanged
+    case listHasChanged
+    case qemuConfigurationHasChanged
+    case mountedDrivesHasChanged
     case virtualMachineDidTransition
     case virtualMachineDidError
 }
@@ -64,23 +67,24 @@ extension UTMRemoteMessageServer {
         }
     }
 
+    struct VirtualMachineInformation: Serializable, Codable {
+        let id: UUID
+        let name: String
+        let path: String
+        let isShortcut: Bool
+        let isSuspended: Bool
+        let backend: UTMBackend
+        let state: UTMVirtualMachineState
+        let mountedDrives: [String: String]
+    }
+
     struct ListVirtualMachines: Message {
         static let id = UTMRemoteMessageServer.listVirtualMachines
 
         struct Request: Serializable, Codable {}
 
-        struct Information: Serializable, Codable {
-            let id: UUID
-            let name: String
-            let path: String
-            let isShortcut: Bool
-            let isSuspended: Bool
-            let backend: UTMBackend
-            let state: UTMVirtualMachineState
-        }
-
         struct Reply: Serializable, Codable {
-            let items: [Information]
+            let ids: [UUID]
         }
     }
 
@@ -93,6 +97,18 @@ extension UTMRemoteMessageServer {
         }
 
         struct Reply: Serializable, Codable {}
+    }
+
+    struct GetVirtualMachineInformation: Message {
+        static let id = UTMRemoteMessageServer.getVirtualMachineInformation
+
+        struct Request: Serializable, Codable {
+            let ids: [UUID]
+        }
+
+        struct Reply: Serializable, Codable {
+            let informations: [VirtualMachineInformation]
+        }
     }
 
     struct GetQEMUConfiguration: Message {
@@ -119,12 +135,12 @@ extension UTMRemoteMessageServer {
         }
     }
 
-    struct GetPackageDataFile: Message {
-        static let id = UTMRemoteMessageServer.getPackageDataFile
+    struct GetPackageFile: Message {
+        static let id = UTMRemoteMessageServer.getPackageFile
 
         struct Request: Serializable, Codable {
             let id: UUID
-            let name: String
+            let relativePathComponents: [String]
             let lastModified: Date?
         }
 
@@ -132,6 +148,30 @@ extension UTMRemoteMessageServer {
             let data: Data?
             let lastModified: Date
         }
+    }
+
+    struct SendPackageFile: Message {
+        static let id = UTMRemoteMessageServer.sendPackageFile
+
+        struct Request: Serializable, Codable {
+            let id: UUID
+            let relativePathComponents: [String]
+            let lastModified: Date
+            let data: Data
+        }
+
+        struct Reply: Serializable, Codable {}
+    }
+
+    struct DeletePackageFile: Message {
+        static let id = UTMRemoteMessageServer.deletePackageFile
+
+        struct Request: Serializable, Codable {
+            let id: UUID
+            let relativePathComponents: [String]
+        }
+
+        struct Reply: Serializable, Codable {}
     }
 
     struct StartVirtualMachine: Message {
@@ -249,6 +289,14 @@ extension Serializable where Self == UTMRemoteMessageServer.GetQEMUConfiguration
     }
 }
 
+extension Serializable where Self == UTMRemoteMessageClient.QEMUConfigurationHasChanged.Request {
+    static func decode(_ data: Data) throws -> Self {
+        let decoder = Decoder()
+        decoder.userInfo[.dataURL] = URL(fileURLWithPath: "/")
+        return try decoder.decode(Self.self, from: data)
+    }
+}
+
 extension UTMRemoteMessageClient {
     struct ClientHandshake: Message {
         static let id = UTMRemoteMessageClient.clientHandshake
@@ -261,6 +309,38 @@ extension UTMRemoteMessageClient {
             let version: Int
             let capabilities: UTMCapabilities
         }
+    }
+
+    struct ListHasChanged: Message {
+        static let id = UTMRemoteMessageClient.listHasChanged
+
+        struct Request: Serializable, Codable {
+            let ids: [UUID]
+        }
+
+        struct Reply: Serializable, Codable {}
+    }
+
+    struct QEMUConfigurationHasChanged: Message {
+        static let id = UTMRemoteMessageClient.qemuConfigurationHasChanged
+
+        struct Request: Serializable, Codable {
+            let id: UUID
+            let configuration: UTMQemuConfiguration
+        }
+
+        struct Reply: Serializable, Codable {}
+    }
+
+    struct MountedDrivesHasChanged: Message {
+        static let id = UTMRemoteMessageClient.mountedDrivesHasChanged
+
+        struct Request: Serializable, Codable {
+            let id: UUID
+            let mountedDrives: [String: String]
+        }
+
+        struct Reply: Serializable, Codable {}
     }
 
     struct VirtualMachineDidTransition: Message {

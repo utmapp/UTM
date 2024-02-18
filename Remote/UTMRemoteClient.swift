@@ -269,12 +269,12 @@ extension UTMRemoteClient {
             switch message {
             case .clientHandshake:
                 return try await _handshake(parameters: .decode(data)).encode()
-            case .listHasChangedOrder:
-                return .init()
-            case .QEMUConfigurationHasChanged:
-                return .init()
-            case .packageDataFileHasChanged:
-                return .init()
+            case .listHasChanged:
+                return try await _listHasChanged(parameters: .decode(data)).encode()
+            case .qemuConfigurationHasChanged:
+                return try await _qemuConfigurationHasChanged(parameters: .decode(data)).encode()
+            case .mountedDrivesHasChanged:
+                return try await _mountedDrivesHasChanged(parameters: .decode(data)).encode()
             case .virtualMachineDidTransition:
                 return try await _virtualMachineDidTransition(parameters: .decode(data)).encode()
             case .virtualMachineDidError:
@@ -290,6 +290,21 @@ extension UTMRemoteClient {
 
         private func _handshake(parameters: M.ClientHandshake.Request) async throws -> M.ClientHandshake.Reply {
             return .init(version: UTMRemoteMessageClient.version, capabilities: .current)
+        }
+
+        private func _listHasChanged(parameters: M.ListHasChanged.Request) async throws -> M.ListHasChanged.Reply {
+            await data.remoteListHasChanged(ids: parameters.ids)
+            return .init()
+        }
+
+        private func _qemuConfigurationHasChanged(parameters: M.QEMUConfigurationHasChanged.Request) async throws -> M.QEMUConfigurationHasChanged.Reply {
+            await data.remoteQemuConfigurationHasChanged(id: parameters.id, configuration: parameters.configuration)
+            return .init()
+        }
+
+        private func _mountedDrivesHasChanged(parameters: M.MountedDrivesHasChanged.Request) async throws -> M.MountedDrivesHasChanged.Reply {
+            await data.remoteMountedDrivesHasChanged(id: parameters.id, mountedDrives: parameters.mountedDrives)
+            return .init()
         }
 
         private func _virtualMachineDidTransition(parameters: M.VirtualMachineDidTransition.Request) async throws -> M.VirtualMachineDidTransition.Reply {
@@ -329,12 +344,16 @@ extension UTMRemoteClient {
             return (isAuthenticated: reply.isAuthenticated, device: MacDevice(model: reply.model))
         }
 
-        func listVirtualMachines() async throws -> [M.ListVirtualMachines.Information] {
-            try await _listVirtualMachines(parameters: .init()).items
+        func listVirtualMachines() async throws -> [UUID] {
+            try await _listVirtualMachines(parameters: .init()).ids
         }
 
         func reorderVirtualMachines(fromIds ids: [UUID], toOffset offset: Int) async throws {
             try await _reorderVirtualMachines(parameters: .init(ids: ids, offset: offset))
+        }
+
+        func getVirtualMachineInformation(for ids: [UUID]) async throws -> [M.VirtualMachineInformation] {
+            try await _getVirtualMachineInformation(parameters: .init(ids: ids)).informations
         }
 
         func getQEMUConfiguration(for id: UUID) async throws -> UTMQemuConfiguration {
@@ -345,23 +364,40 @@ extension UTMRemoteClient {
             try await _getPackageSize(parameters: .init(id: id)).size
         }
 
-        func getPackageDataFile(for id: UUID, name: String) async throws -> URL {
+        func getPackageFile(for id: UUID, relativePathComponents: [String]) async throws -> URL {
             let fm = FileManager.default
-            let cacheUrl = try fm.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
-            let packageUrl = cacheUrl.appendingPathComponent(id.uuidString)
-            if !fm.fileExists(atPath: packageUrl.path) {
-                try fm.createDirectory(at: packageUrl, withIntermediateDirectories: false)
-            }
-            let fileUrl = packageUrl.appendingPathComponent(name)
+            let packageUrl = try packageUrl(for: id)
+            let fileUrl = packageUrl.appendingPathComponent(relativePathComponents.joined(separator: "_"))
             var lastModified: Date?
             if fm.fileExists(atPath: fileUrl.path) {
                 lastModified = try? fm.attributesOfItem(atPath: fileUrl.path)[.modificationDate] as? Date
             }
-            let reply = try await _getPackageDataFile(parameters: .init(id: id, name: name, lastModified: lastModified))
+            let reply = try await _getPackageFile(parameters: .init(id: id, relativePathComponents: relativePathComponents, lastModified: lastModified))
             if let data = reply.data {
                 fm.createFile(atPath: fileUrl.path, contents: data, attributes: [.modificationDate: reply.lastModified])
             }
             return fileUrl
+        }
+
+        func sendPackageFile(for id: UUID, relativePathComponents: [String], data: Data) async throws {
+            let fm = FileManager.default
+            let packageUrl = try packageUrl(for: id)
+            let fileUrl = packageUrl.appendingPathComponent(relativePathComponents.joined(separator: "_"))
+            guard fm.createFile(atPath: fileUrl.path, contents: data) else {
+                throw ConnectionError.failedToAccessFile
+            }
+            guard let lastModified = try fm.attributesOfItem(atPath: fileUrl.path)[.modificationDate] as? Date else {
+                throw ConnectionError.failedToAccessFile
+            }
+            try await _sendPackageFile(parameters: .init(id: id, relativePathComponents: relativePathComponents, lastModified: lastModified, data: data))
+        }
+
+        func deletePackageFile(for id: UUID, relativePathComponents: [String]) async throws {
+            let fm = FileManager.default
+            let packageUrl = try packageUrl(for: id)
+            let fileUrl = packageUrl.appendingPathComponent(relativePathComponents.joined(separator: "_"))
+            try fm.removeItem(at: fileUrl)
+            try await _deletePackageFile(parameters: .init(id: id, relativePathComponents: relativePathComponents))
         }
 
         func startVirtualMachine(id: UUID, options: UTMVirtualMachineStartOptions) async throws -> UTMRemoteMessageServer.StartVirtualMachine.ServerInformation {
@@ -400,6 +436,16 @@ extension UTMRemoteClient {
             try await _changePointerTypeVirtualMachine(parameters: .init(id: id, isTabletMode: tablet))
         }
 
+        private func packageUrl(for id: UUID) throws -> URL {
+            let fm = FileManager.default
+            let cacheUrl = try fm.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+            let packageUrl = cacheUrl.appendingPathComponent(id.uuidString)
+            if !fm.fileExists(atPath: packageUrl.path) {
+                try fm.createDirectory(at: packageUrl, withIntermediateDirectories: false)
+            }
+            return packageUrl
+        }
+
         private func _handshake(parameters: M.ServerHandshake.Request) async throws -> M.ServerHandshake.Reply {
             try await M.ServerHandshake.send(parameters, to: peer)
         }
@@ -413,6 +459,10 @@ extension UTMRemoteClient {
             try await M.ReorderVirtualMachines.send(parameters, to: peer)
         }
 
+        private func _getVirtualMachineInformation(parameters: M.GetVirtualMachineInformation.Request) async throws -> M.GetVirtualMachineInformation.Reply {
+            try await M.GetVirtualMachineInformation.send(parameters, to: peer)
+        }
+
         private func _getQEMUConfiguration(parameters: M.GetQEMUConfiguration.Request) async throws -> M.GetQEMUConfiguration.Reply {
             try await M.GetQEMUConfiguration.send(parameters, to: peer)
         }
@@ -421,8 +471,18 @@ extension UTMRemoteClient {
             try await M.GetPackageSize.send(parameters, to: peer)
         }
 
-        private func _getPackageDataFile(parameters: M.GetPackageDataFile.Request) async throws -> M.GetPackageDataFile.Reply {
-            try await M.GetPackageDataFile.send(parameters, to: peer)
+        private func _getPackageFile(parameters: M.GetPackageFile.Request) async throws -> M.GetPackageFile.Reply {
+            try await M.GetPackageFile.send(parameters, to: peer)
+        }
+
+        @discardableResult
+        private func _sendPackageFile(parameters: M.SendPackageFile.Request) async throws -> M.SendPackageFile.Reply {
+            try await M.SendPackageFile.send(parameters, to: peer)
+        }
+
+        @discardableResult
+        private func _deletePackageFile(parameters: M.DeletePackageFile.Request) async throws -> M.DeletePackageFile.Reply {
+            try await M.DeletePackageFile.send(parameters, to: peer)
         }
 
         private func _startVirtualMachine(parameters: M.StartVirtualMachine.Request) async throws -> M.StartVirtualMachine.Reply {
@@ -479,6 +539,7 @@ extension UTMRemoteClient {
         case passwordInvalid
         case fingerprintUntrusted(State.ServerFingerprint)
         case fingerprintMismatch(State.ServerFingerprint)
+        case failedToAccessFile
 
         var errorDescription: String? {
             switch self {
@@ -494,6 +555,8 @@ extension UTMRemoteClient {
                 return NSLocalizedString("This host is not yet trusted. You should verify that the fingerprints match what is displayed on the host and then select Trust to continue.", comment: "UTMRemoteClient")
             case .fingerprintMismatch(_):
                 return String.localizedStringWithFormat(NSLocalizedString("The host fingerprint does not match the saved value. This means that UTM Server was reset, a different host is using the same name, or an attacker is pretending to be the host. For your protection, you need to delete this saved host to continue.", comment: "UTMRemoteClient"))
+            case .failedToAccessFile:
+                return NSLocalizedString("Failed to access file.", comment: "UTMRemoteClient")
             }
         }
     }

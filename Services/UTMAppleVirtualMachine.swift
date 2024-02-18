@@ -478,7 +478,11 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         screenshot = screenshotDelegate?.screenshot
         return true
     }
-    
+
+    func reloadScreenshotFromFile() {
+        screenshot = loadScreenshot()
+    }
+
     @MainActor private func createAppleVM() throws {
         for i in config.serials.indices {
             let (fd, sfd, name) = try createPty()

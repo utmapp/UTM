@@ -113,6 +113,11 @@ struct VMDetailsView: View {
             .onAppear {
                 Task {
                     size = await data.computeSize(for: vm)
+                    #if WITH_REMOTE
+                    if let vm = vm.wrapped as? UTMRemoteSpiceVirtualMachine {
+                        await vm.loadScreenshotFromServer()
+                    }
+                    #endif
                 }
             }
         }

@@ -443,13 +443,14 @@ class VMRemoteData: VMData {
     /// Set by caller when VM is unavailable and there is a reason for it.
     @Published var unavailableReason: String?
 
-    init(fromRemoteItem item: UTMRemoteMessageServer.ListVirtualMachines.Information) {
+    init(fromRemoteItem item: UTMRemoteMessageServer.VirtualMachineInformation) {
         self.backend = item.backend
         self._isShortcut = item.isShortcut
         self.initialState = item.state
         super.init()
         self.registryEntryWrapped = UTMRegistry.shared.entry(uuid: item.id, name: item.name, path: item.path)
         self.registryEntryWrapped!.isSuspended = item.isSuspended
+        self.registryEntryWrapped!.externalDrives = item.mountedDrives.mapValues({ UTMRegistryEntry.File(dummyFromPath: $0) })
     }
 
     override func load() throws {
@@ -462,16 +463,33 @@ class VMRemoteData: VMData {
         }
         let entry = registryEntryWrapped!
         let config = try await server.getQEMUConfiguration(for: entry.uuid)
-        if config.information.isIconCustom, let iconName = config.information.iconURL?.lastPathComponent {
-            if let iconUrl = try? await server.getPackageDataFile(for: entry.uuid, name: iconName) {
-                config.information.iconURL = iconUrl
-            }
-        }
+        await loadCustomIcon(withRemoteServer: server, id: entry.uuid, config: config)
         let vm = UTMRemoteSpiceVirtualMachine(forRemoteServer: server, remotePath: entry.package.path, entry: entry, config: config)
         wrapped = vm
         vm.updateConfigFromRegistry()
         subscribeToChildren()
         await vm.updateRemoteState(initialState)
+    }
+
+    func reloadConfiguration(withRemoteServer server: UTMRemoteClient.Remote, config: UTMQemuConfiguration) async {
+        let spiceVM = wrapped as! UTMRemoteSpiceVirtualMachine
+        await loadCustomIcon(withRemoteServer: server, id: spiceVM.id, config: config)
+        spiceVM.reload(usingConfiguration: config)
+    }
+
+    private func loadCustomIcon(withRemoteServer server: UTMRemoteClient.Remote, id: UUID, config: UTMQemuConfiguration) async {
+        if config.information.isIconCustom, let iconUrl = config.information.iconURL {
+            if let iconUrl = try? await server.getPackageFile(for: id, relativePathComponents: [UTMQemuConfiguration.dataDirectoryName, iconUrl.lastPathComponent]) {
+                config.information.iconURL = iconUrl
+            }
+        }
+    }
+
+    func updateMountedDrives(_ mountedDrives: [String: String]) {
+        guard let registryEntry = registryEntry else {
+            return
+        }
+        registryEntry.externalDrives = mountedDrives.mapValues({ UTMRegistryEntry.File(dummyFromPath: $0) })
     }
 }
 

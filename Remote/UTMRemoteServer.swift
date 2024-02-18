@@ -610,12 +610,18 @@ extension UTMRemoteServer {
                 return try await _listVirtualMachines(parameters: .decode(data)).encode()
             case .reorderVirtualMachines:
                 return try await _reorderVirtualMachines(parameters: .decode(data)).encode()
+            case .getVirtualMachineInformation:
+                return try await _getVirtualMachineInformation(parameters: .decode(data)).encode()
             case .getQEMUConfiguration:
                 return try await _getQEMUConfiguration(parameters: .decode(data)).encode()
             case .getPackageSize:
                 return try await _getPackageSize(parameters: .decode(data)).encode()
-            case .getPackageDataFile:
-                return try await _getPackageDataFile(parameters: .decode(data)).encode()
+            case .getPackageFile:
+                return try await _getPackageFile(parameters: .decode(data)).encode()
+            case .sendPackageFile:
+                return try await _sendPackageFile(parameters: .decode(data)).encode()
+            case .deletePackageFile:
+                return try await _deletePackageFile(parameters: .decode(data)).encode()
             case .startVirtualMachine:
                 return try await _startVirtualMachine(parameters: .decode(data)).encode()
             case .stopVirtualMachine:
@@ -644,12 +650,19 @@ extension UTMRemoteServer {
         }
 
         @MainActor
-        private func findVM(withId id: UUID) async throws -> VMData {
+        private func findVM(withId id: UUID) throws -> VMData {
             let vm = data.virtualMachines.first(where: { $0.id == id })
             if let vm = vm, let _ = vm.wrapped {
                 return vm
             } else {
                 throw UTMRemoteServer.ServerError.notFound(id)
+            }
+        }
+
+        @MainActor
+        private func packageFileHasChanged(for vm: VMData, relativePathComponents: [String]) throws {
+            if relativePathComponents.count == 1 && relativePathComponents[0] == kUTMBundleScreenshotFilename {
+                try vm.wrapped?.reloadScreenshotFromFile()
             }
         }
 
@@ -666,19 +679,10 @@ extension UTMRemoteServer {
         }
 
         private func _listVirtualMachines(parameters: M.ListVirtualMachines.Request) async throws -> M.ListVirtualMachines.Reply {
-            let vms = await data.virtualMachines
-            let items = await Task { @MainActor in
-                vms.map { vmdata in
-                    M.ListVirtualMachines.Information(id: vmdata.id,
-                                                      name: vmdata.detailsTitleLabel,
-                                                      path: vmdata.pathUrl.path,
-                                                      isShortcut: vmdata.isShortcut,
-                                                      isSuspended: vmdata.registryEntry?.isSuspended ?? false,
-                                                      backend: vmdata.wrapped is UTMQemuVirtualMachine ? .qemu : .unknown,
-                                                      state: vmdata.wrapped?.state ?? .stopped)
-                }
+            let ids = await Task { @MainActor in
+                data.virtualMachines.map({ $0.id })
             }.value
-            return .init(items: items)
+            return .init(ids: ids)
         }
 
         private func _reorderVirtualMachines(parameters: M.ReorderVirtualMachines.Request) async throws -> M.ReorderVirtualMachines.Reply {
@@ -693,6 +697,24 @@ extension UTMRemoteServer {
                 data.listMove(fromOffsets: source, toOffset: destination)
                 return .init()
             }.value
+        }
+
+        private func _getVirtualMachineInformation(parameters: M.GetVirtualMachineInformation.Request) async throws -> M.GetVirtualMachineInformation.Reply {
+            let informations = try await Task { @MainActor in
+                try parameters.ids.map { id in
+                    let vm = try findVM(withId: id)
+                    let mountedDrives = vm.registryEntry?.externalDrives.mapValues({ $0.path }) ?? [:]
+                    return M.VirtualMachineInformation(id: vm.id,
+                                                       name: vm.detailsTitleLabel,
+                                                       path: vm.pathUrl.path,
+                                                       isShortcut: vm.isShortcut,
+                                                       isSuspended: vm.registryEntry?.isSuspended ?? false,
+                                                       backend: vm.wrapped is UTMQemuVirtualMachine ? .qemu : .unknown,
+                                                       state: vm.wrapped?.state ?? .stopped,
+                                                       mountedDrives: mountedDrives)
+                }
+            }.value
+            return .init(informations: informations)
         }
 
         private func _getQEMUConfiguration(parameters: M.GetQEMUConfiguration.Request) async throws -> M.GetQEMUConfiguration.Reply {
@@ -710,10 +732,11 @@ extension UTMRemoteServer {
             return .init(size: size)
         }
 
-        private func _getPackageDataFile(parameters: M.GetPackageDataFile.Request) async throws -> M.GetPackageDataFile.Reply {
+        private func _getPackageFile(parameters: M.GetPackageFile.Request) async throws -> M.GetPackageFile.Reply {
             let vm = try await findVM(withId: parameters.id)
             let fm = FileManager.default
-            let fileUrl = await vm.pathUrl.appendingPathComponent(UTMQemuConfiguration.dataDirectoryName).appendingPathComponent(parameters.name)
+            let pathUrl = await vm.pathUrl
+            let fileUrl = parameters.relativePathComponents.reduce(pathUrl, { $0.appendingPathComponent($1) })
             guard let lastModified = try fm.attributesOfItem(atPath: fileUrl.path)[.modificationDate] as? Date else {
                 throw ServerError.failedToAccessFile
             }
@@ -726,6 +749,29 @@ extension UTMRemoteServer {
                 throw ServerError.failedToAccessFile
             }
             return .init(data: data, lastModified: lastModified)
+        }
+
+        private func _sendPackageFile(parameters: M.SendPackageFile.Request) async throws -> M.SendPackageFile.Reply {
+            let vm = try await findVM(withId: parameters.id)
+            let fm = FileManager.default
+            let pathUrl = await vm.pathUrl
+            let fileUrl = parameters.relativePathComponents.reduce(pathUrl, { $0.appendingPathComponent($1) })
+            try? fm.removeItem(at: fileUrl)
+            guard fm.createFile(atPath: fileUrl.path, contents: parameters.data, attributes: [.modificationDate: parameters.lastModified]) else {
+                throw ServerError.failedToAccessFile
+            }
+            try await packageFileHasChanged(for: vm, relativePathComponents: parameters.relativePathComponents)
+            return .init()
+        }
+
+        private func _deletePackageFile(parameters: M.DeletePackageFile.Request) async throws -> M.DeletePackageFile.Reply {
+            let vm = try await findVM(withId: parameters.id)
+            let fm = FileManager.default
+            let pathUrl = await vm.pathUrl
+            let fileUrl = parameters.relativePathComponents.reduce(pathUrl, { $0.appendingPathComponent($1) })
+            try fm.removeItem(at: fileUrl)
+            try await packageFileHasChanged(for: vm, relativePathComponents: parameters.relativePathComponents)
+            return .init()
         }
 
         private func _startVirtualMachine(parameters: M.StartVirtualMachine.Request) async throws -> M.StartVirtualMachine.Reply {
@@ -802,21 +848,48 @@ extension UTMRemoteServer {
             }
         }
 
-        private func _handshake(parameters: M.ClientHandshake.Request) async throws -> M.ClientHandshake.Reply {
-            try await M.ClientHandshake.send(parameters, to: peer)
+        func listHasChanged(ids: [UUID]) async throws {
+            try await _listHasChanged(parameters: .init(ids: ids))
+        }
+
+        func qemuConfigurationHasChanged(id: UUID, configuration: UTMQemuConfiguration) async throws {
+            try await _qemuConfigurationHasChanged(parameters: .init(id: id, configuration: configuration))
+        }
+
+        func mountedDrivesHasChanged(id: UUID, mountedDrives: [String: String]) async throws {
+            try await _mountedDrivesHasChanged(parameters: .init(id: id, mountedDrives: mountedDrives))
         }
 
         func virtualMachine(id: UUID, didTransitionToState state: UTMVirtualMachineState) async throws {
             try await _virtualMachineDidTransition(parameters: .init(id: id, state: state))
         }
 
+        func virtualMachine(id: UUID, didErrorWithMessage message: String) async throws {
+            try await _virtualMachineDidError(parameters: .init(id: id, errorMessage: message))
+        }
+
+        private func _handshake(parameters: M.ClientHandshake.Request) async throws -> M.ClientHandshake.Reply {
+            try await M.ClientHandshake.send(parameters, to: peer)
+        }
+
+        @discardableResult
+        private func _listHasChanged(parameters: M.ListHasChanged.Request) async throws -> M.ListHasChanged.Reply {
+            try await M.ListHasChanged.send(parameters, to: peer)
+        }
+
+        @discardableResult
+        private func _qemuConfigurationHasChanged(parameters: M.QEMUConfigurationHasChanged.Request) async throws -> M.QEMUConfigurationHasChanged.Reply {
+            try await M.QEMUConfigurationHasChanged.send(parameters, to: peer)
+        }
+
+        @discardableResult
+        private func _mountedDrivesHasChanged(parameters: M.MountedDrivesHasChanged.Request) async throws -> M.MountedDrivesHasChanged.Reply {
+            try await M.MountedDrivesHasChanged.send(parameters, to: peer)
+        }
+
         @discardableResult
         private func _virtualMachineDidTransition(parameters: M.VirtualMachineDidTransition.Request) async throws -> M.VirtualMachineDidTransition.Reply {
             try await M.VirtualMachineDidTransition.send(parameters, to: peer)
-        }
-
-        func virtualMachine(id: UUID, didErrorWithMessage message: String) async throws {
-            try await _virtualMachineDidError(parameters: .init(id: id, errorMessage: message))
         }
 
         @discardableResult

@@ -24,7 +24,7 @@ import UIKit
 
 private let kUTMBundleExtension = "utm"
 private let kScreenshotPeriodSeconds = 60.0
-private let kUTMBundleScreenshotFilename = "screenshot.png"
+let kUTMBundleScreenshotFilename = "screenshot.png"
 private let kUTMBundleViewFilename = "view.plist"
 
 /// UTM virtual machine backend
@@ -149,6 +149,9 @@ protocol UTMVirtualMachine: AnyObject, Identifiable {
     /// Request a screenshot of the primary graphics device
     /// - Returns: true if successful and the screenshot will be in `screenshot`
     @discardableResult func takeScreenshot() async -> Bool
+    
+    /// If screenshot is modified externally, this must be called
+    func reloadScreenshotFromFile() throws
 }
 
 /// Supported capabilities for a UTM backend

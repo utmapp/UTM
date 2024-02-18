@@ -76,6 +76,10 @@ extension UTMSpiceVirtualMachine {
         self.screenshot = screenshot?.image
         return true
     }
+
+    func reloadScreenshotFromFile() {
+        screenshot = loadScreenshot()
+    }
 }
 
 // MARK: - External drives

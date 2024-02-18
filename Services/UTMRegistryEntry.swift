@@ -15,6 +15,7 @@
 //
 
 import Foundation
+import Combine
 
 @objc class UTMRegistryEntry: NSObject, Codable, ObservableObject {
     /// Empty registry entry used only as a workaround for object initialization
@@ -61,7 +62,7 @@ import Foundation
         } else {
             package = nil
         }
-        _package = package ?? File(path: path)
+        _package = package ?? File(dummyFromPath: path)
         self.uuid = uuid
         _isSuspended = false
         _externalDrives = [:]
@@ -166,7 +167,11 @@ extension UTMRegistryEntry: UTMRegistryEntryDecodable {}
             _externalDrives = newValue
         }
     }
-    
+
+    var externalDrivePublisher: Published<[String: File]>.Publisher {
+        $_externalDrives
+    }
+
     var sharedDirectories: [File] {
         get {
             _sharedDirectories
@@ -297,7 +302,7 @@ extension UTMRegistryEntry {
         }
         for drive in viewState.allDrives() {
             if let bookmark = viewState.bookmark(forRemovableDrive: drive), let path = viewState.path(forRemovableDrive: drive) {
-                let file = File(path: path, remoteBookmark: bookmark)
+                let file = File(dummyFromPath: path, remoteBookmark: bookmark)
                 _externalDrives[drive] = file
             }
         }
@@ -382,7 +387,7 @@ extension UTMRegistryEntry {
             self.isValid = true
         }
         
-        fileprivate init(path: String, remoteBookmark: Data = Data()) {
+        init(dummyFromPath path: String, remoteBookmark: Data = Data()) {
             self.path = path
             self.bookmark = Data()
             self.isReadOnly = false
