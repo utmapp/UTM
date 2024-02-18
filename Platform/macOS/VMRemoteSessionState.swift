@@ -25,19 +25,6 @@ class VMRemoteSessionState: VMHeadlessSessionState {
         self.client = client
         super.init(for: vm, onStop: onStop)
     }
-    
-    override func virtualMachine(_ vm: any UTMVirtualMachine, didTransitionToState state: UTMVirtualMachineState) {
-        Task {
-            do {
-                super.virtualMachine(vm, didTransitionToState: state)
-                try await client.virtualMachine(id: vm.id, didTransitionToState: state)
-            } catch {
-                if state != .stopped {
-                    try? await vm.stop(usingMethod: .kill)
-                }
-            }
-        }
-    }
 
     override func virtualMachine(_ vm: any UTMVirtualMachine, didErrorWithMessage message: String) {
         Task {

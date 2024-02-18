@@ -289,6 +289,7 @@ extension UTMRemoteSpiceVirtualMachine {
                 vm.state = state
             }
         }
+        private var remoteState: UTMVirtualMachineState?
 
         init(vm: UTMRemoteSpiceVirtualMachine) {
             self.vm = vm
@@ -299,12 +300,22 @@ extension UTMRemoteSpiceVirtualMachine {
         }
 
         func operation(before: Set<UTMVirtualMachineState>, during: UTMVirtualMachineState, after: UTMVirtualMachineState? = nil, body: () async throws -> Void) async throws {
+            while isInOperation {
+                await Task.yield()
+            }
             guard before.contains(state) else {
                 throw VMError.operationInProgress
             }
+            isInOperation = true
+            remoteState = nil
+            defer {
+                isInOperation = false
+                if let remoteState = remoteState {
+                    state = remoteState
+                }
+            }
             let previous = state
             state = during
-            isInOperation = true
             do {
                 try await body()
             } catch {
@@ -312,17 +323,12 @@ extension UTMRemoteSpiceVirtualMachine {
                 throw error
             }
             state = after ?? previous
-            isInOperation = false
         }
 
         func updateRemoteState(_ state: UTMVirtualMachineState) {
-            guard self.state != state else {
-                return // same state, no need to update
-            }
-            if !isInOperation {
+            self.remoteState = state
+            if !isInOperation && self.state != state {
                 self.state = state
-            } else {
-                logger.debug("ignoring remote state update for \(vm.id) because it is currently in an operation")
             }
         }
     }
