@@ -190,6 +190,7 @@ struct VMDisplayHostedView: UIViewControllerRepresentable {
                 }
                 // some obscure SwiftUI error means we cannot refer to Coordinator's state binding
                 vc.setDisplayScaling(state.displayScale, origin: state.displayOrigin)
+                vc.isDynamicResolutionSupported = state.isDynamicResolutionSupported
             }
         case .serial(let serial, _):
             if let vc = uiViewController as? VMDisplayTerminalViewController {

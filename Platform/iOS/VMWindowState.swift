@@ -71,6 +71,8 @@ struct VMWindowState: Identifiable {
     var isRunning: Bool = false
     
     var alert: Alert?
+
+    var isDynamicResolutionSupported: Bool = false
 }
 
 // MARK: - VM action alerts

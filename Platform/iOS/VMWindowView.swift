@@ -171,6 +171,9 @@ struct VMWindowView: View {
         .onChange(of: session.vmState) { [oldValue = session.vmState] newValue in
             vmStateUpdated(from: oldValue, to: newValue)
         }
+        .onChange(of: session.isDynamicResolutionSupported) { newValue in
+            state.isDynamicResolutionSupported = newValue
+        }
         .onReceive(keyboardDidShowNotification) { _ in
             state.isKeyboardShown = true
             state.isKeyboardRequested = true

@@ -78,7 +78,9 @@ import SwiftUI
     @Published var externalWindowBinding: Binding<VMWindowState>?
     
     @Published var hasShownMemoryWarning: Bool = false
-    
+
+    @Published var isDynamicResolutionSupported: Bool = false
+
     private var hasAutosave: Bool = false
 
     init(for vm: any UTMSpiceVirtualMachine) {
@@ -291,6 +293,12 @@ extension VMSessionState: UTMSpiceIODelegate {
         }
     }
     #endif
+
+    nonisolated func spiceDynamicResolutionSupportDidChange(_ supported: Bool) {
+        Task { @MainActor in
+            isDynamicResolutionSupported = supported
+        }
+    }
 }
 
 #if WITH_USB

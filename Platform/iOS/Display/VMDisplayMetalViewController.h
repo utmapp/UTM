@@ -42,6 +42,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) NSMutableArray<UIKeyCommand *> *mutableKeyCommands;
 
+@property (nonatomic) BOOL isDynamicResolutionSupported;
+
 - (instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
 - (instancetype)initWithNibName:(nullable NSString *)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil NS_UNAVAILABLE;
 - (instancetype)initWithDisplay:(CSDisplay *)display input:(nullable CSInput *)input NS_DESIGNATED_INITIALIZER;

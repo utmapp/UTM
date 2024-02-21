@@ -134,4 +134,15 @@ public extension VMDisplayViewController {
     func integerForSetting(_ key: String) -> Int {
         return UserDefaults.standard.integer(forKey: key)
     }
+
+    @discardableResult
+    func debounce(_ delaySeconds: Int, context: Any? = nil, action: @escaping () -> Void) -> Any {
+        if context != nil {
+            let previous = context as! DispatchWorkItem
+            previous.cancel()
+        }
+        let item = DispatchWorkItem(block: action)
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(delaySeconds), execute: item)
+        return item
+    }
 }
