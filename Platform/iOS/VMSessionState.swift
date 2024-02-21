@@ -45,8 +45,6 @@ import SwiftUI
     
     @Published var vmState: UTMVirtualMachineState = .stopped
     
-    @Published var fatalError: String?
-    
     @Published var nonfatalError: String?
     
     @Published var primaryInput: CSInput?
@@ -159,7 +157,7 @@ extension VMSessionState: UTMVirtualMachineDelegate {
     
     nonisolated func virtualMachine(_ vm: any UTMVirtualMachine, didErrorWithMessage message: String) {
         Task { @MainActor in
-            fatalError = message
+            nonfatalError = message
         }
     }
     

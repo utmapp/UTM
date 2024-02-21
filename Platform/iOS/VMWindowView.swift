@@ -163,11 +163,6 @@ struct VMWindowView: View {
                 state.alert = .nonfatalError(message)
             }
         }
-        .onChange(of: session.fatalError) { newValue in
-            if session.activeWindow == state.id, let message = newValue {
-                state.alert = .fatalError(message)
-            }
-        }
         .onChange(of: session.vmState) { [oldValue = session.vmState] newValue in
             vmStateUpdated(from: oldValue, to: newValue)
         }
@@ -225,7 +220,7 @@ struct VMWindowView: View {
                 state.isRunning = false
             }
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
-                if session.vmState == .stopped && session.fatalError == nil {
+                if session.vmState == .stopped {
                     session.stop()
                 }
             }

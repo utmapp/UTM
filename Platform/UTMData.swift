@@ -1240,7 +1240,7 @@ class UTMRemoteData: UTMData {
 
     func remoteVirtualMachineDidError(id: UUID, message: String) async {
         if let session = VMSessionState.allActiveSessions.values.first(where: { $0.vm.id == id }) {
-            session.fatalError = message
+            session.nonfatalError = message
         }
     }
 

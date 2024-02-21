@@ -24,8 +24,6 @@ import IOKit.pwr_mgt
     
     @Published var vmState: UTMVirtualMachineState = .stopped
     
-    @Published var fatalError: String?
-    
     private var hasStarted: Bool = false
     private var preventIdleSleepAssertion: IOPMAssertionID?
     
@@ -61,7 +59,6 @@ import IOKit.pwr_mgt
     
     nonisolated func virtualMachine(_ vm: any UTMVirtualMachine, didErrorWithMessage message: String) {
         Task { @MainActor in
-            fatalError = message
             NotificationCenter.default.post(name: .vmSessionError, object: nil, userInfo: ["Session": self, "Message": message])
             if !hasStarted {
                 // if we got an error and haven't started, then cleanup
