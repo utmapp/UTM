@@ -25,6 +25,8 @@
 			<array>
 				<string>iOS-Remote</string>
 			</array>
+			<key>Platform</key>
+			<string>iOS</string>
 		</dict>
 		<dict>
 			<key>Type</key>
@@ -35,6 +37,8 @@
 			<string>AutosaveBackground</string>
 			<key>DefaultValue</key>
 			<true/>
+			<key>Platform</key>
+			<string>iOS</string>
 		</dict>
 		<dict>
 			<key>Type</key>

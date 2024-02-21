@@ -499,6 +499,7 @@ extension VMSessionState {
     }
     
     func didEnterBackground() {
+        #if !os(visionOS)
         logger.info("Entering background")
         let shouldAutosaveBackground = UserDefaults.standard.bool(forKey: "AutosaveBackground")
         if shouldAutosaveBackground && vmState == .started {
@@ -521,14 +522,17 @@ extension VMSessionState {
                 task = .invalid
             }
         }
+        #endif
     }
     
     func didEnterForeground() {
+        #if !os(visionOS)
         logger.info("Entering foreground!")
         if (hasAutosave && vmState == .started) {
             logger.info("Deleting snapshot")
             vm.requestVmDeleteState()
         }
+        #endif
     }
 }
 
