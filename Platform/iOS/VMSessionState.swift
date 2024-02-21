@@ -425,10 +425,14 @@ extension VMSessionState {
             logger.warning("Error starting audio session: \(error.localizedDescription)")
         }
         Self.allActiveSessions[id] = self
-        NotificationCenter.default.post(name: .vmSessionCreated, object: nil, userInfo: ["Session": self])
+        showWindow()
         vm.requestVmStart(options: options)
     }
-    
+
+    func showWindow() {
+        NotificationCenter.default.post(name: .vmSessionCreated, object: nil, userInfo: ["Session": self])
+    }
+
     @objc private func suspend() {
         // dummy function for selector
     }
@@ -442,7 +446,9 @@ extension VMSessionState {
         }
         // tell other screens to shut down
         Self.allActiveSessions.removeValue(forKey: id)
-        NotificationCenter.default.post(name: .vmSessionEnded, object: nil, userInfo: ["Session": self])
+        closeWindows()
+
+        #if WITH_SOLO_VM
         // animate to home screen
         let app = UIApplication.shared
         app.performSelector(onMainThread: #selector(suspend), with: nil, waitUntilDone: true)
@@ -452,8 +458,13 @@ extension VMSessionState {
         
         // exit app when app is in background
         exit(0)
+        #endif
     }
-    
+
+    func closeWindows() {
+        NotificationCenter.default.post(name: .vmSessionEnded, object: nil, userInfo: ["Session": self])
+    }
+
     func powerDown() {
         Task {
             try? await vm.deleteSnapshot(name: nil)

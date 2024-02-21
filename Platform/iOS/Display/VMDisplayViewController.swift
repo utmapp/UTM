@@ -75,24 +75,6 @@ public extension VMDisplayViewController {
     func enterLive() {
         UIApplication.shared.isIdleTimerDisabled = disableIdleTimer
     }
-    
-    private func suspend() {
-        // dummy function for selector
-    }
-    
-    func terminateApplication() {
-        DispatchQueue.main.async { [self] in
-            // animate to home screen
-            let app = UIApplication.shared
-            app.performSelector(onMainThread: #selector(suspend), with: nil, waitUntilDone: true)
-            
-            // wait 2 seconds while app is going background
-            Thread.sleep(forTimeInterval: 2)
-            
-            // exit app when app is in background
-            exit(0);
-        }
-    }
 }
 
 // MARK: Toolbar hiding

@@ -91,6 +91,9 @@ final class UTMRemoteSpiceVirtualMachine: UTMSpiceVirtualMachine {
         }
 
         didSet {
+            if state == .stopped {
+                virtualMachineDidStop()
+            }
             delegate?.virtualMachine(self, didTransitionToState: state)
         }
     }
@@ -277,6 +280,10 @@ extension UTMRemoteSpiceVirtualMachine {
         if let data = screenshot?.pngData() {
             try? await server.sendPackageFile(for: id, relativePathComponents: [kUTMBundleScreenshotFilename], data: data)
         }
+    }
+
+    private func virtualMachineDidStop() {
+        ioService = nil
     }
 }
 

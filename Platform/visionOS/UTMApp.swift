@@ -43,7 +43,11 @@ struct UTMApp: App {
             .environmentObject(data)
             .onReceive(vmSessionCreatedNotification) { output in
                 let newSession = output.userInfo!["Session"] as! VMSessionState
-                openWindow(value: newSession.newWindow())
+                if let window = newSession.windows.first {
+                    openWindow(value: window)
+                } else {
+                    openWindow(value: newSession.newWindow())
+                }
             }
             .onReceive(vmSessionEndedNotification) { output in
                 let endedSession = output.userInfo!["Session"] as! VMSessionState
@@ -58,10 +62,12 @@ struct UTMApp: App {
         WindowGroup(for: VMSessionState.GlobalWindowID.self) { $globalID in
             if let globalID = globalID, let session = VMSessionState.allActiveSessions[globalID.sessionID] {
                 VMWindowView(id: globalID.windowID).environmentObject(session)
+                    #if WITH_SOLO_VM
                     .onAppear {
                         // currently we only support one session, so close the home window
                         dismissWindow(id: "home")
                     }
+                    #endif
             }
         }
         .windowResizability(.contentMinSize)
