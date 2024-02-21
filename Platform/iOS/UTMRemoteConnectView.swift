@@ -231,6 +231,10 @@ private struct ServerConnectView: View {
             }
         }
         .onAppear {
+            // if we have an existing password, assume it should be saved
+            if server.password?.isEmpty == false {
+                server.shouldSavePassword = true
+            }
             if isAutoConnect {
                 connect()
             }
