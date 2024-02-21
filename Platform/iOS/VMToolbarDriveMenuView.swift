@@ -52,6 +52,7 @@ struct VMToolbarDriveMenuView: View {
             }
             ForEach(config.drives) { drive in
                 if drive.isExternal {
+                    #if !WITH_REMOTE // FIXME: implement remote feature
                     Menu {
                         Button {
                             selectedDrive = drive
@@ -68,6 +69,12 @@ struct VMToolbarDriveMenuView: View {
                     } label: {
                         MenuLabel(label(for: drive), systemImage: session.vm.externalImageURL(for: drive) == nil ? "opticaldiscdrive" : "opticaldiscdrive.fill")
                     }
+                    #else
+                    Button {
+                    } label: {
+                        MenuLabel(label(for: drive), systemImage: session.vm.externalImageURL(for: drive) == nil ? "opticaldiscdrive" : "opticaldiscdrive.fill")
+                    }.disabled(true)
+                    #endif
                 } else if drive.imageType == .disk || drive.imageType == .cd {
                     Button {
                     } label: {
