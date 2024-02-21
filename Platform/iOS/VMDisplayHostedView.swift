@@ -37,19 +37,19 @@ struct VMDisplayHostedView: UIViewControllerRepresentable {
         }
         
         @MainActor var qemuDisplayUpscaler: MTLSamplerMinMagFilter {
-            vmConfig.displays[state.device!.configIndex].upscalingFilter.metalSamplerMinMagFilter
+            vmConfig.displays[device.configIndex].upscalingFilter.metalSamplerMinMagFilter
         }
         
         @MainActor var qemuDisplayDownscaler: MTLSamplerMinMagFilter {
-            vmConfig.displays[state.device!.configIndex].downscalingFilter.metalSamplerMinMagFilter
+            vmConfig.displays[device.configIndex].downscalingFilter.metalSamplerMinMagFilter
         }
         
         @MainActor var qemuDisplayIsDynamicResolution: Bool {
-            vmConfig.displays[state.device!.configIndex].isDynamicResolution
+            vmConfig.displays[device.configIndex].isDynamicResolution
         }
         
         @MainActor var qemuDisplayIsNativeResolution: Bool {
-            vmConfig.displays[state.device!.configIndex].isNativeResolution
+            vmConfig.displays[device.configIndex].isNativeResolution
         }
         
         @MainActor var qemuHasClipboardSharing: Bool {
@@ -57,7 +57,7 @@ struct VMDisplayHostedView: UIViewControllerRepresentable {
         }
         
         @MainActor var qemuConsoleResizeCommand: String? {
-            vmConfig.serials[state.device!.configIndex].terminal?.resizeCommand
+            vmConfig.serials[device.configIndex].terminal?.resizeCommand
         }
         
         var isViewportChanged: Bool {
