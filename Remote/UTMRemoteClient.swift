@@ -400,6 +400,10 @@ extension UTMRemoteClient {
             try await _deletePackageFile(parameters: .init(id: id, relativePathComponents: relativePathComponents))
         }
 
+        func mountGuestToolsOnVirtualMachine(id: UUID) async throws {
+            try await _mountGuestToolsOnVirtualMachine(parameters: .init(id: id))
+        }
+
         func startVirtualMachine(id: UUID, options: UTMVirtualMachineStartOptions) async throws -> UTMRemoteMessageServer.StartVirtualMachine.ServerInformation {
             return try await _startVirtualMachine(parameters: .init(id: id, options: options)).serverInfo
         }
@@ -483,6 +487,11 @@ extension UTMRemoteClient {
         @discardableResult
         private func _deletePackageFile(parameters: M.DeletePackageFile.Request) async throws -> M.DeletePackageFile.Reply {
             try await M.DeletePackageFile.send(parameters, to: peer)
+        }
+
+        @discardableResult
+        private func _mountGuestToolsOnVirtualMachine(parameters: M.MountGuestToolsOnVirtualMachine.Request) async throws -> M.MountGuestToolsOnVirtualMachine.Reply {
+            try await M.MountGuestToolsOnVirtualMachine.send(parameters, to: peer)
         }
 
         private func _startVirtualMachine(parameters: M.StartVirtualMachine.Request) async throws -> M.StartVirtualMachine.Reply {

@@ -28,6 +28,7 @@ enum UTMRemoteMessageServer: UInt8, MessageID {
     case getPackageFile
     case sendPackageFile
     case deletePackageFile
+    case mountGuestToolsOnVirtualMachine
     case startVirtualMachine
     case stopVirtualMachine
     case restartVirtualMachine
@@ -169,6 +170,16 @@ extension UTMRemoteMessageServer {
         struct Request: Serializable, Codable {
             let id: UUID
             let relativePathComponents: [String]
+        }
+
+        struct Reply: Serializable, Codable {}
+    }
+
+    struct MountGuestToolsOnVirtualMachine: Message {
+        static let id = UTMRemoteMessageServer.mountGuestToolsOnVirtualMachine
+
+        struct Request: Serializable, Codable {
+            let id: UUID
         }
 
         struct Reply: Serializable, Codable {}

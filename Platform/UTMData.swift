@@ -1295,7 +1295,7 @@ class UTMRemoteData: UTMData {
     }
 
     override func mountSupportTools(for vm: any UTMVirtualMachine) async throws {
-        throw UTMDataError.notImplemented
+        try await remoteClient.server.mountGuestToolsOnVirtualMachine(id: vm.id)
     }
 }
 #endif

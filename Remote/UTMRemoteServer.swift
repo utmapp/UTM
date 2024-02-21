@@ -622,6 +622,8 @@ extension UTMRemoteServer {
                 return try await _sendPackageFile(parameters: .decode(data)).encode()
             case .deletePackageFile:
                 return try await _deletePackageFile(parameters: .decode(data)).encode()
+            case .mountGuestToolsOnVirtualMachine:
+                return try await _mountGuestToolsOnVirtualMachine(parameters: .decode(data)).encode()
             case .startVirtualMachine:
                 return try await _startVirtualMachine(parameters: .decode(data)).encode()
             case .stopVirtualMachine:
@@ -771,6 +773,14 @@ extension UTMRemoteServer {
             let fileUrl = parameters.relativePathComponents.reduce(pathUrl, { $0.appendingPathComponent($1) })
             try fm.removeItem(at: fileUrl)
             try await packageFileHasChanged(for: vm, relativePathComponents: parameters.relativePathComponents)
+            return .init()
+        }
+
+        private func _mountGuestToolsOnVirtualMachine(parameters: M.MountGuestToolsOnVirtualMachine.Request) async throws -> M.MountGuestToolsOnVirtualMachine.Reply {
+            let vm = try await findVM(withId: parameters.id)
+            if let wrapped = await vm.wrapped {
+                try await data.mountSupportTools(for: wrapped)
+            }
             return .init()
         }
 
