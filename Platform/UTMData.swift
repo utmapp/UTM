@@ -105,6 +105,9 @@ struct AlertMessage: Identifiable {
 
     /// Listeners for remote access
     private var remoteChangeListeners: [VMData: Set<AnyCancellable>] = [:]
+
+    /// Listener for list changes
+    private var listChangedListener: AnyCancellable?
     #endif
 
     /// Queue to run `busyWork` tasks
@@ -118,8 +121,9 @@ struct AlertMessage: Identifiable {
         self.virtualMachines = []
         self.pendingVMs = []
         self.selectedVM = nil
-        #if os(macOS)
+        #if WITH_SERVER
         self.remoteServer = UTMRemoteServer(data: self)
+        beginObservingChanges()
         #endif
         listLoadFromDefaults()
     }
@@ -799,20 +803,28 @@ struct AlertMessage: Identifiable {
 
     // MARK: - Change listener
 
-    private func beginObservingChanges(for vm: VMData) {
+    private func beginObservingChanges() {
         #if WITH_SERVER
-        var observers = Set<AnyCancellable>()
-        observers.insert($virtualMachines.sink { vms in
+        listChangedListener = $virtualMachines.sink { vms in
             Task {
                 await self.remoteServer.broadcast { remote in
                     try await remote.listHasChanged(ids: vms.map({ $0.id }))
                 }
             }
-        })
+        }
+        #endif
+    }
+
+    private func beginObservingChanges(for vm: VMData) {
+        #if WITH_SERVER
+        var observers = Set<AnyCancellable>()
+        let registryEntry = vm.registryEntry
         observers.insert(vm.objectWillChange.sink { [self] _ in
-            // reset observers when object changes
-            endObservingChanges(for: vm)
-            beginObservingChanges(for: vm)
+            // reset observers when registry changes
+            if vm.registryEntry != registryEntry {
+                endObservingChanges(for: vm)
+                beginObservingChanges(for: vm)
+            }
         })
         observers.insert(vm.$state.sink { state in
             Task {
@@ -821,7 +833,7 @@ struct AlertMessage: Identifiable {
                 }
             }
         })
-        if let registryEntry = vm.registryEntry {
+        if let registryEntry = registryEntry {
             observers.insert(registryEntry.externalDrivePublisher.sink { drives in
                 let mountedDrives = drives.mapValues({ $0.path })
                 Task {
