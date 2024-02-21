@@ -193,7 +193,7 @@ import Virtualization // for getting network interfaces
             if rawValue.hasSuffix("-gl") {
                 return AnyQEMUConstant(rawValue: String(rawValue.dropLast(3)))!
             } else if rawValue.contains("-gl-") {
-                return AnyQEMUConstant(rawValue: String(rawValue.replacingOccurrences(of: "-gl-", with: "")))!
+                return AnyQEMUConstant(rawValue: String(rawValue.replacingOccurrences(of: "-gl-", with: "-")))!
             } else {
                 return display
             }
