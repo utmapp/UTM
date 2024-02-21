@@ -95,7 +95,7 @@ final class UTMQemuVirtualMachine: UTMSpiceVirtualMachine {
         }
     }
     
-    var screenshot: PlatformImage? {
+    var screenshot: UTMVirtualMachineScreenshot? {
         willSet {
             onStateChange?()
         }

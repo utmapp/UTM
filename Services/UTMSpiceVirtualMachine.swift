@@ -22,7 +22,7 @@ protocol UTMSpiceVirtualMachine: UTMVirtualMachine where Configuration == UTMQem
     var isRunningAsDisposible: Bool { get }
     
     /// Get and set screenshot
-    var screenshot: PlatformImage? { get set }
+    var screenshot: UTMVirtualMachineScreenshot? { get set }
 
     /// Handles IO
     var ioServiceDelegate: UTMSpiceIODelegate? { get set }
@@ -72,8 +72,9 @@ extension UTMSpiceVirtualMachine {
 extension UTMSpiceVirtualMachine {
     @MainActor @discardableResult
     func takeScreenshot() async -> Bool {
-        let screenshot = await ioService?.screenshot()
-        self.screenshot = screenshot?.image
+        if let screenshot = await ioService?.screenshot() {
+            self.screenshot = UTMVirtualMachineScreenshot(wrapping: screenshot.image)
+        }
         return true
     }
 

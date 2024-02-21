@@ -89,7 +89,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         }
     }
     
-    private(set) var screenshot: PlatformImage? {
+    private(set) var screenshot: UTMVirtualMachineScreenshot? {
         willSet {
             onStateChange?()
         }
@@ -729,7 +729,7 @@ extension UTMAppleVirtualMachine: VZVirtualMachineDelegate {
 }
 
 protocol UTMScreenshotProvider: AnyObject {
-    var screenshot: PlatformImage? { get }
+    var screenshot: UTMVirtualMachineScreenshot? { get }
 }
 
 enum UTMAppleVirtualMachineError: Error {

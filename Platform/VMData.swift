@@ -67,7 +67,7 @@ import SwiftUI
     @Published var state: UTMVirtualMachineState = .stopped
     
     /// Copy from wrapped VM
-    @Published var screenshot: PlatformImage?
+    @Published var screenshot: UTMVirtualMachineScreenshot?
     
     /// Allows changes in the config, registry, and VM to be reflected
     private var observers: [AnyCancellable] = []
@@ -426,7 +426,7 @@ extension VMData {
     
     /// If non-null, is the most recent screenshot image of the running VM
     var screenshotImage: PlatformImage? {
-        wrapped?.screenshot
+        wrapped?.screenshot?.image
     }
 }
 

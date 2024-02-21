@@ -98,7 +98,7 @@ final class UTMRemoteSpiceVirtualMachine: UTMSpiceVirtualMachine {
         }
     }
 
-    var screenshot: PlatformImage? {
+    var screenshot: UTMVirtualMachineScreenshot? {
         willSet {
             onStateChange?()
         }
@@ -273,11 +273,11 @@ extension UTMRemoteSpiceVirtualMachine {
     }
 
     func loadScreenshot(from url: URL) {
-        screenshot = UIImage(contentsOfURL: url)
+        screenshot = UTMVirtualMachineScreenshot(contentsOfURL: url)
     }
 
     func saveScreenshot() async {
-        if let data = screenshot?.pngData() {
+        if let data = screenshot?.pngData {
             try? await server.sendPackageFile(for: id, relativePathComponents: [kUTMBundleScreenshotFilename], data: data)
         }
     }

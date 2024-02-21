@@ -66,8 +66,8 @@ protocol UTMVirtualMachine: AnyObject, Identifiable {
     var state: UTMVirtualMachineState { get }
     
     /// If non-null, is the most recent screenshot of the running VM
-    var screenshot: PlatformImage? { get }
-    
+    var screenshot: UTMVirtualMachineScreenshot? { get }
+
     /// If non-null, `saveSnapshot` and `restoreSnapshot` will not work due to the reason specified
     var snapshotUnsupportedError: Error? { get }
     
@@ -290,6 +290,43 @@ extension UTMVirtualMachine {
 
 // MARK: - Screenshot
 
+struct UTMVirtualMachineScreenshot {
+    let image: PlatformImage
+    let pngData: Data?
+
+    init?(contentsOfURL url: URL) {
+        #if canImport(AppKit)
+        guard let image = NSImage(contentsOf: url) else {
+            return nil
+        }
+        #elseif canImport(UIKit)
+        guard let image = UIImage(contentsOfURL: url) else {
+            return nil
+        }
+        #endif
+        self.image = image
+        self.pngData = Self.createData(from: image)
+    }
+
+    init(wrapping image: PlatformImage) {
+        self.image = image
+        self.pngData = Self.createData(from: image)
+    }
+
+    private static func createData(from image: PlatformImage) -> Data? {
+        #if canImport(AppKit)
+        guard let cgref = image.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
+            return nil
+        }
+        let newrep = NSBitmapImageRep(cgImage: cgref)
+        newrep.size = image.size
+        return newrep.representation(using: .png, properties: [:])
+        #elseif canImport(UIKit)
+        return image.pngData()
+        #endif
+    }
+}
+
 extension UTMVirtualMachine {
     private var isScreenshotSaveEnabled: Bool {
         !UserDefaults.standard.bool(forKey: "NoSaveScreenshot")
@@ -319,12 +356,8 @@ extension UTMVirtualMachine {
         return timer
     }
     
-    func loadScreenshot() -> PlatformImage? {
-        #if canImport(AppKit)
-        return NSImage(contentsOf: screenshotUrl)
-        #elseif canImport(UIKit)
-        return UIImage(contentsOfURL: screenshotUrl)
-        #endif
+    func loadScreenshot() -> UTMVirtualMachineScreenshot? {
+        UTMVirtualMachineScreenshot(contentsOfURL: screenshotUrl)
     }
     
     func saveScreenshot() throws {
@@ -334,17 +367,7 @@ extension UTMVirtualMachine {
         guard let screenshot = screenshot else {
             return
         }
-        #if canImport(AppKit)
-        guard let cgref = screenshot.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
-            return
-        }
-        let newrep = NSBitmapImageRep(cgImage: cgref)
-        newrep.size = screenshot.size
-        let pngdata = newrep.representation(using: .png, properties: [:])
-        try pngdata?.write(to: screenshotUrl)
-        #elseif canImport(UIKit)
-        try screenshot.pngData()?.write(to: screenshotUrl)
-        #endif
+        try screenshot.pngData?.write(to: screenshotUrl)
     }
     
     func deleteScreenshot() throws {
