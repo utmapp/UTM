@@ -214,10 +214,12 @@ import SwiftUI
                 }
             }
             
-            wrapped.onStateChange = { [weak self] in
+            wrapped.onStateChange = { [weak self, weak wrapped] in
                 Task { @MainActor in
-                    self?.state = wrapped.state
-                    self?.screenshot = wrapped.screenshot
+                    if let wrapped = wrapped {
+                        self?.state = wrapped.state
+                        self?.screenshot = wrapped.screenshot
+                    }
                 }
             }
         }
