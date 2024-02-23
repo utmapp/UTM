@@ -106,10 +106,10 @@ extension UTMPipeInterface {
 
     private func cleanupPipes() {
         // unblock any un-opened pipes
-        _ = try? openPipe(at: monitorOutPipeURL, forReading: false)
-        _ = try? openPipe(at: monitorInPipeURL, forReading: true)
-        _ = try? openPipe(at: guestAgentOutPipeURL, forReading: false)
-        _ = try? openPipe(at: guestAgentInPipeURL, forReading: true)
+        _ = try? FileHandle(forUpdating: monitorOutPipeURL)
+        _ = try? FileHandle(forUpdating: monitorInPipeURL)
+        _ = try? FileHandle(forUpdating: guestAgentOutPipeURL)
+        _ = try? FileHandle(forUpdating: guestAgentInPipeURL)
         pipeIOQueue.sync {
             if let monitorOutPipeURL = monitorOutPipeURL {
                 try? fileManager.removeItem(at: monitorOutPipeURL)
