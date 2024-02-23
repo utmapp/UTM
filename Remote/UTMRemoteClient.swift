@@ -23,6 +23,7 @@ let service = "_utm_server._tcp"
 actor UTMRemoteClient {
     let state: State
     private let keyManager = UTMRemoteKeyManager(forClient: true)
+    private let connectionQueue = DispatchQueue(label: "UTM Remote Client Connection")
     private var local: Local
 
     private var scanTask: Task<Void, Error>?
@@ -91,7 +92,7 @@ actor UTMRemoteClient {
         var isSuccessful = false
         let endpoint = server.endpoint ?? NWEndpoint.hostPort(host: .init(server.hostname), port: .init(integerLiteral: UInt16(server.port ?? 0)))
         try await keyManager.load()
-        let connection = try await Connection(endpoint: endpoint, identity: keyManager.identity)
+        let connection = try await Connection(endpoint: endpoint, connectionQueue: connectionQueue, identity: keyManager.identity)
         defer {
             if !isSuccessful {
                 connection.close()

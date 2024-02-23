@@ -27,6 +27,7 @@ actor UTMRemoteServer {
     fileprivate let data: UTMData
     private let keyManager = UTMRemoteKeyManager(forClient: false)
     private let center = UNUserNotificationCenter.current()
+    private let connectionQueue = DispatchQueue(label: "UTM Remote Server Connection")
     let state: State
 
     private var cancellables = Set<AnyCancellable>()
@@ -146,8 +147,8 @@ actor UTMRemoteServer {
                         }
                     }
                     let port = serverPort > 0 ? NWEndpoint.Port(integerLiteral: UInt16(serverPort)) : .any
-                    for try await connection in Connection.advertise(on: port, forServiceType: service, txtRecord: metadata, identity: keyManager.identity) {
-                        if let connection = try? await Connection(connection: connection) {
+                    for try await connection in Connection.advertise(on: port, forServiceType: service, txtRecord: metadata, connectionQueue: connectionQueue, identity: keyManager.identity) {
+                        if let connection = try? await Connection(connection: connection, connectionQueue: connectionQueue) {
                             await newRemoteConnection(connection)
                         }
                     }
