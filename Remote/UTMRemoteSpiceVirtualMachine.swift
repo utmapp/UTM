@@ -295,11 +295,11 @@ extension UTMRemoteSpiceVirtualMachine {
 
 extension UTMRemoteSpiceVirtualMachine {
     actor State {
-        let vm: UTMRemoteSpiceVirtualMachine
+        private weak var vm: UTMRemoteSpiceVirtualMachine?
         private var isInOperation: Bool = false
         private(set) var state: UTMVirtualMachineState = .stopped {
             didSet {
-                vm.state = state
+                vm?.state = state
             }
         }
         private var remoteState: UTMVirtualMachineState?
