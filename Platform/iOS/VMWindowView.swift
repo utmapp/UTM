@@ -108,7 +108,7 @@ struct VMWindowView: View {
                 }, secondaryButton: .cancel(Text("No")))
             case .terminateApp:
                 return Alert(title: Text("Are you sure you want to exit UTM?"), primaryButton: .destructive(Text("Yes")) {
-                    session.stop()
+                    session.powerDown(isKill: true)
                 }, secondaryButton: .cancel(Text("No")))
             case .restart:
                 return Alert(title: Text("Are you sure you want to reset this VM? Any unsaved changes will be lost."), primaryButton: .destructive(Text("Yes")) {

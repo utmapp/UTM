@@ -82,13 +82,17 @@ struct VMToolbarView: View {
         GeometryReader { geometry in
             Group {
                 Button {
-                    if session.vm.state == .started {
+                    if state.isRunning {
                         state.alert = .powerDown
                     } else {
                         state.alert = .terminateApp
                     }
                 } label: {
-                    Label(state.isRunning ? "Power Off" : "Quit", systemImage: state.isRunning ? "power" : "xmark")
+                    if state.isRunning {
+                        Label("Power Off", systemImage: "power")
+                    } else {
+                        Label("Force Kill", systemImage: "xmark")
+                    }
                 }.offset(offset(for: 8))
                 Button {
                     session.pauseResume()

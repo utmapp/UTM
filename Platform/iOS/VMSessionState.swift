@@ -465,10 +465,10 @@ extension VMSessionState {
         NotificationCenter.default.post(name: .vmSessionEnded, object: nil, userInfo: ["Session": self])
     }
 
-    func powerDown() {
+    func powerDown(isKill: Bool = false) {
         Task {
             try? await vm.deleteSnapshot(name: nil)
-            try await vm.stop(usingMethod: .force)
+            try await vm.stop(usingMethod: isKill ? .kill : .force)
             self.stop()
         }
     }

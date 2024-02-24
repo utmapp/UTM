@@ -25,13 +25,17 @@ struct VMToolbarOrnamentModifier: ViewModifier {
         content.ornament(visibility: isCollapsed ? .hidden : .visible, attachmentAnchor: .scene(.top)) {
             HStack {
                 Button {
-                    if session.vm.state == .started {
+                    if state.isRunning {
                         state.alert = .powerDown
                     } else {
                         state.alert = .terminateApp
                     }
                 } label: {
-                    Label(state.isRunning ? "Power Off" : "Quit", systemImage: state.isRunning ? "power" : "xmark")
+                    if state.isRunning {
+                        Label("Power Off", systemImage: "power")
+                    } else {
+                        Label("Force Kill", systemImage: "xmark")
+                    }
                 }
                 .disabled(state.isBusy)
                 Button {
