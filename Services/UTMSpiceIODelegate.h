@@ -38,6 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @optional
 - (void)spiceDynamicResolutionSupportDidChange:(BOOL)supported;
+- (void)spiceDidDisconnect;
 
 @end
 

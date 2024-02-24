@@ -204,6 +204,7 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
 - (void)spiceDisconnected:(CSConnection *)connection {
     NSAssert(connection == self.spiceConnection, @"Unknown connection");
     self.isConnected = NO;
+    [self.delegate spiceDidDisconnect];
 }
 
 - (void)spiceError:(CSConnection *)connection code:(CSConnectionError)code message:(nullable NSString *)message {
@@ -233,6 +234,9 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
 - (void)spiceDisplayDestroyed:(CSConnection *)connection display:(CSDisplay *)display {
     NSAssert(connection == self.spiceConnection, @"Unknown connection");
     [self.mutableDisplays removeObject:display];
+    if (self.primaryDisplay == display) {
+        self.primaryDisplay = nil;
+    }
     [self.delegate spiceDidDestroyDisplay:display];
 }
 
@@ -271,11 +275,11 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
     }
     if ([port.name isEqualToString:@"org.qemu.guest_agent.0"]) {
     }
-    if ([port.name isEqualToString:@"com.utmapp.terminal.0"]) {
-        self.primarySerial = port;
-    }
     if ([port.name hasPrefix:@"com.utmapp.terminal."]) {
         [self.mutableSerials removeObject:port];
+        if (self.primarySerial == port) {
+            self.primarySerial = nil;
+        }
         [self.delegate spiceDidDestroySerial:port];
     }
 }

@@ -163,6 +163,11 @@ struct VMWindowView: View {
                 state.alert = .nonfatalError(message)
             }
         }
+        .onChange(of: session.fatalError) { newValue in
+            if session.activeWindow == state.id, let message = newValue {
+                state.alert = .fatalError(message)
+            }
+        }
         .onChange(of: session.vmState) { [oldValue = session.vmState] newValue in
             vmStateUpdated(from: oldValue, to: newValue)
         }

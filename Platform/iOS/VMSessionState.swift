@@ -46,7 +46,9 @@ import SwiftUI
     @Published var vmState: UTMVirtualMachineState = .stopped
     
     @Published var nonfatalError: String?
-    
+
+    @Published var fatalError: String?
+
     @Published var primaryInput: CSInput?
     
     #if WITH_USB
@@ -295,6 +297,12 @@ extension VMSessionState: UTMSpiceIODelegate {
     nonisolated func spiceDynamicResolutionSupportDidChange(_ supported: Bool) {
         Task { @MainActor in
             isDynamicResolutionSupported = supported
+        }
+    }
+
+    nonisolated func spiceDidDisconnect() {
+        Task { @MainActor in
+            fatalError = NSLocalizedString("Connection to the server was lost.", comment: "VMSessionState")
         }
     }
 }
