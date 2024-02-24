@@ -886,16 +886,20 @@ struct AlertMessage: Identifiable {
     
     /// Execute a task with spinning progress indicator (Swift concurrency version)
     /// - Parameter work: Function to execute
-    func busyWorkAsync(_ work: @escaping @Sendable () async throws -> Void) {
+    @discardableResult
+    func busyWorkAsync<T>(_ work: @escaping @Sendable () async throws -> T) -> Task<T, any Error> {
         Task.detached(priority: .userInitiated) {
             await self.setBusyIndicator(true)
             do {
-                try await work()
+                let result = try await work()
+                await self.setBusyIndicator(false)
+                return result
             } catch {
                 logger.error("\(error)")
                 await self.showErrorAlert(message: error.localizedDescription)
+                await self.setBusyIndicator(false)
+                throw error
             }
-            await self.setBusyIndicator(false)
         }
     }
     
