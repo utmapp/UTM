@@ -45,7 +45,7 @@ final class UTMRemoteSpiceVirtualMachine: UTMSpiceVirtualMachine {
 
     static let capabilities = Capabilities()
 
-    private let server: UTMRemoteClient.Remote
+    private var server: UTMRemoteClient.Remote
 
     init(packageUrl: URL, configuration: UTMQemuConfiguration, isShortcut: Bool) throws {
         throw UTMVirtualMachineError.notImplemented
@@ -141,6 +141,12 @@ final class UTMRemoteSpiceVirtualMachine: UTMSpiceVirtualMachine {
     
     func changeUuid(to uuid: UUID, name: String?, copyingEntry entry: UTMRegistryEntry?) {
         // not needed
+    }
+
+    func reconnectServer(_ body: () async throws -> UTMRemoteClient.Remote) async throws {
+        try await _state.operation(during: .resuming) {
+            self.server = try await body()
+        }
     }
 }
 
@@ -306,12 +312,14 @@ extension UTMRemoteSpiceVirtualMachine {
             try await operation(before: [before], during: during, after: after, body: body)
         }
 
-        func operation(before: Set<UTMVirtualMachineState>, during: UTMVirtualMachineState, after: UTMVirtualMachineState? = nil, body: () async throws -> Void) async throws {
+        func operation(before: Set<UTMVirtualMachineState>? = nil, during: UTMVirtualMachineState, after: UTMVirtualMachineState? = nil, body: () async throws -> Void) async throws {
             while isInOperation {
                 await Task.yield()
             }
-            guard before.contains(state) else {
-                throw VMError.operationInProgress
+            if let before = before {
+                guard before.contains(state) else {
+                    throw VMError.operationInProgress
+                }
             }
             isInOperation = true
             remoteState = nil

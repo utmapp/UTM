@@ -272,6 +272,7 @@ struct AlertMessage: Identifiable {
         virtualMachines.forEach({ endObservingChanges(for: $0) })
         virtualMachines = vms
         vms.forEach({ beginObservingChanges(for: $0) })
+        selectedVM = nil
     }
     
     /// Add VM to list
@@ -1080,6 +1081,7 @@ enum UTMDataError: Error {
     case jitStreamerAttachFailed
     case jitStreamerUrlInvalid(String)
     case notImplemented
+    case reconnectFailed
 }
 
 extension UTMDataError: LocalizedError {
@@ -1111,6 +1113,8 @@ extension UTMDataError: LocalizedError {
             return String.localizedStringWithFormat(NSLocalizedString("Invalid JitStreamer attach URL:\n%@", comment: "UTMData"), urlString)
         case .notImplemented:
             return NSLocalizedString("This functionality is not yet implemented.", comment: "UTMData")
+        case .reconnectFailed:
+            return NSLocalizedString("Failed to reconnect to the server.", comment: "UTMData")
         }
     }
 }
@@ -1154,6 +1158,8 @@ struct UTMCapabilities: OptionSet, Codable {
 }
 
 #if WITH_REMOTE
+private let kReconnectTimeoutSeconds: UInt64 = 5
+
 @MainActor
 class UTMRemoteData: UTMData {
     /// Remote access client
@@ -1170,14 +1176,46 @@ class UTMRemoteData: UTMData {
 
     override func listRefresh() async {
         busyWorkAsync {
-            if let capabilities = await self.remoteClient.server.capabilities {
-                UTMCapabilities.current = capabilities
-            }
             try await self.listRefreshFromRemote()
         }
     }
 
+    func reconnect(to server: UTMRemoteClient.State.SavedServer) async throws {
+        var reconnectTask: Task<UTMRemoteClient.Remote, any Error>?
+        let timeoutTask = Task {
+            try await Task.sleep(nanoseconds: kReconnectTimeoutSeconds * NSEC_PER_SEC)
+            reconnectTask?.cancel()
+        }
+        reconnectTask = busyWorkAsync { [self] in
+            do {
+                try await remoteClient.connect(server)
+            } catch is CancellationError {
+                throw UTMDataError.reconnectFailed
+            }
+            timeoutTask.cancel()
+            try await listRefreshFromRemote()
+            return await remoteClient.server
+        }
+        // make all active sessions wait on the reconnect
+        for session in VMSessionState.allActiveSessions.values {
+            let vm = session.vm as! UTMRemoteSpiceVirtualMachine
+            Task {
+                do {
+                    try await vm.reconnectServer {
+                        try await reconnectTask!.value
+                    }
+                } catch {
+                    session.stop()
+                }
+            }
+        }
+        _ = try await reconnectTask!.value
+    }
+
     private func listRefreshFromRemote() async throws {
+        if let capabilities = await self.remoteClient.server.capabilities {
+            UTMCapabilities.current = capabilities
+        }
         let ids = try await remoteClient.server.listVirtualMachines()
         let items = try await remoteClient.server.getVirtualMachineInformation(for: ids)
         await loadVirtualMachines(items.map({ VMRemoteData(fromRemoteItem: $0) }))

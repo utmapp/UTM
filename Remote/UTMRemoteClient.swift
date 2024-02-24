@@ -88,11 +88,20 @@ actor UTMRemoteClient {
     }
 
     func connect(_ server: State.SavedServer) async throws {
-        var server = server
         var isSuccessful = false
         let endpoint = server.endpoint ?? NWEndpoint.hostPort(host: .init(server.hostname), port: .init(integerLiteral: UInt16(server.port ?? 0)))
         try await keyManager.load()
-        let connection = try await Connection(endpoint: endpoint, connectionQueue: connectionQueue, identity: keyManager.identity)
+        let connection = try await Connection(endpoint: endpoint, connectionQueue: connectionQueue, identity: keyManager.identity) { connection, error in
+            Task {
+                do {
+                    try await self.local.data.reconnect(to: server)
+                } catch {
+                    // reconnect failed
+                    await self.state.setConnected(false)
+                    await self.state.showErrorAlert(error.localizedDescription)
+                }
+            }
+        }
         defer {
             if !isSuccessful {
                 connection.close()
@@ -121,6 +130,7 @@ actor UTMRemoteClient {
             }
         }
         self.server = remote
+        var server = server
         await state.setConnected(true)
         if !server.shouldSavePassword {
             server.password = nil
@@ -260,7 +270,7 @@ extension UTMRemoteClient {
     class Local: LocalInterface {
         typealias M = UTMRemoteMessageClient
 
-        private let data: UTMRemoteData
+        fileprivate let data: UTMRemoteData
 
         init(data: UTMRemoteData) {
             self.data = data
@@ -280,12 +290,6 @@ extension UTMRemoteClient {
                 return try await _virtualMachineDidTransition(parameters: .decode(data)).encode()
             case .virtualMachineDidError:
                 return try await _virtualMachineDidError(parameters: .decode(data)).encode()
-            }
-        }
-
-        func handle(error: Error) {
-            Task {
-                await data.showErrorAlert(message: error.localizedDescription)
             }
         }
 

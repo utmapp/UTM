@@ -148,7 +148,19 @@ actor UTMRemoteServer {
                     }
                     let port = serverPort > 0 ? NWEndpoint.Port(integerLiteral: UInt16(serverPort)) : .any
                     for try await connection in Connection.advertise(on: port, forServiceType: service, txtRecord: metadata, connectionQueue: connectionQueue, identity: keyManager.identity) {
-                        if let connection = try? await Connection(connection: connection, connectionQueue: connectionQueue) {
+                        let connection = try? await Connection(connection: connection, connectionQueue: connectionQueue) { connection, error in
+                            Task {
+                                guard let fingerprint = connection.fingerprint else {
+                                    return
+                                }
+                                if !(error is NWError) {
+                                    // connection errors are too noisy
+                                    await self.notifyError(error)
+                                }
+                                await self.state.disconnect(fingerprint)
+                            }
+                        }
+                        if let connection = connection {
                             await newRemoteConnection(connection)
                         }
                     }
@@ -174,7 +186,7 @@ actor UTMRemoteServer {
 
     private func newRemoteConnection(_ connection: Connection) async {
         let remoteAddress = connection.connection.endpoint.hostname ?? "\(connection.connection.endpoint)"
-        guard let fingerprint = connection.peerCertificateChain.first?.fingerprint() else {
+        guard let fingerprint = connection.fingerprint else {
             connection.close()
             return
         }
@@ -222,7 +234,7 @@ actor UTMRemoteServer {
     }
 
     private func establishConnection(_ connection: Connection) async {
-        guard let fingerprint = connection.peerCertificateChain.first?.fingerprint() else {
+        guard let fingerprint = connection.fingerprint else {
             connection.close()
             return
         }
@@ -282,9 +294,8 @@ actor UTMRemoteServer {
             while !group.isEmpty {
                 switch await group.nextResult() {
                 case .failure(let error):
-                    if case BroadcastError.connectionError(let error, let fingerprint) = error {
+                    if case BroadcastError.connectionError(_, let fingerprint) = error {
                         // disconnect any clients who failed to respond
-                        await notifyError(error)
                         await state.disconnect(fingerprint)
                     } else {
                         logger.error("client returned error on broadcast: \(error)")
@@ -646,12 +657,6 @@ extension UTMRemoteServer {
             }
         }
 
-        func handle(error: Error) {
-            Task {
-                await server.notifyError(error)
-            }
-        }
-
         @MainActor
         private func findVM(withId id: UUID) throws -> VMData {
             let vm = data.virtualMachines.first(where: { $0.id == id })
@@ -938,5 +943,11 @@ extension UTMRemoteServer {
                 return NSLocalizedString("Failed to access file.", comment: "UTMRemoteServer")
             }
         }
+    }
+}
+
+extension Connection {
+    var fingerprint: [UInt8]? {
+        return peerCertificateChain.first?.fingerprint()
     }
 }
