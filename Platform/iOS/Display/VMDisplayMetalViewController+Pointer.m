@@ -129,7 +129,11 @@ NS_AVAILABLE_IOS(13.4)
 - (UIPointerStyle *)pointerInteraction:(UIPointerInteraction *)interaction styleForRegion:(UIPointerRegion *)region {
     // Hide cursor while hovering in VM view
     if (interaction.view == self.mtkView && self.hasTouchpadPointer) {
+#if TARGET_OS_VISION
+        return nil; // FIXME: hidden pointer seems to jump around due to following gaze
+#else
         return [UIPointerStyle hiddenPointerStyle];
+#endif
     }
     return nil;
 }
