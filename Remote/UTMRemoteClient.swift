@@ -313,7 +313,7 @@ extension UTMRemoteClient {
         }
 
         private func _virtualMachineDidTransition(parameters: M.VirtualMachineDidTransition.Request) async throws -> M.VirtualMachineDidTransition.Reply {
-            await data.remoteVirtualMachineDidTransition(id: parameters.id, state: parameters.state)
+            await data.remoteVirtualMachineDidTransition(id: parameters.id, state: parameters.state, isTakeoverAllowed: parameters.isTakeoverAllowed)
             return .init()
         }
 

@@ -197,7 +197,7 @@ extension UTMRemoteSpiceVirtualMachine {
     }
 
     func start(options: UTMVirtualMachineStartOptions) async throws {
-        try await _state.operation(before: .stopped, during: .starting, after: .started) {
+        try await _state.operation(before: [.stopped, .started, .paused], during: .starting, after: .started) {
             let spiceServer = try await server.startVirtualMachine(id: id, options: options)
             var options = UTMSpiceIOOptions()
             if await !config.sound.isEmpty {
@@ -250,8 +250,12 @@ extension UTMRemoteSpiceVirtualMachine {
     }
 
     func resume() async throws {
-        try await _state.operation(before: .paused, during: .resuming, after: .started) {
-            try await server.resumeVirtualMachine(id: id)
+        if ioService == nil {
+            return try await start(options: [])
+        } else {
+            try await _state.operation(before: .paused, during: .resuming, after: .started) {
+                try await server.resumeVirtualMachine(id: id)
+            }
         }
     }
 

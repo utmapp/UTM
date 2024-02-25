@@ -228,8 +228,33 @@ actor UTMRemoteServer {
             if !connectedClients.contains(client) {
                 if let remote = establishedConnections.removeValue(forKey: client) {
                     remote.close()
+                    Task { @MainActor in
+                        await suspendSessions(for: remote)
+                    }
                 }
             }
+        }
+    }
+
+    @MainActor
+    private func suspendSessions(for remote: Remote) async {
+        let sessions = data.vmWindows.compactMap {
+            if let session = $0.value as? VMRemoteSessionState {
+                return ($0.key, session)
+            } else {
+                return nil
+            }
+        }
+        await withTaskGroup(of: Void.self) { group in
+            for (vm, session) in sessions {
+                if session.client?.id == remote.id {
+                    session.client = nil
+                }
+                group.addTask {
+                    try? await vm.wrapped?.pause()
+                }
+            }
+            await group.waitForAll()
         }
     }
 
@@ -712,11 +737,13 @@ extension UTMRemoteServer {
                 try parameters.ids.map { id in
                     let vm = try findVM(withId: id)
                     let mountedDrives = vm.registryEntry?.externalDrives.mapValues({ $0.path }) ?? [:]
+                    let isTakeoverAllowed = data.vmWindows[vm] is VMRemoteSessionState && (vm.state == .started || vm.state == .paused)
                     return M.VirtualMachineInformation(id: vm.id,
                                                        name: vm.detailsTitleLabel,
                                                        path: vm.pathUrl.path,
                                                        isShortcut: vm.isShortcut,
                                                        isSuspended: vm.registryEntry?.isSuspended ?? false,
+                                                       isTakeoverAllowed: isTakeoverAllowed,
                                                        backend: vm.wrapped is UTMQemuVirtualMachine ? .qemu : .unknown,
                                                        state: vm.wrapped?.state ?? .stopped,
                                                        mountedDrives: mountedDrives)
@@ -850,9 +877,10 @@ extension UTMRemoteServer {
 }
 
 extension UTMRemoteServer {
-    class Remote {
+    class Remote: Identifiable {
         typealias M = UTMRemoteMessageClient
         fileprivate(set) var peer: Peer<UTMRemoteMessageServer>!
+        let id = UUID()
 
         func close() {
             peer.close()
@@ -876,8 +904,8 @@ extension UTMRemoteServer {
             try await _mountedDrivesHasChanged(parameters: .init(id: id, mountedDrives: mountedDrives))
         }
 
-        func virtualMachine(id: UUID, didTransitionToState state: UTMVirtualMachineState) async throws {
-            try await _virtualMachineDidTransition(parameters: .init(id: id, state: state))
+        func virtualMachine(id: UUID, didTransitionToState state: UTMVirtualMachineState, isTakeoverAllowed: Bool) async throws {
+            try await _virtualMachineDidTransition(parameters: .init(id: id, state: state, isTakeoverAllowed: isTakeoverAllowed))
         }
 
         func virtualMachine(id: UUID, didErrorWithMessage message: String) async throws {

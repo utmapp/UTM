@@ -162,7 +162,7 @@ struct Screenshot: View {
                 .blendMode(.hardLight)
             #if os(visionOS)
                 .overlay {
-                    if vm.isStopped {
+                    if vm.isStopped || vm.isTakeoverAllowed {
                         Image(systemName: "play.circle.fill")
                             .resizable()
                             .frame(width: 100, height: 100)
@@ -175,7 +175,7 @@ struct Screenshot: View {
             #endif
             if vm.isBusy {
                 Spinner(size: .large)
-            } else if vm.isStopped {
+            } else if vm.isStopped || vm.isTakeoverAllowed {
                 #if !os(visionOS)
                 Button(action: { data.run(vm: vm) }, label: {
                     Label("Run", systemImage: "play.circle.fill")

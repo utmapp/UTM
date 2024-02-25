@@ -434,7 +434,11 @@ extension VMSessionState {
         }
         Self.allActiveSessions[id] = self
         showWindow()
-        vm.requestVmStart(options: options)
+        if vm.state == .paused {
+            vm.requestVmResume()
+        } else {
+            vm.requestVmStart(options: options)
+        }
     }
 
     func showWindow() {

@@ -829,8 +829,9 @@ struct AlertMessage: Identifiable {
         })
         observers.insert(vm.$state.sink { state in
             Task {
+                let isTakeoverAllowed = self.vmWindows[vm] is VMRemoteSessionState && (state == .started || state == .paused)
                 await self.remoteServer.broadcast { remote in
-                    try await remote.virtualMachine(id: vm.id, didTransitionToState: state)
+                    try await remote.virtualMachine(id: vm.id, didTransitionToState: state, isTakeoverAllowed: isTakeoverAllowed)
                 }
             }
         })
@@ -1271,12 +1272,13 @@ class UTMRemoteData: UTMData {
         vm.updateMountedDrives(mountedDrives)
     }
 
-    func remoteVirtualMachineDidTransition(id: UUID, state: UTMVirtualMachineState) async {
+    func remoteVirtualMachineDidTransition(id: UUID, state: UTMVirtualMachineState, isTakeoverAllowed: Bool) async {
         guard let vm = virtualMachines.first(where: { $0.id == id }) else {
             return
         }
         let remoteVM = vm as! VMRemoteData
         let wrapped = remoteVM.wrapped as! UTMRemoteSpiceVirtualMachine
+        remoteVM.isTakeoverAllowed = isTakeoverAllowed
         await wrapped.updateRemoteState(state)
     }
 

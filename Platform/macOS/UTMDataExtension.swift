@@ -86,6 +86,13 @@ extension UTMData {
         guard let wrapped = vm.wrapped as? UTMQemuVirtualMachine, type(of: wrapped).capabilities.supportsRemoteSession else {
             throw UTMDataError.unsupportedBackend
         }
+        if let existingSession = vmWindows[vm] as? VMRemoteSessionState, let spiceServerInfo = wrapped.spiceServerInfo {
+            if wrapped.state == .paused {
+                try await wrapped.resume()
+            }
+            existingSession.client = client
+            return spiceServerInfo
+        }
         guard vmWindows[vm] == nil else {
             throw UTMDataError.virtualMachineUnavailable
         }

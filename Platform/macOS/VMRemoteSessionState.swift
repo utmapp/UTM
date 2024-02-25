@@ -19,7 +19,7 @@ import IOKit.pwr_mgt
 
 /// Represents the UI state for a single headless VM session.
 class VMRemoteSessionState: VMHeadlessSessionState {
-    let client: UTMRemoteServer.Remote
+    public weak var client: UTMRemoteServer.Remote?
 
     init(for vm: any UTMVirtualMachine, client: UTMRemoteServer.Remote, onStop: (() -> Void)?) {
         self.client = client
@@ -28,7 +28,7 @@ class VMRemoteSessionState: VMHeadlessSessionState {
 
     override func virtualMachine(_ vm: any UTMVirtualMachine, didErrorWithMessage message: String) {
         Task {
-            try? await client.virtualMachine(id: vm.id, didErrorWithMessage: message)
+            try? await client?.virtualMachine(id: vm.id, didErrorWithMessage: message)
             super.virtualMachine(vm, didErrorWithMessage: message)
         }
     }

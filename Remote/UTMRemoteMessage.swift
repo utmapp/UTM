@@ -74,6 +74,7 @@ extension UTMRemoteMessageServer {
         let path: String
         let isShortcut: Bool
         let isSuspended: Bool
+        let isTakeoverAllowed: Bool
         let backend: UTMBackend
         let state: UTMVirtualMachineState
         let mountedDrives: [String: String]
@@ -360,6 +361,7 @@ extension UTMRemoteMessageClient {
         struct Request: Serializable, Codable {
             let id: UUID
             let state: UTMVirtualMachineState
+            let isTakeoverAllowed: Bool
         }
 
         struct Reply: Serializable, Codable {}

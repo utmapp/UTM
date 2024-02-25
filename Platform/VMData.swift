@@ -68,7 +68,10 @@ import SwiftUI
     
     /// Copy from wrapped VM
     @Published var screenshot: UTMVirtualMachineScreenshot?
-    
+
+    /// If true, it is possible to hijack the session.
+    @Published var isTakeoverAllowed: Bool = false
+
     /// Allows changes in the config, registry, and VM to be reflected
     private var observers: [AnyCancellable] = []
     
@@ -450,6 +453,7 @@ class VMRemoteData: VMData {
         self._isShortcut = item.isShortcut
         self.initialState = item.state
         super.init()
+        self.isTakeoverAllowed = item.isTakeoverAllowed
         self.registryEntryWrapped = UTMRegistry.shared.entry(uuid: item.id, name: item.name, path: item.path)
         self.registryEntryWrapped!.isSuspended = item.isSuspended
         self.registryEntryWrapped!.externalDrives = item.mountedDrives.mapValues({ UTMRegistryEntry.File(dummyFromPath: $0) })
