@@ -62,6 +62,7 @@ struct UTMApp: App {
         WindowGroup(for: VMSessionState.GlobalWindowID.self) { $globalID in
             if let globalID = globalID, let session = VMSessionState.allActiveSessions[globalID.sessionID] {
                 VMWindowView(id: globalID.windowID).environmentObject(session)
+                    .glassBackgroundEffect(in: .rect(cornerRadius: 15))
                     #if WITH_SOLO_VM
                     .onAppear {
                         // currently we only support one session, so close the home window
@@ -70,6 +71,7 @@ struct UTMApp: App {
                     #endif
             }
         }
+        .windowStyle(.plain)
         .windowResizability(.contentMinSize)
     }
 }
