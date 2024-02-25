@@ -272,7 +272,9 @@ struct AlertMessage: Identifiable {
         virtualMachines.forEach({ endObservingChanges(for: $0) })
         virtualMachines = vms
         vms.forEach({ beginObservingChanges(for: $0) })
-        selectedVM = nil
+        if let vm = selectedVM, !vms.contains(where: { $0 == vm }) {
+            selectedVM = nil
+        }
     }
     
     /// Add VM to list
@@ -1219,7 +1221,12 @@ class UTMRemoteData: UTMData {
         }
         let ids = try await remoteClient.server.listVirtualMachines()
         let items = try await remoteClient.server.getVirtualMachineInformation(for: ids)
-        await loadVirtualMachines(items.map({ VMRemoteData(fromRemoteItem: $0) }))
+        let openSessionVms = VMSessionState.allActiveSessions.values.map({ $0.vm })
+        let vms = items.map { item in
+            let wrapped = openSessionVms.first(where: { $0.id == item.id }) as? UTMRemoteSpiceVirtualMachine
+            return VMRemoteData(fromRemoteItem: item, existingWrapped: wrapped)
+        }
+        await loadVirtualMachines(vms)
     }
 
     private func loadVirtualMachines(_ vms: [VMData]) async {

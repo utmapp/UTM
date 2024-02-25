@@ -135,6 +135,11 @@ final class UTMRemoteSpiceVirtualMachine: UTMSpiceVirtualMachine {
         updateConfigFromRegistry()
     }
 
+    @MainActor
+    func updateRegistry(_ entry: UTMRegistryEntry) {
+        self.registryEntry = entry
+    }
+
     func updateConfigFromRegistry() {
         // not needed
     }

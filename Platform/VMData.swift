@@ -444,14 +444,16 @@ class VMRemoteData: VMData {
         _isShortcut
     }
     private var initialState: UTMVirtualMachineState
+    private var existingWrapped: UTMRemoteSpiceVirtualMachine?
 
     /// Set by caller when VM is unavailable and there is a reason for it.
     @Published var unavailableReason: String?
 
-    init(fromRemoteItem item: UTMRemoteMessageServer.VirtualMachineInformation) {
+    init(fromRemoteItem item: UTMRemoteMessageServer.VirtualMachineInformation, existingWrapped: UTMRemoteSpiceVirtualMachine? = nil) {
         self.backend = item.backend
         self._isShortcut = item.isShortcut
         self.initialState = item.state
+        self.existingWrapped = existingWrapped
         super.init()
         self.isTakeoverAllowed = item.isTakeoverAllowed
         self.registryEntryWrapped = UTMRegistry.shared.entry(uuid: item.id, name: item.name, path: item.path)
@@ -470,8 +472,17 @@ class VMRemoteData: VMData {
         let entry = registryEntryWrapped!
         let config = try await server.getQEMUConfiguration(for: entry.uuid)
         await loadCustomIcon(withRemoteServer: server, id: entry.uuid, config: config)
-        let vm = UTMRemoteSpiceVirtualMachine(forRemoteServer: server, remotePath: entry.package.path, entry: entry, config: config)
-        wrapped = vm
+        let vm: UTMRemoteSpiceVirtualMachine
+        if let existingWrapped = existingWrapped {
+            vm = existingWrapped
+            wrapped = vm
+            self.existingWrapped = nil
+            await reloadConfiguration(withRemoteServer: server, config: config)
+            vm.updateRegistry(entry)
+        } else {
+            vm = UTMRemoteSpiceVirtualMachine(forRemoteServer: server, remotePath: entry.package.path, entry: entry, config: config)
+            wrapped = vm
+        }
         vm.updateConfigFromRegistry()
         subscribeToChildren()
         await vm.updateRemoteState(initialState)
