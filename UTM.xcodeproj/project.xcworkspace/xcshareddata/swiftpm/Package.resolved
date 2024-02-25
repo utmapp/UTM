@@ -21,10 +21,10 @@
     {
       "identity" : "cod",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/osy/Cod.git",
+      "location" : "https://github.com/saagarjha/Cod.git",
       "state" : {
         "branch" : "main",
-        "revision" : "a9880a8934a7ffce620941c418e6823f37cbb3f7"
+        "revision" : "c359a08accfb49662a17cdfc5e333c7b4e5c2c56"
       }
     },
     {
@@ -78,7 +78,7 @@
       "location" : "https://github.com/utmapp/SwiftConnect",
       "state" : {
         "branch" : "main",
-        "revision" : "4f2241d2ad4e1d99bee6344422ca5c44018f4046"
+        "revision" : "af855e47ca222da163cc7f4f185230f36ba8694a"
       }
     },
     {
@@ -93,10 +93,10 @@
     {
       "identity" : "swiftterm",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/osy/SwiftTerm.git",
+      "location" : "https://github.com/migueldeicaza/SwiftTerm.git",
       "state" : {
-        "branch" : "visionos",
-        "revision" : "8b0900a4c516eb8c87813f11e797f349e7fca014"
+        "branch" : "main",
+        "revision" : "ea0f681b25c8385b4a5a48d435e61d11392216e0"
       }
     },
     {

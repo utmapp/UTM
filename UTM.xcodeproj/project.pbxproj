@@ -5036,9 +5036,9 @@
 		};
 		848F71E4277A2466006A0240 /* XCRemoteSwiftPackageReference "SwiftTerm" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/osy/SwiftTerm.git";
+			repositoryURL = "https://github.com/migueldeicaza/SwiftTerm.git";
 			requirement = {
-				branch = visionos;
+				branch = main;
 				kind = branch;
 			};
 		};
@@ -5156,9 +5156,9 @@
 		};
 		CEF7F58F2AEEDCC400E34952 /* XCRemoteSwiftPackageReference "SwiftTerm" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/osy/SwiftTerm.git";
+			repositoryURL = "https://github.com/migueldeicaza/SwiftTerm.git";
 			requirement = {
-				branch = visionos;
+				branch = main;
 				kind = branch;
 			};
 		};
