@@ -121,13 +121,17 @@ static const NSInteger kResizeTimeoutSecs = 5;
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     self.prefersHomeIndicatorAutoHidden = YES;
+#if !TARGET_OS_VISION
     [self startGCMouse];
+#endif
     [self.vmDisplay addRenderer:self.renderer];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
+#if !TARGET_OS_VISION
     [self stopGCMouse];
+#endif
     [self.vmDisplay removeRenderer:self.renderer];
     [self removeObserver:self forKeyPath:@"vmDisplay.displaySize"];
 }
