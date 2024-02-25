@@ -16,6 +16,9 @@
 
 import SwiftUI
 import SwiftUIVisualEffects
+#if os(visionOS)
+import VisionKeyboardKit
+#endif
 
 struct VMWindowView: View {
     let id: VMSessionState.WindowID
@@ -24,7 +27,10 @@ struct VMWindowView: View {
     @State private var state: VMWindowState
     @EnvironmentObject private var session: VMSessionState
     @Environment(\.scenePhase) private var scenePhase
-    
+    #if os(visionOS)
+    @Environment(\.dismissWindow) private var dismissWindow
+    #endif
+
     private let keyboardDidShowNotification = NotificationCenter.default.publisher(for: UIResponder.keyboardDidShowNotification)
     private let keyboardDidHideNotification = NotificationCenter.default.publisher(for: UIResponder.keyboardDidHideNotification)
     private let didReceiveMemoryWarningNotification = NotificationCenter.default.publisher(for: UIApplication.didReceiveMemoryWarningNotification)
@@ -228,6 +234,9 @@ struct VMWindowView: View {
             if !isInteractive {
                 session.externalWindowBinding = nil
             }
+            #if os(visionOS)
+            dismissWindow(keyboardFor: state.id)
+            #endif
         }
     }
     

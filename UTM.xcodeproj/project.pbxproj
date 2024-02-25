@@ -646,6 +646,9 @@
 		CE8813D324CD230300532628 /* ActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE8813D224CD230300532628 /* ActivityView.swift */; };
 		CE8813D524CD265700532628 /* VMShareFileModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE8813D424CD265700532628 /* VMShareFileModifier.swift */; };
 		CE8813D624CD265700532628 /* VMShareFileModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE8813D424CD265700532628 /* VMShareFileModifier.swift */; };
+		CE89CB0E2B8B1B5A006B2CC2 /* VisionKeyboardKit in Frameworks */ = {isa = PBXBuildFile; platformFilters = (xros, ); productRef = CE89CB0D2B8B1B5A006B2CC2 /* VisionKeyboardKit */; };
+		CE89CB102B8B1B6A006B2CC2 /* VisionKeyboardKit in Frameworks */ = {isa = PBXBuildFile; platformFilters = (xros, ); productRef = CE89CB0F2B8B1B6A006B2CC2 /* VisionKeyboardKit */; };
+		CE89CB122B8B1B7A006B2CC2 /* VisionKeyboardKit in Frameworks */ = {isa = PBXBuildFile; platformFilters = (xros, ); productRef = CE89CB112B8B1B7A006B2CC2 /* VisionKeyboardKit */; };
 		CE928C2A26ABE6690099F293 /* UTMAppleVirtualMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE928C2926ABE6690099F293 /* UTMAppleVirtualMachine.swift */; };
 		CE928C3126ACCDEA0099F293 /* VMAppleRemovableDrivesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE928C3026ACCDEA0099F293 /* VMAppleRemovableDrivesView.swift */; };
 		CE93758924B930270074066F /* BusyOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7D972B24B2B17D0080CB69 /* BusyOverlay.swift */; };
@@ -2121,6 +2124,7 @@
 				84818C0C2898A07A009EDB67 /* AVFAudio.framework in Frameworks */,
 				CE2D934924AD46670059923A /* gstreamer-1.0.0.framework in Frameworks */,
 				CE2D934B24AD46670059923A /* json-glib-1.0.0.framework in Frameworks */,
+				CE89CB0E2B8B1B5A006B2CC2 /* VisionKeyboardKit in Frameworks */,
 				CE2D934C24AD46670059923A /* ffi.7.framework in Frameworks */,
 				CE2D934D24AD46670059923A /* gstnet-1.0.0.framework in Frameworks */,
 				CE2D934E24AD46670059923A /* gstbase-1.0.0.framework in Frameworks */,
@@ -2251,6 +2255,7 @@
 				CEA45F25263519B5002FA97D /* libgstaudiotestsrc.a in Frameworks */,
 				CEA45F26263519B5002FA97D /* libgstvideoconvert.a in Frameworks */,
 				CEA45F27263519B5002FA97D /* libgstaudioconvert.a in Frameworks */,
+				CE89CB102B8B1B6A006B2CC2 /* VisionKeyboardKit in Frameworks */,
 				8401865C2887AFDC0050AC51 /* SwiftTerm in Frameworks */,
 				CEA45F28263519B5002FA97D /* libgstvideoscale.a in Frameworks */,
 				CEA45F29263519B5002FA97D /* IQKeyboardManagerSwift in Frameworks */,
@@ -2386,6 +2391,7 @@
 				CEF7F6692AEEDCC400E34952 /* opus.0.framework in Frameworks */,
 				CEF7F66A2AEEDCC400E34952 /* glib-2.0.0.framework in Frameworks */,
 				CEF7F66B2AEEDCC400E34952 /* png16.16.framework in Frameworks */,
+				CE89CB122B8B1B7A006B2CC2 /* VisionKeyboardKit in Frameworks */,
 				CEF7F66C2AEEDCC400E34952 /* gstfft-1.0.0.framework in Frameworks */,
 				CEF7F66D2AEEDCC400E34952 /* crypto.1.1.framework in Frameworks */,
 				CEF7F66E2AEEDCC400E34952 /* gstpbutils-1.0.0.framework in Frameworks */,
@@ -3040,6 +3046,7 @@
 				84CE3DAB2904C14100FF068B /* InAppSettingsKit */,
 				84A0A8892A47D5D10038F329 /* QEMUKit */,
 				CE9B15372B11A4A7003A32DD /* SwiftConnect */,
+				CE89CB0D2B8B1B5A006B2CC2 /* VisionKeyboardKit */,
 			);
 			productName = UTM;
 			productReference = CE2D93BE24AD46670059923A /* UTM.app */;
@@ -3121,6 +3128,7 @@
 				846D878529050B6B0095F10B /* InAppSettingsKit */,
 				84A0A88B2A47D5D70038F329 /* QEMUKit */,
 				CE9B15392B11A4AE003A32DD /* SwiftConnect */,
+				CE89CB0F2B8B1B6A006B2CC2 /* VisionKeyboardKit */,
 			);
 			productName = UTM;
 			productReference = CEA45FB9263519B5002FA97D /* UTM SE.app */;
@@ -3169,6 +3177,7 @@
 				CEF7F5922AEEDCC400E34952 /* InAppSettingsKit */,
 				CEF7F6D52AEEEF7D00E34952 /* CocoaSpiceNoUsb */,
 				CE9B153B2B11A4B4003A32DD /* SwiftConnect */,
+				CE89CB112B8B1B7A006B2CC2 /* VisionKeyboardKit */,
 			);
 			productName = UTM;
 			productReference = CEF7F6D32AEEDCC400E34952 /* UTM Remote.app */;
@@ -3240,6 +3249,7 @@
 				84A0A8862A47D5C50038F329 /* XCRemoteSwiftPackageReference "QEMUKit" */,
 				CE9B15342B11A491003A32DD /* XCRemoteSwiftPackageReference "SwiftConnect" */,
 				CEDD11BF2B7C74D7004DDAC6 /* XCRemoteSwiftPackageReference "SwiftPortmap" */,
+				CE89CB0C2B8B1B49006B2CC2 /* XCRemoteSwiftPackageReference "VisionKeyboardKit" */,
 			);
 			productRefGroup = CE550BCA225947990063E575 /* Products */;
 			projectDirPath = "";
@@ -5090,6 +5100,14 @@
 				minimumVersion = 1.5.3;
 			};
 		};
+		CE89CB0C2B8B1B49006B2CC2 /* XCRemoteSwiftPackageReference "VisionKeyboardKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/utmapp/VisionKeyboardKit.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		CE93759724BB821F0074066F /* XCRemoteSwiftPackageReference "IQKeyboardManager" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/hackiftekhar/IQKeyboardManager.git";
@@ -5294,6 +5312,21 @@
 			isa = XCSwiftPackageProductDependency;
 			package = CE020BA524AEDEF000B44AB6 /* XCRemoteSwiftPackageReference "swift-log" */;
 			productName = Logging;
+		};
+		CE89CB0D2B8B1B5A006B2CC2 /* VisionKeyboardKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CE89CB0C2B8B1B49006B2CC2 /* XCRemoteSwiftPackageReference "VisionKeyboardKit" */;
+			productName = VisionKeyboardKit;
+		};
+		CE89CB0F2B8B1B6A006B2CC2 /* VisionKeyboardKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CE89CB0C2B8B1B49006B2CC2 /* XCRemoteSwiftPackageReference "VisionKeyboardKit" */;
+			productName = VisionKeyboardKit;
+		};
+		CE89CB112B8B1B7A006B2CC2 /* VisionKeyboardKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CE89CB0C2B8B1B49006B2CC2 /* XCRemoteSwiftPackageReference "VisionKeyboardKit" */;
+			productName = VisionKeyboardKit;
 		};
 		CE93759824BB821F0074066F /* IQKeyboardManagerSwift */ = {
 			isa = XCSwiftPackageProductDependency;

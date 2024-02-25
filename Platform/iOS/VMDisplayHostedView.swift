@@ -168,7 +168,12 @@ struct VMDisplayHostedView: UIViewControllerRepresentable {
         if let vc = uiViewController as? VMDisplayMetalViewController {
             vc.vmInput = session.primaryInput
         }
-        if state.isKeyboardShown != state.isKeyboardRequested {
+        #if os(visionOS)
+        let useSystemOsk = !(uiViewController is VMDisplayMetalViewController)
+        #else
+        let useSystemOsk = true
+        #endif
+        if useSystemOsk && state.isKeyboardShown != state.isKeyboardRequested {
             DispatchQueue.main.async {
                 if state.isKeyboardRequested {
                     uiViewController.showKeyboard()

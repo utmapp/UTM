@@ -15,6 +15,7 @@
 //
 
 import SwiftUI
+import VisionKeyboardKit
 
 @MainActor
 struct UTMApp: App {
@@ -73,5 +74,6 @@ struct UTMApp: App {
         }
         .windowStyle(.plain)
         .windowResizability(.contentMinSize)
+        KeyboardWindowGroup()
     }
 }
