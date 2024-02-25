@@ -127,6 +127,8 @@ struct VMWindowView: View {
                 return Alert(title: Text(message), dismissButton: .cancel(Text("OK")) {
                     if case .fatalError(_) = type {
                         session.stop()
+                    } else if session.vmState == .stopped {
+                        session.stop()
                     } else {
                         session.nonfatalError = nil
                     }
@@ -205,6 +207,21 @@ struct VMWindowView: View {
             if !isInteractive {
                 session.externalWindowBinding = $state
             }
+            state.isDynamicResolutionSupported = session.isDynamicResolutionSupported
+            // in case an alert appeared before we created the view
+            if session.activeWindow == state.id {
+                #if WITH_USB
+                if let device = session.mostRecentConnectedDevice {
+                    state.alert = .deviceConnected(device)
+                }
+                #endif
+                if let nonfatalError = session.nonfatalError {
+                    state.alert = .nonfatalError(nonfatalError)
+                }
+                if let fatalError = session.fatalError {
+                    state.alert = .fatalError(fatalError)
+                }
+            }
         }
         .onDisappear {
             session.removeWindow(state.id)
@@ -224,9 +241,12 @@ struct VMWindowView: View {
                 state.isBusy = false
                 state.isRunning = false
             }
+            // do not close if we have a popup open
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
-                if session.vmState == .stopped {
-                    session.stop()
+                if session.nonfatalError == nil && session.fatalError == nil {
+                    if session.vmState == .stopped {
+                        session.stop()
+                    }
                 }
             }
         case .pausing, .stopping, .starting, .resuming, .saving, .restoring:
