@@ -94,13 +94,17 @@
 
 /* Services */
 
-// UTMQemu.m
+// UTMPipeInterface.swift
+"Failed to create pipe for communications." = "通信用パイプの作成に失敗しました。";
+
+// UTMProcess.m
 "Internal error has occurred." = "内部エラーが発生しました。";
 
 // UTMQemuImage.swift
 "An unknown QEMU error has occurred." = "不明なQEMUエラーが発生しました。";
 
 // UTMSpiceIO.m
+"Failed to change current directory." = "作業ディレクトリの変更に失敗しました。";
 "Failed to start SPICE client." = "SPICEクライアントの開始に失敗しました。";
 "Internal error trying to connect to SPICE server." = "SPICEサーバへの接続試行中に内部エラーが発生しました。";
 
@@ -124,22 +128,46 @@
 "Failed to access shared directory." = "共有ディレクトリのアクセスに失敗しました。";
 "The virtual machine is in an invalid state." = "仮想マシンが無効な状態です。";
 "Failed to save VM snapshot. Usually this means at least one device does not support snapshots. %@" = "仮想マシンのスナップショットの保存に失敗しました。これは、通常1台以上のデバイスがスナップショットに対応していないことを意味します。%@";
+"Failed to generate TLS key for server." = "サーバ用のTLS鍵の生成に失敗しました。";
 
 
 /* Platform/iOS */
 
-// UTMMainView.swift
+// UTMDataExtension.swift
+"This virtual machine is already running. In order to run it from this device, you must stop it first." = "この仮想マシンはすでに実行されています。このデバイスから実行するには、まず停止する必要があります。";
+
+// UTMSingleWindowView.swift
 "Waiting for VM to connect to display..." = "仮想マシンがディスプレイに接続するのを待機中…";
+
+// UTMRemoteConnectView.swift
+"Select a UTM Server" = "UTMサーバを選択してください";
+"Help" = "ヘルプ";
+"New Connection" = "新規接続";
+"Saved" = "保存済み";
+"Edit…" = "編集…";
+"Delete" = "削除";
+"Discovered" = "検出";
+"Make sure the latest version of UTM is running on your Mac and UTM Server is enabled. You can download UTM from the Mac App Store." = "最新バージョンのUTMがMac上で実行されており、UTMサーバが有効になっていることを確認してください。UTMはMac App Storeからダウンロードできます。";
+"Name (optional)" = "名前（オプション）";
+"Hostname or IP address" = "ホスト名またはIPアドレス";
+"Port" = "ポート";
+"Host" = "ホスト";
+"Fingerprint" = "指紋";
+"Password" = "パスワード";
+"Save Password" = "パスワードを保存";
+"Close" = "閉じる";
+"Cancel" = "キャンセル";
+"Trust" = "信頼";
+"Connect" = "接続";
+"Timed out trying to connect." = "接続試行中にタイムアウトになりました。";
 
 // UTMSettingsView.swift
 "Settings" = "設定";
-"Close" = "閉じる";
 
 // VMConfigNetworkPortForwardView.swift
 "Port Forward" = "ポート転送";
 "%@ ➡️ %@" = "%1$@ ➡️ %2$@";
 "New" = "新規";
-"Delete" = "削除";
 "Save" = "保存";
 
 // VMDrivesSettingsView.swift
@@ -147,7 +175,6 @@
 "Are you sure you want to permanently delete this disk image?" = "このディスクイメージを完全に削除してもよろしいですか?";
 "EFI Variables" = "EFI変数";
 "%@ Drive" = "%@ドライブ";
-"Cancel" = "キャンセル";
 "Done" = "完了";
 
 // VMSettingsView.swift
@@ -168,7 +195,7 @@
 
 // VMToolbarView.swift
 "Power Off" = "電源オフ";
-"Quit" = "終了";
+"Force Kill" = "強制終了";
 "Pause" = "一時停止";
 "Play" = "再生";
 "Restart" = "再起動";
@@ -315,9 +342,20 @@
 "If enabled, num lock will always be on to the guest. Note this may make your keyboard's num lock indicator out of sync." = "有効にすると、ゲストに対してNumLockが常にオンになります。これにより、キーボードのNumLockインジケータが同期しなくなる可能性があることに注意してください。";
 "QEMU USB" = "QEMU USB";
 "Do not show prompt when USB device is plugged in" = "USBデバイス挿入時にプロンプトを表示しない";
+"Startup" = "起動時";
+"Automatically start UTM server" = "UTMサーバを自動的に起動";
+"Reject unknown connections by default" = "デフォルトで不明な接続を拒否";
+"If checked, you will not be prompted about any unknown connection and they will be rejected." = "チェックを入れると、不明な接続についてのプロンプトは表示されず拒否されます。";
+"Allow access from external clients" = "外部クライアントからのアクセスを許可";
+"By default, the server is only available on LAN but setting this will use UPnP/NAT-PMP to port forward to WAN." = "デフォルトでは、サーバはLAN上でのみ利用可能ですが、これを設定すると、UPnP/NAT-PMPを使用してWANにポート転送します。";
+"Specify a port number to listen on. This is required if external clients are permitted." = "外部からの接続を受け入れるポート番号を指定します。これは、外部クライアントが許可されている場合に必要です。";
+"Authentication" = "認証";
+"Require Password" = "パスワードが必要";
+"If enabled, clients must enter a password. This is required if you want to access the server externally." = "有効にすると、クライアントはパスワードを入力する必要があります。これは、サーバに外部からアクセスする場合に必要です。";
 
 // UTMApp.swift
 "UTM" = "UTM";
+"UTM Server" = "UTMサーバ";
 
 // UTMDataExtension.swift
 "This virtual machine cannot be run on this machine." = "この仮想マシンはこのマシンでは実行できません。";
@@ -328,12 +366,29 @@
 "Hide dock icon on next launch" = "次回起動時にDockアイコンを非表示にする";
 "Requires restarting UTM to take affect." = "変更を適用するには、UTMを再起動する必要があります。";
 "No virtual machines found." = "仮想マシンが見つかりません。";
+"Quit" = "終了";
 "Terminate UTM and stop all running VMs." = "UTMを終了し、すべての実行中の仮想マシンを停止します。";
 "Start" = "開始";
 "Stop" = "停止";
 "Suspend" = "サスペンド";
 "Reset" = "リセット";
 "Busy…" = "処理中…";
+
+// UTMServer.swift
+"Enable UTM Server" = "UTMサーバを有効にする";
+"Reset Identity" = "IDをリセット";
+"Do you want to forget all clients and generate a new server identity? Any clients that previously paired with this server will be instructed to manually unpair with this server before they can connect again." = "すべてのクライアントを削除して、新しいサーバIDを生成しますか? 以前このサーバとペアリングしていたクライアントは、再度接続する前に手動でこのサーバとのペアリングを解除するよう指示されます。";
+"Server IP: %s, Port: %s" = "サーバIP: %1$s、ポート: %2$s";
+"Running" = "動作中";
+"Name" = "名前";
+"Last Seen" = "最終接続日時";
+"Status" = "状態";
+"Connected" = "接続済み";
+"Blocked" = "ブロック済み";
+"Approve" = "承認";
+"Block" = "ブロック";
+"Disconnect" = "切断";
+"Do you want to forget the selected client(s)?" = "選択中のクライアントを削除しますか?";
 
 // VMConfigAppleBootView.swift
 "Operating System" = "オペレーティングシステム";
@@ -366,7 +421,6 @@
 
 // VMConfigAppleDriveDetailsView.swift
 "Removable Drive" = "リムーバブルドライブ";
-"Name" = "名前";
 "(New Drive)" = "（新規ドライブ）";
 "Read Only?" = "読み出しのみ";
 "Delete Drive" = "ドライブを削除";
@@ -413,8 +467,10 @@
 "Guest Port" = "ゲストポート";
 "Host Address" = "ホストアドレス";
 "Host Port" = "ホストポート";
-"Edit…" = "編集…";
 "New…" = "新規…";
+
+// VMSessionState.swift
+"Connection to the server was lost." = "サーバへの接続が切断されました。";
 
 // VMConfigQEMUArgumentsView.swift
 "Arguments" = "引数";
@@ -623,7 +679,6 @@
 "Emulated Serial Device" = "仮想シリアルデバイス";
 "TCP" = "TCP";
 "Server Address" = "サーバアドレス";
-"Port" = "ポート";
 "The target does not support hardware emulated serial connections." = "このターゲットはハードウェア仮想シリアル接続に対応していません。";
 
 // VMConfigSharingView.swift
@@ -708,6 +763,7 @@
 "Browse UTM Gallery" = "UTMギャラリーをブラウズ";
 "User Guide" = "ユーザガイド";
 "Support" = "サポート";
+"Server" = "サーバ";
 
 // VMRemovableDrivesView.swift
 "%@ %@" = "%1$@ %2$@";
@@ -850,6 +906,7 @@
 
 // UTMData.swift
 "An existing virtual machine already exists with this name." = "この名前の仮想マシンがすでに存在します。";
+"This virtual machine is currently unavailable, make sure it is not open in another session." = "この仮想マシンは現在使用できません。別のセッションで開かれていないことを確認してください。";
 "Failed to clone VM." = "仮想マシンの複製に失敗しました。";
 "Unable to add a shortcut to the new location." = "新しい場所にショートカットを追加できません。";
 "Cannot import this VM. Either the configuration is invalid, created in a newer version of UTM, or on a platform that is incompatible with this version of UTM." = "この仮想マシンは読み込めません。構成が無効であるか、新しいバージョンのUTM、またはこのバージョンのUTMと互換性のないプラットフォームで作成されています。";
@@ -861,6 +918,8 @@
 "Failed to decode JitStreamer response." = "JitStreamerの応答のデコードに失敗しました。";
 "Failed to attach to JitStreamer." = "JitStreamerへのアタッチに失敗しました。";
 "Invalid JitStreamer attach URL:\n%@" = "JitStreamerアタッチURLが無効です:\n%@";
+"This functionality is not yet implemented." = "この機能はまだ実装されていません。";
+"Failed to reconnect to the server." = "サーバへの再接続に失敗しました。";
 
 // UTMDownloadVMTask.swift
 "There is no UTM file in the downloaded ZIP archive." = "ダウンロードされたZIPアーカイブ内にUTMファイルがありません。";
@@ -889,6 +948,44 @@
 "Stopping" = "停止中";
 "Saving" = "保存中";
 "Restoring" = "復元中";
+
+
+/* Remote */
+
+// UTMRemoteKeyManager.swift
+"Failed to generate a key pair." = "鍵ペアの生成に失敗しました。";
+"Failed to parse generated key pair." = "生成された鍵ペアの解析に失敗しました。";
+"Failed to import generated key." = "生成された鍵の読み込みに失敗しました。";
+
+// UTMRemoteClient.swift
+"Failed to determine host name." = "ホスト名の特定に失敗しました。";
+"Failed to get host fingerprint." = "ホストの指紋の取得に失敗しました。";
+"Password is required." = "パスワードが必要です。";
+"Password is incorrect." = "パスワードが間違っています。";
+"This host is not yet trusted. You should verify that the fingerprints match what is displayed on the host and then select Trust to continue." = "このホストはまだ信頼されていません。指紋がホストに表示されているものと一致していることを確認し、“信頼”を選択して続ける必要があります。";
+"The server interface version does not match the client." = "サーバインターフェイスのバージョンがクライアントと一致しません。";
+
+// UTMRemoteSpiceVirtualMachine.swift
+"Failed to connect to SPICE: %@" = "SPICEへの接続に失敗しました: %@";
+"An operation is already in progress." = "操作はすでに進行中です。";
+
+// UTMRemoteServer.swift
+"Allow" = "許可";
+"Deny" = "拒否";
+"Disconnect" = "切断";
+"New unknown remote client connection." = "新しい不明なリモートクライアントからの接続がありました。";
+"New trusted remote client connection." = "新しい信頼済みリモートクライアントからの接続がありました。";
+"Unknown Remote Client" = "不明なリモートクライアント";
+"A client with fingerprint '%@' is attempting to connect." = "指紋“%@”のクライアントが接続しようとしています。";
+"Remote Client Connected" = "リモートクライアント接続済み";
+"Established connection from %@." = "%@からの接続を確立しました。";
+"UTM Remote Server Error" = "UTMリモートサーバエラー";
+"Cannot reserve port '%@' for external access from NAT. Make sure no other device on the network has reserved it." = "NATからの外部アクセス用のポート“%@”を予約できません。ネットワーク上のほかのデバイスが予約していないことを確認してください。";
+"Not authenticated." = "認証されていません。";
+"The client interface version does not match the server." = "クライアントインターフェイスのバージョンがサーバと一致しません。";
+"Cannot find VM with ID: %@" = "指定されたIDの仮想マシンが見つかりません: %@";
+"Invalid backend." = "バックエンドが無効です。";
+"Failed to access file." = "ファイルへのアクセスに失敗しました。";
 
 
 /* Scripting */
