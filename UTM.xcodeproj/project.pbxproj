@@ -1966,6 +1966,7 @@
 		CEB54C1929300C20000D2AA9 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		CEB54C802931C43F000D2AA9 /* UTMPatches.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMPatches.swift; sourceTree = "<group>"; };
 		CEB5C1182B8C4CD4008AAE5C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = "en.lproj/Info-RemotePlist.strings"; sourceTree = "<group>"; };
+		CEB5C11A2B8C4D30008AAE5C /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = "ja.lproj/Info-RemotePlist.strings"; sourceTree = "<group>"; };
 		CEB63A7524F4654400CAF323 /* Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
 		CEB63A7824F468BA00CAF323 /* UTMJailbreak.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMJailbreak.h; sourceTree = "<group>"; };
 		CEB63A7924F469E300CAF323 /* UTMJailbreak.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMJailbreak.m; sourceTree = "<group>"; };
@@ -4226,6 +4227,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				CEB5C1182B8C4CD4008AAE5C /* en */,
+				CEB5C11A2B8C4D30008AAE5C /* ja */,
 			);
 			name = "Info-RemotePlist.strings";
 			sourceTree = "<group>";
