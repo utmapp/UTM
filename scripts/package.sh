@@ -12,7 +12,8 @@ usage() {
 	echo "  MODE is one of:"
 	echo "          deb (Cydia DEB)"
 	echo "          ipa (unsigned IPA of full build with all entitlements)"
-	echo "          ipa-se (unsigned IPA of TCI build)"
+	echo "          ipa-se (unsigned IPA of SE build)"
+	echo "          ipa-remote (unsigned IPA of Remote build)"
 	echo "          ipa-hv (unsigned IPA of full build without JIT entitlement)"
 	echo "          ipa-signed (developer signed IPA with valid PROFILE_NAME and TEAM_ID)"
 	echo "  inputXcarchive is path to UTM.xcarchive"
@@ -41,6 +42,11 @@ ipa-se )
 	NAME="UTM SE"
 	BUNDLE_ID="com.utmapp.UTM-SE"
 	INPUT_APP="$INPUT/Products/Applications/UTM SE.app"
+	;;
+ipa-remote )
+	NAME="UTM Remote"
+	BUNDLE_ID="com.utmapp.UTM-Remote"
+	INPUT_APP="$INPUT/Products/Applications/UTM Remote.app"
 	;;
 * )
 	usage
@@ -298,7 +304,7 @@ EOL
 	create_fake_ipa "$NAME" "$BUNDLE_ID" "$INPUT" "$OUTPUT" "$FAKEENT"
 	rm "$FAKEENT"
 	;;
-ipa-se )
+ipa-se | ipa-remote )
 	FAKEENT="/tmp/fakeent.$$.plist"
 	cat >"$FAKEENT" <<EOL
 <?xml version="1.0" encoding="UTF-8"?>

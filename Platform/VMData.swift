@@ -20,7 +20,7 @@ import SwiftUI
 /// Model wrapping a single UTMVirtualMachine for use in views
 @MainActor class VMData: ObservableObject {
     /// Underlying virtual machine
-    private(set) var wrapped: (any UTMVirtualMachine)? {
+    fileprivate(set) var wrapped: (any UTMVirtualMachine)? {
         willSet {
             objectWillChange.send()
         }
@@ -53,8 +53,8 @@ import SwiftUI
     }
     
     /// Registry entry before loading
-    private var registryEntryWrapped: UTMRegistryEntry?
-    
+    fileprivate var registryEntryWrapped: UTMRegistryEntry?
+
     /// Set when we use a temporary UUID because we loaded a legacy entry
     private var uuidUnknown: Bool = false
     
@@ -67,14 +67,22 @@ import SwiftUI
     @Published var state: UTMVirtualMachineState = .stopped
     
     /// Copy from wrapped VM
-    @Published var screenshot: PlatformImage?
-    
+    @Published var screenshot: UTMVirtualMachineScreenshot?
+
+    /// If true, it is possible to hijack the session.
+    @Published var isTakeoverAllowed: Bool = false
+
     /// Allows changes in the config, registry, and VM to be reflected
     private var observers: [AnyCancellable] = []
     
+    /// True if the .utm is loaded outside of the default storage
+    var isShortcut: Bool {
+        isShortcut(pathUrl)
+    }
+
     /// No default init
-    private init() {
-        
+    fileprivate init() {
+
     }
     
     /// Create a VM from an existing object
@@ -129,9 +137,11 @@ import SwiftUI
     /// - Parameter config: Configuration to create new VM
     convenience init<Config: UTMConfiguration>(creatingFromConfig config: Config, destinationUrl: URL) throws {
         self.init()
+        #if !WITH_REMOTE
         if let qemuConfig = config as? UTMQemuConfiguration {
             wrapped = try UTMQemuVirtualMachine(newForConfiguration: qemuConfig, destinationUrl: destinationUrl)
         }
+        #endif
         #if os(macOS)
         if let appleConfig = config as? UTMAppleConfiguration {
             wrapped = try UTMAppleVirtualMachine(newForConfiguration: appleConfig, destinationUrl: destinationUrl)
@@ -160,9 +170,11 @@ import SwiftUI
         }
         var loaded: (any UTMVirtualMachine)?
         let config = try UTMQemuConfiguration.load(from: url)
+        #if !WITH_REMOTE
         if let qemuConfig = config as? UTMQemuConfiguration {
             loaded = try UTMQemuVirtualMachine(packageUrl: url, configuration: qemuConfig, isShortcut: isShortcut(url))
         }
+        #endif
         #if os(macOS)
         if let appleConfig = config as? UTMAppleConfiguration {
             loaded = try UTMAppleVirtualMachine(packageUrl: url, configuration: appleConfig, isShortcut: isShortcut(url))
@@ -195,7 +207,7 @@ import SwiftUI
     }
     
     /// Listen to changes in the underlying object and propogate upwards
-    private func subscribeToChildren() {
+    fileprivate func subscribeToChildren() {
         var s: [AnyCancellable] = []
         if let wrapped = wrapped {
             wrapped.onConfigurationChange = { [weak self] in
@@ -205,10 +217,12 @@ import SwiftUI
                 }
             }
             
-            wrapped.onStateChange = { [weak self] in
+            wrapped.onStateChange = { [weak self, weak wrapped] in
                 Task { @MainActor in
-                    self?.state = wrapped.state
-                    self?.screenshot = wrapped.screenshot
+                    if let wrapped = wrapped {
+                        self?.state = wrapped.state
+                        self?.screenshot = wrapped.screenshot
+                    }
                 }
             }
         }
@@ -281,11 +295,6 @@ extension VMData: Hashable {
 
 // MARK: - VM State
 extension VMData {
-    /// True if the .utm is loaded outside of the default storage
-    var isShortcut: Bool {
-        isShortcut(pathUrl)
-    }
-    
     func isShortcut(_ url: URL) -> Bool {
         let defaultStorageUrl = UTMData.defaultStorageUrl.standardizedFileURL
         let parentUrl = url.deletingLastPathComponent().standardizedFileURL
@@ -422,6 +431,98 @@ extension VMData {
     
     /// If non-null, is the most recent screenshot image of the running VM
     var screenshotImage: PlatformImage? {
-        wrapped?.screenshot
+        wrapped?.screenshot?.image
     }
 }
+
+#if WITH_REMOTE
+@MainActor
+class VMRemoteData: VMData {
+    private var backend: UTMBackend
+    private var _isShortcut: Bool
+    override var isShortcut: Bool {
+        _isShortcut
+    }
+    private var initialState: UTMVirtualMachineState
+    private var existingWrapped: UTMRemoteSpiceVirtualMachine?
+
+    /// Set by caller when VM is unavailable and there is a reason for it.
+    @Published var unavailableReason: String?
+
+    init(fromRemoteItem item: UTMRemoteMessageServer.VirtualMachineInformation, existingWrapped: UTMRemoteSpiceVirtualMachine? = nil) {
+        self.backend = item.backend
+        self._isShortcut = item.isShortcut
+        self.initialState = item.state
+        self.existingWrapped = existingWrapped
+        super.init()
+        self.isTakeoverAllowed = item.isTakeoverAllowed
+        self.registryEntryWrapped = UTMRegistry.shared.entry(uuid: item.id, name: item.name, path: item.path)
+        self.registryEntryWrapped!.isSuspended = item.isSuspended
+        self.registryEntryWrapped!.externalDrives = item.mountedDrives.mapValues({ UTMRegistryEntry.File(dummyFromPath: $0) })
+    }
+
+    override func load() throws {
+        throw VMRemoteDataError.notImplemented
+    }
+
+    func load(withRemoteServer server: UTMRemoteClient.Remote) async throws {
+        guard backend == .qemu else {
+            throw VMRemoteDataError.backendNotSupported
+        }
+        let entry = registryEntryWrapped!
+        let config = try await server.getQEMUConfiguration(for: entry.uuid)
+        await loadCustomIcon(withRemoteServer: server, id: entry.uuid, config: config)
+        let vm: UTMRemoteSpiceVirtualMachine
+        if let existingWrapped = existingWrapped {
+            vm = existingWrapped
+            wrapped = vm
+            self.existingWrapped = nil
+            await reloadConfiguration(withRemoteServer: server, config: config)
+            vm.updateRegistry(entry)
+        } else {
+            vm = UTMRemoteSpiceVirtualMachine(forRemoteServer: server, remotePath: entry.package.path, entry: entry, config: config)
+            wrapped = vm
+        }
+        vm.updateConfigFromRegistry()
+        subscribeToChildren()
+        await vm.updateRemoteState(initialState)
+    }
+
+    func reloadConfiguration(withRemoteServer server: UTMRemoteClient.Remote, config: UTMQemuConfiguration) async {
+        let spiceVM = wrapped as! UTMRemoteSpiceVirtualMachine
+        await loadCustomIcon(withRemoteServer: server, id: spiceVM.id, config: config)
+        spiceVM.reload(usingConfiguration: config)
+    }
+
+    private func loadCustomIcon(withRemoteServer server: UTMRemoteClient.Remote, id: UUID, config: UTMQemuConfiguration) async {
+        if config.information.isIconCustom, let iconUrl = config.information.iconURL {
+            if let iconUrl = try? await server.getPackageFile(for: id, relativePathComponents: [UTMQemuConfiguration.dataDirectoryName, iconUrl.lastPathComponent]) {
+                config.information.iconURL = iconUrl
+            }
+        }
+    }
+
+    func updateMountedDrives(_ mountedDrives: [String: String]) {
+        guard let registryEntry = registryEntry else {
+            return
+        }
+        registryEntry.externalDrives = mountedDrives.mapValues({ UTMRegistryEntry.File(dummyFromPath: $0) })
+    }
+}
+
+enum VMRemoteDataError: Error {
+    case notImplemented
+    case backendNotSupported
+}
+
+extension VMRemoteDataError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case .notImplemented:
+            return NSLocalizedString("This function is not implemented.", comment: "VMData")
+        case .backendNotSupported:
+            return NSLocalizedString("This VM is configured for a backend that does not support remote clients.", comment: "VMData")
+        }
+    }
+}
+#endif
