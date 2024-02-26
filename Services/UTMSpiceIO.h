@@ -16,8 +16,12 @@
 
 #import <Foundation/Foundation.h>
 #import "UTMSpiceIODelegate.h"
+#if defined(WITH_REMOTE)
+#import "UTMRemoteConnectInterface.h"
+#else
 @import QEMUKitInternal;
-#if defined(WITH_QEMU_TCI)
+#endif
+#if !defined(WITH_USB)
 @import CocoaSpiceNoUsb;
 #else
 @import CocoaSpice;
@@ -34,14 +38,18 @@ typedef NS_OPTIONS(NSUInteger, UTMSpiceIOOptions) {
 
 NS_ASSUME_NONNULL_BEGIN
 
+#if defined(WITH_REMOTE)
+@interface UTMSpiceIO : NSObject<CSConnectionDelegate, UTMRemoteConnectInterface>
+#else
 @interface UTMSpiceIO : NSObject<CSConnectionDelegate, QEMUInterface>
+#endif
 
 @property (nonatomic, readonly, nullable) CSDisplay *primaryDisplay;
 @property (nonatomic, readonly, nullable) CSInput *primaryInput;
 @property (nonatomic, readonly, nullable) CSPort *primarySerial;
 @property (nonatomic, readonly) NSArray<CSDisplay *> *displays;
 @property (nonatomic, readonly) NSArray<CSPort *> *serials;
-#if !defined(WITH_QEMU_TCI)
+#if defined(WITH_USB)
 @property (nonatomic, readonly, nullable) CSUSBManager *primaryUsbManager;
 #endif
 @property (nonatomic, weak, nullable) id<UTMSpiceIODelegate> delegate;
@@ -50,6 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithSocketUrl:(NSURL *)socketUrl options:(UTMSpiceIOOptions)options NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithHost:(NSString *)host tlsPort:(NSInteger)tlsPort serverPublicKey:(NSData *)serverPublicKey password:(NSString *)password options:(UTMSpiceIOOptions)options NS_DESIGNATED_INITIALIZER;
 - (void)changeSharedDirectory:(NSURL *)url;
 
 - (BOOL)startWithError:(NSError * _Nullable *)error;

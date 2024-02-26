@@ -101,7 +101,7 @@ struct VMConfigSystemView: View {
         }
         #endif
         let actualJitSizeMib = jitSizeMib == 0 ? memorySizeMib / 4 : jitSizeMib
-        let jitMirrorMultiplier = jb_has_jit_entitlement() ? 1 : 2;
+        let jitMirrorMultiplier = UTMCapabilities.current.contains(.hasJitEntitlements) ? 1 : 2;
         let estMemoryUsage = UInt64(memorySizeMib + jitMirrorMultiplier*actualJitSizeMib + baseUsageMib) * bytesInMib
         if Double(estMemoryUsage) > Double(totalDeviceMemory) * warningThreshold {
             warningMessage = WarningMessage.overallocatedRam(totalMib: totalDeviceMemory / bytesInMib, estimatedMib: estMemoryUsage / bytesInMib)
@@ -177,7 +177,7 @@ private struct HardwareOptions: View {
                     }
                 }
                 .onChange(of: config.architecture) { newValue in
-                    isArchitectureSupported = UTMQemuVirtualMachine.isSupported(systemArchitecture: newValue)
+                    isArchitectureSupported = ConcreteVirtualMachine.isSupported(systemArchitecture: newValue)
                     if newValue != architecture {
                         architecture = newValue
                     }

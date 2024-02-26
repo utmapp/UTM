@@ -17,30 +17,90 @@
 import SwiftUI
 
 struct VMPlaceholderView: View {
-    @EnvironmentObject private var data: UTMData
-    @Environment(\.openURL) private var openURL
-    
+    var body: some View {
+        if #available(iOS 16, macOS 13, *) {
+            VMPlaceholderViewNew()
+        } else {
+            VMPlaceholderViewOld()
+        }
+    }
+}
+
+fileprivate struct VMPlaceholderViewOld: View {
     var body: some View {
         VStack {
+            Title()
             HStack {
-                Text("Welcome to UTM").font(.title)
+                FirstRow()
             }
             HStack {
-                TileButton(Label(String.create, systemImage: "plus.circle")) {
-                    data.newVM()
-                }
-                TileButton(Label(String.browse, systemImage: "arrow.down.circle")) {
-                    openURL(URL(string: "https://mac.getutm.app/gallery/")!)
-                }
+                SecondRow()
             }
-            HStack {
-                TileButton(Label(String.guide, systemImage: "book.circle")) {
-                    openURL(URL(string: "https://docs.getutm.app/basics/basics/")!)
+        }
+    }
+}
+
+@available(iOS 16, macOS 13, *)
+fileprivate struct VMPlaceholderViewNew: View {
+    @Environment(\.openWindow) private var openWindow
+
+    var body: some View {
+        VStack {
+            Title()
+            Grid {
+                GridRow {
+                    FirstRow()
                 }
-                TileButton(Label(String.support, systemImage: "questionmark.circle")) {
-                    openURL(URL(string: "https://docs.getutm.app/")!)
+                GridRow {
+                    SecondRow()
                 }
+                #if os(macOS)
+                GridRow {
+                    Button {
+                        openWindow(id: "server")
+                    } label: {
+                        Label(String.server, systemImage: "server.rack")
+                    }.buttonStyle(BigButtonStyle(width: nil, height: 50))
+                    .gridCellColumns(2)
+                    .gridCellUnsizedAxes(.horizontal)
+                }
+                #endif
             }
+        }
+    }
+}
+
+fileprivate struct Title: View {
+    var body: some View {
+        HStack {
+            Text("Welcome to UTM").font(.title)
+        }
+    }
+}
+
+fileprivate struct FirstRow: View {
+    @EnvironmentObject private var data: UTMData
+    @Environment(\.openURL) private var openURL
+
+    var body: some View {
+        TileButton(Label(String.create, systemImage: "plus.circle")) {
+            data.newVM()
+        }
+        TileButton(Label(String.browse, systemImage: "arrow.down.circle")) {
+            openURL(URL(string: "https://mac.getutm.app/gallery/")!)
+        }
+    }
+}
+
+fileprivate struct SecondRow: View {
+    @Environment(\.openURL) private var openURL
+
+    var body: some View {
+        TileButton(Label(String.guide, systemImage: "book.circle")) {
+            openURL(URL(string: "https://docs.getutm.app/basics/basics/")!)
+        }
+        TileButton(Label(String.support, systemImage: "questionmark.circle")) {
+            openURL(URL(string: "https://docs.getutm.app/")!)
         }
     }
 }
@@ -50,6 +110,7 @@ fileprivate extension String {
     static let browse = NSLocalizedString("Browse UTM Gallery", comment: "Welcome view")
     static let guide = NSLocalizedString("User Guide", comment: "Welcome view")
     static let support = NSLocalizedString("Support", comment: "Welcome view")
+    static let server = NSLocalizedString("Server", comment: "Server view")
 }
 
 private struct TileButton: View {

@@ -29,9 +29,10 @@ struct VMDetailsView: View {
     #else
     private let regularScreenSizeClass: Bool = true
     #endif
-    
+
+    @State private var size: Int64 = 0
+
     private var sizeLabel: String {
-        let size = data.computeSize(for: vm)
         return ByteCountFormatter.string(fromByteCount: size, countStyle: .binary)
     }
     
@@ -70,8 +71,8 @@ struct VMDetailsView: View {
                             .padding([.leading, .trailing, .bottom])
                     }
                     #else
-                    let qemuVM = vm.wrapped as! UTMQemuVirtualMachine
-                    VMRemovableDrivesView(vm: vm, config: qemuVM.config)
+                    let qemuConfig = vm.config as! UTMQemuConfiguration
+                    VMRemovableDrivesView(vm: vm, config: qemuConfig)
                         .padding([.leading, .trailing, .bottom])
                     #endif
                 } else {
@@ -89,8 +90,8 @@ struct VMDetailsView: View {
                             VMRemovableDrivesView(vm: vm, config: qemuVM.config)
                         }
                         #else
-                        let qemuVM = vm.wrapped as! UTMQemuVirtualMachine
-                        VMRemovableDrivesView(vm: vm, config: qemuVM.config)
+                        let qemuConfig = vm.config as! UTMQemuConfiguration
+                        VMRemovableDrivesView(vm: vm, config: qemuConfig)
                         #endif
                     }.padding([.leading, .trailing, .bottom])
                 }
@@ -108,6 +109,16 @@ struct VMDetailsView: View {
                         .environmentObject(data)
                 }
                 #endif
+            }
+            .onAppear {
+                Task {
+                    size = await data.computeSize(for: vm)
+                    #if WITH_REMOTE
+                    if let vm = vm.wrapped as? UTMRemoteSpiceVirtualMachine {
+                        await vm.loadScreenshotFromServer()
+                    }
+                    #endif
+                }
             }
         }
     }
@@ -151,7 +162,7 @@ struct Screenshot: View {
                 .blendMode(.hardLight)
             #if os(visionOS)
                 .overlay {
-                    if vm.isStopped {
+                    if vm.isStopped || vm.isTakeoverAllowed {
                         Image(systemName: "play.circle.fill")
                             .resizable()
                             .frame(width: 100, height: 100)
@@ -164,7 +175,7 @@ struct Screenshot: View {
             #endif
             if vm.isBusy {
                 Spinner(size: .large)
-            } else if vm.isStopped {
+            } else if vm.isStopped || vm.isTakeoverAllowed {
                 #if !os(visionOS)
                 Button(action: { data.run(vm: vm) }, label: {
                     Label("Run", systemImage: "play.circle.fill")

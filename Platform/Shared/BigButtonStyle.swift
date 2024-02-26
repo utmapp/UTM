@@ -17,12 +17,12 @@
 import SwiftUI
 
 struct BigButtonStyle: ButtonStyle {
-    let width: CGFloat
-    let height: CGFloat
-    
+    let width: CGFloat?
+    let height: CGFloat?
+
     fileprivate struct BigButtonView: View {
-        let width: CGFloat
-        let height: CGFloat
+        let width: CGFloat?
+        let height: CGFloat?
         let configuration: BigButtonStyle.Configuration
         @Environment(\.isEnabled) private var isEnabled: Bool
         
