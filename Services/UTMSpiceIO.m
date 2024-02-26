@@ -204,7 +204,9 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
 - (void)spiceDisconnected:(CSConnection *)connection {
     NSAssert(connection == self.spiceConnection, @"Unknown connection");
     self.isConnected = NO;
-    [self.delegate spiceDidDisconnect];
+    if ([self.delegate respondsToSelector:@selector(spiceDidDisconnect)]) {
+        [self.delegate spiceDidDisconnect];
+    }
 }
 
 - (void)spiceError:(CSConnection *)connection code:(CSConnectionError)code message:(nullable NSString *)message {
