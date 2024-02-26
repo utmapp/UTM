@@ -855,6 +855,7 @@
 		CEA9059625FC6A3B00801E7C /* usbredirparser.1.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CEA9058825FC69D100801E7C /* usbredirparser.1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEB20EEA282053320033EFB5 /* DoubleClickHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB20EE9282053320033EFB5 /* DoubleClickHandler.swift */; };
 		CEB54C852931E32F000D2AA9 /* UTMPatches.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB54C802931C43F000D2AA9 /* UTMPatches.swift */; };
+		CEB5C1172B8C4CD4008AAE5C /* Info-RemotePlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = CEB5C1192B8C4CD4008AAE5C /* Info-RemotePlist.strings */; };
 		CEB63A7624F4654400CAF323 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB63A7524F4654400CAF323 /* Main.swift */; };
 		CEB63A7724F4654400CAF323 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB63A7524F4654400CAF323 /* Main.swift */; };
 		CEB63A7A24F469E300CAF323 /* UTMJailbreak.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB63A7924F469E300CAF323 /* UTMJailbreak.m */; };
@@ -1146,7 +1147,6 @@
 		CEF7F6742AEEDCC400E34952 /* ssl.1.1.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641722653C7500FC7E63 /* ssl.1.1.framework */; };
 		CEF7F6762AEEDCC400E34952 /* pixman-1.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641922653C7600FC7E63 /* pixman-1.0.framework */; };
 		CEF7F6792AEEDCC400E34952 /* Icons in Resources */ = {isa = PBXBuildFile; fileRef = CE4698F824C8FBD9008C1BD6 /* Icons */; };
-		CEF7F67A2AEEDCC400E34952 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = FFB02A8A266CB09C006CD71A /* InfoPlist.strings */; };
 		CEF7F67B2AEEDCC400E34952 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 521F3EFB2414F73800130500 /* Localizable.strings */; };
 		CEF7F67C2AEEDCC400E34952 /* qemu in Resources */ = {isa = PBXBuildFile; fileRef = CE9D18F72265410E00355E14 /* qemu */; };
 		CEF7F67D2AEEDCC400E34952 /* VMDisplayMetalViewInputAccessory.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE061CE9289EB6250000351C /* VMDisplayMetalViewInputAccessory.xib */; };
@@ -1965,6 +1965,7 @@
 		CEB54C1829300C1B000D2AA9 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		CEB54C1929300C20000D2AA9 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		CEB54C802931C43F000D2AA9 /* UTMPatches.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMPatches.swift; sourceTree = "<group>"; };
+		CEB5C1182B8C4CD4008AAE5C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = "en.lproj/Info-RemotePlist.strings"; sourceTree = "<group>"; };
 		CEB63A7524F4654400CAF323 /* Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
 		CEB63A7824F468BA00CAF323 /* UTMJailbreak.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMJailbreak.h; sourceTree = "<group>"; };
 		CEB63A7924F469E300CAF323 /* UTMJailbreak.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMJailbreak.m; sourceTree = "<group>"; };
@@ -2676,6 +2677,7 @@
 				CE2D954F24AD4F980059923A /* Info.plist */,
 				CECF02572B70909900409FC0 /* Info-Remote.plist */,
 				FFB02A8A266CB09C006CD71A /* InfoPlist.strings */,
+				CEB5C1192B8C4CD4008AAE5C /* Info-RemotePlist.strings */,
 				5286EC91243748AC007E6CBC /* Settings.bundle */,
 			);
 			path = iOS;
@@ -3343,7 +3345,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CEF7F6792AEEDCC400E34952 /* Icons in Resources */,
-				CEF7F67A2AEEDCC400E34952 /* InfoPlist.strings in Resources */,
+				CEB5C1172B8C4CD4008AAE5C /* Info-RemotePlist.strings in Resources */,
 				CEF7F67B2AEEDCC400E34952 /* Localizable.strings in Resources */,
 				CEF7F67C2AEEDCC400E34952 /* qemu in Resources */,
 				CEF7F67D2AEEDCC400E34952 /* VMDisplayMetalViewInputAccessory.xib in Resources */,
@@ -4218,6 +4220,14 @@
 				F6DA2DAE2AAFEE060070DCD1 /* zh-Hans */,
 			);
 			name = VMDisplayMetalViewInputAccessory.xib;
+			sourceTree = "<group>";
+		};
+		CEB5C1192B8C4CD4008AAE5C /* Info-RemotePlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				CEB5C1182B8C4CD4008AAE5C /* en */,
+			);
+			name = "Info-RemotePlist.strings";
 			sourceTree = "<group>";
 		};
 		CED8DF7928A120C100C34345 /* Localizable.stringsdict */ = {
