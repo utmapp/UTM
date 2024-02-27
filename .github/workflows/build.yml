@@ -300,11 +300,22 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Setup Xcode
+        shell: bash
+        run: |
+          [[ "$(xcode-select -p)" == "${{ env.BUILD_XCODE_PATH }}"* ]] || sudo xcode-select -s "${{ env.BUILD_XCODE_PATH }}"
       - name: Import signing certificate into keychain
         uses: apple-actions/import-codesign-certs@v1
         with:
           p12-file-base64: ${{ secrets.SIGNING_CERTIFICATE_P12_DATA }}
           p12-password: ${{ secrets.SIGNING_CERTIFICATE_PASSWORD }}
+      - name: Import App Store Connect API Key
+        run: |
+          mkdir -p ~/.appstoreconnect/private_keys
+          echo $AUTHKEY_API_KEY | base64 --decode -o ~/.appstoreconnect/private_keys/AuthKey_$API_KEY.p8
+        env:
+          AUTHKEY_API_KEY: ${{ secrets.CONNECT_KEY }}
+          API_KEY: ${{ vars.CONNECT_KEY_ID }}
       - name: Install Provisioning Profiles
         run: |
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
@@ -336,10 +347,13 @@ jobs:
           HELPER_PROFILE_UUID: ${{ vars.HELPER_PROFILE_UUID }}
           LAUNCHER_PROFILE_UUID: ${{ vars.LAUNCHER_PROFILE_UUID }}
       - name: Notarize app
-        run: npx notarize-cli --file "UTM.dmg" --bundle-id "com.utmapp.UTM"
+        run: |
+          xcrun notarytool submit --issuer "$ISSUER_UUID" --key-id "$API_KEY" --key "~/.appstoreconnect/private_keys/AuthKey_$API_KEY.p8" --team-id "$SIGNING_TEAM_ID" --wait "UTM.dmg"
+          xcrun stapler staple "UTM.dmg"
         env:
-          NOTARIZE_USERNAME: ${{ secrets.SIGNING_USERNAME }}
-          NOTARIZE_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+          SIGNING_TEAM_ID: ${{ vars.SIGNING_TEAM_ID }}
+          ISSUER_UUID: ${{ vars.CONNECT_ISSUER_ID }}
+          API_KEY: ${{ vars.CONNECT_KEY_ID }}
       - name: Upload Artifact
         if: github.event_name != 'release'
         uses: actions/upload-artifact@v3
@@ -364,11 +378,22 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Setup Xcode
+        shell: bash
+        run: |
+          [[ "$(xcode-select -p)" == "${{ env.BUILD_XCODE_PATH }}"* ]] || sudo xcode-select -s "${{ env.BUILD_XCODE_PATH }}"
       - name: Import signing certificate into keychain
         uses: apple-actions/import-codesign-certs@v1
         with:
           p12-file-base64: ${{ secrets.SIGNING_CERTIFICATE_P12_DATA }}
           p12-password: ${{ secrets.SIGNING_CERTIFICATE_PASSWORD }}
+      - name: Import App Store Connect API Key
+        run: |
+          mkdir -p ~/.appstoreconnect/private_keys
+          echo $AUTHKEY_API_KEY | base64 --decode -o ~/.appstoreconnect/private_keys/AuthKey_$API_KEY.p8
+        env:
+          AUTHKEY_API_KEY: ${{ secrets.CONNECT_KEY }}
+          API_KEY: ${{ vars.CONNECT_KEY_ID }}
       - name: Install Provisioning Profiles
         run: |
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
@@ -396,7 +421,6 @@ jobs:
           HELPER_PROFILE_UUID: ${{ vars.APP_STORE_HELPER_PROFILE_UUID }}
           LAUNCHER_PROFILE_UUID: ${{ vars.APP_STORE_LAUNCHER_PROFILE_UUID }}
       - name: Upload Artifact
-        if: github.event_name != 'release'
         uses: actions/upload-artifact@v3
         with:
           name: UTM-pkg
@@ -404,7 +428,75 @@ jobs:
       - name: Upload app to App Store Connect
         if: github.event_name == 'release'
         run: |
-          xcrun altool --upload-app -t macos -f "UTM.pkg" -u "$SUBMIT_USERNAME" -p "$SUBMIT_PASSWORD"
+          xcrun altool --upload-app -t macos -f "UTM.pkg" --apiKey "$API_KEY" --apiIssuer "$ISSUER_UUID"
         env:
-          SUBMIT_USERNAME: ${{ secrets.SIGNING_USERNAME }}
-          SUBMIT_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+          ISSUER_UUID: ${{ vars.CONNECT_ISSUER_ID }}
+          API_KEY: ${{ vars.CONNECT_KEY_ID }}
+  submit-ios:
+    name: Submit (iOS)
+    runs-on: ${{ fromJSON(needs.configuration.outputs.github-runner) }}
+    needs: [configuration, build-utm]
+    strategy:
+      matrix:
+        configuration: [
+          {platform: "ios-tci", scheme: "iOS-SE", mode: "ipa-se-signed", name: "UTM-SE-signed.ipa", path: "UTM SE.ipa", type: "ios"},
+          {platform: "visionos-tci", scheme: "iOS-SE", mode: "ipa-se-signed", name: "UTM-SE-visionOS-signed.ipa", path: "UTM SE.ipa", type: "visionos"},
+          {platform: "ios-tci", scheme: "iOS-Remote", mode: "ipa-remote-signed", name: "UTM-Remote-signed.ipa", path: "UTM Remote.ipa", type: "ios"},
+          {platform: "visionos-tci", scheme: "iOS-Remote", mode: "ipa-remote-signed", name: "UTM-Remote-visionOS-signed.ipa", path: "UTM Remote.ipa", type: "visionos"},
+        ]
+    if: github.event_name == 'release' || github.event.inputs.test_release == 'true'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Xcode
+        shell: bash
+        run: |
+          [[ "$(xcode-select -p)" == "${{ env.BUILD_XCODE_PATH }}"* ]] || sudo xcode-select -s "${{ env.BUILD_XCODE_PATH }}"
+      - name: Import signing certificate into keychain
+        uses: apple-actions/import-codesign-certs@v1
+        with:
+          p12-file-base64: ${{ secrets.SIGNING_CERTIFICATE_P12_DATA }}
+          p12-password: ${{ secrets.SIGNING_CERTIFICATE_PASSWORD }}
+      - name: Import App Store Connect API Key
+        run: |
+          mkdir -p ~/.appstoreconnect/private_keys
+          echo $AUTHKEY_API_KEY | base64 --decode -o ~/.appstoreconnect/private_keys/AuthKey_$API_KEY.p8
+        env:
+          AUTHKEY_API_KEY: ${{ secrets.CONNECT_KEY }}
+          API_KEY: ${{ vars.CONNECT_KEY_ID }}
+      - name: Install Provisioning Profiles
+        run: |
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo $IOS_REMOTE_PROFILE_DATA | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/$IOS_REMOTE_PROFILE_UUID.provisionprofile
+          echo $IOS_SE_PROFILE_DATA | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/$IOS_SE_PROFILE_UUID.provisionprofile
+          echo $LAUNCHER_PROFILE_DATA | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/$LAUNCHER_PROFILE_UUID.provisionprofile
+        env:
+          IOS_REMOTE_PROFILE_DATA: ${{ vars.IOS_REMOTE_PROFILE_DATA }}
+          IOS_REMOTE_PROFILE_UUID: ${{ vars.IOS_REMOTE_PROFILE_UUID }}
+          IOS_SE_PROFILE_DATA: ${{ vars.IOS_SE_PROFILE_DATA }}
+          IOS_SE_PROFILE_UUID: ${{ vars.IOS_SE_PROFILE_UUID }}
+      - name: Download Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: UTM-${{ matrix.configuration.scheme }}-${{ matrix.configuration.platform }}-arm64
+      - name: Package for App Store
+        run: |
+          tar -xf UTM.xcarchive.tgz
+          ./scripts/package.sh ${{ matrix.configuration.mode }} UTM.xcarchive . "$SIGNING_TEAM_ID" "$PROFILE_UUID" app-store
+        env:
+          SIGNING_TEAM_ID: ${{ vars.SIGNING_TEAM_ID }}
+          PROFILE_UUID: ${{ matrix.configuration.scheme == 'iOS-Remote' && vars.IOS_REMOTE_PROFILE_UUID || vars.IOS_SE_PROFILE_UUID }}
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.configuration.name }}
+          path: ${{ matrix.configuration.path }}
+      - name: Upload app to App Store Connect
+        if: github.event_name == 'release'
+        run: |
+          xcrun altool --upload-app -t "$TYPE" -f "$FILE" --apiKey "$API_KEY" --apiIssuer "$ISSUER_UUID"
+        env:
+          FILE: ${{ matrix.configuration.path }}
+          TYPE: ${{ matrix.configuration.type }}
+          ISSUER_UUID: ${{ vars.CONNECT_ISSUER_ID }}
+          API_KEY: ${{ vars.CONNECT_KEY_ID }}
