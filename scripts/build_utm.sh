@@ -113,7 +113,4 @@ if [ "$SDK" == "macosx" ]; then
     rm "$LAUNCHER_ENTITLEMENTS"
     rm "$HELPER_ENTITLEMENTS"
     rm "$CLI_ENTITLEMENTS"
-else
-    # always build with iOS entitlements, package.sh can strip it later
-    codesign --force --sign - --entitlements "$BASEDIR/../Platform/iOS/iOS.entitlements" --timestamp=none "$BUILT_PATH"
 fi

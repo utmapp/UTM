@@ -8,18 +8,19 @@ command -v realpath >/dev/null 2>&1 || realpath() {
 BASEDIR="$(dirname "$(realpath $0)")"
 
 usage() {
-	echo "usage: $0 MODE inputXcarchive outputPath [TEAM_ID PROFILE_NAME]"
+	echo "usage: $0 MODE inputXcarchive outputPath [TEAM_ID PROFILE_NAME SIGNING_METHOD]"
 	echo "  MODE is one of:"
 	echo "          deb (Cydia DEB)"
 	echo "          ipa (unsigned IPA of full build with all entitlements)"
 	echo "          ipa-se (unsigned IPA of SE build)"
 	echo "          ipa-remote (unsigned IPA of Remote build)"
 	echo "          ipa-hv (unsigned IPA of full build without JIT entitlement)"
-	echo "          ipa-signed (developer signed IPA with valid PROFILE_NAME and TEAM_ID)"
+	echo "          ipa-[se-|remote-]signed (signed IPA with valid PROFILE_NAME and TEAM_ID)"
 	echo "  inputXcarchive is path to UTM.xcarchive"
 	echo "  outputPath is path to an EMPTY output directory for UTM.ipa or UTM.deb"
 	echo "  TEAM_ID is only used for ipa-signed and is the name of the team matching the profile"
 	echo "  PROFILE_NAME is only used for ipa-signed and is the name of the signing profile"
+	echo "  SIGNING_METHOD is only used for ipa-signed and is either 'development' (default) or 'app-store'"
 	exit 1
 }
 
@@ -38,12 +39,12 @@ deb | ipa | ipa-hv | ipa-signed )
 	BUNDLE_ID="com.utmapp.UTM"
 	INPUT_APP="$INPUT/Products/Applications/UTM.app"
 	;;
-ipa-se )
+ipa-se | ipa-se-signed )
 	NAME="UTM SE"
 	BUNDLE_ID="com.utmapp.UTM-SE"
 	INPUT_APP="$INPUT/Products/Applications/UTM SE.app"
 	;;
-ipa-remote )
+ipa-remote | ipa-remote-signed )
 	NAME="UTM Remote"
 	BUNDLE_ID="com.utmapp.UTM-Remote"
 	INPUT_APP="$INPUT/Products/Applications/UTM Remote.app"
@@ -68,11 +69,15 @@ itunes_sign() {
 	local OUTPUT=$2
 	local TEAM_ID=$3
 	local PROFILE_NAME=$4
+	local SIGNING_METHOD=$5
 	local OPTIONS="/tmp/options.$$.plist"
 
 	if [ -z "$PROFILE_NAME" -o -z "$TEAM_ID" ]; then
 		echo "Invalid profile name or team id!"
 		usage
+	fi
+	if [ -z "$SIGNING_METHOD" ]; then
+		SIGNING_METHOD="development"
 	fi
 
 	cat >"$OPTIONS" <<EOL
@@ -83,7 +88,7 @@ itunes_sign() {
 	<key>compileBitcode</key>
 	<false/>
 	<key>method</key>
-	<string>development</string>
+	<string>${SIGNING_METHOD}</string>
 	<key>provisioningProfiles</key>
 	<dict>
 		<key>${BUNDLE_ID}</key>
@@ -115,7 +120,9 @@ fake_sign() {
 	mkdir -p "$_output"
 	cp -a "$_input" "$_output/"
 	find "$_output" -type d -path '*/Frameworks/*.framework' -exec ldid -S \{\} \;
-	ldid -S${_fakeent} -I${_bundle_id} "$_output/Applications/$_name.app/$_name"
+	if [ ! -z "${_fakeent}" ]; then
+		ldid -S${_fakeent} -I${_bundle_id} "$_output/Applications/$_name.app/$_name"
+	fi
 }
 
 create_deb() {
@@ -304,7 +311,7 @@ EOL
 	create_fake_ipa "$NAME" "$BUNDLE_ID" "$INPUT" "$OUTPUT" "$FAKEENT"
 	rm "$FAKEENT"
 	;;
-ipa-se | ipa-remote )
+ipa-se )
 	FAKEENT="/tmp/fakeent.$$.plist"
 	cat >"$FAKEENT" <<EOL
 <?xml version="1.0" encoding="UTF-8"?>
@@ -320,7 +327,31 @@ ipa-se | ipa-remote )
 EOL
 	create_fake_ipa "$NAME" "$BUNDLE_ID" "$INPUT" "$OUTPUT" "$FAKEENT"
 	;;
-ipa-signed )
-	itunes_sign "$INPUT" "$OUTPUT" $5 $6
+ipa-remote )
+	create_fake_ipa "$NAME" "$BUNDLE_ID" "$INPUT" "$OUTPUT"
+	;;
+ipa-signed | ipa-se-signed )
+	FAKEENT="/tmp/fakeent.$$.plist"
+	cat >"$FAKEENT" <<EOL
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>com.apple.developer.kernel.increased-memory-limit</key>
+	<true/>
+	<key>com.apple.developer.kernel.extended-virtual-addressing</key>
+	<true/>
+</dict>
+</plist>
+EOL
+	TMPINPUT="/tmp/UTM.$$.xcarchive"
+	cp -a "$INPUT" "$TMPINPUT"
+	BUILT_PATH=$(find "$TMPINPUT" -name '*.app' -type d | head -1)
+	codesign --force --sign - --entitlements "$FAKEENT" --timestamp=none "$BUILT_PATH"
+	itunes_sign "$TMPINPUT" "$OUTPUT" $4 $5 $6
+	rm -rf "$TMPINPUT"
+	;;
+ipa-remote-signed )
+	itunes_sign "$INPUT" "$OUTPUT" $4 $5 $6
 	;;
 esac
