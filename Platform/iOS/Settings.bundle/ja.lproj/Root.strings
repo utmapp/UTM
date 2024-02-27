@@ -45,6 +45,9 @@
 "Drag cursor" = "カーソルをドラッグ";
 "Touch mode (always show cursor)" = "タッチモード（常にカーソルを表示）";
 "Touch mode (try hiding cursor)" = "タッチモード（カーソルの非表示を試みる）";
+"Visibility" = "可視性";
+"Always show cursor" = "常にカーソルを表示";
+"Try hiding cursor" = "カーソルの非表示を試みる";
 "Apple Pencil Input" = "Apple Pencil入力";
 "Tablet mode (always show cursor)" = "タブレットモード（常にカーソルを表示）";
 "Tablet mode (try hiding cursor)" = "タブレットモード（カーソルの非表示を試みる）";
