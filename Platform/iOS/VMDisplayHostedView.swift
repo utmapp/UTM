@@ -19,7 +19,7 @@ import SwiftUI
 
 struct VMDisplayHostedView: UIViewControllerRepresentable {
     internal class Coordinator: VMDisplayViewControllerDelegate {
-        let vm: UTMQemuVirtualMachine
+        let vm: any UTMSpiceVirtualMachine
         let device: VMWindowState.Device
         @Binding var state: VMWindowState
         var vmStateCancellable: AnyCancellable?
@@ -37,19 +37,19 @@ struct VMDisplayHostedView: UIViewControllerRepresentable {
         }
         
         @MainActor var qemuDisplayUpscaler: MTLSamplerMinMagFilter {
-            vmConfig.displays[state.device!.configIndex].upscalingFilter.metalSamplerMinMagFilter
+            vmConfig.displays[device.configIndex].upscalingFilter.metalSamplerMinMagFilter
         }
         
         @MainActor var qemuDisplayDownscaler: MTLSamplerMinMagFilter {
-            vmConfig.displays[state.device!.configIndex].downscalingFilter.metalSamplerMinMagFilter
+            vmConfig.displays[device.configIndex].downscalingFilter.metalSamplerMinMagFilter
         }
         
         @MainActor var qemuDisplayIsDynamicResolution: Bool {
-            vmConfig.displays[state.device!.configIndex].isDynamicResolution
+            vmConfig.displays[device.configIndex].isDynamicResolution
         }
         
         @MainActor var qemuDisplayIsNativeResolution: Bool {
-            vmConfig.displays[state.device!.configIndex].isNativeResolution
+            vmConfig.displays[device.configIndex].isNativeResolution
         }
         
         @MainActor var qemuHasClipboardSharing: Bool {
@@ -57,7 +57,7 @@ struct VMDisplayHostedView: UIViewControllerRepresentable {
         }
         
         @MainActor var qemuConsoleResizeCommand: String? {
-            vmConfig.serials[state.device!.configIndex].terminal?.resizeCommand
+            vmConfig.serials[device.configIndex].terminal?.resizeCommand
         }
         
         var isViewportChanged: Bool {
@@ -100,7 +100,7 @@ struct VMDisplayHostedView: UIViewControllerRepresentable {
             }
         }
         
-        init(with vm: UTMQemuVirtualMachine, device: VMWindowState.Device, state: Binding<VMWindowState>) {
+        init(with vm: any UTMSpiceVirtualMachine, device: VMWindowState.Device, state: Binding<VMWindowState>) {
             self.vm = vm
             self.device = device
             self._state = state
@@ -131,7 +131,7 @@ struct VMDisplayHostedView: UIViewControllerRepresentable {
         }
     }
     
-    let vm: UTMQemuVirtualMachine
+    let vm: any UTMSpiceVirtualMachine
     let device: VMWindowState.Device
     
     @Binding var state: VMWindowState
@@ -168,7 +168,12 @@ struct VMDisplayHostedView: UIViewControllerRepresentable {
         if let vc = uiViewController as? VMDisplayMetalViewController {
             vc.vmInput = session.primaryInput
         }
-        if state.isKeyboardShown != state.isKeyboardRequested {
+        #if os(visionOS)
+        let useSystemOsk = !(uiViewController is VMDisplayMetalViewController)
+        #else
+        let useSystemOsk = true
+        #endif
+        if useSystemOsk && state.isKeyboardShown != state.isKeyboardRequested {
             DispatchQueue.main.async {
                 if state.isKeyboardRequested {
                     uiViewController.showKeyboard()
@@ -190,6 +195,7 @@ struct VMDisplayHostedView: UIViewControllerRepresentable {
                 }
                 // some obscure SwiftUI error means we cannot refer to Coordinator's state binding
                 vc.setDisplayScaling(state.displayScale, origin: state.displayOrigin)
+                vc.isDynamicResolutionSupported = state.isDynamicResolutionSupported
             }
         case .serial(let serial, _):
             if let vc = uiViewController as? VMDisplayTerminalViewController {

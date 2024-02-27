@@ -15,23 +15,40 @@
 //
 
 import SwiftUI
+import VisionKeyboardKit
 
 @MainActor
 struct UTMApp: App {
+    #if WITH_REMOTE
+    @State private var data: UTMRemoteData = UTMRemoteData()
+    #else
     @State private var data: UTMData = UTMData()
+    #endif
     @Environment(\.openWindow) private var openWindow
     @Environment(\.dismissWindow) private var dismissWindow
 
     private let vmSessionCreatedNotification = NotificationCenter.default.publisher(for: .vmSessionCreated)
     private let vmSessionEndedNotification = NotificationCenter.default.publisher(for: .vmSessionEnded)
 
+    private var contentView: some View {
+        #if WITH_REMOTE
+        RemoteContentView(remoteClientState: data.remoteClient.state)
+        #else
+        ContentView()
+        #endif
+    }
+
     var body: some Scene {
         WindowGroup(id: "home") {
-            ContentView()
+            contentView
             .environmentObject(data)
             .onReceive(vmSessionCreatedNotification) { output in
                 let newSession = output.userInfo!["Session"] as! VMSessionState
-                openWindow(value: newSession.newWindow())
+                if let window = newSession.windows.first {
+                    openWindow(value: window)
+                } else {
+                    openWindow(value: newSession.newWindow())
+                }
             }
             .onReceive(vmSessionEndedNotification) { output in
                 let endedSession = output.userInfo!["Session"] as! VMSessionState
@@ -46,12 +63,17 @@ struct UTMApp: App {
         WindowGroup(for: VMSessionState.GlobalWindowID.self) { $globalID in
             if let globalID = globalID, let session = VMSessionState.allActiveSessions[globalID.sessionID] {
                 VMWindowView(id: globalID.windowID).environmentObject(session)
+                    .glassBackgroundEffect(in: .rect(cornerRadius: 15))
+                    #if WITH_SOLO_VM
                     .onAppear {
                         // currently we only support one session, so close the home window
                         dismissWindow(id: "home")
                     }
+                    #endif
             }
         }
+        .windowStyle(.plain)
         .windowResizability(.contentMinSize)
+        KeyboardWindowGroup()
     }
 }

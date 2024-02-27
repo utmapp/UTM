@@ -26,7 +26,7 @@ struct VMConfigInputView: View {
                     VMConfigConstantPicker("USB Support", selection: $config.usbBusSupport)
                 }
                 
-                #if !WITH_QEMU_TCI
+                #if WITH_USB
                 if config.usbBusSupport != .disabled {
                     Section(header: Text("USB Sharing")) {
                         if !jb_has_usb_entitlement() {

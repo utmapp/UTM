@@ -20,8 +20,11 @@ import UniformTypeIdentifiers
 import IQKeyboardManagerSwift
 #endif
 
-#if WITH_QEMU_TCI
+// on visionOS, there is no text to show more than UTM
+#if WITH_QEMU_TCI && !os(visionOS)
 let productName = "UTM SE"
+#elseif WITH_REMOTE && !os(visionOS)
+let productName = "UTM Remote"
 #else
 let productName = "UTM"
 #endif
@@ -33,7 +36,8 @@ struct ContentView: View {
     @State private var newPopupPresented = false
     @State private var openSheetPresented = false
     @Environment(\.openURL) var openURL
-    
+    @AppStorage("ServerAutostart") private var isServerAutostart: Bool = false
+
     var body: some View {
         VMNavigationListView()
         .overlay(data.showSettingsModal ? AnyView(EmptyView()) : AnyView(BusyOverlay()))
@@ -67,6 +71,11 @@ struct ContentView: View {
         .onAppear {
             Task {
                 await data.listRefresh()
+                #if os(macOS)
+                if isServerAutostart {
+                    await data.remoteServer.start()
+                }
+                #endif
             }
             Task {
                 await releaseHelper.fetchReleaseNotes()
@@ -78,7 +87,7 @@ struct ContentView: View {
             #if !os(visionOS)
             IQKeyboardManager.shared.enable = true
             #endif
-            #if !WITH_QEMU_TCI
+            #if WITH_JIT
             if !Main.jitAvailable {
                 data.busyWorkAsync {
                     let jitStreamerAttach = UserDefaults.standard.bool(forKey: "JitStreamerAttach")
@@ -95,7 +104,7 @@ struct ContentView: View {
                     #endif
 
                     // ignore error when we are running on a HV only build
-                    if !jb_has_hypervisor() {
+                    if !UTMCapabilities.current.contains(.hasHypervisorSupport) {
                         throw NSLocalizedString("Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached. See https://getutm.app/install/ for more details.", comment: "ContentView")
                     }
                 }
@@ -163,7 +172,7 @@ struct ContentView: View {
             case "pause":
                 if let vm = findVM(), vm.state == .started {
                     let shouldSaveOnPause: Bool
-                    if let vm = vm.wrapped as? UTMQemuVirtualMachine {
+                    if let vm = vm.wrapped as? (any UTMSpiceVirtualMachine) {
                         shouldSaveOnPause = !vm.isRunningAsDisposible
                     } else {
                         shouldSaveOnPause = true
