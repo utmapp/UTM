@@ -25,7 +25,13 @@ struct UTMUnavailableVMView: View {
                              subtitle: vm.detailsSubtitleLabel,
                              progress: nil,
                              imageOverlaySystemName: "questionmark.circle.fill",
-                             popover: { WrappedVMDetailsView(path: vm.pathUrl.path, onRemove: remove) },
+                             popover: {
+                             #if WITH_REMOTE
+                                 UnsupportedVMDetailsView(vm: vm)
+                             #else
+                                 WrappedVMDetailsView(path: vm.pathUrl.path, onRemove: remove)
+                             #endif
+                             },
                              onRemove: remove)
     }
     
@@ -70,6 +76,26 @@ fileprivate struct WrappedVMDetailsView: View {
         #endif
     }
 }
+
+#if WITH_REMOTE
+fileprivate struct UnsupportedVMDetailsView: View {
+    @ObservedObject var vm: VMData
+
+    var body: some View {
+        VStack(alignment: .center) {
+            if let remotevm = vm as? VMRemoteData, let reason = remotevm.unavailableReason {
+                Text(reason)
+                    .lineLimit(nil)
+            } else {
+                Text("This VM is unavailable.")
+            }
+        }
+        #if os(macOS)
+        .frame(width: 230)
+        #endif
+    }
+}
+#endif
 
 struct UTMUnavailableVMView_Previews: PreviewProvider {
     static var previews: some View {

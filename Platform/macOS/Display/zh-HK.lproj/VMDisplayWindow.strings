@@ -1,11 +1,11 @@
 /* Class = "NSToolbarItem"; label = "Shared Folder"; ObjectID = "7EC-GE-fIl"; */
-"7EC-GE-fIl.label" = "共享資料夾";
+"7EC-GE-fIl.label" = "分享資料夾";
 
 /* Class = "NSToolbarItem"; paletteLabel = "Shared Folder"; ObjectID = "7EC-GE-fIl"; */
-"7EC-GE-fIl.paletteLabel" = "共享資料夾";
+"7EC-GE-fIl.paletteLabel" = "分享資料夾";
 
 /* Class = "NSToolbarItem"; toolTip = "Shared folder"; ObjectID = "7EC-GE-fIl"; */
-"7EC-GE-fIl.toolTip" = "共享資料夾";
+"7EC-GE-fIl.toolTip" = "分享資料夾";
 
 /* Class = "NSToolbarItem"; label = "Drives"; ObjectID = "bKL-Th-FFw"; */
 "bKL-Th-FFw.label" = "磁碟";
@@ -32,13 +32,13 @@
 "C8Y-BQ-Y6m.paletteLabel" = "工具列項目";
 
 /* Class = "NSToolbarItem"; label = "Capture Input"; ObjectID = "FN7-zs-mWC"; */
-"FN7-zs-mWC.label" = "捕獲輸入";
+"FN7-zs-mWC.label" = "擷取輸入";
 
 /* Class = "NSToolbarItem"; paletteLabel = "Capture Input"; ObjectID = "FN7-zs-mWC"; */
-"FN7-zs-mWC.paletteLabel" = "捕獲輸入";
+"FN7-zs-mWC.paletteLabel" = "擷取輸入";
 
 /* Class = "NSToolbarItem"; toolTip = "Capture input devices"; ObjectID = "FN7-zs-mWC"; */
-"FN7-zs-mWC.toolTip" = "捕獲輸入裝置";
+"FN7-zs-mWC.toolTip" = "擷取輸入裝置";
 
 /* Class = "NSToolbarItem"; label = "Restart"; ObjectID = "G7P-HJ-bcy"; */
 "G7P-HJ-bcy.label" = "重新啟動";

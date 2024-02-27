@@ -22,7 +22,7 @@ extension UTMData {
     func run(vm: VMData, options: UTMVirtualMachineStartOptions = [], startImmediately: Bool = true) {
         var window: Any? = vmWindows[vm]
         if window == nil {
-            let close = { (notification: Notification) -> Void in
+            let close = {
                 self.vmWindows.removeValue(forKey: vm)
                 window = nil
             }
@@ -76,6 +76,37 @@ extension UTMData {
         }
     }
     
+    /// Start a remote session and return SPICE server port.
+    /// - Parameters:
+    ///   - vm: VM to start
+    ///   - options: Start options
+    ///   - server: Remote server
+    /// - Returns: Port number to SPICE server
+    func startRemote(vm: VMData, options: UTMVirtualMachineStartOptions, forClient client: UTMRemoteServer.Remote) async throws -> UTMRemoteMessageServer.StartVirtualMachine.ServerInformation {
+        guard let wrapped = vm.wrapped as? UTMQemuVirtualMachine, type(of: wrapped).capabilities.supportsRemoteSession else {
+            throw UTMDataError.unsupportedBackend
+        }
+        if let existingSession = vmWindows[vm] as? VMRemoteSessionState, let spiceServerInfo = wrapped.spiceServerInfo {
+            if wrapped.state == .paused {
+                try await wrapped.resume()
+            }
+            existingSession.client = client
+            return spiceServerInfo
+        }
+        guard vmWindows[vm] == nil else {
+            throw UTMDataError.virtualMachineUnavailable
+        }
+        let session = VMRemoteSessionState(for: wrapped, client: client) {
+            self.vmWindows.removeValue(forKey: vm)
+        }
+        try await wrapped.start(options: options.union(.remoteSession))
+        vmWindows[vm] = session
+        guard let spiceServerInfo = wrapped.spiceServerInfo else {
+            throw UTMDataError.unsupportedBackend
+        }
+        return spiceServerInfo
+    }
+
     func stop(vm: VMData) {
         guard let wrapped = vm.wrapped else {
             return

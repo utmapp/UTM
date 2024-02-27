@@ -40,6 +40,10 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         var supportsRecoveryMode: Bool {
             true
         }
+
+        var supportsRemoteSession: Bool {
+            false
+        }
     }
     
     static let capabilities = Capabilities()
@@ -85,7 +89,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         }
     }
     
-    private(set) var screenshot: PlatformImage? {
+    private(set) var screenshot: UTMVirtualMachineScreenshot? {
         willSet {
             onStateChange?()
         }
@@ -474,7 +478,11 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         screenshot = screenshotDelegate?.screenshot
         return true
     }
-    
+
+    func reloadScreenshotFromFile() {
+        screenshot = loadScreenshot()
+    }
+
     @MainActor private func createAppleVM() throws {
         for i in config.serials.indices {
             let (fd, sfd, name) = try createPty()
@@ -721,7 +729,7 @@ extension UTMAppleVirtualMachine: VZVirtualMachineDelegate {
 }
 
 protocol UTMScreenshotProvider: AnyObject {
-    var screenshot: PlatformImage? { get }
+    var screenshot: UTMVirtualMachineScreenshot? { get }
 }
 
 enum UTMAppleVirtualMachineError: Error {

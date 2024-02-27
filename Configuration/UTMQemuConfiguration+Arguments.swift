@@ -61,6 +61,26 @@ import Virtualization // for getting network interfaces
         socketURL.appendingPathComponent(information.uuid.uuidString).appendingPathExtension("swtpm")
     }
     
+    /// Used only if in remote sever mode.
+    var monitorPipeURL: URL {
+        socketURL.appendingPathComponent(information.uuid.uuidString).appendingPathExtension("qmp")
+    }
+
+    /// Used only if in remote sever mode.
+    var guestAgentPipeURL: URL {
+        socketURL.appendingPathComponent(information.uuid.uuidString).appendingPathExtension("qga")
+    }
+
+    /// Used only if in remote sever mode.
+    var spiceTlsKeyUrl: URL {
+        socketURL.appendingPathComponent(information.uuid.uuidString).appendingPathExtension("pem")
+    }
+
+    /// Used only if in remote sever mode.
+    var spiceTlsCertUrl: URL {
+        socketURL.appendingPathComponent(information.uuid.uuidString).appendingPathExtension("crt")
+    }
+
     /// Combined generated and user specified arguments.
     @QEMUArgumentBuilder var allArguments: [QEMUArgument] {
         generatedArguments
@@ -109,16 +129,48 @@ import Virtualization // for getting network interfaces
     
     @QEMUArgumentBuilder private var spiceArguments: [QEMUArgument] {
         f("-spice")
-        "unix=on"
-        "addr=\(spiceSocketURL.lastPathComponent)"
-        "disable-ticketing=on"
-        "image-compression=off"
-        "playback-compression=off"
-        "streaming-video=off"
-        "gl=\(isGLOn ? "on" : "off")"
+        if let port = qemu.spiceServerPort {
+            if qemu.isSpiceServerTlsEnabled {
+                "tls-port=\(port)"
+                "tls-channel=default"
+                "x509-key-file="
+                spiceTlsKeyUrl
+                "x509-cert-file="
+                spiceTlsCertUrl
+                "x509-cacert-file="
+                spiceTlsCertUrl
+            } else {
+                "port=\(port)"
+            }
+        } else {
+            "unix=on"
+            "addr=\(spiceSocketURL.lastPathComponent)"
+        }
+        if let _ = qemu.spiceServerPassword {
+            "password-secret=secspice0"
+        } else {
+            "disable-ticketing=on"
+        }
+        if !isRemoteSpice {
+            "image-compression=off"
+            "playback-compression=off"
+            "streaming-video=off"
+        } else {
+            "streaming-video=filter"
+        }
+        "gl=\(isGLSupported && !isRemoteSpice ? "on" : "off")"
         f()
         f("-chardev")
-        f("spiceport,id=org.qemu.monitor.qmp,name=org.qemu.monitor.qmp.0")
+        if isRemoteSpice {
+            "pipe"
+            "path="
+            monitorPipeURL
+        } else {
+            "spiceport"
+            "name=org.qemu.monitor.qmp.0"
+        }
+        "id=org.qemu.monitor.qmp"
+        f()
         f("-mon")
         f("chardev=org.qemu.monitor.qmp,mode=control")
         if !isSparc { // disable -vga and other default devices
@@ -128,8 +180,28 @@ import Virtualization // for getting network interfaces
             f("-vga")
             f("none")
         }
+        if let password = qemu.spiceServerPassword {
+            // assume anyone who can read this is in our trust domain
+            f("-object")
+            f("secret,id=secspice0,data=\(password)")
+        }
     }
-    
+
+    private func filterDisplayIfRemote(_ display: any QEMUDisplayDevice) -> any QEMUDisplayDevice {
+        if isRemoteSpice {
+            let rawValue = display.rawValue
+            if rawValue.hasSuffix("-gl") {
+                return AnyQEMUConstant(rawValue: String(rawValue.dropLast(3)))!
+            } else if rawValue.contains("-gl-") {
+                return AnyQEMUConstant(rawValue: String(rawValue.replacingOccurrences(of: "-gl-", with: "-")))!
+            } else {
+                return display
+            }
+        } else {
+            return display
+        }
+    }
+
     @QEMUArgumentBuilder private var displayArguments: [QEMUArgument] {
         if displays.isEmpty {
             f("-nographic")
@@ -143,7 +215,7 @@ import Virtualization // for getting network interfaces
         } else {
             for display in displays {
                 f("-device")
-                display.hardware
+                filterDisplayIfRemote(display.hardware)
                 if let vgaRamSize = displays[0].vgaRamMib {
                     "vgamem_mb=\(vgaRamSize)"
                 }
@@ -152,7 +224,7 @@ import Virtualization // for getting network interfaces
         }
     }
     
-    private var isGLOn: Bool {
+    private var isGLSupported: Bool {
         displays.contains { display in
             display.hardware.rawValue.contains("-gl-") || display.hardware.rawValue.hasSuffix("-gl")
         }
@@ -161,7 +233,11 @@ import Virtualization // for getting network interfaces
     private var isSparc: Bool {
         system.architecture == .sparc || system.architecture == .sparc64
     }
-    
+
+    private var isRemoteSpice: Bool {
+        qemu.spiceServerPort != nil
+    }
+
     @QEMUArgumentBuilder private var serialArguments: [QEMUArgument] {
         for i in serials.indices {
             f("-chardev")
@@ -318,9 +394,9 @@ import Virtualization // for getting network interfaces
             }
             let tbSize = system.jitCacheSize > 0 ? system.jitCacheSize : system.memorySize / 4
             "tb-size=\(tbSize)"
-            #if !WITH_QEMU_TCI
+            #if WITH_JIT
             // use mirror mapping when we don't have JIT entitlements
-            if !jb_has_jit_entitlement() {
+            if !UTMCapabilities.current.contains(.hasJitEntitlements) {
                 "split-wx=on"
             }
             #endif
@@ -433,6 +509,10 @@ import Virtualization // for getting network interfaces
         #if os(iOS) || os(visionOS)
         return false
         #else
+        // only support SPICE audio if we are running remotely
+        if isRemoteSpice {
+            return false
+        }
         // force CoreAudio backend for mac99 which only supports 44100 Hz
         // pcspk doesn't work with SPICE audio
         if sound.contains(where: { $0.hardware.rawValue == "screamer" || $0.hardware.rawValue == "pcspk" }) {
@@ -671,7 +751,7 @@ import Virtualization // for getting network interfaces
         f("usb-mouse,bus=usb-bus.0")
         f("-device")
         f("usb-kbd,bus=usb-bus.0")
-        #if !WITH_QEMU_TCI
+        #if WITH_USB
         let maxDevices = input.maximumUsbShare
         let buses = (maxDevices + 2) / 3
         if input.usbBusSupport == .usb3_0 {
@@ -859,7 +939,16 @@ import Virtualization // for getting network interfaces
             f("-device")
             f("virtserialport,chardev=org.qemu.guest_agent,name=org.qemu.guest_agent.0")
             f("-chardev")
-            f("spiceport,id=org.qemu.guest_agent,name=org.qemu.guest_agent.0")
+            if isRemoteSpice {
+                "pipe"
+                "path="
+                guestAgentPipeURL
+            } else {
+                "spiceport"
+                "name=org.qemu.guest_agent.0"
+            }
+            "id=org.qemu.guest_agent"
+            f()
         }
         if isSpiceAgentUsed {
             f("-device")

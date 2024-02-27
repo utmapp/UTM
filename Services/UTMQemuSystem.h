@@ -15,23 +15,8 @@
 //
 
 #import "UTMProcess.h"
+#import "UTMQemuSystemBackends.h"
 @import QEMUKitInternal;
-
-/// Specify the backend renderer for this VM
-typedef NS_ENUM(NSInteger, UTMQEMURendererBackend) {
-    kQEMURendererBackendDefault = 0,
-    kQEMURendererBackendAngleGL = 1,
-    kQEMURendererBackendAngleMetal = 2,
-    kQEMURendererBackendMax = 3,
-};
-
-/// Specify the sound backend for this VM
-typedef NS_ENUM(NSInteger, UTMQEMUSoundBackend) {
-    kQEMUSoundBackendDefault = 0,
-    kQEMUSoundBackendSPICE = 1,
-    kQEMUSoundBackendCoreAudio = 2,
-    kQEMUSoundBackendMax = 3,
-};
 
 NS_ASSUME_NONNULL_BEGIN
 

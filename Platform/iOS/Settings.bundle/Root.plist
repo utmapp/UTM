@@ -21,6 +21,12 @@
 			<string>RunInBackground</string>
 			<key>DefaultValue</key>
 			<false/>
+			<key>ExcludeTargets</key>
+			<array>
+				<string>iOS-Remote</string>
+			</array>
+			<key>Platform</key>
+			<string>iOS</string>
 		</dict>
 		<dict>
 			<key>Type</key>
@@ -31,6 +37,8 @@
 			<string>AutosaveBackground</string>
 			<key>DefaultValue</key>
 			<true/>
+			<key>Platform</key>
+			<string>iOS</string>
 		</dict>
 		<dict>
 			<key>Type</key>
@@ -83,6 +91,11 @@
 			<string>NoUsbPrompt</string>
 			<key>DefaultValue</key>
 			<false/>
+			<key>ExcludeTargets</key>
+			<array>
+				<string>iOS-Remote</string>
+				<string>iOS-SE</string>
+			</array>
 		</dict>
 		<dict>
 			<key>Type</key>
@@ -99,6 +112,10 @@
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
 			<string>Graphics</string>
+			<key>ExcludeTargets</key>
+			<array>
+				<string>iOS-Remote</string>
+			</array>
 		</dict>
 		<dict>
 			<key>Type</key>
@@ -120,6 +137,10 @@
 				<integer>0</integer>
 				<integer>1</integer>
 				<integer>2</integer>
+			</array>
+			<key>ExcludeTargets</key>
+			<array>
+				<string>iOS-Remote</string>
 			</array>
 		</dict>
 		<dict>
@@ -154,6 +175,10 @@
 				<integer>90</integer>
 				<integer>105</integer>
 				<integer>120</integer>
+			</array>
+			<key>ExcludeTargets</key>
+			<array>
+				<string>iOS-Remote</string>
 			</array>
 		</dict>
 		<dict>
@@ -2789,6 +2814,11 @@
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
 			<string>JitStreamer</string>
+			<key>ExcludeTargets</key>
+			<array>
+				<string>iOS-Remote</string>
+				<string>iOS-SE</string>
+			</array>
 		</dict>
 		<dict>
 			<key>Type</key>
@@ -2799,6 +2829,11 @@
 			<string>JitStreamerAttach</string>
 			<key>DefaultValue</key>
 			<false/>
+			<key>ExcludeTargets</key>
+			<array>
+				<string>iOS-Remote</string>
+				<string>iOS-SE</string>
+			</array>
 		</dict>
 		<dict>
 			<key>Type</key>
@@ -2809,6 +2844,11 @@
 			<string>JitStreamerAddress</string>
 			<key>DefaultValue</key>
 			<string>69.69.0.1</string>
+			<key>ExcludeTargets</key>
+			<array>
+				<string>iOS-Remote</string>
+				<string>iOS-SE</string>
+			</array>
 		</dict>
 		<dict>
 			<key>Type</key>

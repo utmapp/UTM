@@ -1,8 +1,8 @@
 /* Bundle name */
-"CFBundleName" = "UTM SE";
+"CFBundleName" = "UTM";
 
 /* Privacy - Local Network Usage Description */
-"NSLocalNetworkUsageDescription" = "虚拟机可以访问本地网络。UTM 还使用本地网络与 AltServer 通信。";
+"NSLocalNetworkUsageDescription" = "虚拟机可能会访问本地网络。UTM 还使用本地网络与 AltServer 通信。";
 
 /* Privacy - Location Always and When In Use Usage Description */
 "NSLocationAlwaysAndWhenInUseUsageDescription" = "UTM 定期请求位置数据，以确保系统保持后台进程处于活动状态。位置数据永远不会离开设备。";

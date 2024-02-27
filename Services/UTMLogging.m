@@ -15,7 +15,9 @@
 //
 
 #import "UTMLogging.h"
+#if !defined(WITH_REMOTE)
 @import QEMUKitInternal;
+#endif
 
 static UTMLogging *gLoggingInstance;
 
@@ -42,7 +44,11 @@ void UTMLog(NSString *format, ...) {
 }
 
 - (void)writeLine:(NSString *)line {
+#if defined(WITH_REMOTE)
+    NSLog(@"%@", line);
+#else
     [QEMULogging.sharedInstance writeLine:line];
+#endif
 }
 
 @end

@@ -1,0 +1,8 @@
+/* Bundle name */
+"CFBundleName" = "UTM";
+
+/* (No Comment) */
+"UTM virtual machine" = "Macchina Virtuale UTM";
+
+/* Privacy - Microphone Usage Description */
+"NSMicrophoneUsageDescription" = "Permette alle Macchine Virtuali di accedere al Microfono";

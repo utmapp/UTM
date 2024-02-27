@@ -15,7 +15,16 @@
       "location" : "https://github.com/utmapp/CocoaSpice.git",
       "state" : {
         "branch" : "visionos",
-        "revision" : "4529c9686259e8d1e94d6253ad2e3a563fd1498d"
+        "revision" : "9fd682e0f78c884036609d4a19db2cfb3ed50c33"
+      }
+    },
+    {
+      "identity" : "cod",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/saagarjha/Cod.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "c359a08accfb49662a17cdfc5e333c7b4e5c2c56"
       }
     },
     {
@@ -64,12 +73,30 @@
       }
     },
     {
+      "identity" : "swiftconnect",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/utmapp/SwiftConnect",
+      "state" : {
+        "branch" : "main",
+        "revision" : "af855e47ca222da163cc7f4f185230f36ba8694a"
+      }
+    },
+    {
+      "identity" : "swiftportmap",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/osy/SwiftPortmap.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "72782141ab6f6f6db58bd16bac96d4e7ce901e9a"
+      }
+    },
+    {
       "identity" : "swiftterm",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/osy/SwiftTerm.git",
+      "location" : "https://github.com/migueldeicaza/SwiftTerm.git",
       "state" : {
-        "branch" : "visionos",
-        "revision" : "8b0900a4c516eb8c87813f11e797f349e7fca014"
+        "branch" : "main",
+        "revision" : "ea0f681b25c8385b4a5a48d435e61d11392216e0"
       }
     },
     {
@@ -79,6 +106,15 @@
       "state" : {
         "revision" : "b26f8cebd55ff60ed8953768aa818dfb005b5838",
         "version" : "1.0.3"
+      }
+    },
+    {
+      "identity" : "visionkeyboardkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/utmapp/VisionKeyboardKit.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "0804e4d64267acc8d08fb23160f5b6ac6134414f"
       }
     },
     {

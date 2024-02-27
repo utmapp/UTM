@@ -29,11 +29,15 @@
 #import "UTM-Swift.h"
 @import CocoaSpiceRenderer;
 
+static const NSInteger kResizeDebounceSecs = 1;
+static const NSInteger kResizeTimeoutSecs = 5;
+
 @interface VMDisplayMetalViewController ()
 
 @property (nonatomic, nullable) CSMetalRenderer *renderer;
-@property (nonatomic) CGFloat windowScaling;
-@property (nonatomic) CGPoint windowOrigin;
+@property (nonatomic, nullable) id debounceResize;
+@property (nonatomic, nullable) id cancelResize;
+@property (nonatomic) BOOL ignoreNextResize;
 
 @end
 
@@ -43,9 +47,6 @@
     if (self = [super initWithNibName:nil bundle:nil]) {
         self.vmDisplay = display;
         self.vmInput = input;
-        self.windowScaling = 1.0;
-        self.windowOrigin = CGPointZero;
-        [self addObserver:self forKeyPath:@"vmDisplay.displaySize" options:NSKeyValueObservingOptionNew context:nil];
     }
     return self;
 }
@@ -120,19 +121,25 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     self.prefersHomeIndicatorAutoHidden = YES;
+#if !TARGET_OS_VISION
     [self startGCMouse];
+#endif
     [self.vmDisplay addRenderer:self.renderer];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
+#if !TARGET_OS_VISION
     [self stopGCMouse];
+#endif
     [self.vmDisplay removeRenderer:self.renderer];
+    [self removeObserver:self forKeyPath:@"vmDisplay.displaySize"];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     self.delegate.displayViewSize = [self convertSizeToNative:self.view.bounds.size];
+    [self addObserver:self forKeyPath:@"vmDisplay.displaySize" options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionInitial) context:nil];
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
@@ -140,10 +147,12 @@
     [coordinator animateAlongsideTransition:nil completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
         self.delegate.displayViewSize = [self convertSizeToNative:size];
         [self.delegate display:self.vmDisplay didResizeTo:self.vmDisplay.displaySize];
+        if (self.delegate.qemuDisplayIsDynamicResolution && self.isDynamicResolutionSupported) {
+            if (!CGSizeEqualToSize(size, self.vmDisplay.displaySize)) {
+                [self requestResolutionChangeToSize:size];
+            }
+        }
     }];
-    if (self.delegate.qemuDisplayIsDynamicResolution) {
-        [self displayResize:size];
-    }
 }
 
 - (void)enterSuspendedWithIsBusy:(BOOL)busy {
@@ -161,8 +170,8 @@
     [super enterLive];
     self.prefersPointerLocked = YES;
     self.view.window.isIndirectPointerTouchIgnored = YES;
-    if (self.delegate.qemuDisplayIsDynamicResolution) {
-        [self displayResize:self.view.bounds.size];
+    if (self.delegate.qemuDisplayIsDynamicResolution && self.isDynamicResolutionSupported) {
+        [self requestResolutionChangeToSize:self.view.bounds.size];
     }
     if (self.delegate.qemuHasClipboardSharing) {
         [[UTMPasteboard generalPasteboard] requestPollingModeForObject:self];
@@ -200,11 +209,21 @@
     return size;
 }
 
-- (void)displayResize:(CGSize)size {
-    UTMLog(@"resizing to (%f, %f)", size.width, size.height);
-    size = [self convertSizeToNative:size];
-    CGRect bounds = CGRectMake(0, 0, size.width, size.height);
-    [self.vmDisplay requestResolution:bounds];
+- (void)requestResolutionChangeToSize:(CGSize)size {
+    self.debounceResize = [self debounce:kResizeDebounceSecs context:self.debounceResize action:^{
+        UTMLog(@"DISPLAY: requesting resolution (%f, %f)", size.width, size.height);
+        CGSize newSize = [self convertSizeToNative:size];
+        CGRect bounds = CGRectMake(0, 0, newSize.width, newSize.height);
+        self.debounceResize = nil;
+#if defined(TARGET_OS_VISION) && TARGET_OS_VISION
+        self.cancelResize = [self debounce:kResizeTimeoutSecs context:self.cancelResize action:^{
+            self.cancelResize = nil;
+            UTMLog(@"DISPLAY: requesting resolution cancelled");
+            [self resizeWindowToDisplaySize];
+        }];
+#endif
+        [self.vmDisplay requestResolution:bounds];
+    }];
 }
 
 - (void)setVmDisplay:(CSDisplay *)display {
@@ -217,8 +236,6 @@
 
 - (void)setDisplayScaling:(CGFloat)scaling origin:(CGPoint)origin {
     self.vmDisplay.viewportOrigin = origin;
-    self.windowScaling = scaling;
-    self.windowOrigin = origin;
     if (!self.delegate.qemuDisplayIsNativeResolution) {
         scaling = CGPointToPixel(scaling);
     }
@@ -229,25 +246,67 @@
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
     if ([keyPath isEqualToString:@"vmDisplay.displaySize"]) {
-#if defined(TARGET_OS_VISION) && TARGET_OS_VISION
-        dispatch_async(dispatch_get_main_queue(), ^{
-            CGSize minSize = self.vmDisplay.displaySize;
-            if (self.delegate.qemuDisplayIsNativeResolution) {
-                minSize.width = CGPixelToPoint(minSize.width);
-                minSize.height = CGPixelToPoint(minSize.height);
-            }
-            CGSize displaySize = CGSizeMake(minSize.width * self.windowScaling, minSize.height * self.windowScaling);
-            CGSize maxSize = CGSizeMake(UIProposedSceneSizeNoPreference, UIProposedSceneSizeNoPreference);
-            UIWindowSceneGeometryPreferencesVision *geoPref = [[UIWindowSceneGeometryPreferencesVision alloc] initWithSize:displaySize];
-            geoPref.minimumSize = minSize;
-            geoPref.maximumSize = maxSize;
-            geoPref.resizingRestrictions = UIWindowSceneResizingRestrictionsUniform;
-            [self.view.window.windowScene requestGeometryUpdateWithPreferences:geoPref errorHandler:nil];
-        });
-#else
-        [self.delegate display:self.vmDisplay didResizeTo:self.vmDisplay.displaySize];
-#endif
+        UTMLog(@"DISPLAY: vmDisplay.displaySize changed");
+        if (self.cancelResize) {
+            [self debounce:0 context:self.cancelResize action:^{}];
+            self.cancelResize = nil;
+        }
+        self.debounceResize = [self debounce:kResizeDebounceSecs context:self.debounceResize action:^{
+            [self resizeWindowToDisplaySize];
+        }];
     }
+}
+
+- (void)setIsDynamicResolutionSupported:(BOOL)isDynamicResolutionSupported {
+    if (_isDynamicResolutionSupported != isDynamicResolutionSupported) {
+        _isDynamicResolutionSupported = isDynamicResolutionSupported;
+        UTMLog(@"DISPLAY: isDynamicResolutionSupported = %d", isDynamicResolutionSupported);
+        if (self.delegate.qemuDisplayIsDynamicResolution) {
+            if (isDynamicResolutionSupported) {
+                [self requestResolutionChangeToSize:self.view.bounds.size];
+            } else {
+                [self resizeWindowToDisplaySize];
+            }
+        }
+    }
+}
+
+- (void)resizeWindowToDisplaySize {
+    CGSize displaySize = self.vmDisplay.displaySize;
+    UTMLog(@"DISPLAY: request window resize to (%f, %f)", displaySize.width, displaySize.height);
+#if defined(TARGET_OS_VISION) && TARGET_OS_VISION
+    CGSize minSize = displaySize;
+    if (self.delegate.qemuDisplayIsNativeResolution) {
+        minSize.width = CGPixelToPoint(minSize.width);
+        minSize.height = CGPixelToPoint(minSize.height);
+    }
+    CGSize maxSize = CGSizeMake(UIProposedSceneSizeNoPreference, UIProposedSceneSizeNoPreference);
+    UIWindowSceneGeometryPreferencesVision *geoPref = [[UIWindowSceneGeometryPreferencesVision alloc] initWithSize:minSize];
+    if (self.delegate.qemuDisplayIsDynamicResolution && self.isDynamicResolutionSupported) {
+        geoPref.minimumSize = CGSizeMake(800, 600);
+        geoPref.maximumSize = maxSize;
+        geoPref.resizingRestrictions = UIWindowSceneResizingRestrictionsFreeform;
+    } else {
+        geoPref.minimumSize = minSize;
+        geoPref.maximumSize = maxSize;
+        geoPref.resizingRestrictions = UIWindowSceneResizingRestrictionsUniform;
+    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        CGSize currentViewSize = self.view.bounds.size;
+        UTMLog(@"DISPLAY: old view size = (%f, %f)", currentViewSize.width, currentViewSize.height);
+        if (CGSizeEqualToSize(minSize, currentViewSize)) {
+            // since `-viewWillTransitionToSize:withTransitionCoordinator:` is not called
+            self.delegate.displayViewSize = [self convertSizeToNative:currentViewSize];
+            [self.delegate display:self.vmDisplay didResizeTo:displaySize];
+        }
+        [self.view.window.windowScene requestGeometryUpdateWithPreferences:geoPref errorHandler:nil];
+    });
+#else
+    if (CGSizeEqualToSize(displaySize, CGSizeZero)) {
+        return;
+    }
+    [self.delegate display:self.vmDisplay didResizeTo:displaySize];
+#endif
 }
 
 @end
