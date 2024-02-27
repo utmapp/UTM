@@ -59,7 +59,7 @@ class UTMRegistry: NSObject {
         super.init()
         if let newEntries = try? serializedEntries.mapValues({ value in
             let dict = value as! [String: Any]
-            return try UTMRegistryEntry(fromPropertyList: dict)
+            return try UTMRegistryEntry(from: dict)
         }) {
             entries = newEntries
         }

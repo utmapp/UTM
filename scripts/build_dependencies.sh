@@ -409,8 +409,6 @@ build_angle () {
     pwd="$(pwd)"
     cd "$BUILD_DIR/WebKit.git/Source/ThirdParty/ANGLE"
     xcodebuild archive -archivePath "ANGLE" -scheme "ANGLE" -sdk $SDK -arch $ARCH -configuration Release WEBCORE_LIBRARY_DIR="/usr/local/lib" IPHONEOS_DEPLOYMENT_TARGET="14.0" MACOSX_DEPLOYMENT_TARGET="11.0" XROS_DEPLOYMENT_TARGET="1.0"
-    # strip broken entitlements from signature
-    find "ANGLE.xcarchive/Products/usr/local/lib/" -name '*.dylib' -exec codesign -fs - \{\} \;
     rsync -a "ANGLE.xcarchive/Products/usr/local/lib/" "$PREFIX/lib"
     rsync -a "include/" "$PREFIX/include"
     cd "$pwd"

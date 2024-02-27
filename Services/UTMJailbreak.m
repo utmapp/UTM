@@ -65,7 +65,7 @@ typedef struct memorystatus_memlimit_properties {
 
 int memorystatus_control(uint32_t command, int32_t pid, uint32_t flags, user_addr_t buffer, size_t buffersize);
 
-#if !TARGET_OS_OSX && defined(WITH_JIT)
+#if !TARGET_OS_OSX && !defined(WITH_QEMU_TCI)
 extern int csops(pid_t pid, unsigned int ops, void * useraddr, size_t usersize);
 extern boolean_t exc_server(mach_msg_header_t *, mach_msg_header_t *);
 extern int ptrace(int request, pid_t pid, caddr_t addr, int data);
@@ -100,7 +100,7 @@ static bool jb_has_debugger_attached(void) {
 #endif
 
 bool jb_has_cs_disabled(void) {
-#if TARGET_OS_OSX || !defined(WITH_JIT)
+#if TARGET_OS_OSX || defined(WITH_QEMU_TCI)
     return false;
 #else
     int flags;
@@ -236,7 +236,7 @@ static bool is_device_A12_or_newer(void) {
 bool jb_has_jit_entitlement(void) {
 #if TARGET_OS_OSX
     return true;
-#elif !defined(WITH_JIT)
+#elif defined(WITH_QEMU_TCI)
     return false;
 #else
     NSDictionary *entitlements = cached_app_entitlements();
@@ -330,7 +330,7 @@ bool jb_has_cs_execseg_allow_unsigned(void) {
 }
 
 bool jb_enable_ptrace_hack(void) {
-#if TARGET_OS_OSX || !defined(WITH_JIT)
+#if TARGET_OS_OSX || defined(WITH_QEMU_TCI)
     return false;
 #else
     bool debugged = jb_has_debugger_attached();
@@ -380,7 +380,7 @@ bool jb_increase_memlimit(void) {
     return ret1 == 0 && ret2 == 0;
 }
 
-#if !TARGET_OS_OSX && defined(WITH_JIT)
+#if !TARGET_OS_OSX && !defined(WITH_QEMU_TCI)
 extern const char *environ[];
 
 static char *childArgv[] = {NULL, "debugme", NULL};
@@ -397,7 +397,7 @@ bool jb_spawn_ptrace_child(int argc, char **argv) {
         return false;
     }
     childArgv[0] = argv[0];
-    if ((ret = posix_spawnp(&pid, argv[0], NULL, NULL, (void *)childArgv, NULL)) != 0) {
+    if ((ret = posix_spawnp(&pid, argv[0], NULL, NULL, (void *)childArgv, (void *)environ)) != 0) {
         return false;
     }
     return true;

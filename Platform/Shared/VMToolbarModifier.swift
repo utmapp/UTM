@@ -51,7 +51,6 @@ struct VMToolbarModifier: ViewModifier {
             UTMPreferenceButtonToolbarContent()
             #endif
             ToolbarItemGroup(placement: buttonPlacement) {
-                #if !WITH_REMOTE // FIXME: implement remote feature
                 if vm.isShortcut {
                     DestructiveButton {
                         confirmAction = .confirmDeleteShortcut
@@ -113,7 +112,6 @@ struct VMToolbarModifier: ViewModifier {
                     Spacer()
                 }
                 #endif
-                #endif
                 if vm.hasSuspendState || !vm.isStopped {
                     Button {
                         confirmAction = .confirmStopVM
@@ -131,7 +129,6 @@ struct VMToolbarModifier: ViewModifier {
                     }.help("Run selected VM")
                     .padding(.leading, padding)
                 }
-                #if !WITH_REMOTE // FIXME: implement remote feature
                 #if !os(macOS)
                 if bottom {
                     Spacer()
@@ -146,7 +143,6 @@ struct VMToolbarModifier: ViewModifier {
                 }.help("Edit selected VM")
                 .disabled(vm.hasSuspendState || !vm.isModifyAllowed)
                 .padding(.leading, padding)
-                #endif
             }
         }
         .modifier(VMShareItemModifier(isPresented: $showSharePopup, shareItem: shareItem))

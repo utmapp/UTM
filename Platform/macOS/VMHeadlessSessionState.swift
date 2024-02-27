@@ -18,18 +18,20 @@ import Foundation
 import IOKit.pwr_mgt
 
 /// Represents the UI state for a single headless VM session.
-@MainActor class VMHeadlessSessionState: NSObject, ObservableObject, UTMVirtualMachineDelegate {
+@MainActor class VMHeadlessSessionState: NSObject, ObservableObject {
     let vm: any UTMVirtualMachine
-    var onStop: (() -> Void)?
+    var onStop: ((Notification) -> Void)?
     
     @Published var vmState: UTMVirtualMachineState = .stopped
+    
+    @Published var fatalError: String?
     
     private var hasStarted: Bool = false
     private var preventIdleSleepAssertion: IOPMAssertionID?
     
     @Setting("PreventIdleSleep") private var isPreventIdleSleep: Bool = false
     
-    init(for vm: any UTMVirtualMachine, onStop: (() -> Void)?) {
+    init(for vm: any UTMVirtualMachine, onStop: ((Notification) -> Void)?) {
         self.vm = vm
         self.onStop = onStop
         super.init()
@@ -40,7 +42,9 @@ import IOKit.pwr_mgt
     deinit {
         NSWorkspace.shared.notificationCenter.removeObserver(self, name: NSWorkspace.didWakeNotification, object: nil)
     }
+}
 
+extension VMHeadlessSessionState: UTMVirtualMachineDelegate {
     nonisolated func virtualMachine(_ vm: any UTMVirtualMachine, didTransitionToState state: UTMVirtualMachineState) {
         Task { @MainActor in
             vmState = state
@@ -59,6 +63,7 @@ import IOKit.pwr_mgt
     
     nonisolated func virtualMachine(_ vm: any UTMVirtualMachine, didErrorWithMessage message: String) {
         Task { @MainActor in
+            fatalError = message
             NotificationCenter.default.post(name: .vmSessionError, object: nil, userInfo: ["Session": self, "Message": message])
             if !hasStarted {
                 // if we got an error and haven't started, then cleanup
@@ -96,7 +101,6 @@ extension VMHeadlessSessionState {
         if let preventIdleSleepAssertion = preventIdleSleepAssertion {
             IOPMAssertionRelease(preventIdleSleepAssertion)
         }
-        onStop?()
     }
 }
 

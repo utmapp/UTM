@@ -21,18 +21,8 @@ import AppKit
 import UIKit
 import SwiftUI
 #endif
-#if canImport(AltKit) && WITH_JIT
+#if canImport(AltKit) && !WITH_QEMU_TCI
 import AltKit
-#endif
-#if WITH_SERVER
-import Combine
-#endif
-
-#if WITH_REMOTE
-import CocoaSpiceNoUsb
-typealias ConcreteVirtualMachine = UTMRemoteSpiceVirtualMachine
-#else
-typealias ConcreteVirtualMachine = UTMQemuVirtualMachine
 #endif
 
 struct AlertMessage: Identifiable {
@@ -98,18 +88,7 @@ struct AlertMessage: Identifiable {
     nonisolated private var documentsURL: URL {
         UTMData.defaultStorageUrl
     }
-
-    #if WITH_SERVER
-    /// Remote access server
-    private(set) var remoteServer: UTMRemoteServer!
-
-    /// Listeners for remote access
-    private var remoteChangeListeners: [VMData: Set<AnyCancellable>] = [:]
-
-    /// Listener for list changes
-    private var listChangedListener: AnyCancellable?
-    #endif
-
+    
     /// Queue to run `busyWork` tasks
     private var busyQueue: DispatchQueue
     
@@ -121,10 +100,6 @@ struct AlertMessage: Identifiable {
         self.virtualMachines = []
         self.pendingVMs = []
         self.selectedVM = nil
-        #if WITH_SERVER
-        self.remoteServer = UTMRemoteServer(data: self)
-        beginObservingChanges()
-        #endif
         listLoadFromDefaults()
     }
     
@@ -158,7 +133,7 @@ struct AlertMessage: Identifiable {
                 guard try file.resourceValues(forKeys: [.isDirectoryKey]).isDirectory ?? false else {
                     continue
                 }
-                guard ConcreteVirtualMachine.isVirtualMachine(url: file) else {
+                guard UTMQemuVirtualMachine.isVirtualMachine(url: file) else {
                     continue
                 }
                 await Task.yield()
@@ -193,7 +168,7 @@ struct AlertMessage: Identifiable {
     }
     
     /// Load VM list (and order) from persistent storage
-    fileprivate func listLoadFromDefaults() {
+    private func listLoadFromDefaults() {
         let defaults = UserDefaults.standard
         guard defaults.object(forKey: "VMList") == nil else {
             listLegacyLoadFromDefaults()
@@ -211,7 +186,7 @@ struct AlertMessage: Identifiable {
         guard let list = defaults.stringArray(forKey: "VMEntryList") else {
             return
         }
-        let virtualMachines: [VMData] = list.uniqued().compactMap { uuidString in
+        virtualMachines = list.uniqued().compactMap { uuidString in
             guard let entry = UTMRegistry.shared.entry(for: uuidString) else {
                 return nil
             }
@@ -223,7 +198,6 @@ struct AlertMessage: Identifiable {
             }
             return vm
         }
-        listReplace(with: virtualMachines)
     }
     
     /// Load VM list (and order) from persistent storage (legacy)
@@ -231,7 +205,7 @@ struct AlertMessage: Identifiable {
         let defaults = UserDefaults.standard
         // legacy path list
         if let files = defaults.array(forKey: "VMList") as? [String] {
-            let virtualMachines = files.uniqued().compactMap({ file in
+            virtualMachines = files.uniqued().compactMap({ file in
                 let url = documentsURL.appendingPathComponent(file, isDirectory: true)
                 if let vm = try? VMData(url: url) {
                     return vm
@@ -239,11 +213,10 @@ struct AlertMessage: Identifiable {
                     return nil
                 }
             })
-            listReplace(with: virtualMachines)
         }
         // bookmark list
         if let list = defaults.array(forKey: "VMList") {
-            let virtualMachines = list.compactMap { item in
+            virtualMachines = list.compactMap { item in
                 let vm: VMData?
                 if let bookmark = item as? Data {
                     vm = VMData(bookmark: bookmark)
@@ -255,7 +228,6 @@ struct AlertMessage: Identifiable {
                 try? vm?.load()
                 return vm
             }
-            listReplace(with: virtualMachines)
         }
     }
     
@@ -266,15 +238,8 @@ struct AlertMessage: Identifiable {
         defaults.set(wrappedVMs, forKey: "VMEntryList")
     }
     
-    /// Replace current VM list with a new list
-    /// - Parameter vms: List to replace with
-    fileprivate func listReplace(with vms: [VMData]) {
-        virtualMachines.forEach({ endObservingChanges(for: $0) })
+    private func listReplace(with vms: [VMData]) {
         virtualMachines = vms
-        vms.forEach({ beginObservingChanges(for: $0) })
-        if let vm = selectedVM, !vms.contains(where: { $0 == vm }) {
-            selectedVM = nil
-        }
     }
     
     /// Add VM to list
@@ -289,7 +254,6 @@ struct AlertMessage: Identifiable {
         } else {
             virtualMachines.append(vm)
         }
-        beginObservingChanges(for: vm)
     }
     
     /// Select VM in list
@@ -303,7 +267,6 @@ struct AlertMessage: Identifiable {
     /// - Returns: Index of item removed or nil if already removed
     @discardableResult public func listRemove(vm: VMData) -> Int? {
         let index = virtualMachines.firstIndex(of: vm)
-        endObservingChanges(for: vm)
         if let index = index {
             virtualMachines.remove(at: index)
         }
@@ -353,7 +316,7 @@ struct AlertMessage: Identifiable {
         let nameForId = { (i: Int) in i <= 1 ? base : "\(base) \(i)" }
         for i in 1..<1000 {
             let name = nameForId(i)
-            let file = ConcreteVirtualMachine.virtualMachinePath(for: name, in: documentsURL)
+            let file = UTMQemuVirtualMachine.virtualMachinePath(for: name, in: documentsURL)
             if !fileManager.fileExists(atPath: file.path) {
                 return name
             }
@@ -420,13 +383,6 @@ struct AlertMessage: Identifiable {
     func save(vm: VMData) async throws {
         do {
             try await vm.save()
-            #if WITH_SERVER
-            if let qemuConfig = vm.config as? UTMQemuConfiguration {
-                await remoteServer.broadcast { remote in
-                    try await remote.qemuConfigurationHasChanged(id: vm.id, configuration: qemuConfig)
-                }
-            }
-            #endif
         } catch {
             // refresh the VM object as it is now stale
             let origError = error
@@ -494,8 +450,8 @@ struct AlertMessage: Identifiable {
     /// - Returns: The new VM
     @discardableResult func clone(vm: VMData) async throws -> VMData {
         let newName: String = newDefaultVMName(base: vm.detailsTitleLabel)
-        let newPath = ConcreteVirtualMachine.virtualMachinePath(for: newName, in: documentsURL)
-
+        let newPath = UTMQemuVirtualMachine.virtualMachinePath(for: newName, in: documentsURL)
+        
         try await copyItemWithCopyfile(at: vm.pathUrl, to: newPath)
         guard let newVM = try? VMData(url: newPath) else {
             throw UTMDataError.cloneFailed
@@ -576,7 +532,7 @@ struct AlertMessage: Identifiable {
     /// Calculate total size of VM and data
     /// - Parameter vm: VM to calculate size
     /// - Returns: Size in bytes
-    func computeSize(for vm: VMData) async -> Int64 {
+    func computeSize(for vm: VMData) -> Int64 {
         let path = vm.pathUrl
         guard let enumerator = fileManager.enumerator(at: path, includingPropertiesForKeys: [.totalFileAllocatedSizeKey]) else {
             logger.error("failed to create enumerator for \(path)")
@@ -660,7 +616,7 @@ struct AlertMessage: Identifiable {
         listSelect(vm: vm)
     }
 
-    private func copyItemWithCopyfile(at srcURL: URL, to dstURL: URL) async throws {
+    func copyItemWithCopyfile(at srcURL: URL, to dstURL: URL) async throws {
         try await Task.detached(priority: .userInitiated) {
             let status = copyfile(srcURL.path, dstURL.path, nil, copyfile_flags_t(COPYFILE_ALL | COPYFILE_RECURSIVE | COPYFILE_CLONE | COPYFILE_DATA_SPARSE))
             if status < 0 {
@@ -721,10 +677,7 @@ struct AlertMessage: Identifiable {
         }
     }
     
-    func mountSupportTools(for vm: any UTMVirtualMachine) async throws {
-        guard let vm = vm as? any UTMSpiceVirtualMachine else {
-            throw UTMDataError.unsupportedBackend
-        }
+    func mountSupportTools(for vm: UTMQemuVirtualMachine) async throws {
         let task = UTMDownloadSupportToolsTask(for: vm)
         if await task.hasExistingSupportTools {
             vm.config.qemu.isGuestToolsInstallRequested = false
@@ -803,60 +756,7 @@ struct AlertMessage: Identifiable {
         }
         vm.changeUuid(to: UUID(), name: nil, copyingEntry: vm.registryEntry)
     }
-
-    // MARK: - Change listener
-
-    private func beginObservingChanges() {
-        #if WITH_SERVER
-        listChangedListener = $virtualMachines.sink { vms in
-            Task {
-                await self.remoteServer.broadcast { remote in
-                    try await remote.listHasChanged(ids: vms.map({ $0.id }))
-                }
-            }
-        }
-        #endif
-    }
-
-    private func beginObservingChanges(for vm: VMData) {
-        #if WITH_SERVER
-        var observers = Set<AnyCancellable>()
-        let registryEntry = vm.registryEntry
-        observers.insert(vm.objectWillChange.sink { [self] _ in
-            // reset observers when registry changes
-            if vm.registryEntry != registryEntry {
-                endObservingChanges(for: vm)
-                beginObservingChanges(for: vm)
-            }
-        })
-        observers.insert(vm.$state.sink { state in
-            Task {
-                let isTakeoverAllowed = self.vmWindows[vm] is VMRemoteSessionState && (state == .started || state == .paused)
-                await self.remoteServer.broadcast { remote in
-                    try await remote.virtualMachine(id: vm.id, didTransitionToState: state, isTakeoverAllowed: isTakeoverAllowed)
-                }
-            }
-        })
-        if let registryEntry = registryEntry {
-            observers.insert(registryEntry.externalDrivePublisher.sink { drives in
-                let mountedDrives = drives.mapValues({ $0.path })
-                Task {
-                    await self.remoteServer.broadcast { remote in
-                        try await remote.mountedDrivesHasChanged(id: vm.id, mountedDrives: mountedDrives)
-                    }
-                }
-            })
-        }
-        remoteChangeListeners[vm] = observers
-        #endif
-    }
-
-    private func endObservingChanges(for vm: VMData) {
-        #if WITH_SERVER
-        remoteChangeListeners.removeValue(forKey: vm)
-        #endif
-    }
-
+    
     // MARK: - Other utility functions
     
     /// In some regions, iOS will prompt the user for network access
@@ -890,20 +790,16 @@ struct AlertMessage: Identifiable {
     
     /// Execute a task with spinning progress indicator (Swift concurrency version)
     /// - Parameter work: Function to execute
-    @discardableResult
-    func busyWorkAsync<T>(_ work: @escaping @Sendable () async throws -> T) -> Task<T, any Error> {
+    func busyWorkAsync(_ work: @escaping @Sendable () async throws -> Void) {
         Task.detached(priority: .userInitiated) {
             await self.setBusyIndicator(true)
             do {
-                let result = try await work()
-                await self.setBusyIndicator(false)
-                return result
+                try await work()
             } catch {
                 logger.error("\(error)")
                 await self.showErrorAlert(message: error.localizedDescription)
-                await self.setBusyIndicator(false)
-                throw error
             }
+            await self.setBusyIndicator(false)
         }
     }
     
@@ -928,7 +824,7 @@ struct AlertMessage: Identifiable {
     ///   - vm: VM to send mouse/tablet coordinates to
     ///   - components: Data (see UTM Wiki for details)
     func automationSendMouse(to vm: VMData, urlComponents components: URLComponents) {
-        guard let qemuVm = vm.wrapped as? any UTMSpiceVirtualMachine else { return } // FIXME: implement for Apple VM
+        guard let qemuVm = vm.wrapped as? UTMQemuVirtualMachine else { return } // FIXME: implement for Apple VM
         guard !qemuVm.config.displays.isEmpty else { return }
         guard let queryItems = components.queryItems else { return }
         /// Parse targeted position
@@ -972,7 +868,7 @@ struct AlertMessage: Identifiable {
 
     // MARK: - AltKit
     
-#if canImport(AltKit) && WITH_JIT
+#if canImport(AltKit) && !WITH_QEMU_TCI
     /// Detect if we are installed from AltStore and can use AltJIT
     var isAltServerCompatible: Bool {
         guard let _ = Bundle.main.infoDictionary?["ALTServerID"] else {
@@ -1072,8 +968,6 @@ struct AlertMessage: Identifiable {
 // MARK: - Errors
 enum UTMDataError: Error {
     case virtualMachineAlreadyExists
-    case virtualMachineUnavailable
-    case unsupportedBackend
     case cloneFailed
     case shortcutCreationFailed
     case importFailed
@@ -1083,8 +977,6 @@ enum UTMDataError: Error {
     case jitStreamerDecodeFailed
     case jitStreamerAttachFailed
     case jitStreamerUrlInvalid(String)
-    case notImplemented
-    case reconnectFailed
 }
 
 extension UTMDataError: LocalizedError {
@@ -1092,10 +984,6 @@ extension UTMDataError: LocalizedError {
         switch self {
         case .virtualMachineAlreadyExists:
             return NSLocalizedString("An existing virtual machine already exists with this name.", comment: "UTMData")
-        case .virtualMachineUnavailable:
-            return NSLocalizedString("This virtual machine is currently unavailable, make sure it is not open in another session.", comment: "UTMData")
-        case .unsupportedBackend:
-            return NSLocalizedString("Operation not supported by the backend.", comment: "UTMData")
         case .cloneFailed:
             return NSLocalizedString("Failed to clone VM.", comment: "UTMData")
         case .shortcutCreationFailed:
@@ -1114,239 +1002,6 @@ extension UTMDataError: LocalizedError {
             return NSLocalizedString("Failed to attach to JitStreamer.", comment: "UTMData")
         case .jitStreamerUrlInvalid(let urlString):
             return String.localizedStringWithFormat(NSLocalizedString("Invalid JitStreamer attach URL:\n%@", comment: "UTMData"), urlString)
-        case .notImplemented:
-            return NSLocalizedString("This functionality is not yet implemented.", comment: "UTMData")
-        case .reconnectFailed:
-            return NSLocalizedString("Failed to reconnect to the server.", comment: "UTMData")
         }
     }
 }
-
-// MARK: - Remote Client
-
-/// Declare host capabilities to any remote client
-struct UTMCapabilities: OptionSet, Codable {
-    let rawValue: UInt
-
-    /// If set, no trick is needed to get JIT working as the process is entitled.
-    static let hasJitEntitlements = Self(rawValue: 1 << 0)
-
-    /// If set, virtualization is supported by this host.
-    static let hasHypervisorSupport = Self(rawValue: 1 << 1)
-    
-    /// If set, host is aarch64
-    static let isAarch64 = Self(rawValue: 1 << 2)
-    
-    /// If set, host is x86_64
-    static let isX86_64 = Self(rawValue: 1 << 3)
-
-    static fileprivate(set) var current: Self = {
-        var current = Self()
-        #if WITH_JIT
-        if jb_has_jit_entitlement() {
-            current.insert(.hasJitEntitlements)
-        }
-        if jb_has_hypervisor() {
-            current.insert(.hasHypervisorSupport)
-        }
-        #endif
-        #if arch(arm64)
-        current.insert(.isAarch64)
-        #endif
-        #if arch(x86_64)
-        current.insert(.isX86_64)
-        #endif
-        return current
-    }()
-}
-
-#if WITH_REMOTE
-private let kReconnectTimeoutSeconds: UInt64 = 5
-
-@MainActor
-class UTMRemoteData: UTMData {
-    /// Remote access client
-    private(set) var remoteClient: UTMRemoteClient!
-
-    override init() {
-        super.init()
-        self.remoteClient = UTMRemoteClient(data: self)
-    }
-
-    override func listLoadFromDefaults() {
-        // do nothing since we do not load from VMList
-    }
-
-    override func listRefresh() async {
-        busyWorkAsync {
-            try await self.listRefreshFromRemote()
-        }
-    }
-
-    func reconnect(to server: UTMRemoteClient.State.SavedServer) async throws {
-        var reconnectTask: Task<UTMRemoteClient.Remote, any Error>?
-        let timeoutTask = Task {
-            try await Task.sleep(nanoseconds: kReconnectTimeoutSeconds * NSEC_PER_SEC)
-            reconnectTask?.cancel()
-        }
-        reconnectTask = busyWorkAsync { [self] in
-            do {
-                try await remoteClient.connect(server)
-            } catch is CancellationError {
-                throw UTMDataError.reconnectFailed
-            }
-            timeoutTask.cancel()
-            try await listRefreshFromRemote()
-            return await remoteClient.server
-        }
-        // make all active sessions wait on the reconnect
-        for session in VMSessionState.allActiveSessions.values {
-            let vm = session.vm as! UTMRemoteSpiceVirtualMachine
-            Task {
-                do {
-                    try await vm.reconnectServer {
-                        try await reconnectTask!.value
-                    }
-                } catch {
-                    session.stop()
-                }
-            }
-        }
-        _ = try await reconnectTask!.value
-    }
-
-    private func listRefreshFromRemote() async throws {
-        if let capabilities = await self.remoteClient.server.capabilities {
-            UTMCapabilities.current = capabilities
-        }
-        let ids = try await remoteClient.server.listVirtualMachines()
-        let items = try await remoteClient.server.getVirtualMachineInformation(for: ids)
-        let openSessionVms = VMSessionState.allActiveSessions.values.map({ $0.vm })
-        let vms = items.map { item in
-            let wrapped = openSessionVms.first(where: { $0.id == item.id }) as? UTMRemoteSpiceVirtualMachine
-            return VMRemoteData(fromRemoteItem: item, existingWrapped: wrapped)
-        }
-        await loadVirtualMachines(vms)
-    }
-
-    private func loadVirtualMachines(_ vms: [VMData]) async {
-        listReplace(with: vms)
-        for vm in vms {
-            let remoteVM = vm as! VMRemoteData
-            if remoteVM.isLoaded {
-                continue
-            }
-            do {
-                try await remoteVM.load(withRemoteServer: remoteClient.server)
-            } catch {
-                remoteVM.unavailableReason = error.localizedDescription
-            }
-            await Task.yield()
-        }
-    }
-
-    func remoteListHasChanged(ids: [UUID]) async {
-        var existing = virtualMachines.reduce(into: [:]) { partialResult, vm in
-            partialResult[vm.id] = vm
-        }
-        let new = ids.compactMap { id in
-            if existing[id] == nil {
-                return id
-            } else {
-                return nil
-            }
-        }
-        if !new.isEmpty, let newItems = try? await remoteClient.server.getVirtualMachineInformation(for: new) {
-            newItems.map({ VMRemoteData(fromRemoteItem: $0) }).forEach { vm in
-                existing[vm.id] = vm
-            }
-        }
-        let vms = ids.compactMap({ existing[$0] })
-        await loadVirtualMachines(vms)
-    }
-
-    func remoteQemuConfigurationHasChanged(id: UUID, configuration: UTMQemuConfiguration) async {
-        guard let vm = virtualMachines.first(where: { $0.id == id }) as? VMRemoteData else {
-            return
-        }
-        await vm.reloadConfiguration(withRemoteServer: remoteClient.server, config: configuration)
-    }
-
-    func remoteMountedDrivesHasChanged(id: UUID, mountedDrives: [String: String]) async {
-        guard let vm = virtualMachines.first(where: { $0.id == id }) as? VMRemoteData else {
-            return
-        }
-        vm.updateMountedDrives(mountedDrives)
-    }
-
-    func remoteVirtualMachineDidTransition(id: UUID, state: UTMVirtualMachineState, isTakeoverAllowed: Bool) async {
-        guard let vm = virtualMachines.first(where: { $0.id == id }) else {
-            return
-        }
-        let remoteVM = vm as! VMRemoteData
-        let wrapped = remoteVM.wrapped as! UTMRemoteSpiceVirtualMachine
-        remoteVM.isTakeoverAllowed = isTakeoverAllowed
-        await wrapped.updateRemoteState(state)
-    }
-
-    func remoteVirtualMachineDidError(id: UUID, message: String) async {
-        if let session = VMSessionState.allActiveSessions.values.first(where: { $0.vm.id == id }) {
-            session.nonfatalError = message
-        }
-    }
-
-    override func listMove(fromOffsets: IndexSet, toOffset: Int) {
-        let ids = fromOffsets.map({ virtualMachines[$0].id })
-        Task {
-            try await remoteClient.server.reorderVirtualMachines(fromIds: ids, toOffset: toOffset)
-        }
-        super.listMove(fromOffsets: fromOffsets, toOffset: toOffset)
-    }
-
-    override func save(vm: VMData) async throws {
-        throw UTMDataError.notImplemented
-    }
-
-    override func discardChanges(for vm: VMData) throws {
-        throw UTMDataError.notImplemented
-    }
-
-    override func create<Config: UTMConfiguration>(config: Config) async throws -> VMData {
-        throw UTMDataError.notImplemented
-    }
-
-    @discardableResult
-    override func delete(vm: VMData, alsoRegistry: Bool) async throws -> Int? {
-        throw UTMDataError.notImplemented
-    }
-
-    @discardableResult
-    override func clone(vm: VMData) async throws -> VMData {
-        throw UTMDataError.notImplemented
-    }
-
-    override func export(vm: VMData, to url: URL) async throws {
-        throw UTMDataError.notImplemented
-    }
-
-    override func move(vm: VMData, to url: URL) async throws {
-        throw UTMDataError.notImplemented
-    }
-
-    override func template(vm: VMData) async throws {
-        throw UTMDataError.notImplemented
-    }
-
-    override func computeSize(for vm: VMData) async -> Int64 {
-        (try? await remoteClient.server.getPackageSize(for: vm.id)) ?? 0
-    }
-
-    override func importUTM(from url: URL, asShortcut: Bool) async throws {
-        throw UTMDataError.notImplemented
-    }
-
-    override func mountSupportTools(for vm: any UTMVirtualMachine) async throws {
-        try await remoteClient.server.mountGuestToolsOnVirtualMachine(id: vm.id)
-    }
-}
-#endif

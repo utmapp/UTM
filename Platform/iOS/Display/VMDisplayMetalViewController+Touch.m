@@ -181,15 +181,11 @@ const CGFloat kScrollResistance = 10.0f;
 }
 
 - (VMMouseType)indirectMouseType {
-#if TARGET_OS_VISION
-    return VMMouseTypeAbsolute;
-#else
     if (@available(iOS 14.0, *)) {
         return VMMouseTypeRelative;
     } else {
         return VMMouseTypeAbsolute; // legacy iOS 13.4 mouse handling requires absolute
     }
-#endif
 }
 
 #pragma mark - Converting view points to VM display points
@@ -639,7 +635,7 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
             VMMouseType type = [self touchTypeToMouseType:touch.type];
 #if TARGET_OS_VISION
             if ([self isTouchGazeGesture:touch]) {
-                type = VMMouseTypeRelative;
+                type = self.indirectMouseType;
             }
 #endif
             if ([self switchMouseType:type]) {

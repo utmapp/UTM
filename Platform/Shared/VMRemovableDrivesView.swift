@@ -26,8 +26,8 @@ struct VMRemovableDrivesView: View {
     @State private var workaroundFileImporterBug: Bool = false
     @State private var currentDrive: UTMQemuConfigurationDrive?
     
-    private var qemuVM: (any UTMSpiceVirtualMachine)! {
-        vm.wrapped as? any UTMSpiceVirtualMachine
+    private var qemuVM: UTMQemuVirtualMachine! {
+        vm.wrapped as? UTMQemuVirtualMachine
     }
     
     var fileManager: FileManager {
@@ -78,7 +78,6 @@ struct VMRemovableDrivesView: View {
             }
             ForEach(config.drives.filter { $0.isExternal }) { drive in
                 HStack {
-                    #if !WITH_REMOTE // FIXME: implement remote feature
                     // Drive menu
                     Menu {
                         // Browse button
@@ -119,9 +118,6 @@ struct VMRemovableDrivesView: View {
                     } label: {
                         DriveLabel(drive: drive, isInserted: qemuVM.externalImageURL(for: drive) != nil)
                     }.disabled(vm.hasSuspendState)
-                    #else
-                    DriveLabel(drive: drive, isInserted: qemuVM.externalImageURL(for: drive) != nil)
-                    #endif
                     Spacer()
                     // Disk image path, or (empty)
                     Text(pathFor(drive))

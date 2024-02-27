@@ -18,8 +18,8 @@ import Foundation
 
 /// Downloads support tools ISO
 class UTMDownloadSupportToolsTask: UTMDownloadTask {
-    private let vm: any UTMSpiceVirtualMachine
-
+    private let vm: UTMQemuVirtualMachine
+    
     private static let supportToolsDownloadUrl = URL(string: "https://getutm.app/downloads/utm-guest-tools-latest.iso")!
     
     private var toolsUrl: URL {
@@ -42,7 +42,7 @@ class UTMDownloadSupportToolsTask: UTMDownloadTask {
         }
     }
     
-    init(for vm: any UTMSpiceVirtualMachine) {
+    init(for vm: UTMQemuVirtualMachine) {
         self.vm = vm
         let name = NSLocalizedString("Windows Guest Support Tools", comment: "UTMDownloadSupportToolsTask")
         super.init(for: Self.supportToolsDownloadUrl, named: name)

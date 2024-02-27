@@ -16,9 +16,6 @@
 
 import SwiftUI
 import SwiftUIVisualEffects
-#if os(visionOS)
-import VisionKeyboardKit
-#endif
 
 struct VMWindowView: View {
     let id: VMSessionState.WindowID
@@ -27,10 +24,7 @@ struct VMWindowView: View {
     @State private var state: VMWindowState
     @EnvironmentObject private var session: VMSessionState
     @Environment(\.scenePhase) private var scenePhase
-    #if os(visionOS)
-    @Environment(\.dismissWindow) private var dismissWindow
-    #endif
-
+    
     private let keyboardDidShowNotification = NotificationCenter.default.publisher(for: UIResponder.keyboardDidShowNotification)
     private let keyboardDidHideNotification = NotificationCenter.default.publisher(for: UIResponder.keyboardDidHideNotification)
     private let didReceiveMemoryWarningNotification = NotificationCenter.default.publisher(for: UIApplication.didReceiveMemoryWarningNotification)
@@ -114,13 +108,13 @@ struct VMWindowView: View {
                 }, secondaryButton: .cancel(Text("No")))
             case .terminateApp:
                 return Alert(title: Text("Are you sure you want to exit UTM?"), primaryButton: .destructive(Text("Yes")) {
-                    session.powerDown(isKill: true)
+                    session.stop()
                 }, secondaryButton: .cancel(Text("No")))
             case .restart:
                 return Alert(title: Text("Are you sure you want to reset this VM? Any unsaved changes will be lost."), primaryButton: .destructive(Text("Yes")) {
                     session.reset()
                 }, secondaryButton: .cancel(Text("No")))
-            #if WITH_USB
+            #if !WITH_QEMU_TCI
             case .deviceConnected(let device):
                 return Alert(title: Text("Would you like to connect '\(device.name ?? device.description)' to this virtual machine?"), primaryButton: .default(Text("Yes")) {
                     session.mostRecentConnectedDevice = nil
@@ -132,8 +126,6 @@ struct VMWindowView: View {
             case .nonfatalError(let message), .fatalError(let message):
                 return Alert(title: Text(message), dismissButton: .cancel(Text("OK")) {
                     if case .fatalError(_) = type {
-                        session.stop()
-                    } else if session.vmState == .stopped {
                         session.stop()
                     } else {
                         session.nonfatalError = nil
@@ -159,7 +151,7 @@ struct VMWindowView: View {
             state.saveWindow(to: session.vm.registryEntry, device: oldDevice)
             state.restoreWindow(from: session.vm.registryEntry, device: newDevice)
         }
-        #if WITH_USB
+        #if !WITH_QEMU_TCI
         .onChange(of: session.mostRecentConnectedDevice) { newValue in
             if session.activeWindow == state.id, let device = newValue {
                 state.alert = .deviceConnected(device)
@@ -178,9 +170,6 @@ struct VMWindowView: View {
         }
         .onChange(of: session.vmState) { [oldValue = session.vmState] newValue in
             vmStateUpdated(from: oldValue, to: newValue)
-        }
-        .onChange(of: session.isDynamicResolutionSupported) { newValue in
-            state.isDynamicResolutionSupported = newValue
         }
         .onReceive(keyboardDidShowNotification) { _ in
             state.isKeyboardShown = true
@@ -213,30 +202,12 @@ struct VMWindowView: View {
             if !isInteractive {
                 session.externalWindowBinding = $state
             }
-            state.isDynamicResolutionSupported = session.isDynamicResolutionSupported
-            // in case an alert appeared before we created the view
-            if session.activeWindow == state.id {
-                #if WITH_USB
-                if let device = session.mostRecentConnectedDevice {
-                    state.alert = .deviceConnected(device)
-                }
-                #endif
-                if let nonfatalError = session.nonfatalError {
-                    state.alert = .nonfatalError(nonfatalError)
-                }
-                if let fatalError = session.fatalError {
-                    state.alert = .fatalError(fatalError)
-                }
-            }
         }
         .onDisappear {
             session.removeWindow(state.id)
             if !isInteractive {
                 session.externalWindowBinding = nil
             }
-            #if os(visionOS)
-            dismissWindow(keyboardFor: state.id)
-            #endif
         }
     }
     
@@ -250,12 +221,9 @@ struct VMWindowView: View {
                 state.isBusy = false
                 state.isRunning = false
             }
-            // do not close if we have a popup open
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
-                if session.nonfatalError == nil && session.fatalError == nil {
-                    if session.vmState == .stopped {
-                        session.stop()
-                    }
+                if session.vmState == .stopped && session.fatalError == nil {
+                    session.stop()
                 }
             }
         case .pausing, .stopping, .starting, .resuming, .saving, .restoring:

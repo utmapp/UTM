@@ -257,9 +257,9 @@ extension VMDisplayAppleWindowController {
 }
 
 extension VMDisplayAppleWindowController: UTMScreenshotProvider {
-    var screenshot: UTMVirtualMachineScreenshot? {
+    var screenshot: PlatformImage? {
         if let image = mainView?.image() {
-            return UTMVirtualMachineScreenshot(wrapping: image)
+            return image
         } else {
             return nil
         }

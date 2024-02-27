@@ -38,7 +38,7 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
     
     var shouldAutoStartVM: Bool = true
     var vm: (any UTMVirtualMachine)!
-    var onClose: (() -> Void)?
+    var onClose: ((Notification) -> Void)?
     private(set) var secondaryWindows: [VMDisplayWindowController] = []
     private(set) weak var primaryWindow: VMDisplayWindowController?
     private var preventIdleSleepAssertion: IOPMAssertionID?
@@ -60,7 +60,7 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
         self
     }
     
-    convenience init(vm: any UTMVirtualMachine, onClose: (() -> Void)?) {
+    convenience init(vm: any UTMVirtualMachine, onClose: ((Notification) -> Void)?) {
         self.init(window: nil)
         self.vm = vm
         self.onClose = onClose
@@ -236,7 +236,7 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
     
     func registerSecondaryWindow(_ secondaryWindow: VMDisplayWindowController, at index: Int? = nil) {
         secondaryWindows.insert(secondaryWindow, at: index ?? secondaryWindows.endIndex)
-        secondaryWindow.onClose = { [weak self] in
+        secondaryWindow.onClose = { [weak self] _ in
             self?.secondaryWindows.removeAll(where: { $0 == secondaryWindow })
         }
         secondaryWindow.primaryWindow = self
@@ -367,7 +367,7 @@ extension VMDisplayWindowController: NSWindowDelegate {
             IOPMAssertionRelease(preventIdleSleepAssertion)
         }
         isFinalizing = true
-        onClose?()
+        onClose?(notification)
     }
     
     func windowDidBecomeKey(_ notification: Notification) {

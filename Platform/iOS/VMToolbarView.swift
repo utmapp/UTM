@@ -82,17 +82,13 @@ struct VMToolbarView: View {
         GeometryReader { geometry in
             Group {
                 Button {
-                    if state.isRunning {
+                    if session.vm.state == .started {
                         state.alert = .powerDown
                     } else {
                         state.alert = .terminateApp
                     }
                 } label: {
-                    if state.isRunning {
-                        Label("Power Off", systemImage: "power")
-                    } else {
-                        Label("Force Kill", systemImage: "xmark")
-                    }
+                    Label(state.isRunning ? "Power Off" : "Quit", systemImage: state.isRunning ? "power" : "xmark")
                 }.offset(offset(for: 8))
                 Button {
                     session.pauseResume()
@@ -114,7 +110,7 @@ struct VMToolbarView: View {
                 } label: {
                     Label("Zoom", systemImage: state.isViewportChanged ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
                 }.offset(offset(for: 5))
-                #if WITH_USB
+                #if !WITH_QEMU_TCI
                 if session.vm.hasUsbRedirection {
                     VMToolbarUSBMenuView()
                     .offset(offset(for: 4))

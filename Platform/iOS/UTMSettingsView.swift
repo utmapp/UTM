@@ -19,20 +19,12 @@ import SwiftUI
 struct UTMSettingsView: View {
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
-    private var hasContainer: Bool {
-        #if WITH_JIT
-        jb_has_container()
-        #else
-        true
-        #endif
-    }
-
     var body: some View {
         NavigationView {
             IASKAppSettings()
                 .navigationTitle("Settings")
                 .navigationBarTitleDisplayMode(.inline)
-                .appSettingsShowPrivacyLink(hasContainer)
+                .appSettingsShowPrivacyLink(jb_has_container())
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
                         Button("Close") {

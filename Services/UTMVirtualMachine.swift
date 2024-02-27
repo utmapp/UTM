@@ -24,7 +24,7 @@ import UIKit
 
 private let kUTMBundleExtension = "utm"
 private let kScreenshotPeriodSeconds = 60.0
-let kUTMBundleScreenshotFilename = "screenshot.png"
+private let kUTMBundleScreenshotFilename = "screenshot.png"
 private let kUTMBundleViewFilename = "view.plist"
 
 /// UTM virtual machine backend
@@ -66,8 +66,8 @@ protocol UTMVirtualMachine: AnyObject, Identifiable {
     var state: UTMVirtualMachineState { get }
     
     /// If non-null, is the most recent screenshot of the running VM
-    var screenshot: UTMVirtualMachineScreenshot? { get }
-
+    var screenshot: PlatformImage? { get }
+    
     /// If non-null, `saveSnapshot` and `restoreSnapshot` will not work due to the reason specified
     var snapshotUnsupportedError: Error? { get }
     
@@ -149,9 +149,6 @@ protocol UTMVirtualMachine: AnyObject, Identifiable {
     /// Request a screenshot of the primary graphics device
     /// - Returns: true if successful and the screenshot will be in `screenshot`
     @discardableResult func takeScreenshot() async -> Bool
-    
-    /// If screenshot is modified externally, this must be called
-    func reloadScreenshotFromFile() throws
 }
 
 /// Supported capabilities for a UTM backend
@@ -170,9 +167,6 @@ protocol UTMVirtualMachineCapabilities {
     
     /// The backend supports booting into recoveryOS.
     var supportsRecoveryMode: Bool { get }
-    
-    /// The backend supports remote sessions.
-    var supportsRemoteSession: Bool { get }
 }
 
 /// Delegate for UTMVirtualMachine events
@@ -207,7 +201,7 @@ protocol UTMVirtualMachineDelegate: AnyObject {
 }
 
 /// Virtual machine state
-enum UTMVirtualMachineState: Codable {
+enum UTMVirtualMachineState {
     case stopped
     case starting
     case started
@@ -220,19 +214,17 @@ enum UTMVirtualMachineState: Codable {
 }
 
 /// Additional options for VM start
-struct UTMVirtualMachineStartOptions: OptionSet, Codable {
+struct UTMVirtualMachineStartOptions: OptionSet {
     let rawValue: UInt
     
     /// Boot without persisting any changes.
     static let bootDisposibleMode = Self(rawValue: 1 << 0)
     /// Boot into recoveryOS (when supported).
     static let bootRecovery = Self(rawValue: 1 << 1)
-    /// Start VDI session where a remote client will connect to.
-    static let remoteSession = Self(rawValue: 1 << 2)
 }
 
 /// Method to stop the VM
-enum UTMVirtualMachineStopMethod: Codable {
+enum UTMVirtualMachineStopMethod {
     /// Sends a request to the guest to shut down gracefully.
     case request
     /// Sends a hardware power down signal.
@@ -290,43 +282,6 @@ extension UTMVirtualMachine {
 
 // MARK: - Screenshot
 
-struct UTMVirtualMachineScreenshot {
-    let image: PlatformImage
-    let pngData: Data?
-
-    init?(contentsOfURL url: URL) {
-        #if canImport(AppKit)
-        guard let image = NSImage(contentsOf: url) else {
-            return nil
-        }
-        #elseif canImport(UIKit)
-        guard let image = UIImage(contentsOfURL: url) else {
-            return nil
-        }
-        #endif
-        self.image = image
-        self.pngData = Self.createData(from: image)
-    }
-
-    init(wrapping image: PlatformImage) {
-        self.image = image
-        self.pngData = Self.createData(from: image)
-    }
-
-    private static func createData(from image: PlatformImage) -> Data? {
-        #if canImport(AppKit)
-        guard let cgref = image.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
-            return nil
-        }
-        let newrep = NSBitmapImageRep(cgImage: cgref)
-        newrep.size = image.size
-        return newrep.representation(using: .png, properties: [:])
-        #elseif canImport(UIKit)
-        return image.pngData()
-        #endif
-    }
-}
-
 extension UTMVirtualMachine {
     private var isScreenshotSaveEnabled: Bool {
         !UserDefaults.standard.bool(forKey: "NoSaveScreenshot")
@@ -356,8 +311,12 @@ extension UTMVirtualMachine {
         return timer
     }
     
-    func loadScreenshot() -> UTMVirtualMachineScreenshot? {
-        UTMVirtualMachineScreenshot(contentsOfURL: screenshotUrl)
+    func loadScreenshot() -> PlatformImage? {
+        #if canImport(AppKit)
+        return NSImage(contentsOf: screenshotUrl)
+        #elseif canImport(UIKit)
+        return UIImage(contentsOfURL: screenshotUrl)
+        #endif
     }
     
     func saveScreenshot() throws {
@@ -367,7 +326,17 @@ extension UTMVirtualMachine {
         guard let screenshot = screenshot else {
             return
         }
-        try screenshot.pngData?.write(to: screenshotUrl)
+        #if canImport(AppKit)
+        guard let cgref = screenshot.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
+            return
+        }
+        let newrep = NSBitmapImageRep(cgImage: cgref)
+        newrep.size = screenshot.size
+        let pngdata = newrep.representation(using: .png, properties: [:])
+        try pngdata?.write(to: screenshotUrl)
+        #elseif canImport(UIKit)
+        try screenshot.pngData()?.write(to: screenshotUrl)
+        #endif
     }
     
     func deleteScreenshot() throws {

@@ -424,20 +424,20 @@ extension QEMUArchitecture {
         default: return true
         }
     }
-
+    
     var hasHypervisorSupport: Bool {
-        guard UTMCapabilities.current.contains(.hasHypervisorSupport) else {
+        guard jb_has_hypervisor() else {
             return false
         }
-        if UTMCapabilities.current.contains(.isAarch64) {
-            return self == .aarch64
-        } else if UTMCapabilities.current.contains(.isX86_64) {
-            return self == .x86_64
-        } else {
-            return false
-        }
+        #if arch(arm64)
+        return self == .aarch64
+        #elseif arch(x86_64)
+        return self == .x86_64
+        #else
+        return false
+        #endif
     }
-
+    
     /// TSO is supported on jailbroken iOS devices with Hypervisor support
     var hasTSOSupport: Bool {
         #if os(iOS) || os(visionOS)

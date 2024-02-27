@@ -34,7 +34,7 @@ class Main {
     static var jitAvailable = true
     
     static func main() {
-        #if (os(iOS) || os(visionOS)) && WITH_JIT
+        #if (os(iOS) || os(visionOS)) && !WITH_QEMU_TCI
         // check if we have jailbreak
         if jb_spawn_ptrace_child(CommandLine.argc, CommandLine.unsafeArgv) {
             logger.info("JIT: ptrace() child spawn trick")

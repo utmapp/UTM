@@ -7,12 +7,11 @@ command -v realpath >/dev/null 2>&1 || realpath() {
 BASEDIR="$(dirname "$(realpath $0)")"
 
 usage () {
-    echo "Usage: $(basename $0)  [-t teamid] [-p platform] [-s scheme] [-a architecture] [-t targetversion] [-o output]"
+    echo "Usage: $(basename $0)  [-t teamid] [-p platform] [-a architecture] [-t targetversion] [-o output]"
     echo ""
     echo "  -t teamid        Team Identifier for app groups. Optional for iOS. Required for macOS."
-    echo "  -k sdk           Target SDK. Default iphoneos. [iphoneos|iphonesimulator|xros|xrsimulator|macosx]"
-    echo "  -s scheme        Target scheme. Default iOS/macOS depending on platform. [iOS|iOS-TCI|iOS-Remote|macOS]"
-    echo "  -a architecture  Target architecture. Default arm64. [arm64|x86_64]"
+    echo "  -p platform      Target platform. Default ios. [ios|ios_simulator|ios-tci|ios_simulator-tci|macos|visionos|visionos_simulator]"
+    echo "  -a architecture  Target architecture. Default arm64. [armv7|armv7s|arm64|i386|x86_64]"
     echo "  -o output        Output archive path. Default is current directory."
     echo ""
     exit 1
@@ -21,8 +20,9 @@ usage () {
 PRODUCT_BUNDLE_PREFIX="com.utmapp"
 TEAM_IDENTIFIER=
 ARCH=arm64
+PLATFORM=ios
 OUTPUT=$PWD
-SDK=iphoneos
+SDK=
 SCHEME=
 
 while [ "x$1" != "x" ]; do
@@ -35,12 +35,8 @@ while [ "x$1" != "x" ]; do
         ARCH=$2
         shift
         ;;
-    -k )
-        SDK=$2
-        shift
-        ;;
-    -s )
-        SCHEME=$2
+    -p )
+        PLATFORM=$2
         shift
         ;;
     -o )
@@ -54,14 +50,39 @@ while [ "x$1" != "x" ]; do
     shift
 done
 
-case $SDK in
+case $PLATFORM in
+*-tci )
+    SCHEME="iOS-TCI"
+    ;;
+ios* | visionos* )
+    SCHEME="iOS"
+    ;;
 macos )
     SCHEME="macOS"
     ;;
 * )
-    if [ -z "$SCHEME" ]; then
-        SCHEME="iOS"
-    fi
+    usage
+    ;;
+esac
+
+case $PLATFORM in
+visionos_simulator* )
+    SDK=xrsimulator
+    ;;
+visionos* )
+    SDK=xros
+    ;;
+ios_simulator* )
+    SDK=iphonesimulator
+    ;;
+ios* )
+    SDK=iphoneos
+    ;;
+macos )
+    SDK=macosx
+    ;;
+* )
+    usage
     ;;
 esac
 
@@ -73,7 +94,8 @@ fi
 xcodebuild archive -archivePath "$OUTPUT" -scheme "$SCHEME" -sdk "$SDK" $ARCH_ARGS -configuration Release CODE_SIGNING_ALLOWED=NO $TEAM_IDENTIFIER_PREFIX
 BUILT_PATH=$(find $OUTPUT.xcarchive -name '*.app' -type d | head -1)
 # Only retain the target architecture to address < iOS 15 crash & save disk space
-if [ "$SDK" == "iphoneos" ]; then
+case $PLATFORM in
+ios | ios-tci )
     find "$BUILT_PATH" -type f -path '*/Frameworks/*.dylib' | while read FILE; do
         if [[ $(lipo -info "$FILE") =~ "Architectures in the fat file" ]]; then
             lipo -thin $ARCH "$FILE" -output "$FILE"
@@ -85,9 +107,10 @@ if [ "$SDK" == "iphoneos" ]; then
             lipo -thin $ARCH "$FILE" -output "$FILE"
         fi
     done
-fi
+    ;;
+esac
 find "$BUILT_PATH" -type d -path '*/Frameworks/*.framework' -exec codesign --force --sign - --timestamp=none \{\} \;
-if [ "$SDK" == "macosx" ]; then
+if [ "$PLATFORM" == "macos" ]; then
     # always build with vm entitlements, package_mac.sh can strip it later
     # this way we can import into Xcode and re-sign from there
     UTM_ENTITLEMENTS="/tmp/utm.$$.entitlements"

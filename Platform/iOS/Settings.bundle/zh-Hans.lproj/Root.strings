@@ -5,7 +5,7 @@
 "Auto save on background" = "在后台运行时自动保存";
 
 /* (No Comment) */
-"Auto save on low memory" = "在内存不足时自动保存";
+"Auto save on low memory" = "在内存低时自动保存";
 
 /* (No Comment) */
 "Background" = "后台";
@@ -17,7 +17,7 @@
 "Caps" = "大写锁定";
 
 /* (No Comment) */
-"Click & Hold" = "点击并按住";
+"Click & Hold" = "单击并按住";
 
 /* (No Comment) */
 "Continue running VM in the background" = "在后台继续运行虚拟机";
@@ -89,7 +89,7 @@
 "Mouse Wheel" = "鼠标滚轮";
 
 /* (No Comment) */
-"Mouse Wheel (per swipe)" = "鼠标滚轮 (每次滚动)";
+"Mouse Wheel (per swipe)" = "鼠标滚轮";
 
 /* (No Comment) */
 "Move Screen" = "移动显示屏";
@@ -101,7 +101,7 @@
 "none given" = "未指定";
 
 /* (No Comment) */
-"Right" = "右";
+"Right" = "方向键右";
 
 /* (No Comment) */
 "Right Click" = "右键单击";
@@ -110,28 +110,28 @@
 "Space" = "空格";
 
 /* (No Comment) */
-"Tablet mode (always show cursor)" = "平板模式 (总是显示光标)";
+"Tablet mode (always show cursor)" = "平板模式 (显示光标)";
 
 /* (No Comment) */
-"Tablet mode (try hiding cursor)" = "平板模式 (尝试隐藏光标)";
+"Tablet mode (try hiding cursor)" = "平板模式 (隐藏光标)";
 
 /* (No Comment) */
-"Three Finger Pan" = "三指拖移";
+"Three Finger Pan" = "三指拖动";
 
 /* (No Comment) */
 "Touch Input" = "触摸输入";
 
 /* (No Comment) */
-"Touch mode (always show cursor)" = "触摸模式 (总是显示光标)";
+"Touch mode (always show cursor)" = "触摸模式 (显示光标)";
 
 /* (No Comment) */
-"Touch mode (try hiding cursor)" = "触摸模式 (尝试隐藏光标)";
+"Touch mode (try hiding cursor)" = "触摸模式 (隐藏光标)";
 
 /* (No Comment) */
 "Touchpad/Mouse Input" = "触控板/鼠标输入";
 
 /* (No Comment) */
-"Two Finger Pan" = "双指拖移";
+"Two Finger Pan" = "双指拖动";
 
 /* (No Comment) */
 "Two Finger Scroll" = "双指滚动";

@@ -55,7 +55,7 @@ public extension VMDisplayViewController {
             parent.setChildViewControllerForPointerLock(self)
             UIPress.pressResponderOverride = self
         }
-        #if !os(visionOS) && !WITH_REMOTE
+        #if !os(visionOS)
         if runInBackground {
             logger.info("Start location tracking to enable running in background")
             UTMLocationManager.sharedInstance().startUpdatingLocation()
@@ -74,6 +74,24 @@ public extension VMDisplayViewController {
     
     func enterLive() {
         UIApplication.shared.isIdleTimerDisabled = disableIdleTimer
+    }
+    
+    private func suspend() {
+        // dummy function for selector
+    }
+    
+    func terminateApplication() {
+        DispatchQueue.main.async { [self] in
+            // animate to home screen
+            let app = UIApplication.shared
+            app.performSelector(onMainThread: #selector(suspend), with: nil, waitUntilDone: true)
+            
+            // wait 2 seconds while app is going background
+            Thread.sleep(forTimeInterval: 2)
+            
+            // exit app when app is in background
+            exit(0);
+        }
     }
 }
 
@@ -115,16 +133,5 @@ public extension VMDisplayViewController {
     
     func integerForSetting(_ key: String) -> Int {
         return UserDefaults.standard.integer(forKey: key)
-    }
-
-    @discardableResult
-    func debounce(_ delaySeconds: Int, context: Any? = nil, action: @escaping () -> Void) -> Any {
-        if context != nil {
-            let previous = context as! DispatchWorkItem
-            previous.cancel()
-        }
-        let item = DispatchWorkItem(block: action)
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(delaySeconds), execute: item)
-        return item
     }
 }

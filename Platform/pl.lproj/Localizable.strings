@@ -73,7 +73,6 @@
 "TCP Client Connection" = "Połączenie kilent TCP";
 "TCP Server Connection" = "Połączenie serwer TCP";
 "Automatic Serial Device (max 4)" = "Automatyczne urządzenie szeregowe (maks. 4)";
-"Automatic" = "Automatyczny";
 "Manual Serial Device (advanced)" = "Manualne urządzenie szeregowe (zaawansowane)";
 "GDB Debug Stub" = "GDB Debug Stub";
 "QEMU Monitor (HMP)" = "Monitor QEMU (HMP)";
@@ -179,7 +178,7 @@
 "Information" = "Informacje";
 "System" = "System";
 "QEMU" = "QEMU";
-"Input" = "Urządzenie peryferyjne";
+"Input" = "Urządzenie WE/WY";
 "Sharing" = "Współdzielenie";
 "Devices" = "Urządzenia";
 "Display" = "Monitor";
@@ -296,12 +295,10 @@
 "Sound Backend" = "Tryb dźwięku";
 "SPICE with GStreamer (Input & Output)" = "SPICE z GStreamerem (WE/WY)";
 "CoreAudio (Output Only)" = "CoreAudio (tylko wyjście)";
-"Mouse/Keyboard" = "Klawiatura/mysz";
-"Capture input automatically when entering full screen" = "Przechwytuj mysz automatycznie w trybie pełnoekranowym";
 "Console" = "Konsola";
 "Option (⌥) is Meta key" = "Option（⌥） to klawisz Meta";
 "If enabled, Option will be mapped to the Meta key which can be useful for emacs. Otherwise, option will work as the system intended (such as for entering international text)." = "Jeśli włączone, klawisz Option będzie zmapowany jako klawisz Meta, który może być przydatny dla eMacków. W innym wypadku, ta opcja będzie działać jak system przewiduje (tj: wpisywanie międzynarodowego tekstu).";
-"QEMU Pointer" = "Mysz QEMU";
+"QEMU Pointer" = "Wskaźnik QEMU";
 "Hold Control (⌃) for right click" = "Przytrzymaj Control (⌃) aby wykonać prawe kliknięcie";
 "Invert scrolling" = "Odwróć przewijanie";
 "If enabled, scroll wheel input will be inverted." = "Jeśli włączone, przewijanie będzie odwrócone";
@@ -520,8 +517,7 @@
 "Guest Network (IPv6)" = "Sieć gościa (IPv6)";
 "Host Address" = "Adres hosta";
 "Host Address (IPv6)" = "Adres hosta（IPv6)";
-"DHCP Start" = "Pierwszy adres zakresu DHCP";
-"DHCP End" = "Ostatni adres zakresu DHCP";
+"DHCP Start" = "Start DHCP";
 "DHCP Domain Name" = "Nazwa domeny DHCP";
 "DNS Server" = "Serwer DNS";
 "DNS Server (IPv6)" = "Serwer DNS（IPv6）";
@@ -554,7 +550,7 @@
 "Instantiate PS/2 controller even when USB input is supported. Required for older Windows." = "Utwórz instancję kontrolera PS/2 nawet jeśli kontroler USB jest wspierany. Wymagane dla starszych wersji systemu Windows.";
 "QEMU Machine Properties" = "Właściwości maszyny QEMU";
 "This is appended to the -machine argument." = "To jest dołączone do argumentu -machine.";
-"QEMU Arguments" = "Argumenty rozruchu QEMU";
+"QEMU Arguments" = "Argumenty dla QEMU";
 "Export QEMU Command…" = "Eksportuj komendę QEMU…";
 "(Delete)" = "（Usuń）";
 

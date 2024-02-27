@@ -32,13 +32,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)spiceDidUpdateDisplay:(CSDisplay *)display NS_SWIFT_NAME(spiceDidUpdateDisplay(_:));
 - (void)spiceDidCreateSerial:(CSPort *)serial NS_SWIFT_NAME(spiceDidCreateSerial(_:));
 - (void)spiceDidDestroySerial:(CSPort *)serial NS_SWIFT_NAME(spiceDidDestroySerial(_:));
-#if defined(WITH_USB)
+#if !defined(WITH_QEMU_TCI)
 - (void)spiceDidChangeUsbManager:(nullable CSUSBManager *)usbManager NS_SWIFT_NAME(spiceDidChangeUsbManager(_:));
 #endif
 
 @optional
 - (void)spiceDynamicResolutionSupportDidChange:(BOOL)supported;
-- (void)spiceDidDisconnect;
 
 @end
 

@@ -37,21 +37,21 @@ import SwiftUI
 
     let id: ID = ID()
 
-    let vm: any UTMSpiceVirtualMachine
-
+    let vm: UTMQemuVirtualMachine
+    
     var qemuConfig: UTMQemuConfiguration {
         vm.config
     }
     
     @Published var vmState: UTMVirtualMachineState = .stopped
     
-    @Published var nonfatalError: String?
-
     @Published var fatalError: String?
-
+    
+    @Published var nonfatalError: String?
+    
     @Published var primaryInput: CSInput?
     
-    #if WITH_USB
+    #if !WITH_QEMU_TCI
     private var primaryUsbManager: CSUSBManager?
     
     private var usbManagerQueue = DispatchQueue(label: "USB Manager Queue", qos: .utility)
@@ -78,12 +78,10 @@ import SwiftUI
     @Published var externalWindowBinding: Binding<VMWindowState>?
     
     @Published var hasShownMemoryWarning: Bool = false
-
-    @Published var isDynamicResolutionSupported: Bool = false
-
+    
     private var hasAutosave: Bool = false
 
-    init(for vm: any UTMSpiceVirtualMachine) {
+    init(for vm: UTMQemuVirtualMachine) {
         self.vm = vm
         super.init()
         vm.delegate = self
@@ -150,7 +148,7 @@ extension VMSessionState: UTMVirtualMachineDelegate {
         Task { @MainActor in
             vmState = state
             if state == .stopped {
-                #if WITH_USB
+                #if !WITH_QEMU_TCI
                 clearDevices()
                 #endif
             }
@@ -159,7 +157,7 @@ extension VMSessionState: UTMVirtualMachineDelegate {
     
     nonisolated func virtualMachine(_ vm: any UTMVirtualMachine, didErrorWithMessage message: String) {
         Task { @MainActor in
-            nonfatalError = message
+            fatalError = message
         }
     }
     
@@ -283,7 +281,7 @@ extension VMSessionState: UTMSpiceIODelegate {
         }
     }
     
-    #if WITH_USB
+    #if !WITH_QEMU_TCI
     nonisolated func spiceDidChangeUsbManager(_ usbManager: CSUSBManager?) {
         Task { @MainActor in
             primaryUsbManager?.delegate = nil
@@ -293,21 +291,9 @@ extension VMSessionState: UTMSpiceIODelegate {
         }
     }
     #endif
-
-    nonisolated func spiceDynamicResolutionSupportDidChange(_ supported: Bool) {
-        Task { @MainActor in
-            isDynamicResolutionSupported = supported
-        }
-    }
-
-    nonisolated func spiceDidDisconnect() {
-        Task { @MainActor in
-            fatalError = NSLocalizedString("Connection to the server was lost.", comment: "VMSessionState")
-        }
-    }
 }
 
-#if WITH_USB
+#if !WITH_QEMU_TCI
 extension VMSessionState: CSUSBManagerDelegate {
     nonisolated func spiceUsbManager(_ usbManager: CSUSBManager, deviceError error: String, for device: CSUSBDevice) {
         Task { @MainActor in
@@ -433,18 +419,10 @@ extension VMSessionState {
             logger.warning("Error starting audio session: \(error.localizedDescription)")
         }
         Self.allActiveSessions[id] = self
-        showWindow()
-        if vm.state == .paused {
-            vm.requestVmResume()
-        } else {
-            vm.requestVmStart(options: options)
-        }
-    }
-
-    func showWindow() {
         NotificationCenter.default.post(name: .vmSessionCreated, object: nil, userInfo: ["Session": self])
+        vm.requestVmStart(options: options)
     }
-
+    
     @objc private func suspend() {
         // dummy function for selector
     }
@@ -458,9 +436,7 @@ extension VMSessionState {
         }
         // tell other screens to shut down
         Self.allActiveSessions.removeValue(forKey: id)
-        closeWindows()
-
-        #if WITH_SOLO_VM
+        NotificationCenter.default.post(name: .vmSessionEnded, object: nil, userInfo: ["Session": self])
         // animate to home screen
         let app = UIApplication.shared
         app.performSelector(onMainThread: #selector(suspend), with: nil, waitUntilDone: true)
@@ -470,17 +446,12 @@ extension VMSessionState {
         
         // exit app when app is in background
         exit(0)
-        #endif
     }
-
-    func closeWindows() {
-        NotificationCenter.default.post(name: .vmSessionEnded, object: nil, userInfo: ["Session": self])
-    }
-
-    func powerDown(isKill: Bool = false) {
+    
+    func powerDown() {
         Task {
             try? await vm.deleteSnapshot(name: nil)
-            try await vm.stop(usingMethod: isKill ? .kill : .force)
+            try await vm.stop(usingMethod: .force)
             self.stop()
         }
     }
@@ -511,7 +482,6 @@ extension VMSessionState {
     }
     
     func didEnterBackground() {
-        #if !os(visionOS)
         logger.info("Entering background")
         let shouldAutosaveBackground = UserDefaults.standard.bool(forKey: "AutosaveBackground")
         if shouldAutosaveBackground && vmState == .started {
@@ -524,7 +494,7 @@ extension VMSessionState {
             }
             Task {
                 do {
-                    try await vm.saveSnapshot(name: nil)
+                    try await vm.saveSnapshot()
                     self.hasAutosave = true
                     logger.info("Save snapshot complete")
                 } catch {
@@ -534,17 +504,14 @@ extension VMSessionState {
                 task = .invalid
             }
         }
-        #endif
     }
     
     func didEnterForeground() {
-        #if !os(visionOS)
         logger.info("Entering foreground!")
         if (hasAutosave && vmState == .started) {
             logger.info("Deleting snapshot")
             vm.requestVmDeleteState()
         }
-        #endif
     }
 }
 

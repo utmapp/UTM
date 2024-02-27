@@ -99,10 +99,6 @@ class UTMReleaseHelper: ObservableObject {
                 if platform == "iOS SE" {
                     currentSection.body.append(description)
                 }
-                #elseif WITH_REMOTE
-                if platform == "iOS Remote" {
-                    currentSection.body.append(description)
-                }
                 #endif
                 #if os(visionOS)
                 if platform.hasPrefix("visionOS") {

@@ -66,10 +66,8 @@ struct VMNavigationListView: View {
                 }
             }
         }.onMove(perform: move)
-        #if !WITH_REMOTE // FIXME: implement remote feature
         .onDelete(perform: delete)
-        #endif
-
+        
         if data.pendingVMs.count > 0 {
             Section(header: Text("Pending")) {
                 ForEach(data.pendingVMs, id: \.name) { vm in
@@ -121,12 +119,10 @@ private struct VMListModifier: ViewModifier {
                 newButton
             }
             #else
-            #if !WITH_REMOTE // FIXME: implement remote feature
             ToolbarItem(placement: .navigationBarLeading) {
                 newButton
             }
-            #endif
-            #if !os(visionOS) && !WITH_REMOTE
+            #if !os(visionOS)
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button("Settings") {
                     settingsPresented.toggle()
@@ -144,9 +140,7 @@ private struct VMListModifier: ViewModifier {
             if data.showNewVMSheet {
                 VMWizardView()
             } else if settingsPresented {
-                #if !WITH_REMOTE
                 UTMSettingsView()
-                #endif
             }
         }
         .onChange(of: data.showNewVMSheet) { newValue in
