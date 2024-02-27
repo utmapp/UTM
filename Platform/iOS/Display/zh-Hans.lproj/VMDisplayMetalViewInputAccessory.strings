@@ -95,7 +95,7 @@
 "LU6-kH-vN3.accessibilityLabel" = "主页";
 
 /* Class = "UIButton"; normalTitle = "Home"; ObjectID = "LU6-kH-vN3"; */
-"LU6-kH-vN3.normalTitle" = "主页";
+"LU6-kH-vN3.normalTitle" = "Home";
 
 /* Class = "UIButton"; accessibilityLabel = "Escape"; ObjectID = "n12-9R-99C"; */
 "n12-9R-99C.accessibilityLabel" = "Esc";
