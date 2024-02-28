@@ -83,14 +83,15 @@ Below is a summary of all the variables and secrets used by GitHub Actions in th
 |`PERSONAL_ACCESS_TOKEN`          |GitHub personal token with permission for `repository_dispatch`                    |
 |`SIGNING_CERTIFICATE_P12_DATA`   |Base64 encoded PKCS#12 format containing certificates and private keys for signing |
 |`SIGNING_CERTIFICATE_PASSWORD`   |Password of the PKCS#12 file                                                       |
-|`SIGNING_USERNAME`               |App Store Connect username for notarizing and submission                           |
-|`SIGNING_PASSWORD`               |App Store Connect ["app-specific password"][3]                                     |
+|`CONNECT_KEY`                    |App Store Connect API key for notarizing and submission (base64 encoded .p8)       |
 
 |Variable                         |Description                                                                        |
 |---------------------------------|-----------------------------------------------------------------------------------|
 |`DISPATCH_ALTSTORE_REPO_NAME`    |`username/repo` path to a [altstore-github][1] repository                          |
 |`DISPATCH_CYDIA_REPO_NAME`       |`username/repo` path to a [silica-package-github][2] repository                    |
 |`SIGNING_TEAM_ID`                |Team ID associated with signing certificates                                       |
+|`CONNECT_ISSUER_ID`              |App Store Connect API issuer id                                                    |
+|`CONNECT_KEY_ID`                 |App Store Connect API key id                                                       |
 |`PROFILE_DATA`                   |Base64 encoded provisioning profile of main application                            |
 |`PROFILE_UUID`                   |UUID of provisioning profile above                                                 |
 |`HELPER_PROFILE_DATA`            |Base64 encoded provisioning profile of QEMUHelper                                  |
@@ -103,6 +104,10 @@ Below is a summary of all the variables and secrets used by GitHub Actions in th
 |`APP_STORE_HELPER_PROFILE_UUID`  |UUID of provisioning profile above                                                 |
 |`APP_STORE_LAUNCHER_PROFILE_DATA`|Base64 encoded provisioning profile of QEMULauncher for App Store submission       |
 |`APP_STORE_LAUNCHER_PROFILE_UUID`|UUID of provisioning profile above                                                 |
+|`IOS_REMOTE_PROFILE_DATA`        |Base64 encoded provisioning profile of iOS Remote for App Store submission         |
+|`IOS_REMOTE_PROFILE_UUID`        |UUID of provisioning profile above                                                 |
+|`IOS_SE_PROFILE_DATA`            |Base64 encoded provisioning profile of iOS SE for App Store submission             |
+|`IOS_SE_PROFILE_UUID`            |UUID of provisioning profile above                                                 |
 |`IS_SELF_HOSTED_RUNNER`          |Set to `true` to use a self hosted macOS runner set up by the owner                |
 
 ### Signing for release
@@ -110,7 +115,7 @@ Below is a summary of all the variables and secrets used by GitHub Actions in th
 The following certificates (and associated private keys) must be exported from Keychain as a PKCS#12 file (Cmd+click to select multiple and right click to export).
 
 * Developer ID Application
-* 3rd Party Mac Developer Application (Mac App Store)
+* 3rd Party Mac Developer Application (Mac App Store) or Apple Distribution
 * 3rd Party Mac Developer Installer (Mac App Store)
 
 Give a password when prompted and save it to the repository secret `SIGNING_CERTIFICATE_PASSWORD`. Then, in Terminal, convert the PKCS#12 file to Base64 and copy it: `cat Certificates.p12 | base64 | pbcopy` and paste it to `SIGNING_CERTIFICATE_P12_DATA`.
