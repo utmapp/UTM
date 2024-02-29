@@ -1,0 +1,18 @@
+/* Privacy - Local Network Usage Description */
+"NSLocalNetworkUsageDescription" = "UTM używa sieci lokalnej, aby znaleźć i połączyć się do zdalnych serwerów UTM.";
+
+/* Privacy - Location Always and When In Use Usage Description */
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "UTM okazjonalnie prosi o dane lokalizacyjne, aby upewnić się, że system utrzymuje aktywny proces w tle. Dane o lokalizacji nigdy nie opuszczą urządzenia.";
+
+/* Privacy - Location Always Usage Description */
+"NSLocationAlwaysUsageDescription" = "UTM okazjonalnie prosi o dane lokalizacyjne, aby upewnić się, że system utrzymuje aktywny proces w tle. Dane o lokalizacji nigdy nie opuszczą urządzenia.";
+
+/* Privacy - Location When In Use Usage Description */
+"NSLocationWhenInUseUsageDescription" = "UTM okazjonalnie prosi o dane lokalizacyjne, aby upewnić się, że system utrzymuje aktywny proces w tle. Dane o lokalizacji nigdy nie opuszczą urządzenia.";
+
+/* Privacy - Microphone Usage Description */
+"NSMicrophoneUsageDescription" = "Wymagane są uprawnienia dla maszyny wirtualnej, aby używać mikrofonu.";
+
+/* (No Comment) */
+"UTM virtual machine" = "Maszyna wirtualna UTM";
+
