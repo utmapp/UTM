@@ -12,7 +12,7 @@
 "7pj-Jz-7JR.normalTitle" = "⇥";
 
 /* Class = "UIButton"; accessibilityLabel = "Right"; ObjectID = "8Lh-4D-Fz6"; */
-"8Lh-4D-Fz6.accessibilityLabel" = "Droite";
+"8Lh-4D-Fz6.accessibilityLabel" = "Strzałka w prawo";
 
 /* Class = "UIButton"; normalTitle = "→"; ObjectID = "8Lh-4D-Fz6"; */
 "8Lh-4D-Fz6.normalTitle" = "→";
@@ -57,10 +57,10 @@
 "FDV-W6-qlO.normalTitle" = "Caps";
 
 /* Class = "UIButton"; accessibilityLabel = "Home"; ObjectID = "LU6-kH-vN3"; */
-"LU6-kH-vN3.accessibilityLabel" = "Główne";
+"LU6-kH-vN3.accessibilityLabel" = "Główny";
 
 /* Class = "UIButton"; normalTitle = "Home"; ObjectID = "LU6-kH-vN3"; */
-"LU6-kH-vN3.normalTitle" = "Główne";
+"LU6-kH-vN3.normalTitle" = "Główny";
 
 /* Class = "UIButton"; normalTitle = "F8"; ObjectID = "LlV-Ae-CrL"; */
 "LlV-Ae-CrL.normalTitle" = "F8";
@@ -120,7 +120,7 @@
 "h4q-XF-UMn.accessibilityLabel" = "Page Down";
 
 /* Class = "UIButton"; normalTitle = "Pg Dn"; ObjectID = "h4q-XF-UMn"; */
-"h4q-XF-UMn.normalTitle" = "Pg Dwn";
+"h4q-XF-UMn.normalTitle" = "Page Down";
 
 /* Class = "UIButton"; accessibilityLabel = "Option"; ObjectID = "jxu-AQ-u8c"; */
 "jxu-AQ-u8c.accessibilityLabel" = "Option";
@@ -138,7 +138,7 @@
 "kd1-fj-kXM.normalTitle" = "F2";
 
 /* Class = "UIButton"; accessibilityLabel = "Escape"; ObjectID = "n12-9R-99C"; */
-"n12-9R-99C.accessibilityLabel" = "Espace";
+"n12-9R-99C.accessibilityLabel" = "Escape";
 
 /* Class = "UIButton"; normalTitle = "⎋"; ObjectID = "n12-9R-99C"; */
 "n12-9R-99C.normalTitle" = "⎋";
@@ -147,7 +147,7 @@
 "pX1-7o-dbU.accessibilityLabel" = "Page Up";
 
 /* Class = "UIButton"; normalTitle = "Pg Up"; ObjectID = "pX1-7o-dbU"; */
-"pX1-7o-dbU.normalTitle" = "Pg Down";
+"pX1-7o-dbU.normalTitle" = "Page Down";
 
 /* Class = "UIButton"; normalTitle = "F11"; ObjectID = "rfk-su-cFq"; */
 "rfk-su-cFq.normalTitle" = "F11";
@@ -156,7 +156,7 @@
 "rtU-Yt-FhT.accessibilityLabel" = "Ukryj klawiaturę";
 
 /* Class = "UIButton"; accessibilityLabel = "Scroll Lock"; ObjectID = "sF1-tj-hUG"; */
-"sF1-tj-hUG.accessibilityLabel" = "Blokada przewijania.";
+"sF1-tj-hUG.accessibilityLabel" = "Blokada przewijania";
 
 /* Class = "UIButton"; normalTitle = "Scroll"; ObjectID = "sF1-tj-hUG"; */
-"sF1-tj-hUG.normalTitle" = "Przewijacie";
+"sF1-tj-hUG.normalTitle" = "Przewijanie";

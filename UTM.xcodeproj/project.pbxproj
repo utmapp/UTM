@@ -1581,6 +1581,9 @@
 		037DAA222B0B92580061ACB3 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		2C33B3A82566C9B100A954A6 /* VMContextMenuModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMContextMenuModifier.swift; sourceTree = "<group>"; };
 		2C6D9E02256EE454003298E6 /* VMDisplayQemuTerminalWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayQemuTerminalWindowController.swift; sourceTree = "<group>"; };
+		45D72A942B94CE89000D16E9 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		45D72A952B94CEE0000D16E9 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		45D72A962B94CEF5000D16E9 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = "pl.lproj/Info-RemotePlist.strings"; sourceTree = "<group>"; };
 		4B224B9C279D4D8100B63CFF /* InListButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InListButtonStyle.swift; sourceTree = "<group>"; };
 		521F3EFA2414F73800130500 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		5286EC8E2437488E007E6CBC /* VMDisplayMetalViewController+Gamepad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "VMDisplayMetalViewController+Gamepad.h"; sourceTree = "<group>"; };
@@ -4193,6 +4196,7 @@
 			children = (
 				836CA97E28FCC39700EB9EF0 /* de */,
 				E6F791192903EEC6000BAAC9 /* es-419 */,
+				45D72A942B94CE89000D16E9 /* pl */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -4238,6 +4242,7 @@
 			children = (
 				CEB5C1182B8C4CD4008AAE5C /* en */,
 				CEB5C11A2B8C4D30008AAE5C /* ja */,
+				45D72A962B94CEF5000D16E9 /* pl */,
 			);
 			name = "Info-RemotePlist.strings";
 			sourceTree = "<group>";
@@ -4284,6 +4289,7 @@
 				F6DA2DA72AAFED5F0070DCD1 /* zh-HK */,
 				61EBDEA02AACA83100B959A2 /* ru */,
 				037DAA1D2B0B92580061ACB3 /* it */,
+				45D72A952B94CEE0000D16E9 /* pl */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
