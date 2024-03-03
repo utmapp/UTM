@@ -408,9 +408,21 @@ build_angle () {
     export PATH="$(realpath "$BUILD_DIR/depot_tools.git"):$OLD_PATH"
     pwd="$(pwd)"
     cd "$BUILD_DIR/WebKit.git/Source/ThirdParty/ANGLE"
-    xcodebuild archive -archivePath "ANGLE" -scheme "ANGLE" -sdk $SDK -arch $ARCH -configuration Release WEBCORE_LIBRARY_DIR="/usr/local/lib" IPHONEOS_DEPLOYMENT_TARGET="14.0" MACOSX_DEPLOYMENT_TARGET="11.0" XROS_DEPLOYMENT_TARGET="1.0"
-    # strip broken entitlements from signature
-    find "ANGLE.xcarchive/Products/usr/local/lib/" -name '*.dylib' -exec codesign -fs - \{\} \;
+    env -i PATH=$PATH xcodebuild archive -archivePath "ANGLE" \
+                                         -scheme "ANGLE" \
+                                         -sdk $SDK \
+                                         -arch $ARCH \
+                                         -configuration Release \
+                                         WEBCORE_LIBRARY_DIR="/usr/local/lib" \
+                                         NORMAL_UMBRELLA_FRAMEWORKS_DIR="" \
+                                         CODE_SIGNING_ALLOWED=NO \
+                                         IPHONEOS_DEPLOYMENT_TARGET="14.0" \
+                                         MACOSX_DEPLOYMENT_TARGET="11.0" \
+                                         XROS_DEPLOYMENT_TARGET="1.0"
+    # FIXME: update minver and remove this hack
+    if [ "$SDK" == "iphoneos" ]; then
+        find "ANGLE.xcarchive/Products/usr/local/lib/" -name '*.dylib' -exec xcrun vtool -set-version-min ios $SDKMINVER 17.2 -replace -output \{\} \{\} \;
+    fi
     rsync -a "ANGLE.xcarchive/Products/usr/local/lib/" "$PREFIX/lib"
     rsync -a "include/" "$PREFIX/include"
     cd "$pwd"
