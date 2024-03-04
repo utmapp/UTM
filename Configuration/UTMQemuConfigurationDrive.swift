@@ -29,6 +29,9 @@ struct UTMQemuConfigurationDrive: UTMConfigurationDrive {
     /// If true, the drive image will be mounted as read-only.
     var isReadOnly: Bool = false
     
+    /// If true, the drive image is sparse file.
+    var isSparse: Bool = true
+    
     /// If true, a bookmark is stored in the package.
     var isExternal: Bool = false
     
@@ -60,6 +63,7 @@ struct UTMQemuConfigurationDrive: UTMConfigurationDrive {
         case interfaceVersion = "InterfaceVersion"
         case identifier = "Identifier"
         case isReadOnly = "ReadOnly"
+        case isSparse = "Sparse"
     }
     
     init() {
@@ -78,6 +82,7 @@ struct UTMQemuConfigurationDrive: UTMConfigurationDrive {
             isExternal = true
         }
         isReadOnly = try values.decodeIfPresent(Bool.self, forKey: .isReadOnly) ?? isExternal
+        isSparse = try values.decodeIfPresent(Bool.self, forKey: .isSparse) ?? true
         imageType = try values.decode(QEMUDriveImageType.self, forKey: .imageType)
         interface = try values.decode(QEMUDriveInterface.self, forKey: .interface)
         interfaceVersion = try values.decodeIfPresent(Int.self, forKey: .interfaceVersion) ?? 0
@@ -90,6 +95,7 @@ struct UTMQemuConfigurationDrive: UTMConfigurationDrive {
             try container.encodeIfPresent(imageURL?.lastPathComponent, forKey: .imageName)
         }
         try container.encode(isReadOnly, forKey: .isReadOnly)
+        try container.encode(isSparse, forKey: .isSparse)
         try container.encode(imageType, forKey: .imageType)
         if imageType == .cd || imageType == .disk {
             try container.encode(interface, forKey: .interface)
@@ -104,6 +110,7 @@ struct UTMQemuConfigurationDrive: UTMConfigurationDrive {
         imageName?.hash(into: &hasher)
         sizeMib.hash(into: &hasher)
         isReadOnly.hash(into: &hasher)
+        isSparse.hash(into: &hasher)
         isExternal.hash(into: &hasher)
         id.hash(into: &hasher)
         imageType.hash(into: &hasher)

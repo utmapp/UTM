@@ -18,7 +18,14 @@ import SwiftUI
 
 struct VMWizardDrivesView: View {
     @ObservedObject var wizardState: VMWizardState
-    
+    var allocNow: Binding<Bool> {
+        return Binding(get: {
+            return wizardState.allocateAllDiskSpaceNow
+        }, set: { newValue in
+            wizardState.allocateAllDiskSpaceNow = newValue
+        })
+    }
+
     var body: some View {
         VMWizardContent("Storage") {
             Section {
@@ -34,6 +41,9 @@ struct VMWizardDrivesView: View {
                         .frame(maxWidth: 50)
                     Text("GB")
                 }
+                Toggle(isOn: allocNow, label: {
+                    Text("Allocate all disk space now")
+                }).help("If checked, allocate all disk space immediately rather than allow the disk space to gradually grow to the maximum amount.")
             } header: {
                 Text("Size")
             }

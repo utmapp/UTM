@@ -313,6 +313,7 @@ struct DiskImage: Codable, Hashable, Identifiable {
     
     var sizeMib: Int
     var isReadOnly: Bool
+    var isSparse: Bool
     var isExternal: Bool
     var imageURL: URL?
     private var uuid = UUID() // for identifiable
@@ -320,6 +321,7 @@ struct DiskImage: Codable, Hashable, Identifiable {
     private enum CodingKeys: String, CodingKey {
         case sizeMib
         case isReadOnly
+        case isSparse
         case isExternal
         case imagePath
         case imageBookmark
@@ -344,6 +346,7 @@ struct DiskImage: Codable, Hashable, Identifiable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         sizeMib = try container.decode(Int.self, forKey: .sizeMib)
         isReadOnly = try container.decode(Bool.self, forKey: .isReadOnly)
+        isSparse = try container.decode(Bool.self, forKey: .isSparse)
         isExternal = try container.decode(Bool.self, forKey: .isExternal)
         if !isExternal, let imagePath = try container.decodeIfPresent(String.self, forKey: .imagePath) {
             imageURL = dataURL.appendingPathComponent(imagePath)
@@ -357,6 +360,7 @@ struct DiskImage: Codable, Hashable, Identifiable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(sizeMib, forKey: .sizeMib)
         try container.encode(isReadOnly, forKey: .isReadOnly)
+        try container.encode(isSparse, forKey: .isSparse)
         try container.encode(isExternal, forKey: .isExternal)
         if !isExternal {
             try container.encodeIfPresent(imageURL?.lastPathComponent, forKey: .imagePath)
