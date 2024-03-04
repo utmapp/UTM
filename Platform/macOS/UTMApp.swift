@@ -19,7 +19,7 @@ import SwiftUI
 struct UTMApp: App {
     @State var data = UTMData()
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate: AppDelegate
-    
+
     @ViewBuilder
     var homeWindow: some View {
         ContentView().environmentObject(data)
@@ -31,6 +31,9 @@ struct UTMApp: App {
                 if let message = notification.userInfo?["Message"] as? String {
                     data.showErrorAlert(message: message)
                 }
+            }
+            .onReceive(NSNotification.ShowMainWindow) { _ in
+                NSApplication.shared.windows.first?.makeKeyAndOrderFront(nil)
             }
     }
     
