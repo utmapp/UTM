@@ -142,7 +142,7 @@
 "Boot Arguments" = "啟動參數";
 
 /* No comment provided by engineer. */
-"Boot Image Type" = "啟動映像檔類型";
+"Boot Image Type" = "啟動映像檔種類";
 
 /* No comment provided by engineer. */
 "Boot ISO Image" = "啟動 ISO 映像檔";
@@ -1459,7 +1459,7 @@
 "Boot Image" = "啟動映像檔";
 
 /* No comment provided by engineer. */
-"Boot Image Type" = "啟動映像檔類型";
+"Boot Image Type" = "啟動映像檔種類";
 
 /* No comment provided by engineer. */
 "Boot into recovery mode." = "啟動至還原模式。";
@@ -1762,7 +1762,7 @@
 "If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO." = "如設定，直接由 Raw 核心映像檔與 initrd 啟動。否則由受支援的 ISO 啟動。";
 
 /* No comment provided by engineer. */
-"Image Type" = "映像檔類型";
+"Image Type" = "映像檔種類";
 
 /* No comment provided by engineer. */
 "Import Drive" = "輸入磁碟機";
