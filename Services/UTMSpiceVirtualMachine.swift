@@ -60,7 +60,7 @@ protocol UTMSpiceVirtualMachine: UTMVirtualMachine where Configuration == UTMQem
 // MARK: - USB redirection
 extension UTMSpiceVirtualMachine {
     var hasUsbRedirection: Bool {
-        #if HAS_USB
+        #if WITH_USB
         return jb_has_usb_entitlement()
         #else
         return false
