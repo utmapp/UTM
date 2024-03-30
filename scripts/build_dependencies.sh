@@ -117,7 +117,7 @@ clone () {
         echo "${GREEN}$DIR already downloaded! Run with -d to force re-download.${NC}"
     else
         rm -rf "$DIR"
-        echo "${GREEN}Cloning ${URL}...${NC}"
+        echo "${GREEN}Cloning ${REPO}...${NC}"
         git clone --filter=tree:0 --no-checkout "$REPO" "$DIR"
         if [ ! -z "$SUBDIRS" ]; then
             git -C "$DIR" sparse-checkout init
