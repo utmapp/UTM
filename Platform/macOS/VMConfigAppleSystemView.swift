@@ -58,9 +58,7 @@ struct VMConfigAppleSystemView: View {
                     .multilineTextAlignment(.trailing)
             }
             RAMSlider(systemMemory: $config.memorySize) { _ in
-                if config.memorySize < minMemory {
-                    config.memorySize = minMemory
-                } else if config.memorySize > maxMemory {
+                if config.memorySize > maxMemory {
                     config.memorySize = maxMemory
                 }
             }
