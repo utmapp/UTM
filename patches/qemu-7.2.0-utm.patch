@@ -6955,3 +6955,59 @@ index 388e0db6e4..349fa43e0b 100644
 -- 
 2.41.0
 
+From 5502e7c8ea15eca29b82936579de631b8f5cd9f7 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Thu, 28 Mar 2024 02:22:19 -0700
+Subject: [PATCH] Revert "block/file-posix: Use O_RDWR for locking on macOS"
+
+This reverts commit c800dbb61e39547b97ce8278e8a293d10e365053.
+---
+ block/file-posix.c | 17 -----------------
+ 1 file changed, 17 deletions(-)
+
+diff --git a/block/file-posix.c b/block/file-posix.c
+index 9f6e6279d9..b6cda6e00b 100644
+--- a/block/file-posix.c
++++ b/block/file-posix.c
+@@ -130,14 +130,6 @@
+ #define RAW_LOCK_PERM_BASE             100
+ #define RAW_LOCK_SHARED_BASE           200
+ 
+-/*
+- * qemu_lock_fd_test always returns 0 when fd is not open for writing and
+- * exclusive is true on macOS 11.3.1.
+- */
+-#ifdef __APPLE__
+-#define RAW_LOCK_WRITES
+-#endif
+-
+ typedef struct BDRVRawState {
+     int fd;
+     bool use_lock;
+@@ -681,11 +673,7 @@ static int raw_open_common(BlockDriverState *bs, QDict *options,
+                                                false);
+ 
+     s->open_flags = open_flags;
+-#ifdef RAW_LOCK_WRITES
+-    raw_parse_flags(bdrv_flags, &s->open_flags, s->use_lock);
+-#else
+     raw_parse_flags(bdrv_flags, &s->open_flags, false);
+-#endif
+ 
+     s->fd = -1;
+     fd = qemu_open(filename, s->open_flags, errp);
+@@ -1050,11 +1038,6 @@ static int raw_reconfigure_getfd(BlockDriverState *bs, int flags,
+     bool has_writers = perm &
+         (BLK_PERM_WRITE | BLK_PERM_WRITE_UNCHANGED | BLK_PERM_RESIZE);
+     int fcntl_flags = O_APPEND | O_NONBLOCK;
+-#ifdef RAW_LOCK_WRITES
+-    if (s->use_lock) {
+-        has_writers = true;
+-    }
+-#endif
+ #ifdef O_NOATIME
+     fcntl_flags |= O_NOATIME;
+ #endif
+-- 
+2.41.0
+

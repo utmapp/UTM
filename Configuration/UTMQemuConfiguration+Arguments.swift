@@ -461,9 +461,8 @@ import Virtualization // for getting network interfaces
                 "if=pflash"
                 "format=raw"
                 "unit=0"
-                "file.filename="
+                "file="
                 bios
-                "file.locking=off"
                 "readonly=on"
                 f()
                 f("-drive")
@@ -726,8 +725,7 @@ import Virtualization // for getting network interfaces
             "file="
             imageURL
         } else if !isCd {
-            "file.filename=/dev/null"
-            "file.locking=off"
+            "file=/dev/null"
         }
         if drive.isReadOnly || isCd {
             "readonly=on"
