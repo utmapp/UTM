@@ -252,11 +252,6 @@ enum VMWizardOS: String, Identifiable {
                 if #available(macOS 12, *) {
                     if operatingSystem != .Linux {
                         nextPage = .summary // only support linux currently
-                    } else {
-                        if #available(macOS 14, *) {
-                            // Use NVMe as the default disk interface to avoid filesystem corruption on macOS 14+, only available for Linux
-                            useNvmeAsDiskInterface = true
-                        }
                     }
                 } else {
                     nextPage = .summary
