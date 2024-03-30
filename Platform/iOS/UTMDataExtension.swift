@@ -51,23 +51,4 @@ extension UTMData {
     func close(vm: VMData) {
         // do nothing
     }
-    
-    func tryClickAtPoint(point: CGPoint, button: CSInputButton) {
-        if let vc = vmVC as? VMDisplayMetalViewController, let input = vc.vmInput {
-            input.sendMouseButton(button, pressed: true)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.02) {
-                input.sendMouseButton(button, pressed: false)
-            }
-        }
-    }
-    
-    func trySendTextSpice(_ text: String) {
-        if let vc = vmVC as? VMDisplayMetalViewController {
-            #if !os(visionOS) // FIXME: broken in visionOS
-            vc.keyboardView.insertText(text)
-            #endif
-        } else if let vc = vmVC as? VMDisplayTerminalViewController {
-            vc.vmSerialPort.write(text.data(using: .nonLossyASCII)!)
-        }
-    }
 }

@@ -901,69 +901,6 @@ struct AlertMessage: Identifiable {
             }
         }
     }
-    
-    // MARK: - Automation Features
-    
-    /// Send text as keyboard input to VM
-    /// - Parameters:
-    ///   - vm: VM to send text to
-    ///   - components: Data (see UTM Wiki for details)
-    func automationSendText(to vm: VMData, urlComponents components: URLComponents) {
-        guard let queryItems = components.queryItems else { return }
-        guard let text = queryItems.first(where: { $0.name == "text" })?.value else { return }
-        #if os(macOS)
-        trySendTextSpice(vm: vm, text: text)
-        #else
-        trySendTextSpice(text)
-        #endif
-    }
-    
-    /// Send mouse/tablet coordinates to VM
-    /// - Parameters:
-    ///   - vm: VM to send mouse/tablet coordinates to
-    ///   - components: Data (see UTM Wiki for details)
-    func automationSendMouse(to vm: VMData, urlComponents components: URLComponents) {
-        guard let qemuVm = vm.wrapped as? any UTMSpiceVirtualMachine else { return } // FIXME: implement for Apple VM
-        guard !qemuVm.config.displays.isEmpty else { return }
-        guard let queryItems = components.queryItems else { return }
-        /// Parse targeted position
-        var x: CGFloat? = nil
-        var y: CGFloat? = nil
-        let nf = NumberFormatter()
-        nf.allowsFloats = false
-        if let xStr = components.queryItems?.first(where: { item in
-            item.name == "x"
-        })?.value {
-            x = nf.number(from: xStr) as? CGFloat
-        }
-        if let yStr = components.queryItems?.first(where: { item in
-            item.name == "y"
-        })?.value {
-            y = nf.number(from: yStr) as? CGFloat
-        }
-        guard let xPos = x, let yPos = y else { return }
-        let point = CGPoint(x: xPos, y: yPos)
-        /// Parse which button should be clicked
-        var button: CSInputButton = .left
-        if let buttonStr = queryItems.first(where: { $0.name == "button"})?.value {
-            switch buttonStr {
-            case "middle":
-                button = .middle
-                break
-            case "right":
-                button = .right
-                break
-            default:
-                break
-            }
-        }
-        /// All parameters parsed, perform the click
-        #if os(macOS)
-        tryClickAtPoint(vm: vm, point: point, button: button)
-        #else
-        tryClickAtPoint(point: point, button: button)
-        #endif
-    }
 
     // MARK: - AltKit
     
