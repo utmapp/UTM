@@ -699,12 +699,7 @@ struct AlertMessage: Identifiable {
 
     /// Create a new VM by downloading a .zip and extracting it
     /// - Parameter components: Download URL components
-    func downloadUTMZip(from components: URLComponents) async {
-        guard let urlParameter = components.queryItems?.first(where: { $0.name == "url" })?.value,
-           let url = URL(string: urlParameter) else {
-               showErrorAlert(message: NSLocalizedString("Failed to parse download URL.", comment: "UTMData"))
-               return
-        }
+    func downloadUTMZip(from url: URL) {
         let task = UTMDownloadVMTask(for: url)
         listAdd(pendingVM: task.pendingVM)
         Task {
