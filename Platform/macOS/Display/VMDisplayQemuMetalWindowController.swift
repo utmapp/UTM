@@ -60,7 +60,6 @@ class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
     
     @Setting("NoCursorCaptureAlert") private var isCursorCaptureAlertShown: Bool = false
     @Setting("NoFullscreenCursorCaptureAlert") private var isFullscreenCursorCaptureAlertShown: Bool = false
-    @Setting("DisplayFixed") private var isDisplayFixed: Bool = false
     @Setting("FullScreenAutoCapture") private var isFullScreenAutoCapture: Bool = false
     @Setting("CtrlRightClick") private var isCtrlRightClick: Bool = false
     @Setting("AlternativeCaptureKey") private var isAlternativeCaptureKey: Bool = false
@@ -68,7 +67,6 @@ class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
     @Setting("IsNumLockForced") private var isNumLockForced: Bool = false
     @Setting("InvertScroll") private var isInvertScroll: Bool = false
     @Setting("QEMURendererFPSLimit") private var rendererFpsLimit: Int = 0
-    private var settingObservations = [NSKeyValueObservation]()
     
     // MARK: - Init
     
@@ -103,17 +101,12 @@ class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
         metalView.delegate = renderer
         metalView.inputDelegate = self
         
-        settingObservations.append(UserDefaults.standard.observe(\.DisplayFixed, options: .new) { (defaults, change) in
-            self.displaySizeDidChange(size: self.displaySize)
-        })
-        
         super.windowDidLoad()
     }
     
     override func windowWillClose(_ notification: Notification) {
         vmDisplay?.removeRenderer(renderer!)
         stopAllCapture()
-        settingObservations = []
         super.windowWillClose(notification)
     }
     
@@ -286,7 +279,7 @@ extension VMDisplayQemuMetalWindowController {
         let currentScreenScale = window.screen?.backingScaleFactor ?? 1.0
         let nativeScale = displayConfig!.isNativeResolution ? 1.0 : currentScreenScale
         // change optional scale if needed
-        if isDisplaySizeDynamic || isDisplayFixed || (!displayConfig!.isNativeResolution && vmDisplay.viewportScale < currentScreenScale) {
+        if isDisplaySizeDynamic || (!displayConfig!.isNativeResolution && vmDisplay.viewportScale < currentScreenScale) {
             vmDisplay.viewportScale = nativeScale
         }
         let minScaledSize = CGSize(width: size.width * nativeScale / currentScreenScale, height: size.height * nativeScale / currentScreenScale)
@@ -338,9 +331,6 @@ extension VMDisplayQemuMetalWindowController {
 
     func windowWillResize(_ sender: NSWindow, to frameSize: NSSize) -> NSSize {
         guard !self.isDisplaySizeDynamic else {
-            return frameSize
-        }
-        guard !self.isDisplayFixed else {
             return frameSize
         }
         let newSize = updateHostScaling(for: sender, frameSize: frameSize)
