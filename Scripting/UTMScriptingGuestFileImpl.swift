@@ -22,7 +22,7 @@ import QEMUKitInternal
 class UTMScriptingGuestFileImpl: NSObject, UTMScriptable {
     @objc private(set) var id: Int
     
-    weak private var parent: UTMScriptingVirtualMachineImpl?
+    private var parent: UTMScriptingVirtualMachineImpl
     
     init(from handle: Int, parent: UTMScriptingVirtualMachineImpl) {
         self.id = handle
@@ -30,9 +30,6 @@ class UTMScriptingGuestFileImpl: NSObject, UTMScriptable {
     }
     
     override var objectSpecifier: NSScriptObjectSpecifier? {
-        guard let parent = parent else {
-            return nil
-        }
         guard let parentDescription = parent.classDescription as? NSScriptClassDescription else {
             return nil
         }
@@ -66,7 +63,7 @@ class UTMScriptingGuestFileImpl: NSObject, UTMScriptable {
         let isBase64Encoded = command.evaluatedArguments?["isBase64Encoded"] as? Bool ?? false
         let isClosing = command.evaluatedArguments?["isClosing"] as? Bool ?? true
         withScriptCommand(command) { [self] in
-            guard let guestAgent = await parent?.guestAgent else {
+            guard let guestAgent = await parent.guestAgent else {
                 throw UTMScriptingVirtualMachineImpl.ScriptingError.guestAgentNotRunning
             }
             defer {
@@ -96,7 +93,7 @@ class UTMScriptingGuestFileImpl: NSObject, UTMScriptable {
         let file = command.evaluatedArguments?["file"] as? URL
         let isClosing = command.evaluatedArguments?["isClosing"] as? Bool ?? true
         withScriptCommand(command) { [self] in
-            guard let guestAgent = await parent?.guestAgent else {
+            guard let guestAgent = await parent.guestAgent else {
                 throw UTMScriptingVirtualMachineImpl.ScriptingError.guestAgentNotRunning
             }
             defer {
@@ -129,7 +126,7 @@ class UTMScriptingGuestFileImpl: NSObject, UTMScriptable {
         let isBase64Encoded = command.evaluatedArguments?["isBase64Encoded"] as? Bool ?? false
         let isClosing = command.evaluatedArguments?["isClosing"] as? Bool ?? true
         withScriptCommand(command) { [self] in
-            guard let guestAgent = await parent?.guestAgent else {
+            guard let guestAgent = await parent.guestAgent else {
                 throw UTMScriptingVirtualMachineImpl.ScriptingError.guestAgentNotRunning
             }
             defer {
@@ -153,7 +150,7 @@ class UTMScriptingGuestFileImpl: NSObject, UTMScriptable {
         let file = command.evaluatedArguments?["file"] as? URL
         let isClosing = command.evaluatedArguments?["isClosing"] as? Bool ?? true
         withScriptCommand(command) { [self] in
-            guard let guestAgent = await parent?.guestAgent else {
+            guard let guestAgent = await parent.guestAgent else {
                 throw UTMScriptingVirtualMachineImpl.ScriptingError.guestAgentNotRunning
             }
             defer {
@@ -180,7 +177,7 @@ class UTMScriptingGuestFileImpl: NSObject, UTMScriptable {
     
     @objc func close(_ command: NSScriptCommand) {
         withScriptCommand(command) { [self] in
-            guard let guestAgent = await parent?.guestAgent else {
+            guard let guestAgent = await parent.guestAgent else {
                 throw UTMScriptingVirtualMachineImpl.ScriptingError.guestAgentNotRunning
             }
             try await guestAgent.guestFileClose(id)
