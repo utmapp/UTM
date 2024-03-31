@@ -342,6 +342,9 @@
 "Do you want to delete this VM and all its data?" = "要删除此虚拟机及其所有数据吗？";
 
 /* No comment provided by engineer. */
+"Do you want to download '%@'?" = "要下载 '%@' 吗？";
+
+/* No comment provided by engineer. */
 "Do you want to duplicate this VM and all its data?" = "要复制此虚拟机及其所有数据吗？";
 
 /* No comment provided by engineer. */
@@ -360,7 +363,13 @@
 "Do you want to remove this shortcut? The data will not be deleted." = "要删除此快捷方式吗？数据不会被删除。";
 
 /* No comment provided by engineer. */
+"Download" = "下载";
+
+/* No comment provided by engineer. */
 "Download prebuilt from UTM Gallery…" = "从 UTM 库中下载预构建虚拟机…";
+
+/* No comment provided by engineer. */
+"Download VM" = "下载虚拟机";
 
 /* No comment provided by engineer. */
 "Drag and drop IPSW file here" = "拖放 IPSW 文件到此处";
@@ -592,11 +601,17 @@
 /* UTMRemoteServer */
 "Invalid backend." = "无效的后端。";
 
+/* VMWizardState */
+"Invalid drive size specified." = "指定的驱动器大小无效。";
+
 /* UTMData */
 "Invalid JitStreamer attach URL:\n%@" = "无效的 JitStreamer 附加 URL：%@";
 
 /* VMConfigAppleNetworkingView */
 "Invalid MAC address." = "MAC 地址无效。";
+
+/* VMWizardState */
+"Invalid RAM size specified." = "指定的内存大小无效。";
 
 /* No comment provided by engineer. */
 "Invert scrolling" = "反转滚动";
