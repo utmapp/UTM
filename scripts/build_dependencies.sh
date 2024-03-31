@@ -117,7 +117,7 @@ clone () {
         echo "${GREEN}$DIR already downloaded! Run with -d to force re-download.${NC}"
     else
         rm -rf "$DIR"
-        echo "${GREEN}Cloning ${URL}...${NC}"
+        echo "${GREEN}Cloning ${REPO}...${NC}"
         git clone --filter=tree:0 --no-checkout "$REPO" "$DIR"
         if [ ! -z "$SUBDIRS" ]; then
             git -C "$DIR" sparse-checkout init
@@ -257,7 +257,7 @@ build_pkg_config() {
     cd "$DIR"
     if [ -z "$REBUILD" ]; then
         echo "${GREEN}Configuring ${NAME}...${NC}"
-        env -i ./configure --prefix="$PREFIX" --bindir="$PREFIX/host/bin" --with-internal-glib $@
+        env -i CFLAGS="-Wno-error=int-conversion" ./configure --prefix="$PREFIX" --bindir="$PREFIX/host/bin" --with-internal-glib $@
     fi
     echo "${GREEN}Building ${NAME}...${NC}"
     make -j$NCPU

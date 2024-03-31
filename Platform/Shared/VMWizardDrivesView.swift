@@ -25,11 +25,7 @@ struct VMWizardDrivesView: View {
                 HStack {
                     Text("Specify the size of the drive where data will be stored into.")
                     Spacer()
-                    NumberTextField("", number: $wizardState.storageSizeGib, onEditingChanged: { _ in
-                        if wizardState.storageSizeGib < 1 {
-                            wizardState.storageSizeGib = 1
-                        }
-                    })
+                    NumberTextField("", number: $wizardState.storageSizeGib)
                         .textFieldStyle(.roundedBorder)
                         .frame(maxWidth: 50)
                     Text("GB")

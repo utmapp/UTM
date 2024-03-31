@@ -230,6 +230,10 @@ enum VMWizardOS: String, Identifiable {
             }
             nextPage = .hardware
         case .hardware:
+            guard systemMemoryMib > 0 else {
+                alertMessage = AlertMessage(NSLocalizedString("Invalid RAM size specified.", comment: "VMWizardState"))
+                return
+            }
             nextPage = .drives
             #if arch(arm64)
             if operatingSystem == .Windows && windowsBootVhdx != nil {
@@ -246,6 +250,10 @@ enum VMWizardOS: String, Identifiable {
                 }
             }
         case .drives:
+            guard storageSizeGib > 0 else {
+                alertMessage = AlertMessage(NSLocalizedString("Invalid drive size specified.", comment: "VMWizardState"))
+                return
+            }
             nextPage = .sharing
             if useAppleVirtualization {
                 if #available(macOS 12, *) {

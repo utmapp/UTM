@@ -75,9 +75,7 @@ struct VMWizardHardwareView: View {
             }
             Section {
                 RAMSlider(systemMemory: $wizardState.systemMemoryMib) { _ in
-                    if wizardState.systemMemoryMib < minMemoryMib {
-                        wizardState.systemMemoryMib = minMemoryMib
-                    } else if wizardState.systemMemoryMib > maxMemoryMib {
+                    if wizardState.systemMemoryMib > maxMemoryMib {
                         wizardState.systemMemoryMib = maxMemoryMib
                     }
                 }

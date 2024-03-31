@@ -81,6 +81,7 @@ struct VMQEMUSettingsView: View {
                             ToolbarItem(placement: .destructiveAction) {
                                 Button("Remove") {
                                     config.displays.removeAll(where: { $0.id == display.id })
+                                    refresh()
                                 }
                             }
                         }
@@ -89,6 +90,7 @@ struct VMQEMUSettingsView: View {
                 }.contextMenu {
                     DestructiveButton("Remove") {
                         config.displays.removeAll(where: { $0.id == display.id })
+                        refresh()
                     }
                 }
             }
@@ -100,6 +102,7 @@ struct VMQEMUSettingsView: View {
                             ToolbarItem(placement: .destructiveAction) {
                                 Button("Remove") {
                                     config.serials.removeAll(where: { $0.id == serial.id })
+                                    refresh()
                                 }
                             }
                         }
@@ -108,6 +111,7 @@ struct VMQEMUSettingsView: View {
                 }.contextMenu {
                     DestructiveButton("Remove") {
                         config.serials.removeAll(where: { $0.id == serial.id })
+                        refresh()
                     }
                 }
             }
@@ -119,6 +123,7 @@ struct VMQEMUSettingsView: View {
                             ToolbarItem(placement: .destructiveAction) {
                                 Button("Remove") {
                                     config.networks.removeAll(where: { $0.id == network.id })
+                                    refresh()
                                 }
                             }
                         }
@@ -127,6 +132,7 @@ struct VMQEMUSettingsView: View {
                 }.contextMenu {
                     DestructiveButton("Remove") {
                         config.networks.removeAll(where: { $0.id == network.id })
+                        refresh()
                     }
                 }
                 if #available(macOS 12, *), network.mode == .emulated {
@@ -147,6 +153,7 @@ struct VMQEMUSettingsView: View {
                             ToolbarItem(placement: .destructiveAction) {
                                 Button("Remove") {
                                     config.sound.removeAll(where: { $0.id == sound.id })
+                                    refresh()
                                 }
                             }
                         }
@@ -155,6 +162,7 @@ struct VMQEMUSettingsView: View {
                 }.contextMenu {
                     DestructiveButton("Remove") {
                         config.sound.removeAll(where: { $0.id == sound.id })
+                        refresh()
                     }
                 }
             }
@@ -163,6 +171,11 @@ struct VMQEMUSettingsView: View {
         Section(header: Text("Drives")) {
             VMDrivesSettingsView(drives: $config.drives, template: UTMQemuConfigurationDrive(forArchitecture: config.system.architecture, target: config.system.target))
         }
+    }
+
+    private func refresh() {
+        // SwiftUI bug: if a TextField is focused while a device is removed, the app will crash
+        infoActive = true
     }
 }
 
