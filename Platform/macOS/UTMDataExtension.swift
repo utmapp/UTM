@@ -67,7 +67,7 @@ extension UTMData {
             if startImmediately {
                 if vm.wrapped!.state == .paused {
                     vm.wrapped!.requestVmResume()
-                } else {
+                } else if vm.wrapped!.state == .stopped {
                     vm.wrapped!.requestVmStart(options: options)
                 }
             }
