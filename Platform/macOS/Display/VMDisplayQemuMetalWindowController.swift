@@ -43,7 +43,8 @@ class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
     private var localEventMonitor: Any? = nil
     private var globalEventMonitor: Any? = nil
     private var ctrlKeyDown: Bool = false
-    
+    private var screenChangedToken: Any?
+
     private var displayConfig: UTMQemuConfigurationDisplay? {
         vmQemuConfig?.displays[id]
     }
@@ -100,13 +101,24 @@ class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
         vmDisplay?.addRenderer(renderer) // can be nil if primary
         metalView.delegate = renderer
         metalView.inputDelegate = self
-        
+
+        screenChangedToken = NotificationCenter.default.addObserver(forName: NSWindow.didChangeScreenNotification, object: nil, queue: .main) { [weak self] _ in
+            // update minSize when we change screens
+            if let self = self,
+               let window = window,
+               displaySize != .zero,
+               !isDisplaySizeDynamic {
+                window.contentMinSize = contentMinSize(in: window, for: displaySize)
+            }
+        }
+
         super.windowDidLoad()
     }
     
     override func windowWillClose(_ notification: Notification) {
         vmDisplay?.removeRenderer(renderer!)
         stopAllCapture()
+        screenChangedToken = nil
         super.windowWillClose(notification)
     }
     
@@ -272,7 +284,22 @@ extension VMDisplayQemuMetalWindowController {
             displaySizeDidChange(size: vmDisplay.displaySize)
         }
     }
-    
+
+    private func contentMinSize(in window: NSWindow, for displaySize: CGSize) -> CGSize {
+        let currentScreenScale = window.screen?.backingScaleFactor ?? 1.0
+        let nativeScale = displayConfig!.isNativeResolution ? 1.0 : currentScreenScale
+        let minScaledSize = CGSize(width: displaySize.width * nativeScale / currentScreenScale, height: displaySize.height * nativeScale / currentScreenScale)
+        guard let screenSize = window.screen?.visibleFrame.size else {
+            return minScaledSize
+        }
+        let excessSize = window.frameRect(forContentRect: .zero).size
+        // if the window is larger than our host screen, shrink the min size allowed
+        let widthScale = (screenSize.width - excessSize.width) / displaySize.width
+        let heightScale = (screenSize.height - excessSize.height) / displaySize.height
+        let scale = min(min(widthScale, heightScale), 1.0)
+        return CGSize(width: displaySize.width * scale, height: displaySize.height * scale)
+    }
+
     fileprivate func updateHostFrame(forGuestResolution size: CGSize) {
         guard let window = window else { return }
         guard let vmDisplay = vmDisplay else { return }
@@ -282,7 +309,6 @@ extension VMDisplayQemuMetalWindowController {
         if isDisplaySizeDynamic || (!displayConfig!.isNativeResolution && vmDisplay.viewportScale < currentScreenScale) {
             vmDisplay.viewportScale = nativeScale
         }
-        let minScaledSize = CGSize(width: size.width * nativeScale / currentScreenScale, height: size.height * nativeScale / currentScreenScale)
         let fullContentWidth = size.width * vmDisplay.viewportScale / currentScreenScale
         let fullContentHeight = size.height * vmDisplay.viewportScale / currentScreenScale
         let contentRect = CGRect(x: window.frame.origin.x,
@@ -296,7 +322,7 @@ extension VMDisplayQemuMetalWindowController {
             window.contentResizeIncrements = NSSize(width: 1, height: 1)
             window.setFrame(windowRect, display: false, animate: false)
         } else {
-            window.contentMinSize = minScaledSize
+            window.contentMinSize = contentMinSize(in: window, for: size)
             window.contentAspectRatio = size
             window.setFrame(windowRect, display: false, animate: true)
         }
