@@ -32,7 +32,11 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
         }
         return display.value(forKey: "_supportsReconfiguration") as? Bool ?? false
     }
-    
+
+    var isDynamicResolution: Bool {
+        appleConfig.displays.first!.isDynamicResolution
+    }
+
     private var aspectRatioLocked: Bool = false
     
     @Setting("FullScreenAutoCapture") private var isFullScreenAutoCapture: Bool = false
@@ -46,7 +50,7 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
     override func enterLive() {
         appleView.virtualMachine = appleVM.apple
         if #available(macOS 14, *) {
-            appleView.automaticallyReconfiguresDisplay = true
+            appleView.automaticallyReconfiguresDisplay = isDynamicResolution
         }
         super.enterLive()
     }
@@ -108,7 +112,7 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
     }
     
     func windowDidResize(_ notification: Notification) {
-        if aspectRatioLocked && supportsReconfiguration {
+        if aspectRatioLocked && supportsReconfiguration && isDynamicResolution {
             window!.resizeIncrements = NSSize(width: 1.0, height: 1.0)
             aspectRatioLocked = false
         }
