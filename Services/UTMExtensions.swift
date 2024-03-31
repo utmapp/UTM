@@ -226,6 +226,12 @@ extension CGColor {
 extension UIImage {
     convenience init?(contentsOfURL: URL?) {
         if let url = contentsOfURL {
+            let scoped = url.startAccessingSecurityScopedResource()
+            defer {
+                if scoped {
+                    url.stopAccessingSecurityScopedResource()
+                }
+            }
             self.init(contentsOfFile: url.path)
         } else {
             return nil
@@ -295,6 +301,12 @@ extension View {
 extension NSImage {
     convenience init?(contentsOfURL: URL?) {
         if let url = contentsOfURL {
+            let scoped = url.startAccessingSecurityScopedResource()
+            defer {
+                if scoped {
+                    url.stopAccessingSecurityScopedResource()
+                }
+            }
             self.init(contentsOf: url)
         } else {
             return nil
