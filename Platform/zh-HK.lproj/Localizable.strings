@@ -48,7 +48,7 @@
 "A valid backend must be specified." = "必須指定有效的後端。";
 
 /* UTMScriptingAppDelegate */
-"A valid configuration must be specified." = "必須指定有效的配置。";
+"A valid configuration must be specified." = "必須指定有效的設定。";
 
 /* UTMAppleConfiguration */
 "A valid kernel image must be specified." = "必須指定有效的內核映像檔。";
@@ -342,6 +342,9 @@
 "Do you want to delete this VM and all its data?" = "你要刪除此虛擬電腦及其所有資料嗎？";
 
 /* No comment provided by engineer. */
+"Do you want to download '%@'?" = "你要下載「%@」嗎？";
+
+/* No comment provided by engineer. */
 "Do you want to duplicate this VM and all its data?" = "你要製作此虛擬電腦及其所有資料的副本嗎？";
 
 /* No comment provided by engineer. */
@@ -360,7 +363,13 @@
 "Do you want to remove this shortcut? The data will not be deleted." = "你要刪除此捷徑嗎？資料不會被刪除。";
 
 /* No comment provided by engineer. */
+"Download" = "下載";
+
+/* No comment provided by engineer. */
 "Download prebuilt from UTM Gallery…" = "從 UTM 虛擬電腦庫下載預構建⋯";
+
+/* No comment provided by engineer. */
+"Download VM" = "下載虛擬電腦";
 
 /* No comment provided by engineer. */
 "Drag and drop IPSW file here" = "拖放 IPSW 檔至此";
@@ -592,11 +601,17 @@
 /* UTMRemoteServer */
 "Invalid backend." = "無效的後端。";
 
+/* VMWizardState */
+"Invalid drive size specified." = "指定的磁碟大小無效。";
+
 /* UTMData */
 "Invalid JitStreamer attach URL:\n%@" = "無效的 JitStreamer 附加 URL：%@";
 
 /* VMConfigAppleNetworkingView */
 "Invalid MAC address." = "無效的 MAC 位址。";
+
+/* VMWizardState */
+"Invalid RAM size specified." = "指定的記憶體大小無效。";
 
 /* No comment provided by engineer. */
 "Invert scrolling" = "反轉捲動";
