@@ -6,7 +6,7 @@ PKG_CONFIG_SRC="https://pkgconfig.freedesktop.org/releases/pkg-config-0.29.2.tar
 # Source files for qemu
 FFI_SRC="https://sourceware.org/ftp/libffi/libffi-3.3.tar.gz"
 ICONV_SRC="https://ftp.gnu.org/gnu/libiconv/libiconv-1.16.tar.gz"
-GETTEXT_SRC="https://ftp.gnu.org/gnu/gettext/gettext-0.21.tar.gz"
+GETTEXT_SRC="https://ftp.gnu.org/gnu/gettext/gettext-0.22.5.tar.gz"
 PNG_SRC="https://ftp.osuosl.org/pub/blfs/conglomeration/libpng/libpng-1.6.37.tar.xz"
 JPEG_TURBO_SRC="https://ftp.osuosl.org/pub/blfs/conglomeration/libjpeg-turbo/libjpeg-turbo-1.5.3.tar.gz"
 GLIB_SRC="https://download.gnome.org/sources/glib/2.69/glib-2.69.0.tar.xz"
