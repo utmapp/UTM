@@ -308,8 +308,6 @@
 "Prevent system from sleeping when any VM is running" = "仮想マシン実行中にシステムがスリープしないようにする";
 "Do not show confirmation when closing a running VM" = "実行中の仮想マシンを閉じるときに確認を表示しない";
 "Closing a VM without properly shutting it down could result in data loss." = "仮想マシンを適切にシステム終了せずに閉じると、データが失われる可能性があります。";
-"VM display size is fixed" = "仮想マシンのディスプレイサイズを固定";
-"If enabled, resizing of the VM window will not be allowed." = "有効にすると、仮想マシンのディスプレイサイズを変更できなくなります。";
 "Do not save VM screenshot to disk" = "仮想マシンのスクリーンショットをディスクに保存しない";
 "If enabled, any existing screenshot will be deleted the next time the VM is started." = "有効にすると、次回仮想マシンを開始したときに既存のスクリーンショットが削除されます。";
 "QEMU Graphics Acceleration" = "QEMUグラフィックスアクセラレーション";
@@ -415,6 +413,8 @@
 "Height" = "高さ";
 "HiDPI (Retina)" = "高DPI（Retina）";
 "Only available on macOS virtual machines." = "macOS仮想マシンでのみ使用できます。";
+"Dynamic Resolution" = "ダイナミック解像度";
+"Only available on macOS 14+ virtual machines." = "macOS 14以降の仮想マシンでのみ使用できます。";
 
 // VMConfigAppleDriveCreateView.swift
 "Removable" = "リムーバブル";
