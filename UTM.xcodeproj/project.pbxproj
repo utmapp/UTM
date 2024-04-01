@@ -4672,6 +4672,7 @@
 				SUPPORTED_PLATFORMS = "";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
 				SYSROOT_DIR = "sysroot-$(PLATFORM_DISPLAY_NAME:identifier)$(PLATFORM_SUFFIX)-$(ARCHS:identifier)";
+				XROS_DEPLOYMENT_TARGET = 1.0;
 			};
 			name = Debug;
 		};
@@ -4753,6 +4754,7 @@
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SYSROOT_DIR = "sysroot-$(PLATFORM_DISPLAY_NAME:identifier)$(PLATFORM_SUFFIX)-$(ARCHS:identifier)";
 				VALIDATE_PRODUCT = YES;
+				XROS_DEPLOYMENT_TARGET = 1.0;
 			};
 			name = Release;
 		};

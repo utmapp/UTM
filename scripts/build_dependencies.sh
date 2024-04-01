@@ -645,25 +645,26 @@ ios* | visionos* )
     case $PLATFORM in
     ios_simulator* )
         SDK=iphonesimulator
-        CFLAGS_MINVER="-mios-simulator-version-min=$SDKMINVER"
+        CFLAGS_TARGET="-target $ARCH-apple-ios$SDKMINVER-simulator"
         PLATFORM_FAMILY_PREFIX="iOS_Simulator"
         ;;
     ios* )
         SDK=iphoneos
-        CFLAGS_MINVER="-miphoneos-version-min=$SDKMINVER"
+        CFLAGS_TARGET="-target $ARCH-apple-ios$SDKMINVER"
         PLATFORM_FAMILY_PREFIX="iOS"
         HVF_FLAGS="--enable-hvf-private"
         ;;
     visionos_simulator* )
         SDK=xrsimulator
+        CFLAGS_TARGET="-target $ARCH-apple-xros$SDKMINVER-simulator"
         PLATFORM_FAMILY_PREFIX="visionOS_Simulator"
         ;;
     visionos* )
         SDK=xros
+        CFLAGS_TARGET="-target $ARCH-apple-xros$SDKMINVER"
         PLATFORM_FAMILY_PREFIX="visionOS"
         ;;
     esac
-    CFLAGS_TARGET=
     case $PLATFORM in
     *-tci )
         if [ "$ARCH" == "arm64" ]; then
@@ -685,8 +686,7 @@ macos )
         SDKMINVER="$MAC_SDKMINVER"
     fi
     SDK=macosx
-    CFLAGS_MINVER="-mmacos-version-min=$SDKMINVER"
-    CFLAGS_TARGET="-target $ARCH-apple-macos"
+    CFLAGS_TARGET="-target $ARCH-apple-macos$SDKMINVER"
     PLATFORM_FAMILY_NAME="macOS"
     QEMU_PLATFORM_BUILD_FLAGS="--disable-debug-info --enable-shared-lib --disable-cocoa --cpu=$CPU"
     ;;
@@ -760,11 +760,11 @@ export STRIP
 export PREFIX
 
 # Flags
-CFLAGS="$CFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks $CFLAGS_MINVER $CFLAGS_TARGET"
-CPPFLAGS="$CPPFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks $CFLAGS_MINVER $CFLAGS_TARGET"
-CXXFLAGS="$CXXFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks $CFLAGS_MINVER $CFLAGS_TARGET"
-OBJCFLAGS="$OBJCFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks $CFLAGS_MINVER $CFLAGS_TARGET"
-LDFLAGS="$LDFLAGS -arch $ARCH -isysroot $SDKROOT -L$PREFIX/lib -F$PREFIX/Frameworks $CFLAGS_MINVER $CFLAGS_TARGET"
+CFLAGS="$CFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks $CFLAGS_TARGET"
+CPPFLAGS="$CPPFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks $CFLAGS_TARGET"
+CXXFLAGS="$CXXFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks $CFLAGS_TARGET"
+OBJCFLAGS="$OBJCFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks $CFLAGS_TARGET"
+LDFLAGS="$LDFLAGS -arch $ARCH -isysroot $SDKROOT -L$PREFIX/lib -F$PREFIX/Frameworks $CFLAGS_TARGET"
 export CFLAGS
 export CPPFLAGS
 export CXXFLAGS
