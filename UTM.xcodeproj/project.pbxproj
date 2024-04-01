@@ -877,6 +877,9 @@
 		CEBE820C26A4C8E0007AAB12 /* VMWizardSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBE820A26A4C8E0007AAB12 /* VMWizardSummaryView.swift */; };
 		CEBE820D26A4C8E0007AAB12 /* VMWizardSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBE820A26A4C8E0007AAB12 /* VMWizardSummaryView.swift */; };
 		CEC0A30A2A7490D200980857 /* VMConfigQEMUArgumentsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC0A3092A7490D200980857 /* VMConfigQEMUArgumentsView.swift */; };
+		CEC1B00B2BBB211C0088119D /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = CEC1B00A2BBB211C0088119D /* PrivacyInfo.xcprivacy */; };
+		CEC1B00C2BBB211C0088119D /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = CEC1B00A2BBB211C0088119D /* PrivacyInfo.xcprivacy */; };
+		CEC1B00D2BBB211C0088119D /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = CEC1B00A2BBB211C0088119D /* PrivacyInfo.xcprivacy */; };
 		CEC794BA294924E300121A9F /* UTMScriptingSerialPortImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC794B9294924E300121A9F /* UTMScriptingSerialPortImpl.swift */; };
 		CEC794BC2949663C00121A9F /* UTMScripting.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC794BB2949663C00121A9F /* UTMScripting.swift */; };
 		CEC794BD2949663C00121A9F /* UTMScripting.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC794BB2949663C00121A9F /* UTMScripting.swift */; };
@@ -1994,6 +1997,7 @@
 		CEBE820626A4C74E007AAB12 /* VMWizardSharingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMWizardSharingView.swift; sourceTree = "<group>"; };
 		CEBE820A26A4C8E0007AAB12 /* VMWizardSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMWizardSummaryView.swift; sourceTree = "<group>"; };
 		CEC0A3092A7490D200980857 /* VMConfigQEMUArgumentsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigQEMUArgumentsView.swift; sourceTree = "<group>"; };
+		CEC1B00A2BBB211C0088119D /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		CEC794B9294924E300121A9F /* UTMScriptingSerialPortImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMScriptingSerialPortImpl.swift; sourceTree = "<group>"; };
 		CEC794BB2949663C00121A9F /* UTMScripting.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UTMScripting.swift; sourceTree = "<group>"; };
 		CEC9968328AA516000E7A025 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ja; path = ja.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
@@ -2693,6 +2697,7 @@
 				F69A203E2BB7E59100BB13DD /* Info-Remote-InfoPlist.strings */,
 				FFB02A8A266CB09C006CD71A /* InfoPlist.strings */,
 				CEB5C1192B8C4CD4008AAE5C /* Info-RemotePlist.strings */,
+				CEC1B00A2BBB211C0088119D /* PrivacyInfo.xcprivacy */,
 				5286EC91243748AC007E6CBC /* Settings.bundle */,
 			);
 			path = iOS;
@@ -3302,6 +3307,7 @@
 				CE4698F924C8FBD9008C1BD6 /* Icons in Resources */,
 				FFB02A8C266CB09C006CD71A /* InfoPlist.strings in Resources */,
 				CE2D936B24AD46670059923A /* Localizable.strings in Resources */,
+				CEC1B00B2BBB211C0088119D /* PrivacyInfo.xcprivacy in Resources */,
 				CE2D936C24AD46670059923A /* qemu in Resources */,
 				CE061CE6289EB6250000351C /* VMDisplayMetalViewInputAccessory.xib in Resources */,
 				CED8DF7528A120C100C34345 /* Localizable.stringsdict in Resources */,
@@ -3339,6 +3345,7 @@
 				CEA45F64263519B5002FA97D /* Icons in Resources */,
 				FFB02A8D266CB09C006CD71A /* InfoPlist.strings in Resources */,
 				CEA45F67263519B5002FA97D /* Localizable.strings in Resources */,
+				CEC1B00C2BBB211C0088119D /* PrivacyInfo.xcprivacy in Resources */,
 				CEA45F69263519B5002FA97D /* qemu in Resources */,
 				CE061CE7289EB6250000351C /* VMDisplayMetalViewInputAccessory.xib in Resources */,
 				CED8DF7628A120C100C34345 /* Localizable.stringsdict in Resources */,
@@ -3368,6 +3375,7 @@
 				CEF7F67D2AEEDCC400E34952 /* VMDisplayMetalViewInputAccessory.xib in Resources */,
 				CEF7F67E2AEEDCC400E34952 /* Localizable.stringsdict in Resources */,
 				CEF7F67F2AEEDCC400E34952 /* Settings.bundle in Resources */,
+				CEC1B00D2BBB211C0088119D /* PrivacyInfo.xcprivacy in Resources */,
 				CEF7F6802AEEDCC400E34952 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
