@@ -24,7 +24,7 @@ on:
 
 env:
   BUILD_XCODE_PATH: /Applications/Xcode_15.3.app
-  RUNNER_IMAGE: macos-13
+  RUNNER_IMAGE: macos-14
 
 jobs:
   configuration:
@@ -330,9 +330,7 @@ jobs:
           LAUNCHER_PROFILE_DATA: ${{ vars.LAUNCHER_PROFILE_DATA }}
           LAUNCHER_PROFILE_UUID: ${{ vars.LAUNCHER_PROFILE_UUID }}
       - name: Install appdmg
-        run: |
-          python3 -m pip install setuptools
-          npm install -g appdmg
+        run: npm install -g appdmg
       - name: Download Artifact
         uses: actions/download-artifact@v3
         with:
