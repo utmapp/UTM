@@ -348,6 +348,7 @@
 "If checked, you will not be prompted about any unknown connection and they will be rejected." = "チェックを入れると、不明な接続についてのプロンプトは表示されず拒否されます。";
 "Allow access from external clients" = "外部クライアントからのアクセスを許可";
 "By default, the server is only available on LAN but setting this will use UPnP/NAT-PMP to port forward to WAN." = "デフォルトでは、サーバはLAN上でのみ利用可能ですが、これを設定すると、UPnP/NAT-PMPを使用してWANにポート転送します。";
+"Any" = "任意";
 "Specify a port number to listen on. This is required if external clients are permitted." = "外部からの接続を受け入れるポート番号を指定します。これは、外部クライアントが許可されている場合に必要です。";
 "Authentication" = "認証";
 "Require Password" = "パスワードが必要";
@@ -381,7 +382,7 @@
 "Server IP: %s, Port: %s" = "サーバIP: %1$s、ポート: %2$s";
 "Running" = "動作中";
 "Name" = "名前";
-"Last Seen" = "最終接続日時";
+"Last Seen" = "最終接続";
 "Status" = "状態";
 "Connected" = "接続済み";
 "Blocked" = "ブロック済み";
@@ -528,6 +529,8 @@
 "Description" = "説明";
 
 // ContentView.swift
+"Download VM" = "仮想マシンをダウンロード";
+"Do you want to download '%@'?" = "“%@”をダウンロードしますか?";
 "Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached. See https://getutm.app/install/ for more details." = "お使いのiOSバージョンは改造されていない状態での仮想マシンの実行に対応していません。脱獄（ジェイルブレイク）、またはリモートデバッガに接続された状態でUTMを実行する必要があります。詳細については、https://getutm.app/install/ を参照してください。";
 
 // DefaultTextField.swift
@@ -910,8 +913,7 @@
 "Failed to clone VM." = "仮想マシンの複製に失敗しました。";
 "Unable to add a shortcut to the new location." = "新しい場所にショートカットを追加できません。";
 "Cannot import this VM. Either the configuration is invalid, created in a newer version of UTM, or on a platform that is incompatible with this version of UTM." = "この仮想マシンは読み込めません。構成が無効であるか、新しいバージョンのUTM、またはこのバージョンのUTMと互換性のないプラットフォームで作成されています。";
-"Failed to parse imported VM." = "読み込まれた仮想マシンのパースに失敗しました。";
-"Failed to parse download URL." = "ダウンロードURLのパースに失敗しました。";
+"Failed to parse imported VM." = "読み込まれた仮想マシンの解析に失敗しました。";
 "Cannot find AltServer for JIT enable. You cannot run VMs until JIT is enabled." = "JITを有効にするためのAltServerを見つけられません。JITが有効になるまで仮想マシンを実行できません。";
 "AltJIT error: %@" = "AltJITエラー: %@";
 "Failed to attach to JitStreamer:\n%@" = "JitStreamerへのアタッチに失敗しました:\n%@";
@@ -923,7 +925,7 @@
 
 // UTMDownloadVMTask.swift
 "There is no UTM file in the downloaded ZIP archive." = "ダウンロードされたZIPアーカイブ内にUTMファイルがありません。";
-"Failed to parse the downloaded VM." = "ダウンロードされた仮想マシンのパースに失敗しました。";
+"Failed to parse the downloaded VM." = "ダウンロードされた仮想マシンの解析に失敗しました。";
 
 // UTMDownloadSupportToolsTask.swift
 "Windows Guest Support Tools" = "Windowsゲストサポートツール";
@@ -1032,7 +1034,7 @@
 "Mismatched id from guest-sync-delimited." = "guest-sync-delimitedからのIDが一致しません。";
 
 // UTMJSONStream.m
-"Error parsing JSON." = "JSONのパース中にエラーが発生しました。";
+"Error parsing JSON." = "JSONの解析中にエラーが発生しました。";
 "Port is not connected." = "ポートが接続されていません。";
 
 // UTMQemuManager.m
