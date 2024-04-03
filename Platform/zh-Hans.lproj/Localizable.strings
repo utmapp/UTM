@@ -1606,6 +1606,9 @@
 "Downscaling" = "细化";
 
 /* No comment provided by engineer. */
+"Dynamic Resolution" = "动态";
+
+/* No comment provided by engineer. */
 "Edit" = "编辑";
 
 /* No comment provided by engineer. */
@@ -1649,6 +1652,9 @@
 
 /* No comment provided by engineer. */
 "Enable Sound" = "启用声音";
+
+/* No comment provided by engineer. */
+"Enable UTM Server" = "启用 UTM 服务器";
 
 /* No comment provided by engineer. */
 "Engine" = "引擎";
@@ -1825,6 +1831,9 @@
 "Keyboard" = "键盘";
 
 /* No comment provided by engineer. */
+"Last Seen" = "最后上线于";
+
+/* No comment provided by engineer. */
 "MAC Address" = "MAC 地址";
 
 /* No comment provided by engineer. */
@@ -1895,6 +1904,9 @@
 
 /* No comment provided by engineer. */
 "Path" = "路径";
+
+/* No comment provided by engineer. */
+"Pointer" = "鼠标指针";
 
 /* No comment provided by engineer. */
 "Port" = "端口";
@@ -2171,6 +2183,9 @@
 
 /* No comment provided by engineer. */
 "Use Virtualization" = "使用虚拟化";
+
+/* No comment provided by engineer. */
+"UTM Server" = "UTM 服务器";
 
 /* No comment provided by engineer. */
 "VGA Device RAM (MB)" = "VGA 设备内存 (MB)";
