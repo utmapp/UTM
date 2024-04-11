@@ -1429,10 +1429,16 @@
 "Advanced. If checked, a raw disk image is used. Raw disk image does not support snapshots and will not dynamically expand in size." = "高级选项。若选中，将使用 Raw 磁盘映像。Raw 磁盘映像不支持快照，也不会动态地扩充大小。";
 
 /* No comment provided by engineer. */
+"Allow access from external clients" = "允许外部客户机访问";
+
+/* No comment provided by engineer. */
 "Allow Remote Connection" = "允许远程连接";
 
 /* No comment provided by engineer. */
 "Allows passing through additional input from trackpads. Only supported on macOS 13+ guests." = "允许通过触控板额外输入。仅支持 macOS 13 及以上的客户机。";
+
+/* No comment provided by engineer. */
+"Any" = "任意";
 
 /* No comment provided by engineer. */
 "Apple Virtualization is experimental and only for advanced use cases. Leave unchecked to use QEMU, which is recommended." = "Apple 虚拟化属于实验性功能，仅适用于高级用例。推荐不选中此复选框，以使用 QEMU。";
@@ -1451,6 +1457,9 @@
 
 /* No comment provided by engineer. */
 "Automatic" = "自动";
+
+/* No comment provided by engineer. */
+"Automatically start UTM server" = "自动启动 UTM 服务器";
 
 /* No comment provided by engineer. */
 "Background Color" = "背景颜色";
@@ -1945,10 +1954,16 @@
 "Reclaim Space" = "释放空间";
 
 /* No comment provided by engineer. */
+"Reject unknown connections by default" = "默认情况下拒绝未知连接";
+
+/* No comment provided by engineer. */
 "Remove selected shortcut" = "移除选中的快捷方式";
 
 /* No comment provided by engineer. */
 "Renderer Backend" = "渲染器后端";
+
+/* No comment provided by engineer. */
+"Require Password" = "需要密码";
 
 /* No comment provided by engineer. */
 "Requires restarting UTM to take affect." = "需要重新打开 UTM 以生效。";
