@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17506" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaDFRPlugin" version="17008"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17506"/>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaDFRPlugin" version="22607"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="22689"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
         <capability name="the Touch Bar" minToolsVersion="8.1" minSystemVersion="10.12.2" requiredIntegratedClassName="NSTouchBar"/>
     </dependencies>
@@ -33,9 +34,10 @@
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <window title="UTM" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" toolbarStyle="compact" id="QvC-M9-y7g">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+            <windowCollectionBehavior key="collectionBehavior" fullScreenPrimary="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="240" width="800" height="600"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1728" height="1079"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1025"/>
             <view key="contentView" wantsLayer="YES" id="EiT-Mj-1SZ">
                 <rect key="frame" x="0.0" y="0.0" width="800" height="600"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -66,14 +68,14 @@
                             </progressIndicator>
                             <button toolTip="Starts/resumes the VM" translatesAutoresizingMaskIntoConstraints="NO" id="ZTi-Hs-ge6" userLabel="Play Button">
                                 <rect key="frame" x="300" y="197" width="200" height="206"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="200" id="dy7-LO-AqQ"/>
-                                    <constraint firstAttribute="width" constant="200" id="jeW-Sr-S47"/>
-                                </constraints>
                                 <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="play.circle.fill" catalog="system" imagePosition="only" alignment="center" imageScaling="proportionallyUpOrDown" inset="2" id="mPs-BZ-Bc0">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="200" id="dy7-LO-AqQ"/>
+                                    <constraint firstAttribute="width" constant="200" id="jeW-Sr-S47"/>
+                                </constraints>
                                 <connections>
                                     <action selector="startPauseButtonPressed:" target="-2" id="Tst-4i-SvJ"/>
                                 </connections>
@@ -252,7 +254,7 @@
         <image name="arrow.up.left.and.arrow.down.right" catalog="system" width="16" height="15"/>
         <image name="command.square" catalog="system" width="15" height="14"/>
         <image name="cursorarrow.rays" catalog="system" width="16" height="16"/>
-        <image name="folder.badge.person.crop" catalog="system" width="19" height="14"/>
+        <image name="folder.badge.person.crop" catalog="system" width="20" height="15"/>
         <image name="opticaldisc" catalog="system" width="15" height="15"/>
         <image name="play.circle.fill" catalog="system" width="15" height="15"/>
         <image name="play.fill" catalog="system" width="12" height="13"/>
