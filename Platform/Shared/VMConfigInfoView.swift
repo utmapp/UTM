@@ -47,6 +47,15 @@ struct VMConfigInfoView: View {
                 Text("Name").frame(width: 50, alignment: .trailing)
                 nameField
             }
+            HStack {
+                Text("").frame(width: 50, alignment: .trailing)
+                Toggle(isOn:
+                    $config.isFullScreenStart,
+                    label: {
+                        Text("Start the VM display(s) in full screen")
+                    }
+                )
+            }
             HStack(alignment: .top) {
                 Text("Notes").frame(width: 50, alignment: .trailing)
                 notesField

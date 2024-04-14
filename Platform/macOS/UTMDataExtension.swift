@@ -59,6 +59,10 @@ extension UTMData {
             vm.wrapped!.delegate = unwrappedWindow
             unwrappedWindow.showWindow(nil)
             unwrappedWindow.window!.makeMain()
+            if vm.wrapped!.config.information.isFullScreenStart && !unwrappedWindow.window!.styleMask.contains(.fullScreen) {
+                unwrappedWindow.window!.toggleFullScreen(nil)
+            }
+            
             if startImmediately {
                 unwrappedWindow.requestAutoStart(options: options)
             }
