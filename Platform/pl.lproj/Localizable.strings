@@ -997,7 +997,7 @@
 "Remote Client Connected" = "Połączono ze zdalnym klientem";
 "Established connection from %@." = "Próba nawiązenia połączenia od '%@'.";
 "UTM Remote Server Error" = "UTMリモートサーバエラー";
-"Cannot reserve port '%@' for external access from NAT. Make sure no other device on the network has reserved it." = "NATからの外部アクセス用のポート“%@”を予約できません。ネットワーク上のほかのデバイスが予約していないことを確認してください。";
+"Cannot reserve port %d for external access from NAT. Make sure no other device on the network has reserved it." = "NATからの外部アクセス用のポート“%d”を予約できません。ネットワーク上のほかのデバイスが予約していないことを確認してください。";
 "Not authenticated." = "Nieuwiezytelniony";
 "The client interface version does not match the server." = "Wersja interfejsu klienta nie zgadza się z wersją interfejsu serwera.";
 "Cannot find VM with ID: %@" = "Nie udało się znaleźć maszyny wirtualnej o danym identyfikatorze: %@";
