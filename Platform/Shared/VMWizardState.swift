@@ -183,7 +183,11 @@ enum VMWizardOS: String, Identifiable {
         var nextPage = currentPage
         switch currentPage {
         case .start:
+            #if WITH_QEMU_TCI
+            nextPage = .otherBoot
+            #else
             nextPage = .operatingSystem
+            #endif
         case .operatingSystem:
             switch operatingSystem {
             case .Other:

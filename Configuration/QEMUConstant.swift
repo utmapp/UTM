@@ -23,9 +23,11 @@ import Metal
 protocol QEMUConstant: Codable, RawRepresentable, CaseIterable where RawValue == String, AllCases == [Self] {
     static var allRawValues: [String] { get }
     static var allPrettyValues: [String] { get }
+    static var shownPrettyValues: [String] { get }
     var prettyValue: String { get }
     var rawValue: String { get }
-    
+    var isHidden: Bool { get }
+
     init?(rawValue: String)
 }
 
@@ -36,6 +38,14 @@ extension QEMUConstant where Self: CaseIterable, AllCases == [Self] {
     
     static var allPrettyValues: [String] {
         allCases.map { value in value.prettyValue }
+    }
+
+    static var shownPrettyValues: [String] {
+        allCases.compactMap { value in value.isHidden ? nil : value.prettyValue }
+    }
+
+    var isHidden: Bool {
+        false
     }
 }
 
@@ -478,3 +488,22 @@ extension QEMUTarget {
         }
     }
 }
+
+#if WITH_QEMU_TCI
+/// TCI build has a reduced set of supported architectures due to size of binaries.
+extension QEMUArchitecture {
+    var isHidden: Bool {
+        switch self {
+        case .arm: return false
+        case .aarch64: return false
+        case .i386: return false
+        case .ppc: return false
+        case .ppc64: return false
+        case .riscv32: return false
+        case .riscv64: return false
+        case .x86_64: return false
+        default: return true
+        }
+    }
+}
+#endif
