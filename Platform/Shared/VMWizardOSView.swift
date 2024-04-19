@@ -27,6 +27,7 @@ struct VMWizardOSView: View {
                         wizardState.operatingSystem = .macOS
                         wizardState.useAppleVirtualization = true
                         wizardState.isGuestToolsInstallRequested = false
+                        wizardState.legacyHardware = false
                         wizardState.next()
                     } label: {
                         OperatingSystem(imageName: "mac", name: "macOS 12+")
@@ -37,6 +38,7 @@ struct VMWizardOSView: View {
                     wizardState.operatingSystem = .Windows
                     wizardState.useAppleVirtualization = false
                     wizardState.isGuestToolsInstallRequested = true
+                    wizardState.legacyHardware = false
                     wizardState.next()
                 } label: {
                     OperatingSystem(imageName: "windows", name: "Windows")
@@ -44,6 +46,7 @@ struct VMWizardOSView: View {
                 Button {
                     wizardState.operatingSystem = .Linux
                     wizardState.isGuestToolsInstallRequested = false
+                    wizardState.legacyHardware = false
                     wizardState.next()
                 } label: {
                     OperatingSystem(imageName: "linux", name: "Linux")

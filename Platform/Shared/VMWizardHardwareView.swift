@@ -126,6 +126,9 @@ struct VMWizardHardwareView: View {
                 #endif
                 wizardState.systemTarget = wizardState.systemArchitecture.targetType.default
             }
+            if wizardState.legacyHardware && wizardState.systemArchitecture == .x86_64 {
+                wizardState.systemTarget = QEMUTarget_x86_64.pc
+            }
         }
     }
     

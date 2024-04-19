@@ -22,7 +22,17 @@ struct VMWizardOSOtherView: View {
     
     var body: some View {
         VMWizardContent("Other") {
-            if !wizardState.isSkipBootImage {
+            Picker("Boot Device", selection: $wizardState.bootDevice) {
+                Text("None").tag(VMBootDevice.none)
+                Text("CD/DVD Image").tag(VMBootDevice.cd)
+                Text("Floppy Image").tag(VMBootDevice.floppy)
+            }.pickerStyle(.inline)
+            .onChange(of: wizardState.bootDevice) { bootDevice in
+                if bootDevice == .floppy {
+                    wizardState.legacyHardware = true
+                }
+            }
+            if wizardState.bootDevice != .none {
                 Section {
                     FileBrowseField(url: $wizardState.bootImageURL, isFileImporterPresented: $isFileImporterPresented, hasClearButton: false)
                     .padding(.leading, 1)
@@ -30,13 +40,18 @@ struct VMWizardOSOtherView: View {
                         Spinner(size: .large)
                     }
                 } header: {
-                    Text("Boot ISO Image")
+                    if wizardState.bootDevice == .cd {
+                        Text("Boot ISO Image")
+                    } else {
+                        Text("Boot IMG Image")
+                    }
                 }
             }
             Section {
-                Toggle("Skip ISO boot", isOn: $wizardState.isSkipBootImage)
+                Toggle("Legacy Hardware", isOn: $wizardState.legacyHardware)
+                    .help("If checked, emulated devices with higher compatibility will be instantiated at the cost of performance.")
             } header: {
-                Text("Advanced")
+                Text("Options")
             }
         }
         .fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.data], onCompletion: processImage)
