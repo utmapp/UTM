@@ -6160,9 +6160,9 @@ enum QEMUTarget_ppc: String, CaseIterable, QEMUTarget {
     var prettyValue: String {
         switch self {
         case .pegasos2: return "Genesi/bPlan Pegasos II (pegasos2)"
-        case .g3beige: return "Heathrow based PowerMAC (default) (g3beige)"
+        case .g3beige: return "Heathrow based PowerMac (default) (g3beige)"
         case ._40p: return "IBM RS/6000 7020 (40p) (40p)"
-        case .mac99: return "Mac99 based PowerMAC (mac99)"
+        case .mac99: return "Mac99 based PowerMac (mac99)"
         case .virtex_ml507: return "Xilinx Virtex ML507 reference design (virtex-ml507)"
         case .sam460ex: return "aCube Sam460ex (sam460ex)"
         case .bamboo: return "bamboo (bamboo)"
@@ -6226,13 +6226,13 @@ enum QEMUTarget_ppc64: String, CaseIterable, QEMUTarget {
     var prettyValue: String {
         switch self {
         case .pegasos2: return "Genesi/bPlan Pegasos II (pegasos2)"
-        case .g3beige: return "Heathrow based PowerMAC (g3beige)"
+        case .g3beige: return "Heathrow based PowerMac (g3beige)"
         case .powernv10: return "IBM PowerNV (Non-Virtualized) POWER10 (powernv10)"
         case .powernv8: return "IBM PowerNV (Non-Virtualized) POWER8 (powernv8)"
         case .powernv: return "IBM PowerNV (Non-Virtualized) POWER9 (alias of powernv9) (powernv)"
         case .powernv9: return "IBM PowerNV (Non-Virtualized) POWER9 (powernv9)"
         case ._40p: return "IBM RS/6000 7020 (40p) (40p)"
-        case .mac99: return "Mac99 based PowerMAC (mac99)"
+        case .mac99: return "Mac99 based PowerMac (mac99)"
         case .virtex_ml507: return "Xilinx Virtex ML507 reference design (virtex-ml507)"
         case .sam460ex: return "aCube Sam460ex (sam460ex)"
         case .bamboo: return "bamboo (bamboo)"
