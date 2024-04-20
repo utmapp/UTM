@@ -739,7 +739,7 @@ fi
 export NCPU
 
 # Export tools
-CC=$(xcrun --sdk $SDK --find gcc)
+CC="$(xcrun --sdk $SDK --find gcc) $CFLAGS_TARGET"
 CPP=$(xcrun --sdk $SDK --find gcc)" -E"
 CXX=$(xcrun --sdk $SDK --find g++)
 OBJCC=$(xcrun --sdk $SDK --find clang)
@@ -760,7 +760,7 @@ export STRIP
 export PREFIX
 
 # Flags
-CFLAGS="$CFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks $CFLAGS_TARGET"
+CFLAGS="$CFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks"
 CPPFLAGS="$CPPFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks $CFLAGS_TARGET"
 CXXFLAGS="$CXXFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks $CFLAGS_TARGET"
 OBJCFLAGS="$OBJCFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks $CFLAGS_TARGET"
