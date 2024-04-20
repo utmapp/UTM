@@ -827,8 +827,14 @@
 
 // VMWizardOSOtherView.swift
 "Other" = "その他";
+"Boot Device" = "起動デバイス";
+"CD/DVD Image" = "CD/DVDイメージ";
+"Floppy Image" = "フロッピーイメージ";
+"Boot IMG Image" = "起動IMGイメージ";
 "Skip ISO boot" = "ISO起動をスキップ";
-"Advanced" = "詳細";
+"Legacy Hardware" = "レガシーハードウェア";
+"If checked, emulated devices with higher compatibility will be instantiated at the cost of performance." = "チェックを入れると、パフォーマンスを犠牲にして、より互換性の高い仮想デバイスがインスタンス化されます。";
+"Options" = "オプション";
 
 // VMWizardOSView.swift
 "macOS 12+" = "macOS 12以降";
@@ -862,6 +868,10 @@
 "This build does not emulation." = "このビルドではエミュレーションを行いません。";
 "Download prebuilt from UTM Gallery…" = "UTMギャラリーからビルド済みパッケージをダウンロード…";
 "Existing" = "既存";
+
+// VMWizardStartViewTCI.swift
+"New Machine" = "新規マシン";
+"Create a new emulated machine from scratch." = "新規仮想マシンをゼロから作成します。";
 
 // VMWizardState.swift
 "Please select a boot image." = "起動イメージを選択してください。";
@@ -982,7 +992,7 @@
 "Remote Client Connected" = "リモートクライアント接続済み";
 "Established connection from %@." = "%@からの接続を確立しました。";
 "UTM Remote Server Error" = "UTMリモートサーバエラー";
-"Cannot reserve port %d for external access from NAT. Make sure no other device on the network has reserved it." = "NATからの外部アクセス用のポート“%d”を予約できません。ネットワーク上のほかのデバイスが予約していないことを確認してください。";
+"Cannot reserve port %d for external access from NAT. Make sure no other device on the network has reserved it." = "NATからの外部アクセス用のポート%dを予約できません。ネットワーク上のほかのデバイスが予約していないことを確認してください。";
 "Not authenticated." = "認証されていません。";
 "The client interface version does not match the server." = "クライアントインターフェイスのバージョンがサーバと一致しません。";
 "Cannot find VM with ID: %@" = "指定されたIDの仮想マシンが見つかりません: %@";
