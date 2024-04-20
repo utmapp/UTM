@@ -81,6 +81,17 @@ import Virtualization // for getting network interfaces
         socketURL.appendingPathComponent(information.uuid.uuidString).appendingPathExtension("crt")
     }
 
+    /// Used for placeholder images
+    var placeholderUrl: URL {
+        #if os(macOS)
+        URL(fileURLWithPath: "/dev/null")!
+        #else
+        let empty = FileManager.default.temporaryDirectory.appendingPathComponent("empty")
+        FileManager.default.createFile(atPath: empty.path, contents: nil)
+        return empty
+        #endif
+    }
+
     /// Combined generated and user specified arguments.
     @QEMUArgumentBuilder var allArguments: [QEMUArgument] {
         generatedArguments
@@ -725,7 +736,8 @@ import Virtualization // for getting network interfaces
             "file="
             imageURL
         } else if !isCd {
-            "file=/dev/null"
+            "file="
+            placeholderUrl
         }
         if drive.isReadOnly || isCd {
             "readonly=on"
