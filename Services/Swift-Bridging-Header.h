@@ -37,7 +37,7 @@
 #include "UTMSpiceIO.h"
 #include "GenerateKey.h"
 #if TARGET_OS_IPHONE
-#if !defined(WITH_REMOTE)
+#if defined(WITH_LOCATION_BACKGROUND)
 #include "UTMLocationManager.h"
 #endif
 #include "VMDisplayViewController.h"

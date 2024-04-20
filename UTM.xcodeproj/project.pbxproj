@@ -712,7 +712,6 @@
 		CEA45ECA263519B5002FA97D /* UTMLegacyQemuConfiguration+Networking.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA02A982436C7A30087E45F /* UTMLegacyQemuConfiguration+Networking.m */; };
 		CEA45ECD263519B5002FA97D /* VMConfirmActionModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6D21DB2553A6ED001D29C5 /* VMConfirmActionModifier.swift */; };
 		CEA45ECF263519B5002FA97D /* VMConfigPortForwardForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D955224AD4F980059923A /* VMConfigPortForwardForm.swift */; };
-		CEA45ED1263519B5002FA97D /* UTMLocationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CE059DC7243E9E3400338317 /* UTMLocationManager.m */; platformFilter = ios; };
 		CEA45ED3263519B5002FA97D /* VMSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D954C24AD4F980059923A /* VMSettingsView.swift */; };
 		CEA45ED8263519B5002FA97D /* VMKeyboardButton.m in Sources */ = {isa = PBXBuildFile; fileRef = CEEB66452284B942002737B2 /* VMKeyboardButton.m */; };
 		CEA45EE8263519B5002FA97D /* VMDisplayMetalViewController+Keyboard.m in Sources */ = {isa = PBXBuildFile; fileRef = CE3ADD66240EFBCA002D6A5F /* VMDisplayMetalViewController+Keyboard.m */; };
@@ -3130,6 +3129,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = CEA45FB6263519B5002FA97D /* Build configuration list for PBXNativeTarget "iOS-SE" */;
 			buildPhases = (
+				CE11C03B2BD46F7600E103A0 /* Generate Info.plist */,
 				CEA45E24263519B5002FA97D /* Sources */,
 				CEA45F23263519B5002FA97D /* Frameworks */,
 				CEA45F63263519B5002FA97D /* Resources */,
@@ -3383,6 +3383,27 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		CE11C03B2BD46F7600E103A0 /* Generate Info.plist */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Platform/iOS/Info.plist",
+			);
+			name = "Generate Info.plist";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Info.plist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#!/bin/sh\n\nPLISTBUDDY=/usr/libexec/PlistBuddy\nINFO_PLIST=\"$SCRIPT_OUTPUT_FILE_0\"\ncp \"$SCRIPT_INPUT_FILE_0\" \"$INFO_PLIST\"\n\n$PLISTBUDDY -c \"Delete :ALTDeviceID\" \"$INFO_PLIST\"\n$PLISTBUDDY -c \"Delete :NSLocationAlwaysAndWhenInUseUsageDescription\" \"$INFO_PLIST\"\n$PLISTBUDDY -c \"Delete :NSLocationAlwaysUsageDescription\" \"$INFO_PLIST\"\n$PLISTBUDDY -c \"Delete :NSLocationWhenInUseUsageDescription\" \"$INFO_PLIST\"\n$PLISTBUDDY -c \"Delete :UIBackgroundModes:1\" \"$INFO_PLIST\"\n";
+			showEnvVarsInLog = 0;
+		};
 		CE59A7B12ABCC75F00E5FFBD /* Patch Settings bundle */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -3933,7 +3954,6 @@
 				843BF83528450C0B0029D60D /* UTMQemuConfigurationSound.swift in Sources */,
 				CEA45ECF263519B5002FA97D /* VMConfigPortForwardForm.swift in Sources */,
 				841E999928AC817D003C6CB6 /* UTMQemuVirtualMachine.swift in Sources */,
-				CEA45ED1263519B5002FA97D /* UTMLocationManager.m in Sources */,
 				84CF5DD4288DCE6400D01721 /* VMDisplayHostedView.swift in Sources */,
 				CEBE820826A4C74E007AAB12 /* VMWizardSharingView.swift in Sources */,
 				84C60FB82681A41B00B58C00 /* VMToolbarView.swift in Sources */,
@@ -4468,6 +4488,7 @@
 					"WITH_JIT=1",
 					"WITH_SOLO_VM=1",
 					"WITH_USB=1",
+					"WITH_LOCATION_BACKGROUND=1",
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = Platform/iOS/Info.plist;
@@ -4481,7 +4502,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "WITH_JIT WITH_SOLO_VM WITH_USB $(inherited)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "WITH_JIT WITH_SOLO_VM WITH_USB WITH_LOCATION_BACKGROUND $(inherited)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Services/Swift-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -4504,6 +4525,7 @@
 					"WITH_JIT=1",
 					"WITH_SOLO_VM=1",
 					"WITH_USB=1",
+					"WITH_LOCATION_BACKGROUND=1",
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = Platform/iOS/Info.plist;
@@ -4517,7 +4539,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "WITH_JIT WITH_SOLO_VM WITH_USB $(inherited)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "WITH_JIT WITH_SOLO_VM WITH_USB WITH_LOCATION_BACKGROUND $(inherited)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Services/Swift-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
@@ -4830,7 +4852,7 @@
 					"WITH_SOLO_VM=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = Platform/iOS/Info.plist;
+				INFOPLIST_FILE = "$(DERIVED_FILE_DIR)/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -4867,7 +4889,7 @@
 					"WITH_SOLO_VM=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = Platform/iOS/Info.plist;
+				INFOPLIST_FILE = "$(DERIVED_FILE_DIR)/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
