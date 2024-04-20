@@ -266,7 +266,7 @@
 "Serial %lld" = "シリアル%lld";
 
 // Display/VMDisplayAppleDisplayWindowController.swift
-"%@ (Terminal %lld)" = "%1$@ (ターミナル%2$lld）";
+"%@ (Terminal %lld)" = "%1$@（ターミナル%2$lld）";
 
 // Display/VMDisplayQemuDisplayController.swift
 "Disposable Mode" = "使い捨てモード";
@@ -831,7 +831,6 @@
 "CD/DVD Image" = "CD/DVDイメージ";
 "Floppy Image" = "フロッピーイメージ";
 "Boot IMG Image" = "起動IMGイメージ";
-"Skip ISO boot" = "ISO起動をスキップ";
 "Legacy Hardware" = "レガシーハードウェア";
 "If checked, emulated devices with higher compatibility will be instantiated at the cost of performance." = "チェックを入れると、パフォーマンスを犠牲にして、より互換性の高い仮想デバイスがインスタンス化されます。";
 "Options" = "オプション";
