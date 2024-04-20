@@ -347,7 +347,10 @@ EOL
 	TMPINPUT="/tmp/UTM.$$.xcarchive"
 	cp -a "$INPUT" "$TMPINPUT"
 	BUILT_PATH=$(find "$TMPINPUT" -name '*.app' -type d | head -1)
-	codesign --force --sign - --entitlements "$FAKEENT" --timestamp=none "$BUILT_PATH"
+	PLATFORM="$(/usr/libexec/PlistBuddy -c "Print :DTPlatformName" "$BUILT_PATH/Info.plist")"
+	if [ "$PLATFORM" != "xros" ]; then
+		codesign --force --sign - --entitlements "$FAKEENT" --timestamp=none "$BUILT_PATH"
+	fi
 	itunes_sign "$TMPINPUT" "$OUTPUT" $4 $5 $6
 	rm -rf "$TMPINPUT"
 	;;
