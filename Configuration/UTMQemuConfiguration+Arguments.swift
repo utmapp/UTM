@@ -84,7 +84,7 @@ import Virtualization // for getting network interfaces
     /// Used for placeholder images
     var placeholderUrl: URL {
         #if os(macOS)
-        URL(fileURLWithPath: "/dev/null")!
+        URL(fileURLWithPath: "/dev/null")
         #else
         let empty = FileManager.default.temporaryDirectory.appendingPathComponent("empty")
         FileManager.default.createFile(atPath: empty.path, contents: nil)
