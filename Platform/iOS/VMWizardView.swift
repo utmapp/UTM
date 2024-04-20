@@ -164,7 +164,11 @@ fileprivate struct WizardViewWrapper: View {
     var body: some View {
         switch page {
         case .start:
+            #if WITH_QEMU_TCI
+            VMWizardStartViewTCI(wizardState: wizardState)
+            #else
             VMWizardStartView(wizardState: wizardState)
+            #endif
         case .operatingSystem:
             VMWizardOSView(wizardState: wizardState)
         case .macOSBoot:

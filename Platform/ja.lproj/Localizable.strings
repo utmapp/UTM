@@ -982,7 +982,7 @@
 "Remote Client Connected" = "リモートクライアント接続済み";
 "Established connection from %@." = "%@からの接続を確立しました。";
 "UTM Remote Server Error" = "UTMリモートサーバエラー";
-"Cannot reserve port '%@' for external access from NAT. Make sure no other device on the network has reserved it." = "NATからの外部アクセス用のポート“%@”を予約できません。ネットワーク上のほかのデバイスが予約していないことを確認してください。";
+"Cannot reserve port %d for external access from NAT. Make sure no other device on the network has reserved it." = "NATからの外部アクセス用のポート“%d”を予約できません。ネットワーク上のほかのデバイスが予約していないことを確認してください。";
 "Not authenticated." = "認証されていません。";
 "The client interface version does not match the server." = "クライアントインターフェイスのバージョンがサーバと一致しません。";
 "Cannot find VM with ID: %@" = "指定されたIDの仮想マシンが見つかりません: %@";

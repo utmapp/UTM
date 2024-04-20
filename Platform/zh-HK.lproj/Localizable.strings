@@ -197,7 +197,7 @@
 "Cannot import this VM. Either the configuration is invalid, created in a newer version of UTM, or on a platform that is incompatible with this version of UTM." = "無法輸入此虛擬電腦。可能設定無效，或是在較新版本的 UTM 上製作，或是在與此版本的 UTM 不相容的平台上製作。";
 
 /* UTMRemoteServer */
-"Cannot reserve port '%@' for external access from NAT. Make sure no other device on the network has reserved it." = "無法為 NAT 外部取用保留埠「%@」。請確保網絡上未有其他裝置保留它。";
+"Cannot reserve port %d for external access from NAT. Make sure no other device on the network has reserved it." = "無法為 NAT 外部取用保留埠「%d」。請確保網絡上未有其他裝置保留它。";
 
 /* No comment provided by engineer. */
 "Caps Lock (⇪) is treated as a key" = "將 Caps Lock (⇪) 視為按鍵";
