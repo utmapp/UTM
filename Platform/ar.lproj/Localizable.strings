@@ -99,28 +99,28 @@
 "Approve" = "批准";
 
 /* No comment provided by engineer. */
-"Architecture" = "架构";
+"Architecture" = "المعمارية";
 
 /* No comment provided by engineer. */
-"Are you sure you want to exit UTM?" = "确定要退出 UTM 吗？";
+"Are you sure you want to exit UTM?" = "هل أنت متأكد أنك تريد الخروج من UTM؟";
 
 /* No comment provided by engineer. */
-"Are you sure you want to permanently delete this disk image?" = "确定要永久删除此磁盘映像吗？";
+"Are you sure you want to permanently delete this disk image?" = "هل أنت متأكد أنك تريد حذف صورة القرص هذه نهائيًا؟";
 
 /* No comment provided by engineer. */
-"Are you sure you want to reset this VM? Any unsaved changes will be lost." = "确定要重置此虚拟机吗？任何未保存的更改都将丢失。";
+"Are you sure you want to reset this VM? Any unsaved changes will be lost." = "هل أنت متأكد أنك تريد إعادة تعيين هذا الجهاز الافتراضي؟ سيتم فقدان أي تغييرات غير محفوظة.";
 
 /* No comment provided by engineer. */
-"Are you sure you want to stop this VM and exit? Any unsaved changes will be lost." = "确定要停止此虚拟机并退出吗？任何未保存的更改都将丢失。";
+"Are you sure you want to stop this VM and exit? Any unsaved changes will be lost." = "هل أنت متأكد أنك تريد إيقاف هذا الجهاز الافتراضي والخروج؟ سيتم فقدان أي تغييرات غير محفوظة.";
 
 /* No comment provided by engineer. */
-"Authentication" = "鉴定";
+"Authentication" = "المصادقة";
 
 /* No comment provided by engineer. */
-"Automatic" = "自动";
+"Automatic" = "تلقائي";
 
 /* UTMQemuConstants */
-"Automatic Serial Device (max 4)" = "自动串行设备 (最大值 4)";
+"Automatic Serial Device (max 4)" = "جهاز تسلسلي تلقائي (بحد أقصى 4)";
 
 /* UTMLegacyQemuConfiguration
    UTMQemuConstants */
@@ -130,207 +130,207 @@
 "Block" = "屏蔽";
 
 /* No comment provided by engineer. */
-"Blocked" = "已屏蔽";
+"Blocked" = "حظر";
 
 /* UTMQemuConstants */
-"Bold" = "粗体";
+"Bold" = "عريض";
 
 /* No comment provided by engineer. */
-"Boot" = "启动";
+"Boot" = "تمهيد";
 
 /* No comment provided by engineer. */
-"Boot Arguments" = "启动参数";
+"Boot Arguments" = "أوامر التمهيد";
 
 /* No comment provided by engineer. */
-"Boot Image Type" = "启动映像类型";
+"Boot Image Type" = "نوع صورة التمهيد";
 
 /* No comment provided by engineer. */
-"Boot ISO Image" = "启动 ISO 映像";
+"Boot ISO Image" = "تمهيد صورة ISO";
 
 /* No comment provided by engineer. */
-"Boot ISO Image (optional)" = "启动 ISO 映像 (可选)";
+"Boot ISO Image (optional)" = "الإقلاع من صورة ISO (اختياري)";
 
 /* No comment provided by engineer. */
-"Boot VHDX Image" = "启动 VHDX 映像";
+"Boot VHDX Image" = "الإقلاع من صورة VHDX";
 
 /* UTMQemuConstants */
-"Bridged (Advanced)" = "桥接 (高级)";
+"Bridged (Advanced)" = "موصول (متقدم)";
 
 /* No comment provided by engineer. */
-"Bridged Settings" = "桥接设置";
+"Bridged Settings" = "إعدادات الموصول";
 
 /* Welcome view */
-"Browse UTM Gallery" = "浏览 UTM 库";
+"Browse UTM Gallery" = "تصفح معرض UTM";
 
 /* No comment provided by engineer. */
-"Browse…" = "浏览…";
+"Browse…" = "تصفح...";
 
 /* No comment provided by engineer. */
-"Build" = "构建版本";
+"Build" = "بناء";
 
 /* UTMQemuConstants */
-"Built-in Terminal" = "内置终端";
+"Built-in Terminal" = "وحدة طرفية مدمجة";
 
 /* No comment provided by engineer. */
-"Busy…" = "正忙…";
+"Busy…" = "مشغول...";
 
 /* VMDisplayWindowController
    VMQemuDisplayMetalWindowController */
-"Cancel" = "取消";
+"Cancel" = "إلغاء";
 
 /* UTMAppleVirtualMachine */
-"Cannot access resource: %@" = "无法访问资源：%@";
+"Cannot access resource: %@" = "لا يمكن الوصول إلى المورد: %@";
 
 /* UTMSWTPM */
-"Cannot access TPM data." = "无法访问 TPM 数据。";
+"Cannot access TPM data." = "لا يمكن الوصول إلى بيانات TPM.";
 
 /* UTMAppleVirtualMachine */
-"Cannot create virtual terminal." = "无法创建虚拟终端。";
+"Cannot create virtual terminal." = "لا يمكن إنشاء وحدة طرفية إفتراضية";
 
 /* UTMData */
-"Cannot find AltServer for JIT enable. You cannot run VMs until JIT is enabled." = "找不到用于 JIT 启用的 AltServer。在启用 JIT 之前，你将无法运行虚拟机。";
+"Cannot find AltServer for JIT enable. You cannot run VMs until JIT is enabled." = "لا يمكن العثور على AltServer لتمكين JIT. لا يمكنك تشغيل الآلات الافتراضية حتى يتم تمكين JIT.";
 
 /* UTMRemoteServer */
-"Cannot find VM with ID: %@" = "无法通过 ID 找到虚拟机：%@";
+"Cannot find VM with ID: %@" = "لا يمكن العثور على VM بعنوان ID: %@";
 
 /* UTMData */
-"Cannot import this VM. Either the configuration is invalid, created in a newer version of UTM, or on a platform that is incompatible with this version of UTM." = "无法导入此虚拟机。此虚拟机可能配置无效，或者可能是在较新版本的 UTM 中创建的，也可能是在与此版本的 UTM 不兼容的平台上创建的。";
+"Cannot import this VM. Either the configuration is invalid, created in a newer version of UTM, or on a platform that is incompatible with this version of UTM." = "لا يمكن استيراد هذه الآلة الافتراضية. إما أن التكوين غير صالح، أو تم إنشاؤها في إصدار أحدث من UTM، أو على نظام أساسي غير متوافق مع هذا الإصدار من UTM.";
 
 /* UTMRemoteServer */
-"Cannot reserve port '%@' for external access from NAT. Make sure no other device on the network has reserved it." = "无法保留端口“%@”用作从 NAT 的外部访问。请确保网络上没有其他设备保留该端口。";
+"لا يمكن حجز المنفذ '%@' للوصول الخارجي من NAT. تأكد من عدم قيام أي جهاز آخر على الشبكة بحجزه." = "无法保留端口“%@”用作从 NAT 的外部访问。请确保网络上没有其他设备保留该端口。";
 
 /* No comment provided by engineer. */
-"Caps Lock (⇪) is treated as a key" = "将 Caps Lock (⇪) 视为按键";
+"Caps Lock (⇪) is treated as a key" = "يتم التعامل مع Caps Lock (⇪) كمفتاح";
 
 /* VMMetalView */
-"Capture Input" = "捕获输入";
+"Capture Input" = "التقاط المدخلات";
 
 /* No comment provided by engineer. */
-"Capture input automatically when entering full screen" = "进入全屏时自动捕获输入";
+"Capture input automatically when entering full screen" = "التقاط المدخلات تلقائيا عند الدخول في وضع ملء الشاشة";
 
 /* VMDisplayQemuMetalWindowController */
-"Captured mouse" = "已捕获鼠标";
+"Captured mouse" = "الماوس الملتقط";
 
 /* Configuration boot device */
 "CD/DVD" = "CD/DVD";
 
 /* UTMLegacyQemuConfiguration
    UTMQemuConstants */
-"CD/DVD (ISO) Image" = "CD/DVD (ISO) 映像";
+"CD/DVD (ISO) Image" = "CD/DVD (ISO) صورة";
 
 /* VMDisplayWindowController */
-"Change" = "更改";
+"Change" = "تغيير";
 
 /* VMDisplayAppleController */
-"Change…" = "更改…";
+"Change…" = "تغيير…";
 
 /* No comment provided by engineer. */
-"Clear" = "清除";
+"Clear" = "مسح";
 
 /* No comment provided by engineer. */
-"Close" = "关闭";
+"Close" = "إغلاق";
 
 /* VMQemuDisplayMetalWindowController */
-"Closing this window will kill the VM." = "关闭此窗口将终止此虚拟机。";
+"Closing this window will kill the VM." = "سيؤدي إغلاق هذه النافذة إلى قتل الآلة الإفتراضية.";
 
 /* VMQemuDisplayMetalWindowController */
-"Confirm" = "确认";
+"Confirm" = "تأكيد";
 
 /* No comment provided by engineer. */
-"Confirm Delete" = "确认删除";
+"Confirm Delete" = "تأكيد الحذف";
 
 /* AppDelegate
    VMDisplayWindowController */
-"Confirmation" = "确认";
+"Confirmation" = "التأكيد";
 
 /* No comment provided by engineer. */
-"Connect" = "连接";
+"Connect" = "إتصال";
 
 /* No comment provided by engineer. */
-"Connected" = "已连接";
+"Connected" = "متصل";
 
 /* No comment provided by engineer. */
-"Connection" = "连接";
+"Connection" = "الإتصال";
 
 /* VMSessionState */
-"Connection to the server was lost." = "与服务器的连接丢失。";
+"Connection to the server was lost." = "إنقطع الإتصال بالخادم.";
 
 /* No comment provided by engineer. */
-"Console" = "控制台";
+"Console" = "وحدة التحكم";
 
 /* No comment provided by engineer. */
-"Continue" = "继续";
+"Continue" = "استمرار";
 
 /* No comment provided by engineer. */
-"CoreAudio (Output Only)" = "CoreAudio (仅输出)";
+"CoreAudio (Output Only)" = "CoreAudio (الإخراج فقط)";
 
 /* No comment provided by engineer. */
-"Cores" = "核心";
+"Cores" = "أنوية";
 
 /* No comment provided by engineer. */
 "CPU" = "CPU";
 
 /* No comment provided by engineer. */
-"CPU Cores" = "CPU 核心";
+"CPU Cores" = "CPU أنوية";
 
 /* No comment provided by engineer. */
-"Create" = "创建";
+"Create" = "إنشاء";
 
 /* Welcome view */
-"Create a New Virtual Machine" = "创建一个新虚拟机";
+"Create a New Virtual Machine" = "إنشاء آلة افتراضية جديدة";
 
 /* VMConfigAppleDisplayView */
-"Custom" = "自定义";
+"Custom" = "مخصص";
 
 /* UTMSWTPM */
-"Data not specified." = "未指定数据。";
+"Data not specified." = "البيانات غير محددة.";
 
 /* No comment provided by engineer. */
-"Debug Logging" = "调试日志记录";
+"Debug Logging" = "تسجيل التصحيح";
 
 /* QEMUConstantGenerated
    UTMQemuConstants */
-"Default" = "默认";
+"Default" = "إفتراضي";
 
 /* VMWizardSummaryView */
-"Default Cores" = "默认核心数";
+"Default Cores" = "الأنوية الإفتراضية";
 
 /* No comment provided by engineer. */
-"Delete" = "删除";
+"Delete" = "حذف";
 
 /* No comment provided by engineer. */
-"Devices" = "设备";
+"Devices" = "أجهزة";
 
 /* VMDisplayAppleWindowController */
-"Directory sharing" = "目录共享";
+"Directory sharing" = "مشاركة المسار";
 
 /* UTMQemuConstants */
-"Disabled" = "已禁用";
+"Disabled" = "معطل";
 
 /* No comment provided by engineer. */
-"Disconnect" = "断开连接";
+"Disconnect" = "قطع الإتصال";
 
 /* No comment provided by engineer. */
-"Discovered" = "已发现";
+"Discovered" = "مستكشف";
 
 /* UTMLegacyQemuConfiguration
    UTMQemuConstants */
-"Disk Image" = "磁盘映像";
+"Disk Image" = "صورة القرص";
 
 /* VMDisplayAppleWindowController */
-"Display" = "显示";
+"Display" = "العرض";
 
 /* VMDisplayQemuDisplayController */
-"Display %lld: %@" = "显示 %1$lld：%2$@";
+"Display %lld: %@" = "عرض %1$lld：%2$@";
 
 /* VMDisplayQemuDisplayController */
-"Disposable Mode" = "一次性模式";
+"Disposable Mode" = "وضع يمكن التخلص منه";
 
 /* No comment provided by engineer. */
-"Do not save VM screenshot to disk" = "不将虚拟机的屏幕截图保存到磁盘";
+"Do not save VM screenshot to disk" = "لا تقم بحفظ لقطة شاشة آلة إفتراضية على القرص";
 
 /* No comment provided by engineer. */
-"Do not show confirmation when closing a running VM" = "关闭正在运行的虚拟机时不显示确认";
+"Do not show confirmation when closing a running VM" = "لا تظهر التأكيد عند إغلاق آلة إفتراضية قيد التشغيل";
 
 /* No comment provided by engineer. */
 "Do not show prompt when USB device is plugged in" = "插入 USB 设备时不显示提示";
