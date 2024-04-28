@@ -426,6 +426,10 @@
 		CE19392826DCB094005CEC17 /* RAMSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE19392526DCB093005CEC17 /* RAMSlider.swift */; };
 		CE1AEC3F2B78B30700992AFC /* MacDeviceLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1AEC3E2B78B30700992AFC /* MacDeviceLabel.swift */; };
 		CE1AEC402B78B30700992AFC /* MacDeviceLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1AEC3E2B78B30700992AFC /* MacDeviceLabel.swift */; };
+		CE231D422BDDF280006D6DC3 /* UTMDonateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE231D412BDDF280006D6DC3 /* UTMDonateView.swift */; };
+		CE231D432BDDF280006D6DC3 /* UTMDonateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE231D412BDDF280006D6DC3 /* UTMDonateView.swift */; };
+		CE231D462BDDFD03006D6DC3 /* UTMDonateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE231D452BDDFD03006D6DC3 /* UTMDonateStore.swift */; };
+		CE231D472BDDFD03006D6DC3 /* UTMDonateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE231D452BDDFD03006D6DC3 /* UTMDonateStore.swift */; };
 		CE25124729BFDB87000790AB /* UTMScriptingGuestProcessImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE25124629BFDB87000790AB /* UTMScriptingGuestProcessImpl.swift */; };
 		CE25124929BFDBA6000790AB /* UTMScriptingGuestFileImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE25124829BFDBA6000790AB /* UTMScriptingGuestFileImpl.swift */; };
 		CE25124B29BFE273000790AB /* UTMScriptable.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE25124A29BFE273000790AB /* UTMScriptable.swift */; };
@@ -1786,6 +1790,9 @@
 		CE1AEC3E2B78B30700992AFC /* MacDeviceLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacDeviceLabel.swift; sourceTree = "<group>"; };
 		CE20FAE62448D2BE0059AE11 /* VMScroll.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMScroll.h; sourceTree = "<group>"; };
 		CE20FAE72448D2BE0059AE11 /* VMScroll.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMScroll.m; sourceTree = "<group>"; };
+		CE231D412BDDF280006D6DC3 /* UTMDonateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMDonateView.swift; sourceTree = "<group>"; };
+		CE231D442BDDFA61006D6DC3 /* Donation.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Donation.storekit; sourceTree = "<group>"; };
+		CE231D452BDDFD03006D6DC3 /* UTMDonateStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMDonateStore.swift; sourceTree = "<group>"; };
 		CE25124629BFDB87000790AB /* UTMScriptingGuestProcessImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMScriptingGuestProcessImpl.swift; sourceTree = "<group>"; };
 		CE25124829BFDBA6000790AB /* UTMScriptingGuestFileImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMScriptingGuestFileImpl.swift; sourceTree = "<group>"; };
 		CE25124A29BFE273000790AB /* UTMScriptable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMScriptable.swift; sourceTree = "<group>"; };
@@ -2674,6 +2681,8 @@
 				CE08334A2B784FD400522C03 /* RemoteContentView.swift */,
 				841E58D02893AF5400137A20 /* UTMApp.swift */,
 				CEBBF1A424B56A2900C15049 /* UTMDataExtension.swift */,
+				CE231D452BDDFD03006D6DC3 /* UTMDonateStore.swift */,
+				CE231D412BDDF280006D6DC3 /* UTMDonateView.swift */,
 				841E58CA28937EE200137A20 /* UTMExternalSceneDelegate.swift */,
 				841E58CD28937FED00137A20 /* UTMSingleWindowView.swift */,
 				842B9F8C28CC58B700031EE7 /* UTMPatches.swift */,
@@ -2698,6 +2707,7 @@
 				CEB5C1192B8C4CD4008AAE5C /* Info-RemotePlist.strings */,
 				CEC1B00A2BBB211C0088119D /* PrivacyInfo.xcprivacy */,
 				5286EC91243748AC007E6CBC /* Settings.bundle */,
+				CE231D442BDDFA61006D6DC3 /* Donation.storekit */,
 			);
 			path = iOS;
 			sourceTree = "<group>";
@@ -3493,6 +3503,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CE2D926A24AD46670059923A /* VMDisplayMetalViewController+Pointer.h in Sources */,
+				CE231D462BDDFD03006D6DC3 /* UTMDonateStore.swift in Sources */,
 				84C4D9022880CA8A00EC3B2B /* VMSettingsAddDeviceMenuView.swift in Sources */,
 				CE2D956F24AD4F990059923A /* VMRemovableDrivesView.swift in Sources */,
 				8443EFF22845641600B2E6E2 /* UTMQemuConfigurationDrive.swift in Sources */,
@@ -3619,6 +3630,7 @@
 				848F71EC277A2F47006A0240 /* UTMSerialPortDelegate.swift in Sources */,
 				CE2D955D24AD4F990059923A /* VMConfigSoundView.swift in Sources */,
 				CE2D930424AD46670059923A /* UTMLegacyQemuConfiguration.m in Sources */,
+				CE231D422BDDF280006D6DC3 /* UTMDonateView.swift in Sources */,
 				841E999828AC817D003C6CB6 /* UTMQemuVirtualMachine.swift in Sources */,
 				CE2D957924AD4F990059923A /* VMDetailsView.swift in Sources */,
 				CE2D930524AD46670059923A /* VMDisplayMetalViewController.m in Sources */,
@@ -3856,6 +3868,7 @@
 				84C505AD28C588EC007CE8FF /* SizeTextField.swift in Sources */,
 				CEA45E27263519B5002FA97D /* VMRemovableDrivesView.swift in Sources */,
 				CEF0306E26A2AFDF00667B63 /* VMWizardOSView.swift in Sources */,
+				CE231D432BDDF280006D6DC3 /* UTMDonateView.swift in Sources */,
 				CE65BABF26A4D8DD0001BD6B /* VMConfigDisplayConsoleView.swift in Sources */,
 				848F71ED277A2F47006A0240 /* UTMSerialPortDelegate.swift in Sources */,
 				83A004BA26A8CC95001AC09E /* UTMDownloadTask.swift in Sources */,
@@ -3900,6 +3913,7 @@
 				CEA45E6A263519B5002FA97D /* VMDisplayMetalViewController+Touch.m in Sources */,
 				CEA45E6B263519B5002FA97D /* UTMLegacyQemuConfiguration+Display.m in Sources */,
 				CEA45E6C263519B5002FA97D /* UTMVirtualMachine.swift in Sources */,
+				CE231D472BDDFD03006D6DC3 /* UTMDonateStore.swift in Sources */,
 				84B36D2A27B790BE00C22685 /* DestructiveButton.swift in Sources */,
 				CEF469EF2BD2D165005A0B68 /* VMWizardStartViewTCI.swift in Sources */,
 				842B9F8E28CC58B700031EE7 /* UTMPatches.swift in Sources */,
