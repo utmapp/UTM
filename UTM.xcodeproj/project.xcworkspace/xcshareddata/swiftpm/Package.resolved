@@ -1,4 +1,5 @@
 {
+  "originHash" : "7b5e2ff74c08d3efce9babb7649d891f7ad18d9c868e75db7d9e26ce542055cc",
   "pins" : [
     {
       "identity" : "altkit",
@@ -82,6 +83,15 @@
       }
     },
     {
+      "identity" : "swiftcopyfile",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/osy/SwiftCopyfile.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "faac327beaed77c1a3ec8e899887835777782f30"
+      }
+    },
+    {
       "identity" : "swiftportmap",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/osy/SwiftPortmap.git",
@@ -127,5 +137,5 @@
       }
     }
   ],
-  "version" : 2
+  "version" : 3
 }

@@ -27,6 +27,7 @@ import AltKit
 #if WITH_SERVER
 import Combine
 #endif
+import SwiftCopyfile
 
 #if WITH_REMOTE
 import CocoaSpiceNoUsb
@@ -661,12 +662,7 @@ struct AlertMessage: Identifiable {
     }
 
     private func copyItemWithCopyfile(at srcURL: URL, to dstURL: URL) async throws {
-        try await Task.detached(priority: .userInitiated) {
-            let status = copyfile(srcURL.path, dstURL.path, nil, copyfile_flags_t(COPYFILE_ALL | COPYFILE_RECURSIVE | COPYFILE_CLONE | COPYFILE_DATA_SPARSE))
-            if status < 0 {
-                throw NSError(domain: NSPOSIXErrorDomain, code: Int(errno))
-            }
-        }.value
+        try await CopyManager.default.copyItem(at: srcURL, to: dstURL, flags: [.all, .recursive, .clone, .dataSparse])
     }
     
     // MARK: - Downloading VMs

@@ -430,6 +430,10 @@
 		CE231D432BDDF280006D6DC3 /* UTMDonateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE231D412BDDF280006D6DC3 /* UTMDonateView.swift */; };
 		CE231D462BDDFD03006D6DC3 /* UTMDonateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE231D452BDDFD03006D6DC3 /* UTMDonateStore.swift */; };
 		CE231D472BDDFD03006D6DC3 /* UTMDonateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE231D452BDDFD03006D6DC3 /* UTMDonateStore.swift */; };
+		CE231D522BE03617006D6DC3 /* SwiftCopyfile in Frameworks */ = {isa = PBXBuildFile; productRef = CE231D512BE03617006D6DC3 /* SwiftCopyfile */; };
+		CE231D542BE03630006D6DC3 /* SwiftCopyfile in Frameworks */ = {isa = PBXBuildFile; productRef = CE231D532BE03630006D6DC3 /* SwiftCopyfile */; };
+		CE231D562BE03636006D6DC3 /* SwiftCopyfile in Frameworks */ = {isa = PBXBuildFile; productRef = CE231D552BE03636006D6DC3 /* SwiftCopyfile */; };
+		CE231D5A2BE03791006D6DC3 /* SwiftCopyfile in Frameworks */ = {isa = PBXBuildFile; productRef = CE231D592BE03791006D6DC3 /* SwiftCopyfile */; };
 		CE25124729BFDB87000790AB /* UTMScriptingGuestProcessImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE25124629BFDB87000790AB /* UTMScriptingGuestProcessImpl.swift */; };
 		CE25124929BFDBA6000790AB /* UTMScriptingGuestFileImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE25124829BFDBA6000790AB /* UTMScriptingGuestFileImpl.swift */; };
 		CE25124B29BFE273000790AB /* UTMScriptable.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE25124A29BFE273000790AB /* UTMScriptable.swift */; };
@@ -2119,6 +2123,7 @@
 				CE2D933024AD46670059923A /* libgstvideoscale.a in Frameworks */,
 				CE93759924BB821F0074066F /* IQKeyboardManagerSwift in Frameworks */,
 				CE2D933124AD46670059923A /* MetalKit.framework in Frameworks */,
+				CE231D542BE03630006D6DC3 /* SwiftCopyfile in Frameworks */,
 				CE2D933224AD46670059923A /* libgstvolume.a in Frameworks */,
 				CE2D933324AD46670059923A /* libgstcoreelements.a in Frameworks */,
 				CE2D933424AD46670059923A /* libgstvideorate.a in Frameworks */,
@@ -2261,6 +2266,7 @@
 				CE0B6F0224AD677200FE012D /* libgstjpeg.a in Frameworks */,
 				CE0B6EFC24AD677200FE012D /* libgstaudiotestsrc.a in Frameworks */,
 				CE0B6EF824AD677200FE012D /* gstsdp-1.0.0.framework in Frameworks */,
+				CE231D522BE03617006D6DC3 /* SwiftCopyfile in Frameworks */,
 				CE0B6EEA24AD677200FE012D /* libgstcoreelements.a in Frameworks */,
 				83993290272F4A400059355F /* ZIPFoundation in Frameworks */,
 			);
@@ -2340,6 +2346,7 @@
 				CEA45F58263519B5002FA97D /* crypto.1.1.framework in Frameworks */,
 				CEA45F59263519B5002FA97D /* gstpbutils-1.0.0.framework in Frameworks */,
 				CEA45F5A263519B5002FA97D /* gstallocators-1.0.0.framework in Frameworks */,
+				CE231D562BE03636006D6DC3 /* SwiftCopyfile in Frameworks */,
 				CEA45F5B263519B5002FA97D /* gstcheck-1.0.0.framework in Frameworks */,
 				CEA45F5C263519B5002FA97D /* iconv.2.framework in Frameworks */,
 				CEA45F5D263519B5002FA97D /* gstsdp-1.0.0.framework in Frameworks */,
@@ -2424,6 +2431,7 @@
 				CEF7F66F2AEEDCC400E34952 /* gstallocators-1.0.0.framework in Frameworks */,
 				CEF7F6702AEEDCC400E34952 /* gstcheck-1.0.0.framework in Frameworks */,
 				CEF7F6712AEEDCC400E34952 /* iconv.2.framework in Frameworks */,
+				CE231D5A2BE03791006D6DC3 /* SwiftCopyfile in Frameworks */,
 				CEF7F6722AEEDCC400E34952 /* gstsdp-1.0.0.framework in Frameworks */,
 				CEF7F6742AEEDCC400E34952 /* ssl.1.1.framework in Frameworks */,
 				CEF7F6762AEEDCC400E34952 /* pixman-1.0.framework in Frameworks */,
@@ -3079,6 +3087,7 @@
 				84A0A8892A47D5D10038F329 /* QEMUKit */,
 				CE9B15372B11A4A7003A32DD /* SwiftConnect */,
 				CE89CB0D2B8B1B5A006B2CC2 /* VisionKeyboardKit */,
+				CE231D532BE03630006D6DC3 /* SwiftCopyfile */,
 			);
 			productName = UTM;
 			productReference = CE2D93BE24AD46670059923A /* UTM.app */;
@@ -3112,6 +3121,7 @@
 				84A0A8872A47D5C50038F329 /* QEMUKit */,
 				CE9B15352B11A491003A32DD /* SwiftConnect */,
 				CEDD11C02B7C74D7004DDAC6 /* SwiftPortmap */,
+				CE231D512BE03617006D6DC3 /* SwiftCopyfile */,
 			);
 			productName = UTM;
 			productReference = CE2D951C24AD48BE0059923A /* UTM.app */;
@@ -3162,6 +3172,7 @@
 				84A0A88B2A47D5D70038F329 /* QEMUKit */,
 				CE9B15392B11A4AE003A32DD /* SwiftConnect */,
 				CE89CB0F2B8B1B6A006B2CC2 /* VisionKeyboardKit */,
+				CE231D552BE03636006D6DC3 /* SwiftCopyfile */,
 			);
 			productName = UTM;
 			productReference = CEA45FB9263519B5002FA97D /* UTM SE.app */;
@@ -3211,6 +3222,7 @@
 				CEF7F6D52AEEEF7D00E34952 /* CocoaSpiceNoUsb */,
 				CE9B153B2B11A4B4003A32DD /* SwiftConnect */,
 				CE89CB112B8B1B7A006B2CC2 /* VisionKeyboardKit */,
+				CE231D592BE03791006D6DC3 /* SwiftCopyfile */,
 			);
 			productName = UTM;
 			productReference = CEF7F6D32AEEDCC400E34952 /* UTM Remote.app */;
@@ -3284,6 +3296,7 @@
 				CE9B15342B11A491003A32DD /* XCRemoteSwiftPackageReference "SwiftConnect" */,
 				CEDD11BF2B7C74D7004DDAC6 /* XCRemoteSwiftPackageReference "SwiftPortmap" */,
 				CE89CB0C2B8B1B49006B2CC2 /* XCRemoteSwiftPackageReference "VisionKeyboardKit" */,
+				CE231D502BE03617006D6DC3 /* XCRemoteSwiftPackageReference "SwiftCopyfile" */,
 			);
 			productRefGroup = CE550BCA225947990063E575 /* Products */;
 			projectDirPath = "";
@@ -5191,6 +5204,14 @@
 				minimumVersion = 1.5.3;
 			};
 		};
+		CE231D502BE03617006D6DC3 /* XCRemoteSwiftPackageReference "SwiftCopyfile" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/osy/SwiftCopyfile.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		CE89CB0C2B8B1B49006B2CC2 /* XCRemoteSwiftPackageReference "VisionKeyboardKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/utmapp/VisionKeyboardKit.git";
@@ -5403,6 +5424,26 @@
 			isa = XCSwiftPackageProductDependency;
 			package = CE020BA524AEDEF000B44AB6 /* XCRemoteSwiftPackageReference "swift-log" */;
 			productName = Logging;
+		};
+		CE231D512BE03617006D6DC3 /* SwiftCopyfile */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CE231D502BE03617006D6DC3 /* XCRemoteSwiftPackageReference "SwiftCopyfile" */;
+			productName = SwiftCopyfile;
+		};
+		CE231D532BE03630006D6DC3 /* SwiftCopyfile */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CE231D502BE03617006D6DC3 /* XCRemoteSwiftPackageReference "SwiftCopyfile" */;
+			productName = SwiftCopyfile;
+		};
+		CE231D552BE03636006D6DC3 /* SwiftCopyfile */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CE231D502BE03617006D6DC3 /* XCRemoteSwiftPackageReference "SwiftCopyfile" */;
+			productName = SwiftCopyfile;
+		};
+		CE231D592BE03791006D6DC3 /* SwiftCopyfile */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CE231D502BE03617006D6DC3 /* XCRemoteSwiftPackageReference "SwiftCopyfile" */;
+			productName = SwiftCopyfile;
 		};
 		CE89CB0D2B8B1B5A006B2CC2 /* VisionKeyboardKit */ = {
 			isa = XCSwiftPackageProductDependency;
