@@ -62,9 +62,6 @@
 /* No comment provided by engineer. */
 "Additional Settings" = "附加设置";
 
-/* No comment provided by engineer. */
-"Advanced" = "高级";
-
 /* VMConfigSystemView */
 "Allocating too much memory will crash the VM." = "分配过多内存会使虚拟机崩溃。";
 
@@ -145,6 +142,9 @@
 "Boot Image Type" = "启动映像类型";
 
 /* No comment provided by engineer. */
+"Boot IMG Image" = "启动 IMG 映像";
+
+/* No comment provided by engineer. */
 "Boot ISO Image" = "启动 ISO 映像";
 
 /* No comment provided by engineer. */
@@ -218,6 +218,9 @@
    UTMQemuConstants */
 "CD/DVD (ISO) Image" = "CD/DVD (ISO) 映像";
 
+/* No comment provided by engineer. */
+"CD/DVD Image" = "CD/DVD 映像";
+
 /* VMDisplayWindowController */
 "Change" = "更改";
 
@@ -275,6 +278,9 @@
 
 /* No comment provided by engineer. */
 "Create" = "创建";
+
+/* No comment provided by engineer. */
+"Create a new emulated machine from scratch." = "从头开始创建一个新的虚拟机。";
 
 /* Welcome view */
 "Create a New Virtual Machine" = "创建一个新虚拟机";
@@ -461,9 +467,6 @@
 /* UTMQemuConfigurationError */
 "Failed to migrate configuration from a previous UTM version." = "无法从以前的 UTM 版本迁移配置。";
 
-/* UTMData */
-"Failed to parse download URL." = "无法解析下载 URL。";
-
 /* UTMRemoteKeyManager */
 "Failed to parse generated key pair." = "无法解析生成的密钥对。";
 
@@ -495,6 +498,9 @@
 /* Configuration boot device
    UTMQemuConstants */
 "Floppy" = "软盘";
+
+/* No comment provided by engineer. */
+"Floppy Image" = "软盘映像";
 
 /* No comment provided by engineer. */
 "Font Size" = "字体大小";
@@ -734,6 +740,9 @@
 "New" = "新建";
 
 /* No comment provided by engineer. */
+"New Machine" = "新建虚拟机";
+
+/* No comment provided by engineer. */
 "New…" = "新建…";
 
 /* No comment provided by engineer. */
@@ -808,6 +817,9 @@
 
 /* No comment provided by engineer. */
 "Option (⌥) is Meta key" = "Option (⌥) 键作为 Meta 键";
+
+/* No comment provided by engineer. */
+"Options" = "选项";
 
 /* No comment provided by engineer. */
 "Other" = "其他";
@@ -1369,9 +1381,6 @@
 "Virtualize" = "虚拟化";
 
 /* No comment provided by engineer. */
-"VM display size is fixed" = "虚拟机显示大小为固定";
-
-/* No comment provided by engineer. */
 "Waiting for VM to connect to display..." = "等待虚拟机连接到显示...";
 
 /* No comment provided by engineer. */
@@ -1426,13 +1435,22 @@
 "Add read only" = "添加只读";
 
 /* No comment provided by engineer. */
+"Advanced" = "高级";
+
+/* No comment provided by engineer. */
 "Advanced. If checked, a raw disk image is used. Raw disk image does not support snapshots and will not dynamically expand in size." = "高级选项。若选中，将使用 Raw 磁盘映像。Raw 磁盘映像不支持快照，也不会动态地扩充大小。";
+
+/* No comment provided by engineer. */
+"Allow access from external clients" = "允许外部客户机访问";
 
 /* No comment provided by engineer. */
 "Allow Remote Connection" = "允许远程连接";
 
 /* No comment provided by engineer. */
 "Allows passing through additional input from trackpads. Only supported on macOS 13+ guests." = "允许通过触控板额外输入。仅支持 macOS 13 及以上的客户机。";
+
+/* No comment provided by engineer. */
+"Any" = "任意";
 
 /* No comment provided by engineer. */
 "Apple Virtualization is experimental and only for advanced use cases. Leave unchecked to use QEMU, which is recommended." = "Apple 虚拟化属于实验性功能，仅适用于高级用例。推荐不选中此复选框，以使用 QEMU。";
@@ -1451,6 +1469,9 @@
 
 /* No comment provided by engineer. */
 "Automatic" = "自动";
+
+/* No comment provided by engineer. */
+"Automatically start UTM server" = "自动启动 UTM 服务器";
 
 /* No comment provided by engineer. */
 "Background Color" = "背景颜色";
@@ -1606,6 +1627,9 @@
 "Downscaling" = "细化";
 
 /* No comment provided by engineer. */
+"Dynamic Resolution" = "动态";
+
+/* No comment provided by engineer. */
 "Edit" = "编辑";
 
 /* No comment provided by engineer. */
@@ -1651,6 +1675,9 @@
 "Enable Sound" = "启用声音";
 
 /* No comment provided by engineer. */
+"Enable UTM Server" = "启用 UTM 服务器";
+
+/* No comment provided by engineer. */
 "Engine" = "引擎";
 
 /* No comment provided by engineer. */
@@ -1661,6 +1688,9 @@
 
 /* No comment provided by engineer. */
 "External Drive" = "外部磁盘";
+
+/* UTMData */
+"Failed to parse download URL." = "无法解析下载 URL。";
 
 /* No comment provided by engineer. */
 "Fetch latest Windows installer…" = "获取最新的 Windows 安装程序…";
@@ -1825,6 +1855,9 @@
 "Keyboard" = "键盘";
 
 /* No comment provided by engineer. */
+"Last Seen" = "最后上线于";
+
+/* No comment provided by engineer. */
 "MAC Address" = "MAC 地址";
 
 /* No comment provided by engineer. */
@@ -1897,6 +1930,9 @@
 "Path" = "路径";
 
 /* No comment provided by engineer. */
+"Pointer" = "鼠标指针";
+
+/* No comment provided by engineer. */
 "Port" = "端口";
 
 /* No comment provided by engineer. */
@@ -1933,10 +1969,16 @@
 "Reclaim Space" = "释放空间";
 
 /* No comment provided by engineer. */
+"Reject unknown connections by default" = "默认情况下拒绝未知连接";
+
+/* No comment provided by engineer. */
 "Remove selected shortcut" = "移除选中的快捷方式";
 
 /* No comment provided by engineer. */
 "Renderer Backend" = "渲染器后端";
+
+/* No comment provided by engineer. */
+"Require Password" = "需要密码";
 
 /* No comment provided by engineer. */
 "Requires restarting UTM to take affect." = "需要重新打开 UTM 以生效。";
@@ -2173,6 +2215,9 @@
 "Use Virtualization" = "使用虚拟化";
 
 /* No comment provided by engineer. */
+"UTM Server" = "UTM 服务器";
+
+/* No comment provided by engineer. */
 "VGA Device RAM (MB)" = "VGA 设备内存 (MB)";
 
 /* No comment provided by engineer. */
@@ -2180,6 +2225,9 @@
 
 /* No comment provided by engineer. */
 "Virtualization Engine" = "虚拟化引擎";
+
+/* No comment provided by engineer. */
+"VM display size is fixed" = "虚拟机显示大小为固定";
 
 /* No comment provided by engineer. */
 "Wait for Connection" = "等待连接";
