@@ -68,7 +68,7 @@ struct VMWizardOSMacView: View {
                 wizardState.macPlatform = UTMAppleConfigurationMacPlatform(newHardware: model)
                 wizardState.macRecoveryIpswURL = url
                 wizardState.macPlatformVersion = image.buildVersion.integerPrefix()
-                wizardState.isSkipBootImage = true
+                wizardState.bootDevice = .none
                 wizardState.bootImageURL = nil
                 wizardState.next()
             }

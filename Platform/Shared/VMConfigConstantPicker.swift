@@ -55,7 +55,7 @@ struct VMConfigConstantPicker: View {
     
     var body: some View {
         Picker(titleKey ?? "", selection: $selection) {
-            ForEach(type.allPrettyValues) { displayValue in
+            ForEach(type.shownPrettyValues) { displayValue in
                 Text(displayValue).tag(identifier(for: displayValue))
             }
         }

@@ -124,6 +124,11 @@ struct VMDetailsView: View {
 
 private extension View {
     func taskOnAppear<T>(id value: T, priority: TaskPriority = .userInitiated, _ action: @escaping @Sendable @MainActor () async -> Void) -> some View where T : Equatable & Hashable {
+        #if os(visionOS) // FIXME: visionOS crashes with task()
+        self.onAppear {
+            Task(priority: priority, operation: action)
+        }.id(value)
+        #else
         if #available(macOS 12, iOS 15, *) {
             return self.task(id: value, priority: priority, action)
         } else {
@@ -131,6 +136,7 @@ private extension View {
                 Task(priority: priority, operation: action)
             }.id(value)
         }
+        #endif
     }
 }
 

@@ -55,7 +55,7 @@ public extension VMDisplayViewController {
             parent.setChildViewControllerForPointerLock(self)
             UIPress.pressResponderOverride = self
         }
-        #if !os(visionOS) && !WITH_REMOTE
+        #if !os(visionOS) && WITH_LOCATION_BACKGROUND
         if runInBackground {
             logger.info("Start location tracking to enable running in background")
             UTMLocationManager.sharedInstance().startUpdatingLocation()

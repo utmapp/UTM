@@ -958,7 +958,7 @@ extension UTMRemoteServer {
             case .silentError(let error):
                 return error.localizedDescription
             case .natReservationMismatch(let port):
-                return String.localizedStringWithFormat(NSLocalizedString("Cannot reserve port '%@' for external access from NAT. Make sure no other device on the network has reserved it.", comment: "UTMRemoteServer"), port)
+                return String.localizedStringWithFormat(NSLocalizedString("Cannot reserve port %d for external access from NAT. Make sure no other device on the network has reserved it.", comment: "UTMRemoteServer"), port)
             case .notAuthenticated:
                 return NSLocalizedString("Not authenticated.", comment: "UTMRemoteServer")
             case .versionMismatch:

@@ -57,13 +57,10 @@
 "Add…" = "新增⋯";
 
 /* No comment provided by engineer. */
-"Additional Options" = "附加項目";
+"Additional Options" = "附加選項";
 
 /* No comment provided by engineer. */
 "Additional Settings" = "附加設定";
-
-/* No comment provided by engineer. */
-"Advanced" = "進階";
 
 /* VMConfigSystemView */
 "Allocating too much memory will crash the VM." = "分配過多記憶體會使虛擬電腦當機。";
@@ -145,6 +142,9 @@
 "Boot Image Type" = "啟動映像檔種類";
 
 /* No comment provided by engineer. */
+"Boot IMG Image" = "啟動 IMG 映像檔";
+
+/* No comment provided by engineer. */
 "Boot ISO Image" = "啟動 ISO 映像檔";
 
 /* No comment provided by engineer. */
@@ -197,7 +197,7 @@
 "Cannot import this VM. Either the configuration is invalid, created in a newer version of UTM, or on a platform that is incompatible with this version of UTM." = "無法輸入此虛擬電腦。可能設定無效，或是在較新版本的 UTM 上製作，或是在與此版本的 UTM 不相容的平台上製作。";
 
 /* UTMRemoteServer */
-"Cannot reserve port '%@' for external access from NAT. Make sure no other device on the network has reserved it." = "無法為 NAT 外部取用保留埠「%@」。請確保網絡上未有其他裝置保留它。";
+"Cannot reserve port %d for external access from NAT. Make sure no other device on the network has reserved it." = "無法為 NAT 外部取用保留埠「%d」。請確保網絡上未有其他裝置保留它。";
 
 /* No comment provided by engineer. */
 "Caps Lock (⇪) is treated as a key" = "將 Caps Lock (⇪) 視為按鍵";
@@ -217,6 +217,9 @@
 /* UTMLegacyQemuConfiguration
    UTMQemuConstants */
 "CD/DVD (ISO) Image" = "CD/DVD (ISO) 映像檔";
+
+/* No comment provided by engineer. */
+"CD/DVD Image" = "CD/DVD 映像檔";
 
 /* VMDisplayWindowController */
 "Change" = "變更";
@@ -275,6 +278,9 @@
 
 /* No comment provided by engineer. */
 "Create" = "製作";
+
+/* No comment provided by engineer. */
+"Create a new emulated machine from scratch." = "從頭開始製作一個新的虛擬電腦。";
 
 /* Welcome view */
 "Create a New Virtual Machine" = "製作一個新虛擬電腦";
@@ -461,9 +467,6 @@
 /* UTMQemuConfigurationError */
 "Failed to migrate configuration from a previous UTM version." = "無法由之前版本的 UTM 轉移設定。";
 
-/* UTMData */
-"Failed to parse download URL." = "無法解析已經下載的 URL。";
-
 /* UTMRemoteKeyManager */
 "Failed to parse generated key pair." = "無法解析生成的密鑰對。";
 
@@ -495,6 +498,9 @@
 /* Configuration boot device
    UTMQemuConstants */
 "Floppy" = "軟碟";
+
+/* No comment provided by engineer. */
+"Floppy Image" = "軟碟映像檔";
 
 /* No comment provided by engineer. */
 "Font Size" = "字體大小";
@@ -734,6 +740,9 @@
 "New" = "新增";
 
 /* No comment provided by engineer. */
+"New Machine" = "新增電腦";
+
+/* No comment provided by engineer. */
 "New…" = "新增⋯";
 
 /* No comment provided by engineer. */
@@ -808,6 +817,9 @@
 
 /* No comment provided by engineer. */
 "Option (⌥) is Meta key" = "將 Option (⌥) 作為 Meta 鍵";
+
+/* No comment provided by engineer. */
+"Options" = "選項";
 
 /* No comment provided by engineer. */
 "Other" = "其他";
@@ -1369,9 +1381,6 @@
 "Virtualize" = "虛擬化";
 
 /* No comment provided by engineer. */
-"VM display size is fixed" = "虛擬電腦顯示大小固定";
-
-/* No comment provided by engineer. */
 "Waiting for VM to connect to display..." = "正在等待虛擬電腦連接至顯示...";
 
 /* No comment provided by engineer. */
@@ -1426,13 +1435,22 @@
 "Add read only" = "加入唯讀";
 
 /* No comment provided by engineer. */
+"Advanced" = "進階";
+
+/* No comment provided by engineer. */
 "Advanced. If checked, a raw disk image is used. Raw disk image does not support snapshots and will not dynamically expand in size." = "進階選項。如選取，將會使用 Raw 磁碟映像。Raw 磁碟映像不支援快照，也不會動態擴充套件大小。";
+
+/* No comment provided by engineer. */
+"Allow access from external clients" = "允許外部客戶端訪問";
 
 /* No comment provided by engineer. */
 "Allow Remote Connection" = "允許遠端連線";
 
 /* No comment provided by engineer. */
 "Allows passing through additional input from trackpads. Only supported on macOS 13+ guests." = "允許透過觸控板額外輸入。僅支援 macOS 13+ 客戶端。";
+
+/* No comment provided by engineer. */
+"Any" = "任意";
 
 /* No comment provided by engineer. */
 "Apple Virtualization is experimental and only for advanced use cases. Leave unchecked to use QEMU, which is recommended." = "Apple 虛擬化為試驗性質，僅可用作進階用例，不選取此剔選框以使用推介的 QEMU。";
@@ -1451,6 +1469,9 @@
 
 /* No comment provided by engineer. */
 "Automatic" = "自動";
+
+/* No comment provided by engineer. */
+"Automatically start UTM server" = "自動開始 UTM 伺服器";
 
 /* No comment provided by engineer. */
 "Background Color" = "背景顏色";
@@ -1606,6 +1627,9 @@
 "Downscaling" = "細化解像度";
 
 /* No comment provided by engineer. */
+"Dynamic Resolution" = "動態解像度";
+
+/* No comment provided by engineer. */
 "Edit" = "編輯";
 
 /* No comment provided by engineer. */
@@ -1651,6 +1675,9 @@
 "Enable Sound" = "啟用聲音";
 
 /* No comment provided by engineer. */
+"Enable UTM Server" = "啟用 UTM 伺服器";
+
+/* No comment provided by engineer. */
 "Engine" = "引擎";
 
 /* No comment provided by engineer. */
@@ -1661,6 +1688,9 @@
 
 /* No comment provided by engineer. */
 "External Drive" = "外部磁碟";
+
+/* UTMData */
+"Failed to parse download URL." = "無法解析已經下載的 URL。";
 
 /* No comment provided by engineer. */
 "Fetch latest Windows installer…" = "取得最新的 Windows 安裝工具⋯";
@@ -1825,6 +1855,9 @@
 "Keyboard" = "鍵盤";
 
 /* No comment provided by engineer. */
+"Last Seen" = "最後檢視時間";
+
+/* No comment provided by engineer. */
 "MAC Address" = "MAC 位址";
 
 /* No comment provided by engineer. */
@@ -1897,6 +1930,9 @@
 "Path" = "路徑";
 
 /* No comment provided by engineer. */
+"Pointer" = "指標";
+
+/* No comment provided by engineer. */
 "Port" = "埠";
 
 /* No comment provided by engineer. */
@@ -1933,10 +1969,16 @@
 "Reclaim Space" = "釋放空間";
 
 /* No comment provided by engineer. */
+"Reject unknown connections by default" = "於預設情況下拒絕不明連線";
+
+/* No comment provided by engineer. */
 "Remove selected shortcut" = "移除已選取的捷徑";
 
 /* No comment provided by engineer. */
 "Renderer Backend" = "渲染器後端";
+
+/* No comment provided by engineer. */
+"Require Password" = "需要密碼";
 
 /* No comment provided by engineer. */
 "Requires restarting UTM to take affect." = "需要重新開啟 UTM 以生效。";
@@ -2173,6 +2215,9 @@
 "Use Virtualization" = "使用虛擬化";
 
 /* No comment provided by engineer. */
+"UTM Server" = "UTM 伺服器";
+
+/* No comment provided by engineer. */
 "VGA Device RAM (MB)" = "VGA 裝置記憶體 (MB)";
 
 /* No comment provided by engineer. */
@@ -2180,6 +2225,9 @@
 
 /* No comment provided by engineer. */
 "Virtualization Engine" = "虛擬化引擎";
+
+/* No comment provided by engineer. */
+"VM display size is fixed" = "虛擬電腦顯示大小固定";
 
 /* No comment provided by engineer. */
 "Wait for Connection" = "等待連線";
