@@ -136,6 +136,25 @@
 // UTMDataExtension.swift
 "This virtual machine is already running. In order to run it from this device, you must stop it first." = "この仮想マシンはすでに実行されています。このデバイスから実行するには、まず停止する必要があります。";
 
+// UTMDonateView.swift
+"Your support is the driving force that helps UTM stay independent. Your contribution, no matter the size, makes a significant difference. It enables us to develop new features and maintain existing ones. Thank you for considering a donation to support us." = "皆様のご支援がUTMの独立を維持する原動力となります。皆様からのご支援は、その大小にかかわらず、大きな違いをもたらします。これにより、新しい機能を開発し、既存の機能を維持することができます。ぜひご寄付をご検討のほどよろしくお願いいたします。";
+"GitHub Sponsors" = "GitHub Sponsors";
+"Support UTM" = "UTMを支援";
+"One Time Donation" = "1回限りの寄付";
+"Recurring Donation" = "定期寄付";
+"Manage Subscriptions…" = "サブスクリプションを管理…";
+"Restore Purchases" = "購入を復元";
+"%d days" = "%d日間";
+"day" = "1日間";
+"%d weeks" = "%d週間";
+"week" = "1週間";
+"%d months" = "%dか月間";
+"month" = "1か月間";
+"%d years" = "%d年間";
+"year" = "1年間";
+"period" = "期間";
+"Your purchase could not be verified by the App Store." = "App Storeで購入が確認できませんでした。";
+
 // UTMSingleWindowView.swift
 "Waiting for VM to connect to display..." = "仮想マシンがディスプレイに接続するのを待機中…";
 
@@ -266,7 +285,7 @@
 "Serial %lld" = "シリアル%lld";
 
 // Display/VMDisplayAppleDisplayWindowController.swift
-"%@ (Terminal %lld)" = "%1$@ (ターミナル%2$lld）";
+"%@ (Terminal %lld)" = "%1$@（ターミナル%2$lld）";
 
 // Display/VMDisplayQemuDisplayController.swift
 "Disposable Mode" = "使い捨てモード";
@@ -756,6 +775,7 @@
 "Inactive" = "非アクティブ";
 
 // VMNavigationListView.swift
+"Donate" = "寄付";
 "Pending" = "保留中";
 "New VM" = "新規仮想マシン";
 "Create a new VM" = "新規仮想マシンを作成します";
@@ -827,8 +847,13 @@
 
 // VMWizardOSOtherView.swift
 "Other" = "その他";
-"Skip ISO boot" = "ISO起動をスキップ";
-"Advanced" = "詳細";
+"Boot Device" = "起動デバイス";
+"CD/DVD Image" = "CD/DVDイメージ";
+"Floppy Image" = "フロッピーイメージ";
+"Boot IMG Image" = "起動IMGイメージ";
+"Legacy Hardware" = "レガシーハードウェア";
+"If checked, emulated devices with higher compatibility will be instantiated at the cost of performance." = "チェックを入れると、パフォーマンスを犠牲にして、より互換性の高い仮想デバイスがインスタンス化されます。";
+"Options" = "オプション";
 
 // VMWizardOSView.swift
 "macOS 12+" = "macOS 12以降";
@@ -862,6 +887,10 @@
 "This build does not emulation." = "このビルドではエミュレーションを行いません。";
 "Download prebuilt from UTM Gallery…" = "UTMギャラリーからビルド済みパッケージをダウンロード…";
 "Existing" = "既存";
+
+// VMWizardStartViewTCI.swift
+"New Machine" = "新規マシン";
+"Create a new emulated machine from scratch." = "新規仮想マシンをゼロから作成します。";
 
 // VMWizardState.swift
 "Please select a boot image." = "起動イメージを選択してください。";
@@ -982,7 +1011,7 @@
 "Remote Client Connected" = "リモートクライアント接続済み";
 "Established connection from %@." = "%@からの接続を確立しました。";
 "UTM Remote Server Error" = "UTMリモートサーバエラー";
-"Cannot reserve port %d for external access from NAT. Make sure no other device on the network has reserved it." = "NATからの外部アクセス用のポート“%d”を予約できません。ネットワーク上のほかのデバイスが予約していないことを確認してください。";
+"Cannot reserve port %d for external access from NAT. Make sure no other device on the network has reserved it." = "NATからの外部アクセス用のポート%dを予約できません。ネットワーク上のほかのデバイスが予約していないことを確認してください。";
 "Not authenticated." = "認証されていません。";
 "The client interface version does not match the server." = "クライアントインターフェイスのバージョンがサーバと一致しません。";
 "Cannot find VM with ID: %@" = "指定されたIDの仮想マシンが見つかりません: %@";
