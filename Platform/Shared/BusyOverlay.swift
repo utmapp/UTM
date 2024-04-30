@@ -22,7 +22,7 @@ struct BusyOverlay: View {
     var body: some View {
         Group {
             if data.busy {
-                BusyIndicator()
+                BusyIndicator(progress: $data.busyProgress)
             } else {
                 EmptyView()
             }

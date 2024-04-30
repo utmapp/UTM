@@ -66,6 +66,9 @@ struct AlertMessage: Identifiable {
     /// View: show busy spinner
     @Published var busy: Bool
     
+    /// View: show a percent progress in the busy spinner
+    @Published var busyProgress: Float?
+
     /// View: currently selected VM
     @Published var selectedVM: VMData?
     
