@@ -26,16 +26,16 @@
 "Cursor" = "指標";
 
 /* (No Comment) */
-"D-DOWN" = "下方向鍵";
+"D-DOWN" = "向下鍵";
 
 /* (No Comment) */
-"D-LEFT" = "左方向鍵";
+"D-LEFT" = "向左鍵";
 
 /* (No Comment) */
-"D-RIGHT" = "右方向鍵";
+"D-RIGHT" = "向右鍵";
 
 /* (No Comment) */
-"D-UP" = "上方向鍵";
+"D-UP" = "向上鍵";
 
 /* (No Comment) */
 "Disabled" = "已禁用";
@@ -104,7 +104,7 @@
 "Right" = "右";
 
 /* (No Comment) */
-"Right Click" = "右鍵單擊";
+"Right Click" = "點按右按鈕";
 
 /* (No Comment) */
 "Space" = "空格";

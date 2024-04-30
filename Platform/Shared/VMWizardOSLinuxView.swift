@@ -35,7 +35,15 @@ struct VMWizardOSLinuxView: View {
             return false
         }
     }
-    
+
+    private var useLinuxKernel: Binding<Bool> {
+        Binding {
+            wizardState.bootDevice == .kernel
+        } set: { value in
+            wizardState.bootDevice = value ? .kernel : .cd
+        }
+    }
+
     var body: some View {
         VMWizardContent("Linux") {
 #if os(macOS)
@@ -47,10 +55,10 @@ struct VMWizardOSLinuxView: View {
 #endif
             
             Section {
-                Toggle("Boot from kernel image", isOn: $wizardState.useLinuxKernel)
+                Toggle("Boot from kernel image", isOn: useLinuxKernel)
                     .help("If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO.")
                     .disabled(wizardState.useAppleVirtualization && !hasVenturaFeatures)
-                if !wizardState.useLinuxKernel {
+                if wizardState.bootDevice != .kernel {
                     if wizardState.useAppleVirtualization {
                         Link(destination: URL(string: "https://docs.getutm.app/guides/debian/")!) {
                             Label("Debian Install Guide", systemImage: "link")
@@ -78,8 +86,8 @@ struct VMWizardOSLinuxView: View {
             }
             #endif
             
-            if wizardState.useLinuxKernel {
-                
+            if wizardState.bootDevice == .kernel {
+
                 Section {
                     FileBrowseField(url: $wizardState.linuxKernelURL, isFileImporterPresented: $isFileImporterPresented, hasClearButton: false) {
                         selectImage = .kernel
@@ -156,7 +164,7 @@ struct VMWizardOSLinuxView: View {
                     wizardState.linuxRootImageURL = url
                 case .bootImage:
                     wizardState.bootImageURL = url
-                    wizardState.isSkipBootImage = false
+                    wizardState.bootDevice = .cd
                 }
             }
         }

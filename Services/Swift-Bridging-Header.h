@@ -25,14 +25,21 @@
 #include "UTMLegacyQemuConfiguration+Sharing.h"
 #include "UTMLegacyQemuConfiguration+System.h"
 #include "UTMLegacyQemuConfigurationPortForward.h"
+#include "UTMLogging.h"
+#if !defined(WITH_REMOTE)
 #include "UTMProcess.h"
 #include "UTMQemuSystem.h"
 #include "UTMJailbreak.h"
-#include "UTMLogging.h"
+#else
+#include "UTMQemuSystemBackends.h"
+#endif
 #include "UTMLegacyViewState.h"
 #include "UTMSpiceIO.h"
+#include "GenerateKey.h"
 #if TARGET_OS_IPHONE
+#if defined(WITH_LOCATION_BACKGROUND)
 #include "UTMLocationManager.h"
+#endif
 #include "VMDisplayViewController.h"
 //#if !defined(TARGET_OS_VISION) || !TARGET_OS_VISION
 #include "VMDisplayMetalViewController.h"

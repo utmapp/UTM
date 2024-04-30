@@ -1,0 +1,20 @@
+/* Bundle name */
+"CFBundleName" = "UTM";
+
+/* Privacy - Local Network Usage Description */
+"NSLocalNetworkUsageDescription" = "La macchina virtuale può accedere alla rete locale. Inoltre, UTM, si avvale della rete locale per comunicare con AltServer";
+
+/* Privacy - Location Always and When In Use Usage Description */
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "UTM richiede il permesso di accedere alla posizione periodicamente per assicurarsi che il sistema mantenga il processo in background. I dati raccolti sulla posizione non lasceranno il tuo dispositivo.";
+
+/* Privacy - Location Always Usage Description */
+"NSLocationAlwaysUsageDescription" = "UTM richiede il permesso di accedere alla posizione periodicamente per assicurarsi che il sistema mantenga il processo in background. I dati raccolti sulla posizione non lasceranno il tuo dispositivo.";
+
+/* Privacy - Location When In Use Usage Description */
+"NSLocationWhenInUseUsageDescription" = "UTM richiede il permesso di accedere alla posizione periodicamente per assicurarsi che il sistema mantenga il processo in background. I dati raccolti sulla posizione non lasceranno il tuo dispositivo.";
+
+/* Privacy - Microphone Usage Description */
+"NSMicrophoneUsageDescription" = "Permette alle Macchine Virtuali di accedere al Microfono";
+
+/* (No Comment) */
+"UTM virtual machine" = "Macchina Virtuale UTM";

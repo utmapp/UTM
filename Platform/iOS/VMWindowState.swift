@@ -71,6 +71,8 @@ struct VMWindowState: Identifiable {
     var isRunning: Bool = false
     
     var alert: Alert?
+
+    var isDynamicResolutionSupported: Bool = false
 }
 
 // MARK: - VM action alerts
@@ -82,7 +84,7 @@ extension VMWindowState {
             case .powerDown: return 0
             case .terminateApp: return 1
             case .restart: return 2
-            #if !WITH_QEMU_TCI
+            #if WITH_USB
             case .deviceConnected(_): return 3
             #endif
             case .nonfatalError(_): return 4
@@ -94,7 +96,7 @@ extension VMWindowState {
         case powerDown
         case terminateApp
         case restart
-        #if !WITH_QEMU_TCI
+        #if WITH_USB
         case deviceConnected(CSUSBDevice)
         #endif
         case nonfatalError(String)

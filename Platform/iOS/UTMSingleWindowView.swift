@@ -19,8 +19,12 @@ import SwiftUI
 @MainActor
 struct UTMSingleWindowView: View {
     let isInteractive: Bool
-    
+
+    #if WITH_REMOTE
+    @State private var data: UTMRemoteData = UTMRemoteData()
+    #else
     @State private var data: UTMData = UTMData()
+    #endif
     @State private var session: VMSessionState?
     @State private var identifier: VMSessionState.WindowID?
 
@@ -36,7 +40,11 @@ struct UTMSingleWindowView: View {
             if let session = session {
                 VMWindowView(id: identifier!, isInteractive: isInteractive).environmentObject(session)
             } else if isInteractive {
+                #if WITH_REMOTE
+                RemoteContentView(remoteClientState: data.remoteClient.state).environmentObject(data)
+                #else
                 ContentView().environmentObject(data)
+                #endif
             } else {
                 VStack {
                     Text("Waiting for VM to connect to display...")

@@ -1,0 +1,9 @@
+/* Bundle name */
+"CFBundleName" = "UTM";
+
+/* Privacy - Local Network Usage Description */
+"NSLocalNetworkUsageDescription" = "UTM używa sieci lokalnej, aby znaleźć i połączyć się do zdalnych serwerów UTM.";
+
+/* Privacy - Microphone Usage Description */
+"NSMicrophoneUsageDescription" = "Wymagane są uprawnienia dla maszyny wirtualnej, aby używać mikrofonu.";
+

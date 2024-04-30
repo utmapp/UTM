@@ -16,7 +16,7 @@
 
 #import <UIKit/UIKit.h>
 #import "VMDisplayViewController.h"
-#if defined(WITH_QEMU_TCI)
+#if !defined(WITH_USB)
 @import CocoaSpiceNoUsb;
 #else
 @import CocoaSpice;
@@ -41,6 +41,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL serverModeCursor;
 
 @property (nonatomic, strong) NSMutableArray<UIKeyCommand *> *mutableKeyCommands;
+
+@property (nonatomic) BOOL isDynamicResolutionSupported;
 
 - (instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
 - (instancetype)initWithNibName:(nullable NSString *)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil NS_UNAVAILABLE;

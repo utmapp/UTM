@@ -26,12 +26,12 @@ struct VMWizardStartView: View {
         #if os(macOS)
         VZVirtualMachine.isSupported && !processIsTranslated()
         #else
-        jb_has_hypervisor()
+        UTMCapabilities.current.contains(.hasHypervisorSupport)
         #endif
     }
     
     var isEmulationSupported: Bool {
-        #if WITH_QEMU_TCI
+        #if !WITH_JIT
         true
         #else
         Main.jitAvailable

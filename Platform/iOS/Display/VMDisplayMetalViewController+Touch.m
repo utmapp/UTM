@@ -181,11 +181,15 @@ const CGFloat kScrollResistance = 10.0f;
 }
 
 - (VMMouseType)indirectMouseType {
+#if TARGET_OS_VISION
+    return VMMouseTypeAbsolute;
+#else
     if (@available(iOS 14.0, *)) {
         return VMMouseTypeRelative;
     } else {
         return VMMouseTypeAbsolute; // legacy iOS 13.4 mouse handling requires absolute
     }
+#endif
 }
 
 #pragma mark - Converting view points to VM display points
@@ -455,9 +459,14 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
         sender.state == UIGestureRecognizerStateChanged ||
         sender.state == UIGestureRecognizerStateEnded) {
         NSAssert(sender.scale > 0, @"sender.scale cannot be 0");
-        self.vmDisplay.viewportScale *= sender.scale;
-        // persist this change in viewState
-        self.delegate.displayScale = self.vmDisplay.viewportScale;
+        CGFloat scaling;
+        if (!self.delegate.qemuDisplayIsNativeResolution) {
+            // will be undo in `-setDisplayScaling:origin:`
+            scaling = CGPixelToPoint(CGPointToPixel(self.delegate.displayScale) * sender.scale);
+        } else {
+            scaling = self.delegate.displayScale * sender.scale;
+        }
+        self.delegate.displayScale = scaling;
         sender.scale = 1.0;
     }
 }
@@ -635,7 +644,7 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
             VMMouseType type = [self touchTypeToMouseType:touch.type];
 #if TARGET_OS_VISION
             if ([self isTouchGazeGesture:touch]) {
-                type = self.indirectMouseType;
+                type = VMMouseTypeRelative;
             }
 #endif
             if ([self switchMouseType:type]) {
