@@ -776,7 +776,15 @@ struct AlertMessage: Identifiable {
     func reclaimSpace(for driveUrl: URL, withCompression isCompressed: Bool = false) async throws {
         let baseUrl = driveUrl.deletingLastPathComponent()
         let dstUrl = Self.newImage(from: driveUrl, to: baseUrl, withExtension: "qcow2")
-        try await UTMQemuImage.convert(from: driveUrl, toQcow2: dstUrl, withCompression: isCompressed)
+        defer {
+            busyProgress = nil
+        }
+        try await UTMQemuImage.convert(from: driveUrl, toQcow2: dstUrl, withCompression: isCompressed) { progress in
+            Task { @MainActor in
+                self.busyProgress = progress / 100
+            }
+        }
+        busyProgress = nil
         do {
             try fileManager.replaceItem(at: driveUrl, withItemAt: dstUrl, backupItemName: nil, resultingItemURL: nil)
         } catch {

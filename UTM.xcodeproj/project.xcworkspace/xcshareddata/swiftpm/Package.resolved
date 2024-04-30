@@ -1,5 +1,5 @@
 {
-  "originHash" : "7b5e2ff74c08d3efce9babb7649d891f7ad18d9c868e75db7d9e26ce542055cc",
+  "originHash" : "c9482d61e795c27df5a7c772a0750aefc9164d93bd871138a9b229c9f08c6fab",
   "pins" : [
     {
       "identity" : "altkit",
@@ -52,7 +52,7 @@
       "location" : "https://github.com/utmapp/QEMUKit.git",
       "state" : {
         "branch" : "main",
-        "revision" : "06b806f61aeeea8efff99a98b058defcf3632e2e"
+        "revision" : "1019ed76278a1d5cbe871ff5e51c62b5d8c9a032"
       }
     },
     {
