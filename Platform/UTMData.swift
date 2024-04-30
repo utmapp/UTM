@@ -581,9 +581,12 @@ struct AlertMessage: Identifiable {
     /// - Parameter vm: VM to calculate size
     /// - Returns: Size in bytes
     func computeSize(for vm: VMData) async -> Int64 {
-        let path = vm.pathUrl
-        guard let enumerator = fileManager.enumerator(at: path, includingPropertiesForKeys: [.totalFileAllocatedSizeKey]) else {
-            logger.error("failed to create enumerator for \(path)")
+        return computeSize(recursiveFor: vm.pathUrl)
+    }
+
+    private func computeSize(recursiveFor url: URL) -> Int64 {
+        guard let enumerator = fileManager.enumerator(at: url, includingPropertiesForKeys: [.totalFileAllocatedSizeKey]) else {
+            logger.error("failed to create enumerator for \(url)")
             return 0
         }
         var total: Int64 = 0
@@ -665,7 +668,26 @@ struct AlertMessage: Identifiable {
     }
 
     private func copyItemWithCopyfile(at srcURL: URL, to dstURL: URL) async throws {
-        try await CopyManager.default.copyItem(at: srcURL, to: dstURL, flags: [.all, .recursive, .clone, .dataSparse])
+        let totalSize = computeSize(recursiveFor: srcURL)
+        var lastUpdate = Date()
+        var lastProgress: CopyManager.Progress?
+        var copiedSize: Int64 = 0
+        defer {
+            busyProgress = nil
+        }
+        for try await progress in CopyManager.default.copyItemProgress(at: srcURL, to: dstURL, flags: [.all, .recursive, .clone, .dataSparse]) {
+            if let _lastProgress = lastProgress, _lastProgress.srcPath != _lastProgress.srcPath {
+                copiedSize += _lastProgress.bytesCopied
+                lastProgress = progress
+            } else {
+                lastProgress = progress
+            }
+            if totalSize > 0 && lastUpdate.timeIntervalSinceNow < -1 {
+                lastUpdate = Date()
+                let completed = Float(copiedSize + progress.bytesCopied) / Float(totalSize)
+                busyProgress = completed > 1.0 ? 1.0 : completed
+            }
+        }
     }
     
     // MARK: - Downloading VMs
