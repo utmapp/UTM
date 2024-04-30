@@ -150,6 +150,9 @@ class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
         }
         super.enterLive()
         resizeConsoleToolbarItem.isEnabled = false // disable item
+        if isWindowFocusAutoCapture {
+            captureMouse()
+        }
     }
     
     override func enterSuspended(isBusy busy: Bool) {
