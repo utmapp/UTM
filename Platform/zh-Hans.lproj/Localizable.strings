@@ -208,6 +208,12 @@
 /* No comment provided by engineer. */
 "Capture input automatically when entering full screen" = "进入全屏时自动捕获输入";
 
+"If enabled, input capture will toggle automatically when entering and exiting full screen mode." = "如果启用此开关，进入和退出全屏模式时将自动切换输入捕获。";
+
+"Capture input automatically when window is focused" = "成为活动窗口时自动捕获输入";
+
+"If enabled, input capture will toggle automatically when the VM's window is focused." = "如果启用此开关，成为/失去当前活动窗口时自动切换输入捕获。";
+
 /* VMDisplayQemuMetalWindowController */
 "Captured mouse" = "已捕获鼠标";
 

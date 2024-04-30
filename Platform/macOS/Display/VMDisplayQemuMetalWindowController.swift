@@ -62,6 +62,7 @@ class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
     @Setting("NoCursorCaptureAlert") private var isCursorCaptureAlertShown: Bool = false
     @Setting("NoFullscreenCursorCaptureAlert") private var isFullscreenCursorCaptureAlertShown: Bool = false
     @Setting("FullScreenAutoCapture") private var isFullScreenAutoCapture: Bool = false
+    @Setting("WindowFocusAutoCapture") private var isWindowFocusAutoCapture: Bool = false
     @Setting("CtrlRightClick") private var isCtrlRightClick: Bool = false
     @Setting("AlternativeCaptureKey") private var isAlternativeCaptureKey: Bool = false
     @Setting("IsCapsLockKey") private var isCapsLockKey: Bool = false
@@ -412,6 +413,21 @@ extension VMDisplayQemuMetalWindowController {
         if isFullScreenAutoCapture {
             releaseMouse()
         }
+    }
+    
+    func windowDidBecomeMain(_ notification: Notification) {
+        // Do not capture mouse if user did not clicked inside the metalView because the window will be draged if user hold the mouse button.
+        guard let window = window,
+              window.mouseLocationOutsideOfEventStream.y < metalView.frame.height,
+              captureMouseToolbarButton.state == .off,
+              isWindowFocusAutoCapture else {
+            return
+        }
+        captureMouse()
+    }
+    
+    func windowDidResignMain(_ notification: Notification) {
+        releaseMouse()
     }
     
     override func windowDidBecomeKey(_ notification: Notification) {
