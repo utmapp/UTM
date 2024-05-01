@@ -1,5 +1,5 @@
 /* Privacy - Local Network Usage Description */
-"NSLocalNetworkUsageDescription" = "仮想マシンがローカルネットワークにアクセスする可能性があります。UTMもAltServerと通信するためにローカルネットワークを使用します。";
+"NSLocalNetworkUsageDescription" = "仮想マシンがローカルネットワークにアクセスできるようになります。UTMもローカルサーバと通信するためにネットワークを使用することがあります。";
 
 /* Privacy - Location Always and When In Use Usage Description */
 "NSLocationAlwaysAndWhenInUseUsageDescription" = "UTMは定期的に位置データを要求することで、システムがバックグラウンドプロセスをアクティブに保つようにします。位置データが送信されることはありません。";
