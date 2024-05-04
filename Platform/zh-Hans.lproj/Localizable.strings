@@ -44,6 +44,18 @@
 /* Format string for download progress and speed, e. g. 5 MB of 6 GB (200 kbit/s) */
 "%1$@ of %2$@ (%3$@)" = "共 %2$@，已下载 %1$@ (%3$@)";
 
+/* UTMDonateView */
+"%d days" = "%d 天";
+
+/* UTMDonateView */
+"%d months" = "%d 月";
+
+/* UTMDonateView */
+"%d weeks" = "%d 周";
+
+/* UTMDonateView */
+"%d years" = "%d 年";
+
 /* UTMScriptingAppDelegate */
 "A valid backend must be specified." = "必须指定有效的后端。";
 
@@ -118,6 +130,9 @@
 
 /* UTMQemuConstants */
 "Automatic Serial Device (max 4)" = "自动串行设备 (最大值 4)";
+
+/* VMSessionState */
+"Background task is about to expire" = "后台任务即将终止";
 
 /* UTMLegacyQemuConfiguration
    UTMQemuConstants */
@@ -208,11 +223,8 @@
 /* No comment provided by engineer. */
 "Capture input automatically when entering full screen" = "进入全屏时自动捕获输入";
 
-"If enabled, input capture will toggle automatically when entering and exiting full screen mode." = "如果启用此开关，进入和退出全屏模式时将自动切换输入捕获。";
-
-"Capture input automatically when window is focused" = "成为活动窗口时自动捕获输入";
-
-"If enabled, input capture will toggle automatically when the VM's window is focused." = "如果启用此开关，成为/失去当前活动窗口时自动切换输入捕获。";
+/* No comment provided by engineer. */
+"Capture input automatically when window is focused" = "聚焦窗口时自动捕获输入";
 
 /* VMDisplayQemuMetalWindowController */
 "Captured mouse" = "已捕获鼠标";
@@ -232,6 +244,9 @@
 
 /* VMDisplayAppleController */
 "Change…" = "更改…";
+
+/* No comment provided by engineer. */
+"Choose" = "选择";
 
 /* No comment provided by engineer. */
 "Clear" = "清除";
@@ -296,6 +311,9 @@
 
 /* UTMSWTPM */
 "Data not specified." = "未指定数据。";
+
+/* UTMDonateView */
+"day" = "天";
 
 /* No comment provided by engineer. */
 "Debug Logging" = "调试日志记录";
@@ -718,6 +736,9 @@
 /* No comment provided by engineer. */
 "Minimum size: %@" = "最小文件大小：%@";
 
+/* UTMDonateView */
+"month" = "月";
+
 /* No comment provided by engineer. */
 "Mouse/Keyboard" = "鼠标/键盘";
 
@@ -853,6 +874,9 @@
 
 /* No comment provided by engineer. */
 "Pending" = "等待中";
+
+/* UTMDonateView */
+"period" = "周期";
 
 /* VMDisplayWindowController */
 "Play" = "启动";
@@ -1132,6 +1156,9 @@
 /* UTMSWTPM */
 "SW TPM failed to start. %@" = "SW TPM 无法启动。%@";
 
+/* VMSessionState */
+"Switch back to UTM to avoid termination." = "切换回 UTM 以避免终止。";
+
 /* No comment provided by engineer. */
 "System" = "系统";
 
@@ -1359,7 +1386,7 @@
 
 /* UTMScriptingAppDelegate
    UTMScriptingUSBDeviceImpl */
-"UTM is not ready to accept commands." = "UTM 未准备好接受命令。";
+"UTM is not ready to accept commands." = "UTM 尚未准备好接受命令。";
 
 /* No comment provided by engineer. */
 "Version" = "版本号";
@@ -1389,6 +1416,9 @@
 /* No comment provided by engineer. */
 "Waiting for VM to connect to display..." = "等待虚拟机连接到显示...";
 
+/* UTMDonateView */
+"week" = "周";
+
 /* No comment provided by engineer. */
 "Welcome to UTM" = "欢迎使用 UTM";
 
@@ -1410,6 +1440,9 @@
 /* No comment provided by engineer. */
 "Would you like to re-convert this disk image to reclaim unused space? Note this will require enough temporary space to perform the conversion. You are strongly encouraged to back-up this VM before proceeding." = "要重新转换此磁盘映像以回收未使用的空间吗？请注意，这将需要足够的临时空间来执行转换。在继续操作之前，强烈建议你备份此虚拟机。";
 
+/* UTMDonateView */
+"year" = "年";
+
 /* No comment provided by engineer. */
 "Yes" = "是";
 
@@ -1420,10 +1453,19 @@
    VMWizardOSMacView */
 "Your machine does not support running this IPSW." = "你的机器不支持运行此 IPSW。";
 
+/* UTMDonateView */
+"Your purchase could not be verified by the App Store." = "App Store 无法验证你的购买。";
+
+/* No comment provided by engineer. */
+"Your support is the driving force that helps UTM stay independent. Your contribution, no matter the size, makes a significant difference. It enables us to develop new features and maintain existing ones. Thank you for considering a donation to support us." = "你的支持是 UTM 保持独立的动力。你的贡献无论或大或小，都会产生重大的影响。它可以使我们能开发出功能，并维护现有的功能。感谢你考虑捐赠支持我们。";
+
 /* ContentView */
 "Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached. See https://getutm.app/install/ for more details." = "你的 iOS 版本不支持在未经修改的情况下运行虚拟机，必须在越狱时运行 UTM，或者连接远程调试器。有关更多详细信息，请参阅 https://getutm.app/install/。";
 
 // Additional Strings (These strings are unable to be extracted by Xcode)
+
+/* No comment provided by engineer. */
+"" = "";
 
 /* No comment provided by engineer. */
 "(Delete)" = "(删除)";
@@ -1790,6 +1832,8 @@
 
 /* No comment provided by engineer. */
 "If enabled, input capture will toggle automatically when entering and exiting full screen mode." = "若启用，输入捕捉会在进入和退出全屏模式时自动切换。";
+
+"If enabled, input capture will toggle automatically when the VM's window is focused." = "若启用，输入捕捉将在虚拟机窗口聚焦时自动切换。";
 
 /* No comment provided by engineer. */
 "If enabled, num lock will always be on to the guest. Note this may make your keyboard's num lock indicator out of sync." = "若启用，Num Lock 将始终对客户机开启。注意，这可能会使键盘的 Num Lock  指示灯不同步。";
