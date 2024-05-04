@@ -1414,7 +1414,7 @@
 "Virtualize" = "虛擬化";
 
 /* No comment provided by engineer. */
-"Waiting for VM to connect to display..." = "正在等待虛擬電腦連接至顯示...";
+"Waiting for VM to connect to display..." = "正在等待虛擬電腦連接至顯示⋯";
 
 /* UTMDonateView */
 "week" = "周";
