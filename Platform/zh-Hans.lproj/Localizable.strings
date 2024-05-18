@@ -1837,7 +1837,7 @@
 "If enabled, input capture will toggle automatically when the VM's window is focused." = "若启用，输入捕捉将在虚拟机窗口聚焦时自动切换。";
 
 /* No comment provided by engineer. */
-"If enabled, num lock will always be on to the guest. Note this may make your keyboard's num lock indicator out of sync." = "若启用，Num Lock 将始终对客户机开启。注意，这可能会使键盘的 Num Lock  指示灯不同步。";
+"If enabled, num lock will always be on to the guest. Note this may make your keyboard's num lock indicator out of sync." = "若启用，Num Lock 将始终对客户机开启。注意，这可能会使键盘的 Num Lock 指示灯不同步。";
 
 /* No comment provided by engineer. */
 "If enabled, Option will be mapped to the Meta key which can be useful for emacs. Otherwise, option will work as the system intended (such as for entering international text)." = "若启用，Option 键将映射到 Meta 键，这对 Emacs 很有用。否则，Option 键将按照系统默认方式工作 (例如输入国际文本)。";
