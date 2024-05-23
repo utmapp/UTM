@@ -210,6 +210,7 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
     
     @MainActor
     func showErrorAlert(_ message: String, completionHandler handler: ((NSApplication.ModalResponse) -> Void)? = nil) {
+        window?.resignKey()
         let alert = NSAlert()
         alert.alertStyle = .critical
         alert.messageText = NSLocalizedString("Error", comment: "VMDisplayWindowController")
@@ -219,6 +220,7 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
     
     @MainActor
     func showConfirmAlert(_ message: String, confirmHandler handler: (() -> Void)? = nil) {
+        window?.resignKey()
         let alert = NSAlert()
         alert.alertStyle = .informational
         alert.messageText = NSLocalizedString("Confirmation", comment: "VMDisplayWindowController")
