@@ -265,11 +265,12 @@ private struct IconSelect: View {
         LazyVGrid(columns: gridLayout, spacing: 0) {
             ForEach(icons, id: \.self) { icon in
                 Button(action: { onIconSelected(icon) }, label: {
-                    VStack {
+                    VStack(alignment: .center) {
                         Logo(logo: PlatformImage(contentsOfURL: icon))
                         Text(iconToTitle(icon))
-                            .lineLimit(2)
+                            .lineLimit(2, optionalReservesSpace: true)
                             .font(.footnote)
+                            .multilineTextAlignment(.center)
                     }
                     .padding(8)
                     .frame(width: iconGridSize, height: iconGridSize)
@@ -280,6 +281,17 @@ private struct IconSelect: View {
                 }).buttonStyle(.plain)
             }
         }.modifier(IconSelectModifier())
+    }
+}
+
+private extension View {
+    @ViewBuilder
+    func lineLimit(_ limit: Int, optionalReservesSpace: Bool) -> some View {
+        if #available(macOS 13, iOS 16, *) {
+            self.lineLimit(limit, reservesSpace: optionalReservesSpace)
+        } else {
+            self.lineLimit(limit)
+        }
     }
 }
 
