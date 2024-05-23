@@ -125,6 +125,9 @@ struct VMConfigInfoView: View {
             #if os(macOS)
             VStack {
                 IconPreview(url: config.iconURL)
+                    .onTapGesture {
+                        imageSelectVisible.toggle()
+                    }
                 Button(action: { imageSelectVisible.toggle() }, label: {
                     Text("Choose")
                 }).fileImporter(isPresented: $imageSelectVisible, allowedContentTypes: [.image]) { result in
@@ -148,6 +151,9 @@ struct VMConfigInfoView: View {
             #if os(macOS)
             VStack {
                 IconPreview(url: config.iconURL)
+                    .onTapGesture {
+                        imageSelectVisible.toggle()
+                    }
                 Button(action: { imageSelectVisible.toggle() }, label: {
                     Text("Choose")
                 }).popover(isPresented: $imageSelectVisible, arrowEdge: .bottom) {
