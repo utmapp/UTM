@@ -56,8 +56,10 @@ struct VMWindowView: View {
                     switch device {
                     case .display(_, _):
                         VMDisplayHostedView(vm: session.vm, device: device, state: $state)
+                            .prefersPersistentSystemOverlaysHidden()
                     case .serial(_, _):
                         VMDisplayHostedView(vm: session.vm, device: device, state: $state)
+                            .prefersPersistentSystemOverlaysHidden()
                     }
                 } else if !state.isBusy && state.isRunning {
                     // headless
@@ -307,3 +309,13 @@ fileprivate struct VMToolbarOrnamentModifier: ViewModifier {
     }
 }
 #endif
+
+private extension View {
+    func prefersPersistentSystemOverlaysHidden() -> some View {
+        if #available(iOS 16, *) {
+            return self.persistentSystemOverlays(.hidden)
+        } else {
+            return self
+        }
+    }
+}

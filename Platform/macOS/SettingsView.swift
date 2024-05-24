@@ -81,7 +81,6 @@ struct ApplicationSettingsView: View {
 }
 
 struct DisplaySettingsView: View {
-    @AppStorage("DisplayFixed") var isVMDisplayFixed = false
     @AppStorage("NoSaveScreenshot") var isNoSaveScreenshot = false
     @AppStorage("QEMURendererBackend") var qemuRendererBackend: UTMQEMURendererBackend = .qemuRendererBackendDefault
     @AppStorage("QEMURendererFPSLimit") var qemuRendererFpsLimit: Int = 0
@@ -89,9 +88,6 @@ struct DisplaySettingsView: View {
     var body: some View {
         Form {
             Section(header: Text("Display")) {
-                Toggle(isOn: $isVMDisplayFixed, label: {
-                    Text("VM display size is fixed")
-                }).help("If enabled, resizing of the VM window will not be allowed.")
                 Toggle(isOn: $isNoSaveScreenshot) {
                     Text("Do not save VM screenshot to disk")
                 }.help("If enabled, any existing screenshot will be deleted the next time the VM is started.")
@@ -133,6 +129,7 @@ struct SoundSettingsView: View {
 
 struct InputSettingsView: View {
     @AppStorage("FullScreenAutoCapture") var isFullScreenAutoCapture = false
+    @AppStorage("WindowFocusAutoCapture") var isWindowFocusAutoCapture = false
     @AppStorage("OptionAsMetaKey") var isOptionAsMetaKey = false
     @AppStorage("CtrlRightClick") var isCtrlRightClick = false
     @AppStorage("AlternativeCaptureKey") var isAlternativeCaptureKey = false
@@ -147,6 +144,9 @@ struct InputSettingsView: View {
                 Toggle(isOn: $isFullScreenAutoCapture) {
                     Text("Capture input automatically when entering full screen")
                 }.help("If enabled, input capture will toggle automatically when entering and exiting full screen mode.")
+                Toggle(isOn: $isWindowFocusAutoCapture) {
+                    Text("Capture input automatically when window is focused")
+                }.help("If enabled, input capture will toggle automatically when the VM's window is focused.")
             }
             
             Section(header: Text("Console")) {
@@ -251,7 +251,6 @@ extension UserDefaults {
     @objc dynamic var PreventIdleSleep: Bool { false }
     @objc dynamic var NoQuitConfirmation: Bool { false }
     @objc dynamic var NoCursorCaptureAlert: Bool { false }
-    @objc dynamic var DisplayFixed: Bool { false }
     @objc dynamic var FullScreenAutoCapture: Bool { false }
     @objc dynamic var OptionAsMetaKey: Bool { false }
     @objc dynamic var CtrlRightClick: Bool { false }

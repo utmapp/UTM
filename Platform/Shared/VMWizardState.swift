@@ -48,6 +48,17 @@ enum VMWizardOS: String, Identifiable {
     case Windows
 }
 
+enum VMBootDevice: Int, Identifiable {
+    var id: Int {
+        return self.rawValue
+    }
+
+    case none
+    case cd
+    case floppy
+    case kernel
+}
+
 @MainActor class VMWizardState: ObservableObject {
     let bytesInMib = 1048576
     let bytesInGib = 1073741824
@@ -64,7 +75,7 @@ enum VMWizardOS: String, Identifiable {
     @Published var isBusy: Bool = false
     @Published var systemBootUefi: Bool = true
     @Published var systemBootTpm: Bool = true
-    @Published var isGuestToolsInstallRequested: Bool = true
+    @Published var isGuestToolsInstallRequested: Bool = false
     @Published var useVirtualization: Bool = false {
         didSet {
             if !useVirtualization {
@@ -75,7 +86,7 @@ enum VMWizardOS: String, Identifiable {
     @Published var useAppleVirtualization: Bool = false {
         didSet {
             if #unavailable(macOS 13), useAppleVirtualization {
-                useLinuxKernel = true
+                bootDevice = .kernel
             }
         }
     }
@@ -99,14 +110,9 @@ enum VMWizardOS: String, Identifiable {
         }
     }
     #endif
-    @Published var isSkipBootImage: Bool = false
+    @Published var legacyHardware: Bool = false
+    @Published var bootDevice: VMBootDevice = .cd
     @Published var bootImageURL: URL?
-    @Published var useLinuxKernel: Bool = false {
-        didSet {
-            isSkipBootImage = useLinuxKernel
-            bootImageURL = nil
-        }
-    }
     @Published var linuxKernelURL: URL?
     @Published var linuxInitialRamdiskURL: URL?
     @Published var linuxRootImageURL: URL?
@@ -184,7 +190,11 @@ enum VMWizardOS: String, Identifiable {
         var nextPage = currentPage
         switch currentPage {
         case .start:
+            #if WITH_QEMU_TCI
+            nextPage = .otherBoot
+            #else
             nextPage = .operatingSystem
+            #endif
         case .operatingSystem:
             switch operatingSystem {
             case .Other:
@@ -197,7 +207,7 @@ enum VMWizardOS: String, Identifiable {
                 nextPage = .windowsBoot
             }
         case .otherBoot:
-            guard isSkipBootImage || bootImageURL != nil else {
+            guard bootDevice == .none || bootImageURL != nil else {
                 alertMessage = AlertMessage(NSLocalizedString("Please select a boot image.", comment: "VMWizardState"))
                 return
             }
@@ -212,7 +222,7 @@ enum VMWizardOS: String, Identifiable {
             }
             #endif
         case .linuxBoot:
-            if useLinuxKernel {
+            if bootDevice == .kernel {
                 guard linuxKernelURL != nil else {
                     alertMessage = AlertMessage(NSLocalizedString("Please select a kernel file.", comment: "VMWizardState"))
                     return
@@ -231,6 +241,10 @@ enum VMWizardOS: String, Identifiable {
             }
             nextPage = .hardware
         case .hardware:
+            guard systemMemoryMib > 0 else {
+                alertMessage = AlertMessage(NSLocalizedString("Invalid RAM size specified.", comment: "VMWizardState"))
+                return
+            }
             nextPage = .drives
             #if arch(arm64)
             if operatingSystem == .Windows && windowsBootVhdx != nil {
@@ -247,6 +261,10 @@ enum VMWizardOS: String, Identifiable {
                 }
             }
         case .drives:
+            guard storageSizeGib > 0 else {
+                alertMessage = AlertMessage(NSLocalizedString("Invalid drive size specified.", comment: "VMWizardState"))
+                return
+            }
             nextPage = .sharing
             if useAppleVirtualization {
                 if #available(macOS 12, *) {
@@ -283,7 +301,7 @@ enum VMWizardOS: String, Identifiable {
         config.information.name = name!
         config.system.memorySize = systemMemoryMib
         config.system.cpuCount = systemCpuCount
-        if !isSkipBootImage, let bootImageURL = bootImageURL {
+        if bootDevice != .none, let bootImageURL = bootImageURL {
             config.drives.append(UTMAppleConfigurationDrive(existingURL: bootImageURL, isExternal: true))
         }
         var isSkipDiskCreate = false
@@ -302,7 +320,7 @@ enum VMWizardOS: String, Identifiable {
         case .Linux:
             config.information.iconURL = UTMConfigurationInfo.builtinIcon(named: "linux")
             #if os(macOS)
-            if useLinuxKernel {
+            if bootDevice == .kernel {
                 var bootloader = try UTMAppleConfigurationBoot(for: .linux, linuxKernelURL: linuxKernelURL!)
                 bootloader.linuxInitialRamdiskURL = linuxInitialRamdiskURL
                 bootloader.linuxCommandLine = linuxBootArguments
@@ -359,7 +377,7 @@ enum VMWizardOS: String, Identifiable {
         config.virtualization.hasBalloon = true
         config.virtualization.hasEntropy = true
         config.networks = [UTMAppleConfigurationNetwork()]
-        if operatingSystem == .Linux && useLinuxKernel {
+        if operatingSystem == .Linux && bootDevice == .kernel {
             config.serials = [UTMAppleConfigurationSerial()]
         }
         if #available(macOS 13, *) {
@@ -435,8 +453,11 @@ enum VMWizardOS: String, Identifiable {
         } else {
             mainDriveInterface = UTMQemuConfigurationDrive.defaultInterface(forArchitecture: systemArchitecture, target: systemTarget, imageType: .disk)
         }
-        if !isSkipBootImage && bootImageURL != nil {
+        if bootDevice != .none && bootImageURL != nil {
             var bootDrive = UTMQemuConfigurationDrive(forArchitecture: systemArchitecture, target: systemTarget, isExternal: true)
+            if bootDevice == .floppy {
+                bootDrive.interface = .floppy
+            }
             bootDrive.imageURL = bootImageURL
             config.drives.append(bootDrive)
         }
@@ -447,7 +468,7 @@ enum VMWizardOS: String, Identifiable {
             throw NSLocalizedString("macOS is not supported with QEMU.", comment: "VMWizardState")
         case .Linux:
             config.information.iconURL = UTMConfigurationInfo.builtinIcon(named: "linux")
-            if useLinuxKernel {
+            if bootDevice == .kernel {
                 var kernel = UTMQemuConfigurationDrive()
                 kernel.imageURL = linuxKernelURL
                 kernel.imageType = .linuxKernel
@@ -495,6 +516,10 @@ enum VMWizardOS: String, Identifiable {
                 let toolsDiskDrive = UTMQemuConfigurationDrive(forArchitecture: systemArchitecture, target: systemTarget, isExternal: true)
                 config.drives.append(toolsDiskDrive)
             }
+        }
+        if legacyHardware {
+            config.qemu.hasUefiBoot = false
+            config.input.usbBusSupport = .usb2_0
         }
         return config
     }

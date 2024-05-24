@@ -35,6 +35,7 @@ struct ContentView: View {
     @StateObject private var releaseHelper = UTMReleaseHelper()
     @State private var newPopupPresented = false
     @State private var openSheetPresented = false
+    @State private var alertItem: AlertItem?
     @Environment(\.openURL) var openURL
     @AppStorage("ServerAutostart") private var isServerAutostart: Bool = false
 
@@ -50,6 +51,14 @@ struct ContentView: View {
         }, content: {
             VMReleaseNotesView(helper: releaseHelper).padding()
         })
+        .alert(item: $alertItem) { item in
+            switch item {
+            case .downloadUrl(let url):
+                return Alert(title: Text("Download VM"), message: Text("Do you want to download '\(url)'?"), primaryButton: .cancel(), secondaryButton: .default(Text("Download")) {
+                    data.downloadUTMZip(from: url)
+                })
+            }
+        }
         .onReceive(NSNotification.ShowReleaseNotes) { _ in
             Task {
                 await releaseHelper.fetchReleaseNotes(force: true)
@@ -115,13 +124,17 @@ struct ContentView: View {
     }
     
     private func handleURL(url: URL) {
-        data.busyWorkAsync {
-            if url.isFileURL {
+        if let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+           components.scheme?.lowercased() == "utm",
+           components.host == "downloadVM",
+           let urlParameter = components.queryItems?.first(where: { $0.name == "url" })?.value,
+           let url = URL(string: urlParameter) {
+            if alertItem == nil {
+                alertItem = .downloadUrl(url)
+            }
+        } else if url.isFileURL {
+            data.busyWorkAsync {
                 try await importUTM(url: url)
-            } else if let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
-                      let scheme = components.scheme,
-                      scheme.lowercased() == "utm" {
-                try await handleUTMURL(with: components)
             }
         }
     }
@@ -138,70 +151,6 @@ struct ContentView: View {
             let urls = try result.get()
             for url in urls {
                 try await data.importUTM(from: url)
-            }
-        }
-    }
-    
-    @MainActor private func handleUTMURL(with components: URLComponents) async throws {
-        func findVM() -> VMData? {
-            if let vmName = components.queryItems?.first(where: { $0.name == "name" })?.value {
-                return data.virtualMachines.first(where: { $0.detailsTitleLabel == vmName })
-            } else {
-                return nil
-            }
-        }
-        
-        if let action = components.host {
-            switch action {
-            case "start":
-                if let vm = findVM(), vm.state == .stopped {
-                    data.run(vm: vm)
-                }
-                break
-            case "stop":
-                if let vm = findVM(), vm.state == .started {
-                    try await vm.wrapped!.stop(usingMethod: .force)
-                    data.stop(vm: vm)
-                }
-                break
-            case "restart":
-                if let vm = findVM(), vm.state == .started {
-                    try await vm.wrapped!.restart()
-                }
-                break
-            case "pause":
-                if let vm = findVM(), vm.state == .started {
-                    let shouldSaveOnPause: Bool
-                    if let vm = vm.wrapped as? (any UTMSpiceVirtualMachine) {
-                        shouldSaveOnPause = !vm.isRunningAsDisposible
-                    } else {
-                        shouldSaveOnPause = true
-                    }
-                    try await vm.wrapped!.pause()
-                    if shouldSaveOnPause {
-                        try? await vm.wrapped!.saveSnapshot(name: nil)
-                    }
-                }
-            case "resume":
-                if let vm = findVM(), vm.state == .paused {
-                    try await vm.wrapped!.resume()
-                }
-                break
-            case "sendText":
-                if let vm = findVM(), vm.state == .started {
-                    data.automationSendText(to: vm, urlComponents: components)
-                }
-                break
-            case "click":
-                if let vm = findVM(), vm.state == .started {
-                    data.automationSendMouse(to: vm, urlComponents: components)
-                }
-                break
-            case "downloadVM":
-                await data.downloadUTMZip(from: components)
-                break
-            default:
-                return
             }
         }
     }
@@ -243,6 +192,19 @@ extension ContentView: DropDelegate {
         group.wait()
 
         return validURLs
+    }
+}
+
+extension ContentView {
+    private enum AlertItem: Identifiable {
+        case downloadUrl(URL)
+
+        var id: Int {
+            switch self {
+            case .downloadUrl(let url):
+                return url.hashValue
+            }
+        }
     }
 }
 

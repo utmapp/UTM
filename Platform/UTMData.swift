@@ -27,6 +27,7 @@ import AltKit
 #if WITH_SERVER
 import Combine
 #endif
+import SwiftCopyfile
 
 #if WITH_REMOTE
 import CocoaSpiceNoUsb
@@ -65,6 +66,9 @@ struct AlertMessage: Identifiable {
     /// View: show busy spinner
     @Published var busy: Bool
     
+    /// View: show a percent progress in the busy spinner
+    @Published var busyProgress: Float?
+
     /// View: currently selected VM
     @Published var selectedVM: VMData?
     
@@ -577,9 +581,12 @@ struct AlertMessage: Identifiable {
     /// - Parameter vm: VM to calculate size
     /// - Returns: Size in bytes
     func computeSize(for vm: VMData) async -> Int64 {
-        let path = vm.pathUrl
-        guard let enumerator = fileManager.enumerator(at: path, includingPropertiesForKeys: [.totalFileAllocatedSizeKey]) else {
-            logger.error("failed to create enumerator for \(path)")
+        return computeSize(recursiveFor: vm.pathUrl)
+    }
+
+    private func computeSize(recursiveFor url: URL) -> Int64 {
+        guard let enumerator = fileManager.enumerator(at: url, includingPropertiesForKeys: [.totalFileAllocatedSizeKey]) else {
+            logger.error("failed to create enumerator for \(url)")
             return 0
         }
         var total: Int64 = 0
@@ -661,12 +668,26 @@ struct AlertMessage: Identifiable {
     }
 
     private func copyItemWithCopyfile(at srcURL: URL, to dstURL: URL) async throws {
-        try await Task.detached(priority: .userInitiated) {
-            let status = copyfile(srcURL.path, dstURL.path, nil, copyfile_flags_t(COPYFILE_ALL | COPYFILE_RECURSIVE | COPYFILE_CLONE | COPYFILE_DATA_SPARSE))
-            if status < 0 {
-                throw NSError(domain: NSPOSIXErrorDomain, code: Int(errno))
+        let totalSize = computeSize(recursiveFor: srcURL)
+        var lastUpdate = Date()
+        var lastProgress: CopyManager.Progress?
+        var copiedSize: Int64 = 0
+        defer {
+            busyProgress = nil
+        }
+        for try await progress in CopyManager.default.copyItemProgress(at: srcURL, to: dstURL, flags: [.all, .recursive, .clone, .dataSparse]) {
+            if let _lastProgress = lastProgress, _lastProgress.srcPath != _lastProgress.srcPath {
+                copiedSize += _lastProgress.bytesCopied
+                lastProgress = progress
+            } else {
+                lastProgress = progress
             }
-        }.value
+            if totalSize > 0 && lastUpdate.timeIntervalSinceNow < -1 {
+                lastUpdate = Date()
+                let completed = Float(copiedSize + progress.bytesCopied) / Float(totalSize)
+                busyProgress = completed > 1.0 ? 1.0 : completed
+            }
+        }
     }
     
     // MARK: - Downloading VMs
@@ -699,12 +720,7 @@ struct AlertMessage: Identifiable {
 
     /// Create a new VM by downloading a .zip and extracting it
     /// - Parameter components: Download URL components
-    func downloadUTMZip(from components: URLComponents) async {
-        guard let urlParameter = components.queryItems?.first(where: { $0.name == "url" })?.value,
-           let url = URL(string: urlParameter) else {
-               showErrorAlert(message: NSLocalizedString("Failed to parse download URL.", comment: "UTMData"))
-               return
-        }
+    func downloadUTMZip(from url: URL) {
         let task = UTMDownloadVMTask(for: url)
         listAdd(pendingVM: task.pendingVM)
         Task {
@@ -760,7 +776,15 @@ struct AlertMessage: Identifiable {
     func reclaimSpace(for driveUrl: URL, withCompression isCompressed: Bool = false) async throws {
         let baseUrl = driveUrl.deletingLastPathComponent()
         let dstUrl = Self.newImage(from: driveUrl, to: baseUrl, withExtension: "qcow2")
-        try await UTMQemuImage.convert(from: driveUrl, toQcow2: dstUrl, withCompression: isCompressed)
+        defer {
+            busyProgress = nil
+        }
+        try await UTMQemuImage.convert(from: driveUrl, toQcow2: dstUrl, withCompression: isCompressed) { progress in
+            Task { @MainActor in
+                self.busyProgress = progress / 100
+            }
+        }
+        busyProgress = nil
         do {
             try fileManager.replaceItem(at: driveUrl, withItemAt: dstUrl, backupItemName: nil, resultingItemURL: nil)
         } catch {
@@ -905,69 +929,6 @@ struct AlertMessage: Identifiable {
                 throw error
             }
         }
-    }
-    
-    // MARK: - Automation Features
-    
-    /// Send text as keyboard input to VM
-    /// - Parameters:
-    ///   - vm: VM to send text to
-    ///   - components: Data (see UTM Wiki for details)
-    func automationSendText(to vm: VMData, urlComponents components: URLComponents) {
-        guard let queryItems = components.queryItems else { return }
-        guard let text = queryItems.first(where: { $0.name == "text" })?.value else { return }
-        #if os(macOS)
-        trySendTextSpice(vm: vm, text: text)
-        #else
-        trySendTextSpice(text)
-        #endif
-    }
-    
-    /// Send mouse/tablet coordinates to VM
-    /// - Parameters:
-    ///   - vm: VM to send mouse/tablet coordinates to
-    ///   - components: Data (see UTM Wiki for details)
-    func automationSendMouse(to vm: VMData, urlComponents components: URLComponents) {
-        guard let qemuVm = vm.wrapped as? any UTMSpiceVirtualMachine else { return } // FIXME: implement for Apple VM
-        guard !qemuVm.config.displays.isEmpty else { return }
-        guard let queryItems = components.queryItems else { return }
-        /// Parse targeted position
-        var x: CGFloat? = nil
-        var y: CGFloat? = nil
-        let nf = NumberFormatter()
-        nf.allowsFloats = false
-        if let xStr = components.queryItems?.first(where: { item in
-            item.name == "x"
-        })?.value {
-            x = nf.number(from: xStr) as? CGFloat
-        }
-        if let yStr = components.queryItems?.first(where: { item in
-            item.name == "y"
-        })?.value {
-            y = nf.number(from: yStr) as? CGFloat
-        }
-        guard let xPos = x, let yPos = y else { return }
-        let point = CGPoint(x: xPos, y: yPos)
-        /// Parse which button should be clicked
-        var button: CSInputButton = .left
-        if let buttonStr = queryItems.first(where: { $0.name == "button"})?.value {
-            switch buttonStr {
-            case "middle":
-                button = .middle
-                break
-            case "right":
-                button = .right
-                break
-            default:
-                break
-            }
-        }
-        /// All parameters parsed, perform the click
-        #if os(macOS)
-        tryClickAtPoint(vm: vm, point: point, button: button)
-        #else
-        tryClickAtPoint(point: point, button: button)
-        #endif
     }
 
     // MARK: - AltKit

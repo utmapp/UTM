@@ -75,9 +75,7 @@ struct VMWizardHardwareView: View {
             }
             Section {
                 RAMSlider(systemMemory: $wizardState.systemMemoryMib) { _ in
-                    if wizardState.systemMemoryMib < minMemoryMib {
-                        wizardState.systemMemoryMib = minMemoryMib
-                    } else if wizardState.systemMemoryMib > maxMemoryMib {
+                    if wizardState.systemMemoryMib > maxMemoryMib {
                         wizardState.systemMemoryMib = maxMemoryMib
                     }
                 }
@@ -127,6 +125,9 @@ struct VMWizardHardwareView: View {
                 #error("Unsupported architecture.")
                 #endif
                 wizardState.systemTarget = wizardState.systemArchitecture.targetType.default
+            }
+            if wizardState.legacyHardware && wizardState.systemArchitecture == .x86_64 {
+                wizardState.systemTarget = QEMUTarget_x86_64.pc
             }
         }
     }

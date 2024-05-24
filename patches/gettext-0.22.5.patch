@@ -1,0 +1,72 @@
+diff --color -Naur a/libtextstyle/lib/get_ppid_of.c b/libtextstyle/lib/get_ppid_of.c
+--- a/libtextstyle/lib/get_ppid_of.c	2024-02-21 02:45:23
++++ b/libtextstyle/lib/get_ppid_of.c	2024-03-30 20:38:55
+@@ -33,6 +33,8 @@
+ #endif
+ 
+ #if defined __APPLE__ && defined __MACH__                   /* Mac OS X */
++# include <TargetConditionals.h>
++# if TARGET_OS_OSX
+ /* Get MAC_OS_X_VERSION_MIN_REQUIRED, MAC_OS_X_VERSION_MAX_ALLOWED.
+    The version at runtime satisfies
+    MAC_OS_X_VERSION_MIN_REQUIRED <= version <= MAC_OS_X_VERSION_MAX_ALLOWED.  */
+@@ -46,6 +48,7 @@
+ extern int proc_pidinfo (int, int, uint64_t, void *, int) WEAK_IMPORT_ATTRIBUTE;
+ #  endif
+ # endif
++# endif
+ #endif
+ 
+ #if defined _AIX                                            /* AIX */
+@@ -238,6 +241,7 @@
+ #endif
+ 
+ #if defined __APPLE__ && defined __MACH__                   /* Mac OS X */
++# if TARGET_OS_OSX
+ # if MAC_OS_X_VERSION_MAX_ALLOWED >= 1050
+ 
+   /* Mac OS X >= 10.7 has PROC_PIDT_SHORTBSDINFO.  */
+@@ -271,6 +275,7 @@
+     }
+ #  endif
+ 
++# endif
+ # endif
+ #endif
+ 
+diff --color -Naur a/libtextstyle/lib/get_progname_of.c b/libtextstyle/lib/get_progname_of.c
+--- a/libtextstyle/lib/get_progname_of.c	2024-02-21 02:45:23
++++ b/libtextstyle/lib/get_progname_of.c	2024-03-30 20:39:22
+@@ -41,6 +41,8 @@
+ #endif
+ 
+ #if defined __APPLE__ && defined __MACH__                   /* Mac OS X */
++# include <TargetConditionals.h>
++# if TARGET_OS_OSX
+ /* Get MAC_OS_X_VERSION_MIN_REQUIRED, MAC_OS_X_VERSION_MAX_ALLOWED.
+    The version at runtime satisfies
+    MAC_OS_X_VERSION_MIN_REQUIRED <= version <= MAC_OS_X_VERSION_MAX_ALLOWED.  */
+@@ -54,6 +56,7 @@
+ extern int proc_pidinfo (int, int, uint64_t, void *, int) WEAK_IMPORT_ATTRIBUTE;
+ #  endif
+ # endif
++# endif
+ #endif
+ 
+ #if defined _AIX                                            /* AIX */
+@@ -278,6 +281,7 @@
+ #endif
+ 
+ #if defined __APPLE__ && defined __MACH__                   /* Mac OS X */
++# if TARGET_OS_OSX
+ # if MAC_OS_X_VERSION_MAX_ALLOWED >= 1050
+ 
+   /* Mac OS X >= 10.7 has PROC_PIDT_SHORTBSDINFO.  */
+@@ -311,6 +315,7 @@
+     }
+ #  endif
+ 
++# endif
+ # endif
+ #endif
+ 

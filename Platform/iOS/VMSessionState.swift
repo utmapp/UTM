@@ -83,6 +83,8 @@ import SwiftUI
 
     private var hasAutosave: Bool = false
 
+    private var backgroundTask: UIBackgroundTaskIdentifier?
+
     init(for vm: any UTMSpiceVirtualMachine) {
         self.vm = vm
         super.init()
@@ -419,6 +421,14 @@ extension VMSessionState: CSUSBManagerDelegate {
 #endif
 
 extension VMSessionState {
+    private var shouldRunInBackground: Bool {
+        UserDefaults.standard.bool(forKey: "RunInBackground")
+    }
+
+    private var shouldAutosaveBackground: Bool {
+        UserDefaults.standard.bool(forKey: "AutosaveBackground")
+    }
+
     func start(options: UTMVirtualMachineStartOptions = []) {
         let audioSession = AVAudioSession.sharedInstance()
         do {
@@ -439,6 +449,15 @@ extension VMSessionState {
         } else {
             vm.requestVmStart(options: options)
         }
+        #if !os(visionOS) && !WITH_LOCATION_BACKGROUND
+        if shouldRunInBackground {
+            UNUserNotificationCenter.current().requestAuthorization(options: .alert) { granted, _ in
+                if !granted {
+                    logger.error("Failed to authorize notifications.")
+                }
+            }
+        }
+        #endif
     }
 
     func showWindow() {
@@ -513,12 +532,11 @@ extension VMSessionState {
     func didEnterBackground() {
         #if !os(visionOS)
         logger.info("Entering background")
-        let shouldAutosaveBackground = UserDefaults.standard.bool(forKey: "AutosaveBackground")
         if shouldAutosaveBackground && vmState == .started {
             logger.info("Saving snapshot")
             var task: UIBackgroundTaskIdentifier = .invalid
             task = UIApplication.shared.beginBackgroundTask {
-                logger.info("Background task end")
+                logger.info("Save snapshot task end")
                 UIApplication.shared.endBackgroundTask(task)
                 task = .invalid
             }
@@ -534,6 +552,14 @@ extension VMSessionState {
                 task = .invalid
             }
         }
+        #if !WITH_LOCATION_BACKGROUND
+        if shouldRunInBackground && vmState == .started {
+            backgroundTask = UIApplication.shared.beginBackgroundTask {
+                logger.info("Background task ending")
+                self.showBackgroundExpireNotification()
+            }
+        }
+        #endif
         #endif
     }
     
@@ -544,7 +570,29 @@ extension VMSessionState {
             logger.info("Deleting snapshot")
             vm.requestVmDeleteState()
         }
+        #if !WITH_LOCATION_BACKGROUND
+        if let task = backgroundTask {
+            UIApplication.shared.endBackgroundTask(task)
+            backgroundTask = nil
+            hideBackgroundExpireNotification()
+        }
         #endif
+        #endif
+    }
+
+    private func showBackgroundExpireNotification() {
+        let content = UNMutableNotificationContent()
+        content.title = NSLocalizedString("Background task is about to expire", comment: "VMSessionState")
+        content.body = NSLocalizedString("Switch back to UTM to avoid termination.", comment: "VMSessionState")
+        if #available(iOS 15, *) {
+            content.interruptionLevel = .timeSensitive
+        }
+        let request = UNNotificationRequest(identifier: "BACKGROUND", content: content, trigger: nil)
+        UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
+    }
+
+    private func hideBackgroundExpireNotification() {
+        UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: ["BACKGROUND"])
     }
 }
 

@@ -32,21 +32,40 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
         }
         return display.value(forKey: "_supportsReconfiguration") as? Bool ?? false
     }
-    
+
+    var isDynamicResolution: Bool {
+        appleConfig.displays.first!.isDynamicResolution
+    }
+
     private var aspectRatioLocked: Bool = false
-    
+    private var screenChangedToken: Any?
+
     @Setting("FullScreenAutoCapture") private var isFullScreenAutoCapture: Bool = false
     
     override func windowDidLoad() {
         mainView = VZVirtualMachineView()
         captureMouseToolbarButton.image = captureMouseToolbarButton.alternateImage // show capture keyboard image
+        screenChangedToken = NotificationCenter.default.addObserver(forName: NSWindow.didChangeScreenNotification, object: nil, queue: .main) { [weak self] _ in
+            // update minSize when we change screens
+            if let self = self,
+               let window = window,
+               let primaryDisplay = appleConfig.displays.first,
+               !supportsReconfiguration || !isDynamicResolution {
+                window.contentMinSize = contentMinSize(in: window, for: windowSize(for: primaryDisplay))
+            }
+        }
         super.windowDidLoad()
     }
-    
+
+    override func windowWillClose(_ notification: Notification) {
+        screenChangedToken = nil
+        super.windowWillClose(notification)
+    }
+
     override func enterLive() {
         appleView.virtualMachine = appleVM.apple
         if #available(macOS 14, *) {
-            appleView.automaticallyReconfiguresDisplay = true
+            appleView.automaticallyReconfiguresDisplay = isDynamicResolution
         }
         super.enterLive()
     }
@@ -80,7 +99,11 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
         let frame = window.frameRect(forContentRect: CGRect(origin: window.frame.origin, size: size))
         window.contentAspectRatio = size
         aspectRatioLocked = true
-        window.minSize = NSSize(width: 400, height: 400)
+        if supportsReconfiguration && isDynamicResolution {
+            window.minSize = NSSize(width: 400, height: 400)
+        } else {
+            window.minSize = contentMinSize(in: window, for: size)
+        }
         window.setFrame(frame, display: false, animate: true)
         super.updateWindowFrame()
     }
@@ -108,9 +131,22 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
     }
     
     func windowDidResize(_ notification: Notification) {
-        if aspectRatioLocked && supportsReconfiguration {
+        if aspectRatioLocked && supportsReconfiguration && isDynamicResolution {
             window!.resizeIncrements = NSSize(width: 1.0, height: 1.0)
+            window!.minSize = NSSize(width: 400, height: 400)
             aspectRatioLocked = false
         }
+    }
+
+    private func contentMinSize(in window: NSWindow, for scaledSize: CGSize) -> CGSize {
+        guard let screenSize = window.screen?.visibleFrame.size else {
+            return scaledSize
+        }
+        let excessSize = window.frameRect(forContentRect: .zero).size
+        // if the window is larger than our host screen, shrink the min size allowed
+        let widthScale = (screenSize.width - excessSize.width) / scaledSize.width
+        let heightScale = (screenSize.height - excessSize.height) / scaledSize.height
+        let scale = min(min(widthScale, heightScale), 1.0)
+        return CGSize(width: scaledSize.width * scale, height: scaledSize.height * scale)
     }
 }

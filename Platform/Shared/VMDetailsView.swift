@@ -110,17 +110,33 @@ struct VMDetailsView: View {
                 }
                 #endif
             }
-            .onAppear {
-                Task {
-                    size = await data.computeSize(for: vm)
-                    #if WITH_REMOTE
-                    if let vm = vm.wrapped as? UTMRemoteSpiceVirtualMachine {
-                        await vm.loadScreenshotFromServer()
-                    }
-                    #endif
+            .taskOnAppear(id: vm.id) {
+                size = await data.computeSize(for: vm)
+                #if WITH_REMOTE
+                if let vm = vm.wrapped as? UTMRemoteSpiceVirtualMachine {
+                    await vm.loadScreenshotFromServer()
                 }
+                #endif
             }
         }
+    }
+}
+
+private extension View {
+    func taskOnAppear<T>(id value: T, priority: TaskPriority = .userInitiated, _ action: @escaping @Sendable @MainActor () async -> Void) -> some View where T : Equatable & Hashable {
+        #if os(visionOS) // FIXME: visionOS crashes with task()
+        self.onAppear {
+            Task(priority: priority, operation: action)
+        }.id(value)
+        #else
+        if #available(macOS 12, iOS 15, *) {
+            return self.task(id: value, priority: priority, action)
+        } else {
+            return self.onAppear {
+                Task(priority: priority, operation: action)
+            }.id(value)
+        }
+        #endif
     }
 }
 

@@ -7011,3 +7011,46 @@ index 9f6e6279d9..b6cda6e00b 100644
 -- 
 2.41.0
 
+From c03d7e35473b57544523ba19975023332567a63d Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Sat, 30 Mar 2024 20:15:01 -0700
+Subject: [PATCH] egl-helpers: incorrect type for native_display
+
+---
+ ui/egl-helpers.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/ui/egl-helpers.c b/ui/egl-helpers.c
+index 0df9dd8fd5..0e9a3e469d 100644
+--- a/ui/egl-helpers.c
++++ b/ui/egl-helpers.c
+@@ -505,7 +505,7 @@ static int qemu_egl_init_dpy_platform(EGLNativeDisplayType native,
+         PFNEGLGETPLATFORMDISPLAYEXTPROC getPlatformDisplayEXT =
+             (void *) eglGetProcAddress("eglGetPlatformDisplayEXT");
+         if (getPlatformDisplayEXT && platform != 0) {
+-            dpy = getPlatformDisplayEXT(platform, native, NULL);
++            dpy = getPlatformDisplayEXT(platform, (void *)native, NULL);
+         }
+     }
+ 
+@@ -526,7 +526,7 @@ static int qemu_egl_init_dpy_platform(EGLNativeDisplayType native,
+ 
+ int qemu_egl_init_dpy_surfaceless(DisplayGLMode mode)
+ {
+-    return qemu_egl_init_dpy_platform(NULL, EGL_PLATFORM_SURFACELESS_MESA, mode);
++    return qemu_egl_init_dpy_platform(EGL_DEFAULT_DISPLAY, EGL_PLATFORM_SURFACELESS_MESA, mode);
+ }
+ 
+ #if defined(CONFIG_X11) || defined(CONFIG_GBM)
+@@ -555,7 +555,7 @@ int qemu_egl_init_dpy_mesa(EGLNativeDisplayType dpy, DisplayGLMode mode)
+ 
+ int qemu_egl_init_dpy_angle(DisplayGLMode mode)
+ {
+-    return qemu_egl_init_dpy_platform(NULL, EGL_PLATFORM_ANGLE_ANGLE, mode);
++    return qemu_egl_init_dpy_platform(EGL_DEFAULT_DISPLAY, EGL_PLATFORM_ANGLE_ANGLE, mode);
+ }
+ 
+ #endif
+-- 
+2.41.0
+
