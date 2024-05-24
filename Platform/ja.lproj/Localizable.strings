@@ -440,8 +440,8 @@
 // VMConfigAppleDriveCreateView.swift
 "Removable" = "リムーバブル";
 "If checked, the drive image will be stored with the VM." = "チェックを入れると、ドライブイメージが仮想マシンに保存されます。";
-"Use NVMe Interface" = "NVMeを使用";
-"If checked, use NVMe instead of virtio as the disk interface, available on macOS 14+ for Linux guests only. This interface is slower but less likely to encounter filesystem errors." = "チェックを入れると、virtioの代わりにNVMeをディスクインターフェイスとして使用します。これは、macOS 14以降のLinuxゲストのみで使用できます。このインターフェイスは低速ですが、ファイルシステムエラーが発生する可能性が低くなります。";
+"Use NVMe Interface" = "NVMeインターフェイスを使用";
+"If checked, use NVMe instead of virtio as the disk interface, available on macOS 14+ for Linux guests only. This interface is slower but less likely to encounter filesystem errors." = "チェックを入れると、Virtioの代わりにNVMeをディスクインターフェイスとして使用します。これは、macOS 14以降のLinuxゲストでのみ使用できます。このインターフェイスは低速ですが、ファイルシステムエラーが発生する可能性が低くなります。";
 
 // VMConfigAppleDriveDetailsView.swift
 "Removable Drive" = "リムーバブルドライブ";
