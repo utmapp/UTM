@@ -44,6 +44,18 @@
 /* Format string for download progress and speed, e. g. 5 MB of 6 GB (200 kbit/s) */
 "%1$@ of %2$@ (%3$@)" = "%1$@ / %2$@ (%3$@)";
 
+/* UTMDonateView */
+"%d days" = "%d 日";
+
+/* UTMDonateView */
+"%d months" = "%d 月";
+
+/* UTMDonateView */
+"%d weeks" = "%d 周";
+
+/* UTMDonateView */
+"%d years" = "%d 年";
+
 /* UTMScriptingAppDelegate */
 "A valid backend must be specified." = "必須指定有效的後端。";
 
@@ -118,6 +130,9 @@
 
 /* UTMQemuConstants */
 "Automatic Serial Device (max 4)" = "自動序列裝置 (最大值為 4)";
+
+/* VMSessionState */
+"Background task is about to expire" = "背景任務即將過期";
 
 /* UTMLegacyQemuConfiguration
    UTMQemuConstants */
@@ -208,6 +223,9 @@
 /* No comment provided by engineer. */
 "Capture input automatically when entering full screen" = "進入全螢幕時自動擷取輸入";
 
+/* No comment provided by engineer. */
+"Capture input automatically when window is focused" = "於視窗聚焦時自動擷取輸入";
+
 /* VMDisplayQemuMetalWindowController */
 "Captured mouse" = "已擷取滑鼠";
 
@@ -226,6 +244,9 @@
 
 /* VMDisplayAppleController */
 "Change…" = "變更⋯";
+
+/* No comment provided by engineer. */
+"Choose" = "選取";
 
 /* No comment provided by engineer. */
 "Clear" = "清除";
@@ -291,6 +312,9 @@
 /* UTMSWTPM */
 "Data not specified." = "未指定資料。";
 
+/* UTMDonateView */
+"day" = "日";
+
 /* No comment provided by engineer. */
 "Debug Logging" = "除錯記錄";
 
@@ -333,7 +357,7 @@
 "Disposable Mode" = "即拋式模式";
 
 /* No comment provided by engineer. */
-"Do not save VM screenshot to disk" = "不要將虛擬電腦快照儲存至磁碟";
+"Do not save VM screenshot to disk" = "不要將虛擬電腦螢幕截圖儲存至磁碟";
 
 /* No comment provided by engineer. */
 "Do not show confirmation when closing a running VM" = "關閉正在執行的虛擬電腦時不要顯示確認";
@@ -712,6 +736,9 @@
 /* No comment provided by engineer. */
 "Minimum size: %@" = "最小大小：%@";
 
+/* UTMDonateView */
+"month" = "月";
+
 /* No comment provided by engineer. */
 "Mouse/Keyboard" = "滑鼠/鍵盤";
 
@@ -847,6 +874,9 @@
 
 /* No comment provided by engineer. */
 "Pending" = "待定";
+
+/* UTMDonateView */
+"period" = "期間";
 
 /* VMDisplayWindowController */
 "Play" = "播放";
@@ -1126,6 +1156,9 @@
 /* UTMSWTPM */
 "SW TPM failed to start. %@" = "SW TPM 無法啟動。%@";
 
+/* VMSessionState */
+"Switch back to UTM to avoid termination." = "切換回至 UTM 以避免終止。";
+
 /* No comment provided by engineer. */
 "System" = "系統";
 
@@ -1381,7 +1414,10 @@
 "Virtualize" = "虛擬化";
 
 /* No comment provided by engineer. */
-"Waiting for VM to connect to display..." = "正在等待虛擬電腦連接至顯示...";
+"Waiting for VM to connect to display..." = "正在等待虛擬電腦連接至顯示⋯";
+
+/* UTMDonateView */
+"week" = "周";
 
 /* No comment provided by engineer. */
 "Welcome to UTM" = "歡迎使用 UTM";
@@ -1404,6 +1440,9 @@
 /* No comment provided by engineer. */
 "Would you like to re-convert this disk image to reclaim unused space? Note this will require enough temporary space to perform the conversion. You are strongly encouraged to back-up this VM before proceeding." = "你要重新轉換此磁碟映像檔以回收未使用的空間嗎？請緊記，這將需要足夠的臨時空間來執行轉換。強烈建議你先備份此虛擬電腦，然後再繼續操作。";
 
+/* UTMDonateView */
+"year" = "年";
+
 /* No comment provided by engineer. */
 "Yes" = "是";
 
@@ -1414,10 +1453,19 @@
    VMWizardOSMacView */
 "Your machine does not support running this IPSW." = "你的電腦不支援執行此 IPSW。";
 
+/* UTMDonateView */
+"Your purchase could not be verified by the App Store." = "App Store 無法驗證你的購買。";
+
+/* No comment provided by engineer. */
+"Your support is the driving force that helps UTM stay independent. Your contribution, no matter the size, makes a significant difference. It enables us to develop new features and maintain existing ones. Thank you for considering a donation to support us." = "你的支援是幫助 UTM 保持獨立的動力。無論你的貢獻幾多，都會帶來重大影響。這可以令我們能夠開發新功能，並維護現有的功能。多謝你考慮捐贈來支援我們。";
+
 /* ContentView */
 "Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached. See https://getutm.app/install/ for more details." = "你的 iOS 版本不支援在未作更動的情況下執行虛擬電腦，必須在越獄 (jailbreak) 時執行 UTM，或是在附加遠程除錯器的情況下執行 UTM。有關更多詳細訊息，請見 https://getutm.app/install/。";
 
 // Additional Strings (These strings are unable to be extracted by Xcode)
+
+/* No comment provided by engineer. */
+"" = "";
 
 /* No comment provided by engineer. */
 "(Delete)" = "(刪除)";
@@ -1777,13 +1825,16 @@
 "If enabled, a virtiofs share tagged 'rosetta' will be available on the Linux guest for installing Rosetta for emulating x86_64 on ARM64." = "如啟用，標記為「rosetta」的 virtiofs 分享將會於 Linux 客戶端上可用，用作安裝 Rosetta，可以於 arm64 上仿真 x86_64。";
 
 /* No comment provided by engineer. */
-"If enabled, any existing screenshot will be deleted the next time the VM is started." = "如啟用，下次啟動虛擬電腦時，任何現存的快照將會被刪除。";
+"If enabled, any existing screenshot will be deleted the next time the VM is started." = "如啟用，下次啟動虛擬電腦時，任何現存的螢幕截圖將會被刪除。";
 
 /* No comment provided by engineer. */
 "If enabled, caps lock will be handled like other keys. If disabled, it is treated as a toggle that is synchronized with the host." = "如啟用，Caps Lock 將會同其他鍵一樣處理。如停用，它將會被視為開關鍵，並與主機同步。";
 
 /* No comment provided by engineer. */
 "If enabled, input capture will toggle automatically when entering and exiting full screen mode." = "如啟用，於進入和離開全螢幕模式時，將會自動切換輸入擷取。";
+
+/* No comment provided by engineer. */
+"If enabled, input capture will toggle automatically when the VM's window is focused." = "如啟用，於虛擬電腦聚焦視窗時，將自動切換輸入擷取。";
 
 /* No comment provided by engineer. */
 "If enabled, num lock will always be on to the guest. Note this may make your keyboard's num lock indicator out of sync." = "如啟用，Num Lock 將會始終對客戶端開啟。請緊記，這可能會令鍵盤的 Num Lock 指示器不同步。";
