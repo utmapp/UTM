@@ -343,6 +343,8 @@
 "Mouse/Keyboard" = "マウス/キーボード";
 "Capture input automatically when entering full screen" = "フルスクリーンになったときに入力を自動的にキャプチャ";
 "If enabled, input capture will toggle automatically when entering and exiting full screen mode." = "有効にすると、フルスクリーンモードの開始時と解除時に入力キャプチャが自動的に切り替わります。";
+"Capture input automatically when window is focused" = "ウインドウがフォーカスされたときに入力を自動的にキャプチャ";
+"If enabled, input capture will toggle automatically when the VM's window is focused." = "有効にすると、仮想マシンのウインドウがフォーカスされたときに入力キャプチャが自動的に切り替わります。";
 "Console" = "コンソール";
 "Option (⌥) is Meta key" = "メタキーとしてOption（⌥）を使用";
 "If enabled, Option will be mapped to the Meta key which can be useful for emacs. Otherwise, option will work as the system intended (such as for entering international text)." = "有効にすると、OptionがEmacsの利用に便利なメタキーにマッピングされます。そうでない場合、Optionはシステムが意図したとおりに動作します（国際テキストを入力する場合など）。";
@@ -491,6 +493,8 @@
 
 // VMSessionState.swift
 "Connection to the server was lost." = "サーバへの接続が切断されました。";
+"Background task is about to expire" = "バックグラウンドタスクがまもなく期限切れになります";
+"Switch back to UTM to avoid termination." = "終了を防ぐには、UTMに戻ってください。";
 
 // VMConfigQEMUArgumentsView.swift
 "Arguments" = "引数";
@@ -635,6 +639,71 @@
 "Generic" = "一般";
 "Notes" = "メモ";
 "Icon" = "アイコン";
+"Choose" = "選択";
+"AIX" = "AIX";
+"iOS" = "iOS";
+"Windows 7" = "Windows 7";
+"AlmaLinux" = "AlmaLinux";
+"Alpine" = "Alpine";
+"AmigaOS" = "AmigaOS";
+"Android" = "Android";
+"Apple TV" = "Apple TV";
+"Arch Linux" = "Arch Linux";
+"BackTrack" = "BackTrack";
+"Bada" = "Bada";
+"BeOS" = "BeOS";
+"CentOS" = "CentOS";
+"Chrome OS" = "Chrome OS";
+"CyanogenMod" = "CyanogenMod";
+"Debian" = "Debian";
+"Elementary OS" = "elementary OS";
+"Fedora" = "Fedora";
+"Firefox OS" = "Firefox OS";
+"FreeBSD" = "FreeBSD";
+"Gentoo" = "Gentoo";
+"Haiku OS" = "Haiku OS";
+"HP-UX" = "HP-UX";
+"KaiOS" = "KaiOS";
+"Knoppix" = "Knoppix";
+"Kubuntu" = "Kubuntu";
+"Linux" = "Linux";
+"Lubuntu" = "Lubuntu";
+"macOS" = "macOS";
+"Maemo" = "Maemo";
+"Mandriva" = "Mandriva";
+"MeeGo" = "MeeGo";
+"Linux Mint" = "Linux Mint";
+"NetBSD" = "NetBSD";
+"Nintendo" = "任天堂";
+"NixOS" = "NixOS";
+"OpenBSD" = "OpenBSD";
+"OpenWrt" = "OpenWrt";
+"OS/2" = "OS/2";
+"Palm OS" = "Palm OS";
+"PlayStation Portable" = "PlayStation Portable";
+"PlayStation" = "PlayStation";
+"Pop!_OS" = "Pop!_OS";
+"Red Hat" = "Red Hat";
+"Remix OS" = "Remix OS";
+"RISC OS" = "RISC OS";
+"Sabayon" = "Sabayon";
+"Sailfish OS" = "Sailfish OS";
+"Slackware" = "Slackware";
+"Solaris" = "Solaris";
+"openSUSE" = "openSUSE";
+"Syllable" = "Syllable";
+"Symbian" = "Symbian";
+"ThreadX" = "ThreadX";
+"Tizen" = "Tizen";
+"Ubuntu" = "Ubuntu";
+"webOS" = "webOS";
+"Windows 11" = "Windows 11";
+"Windows 9x" = "Windows 9x系";
+"Windows XP" = "Windows XP";
+"Windows" = "Windows";
+"Xbox" = "Xbox";
+"Xubuntu" = "Xubuntu";
+"YunOS" = "YunOS";
 
 // VMConfigInputView.swift
 "If enabled, the default input devices will be emulated on the USB bus." = "有効にすると、デフォルトの入力デバイスがUSBバス上でエミュレートされます。";
