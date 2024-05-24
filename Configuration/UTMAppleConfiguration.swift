@@ -265,11 +265,13 @@ extension UTMAppleConfiguration {
         }
         if !ignoringDrives {
             vzconfig.storageDevices = try drives.compactMap { drive in
-                guard let attachment = try drive.vzDiskImage() else {
+                guard let attachment = try drive.vzDiskImage(useFsWorkAround: system.boot.operatingSystem == .linux) else {
                     return nil
                 }
                 if #available(macOS 13, *), drive.isExternal {
                     return VZUSBMassStorageDeviceConfiguration(attachment: attachment)
+                } else if #available(macOS 14, *), drive.isNvme, system.boot.operatingSystem == .linux {
+                    return VZNVMExpressControllerDeviceConfiguration(attachment: attachment)
                 } else {
                     return VZVirtioBlockDeviceConfiguration(attachment: attachment)
                 }
