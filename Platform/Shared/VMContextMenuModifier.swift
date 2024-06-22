@@ -179,7 +179,8 @@ struct VMContextMenuModifier: ViewModifier {
         .onChange(of: (vm.config as? UTMQemuConfiguration)?.qemu.isGuestToolsInstallRequested) { newValue in
             if newValue == true {
                 data.busyWorkAsync {
-                    try await data.mountSupportTools(for: vm.wrapped!)
+                    let unattend = await (vm.config as? UTMQemuConfiguration)?.qemu.unattended ?? false
+                    try await data.mountSupportTools(for: vm.wrapped!, unattendless: unattend)
                 }
             }
         }

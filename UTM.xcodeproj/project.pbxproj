@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		003B61A42C03EC5B0013BA74 /* VMWizardWindowsUnattendView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 003B61A32C03EC5B0013BA74 /* VMWizardWindowsUnattendView.swift */; };
+		003B61A52C03EC5B0013BA74 /* VMWizardWindowsUnattendView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 003B61A32C03EC5B0013BA74 /* VMWizardWindowsUnattendView.swift */; };
+		003B61A62C03EC5B0013BA74 /* VMWizardWindowsUnattendView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 003B61A32C03EC5B0013BA74 /* VMWizardWindowsUnattendView.swift */; };
+		003B61A72C03EC5B0013BA74 /* VMWizardWindowsUnattendView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 003B61A32C03EC5B0013BA74 /* VMWizardWindowsUnattendView.swift */; };
 		2C33B3A92566C9B100A954A6 /* VMContextMenuModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C33B3A82566C9B100A954A6 /* VMContextMenuModifier.swift */; };
 		2C33B3AA2566C9B100A954A6 /* VMContextMenuModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C33B3A82566C9B100A954A6 /* VMContextMenuModifier.swift */; };
 		2C6D9E03256EE454003298E6 /* VMDisplayQemuTerminalWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6D9E02256EE454003298E6 /* VMDisplayQemuTerminalWindowController.swift */; };
@@ -1584,6 +1588,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		003B61A32C03EC5B0013BA74 /* VMWizardWindowsUnattendView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMWizardWindowsUnattendView.swift; sourceTree = "<group>"; };
 		037DAA1C2B0B92580061ACB3 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/VMDisplayWindow.strings; sourceTree = "<group>"; };
 		037DAA1D2B0B92580061ACB3 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		037DAA1E2B0B92580061ACB3 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -2972,6 +2977,7 @@
 				83034C0626AB630F006B4BAF /* UTMPendingVMView.swift */,
 				84909A8C27CACD5C005605F1 /* UTMPlaceholderVMView.swift */,
 				84909A9027CADAE0005605F1 /* UTMUnavailableVMView.swift */,
+				003B61A32C03EC5B0013BA74 /* VMWizardWindowsUnattendView.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -3605,6 +3611,7 @@
 				CEF0307426A2B40B00667B63 /* VMWizardHardwareView.swift in Sources */,
 				841E997528AA1191003C6CB6 /* UTMRegistry.swift in Sources */,
 				8401868F288A50B90050AC51 /* VMDisplayViewControllerDelegate.swift in Sources */,
+				003B61A42C03EC5B0013BA74 /* VMWizardWindowsUnattendView.swift in Sources */,
 				CE2D92D724AD46670059923A /* UTMLogging.m in Sources */,
 				848D99A8285DB5550055C215 /* VMConfigConstantPicker.swift in Sources */,
 				8453DCB4278CE5410037A0DA /* UTMQemuImage.swift in Sources */,
@@ -3787,6 +3794,7 @@
 				CE0B6CF524AD568400FE012D /* UTMLegacyQemuConfiguration+Miscellaneous.m in Sources */,
 				CE25125129C806AF000790AB /* UTMScriptingDeleteCommand.swift in Sources */,
 				CE0B6CFB24AD568400FE012D /* UTMLegacyQemuConfiguration+Networking.m in Sources */,
+				003B61A72C03EC5B0013BA74 /* VMWizardWindowsUnattendView.swift in Sources */,
 				84C584E5268F8C65000FCABF /* VMAppleSettingsView.swift in Sources */,
 				CE9B15442B11A74E003A32DD /* UTMRemoteKeyManager.swift in Sources */,
 				84F746BB276FF70700A20C87 /* VMDisplayQemuDisplayController.swift in Sources */,
@@ -4021,6 +4029,7 @@
 				CEA45F00263519B5002FA97D /* VMCardView.swift in Sources */,
 				CEA45F01263519B5002FA97D /* UTMLegacyQemuConfiguration+Sharing.m in Sources */,
 				841619B328431DA5000034B2 /* UTMQemuConfigurationQEMU.swift in Sources */,
+				003B61A52C03EC5B0013BA74 /* VMWizardWindowsUnattendView.swift in Sources */,
 				CEF0305C26A2AFDF00667B63 /* VMWizardOSOtherView.swift in Sources */,
 				CEA45F08263519B5002FA97D /* ActivityView.swift in Sources */,
 				848F71E9277A2A4E006A0240 /* UTMSerialPort.swift in Sources */,
@@ -4138,6 +4147,7 @@
 				CEF7F5E82AEEDCC400E34952 /* VMDisplayViewControllerDelegate.swift in Sources */,
 				CEF7F5EA2AEEDCC400E34952 /* VMConfigConstantPicker.swift in Sources */,
 				CEF7F5EC2AEEDCC400E34952 /* VMToolbarModifier.swift in Sources */,
+				003B61A62C03EC5B0013BA74 /* VMWizardWindowsUnattendView.swift in Sources */,
 				CEF7F5ED2AEEDCC400E34952 /* VMCursor.m in Sources */,
 				CEF7F5EE2AEEDCC400E34952 /* VMConfigDriveDetailsView.swift in Sources */,
 				CEF7F5F02AEEDCC400E34952 /* NumberTextField.swift in Sources */,

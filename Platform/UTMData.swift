@@ -737,11 +737,11 @@ struct AlertMessage: Identifiable {
         }
     }
     
-    func mountSupportTools(for vm: any UTMVirtualMachine) async throws {
+    func mountSupportTools(for vm: any UTMVirtualMachine, unattendless: Bool) async throws {
         guard let vm = vm as? any UTMSpiceVirtualMachine else {
             throw UTMDataError.unsupportedBackend
         }
-        let task = UTMDownloadSupportToolsTask(for: vm)
+        let task = UTMDownloadSupportToolsTask(for: vm, unattendless: unattendless)
         if await task.hasExistingSupportTools {
             vm.config.qemu.isGuestToolsInstallRequested = false
             _ = try await task.mountTools()

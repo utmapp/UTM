@@ -66,6 +66,8 @@ struct UTMQemuConfigurationQEMU: Codable {
     /// Set to true to request guest tools install. Not saved.
     var isGuestToolsInstallRequested: Bool = false
     
+    var unattended: Bool = false
+
     /// Set to true to request UEFI variable reset. Not saved.
     var isUefiVariableResetRequested: Bool = false
     
