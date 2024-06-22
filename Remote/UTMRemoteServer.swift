@@ -812,7 +812,7 @@ extension UTMRemoteServer {
         private func _mountGuestToolsOnVirtualMachine(parameters: M.MountGuestToolsOnVirtualMachine.Request) async throws -> M.MountGuestToolsOnVirtualMachine.Reply {
             let vm = try await findVM(withId: parameters.id)
             if let wrapped = await vm.wrapped {
-                try await data.mountSupportTools(for: wrapped)
+                try await data.mountSupportTools(for: wrapped, unattendless: false)
             }
             return .init()
         }

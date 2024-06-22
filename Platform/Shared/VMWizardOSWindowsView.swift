@@ -60,6 +60,7 @@ struct VMWizardOSWindowsView: View {
                         } label: {
                             Label("Fetch latest Windows installer…", systemImage: "link")
                         }.buttonStyle(.link)
+                        Toggle("Unattended Installation", isOn: $wizardState.windowsUnattendedInstall)
                     }
                     #endif
                     Link(destination: URL(string: "https://docs.getutm.app/guides/windows/")!) {

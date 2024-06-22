@@ -19,15 +19,21 @@ import Foundation
 /// Downloads support tools ISO
 class UTMDownloadSupportToolsTask: UTMDownloadTask {
     private let vm: any UTMSpiceVirtualMachine
+    private let unattend: Bool
 
     private static let supportToolsDownloadUrl = URL(string: "https://getutm.app/downloads/utm-guest-tools-latest.iso")!
+    private static let supportToolsDownloadUrlUa = URL(string: "https://getutm.app/downloads/unattendless.iso")!
     
     private var toolsUrl: URL {
         fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!.appendingPathComponent("GuestSupportTools")
     }
     
     private var supportToolsLocalUrl: URL {
-        toolsUrl.appendingPathComponent(Self.supportToolsDownloadUrl.lastPathComponent)
+        var url = Self.supportToolsDownloadUrl
+        if unattend {
+            url = Self.supportToolsDownloadUrlUa
+        }
+        return toolsUrl.appendingPathComponent(url.lastPathComponent)
     }
 
     @Setting("LastDownloadedGuestTools")
@@ -42,10 +48,15 @@ class UTMDownloadSupportToolsTask: UTMDownloadTask {
         }
     }
     
-    init(for vm: any UTMSpiceVirtualMachine) {
+    init(for vm: any UTMSpiceVirtualMachine, unattendless: Bool) {
         self.vm = vm
         let name = NSLocalizedString("Windows Guest Support Tools", comment: "UTMDownloadSupportToolsTask")
-        super.init(for: Self.supportToolsDownloadUrl, named: name)
+        self.unattend = unattendless
+        var url = Self.supportToolsDownloadUrl
+        if unattend {
+            url = Self.supportToolsDownloadUrlUa
+        }
+        super.init(for: url, named: name)
     }
     
     override func processCompletedDownload(at location: URL, response: URLResponse?) async throws -> any UTMVirtualMachine {

@@ -60,6 +60,9 @@ struct VMWizardView: View {
             case .windowsBoot:
                 VMWizardOSWindowsView(wizardState: wizardState)
                     .transition(wizardState.slide)
+            case .windowsUnattendConfig:
+                VMWizardWindowsUnattendView(wizardState: wizardState)
+                    .transition(wizardState.slide)
             case .hardware:
                 VMWizardHardwareView(wizardState: wizardState)
                     .transition(wizardState.slide)
@@ -115,6 +118,7 @@ struct VMWizardView: View {
                                 _ = try await data.create(config: qemuConfig)
                                 await MainActor.run {
                                     qemuConfig.qemu.isGuestToolsInstallRequested = wizardState.isGuestToolsInstallRequested
+                                    qemuConfig.qemu.unattended = wizardState.windowsUnattendedInstall
                                 }
                             } else if let appleConfig = config as? UTMAppleConfiguration {
                                 _ = try await data.create(config: appleConfig)

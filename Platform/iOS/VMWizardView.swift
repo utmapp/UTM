@@ -173,6 +173,8 @@ fileprivate struct WizardViewWrapper: View {
             VMWizardOSView(wizardState: wizardState)
         case .macOSBoot:
             EmptyView()
+        case .windowsUnattendConfig:
+            VMWizardWindowsUnattendView(wizardState: wizardState)
         case .linuxBoot:
             VMWizardOSLinuxView(wizardState: wizardState)
         case .windowsBoot:
