@@ -60,7 +60,7 @@ struct RAMSlider: View {
                 }
                 NumberTextField("", number: $systemMemory, prompt: "Size", onEditingChanged: validateMemorySize)
                     .frame(width: 80)
-                Text("MB")
+                Text("MiB")
             }
         }.frame(height: 30)
     }

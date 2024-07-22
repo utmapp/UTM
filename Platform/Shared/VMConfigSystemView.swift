@@ -55,7 +55,7 @@ struct VMConfigSystemView: View {
                     HStack {
                         NumberTextField("", number: $config.jitCacheSize, prompt: "Default", onEditingChanged: validateMemorySize)
                             .multilineTextAlignment(.trailing)
-                        Text("MB")
+                        Text("MiB")
                     }
                 }
             }
