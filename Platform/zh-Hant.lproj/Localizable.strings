@@ -720,7 +720,7 @@
 "FPS Limit" = "FPS 上限";
 
 /* No comment provided by engineer. */
-"GB" = "GB";
+"GiB" = "GiB";
 
 /* UTMQemuConstants */
 "GDB Debug Stub" = "GDB 除錯 stub";
@@ -1023,7 +1023,7 @@
 "Maximum Shared USB Devices" = "最大共享 USB 裝置";
 
 /* No comment provided by engineer. */
-"MB" = "MB";
+"MiB" = "MiB";
 
 /* No comment provided by engineer. */
 "Memory" = "記憶體";

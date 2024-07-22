@@ -364,7 +364,7 @@
 "Force Multicore" = "Multicore erzwingen";
 
 /* No comment provided by engineer. */
-"GB" = "GB";
+"GiB" = "GiB";
 
 /* UTMQemuConstants */
 "GDB Debug Stub" = "GDB Debug Stub";
@@ -520,7 +520,7 @@
 "Maximum Shared USB Devices" = "Anzahl weitergeleiteter USB-Geräte (max.)";
 
 /* No comment provided by engineer. */
-"MB" = "MB";
+"MiB" = "MiB";
 
 /* No comment provided by engineer. */
 "Memory" = "Speicher";

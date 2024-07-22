@@ -681,7 +681,7 @@
 "Full Graphics" = "Полная графика";
 
 /* No comment provided by engineer. */
-"GB" = "ГБ";
+"GiB" = "ГиБ";
 
 /* UTMQemuConstants */
 "GDB Debug Stub" = "Плагин отладки GDB";
@@ -1004,7 +1004,7 @@
 "Maximum Shared USB Devices" = "Максимальное кол-во совместно используемых USB-устройств";
 
 /* No comment provided by engineer. */
-"MB" = "МБ";
+"MiB" = "МиБ";
 
 /* No comment provided by engineer. */
 "Memory" = "Память";
