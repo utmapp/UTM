@@ -440,7 +440,7 @@
 "Full Graphics" = "Täysi grafiikka";
 
 /* No comment provided by engineer. */
-"GB" = "Gt";
+"GiB" = "GiB";
 
 /* No comment provided by engineer. */
 "Generate Windows Installer ISO" = "Luo Windows Installer ISO";
@@ -650,7 +650,7 @@
 "Maximum Shared USB Devices" = "Jaettujen USB-laitteiden enimmäismäärä";
 
 /* No comment provided by engineer. */
-"MB" = "Mt";
+"MiB" = "MiB";
 
 /* No comment provided by engineer. */
 "Memory" = "Muisti";
