@@ -680,7 +680,7 @@
 
 // VMSettingsAddDeviceMenuView.swift
 "Import Drive" = "Importer un lecteur";
-"New Drive" = "Nouveu lecteur";
+"New Drive" = "Nouveau lecteur";
 
 // VMToolbarModifier.swift
 "Remove selected shortcut" = "Supprimer le raccourci sélectionné";
