@@ -16,6 +16,7 @@
 
 import SwiftUI
 import UniformTypeIdentifiers
+import Network
 
 extension Optional where Wrapped == String {
     var _bound: String? {
@@ -225,6 +226,12 @@ extension CGColor {
 extension UIImage {
     convenience init?(contentsOfURL: URL?) {
         if let url = contentsOfURL {
+            let scoped = url.startAccessingSecurityScopedResource()
+            defer {
+                if scoped {
+                    url.stopAccessingSecurityScopedResource()
+                }
+            }
             self.init(contentsOfFile: url.path)
         } else {
             return nil
@@ -294,6 +301,12 @@ extension View {
 extension NSImage {
     convenience init?(contentsOfURL: URL?) {
         if let url = contentsOfURL {
+            let scoped = url.startAccessingSecurityScopedResource()
+            defer {
+                if scoped {
+                    url.stopAccessingSecurityScopedResource()
+                }
+            }
             self.init(contentsOf: url)
         } else {
             return nil
@@ -382,5 +395,45 @@ extension String {
             numeric.append(char)
         }
         return Int(numeric)
+    }
+
+    static func random(length: Int) -> String {
+        let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        return String((0..<length).map{ _ in letters.randomElement()! })
+    }
+}
+
+extension Encodable {
+    func propertyList() throws -> Any {
+        let encoder = PropertyListEncoder()
+        encoder.outputFormat = .xml
+        let xml = try encoder.encode(self)
+        return try PropertyListSerialization.propertyList(from: xml, format: nil)
+    }
+}
+
+extension Decodable {
+    init(fromPropertyList propertyList: Any) throws {
+        let data = try PropertyListSerialization.data(fromPropertyList: propertyList, format: .xml, options: 0)
+        let decoder = PropertyListDecoder()
+        self = try decoder.decode(Self.self, from: data)
+    }
+}
+
+extension NWEndpoint {
+    var hostname: String? {
+        if case .hostPort(let host, _) = self {
+            switch host {
+            case .name(let hostname, _):
+                return hostname
+            case .ipv4(let address):
+                return "\(address)"
+            case .ipv6(let address):
+                return "\(address)"
+            @unknown default:
+                break
+            }
+        }
+        return nil
     }
 }

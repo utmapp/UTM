@@ -18,9 +18,12 @@ import Foundation
 import QEMUKitInternal
 
 @objc class UTMQemuImage: UTMProcess {
+    typealias ProgressCallback = (Float) -> Void
+
     private var logOutput: String = ""
     private var processExitContinuation: CheckedContinuation<Void, any Error>?
-    
+    private var onProgress: ProgressCallback?
+
     private init() {
         super.init(arguments: [])
     }
@@ -52,11 +55,14 @@ import QEMUKitInternal
         }
     }
     
-    static func convert(from url: URL, toQcow2 dest: URL, withCompression compressed: Bool = false) async throws {
+    static func convert(from url: URL, toQcow2 dest: URL, withCompression compressed: Bool = false, onProgress: ProgressCallback? = nil) async throws {
         let qemuImg = UTMQemuImage()
         let srcBookmark = try url.bookmarkData()
         let dstBookmark = try dest.deletingLastPathComponent().bookmarkData()
         qemuImg.pushArgv("convert")
+        if onProgress != nil {
+            qemuImg.pushArgv("-p")
+        }
         if compressed {
             qemuImg.pushArgv("-c")
             qemuImg.pushArgv("-o")
@@ -69,8 +75,10 @@ import QEMUKitInternal
         qemuImg.accessData(withBookmark: dstBookmark)
         qemuImg.pushArgv(dest.path)
         let logging = QEMULogging()
+        logging.delegate = qemuImg
         qemuImg.standardOutput = logging.standardOutput
         qemuImg.standardError = logging.standardError
+        qemuImg.onProgress = onProgress
         try await qemuImg.start()
     }
     
@@ -175,8 +183,34 @@ extension UTMQemuImageError: LocalizedError {
 extension UTMQemuImage: QEMULoggingDelegate {
     func logging(_ logging: QEMULogging, didRecieveOutputLine line: String) {
         logOutput += line
+        if let onProgress = onProgress, line.contains("100%") {
+            if let progress = parseProgress(line) {
+                onProgress(progress)
+            }
+        }
     }
     
     func logging(_ logging: QEMULogging, didRecieveErrorLine line: String) {
+    }
+}
+
+extension UTMQemuImage {
+    private func parseProgress(_ line: String) -> Float? {
+        let pattern = "\\(([0-9]+\\.[0-9]+)/100\\%\\)"
+        do {
+            let regex = try NSRegularExpression(pattern: pattern)
+            if let match = regex.firstMatch(in: line, range: NSRange(location: 0, length: line.count)) {
+                let range = match.range(at: 1)
+                if let swiftRange = Range(range, in: line) {
+                    let floatValueString = line[swiftRange]
+                    if let floatValue = Float(floatValueString) {
+                        return floatValue
+                    }
+                }
+            }
+        } catch {
+
+        }
+        return nil
     }
 }

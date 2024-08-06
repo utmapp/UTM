@@ -23,9 +23,13 @@ struct VMConfigPortForwardForm: View {
         Group {
             VMConfigConstantPicker("Protocol", selection: $forward.protocol)
             DefaultTextField("Guest Address", text: $forward.guestAddress.bound, prompt: "10.0.2.15")
+                .help("Guest Address")
             NumberTextField("Guest Port", number: $forward.guestPort, prompt: "1234")
+                .help("Guest Port")
             DefaultTextField("Host Address", text: $forward.hostAddress.bound, prompt: "127.0.0.1")
+                .help("Host Address")
             NumberTextField("Host Port", number: $forward.hostPort, prompt: "1234")
+                .help("Host Port")
         }.disableAutocorrection(true)
         .keyboardType(.decimalPad)
     }

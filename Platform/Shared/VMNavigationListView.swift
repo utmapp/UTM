@@ -66,8 +66,10 @@ struct VMNavigationListView: View {
                 }
             }
         }.onMove(perform: move)
+        #if !WITH_REMOTE // FIXME: implement remote feature
         .onDelete(perform: delete)
-        
+        #endif
+
         if data.pendingVMs.count > 0 {
             Section(header: Text("Pending")) {
                 ForEach(data.pendingVMs, id: \.name) { vm in
@@ -102,7 +104,8 @@ private struct VMListModifier: ViewModifier {
     @EnvironmentObject private var data: UTMData
     @State private var settingsPresented = false
     @State private var sheetPresented = false
-    
+    @State private var donatePresented = false
+
     func body(content: Content) -> some View {
         content
         #if os(macOS)
@@ -119,10 +122,21 @@ private struct VMListModifier: ViewModifier {
                 newButton
             }
             #else
+            #if !WITH_REMOTE // FIXME: implement remote feature
             ToolbarItem(placement: .navigationBarLeading) {
                 newButton
             }
-            #if !os(visionOS)
+            #endif
+            #if !WITH_REMOTE
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button {
+                    donatePresented.toggle()
+                } label: {
+                    Label("Donate", systemImage: "heart.fill")
+                }
+            }
+            #endif
+            #if !os(visionOS) && !WITH_REMOTE
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button("Settings") {
                     settingsPresented.toggle()
@@ -140,24 +154,40 @@ private struct VMListModifier: ViewModifier {
             if data.showNewVMSheet {
                 VMWizardView()
             } else if settingsPresented {
+                #if !WITH_REMOTE
                 UTMSettingsView()
+                #endif
+            } else if donatePresented {
+                #if !os(macOS) && !WITH_REMOTE
+                UTMDonateView()
+                #endif
             }
         }
         .onChange(of: data.showNewVMSheet) { newValue in
             if newValue {
                 settingsPresented = false
+                donatePresented = false
                 sheetPresented = true
             }
         }
         .onChange(of: settingsPresented) { newValue in
             if newValue {
                 data.showNewVMSheet = false
+                donatePresented = false
+                sheetPresented = true
+            }
+        }
+        .onChange(of: donatePresented) { newValue in
+            if newValue {
+                data.showNewVMSheet = false
+                settingsPresented = false
                 sheetPresented = true
             }
         }
         .onChange(of: sheetPresented) { newValue in
             if !newValue {
                 settingsPresented = false
+                donatePresented = false
                 data.showNewVMSheet = false
             }
         }
@@ -168,6 +198,11 @@ private struct VMListModifier: ViewModifier {
         .sheet(isPresented: $data.showNewVMSheet) {
             VMWizardView()
         }
+        #if !os(macOS) && !WITH_REMOTE
+        .sheet(isPresented: $donatePresented) {
+            UTMDonateView()
+        }
+        #endif
         .onReceive(NSNotification.OpenVirtualMachine) { _ in
             data.showNewVMSheet = false
         }

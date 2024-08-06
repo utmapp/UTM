@@ -117,7 +117,7 @@ clone () {
         echo "${GREEN}$DIR already downloaded! Run with -d to force re-download.${NC}"
     else
         rm -rf "$DIR"
-        echo "${GREEN}Cloning ${URL}...${NC}"
+        echo "${GREEN}Cloning ${REPO}...${NC}"
         git clone --filter=tree:0 --no-checkout "$REPO" "$DIR"
         if [ ! -z "$SUBDIRS" ]; then
             git -C "$DIR" sparse-checkout init
@@ -257,7 +257,7 @@ build_pkg_config() {
     cd "$DIR"
     if [ -z "$REBUILD" ]; then
         echo "${GREEN}Configuring ${NAME}...${NC}"
-        env -i ./configure --prefix="$PREFIX" --bindir="$PREFIX/host/bin" --with-internal-glib $@
+        env -i CFLAGS="-Wno-error=int-conversion" ./configure --prefix="$PREFIX" --bindir="$PREFIX/host/bin" --with-internal-glib $@
     fi
     echo "${GREEN}Building ${NAME}...${NC}"
     make -j$NCPU
@@ -408,7 +408,21 @@ build_angle () {
     export PATH="$(realpath "$BUILD_DIR/depot_tools.git"):$OLD_PATH"
     pwd="$(pwd)"
     cd "$BUILD_DIR/WebKit.git/Source/ThirdParty/ANGLE"
-    xcodebuild archive -archivePath "ANGLE" -scheme "ANGLE" -sdk $SDK -arch $ARCH -configuration Release WEBCORE_LIBRARY_DIR="/usr/local/lib" IPHONEOS_DEPLOYMENT_TARGET="14.0" MACOSX_DEPLOYMENT_TARGET="11.0" XROS_DEPLOYMENT_TARGET="1.0"
+    env -i PATH=$PATH xcodebuild archive -archivePath "ANGLE" \
+                                         -scheme "ANGLE" \
+                                         -sdk $SDK \
+                                         -arch $ARCH \
+                                         -configuration Release \
+                                         WEBCORE_LIBRARY_DIR="/usr/local/lib" \
+                                         NORMAL_UMBRELLA_FRAMEWORKS_DIR="" \
+                                         CODE_SIGNING_ALLOWED=NO \
+                                         IPHONEOS_DEPLOYMENT_TARGET="14.0" \
+                                         MACOSX_DEPLOYMENT_TARGET="11.0" \
+                                         XROS_DEPLOYMENT_TARGET="1.0"
+    # FIXME: update minver and remove this hack
+    if [ "$SDK" == "iphoneos" ]; then
+        find "ANGLE.xcarchive/Products/usr/local/lib/" -name '*.dylib' -exec xcrun vtool -set-version-min ios $SDKMINVER 17.2 -replace -output \{\} \{\} \;
+    fi
     rsync -a "ANGLE.xcarchive/Products/usr/local/lib/" "$PREFIX/lib"
     rsync -a "include/" "$PREFIX/include"
     cd "$pwd"
@@ -631,25 +645,26 @@ ios* | visionos* )
     case $PLATFORM in
     ios_simulator* )
         SDK=iphonesimulator
-        CFLAGS_MINVER="-mios-simulator-version-min=$SDKMINVER"
+        CFLAGS_TARGET="-target $ARCH-apple-ios$SDKMINVER-simulator"
         PLATFORM_FAMILY_PREFIX="iOS_Simulator"
         ;;
     ios* )
         SDK=iphoneos
-        CFLAGS_MINVER="-miphoneos-version-min=$SDKMINVER"
+        CFLAGS_TARGET="-target $ARCH-apple-ios$SDKMINVER"
         PLATFORM_FAMILY_PREFIX="iOS"
         HVF_FLAGS="--enable-hvf-private"
         ;;
     visionos_simulator* )
         SDK=xrsimulator
+        CFLAGS_TARGET="-target $ARCH-apple-xros$SDKMINVER-simulator"
         PLATFORM_FAMILY_PREFIX="visionOS_Simulator"
         ;;
     visionos* )
         SDK=xros
+        CFLAGS_TARGET="-target $ARCH-apple-xros$SDKMINVER"
         PLATFORM_FAMILY_PREFIX="visionOS"
         ;;
     esac
-    CFLAGS_TARGET=
     case $PLATFORM in
     *-tci )
         if [ "$ARCH" == "arm64" ]; then
@@ -671,8 +686,7 @@ macos )
         SDKMINVER="$MAC_SDKMINVER"
     fi
     SDK=macosx
-    CFLAGS_MINVER="-mmacos-version-min=$SDKMINVER"
-    CFLAGS_TARGET="-target $ARCH-apple-macos"
+    CFLAGS_TARGET="-target $ARCH-apple-macos$SDKMINVER"
     PLATFORM_FAMILY_NAME="macOS"
     QEMU_PLATFORM_BUILD_FLAGS="--disable-debug-info --enable-shared-lib --disable-cocoa --cpu=$CPU"
     ;;
@@ -725,7 +739,7 @@ fi
 export NCPU
 
 # Export tools
-CC=$(xcrun --sdk $SDK --find gcc)
+CC="$(xcrun --sdk $SDK --find gcc) $CFLAGS_TARGET"
 CPP=$(xcrun --sdk $SDK --find gcc)" -E"
 CXX=$(xcrun --sdk $SDK --find g++)
 OBJCC=$(xcrun --sdk $SDK --find clang)
@@ -746,11 +760,11 @@ export STRIP
 export PREFIX
 
 # Flags
-CFLAGS="$CFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks $CFLAGS_MINVER $CFLAGS_TARGET"
-CPPFLAGS="$CPPFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks $CFLAGS_MINVER $CFLAGS_TARGET"
-CXXFLAGS="$CXXFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks $CFLAGS_MINVER $CFLAGS_TARGET"
-OBJCFLAGS="$OBJCFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks $CFLAGS_MINVER $CFLAGS_TARGET"
-LDFLAGS="$LDFLAGS -arch $ARCH -isysroot $SDKROOT -L$PREFIX/lib -F$PREFIX/Frameworks $CFLAGS_MINVER $CFLAGS_TARGET"
+CFLAGS="$CFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks"
+CPPFLAGS="$CPPFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks $CFLAGS_TARGET"
+CXXFLAGS="$CXXFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks $CFLAGS_TARGET"
+OBJCFLAGS="$OBJCFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks $CFLAGS_TARGET"
+LDFLAGS="$LDFLAGS -arch $ARCH -isysroot $SDKROOT -L$PREFIX/lib -F$PREFIX/Frameworks $CFLAGS_TARGET"
 export CFLAGS
 export CPPFLAGS
 export CXXFLAGS

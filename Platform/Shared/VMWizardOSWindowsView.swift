@@ -127,11 +127,11 @@ struct VMWizardOSWindowsView: View {
                 if useVhdx {
                     wizardState.windowsBootVhdx = url
                     wizardState.bootImageURL = nil
-                    wizardState.isSkipBootImage = true
+                    wizardState.bootDevice = .none
                 } else {
                     wizardState.windowsBootVhdx = nil
                     wizardState.bootImageURL = url
-                    wizardState.isSkipBootImage = false
+                    wizardState.bootDevice = .cd
                 }
             }
         }

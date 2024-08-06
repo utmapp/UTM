@@ -120,7 +120,7 @@ extension UTMConfiguration {
             #endif
             // is it a legacy QEMU config?
             let dict = try NSDictionary(contentsOf: configURL, error: ()) as! [AnyHashable : Any]
-            let name = UTMQemuVirtualMachine.virtualMachineName(for: packageURL)
+            let name = ConcreteVirtualMachine.virtualMachineName(for: packageURL)
             let legacy = UTMLegacyQemuConfiguration(dictionary: dict, name: name, path: packageURL)
             return UTMQemuConfiguration(migrating: legacy)
         } else if stub.backend == .qemu {

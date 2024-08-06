@@ -15,23 +15,35 @@
 //
 
 import SwiftUI
+import VisionKeyboardKit
+#if !WITH_USB
+import CocoaSpiceNoUsb
+#else
+import CocoaSpice
+#endif
 
 struct VMToolbarOrnamentModifier: ViewModifier {
     @Binding var state: VMWindowState
     @EnvironmentObject private var session: VMSessionState
     @AppStorage("ToolbarIsCollapsed") private var isCollapsed: Bool = false
+    @Environment(\.openWindow) private var openWindow
+    @Environment(\.dismissWindow) private var dismissWindow
 
     func body(content: Content) -> some View {
         content.ornament(visibility: isCollapsed ? .hidden : .visible, attachmentAnchor: .scene(.top)) {
             HStack {
                 Button {
-                    if session.vm.state == .started {
+                    if state.isRunning {
                         state.alert = .powerDown
                     } else {
                         state.alert = .terminateApp
                     }
                 } label: {
-                    Label(state.isRunning ? "Power Off" : "Quit", systemImage: state.isRunning ? "power" : "xmark")
+                    if state.isRunning {
+                        Label("Power Off", systemImage: "power")
+                    } else {
+                        Label("Force Kill", systemImage: "xmark")
+                    }
                 }
                 .disabled(state.isBusy)
                 Button {
@@ -56,7 +68,7 @@ struct VMToolbarOrnamentModifier: ViewModifier {
                     }
                     .disabled(state.isBusy)
                 }
-                #if !WITH_QEMU_TCI
+                #if WITH_USB
                 if session.vm.hasUsbRedirection {
                     VMToolbarUSBMenuView()
                         .disabled(state.isBusy)
@@ -67,11 +79,39 @@ struct VMToolbarOrnamentModifier: ViewModifier {
                 VMToolbarDisplayMenuView(state: $state)
                     .disabled(state.isBusy)
                 Button {
-                    state.isKeyboardRequested = true
+                    if case .display(_, _) = state.device {
+                        state.isKeyboardRequested = !state.isKeyboardShown
+                    } else {
+                        state.isKeyboardRequested = true
+                    }
                 } label: {
                     Label("Keyboard", systemImage: "keyboard")
                 }
                 .disabled(state.isBusy)
+                .onChange(of: state.isKeyboardRequested) { _, newValue in
+                    guard case .display(_, _) = state.device else {
+                        return
+                    }
+                    if newValue {
+                        openWindow(keyboardFor: state.id)
+                    } else {
+                        dismissWindow(keyboardFor: state.id)
+                    }
+                }
+                .onReceive(KeyboardEvent.publisher(for: state.id)) { event in
+                    switch event {
+                    case .keyboardDidAppear:
+                        state.isKeyboardShown = true
+                        state.isKeyboardRequested = true
+                    case .keyboardDidDisappear:
+                        state.isKeyboardShown = false
+                        state.isKeyboardRequested = false
+                    case .keyUp(let keyCode, let modifier):
+                        handleKeyEvent(keyCode, modifier: modifier, isKeyDown: false)
+                    case .keyDown(let keyCode, let modifier):
+                        handleKeyEvent(keyCode, modifier: modifier, isKeyDown: true)
+                    }
+                }
                 Divider()
                 Button {
                     isCollapsed = true
@@ -89,6 +129,18 @@ struct VMToolbarOrnamentModifier: ViewModifier {
                 }
                 .modifier(ToolbarOrnamentViewModifier())
         }
+    }
+
+    private func handleKeyEvent(_ keyCode: KeyboardKeyCode, modifier: KeyboardModifier, isKeyDown: Bool) {
+        guard let primaryInput = session.primaryInput else {
+            logger.debug("ignoring key event because input channel is not ready")
+            return
+        }
+        var scanCode = keyCode.ps2Set1ScanMake(modifier).reduce(Int32(0), { ($0 << 8) | Int32($1) })
+        if ((scanCode & 0xFF00) == 0xE000) {
+            scanCode = 0x100 | (scanCode & 0xFF);
+        }
+        primaryInput.send(isKeyDown ? .press : .release, code: scanCode)
     }
 }
 

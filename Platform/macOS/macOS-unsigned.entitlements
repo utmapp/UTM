@@ -4,6 +4,10 @@
 <dict>
 	<key>com.apple.security.app-sandbox</key>
 	<true/>
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>$(TeamIdentifierPrefix)$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).UTM</string>
+	</array>
 	<key>com.apple.security.cs.disable-library-validation</key>
 	<true/>
 	<key>com.apple.security.device.audio-input</key>
@@ -13,6 +17,8 @@
 	<key>com.apple.security.files.user-selected.read-write</key>
 	<true/>
 	<key>com.apple.security.network.client</key>
+	<true/>
+	<key>com.apple.security.network.server</key>
 	<true/>
 	<key>com.apple.security.temporary-exception.sbpl</key>
 	<array>

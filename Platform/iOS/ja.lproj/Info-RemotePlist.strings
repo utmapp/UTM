@@ -1,0 +1,9 @@
+/* Bundle name */
+"CFBundleName" = "UTMリモート";
+
+/* Privacy - Local Network Usage Description */
+"NSLocalNetworkUsageDescription" = "UTMはローカルネットワークを使用してUTMリモートサーバを検索し、接続します。";
+
+/* Privacy - Microphone Usage Description */
+"NSMicrophoneUsageDescription" = "仮想マシンがマイクから録音するには、アクセス許可が必要です。";
+

@@ -38,7 +38,7 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
     
     var shouldAutoStartVM: Bool = true
     var vm: (any UTMVirtualMachine)!
-    var onClose: ((Notification) -> Void)?
+    var onClose: (() -> Void)?
     private(set) var secondaryWindows: [VMDisplayWindowController] = []
     private(set) weak var primaryWindow: VMDisplayWindowController?
     private var preventIdleSleepAssertion: IOPMAssertionID?
@@ -60,7 +60,7 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
         self
     }
     
-    convenience init(vm: any UTMVirtualMachine, onClose: ((Notification) -> Void)?) {
+    convenience init(vm: any UTMVirtualMachine, onClose: (() -> Void)?) {
         self.init(window: nil)
         self.vm = vm
         self.onClose = onClose
@@ -210,6 +210,7 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
     
     @MainActor
     func showErrorAlert(_ message: String, completionHandler handler: ((NSApplication.ModalResponse) -> Void)? = nil) {
+        window?.resignKey()
         let alert = NSAlert()
         alert.alertStyle = .critical
         alert.messageText = NSLocalizedString("Error", comment: "VMDisplayWindowController")
@@ -219,6 +220,7 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
     
     @MainActor
     func showConfirmAlert(_ message: String, confirmHandler handler: (() -> Void)? = nil) {
+        window?.resignKey()
         let alert = NSAlert()
         alert.alertStyle = .informational
         alert.messageText = NSLocalizedString("Confirmation", comment: "VMDisplayWindowController")
@@ -236,7 +238,7 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
     
     func registerSecondaryWindow(_ secondaryWindow: VMDisplayWindowController, at index: Int? = nil) {
         secondaryWindows.insert(secondaryWindow, at: index ?? secondaryWindows.endIndex)
-        secondaryWindow.onClose = { [weak self] _ in
+        secondaryWindow.onClose = { [weak self] in
             self?.secondaryWindows.removeAll(where: { $0 == secondaryWindow })
         }
         secondaryWindow.primaryWindow = self
@@ -367,7 +369,7 @@ extension VMDisplayWindowController: NSWindowDelegate {
             IOPMAssertionRelease(preventIdleSleepAssertion)
         }
         isFinalizing = true
-        onClose?(notification)
+        onClose?()
     }
     
     func windowDidBecomeKey(_ notification: Notification) {

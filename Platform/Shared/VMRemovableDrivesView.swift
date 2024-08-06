@@ -15,6 +15,7 @@
 //
 
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct VMRemovableDrivesView: View {
     @ObservedObject var vm: VMData
@@ -25,9 +26,12 @@ struct VMRemovableDrivesView: View {
     /// Explanation see "SwiftUI FileImporter modal bug" in the `body`
     @State private var workaroundFileImporterBug: Bool = false
     @State private var currentDrive: UTMQemuConfigurationDrive?
-    
-    private var qemuVM: UTMQemuVirtualMachine! {
-        vm.wrapped as? UTMQemuVirtualMachine
+
+    private static let shareDirectoryUTType = UTType.folder
+    private static let diskImageUTType = UTType.data
+
+    private var qemuVM: (any UTMSpiceVirtualMachine)! {
+        vm.wrapped as? any UTMSpiceVirtualMachine
     }
     
     var fileManager: FileManager {
@@ -73,11 +77,25 @@ struct VMRemovableDrivesView: View {
                     } else {
                         Button("Browse…", action: { shareDirectoryFileImportPresented.toggle() })
                     }
-                }.fileImporter(isPresented: $shareDirectoryFileImportPresented, allowedContentTypes: [.folder], onCompletion: selectShareDirectory)
-                .disabled(mode == .virtfs && vm.state != .stopped)
+                }.fileImporter(isPresented: $shareDirectoryFileImportPresented, allowedContentTypes: [Self.shareDirectoryUTType], onCompletion: selectShareDirectory)
+                    .disabled(mode == .virtfs && vm.state != .stopped)
+                    .onDrop(of: [Self.shareDirectoryUTType], isTargeted: nil) { providers in
+                        guard let item = providers.first, item.hasItemConformingToTypeIdentifier(Self.shareDirectoryUTType.identifier) else { return false }
+
+                        item.loadItem(forTypeIdentifier: Self.shareDirectoryUTType.identifier) { url, error in
+                            if let url = url as? URL {
+                                selectShareDirectory(result: .success(url))
+                            }
+                            if let error = error {
+                                selectShareDirectory(result: .failure(error))
+                            }
+                        }
+                        return true
+                    }
             }
             ForEach(config.drives.filter { $0.isExternal }) { drive in
                 HStack {
+                    #if !WITH_REMOTE // FIXME: implement remote feature
                     // Drive menu
                     Menu {
                         // Browse button
@@ -118,17 +136,33 @@ struct VMRemovableDrivesView: View {
                     } label: {
                         DriveLabel(drive: drive, isInserted: qemuVM.externalImageURL(for: drive) != nil)
                     }.disabled(vm.hasSuspendState)
+                    #else
+                    DriveLabel(drive: drive, isInserted: qemuVM.externalImageURL(for: drive) != nil)
+                    #endif
                     Spacer()
                     // Disk image path, or (empty)
                     Text(pathFor(drive))
                         .lineLimit(1)
                         .truncationMode(.tail)
                         .foregroundColor(.secondary)
-                }.fileImporter(isPresented: $diskImageFileImportPresented, allowedContentTypes: [.data]) { result in
+                }.fileImporter(isPresented: $diskImageFileImportPresented, allowedContentTypes: [Self.diskImageUTType]) { result in
                     if let currentDrive = self.currentDrive {
                         selectRemovableImage(forDrive: currentDrive, result: result)
                         self.currentDrive = nil
                     }
+                }
+                .onDrop(of: [Self.diskImageUTType], isTargeted: nil) { providers in
+                    guard let item = providers.first, item.hasItemConformingToTypeIdentifier(Self.diskImageUTType.identifier) else { return false }
+
+                    item.loadItem(forTypeIdentifier: Self.diskImageUTType.identifier) { url, error in
+                        if let url = url as? URL{
+                            selectRemovableImage(forDrive: drive, result: .success(url))
+                        }
+                        if let error {
+                            selectRemovableImage(forDrive: drive, result: .failure(error))
+                        }
+                    }
+                    return true
                 }
             }
         }

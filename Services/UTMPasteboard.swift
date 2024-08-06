@@ -26,7 +26,7 @@ typealias SystemPasteboardType = NSPasteboard.PasteboardType
 #else
 #error("Neither UIKit nor AppKit found!")
 #endif
-#if WITH_QEMU_TCI
+#if !WITH_USB
 import CocoaSpiceNoUsb
 #else
 import CocoaSpice

@@ -167,6 +167,10 @@ struct VMConfigAppleDisplayView: View {
             }
             Toggle("HiDPI (Retina)", isOn: isHidpi)
                 .help("Only available on macOS virtual machines.")
+            if #available(macOS 14, *) {
+                Toggle("Dynamic Resolution", isOn: $config.isDynamicResolution)
+                    .help("Only available on macOS 14+ virtual machines.")
+            }
         }
     }
 }

@@ -23,9 +23,11 @@ import Metal
 protocol QEMUConstant: Codable, RawRepresentable, CaseIterable where RawValue == String, AllCases == [Self] {
     static var allRawValues: [String] { get }
     static var allPrettyValues: [String] { get }
+    static var shownPrettyValues: [String] { get }
     var prettyValue: String { get }
     var rawValue: String { get }
-    
+    var isHidden: Bool { get }
+
     init?(rawValue: String)
 }
 
@@ -36,6 +38,14 @@ extension QEMUConstant where Self: CaseIterable, AllCases == [Self] {
     
     static var allPrettyValues: [String] {
         allCases.map { value in value.prettyValue }
+    }
+
+    static var shownPrettyValues: [String] {
+        allCases.compactMap { value in value.isHidden ? nil : value.prettyValue }
+    }
+
+    var isHidden: Bool {
+        false
     }
 }
 
@@ -424,20 +434,20 @@ extension QEMUArchitecture {
         default: return true
         }
     }
-    
+
     var hasHypervisorSupport: Bool {
-        guard jb_has_hypervisor() else {
+        guard UTMCapabilities.current.contains(.hasHypervisorSupport) else {
             return false
         }
-        #if arch(arm64)
-        return self == .aarch64
-        #elseif arch(x86_64)
-        return self == .x86_64
-        #else
-        return false
-        #endif
+        if UTMCapabilities.current.contains(.isAarch64) {
+            return self == .aarch64
+        } else if UTMCapabilities.current.contains(.isX86_64) {
+            return self == .x86_64
+        } else {
+            return false
+        }
     }
-    
+
     /// TSO is supported on jailbroken iOS devices with Hypervisor support
     var hasTSOSupport: Bool {
         #if os(iOS) || os(visionOS)
@@ -478,3 +488,22 @@ extension QEMUTarget {
         }
     }
 }
+
+#if WITH_QEMU_TCI
+/// TCI build has a reduced set of supported architectures due to size of binaries.
+extension QEMUArchitecture {
+    var isHidden: Bool {
+        switch self {
+        case .arm: return false
+        case .aarch64: return false
+        case .i386: return false
+        case .ppc: return false
+        case .ppc64: return false
+        case .riscv32: return false
+        case .riscv64: return false
+        case .x86_64: return false
+        default: return true
+        }
+    }
+}
+#endif

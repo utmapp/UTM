@@ -21,6 +21,7 @@ struct VMCommands: Commands {
     
     @CommandsBuilder
     var body: some Commands {
+        #if !WITH_REMOTE // FIXME: implement remote feature
         CommandGroup(replacing: .newItem) {
             Button(action: { NotificationCenter.default.post(name: NSNotification.NewVirtualMachine, object: nil) }, label: {
                 Text("New…")
@@ -29,6 +30,7 @@ struct VMCommands: Commands {
                 Text("Open…")
             }).keyboardShortcut(KeyEquivalent("o"))
         }
+        #endif
         SidebarCommands()
         ToolbarCommands()
         CommandGroup(replacing: .help) {

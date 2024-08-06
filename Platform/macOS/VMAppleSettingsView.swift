@@ -76,6 +76,7 @@ struct VMAppleSettingsView: View {
                                     ToolbarItem(placement: .destructiveAction) {
                                         Button("Remove") {
                                             config.displays.removeAll(where: { $0.id == display.id })
+                                            refresh()
                                         }
                                     }
                                 }
@@ -84,6 +85,7 @@ struct VMAppleSettingsView: View {
                         }.contextMenu {
                             DestructiveButton("Remove") {
                                 config.displays.removeAll(where: { $0.id == display.id })
+                                refresh()
                             }
                         }
                     }
@@ -97,6 +99,7 @@ struct VMAppleSettingsView: View {
                             ToolbarItem(placement: .destructiveAction) {
                                 Button("Remove") {
                                     config.serials.removeAll(where: { $0.id == serial.id })
+                                    refresh()
                                 }
                             }
                         }
@@ -105,6 +108,7 @@ struct VMAppleSettingsView: View {
                 }.contextMenu {
                     DestructiveButton("Remove") {
                         config.serials.removeAll(where: { $0.id == serial.id })
+                        refresh()
                     }
                 }
             }
@@ -116,6 +120,7 @@ struct VMAppleSettingsView: View {
                             ToolbarItem(placement: .destructiveAction) {
                                 Button("Remove") {
                                     config.networks.removeAll(where: { $0.id == network.id })
+                                    refresh()
                                 }
                             }
                         }
@@ -124,6 +129,7 @@ struct VMAppleSettingsView: View {
                 }.contextMenu {
                     DestructiveButton("Remove") {
                         config.networks.removeAll(where: { $0.id == network.id })
+                        refresh()
                     }
                 }
             }
@@ -132,6 +138,11 @@ struct VMAppleSettingsView: View {
         Section(header: Text("Drives")) {
             VMDrivesSettingsView(drives: $config.drives, template: UTMAppleConfigurationDrive(newSize: 10240))
         }
+    }
+
+    private func refresh() {
+        // SwiftUI bug: if a TextField is focused while a device is removed, the app will crash
+        infoActive = true
     }
 }
 

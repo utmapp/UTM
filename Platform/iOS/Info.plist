@@ -64,7 +64,7 @@
 		<string>_altserver._tcp</string>
 	</array>
 	<key>NSLocalNetworkUsageDescription</key>
-	<string>The virtual machine may access the local network. UTM also uses the local network to communicate with AltServer.</string>
+	<string>The virtual machine may access the local network. UTM may also use the network to communicate with local servers.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>UTM requests location data periodically to ensure the system keeps the background process active. Location data will never leave the device.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
@@ -82,8 +82,8 @@
 	</array>
 	<key>UIFileSharingEnabled</key>
 	<true/>
-	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreen</string>
+	<key>UILaunchScreen</key>
+	<dict/>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>arm64</string>

@@ -123,16 +123,23 @@ struct VMConfigInfoView: View {
         switch iconStyle {
         case .custom:
             #if os(macOS)
-            Button(action: { imageSelectVisible.toggle() }, label: {
+            VStack {
                 IconPreview(url: config.iconURL)
-            }).fileImporter(isPresented: $imageSelectVisible, allowedContentTypes: [.image]) { result in
-                switch result {
-                case .success(let url):
-                    imageCustomSelected(url: url)
-                case .failure:
-                    break
+                    .onTapGesture {
+                        imageSelectVisible.toggle()
+                    }
+                Button(action: { imageSelectVisible.toggle() }, label: {
+                    Text("Choose")
+                }).fileImporter(isPresented: $imageSelectVisible, allowedContentTypes: [.image]) { result in
+                    switch result {
+                    case .success(let url):
+                        imageCustomSelected(url: url)
+                    case .failure:
+                        break
+                    }
                 }
-            }.buttonStyle(.plain)
+            }
+            .frame(width: 90)
             #else
             Button(action: { imageSelectVisible.toggle() }, label: {
                 IconPreview(url: config.iconURL)
@@ -141,18 +148,34 @@ struct VMConfigInfoView: View {
             }.buttonStyle(.plain)
             #endif
         case .operatingSystem:
-            Button(action: { imageSelectVisible.toggle() }, label: {
+            #if os(macOS)
+            VStack {
                 IconPreview(url: config.iconURL)
-            }).popover(isPresented: $imageSelectVisible, arrowEdge: .bottom) {
-                IconSelect(onIconSelected: imageSelected)
-            }.buttonStyle(.plain)
+                    .onTapGesture {
+                        imageSelectVisible.toggle()
+                    }
+                Button(action: { imageSelectVisible.toggle() }, label: {
+                    Text("Choose")
+                }).popover(isPresented: $imageSelectVisible, arrowEdge: .bottom) {
+                    IconSelect(current: config.iconURL, onIconSelected: imageSelected)
+                }
+            }
+            .frame(width: 90)
+            #else
+            IconSelect(current: config.iconURL, onIconSelected: imageSelected)
+            #endif
         default:
             #if os(macOS)
-            Image(systemName: "desktopcomputer")
-                .resizable()
-                .frame(width: 30.0, height: 30.0)
-                .padding()
-                .foregroundColor(Color(NSColor.disabledControlTextColor))
+            VStack {
+                Image(systemName: "desktopcomputer")
+                    .resizable()
+                    .frame(width: 30.0, height: 30.0)
+                    .foregroundColor(Color(NSColor.disabledControlTextColor))
+                Button {} label: {
+                    Text("Choose")
+                }.disabled(true)
+            }
+            .frame(width: 90)
             #else
             EmptyView()
             #endif
@@ -190,7 +213,6 @@ private struct IconPreview: View {
             Spacer()
             #endif
             Logo(logo: PlatformImage(contentsOfURL: url))
-                .padding()
             #if !os(macOS)
             Spacer()
             #endif
@@ -198,9 +220,16 @@ private struct IconPreview: View {
     }
 }
 
+#if os(macOS)
+let iconGridSize: CGFloat = 80
+#else
+let iconGridSize: CGFloat = 100
+#endif
+
 private struct IconSelect: View {
+    let current: URL?
     let onIconSelected: (URL) -> Void
-    private let gridLayout = [GridItem(.adaptive(minimum: 60))]
+    private let gridLayout = [GridItem(.adaptive(minimum: iconGridSize))]
     private var icons: [URL] {
         let paths = Bundle.main.paths(forResourcesOfType: "png", inDirectory: "Icons")
         let urls = paths.map({ URL(fileURLWithPath: $0) })
@@ -210,6 +239,7 @@ private struct IconSelect: View {
     }
     
     #if os(macOS)
+
     typealias PlatformImage = NSImage
     #else
     typealias PlatformImage = UIImage
@@ -218,47 +248,50 @@ private struct IconSelect: View {
     struct IconSelectModifier: ViewModifier {
         @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
         
-        #if os(macOS)
-        let isPhone: Bool = false
-        #else
-        var isPhone: Bool {
-            UIDevice.current.userInterfaceIdiom == .phone
-        }
-        #endif
-        
         func body(content: Content) -> some View {
-            if isPhone {
-                return AnyView(
-                    VStack {
-                        HStack {
-                            Spacer()
-                            Button(action: { presentationMode.wrappedValue.dismiss() }, label: {
-                                Text("Cancel")
-                            }).padding()
-                        }
-                        ScrollView {
-                            content.padding(.bottom)
-                        }
-                    }
-                )
-            } else {
-                return AnyView(
-                    ScrollView {
-                        content.padding([.top, .bottom])
-                    }.frame(width: 400, height: 400)
-                )
-            }
+    #if os(macOS)
+            return AnyView(
+                ScrollView {
+                    content.padding(16)
+                }.frame(width: 480, height: 400)
+            )
+    #else
+            return AnyView(content)
+    #endif
         }
     }
     
     var body: some View {
-        LazyVGrid(columns: gridLayout, spacing: 30) {
+        LazyVGrid(columns: gridLayout, spacing: 0) {
             ForEach(icons, id: \.self) { icon in
                 Button(action: { onIconSelected(icon) }, label: {
-                    Logo(logo: PlatformImage(contentsOfURL: icon))
+                    VStack(alignment: .center) {
+                        Logo(logo: PlatformImage(contentsOfURL: icon))
+                        Text(iconToTitle(icon))
+                            .lineLimit(2, optionalReservesSpace: true)
+                            .font(.footnote)
+                            .multilineTextAlignment(.center)
+                    }
+                    .padding(8)
+                    .frame(width: iconGridSize, height: iconGridSize)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(current == icon ? Color.accentColor : Color.clear, lineWidth: 2)
+                    )
                 }).buttonStyle(.plain)
             }
         }.modifier(IconSelectModifier())
+    }
+}
+
+private extension View {
+    @ViewBuilder
+    func lineLimit(_ limit: Int, optionalReservesSpace: Bool) -> some View {
+        if #available(macOS 13, iOS 16, *) {
+            self.lineLimit(limit, reservesSpace: optionalReservesSpace)
+        } else {
+            self.lineLimit(limit)
+        }
     }
 }
 
@@ -271,9 +304,83 @@ struct VMConfigInfoView_Previews: PreviewProvider {
                 #if os(macOS)
                 .scrollable()
                 #endif
-            IconSelect() { _ in
+            IconSelect(current: nil) { _ in
                 
             }
         }
     }
 }
+
+private func iconToTitle(_ icon: URL?) -> LocalizedStringKey {
+    guard let fileName = icon?.deletingPathExtension().lastPathComponent else {
+        return "Custom"
+    }
+    return ICON_TITLE_MAP[fileName] ?? "Custom"
+}
+
+private let ICON_TITLE_MAP: [String: LocalizedStringKey] = [
+    "AIX": "AIX",
+    "IOS": "iOS",
+    "Windows7": "Windows 7",
+    "almalinux": "AlmaLinux",
+    "alpine": "Alpine",
+    "amigaos": "AmigaOS",
+    "android": "Android",
+    "apple-tv": "Apple TV",
+    "arch-linux": "Arch Linux",
+    "backtrack": "BackTrack",
+    "bada": "Bada",
+    "beos": "BeOS",
+    "centos": "CentOS",
+    "chrome-os": "Chrome OS",
+    "cyanogenmod": "CyanogenMod",
+    "debian": "Debian",
+    "elementary-os": "Elementary OS",
+    "fedora": "Fedora",
+    "firefox-os": "Firefox OS",
+    "freebsd": "FreeBSD",
+    "gentoo": "Gentoo",
+    "haiku-os": "Haiku OS",
+    "hp-ux": "HP-UX",
+    "kaios": "KaiOS",
+    "knoppix": "Knoppix",
+    "kubuntu": "Kubuntu",
+    "linux": "Linux",
+    "lubuntu": "Lubuntu",
+    "mac": "macOS",
+    "maemo": "Maemo",
+    "mandriva": "Mandriva",
+    "meego": "MeeGo",
+    "mint": "Linux Mint",
+    "netbsd": "NetBSD",
+    "nintendo": "Nintendo",
+    "nixos": "NixOS",
+    "openbsd": "OpenBSD",
+    "openwrt": "OpenWrt",
+    "os2": "OS/2",
+    "palmos": "Palm OS",
+    "playstation-portable": "PlayStation Portable",
+    "playstation": "PlayStation",
+    "pop-os": "Pop!_OS",
+    "red-hat": "Red Hat",
+    "remix-os": "Remix OS",
+    "risc-os": "RISC OS",
+    "sabayon": "Sabayon",
+    "sailfish-os": "Sailfish OS",
+    "slackware": "Slackware",
+    "solaris": "Solaris",
+    "suse": "openSUSE",
+    "syllable": "Syllable",
+    "symbian": "Symbian",
+    "threadx": "ThreadX",
+    "tizen": "Tizen",
+    "ubuntu": "Ubuntu",
+    "webos": "webOS",
+    "windows-11": "Windows 11",
+    "windows-9x": "Windows 9x",
+    "windows-xp": "Windows XP",
+    "windows": "Windows",
+    "xbox": "Xbox",
+    "xubuntu": "Xubuntu",
+    "yunos": "YunOS",
+]

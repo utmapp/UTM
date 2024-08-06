@@ -37,6 +37,10 @@ struct SettingsView: View {
                 .tabItem {
                     Label("Input", systemImage: "keyboard")
                 }
+            ServerSettingsView().padding()
+                .tabItem {
+                    Label("Server", systemImage: "server.rack")
+                }
         }.frame(minWidth: 600, minHeight: 350, alignment: .topLeading)
     }
 }
@@ -77,7 +81,6 @@ struct ApplicationSettingsView: View {
 }
 
 struct DisplaySettingsView: View {
-    @AppStorage("DisplayFixed") var isVMDisplayFixed = false
     @AppStorage("NoSaveScreenshot") var isNoSaveScreenshot = false
     @AppStorage("QEMURendererBackend") var qemuRendererBackend: UTMQEMURendererBackend = .qemuRendererBackendDefault
     @AppStorage("QEMURendererFPSLimit") var qemuRendererFpsLimit: Int = 0
@@ -85,9 +88,6 @@ struct DisplaySettingsView: View {
     var body: some View {
         Form {
             Section(header: Text("Display")) {
-                Toggle(isOn: $isVMDisplayFixed, label: {
-                    Text("VM display size is fixed")
-                }).help("If enabled, resizing of the VM window will not be allowed.")
                 Toggle(isOn: $isNoSaveScreenshot) {
                     Text("Do not save VM screenshot to disk")
                 }.help("If enabled, any existing screenshot will be deleted the next time the VM is started.")
@@ -129,6 +129,7 @@ struct SoundSettingsView: View {
 
 struct InputSettingsView: View {
     @AppStorage("FullScreenAutoCapture") var isFullScreenAutoCapture = false
+    @AppStorage("WindowFocusAutoCapture") var isWindowFocusAutoCapture = false
     @AppStorage("OptionAsMetaKey") var isOptionAsMetaKey = false
     @AppStorage("CtrlRightClick") var isCtrlRightClick = false
     @AppStorage("AlternativeCaptureKey") var isAlternativeCaptureKey = false
@@ -143,6 +144,9 @@ struct InputSettingsView: View {
                 Toggle(isOn: $isFullScreenAutoCapture) {
                     Text("Capture input automatically when entering full screen")
                 }.help("If enabled, input capture will toggle automatically when entering and exiting full screen mode.")
+                Toggle(isOn: $isWindowFocusAutoCapture) {
+                    Text("Capture input automatically when window is focused")
+                }.help("If enabled, input capture will toggle automatically when the VM's window is focused.")
             }
             
             Section(header: Text("Console")) {
@@ -181,6 +185,65 @@ struct InputSettingsView: View {
     }
 }
 
+struct ServerSettingsView: View {
+    private let defaultPort = 21589
+
+    @AppStorage("ServerAutostart") var isServerAutostart: Bool = false
+    @AppStorage("ServerExternal") var isServerExternal: Bool = false
+    @AppStorage("ServerAutoblock") var isServerAutoblock: Bool = false
+    @AppStorage("ServerPort") var serverPort: Int = 0
+    @AppStorage("ServerPasswordRequired") var isServerPasswordRequired: Bool = false
+    @AppStorage("ServerPassword") var serverPassword: String = ""
+
+    // note it is okay to store the server password in plaintext in the settings plist because if the attacker is able to see the password,
+    // they can gain execution in UTM application context... which is the context needed to read the password.
+
+    var body: some View {
+        Form {
+            Section(header: Text("Startup")) {
+                Toggle("Automatically start UTM server", isOn: $isServerAutostart)
+            }
+            Section(header: Text("Network")) {
+                Toggle("Reject unknown connections by default", isOn: $isServerAutoblock)
+                    .help("If checked, you will not be prompted about any unknown connection and they will be rejected.")
+                Toggle("Allow access from external clients", isOn: $isServerExternal)
+                    .help("By default, the server is only available on LAN but setting this will use UPnP/NAT-PMP to port forward to WAN.")
+                    .onChange(of: isServerExternal) { newValue in
+                        if newValue {
+                            if serverPort == 0 {
+                                serverPort = defaultPort
+                            }
+                            if !isServerPasswordRequired {
+                                isServerPasswordRequired = true
+                            }
+                        }
+                    }
+                NumberTextField("", number: $serverPort, prompt: "Any")
+                    .frame(width: 80)
+                    .multilineTextAlignment(.trailing)
+                    .help("Specify a port number to listen on. This is required if external clients are permitted.")
+                    .onChange(of: serverPort) { newValue in
+                        if serverPort == 0 {
+                            isServerExternal = false
+                        }
+                    }
+            }
+            Section(header: Text("Authentication")) {
+                Toggle("Require Password", isOn: $isServerPasswordRequired)
+                    .disabled(isServerExternal)
+                    .help("If enabled, clients must enter a password. This is required if you want to access the server externally.")
+                    .onChange(of: isServerPasswordRequired) { newValue in
+                        if newValue && serverPassword.count == 0 {
+                            serverPassword = .random(length: 32)
+                        }
+                    }
+                TextField("Password", text: $serverPassword)
+                    .disabled(!isServerPasswordRequired)
+            }
+        }
+    }
+}
+
 extension UserDefaults {
     @objc dynamic var KeepRunningAfterLastWindowClosed: Bool { false }
     @objc dynamic var ShowMenuIcon: Bool { false }
@@ -188,7 +251,6 @@ extension UserDefaults {
     @objc dynamic var PreventIdleSleep: Bool { false }
     @objc dynamic var NoQuitConfirmation: Bool { false }
     @objc dynamic var NoCursorCaptureAlert: Bool { false }
-    @objc dynamic var DisplayFixed: Bool { false }
     @objc dynamic var FullScreenAutoCapture: Bool { false }
     @objc dynamic var OptionAsMetaKey: Bool { false }
     @objc dynamic var CtrlRightClick: Bool { false }

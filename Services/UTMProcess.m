@@ -35,7 +35,9 @@ extern NSString *const kUTMErrorDomain;
 @implementation UTMProcess {
     NSMutableArray<NSString *> *_argv;
     NSMutableArray<NSURL *> *_urls;
+#if TARGET_OS_OSX
     NSXPCConnection *_connection;
+#endif
 }
 
 static void *startProcess(void *args) {
@@ -92,7 +94,11 @@ static int defaultEntry(UTMProcess *self, int argc, const char *argv[], const ch
 }
 
 - (BOOL)hasRemoteProcess {
+#if TARGET_OS_OSX
     return _connection != nil;
+#else
+    return NO;
+#endif
 }
 
 - (NSString *)arguments {
@@ -219,6 +225,7 @@ static int defaultEntry(UTMProcess *self, int argc, const char *argv[], const ch
     completion(nil);
 }
 
+#if TARGET_OS_OSX
 - (void)startQemuRemote:(nonnull NSString *)name completion:(nonnull void (^)(NSError * _Nullable))completion {
     NSError *error;
     NSData *libBookmark = [self.libraryURL bookmarkDataWithOptions:0
@@ -253,6 +260,7 @@ static int defaultEntry(UTMProcess *self, int argc, const char *argv[], const ch
         }
     }];
 }
+#endif
 
 - (void)startProcess:(nonnull NSString *)name completion:(nonnull void (^)(NSError * _Nullable))completion {
 #if TARGET_OS_IPHONE
@@ -262,18 +270,24 @@ static int defaultEntry(UTMProcess *self, int argc, const char *argv[], const ch
 #endif
     NSString *dylib = [NSString stringWithFormat:@"%@.framework/%@%@", name, base, name];
     self.processName = name;
+#if TARGET_OS_OSX
     if (_connection) {
         [self startQemuRemote:dylib completion:completion];
     } else {
+#endif
         [self startDylibThread:dylib completion:completion];
+#if TARGET_OS_OSX
     }
+#endif
 }
 
 - (void)stopProcess {
+#if TARGET_OS_OSX
     if (_connection) {
         [[_connection remoteObjectProxy] terminate];
         [_connection invalidate];
     }
+#endif
     for (NSURL *url in _urls) {
         [url stopAccessingSecurityScopedResource];
     }
@@ -320,11 +334,15 @@ static int defaultEntry(UTMProcess *self, int argc, const char *argv[], const ch
 }
 
 - (void)accessDataWithBookmark:(NSData *)bookmark securityScoped:(BOOL)securityScoped completion:(void(^)(BOOL, NSData * _Nullable, NSString * _Nullable))completion {
+#if TARGET_OS_OSX
     if (_connection) {
         [[_connection remoteObjectProxy] accessDataWithBookmark:bookmark securityScoped:securityScoped completion:completion];
     } else {
+#endif
         [self accessDataWithBookmarkThread:bookmark securityScoped:securityScoped completion:completion];
+#if TARGET_OS_OSX
     }
+#endif
 }
 
 - (void)stopAccessingPathThread:(nullable NSString *)path {
@@ -342,11 +360,15 @@ static int defaultEntry(UTMProcess *self, int argc, const char *argv[], const ch
 }
 
 - (void)stopAccessingPath:(nullable NSString *)path {
+#if TARGET_OS_OSX
     if (_connection) {
         [[_connection remoteObjectProxy] stopAccessingPath:path];
     } else {
+#endif
         [self stopAccessingPathThread:path];
+#if TARGET_OS_OSX
     }
+#endif
 }
 
 - (NSError *)errorWithMessage:(nullable NSString *)message {
