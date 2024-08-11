@@ -357,7 +357,7 @@
 "Disposable Mode" = "即拋式模式";
 
 /* No comment provided by engineer. */
-"Do not save VM screenshot to disk" = "不要將虛擬電腦螢幕截圖儲存至磁碟";
+"Do not save VM screenshot to disk" = "不要儲存虛擬電腦的螢幕截圖至磁碟";
 
 /* No comment provided by engineer. */
 "Do not show confirmation when closing a running VM" = "關閉正在執行的虛擬電腦時不要顯示確認";
