@@ -169,7 +169,7 @@
 "Disable screen dimming when idle" = "闲置时禁用屏幕变暗";
 
 /* (No Comment) */
-"Do not save VM screenshot to disk" = "不将虚拟机截图存储到磁盘";
+"Do not save VM screenshot to disk" = "不将虚拟机截图保存到磁盘";
 
 /* (No Comment) */
 "FPS Limit" = "FPS 上限";
