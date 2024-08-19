@@ -683,13 +683,16 @@ extension UTMRemoteServer {
         }
 
         @MainActor
-        private func findVM(withId id: UUID) throws -> VMData {
+        private func findVM(withId id: UUID, allowNotLoaded: Bool = false) throws -> VMData {
             let vm = data.virtualMachines.first(where: { $0.id == id })
-            if let vm = vm, let _ = vm.wrapped {
-                return vm
-            } else {
-                throw UTMRemoteServer.ServerError.notFound(id)
+            if let vm = vm {
+                if let _ = vm.wrapped {
+                    return vm
+                } else if allowNotLoaded {
+                    return vm
+                }
             }
+            throw UTMRemoteServer.ServerError.notFound(id)
         }
 
         @MainActor
@@ -735,7 +738,7 @@ extension UTMRemoteServer {
         private func _getVirtualMachineInformation(parameters: M.GetVirtualMachineInformation.Request) async throws -> M.GetVirtualMachineInformation.Reply {
             let informations = try await Task { @MainActor in
                 try parameters.ids.map { id in
-                    let vm = try findVM(withId: id)
+                    let vm = try findVM(withId: id, allowNotLoaded: true)
                     let mountedDrives = vm.registryEntry?.externalDrives.mapValues({ $0.path }) ?? [:]
                     let isTakeoverAllowed = data.vmWindows[vm] is VMRemoteSessionState && (vm.state == .started || vm.state == .paused)
                     return M.VirtualMachineInformation(id: vm.id,
