@@ -142,7 +142,7 @@ cat >"$DEB_TMP/DEBIAN/control" <<EOL
 Package: com.utmapp.UTM
 Version: ${VERSION}
 Section: Productivity
-Architecture: iphoneos-arm
+Architecture: all
 Depends: firmware (>=14.0), firmware-sbin, net.angelxwind.appsyncunified
 Installed-Size: ${SIZE_KIB}
 Maintainer: osy <dev@getutm.app>
