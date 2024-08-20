@@ -121,6 +121,17 @@ struct ContentView: View {
             #endif
             #endif
         }
+        #if WITH_SERVER
+        .onChange(of: isServerAutostart) { newValue in
+            if newValue {
+                Task {
+                    if isServerAutostart && !data.remoteServer.state.isServerActive {
+                        await data.remoteServer.start()
+                    }
+                }
+            }
+        }
+        #endif
     }
     
     private func handleURL(url: URL) {
