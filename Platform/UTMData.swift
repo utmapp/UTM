@@ -619,9 +619,13 @@ struct AlertMessage: Identifiable {
     /// - Parameter asShortcut: Create a shortcut rather than a copy
     func importUTM(from url: URL, asShortcut: Bool = true) async throws {
         guard url.isFileURL else { return }
-        _ = url.startAccessingSecurityScopedResource()
-        defer { url.stopAccessingSecurityScopedResource() }
-        
+        let isScopedAccess = url.startAccessingSecurityScopedResource()
+        defer {
+            if isScopedAccess {
+                url.stopAccessingSecurityScopedResource()
+            }
+        }
+
         logger.info("importing: \(url)")
         // attempt to turn temp URL to presistent bookmark early otherwise,
         // when stopAccessingSecurityScopedResource() is called, we lose access

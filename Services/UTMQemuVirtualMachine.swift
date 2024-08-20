@@ -784,9 +784,11 @@ extension UTMQemuVirtualMachine {
     }
 
     private func changeMedium(_ drive: UTMQemuConfigurationDrive, to url: URL, isAccessOnly: Bool) async throws {
-        _ = url.startAccessingSecurityScopedResource()
+        let isScopedAccess = url.startAccessingSecurityScopedResource()
         defer {
-            url.stopAccessingSecurityScopedResource()
+            if isScopedAccess {
+                url.stopAccessingSecurityScopedResource()
+            }
         }
         let tempBookmark = try url.bookmarkData()
         try await eject(drive, isForced: true)
