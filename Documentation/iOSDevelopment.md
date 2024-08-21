@@ -22,6 +22,10 @@ The easy way is to get the prebuilt dependences from [GitHub Actions][1]. Pick t
 | Simulator    | `ios_simulator-x86_64`     | `ios_simulator-arm64`     |
 | Simulator SE | `ios_simulator-tci-x86_64` | `ios_simulator-tci-arm64` |
 
+After downloading the prebuilt artifacts of your choice, extract them to the root directory where you cloned the repository.
+
+To build UTM, make sure you have the latest version of Xcode installed.
+
 ### Building Dependencies (Advanced)
 
 If you want to build the dependencies yourself, it is highly recommended that you start with a fresh macOS VM. This is because some of the dependencies attempt to use `/usr/local/lib` even though the architecture does not match. Certain installed packages like `libusb`, `gawk`, and `cmake` will break the build.
@@ -39,10 +43,10 @@ If you want to build the dependencies yourself, it is highly recommended that yo
 
 ### Command Line
 
-You can build UTM with the script:
+You can build UTM for iOS with the script (run `./scripts/build_utm.sh` for all options):
 
 ```
-./scripts/build_utm.sh -p ios -a arm64 -o /path/to/output/directory
+./scripts/build_utm.sh -k iphoneos -s iOS -a arm64 -o /path/to/output/directory
 ```
 
 The built artifact is an unsigned `.xcarchive` which you can use with the package tool (see below). Replace `ios` with `ios-tci` to build UTM SE.
