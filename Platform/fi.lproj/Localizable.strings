@@ -521,7 +521,7 @@
 "Import…" = "Tuo...";
 
 /* No comment provided by engineer. */
-"Import Drive" = "Tuo asema";
+"Import Drive…" = "Tuo asema...";
 
 /* No comment provided by engineer. */
 "Import VHDX Image" = "Importer une image VHDX";
@@ -680,7 +680,7 @@
 "New" = "Uusi";
 
 /* No comment provided by engineer. */
-"New Drive" = "Uusi asema";
+"New Drive…" = "Uusi asema…";
 
 /* VMConfigPortForwardingViewController */
 "New port forward" = "Uusi portitus";

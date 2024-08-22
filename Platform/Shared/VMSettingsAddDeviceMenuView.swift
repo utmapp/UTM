@@ -74,12 +74,12 @@ struct VMSettingsAddDeviceMenuView: View {
             Button {
                 isImportDriveShown.toggle()
             } label: {
-                Label("Import Drive", systemImage: "externaldrive")
+                Label("Import Drive…", systemImage: "externaldrive")
             }
             Button {
                 isCreateDriveShown.toggle()
             } label: {
-                Label("New Drive", systemImage: "externaldrive.badge.plus")
+                Label("New Drive…", systemImage: "externaldrive.badge.plus")
             }
             #endif
         } label: {

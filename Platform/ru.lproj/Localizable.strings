@@ -809,7 +809,7 @@
 "Import…" = "Импорт…";
 
 /* No comment provided by engineer. */
-"Import Drive" = "Импортировать диск";
+"Import Drive…" = "Импортировать диск…";
 
 /* No comment provided by engineer. */
 "Import VHDX Image" = "Импортировать образ VHDX";
@@ -1070,7 +1070,7 @@
 "New…" = "Новый…";
 
 /* No comment provided by engineer. */
-"New Drive" = "Новый диск";
+"New Drive…" = "Новый диск…";
 
 /* No comment provided by engineer. */
 "New from template…" = "Новая из шаблона…";

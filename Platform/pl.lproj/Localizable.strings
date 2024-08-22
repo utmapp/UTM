@@ -787,8 +787,8 @@
 "%@ %@" = "%@ %@";
 
 /* VMSettingsAddDeviceMenuView.swift */
-"Import Drive" = "Importuj dysk";
-"New Drive" = "Nowy dysk";
+"Import Drive…" = "Importuj dysk...";
+"New Drive…" = "Nowy dysk...";
 
 /* VMToolbarModifier.swift */
 "Remove selected shortcut" = "Uruchom wybrany skrót";

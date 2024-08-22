@@ -797,7 +797,7 @@
 "Import…" = "Importar...";
 
 /* No comment provided by engineer. */
-"Import Drive" = "Importar unidad";
+"Import Drive…" = "Importar unidad...";
 
 /* No comment provided by engineer. */
 "Import VHDX Image" = "Importar una imagen VHDX";
@@ -1055,7 +1055,7 @@
 "New…" = "Nuevo...";
 
 /* No comment provided by engineer. */
-"New Drive" = "Nueva unidad";
+"New Drive…" = "Nueva unidad...";
 
 /* No comment provided by engineer. */
 "New from template…" = "Nuevo desde plantilla...";

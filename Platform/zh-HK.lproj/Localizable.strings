@@ -1861,7 +1861,7 @@
 "Image Type" = "映像檔種類";
 
 /* No comment provided by engineer. */
-"Import Drive" = "輸入磁碟機";
+"Import Drive…" = "輸入磁碟機⋯";
 
 /* No comment provided by engineer. */
 "Import VHDX Image" = "輸入 VHDX 映像檔";
@@ -1945,7 +1945,7 @@
 "Network Mode" = "網絡模式";
 
 /* No comment provided by engineer. */
-"New Drive" = "新增磁碟機";
+"New Drive…" = "新增磁碟機⋯";
 
 /* No comment provided by engineer. */
 "New from template…" = "由此範本新增⋯";

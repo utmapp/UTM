@@ -863,8 +863,8 @@
 "%@ %@" = "%1$@ %2$@";
 
 // VMSettingsAddDeviceMenuView.swift
-"Import Drive" = "ドライブを読み込む";
-"New Drive" = "新規ドライブ";
+"Import Drive…" = "ドライブを読み込む…";
+"New Drive…" = "新規ドライブ…";
 
 // VMToolbarModifier.swift
 "Remove selected shortcut" = "選択したショートカットを削除します";

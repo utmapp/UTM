@@ -825,7 +825,7 @@
 "Import…" = "Importa...";
 
 /* No comment provided by engineer. */
-"Import Drive" = "Importa Disco";
+"Import Drive…" = "Importa Disco...";
 
 /* No comment provided by engineer. */
 "Import VHDX Image" = "Importa un'Immagine VHDX";
@@ -1166,7 +1166,7 @@
 "New…" = "Crea...";
 
 /* No comment provided by engineer. */
-"New Drive" = "Nuovo Disco";
+"New Drive…" = "Nuovo Disco...";
 
 /* No comment provided by engineer. */
 "New from template…" = "Nuovo da template...";
