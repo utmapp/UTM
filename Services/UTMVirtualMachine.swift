@@ -401,6 +401,14 @@ extension UTMVirtualMachine {
             try reload(from: newPath)
             try await updateRegistryBasics() // update bookmark
         }
+        // update last modified date
+        try? updateLastModified()
+    }
+    
+    /// Set the package's last modified time
+    /// - Parameter date: Last modified date
+    nonisolated func updateLastModified(to date: Date = Date()) throws {
+        try FileManager.default.setAttributes([.modificationDate: date], ofItemAtPath: pathUrl.path)
     }
 }
 

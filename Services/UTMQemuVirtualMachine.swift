@@ -437,6 +437,11 @@ extension UTMQemuVirtualMachine {
             self.spicePort = spicePort
         }
         #endif
+
+        // update timestamp
+        if !isRunningAsDisposible {
+            try? updateLastModified()
+        }
     }
     
     func start(options: UTMVirtualMachineStartOptions = []) async throws {
@@ -549,6 +554,7 @@ extension UTMQemuVirtualMachine {
         if result.localizedCaseInsensitiveContains("Error") {
             throw UTMQemuVirtualMachineError.qemuError(result)
         }
+        try? updateLastModified()
     }
     
     func saveSnapshot(name: String? = nil) async throws {
@@ -580,6 +586,7 @@ extension UTMQemuVirtualMachine {
             if result.localizedCaseInsensitiveContains("Error") {
                 throw UTMQemuVirtualMachineError.qemuError(result)
             }
+            try? updateLastModified()
         }
     }
     
