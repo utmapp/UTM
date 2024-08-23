@@ -148,7 +148,7 @@ private struct VMListModifier: ViewModifier {
             #else
             #if !WITH_REMOTE // FIXME: implement remote feature
             ToolbarItem(placement: .navigationBarLeading) {
-                if #available(iOS 17, *) {
+                if #available(iOS 17, visionOS 99, *) {
                     Button {
                         createTip.invalidate(reason: .actionPerformed)
                         data.newVM()
@@ -163,7 +163,7 @@ private struct VMListModifier: ViewModifier {
             #endif
             #if !WITH_REMOTE
             ToolbarItem(placement: .navigationBarLeading) {
-                if #available(iOS 17, macOS 14, *) {
+                if #available(iOS 17, visionOS 99, *) {
                     Button {
                         donateTip.invalidate(reason: .actionPerformed)
                         donatePresented.toggle()
