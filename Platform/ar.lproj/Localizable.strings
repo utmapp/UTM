@@ -1229,7 +1229,7 @@
 "This functionality is not yet implemented." = "هذه الوظيفة لم تُنفذ بعد.";
 
 /* UTMRemoteClient */
-"This host is not yet trusted. You should verify that the fingerprints match what is displayed on the host and then select Trust to continue." = "هذا المضيف لم يُوثق بعد. يجب عليك التحقق من أن بصمات الأصابع تتطابق مع ما هو معروض على المضيف ثم اختيار "ثقة" للمتابعة.";
+"This host is not yet trusted. You should verify that the fingerprints match what is displayed on the host and then select Trust to continue." = "هذا المضيف لم يُوثق بعد. يجب عليك التحقق من أن بصمات الأصابع تتطابق مع ما هو معروض على المضيف ثم اختيار \"ثقة\" للمتابعة.";
 
 /* UTMAppleConfiguration */
 "This is not a valid Apple Virtualization configuration." = "هذه ليست تكوينًا صالحًا لافتراضية Apple.";
@@ -1537,7 +1537,7 @@
 "Debian Install Guide" = "دليل تثبيت Debian.";
 
 /* No comment provided by engineer. */
-"Default is 1/4 of the RAM size (above). The JIT cache size is additive to the RAM size in the total memory usage!" = "الإعداد الافتراضي هو 1/4 من حجم الذاكرة (كما هو موضح أعلاه). حجم ذاكرة التخزين المؤقت JIT يضاف إلى حجم الذاكرة في الاستخدام الكلي للذاكرة!" ;
+"Default is 1/4 of the RAM size (above). The JIT cache size is additive to the RAM size in the total memory usage!" = "الإعداد الافتراضي هو 1/4 من حجم الذاكرة (كما هو موضح أعلاه). حجم ذاكرة التخزين المؤقت JIT يضاف إلى حجم الذاكرة في الاستخدام الكلي للذاكرة!";
 
 /* No comment provided by engineer. */
 "Delete this drive." = "حذف هذا المحرك.";
@@ -1759,7 +1759,7 @@
 "If enabled, num lock will always be on to the guest. Note this may make your keyboard's num lock indicator out of sync." = "إذا تم تمكينه، سيظل Num Lock مفعلًا دائمًا للضيف. لاحظ أن هذا قد يجعل مؤشر Num Lock على لوحة المفاتيح غير متزامن.";
 
 /* No comment provided by engineer. */
-"If enabled, Option will be mapped to the Meta key which can be useful for emacs. Otherwise, option will work as the system intended (such as for entering international text)." = "إذا تم تمكينه، سيتم تعيين مفتاح Option إلى مفتاح Meta، مما قد يكون مفيدًا لـ emacs. خلاف ذلك، سيعمل مفتاح Option كما هو مقصود من قبل النظام (مثل إدخال نص دولي)." ;
+"If enabled, Option will be mapped to the Meta key which can be useful for emacs. Otherwise, option will work as the system intended (such as for entering international text)." = "إذا تم تمكينه، سيتم تعيين مفتاح Option إلى مفتاح Meta، مما قد يكون مفيدًا لـ emacs. خلاف ذلك، سيعمل مفتاح Option كما هو مقصود من قبل النظام (مثل إدخال نص دولي).";
 
 /* No comment provided by engineer. */
 "If enabled, resizing of the VM window will not be allowed." = "إذا تم تمكينه، فلن يُسمح بتغيير حجم نافذة الآلة الافتراضية.";
