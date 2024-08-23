@@ -2021,6 +2021,7 @@
 		CECF02562B706ADD00409FC0 /* UTMRemoteConnectInterface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMRemoteConnectInterface.h; sourceTree = "<group>"; };
 		CECF02572B70909900409FC0 /* Info-Remote.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-Remote.plist"; sourceTree = "<group>"; };
 		CED234EC254796E500ED0A57 /* NumberTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberTextField.swift; sourceTree = "<group>"; };
+		CED779E92C7938D500EB82AE /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Localizable.strings; sourceTree = "<group>"; };
 		CED779E42C78C82A00EB82AE /* UTMTips.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMTips.swift; sourceTree = "<group>"; };
 		CED814E824C79F070042F0F1 /* VMConfigDriveCreateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigDriveCreateView.swift; sourceTree = "<group>"; };
 		CED814EB24C7C2850042F0F1 /* VMConfigInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigInfoView.swift; sourceTree = "<group>"; };
@@ -3289,6 +3290,7 @@
 				"zh-HK",
 				ru,
 				it,
+				ar,
 			);
 			mainGroup = CE550BC0225947990063E575;
 			packageReferences = (
@@ -4261,6 +4263,7 @@
 				F6DA2DA92AAFED5F0070DCD1 /* zh-HK */,
 				61EBDEA22AACA83100B959A2 /* ru */,
 				037DAA1F2B0B92580061ACB3 /* it */,
+				CED779E92C7938D500EB82AE /* ar */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";

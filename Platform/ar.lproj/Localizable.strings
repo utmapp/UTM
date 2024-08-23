@@ -1,0 +1,2200 @@
+/* A removable drive that has no image file inserted. */
+"(empty)" = "(فارغ)";
+
+/* VMConfigAppleDriveDetailsView */
+"(New Drive)" = "(قرص جديد)";
+
+/* No comment provided by engineer. */
+"(new)" = "(جديد)";
+
+/* VMData */
+"(Unavailable)" = "(غير متاح)";
+
+/* QEMUConstant */
+"%@ (%@)" = "%1$@ (%2$@)";
+
+/* VMToolbarDriveMenuView */
+"%@ (%@): %@" = "%1$@ (%2$@): %3$@";
+
+/* VMDisplayMetalWindowController */
+"%@ (Display %lld)" = "%1$@ (العرض %2$lld)";
+
+/* VMDisplayAppleTerminalWindowController
+   VMDisplayQemuTerminalWindowController */
+"%@ (Terminal %lld)" = "%1$@ (الوحدة الطرفية %2$lld)";
+
+/* VMRemovableDrivesView */
+"%@ %@" = "%1$@ %2$@";
+
+/* No comment provided by engineer. */
+"%@ ➡️ %@" = "%1$@ ➡️ %2$@";
+
+/* VMDrivesSettingsView */
+"%@ Drive" = "%@ قرص";
+
+/* VMDrivesSettingsView */
+"%@ Image" = "%@ صورة";
+
+/* Format string for remaining time until a download finishes */
+"%@ remaining" = "المتبقي %@";
+
+/* Format string for the 'per second' part of a download speed. */
+"%@/s" = "%@/s";
+
+/* Format string for download progress and speed, e. g. 5 MB of 6 GB (200 kbit/s) */
+"%1$@ of %2$@ (%3$@)" = "%1$@ من %2$@ (%3$@)";
+
+/* UTMScriptingAppDelegate */
+"A valid backend must be specified." = "يجب تحديد واجهة خلفية صالحة";
+
+/* UTMScriptingAppDelegate */
+"A valid configuration must be specified." = "يجب تحديد تكوين صالح.";
+
+/* UTMAppleConfiguration */
+"A valid kernel image must be specified." = "يجب تحديد صورة نواة صالحة.";
+
+/* VMDisplayAppleController */
+"Add…" = "إضافة...";
+
+/* No comment provided by engineer. */
+"Additional Options" = "خيارات إضافية";
+
+/* No comment provided by engineer. */
+"Additional Settings" = "إعدادات إضافية";
+
+/* No comment provided by engineer. */
+"Advanced" = "متقدم";
+
+/* VMConfigSystemView */
+"Allocating too much memory will crash the VM." = "سيؤدي تخصيص الكثير من الذاكرة إلى تعطل الآلة الافتراضية.";
+
+/* UTMData */
+"AltJIT error: %@" = "AltJIT خطأ：%@";
+
+/* UTMData */
+"An existing virtual machine already exists with this name." = "يوجد جهاز ظاهري موجود بالفعل بهذا الاسم.";
+
+/* UTMConfiguration */
+"An internal error has occurred." = "حدث خطأ داخلي.";
+
+/* UTMConfiguration */
+"An invalid value of '%@' is used in the configuration file." = "تم استخدام قيمة غير صالحة لـ'%@' في ملف التكوين.";
+
+/* UTMRemoteSpiceVirtualMachine */
+"An operation is already in progress." = "هناك عملية قيد التقدم بالفعل.";
+
+/* UTMQemuImage */
+"An unknown QEMU error has occurred." = "لقد حدث خطأ QEMU غير معروف.";
+
+/* No comment provided by engineer. */
+"ANGLE (Metal)" = "ANGLE (Metal)";
+
+/* No comment provided by engineer. */
+"ANGLE (OpenGL)" = "ANGLE (OpenGL)";
+
+/* VMConfigSystemView */
+"Any unsaved changes will be lost." = "سيتم فقدان أي تغييرات غير محفوظة.";
+
+/* No comment provided by engineer. */
+"Approve" = "批准";
+
+/* No comment provided by engineer. */
+"Architecture" = "المعمارية";
+
+/* No comment provided by engineer. */
+"Are you sure you want to exit UTM?" = "هل أنت متأكد أنك تريد الخروج من UTM؟";
+
+/* No comment provided by engineer. */
+"Are you sure you want to permanently delete this disk image?" = "هل أنت متأكد أنك تريد حذف صورة القرص هذه نهائيًا؟";
+
+/* No comment provided by engineer. */
+"Are you sure you want to reset this VM? Any unsaved changes will be lost." = "هل أنت متأكد أنك تريد إعادة تعيين هذا الجهاز الافتراضي؟ سيتم فقدان أي تغييرات غير محفوظة.";
+
+/* No comment provided by engineer. */
+"Are you sure you want to stop this VM and exit? Any unsaved changes will be lost." = "هل أنت متأكد أنك تريد إيقاف هذا الجهاز الافتراضي والخروج؟ سيتم فقدان أي تغييرات غير محفوظة.";
+
+/* No comment provided by engineer. */
+"Authentication" = "المصادقة";
+
+/* No comment provided by engineer. */
+"Automatic" = "تلقائي";
+
+/* UTMQemuConstants */
+"Automatic Serial Device (max 4)" = "جهاز تسلسلي تلقائي (بحد أقصى 4)";
+
+/* UTMLegacyQemuConfiguration
+   UTMQemuConstants */
+"BIOS" = "BIOS";
+
+/* No comment provided by engineer. */
+"Block" = "屏蔽";
+
+/* No comment provided by engineer. */
+"Blocked" = "حظر";
+
+/* UTMQemuConstants */
+"Bold" = "عريض";
+
+/* No comment provided by engineer. */
+"Boot" = "تمهيد";
+
+/* No comment provided by engineer. */
+"Boot Arguments" = "أوامر التمهيد";
+
+/* No comment provided by engineer. */
+"Boot Image Type" = "نوع صورة التمهيد";
+
+/* No comment provided by engineer. */
+"Boot ISO Image" = "تمهيد صورة ISO";
+
+/* No comment provided by engineer. */
+"Boot ISO Image (optional)" = "الإقلاع من صورة ISO (اختياري)";
+
+/* No comment provided by engineer. */
+"Boot VHDX Image" = "الإقلاع من صورة VHDX";
+
+/* UTMQemuConstants */
+"Bridged (Advanced)" = "موصول (متقدم)";
+
+/* No comment provided by engineer. */
+"Bridged Settings" = "إعدادات الموصول";
+
+/* Welcome view */
+"Browse UTM Gallery" = "تصفح معرض UTM";
+
+/* No comment provided by engineer. */
+"Browse…" = "تصفح...";
+
+/* No comment provided by engineer. */
+"Build" = "بناء";
+
+/* UTMQemuConstants */
+"Built-in Terminal" = "وحدة طرفية مدمجة";
+
+/* No comment provided by engineer. */
+"Busy…" = "مشغول...";
+
+/* VMDisplayWindowController
+   VMQemuDisplayMetalWindowController */
+"Cancel" = "إلغاء";
+
+/* UTMAppleVirtualMachine */
+"Cannot access resource: %@" = "لا يمكن الوصول إلى المورد: %@";
+
+/* UTMSWTPM */
+"Cannot access TPM data." = "لا يمكن الوصول إلى بيانات TPM.";
+
+/* UTMAppleVirtualMachine */
+"Cannot create virtual terminal." = "لا يمكن إنشاء وحدة طرفية إفتراضية";
+
+/* UTMData */
+"Cannot find AltServer for JIT enable. You cannot run VMs until JIT is enabled." = "لا يمكن العثور على AltServer لتمكين JIT. لا يمكنك تشغيل الآلات الافتراضية حتى يتم تمكين JIT.";
+
+/* UTMRemoteServer */
+"Cannot find VM with ID: %@" = "لا يمكن العثور على VM بعنوان ID: %@";
+
+/* UTMData */
+"Cannot import this VM. Either the configuration is invalid, created in a newer version of UTM, or on a platform that is incompatible with this version of UTM." = "لا يمكن استيراد هذه الآلة الافتراضية. إما أن التكوين غير صالح، أو تم إنشاؤها في إصدار أحدث من UTM، أو على نظام أساسي غير متوافق مع هذا الإصدار من UTM.";
+
+/* UTMRemoteServer */
+"لا يمكن حجز المنفذ '%@' للوصول الخارجي من NAT. تأكد من عدم قيام أي جهاز آخر على الشبكة بحجزه." = "无法保留端口“%@”用作从 NAT 的外部访问。请确保网络上没有其他设备保留该端口。";
+
+/* No comment provided by engineer. */
+"Caps Lock (⇪) is treated as a key" = "يتم التعامل مع Caps Lock (⇪) كمفتاح";
+
+/* VMMetalView */
+"Capture Input" = "التقاط المدخلات";
+
+/* No comment provided by engineer. */
+"Capture input automatically when entering full screen" = "التقاط المدخلات تلقائيا عند الدخول في وضع ملء الشاشة";
+
+/* VMDisplayQemuMetalWindowController */
+"Captured mouse" = "الماوس الملتقط";
+
+/* Configuration boot device */
+"CD/DVD" = "CD/DVD";
+
+/* UTMLegacyQemuConfiguration
+   UTMQemuConstants */
+"CD/DVD (ISO) Image" = "CD/DVD (ISO) صورة";
+
+/* VMDisplayWindowController */
+"Change" = "تغيير";
+
+/* VMDisplayAppleController */
+"Change…" = "تغيير…";
+
+/* No comment provided by engineer. */
+"Clear" = "مسح";
+
+/* No comment provided by engineer. */
+"Close" = "إغلاق";
+
+/* VMQemuDisplayMetalWindowController */
+"Closing this window will kill the VM." = "سيؤدي إغلاق هذه النافذة إلى قتل الآلة الإفتراضية.";
+
+/* VMQemuDisplayMetalWindowController */
+"Confirm" = "تأكيد";
+
+/* No comment provided by engineer. */
+"Confirm Delete" = "تأكيد الحذف";
+
+/* AppDelegate
+   VMDisplayWindowController */
+"Confirmation" = "التأكيد";
+
+/* No comment provided by engineer. */
+"Connect" = "إتصال";
+
+/* No comment provided by engineer. */
+"Connected" = "متصل";
+
+/* No comment provided by engineer. */
+"Connection" = "الإتصال";
+
+/* VMSessionState */
+"Connection to the server was lost." = "إنقطع الإتصال بالخادم.";
+
+/* No comment provided by engineer. */
+"Console" = "وحدة التحكم";
+
+/* No comment provided by engineer. */
+"Continue" = "استمرار";
+
+/* No comment provided by engineer. */
+"CoreAudio (Output Only)" = "CoreAudio (الإخراج فقط)";
+
+/* No comment provided by engineer. */
+"Cores" = "أنوية";
+
+/* No comment provided by engineer. */
+"CPU" = "CPU";
+
+/* No comment provided by engineer. */
+"CPU Cores" = "CPU أنوية";
+
+/* No comment provided by engineer. */
+"Create" = "إنشاء";
+
+/* Welcome view */
+"Create a New Virtual Machine" = "إنشاء آلة افتراضية جديدة";
+
+/* VMConfigAppleDisplayView */
+"Custom" = "مخصص";
+
+/* UTMSWTPM */
+"Data not specified." = "البيانات غير محددة.";
+
+/* No comment provided by engineer. */
+"Debug Logging" = "تسجيل التصحيح";
+
+/* QEMUConstantGenerated
+   UTMQemuConstants */
+"Default" = "إفتراضي";
+
+/* VMWizardSummaryView */
+"Default Cores" = "الأنوية الإفتراضية";
+
+/* No comment provided by engineer. */
+"Delete" = "حذف";
+
+/* No comment provided by engineer. */
+"Devices" = "أجهزة";
+
+/* VMDisplayAppleWindowController */
+"Directory sharing" = "مشاركة المسار";
+
+/* UTMQemuConstants */
+"Disabled" = "معطل";
+
+/* No comment provided by engineer. */
+"Disconnect" = "قطع الإتصال";
+
+/* No comment provided by engineer. */
+"Discovered" = "مستكشف";
+
+/* UTMLegacyQemuConfiguration
+   UTMQemuConstants */
+"Disk Image" = "صورة القرص";
+
+/* VMDisplayAppleWindowController */
+"Display" = "العرض";
+
+/* VMDisplayQemuDisplayController */
+"Display %lld: %@" = "عرض %1$lld：%2$@";
+
+/* VMDisplayQemuDisplayController */
+"Disposable Mode" = "وضع يمكن التخلص منه";
+
+/* No comment provided by engineer. */
+"Do not save VM screenshot to disk" = "لا تقم بحفظ لقطة شاشة آلة إفتراضية على القرص";
+
+/* No comment provided by engineer. */
+"Do not show confirmation when closing a running VM" = "لا تظهر التأكيد عند إغلاق آلة إفتراضية قيد التشغيل";
+
+/* No comment provided by engineer. */
+"Do not show prompt when USB device is plugged in" = "لا تظهر الموجه عند توصيل جهاز USB";
+
+/* No comment provided by engineer. */
+"Do you want to copy this VM and all its data to internal storage?" = "هل تريد نسخ هذه الآلة الافتراضية وجميع بياناتها إلى التخزين الداخلي؟";
+
+/* No comment provided by engineer. */
+"Do you want to delete this VM and all its data?" = "هل تريد حذف هذه الآلة الافتراضية وجميع بياناتها؟";
+
+/* No comment provided by engineer. */
+"Do you want to download '%@'?" = "هل تريد تنزيل '%@'؟";
+
+/* No comment provided by engineer. */
+"Do you want to duplicate this VM and all its data?" = "هل تريد تكرار هذه الآلة الافتراضية وجميع بياناتها؟";
+
+/* No comment provided by engineer. */
+"Do you want to force stop this VM and lose all unsaved data?" = "هل تريد إيقاف هذه الآلة الافتراضية قسريًا وفقدان جميع البيانات غير المحفوظة؟";
+
+/* No comment provided by engineer. */
+"Do you want to forget all clients and generate a new server identity? Any clients that previously paired with this server will be instructed to manually unpair with this server before they can connect again." = "هل تريد نسيان جميع العملاء وإنشاء هوية جديدة للخادم؟ سيتم إبلاغ أي عملاء تم اقترانهم بهذا الخادم مسبقًا بإلغاء الاقتران يدويًا مع هذا الخادم قبل أن يتمكنوا من الاتصال مرة أخرى.";
+
+/* No comment provided by engineer. */
+"Do you want to forget the selected client(s)?" = "هل تريد نسيان العميل(العملاء) المحدد(ين)؟";
+
+/* No comment provided by engineer. */
+"Do you want to move this VM to another location? This will copy the data to the new location, delete the data from the original location, and then create a shortcut." = "هل تريد نقل هذه الآلة الافتراضية إلى موقع آخر؟ سيؤدي ذلك إلى نسخ البيانات إلى الموقع الجديد، وحذف البيانات من الموقع الأصلي، ثم إنشاء اختصار.";
+
+/* No comment provided by engineer. */
+"Do you want to remove this shortcut? The data will not be deleted." = "هل تريد إزالة هذا الاختصار؟ لن يتم حذف البيانات.";
+
+/* No comment provided by engineer. */
+"Download" = "تنزيل";
+
+/* No comment provided by engineer. */
+"Download prebuilt from UTM Gallery…" = "تنزيل مسبق البناء من معرض UTM…";
+
+/* No comment provided by engineer. */
+"Download VM" = "تنزيل الآلة الافتراضية";
+
+/* No comment provided by engineer. */
+"Drag and drop IPSW file here" = "قم بسحب وإفلات ملف IPSW هنا";
+
+/* UTMScriptingConfigImpl */
+"Drive description is invalid." = "وصف القرص غير صالح.";
+
+/* No comment provided by engineer. */
+"Drives" = "الأقراص";
+
+/* VMDrivesSettingsView */
+"EFI Variables" = "متغيرات EFI";
+
+/* VMDisplayWindowController */
+"Eject" = "إخراج";
+
+/* No comment provided by engineer. */
+"Emulate" = "محاكاة";
+
+/* UTMQemuConstants */
+"Emulated VLAN" = "VLAN المحاكية";
+
+/* No comment provided by engineer. */
+"Enable Clipboard Sharing" = "تمكين مشاركة الحافظة";
+
+/* VMDisplayWindowController */
+"Error" = "خطأ";
+
+/* No comment provided by engineer. */
+"Existing" = "موجود";
+
+/* No comment provided by engineer. */
+"Export QEMU Command…" = "تصدير أمر QEMU…";
+
+/* Word for decompressing a compressed folder */
+"Extracting…" = "يتم الاستخراج…";
+
+/* UTMQemuVirtualMachine */
+"Failed to access data from shortcut." = "فشل في الوصول إلى البيانات من الاختصار.";
+
+/* UTMQemuVirtualMachine */
+"Failed to access drive image path." = "فشل في الوصول إلى مسار صورة القرص.";
+
+/* UTMRemoteServer */
+"Failed to access file." = "فشل في الوصول إلى الملف.";
+
+/* UTMQemuVirtualMachine */
+"Failed to access shared directory." = "فشل في الوصول إلى الدليل المشترك.";
+
+/* ContentView */
+"Failed to attach to JitStreamer:\n%@" = "فشل في الارتباط بـ JitStreamer:\n%@";
+
+/* UTMData */
+"Failed to attach to JitStreamer." = "فشل في الارتباط بـ JitStreamer.";
+
+/* UTMSpiceIO */
+"Failed to change current directory." = "فشل في تغيير الدليل الحالي.";
+
+/* UTMData */
+"Failed to clone VM." = "فشل في استنساخ الآلة الافتراضية.";
+
+/* UTMRemoteSpiceVirtualMachine */
+"Failed to connect to SPICE: %@" = "فشل في الاتصال بـ SPICE: %@";
+
+/* UTMPipeInterface */
+"Failed to create pipe for communications." = "فشل في إنشاء أنبوب للتواصل.";
+
+/* UTMData */
+"Failed to decode JitStreamer response." = "فشل في فك تشفير استجابة JitStreamer.";
+
+/* UTMRemoteClient */
+"Failed to determine host name." = "فشل في تحديد اسم المضيف.";
+
+/* UTMRemoteKeyManager */
+"Failed to generate a key pair." = "فشل في توليد زوج من المفاتيح.";
+
+/* UTMQemuVirtualMachine */
+"Failed to generate TLS key for server." = "فشل في توليد مفتاح TLS للخادم.";
+
+/* UTMRemoteClient */
+"Failed to get host fingerprint." = "فشل في الحصول على بصمة المضيف.";
+
+/* VMWizardState */
+"Failed to get latest macOS version from Apple." = "فشل في الحصول على أحدث إصدار من macOS من Apple.";
+
+/* UTMRemoteKeyManager */
+"Failed to import generated key." = "فشل في استيراد المفتاح المولد.";
+
+/* UTMQemuConfigurationError */
+"Failed to migrate configuration from a previous UTM version." = "فشل في ترحيل التكوين من إصدار UTM سابق.";
+
+/* UTMData */
+"Failed to parse download URL." = "فشل في تحليل عنوان URL للتنزيل.";
+
+/* UTMRemoteKeyManager */
+"Failed to parse generated key pair." = "فشل في تحليل زوج المفاتيح المولد.";
+
+/* UTMData */
+"Failed to parse imported VM." = "فشل في تحليل الآلة الافتراضية المستوردة.";
+
+/* UTMDownloadVMTask */
+"Failed to parse the downloaded VM." = "فشل في تحليل الآلة الافتراضية التي تم تنزيلها.";
+
+/* UTMData */
+"Failed to reconnect to the server." = "فشل في إعادة الاتصال بالخادم.";
+
+/* AppDelegate
+   VMDisplayWindowController */
+"Failed to save suspend state" = "فشل في حفظ حالة التعليق.";
+
+/* UTMQemuVirtualMachine */
+"Failed to save VM snapshot. Usually this means at least one device does not support snapshots. %@" = "فشل في حفظ لقطة الآلة الافتراضية. عادةً ما يعني ذلك أن جهازًا واحدًا على الأقل لا يدعم اللقطات. %@";
+
+/* UTMSpiceIO */
+"Failed to start SPICE client." = "فشل في بدء عميل SPICE.";
+
+/* No comment provided by engineer. */
+"Faster, but can only run the native CPU architecture." = "أسرع، ولكن يمكنه تشغيل بنية المعالج الأصلية فقط.";
+
+/* No comment provided by engineer. */
+"Fingerprint" = "بصمة";
+
+/* Configuration boot device
+   UTMQemuConstants */
+"Floppy" = "قرص مرن";
+
+/* No comment provided by engineer. */
+"Font Size" = "حجم الخط";
+
+/* VMDisplayWindowController */
+"Force kill" = "قتل قسري";
+
+/* VMDisplayWindowController */
+"Force kill the VM process with high risk of data corruption." = "قتل عملية الآلة الافتراضية قسريًا مع خطر كبير لفساد البيانات.";
+
+/* No comment provided by engineer. */
+"Force Multicore" = "فرض تعدد النواة";
+
+/* VMDisplayWindowController */
+"Force shut down" = "إيقاف قسري";
+
+/* No comment provided by engineer. */
+"GB" = "جيجابايت";
+
+/* UTMQemuConstants */
+"GDB Debug Stub" = "جذع تصحيح GDB";
+
+/* No comment provided by engineer. */
+"Generic" = "عام";
+
+/* UTMAppleConfigurationDevices */
+"Generic Mouse" = "فأرة عامة";
+
+/* UTMAppleConfigurationDevices */
+"Generic USB" = "USB عام";
+
+/* No comment provided by engineer. */
+"Gesture and Cursor Settings" = "إعدادات الإيماءات والمؤشر";
+
+/* No comment provided by engineer. */
+"Guest drivers are required for 3D acceleration." = "تحتاج برامج تشغيل الضيف إلى تسريع ثلاثي الأبعاد.";
+
+/* Configuration boot device */
+"Hard Disk" = "قرص صلب";
+
+/* No comment provided by engineer. */
+"Hardware" = "عتاد";
+
+/* No comment provided by engineer. */
+"Hello" = "مرحبا";
+
+/* No comment provided by engineer. */
+"Hide Unused…" = "إخفاء غير المستخدم…";
+
+/* No comment provided by engineer. */
+"Hold Control (⌃) for right click" = "اضغط على Control (⌃) للنقر بزر الماوس الأيمن";
+
+/* No comment provided by engineer. */
+"Host" = "مضيف";
+
+/* UTMQemuConstants */
+"Host Only" = "فقط المضيف";
+
+/* No comment provided by engineer. */
+"Hostname or IP address" = "اسم المضيف أو عنوان IP";
+
+/* No comment provided by engineer. */
+"Icon" = "أيقونة";
+
+/* UTMQemuConstants */
+"IDE" = "IDE";
+
+/* UTMScriptingConfigImpl */
+"Identifier '%@' cannot be found." = "لا يمكن العثور على المعرف '%@'.";
+
+/* No comment provided by engineer. */
+"Image File Type" = "نوع ملف الصورة";
+
+/* No comment provided by engineer. */
+"Import IPSW" = "استيراد IPSW";
+
+/* No comment provided by engineer. */
+"Import…" = "استيراد…";
+
+/* VMDetailsView */
+"Inactive" = "غير نشط";
+
+/* UTMScriptingConfigImpl */
+"Index %lld cannot be found." = "لا يمكن العثور على الفهرس %lld.";
+
+/* No comment provided by engineer. */
+"Information" = "معلومات";
+
+/* VMDisplayWindowController */
+"Install Windows Guest Tools…" = "تثبيت أدوات ضيف Windows…";
+
+/* VMDisplayAppleWindowController */
+"Installation: %@" = "التثبيت: %@";
+
+/* UTMProcess */
+"Internal error has occurred." = "حدث خطأ داخلي.";
+
+/* UTMSpiceIO */
+"Internal error trying to connect to SPICE server." = "خطأ داخلي أثناء محاولة الاتصال بخادم SPICE.";
+
+/* VMDisplayMetalWindowController */
+"Internal error." = "خطأ داخلي.";
+
+/* UTMRemoteServer */
+"Invalid backend." = "خلفية غير صالحة.";
+
+/* VMWizardState */
+"Invalid drive size specified." = "تم تحديد حجم قرص غير صالح.";
+
+/* UTMData */
+"Invalid JitStreamer attach URL:\n%@" = "عنوان URL المرفق بـ JitStreamer غير صالح:\n%@";
+
+/* VMConfigAppleNetworkingView */
+"Invalid MAC address." = "عنوان MAC غير صالح.";
+
+/* VMWizardState */
+"Invalid RAM size specified." = "تم تحديد حجم RAM غير صالح.";
+
+/* No comment provided by engineer. */
+"Invert scrolling" = "عكس التمرير";
+
+/* No comment provided by engineer. */
+"IP Configuration" = "تكوين IP";
+
+/* No comment provided by engineer. */
+"Isolate Guest from Host" = "عزل الضيف عن المضيف";
+
+/* UTMQemuConstants */
+"Italic" = "مائل";
+
+/* UTMQemuConstants */
+"Italic, Bold" = "مائل، عريض";
+
+/* No comment provided by engineer. */
+"Keep UTM running after last window is closed and all VMs are shut down" = "استمر في تشغيل UTM بعد إغلاق آخر نافذة وإيقاف جميع الآلات الافتراضية.";
+
+/* No comment provided by engineer. */
+"License" = "ترخيص";
+
+/* UTMQemuConstants */
+"Linear" = "خطية";
+
+/* UTMAppleConfigurationBoot */
+"Linux" = "لينكس";
+
+/* UTMLegacyQemuConfiguration
+   UTMQemuConstants */
+"Linux Device Tree Binary" = "ثنائي شجرة جهاز لينكس";
+
+/* No comment provided by engineer. */
+"Linux initial ramdisk (optional)" = "الذاكرة المؤقتة الأولية لنظام لينكس (اختياري)";
+
+/* UTMLegacyQemuConfiguration
+   UTMQemuConstants */
+"Linux Kernel" = "نواة لينكس";
+
+/* No comment provided by engineer. */
+"Linux kernel (required)" = "نواة لينكس (مطلوب)";
+
+/* UTMLegacyQemuConfiguration
+   UTMQemuConstants */
+"Linux RAM Disk" = "قرص RAM لنظام لينكس";
+
+/* No comment provided by engineer. */
+"Linux Root FS Image (optional)" = "صورة نظام الملفات الجذرية لنظام لينكس (اختياري)";
+
+/* No comment provided by engineer. */
+"Linux Settings" = "إعدادات لينكس";
+
+/* No comment provided by engineer. */
+"Logging" = "تسجيل";
+
+/* UTMAppleConfigurationDevices */
+"Mac Keyboard (macOS 14+)" = "لوحة مفاتيح ماك (macOS 14+)";
+
+/* UTMAppleConfigurationDevices */
+"Mac Trackpad (macOS 13+)" = "لوحة تتبع ماك (macOS 14+)";
+
+/* UTMAppleConfigurationBoot */
+"macOS" = "macOS";
+
+/* VMWizardOSMacView */
+"macOS guests are only supported on ARM64 devices." = "الضيوف من نظام macOS مدعومون فقط على أجهزة ARM64.";
+
+/* VMWizardState */
+"macOS is not supported with QEMU." = "نظام macOS غير مدعوم مع QEMU.";
+
+/* No comment provided by engineer. */
+"macOS Settings" = "إعدادات macOS";
+
+/* No comment provided by engineer. */
+"Make sure the latest version of UTM is running on your Mac and UTM Server is enabled. You can download UTM from the Mac App Store." = "تأكد من أن أحدث إصدار من UTM يعمل على جهاز Mac الخاص بك وأن خادم UTM مفعل. يمكنك تنزيل UTM من متجر تطبيقات Mac.";
+
+/* UTMQemuConstants */
+"Manual Serial Device (advanced)" = "جهاز تسلسلي يدوي (متقدم)";
+
+/* No comment provided by engineer. */
+"Maximum Shared USB Devices" = "الحد الأقصى لعدد أجهزة USB المشتركة";
+
+/* No comment provided by engineer. */
+"MB" = "ميغابايت";
+
+/* No comment provided by engineer. */
+"Memory" = "ذاكرة";
+
+/* VMDisplayMetalWindowController */
+"Metal is not supported on this device. Cannot render display." = "لا يدعم هذا الجهاز Metal. لا يمكن عرض الشاشة.";
+
+/* No comment provided by engineer. */
+"Minimum size: %@" = "الحجم الأدنى: %@";
+
+/* No comment provided by engineer. */
+"Mouse/Keyboard" = "فأرة/لوحة مفاتيح";
+
+/* No comment provided by engineer. */
+"Move Down" = "تحريك لأسفل";
+
+/* No comment provided by engineer. */
+"Move Up" = "تحريك لأعلى";
+
+/* UTMQemuConstants */
+"MTD (NAND/NOR)" = "MTD (NAND/NOR)";
+
+/* No comment provided by engineer. */
+"Name" = "اسم";
+
+/* No comment provided by engineer. */
+"Name (optional)" = "اسم (اختياري)";
+
+/* UTMQemuConstants */
+"Nearest Neighbor" = "أقرب جار";
+
+/* No comment provided by engineer. */
+"Network" = "شبكة";
+
+/* No comment provided by engineer. */
+"New" = "جديد";
+
+/* No comment provided by engineer. */
+"New…" = "جديد…";
+
+/* No comment provided by engineer. */
+"No" = "لا";
+
+/* UTMScriptingAppDelegate */
+"No architecture specified in the configuration." = "لم يتم تحديد بنية في التكوين.";
+
+/* VMDisplayWindowController */
+"No drives connected." = "لا توجد محركات متصلة.";
+
+/* UTMDownloadSupportToolsTaskError */
+"No empty removable drive found. Make sure you have at least one removable drive that is not in use." = "لم يتم العثور على محرك قابل للإزالة فارغ. تأكد من أن لديك على الأقل محرك قابل للإزالة غير مستخدم.";
+
+/* UTMScriptingAppDelegate */
+"No name specified in the configuration." = "لم يتم تحديد اسم في التكوين.";
+
+/* No comment provided by engineer. */
+"No output device is selected for this window." = "لم يتم اختيار جهاز إخراج لهذه النافذة.";
+
+/* No comment provided by engineer. */
+"No release notes found for version %@." = "لم يتم العثور على ملاحظات الإصدار للإصدار %@.";
+
+/* VMQemuDisplayMetalWindowController */
+"No USB devices detected." = "لم يتم اكتشاف أجهزة USB.";
+
+/* No comment provided by engineer. */
+"No virtual machines found." = "لم يتم العثور على آلات افتراضية.";
+
+/* VMToolbarDriveMenuView */
+"none" = "لا شيء";
+
+/* UTMLegacyQemuConfiguration
+   UTMQemuConstants */
+"None" = "لا شيء";
+
+/* UTMQemuConstants */
+"None (Advanced)" = "لا شيء (متقدم)";
+
+/* UTMRemoteServer */
+"Not authenticated." = "غير مصادق.";
+
+/* UTMVirtualMachine */
+"Not implemented." = "غير مُنفذ.";
+
+/* No comment provided by engineer. */
+"Notes" = "ملاحظات";
+
+/* No comment provided by engineer. */
+"Num Lock is forced on" = "تم فرض تشغيل قفل الأرقام (Num Lock)";
+
+/* UTMQemuConstants */
+"NVMe" = "NVMe";
+
+/* VMDisplayWindowController */
+"OK" = "حسناً";
+
+/* UTMScriptingVirtualMachineImpl */
+"One or more required parameters are missing or invalid." = "معامل واحد أو أكثر مطلوب مفقود أو غير صالح.";
+
+/* No comment provided by engineer. */
+"Open…" = "فتح…";
+
+/* No comment provided by engineer. */
+"Operating System" = "نظام التشغيل";
+
+/* UTMScriptingVirtualMachineImpl */
+"Operation not available." = "العملية غير متاحة.";
+
+/* UTMData */
+"Operation not supported by the backend." = "العملية غير مدعومة من قبل الخلفية.";
+
+/* No comment provided by engineer. */
+"Option (⌥) is Meta key" = "مفتاح Option (⌥) هو مفتاح Meta";
+
+/* No comment provided by engineer. */
+"Other" = "آخر";
+
+/* No comment provided by engineer. */
+"Password" = "كلمة المرور";
+
+/* UTMRemoteClient */
+"Password is incorrect." = "كلمة المرور غير صحيحة.";
+
+/* UTMRemoteClient */
+"Password is required." = "مطلوب كلمة المرور.";
+
+/* VMDisplayWindowController */
+"Pause" = "إيقاف مؤقت";
+
+/* VMData */
+"Paused" = "موقوف مؤقتاً";
+
+/* VMData */
+"Pausing" = "يتم إيقافه مؤقتاً";
+
+/* UTMQemuConstants */
+"PC System Flash" = "فلاش نظام PC";
+
+/* No comment provided by engineer. */
+"Pending" = "قيد الانتظار";
+
+/* VMDisplayWindowController */
+"Play" = "تشغيل";
+
+/* VMWizardState */
+"Please select a boot image." = "يرجى اختيار صورة تمهيد.";
+
+/* VMWizardState */
+"Please select a kernel file." = "يرجى اختيار ملف نواة.";
+
+/* No comment provided by engineer. */
+"Please select a macOS recovery IPSW." = "يرجى اختيار IPSW لاسترداد macOS.";
+
+/* No comment provided by engineer. */
+"Please select an uncompressed Linux kernel image." = "يرجى اختيار صورة نواة لينكس غير مضغوطة.";
+
+/* No comment provided by engineer. */
+"Port" = "منفذ";
+
+/* No comment provided by engineer. */
+"Port Forward" = "إعادة توجيه المنفذ";
+
+/* No comment provided by engineer. */
+"Preconfigured" = "مُعد مسبقاً";
+
+/* A download process is about to begin. */
+"Preparing…" = "يتم التحضير…";
+
+/* VMDisplayQemuMetalWindowController */
+"Press %@ to release cursor" = "اضغط %@ لتحرير المؤشر";
+
+/* No comment provided by engineer. */
+"Prevent system from sleeping when any VM is running" = "منع النظام من الدخول في وضع السكون عندما تعمل أي آلة افتراضية";
+
+/* UTMQemuConstants */
+"Pseudo-TTY Device" = "جهاز Pseudo-TTY";
+
+/* No comment provided by engineer. */
+"QEMU Arguments" = "وسائط QEMU";
+
+/* No comment provided by engineer. */
+"QEMU Graphics Acceleration" = "تسريع الرسوميات QEMU";
+
+/* No comment provided by engineer. */
+"QEMU Keyboard" = "لوحة مفاتيح QEMU";
+
+/* UTMQemuConstants */
+"QEMU Monitor (HMP)" = "مراقب QEMU (HMP)";
+
+/* No comment provided by engineer. */
+"QEMU Pointer" = "مؤشر QEMU";
+
+/* No comment provided by engineer. */
+"QEMU Sound" = "صوت QEMU";
+
+/* No comment provided by engineer. */
+"QEMU USB" = "USB QEMU";
+
+/* VMDisplayWindowController */
+"Querying drives status..." = "يتم استعلام حالة المحركات...";
+
+/* VMQemuDisplayMetalWindowController */
+"Querying USB devices..." = "يتم استعلام أجهزة USB...";
+
+/* VMQemuDisplayMetalWindowController */
+"Quitting UTM will kill all running VMs." = "إنهاء UTM سيؤدي إلى إنهاء جميع الآلات الافتراضية النشطة.";
+
+/* No comment provided by engineer. */
+"Raw Image" = "صورة خام";
+
+/* VMDisplayAppleController */
+"Read Only" = "للقراءة فقط";
+
+/* No comment provided by engineer. */
+"Reclaim" = "استرداد";
+
+/* UTMQemuConstants */
+"Regular" = "عادي";
+
+/* VMRemovableDrivesView */
+"Removable" = "قابل للإزالة";
+
+/* No comment provided by engineer. */
+"Removable Drive" = "محرك قابل للإزالة";
+
+/* No comment provided by engineer. */
+"Remove" = "إزالة";
+
+/* VMDisplayAppleController */
+"Remove…" = "إزالة…";
+
+/* VMDisplayWindowController */
+"Request power down" = "طلب إيقاف تشغيل الطاقة";
+
+/* No comment provided by engineer. */
+"Reset" = "إعادة تعيين";
+
+/* No comment provided by engineer. */
+"Reset Identity" = "إعادة تعيين الهوية";
+
+/* No comment provided by engineer. */
+"Resize" = "إعادة حجم";
+
+/* No comment provided by engineer. */
+"Resize display to screen size and orientation automatically" = "إعادة حجم العرض إلى حجم الشاشة واتجاهها تلقائيًا";
+
+/* No comment provided by engineer. */
+"Resize display to window size automatically" = "إعادة حجم العرض إلى حجم النافذة تلقائيًا";
+
+/* No comment provided by engineer. */
+"Resizing is experimental and could result in data loss. You are strongly encouraged to back-up this VM before proceeding. Would you like to resize to %@ GiB?" = "إعادة الحجم هي ميزة تجريبية وقد تؤدي إلى فقدان البيانات. يُنصح بشدة بعمل نسخة احتياطية لهذه الآلة الافتراضية قبل المتابعة. هل ترغب في تغيير الحجم إلى %@ جيجابايت؟";
+
+/* VMData */
+"Restoring" = "يتم الاستعادة";
+
+/* VMData */
+"Resuming" = "يتم الاستئناف";
+
+/* No comment provided by engineer. */
+"Retina Mode" = "وضع Retina";
+
+/* UTMAppleConfiguration */
+"Rosetta is not supported on the current host machine." = "Rosetta غير مدعومة على الجهاز المضيف الحالي.";
+
+/* No comment provided by engineer. */
+"Running" = "يعمل";
+
+/* No comment provided by engineer. */
+"Running low on memory! UTM might soon be killed by iOS. You can prevent this by decreasing the amount of memory and/or JIT cache assigned to this VM" = "الذاكرة منخفضة! قد يتم إنهاء UTM قريبًا بواسطة iOS. يمكنك منع ذلك عن طريق تقليل كمية الذاكرة و/أو ذاكرة التخزين المؤقت JIT المخصصة لهذه الآلة الافتراضية.";
+
+/* No comment provided by engineer. */
+"Save" = "حفظ";
+
+/* No comment provided by engineer. */
+"Saved" = "تم الحفظ";
+
+/* VMData */
+"Saving" = "يتم الحفظ";
+
+/* No comment provided by engineer. */
+"Scaling" = "تغيير الحجم";
+
+/* UTMQemuConstants */
+"SCSI" = "SCSI";
+
+/* UTMQemuConstants */
+"SD Card" = "بطاقة SD";
+
+/* No comment provided by engineer. */
+"Select a file." = "اختر ملفًا.";
+
+/* No comment provided by engineer. */
+"Select a UTM Server" = "اختر خادم UTM";
+
+/* VMDisplayWindowController */
+"Select Drive Image" = "اختر صورة محرك";
+
+/* VMDisplayAppleWindowController
+   VMDisplayWindowController */
+"Select Shared Folder" = "اختر مجلد مشترك";
+
+/* SavePanel */
+"Select where to export QEMU command:" = "اختر المكان لتصدير أمر QEMU:";
+
+/* SavePanel */
+"Select where to save debug log:" = "اختر المكان لحفظ سجل التصحيح:";
+
+/* SavePanel */
+"Select where to save UTM Virtual Machine:" = "اختر المكان لحفظ الآلة الافتراضية UTM:";
+
+/* No comment provided by engineer. */
+"Selected:" = "المحدد:";
+
+/* VMDisplayWindowController */
+"Sends power down request to the guest. This simulates pressing the power button on a PC." = "يرسل طلب إيقاف تشغيل الطاقة إلى الضيف. هذا يحاكي الضغط على زر الطاقة على الكمبيوتر الشخصي.";
+
+/* VMDisplayAppleWindowController
+   VMDisplayQemuDisplayController */
+"Serial %lld" = "سلسلة %lld";
+
+/* Server view */
+"Server" = "خادم";
+
+/* No comment provided by engineer. */
+"Server IP: %@, Port: %@" = "IP الخادم: %1$@، المنفذ: %2$@";
+
+/* No comment provided by engineer. */
+"Share USB devices from host" = "مشاركة أجهزة USB من المضيف";
+
+/* No comment provided by engineer. */
+"Shared directories in macOS VMs are only available in macOS 13 and later." = "الدلائل المشتركة في آلات macOS الافتراضية متاحة فقط في macOS 13 وما بعده.";
+
+/* No comment provided by engineer. */
+"Shared Directory" = "دليل مشترك";
+
+/* UTMQemuConstants */
+"Shared Network" = "شبكة مشتركة";
+
+/* No comment provided by engineer. */
+"Sharing" = "مشاركة";
+
+/* No comment provided by engineer. */
+"Show Advanced Settings" = "عرض الإعدادات المتقدمة";
+
+/* No comment provided by engineer. */
+"Show All" = "عرض الكل";
+
+/* No comment provided by engineer. */
+"Show All…" = "عرض الكل…";
+
+/* No comment provided by engineer. */
+"Show dock icon" = "عرض أيقونة الرصيف";
+
+/* No comment provided by engineer. */
+"Show menu bar icon" = "عرض أيقونة شريط القوائم";
+
+/* No comment provided by engineer. */
+"Size" = "الحجم";
+
+/* No comment provided by engineer. */
+"Slower, but can run other CPU architectures." = "أبطأ، ولكن يمكنه تشغيل بنى المعالج الأخرى.";
+
+/* UTMSWTPM */
+"Socket not specified." = "لم يتم تحديد المقبس.";
+
+/* No comment provided by engineer. */
+"Specify the size of the drive where data will be stored into." = "حدد حجم القرص الذي سيتم تخزين البيانات فيه.";
+
+/* UTMQemuConstants */
+"SPICE WebDAV" = "SPICE WebDAV";
+
+/* No comment provided by engineer. */
+"SPICE with GStreamer (Input & Output)" = "SPICE مع GStreamer (إدخال وإخراج)";
+
+/* VMData */
+"Started" = "تم البدء";
+
+/* VMData */
+"Starting" = "يتم البدء";
+
+/* No comment provided by engineer. */
+"Startup" = "بدء التشغيل";
+
+/* No comment provided by engineer. */
+"Stop" = "إيقاف";
+
+/* VMData */
+"Stopped" = "تم الإيقاف";
+
+/* VMData */
+"Stopping" = "يتم الإيقاف";
+
+/* No comment provided by engineer. */
+"Style" = "نمط";
+
+/* No comment provided by engineer. */
+"Summary" = "ملخص";
+
+/* Welcome view */
+"Support" = "دعم";
+
+/* UTMQemuVirtualMachine */
+"Suspend is not supported for virtualization." = "لا تدعم خاصية الإيقاف المؤقت في بيئة الافتراضية.";
+
+/* UTMQemuVirtualMachine */
+"Suspend is not supported when an emulated NVMe device is active." = "لا تدعم خاصية الإيقاف المؤقت عندما يكون جهاز NVMe المحاكي نشطًا.";
+
+/* UTMQemuVirtualMachine */
+"Suspend is not supported when GPU acceleration is enabled." = "لا تدعم خاصية الإيقاف المؤقت عند تمكين تسريع GPU.";
+
+/* UTMQemuVirtualMachine */
+"Suspend state cannot be saved when running in disposible mode." = "لا يمكن حفظ حالة الإيقاف المؤقت عند التشغيل في وضع التخلص.";
+
+/* VMData */
+"Suspended" = "معلق";
+
+/* UTMSWTPM */
+"SW TPM failed to start. %@" = "فشل SW TPM في البدء. %@";
+
+/* No comment provided by engineer. */
+"System" = "نظام";
+
+/* UTMQemuConstants */
+"TCP" = "TCP";
+
+/* UTMQemuConstants */
+"TCP Client Connection" = "اتصال عميل TCP";
+
+/* UTMQemuConstants */
+"TCP Server Connection" = "اتصال خادم TCP";
+
+/* VMDisplayWindowController */
+"Tells the VM process to shut down with risk of data corruption. This simulates holding down the power button on a PC." = "يخبر عملية الآلة الافتراضية بإيقاف التشغيل مع خطر تلف البيانات. هذا يحاكي الضغط على زر الطاقة في الكمبيوتر الشخصي.";
+
+/* No comment provided by engineer. */
+"Test" = "اختبار";
+
+/* No comment provided by engineer. */
+"Test 1" = "اختبار 1";
+
+/* No comment provided by engineer. */
+"Test 2" = "اختبار 2";
+
+/* UTMConfiguration */
+"The backend for this configuration is not supported." = "الخلفية لهذا التكوين غير مدعومة.";
+
+/* UTMRemoteServer */
+"The client interface version does not match the server." = "إصدار واجهة العميل لا يتطابق مع الخادم.";
+
+/* UTMScriptingUSBDeviceImpl */
+"The device cannot be found." = "لا يمكن العثور على الجهاز.";
+
+/* UTMScriptingUSBDeviceImpl */
+"The device is not currently connected." = "الجهاز غير متصل حاليًا.";
+
+/* UTMConfiguration */
+"The drive '%@' already exists and cannot be created." = "القرص '%@' موجود بالفعل ولا يمكن إنشاؤه.";
+
+/* UTMDownloadSupportToolsTaskError */
+"The guest support tools have already been mounted." = "تمت إضافة أدوات دعم الضيف بالفعل.";
+
+/* UTMRemoteClient */
+"The host fingerprint does not match the saved value. This means that UTM Server was reset, a different host is using the same name, or an attacker is pretending to be the host. For your protection, you need to delete this saved host to continue." = "بصمة المضيف لا تتطابق مع القيمة المحفوظة. هذا يعني أن خادم UTM قد تم إعادة تعيينه، أو أن مضيفًا مختلفًا يستخدم نفس الاسم، أو أن هناك مهاجمًا يتظاهر بأنه المضيف. لحمايتك، تحتاج إلى حذف هذا المضيف المحفوظ للمتابعة.";
+
+/* UTMAppleConfiguration */
+"The host operating system needs to be updated to support one or more features requested by the guest." = "يجب تحديث نظام التشغيل المضيف لدعم ميزة أو أكثر طلبها الضيف.";
+
+/* UTMAppleVirtualMachine */
+"The operating system cannot be installed on this machine." = "لا يمكن تثبيت نظام التشغيل على هذه الآلة.";
+
+/* UTMAppleVirtualMachine */
+"The operation is not available." = "هذه العملية غير متاحة.";
+
+/* UTMScriptingVirtualMachineImpl */
+"The QEMU guest agent is not running or not installed on the guest." = "وكيل ضيف QEMU غير قيد التشغيل أو غير مثبت على الضيف.";
+
+/* No comment provided by engineer. */
+"The selected architecture is unsupported in this version of UTM." = "البنية المختارة غير مدعومة في هذا الإصدار من UTM.";
+
+/* VMWizardState */
+"The selected boot image contains the word '%@' but the guest architecture is '%@'. Please ensure you have selected an image that is compatible with '%@'." = "تحتوي صورة التمهيد المحددة على الكلمة '%@' ولكن بنية الضيف هي '%@'. يرجى التأكد من أنك قد اخترت صورة متوافقة مع '%@'.";
+
+/* UTMRemoteClient */
+"The server interface version does not match the client." = "إصدار واجهة الخادم لا يتطابق مع العميل.";
+
+/* No comment provided by engineer. */
+"The target does not support hardware emulated serial connections." = "الهدف لا يدعم الاتصالات التسلسلية المحاكية بالعتاد.";
+
+/* UTMQemuVirtualMachine */
+"The virtual machine is in an invalid state." = "الآلة الافتراضية في حالة غير صالحة.";
+
+/* UTMScriptingVirtualMachineImpl */
+"The virtual machine is not running." = "الآلة الافتراضية غير قيد التشغيل.";
+
+/* UTMScriptingVirtualMachineImpl */
+"The virtual machine must be stopped before this operation can be performed." = "يجب إيقاف الآلة الافتراضية قبل أن يمكن تنفيذ هذه العملية.";
+
+/* Error shown when importing a ZIP file from web that doesn't contain a UTM Virtual Machine. */
+"There is no UTM file in the downloaded ZIP archive." = "لا يوجد ملف UTM في الأرشيف المضغوط الذي تم تنزيله.";
+
+/* No comment provided by engineer. */
+"This audio card is not supported." = "هذه بطاقة الصوت غير مدعومة.";
+
+/* UTMScriptingAppDelegate */
+"This backend is not supported on your machine." = "هذا الخلفية غير مدعومة على جهازك.";
+
+/* No comment provided by engineer. */
+"This build does not emulation." = "هذا الإصدار لا يدعم المحاكاة.";
+
+/* UTMQemuVirtualMachine */
+"This build of UTM does not support emulating the architecture of this VM." = "هذا الإصدار من UTM لا يدعم محاكاة بنية هذه الآلة الافتراضية.";
+
+/* VMConfigSystemView */
+"This change will reset all settings" = "سيؤدي هذا التغيير إلى إعادة تعيين جميع الإعدادات.";
+
+/* UTMConfiguration */
+"This configuration is saved with a newer version of UTM and is not compatible with this version." = "تم حفظ هذا التكوين بإصدار أحدث من UTM وهو غير متوافق مع هذا الإصدار.";
+
+/* UTMConfiguration */
+"This configuration is too old and is not supported." = "هذا التكوين قديم جدًا وغير مدعوم.";
+
+/* UTMScriptingConfigImpl */
+"This device is not supported by the target." = "هذا الجهاز غير مدعوم من قبل الهدف.";
+
+/* VMConfigAppleSharingView */
+"This directory is already being shared." = "يتم مشاركة هذا الدليل بالفعل.";
+
+/* VMData */
+"This function is not implemented." = "هذه الوظيفة غير منفذة.";
+
+/* UTMData */
+"This functionality is not yet implemented." = "هذه الوظيفة لم تُنفذ بعد.";
+
+/* UTMRemoteClient */
+"This host is not yet trusted. You should verify that the fingerprints match what is displayed on the host and then select Trust to continue." = "هذا المضيف لم يُوثق بعد. يجب عليك التحقق من أن بصمات الأصابع تتطابق مع ما هو معروض على المضيف ثم اختيار \"ثقة\" للمتابعة.";
+
+/* UTMAppleConfiguration */
+"This is not a valid Apple Virtualization configuration." = "هذه ليست تكوينًا صالحًا لافتراضية Apple.";
+
+/* VMDisplayWindowController */
+"This may corrupt the VM and any unsaved changes will be lost. To quit safely, shut down from the guest." = "قد يتسبب هذا في تلف الآلة الافتراضية وأي تغييرات غير محفوظة ستفقد. للخروج بأمان، قم بإيقاف التشغيل من الضيف.";
+
+/* No comment provided by engineer. */
+"This operating system is unsupported on your machine." = "هذا نظام التشغيل غير مدعوم على جهازك.";
+
+/* UTMDataExtension */
+"This virtual machine cannot be run on this machine." = "لا يمكن تشغيل هذه الآلة الافتراضية على هذه الآلة.";
+
+/* UTMAppleConfiguration */
+"This virtual machine cannot run on the current host machine." = "لا يمكن تشغيل هذه الآلة الافتراضية على المضيف الحالي.";
+
+/* UTMAppleConfiguration */
+"This virtual machine contains an invalid hardware model. The configuration may be corrupted or is outdated." = "تحتوي هذه الآلة الافتراضية على نموذج عتاد غير صالح. قد يكون التكوين تالفًا أو قديمًا.";
+
+/* No comment provided by engineer. */
+"This virtual machine has been removed." = "تمت إزالة هذه الآلة الافتراضية.";
+
+/* UTMDataExtension */
+"This virtual machine is already running. In order to run it from this device, you must stop it first." = "هذه الآلة الافتراضية قيد التشغيل بالفعل. لتشغيلها من هذا الجهاز، يجب عليك إيقافها أولاً.";
+
+/* UTMData */
+"This virtual machine is currently unavailable, make sure it is not open in another session." = "هذه الآلة الافتراضية غير متاحة حاليًا، تأكد من أنها غير مفتوحة في جلسة أخرى.";
+
+/* VMData */
+"This VM is configured for a backend that does not support remote clients." = "تم تكوين هذه الآلة الافتراضية لخلفية لا تدعم العملاء عن بُعد.";
+
+/* No comment provided by engineer. */
+"This VM is unavailable." = "هذه الآلة الافتراضية غير متاحة.";
+
+/* VMDisplayWindowController */
+"This will reset the VM and any unsaved state will be lost." = "سيؤدي هذا إلى إعادة تعيين الآلة الافتراضية وأي حالة غير محفوظة ستفقد.";
+
+/* UTMRemoteConnectView */
+"Timed out trying to connect." = "انتهت المهلة أثناء محاولة الاتصال.";
+
+/* VMDisplayAppleWindowController */
+"To access the shared directory, the guest OS must have Virtiofs drivers installed. You can then run `sudo mount -t virtiofs share /path/to/share` to mount to the share path." = "للوصول إلى الدليل المشترك، يجب أن يكون لدى نظام تشغيل الضيف برامج تشغيل Virtiofs مثبتة. يمكنك بعد ذلك تشغيل `sudo mount -t virtiofs share /path/to/share` لتركيب المسار المشترك.";
+
+/* VMMetalView */
+"To capture input or to release the capture, press Command and Option at the same time." = "للقبض على الإدخال أو لتحرير القبض، اضغط على Command وOption في نفس الوقت.";
+
+/* No comment provided by engineer. */
+"To install macOS, you need to download a recovery IPSW. If you do not select an existing IPSW, the latest macOS IPSW will be downloaded from Apple." = "لتثبيت macOS، تحتاج إلى تنزيل IPSW للاسترداد. إذا لم تحدد IPSW موجودة، سيتم تنزيل أحدث IPSW من Apple.";
+
+/* VMDisplayQemuMetalWindowController */
+"To release the mouse cursor, press %@ at the same time." = "لإطلاق مؤشر الماوس، اضغط على %@ في نفس الوقت.";
+
+/* No comment provided by engineer. */
+"Trust" = "ثقة";
+
+/* No comment provided by engineer. */
+"u{2022} " = "u{2022}";
+
+/* UTMQemuConstants */
+"UDP" = "UDP";
+
+/* No comment provided by engineer. */
+"UEFI" = "UEFI";
+
+/* UTMQemuConfigurationError */
+"UEFI is not supported with this architecture." = "لا تدعم هذه البنية UEFI.";
+
+/* UTMData */
+"Unable to add a shortcut to the new location." = "غير قادر على إضافة اختصار إلى الموقع الجديد.";
+
+/* VMData */
+"Unavailable" = "غير متاح";
+
+/* VMWizardState */
+"Unavailable for this platform." = "غير متاح لهذه المنصة.";
+
+/* No comment provided by engineer. */
+"Uncompressed Linux initial ramdisk (optional)" = "ذاكرة مؤقتة أولية لنظام لينكس غير مضغوطة (اختياري)";
+
+/* No comment provided by engineer. */
+"Uncompressed Linux kernel (required)" = "نواة لينكس غير مضغوطة (مطلوب)";
+
+/* No comment provided by engineer. */
+"Update Interface" = "تحديث الواجهة";
+
+/* UTMQemuConstants */
+"USB" = "USB";
+
+/* UTMQemuConstants */
+"USB 2.0" = "USB 2.0";
+
+/* UTMQemuConstants */
+"USB 3.0 (XHCI)" = "USB 3.0 (XHCI)";
+
+/* VMQemuDisplayMetalWindowController */
+"USB Device" = "جهاز USB";
+
+/* No comment provided by engineer. */
+"USB Sharing" = "مشاركة USB";
+
+/* No comment provided by engineer. */
+"USB sharing not supported in this build of UTM." = "مشاركة USB غير مدعومة في هذا الإصدار من UTM.";
+
+/* No comment provided by engineer. */
+"Use Command+Option (⌘+⌥) for input capture/release" = "استخدم Command + Option (⌘ + ⌥) لالتقاط/إطلاق الإدخال.";
+
+/* Welcome view */
+"User Guide" = "دليل المستخدم";
+
+/* UTMScriptingAppDelegate
+   UTMScriptingUSBDeviceImpl */
+"UTM is not ready to accept commands." = "UTM غير جاهز لقبول الأوامر.";
+
+/* No comment provided by engineer. */
+"Version" = "الإصدار";
+
+/* UTMQemuConstants */
+"VirtFS" = "VirtFS";
+
+/* UTMQemuConstants */
+"VirtIO" = "VirtIO";
+
+/* UTMConfigurationInfo
+   UTMData */
+"Virtual Machine" = "آلة افتراضية";
+
+/* No comment provided by engineer. */
+"Virtual Machine Gallery" = "معرض الآلات الافتراضية";
+
+/* VMData */
+"Virtual machine not loaded." = "لم يتم تحميل الآلة الافتراضية.";
+
+/* No comment provided by engineer. */
+"Virtualization is not supported on your system." = "لا تدعم نظامك الافتراضية.";
+
+/* No comment provided by engineer. */
+"Virtualize" = "افتراضية";
+
+/* No comment provided by engineer. */
+"VM display size is fixed" = "حجم عرض الآلة الافتراضية ثابت.";
+
+/* No comment provided by engineer. */
+"Waiting for VM to connect to display..." = "انتظار اتصال الآلة الافتراضية بالشاشة...";
+
+/* No comment provided by engineer. */
+"Welcome to UTM" = "مرحبًا بك في UTM";
+
+/* No comment provided by engineer. */
+"What's New" = "ما الجديد";
+
+/* UTMDownloadSupportToolsTask */
+"Windows Guest Support Tools" = "أدوات دعم الضيف لنظام Windows.";
+
+/* VMQemuDisplayMetalWindowController */
+"Would you like to connect '%@' to this virtual machine?" = "هل ترغب في توصيل '%@' بهذه الآلة الافتراضية؟";
+
+/* VMDisplayAppleWindowController */
+"Would you like to install macOS? If an existing operating system is already installed on the primary drive of this VM, then it will be erased." = "هل ترغب في تثبيت macOS؟ إذا كان نظام تشغيل موجود بالفعل مثبتًا على القرص الرئيسي لهذه الآلة الافتراضية، فسيتم محوه.";
+
+/* No comment provided by engineer. */
+"Would you like to re-convert this disk image to reclaim unused space and apply compression? Note this will require enough temporary space to perform the conversion. Compression only applies to existing data and new data will still be written uncompressed. You are strongly encouraged to back-up this VM before proceeding." = "هل ترغب في إعادة تحويل هذه الصورة القرصية لاستعادة المساحة غير المستخدمة وتطبيق الضغط؟ لاحظ أن هذا سيتطلب مساحة مؤقتة كافية لإجراء التحويل. الضغط ينطبق فقط على البيانات الموجودة وستظل البيانات الجديدة تُكتب بدون ضغط. يُنصح بشدة بعمل نسخة احتياطية لهذه الآلة الافتراضية قبل المتابعة.";
+
+/* No comment provided by engineer. */
+"Would you like to re-convert this disk image to reclaim unused space? Note this will require enough temporary space to perform the conversion. You are strongly encouraged to back-up this VM before proceeding." = "هل ترغب في إعادة تحويل هذه الصورة القرصية لاستعادة المساحة غير المستخدمة؟ لاحظ أن هذا سيتطلب مساحة مؤقتة كافية لإجراء التحويل. يُنصح بشدة بعمل نسخة احتياطية لهذه الآلة الافتراضية قبل المتابعة.";
+
+/* No comment provided by engineer. */
+"Yes" = "نعم";
+
+/* VMConfigSystemView */
+"Your device has %llu MB of memory and the estimated usage is %llu MB." = "جهازك يحتوي على %llu ميغابايت من الذاكرة والاستخدام المقدر هو %llu ميغابايت.";
+
+/* VMConfigAppleBootView
+   VMWizardOSMacView */
+"Your machine does not support running this IPSW." = "جهازك لا يدعم تشغيل هذا IPSW.";
+
+/* ContentView */
+"Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached. See https://getutm.app/install/ for more details." = "إصدار iOS الخاص بك لا يدعم تشغيل الآلات الافتراضية في حالة عدم التعديل. يجب عليك تشغيل UTM أثناء كسر الحماية أو مع توصيل مصحح أخطاء عن بُعد. انظر https://getutm.app/install/ لمزيد من التفاصيل.";
+
+// Additional Strings (These strings are unable to be extracted by Xcode)
+
+/* No comment provided by engineer. */
+"(Delete)" = "(حذف)";
+
+/* No comment provided by engineer. */
+"Add" = "إضافة";
+
+/* No comment provided by engineer. */
+"Add a new device." = "إضافة جهاز جديد.";
+
+/* No comment provided by engineer. */
+"Add a new drive." = "إضافة محرك جديد.";
+
+/* No comment provided by engineer. */
+"Add read only" = "إضافة للقراءة فقط";
+
+/* No comment provided by engineer. */
+"Advanced. If checked, a raw disk image is used. Raw disk image does not support snapshots and will not dynamically expand in size." = "خيارات متقدمة. إذا تم تحديدها، سيتم استخدام صورة قرص خام. صورة القرص الخام لا تدعم اللقطات ولن تتوسع ديناميكيًا في الحجم.";
+
+/* No comment provided by engineer. */
+"Allow Remote Connection" = "السماح بالاتصال عن بُعد";
+
+/* No comment provided by engineer. */
+"Allows passing through additional input from trackpads. Only supported on macOS 13+ guests." = "يسمح بتمرير إدخال إضافي من لوحات اللمس. مدعوم فقط على ضيوف macOS 13 وما فوق.";
+
+/* No comment provided by engineer. */
+"Apple Virtualization is experimental and only for advanced use cases. Leave unchecked to use QEMU, which is recommended." = "التقنية الافتراضية من Apple تجريبية ومخصصة فقط للاستخدام المتقدم. اتركها غير محددة لاستخدام QEMU، وهو موصى به.";
+
+/* No comment provided by engineer. */
+"Application" = "تطبيق";
+
+/* No comment provided by engineer. */
+"Architecture" = "بنية";
+
+/* No comment provided by engineer. */
+"Arguments" = "وسائط";
+
+/* No comment provided by engineer. */
+"Auto Resolution" = "تعديل تلقائي للدقة";
+
+/* No comment provided by engineer. */
+"Automatic" = "تلقائي";
+
+/* No comment provided by engineer. */
+"Background Color" = "لون الخلفية";
+
+/* No comment provided by engineer. */
+"Balloon Device" = "جهاز Balloon";
+
+/* No comment provided by engineer. */
+"Blinking cursor?" = "مؤشر يومض؟";
+
+/* No comment provided by engineer. */
+"Boot arguments" = "وسائط التمهيد";
+
+/* No comment provided by engineer. */
+"Boot Arguments" = "وسائط التمهيد";
+
+/* No comment provided by engineer. */
+"Boot from kernel image" = "التمهيد من صورة النواة";
+
+/* No comment provided by engineer. */
+"Boot Image" = "صورة التمهيد";
+
+/* No comment provided by engineer. */
+"Boot Image Type" = "نوع صورة التمهيد";
+
+/* No comment provided by engineer. */
+"Boot into recovery mode." = "التمهيد إلى وضع الاسترداد.";
+
+/* No comment provided by engineer. */
+"Bootloader" = "محمل الإقلاع";
+
+/* No comment provided by engineer. */
+"Bridged Interface" = "واجهة جسرية";
+
+/* No comment provided by engineer. */
+"Bridged Settings" = "إعدادات الجسر";
+
+/* No comment provided by engineer. */
+"By default, the best backend for the target will be used. If the selected backend is not available for any reason, an alternative will automatically be selected." = "بشكل افتراضي، سيتم استخدام أفضل خلفية للهدف. إذا كانت الخلفية المحددة غير متاحة لأي سبب، سيتم اختيار بديل تلقائيًا.";
+
+/* No comment provided by engineer. */
+"By default, the best renderer for this device will be used. You can override this with to always use a specific renderer. This only applies to QEMU VMs with GPU accelerated graphics." = "بشكل افتراضي، سيتم استخدام أفضل مُعالج لهذا الجهاز. يمكنك تجاوز ذلك لاستخدام مُعالج معين دائمًا. ينطبق هذا فقط على الآلات الافتراضية QEMU ذات الرسوميات المعجلة بواسطة GPU.";
+
+/* No comment provided by engineer. */
+"Calculating current size..." = "يتم حساب الحجم الحالي...";
+
+/* No comment provided by engineer. */
+"Cancel Download" = "إلغاء التنزيل";
+
+/* No comment provided by engineer. */
+"Clipboard Sharing" = "مشاركة الحافظة";
+
+/* No comment provided by engineer. */
+"Clone" = "استنساخ";
+
+/* No comment provided by engineer. */
+"Clone selected VM" = "استنساخ الآلة الافتراضية المحددة.";
+
+/* No comment provided by engineer. */
+"Clone…" = "استنساخ...";
+
+/* No comment provided by engineer. */
+"Close" = "إغلاق";
+
+/* No comment provided by engineer. */
+"Closing a VM without properly shutting it down could result in data loss." = "قد يؤدي إغلاق آلة افتراضية دون إيقافها بشكل صحيح إلى فقدان البيانات.";
+
+/* No comment provided by engineer. */
+"Compress" = "ضغط";
+
+/* No comment provided by engineer. */
+"Compress by re-converting the disk image and compressing the data." = "ضغط عن طريق إعادة تحويل صورة القرص وضغط البيانات.";
+
+/* No comment provided by engineer. */
+"Create a new VM" = "إنشاء آلة افتراضية جديدة.";
+
+/* No comment provided by engineer. */
+"Create a new VM with the same configuration as this one but without any data." = "إنشاء آلة افتراضية جديدة بنفس التكوين مثل هذه ولكن بدون أي بيانات.";
+
+/* No comment provided by engineer. */
+"Create an empty drive." = "إنشاء محرك فارغ.";
+
+/* No comment provided by engineer. */
+"Debian Install Guide" = "دليل تثبيت Debian.";
+
+/* No comment provided by engineer. */
+"Default is 1/4 of the RAM size (above). The JIT cache size is additive to the RAM size in the total memory usage!" = "الإعداد الافتراضي هو 1/4 من حجم الذاكرة (كما هو موضح أعلاه). حجم ذاكرة التخزين المؤقت JIT يضاف إلى حجم الذاكرة في الاستخدام الكلي للذاكرة!";
+
+/* No comment provided by engineer. */
+"Delete this drive." = "حذف هذا المحرك.";
+
+/* No comment provided by engineer. */
+"Delete selected VM" = "حذف الآلة الافتراضية المحددة.";
+
+/* No comment provided by engineer. */
+"Delete this shortcut. The underlying data will not be deleted." = "حذف هذا الاختصار. البيانات الأساسية لن تحذف.";
+
+/* No comment provided by engineer. */
+"Delete this VM and all its data." = "حذف هذه الآلة الافتراضية وجميع بياناتها.";
+
+/* No comment provided by engineer. */
+"Delete Drive" = "حذف المحرك.";
+
+/* No comment provided by engineer. */
+"Description" = "الوصف";
+
+/* No comment provided by engineer. */
+"Devices" = "الأجهزة";
+
+/* No comment provided by engineer. */
+"Directory" = "الدليل";
+
+/* No comment provided by engineer. */
+"Directory Share Mode" = "وضع مشاركة الدليل.";
+
+/* No comment provided by engineer. */
+"Disk" = "قرص";
+
+/* No comment provided by engineer. */
+"DHCP Domain Name" = "اسم نطاق DHCP.";
+
+/* No comment provided by engineer. */
+"DHCP End" = "نهاية عنوان DHCP.";
+
+/* No comment provided by engineer. */
+"DNS Search Domains" = "نطاقات بحث DNS.";
+
+/* No comment provided by engineer. */
+"DNS Server" = "خادم DNS.";
+
+/* No comment provided by engineer. */
+"DNS Server (IPv6)" = "خادم DNS (IPv6).";
+
+/* No comment provided by engineer. */
+"DHCP Start" = "بداية عنوان DHCP.";
+
+/* No comment provided by engineer. */
+"Done" = "تم.";
+
+/* No comment provided by engineer. */
+"Duplicate this VM along with all its data." = "تكرار هذه الآلة الافتراضية مع جميع بياناتها.";
+
+/* No comment provided by engineer. */
+"Download and mount the guest support package for Windows. This is required for some features including dynamic resolution and clipboard sharing." = "قم بتنزيل وتحميل حزمة دعم الضيف لنظام Windows. هذا مطلوب لبعض الميزات بما في ذلك الدقة الديناميكية ومشاركة الحافظة.";
+
+/* No comment provided by engineer. */
+"Download and mount the guest tools for Windows." = "قم بتنزيل وتحميل أدوات الضيف لنظام Windows.";
+
+/* No comment provided by engineer. */
+"Download Windows 11 for ARM64 Preview VHDX" = "تنزيل Windows 11 لمعاينة ARM64 VHDX.";
+
+/* No comment provided by engineer. */
+"Downscaling" = "تقليص.";
+
+/* No comment provided by engineer. */
+"Edit" = "تحرير.";
+
+/* No comment provided by engineer. */
+"Edit selected VM" = "تحرير الآلة الافتراضية المحددة.";
+
+/* No comment provided by engineer. */
+"Edit…" = "تحرير...";
+
+/* No comment provided by engineer. */
+"Emulated Audio Card" = "بطاقة صوت محاكية.";
+
+/* No comment provided by engineer. */
+"Emulated Display Card" = "بطاقة عرض محاكية.";
+
+/* No comment provided by engineer. */
+"Emulated Network Card" = "بطاقة شبكة محاكية.";
+
+/* No comment provided by engineer. */
+"Emulated Serial Device" = "جهاز تسلسلي محاكي.";
+
+/* No comment provided by engineer. */
+"Enable Balloon Device" = "تمكين جهاز Balloon.";
+
+/* No comment provided by engineer. */
+"Enable Entropy Device" = "تمكين جهاز Entropy.";
+
+/* No comment provided by engineer. */
+"Enable hardware OpenGL acceleration" = "تمكين تسريع OpenGL بالعتاد.";
+
+/* No comment provided by engineer. */
+"Enable Keyboard" = "تمكين لوحة المفاتيح.";
+
+/* No comment provided by engineer. */
+"Enable Pointer" = "تمكين المؤشر.";
+
+/* No comment provided by engineer. */
+"Enable Rosetta (x86_64 Emulation)" = "تمكين Rosetta (محاكاة x86_64).";
+
+/* No comment provided by engineer. */
+"Enable Rosetta on Linux (x86_64 Emulation)" = "تمكين Rosetta على Linux (محاكاة x86_64).";
+
+/* No comment provided by engineer. */
+"Enable Sound" = "تمكين الصوت.";
+
+/* No comment provided by engineer. */
+"Engine" = "محرك.";
+
+/* No comment provided by engineer. */
+"Export all arguments as a text file. This is only for debugging purposes as UTM's built-in QEMU differs from upstream QEMU in supported arguments." = "تصدير جميع الوسائط كملف نصي. هذا فقط لأغراض التصحيح حيث أن QEMU المدمج في UTM يختلف عن QEMU الرئيسي في الوسائط المدعومة.";
+
+/* No comment provided by engineer. */
+"Export Debug Log" = "تصدير سجل التصحيح.";
+
+/* No comment provided by engineer. */
+"External Drive" = "قرص خارجي";
+
+/* No comment provided by engineer. */
+"Fetch latest Windows installer…" = "احصل على أحدث مثبت لنظام Windows…";
+
+/* No comment provided by engineer. */
+"Font" = "خط";
+
+/* No comment provided by engineer. */
+"Force Disable CPU Flags" = "فرض تعطيل علامات CPU";
+
+/* No comment provided by engineer. */
+"Force Enable CPU Flags" = "فرض تمكين علامات CPU";
+
+/* No comment provided by engineer. */
+"Force multicore may improve speed of emulation but also might result in unstable and incorrect emulation." = "فرض استخدام عدة أنوية قد يحسن سرعة المحاكاة ولكنه قد يؤدي أيضًا إلى محاكاة غير مستقرة وغير صحيحة.";
+
+/* No comment provided by engineer. */
+"Force PS/2 controller" = "فرض استخدام وحدة تحكم PS/2";
+
+/* No comment provided by engineer. */
+"FPS Limit" = "حد FPS";
+
+/* No comment provided by engineer. */
+"Go Back" = "العودة";
+
+/* No comment provided by engineer. */
+"GPU Acceleration Supported" = "يدعم تسريع GPU";
+
+/* No comment provided by engineer. */
+"Guest Address" = "عنوان الضيف";
+
+/* No comment provided by engineer. */
+"Guest Network" = "شبكة الضيف";
+
+/* No comment provided by engineer. */
+"Guest Network (IPv6)" = "شبكة الضيف (IPv6)";
+
+/* No comment provided by engineer. */
+"Guest Port" = "منفذ الضيف";
+
+/* No comment provided by engineer. */
+"Hardware interface on the guest used to mount this image. Different operating systems support different interfaces. The default will be the most common interface." = "واجهة الأجهزة على الضيف المستخدمة لتركيب هذه الصورة. تدعم أنظمة التشغيل المختلفة واجهات مختلفة. ستكون القيمة الافتراضية هي الواجهة الأكثر شيوعًا.";
+
+/* No comment provided by engineer. */
+"Hardware OpenGL Acceleration" = "تسريع OpenGL بالعتاد";
+
+/* No comment provided by engineer. */
+"Height" = "الارتفاع";
+
+/* No comment provided by engineer. */
+"Hide" = "إخفاء";
+
+/* No comment provided by engineer. */
+"Hide dock icon on next launch" = "إخفاء أيقونة الرصيف في الإطلاق التالي";
+
+/* No comment provided by engineer. */
+"Host Address" = "عنوان المضيف";
+
+/* No comment provided by engineer. */
+"Host Address (IPv6)" = "عنوان المضيف (IPv6)";
+
+/* No comment provided by engineer. */
+"Host Port" = "منفذ المضيف";
+
+/* No comment provided by engineer. */
+"If checked, no drive image will be stored with the VM. Instead you can mount/unmount image while the VM is running." = "إذا تم تحديده، فلن يتم تخزين صورة القرص مع الآلة الافتراضية. بدلاً من ذلك، يمكنك تركيب/إلغاء تركيب الصورة أثناء تشغيل الآلة الافتراضية.";
+
+/* No comment provided by engineer. */
+"If checked, the CPU flag will be enabled. Otherwise, the default value will be used." = "إذا تم تحديده، ستُفعل علامة CPU. خلاف ذلك، سيتم استخدام القيمة الافتراضية.";
+
+/* No comment provided by engineer. */
+"If checked, the CPU flag will be disabled. Otherwise, the default value will be used." = "إذا تم تحديده، ستُعطل علامة CPU. خلاف ذلك، سيتم استخدام القيمة الافتراضية.";
+
+/* No comment provided by engineer. */
+"If checked, the drive image will be stored with the VM." = "إذا تم تحديده، ستُخزن صورة القرص مع الآلة الافتراضية.";
+
+/* No comment provided by engineer. */
+"If checked, use local time for RTC which is required for Windows. Otherwise, use UTC clock." = "إذا تم تحديده، استخدم الوقت المحلي لوحدة RTC المطلوبة لنظام Windows. خلاف ذلك، استخدم ساعة UTC.";
+
+/* No comment provided by engineer. */
+"If disabled, the default combination Control+Option (⌃+⌥) will be used." = "إذا تم تعطيله، سيتم استخدام المجموعة الافتراضية Control + Option (⌃ + ⌥).";
+
+/* No comment provided by engineer. */
+"If enabled, a virtiofs share tagged 'rosetta' will be available on the Linux guest for installing Rosetta for emulating x86_64 on ARM64." = "إذا تم تمكينه، ستكون مشاركة virtiofs المسمى 'rosetta' متاحة على الضيف Linux لتثبيت Rosetta لمحاكاة x86_64 على ARM64.";
+
+/* No comment provided by engineer. */
+"If enabled, any existing screenshot will be deleted the next time the VM is started." = "إذا تم تمكينه، سيتم حذف أي لقطة موجودة في المرة التالية التي يتم فيها بدء الآلة الافتراضية.";
+
+/* No comment provided by engineer. */
+"If enabled, caps lock will be handled like other keys. If disabled, it is treated as a toggle that is synchronized with the host." = "إذا تم تمكينه، سيتم التعامل مع Caps Lock مثل المفاتيح الأخرى. إذا تم تعطيله، سيتم اعتباره مفتاح تبديل متزامن مع المضيف.";
+
+/* No comment provided by engineer. */
+"If enabled, input capture will toggle automatically when entering and exiting full screen mode." = "إذا تم تمكينه، ستتبدل عملية التقاط الإدخال تلقائيًا عند الدخول والخروج من وضع ملء الشاشة.";
+
+/* No comment provided by engineer. */
+"If enabled, num lock will always be on to the guest. Note this may make your keyboard's num lock indicator out of sync." = "إذا تم تمكينه، سيظل Num Lock مفعلًا دائمًا للضيف. لاحظ أن هذا قد يجعل مؤشر Num Lock على لوحة المفاتيح غير متزامن.";
+
+/* No comment provided by engineer. */
+"If enabled, Option will be mapped to the Meta key which can be useful for emacs. Otherwise, option will work as the system intended (such as for entering international text)." = "إذا تم تمكينه، سيتم تعيين مفتاح Option إلى مفتاح Meta، مما قد يكون مفيدًا لـ emacs. خلاف ذلك، سيعمل مفتاح Option كما هو مقصود من قبل النظام (مثل إدخال نص دولي).";
+
+/* No comment provided by engineer. */
+"If enabled, resizing of the VM window will not be allowed." = "إذا تم تمكينه، فلن يُسمح بتغيير حجم نافذة الآلة الافتراضية.";
+
+/* No comment provided by engineer. */
+"If enabled, scroll wheel input will be inverted." = "إذا تم تمكينه، سيتم عكس إدخال عجلة التمرير.";
+
+/* No comment provided by engineer. */
+"If enabled, the default input devices will be emulated on the USB bus." = "إذا تم تمكينه، ستتم محاكاة أجهزة الإدخال الافتراضية على ناقل USB.";
+
+/* No comment provided by engineer. */
+"If set, a frame limit can improve smoothness in rendering by preventing stutters when set to the lowest value your device can handle." = "إذا تم تعيينه، يمكن أن يحسن حد الإطار من سلاسة العرض من خلال منع التقطيع عند تعيينه لأدنى قيمة يمكن لجهازك التعامل معها.";
+
+/* No comment provided by engineer. */
+"If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO." = "إذا تم تعيينه، يتم التمهيد مباشرة من صورة نواة خام وinitrd. خلاف ذلك، يتم التمهيد من ISO مدعوم.";
+
+/* No comment provided by engineer. */
+"Image Type" = "نوع الصورة";
+
+/* No comment provided by engineer. */
+"Import Drive" = "استيراد محرك";
+
+/* No comment provided by engineer. */
+"Import VHDX Image" = "استيراد صورة VHDX";
+
+/* No comment provided by engineer. */
+"Increase the size of the disk image." = "زيادة حجم صورة القرص.";
+
+/* No comment provided by engineer. */
+"Initial Ramdisk" = "ذاكرة مؤقتة أولية";
+
+/* No comment provided by engineer. */
+"Input" = "إدخال";
+
+/* No comment provided by engineer. */
+"Install drivers and SPICE tools" = "تثبيت برامج التشغيل وأدوات SPICE";
+
+/* No comment provided by engineer. */
+"Install Windows 10 or higher" = "تثبيت Windows 10 أو أعلى";
+
+/* No comment provided by engineer. */
+"Installation Instructions" = "تعليمات التثبيت";
+
+/* No comment provided by engineer. */
+"Instantiate PS/2 controller even when USB input is supported. Required for older Windows." = "تكوين وحدة تحكم PS/2 حتى عند دعم إدخال USB. مطلوب لنظم Windows القديمة.";
+
+/* No comment provided by engineer. */
+"Interface" = "واجهة";
+
+/* No comment provided by engineer. */
+"IPSW Install Image" = "صورة تثبيت IPSW";
+
+/* No comment provided by engineer. */
+"JIT Cache" = "ذاكرة التخزين المؤقت JIT";
+
+/* No comment provided by engineer. */
+"Kernel" = "نواة";
+
+/* No comment provided by engineer. */
+"Kernel Image" = "صورة النواة";
+
+/* No comment provided by engineer. */
+"Keyboard" = "لوحة المفاتيح";
+
+/* No comment provided by engineer. */
+"MAC Address" = "عنوان MAC";
+
+/* No comment provided by engineer. */
+"Machine" = "آلة افتراضية";
+
+/* No comment provided by engineer. */
+"Maintenance" = "صيانة";
+
+/* No comment provided by engineer. */
+"Mode" = "وضع";
+
+/* No comment provided by engineer. */
+"Modify settings for this VM." = "تعديل إعدادات هذه الآلة الافتراضية.";
+
+/* UTMAppleConfigurationDevices */
+"Mouse" = "ماوس";
+
+/* No comment provided by engineer. */
+"Move" = "نقل";
+
+/* No comment provided by engineer. */
+"Move…" = "نقل…";
+
+/* No comment provided by engineer. */
+"Move selected VM" = "نقل الآلة الافتراضية المحددة";
+
+/* No comment provided by engineer. */
+"Move this VM from internal storage to elsewhere." = "نقل هذه الآلة الافتراضية من التخزين الداخلي إلى مكان آخر.";
+
+/* No comment provided by engineer. */
+"Network" = "شبكة";
+
+/* No comment provided by engineer. */
+"Network Mode" = "وضع الشبكة";
+
+/* No comment provided by engineer. */
+"New Drive" = "محرك جديد";
+
+/* No comment provided by engineer. */
+"New from template…" = "جديد من القالب…";
+
+/* No comment provided by engineer. */
+"New Shared Directory…" = "دليل مشترك جديد…";
+
+/* No comment provided by engineer. */
+"New VM" = "آلة افتراضية جديدة";
+
+/* No comment provided by engineer. */
+"Older versions of UTM added each IDE device to a separate bus. Check this to change the configuration to place two units on each bus." = "أضافت الإصدارات القديمة من UTM كل جهاز IDE إلى ناقل منفصل. تحقق من ذلك لتغيير التكوين لوضع وحدتين على كل ناقل.";
+
+/* No comment provided by engineer. */
+"Only available if host architecture matches the target. Otherwise, TCG emulation is used." = "متاح فقط إذا كانت بنية المضيف تتطابق مع الهدف. خلاف ذلك، يتم استخدام محاكاة TCG.";
+
+/* No comment provided by engineer. */
+"Only available on macOS virtual machines." = "متاح فقط على الآلات الافتراضية macOS.";
+
+/* No comment provided by engineer. */
+"Only available when Hypervisor is used on supported hardware. TSO speeds up Intel emulation in the guest at the cost of decreased performance in general." = "متاح فقط عند استخدام Hypervisor على الأجهزة المدعومة. TSO يسرع من محاكاة Intel في الضيف على حساب انخفاض الأداء بشكل عام.";
+
+/* No comment provided by engineer. */
+"Open VM Settings" = "فتح إعدادات الآلة الافتراضية";
+
+/* No comment provided by engineer. */
+"Optionally select a directory to make accessible inside the VM. Note that support for shared directories varies by the guest operating system and may require additional guest drivers to be installed. See UTM support pages for more details." = "اختر دليلًا بشكل اختياري لجعله متاحًا داخل الآلة الافتراضية. لاحظ أن الدعم للدلائل المشتركة يختلف حسب نظام تشغيل الضيف وقد يتطلب تثبيت برامج تشغيل إضافية للضيف. راجع صفحات دعم UTM لمزيد من التفاصيل.";
+
+/* No comment provided by engineer. */
+"Options here only apply on next boot and are not saved." = "الخيارات هنا تنطبق فقط عند التمهيد التالي وليست محفوظة.";
+
+/* No comment provided by engineer. */
+"Path" = "مسار";
+
+/* No comment provided by engineer. */
+"Port" = "منفذ";
+
+/* No comment provided by engineer. */
+"Power Off" = "إيقاف التشغيل";
+
+/* No comment provided by engineer. */
+"Prompt" = "مطالبة";
+
+/* No comment provided by engineer. */
+"Protocol" = "بروتوكول";
+
+/* No comment provided by engineer. */
+"QEMU Machine Properties" = "خصائص آلة QEMU";
+
+/* No comment provided by engineer. */
+"Quit" = "خروج";
+
+/* No comment provided by engineer. */
+"RAM" = "ذاكرة الوصول العشوائي";
+
+/* No comment provided by engineer. */
+"Ramdisk (optional)" = "ذاكرة مؤقتة (اختياري)";
+
+/* No comment provided by engineer. */
+"Random" = "عشوائي";
+
+/* No comment provided by engineer. */
+"Read Only?" = "للقراءة فقط؟";
+
+/* No comment provided by engineer. */
+"Reclaim disk space by re-converting the disk image." = "استعادة مساحة القرص عن طريق إعادة تحويل صورة القرص.";
+
+/* No comment provided by engineer. */
+"Reclaim Space" = "استعادة المساحة";
+
+/* No comment provided by engineer. */
+"Remove selected shortcut" = "إزالة الاختصار المحدد";
+
+/* No comment provided by engineer. */
+"Renderer Backend" = "الواجهة الخلفية للرندر";
+
+/* No comment provided by engineer. */
+"Requires restarting UTM to take affect." = "يتطلب إعادة تشغيل UTM ليصبح ساري المفعول.";
+
+/* No comment provided by engineer. */
+"Requires SPICE guest agent tools to be installed." = "يتطلب تثبيت أدوات وكيل SPICE للضيف.";
+
+/* No comment provided by engineer. */
+"Reset UEFI Variables" = "إعادة تعيين متغيرات UEFI";
+
+/* No comment provided by engineer. */
+"Resize Console Command" = "أمر تغيير حجم وحدة التحكم";
+
+/* No comment provided by engineer. */
+"Resize…" = "تغيير الحجم…";
+
+/* No comment provided by engineer. */
+"Resizing is experimental and could result in data loss. You are strongly encouraged to back-up this VM before proceeding. Would you like to resize to %lld GiB?" = "تغيير الحجم هو تجربة وقد يؤدي إلى فقدان البيانات. يُنصح بشدة بعمل نسخة احتياطية من هذه الآلة الافتراضية قبل المتابعة. هل ترغب في تغيير الحجم إلى %lld GiB؟";
+
+/* No comment provided by engineer. */
+"Resolution" = "الدقة";
+
+/* No comment provided by engineer. */
+"Restart" = "إعادة تشغيل";
+
+/* No comment provided by engineer. */
+"Resume" = "استئناف";
+
+/* No comment provided by engineer. */
+"Resume running VM." = "استئناف تشغيل الآلة الافتراضية.";
+
+/* No comment provided by engineer. */
+"Reveal where the VM is stored." = "كشف مكان تخزين الآلة الافتراضية.";
+
+/* No comment provided by engineer. */
+"RNG Device" = "جهاز RNG";
+
+/* No comment provided by engineer. */
+"Root Image" = "صورة الجذر";
+
+/* No comment provided by engineer. */
+"Run" = "تشغيل";
+
+/* No comment provided by engineer. */
+"Run Recovery" = "تشغيل وضع الاسترداد";
+
+/* No comment provided by engineer. */
+"Run selected VM" = "تشغيل الآلة الافتراضية المحددة";
+
+/* No comment provided by engineer. */
+"Run the VM in the foreground." = "تشغيل الآلة الافتراضية في المقدمة.";
+
+/* No comment provided by engineer. */
+"Run the VM in the foreground, without saving data changes to disk." = "تشغيل الآلة الافتراضية في المقدمة، دون حفظ تغييرات البيانات على القرص.";
+
+/* No comment provided by engineer. */
+"Run without saving changes" = "تشغيل دون حفظ التغييرات";
+
+/* No comment provided by engineer. */
+"Section" = "قسم";
+
+/* No comment provided by engineer. */
+"Secure Boot with TPM 2.0" = "التمهيد الآمن مع TPM 2.0";
+
+/* No comment provided by engineer. */
+"Select an existing disk image." = "اختر صورة قرص موجودة.";
+
+/* No comment provided by engineer. */
+"Serial" = "سلسلة";
+
+/* No comment provided by engineer. */
+"Server Address" = "عنوان الخادم";
+
+/* No comment provided by engineer. */
+"Settings" = "الإعدادات";
+
+/* No comment provided by engineer. */
+"Share" = "مشاركة";
+
+/* No comment provided by engineer. */
+"Share…" = "مشاركة…";
+
+/* No comment provided by engineer. */
+"Share a copy of this VM and all its data." = "مشاركة نسخة من هذه الآلة الافتراضية وجميع بياناتها.";
+
+/* No comment provided by engineer. */
+"Share Directory" = "مشاركة الدليل";
+
+/* No comment provided by engineer. */
+"Share is read only" = "المشاركة للقراءة فقط";
+
+/* No comment provided by engineer. */
+"Share selected VM" = "مشاركة الآلة الافتراضية المحددة";
+
+/* No comment provided by engineer. */
+"Shared Directory Path" = "مسار الدليل المشترك";
+
+/* No comment provided by engineer. */
+"Shared Path" = "المسار المشترك";
+
+/* No comment provided by engineer. */
+"Should be off for older operating systems such as Windows 7 or lower." = "يجب أن يكون مغلقًا للأنظمة القديمة مثل Windows 7 أو أقل.";
+
+/* No comment provided by engineer. */
+"Should be on always unless the guest cannot boot because of this." = "يجب أن يكون مفعلًا دائمًا إلا إذا كانت الآلة الافتراضية لا تستطيع التمهيد بسبب ذلك.";
+
+/* No comment provided by engineer. */
+"Show all devices…" = "عرض جميع الأجهزة…";
+
+/* No comment provided by engineer. */
+"Show in Finder" = "عرض في Finder";
+
+/* No comment provided by engineer. */
+"Show the main window." = "عرض النافذة الرئيسية.";
+
+/* No comment provided by engineer. */
+"Show UTM" = "عرض UTM";
+
+/* No comment provided by engineer. */
+"Show UTM preferences" = "عرض تفضيلات UTM";
+
+/* No comment provided by engineer. */
+"Skip Boot Image" = "تخطي صورة التمهيد";
+
+/* No comment provided by engineer. */
+"Skip ISO boot" = "تخطي تمهيد ISO";
+
+/* No comment provided by engineer. */
+"Some older systems do not support UEFI boot, such as Windows 7 and below." = "بعض الأنظمة القديمة لا تدعم التمهيد UEFI، مثل Windows 7 وأقل.";
+
+/* No comment provided by engineer. */
+"Sound" = "صوت";
+
+/* No comment provided by engineer. */
+"Sound Backend" = "واجهة الصوت الخلفية";
+
+/* No comment provided by engineer. */
+"Start" = "بدء";
+
+/* No comment provided by engineer. */
+"Status" = "الحالة";
+
+/* No comment provided by engineer. */
+"Stop selected VM" = "إيقاف الآلة الافتراضية المحددة";
+
+/* No comment provided by engineer. */
+"Stop the running VM." = "إيقاف تشغيل الآلة الافتراضية.";
+
+/* No comment provided by engineer. */
+"Storage" = "التخزين";
+
+/* No comment provided by engineer. */
+"stty cols $COLS rows $ROWS\n" = "stty أعمدة $COLS صفوف $ROWS\n";
+
+/* No comment provided by engineer. */
+"Suspend" = "تعليق";
+
+/* No comment provided by engineer. */
+"Target" = "الهدف";
+
+/* No comment provided by engineer. */
+"Terminate UTM and stop all running VMs." = "إنهاء UTM وإيقاف جميع الآلات الافتراضية الجارية.";
+
+/* No comment provided by engineer. */
+"Text" = "نص";
+
+/* No comment provided by engineer. */
+"Text Color" = "لون النص";
+
+/* No comment provided by engineer. */
+"The amount of storage to allocate for this image. Ignored if importing an image. If this is a raw image, then an empty file of this size will be stored with the VM. Otherwise, the disk image will dynamically expand up to this size." = "حجم التخزين المخصص لهذه الصورة. يتم تجاهله عند استيراد صورة. إذا كانت هذه صورة خام، فسيتم تخزين ملف فارغ بهذا الحجم مع الآلة الافتراضية. خلاف ذلك، ستتوسع صورة القرص ديناميكيًا حتى هذا الحجم.";
+
+/* No comment provided by engineer. */
+"Theme" = "ثيم";
+
+/* No comment provided by engineer. */
+"There are known issues in some newer Linux drivers including black screen, broken compositing, and apps failing to render." = "هناك مشاكل معروفة في بعض برامج تشغيل Linux الجديدة بما في ذلك الشاشة السوداء، والتكوين المعطل، وفشل التطبيقات في العرض.";
+
+/* No comment provided by engineer. */
+"These are advanced settings affecting QEMU which should be kept default unless you are running into issues." = "هذه إعدادات متقدمة تؤثر على QEMU ويجب الحفاظ على الإعدادات الافتراضية ما لم تواجه مشاكل.";
+
+/* No comment provided by engineer. */
+"This is appended to the -machine argument." = "يتم إضافته إلى وسيط -machine.";
+
+/* No comment provided by engineer. */
+"This virtual machine cannot be found at: %@" = "لا يمكن العثور على هذه الآلة الافتراضية في: %@";
+
+/* No comment provided by engineer. */
+"This virtual machine must be re-added to UTM by opening it with Finder. You can find it at the path: %@" = "يجب إعادة إضافة هذه الآلة الافتراضية إلى UTM عن طريق فتحها باستخدام Finder. يمكنك العثور عليها في المسار: %@";
+
+/* No comment provided by engineer. */
+"TPM 2.0 Device" = "جهاز TPM 2.0";
+
+/* No comment provided by engineer. */
+"TPM can be used to protect secrets in the guest operating system. Note that the host will always be able to read these secrets and therefore no expectation of physical security is provided." = "يمكن استخدام TPM لحماية الأسرار في نظام تشغيل الضيف. لاحظ أن المضيف سيكون قادرًا دائمًا على قراءة هذه الأسرار، وبالتالي لا يتم توفير توقعات للأمان المادي.";
+
+/* UTMAppleConfigurationDevices */
+"Trackpad" = "لوحة اللمس";
+
+/* No comment provided by engineer. */
+"Tweaks" = "تعديلات";
+
+/* No comment provided by engineer. */
+"Ubuntu Install Guide" = "دليل تثبيت Ubuntu";
+
+/* No comment provided by engineer. */
+"UEFI Boot" = "تمهيد UEFI";
+
+/* No comment provided by engineer. */
+"Upscaling" = "تكبير";
+
+/* No comment provided by engineer. */
+"USB Support" = "دعم USB";
+
+/* No comment provided by engineer. */
+"Use Apple Virtualization" = "استخدام الافتراضية من Apple";
+
+/* No comment provided by engineer. */
+"Use Hypervisor" = "استخدام Hypervisor";
+
+/* No comment provided by engineer. */
+"Use local time for base clock" = "استخدام الوقت المحلي كساعة أساسية";
+
+/* No comment provided by engineer. */
+"Use Rosetta" = "استخدام Rosetta";
+
+/* No comment provided by engineer. */
+"Use Trackpad" = "استخدام لوحة اللمس";
+
+/* No comment provided by engineer. */
+"Use TSO" = "استخدام TSO";
+
+/* No comment provided by engineer. */
+"Use Virtualization" = "استخدام الافتراضية";
+
+/* No comment provided by engineer. */
+"VGA Device RAM (MB)" = "ذاكرة جهاز VGA (MB)";
+
+/* No comment provided by engineer. */
+"Virtualization" = "الافتراضية";
+
+/* No comment provided by engineer. */
+"Virtualization Engine" = "محرك الافتراضية";
+
+/* No comment provided by engineer. */
+"Wait for Connection" = "انتظر الاتصال";
+
+/* No comment provided by engineer. */
+"WebDAV requires installing SPICE daemon. VirtFS requires installing device drivers." = "يتطلب WebDAV تثبيت خدمة SPICE. يتطلب VirtFS تثبيت برامج تشغيل الأجهزة.";
+
+/* No comment provided by engineer. */
+"Width" = "عرض";
+
+/* No comment provided by engineer. */
+"Windows Install Guide" = "دليل تثبيت Windows";
+
+/* No comment provided by engineer. */
+"You can use this if your boot options are corrupted or if you wish to re-enroll in the default keys for secure boot." = "يمكنك استخدام هذا إذا كانت خيارات التمهيد لديك تالفة أو إذا كنت ترغب في إعادة تسجيل المفاتيح الافتراضية للتمهيد الآمن.";
+
+/* No comment provided by engineer. */
+"Zoom" = "تكبير";
