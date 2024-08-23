@@ -19,6 +19,7 @@ import UniformTypeIdentifiers
 #if os(iOS)
 import IQKeyboardManagerSwift
 #endif
+import TipKit
 
 // on visionOS, there is no text to show more than UTM
 #if WITH_QEMU_TCI && !os(visionOS)
@@ -78,6 +79,9 @@ struct ContentView: View {
         }.fileImporter(isPresented: $openSheetPresented, allowedContentTypes: [.UTM, .UTMextension], allowsMultipleSelection: true, onCompletion: selectImportedUTM)
         .onDrop(of: [.fileURL], delegate: self)
         .onAppear {
+            if #available(iOS 17, macOS 14, *) {
+                UTMTipDonate.timesLaunched += 1
+            }
             Task {
                 await data.listRefresh()
                 #if os(macOS)

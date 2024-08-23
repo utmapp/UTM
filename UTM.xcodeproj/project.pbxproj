@@ -892,6 +892,9 @@
 		CEC794BD2949663C00121A9F /* UTMScripting.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC794BB2949663C00121A9F /* UTMScripting.swift */; };
 		CED234ED254796E500ED0A57 /* NumberTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED234EC254796E500ED0A57 /* NumberTextField.swift */; };
 		CED234EE254796E500ED0A57 /* NumberTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED234EC254796E500ED0A57 /* NumberTextField.swift */; };
+		CED779E52C78C82A00EB82AE /* UTMTips.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED779E42C78C82A00EB82AE /* UTMTips.swift */; };
+		CED779E62C78C82A00EB82AE /* UTMTips.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED779E42C78C82A00EB82AE /* UTMTips.swift */; };
+		CED779E72C78C82A00EB82AE /* UTMTips.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED779E42C78C82A00EB82AE /* UTMTips.swift */; };
 		CED814E924C79F070042F0F1 /* VMConfigDriveCreateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED814E824C79F070042F0F1 /* VMConfigDriveCreateView.swift */; };
 		CED814EA24C79F070042F0F1 /* VMConfigDriveCreateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED814E824C79F070042F0F1 /* VMConfigDriveCreateView.swift */; };
 		CED814EC24C7C2850042F0F1 /* VMConfigInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED814EB24C7C2850042F0F1 /* VMConfigInfoView.swift */; };
@@ -2017,6 +2020,7 @@
 		CECF02562B706ADD00409FC0 /* UTMRemoteConnectInterface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMRemoteConnectInterface.h; sourceTree = "<group>"; };
 		CECF02572B70909900409FC0 /* Info-Remote.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-Remote.plist"; sourceTree = "<group>"; };
 		CED234EC254796E500ED0A57 /* NumberTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberTextField.swift; sourceTree = "<group>"; };
+		CED779E42C78C82A00EB82AE /* UTMTips.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMTips.swift; sourceTree = "<group>"; };
 		CED814E824C79F070042F0F1 /* VMConfigDriveCreateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigDriveCreateView.swift; sourceTree = "<group>"; };
 		CED814EB24C7C2850042F0F1 /* VMConfigInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigInfoView.swift; sourceTree = "<group>"; };
 		CED814EE24C7EB760042F0F1 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
@@ -2698,6 +2702,7 @@
 				842B9F8C28CC58B700031EE7 /* UTMPatches.swift */,
 				CEE06B282B30013500A811AE /* UTMRemoteConnectView.swift */,
 				84CE3DB02904C7A100FF068B /* UTMSettingsView.swift */,
+				CED779E42C78C82A00EB82AE /* UTMTips.swift */,
 				CE2D954D24AD4F980059923A /* VMConfigNetworkPortForwardView.swift */,
 				84CF5DD2288DCE6400D01721 /* VMDisplayHostedView.swift */,
 				84018685288A3B5B0050AC51 /* VMSessionState.swift */,
@@ -3657,6 +3662,7 @@
 				CE2D958F24AD4FF00059923A /* VMCardView.swift in Sources */,
 				8432329028C2CDAD00CFBC97 /* VMNavigationListView.swift in Sources */,
 				841E58CE28937FED00137A20 /* UTMSingleWindowView.swift in Sources */,
+				CED779E52C78C82A00EB82AE /* UTMTips.swift in Sources */,
 				CE2D930B24AD46670059923A /* UTMLegacyQemuConfiguration+Sharing.m in Sources */,
 				84C505AC28C588EC007CE8FF /* SizeTextField.swift in Sources */,
 				8471770627CC974F00D3A50B /* DefaultTextField.swift in Sources */,
@@ -3924,6 +3930,7 @@
 				CEA45E63263519B5002FA97D /* UTMLegacyViewState.m in Sources */,
 				CEA45E64263519B5002FA97D /* UTMLoggingSwift.swift in Sources */,
 				841619A7284315C1000034B2 /* UTMQemuConfiguration.swift in Sources */,
+				CED779E62C78C82A00EB82AE /* UTMTips.swift in Sources */,
 				84C2E8662AA429E800B17308 /* VMWizardContent.swift in Sources */,
 				CEF0305F26A2AFDF00667B63 /* VMWizardState.swift in Sources */,
 				CEA45E69263519B5002FA97D /* VMConfigQEMUView.swift in Sources */,
@@ -4152,6 +4159,7 @@
 				CEF7F5F92AEEDCC400E34952 /* VMToolbarDriveMenuView.swift in Sources */,
 				CE08334B2B784FD400522C03 /* RemoteContentView.swift in Sources */,
 				CEF7F5FA2AEEDCC400E34952 /* VMSettingsView.swift in Sources */,
+				CED779E72C78C82A00EB82AE /* UTMTips.swift in Sources */,
 				CEF7F5FB2AEEDCC400E34952 /* VMDisplayViewController.swift in Sources */,
 				CEF7F5FC2AEEDCC400E34952 /* VMWizardStartView.swift in Sources */,
 				CEF7F5FD2AEEDCC400E34952 /* QEMUConstantGenerated.swift in Sources */,

@@ -15,6 +15,7 @@
 //
 
 import SwiftUI
+import TipKit
 
 struct VMNavigationListView: View {
     @EnvironmentObject private var data: UTMData
@@ -106,6 +107,21 @@ private struct VMListModifier: ViewModifier {
     @State private var sheetPresented = false
     @State private var donatePresented = false
 
+    private let _donateTip: Any?
+
+    @available(iOS 17, macOS 14, *)
+    private var donateTip: UTMTipDonate {
+        _donateTip as! UTMTipDonate
+    }
+
+    init() {
+        if #available(iOS 17, macOS 14, *) {
+            _donateTip = UTMTipDonate()
+        } else {
+            _donateTip = nil
+        }
+    }
+
     func body(content: Content) -> some View {
         content
         #if os(macOS)
@@ -129,10 +145,24 @@ private struct VMListModifier: ViewModifier {
             #endif
             #if !WITH_REMOTE
             ToolbarItem(placement: .navigationBarLeading) {
-                Button {
-                    donatePresented.toggle()
-                } label: {
-                    Label("Donate", systemImage: "heart.fill")
+                if #available(iOS 17, macOS 14, *) {
+                    Button {
+                        donateTip.invalidate(reason: .actionPerformed)
+                        donatePresented.toggle()
+                    } label: {
+                        Image(systemName: "heart.fill") // SwiftUI bug: tip won't show up if this is a label
+                    }.popoverTip(donateTip, arrowEdge: .top) { action in
+                        donateTip.invalidate(reason: .actionPerformed)
+                        if action.id == "donate" {
+                            donatePresented.toggle()
+                        }
+                    }
+                } else {
+                    Button {
+                        donatePresented.toggle()
+                    } label: {
+                        Label("Donate", systemImage: "heart.fill")
+                    }
                 }
             }
             #endif
