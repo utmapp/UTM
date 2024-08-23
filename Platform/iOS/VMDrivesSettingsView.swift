@@ -35,6 +35,16 @@ struct VMDrivesSettingsView: View {
             attemptDelete = offsets
         }
         .onMove(perform: moveDrives)
+        Button {
+            isImportDriveShown.toggle()
+        } label: {
+            Text("Import Drive…")
+        }
+        Button {
+            isCreateDriveShown.toggle()
+        } label: {
+            Text("New Drive…")
+        }
         .nonbrokenSheet(isPresented: $isCreateDriveShown) {
             CreateDrive(newDrive: UTMQemuConfigurationDrive(forArchitecture: config.system.architecture, target: config.system.target), onDismiss: newDrive)
         }
@@ -71,7 +81,7 @@ struct VMDrivesSettingsView: View {
             switch result {
             case .success(let url):
                 await MainActor.run {
-                    var drive = UTMQemuConfigurationDrive(forArchitecture: config.system.architecture, target: config.system.target, isExternal: true)
+                    var drive = UTMQemuConfigurationDrive(forArchitecture: config.system.architecture, target: config.system.target, isExternal: false)
                     drive.imageURL = url
                     config.drives.append(drive)
                 }

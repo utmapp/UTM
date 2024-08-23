@@ -422,8 +422,8 @@
 "If checked, the drive image will be stored with the VM." = "Jeśli zaznaczone, obraz dysku będzie przechowywany wraz z wirtualną maszyną.";
 "Size" = "Rozmiar";
 "The amount of storage to allocate for this image. An empty file of this size will be stored with the VM." = "Ilość pamięci masowej przydzielonej dla tego obrazu. Pusty plik takiego rozmiaru będzie przechowywany wraz z maszyną wirtualną";
-"GB" = "GB";
-"MB" = "MB";
+"GiB" = "GiB";
+"MiB" = "MiB";
 
 /* VMConfigAppleDriveDetailsView.swift */
 "Name" = "Nazwa";
@@ -547,14 +547,14 @@
 
 /* RAMSlider.swift */
 "Size" = "Rozmiar";
-"MB" = "MB";
+"MiB" = "MiB";
 
 /* FileBrowseField.swift */
 "Path" = "Ścieżka";
 
 /* SizeTextField.swift */
 "The amount of storage to allocate for this image. Ignored if importing an image. If this is a raw image, then an empty file of this size will be stored with the VM. Otherwise, the disk image will dynamically expand up to this size." = "Ilość pamięci masowej do przydzielenia dla tego obrazu. Ignorowane, jeśli importujesz obraz. Jeśli jest to surowy obraz, wtedy plusty plik tego rozmiaru będzie przechowywany wraz z wirtualną maszyną. W przeciwnym wypadku, obraz dysku będzie dynamicznie się rozszerzał do docelowego rozmiaru.";
-"GB" = "GB";
+"GiB" = "GiB";
 
 /* VMCardView.swift */
 "Run" = "Uruchom";
@@ -787,8 +787,8 @@
 "%@ %@" = "%@ %@";
 
 /* VMSettingsAddDeviceMenuView.swift */
-"Import Drive" = "Importuj dysk";
-"New Drive" = "Nowy dysk";
+"Import Drive…" = "Importuj dysk...";
+"New Drive…" = "Nowy dysk...";
 
 /* VMToolbarModifier.swift */
 "Remove selected shortcut" = "Uruchom wybrany skrót";

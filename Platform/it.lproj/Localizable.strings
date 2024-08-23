@@ -703,7 +703,7 @@
 "Full Graphics" = "Grafica Completa";
 
 /* No comment provided by engineer. */
-"GB" = "GB";
+"GiB" = "GiB";
 
 /* UTMQemuConstants */
 "GDB Debug Stub" = "GDB Debug Stub";
@@ -825,7 +825,7 @@
 "Import…" = "Importa...";
 
 /* No comment provided by engineer. */
-"Import Drive" = "Importa Disco";
+"Import Drive…" = "Importa Disco...";
 
 /* No comment provided by engineer. */
 "Import VHDX Image" = "Importa un'Immagine VHDX";
@@ -1100,7 +1100,7 @@
 "Maximum Shared USB Devices" = "Dispositivi USB Condivisi Massimi";
 
 /* No comment provided by engineer. */
-"MB" = "MB";
+"MiB" = "MiB";
 
 /* No comment provided by engineer. */
 "Memory" = "Memoria";
@@ -1166,7 +1166,7 @@
 "New…" = "Crea...";
 
 /* No comment provided by engineer. */
-"New Drive" = "Nuovo Disco";
+"New Drive…" = "Nuovo Disco...";
 
 /* No comment provided by engineer. */
 "New from template…" = "Nuovo da template...";

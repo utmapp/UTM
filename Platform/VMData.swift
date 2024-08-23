@@ -521,7 +521,7 @@ extension VMRemoteDataError: LocalizedError {
         case .notImplemented:
             return NSLocalizedString("This function is not implemented.", comment: "VMData")
         case .backendNotSupported:
-            return NSLocalizedString("This VM is configured for a backend that does not support remote clients.", comment: "VMData")
+            return NSLocalizedString("This VM is not available or is configured for a backend that does not support remote clients.", comment: "VMData")
         }
     }
 }

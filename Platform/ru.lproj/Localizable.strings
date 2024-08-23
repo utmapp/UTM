@@ -244,7 +244,7 @@
 "Change…" = "Изменить…";
 
 /* No comment provided by engineer. */
-"Clear" = "Отчистить";
+"Clear" = "Очистить";
 
 /* No comment provided by engineer. */
 "Clipboard Sharing" = "Обмен буфером обмена";
@@ -681,7 +681,7 @@
 "Full Graphics" = "Полная графика";
 
 /* No comment provided by engineer. */
-"GB" = "ГБ";
+"GiB" = "ГиБ";
 
 /* UTMQemuConstants */
 "GDB Debug Stub" = "Плагин отладки GDB";
@@ -809,7 +809,7 @@
 "Import…" = "Импорт…";
 
 /* No comment provided by engineer. */
-"Import Drive" = "Импортировать диск";
+"Import Drive…" = "Импортировать диск…";
 
 /* No comment provided by engineer. */
 "Import VHDX Image" = "Импортировать образ VHDX";
@@ -1004,7 +1004,7 @@
 "Maximum Shared USB Devices" = "Максимальное кол-во совместно используемых USB-устройств";
 
 /* No comment provided by engineer. */
-"MB" = "МБ";
+"MiB" = "МиБ";
 
 /* No comment provided by engineer. */
 "Memory" = "Память";
@@ -1070,7 +1070,7 @@
 "New…" = "Новый…";
 
 /* No comment provided by engineer. */
-"New Drive" = "Новый диск";
+"New Drive…" = "Новый диск…";
 
 /* No comment provided by engineer. */
 "New from template…" = "Новая из шаблона…";

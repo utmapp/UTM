@@ -7,7 +7,7 @@ command -v realpath >/dev/null 2>&1 || realpath() {
 BASEDIR="$(dirname "$(realpath $0)")"
 
 usage () {
-    echo "Usage: $(basename $0)  [-t teamid] [-p platform] [-s scheme] [-a architecture] [-t targetversion] [-o output]"
+    echo "Usage: $(basename $0)  [-t teamid] [-k SDK] [-s scheme] [-a architecture] [-o output]"
     echo ""
     echo "  -t teamid        Team Identifier for app groups. Optional for iOS. Required for macOS."
     echo "  -k sdk           Target SDK. Default iphoneos. [iphoneos|iphonesimulator|xros|xrsimulator|macosx]"

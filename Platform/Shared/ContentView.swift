@@ -19,6 +19,7 @@ import UniformTypeIdentifiers
 #if os(iOS)
 import IQKeyboardManagerSwift
 #endif
+import TipKit
 
 // on visionOS, there is no text to show more than UTM
 #if WITH_QEMU_TCI && !os(visionOS)
@@ -48,6 +49,9 @@ struct ContentView: View {
         .disabled(data.busy && !data.showNewVMSheet && !data.showSettingsModal)
         .sheet(isPresented: $releaseHelper.isReleaseNotesShown, onDismiss: {
             releaseHelper.closeReleaseNotes()
+            if #available(iOS 17, macOS 14, *) {
+                UTMTipCreateVM.isVMListEmpty = data.virtualMachines.count == 0
+            }
         }, content: {
             VMReleaseNotesView(helper: releaseHelper).padding()
         })
@@ -80,14 +84,18 @@ struct ContentView: View {
         .onAppear {
             Task {
                 await data.listRefresh()
+                await releaseHelper.fetchReleaseNotes()
+                if #available(iOS 17, macOS 14, *) {
+                    if !releaseHelper.isReleaseNotesShown {
+                        UTMTipCreateVM.isVMListEmpty = data.virtualMachines.count == 0
+                        UTMTipDonate.timesLaunched += 1
+                    }
+                }
                 #if os(macOS)
                 if isServerAutostart {
                     await data.remoteServer.start()
                 }
                 #endif
-            }
-            Task {
-                await releaseHelper.fetchReleaseNotes()
             }
             #if os(macOS)
             NSWindow.allowsAutomaticWindowTabbing = false
@@ -121,6 +129,17 @@ struct ContentView: View {
             #endif
             #endif
         }
+        #if WITH_SERVER
+        .onChange(of: isServerAutostart) { newValue in
+            if newValue {
+                Task {
+                    if isServerAutostart && !data.remoteServer.state.isServerActive {
+                        await data.remoteServer.start()
+                    }
+                }
+            }
+        }
+        #endif
     }
     
     private func handleURL(url: URL) {

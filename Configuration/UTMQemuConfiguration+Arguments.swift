@@ -472,8 +472,9 @@ import Virtualization // for getting network interfaces
                 "if=pflash"
                 "format=raw"
                 "unit=0"
-                "file="
+                "file.filename="
                 bios
+                "file.locking=off"
                 "readonly=on"
                 f()
                 f("-drive")
@@ -733,13 +734,16 @@ import Virtualization // for getting network interfaces
         }
         "id=drive\(drive.id)"
         if let imageURL = drive.imageURL {
-            "file="
+            "file.filename="
             imageURL
         } else if !isCd {
-            "file="
+            "file.filename="
             placeholderUrl
         }
         if drive.isReadOnly || isCd {
+            if drive.imageURL != nil {
+                "file.locking=off"
+            }
             "readonly=on"
         } else {
             "discard=unmap"

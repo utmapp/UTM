@@ -85,14 +85,26 @@ extension VMDisplayTerminalViewController {
     var useAutoLayout: Bool {
         get { true }
     }
-    
+
+    // This prevents curved edge from cutting off the content
+    var additionalTopPadding: CGFloat {
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            let scenes = UIApplication.shared.connectedScenes
+            let windowScene = scenes.first as? UIWindowScene
+            guard let window = windowScene?.windows.first else { return 0 }
+            return window.safeAreaInsets.bottom
+        } else {
+            return 0
+        }
+    }
+
     func makeFrame (keyboardDelta: CGFloat, _ fn: String = #function, _ ln: Int = #line) -> CGRect
     {
         if useAutoLayout {
             return CGRect.zero
         } else {
             return CGRect (x: view.safeAreaInsets.left,
-                           y: view.safeAreaInsets.top,
+                           y: view.safeAreaInsets.top + additionalTopPadding,
                            width: view.frame.width - view.safeAreaInsets.left - view.safeAreaInsets.right,
                            height: view.frame.height - view.safeAreaInsets.top - keyboardDelta)
         }
@@ -101,13 +113,16 @@ extension VMDisplayTerminalViewController {
     func setupKeyboardMonitor ()
     {
         if #available(iOS 15.0, *), useAutoLayout {
+            #if os(visionOS)
+            let inputAccessoryHeight: CGFloat = 0
+            #else
+            let inputAccessoryHeight = terminalView.inputAccessoryView?.frame.height ?? 0
+            #endif
             terminalView.translatesAutoresizingMaskIntoConstraints = false
-            terminalView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
+            terminalView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: additionalTopPadding).isActive = true
             terminalView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor).isActive = true
             terminalView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor).isActive = true
-            terminalView.bottomAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
-            terminalView.keyboardLayoutGuide.topAnchor.constraint(equalTo: terminalView.bottomAnchor).isActive = true
-            terminalView.keyboardLayoutGuide.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+            terminalView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: -inputAccessoryHeight).isActive = true
         } else {
             NotificationCenter.default.addObserver(
                 self,

@@ -566,11 +566,11 @@
 
 // RAMSlider.swift
 "Size" = "サイズ";
-"MB" = "MB";
+"MiB" = "MiB";
 
 // SizeTextField.swift
 "The amount of storage to allocate for this image. Ignored if importing an image. If this is a raw image, then an empty file of this size will be stored with the VM. Otherwise, the disk image will dynamically expand up to this size." = "このイメージに割り当てるストレージ領域です。イメージを読み込む場合は無視されます。生イメージの場合、このサイズの空のファイルが仮想マシンに保存されます。そうでない場合、ディスクイメージはこのサイズまで動的に拡張されます。";
-"GB" = "GB";
+"GiB" = "GiB";
 
 // VMCardView.swift
 "Run" = "実行";
@@ -863,8 +863,8 @@
 "%@ %@" = "%1$@ %2$@";
 
 // VMSettingsAddDeviceMenuView.swift
-"Import Drive" = "ドライブを読み込む";
-"New Drive" = "新規ドライブ";
+"Import Drive…" = "ドライブを読み込む…";
+"New Drive…" = "新規ドライブ…";
 
 // VMToolbarModifier.swift
 "Remove selected shortcut" = "選択したショートカットを削除します";

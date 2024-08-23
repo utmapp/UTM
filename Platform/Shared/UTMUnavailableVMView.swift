@@ -73,6 +73,8 @@ fileprivate struct WrappedVMDetailsView: View {
         }
         #if os(macOS)
         .frame(width: 230)
+        #else
+        .padding()
         #endif
     }
 }
@@ -92,6 +94,8 @@ fileprivate struct UnsupportedVMDetailsView: View {
         }
         #if os(macOS)
         .frame(width: 230)
+        #else
+        .padding()
         #endif
     }
 }

@@ -15,6 +15,7 @@
 //
 
 import SwiftUI
+import TipKit
 
 struct VMNavigationListView: View {
     @EnvironmentObject private var data: UTMData
@@ -106,6 +107,29 @@ private struct VMListModifier: ViewModifier {
     @State private var sheetPresented = false
     @State private var donatePresented = false
 
+    private let _donateTip: Any?
+    private let _createTip: Any?
+
+    @available(iOS 17, macOS 14, *)
+    private var donateTip: UTMTipDonate {
+        _donateTip as! UTMTipDonate
+    }
+
+    @available(iOS 17, macOS 14, *)
+    private var createTip: UTMTipCreateVM {
+        _createTip as! UTMTipCreateVM
+    }
+
+    init() {
+        if #available(iOS 17, macOS 14, *) {
+            _donateTip = UTMTipDonate()
+            _createTip = UTMTipCreateVM()
+        } else {
+            _donateTip = nil
+            _createTip = nil
+        }
+    }
+
     func body(content: Content) -> some View {
         content
         #if os(macOS)
@@ -124,15 +148,39 @@ private struct VMListModifier: ViewModifier {
             #else
             #if !WITH_REMOTE // FIXME: implement remote feature
             ToolbarItem(placement: .navigationBarLeading) {
-                newButton
+                if #available(iOS 17, visionOS 99, *) {
+                    Button {
+                        createTip.invalidate(reason: .actionPerformed)
+                        data.newVM()
+                    } label: {
+                        Image(systemName: "plus") // SwiftUI bug: tip won't show up if this is a label
+                    }.help("Create a new VM")
+                    .popoverTip(createTip, arrowEdge: .top)
+                } else {
+                    newButton
+                }
             }
             #endif
             #if !WITH_REMOTE
             ToolbarItem(placement: .navigationBarLeading) {
-                Button {
-                    donatePresented.toggle()
-                } label: {
-                    Label("Donate", systemImage: "heart.fill")
+                if #available(iOS 17, visionOS 99, *) {
+                    Button {
+                        donateTip.invalidate(reason: .actionPerformed)
+                        donatePresented.toggle()
+                    } label: {
+                        Image(systemName: "heart.fill") // SwiftUI bug: tip won't show up if this is a label
+                    }.popoverTip(donateTip, arrowEdge: .top) { action in
+                        donateTip.invalidate(reason: .actionPerformed)
+                        if action.id == "donate" {
+                            donatePresented.toggle()
+                        }
+                    }
+                } else {
+                    Button {
+                        donatePresented.toggle()
+                    } label: {
+                        Label("Donate", systemImage: "heart.fill")
+                    }
                 }
             }
             #endif

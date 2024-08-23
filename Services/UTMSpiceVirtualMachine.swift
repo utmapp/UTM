@@ -105,9 +105,11 @@ extension UTMSpiceVirtualMachine {
 
     func changeSharedDirectory(to url: URL) async throws {
         await clearSharedDirectory()
-        _ = url.startAccessingSecurityScopedResource()
+        let isScopedAccess = url.startAccessingSecurityScopedResource()
         defer {
-            url.stopAccessingSecurityScopedResource()
+            if isScopedAccess {
+                url.stopAccessingSecurityScopedResource()
+            }
         }
         let file = try await UTMRegistryEntry.File(url: url, isReadOnly: config.sharing.isDirectoryShareReadOnly)
         await registryEntry.setSingleSharedDirectory(file)

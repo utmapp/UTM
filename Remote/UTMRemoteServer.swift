@@ -131,7 +131,7 @@ actor UTMRemoteServer {
             registerNotifications()
             listener = Task {
                 await withErrorNotification {
-                    if isServerExternal && serverPort > 0 {
+                    if isServerExternal && serverPort > 0 && serverPort <= UInt16.max {
                         natPort = Port.TCP(internalPort: UInt16(serverPort))
                         natPort!.mappingChangedHandler = { port in
                             Task {
@@ -146,7 +146,7 @@ actor UTMRemoteServer {
                             }
                         }
                     }
-                    let port = serverPort > 0 ? NWEndpoint.Port(integerLiteral: UInt16(serverPort)) : .any
+                    let port = serverPort > 0 && serverPort <= UInt16.max ? NWEndpoint.Port(integerLiteral: UInt16(serverPort)) : .any
                     for try await connection in Connection.advertise(on: port, forServiceType: service, txtRecord: metadata, connectionQueue: connectionQueue, identity: keyManager.identity) {
                         let connection = try? await Connection(connection: connection, connectionQueue: connectionQueue) { connection, error in
                             Task {
@@ -683,13 +683,16 @@ extension UTMRemoteServer {
         }
 
         @MainActor
-        private func findVM(withId id: UUID) throws -> VMData {
+        private func findVM(withId id: UUID, allowNotLoaded: Bool = false) throws -> VMData {
             let vm = data.virtualMachines.first(where: { $0.id == id })
-            if let vm = vm, let _ = vm.wrapped {
-                return vm
-            } else {
-                throw UTMRemoteServer.ServerError.notFound(id)
+            if let vm = vm {
+                if let _ = vm.wrapped {
+                    return vm
+                } else if allowNotLoaded {
+                    return vm
+                }
             }
+            throw UTMRemoteServer.ServerError.notFound(id)
         }
 
         @MainActor
@@ -735,7 +738,7 @@ extension UTMRemoteServer {
         private func _getVirtualMachineInformation(parameters: M.GetVirtualMachineInformation.Request) async throws -> M.GetVirtualMachineInformation.Reply {
             let informations = try await Task { @MainActor in
                 try parameters.ids.map { id in
-                    let vm = try findVM(withId: id)
+                    let vm = try findVM(withId: id, allowNotLoaded: true)
                     let mountedDrives = vm.registryEntry?.externalDrives.mapValues({ $0.path }) ?? [:]
                     let isTakeoverAllowed = data.vmWindows[vm] is VMRemoteSessionState && (vm.state == .started || vm.state == .paused)
                     return M.VirtualMachineInformation(id: vm.id,

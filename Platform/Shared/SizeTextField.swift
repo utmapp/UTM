@@ -40,9 +40,9 @@ struct SizeTextField: View {
             Button(action: { isGiB.toggle() }, label: {
                 Group {
                     if isGiB {
-                        Text("GB")
+                        Text("GiB")
                     } else {
-                        Text("MB")
+                        Text("MiB")
                     }
                 }.foregroundColor(.blue)
             }).buttonStyle(.plain)

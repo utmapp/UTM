@@ -542,7 +542,7 @@
 "Force shut down" = "强制关机";
 
 /* No comment provided by engineer. */
-"GB" = "GB";
+"GiB" = "GiB";
 
 /* UTMQemuConstants */
 "GDB Debug Stub" = "GDB 调试存根";
@@ -725,7 +725,7 @@
 "Maximum Shared USB Devices" = "最大共享 USB 设备数";
 
 /* No comment provided by engineer. */
-"MB" = "MB";
+"MiB" = "MiB";
 
 /* No comment provided by engineer. */
 "Memory" = "内存";
@@ -1861,7 +1861,7 @@
 "Image Type" = "映像类型";
 
 /* No comment provided by engineer. */
-"Import Drive" = "导入驱动器";
+"Import Drive…" = "导入驱动器…";
 
 /* No comment provided by engineer. */
 "Import VHDX Image" = "导入 VHDX 映像";
@@ -1945,7 +1945,7 @@
 "Network Mode" = "网络模式";
 
 /* No comment provided by engineer. */
-"New Drive" = "新建驱动器";
+"New Drive…" = "新建驱动器…";
 
 /* No comment provided by engineer. */
 "New from template…" = "从此模板新建…";
