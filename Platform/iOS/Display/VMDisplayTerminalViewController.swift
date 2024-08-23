@@ -114,7 +114,7 @@ extension VMDisplayTerminalViewController {
     {
         if #available(iOS 15.0, *), useAutoLayout {
             #if os(visionOS)
-            let inputAccessoryHeight = 0
+            let inputAccessoryHeight: CGFloat = 0
             #else
             let inputAccessoryHeight = terminalView.inputAccessoryView?.frame.height ?? 0
             #endif
