@@ -357,7 +357,7 @@
 "Disposable Mode" = "一次性模式";
 
 /* No comment provided by engineer. */
-"Do not save VM screenshot to disk" = "不将虚拟机的屏幕截图保存到磁盘";
+"Do not save VM screenshot to disk" = "不将虚拟机截图保存到磁盘";
 
 /* No comment provided by engineer. */
 "Do not show confirmation when closing a running VM" = "关闭正在运行的虚拟机时不显示确认";
