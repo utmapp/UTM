@@ -49,6 +49,9 @@ struct ContentView: View {
         .disabled(data.busy && !data.showNewVMSheet && !data.showSettingsModal)
         .sheet(isPresented: $releaseHelper.isReleaseNotesShown, onDismiss: {
             releaseHelper.closeReleaseNotes()
+            if #available(iOS 17, macOS 14, *) {
+                UTMTipCreateVM.isVMListEmpty = data.virtualMachines.count == 0
+            }
         }, content: {
             VMReleaseNotesView(helper: releaseHelper).padding()
         })
@@ -79,19 +82,20 @@ struct ContentView: View {
         }.fileImporter(isPresented: $openSheetPresented, allowedContentTypes: [.UTM, .UTMextension], allowsMultipleSelection: true, onCompletion: selectImportedUTM)
         .onDrop(of: [.fileURL], delegate: self)
         .onAppear {
-            if #available(iOS 17, macOS 14, *) {
-                UTMTipDonate.timesLaunched += 1
-            }
             Task {
                 await data.listRefresh()
+                await releaseHelper.fetchReleaseNotes()
+                if #available(iOS 17, macOS 14, *) {
+                    if !releaseHelper.isReleaseNotesShown {
+                        UTMTipCreateVM.isVMListEmpty = data.virtualMachines.count == 0
+                        UTMTipDonate.timesLaunched += 1
+                    }
+                }
                 #if os(macOS)
                 if isServerAutostart {
                     await data.remoteServer.start()
                 }
                 #endif
-            }
-            Task {
-                await releaseHelper.fetchReleaseNotes()
             }
             #if os(macOS)
             NSWindow.allowsAutomaticWindowTabbing = false

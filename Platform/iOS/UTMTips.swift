@@ -60,3 +60,23 @@ struct UTMTipHideToolbar: Tip {
         }
     }
 }
+
+@available(iOS 17, macOS 14, *)
+struct UTMTipCreateVM: Tip {
+    @Parameter(.transient)
+    static var isVMListEmpty: Bool = false
+
+    var title: Text {
+        Text("Start Here")
+    }
+
+    var message: Text? {
+        Text("Create a new virtual machine or import an existing one.")
+    }
+
+    var rules: [Rule] {
+        #Rule(Self.$isVMListEmpty) {
+            $0
+        }
+    }
+}
