@@ -145,3 +145,52 @@
 /* (No Comment) */
 "Up" = "上";
 
+// Additional Strings (unable to be extracted by Xcode)
+
+/* (No Comment) */
+"ABOUT" = "关于";
+
+/* (No Comment) */
+"Build" = "构建";
+
+/* (No Comment) */
+"CURSOR - DRAG SPEED" = "指针 - 拖放速度";
+
+/* (No Comment) */
+"CURSOR - SCROLL WHEEL" = "指针 - 滚轮";
+
+/* (No Comment) */
+"Default" = "默认";
+
+/* (No Comment) */
+"DEVICES" = "设备";
+
+/* (No Comment) */
+"Disable screen dimming when idle" = "闲置时禁用屏幕变暗";
+
+/* (No Comment) */
+"Do not save VM screenshot to disk" = "不将虚拟机截图保存到磁盘";
+
+/* (No Comment) */
+"FPS Limit" = "FPS 上限";
+
+/* (No Comment) */
+"GRAPHICS" = "图形";
+
+/* (No Comment) */
+"IDLE" = "闲置";
+
+/* (No Comment) */
+"Invert Scroll" = "反转滚动";
+
+/* (No Comment) */
+"License" = "许可";
+
+/* (No Comment) */
+"Prefer device to external microphone" = "首选外置麦克风设备";
+
+/* (No Comment) */
+"Renderer Backend" = "渲染器后端";
+
+/* (No Comment) */
+"Version" = "版本";

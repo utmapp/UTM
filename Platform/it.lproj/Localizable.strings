@@ -127,6 +127,18 @@
 "Are you sure you want to permanently delete this disk image?" = "Sei sicuro di voler eliminare questa immagine definitivamente?";
 
 /* No comment provided by engineer. */
+"Add a new drive." = "Aggiungi un nuovo disco.";
+
+/* No comment provided by engineer. */
+"Select an existing disk image." = "Selezione un'immagine disco esistente.";
+
+/* No comment provided by engineer. */
+"Create an empty drive." = "Crea un disco vuoto.";
+
+/* No comment provided by engineer. */
+"Add a new device." = "Aggiungi un nuovo dispositivo.";
+
+/* No comment provided by engineer. */
 "Are you sure you want to reset this VM? Any unsaved changes will be lost." = "Sei sicuro di voler riavviare questa Macchina Virtuale? Le modifiche non salvate andranno perse.";
 
 /* No comment provided by engineer. */
@@ -140,6 +152,9 @@
 
 /* No comment provided by engineer. */
 "Balloon Device" = "Dispositivo Balloon";
+
+/* No comment provided by engineer. */
+"TPM can be used to protect secrets in the guest operating system. Note that the host will always be able to read these secrets and therefore no expectation of physical security is provided." = "TPM può essere utilizzato per conservare informazioni riservate del sistema. Il dispositivo host sarà sempre in grado di accedere a questi dati.";
 
 /* UTMLegacyQemuConfiguration
    UTMQemuConstants */
@@ -156,6 +171,9 @@
 
 /* No comment provided by engineer. */
 "Boot from kernel image" = "Avvia da immagine del kernel";
+
+/* No comment provided by engineer. */
+"Ubuntu Install Guide" = "Guida all'installazione di Ubuntu";
 
 /* No comment provided by engineer. */
 "Boot Arguments" = "Argomenti di Avvio";
@@ -185,7 +203,7 @@
 "Bridged Settings" = "Impostazioni Bridged";
 
 /* No comment provided by engineer. */
-"Bridged Interface" = "Interfaccia Bridget";
+"Bridged Interface" = "Interfaccia Bridged";
 
 /* Welcome view */
 "Browse UTM Gallery" = "Scopri la UTM Gallery";
@@ -253,7 +271,7 @@
 "Clone" = "Clona";
 
 /* No comment provided by engineer. */
-"Clone selected VM" = "Clona la Macchina Virtuale selezionata";
+"Clone selected VM" = "Clona la VM selezionata";
 
 /* No comment provided by engineer. */
 "Clone…" = "Clona...";
@@ -304,7 +322,7 @@
 "Create" = "Crea";
 
 /* Welcome view */
-"Create a New Virtual Machine" = "Crea una Nuova Macchina Virtuale (VM)";
+"Create a New Virtual Machine" = "Crea una Nuova Macchina Virtuale";
 
 /* No comment provided by engineer. */
 "Create a new VM with the same configuration as this one but without any data." = "Crea una nuova Macchina Virtuale con la stessa configurazione, ma senza alcun dato.";
@@ -341,7 +359,10 @@
 "Delete Drive" = "Elimina Disco";
 
 /* No comment provided by engineer. */
-"Delete selected VM" = "Elimina la Macchina Virtuale selezionata";
+"Delete this drive." = "Elimina questo disco";
+
+/* No comment provided by engineer. */
+"Delete selected VM" = "Elimina la VM selezionata";
 
 /* No comment provided by engineer. */
 "Delete…" = "Elimina...";
@@ -363,6 +384,9 @@
 
 /* No comment provided by engineer. */
 "DHCP Start" = "Inzio DHCP";
+
+/* No comment provided by engineer. */
+"DHCP End" = "Fine DHCP";
 
 /* No comment provided by engineer. */
 "Directory" = "Cartella";
@@ -398,13 +422,13 @@
 "Disk Image" = "Immagine del Disco";
 
 /* VMDisplayAppleWindowController */
-"Display" = "Monitor";
+"Display" = "Schermo";
 
 /* VMDisplayQemuDisplayController */
-"Display %lld: %@" = "Monitor %1$lld: %2$@";
+"Display %lld: %@" = "Schermo %1$lld: %2$@";
 
 /* VMDisplayQemuDisplayController */
-"Disposable Mode" = "Modo desechable";
+"Disposable Mode" = "Modalità usa e getta";
 
 /* No comment provided by engineer. */
 "DNS Search Domains" = "Dominio di Ricerca DNS";
@@ -483,7 +507,7 @@
 "Edit…" = "Modifica...";
 
 /* No comment provided by engineer. */
-"Edit selected VM" = "Modifica la Macchina Virtuale selezionata";
+"Edit selected VM" = "Modifica la VM selezionata";
 
 /* VMDrivesSettingsView */
 "EFI Variables" = "Variabli EFI";
@@ -522,6 +546,9 @@
 "Enable Clipboard Sharing" = "Abilita Condivisione Appunti";
 
 /* No comment provided by engineer. */
+"Requires SPICE guest agent tools to be installed." = "Richiede l'installazione degli strumenti SPICE sul sistema guest.";
+
+/* No comment provided by engineer. */
 "Enable Directory Sharing" = "Abilita Condivisione Cartella";
 
 /* No comment provided by engineer. */
@@ -534,6 +561,8 @@
 "Enable Pointer" = "Abilita Puntatore";
 
 "Enable Rosetta on Linux (x86_64 Emulation)" = "Abilita Rosetta su Linux (Emulazione x86_64)";
+
+"If enabled, a virtiofs share tagged 'rosetta' will be available on the Linux guest for installing Rosetta for emulating x86_64 on ARM64." = "Se abilitato, verrà resa disponibile la condivisione virtiofs 'rosetta' al guest Linux, per poter installare Rosetta ed emulare x86_64 su ARM64.";
 
 /* No comment provided by engineer. */
 "Enable hardware OpenGL acceleration" = "Abilita l'accelerazione hardware OpenGL";
@@ -567,6 +596,9 @@
 
 /* No comment provided by engineer. */
 "Export QEMU Command…" = "Esporta comando QEMU…";
+
+/* No comment provided by engineer. */
+"Export all arguments as a text file. This is only for debugging purposes as UTM's built-in QEMU differs from upstream QEMU in supported arguments." = "Esporta tutti gli argomenti in un file di testo. Consigliato per il debugging: gli argomenti QEMU utilizzati da UTM potrebbero differire da quelli di QEMU upstream";
 
 /* Word for decompressing a compressed folder */
 "Extracting…" = "Estrazione…";
@@ -638,10 +670,6 @@
 /* No comment provided by engineer. */
 "Fit To Screen" = "Adatta allo Schermo";
 
-/* Configuration boot device
-   UTMQemuConstants */
-"Floppy" = "Dischetto";
-
 /* No comment provided by engineer. */
 "Font" = "Font";
 
@@ -675,7 +703,7 @@
 "Full Graphics" = "Grafica Completa";
 
 /* No comment provided by engineer. */
-"GB" = "GB";
+"GiB" = "GiB";
 
 /* UTMQemuConstants */
 "GDB Debug Stub" = "GDB Debug Stub";
@@ -797,10 +825,16 @@
 "Import…" = "Importa...";
 
 /* No comment provided by engineer. */
-"Import Drive" = "Importa Disco";
+"Import Drive…" = "Importa Disco...";
 
 /* No comment provided by engineer. */
 "Import VHDX Image" = "Importa un'Immagine VHDX";
+
+/* No comment provided by engineer. */
+"Fetch latest Windows installer…" = "Ottieni l'installer di Windows più recente";
+
+/* No comment provided by engineer. */
+"Windows Install Guide" = "Guida all'installazione di Windows";
 
 /* No comment provided by engineer. */
 "Import Virtual Machine…" = "Importa una Macchina Virtuale...";
@@ -822,6 +856,8 @@
 
 /* No comment provided by engineer. */
 "Interface" = "Interfaccia";
+
+"Hardware interface on the guest used to mount this image. Different operating systems support different interfaces. The default will be the most common interface." = "L'interfaccia hardware utilizzata dal sistema guest per montare questa imnmagine. Ciascun sistema operativo può supportare diversi tipi di interfacce. L'interfaccia predefinita sarà quella utilizzata comunemente.";
 
 /* VMDisplayWindowController */
 "Install Windows Guest Tools…" = "Installa gli Strumenti Guest per Windows…";
@@ -887,6 +923,9 @@
 "Invert scrolling" = "Inverti lo scorrimento";
 
 /* No comment provided by engineer. */
+"If enabled, scroll wheel input will be inverted." = "Se abilitato, lo scorrimento della rotella del mouse verrà invertito";
+
+/* No comment provided by engineer. */
 "IP Configuration" = "Impostazioni IP";
 
 /* No comment provided by engineer. */
@@ -915,6 +954,78 @@
 
 /* No comment provided by engineer. */
 "Keep UTM running after last window is closed and all VMs are shut down" = "Esegui UTM anche quando tutte le fineste sono chiuse e nessuna VM è in esecuzione";
+
+/* No comment provided by engineer. */
+"Show dock icon" = "Mostra icona nel dock";
+
+/* No comment provided by engineer. */
+"Show menu bar icon" = "Mostra icona nella barra dei menu";
+
+/* No comment provided by engineer. */
+"Prevent system from sleeping when any VM is running" = "Impedisci lo stop del sistema quando una VM è in esecuzione";
+
+/* No comment provided by engineer. */
+"Do not show confirmation when closing a running VM" = "Non mostrare un avviso alla chiusura di una VM in esecuzione";
+
+/* No comment provided by engineer. */
+"Closing a VM without properly shutting it down could result in data loss." = "La chiusura di una VM senza il corretto spegnimento potrebbe comportare perdita di dati.";
+
+/* No comment provided by engineer. */
+"QEMU Graphics Acceleration" = "Accelerazione Grafica QEMU";
+
+/* No comment provided by engineer. */
+"By default, the best renderer for this device will be used. You can override this with to always use a specific renderer. This only applies to QEMU VMs with GPU accelerated graphics." = "Il miglior Renderer per questo dispositivo verrà selezionato automaticamente. Puoi sceglierne un altro con questa opzione. Si applica solo alle VM QEMU con accelerazione GPU";
+
+/* No comment provided by engineer. */
+"If set, a frame limit can improve smoothness in rendering by preventing stutters when set to the lowest value your device can handle." = "Se impostato, un limite di frame può migliorare l'esperienza quando impostato al valore minimo di refresh del proprio dispositivo.";
+
+/* No comment provided by engineer. */
+"By default, the best backend for the target will be used. If the selected backend is not available for any reason, an alternative will automatically be selected." = "Il miglior backand disponibile verrà scelto automaticamente. Se il backend selezionato non fosse disponibile, verrà selezionata un'alternativa automaticamente";
+
+/* No comment provided by engineer. */
+"FPS Limit" = "Limite FPS";
+
+/* No comment provided by engineer. */
+"QEMU Sound" = "Suono QEMU";
+
+/* No comment provided by engineer. */
+"Renderer Backend" = "Backend Renderer";
+
+/* No comment provided by engineer. */
+"Sound Backend" = "Backend Suono";
+
+/* No comment provided by engineer. */
+"Mouse/Keyboard" = "Mouse/Tastiera";
+
+/* No comment provided by engineer. */
+"QEMU Pointer" = "Puntatore QEMU";
+
+/* No comment provided by engineer. */
+"QEMU Keyboard" = "Tastiera QEMU";
+
+/* No comment provided by engineer. */
+"Capture input automatically when entering full screen" = "Cattura automaticamente l'input in modalità schermo intero";
+
+/* No comment provided by engineer. */
+"If enabled, input capture will toggle automatically when entering and exiting full screen mode." = "Se abilitato, la cattura dell'input verrà attivata e disattivata all'entrata e all'uscita dalla modalità a schermo intero";
+
+/* No comment provided by engineer. */
+"Capture input automatically when window is focused" = "Cattura automaticamente l'input quando la finestra è in primo piano";
+
+/* No comment provided by engineer. */
+"If enabled, input capture will toggle automatically when the VM's window is focused." = "Se abilitato, la cattura dell'imput verrà automaticamente attivata o disattivata quando la finestra della VM è in primo piano o non selezionata";
+
+/* No comment provided by engineer. */
+"Option (⌥) is Meta key" = "Option (⌥) come Meta key";
+
+/* No comment provided by engineer. */
+"If enabled, Option will be mapped to the Meta key which can be useful for emacs. Otherwise, option will work as the system intended (such as for entering international text)." = "Se abilitata, il tasto Option (⌥) verrà mappato come Meta key, utile per emacs. In caso contrario, il tasto Option funzionerà come da impostazioni di sistema (ad esempio per inserimento di testo speciale o con caratteri internazionali)";
+
+/* No comment provided by engineer. */
+"Num Lock is forced on" = "Forza attivazione Num Lock";
+
+/* No comment provided by engineer. */
+"Sound Backend" = "Mostra icona nella barra dei menu";
 
 /* No comment provided by engineer. */
 "Legacy" = "Legacy";
@@ -986,10 +1097,10 @@
 "Manual Serial Device (advanced)" = "Dispositivo Seriale Manuale (avanzate)";
 
 /* No comment provided by engineer. */
-"Maximum Shared USB Devices" = "Numero Massimo di Dispositivi USB Condivisi";
+"Maximum Shared USB Devices" = "Dispositivi USB Condivisi Massimi";
 
 /* No comment provided by engineer. */
-"MB" = "MB";
+"MiB" = "MiB";
 
 /* No comment provided by engineer. */
 "Memory" = "Memoria";
@@ -1049,13 +1160,13 @@
 "Network Mode" = "Modalità di Rete";
 
 /* No comment provided by engineer. */
-"New" = "Nuova";
+"New" = "Crea";
 
 /* No comment provided by engineer. */
-"New…" = "Nuova...";
+"New…" = "Crea...";
 
 /* No comment provided by engineer. */
-"New Drive" = "Nuovo Disco";
+"New Drive…" = "Nuovo Disco...";
 
 /* No comment provided by engineer. */
 "New from template…" = "Nuovo da template...";
@@ -1064,7 +1175,7 @@
 "New port forward" = "Nuovo Inoltro di Porta";
 
 /* No comment provided by engineer. */
-"New Virtual Machine" = "Nuova Macchina Virtuale (VM)";
+"New Virtual Machine" = "Nuova Macchina Virtuale";
 
 /* No comment provided by engineer. */
 "New VM" = "Nuova VM";
@@ -1104,7 +1215,7 @@
 
 /* UTMLegacyQemuConfiguration
    UTMQemuConstants */
-"None" = "Nessuno";
+"None" = "Nessuno/a";
 
 /* UTMQemuConstants */
 "None (Advanced)" = "Nessuno (Avanzato)";
@@ -1146,7 +1257,11 @@
 "Optionally select a directory to make accessible inside the VM. Note that support for shared directories varies by the guest operating system and may require additional guest drivers to be installed. See UTM support pages for more details." = "Se vuoi, puoi selezionare una cartella da rendere accessibile all'interno della VM. Il supporto alle cartelle condivise varia in base al sistema operativo e potrebbe essere necessario installare driver sulla VM. Controlla le pagine di supporto di UTM per ulteriori informazioni.";
 
 /* No comment provided by engineer. */
+"Skip ISO boot" = "Salta avvio da ISO";
 "Other" = "Altro";
+"Options" = "Opzioni";
+"Legacy Hardware" = "Hardware Legacy";
+"If checked, emulated devices with higher compatibility will be instantiated at the cost of performance." = "Se attivo, i dispositivi emulati avranno una compatibilità elevata, al costo di prestazioni peggiori.";
 
 /* No comment provided by engineer. */
 "Path" = "Percorso";
@@ -1215,7 +1330,7 @@
 "QEMU" = "QEMU";
 
 /* No comment provided by engineer. */
-"QEMU Arguments" = "Argomenti di QEMU";
+"QEMU Arguments" = "Argomenti QEMU";
 
 /* UTMQemuVirtualMachine */
 "QEMU exited from an error: %@" = "QEMU si è interrotto a causa di un errore: %@";
@@ -1235,6 +1350,9 @@
 /* No comment provided by engineer. */
 "Quit" = "Esci";
 
+/* No comment provided by engineer. */
+"Terminate UTM and stop all running VMs." = "Termina UTM e tutte le macchine virtuali in esecuzione.";
+
 /* VMQemuDisplayMetalWindowController */
 "Quitting UTM will kill all running VMs." = "L'uscita da UTM causerà l'interruzione di tutte le VM in esecuzione.";
 
@@ -1247,6 +1365,9 @@
 /* No comment provided by engineer. */
 "Raw Image" = "Immagine Raw";
 
+/* No comment provided by engineer. */
+"Advanced. If checked, a raw disk image is used. Raw disk image does not support snapshots and will not dynamically expand in size." = "Impostazione Avanzata. Se attivo, verrà utilizzata un'immagine disco raw. Le immagini disco raw non supportano le snapshot e non vengono ridimensionate automaticamente.";
+
 /* VMDisplayAppleController */
 "Read Only" = "Sola Lettura";
 
@@ -1257,13 +1378,31 @@
 "Reclaim Space" = "Recupera Spazio";
 
 /* No comment provided by engineer. */
-"Reclaim disk space by re-converting the disk image." = "Recupera spazio su disco ri-convertendo l'immagine disco.";
+"Reclaim disk space by re-converting the disk image." = "Recupera spazio su disco riconvertendo l'immagine disco.";
+
+/* No comment provided by engineer. */
+"Compress" = "Comprimi";
+
+/* No comment provided by engineer. */
+"Compress by re-converting the disk image and compressing the data." = "Recupera spazio su disco riconvertendo l'immagine disco e comprimendo i dati.";
+
+/* No comment provided by engineer. */
+"Resize" = "Ridimensiona";
+
+/* No comment provided by engineer. */
+"Increase the size of the disk image." = "Incrementa la dimensione dell'immagine disco.";
 
 /* UTMQemuConstants */
 "Regular" = "Normale";
 
 /* No comment provided by engineer. */
 "Removable" = "Rimovibile";
+
+/* No comment provided by engineer. */
+"If checked, the drive image will be stored with the VM." = "Se attivo, l'immagine del disco sarà salvata insieme alla VM";
+
+/* No comment provided by engineer. */
+"If checked, no drive image will be stored with the VM. Instead you can mount/unmount image while the VM is running." = "Se attivo, l'immagine del disco non sarà salvata insieme alla VM. Può essere, invece, montata e smontata quando la VM è in esecuzione";
 
 /* No comment provided by engineer. */
 "Removable Drive" = "Disco Rimovibile";
@@ -1306,6 +1445,21 @@
 
 /* No comment provided by engineer. */
 "Resolution" = "Risoluzione";
+
+/* No comment provided by engineer. */
+"Width" = "Larghezza";
+
+/* No comment provided by engineer. */
+"Height" = "Altezza";
+
+/* No comment provided by engineer. */
+"Only available on macOS virtual machines." = "Disponibile solo su macchine virtuali macOS.";
+
+/* No comment provided by engineer. */
+"Dynamic Resolution" = "Risoluzione Dinamica";
+
+/* No comment provided by engineer. */
+"Only available on macOS 14+ virtual machines." = "Disponibile solo su macchine virtuali macOS (versione 14 o superiore).";
 
 /* No comment provided by engineer. */
 "Restart" = "Ricomincia";
@@ -1357,9 +1511,6 @@
 
 /* Save VM overlay */
 "Saving %@…" = "Salvataggio di %@...";
-
-/* No comment provided by engineer. */
-"Scaling" = "Scala";
 
 /* No comment provided by engineer. */
 "Selected:" = "Selezionato:";
@@ -1748,13 +1899,22 @@
 "USB Support" = "Supporto USB";
 
 /* No comment provided by engineer. */
-"Use Apple Virtualization" = "Usa la Virtualizzazione di Apple";
+"Use Apple Virtualization" = "Usa la Virtualizzazione Apple";
 
 /* No comment provided by engineer. */
 "Use Command+Option (⌘+⌥) for input capture/release" = "Usa Command+Option (⌘+⌥) per catturare/rilasciare l'input";
 
 /* No comment provided by engineer. */
+"If disabled, the default combination Control+Option (⌃+⌥) will be used." = "Se disabilitato, verrà usata la combinazione di default Control+Option (⌃+⌥).";
+
+/* No comment provided by engineer. */
 "Use Hypervisor" = "Usa Hypervisor";
+
+/* No comment provided by engineer. */
+"Use TSO" = "Usa TSO";
+
+/* No comment provided by engineer. */
+"Only available when Hypervisor is used on supported hardware. TSO speeds up Intel emulation in the guest at the cost of decreased performance in general." = "Disponibile solo con un Hypervisor e hardware supportato. TSO incrementa le prestazioni di emulazione di un guest Intel, al costo di performance generali ridotte.";
 
 /* No comment provided by engineer. */
 "Use local time for base clock" = "Usa l'ora locale locale per l'orologio di sistema";
@@ -1779,7 +1939,7 @@
 "Virtual Machine" = "Macchina Virtuale";
 
 /* No comment provided by engineer. */
-"Virtual Machine Gallery" = "Libreria di VM (UTM Gallery)";
+"Virtual Machine Gallery" = "Libreria di Macchine Virtuali";
 
 /* New VM window. */
 "Virtualization Engine" = "Motore di Virtualizzazione";
@@ -1852,4 +2012,97 @@
 "Options here only apply on next boot and are not saved." = "Queste impostazioni vengo applicate solo all'avvio successivo e non sono salvate.";
 
 /* No comment provided by engineer. */
+"You can use this if your boot options are corrupted or if you wish to re-enroll in the default keys for secure boot." = "Puoi usare questa opzione se le impostazioni di boot sono compromesse o se desideri ricreare le chiavi di default per il secure boot.";
+
+/* No comment provided by engineer. */
 "Create a new VM" = "Crea una nuova VM";
+
+/* No comment provided by engineer. */
+"Show UTM" = "Mostra UTM";
+
+/* No comment provided by engineer. */
+"Show the main window." = "Mostra la finestra principale.";
+
+/* No comment provided by engineer. */
+"Hide dock icon on next launch" = "Nascondi icona del dock al prossimo avvio";
+
+/* No comment provided by engineer. */
+"No virtual machines found." = "Nessuna macchina virtuale trovata.";
+
+/* No comment provided by engineer. */
+"Requires restarting UTM to take affect." = "Richiede il riavvio di UTM.";
+
+/* No comment provided by engineer. */
+"Choose" = "Seleziona";
+
+/* No comment provided by engineer. */
+"Arguments" = "Argomenti";
+
+/* No comment provided by engineer. */
+"Guest drivers are required for 3D acceleration." = "L'installazione dei driver guest è richiesta per l'accelerazione 3D.";
+
+/* No comment provided by engineer. */
+"GPU Acceleration supported" = "Accelerazione GPU Supportata";
+
+/* No comment provided by engineer. */
+"Automatic" = "Automatica";
+
+/* No comment provided by engineer. */
+"Read Only?" = "Sola Lettura";
+
+/* No comment provided by engineer. */
+"Update Interface" = "Aggiorna Interfaccia";
+
+/* No comment provided by engineer. */
+"Older versions of UTM added each IDE device to a separate bus. Check this to change the configuration to place two units on each bus." = "Le versioni precedenti di UTM aggiungevano ciascun dispositivo IDE ad un bus separato. Seleziona questa opzione per modificare la configurazione e impostare due unità su ciascun bus.";
+
+/* No comment provided by engineer. */
+"What's New" = "Novità di UTM";
+
+/* No comment provided by engineer. */
+"Enable UTM Server" = "Abilita UTM Server";
+
+/* No comment provided by engineer. */
+"Last Seen" = "Accesso più recente";
+
+/* No comment provided by engineer. */
+"Reset Identity" = "Ripristina Identità";
+
+/* No comment provided by engineer. */
+"Do you want to forget all clients and generate a new server identity? Any clients that previously paired with this server will be instructed to manually unpair with this server before they can connect again." = "Vuoi dimenticare tutti i client e generare una nuova identità del server? Verrà chiesto a tutti i client collegati di disassociarsi manualmente prima di poter stabile una nuova connessione.";
+
+/* No comment provided by engineer. */
+"Reset Identity" = "Ripristina Identità";
+
+/* No comment provided by engineer. */
+"Startup" = "Avvio";
+
+/* No comment provided by engineer. */
+"Automatically start UTM server" = "Avvia il Server UTM automaticamente";
+
+/* No comment provided by engineer. */
+"Reject unknown connections by default" = "Rifiuta connessioni sconosciute";
+
+/* No comment provided by engineer. */
+"If checked, you will not be prompted about any unknown connection and they will be rejected." = "Se attivo, non ti verrà chiesto di accettare richieste da origini sconosciute, che verranno automaticamente rifiutate.";
+
+/* No comment provided by engineer. */
+"Allow access from external clients" = "Permetti l'accesso da client esterni";
+
+/* No comment provided by engineer. */
+"By default, the server is only available on LAN but setting this will use UPnP/NAT-PMP to port forward to WAN." = "Di default, il server è solo disponibile su rete locale, attivando questa opzione verrà attivato UPnP/NAT-PMP per il port forwarding su WAN";
+
+/* No comment provided by engineer. */
+"Any" = "Qualunque";
+
+/* No comment provided by engineer. */
+"Specify a port number to listen on. This is required if external clients are permitted." = "Specifica una porta d'ascolto. Richiesto se l'accesso da client esterni è attivato.";
+
+/* No comment provided by engineer. */
+"Authentication" = "Autenticazione";
+
+/* No comment provided by engineer. */
+"Require Password" = "Richiedi Password";
+
+/* No comment provided by engineer. */
+"If enabled, clients must enter a password. This is required if you want to access the server externally." = "Se abilitato, i client dovranno inserire una password. Richiesto se vuoi accedere da client esterni.";

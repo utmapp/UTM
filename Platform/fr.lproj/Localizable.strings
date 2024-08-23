@@ -463,11 +463,11 @@
 
 // RAMSlider.swift
 "Size" = "Taille";
-"MB" = "MB";
+"MiB" = "MiB";
 
 // SizeTextField.swift
 "The amount of storage to allocate for this image. Ignored if importing an image. If this is a raw image, then an empty file of this size will be stored with the VM. Otherwise, the disk image will dynamically expand up to this size." = "La quantité de stockage à allouer pour cette image. Ignoré si importation d’image. Si c'est une image brute, un fichier vide de la même taille sera enregistré avec la VM. Sinon, l’image disque sera dynamiquement étendue jusqu’à cette taille.";
-"GB" = "GB";
+"GiB" = "GiB";
 
 // VMCardView.swift
 "Run" = "Démarrer";
@@ -679,8 +679,8 @@
 "Removable" = "Amovible";
 
 // VMSettingsAddDeviceMenuView.swift
-"Import Drive" = "Importer un lecteur";
-"New Drive" = "Nouveu lecteur";
+"Import Drive…" = "Importer un lecteur…";
+"New Drive…" = "Nouveau lecteur…";=
 
 // VMToolbarModifier.swift
 "Remove selected shortcut" = "Supprimer le raccourci sélectionné";

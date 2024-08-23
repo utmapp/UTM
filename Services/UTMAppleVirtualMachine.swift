@@ -170,6 +170,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
                 }
             }
         }
+        try? updateLastModified()
     }
     
     func start(options: UTMVirtualMachineStartOptions = []) async throws {
@@ -358,6 +359,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
                 }
             }
         }
+        try? updateLastModified()
     }
     #endif
     
@@ -393,6 +395,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         }
         await registryEntry.setIsSuspended(false)
         try FileManager.default.removeItem(at: vmSavedStateURL)
+        try? updateLastModified()
     }
     
     #if arch(arm64)

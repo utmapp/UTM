@@ -136,6 +136,25 @@
 // UTMDataExtension.swift
 "This virtual machine is already running. In order to run it from this device, you must stop it first." = "この仮想マシンはすでに実行されています。このデバイスから実行するには、まず停止する必要があります。";
 
+// UTMDonateView.swift
+"Your support is the driving force that helps UTM stay independent. Your contribution, no matter the size, makes a significant difference. It enables us to develop new features and maintain existing ones. Thank you for considering a donation to support us." = "皆様のご支援がUTMの独立を維持する原動力となります。皆様からのご支援は、その大小にかかわらず、大きな違いをもたらします。これにより、新しい機能を開発し、既存の機能を維持することができます。ぜひご寄付をご検討のほどよろしくお願いいたします。";
+"GitHub Sponsors" = "GitHub Sponsors";
+"Support UTM" = "UTMを支援";
+"One Time Donation" = "1回限りの寄付";
+"Recurring Donation" = "定期寄付";
+"Manage Subscriptions…" = "サブスクリプションを管理…";
+"Restore Purchases" = "購入を復元";
+"%d days" = "%d日間";
+"day" = "1日間";
+"%d weeks" = "%d週間";
+"week" = "1週間";
+"%d months" = "%dか月間";
+"month" = "1か月間";
+"%d years" = "%d年間";
+"year" = "1年間";
+"period" = "期間";
+"Your purchase could not be verified by the App Store." = "App Storeで購入が確認できませんでした。";
+
 // UTMSingleWindowView.swift
 "Waiting for VM to connect to display..." = "仮想マシンがディスプレイに接続するのを待機中…";
 
@@ -266,7 +285,7 @@
 "Serial %lld" = "シリアル%lld";
 
 // Display/VMDisplayAppleDisplayWindowController.swift
-"%@ (Terminal %lld)" = "%1$@ (ターミナル%2$lld）";
+"%@ (Terminal %lld)" = "%1$@（ターミナル%2$lld）";
 
 // Display/VMDisplayQemuDisplayController.swift
 "Disposable Mode" = "使い捨てモード";
@@ -324,6 +343,8 @@
 "Mouse/Keyboard" = "マウス/キーボード";
 "Capture input automatically when entering full screen" = "フルスクリーンになったときに入力を自動的にキャプチャ";
 "If enabled, input capture will toggle automatically when entering and exiting full screen mode." = "有効にすると、フルスクリーンモードの開始時と解除時に入力キャプチャが自動的に切り替わります。";
+"Capture input automatically when window is focused" = "ウインドウがフォーカスされたときに入力を自動的にキャプチャ";
+"If enabled, input capture will toggle automatically when the VM's window is focused." = "有効にすると、仮想マシンのウインドウがフォーカスされたときに入力キャプチャが自動的に切り替わります。";
 "Console" = "コンソール";
 "Option (⌥) is Meta key" = "メタキーとしてOption（⌥）を使用";
 "If enabled, Option will be mapped to the Meta key which can be useful for emacs. Otherwise, option will work as the system intended (such as for entering international text)." = "有効にすると、OptionがEmacsの利用に便利なメタキーにマッピングされます。そうでない場合、Optionはシステムが意図したとおりに動作します（国際テキストを入力する場合など）。";
@@ -419,6 +440,8 @@
 // VMConfigAppleDriveCreateView.swift
 "Removable" = "リムーバブル";
 "If checked, the drive image will be stored with the VM." = "チェックを入れると、ドライブイメージが仮想マシンに保存されます。";
+"Use NVMe Interface" = "NVMeインターフェイスを使用";
+"If checked, use NVMe instead of virtio as the disk interface, available on macOS 14+ for Linux guests only. This interface is slower but less likely to encounter filesystem errors." = "チェックを入れると、Virtioの代わりにNVMeをディスクインターフェイスとして使用します。これは、macOS 14以降のLinuxゲストでのみ使用できます。このインターフェイスは低速ですが、ファイルシステムエラーが発生する可能性が低くなります。";
 
 // VMConfigAppleDriveDetailsView.swift
 "Removable Drive" = "リムーバブルドライブ";
@@ -472,6 +495,8 @@
 
 // VMSessionState.swift
 "Connection to the server was lost." = "サーバへの接続が切断されました。";
+"Background task is about to expire" = "バックグラウンドタスクがまもなく期限切れになります";
+"Switch back to UTM to avoid termination." = "終了を防ぐには、UTMに戻ってください。";
 
 // VMConfigQEMUArgumentsView.swift
 "Arguments" = "引数";
@@ -541,11 +566,11 @@
 
 // RAMSlider.swift
 "Size" = "サイズ";
-"MB" = "MB";
+"MiB" = "MiB";
 
 // SizeTextField.swift
 "The amount of storage to allocate for this image. Ignored if importing an image. If this is a raw image, then an empty file of this size will be stored with the VM. Otherwise, the disk image will dynamically expand up to this size." = "このイメージに割り当てるストレージ領域です。イメージを読み込む場合は無視されます。生イメージの場合、このサイズの空のファイルが仮想マシンに保存されます。そうでない場合、ディスクイメージはこのサイズまで動的に拡張されます。";
-"GB" = "GB";
+"GiB" = "GiB";
 
 // VMCardView.swift
 "Run" = "実行";
@@ -616,6 +641,71 @@
 "Generic" = "一般";
 "Notes" = "メモ";
 "Icon" = "アイコン";
+"Choose" = "選択";
+"AIX" = "AIX";
+"iOS" = "iOS";
+"Windows 7" = "Windows 7";
+"AlmaLinux" = "AlmaLinux";
+"Alpine" = "Alpine";
+"AmigaOS" = "AmigaOS";
+"Android" = "Android";
+"Apple TV" = "Apple TV";
+"Arch Linux" = "Arch Linux";
+"BackTrack" = "BackTrack";
+"Bada" = "Bada";
+"BeOS" = "BeOS";
+"CentOS" = "CentOS";
+"Chrome OS" = "Chrome OS";
+"CyanogenMod" = "CyanogenMod";
+"Debian" = "Debian";
+"Elementary OS" = "elementary OS";
+"Fedora" = "Fedora";
+"Firefox OS" = "Firefox OS";
+"FreeBSD" = "FreeBSD";
+"Gentoo" = "Gentoo";
+"Haiku OS" = "Haiku OS";
+"HP-UX" = "HP-UX";
+"KaiOS" = "KaiOS";
+"Knoppix" = "Knoppix";
+"Kubuntu" = "Kubuntu";
+"Linux" = "Linux";
+"Lubuntu" = "Lubuntu";
+"macOS" = "macOS";
+"Maemo" = "Maemo";
+"Mandriva" = "Mandriva";
+"MeeGo" = "MeeGo";
+"Linux Mint" = "Linux Mint";
+"NetBSD" = "NetBSD";
+"Nintendo" = "任天堂";
+"NixOS" = "NixOS";
+"OpenBSD" = "OpenBSD";
+"OpenWrt" = "OpenWrt";
+"OS/2" = "OS/2";
+"Palm OS" = "Palm OS";
+"PlayStation Portable" = "PlayStation Portable";
+"PlayStation" = "PlayStation";
+"Pop!_OS" = "Pop!_OS";
+"Red Hat" = "Red Hat";
+"Remix OS" = "Remix OS";
+"RISC OS" = "RISC OS";
+"Sabayon" = "Sabayon";
+"Sailfish OS" = "Sailfish OS";
+"Slackware" = "Slackware";
+"Solaris" = "Solaris";
+"openSUSE" = "openSUSE";
+"Syllable" = "Syllable";
+"Symbian" = "Symbian";
+"ThreadX" = "ThreadX";
+"Tizen" = "Tizen";
+"Ubuntu" = "Ubuntu";
+"webOS" = "webOS";
+"Windows 11" = "Windows 11";
+"Windows 9x" = "Windows 9x系";
+"Windows XP" = "Windows XP";
+"Windows" = "Windows";
+"Xbox" = "Xbox";
+"Xubuntu" = "Xubuntu";
+"YunOS" = "YunOS";
 
 // VMConfigInputView.swift
 "If enabled, the default input devices will be emulated on the USB bus." = "有効にすると、デフォルトの入力デバイスがUSBバス上でエミュレートされます。";
@@ -756,6 +846,7 @@
 "Inactive" = "非アクティブ";
 
 // VMNavigationListView.swift
+"Donate" = "寄付";
 "Pending" = "保留中";
 "New VM" = "新規仮想マシン";
 "Create a new VM" = "新規仮想マシンを作成します";
@@ -772,8 +863,8 @@
 "%@ %@" = "%1$@ %2$@";
 
 // VMSettingsAddDeviceMenuView.swift
-"Import Drive" = "ドライブを読み込む";
-"New Drive" = "新規ドライブ";
+"Import Drive…" = "ドライブを読み込む…";
+"New Drive…" = "新規ドライブ…";
 
 // VMToolbarModifier.swift
 "Remove selected shortcut" = "選択したショートカットを削除します";
@@ -827,8 +918,13 @@
 
 // VMWizardOSOtherView.swift
 "Other" = "その他";
-"Skip ISO boot" = "ISO起動をスキップ";
-"Advanced" = "詳細";
+"Boot Device" = "起動デバイス";
+"CD/DVD Image" = "CD/DVDイメージ";
+"Floppy Image" = "フロッピーイメージ";
+"Boot IMG Image" = "起動IMGイメージ";
+"Legacy Hardware" = "レガシーハードウェア";
+"If checked, emulated devices with higher compatibility will be instantiated at the cost of performance." = "チェックを入れると、パフォーマンスを犠牲にして、より互換性の高い仮想デバイスがインスタンス化されます。";
+"Options" = "オプション";
 
 // VMWizardOSView.swift
 "macOS 12+" = "macOS 12以降";
@@ -862,6 +958,10 @@
 "This build does not emulation." = "このビルドではエミュレーションを行いません。";
 "Download prebuilt from UTM Gallery…" = "UTMギャラリーからビルド済みパッケージをダウンロード…";
 "Existing" = "既存";
+
+// VMWizardStartViewTCI.swift
+"New Machine" = "新規マシン";
+"Create a new emulated machine from scratch." = "新規仮想マシンをゼロから作成します。";
 
 // VMWizardState.swift
 "Please select a boot image." = "起動イメージを選択してください。";
@@ -982,7 +1082,7 @@
 "Remote Client Connected" = "リモートクライアント接続済み";
 "Established connection from %@." = "%@からの接続を確立しました。";
 "UTM Remote Server Error" = "UTMリモートサーバエラー";
-"Cannot reserve port %d for external access from NAT. Make sure no other device on the network has reserved it." = "NATからの外部アクセス用のポート“%d”を予約できません。ネットワーク上のほかのデバイスが予約していないことを確認してください。";
+"Cannot reserve port %d for external access from NAT. Make sure no other device on the network has reserved it." = "NATからの外部アクセス用のポート%dを予約できません。ネットワーク上のほかのデバイスが予約していないことを確認してください。";
 "Not authenticated." = "認証されていません。";
 "The client interface version does not match the server." = "クライアントインターフェイスのバージョンがサーバと一致しません。";
 "Cannot find VM with ID: %@" = "指定されたIDの仮想マシンが見つかりません: %@";

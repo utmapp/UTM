@@ -440,7 +440,7 @@
 "Full Graphics" = "Täysi grafiikka";
 
 /* No comment provided by engineer. */
-"GB" = "Gt";
+"GiB" = "GiB";
 
 /* No comment provided by engineer. */
 "Generate Windows Installer ISO" = "Luo Windows Installer ISO";
@@ -521,7 +521,7 @@
 "Import…" = "Tuo...";
 
 /* No comment provided by engineer. */
-"Import Drive" = "Tuo asema";
+"Import Drive…" = "Tuo asema...";
 
 /* No comment provided by engineer. */
 "Import VHDX Image" = "Importer une image VHDX";
@@ -650,7 +650,7 @@
 "Maximum Shared USB Devices" = "Jaettujen USB-laitteiden enimmäismäärä";
 
 /* No comment provided by engineer. */
-"MB" = "Mt";
+"MiB" = "MiB";
 
 /* No comment provided by engineer. */
 "Memory" = "Muisti";
@@ -680,7 +680,7 @@
 "New" = "Uusi";
 
 /* No comment provided by engineer. */
-"New Drive" = "Uusi asema";
+"New Drive…" = "Uusi asema…";
 
 /* VMConfigPortForwardingViewController */
 "New port forward" = "Uusi portitus";

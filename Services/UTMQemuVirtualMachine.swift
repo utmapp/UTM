@@ -437,6 +437,11 @@ extension UTMQemuVirtualMachine {
             self.spicePort = spicePort
         }
         #endif
+
+        // update timestamp
+        if !isRunningAsDisposible {
+            try? updateLastModified()
+        }
     }
     
     func start(options: UTMVirtualMachineStartOptions = []) async throws {
@@ -549,6 +554,7 @@ extension UTMQemuVirtualMachine {
         if result.localizedCaseInsensitiveContains("Error") {
             throw UTMQemuVirtualMachineError.qemuError(result)
         }
+        try? updateLastModified()
     }
     
     func saveSnapshot(name: String? = nil) async throws {
@@ -580,6 +586,7 @@ extension UTMQemuVirtualMachine {
             if result.localizedCaseInsensitiveContains("Error") {
                 throw UTMQemuVirtualMachineError.qemuError(result)
             }
+            try? updateLastModified()
         }
     }
     
@@ -784,18 +791,20 @@ extension UTMQemuVirtualMachine {
     }
 
     private func changeMedium(_ drive: UTMQemuConfigurationDrive, to url: URL, isAccessOnly: Bool) async throws {
-        _ = url.startAccessingSecurityScopedResource()
+        let isScopedAccess = url.startAccessingSecurityScopedResource()
         defer {
-            url.stopAccessingSecurityScopedResource()
+            if isScopedAccess {
+                url.stopAccessingSecurityScopedResource()
+            }
         }
         let tempBookmark = try url.bookmarkData()
         try await eject(drive, isForced: true)
         let file = try UTMRegistryEntry.File(url: url, isReadOnly: drive.isReadOnly)
         await registryEntry.setExternalDrive(file, forId: drive.id)
-        try await changeMedium(drive, with: tempBookmark, url: url, isSecurityScoped: false, isAccessOnly: isAccessOnly)
+        try await changeMedium(drive, with: tempBookmark, isSecurityScoped: false, isAccessOnly: isAccessOnly)
     }
 
-    private func changeMedium(_ drive: UTMQemuConfigurationDrive, with bookmark: Data, url: URL?, isSecurityScoped: Bool, isAccessOnly: Bool) async throws {
+    private func changeMedium(_ drive: UTMQemuConfigurationDrive, with bookmark: Data, isSecurityScoped: Bool, isAccessOnly: Bool) async throws {
         let system = await system ?? UTMProcess()
         let (success, bookmark, path) = await system.accessData(withBookmark: bookmark, securityScoped: isSecurityScoped)
         guard let bookmark = bookmark, let path = path, success else {
@@ -803,7 +812,7 @@ extension UTMQemuVirtualMachine {
         }
         await registryEntry.updateExternalDriveRemoteBookmark(bookmark, forId: drive.id)
         if let qemu = await monitor, qemu.isConnected && !isAccessOnly {
-            try qemu.changeMedium(forDrive: "drive\(drive.id)", path: path)
+            try qemu.changeMedium(forDrive: "drive\(drive.id)", path: path, locking: false)
         }
     }
 
@@ -818,7 +827,7 @@ extension UTMQemuVirtualMachine {
             let id = drive.id
             if let bookmark = await registryEntry.externalDrives[id]?.remoteBookmark {
                 // an image bookmark was saved while QEMU was running
-                try await changeMedium(drive, with: bookmark, url: nil, isSecurityScoped: true, isAccessOnly: !isMounting)
+                try await changeMedium(drive, with: bookmark, isSecurityScoped: true, isAccessOnly: !isMounting)
             } else if let localBookmark = await registryEntry.externalDrives[id]?.bookmark {
                 // an image bookmark was saved while QEMU was NOT running
                 let url = try URL(resolvingPersistentBookmarkData: localBookmark)

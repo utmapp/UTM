@@ -27,6 +27,7 @@ import AltKit
 #if WITH_SERVER
 import Combine
 #endif
+import SwiftCopyfile
 
 #if WITH_REMOTE
 import CocoaSpiceNoUsb
@@ -65,6 +66,9 @@ struct AlertMessage: Identifiable {
     /// View: show busy spinner
     @Published var busy: Bool
     
+    /// View: show a percent progress in the busy spinner
+    @Published var busyProgress: Float?
+
     /// View: currently selected VM
     @Published var selectedVM: VMData?
     
@@ -577,9 +581,12 @@ struct AlertMessage: Identifiable {
     /// - Parameter vm: VM to calculate size
     /// - Returns: Size in bytes
     func computeSize(for vm: VMData) async -> Int64 {
-        let path = vm.pathUrl
-        guard let enumerator = fileManager.enumerator(at: path, includingPropertiesForKeys: [.totalFileAllocatedSizeKey]) else {
-            logger.error("failed to create enumerator for \(path)")
+        return computeSize(recursiveFor: vm.pathUrl)
+    }
+
+    private func computeSize(recursiveFor url: URL) -> Int64 {
+        guard let enumerator = fileManager.enumerator(at: url, includingPropertiesForKeys: [.totalFileAllocatedSizeKey]) else {
+            logger.error("failed to create enumerator for \(url)")
             return 0
         }
         var total: Int64 = 0
@@ -612,9 +619,13 @@ struct AlertMessage: Identifiable {
     /// - Parameter asShortcut: Create a shortcut rather than a copy
     func importUTM(from url: URL, asShortcut: Bool = true) async throws {
         guard url.isFileURL else { return }
-        _ = url.startAccessingSecurityScopedResource()
-        defer { url.stopAccessingSecurityScopedResource() }
-        
+        let isScopedAccess = url.startAccessingSecurityScopedResource()
+        defer {
+            if isScopedAccess {
+                url.stopAccessingSecurityScopedResource()
+            }
+        }
+
         logger.info("importing: \(url)")
         // attempt to turn temp URL to presistent bookmark early otherwise,
         // when stopAccessingSecurityScopedResource() is called, we lose access
@@ -661,12 +672,26 @@ struct AlertMessage: Identifiable {
     }
 
     private func copyItemWithCopyfile(at srcURL: URL, to dstURL: URL) async throws {
-        try await Task.detached(priority: .userInitiated) {
-            let status = copyfile(srcURL.path, dstURL.path, nil, copyfile_flags_t(COPYFILE_ALL | COPYFILE_RECURSIVE | COPYFILE_CLONE | COPYFILE_DATA_SPARSE))
-            if status < 0 {
-                throw NSError(domain: NSPOSIXErrorDomain, code: Int(errno))
+        let totalSize = computeSize(recursiveFor: srcURL)
+        var lastUpdate = Date()
+        var lastProgress: CopyManager.Progress?
+        var copiedSize: Int64 = 0
+        defer {
+            busyProgress = nil
+        }
+        for try await progress in CopyManager.default.copyItemProgress(at: srcURL, to: dstURL, flags: [.all, .recursive, .clone, .dataSparse]) {
+            if let _lastProgress = lastProgress, _lastProgress.srcPath != _lastProgress.srcPath {
+                copiedSize += _lastProgress.bytesCopied
+                lastProgress = progress
+            } else {
+                lastProgress = progress
             }
-        }.value
+            if totalSize > 0 && lastUpdate.timeIntervalSinceNow < -1 {
+                lastUpdate = Date()
+                let completed = Float(copiedSize + progress.bytesCopied) / Float(totalSize)
+                busyProgress = completed > 1.0 ? 1.0 : completed
+            }
+        }
     }
     
     // MARK: - Downloading VMs
@@ -755,7 +780,15 @@ struct AlertMessage: Identifiable {
     func reclaimSpace(for driveUrl: URL, withCompression isCompressed: Bool = false) async throws {
         let baseUrl = driveUrl.deletingLastPathComponent()
         let dstUrl = Self.newImage(from: driveUrl, to: baseUrl, withExtension: "qcow2")
-        try await UTMQemuImage.convert(from: driveUrl, toQcow2: dstUrl, withCompression: isCompressed)
+        defer {
+            busyProgress = nil
+        }
+        try await UTMQemuImage.convert(from: driveUrl, toQcow2: dstUrl, withCompression: isCompressed) { progress in
+            Task { @MainActor in
+                self.busyProgress = progress / 100
+            }
+        }
+        busyProgress = nil
         do {
             try fileManager.replaceItem(at: driveUrl, withItemAt: dstUrl, backupItemName: nil, resultingItemURL: nil)
         } catch {

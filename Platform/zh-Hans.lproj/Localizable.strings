@@ -44,6 +44,18 @@
 /* Format string for download progress and speed, e. g. 5 MB of 6 GB (200 kbit/s) */
 "%1$@ of %2$@ (%3$@)" = "共 %2$@，已下载 %1$@ (%3$@)";
 
+/* UTMDonateView */
+"%d days" = "%d 天";
+
+/* UTMDonateView */
+"%d months" = "%d 月";
+
+/* UTMDonateView */
+"%d weeks" = "%d 周";
+
+/* UTMDonateView */
+"%d years" = "%d 年";
+
 /* UTMScriptingAppDelegate */
 "A valid backend must be specified." = "必须指定有效的后端。";
 
@@ -61,9 +73,6 @@
 
 /* No comment provided by engineer. */
 "Additional Settings" = "附加设置";
-
-/* No comment provided by engineer. */
-"Advanced" = "高级";
 
 /* VMConfigSystemView */
 "Allocating too much memory will crash the VM." = "分配过多内存会使虚拟机崩溃。";
@@ -122,6 +131,9 @@
 /* UTMQemuConstants */
 "Automatic Serial Device (max 4)" = "自动串行设备 (最大值 4)";
 
+/* VMSessionState */
+"Background task is about to expire" = "后台任务即将终止";
+
 /* UTMLegacyQemuConfiguration
    UTMQemuConstants */
 "BIOS" = "BIOS";
@@ -143,6 +155,9 @@
 
 /* No comment provided by engineer. */
 "Boot Image Type" = "启动映像类型";
+
+/* No comment provided by engineer. */
+"Boot IMG Image" = "启动 IMG 映像";
 
 /* No comment provided by engineer. */
 "Boot ISO Image" = "启动 ISO 映像";
@@ -208,6 +223,9 @@
 /* No comment provided by engineer. */
 "Capture input automatically when entering full screen" = "进入全屏时自动捕获输入";
 
+/* No comment provided by engineer. */
+"Capture input automatically when window is focused" = "聚焦窗口时自动捕获输入";
+
 /* VMDisplayQemuMetalWindowController */
 "Captured mouse" = "已捕获鼠标";
 
@@ -218,11 +236,17 @@
    UTMQemuConstants */
 "CD/DVD (ISO) Image" = "CD/DVD (ISO) 映像";
 
+/* No comment provided by engineer. */
+"CD/DVD Image" = "CD/DVD 映像";
+
 /* VMDisplayWindowController */
 "Change" = "更改";
 
 /* VMDisplayAppleController */
 "Change…" = "更改…";
+
+/* No comment provided by engineer. */
+"Choose" = "选择";
 
 /* No comment provided by engineer. */
 "Clear" = "清除";
@@ -276,6 +300,9 @@
 /* No comment provided by engineer. */
 "Create" = "创建";
 
+/* No comment provided by engineer. */
+"Create a new emulated machine from scratch." = "从头开始创建一个新的虚拟机。";
+
 /* Welcome view */
 "Create a New Virtual Machine" = "创建一个新虚拟机";
 
@@ -284,6 +311,9 @@
 
 /* UTMSWTPM */
 "Data not specified." = "未指定数据。";
+
+/* UTMDonateView */
+"day" = "天";
 
 /* No comment provided by engineer. */
 "Debug Logging" = "调试日志记录";
@@ -327,7 +357,7 @@
 "Disposable Mode" = "一次性模式";
 
 /* No comment provided by engineer. */
-"Do not save VM screenshot to disk" = "不将虚拟机的屏幕截图保存到磁盘";
+"Do not save VM screenshot to disk" = "不将虚拟机截图保存到磁盘";
 
 /* No comment provided by engineer. */
 "Do not show confirmation when closing a running VM" = "关闭正在运行的虚拟机时不显示确认";
@@ -461,9 +491,6 @@
 /* UTMQemuConfigurationError */
 "Failed to migrate configuration from a previous UTM version." = "无法从以前的 UTM 版本迁移配置。";
 
-/* UTMData */
-"Failed to parse download URL." = "无法解析下载 URL。";
-
 /* UTMRemoteKeyManager */
 "Failed to parse generated key pair." = "无法解析生成的密钥对。";
 
@@ -497,6 +524,9 @@
 "Floppy" = "软盘";
 
 /* No comment provided by engineer. */
+"Floppy Image" = "软盘映像";
+
+/* No comment provided by engineer. */
 "Font Size" = "字体大小";
 
 /* VMDisplayWindowController */
@@ -512,7 +542,7 @@
 "Force shut down" = "强制关机";
 
 /* No comment provided by engineer. */
-"GB" = "GB";
+"GiB" = "GiB";
 
 /* UTMQemuConstants */
 "GDB Debug Stub" = "GDB 调试存根";
@@ -695,7 +725,7 @@
 "Maximum Shared USB Devices" = "最大共享 USB 设备数";
 
 /* No comment provided by engineer. */
-"MB" = "MB";
+"MiB" = "MiB";
 
 /* No comment provided by engineer. */
 "Memory" = "内存";
@@ -705,6 +735,9 @@
 
 /* No comment provided by engineer. */
 "Minimum size: %@" = "最小文件大小：%@";
+
+/* UTMDonateView */
+"month" = "月";
 
 /* No comment provided by engineer. */
 "Mouse/Keyboard" = "鼠标/键盘";
@@ -732,6 +765,9 @@
 
 /* No comment provided by engineer. */
 "New" = "新建";
+
+/* No comment provided by engineer. */
+"New Machine" = "新建虚拟机";
 
 /* No comment provided by engineer. */
 "New…" = "新建…";
@@ -810,6 +846,9 @@
 "Option (⌥) is Meta key" = "Option (⌥) 键作为 Meta 键";
 
 /* No comment provided by engineer. */
+"Options" = "选项";
+
+/* No comment provided by engineer. */
 "Other" = "其他";
 
 /* No comment provided by engineer. */
@@ -835,6 +874,9 @@
 
 /* No comment provided by engineer. */
 "Pending" = "等待中";
+
+/* UTMDonateView */
+"period" = "周期";
 
 /* VMDisplayWindowController */
 "Play" = "启动";
@@ -1114,6 +1156,9 @@
 /* UTMSWTPM */
 "SW TPM failed to start. %@" = "SW TPM 无法启动。%@";
 
+/* VMSessionState */
+"Switch back to UTM to avoid termination." = "切换回 UTM 以避免终止。";
+
 /* No comment provided by engineer. */
 "System" = "系统";
 
@@ -1341,7 +1386,7 @@
 
 /* UTMScriptingAppDelegate
    UTMScriptingUSBDeviceImpl */
-"UTM is not ready to accept commands." = "UTM 未准备好接受命令。";
+"UTM is not ready to accept commands." = "UTM 尚未准备好接受命令。";
 
 /* No comment provided by engineer. */
 "Version" = "版本号";
@@ -1369,10 +1414,10 @@
 "Virtualize" = "虚拟化";
 
 /* No comment provided by engineer. */
-"VM display size is fixed" = "虚拟机显示大小为固定";
+"Waiting for VM to connect to display..." = "等待虚拟机连接到显示…";
 
-/* No comment provided by engineer. */
-"Waiting for VM to connect to display..." = "等待虚拟机连接到显示...";
+/* UTMDonateView */
+"week" = "周";
 
 /* No comment provided by engineer. */
 "Welcome to UTM" = "欢迎使用 UTM";
@@ -1395,6 +1440,9 @@
 /* No comment provided by engineer. */
 "Would you like to re-convert this disk image to reclaim unused space? Note this will require enough temporary space to perform the conversion. You are strongly encouraged to back-up this VM before proceeding." = "要重新转换此磁盘映像以回收未使用的空间吗？请注意，这将需要足够的临时空间来执行转换。在继续操作之前，强烈建议你备份此虚拟机。";
 
+/* UTMDonateView */
+"year" = "年";
+
 /* No comment provided by engineer. */
 "Yes" = "是";
 
@@ -1405,10 +1453,19 @@
    VMWizardOSMacView */
 "Your machine does not support running this IPSW." = "你的机器不支持运行此 IPSW。";
 
+/* UTMDonateView */
+"Your purchase could not be verified by the App Store." = "App Store 无法验证你的购买。";
+
+/* No comment provided by engineer. */
+"Your support is the driving force that helps UTM stay independent. Your contribution, no matter the size, makes a significant difference. It enables us to develop new features and maintain existing ones. Thank you for considering a donation to support us." = "你的支持是 UTM 保持独立的动力。你的贡献无论或大或小，都会产生重大的影响。它可以使我们能开发出功能，并维护现有的功能。感谢你考虑捐赠支持我们。";
+
 /* ContentView */
 "Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached. See https://getutm.app/install/ for more details." = "你的 iOS 版本不支持在未经修改的情况下运行虚拟机，必须在越狱时运行 UTM，或者连接远程调试器。有关更多详细信息，请参阅 https://getutm.app/install/。";
 
 // Additional Strings (These strings are unable to be extracted by Xcode)
+
+/* No comment provided by engineer. */
+"" = "";
 
 /* No comment provided by engineer. */
 "(Delete)" = "(删除)";
@@ -1426,13 +1483,22 @@
 "Add read only" = "添加只读";
 
 /* No comment provided by engineer. */
+"Advanced" = "高级";
+
+/* No comment provided by engineer. */
 "Advanced. If checked, a raw disk image is used. Raw disk image does not support snapshots and will not dynamically expand in size." = "高级选项。若选中，将使用 Raw 磁盘映像。Raw 磁盘映像不支持快照，也不会动态地扩充大小。";
+
+/* No comment provided by engineer. */
+"Allow access from external clients" = "允许外部客户机访问";
 
 /* No comment provided by engineer. */
 "Allow Remote Connection" = "允许远程连接";
 
 /* No comment provided by engineer. */
 "Allows passing through additional input from trackpads. Only supported on macOS 13+ guests." = "允许通过触控板额外输入。仅支持 macOS 13 及以上的客户机。";
+
+/* No comment provided by engineer. */
+"Any" = "任意";
 
 /* No comment provided by engineer. */
 "Apple Virtualization is experimental and only for advanced use cases. Leave unchecked to use QEMU, which is recommended." = "Apple 虚拟化属于实验性功能，仅适用于高级用例。推荐不选中此复选框，以使用 QEMU。";
@@ -1451,6 +1517,9 @@
 
 /* No comment provided by engineer. */
 "Automatic" = "自动";
+
+/* No comment provided by engineer. */
+"Automatically start UTM server" = "自动启动 UTM 服务器";
 
 /* No comment provided by engineer. */
 "Background Color" = "背景颜色";
@@ -1606,6 +1675,9 @@
 "Downscaling" = "细化";
 
 /* No comment provided by engineer. */
+"Dynamic Resolution" = "动态";
+
+/* No comment provided by engineer. */
 "Edit" = "编辑";
 
 /* No comment provided by engineer. */
@@ -1651,6 +1723,9 @@
 "Enable Sound" = "启用声音";
 
 /* No comment provided by engineer. */
+"Enable UTM Server" = "启用 UTM 服务器";
+
+/* No comment provided by engineer. */
 "Engine" = "引擎";
 
 /* No comment provided by engineer. */
@@ -1661,6 +1736,9 @@
 
 /* No comment provided by engineer. */
 "External Drive" = "外部磁盘";
+
+/* UTMData */
+"Failed to parse download URL." = "无法解析下载 URL。";
 
 /* No comment provided by engineer. */
 "Fetch latest Windows installer…" = "获取最新的 Windows 安装程序…";
@@ -1756,7 +1834,10 @@
 "If enabled, input capture will toggle automatically when entering and exiting full screen mode." = "若启用，输入捕捉会在进入和退出全屏模式时自动切换。";
 
 /* No comment provided by engineer. */
-"If enabled, num lock will always be on to the guest. Note this may make your keyboard's num lock indicator out of sync." = "若启用，Num Lock 将始终对客户机开启。注意，这可能会使键盘的 Num Lock  指示灯不同步。";
+"If enabled, input capture will toggle automatically when the VM's window is focused." = "若启用，输入捕捉将在虚拟机窗口聚焦时自动切换。";
+
+/* No comment provided by engineer. */
+"If enabled, num lock will always be on to the guest. Note this may make your keyboard's num lock indicator out of sync." = "若启用，Num Lock 将始终对客户机开启。注意，这可能会使键盘的 Num Lock 指示灯不同步。";
 
 /* No comment provided by engineer. */
 "If enabled, Option will be mapped to the Meta key which can be useful for emacs. Otherwise, option will work as the system intended (such as for entering international text)." = "若启用，Option 键将映射到 Meta 键，这对 Emacs 很有用。否则，Option 键将按照系统默认方式工作 (例如输入国际文本)。";
@@ -1780,7 +1861,7 @@
 "Image Type" = "映像类型";
 
 /* No comment provided by engineer. */
-"Import Drive" = "导入驱动器";
+"Import Drive…" = "导入驱动器…";
 
 /* No comment provided by engineer. */
 "Import VHDX Image" = "导入 VHDX 映像";
@@ -1825,6 +1906,9 @@
 "Keyboard" = "键盘";
 
 /* No comment provided by engineer. */
+"Last Seen" = "最后上线于";
+
+/* No comment provided by engineer. */
 "MAC Address" = "MAC 地址";
 
 /* No comment provided by engineer. */
@@ -1861,7 +1945,7 @@
 "Network Mode" = "网络模式";
 
 /* No comment provided by engineer. */
-"New Drive" = "新建驱动器";
+"New Drive…" = "新建驱动器…";
 
 /* No comment provided by engineer. */
 "New from template…" = "从此模板新建…";
@@ -1895,6 +1979,9 @@
 
 /* No comment provided by engineer. */
 "Path" = "路径";
+
+/* No comment provided by engineer. */
+"Pointer" = "鼠标指针";
 
 /* No comment provided by engineer. */
 "Port" = "端口";
@@ -1933,10 +2020,16 @@
 "Reclaim Space" = "释放空间";
 
 /* No comment provided by engineer. */
+"Reject unknown connections by default" = "默认情况下拒绝未知连接";
+
+/* No comment provided by engineer. */
 "Remove selected shortcut" = "移除选中的快捷方式";
 
 /* No comment provided by engineer. */
 "Renderer Backend" = "渲染器后端";
+
+/* No comment provided by engineer. */
+"Require Password" = "需要密码";
 
 /* No comment provided by engineer. */
 "Requires restarting UTM to take affect." = "需要重新打开 UTM 以生效。";
@@ -2173,6 +2266,9 @@
 "Use Virtualization" = "使用虚拟化";
 
 /* No comment provided by engineer. */
+"UTM Server" = "UTM 服务器";
+
+/* No comment provided by engineer. */
 "VGA Device RAM (MB)" = "VGA 设备内存 (MB)";
 
 /* No comment provided by engineer. */
@@ -2180,6 +2276,9 @@
 
 /* No comment provided by engineer. */
 "Virtualization Engine" = "虚拟化引擎";
+
+/* No comment provided by engineer. */
+"VM display size is fixed" = "虚拟机显示大小为固定";
 
 /* No comment provided by engineer. */
 "Wait for Connection" = "等待连接";
@@ -2198,3 +2297,8 @@
 
 /* No comment provided by engineer. */
 "Zoom" = "缩放";
+
+/* VMConfigAppleDriveDetailsView
+ VMConfigAppleDriveCreateView*/
+"Use NVMe Interface" = "使用 NVMe 磁盘接口";
+"If checked, use NVMe instead of virtio as the disk interface, available on macOS 14+ for Linux guests only. This interface is slower but less likely to encounter filesystem errors." = "如果选中，使用 NVMe 而不是 virtio 作为磁盘接口，仅适用于 macOS 14+ 上的 Linux 客户机。此接口速度较慢，但不太容易遇到文件系统错误。";

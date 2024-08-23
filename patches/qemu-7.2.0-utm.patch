@@ -7054,3 +7054,132 @@ index 0df9dd8fd5..0e9a3e469d 100644
 -- 
 2.41.0
 
+From 7129cfcc829baeb05ba2c7267ef7cc8e19ed9cef Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Thu, 22 Aug 2024 16:42:50 -0500
+Subject: [PATCH] block: support locking on change medium
+
+New optional argument for 'blockdev-change-medium' QAPI command to allow
+the caller to specify if they wish to enable file locking.
+---
+ block/qapi-sysemu.c       | 22 ++++++++++++++++++++++
+ monitor/hmp-cmds.c        |  1 +
+ qapi/block.json           | 23 ++++++++++++++++++++++-
+ ui/cocoa/app_controller.m |  1 +
+ 4 files changed, 46 insertions(+), 1 deletion(-)
+
+diff --git a/block/qapi-sysemu.c b/block/qapi-sysemu.c
+index 680c7ee342..888e13e539 100644
+--- a/block/qapi-sysemu.c
++++ b/block/qapi-sysemu.c
+@@ -321,6 +321,8 @@ void qmp_blockdev_change_medium(bool has_device, const char *device,
+                                 bool has_force, bool force,
+                                 bool has_read_only,
+                                 BlockdevChangeReadOnlyMode read_only,
++                                bool has_file_locking_mode,
++                                BlockdevChangeFileLockingMode file_locking_mode,
+                                 Error **errp)
+ {
+     BlockBackend *blk;
+@@ -374,6 +376,26 @@ void qmp_blockdev_change_medium(bool has_device, const char *device,
+         qdict_put_str(options, "driver", format);
+     }
+ 
++    if (!has_file_locking_mode) {
++        file_locking_mode = BLOCKDEV_CHANGE_FILE_LOCKING_MODE_AUTO;
++    }
++
++    switch (file_locking_mode) {
++    case BLOCKDEV_CHANGE_FILE_LOCKING_MODE_AUTO:
++        break;
++
++    case BLOCKDEV_CHANGE_FILE_LOCKING_MODE_OFF:
++        qdict_put_str(options, "file.locking", "off");
++        break;
++
++    case BLOCKDEV_CHANGE_FILE_LOCKING_MODE_ON:
++        qdict_put_str(options, "file.locking", "on");
++        break;
++
++    default:
++        abort();
++    }
++
+     medium_bs = bdrv_open(filename, NULL, options, bdrv_flags, errp);
+     if (!medium_bs) {
+         goto fail;
+diff --git a/monitor/hmp-cmds.c b/monitor/hmp-cmds.c
+index 01b789a79e..9e42634c17 100644
+--- a/monitor/hmp-cmds.c
++++ b/monitor/hmp-cmds.c
+@@ -1499,6 +1499,7 @@ void hmp_change(Monitor *mon, const QDict *qdict)
+         qmp_blockdev_change_medium(true, device, false, NULL, target,
+                                    !!arg, arg, true, force,
+                                    !!read_only, read_only_mode,
++                                   false, 0,
+                                    &err);
+     }
+ 
+diff --git a/qapi/block.json b/qapi/block.json
+index 5fe068f903..0034ebe941 100644
+--- a/qapi/block.json
++++ b/qapi/block.json
+@@ -303,6 +303,23 @@
+ { 'enum': 'BlockdevChangeReadOnlyMode',
+   'data': ['retain', 'read-only', 'read-write'] }
+ 
++##
++# @BlockdevChangeFileLockingMode:
++#
++# Specifies the new locking mode of a file image passed to the
++# @blockdev-change-medium command.
++#
++# @auto: Use locking if API is available
++#
++# @off: Disable file image locking
++#
++# @on: Enable file image locking
++#
++# Since: 9.2
++##
++{ 'enum': 'BlockdevChangeFileLockingMode',
++  'data': ['auto', 'off', 'on'] }
++
+ ##
+ # @blockdev-change-medium:
+ #
+@@ -324,6 +341,9 @@
+ # @read-only-mode: change the read-only mode of the device; defaults
+ #                  to 'retain'
+ #
++# @file-locking-mode: change the locking mode of the file image; defaults
++#                     to 'auto'
++#
+ # @force: if false (the default), an eject request through blockdev-open-tray
+ #         will be sent to the guest if it has locked the tray (and the tray
+ #         will not be opened immediately); if true, the tray will be opened
+@@ -371,7 +391,8 @@
+             'filename': 'str',
+             '*format': 'str',
+             '*force': 'bool',
+-            '*read-only-mode': 'BlockdevChangeReadOnlyMode' } }
++            '*read-only-mode': 'BlockdevChangeReadOnlyMode',
++            '*file-locking-mode': 'BlockdevChangeFileLockingMode' } }
+ 
+ ##
+ # @DEVICE_TRAY_MOVED:
+diff --git a/ui/cocoa/app_controller.m b/ui/cocoa/app_controller.m
+index 496036162d..0a062950cf 100644
+--- a/ui/cocoa/app_controller.m
++++ b/ui/cocoa/app_controller.m
+@@ -373,6 +373,7 @@ - (void)changeDeviceMedia:(id)sender
+                                    "raw",
+                                    true, false,
+                                    false, 0,
++                                   false, 0,
+                                    &err);
+         qemu_mutex_unlock_iothread();
+         handleAnyDeviceErrors(err);
+-- 
+2.41.0
+

@@ -1,4 +1,5 @@
 {
+  "originHash" : "c9482d61e795c27df5a7c772a0750aefc9164d93bd871138a9b229c9f08c6fab",
   "pins" : [
     {
       "identity" : "altkit",
@@ -51,7 +52,7 @@
       "location" : "https://github.com/utmapp/QEMUKit.git",
       "state" : {
         "branch" : "main",
-        "revision" : "06b806f61aeeea8efff99a98b058defcf3632e2e"
+        "revision" : "c0c978d5566928b2f2b93005c2aa720bba01157a"
       }
     },
     {
@@ -79,6 +80,15 @@
       "state" : {
         "branch" : "main",
         "revision" : "af855e47ca222da163cc7f4f185230f36ba8694a"
+      }
+    },
+    {
+      "identity" : "swiftcopyfile",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/osy/SwiftCopyfile.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "4da383bceaa5a5aec0ceb5789eed9bef2fa93f26"
       }
     },
     {
@@ -127,5 +137,5 @@
       }
     }
   ],
-  "version" : 2
+  "version" : 3
 }

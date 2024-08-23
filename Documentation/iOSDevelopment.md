@@ -15,12 +15,20 @@ Alternatively, run `git submodule update --init --recursive` after cloning if yo
 
 The easy way is to get the prebuilt dependences from [GitHub Actions][1]. Pick the latest release and download the `Sysroot-*` artifact for the targets you wish to develop on. You need to be logged in to GitHub to download artifacts.
 
-|              | Intel                      | Apple Silicon             |
-|--------------|----------------------------|---------------------------|
-| iOS          | N/A                        | `ios-arm64`               |
-| iOS SE       | N/A                        | `ios-tci-arm64`           |
-| Simulator    | `ios_simulator-x86_64`     | `ios_simulator-arm64`     |
-| Simulator SE | `ios_simulator-tci-x86_64` | `ios_simulator-tci-arm64` |
+|                       | Intel                      | Apple Silicon                  |
+|-----------------------|----------------------------|--------------------------------|
+| iOS                   | N/A                        | `ios-arm64`                    |
+| iOS SE                | N/A                        | `ios-tci-arm64`                |
+| iOS Simulator         | `ios_simulator-x86_64`     | `ios_simulator-arm64`          |
+| iOS Simulator SE      | `ios_simulator-tci-x86_64` | `ios_simulator-tci-arm64`      |
+| visionOS              | N/A                        | `visionos-arm64`               |
+| visionOS SE           | N/A                        | `visionos-tci-arm64`           |
+| visionOS Simulator    | N/A                        | `visionos_simulator-arm64`     |
+| visionOS Simulator SE | N/A                        | `visionos_simulator-tci-arm64` |
+
+After downloading the prebuilt artifacts of your choice, extract them to the root directory where you cloned the repository.
+
+To build UTM, make sure you have the latest version of Xcode installed.
 
 ### Building Dependencies (Advanced)
 
@@ -39,13 +47,13 @@ If you want to build the dependencies yourself, it is highly recommended that yo
 
 ### Command Line
 
-You can build UTM with the script:
+You can build UTM for iOS with the script (run `./scripts/build_utm.sh` for all options):
 
 ```
-./scripts/build_utm.sh -p ios -a arm64 -o /path/to/output/directory
+./scripts/build_utm.sh -k iphoneos -s iOS -a arm64 -o /path/to/output/directory
 ```
 
-The built artifact is an unsigned `.xcarchive` which you can use with the package tool (see below). Replace `ios` with `ios-tci` to build UTM SE.
+The built artifact is an unsigned `.xcarchive` which you can use with the package tool (see below). Replace `iOS` with `iOS-SE` to build UTM SE. Replace `iphoneos` with `xros` to build for visionOS.
 
 ### Packaging
 

@@ -720,7 +720,7 @@
 "FPS Limit" = "FPS 上限";
 
 /* No comment provided by engineer. */
-"GB" = "GB";
+"GiB" = "GiB";
 
 /* UTMQemuConstants */
 "GDB Debug Stub" = "GDB 除錯 stub";
@@ -858,7 +858,7 @@
 "Image Type" = "映像檔類型";
 
 /* No comment provided by engineer. */
-"Import Drive" = "匯入磁碟機";
+"Import Drive…" = "匯入磁碟機⋯";
 
 /* No comment provided by engineer. */
 "Import IPSW" = "匯入 IPSW";
@@ -1023,7 +1023,7 @@
 "Maximum Shared USB Devices" = "最大共享 USB 裝置";
 
 /* No comment provided by engineer. */
-"MB" = "MB";
+"MiB" = "MiB";
 
 /* No comment provided by engineer. */
 "Memory" = "記憶體";
@@ -1080,7 +1080,7 @@
 "New" = "新增";
 
 /* No comment provided by engineer. */
-"New Drive" = "新增磁碟機";
+"New Drive…" = "新增磁碟機…";
 
 /* No comment provided by engineer. */
 "New from template…" = "從樣板建立…";
@@ -2001,4 +2001,9 @@
 
 /* No comment provided by engineer. */
 "Zoom" = "縮放";
+
+/* VMConfigAppleDriveDetailsView
+ VMConfigAppleDriveCreateView*/
+"Use NVMe Interface" = "使用 NVMe 磁碟介面";
+"If checked, use NVMe instead of virtio as the disk interface, available on macOS 14+ for Linux guests only. This interface is slower but less likely to encounter filesystem errors." = "如果選取，將使用 NVMe 而非 virtio 作為磁碟介面，僅在 macOS 14+ 中適用於 Linux 客戶機器。這個介面速度較慢，但較不容易遇到檔案系統錯誤。";
 

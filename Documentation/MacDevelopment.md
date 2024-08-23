@@ -16,7 +16,9 @@ git submodule update --init --recursive
 
 ## Dependencies
 
-The easy way is to get the prebuilt dependences from [GitHub Actions][1]. Pick the latest release and download all of the `Sysroot-macos-*` artifacts. You need to be logged in to GitHub to download artifacts. If you only intend to run locally, it is alright to just download the sysroot for your architecture.
+The easy way is to get the prebuilt dependences from [GitHub Actions][1]. Pick the latest release and download all of the `Sysroot-macos-*` artifacts. You need to be logged in to GitHub to download artifacts. If you only intend to run locally, it is alright to just download the sysroot for your architecture. After downloading the prebuilt artifacts of your choice, extract them to the root directory where you cloned the repository.
+
+To build UTM, make sure you have the latest version of Xcode installed.
 
 ### Building Dependencies (Advanced)
 
@@ -58,7 +60,7 @@ If you are developing QEMU and wish to pass in a custom path to QEMU, you can us
 You can build UTM with the script:
 
 ```sh
-./scripts/build_utm.sh -t TEAMID -p macos -a ARCH -o /path/to/output/directory
+./scripts/build_utm.sh -t TEAMID -k macosx -s macos -a ARCH -o /path/to/output/directory
 ```
 
 `ARCH` can be `x86_64` or `arm64` or `"arm64 x86_64"` (quotes are required) for a universal binary. The built artifact is an unsigned `.xcarchive` which you can use with the package tool (see below).
