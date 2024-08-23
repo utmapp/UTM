@@ -298,6 +298,7 @@
 "USB Device" = "USBデバイス";
 "Confirm" = "確定";
 "Querying USB devices..." = "USBデバイスを確認中…";
+"Serial %lld: %@" = "シリアル%1$lld: %2$@";
 "Display %lld: %@" = "ディスプレイ%1$lld: %2$@";
 
 // Display/VMDisplayQemuMetalWindowController.swift
@@ -1050,6 +1051,8 @@
 "Stopping" = "停止中";
 "Saving" = "保存中";
 "Restoring" = "復元中";
+"This function is not implemented." = "この機能は実装されていません。";
+"This VM is not available or is configured for a backend that does not support remote clients." = "この仮想マシンは利用できないか、リモートクライアントに対応していないバックエンド用に構成されています。";
 
 
 /* Remote */
