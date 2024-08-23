@@ -131,7 +131,7 @@ actor UTMRemoteServer {
             registerNotifications()
             listener = Task {
                 await withErrorNotification {
-                    if isServerExternal && serverPort > 0 {
+                    if isServerExternal && serverPort > 0 && serverPort <= UInt16.max {
                         natPort = Port.TCP(internalPort: UInt16(serverPort))
                         natPort!.mappingChangedHandler = { port in
                             Task {
@@ -146,7 +146,7 @@ actor UTMRemoteServer {
                             }
                         }
                     }
-                    let port = serverPort > 0 ? NWEndpoint.Port(integerLiteral: UInt16(serverPort)) : .any
+                    let port = serverPort > 0 && serverPort <= UInt16.max ? NWEndpoint.Port(integerLiteral: UInt16(serverPort)) : .any
                     for try await connection in Connection.advertise(on: port, forServiceType: service, txtRecord: metadata, connectionQueue: connectionQueue, identity: keyManager.identity) {
                         let connection = try? await Connection(connection: connection, connectionQueue: connectionQueue) { connection, error in
                             Task {

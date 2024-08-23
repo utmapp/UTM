@@ -223,8 +223,11 @@ struct ServerSettingsView: View {
                     .multilineTextAlignment(.trailing)
                     .help("Specify a port number to listen on. This is required if external clients are permitted.")
                     .onChange(of: serverPort) { newValue in
-                        if serverPort == 0 {
+                        if newValue == 0 {
                             isServerExternal = false
+                        }
+                        if newValue < 0 || newValue >= UInt16.max {
+                            serverPort = defaultPort
                         }
                     }
             }
