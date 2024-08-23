@@ -741,7 +741,9 @@ import Virtualization // for getting network interfaces
             placeholderUrl
         }
         if drive.isReadOnly || isCd {
-            "file.locking=off"
+            if drive.imageURL != nil {
+                "file.locking=off"
+            }
             "readonly=on"
         } else {
             "discard=unmap"
