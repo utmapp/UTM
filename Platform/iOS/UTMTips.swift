@@ -40,3 +40,23 @@ struct UTMTipDonate: Tip {
         }
     }
 }
+
+@available(iOS 17, macOS 14, *)
+struct UTMTipHideToolbar: Tip {
+    @Parameter
+    static var didHideToolbar: Bool = true
+
+    var title: Text {
+        Text("Tap to hide/show toolbar")
+    }
+
+    var message: Text? {
+        Text("When the toolbar is hidden, the icon will disappear after a few seconds. To show the icon again, tap anywhere on the screen.")
+    }
+
+    var rules: [Rule] {
+        #Rule(Self.$didHideToolbar) {
+            !$0
+        }
+    }
+}

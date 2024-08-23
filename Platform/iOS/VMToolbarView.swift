@@ -15,9 +15,10 @@
 //
 
 import SwiftUI
+import TipKit
 
 struct VMToolbarView: View {
-    @AppStorage("ToolbarIsCollapsed") private var isCollapsed: Bool = true
+    @AppStorage("ToolbarIsCollapsed") private var isCollapsed: Bool = false
     @AppStorage("ToolbarLocation") private var location: ToolbarLocation = .topRight
     @State private var shake: Bool = true
     @State private var isMoving: Bool = false
@@ -145,6 +146,7 @@ struct VMToolbarView: View {
             } label: {
                 Label("Hide", systemImage: isCollapsed ? nameOfHideIcon : nameOfShowIcon)
             }.buttonStyle(.toolbar(horizontalSizeClass: horizontalSizeClass, verticalSizeClass: verticalSizeClass))
+            .modifier(HideToolbarTipModifier(isCollapsed: $isCollapsed))
             .opacity(toolbarToggleOpacity)
             .modifier(Shake(shake: shake))
             .position(position(for: geometry))
@@ -385,5 +387,37 @@ extension MenuStyle where Self == ToolbarMenuStyle {
             self.setIsUserInteracting(false)
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 15, execute: longIdleTask!)
+    }
+}
+
+private struct HideToolbarTipModifier: ViewModifier {
+    @Binding var isCollapsed: Bool
+    private let _hideToolbarTip: Any?
+
+    @available(iOS 17, *)
+    private var hideToolbarTip: UTMTipHideToolbar {
+        _hideToolbarTip as! UTMTipHideToolbar
+    }
+
+    init(isCollapsed: Binding<Bool>) {
+        _isCollapsed = isCollapsed
+        if #available(iOS 17, *) {
+            _hideToolbarTip = UTMTipHideToolbar()
+        } else {
+            _hideToolbarTip = nil
+        }
+    }
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if #available(iOS 17, *) {
+            content
+                .popoverTip(hideToolbarTip, arrowEdge: .top)
+                .onAppear {
+                    UTMTipHideToolbar.didHideToolbar = isCollapsed
+                }
+        } else {
+            content
+        }
     }
 }
