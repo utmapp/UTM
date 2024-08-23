@@ -47,10 +47,10 @@ class UTMReleaseHelper: ObservableObject {
             return
         }
         let configuration = URLSessionConfiguration.ephemeral
-        configuration.allowsCellularAccess = false
+        configuration.allowsCellularAccess = true
         configuration.allowsExpensiveNetworkAccess = false
         configuration.allowsConstrainedNetworkAccess = false
-        configuration.waitsForConnectivity = true
+        configuration.waitsForConnectivity = false
         configuration.httpAdditionalHeaders = ["Accept": "application/vnd.github+json",
                                                "X-GitHub-Api-Version": "2022-11-28"]
         let session = URLSession(configuration: configuration)
