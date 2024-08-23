@@ -812,7 +812,7 @@ extension UTMQemuVirtualMachine {
         }
         await registryEntry.updateExternalDriveRemoteBookmark(bookmark, forId: drive.id)
         if let qemu = await monitor, qemu.isConnected && !isAccessOnly {
-            try qemu.changeMedium(forDrive: "drive\(drive.id)", path: path)
+            try qemu.changeMedium(forDrive: "drive\(drive.id)", path: path, locking: false)
         }
     }
 
