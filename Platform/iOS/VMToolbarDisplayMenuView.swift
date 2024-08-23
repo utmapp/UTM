@@ -55,7 +55,10 @@ struct VMToolbarDisplayMenuView: View {
                     Picker("", selection: externalWindowBinding.device) {
                         MenuLabel("None", systemImage: "rectangle.dashed").tag(nil as VMWindowState.Device?)
                         ForEach(session.devices) { device in
-                            if case .display(_, let index) = device {
+                            switch device {
+                            case .serial(_, let index):
+                                MenuLabel("Serial \(index): \(session.qemuConfig.serials[index].target.prettyValue)", systemImage: "rectangle.connected.to.line.below").tag(device as VMWindowState.Device?)
+                            case .display(_, let index):
                                 MenuLabel("Display \(index): \(session.qemuConfig.displays[index].hardware.prettyValue)", systemImage: "display").tag(device as VMWindowState.Device?)
                             }
                         }
