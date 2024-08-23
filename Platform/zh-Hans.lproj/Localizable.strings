@@ -542,7 +542,7 @@
 "Force shut down" = "强制关机";
 
 /* No comment provided by engineer. */
-"GB" = "GB";
+"GiB" = "GiB";
 
 /* UTMQemuConstants */
 "GDB Debug Stub" = "GDB 调试存根";
@@ -725,7 +725,7 @@
 "Maximum Shared USB Devices" = "最大共享 USB 设备数";
 
 /* No comment provided by engineer. */
-"MB" = "MB";
+"MiB" = "MiB";
 
 /* No comment provided by engineer. */
 "Memory" = "内存";

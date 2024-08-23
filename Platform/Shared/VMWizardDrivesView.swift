@@ -28,7 +28,7 @@ struct VMWizardDrivesView: View {
                     NumberTextField("", number: $wizardState.storageSizeGib)
                         .textFieldStyle(.roundedBorder)
                         .frame(maxWidth: 50)
-                    Text("GB")
+                    Text("GiB")
                 }
             } header: {
                 Text("Size")

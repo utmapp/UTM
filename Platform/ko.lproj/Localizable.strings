@@ -398,7 +398,7 @@
 "Manager being deallocated, killing pending RPC." = "Manager being deallocated, killing pending RPC.";
 
 /* No comment provided by engineer. */
-"MB" = "MB";
+"MiB" = "MiB";
 
 /* No comment provided by engineer. */
 "Memory" = "메모리";
