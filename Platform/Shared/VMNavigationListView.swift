@@ -22,7 +22,7 @@ struct VMNavigationListView: View {
     
     var body: some View {
         if #available(iOS 16, macOS 13, *) {
-            NavigationSplitView {
+            NavigationSplitView(columnVisibility: .constant(.doubleColumn)) {
                 List(selection: $data.selectedVM) {
                     listBody
                 }.modifier(VMListModifier())
@@ -37,7 +37,7 @@ struct VMNavigationListView: View {
                         }
                     #endif
                 }
-            }
+            }.navigationSplitViewStyle(.balanced)
         } else {
             NavigationView {
                 List {
