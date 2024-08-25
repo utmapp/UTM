@@ -10,7 +10,7 @@
       "internalID" : "4FFB8333",
       "localizations" : [
         {
-          "description" : "The most basic building block.",
+          "description" : "A small one time donation.",
           "displayName" : "Transistor",
           "locale" : "en_US"
         }
@@ -25,7 +25,7 @@
       "internalID" : "B6BBB675",
       "localizations" : [
         {
-          "description" : "Each one has a unique functionality.",
+          "description" : "A medium one time donation.",
           "displayName" : "Chip",
           "locale" : "en_US"
         }
@@ -40,7 +40,7 @@
       "internalID" : "FAEB2D3C",
       "localizations" : [
         {
-          "description" : "Gets the work done.",
+          "description" : "A large one time donation.",
           "displayName" : "Computer",
           "locale" : "en_US"
         }
@@ -103,90 +103,7 @@
     ]
   },
   "subscriptionGroups" : [
-    {
-      "id" : "D96518D8",
-      "localizations" : [
 
-      ],
-      "name" : "Donation",
-      "subscriptions" : [
-        {
-          "adHocOffers" : [
-
-          ],
-          "codeOffers" : [
-
-          ],
-          "displayPrice" : "0.99",
-          "familyShareable" : false,
-          "groupNumber" : 3,
-          "internalID" : "C7B7ED7B",
-          "introductoryOffer" : null,
-          "localizations" : [
-            {
-              "description" : "Ones and zeros would be lonely without them.",
-              "displayName" : "Logic",
-              "locale" : "en_US"
-            }
-          ],
-          "productID" : "subscription.small",
-          "recurringSubscriptionPeriod" : "P1M",
-          "referenceName" : "Logic",
-          "subscriptionGroupID" : "D96518D8",
-          "type" : "RecurringSubscription"
-        },
-        {
-          "adHocOffers" : [
-
-          ],
-          "codeOffers" : [
-
-          ],
-          "displayPrice" : "4.99",
-          "familyShareable" : false,
-          "groupNumber" : 2,
-          "internalID" : "A193204D",
-          "introductoryOffer" : null,
-          "localizations" : [
-            {
-              "description" : "Converts inputs to outputs in a fancy way.",
-              "displayName" : "Function",
-              "locale" : "en_US"
-            }
-          ],
-          "productID" : "subscription.medium",
-          "recurringSubscriptionPeriod" : "P1M",
-          "referenceName" : "Function",
-          "subscriptionGroupID" : "D96518D8",
-          "type" : "RecurringSubscription"
-        },
-        {
-          "adHocOffers" : [
-
-          ],
-          "codeOffers" : [
-
-          ],
-          "displayPrice" : "9.99",
-          "familyShareable" : false,
-          "groupNumber" : 1,
-          "internalID" : "08CDD5EB",
-          "introductoryOffer" : null,
-          "localizations" : [
-            {
-              "description" : "Maybe it was all a mistake.",
-              "displayName" : "Software",
-              "locale" : "en_US"
-            }
-          ],
-          "productID" : "subscription.large",
-          "recurringSubscriptionPeriod" : "P1M",
-          "referenceName" : "Software",
-          "subscriptionGroupID" : "D96518D8",
-          "type" : "RecurringSubscription"
-        }
-      ]
-    }
   ],
   "version" : {
     "major" : 3,
