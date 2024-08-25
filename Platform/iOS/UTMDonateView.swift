@@ -91,7 +91,7 @@ private struct StoreView: View {
                 }
                 if store.consumables.isEmpty && store.subscriptions.isEmpty {
                     Link("GitHub Sponsors", destination: URL(string: "https://github.com/sponsors/utmapp")!)
-                } else {
+                } else if !store.subscriptions.isEmpty {
                     Button("Restore Purchases") {
                         Task {
                             try? await AppStore.sync()
