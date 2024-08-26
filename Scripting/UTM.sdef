@@ -421,6 +421,11 @@
             <type type="qemu network configuration" list="yes"/>
           </property>
           
+          <property name="displays" code="DiSp"
+            description="List of display configuration.">
+            <type type="qemu display configuration" list="yes"/>
+          </property>
+          
           <property name="serial ports" code="SrPt"
             description="List of serial configuration.">
             <type type="qemu serial configuration" list="yes"/>
@@ -489,6 +494,13 @@
             description="Only used in emulated mode. Allows port forwarding from guest to host.">
             <type type="qemu port forward" list="yes"/>
           </property>
+        </record-type>
+        
+        <record-type name="qemu display configuration" code="QeDp" description="QEMU display configuration.">
+          <property name="native resolution" code="NaRe" type="boolean"
+            description="Use native resolution."/>
+          <property name="dynamic resolution" code="DyRe" type="boolean"
+            description="Use dynamic resolution."/>
         </record-type>
         
         <enumeration name="qemu network mode" code="QeNm" description="Mode for networking device.">
@@ -562,6 +574,11 @@
             <type type="apple network configuration" list="yes"/>
           </property>
           
+          <property name="displays" code="DiSp"
+            description="List of display configuration.">
+            <type type="apple display configuration" list="yes"/>
+          </property>
+          
           <property name="serial ports" code="SrPt"
             description="List of serial configuration.">
             <type type="apple serial configuration" list="yes"/>
@@ -591,6 +608,15 @@
             
           <property name="source" code="SrCe" type="file"
             description="An existing file to use as the source image."/>
+        </record-type>
+        
+        <record-type name="apple display configuration" code="ApDp" description="Apple display configuration.">
+          <property name="width in pixels" code="WiPx" type="integer"
+            description="Width in pixels"/>
+          <property name="height in pixels" code="HiPx" type="boolean"
+            description="Height in pixels."/>
+          <property name="pixels per inch" code="PxIn" type="boolean"
+            description="Pixels per inch.."/>
         </record-type>
         
         <record-type name="apple network configuration" code="ApCn" description="Apple virtual network configuration.">
