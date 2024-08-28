@@ -1537,6 +1537,9 @@
 "Boot Arguments" = "启动参数";
 
 /* No comment provided by engineer. */
+"Boot Device" = "启动设备";
+
+/* No comment provided by engineer. */
 "Boot from kernel image" = "从内核映像启动";
 
 /* No comment provided by engineer. */
@@ -1818,6 +1821,10 @@
 /* No comment provided by engineer. */
 "If checked, use local time for RTC which is required for Windows. Otherwise, use UTC clock." = "若选中，将使用 Windows 需要的 RTC 本地时间，否则使用 UTC 时钟。";
 
+/* VMConfigAppleDriveDetailsView
+ VMConfigAppleDriveCreateView*/
+"If checked, use NVMe instead of virtio as the disk interface, available on macOS 14+ for Linux guests only. This interface is slower but less likely to encounter filesystem errors." = "如果选中，使用 NVMe 而不是 virtio 作为磁盘接口，仅适用于 macOS 14+ 上的 Linux 客户机。此接口速度较慢，但不太容易遇到文件系统错误。";
+
 /* No comment provided by engineer. */
 "If disabled, the default combination Control+Option (⌃+⌥) will be used." = "若禁用，将使用默认组合键 Control + Option (⌃ + ⌥)。";
 
@@ -1907,6 +1914,9 @@
 
 /* No comment provided by engineer. */
 "Last Seen" = "最后上线于";
+
+/* No comment provided by engineer. */
+"Legacy Hardware" = "旧式硬件";
 
 /* No comment provided by engineer. */
 "MAC Address" = "MAC 地址";
@@ -2253,6 +2263,10 @@
 /* No comment provided by engineer. */
 "Use local time for base clock" = "使用本地时间作为基本时钟";
 
+/* VMConfigAppleDriveDetailsView
+ VMConfigAppleDriveCreateView*/
+"Use NVMe Interface" = "使用 NVMe 磁盘接口";
+
 /* No comment provided by engineer. */
 "Use Rosetta" = "使用 Rosetta";
 
@@ -2297,8 +2311,3 @@
 
 /* No comment provided by engineer. */
 "Zoom" = "缩放";
-
-/* VMConfigAppleDriveDetailsView
- VMConfigAppleDriveCreateView*/
-"Use NVMe Interface" = "使用 NVMe 磁盘接口";
-"If checked, use NVMe instead of virtio as the disk interface, available on macOS 14+ for Linux guests only. This interface is slower but less likely to encounter filesystem errors." = "如果选中，使用 NVMe 而不是 virtio 作为磁盘接口，仅适用于 macOS 14+ 上的 Linux 客户机。此接口速度较慢，但不太容易遇到文件系统错误。";
