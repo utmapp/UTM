@@ -306,6 +306,9 @@
 /* Welcome view */
 "Create a New Virtual Machine" = "製作一個新虛擬電腦";
 
+/* No comment provided by engineer. */
+"Create a new virtual machine or import an existing one." = "製作一個新的虛擬電腦或者輸入一個現有的。";
+
 /* VMConfigAppleDisplayView */
 "Custom" = "自訂";
 
@@ -425,6 +428,9 @@
 /* No comment provided by engineer. */
 "Enable Clipboard Sharing" = "啟用剪貼板分享";
 
+/* No comment provided by engineer. */
+"Enjoying the app? Consider making a donation to support development." = "享受使用這個 App 嗎？考慮下捐贈支持開發吧。";
+
 /* VMDisplayWindowController */
 "Error" = "錯誤";
 
@@ -541,9 +547,6 @@
 /* VMDisplayWindowController */
 "Force shut down" = "強行關機";
 
-/* No comment provided by engineer. */
-"GiB" = "GiB";
-
 /* UTMQemuConstants */
 "GDB Debug Stub" = "GDB Debug Stub";
 
@@ -558,6 +561,9 @@
 
 /* No comment provided by engineer. */
 "Gesture and Cursor Settings" = "手勢與指標設定";
+
+/* No comment provided by engineer. */
+"GiB" = "GiB";
 
 /* No comment provided by engineer. */
 "Guest drivers are required for 3D acceleration." = "需要客戶端驅動程式才能使用 3D 加速。";
@@ -597,6 +603,9 @@
 
 /* No comment provided by engineer. */
 "Image File Type" = "映像檔種類";
+
+/* No comment provided by engineer. */
+"Import Drive…" = "輸入磁碟機⋯";
 
 /* No comment provided by engineer. */
 "Import IPSW" = "輸入 IPSW";
@@ -725,13 +734,13 @@
 "Maximum Shared USB Devices" = "最多分享 USB 裝置";
 
 /* No comment provided by engineer. */
-"MiB" = "MiB";
-
-/* No comment provided by engineer. */
 "Memory" = "記憶體";
 
 /* VMDisplayMetalWindowController */
 "Metal is not supported on this device. Cannot render display." = "此裝置不支援 Metal，無法呈送顯示內容。";
+
+/* No comment provided by engineer. */
+"MiB" = "MiB";
 
 /* No comment provided by engineer. */
 "Minimum size: %@" = "最小大小：%@";
@@ -765,6 +774,9 @@
 
 /* No comment provided by engineer. */
 "New" = "新增";
+
+/* No comment provided by engineer. */
+"New Drive…" = "新增磁碟機⋯";
 
 /* No comment provided by engineer. */
 "New Machine" = "新增電腦";
@@ -1111,6 +1123,9 @@
 /* No comment provided by engineer. */
 "SPICE with GStreamer (Input & Output)" = "SPICE with GStreamer (輸入與輸出)";
 
+/* No comment provided by engineer. */
+"Start Here" = "由此開始";
+
 /* VMData */
 "Started" = "已經啟動";
 
@@ -1138,6 +1153,9 @@
 /* Welcome view */
 "Support" = "支援";
 
+/* No comment provided by engineer. */
+"Support UTM" = "支持 UTM";
+
 /* UTMQemuVirtualMachine */
 "Suspend is not supported for virtualization." = "暫停功能不支援虛擬化。";
 
@@ -1161,6 +1179,9 @@
 
 /* No comment provided by engineer. */
 "System" = "系統";
+
+/* No comment provided by engineer. */
+"Tap to hide/show toolbar" = "點一下以隱藏/顯示工具列";
 
 /* UTMQemuConstants */
 "TCP" = "TCP";
@@ -1304,7 +1325,7 @@
 "This virtual machine is currently unavailable, make sure it is not open in another session." = "現時無法使用此虛擬電腦，確保它沒有於另一個會話當中開啟。.";
 
 /* VMData */
-"This VM is configured for a backend that does not support remote clients." = "此虛擬電腦設定為不支援遠端客戶端的後端。";
+"This VM is not available or is configured for a backend that does not support remote clients." = "這個虛擬電腦無法使用，或者是被設定為不支援遠端客戶端的後端。";
 
 /* No comment provided by engineer. */
 "This VM is unavailable." = "此虛擬電腦無法使用。";
@@ -1381,6 +1402,9 @@
 /* No comment provided by engineer. */
 "Use Command+Option (⌘+⌥) for input capture/release" = "使用 Command + Option (⌘ + ⌥) 來擷取/放開輸入";
 
+/* No comment provided by engineer. */
+"Use NVMe Interface" = "使用 NVMe 磁碟介面";
+
 /* Welcome view */
 "User Guide" = "用戶指南";
 
@@ -1424,6 +1448,9 @@
 
 /* No comment provided by engineer. */
 "What's New" = "新功能";
+
+/* No comment provided by engineer. */
+"When the toolbar is hidden, the icon will disappear after a few seconds. To show the icon again, tap anywhere on the screen." = "當工具列隱藏時，圖示將會於幾秒鐘之後消失。如要再次顯示圖示，請在螢幕上的任意位置點一下。";
 
 /* UTMDownloadSupportToolsTask */
 "Windows Guest Support Tools" = "Windows 客戶端支援工具";
