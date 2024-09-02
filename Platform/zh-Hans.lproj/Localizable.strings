@@ -1600,6 +1600,12 @@
 "Cancel Download" = "取消下载";
 
 /* No comment provided by engineer. */
+"Change…" = "更改…";
+
+/* No comment provided by engineer. */
+"Clear…" = "清除…";
+
+/* No comment provided by engineer. */
 "Clipboard Sharing" = "剪贴板共享";
 
 /* No comment provided by engineer. */
@@ -1715,6 +1721,9 @@
 
 /* No comment provided by engineer. */
 "Edit…" = "编辑…";
+
+/* No comment provided by engineer. */
+"Eject…" = "推出…";
 
 /* No comment provided by engineer. */
 "Emulated Audio Card" = "模拟声卡";
@@ -2154,6 +2163,9 @@
 
 /* No comment provided by engineer. */
 "Share Directory" = "共享目录";
+
+/* No comment provided by engineer. */
+"Shared Directory: %@" = "共享目录：%@";
 
 /* No comment provided by engineer. */
 "Share is read only" = "共享为只读";
