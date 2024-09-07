@@ -2006,6 +2006,9 @@
 "Older versions of UTM added each IDE device to a separate bus. Check this to change the configuration to place two units on each bus." = "旧版本的 UTM 会将每个 IDE 设备添加到单独的总线上。选中此项可更改配置，以在每条总线上放置两个设备。";
 
 /* No comment provided by engineer. */
+"One Time Donation" = "一次性捐赠";
+
+/* No comment provided by engineer. */
 "Only available if host architecture matches the target. Otherwise, TCG emulation is used." = "仅当主机架构和目标匹配时才可用。否则将使用 TCG 模拟。";
 
 /* No comment provided by engineer. */
