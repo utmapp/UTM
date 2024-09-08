@@ -1337,13 +1337,13 @@
 "Timed out trying to connect." = "尝试连接超时。";
 
 /* VMDisplayAppleWindowController */
-"To access the shared directory, the guest OS must have Virtiofs drivers installed. You can then run `sudo mount -t virtiofs share /path/to/share` to mount to the share path." = "要访问共享目录，客户机操作系统必须安装 VirtioFS 驱动程序。然后，你可以运行命令 `sudo mount -t virtiofs share [要共享的目录]` 来挂载到共享路径。";
+"To access the shared directory, the guest OS must have Virtiofs drivers installed. You can then run `sudo mount -t virtiofs share /path/to/share` to mount to the share path." = "若要访问共享目录，客户机操作系统必须安装 VirtioFS 驱动程序。然后，你可以运行命令 `sudo mount -t virtiofs share [要共享的目录]` 来挂载到共享路径。";
 
 /* VMMetalView */
-"To capture input or to release the capture, press Command and Option at the same time." = "要捕获或释放捕获输入，请同时按下 Command 和 Option 键。";
+"To capture input or to release the capture, press Command and Option at the same time." = "若要捕获或释放捕获输入，请同时按下 Command 和 Option 键。";
 
 /* No comment provided by engineer. */
-"To install macOS, you need to download a recovery IPSW. If you do not select an existing IPSW, the latest macOS IPSW will be downloaded from Apple." = "若要安装 macOS，你需要下载 IPSW 恢复文件。如果你没有选择现有的IPSW，将从苹果下载最新的 macOS IPSW。";
+"To install macOS, you need to download a recovery IPSW. If you do not select an existing IPSW, the latest macOS IPSW will be downloaded from Apple." = "若要安装 macOS，你需要下载 IPSW 恢复文件。如果你没有选择现有的 IPSW，将从 Apple 下载最新的 macOS IPSW。";
 
 /* VMDisplayQemuMetalWindowController */
 "To release the mouse cursor, press %@ at the same time." = "要释放鼠标光标，请同时按 %@。";
@@ -1859,7 +1859,7 @@
 
 /* VMConfigAppleDriveDetailsView
  VMConfigAppleDriveCreateView*/
-"If checked, use NVMe instead of virtio as the disk interface, available on macOS 14+ for Linux guests only. This interface is slower but less likely to encounter filesystem errors." = "如果选中，使用 NVMe 而不是 virtio 作为磁盘接口，仅适用于 macOS 14+ 上的 Linux 客户机。此接口速度较慢，但不太容易遇到文件系统错误。";
+"If checked, use NVMe instead of virtio as the disk interface, available on macOS 14+ for Linux guests only. This interface is slower but less likely to encounter filesystem errors." = "若选中，使用 NVMe 而不是 virtio 作为磁盘接口，仅适用于 macOS 14+ 上的 Linux 客户机。此接口速度较慢，但不太容易遇到文件系统错误。";
 
 /* No comment provided by engineer. */
 "If disabled, the default combination Control+Option (⌃+⌥) will be used." = "若禁用，将使用默认组合键 Control + Option (⌃ + ⌥)。";
