@@ -405,7 +405,6 @@
 		CE0DF19E25A83C1700A51894 /* qemu-mips64-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F422653C7400FC7E63 /* qemu-mips64-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0DF19F25A83C1700A51894 /* qemu-mips64el-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640822653C7500FC7E63 /* qemu-mips64el-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0DF1A025A83C1700A51894 /* qemu-mipsel-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640622653C7500FC7E63 /* qemu-mipsel-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0DF1A225A83C1700A51894 /* qemu-nios2-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DF22653C7400FC7E63 /* qemu-nios2-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0DF1A325A83C1700A51894 /* qemu-or1k-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640B22653C7500FC7E63 /* qemu-or1k-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0DF1A425A83C1700A51894 /* qemu-ppc-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E722653C7400FC7E63 /* qemu-ppc-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0DF1A525A83C1700A51894 /* qemu-ppc64-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640C22653C7500FC7E63 /* qemu-ppc64-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -576,7 +575,6 @@
 		CE2D93AA24AD46670059923A /* spice-client-glib-2.0.8.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FE22653C7500FC7E63 /* spice-client-glib-2.0.8.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE2D93AB24AD46670059923A /* opus.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640322653C7500FC7E63 /* opus.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE2D93AD24AD46670059923A /* gstsdp-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641622653C7500FC7E63 /* gstsdp-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE2D93AE24AD46670059923A /* qemu-nios2-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DF22653C7400FC7E63 /* qemu-nios2-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE2D93B024AD46670059923A /* gstaudio-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63EF22653C7400FC7E63 /* gstaudio-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE2D93B124AD46670059923A /* gstcheck-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641422653C7500FC7E63 /* gstcheck-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE2D93B224AD46670059923A /* qemu-xtensa-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63ED22653C7400FC7E63 /* qemu-xtensa-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -1343,7 +1341,6 @@
 				CE0DF19E25A83C1700A51894 /* qemu-mips64-softmmu.framework in Embed Libraries */,
 				CE0DF19F25A83C1700A51894 /* qemu-mips64el-softmmu.framework in Embed Libraries */,
 				CE0DF1A025A83C1700A51894 /* qemu-mipsel-softmmu.framework in Embed Libraries */,
-				CE0DF1A225A83C1700A51894 /* qemu-nios2-softmmu.framework in Embed Libraries */,
 				CE0DF1A325A83C1700A51894 /* qemu-or1k-softmmu.framework in Embed Libraries */,
 				CE0DF1A425A83C1700A51894 /* qemu-ppc-softmmu.framework in Embed Libraries */,
 				CE0DF1A525A83C1700A51894 /* qemu-ppc64-softmmu.framework in Embed Libraries */,
@@ -1437,7 +1434,6 @@
 				CE2D93AB24AD46670059923A /* opus.0.framework in Embed Libraries */,
 				CE2D93AD24AD46670059923A /* gstsdp-1.0.0.framework in Embed Libraries */,
 				CE064C6A2A563F6E003C833D /* swtpm.0.framework in Embed Libraries */,
-				CE2D93AE24AD46670059923A /* qemu-nios2-softmmu.framework in Embed Libraries */,
 				CE02C8AB294EE4EB006DFE48 /* qemu-loongarch64-softmmu.framework in Embed Libraries */,
 				CE2D93B024AD46670059923A /* gstaudio-1.0.0.framework in Embed Libraries */,
 				CE2D93B124AD46670059923A /* gstcheck-1.0.0.framework in Embed Libraries */,
@@ -1818,7 +1814,6 @@
 		CE2D63DC22653C7300FC7E63 /* gthread-2.0.0.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "gthread-2.0.0.framework"; path = "$(SYSROOT_DIR)/Frameworks/gthread-2.0.0.framework"; sourceTree = "<group>"; };
 		CE2D63DD22653C7400FC7E63 /* gstrtp-1.0.0.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "gstrtp-1.0.0.framework"; path = "$(SYSROOT_DIR)/Frameworks/gstrtp-1.0.0.framework"; sourceTree = "<group>"; };
 		CE2D63DE22653C7400FC7E63 /* gstriff-1.0.0.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "gstriff-1.0.0.framework"; path = "$(SYSROOT_DIR)/Frameworks/gstriff-1.0.0.framework"; sourceTree = "<group>"; };
-		CE2D63DF22653C7400FC7E63 /* qemu-nios2-softmmu.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "qemu-nios2-softmmu.framework"; path = "$(SYSROOT_DIR)/Frameworks/qemu-nios2-softmmu.framework"; sourceTree = "<group>"; };
 		CE2D63E022653C7400FC7E63 /* gstreamer-1.0.0.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "gstreamer-1.0.0.framework"; path = "$(SYSROOT_DIR)/Frameworks/gstreamer-1.0.0.framework"; sourceTree = "<group>"; };
 		CE2D63E122653C7400FC7E63 /* qemu-sh4eb-softmmu.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "qemu-sh4eb-softmmu.framework"; path = "$(SYSROOT_DIR)/Frameworks/qemu-sh4eb-softmmu.framework"; sourceTree = "<group>"; };
 		CE2D63E222653C7400FC7E63 /* json-glib-1.0.0.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "json-glib-1.0.0.framework"; path = "$(SYSROOT_DIR)/Frameworks/json-glib-1.0.0.framework"; sourceTree = "<group>"; };
@@ -2600,7 +2595,6 @@
 				CE2D63F422653C7400FC7E63 /* qemu-mips64-softmmu.framework */,
 				CE2D640822653C7500FC7E63 /* qemu-mips64el-softmmu.framework */,
 				CE2D640622653C7500FC7E63 /* qemu-mipsel-softmmu.framework */,
-				CE2D63DF22653C7400FC7E63 /* qemu-nios2-softmmu.framework */,
 				CE2D640B22653C7500FC7E63 /* qemu-or1k-softmmu.framework */,
 				CE2D63E722653C7400FC7E63 /* qemu-ppc-softmmu.framework */,
 				CE2D640C22653C7500FC7E63 /* qemu-ppc64-softmmu.framework */,

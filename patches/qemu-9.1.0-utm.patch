@@ -1,0 +1,128 @@
+From ed481d745d3e725f0694d6032e8aa895d49ae3ec Mon Sep 17 00:00:00 2001
+From: Joelle van Dyne <j@getutm.app>
+Date: Thu, 22 Aug 2024 16:42:50 -0500
+Subject: [PATCH] block: support locking on change medium
+
+New optional argument for 'blockdev-change-medium' QAPI command to allow
+the caller to specify if they wish to enable file locking.
+---
+ block/monitor/block-hmp-cmds.c |  2 +-
+ block/qapi-sysemu.c            | 22 ++++++++++++++++++++++
+ qapi/block.json                | 23 ++++++++++++++++++++++-
+ ui/cocoa.m                     |  1 +
+ 4 files changed, 46 insertions(+), 2 deletions(-)
+
+diff --git a/block/monitor/block-hmp-cmds.c b/block/monitor/block-hmp-cmds.c
+index bdf2eb50b6..ff64020a80 100644
+--- a/block/monitor/block-hmp-cmds.c
++++ b/block/monitor/block-hmp-cmds.c
+@@ -1007,5 +1007,5 @@ void hmp_change_medium(Monitor *mon, const char *device, const char *target,
+     }
+ 
+     qmp_blockdev_change_medium(device, NULL, target, arg, true, force,
+-                               !!read_only, read_only_mode, errp);
++                               !!read_only, read_only_mode, false, 0, errp);
+ }
+diff --git a/block/qapi-sysemu.c b/block/qapi-sysemu.c
+index e4282631d2..8064bdfb3a 100644
+--- a/block/qapi-sysemu.c
++++ b/block/qapi-sysemu.c
+@@ -311,6 +311,8 @@ void qmp_blockdev_change_medium(const char *device,
+                                 bool has_force, bool force,
+                                 bool has_read_only,
+                                 BlockdevChangeReadOnlyMode read_only,
++                                bool has_file_locking_mode,
++                                BlockdevChangeFileLockingMode file_locking_mode,
+                                 Error **errp)
+ {
+     BlockBackend *blk;
+@@ -362,6 +364,26 @@ void qmp_blockdev_change_medium(const char *device,
+         qdict_put_str(options, "driver", format);
+     }
+ 
++    if (!has_file_locking_mode) {
++        file_locking_mode = BLOCKDEV_CHANGE_FILE_LOCKING_MODE_AUTO;
++    }
++
++    switch (file_locking_mode) {
++    case BLOCKDEV_CHANGE_FILE_LOCKING_MODE_AUTO:
++        break;
++
++    case BLOCKDEV_CHANGE_FILE_LOCKING_MODE_OFF:
++        qdict_put_str(options, "file.locking", "off");
++        break;
++
++    case BLOCKDEV_CHANGE_FILE_LOCKING_MODE_ON:
++        qdict_put_str(options, "file.locking", "on");
++        break;
++
++    default:
++        abort();
++    }
++
+     medium_bs = bdrv_open(filename, NULL, options, bdrv_flags, errp);
+ 
+     if (!medium_bs) {
+diff --git a/qapi/block.json b/qapi/block.json
+index e66666f5c6..35e8e2e191 100644
+--- a/qapi/block.json
++++ b/qapi/block.json
+@@ -309,6 +309,23 @@
+ { 'enum': 'BlockdevChangeReadOnlyMode',
+   'data': ['retain', 'read-only', 'read-write'] }
+ 
++##
++# @BlockdevChangeFileLockingMode:
++#
++# Specifies the new locking mode of a file image passed to the
++# @blockdev-change-medium command.
++#
++# @auto: Use locking if API is available
++#
++# @off: Disable file image locking
++#
++# @on: Enable file image locking
++#
++# Since: 9.2
++##
++{ 'enum': 'BlockdevChangeFileLockingMode',
++  'data': ['auto', 'off', 'on'] }
++
+ ##
+ # @blockdev-change-medium:
+ #
+@@ -330,6 +347,9 @@
+ # @read-only-mode: change the read-only mode of the device; defaults
+ #     to 'retain'
+ #
++# @file-locking-mode: change the locking mode of the file image; defaults
++#     to 'auto' (since: 9.2)
++#
+ # @force: if false (the default), an eject request through
+ #     blockdev-open-tray will be sent to the guest if it has locked
+ #     the tray (and the tray will not be opened immediately); if true,
+@@ -378,7 +398,8 @@
+             'filename': 'str',
+             '*format': 'str',
+             '*force': 'bool',
+-            '*read-only-mode': 'BlockdevChangeReadOnlyMode' } }
++            '*read-only-mode': 'BlockdevChangeReadOnlyMode',
++            '*file-locking-mode': 'BlockdevChangeFileLockingMode' } }
+ 
+ ##
+ # @DEVICE_TRAY_MOVED:
+diff --git a/ui/cocoa.m b/ui/cocoa.m
+index 4c2dd33532..6e73c6e13e 100644
+--- a/ui/cocoa.m
++++ b/ui/cocoa.m
+@@ -1611,6 +1611,7 @@ - (void)changeDeviceMedia:(id)sender
+                                        "raw",
+                                        true, false,
+                                        false, 0,
++                                       false, 0,
+                                        &err);
+         });
+         handleAnyDeviceErrors(err);
+-- 
+2.41.0
+

@@ -66,9 +66,11 @@ check_env () {
     command -v python3 >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'python3' on your host machine.${NC}"; exit 1; }
     python_module_test six >/dev/null 2>&1 || { echo >&2 "${RED}'six' not found in your Python 3 installation.${NC}"; exit 1; }
     python_module_test pyparsing >/dev/null 2>&1 || { echo >&2 "${RED}'pyparsing' not found in your Python 3 installation.${NC}"; exit 1; }
+    python_module_test distutils >/dev/null 2>&1 || { echo >&2 "${RED}'distutils' not found in your Python 3 installation.${NC}"; exit 1; }
     command -v meson >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'meson' on your host machine.${NC}"; exit 1; }
     command -v msgfmt >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'gettext' on your host machine.\n\t'msgfmt' needs to be in your \$PATH as well.${NC}"; exit 1; }
     command -v glib-mkenums >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'glib-utils' on your host machine.\n\t'glib-mkenums' needs to be in your \$PATH as well.${NC}"; exit 1; }
+    command -v glib-compile-resources >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'glib-utils' on your host machine.\n\t'glib-compile-resources' needs to be in your \$PATH as well.${NC}"; exit 1; }
     command -v gpg-error-config >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'libgpg-error' on your host machine.\n\t'gpg-error-config' needs to be in your \$PATH as well.${NC}"; exit 1; }
     command -v xcrun >/dev/null 2>&1 || { echo >&2 "${RED}'xcrun' is not found. Make sure you are running on OSX."; exit 1; }
     command -v otool >/dev/null 2>&1 || { echo >&2 "${RED}'otool' is not found. Make sure you are running on OSX."; exit 1; }
@@ -164,6 +166,7 @@ download_all () {
     clone $EPOXY_REPO $EPOXY_COMMIT
     clone $VIRGLRENDERER_REPO $VIRGLRENDERER_COMMIT
     clone $HYPERVISOR_REPO $HYPERVISOR_COMMIT
+    clone $LIBUCONTEXT_REPO $LIBUCONTEXT_COMMIT
 }
 
 copy_private_headers() {
@@ -217,6 +220,8 @@ generate_meson_cross() {
     echo "ranlib = [$(meson_quote $RANLIB)]" >> $cross
     echo "strip = [$(meson_quote $STRIP), '-x']" >> $cross
     echo "python = ['$(which python3)']" >> $cross
+    echo "glib-mkenums = ['$(which glib-mkenums)']" >> $cross
+    echo "glib-compile-resources = ['$(which glib-compile-resources)']" >> $cross
     echo "[host_machine]" >> $cross
     case $PLATFORM in
     ios* | visionos* )
@@ -491,7 +496,7 @@ build_qemu_dependencies () {
 }
 
 build_spice_client () {
-    meson_build "$QEMU_DIR/subprojects/libucontext" -Ddefault_library=static -Dfreestanding=true
+    meson_build $LIBUCONTEXT_REPO -Ddefault_library=static -Dfreestanding=true
     meson_build $JSON_GLIB_SRC -Dintrospection=disabled
     build $XML2_SRC --enable-shared=no --without-python
     meson_build $SOUP_SRC --default-library static -Dsysprof=disabled -Dtls_check=false -Dintrospection=disabled
@@ -788,6 +793,7 @@ echo "${GREEN}Deleting old sysroot!${NC}"
 rm -rf "$PREFIX/"*
 rm -f "$BUILD_DIR/BUILD_SUCCESS"
 rm -f "$BUILD_DIR/meson.cross"
+mkdir -p "$PREFIX/Frameworks"
 copy_private_headers
 build_pkg_config
 build_qemu_dependencies

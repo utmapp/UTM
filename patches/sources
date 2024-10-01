@@ -23,7 +23,7 @@ SPICE_SERVER_SRC="https://www.spice-space.org/download/releases/spice-server/spi
 USB_SRC="https://github.com/libusb/libusb/releases/download/v1.0.25/libusb-1.0.25.tar.bz2"
 USBREDIR_SRC="https://www.spice-space.org/download/usbredir/usbredir-0.13.0.tar.xz"
 SLIRP_SRC="https://gitlab.freedesktop.org/slirp/libslirp/-/archive/v4.7.0/libslirp-v4.7.0.tar.gz"
-QEMU_SRC="https://github.com/utmapp/qemu/releases/download/v7.2.0-utm/qemu-7.2.0-utm.tar.bz2"
+QEMU_SRC="https://github.com/utmapp/qemu/releases/download/v9.1.0-utm/qemu-9.1.0-utm.tar.xz"
 
 # Source files for spice-client
 JSON_GLIB_SRC="https://download.gnome.org/sources/json-glib/1.6/json-glib-1.6.6.tar.xz"
@@ -34,6 +34,8 @@ XML2_SRC="http://xmlsoft.org/sources/libxml2-2.9.12.tar.gz"
 SOUP_SRC="https://download.gnome.org/sources/libsoup/2.74/libsoup-2.74.2.tar.xz"
 PHODAV_SRC="https://download.gnome.org/sources/phodav/2.5/phodav-2.5.tar.xz"
 SPICE_CLIENT_SRC="https://www.spice-space.org/download/gtk/spice-gtk-0.40.tar.xz"
+LIBUCONTEXT_REPO="https://github.com/utmapp/libucontext.git"
+LIBUCONTEXT_COMMIT="9b1d8f01a6e99166f9808c79966abe10786de8b6"
 
 # Source files for GPU acceleration
 WEBKIT_REPO="https://github.com/utmapp/WebKit.git"

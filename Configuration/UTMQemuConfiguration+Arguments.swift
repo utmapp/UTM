@@ -111,9 +111,7 @@ import Virtualization // for getting network interfaces
         cpuArguments
         machineArguments
         architectureArguments
-        if !sound.isEmpty {
-            soundArguments
-        }
+        soundArguments
         if isUsbUsed {
             usbArguments
         }
@@ -524,9 +522,8 @@ import Virtualization // for getting network interfaces
         if isRemoteSpice {
             return false
         }
-        // force CoreAudio backend for mac99 which only supports 44100 Hz
         // pcspk doesn't work with SPICE audio
-        if sound.contains(where: { $0.hardware.rawValue == "screamer" || $0.hardware.rawValue == "pcspk" }) {
+        if sound.contains(where: { $0.hardware.rawValue == "pcspk" }) {
             return true
         }
         if soundBackend == .qemuSoundBackendCoreAudio {
@@ -537,6 +534,19 @@ import Virtualization // for getting network interfaces
     }
     
     @QEMUArgumentBuilder private var soundArguments: [QEMUArgument] {
+        if sound.isEmpty {
+            f("-audio")
+            f("none")
+        } else if sound.contains(where: { $0.hardware.rawValue == "screamer" }) {
+            #if os(iOS) || os(visionOS)
+            f("-audio")
+            f("none")
+            #else
+            // force CoreAudio backend for mac99 which only supports 44100 Hz
+            f("-audio")
+            f("coreaudio")
+            #endif
+        }
         if useCoreAudioBackend {
             f("-audiodev")
             "coreaudio"

@@ -28,7 +28,6 @@ TARGETS = [
     Name("mipsel", "MIPS (Little Endian)"),
     Name("mips64", "MIPS64"),
     Name("mips64el", "MIPS64 (Little Endian)"),
-    Name("nios2", "NIOS2"),
     Name("or1k", "OpenRISC"),
     Name("ppc", "PowerPC"),
     Name("ppc64", "PowerPC64"),
@@ -119,12 +118,16 @@ import Foundation
 def parseListing(listing):
     output = listing.splitlines()[1:]
     result = set()
+    names = set()
     for line in output:
         idx = line.find(' ')
         if idx < 0:
             break
         name = line[0:idx]
         description = line[idx:].strip()
+        if name in names:
+            continue # duplicate
+        names.add(name)
         result.add(Name(name, '{} ({})'.format(description, name)))
     return result
 
@@ -138,7 +141,7 @@ def parseDeviceListing(defaults, listing):
         if not line.startswith('name '):
             group = line.rstrip(':')
             continue
-        search = re.search('^name "(?P<name>[^"]*)"(?:, bus (?P<bus>[^\s]+))?(?:, alias "(?P<alias>[^"]+)")?(?:, desc "(?P<desc>[^"]+)")?$', line)
+        search = re.search('^name "(?P<name>[^"]*)"(?:, bus (?P<bus>[^\\s]+))?(?:, alias "(?P<alias>[^"]+)")?(?:, desc "(?P<desc>[^"]+)")?$', line)
         name = search.group('name')
         desc = search.group('desc')
         if not desc:
@@ -149,18 +152,15 @@ def parseDeviceListing(defaults, listing):
         result[group].add(item)
     return result
 
-def parseCpu(listing):
-    def parseMips(line):
-        search = re.search('^(?P<arch>\S+)\s+\'(?P<name>.+)\'.*', line)
-        return Name(search.group('name'), search.group('name'))
+def parseCpu(target, listing):
     def parseSingle(line):
         name = line.strip()
         return Name(name, name)
     def parseSparc(line):
-        search = re.search('^(?P<arch>\S+)\s+(?P<name>.+)\s+IU\s+(?P<iu>\S+)\s+FPU\s+(?P<fpu>\S+)\s+MMU\s+(?P<mmu>\S+)\s+NWINS\s+(?P<nwins>\d+).*$', line)
+        search = re.search('^\\s+(?P<name>.+)\\s+\\(IU\\s+(?P<iu>\\S+)\\s+FPU\\s+(?P<fpu>\\S+)\\s+MMU\\s+(?P<mmu>\\S+)\\s+NWINS\\s+(?P<nwins>\\d+)\\).*$', line)
         return Name(search.group('name'), search.group('name'))
     def parseStandard(line):
-        search = re.search('^(?P<arch>\S+)\s+(?P<name>\S+)\s+(?P<desc>.*)?$', line)
+        search = re.search('^\\s+(?P<name>\\S+)\\s+(?P<desc>.*)?$', line)
         name = search.group('name')
         desc = search.group('desc').strip()
         desc = ' '.join(desc.split())
@@ -199,13 +199,11 @@ def parseCpu(listing):
             break
         if len(line.strip().split(' ')) == 1:
             cpu = parseSingle(line)
-        elif line.startswith('Sparc'):
-            cpu = parseSparc(line)
-        elif line.startswith('MIPS'):
-            cpu = parseMips(line)
         elif parseSparcFlags(line) != None:
             flags += parseSparcFlags(line)
             continue
+        elif target.name.startswith('sparc'):
+            cpu = parseSparc(line)
         else:
             cpu = parseStandard(line)
         if cpu.name != 'default':
@@ -243,7 +241,7 @@ def getDevices(target, qemu_path):
 
 def getCpus(target, qemu_path):
     output = subprocess.check_output([qemu_path, '-cpu', 'help']).decode('utf-8')
-    return parseCpu(output)
+    return parseCpu(target, output)
 
 def sanitizeName(name):
     sanitized = re.sub('[^0-9a-zA-Z]+', '_', name)
