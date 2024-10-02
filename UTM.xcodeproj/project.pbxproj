@@ -1218,7 +1218,6 @@
 		CEFE96772B69A7CC000F00C9 /* VMRemoteSessionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEFE96762B69A7CC000F00C9 /* VMRemoteSessionState.swift */; };
 		CEFE98DF29485237007CB7A8 /* UTM.sdef in Resources */ = {isa = PBXBuildFile; fileRef = CEFE98DE29485237007CB7A8 /* UTM.sdef */; };
 		CEFE98E129485776007CB7A8 /* UTMScriptingVirtualMachineImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEFE98E029485776007CB7A8 /* UTMScriptingVirtualMachineImpl.swift */; };
-		F6056EF32BE642F500FAEED8 /* Info-Remote-InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F6056EF12BE642F500FAEED8 /* Info-Remote-InfoPlist.strings */; };
 		FF0307552A84E3B70049979B /* QEMULauncher-InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = FF0307532A84E3B70049979B /* QEMULauncher-InfoPlist.strings */; };
 		FFB02A8C266CB09C006CD71A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = FFB02A8A266CB09C006CD71A /* InfoPlist.strings */; };
 		FFB02A8D266CB09C006CD71A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = FFB02A8A266CB09C006CD71A /* InfoPlist.strings */; };
@@ -2075,7 +2074,6 @@
 		E68D492228AC018E00D34C54 /* es-419 */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-419"; path = "es-419.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		E68D492328AC018E00D34C54 /* es-419 */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-419"; path = "es-419.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		E6F791192903EEC6000BAAC9 /* es-419 */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-419"; path = "es-419.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
-		F6056EF22BE642F500FAEED8 /* zh-HK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-HK"; path = "zh-HK.lproj/Info-Remote-InfoPlist.strings"; sourceTree = "<group>"; };
 		F6DA2DA52AAFED5F0070DCD1 /* zh-HK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-HK"; path = "zh-HK.lproj/VMDisplayMetalViewInputAccessory.strings"; sourceTree = "<group>"; };
 		F6DA2DA62AAFED5F0070DCD1 /* zh-HK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-HK"; path = "zh-HK.lproj/VMDisplayWindow.strings"; sourceTree = "<group>"; };
 		F6DA2DA72AAFED5F0070DCD1 /* zh-HK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-HK"; path = "zh-HK.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
@@ -2713,7 +2711,6 @@
 				CE95877426D74C2A0086BDE8 /* iOS.entitlements */,
 				CE2D954F24AD4F980059923A /* Info.plist */,
 				CECF02572B70909900409FC0 /* Info-Remote.plist */,
-				F6056EF12BE642F500FAEED8 /* Info-Remote-InfoPlist.strings */,
 				FFB02A8A266CB09C006CD71A /* InfoPlist.strings */,
 				CEB5C1192B8C4CD4008AAE5C /* Info-RemotePlist.strings */,
 				CEC1B00A2BBB211C0088119D /* PrivacyInfo.xcprivacy */,
@@ -3399,7 +3396,6 @@
 				CEF7F6792AEEDCC400E34952 /* Icons in Resources */,
 				CEB5C1172B8C4CD4008AAE5C /* Info-RemotePlist.strings in Resources */,
 				CEF7F67B2AEEDCC400E34952 /* Localizable.strings in Resources */,
-				F6056EF32BE642F500FAEED8 /* Info-Remote-InfoPlist.strings in Resources */,
 				CEF7F67C2AEEDCC400E34952 /* qemu in Resources */,
 				CEF7F67D2AEEDCC400E34952 /* VMDisplayMetalViewInputAccessory.xib in Resources */,
 				CEF7F67E2AEEDCC400E34952 /* Localizable.stringsdict in Resources */,
@@ -4337,14 +4333,6 @@
 				037DAA202B0B92580061ACB3 /* it */,
 			);
 			name = Localizable.stringsdict;
-			sourceTree = "<group>";
-		};
-		F6056EF12BE642F500FAEED8 /* Info-Remote-InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				F6056EF22BE642F500FAEED8 /* zh-HK */,
-			);
-			name = "Info-Remote-InfoPlist.strings";
 			sourceTree = "<group>";
 		};
 		FF0307532A84E3B70049979B /* QEMULauncher-InfoPlist.strings */ = {
