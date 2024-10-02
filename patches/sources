@@ -48,4 +48,4 @@ VIRGLRENDERER_COMMIT="dc039d9ecd74fc671a85bfbe7c4e4bc552b7b855"
 
 # Decompiled Hypervisor for iOS
 HYPERVISOR_REPO="https://github.com/utmapp/Hypervisor.git"
-HYPERVISOR_COMMIT="bcec1a8b0cb3b07ecd0f81b33f26fa3048ffd307"
+HYPERVISOR_COMMIT="eaf6d74362a61b721f85a431131259c817f57505"
