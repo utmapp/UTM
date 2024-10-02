@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/utmapp/CocoaSpice.git",
       "state" : {
-        "branch" : "visionos",
-        "revision" : "9fd682e0f78c884036609d4a19db2cfb3ed50c33"
+        "branch" : "main",
+        "revision" : "409f78bc17943980e5920c83dc210bfd62f77a1a"
       }
     },
     {

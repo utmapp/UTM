@@ -5187,7 +5187,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/utmapp/CocoaSpice.git";
 			requirement = {
-				branch = visionos;
+				branch = main;
 				kind = branch;
 			};
 		};
