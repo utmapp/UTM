@@ -73,13 +73,11 @@ struct VMConfigQEMUView: View {
                     Toggle("Use Hypervisor", isOn: $config.hasHypervisor)
                         .help("Only available if host architecture matches the target. Otherwise, TCG emulation is used.")
                         .disabled(!system.architecture.hasHypervisorSupport)
-                    #if os(iOS) || os(visionOS)
                     if config.hasHypervisor {
                         Toggle("Use TSO", isOn: $config.hasTSO)
                             .help("Only available when Hypervisor is used on supported hardware. TSO speeds up Intel emulation in the guest at the cost of decreased performance in general.")
                             .disabled(!system.architecture.hasTSOSupport)
                     }
-                    #endif
                     Toggle("Use local time for base clock", isOn: $config.hasRTCLocalTime)
                         .help("If checked, use local time for RTC which is required for Windows. Otherwise, use UTC clock.")
                     Toggle("Force PS/2 controller", isOn: $config.hasPS2Controller)

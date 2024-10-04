@@ -452,7 +452,11 @@ extension QEMUArchitecture {
         #if os(iOS) || os(visionOS)
         return hasHypervisorSupport
         #else
-        return false
+        if #available(macOS 15, *) {
+            return true
+        } else {
+            return false
+        }
         #endif
     }
     
