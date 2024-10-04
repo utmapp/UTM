@@ -50,6 +50,10 @@ struct UTMAppleConfigurationGenericPlatform: Codable {
                 config.machineIdentifier = vzMachineIdentifier
             }
         }
+        if #available(macOS 15, *) {
+            // always enable nestedVirtualization when available
+            config.isNestedVirtualizationEnabled = VZGenericPlatformConfiguration.isNestedVirtualizationSupported
+        }
         return config
     }
 }
