@@ -92,6 +92,15 @@
             </parameter>
         </command>
         
+        <command name="export" code="coreexpo" description="Export a virtual machine to a specified location.">
+            <cocoa class="UTMScriptingExportCommand"/>
+            <access-group identifier="*"/>
+            <direct-parameter type="virtual machine" requires-access="r" description="The virtual machine to export."/>
+            <parameter name="to" code="efil" type="file" description="Location to export the VM to.">
+                <cocoa key="file"/>
+            </parameter>
+        </command>
+        
         <class name="virtual machine" code="UTMv" description="A virtual machine registered in UTM." plural="virtual machines">
           <cocoa class="UTMScriptingVirtualMachineImpl"/>
 
