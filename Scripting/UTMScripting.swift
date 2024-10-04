@@ -208,6 +208,7 @@ extension SBObject: UTMScriptingWindow {}
     @objc optional func stopBy(_ by: UTMScriptingStopMethod) // Shuts down a running virtual machine.
     @objc optional func delete() // Delete a virtual machine. All data will be deleted, there is no confirmation!
     @objc optional func duplicateWithProperties(_ withProperties: [AnyHashable : Any]!) // Copy an virtual machine and all its data.
+    @objc optional func exportTo(_ to: URL!) // Export a virtual machine to a specified location.
     @objc optional func openFileAt(_ at: String!, for for_: UTMScriptingOpenMode, updating: Bool) -> UTMScriptingGuestFile // Open a file on the guest. You must close the file when you are done to prevent leaking guest resources.
     @objc optional func executeAt(_ at: String!, withArguments: [String]!, withEnvironment: [String]!, usingInput: String!, base64Encoding: Bool, outputCapturing: Bool) -> UTMScriptingGuestProcess // Execute a command or script on the guest.
     @objc optional func queryIp() -> [Any] // Query the guest for all IP addresses on its network interfaces (excluding loopback).

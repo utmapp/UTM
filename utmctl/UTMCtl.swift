@@ -36,6 +36,7 @@ struct UTMCtl: ParsableCommand {
             IPAddress.self,
             Clone.self,
             Delete.self,
+            Export.self,
             USB.self
         ]
     )
@@ -518,6 +519,27 @@ extension UTMCtl {
         func run(with application: UTMScriptingApplication) throws {
             let vm = try virtualMachine(forIdentifier: identifer, in: application)
             vm.delete!()
+        }
+    }
+}
+
+extension UTMCtl {
+    struct Export: UTMAPICommand {
+        static var configuration =  CommandConfiguration(
+            abstract: "Export a virtual machine and all its data to a specified location."
+        )
+        
+        @OptionGroup var environment: EnvironmentOptions
+        
+        @OptionGroup var identifer: VMIdentifier
+        
+        @Option var path: String
+        
+        func run(with application: UTMScriptingApplication) throws {
+            let vm = try virtualMachine(forIdentifier: identifer, in: application)
+            // TODO: Make sure the URL is writable as required by data.export
+            let exportUrl = URL(fileURLWithPath: path)
+            vm.exportTo!(exportUrl)
         }
     }
 }

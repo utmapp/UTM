@@ -270,6 +270,7 @@
 		85EC516627CC8D10004A51DE /* VMConfigAdvancedNetworkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EC516327CC8C98004A51DE /* VMConfigAdvancedNetworkView.swift */; };
 		B329049C270FE136002707AC /* AltKit in Frameworks */ = {isa = PBXBuildFile; productRef = B329049B270FE136002707AC /* AltKit */; };
 		B3DDF57226E9BBA300CE47F0 /* AltKit in Frameworks */ = {isa = PBXBuildFile; productRef = B3DDF57126E9BBA300CE47F0 /* AltKit */; };
+		CD77BE422CAB51B40074ADD2 /* UTMScriptingExportCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD77BE412CAB519F0074ADD2 /* UTMScriptingExportCommand.swift */; };
 		CE020BA324AEDC7C00B44AB6 /* UTMData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE020BA224AEDC7C00B44AB6 /* UTMData.swift */; };
 		CE020BA424AEDC7C00B44AB6 /* UTMData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE020BA224AEDC7C00B44AB6 /* UTMData.swift */; };
 		CE020BA724AEDEF000B44AB6 /* Logging in Frameworks */ = {isa = PBXBuildFile; productRef = CE020BA624AEDEF000B44AB6 /* Logging */; };
@@ -1762,6 +1763,7 @@
 		C03453AF2709E35100AD51AD /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		C03453B02709E35200AD51AD /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		C8958B6D243634DA002D86B4 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/Localizable.strings; sourceTree = "<group>"; };
+		CD77BE412CAB519F0074ADD2 /* UTMScriptingExportCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMScriptingExportCommand.swift; sourceTree = "<group>"; };
 		CE020BA224AEDC7C00B44AB6 /* UTMData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMData.swift; sourceTree = "<group>"; };
 		CE020BAA24AEE00000B44AB6 /* UTMLoggingSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMLoggingSwift.swift; sourceTree = "<group>"; };
 		CE020BB524B14F8400B44AB6 /* UTMVirtualMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMVirtualMachine.swift; sourceTree = "<group>"; };
@@ -3006,6 +3008,7 @@
 				CE25125429C80CD4000790AB /* UTMScriptingCreateCommand.swift */,
 				CE25125029C806AF000790AB /* UTMScriptingDeleteCommand.swift */,
 				CE25125229C80A18000790AB /* UTMScriptingCloneCommand.swift */,
+				CD77BE412CAB519F0074ADD2 /* UTMScriptingExportCommand.swift */,
 			);
 			path = Scripting;
 			sourceTree = "<group>";
@@ -3811,6 +3814,7 @@
 				CEF01DB52B6724A300725A0F /* UTMSpiceVirtualMachine.swift in Sources */,
 				8432329A28C3084A00CFBC97 /* GlobalFileImporter.swift in Sources */,
 				CE19392826DCB094005CEC17 /* RAMSlider.swift in Sources */,
+				CD77BE422CAB51B40074ADD2 /* UTMScriptingExportCommand.swift in Sources */,
 				2C33B3AA2566C9B100A954A6 /* VMContextMenuModifier.swift in Sources */,
 				84BB993A2899E8D500DF28B2 /* VMHeadlessSessionState.swift in Sources */,
 				CE2D955A24AD4F980059923A /* VMToolbarModifier.swift in Sources */,
