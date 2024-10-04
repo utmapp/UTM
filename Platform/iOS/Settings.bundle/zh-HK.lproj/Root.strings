@@ -5,7 +5,7 @@
 "Auto save on background" = "於背景自動儲存";
 
 /* (No Comment) */
-"Auto save on low memory" = "在記憶體不足時自動儲存";
+"Auto save on low memory" = "於記憶體不足時自動儲存";
 
 /* (No Comment) */
 "Background" = "背景";
@@ -148,22 +148,22 @@
 // Additional Strings (unable to be extracted by Xcode)
 
 /* (No Comment) */
-"ABOUT" = "關於";
+"About" = "關於";
 
 /* (No Comment) */
 "Build" = "建立版號";
 
 /* (No Comment) */
-"CURSOR - DRAG SPEED" = "指標 - 拖放速度";
+"Cursor - Drag Speed" = "指標 - 拖放速度";
 
 /* (No Comment) */
-"CURSOR - SCROLL WHEEL" = "指標 - 捲動輪";
+"Cursor - Scroll Wheel" = "指標 - 捲動輪";
 
 /* (No Comment) */
 "Default" = "預設值";
 
 /* (No Comment) */
-"DEVICES" = "裝置";
+"Devices" = "裝置";
 
 /* (No Comment) */
 "Disable screen dimming when idle" = "閒置時停用變暗螢幕";
@@ -175,10 +175,10 @@
 "FPS Limit" = "FPS 限制";
 
 /* (No Comment) */
-"GRAPHICS" = "圖形";
+"Graphics" = "圖形";
 
 /* (No Comment) */
-"IDLE" = "閒置";
+"Idle" = "閒置";
 
 /* (No Comment) */
 "Invert Scroll" = "反轉捲動";
