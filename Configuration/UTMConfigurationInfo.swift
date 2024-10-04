@@ -21,6 +21,11 @@ struct UTMConfigurationInfo: Codable {
     /// VM name displayed to user.
     var name: String = NSLocalizedString("Virtual Machine", comment: "UTMConfigurationInfo")
     
+    #if os(macOS)
+    /// If true, starts the VM in full screen.
+    var isFullScreenStart: Bool = false
+    #endif
+    
     /// Path to the icon.
     var iconURL: URL?
     
@@ -39,6 +44,7 @@ struct UTMConfigurationInfo: Codable {
         case isIconCustom = "IconCustom"
         case notes = "Notes"
         case uuid = "UUID"
+        case isFullScreenStart = "IsFullScreenStart"
     }
     
     init() {
@@ -59,6 +65,9 @@ struct UTMConfigurationInfo: Codable {
         }
         notes = try values.decodeIfPresent(String.self, forKey: .notes)
         uuid = try values.decode(UUID.self, forKey: .uuid)
+        #if os(macOS)
+        isFullScreenStart = try values.decodeIfPresent(Bool.self, forKey: .isFullScreenStart) ?? false
+        #endif
     }
     
     func encode(to encoder: Encoder) throws {
@@ -75,6 +84,9 @@ struct UTMConfigurationInfo: Codable {
         }
         try container.encodeIfPresent(notes, forKey: .notes)
         try container.encode(uuid, forKey: .uuid)
+        #if os(macOS)
+        try container.encode(isFullScreenStart, forKey: .isFullScreenStart)
+        #endif
     }
     
     static func builtinIcon(named name: String) -> URL? {
