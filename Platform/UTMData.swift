@@ -670,6 +670,57 @@ struct AlertMessage: Identifiable {
         listAdd(vm: vm)
         listSelect(vm: vm)
     }
+    
+    /// Handles UTM file URLs similar to importUTM, with few differences
+    ///
+    /// Always creates new VM (no shortcuts)
+    /// Copies VM file with a unique name to default storage (to avoid duplicates)
+    /// Returns VM data Object (to access UUID)
+    /// - Parameter url: File URL to read from
+    func importNewUTM(from url: URL) async throws -> VMData {
+        guard url.isFileURL else {
+            throw UTMDataError.importFailed
+        }
+        let isScopedAccess = url.startAccessingSecurityScopedResource()
+        defer {
+            if isScopedAccess {
+                url.stopAccessingSecurityScopedResource()
+            }
+        }
+        
+        logger.info("importing: \(url)")
+        // attempt to turn temp URL to presistent bookmark early otherwise,
+        // when stopAccessingSecurityScopedResource() is called, we lose access
+        let bookmark = try url.persistentBookmarkData()
+        let url = try URL(resolvingPersistentBookmarkData: bookmark)
+        
+        // get unique filename, for every import we create a new VM
+        let newUrl = UTMData.newImage(from: url, to: documentsURL)
+        let fileName = newUrl.lastPathComponent
+        // create destination name (default storage + file name)
+        let dest =  documentsURL.appendingPathComponent(fileName, isDirectory: true)
+        
+        // check if VM is valid
+        guard let _ = try? VMData(url: url) else {
+            throw UTMDataError.importFailed
+        }
+        
+        // Copy file to documents
+        let vm: VMData?
+        logger.info("copying to Documents")
+        try fileManager.copyItem(at: url, to: dest)
+        vm = try VMData(url: dest)
+        
+        guard let vm = vm else {
+            throw UTMDataError.importParseFailed
+        }
+
+        // Add vm to the list
+        listAdd(vm: vm)
+        listSelect(vm: vm)
+        
+        return vm
+    }
 
     private func copyItemWithCopyfile(at srcURL: URL, to dstURL: URL) async throws {
         let totalSize = computeSize(recursiveFor: srcURL)

@@ -159,6 +159,7 @@ import ScriptingBridge
     @objc optional func print(_ x: Any!, withProperties: [AnyHashable : Any]!, printDialog: Bool) // Print a document.
     @objc optional func quitSaving(_ saving: UTMScriptingSaveOptions) // Quit the application.
     @objc optional func exists(_ x: Any!) -> Bool // Verify that an object exists.
+    @objc optional func importNew(_ new_: NSNumber!, from: URL!) -> SBObject // Import a new virtual machine from a file.
     @objc optional func virtualMachines() -> SBElementArray
     @objc optional var autoTerminate: Bool { get } // Auto terminate the application when all windows are closed?
     @objc optional func setAutoTerminate(_ autoTerminate: Bool) // Auto terminate the application when all windows are closed?
