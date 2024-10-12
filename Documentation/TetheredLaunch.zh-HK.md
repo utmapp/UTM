@@ -1,6 +1,6 @@
 # 不完全啟動
 
- 在iOS14中，Apple[修補][1]了我們用來使JIT工作的“把戲”。 因此，下一個最佳的解決方案所涉及的範圍更廣。 這只支援非越獄設備。 如果你越獄了，你不需要這樣做。
+ 在 iOS14 當中，Apple [修補][1]了我們用來使JIT工作的“把戲”。 因此，下一個最佳的解決方案所涉及的範圍更廣。這只支援非越獄設備。如果你越獄了，你不需要這樣做。
 
  ## 前條件
 
@@ -18,7 +18,7 @@
 
  ## 部署
 
- 要部署UTM，連接你的設備然後在終端中運行：
+ 如要部署 UTM，連接你的設備然後在終端中運行：
 
  ```sh
  ios-deploy --bundle /path/to/Payload/UTM.app
@@ -34,9 +34,9 @@
  ios-deploy --justlaunch --noinstall --bundle /path/to/Payload/UTM.app
  ```
 
- (提示：如果您打開Xcode並轉到Window->Devices and Simulators並找到您的設備，那麼您可以選中“Connect via network”（通過網路連接）以便在沒有USB連線的情況下部署/啟動。你只 需要解鎖設備並靠近你的電腦。)
+ (貼士：如你開啟 Xcode 並轉到 Window->Devices and Simulators 並找到您的設備，那麼您可以選中“Connect via network”（通過網路連接）以便在沒有USB連線的情況下部署/啟動。你只需要解鎖設備並靠近你的電腦。)
 
- ## 疑難解答
+ ## 疑難排解
 
  ### 信任問題
 
