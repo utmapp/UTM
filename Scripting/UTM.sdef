@@ -425,6 +425,11 @@
             description="List of serial configuration.">
             <type type="qemu serial configuration" list="yes"/>
           </property>
+          
+          <property name="qemu additional arguments" code="QeAd"
+            description="List of qemu arguments.">
+            <type type="qemu argument" list="yes"/>
+          </property>
         </record-type>
         
         <enumeration name="qemu directory share mode" code="QeSm" description="Method for sharing directory in QEMU.">
@@ -532,6 +537,14 @@
               
             <property name="port" code="PoRt" type="integer"
               description="The port number to listen on when the interface is a TCP server."/>
+        </record-type>
+        
+        <record-type name="qemu argument" code="QeAr" description="QEMU argument configuration.">
+          <property name="string" code="StAg" type="text"
+            description="The QEMU argument as a string."/>
+            
+          <property name="file urls" code="FlUr" type="file" list="yes"
+            description="Optional URLs associated with this argument."/>
         </record-type>
         
         <record-type name="apple configuration" code="ApCf" description="Apple virtual machine configuration.">

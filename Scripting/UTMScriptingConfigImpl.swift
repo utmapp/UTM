@@ -107,6 +107,7 @@ extension UTMScriptingConfigImpl {
             "drives": config.drives.map({ serializeQemuDriveExisting($0) }),
             "networkInterfaces": config.networks.enumerated().map({ serializeQemuNetwork($1, index: $0) }),
             "serialPorts": config.serials.enumerated().map({ serializeQemuSerial($1, index: $0) }),
+            "qemuAdditionalArguments": config.qemu.additionalArguments.map({ serializeQemuAdditionalArgument($0)}),
         ]
     }
     
@@ -186,6 +187,19 @@ extension UTMScriptingConfigImpl {
             "interface": qemuSerialInterface(from: config.mode).rawValue,
             "port": config.tcpPort ?? 0,
         ]
+    }
+    
+    private func serializeQemuAdditionalArgument(_ argument: QEMUArgument) -> [AnyHashable: Any] {
+        var serializedArgument: [AnyHashable: Any] = [
+            "string": argument.string
+        ]
+        
+        // Only add fileUrls if it is not nil and contains URLs
+        if let fileUrls = argument.fileUrls, !fileUrls.isEmpty {
+            serializedArgument["fileUrls"] = fileUrls.map({ $0 as AnyHashable })
+        }
+        
+        return serializedArgument
     }
     
     private func serializeAppleConfiguration(_ config: UTMAppleConfiguration) -> [AnyHashable : Any] {
@@ -337,6 +351,9 @@ extension UTMScriptingConfigImpl {
         }
         if let serialPorts = record["serialPorts"] as? [[AnyHashable : Any]] {
             try updateQemuSerials(from: serialPorts)
+        }
+        if let qemuAdditionalArguments = record["qemuAdditionalArguments"] as? [[AnyHashable: Any]] {
+            try updateQemuAdditionalArguments(from: qemuAdditionalArguments)
         }
     }
     
@@ -499,6 +516,24 @@ extension UTMScriptingConfigImpl {
             serial.tcpPort = port
         }
     }
+    
+    private func updateQemuAdditionalArguments(from records: [[AnyHashable: Any]]) throws {
+        let config = config as! UTMQemuConfiguration
+        let additionalArguments = records.compactMap { record -> QEMUArgument? in
+            guard let argumentString = record["string"] as? String else { return nil }
+            var argument = QEMUArgument(argumentString)
+            // Qemu Additional Arguments in UI, only takes strings
+            // So, fileUrls of arguments will never be used
+            // This is here if they support in future
+            if let fileUrls = record["fileUrls"] as? [URL] {
+                argument.fileUrls = fileUrls
+            }
+            return argument
+        }
+        // Update entire additional arguments with new one.
+        config.qemu.additionalArguments = additionalArguments
+    }
+        
     
     private func updateAppleConfiguration(from record: [AnyHashable : Any]) throws {
         let config = config as! UTMAppleConfiguration
