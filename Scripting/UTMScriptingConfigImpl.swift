@@ -105,6 +105,7 @@ extension UTMScriptingConfigImpl {
             "uefi": config.qemu.hasUefiBoot,
             "directoryShareMode": qemuDirectoryShareMode(from: config.sharing.directoryShareMode).rawValue,
             "drives": config.drives.map({ serializeQemuDriveExisting($0) }),
+            "displays": config.displays.enumerated().map({ serializeQemuDisplay($1, index: $0) }),
             "networkInterfaces": config.networks.enumerated().map({ serializeQemuNetwork($1, index: $0) }),
             "serialPorts": config.serials.enumerated().map({ serializeQemuSerial($1, index: $0) }),
         ]
@@ -151,6 +152,15 @@ extension UTMScriptingConfigImpl {
             "address": config.macAddress,
             "hostInterface": config.bridgeInterface ?? "",
             "portForwards": config.portForward.map({ serializeQemuPortForward($0) }),
+        ]
+    }
+    
+    private func serializeQemuDisplay(_ display: UTMQemuConfigurationDisplay, index: Int) -> [AnyHashable : Any] {
+        [
+            "index": index,
+            "hardware": display.hardware,
+            "nativeResolution": display.isNativeResolution,
+            "dynamicResolution": display.isDynamicResolution,
         ]
     }
     
@@ -332,6 +342,9 @@ extension UTMScriptingConfigImpl {
         if let drives = record["drives"] as? [[AnyHashable : Any]] {
             try updateQemuDrives(from: drives)
         }
+        if let displays = record["displays"] as? [[AnyHashable : Any]] {
+            try updateQemuDisplays(from: displays)
+        }
         if let networkInterfaces = record["networkInterfaces"] as? [[AnyHashable : Any]] {
             try updateQemuNetworks(from: networkInterfaces)
         }
@@ -389,6 +402,32 @@ extension UTMScriptingConfigImpl {
             newDrive.isRawImage = raw
         }
         return newDrive
+    }
+    
+    private func updateQemuDisplays(from records: [[AnyHashable : Any]]) throws {
+        let config = config as! UTMQemuConfiguration
+        try updateIdentifiedElements(&config.displays, with: records, onExisting: updateQemuExistingDisplay, onNew: unserializeQemuDisplayNew)
+    }
+    
+    private func updateQemuExistingDisplay(_ display: inout UTMQemuConfigurationDisplay, from record: [AnyHashable : Any]) throws {
+        if let nativeResolution = record["nativeResolution"] as? Bool {
+            display.isNativeResolution = nativeResolution
+        }
+        if let dynamicResolution = record["dynamicResolution"] as? Bool {
+            display.isDynamicResolution = dynamicResolution
+        }
+    }
+    
+    private func unserializeQemuDisplayNew(from record: [AnyHashable : Any]) throws -> UTMQemuConfigurationDisplay {
+        let config = config as! UTMQemuConfiguration
+        var newDisplay = UTMQemuConfigurationDisplay(forArchitecture: config.system.architecture, target: config.system.target)!
+        if let nativeResolution = record["nativeResolution"] as? Bool {
+            newDisplay.isNativeResolution = nativeResolution
+        }
+        if let dynamicResolution = record["dynamicResolution"] as? Bool {
+            newDisplay.isDynamicResolution = dynamicResolution
+        }
+        return newDisplay
     }
     
     private func updateQemuNetworks(from records: [[AnyHashable : Any]]) throws {
@@ -520,6 +559,9 @@ extension UTMScriptingConfigImpl {
         if let drives = record["drives"] as? [[AnyHashable : Any]] {
             try updateAppleDrives(from: drives)
         }
+        if let displays = record["displays"] as? [[AnyHashable : Any]] {
+            try updateAppleDisplays(from: displays)
+        }
         if let networkInterfaces = record["networkInterfaces"] as? [[AnyHashable : Any]] {
             try updateAppleNetworks(from: networkInterfaces)
         }
@@ -563,6 +605,38 @@ extension UTMScriptingConfigImpl {
             newDrive = UTMAppleConfigurationDrive(existingURL: record["source"] as? URL, isExternal: removable)
         }
         return newDrive
+    }
+
+    private func updateAppleDisplays(from records: [[AnyHashable : Any]]) throws {
+        let config = config as! UTMAppleConfiguration
+        try updateIdentifiedElements(&config.displays, with: records, onExisting: updateAppleExistingDisplay, onNew: unserializeAppleDisplayNew)
+    }
+    
+    private func updateAppleExistingDisplay(_ display: inout UTMAppleConfigurationDisplay, from record: [AnyHashable : Any]) throws {
+        if let pixelsPerInch = record["pixelsPerInch"] as? Int {
+            display.pixelsPerInch = pixelsPerInch
+        }
+        if let widthInPixels = record["widthInPixels"] as? Int {
+            display.widthInPixels = widthInPixels
+        }
+        if let heightInPixels = record["heightInPixels"] as? Int {
+            display.heightInPixels = heightInPixels
+        }
+    }
+    
+    private func unserializeAppleDisplayNew(from record: [AnyHashable : Any]) throws -> UTMAppleConfigurationDisplay {
+        var newDisplay = UTMAppleConfigurationDisplay()
+        if let pixelsPerInch = record["pixelsPerInch"] as? Int {
+            newDisplay.pixelsPerInch = pixelsPerInch
+        }
+        if let widthInPixels = record["widthInPixels"] as? Int {
+            newDisplay.widthInPixels = widthInPixels
+        }
+        if let heightInPixels = record["heightInPixels"] as? Int {
+            newDisplay.heightInPixels = heightInPixels
+        }
+        
+        return newDisplay
     }
     
     private func updateAppleNetworks(from records: [[AnyHashable : Any]]) throws {
