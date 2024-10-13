@@ -191,7 +191,7 @@ extension UTMScriptingConfigImpl {
     
     private func serializeQemuAdditionalArgument(_ argument: QEMUArgument) -> [AnyHashable: Any] {
         var serializedArgument: [AnyHashable: Any] = [
-            "string": argument.string
+            "argumentString": argument.string
         ]
         
         // Only add fileUrls if it is not nil and contains URLs
@@ -520,7 +520,7 @@ extension UTMScriptingConfigImpl {
     private func updateQemuAdditionalArguments(from records: [[AnyHashable: Any]]) throws {
         let config = config as! UTMQemuConfiguration
         let additionalArguments = records.compactMap { record -> QEMUArgument? in
-            guard let argumentString = record["string"] as? String else { return nil }
+            guard let argumentString = record["argumentString"] as? String else { return nil }
             var argument = QEMUArgument(argumentString)
             // Qemu Additional Arguments in UI, only takes strings
             // So, fileUrls of arguments will never be used
