@@ -28,13 +28,13 @@ ios-deploy --bundle /path/to/Payload/UTM.app
 
 ## 啟動
 
-如你每次希望啟動 UTM 時，都需要執行以下內容。（在 iOS 14 當中，不應該透過主畫面啟動 UTM，否則它將無法正常工作！）
+如你每次希望啟動 UTM，都需要執行以下內容。（在 iOS 14 當中，不應該透過主畫面啟動 UTM，否則它將無法正常工作！）
 
 ```sh
 ios-deploy --justlaunch --noinstall --bundle /path/to/Payload/UTM.app
 ```
 
-（貼士：如你要開啟 Xcode 並轉到 Window > Devices and Simulators 找到你的裝置，則你可以選中「Connect via network」以便在無 USB 連線的條件下部署/啟動。你只需要解鎖裝置並令它靠近你的電腦。）
+（貼士：如你要開啟 Xcode 並轉到 Window > Devices and Simulators 找到你的裝置，則你可以選中「Connect via network」以便於在無 USB 連線的條件下部署/啟動。你只需要解鎖裝置並令它靠近你的電腦。）
 
 ## 疑難排解
 
@@ -42,9 +42,9 @@ ios-deploy --justlaunch --noinstall --bundle /path/to/Payload/UTM.app
 
 如你看到訊息：`The operation couldn't be completed. Unable to launch xxx because it has an invalid code signature, inadequate entitlements or its profile has not been explicitly trusted by the user.`，你需要開啟設定 > 一般 > 裝置管理，選擇「開發者描述檔」，然後選擇「信任」。
 
-### 註冊捆綁標識符失敗
+### 註冊套裝識別碼失敗
 
-Xcode 可能在嘗試創建簽名配置文件時顯示此消息，你需要更改綁定標識符，然後再試。
+Xcode 可能在嘗試創建簽名配置文件時顯示此消息，你需要更改綁定識別碼，然後再試。
 
 [1]: https://github.com/utmapp/UTM/issues/397
 [2]: https://brew.sh
