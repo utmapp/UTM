@@ -42,7 +42,7 @@ ios-deploy --justlaunch --noinstall --bundle /path/to/Payload/UTM.app
 
 如你看到訊息：`The operation couldn't be completed. Unable to launch xxx because it has an invalid code signature, inadequate entitlements or its profile has not been explicitly trusted by the user.`，你需要開啟設定 > 一般 > 裝置管理，選擇「開發者描述檔」，然後選擇「信任」。
 
-### 註冊套裝識別碼失敗
+### 註冊套裝識別碼失敗（Failed to register bundle identifier）
 
 Xcode 可能在嘗試創建簽名配置文件時顯示此消息，你需要更改綁定識別碼，然後再試。
 
