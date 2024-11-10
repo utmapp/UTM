@@ -384,10 +384,10 @@
 "Do you want to force stop this VM and lose all unsaved data?" = "你要強行停止這個虛擬機器並遺失所有未儲存的資料嗎？";
 
 /* No comment provided by engineer. */
-"Do you want to forget all clients and generate a new server identity? Any clients that previously paired with this server will be instructed to manually unpair with this server before they can connect again." = "你要忘記所有客戶端並生成新的伺服器身分嗎？之前與這個伺服器配對的任何客戶端將被指示於再次連接之前手動取消與這個伺服器的配對。";
+"Do you want to forget all clients and generate a new server identity? Any clients that previously paired with this server will be instructed to manually unpair with this server before they can connect again." = "你要忘記所有客户端並生成新的伺服器身分嗎？之前與這個伺服器配對的任何客户端將被指示於再次連接之前手動取消與這個伺服器的配對。";
 
 /* No comment provided by engineer. */
-"Do you want to forget the selected client(s)?" = "你要忘記已選擇的客戶端嗎？";
+"Do you want to forget the selected client(s)?" = "你要忘記已選擇的客户端嗎？";
 
 /* No comment provided by engineer. */
 "Do you want to move this VM to another location? This will copy the data to the new location, delete the data from the original location, and then create a shortcut." = "你要將這個虛擬機器移動至其他位置嗎？這將會複製資料至新位置，刪除原先位置資料，並製作捷徑。";
@@ -517,7 +517,7 @@
 "Failed to save VM snapshot. Usually this means at least one device does not support snapshots. %@" = "無法儲存虛擬機器快照。通常這意味著至少有一個裝置不支援快照。%@";
 
 /* UTMSpiceIO */
-"Failed to start SPICE client." = "無法啟動 SPICE 客戶端。";
+"Failed to start SPICE client." = "無法啟動 SPICE 客户端。";
 
 /* No comment provided by engineer. */
 "Faster, but can only run the native CPU architecture." = "較快，但只限執行原生 CPU 架構。";
@@ -566,7 +566,7 @@
 "GiB" = "GiB";
 
 /* No comment provided by engineer. */
-"Guest drivers are required for 3D acceleration." = "需要客戶端驅動程式才能使用 3D 加速。";
+"Guest drivers are required for 3D acceleration." = "需要客户端驅動程式才能使用 3D 加速。";
 
 /* Configuration boot device */
 "Hard Disk" = "硬碟";
@@ -623,7 +623,7 @@
 "Information" = "訊息";
 
 /* VMDisplayWindowController */
-"Install Windows Guest Tools…" = "安裝 Windows 客戶端工具⋯";
+"Install Windows Guest Tools…" = "安裝 Windows 客户端工具⋯";
 
 /* VMDisplayAppleWindowController */
 "Installation: %@" = "安裝：%@";
@@ -659,7 +659,7 @@
 "IP Configuration" = "IP 設定";
 
 /* No comment provided by engineer. */
-"Isolate Guest from Host" = "從主機隔離客戶端";
+"Isolate Guest from Host" = "從主機隔離客户端";
 
 /* UTMQemuConstants */
 "Italic" = "斜體";
@@ -716,7 +716,7 @@
 "macOS" = "macOS";
 
 /* VMWizardOSMacView */
-"macOS guests are only supported on ARM64 devices." = "macOS 客戶端只限支援 ARM64 裝置。";
+"macOS guests are only supported on ARM64 devices." = "macOS 客户端只限支援 ARM64 裝置。";
 
 /* VMWizardState */
 "macOS is not supported with QEMU." = "macOS 不支援 QEMU。";
@@ -1063,7 +1063,7 @@
 "Selected:" = "已選擇：";
 
 /* VMDisplayWindowController */
-"Sends power down request to the guest. This simulates pressing the power button on a PC." = "向客戶端發送關閉電源請求。這個操作仿真了按一下 PC 上的電源按鈕。";
+"Sends power down request to the guest. This simulates pressing the power button on a PC." = "向客户端發送關閉電源請求。這個操作仿真了按一下 PC 上的電源按鈕。";
 
 /* VMDisplayAppleWindowController
    VMDisplayQemuDisplayController */
@@ -1187,7 +1187,7 @@
 "TCP" = "TCP";
 
 /* UTMQemuConstants */
-"TCP Client Connection" = "TCP 客戶端連線";
+"TCP Client Connection" = "TCP 客户端連線";
 
 /* UTMQemuConstants */
 "TCP Server Connection" = "TCP 伺服器連線";
@@ -1208,7 +1208,7 @@
 "The backend for this configuration is not supported." = "不支援這個設定的後端。";
 
 /* UTMRemoteServer */
-"The client interface version does not match the server." = "客戶端介面版本與伺服器不匹配。";
+"The client interface version does not match the server." = "客户端介面版本與伺服器不匹配。";
 
 /* UTMScriptingUSBDeviceImpl */
 "The device cannot be found." = "無法找到這個裝置。";
@@ -1220,13 +1220,13 @@
 "The drive '%@' already exists and cannot be created." = "磁碟「%@」已存在，無法製作。";
 
 /* UTMDownloadSupportToolsTaskError */
-"The guest support tools have already been mounted." = "這個客戶端支援工具被裝載。";
+"The guest support tools have already been mounted." = "這個客户端支援工具被裝載。";
 
 /* UTMRemoteClient */
 "The host fingerprint does not match the saved value. This means that UTM Server was reset, a different host is using the same name, or an attacker is pretending to be the host. For your protection, you need to delete this saved host to continue." = "主機指紋與儲存值不匹配。這意味著 UTM 伺服器被重設，或不同的主機使用相同的名稱，或黑客正在偽裝成主機。為保護起見，你需要刪除這個儲存的主機以繼續。";
 
 /* UTMAppleConfiguration */
-"The host operating system needs to be updated to support one or more features requested by the guest." = "需要更新主機的作業系統以支援客戶端請求的一個或多個功能。";
+"The host operating system needs to be updated to support one or more features requested by the guest." = "需要更新主機的作業系統以支援客户端請求的一個或多個功能。";
 
 /* UTMAppleVirtualMachine */
 "The operating system cannot be installed on this machine." = "無法在這個電腦上安裝這個作業系統。";
@@ -1235,16 +1235,16 @@
 "The operation is not available." = "這個操作不可用。";
 
 /* UTMScriptingVirtualMachineImpl */
-"The QEMU guest agent is not running or not installed on the guest." = "QEMU 客戶端代理程式未執行或未在客戶端上安裝。";
+"The QEMU guest agent is not running or not installed on the guest." = "QEMU 客户端代理程式未執行或未在客户端上安裝。";
 
 /* No comment provided by engineer. */
 "The selected architecture is unsupported in this version of UTM." = "這個版本的 UTM 不支援所選擇的架構。";
 
 /* VMWizardState */
-"The selected boot image contains the word '%@' but the guest architecture is '%@'. Please ensure you have selected an image that is compatible with '%@'." = "選擇的啟動映像檔包含單字「%1$@」，但客戶端架構為「%2$@」。確保你選擇了與「%3$@」架構相容的映像檔。";
+"The selected boot image contains the word '%@' but the guest architecture is '%@'. Please ensure you have selected an image that is compatible with '%@'." = "選擇的啟動映像檔包含單字「%1$@」，但客户端架構為「%2$@」。確保你選擇了與「%3$@」架構相容的映像檔。";
 
 /* UTMRemoteClient */
-"The server interface version does not match the client." = "伺服器介面版本與客戶端不匹配。";
+"The server interface version does not match the client." = "伺服器介面版本與客户端不匹配。";
 
 /* No comment provided by engineer. */
 "The target does not support hardware emulated serial connections." = "目標平台不支援硬件仿真序列連線。";
@@ -1301,7 +1301,7 @@
 "This is not a valid Apple Virtualization configuration." = "並非有效的 Apple 虛擬化設定。";
 
 /* VMDisplayWindowController */
-"This may corrupt the VM and any unsaved changes will be lost. To quit safely, shut down from the guest." = "這可能會損毀虛擬機器，任何未儲存的變更都將遺失。如要安全退出，請從客戶端關機。";
+"This may corrupt the VM and any unsaved changes will be lost. To quit safely, shut down from the guest." = "這可能會損毀虛擬機器，任何未儲存的變更都將遺失。如要安全退出，請從客户端關機。";
 
 /* No comment provided by engineer. */
 "This operating system is unsupported on your machine." = "你的電腦不支援這個作業系統。";
@@ -1325,7 +1325,7 @@
 "This virtual machine is currently unavailable, make sure it is not open in another session." = "現時無法使用這個虛擬機器，確保它沒有在另一個會話當中開啟。";
 
 /* VMData */
-"This VM is not available or is configured for a backend that does not support remote clients." = "這個虛擬機器無法使用，或是被設定為不支援遠端客戶端的後端。";
+"This VM is not available or is configured for a backend that does not support remote clients." = "這個虛擬機器無法使用，或是被設定為不支援遠端客户端的後端。";
 
 /* No comment provided by engineer. */
 "This VM is unavailable." = "這個虛擬機器無法使用。";
@@ -1337,7 +1337,7 @@
 "Timed out trying to connect." = "嘗試連接超時。";
 
 /* VMDisplayAppleWindowController */
-"To access the shared directory, the guest OS must have Virtiofs drivers installed. You can then run `sudo mount -t virtiofs share /path/to/share` to mount to the share path." = "要取用分享目錄，客戶端作業系統必須安裝 VirtioFS 驅動程式。然後，你可以執行「sudo mount -t virtiofs share /path/to/share」以裝載至分享路徑。";
+"To access the shared directory, the guest OS must have Virtiofs drivers installed. You can then run `sudo mount -t virtiofs share /path/to/share` to mount to the share path." = "要取用分享目錄，客户端作業系統必須安裝 VirtioFS 驅動程式。然後，你可以執行「sudo mount -t virtiofs share /path/to/share」以裝載至分享路徑。";
 
 /* VMMetalView */
 "To capture input or to release the capture, press Command and Option at the same time." = "要擷取或釋放輸入，請同時按一下 Command + Option。";
@@ -1406,7 +1406,7 @@
 "Use NVMe Interface" = "使用 NVMe 磁碟介面";
 
 /* Welcome view */
-"User Guide" = "用戶指南";
+"User Guide" = "用户指南";
 
 /* UTMScriptingAppDelegate
    UTMScriptingUSBDeviceImpl */
@@ -1453,7 +1453,7 @@
 "When the toolbar is hidden, the icon will disappear after a few seconds. To show the icon again, tap anywhere on the screen." = "當工具列隱藏時，圖示將會在幾秒鐘之後消失。如要再次顯示圖示，請在螢幕上的任意位置點一下。";
 
 /* UTMDownloadSupportToolsTask */
-"Windows Guest Support Tools" = "Windows 客戶端支援工具";
+"Windows Guest Support Tools" = "Windows 客户端支援工具";
 
 /* VMQemuDisplayMetalWindowController */
 "Would you like to connect '%@' to this virtual machine?" = "你要連接「%@」至這個虛擬機器嗎？";
@@ -1516,13 +1516,13 @@
 "Advanced. If checked, a raw disk image is used. Raw disk image does not support snapshots and will not dynamically expand in size." = "進階選項。如選擇，將會使用 Raw 磁碟映像。Raw 磁碟映像不支援快照，亦不會動態擴充套件大小。";
 
 /* No comment provided by engineer. */
-"Allow access from external clients" = "允許外部客戶端訪問";
+"Allow access from external clients" = "允許外部客户端訪問";
 
 /* No comment provided by engineer. */
 "Allow Remote Connection" = "允許遠端連線";
 
 /* No comment provided by engineer. */
-"Allows passing through additional input from trackpads. Only supported on macOS 13+ guests." = "允許透過觸控板額外輸入。只限支援 macOS 13+ 客戶端。";
+"Allows passing through additional input from trackpads. Only supported on macOS 13+ guests." = "允許透過觸控板額外輸入。只限支援 macOS 13+ 客户端。";
 
 /* No comment provided by engineer. */
 "Any" = "任意";
@@ -1699,10 +1699,10 @@
 "Duplicate this VM along with all its data." = "複製這個虛擬機器及其所有資料。";
 
 /* No comment provided by engineer. */
-"Download and mount the guest support package for Windows. This is required for some features including dynamic resolution and clipboard sharing." = "下載並裝載 Windows 的客戶端支援套件。這對於一些功能為必需，當中包括動態解像度與剪貼板分享。";
+"Download and mount the guest support package for Windows. This is required for some features including dynamic resolution and clipboard sharing." = "下載並裝載 Windows 的客户端支援套件。這對於一些功能為必需，當中包括動態解像度與剪貼板分享。";
 
 /* No comment provided by engineer. */
-"Download and mount the guest tools for Windows." = "下載並裝載 Windows 的客戶端工具。";
+"Download and mount the guest tools for Windows." = "下載並裝載 Windows 的客户端工具。";
 
 /* No comment provided by engineer. */
 "Download Windows 11 for ARM64 Preview VHDX" = "下載 Windows 11 ARM64 Preview VHDX 映像檔";
@@ -1807,19 +1807,19 @@
 "GPU Acceleration Supported" = "支援 GPU 加速";
 
 /* No comment provided by engineer. */
-"Guest Address" = "客戶端位址";
+"Guest Address" = "客户端位址";
 
 /* No comment provided by engineer. */
-"Guest Network" = "客戶端網絡";
+"Guest Network" = "客户端網絡";
 
 /* No comment provided by engineer. */
-"Guest Network (IPv6)" = "客戶端網絡 (IPv6)";
+"Guest Network (IPv6)" = "客户端網絡 (IPv6)";
 
 /* No comment provided by engineer. */
-"Guest Port" = "客戶端埠";
+"Guest Port" = "客户端埠";
 
 /* No comment provided by engineer. */
-"Hardware interface on the guest used to mount this image. Different operating systems support different interfaces. The default will be the most common interface." = "用作裝載這個映像的客戶端硬體介面。不同的作業系統支援不同的介面。預設值將會設定為最常見的介面。";
+"Hardware interface on the guest used to mount this image. Different operating systems support different interfaces. The default will be the most common interface." = "用作裝載這個映像的客户端硬體介面。不同的作業系統支援不同的介面。預設值將會設定為最常見的介面。";
 
 /* No comment provided by engineer. */
 "Hardware OpenGL Acceleration" = "硬體 OpenGL 加速";
@@ -1859,13 +1859,13 @@
 
 /* VMConfigAppleDriveDetailsView
  VMConfigAppleDriveCreateView*/
-"If checked, use NVMe instead of virtio as the disk interface, available on macOS 14+ for Linux guests only. This interface is slower but less likely to encounter filesystem errors." = "如果勾選，將使用 NVMe 而非 virtio 作為磁碟介面，只限在 macOS 14+ 中適用 Linux 客戶機器。這個介面的速度較慢，但較不容易遇到檔案系統錯誤。";
+"If checked, use NVMe instead of virtio as the disk interface, available on macOS 14+ for Linux guests only. This interface is slower but less likely to encounter filesystem errors." = "如果勾選，將使用 NVMe 而非 virtio 作為磁碟介面，只限在 macOS 14+ 中適用 Linux 客户機器。這個介面的速度較慢，但較不容易遇到檔案系統錯誤。";
 
 /* No comment provided by engineer. */
 "If disabled, the default combination Control+Option (⌃+⌥) will be used." = "如停用，將會使用預設組合鍵 Control + Option (⌃ + ⌥)。";
 
 /* No comment provided by engineer. */
-"If enabled, a virtiofs share tagged 'rosetta' will be available on the Linux guest for installing Rosetta for emulating x86_64 on ARM64." = "如啟用，標記為「rosetta」的 virtiofs 分享將會在 Linux 客戶端上可用，用作安裝 Rosetta，可以在 arm64 上仿真 x86_64。";
+"If enabled, a virtiofs share tagged 'rosetta' will be available on the Linux guest for installing Rosetta for emulating x86_64 on ARM64." = "如啟用，標記為「rosetta」的 virtiofs 分享將會在 Linux 客户端上可用，用作安裝 Rosetta，可以在 arm64 上仿真 x86_64。";
 
 /* No comment provided by engineer. */
 "If enabled, any existing screenshot will be deleted the next time the VM is started." = "如啟用，下次啟動虛擬機器時，任何現有的螢幕截圖將會被刪除。";
@@ -1880,7 +1880,7 @@
 "If enabled, input capture will toggle automatically when the VM's window is focused." = "如啟用，在虛擬機器聚焦視窗時，將自動切換輸入擷取。";
 
 /* No comment provided by engineer. */
-"If enabled, num lock will always be on to the guest. Note this may make your keyboard's num lock indicator out of sync." = "如啟用，Num Lock 將會始終對客戶端開啟。請緊記，這可能會令鍵盤的 Num Lock 指示器不同步。";
+"If enabled, num lock will always be on to the guest. Note this may make your keyboard's num lock indicator out of sync." = "如啟用，Num Lock 將會始終對客户端開啟。請緊記，這可能會令鍵盤的 Num Lock 指示器不同步。";
 
 /* No comment provided by engineer. */
 "If enabled, Option will be mapped to the Meta key which can be useful for emacs. Otherwise, option will work as the system intended (such as for entering international text)." = "如啟用，Option 鍵將會對應至 Meta 鍵，這對於 Emacs 很有用。否則，Option 鍵將會以系統預設工作 (例如輸入國際文字)。";
@@ -2015,13 +2015,13 @@
 "Only available on macOS virtual machines." = "只限 macOS 虛擬機器可用。";
 
 /* No comment provided by engineer. */
-"Only available when Hypervisor is used on supported hardware. TSO speeds up Intel emulation in the guest at the cost of decreased performance in general." = "只限在受支援的硬體上使用 Hypervisor 時可用。TSO 提升了客戶端的 Intel 仿真速度，但以總體的效能降低為代價。";
+"Only available when Hypervisor is used on supported hardware. TSO speeds up Intel emulation in the guest at the cost of decreased performance in general." = "只限在受支援的硬體上使用 Hypervisor 時可用。TSO 提升了客户端的 Intel 仿真速度，但以總體的效能降低為代價。";
 
 /* No comment provided by engineer. */
 "Open VM Settings" = "開啟虛擬機器設定";
 
 /* No comment provided by engineer. */
-"Optionally select a directory to make accessible inside the VM. Note that support for shared directories varies by the guest operating system and may require additional guest drivers to be installed. See UTM support pages for more details." = "(可選) 選擇一個目錄，可以在虛擬機器當中取用。請緊記，分享目錄的支援視乎客戶端作業系統而定，可能需要安裝額外的客戶端驅動程式。有關更多詳細訊息，請見 UTM 支援頁面。";
+"Optionally select a directory to make accessible inside the VM. Note that support for shared directories varies by the guest operating system and may require additional guest drivers to be installed. See UTM support pages for more details." = "(可選) 選擇一個目錄，可以在虛擬機器當中取用。請緊記，分享目錄的支援視乎客户端作業系統而定，可能需要安裝額外的客户端驅動程式。有關更多詳細訊息，請見 UTM 支援頁面。";
 
 /* No comment provided by engineer. */
 "Options here only apply on next boot and are not saved." = "這裡的選項只限下次啟動時生效，並且不會儲存。";
@@ -2084,7 +2084,7 @@
 "Requires restarting UTM to take affect." = "需要重新開啟 UTM 以生效。";
 
 /* No comment provided by engineer. */
-"Requires SPICE guest agent tools to be installed." = "需要安裝 SPICE 客戶端代理程式工具。";
+"Requires SPICE guest agent tools to be installed." = "需要安裝 SPICE 客户端代理程式工具。";
 
 /* No comment provided by engineer. */
 "Reset UEFI Variables" = "重設 UEFI 變數";
@@ -2186,7 +2186,7 @@
 "Should be off for older operating systems such as Windows 7 or lower." = "對於較舊的作業系統應關閉，例如 Windows 7 或更低版本。";
 
 /* No comment provided by engineer. */
-"Should be on always unless the guest cannot boot because of this." = "除非客戶端因為這個設定而無法啟動，否則應始終開啟。";
+"Should be on always unless the guest cannot boot because of this." = "除非客户端因為這個設定而無法啟動，否則應始終開啟。";
 
 /* No comment provided by engineer. */
 "Show all devices…" = "顯示所有裝置⋯";
@@ -2276,7 +2276,7 @@
 "TPM 2.0 Device" = "TPM 2.0 裝置";
 
 /* No comment provided by engineer. */
-"TPM can be used to protect secrets in the guest operating system. Note that the host will always be able to read these secrets and therefore no expectation of physical security is provided." = "TPM 可以用來保護客戶端作業系統中的私密資料。請緊記，主機將始終可以讀取這些私密資料，所以無法提供預期的物理保安性。";
+"TPM can be used to protect secrets in the guest operating system. Note that the host will always be able to read these secrets and therefore no expectation of physical security is provided." = "TPM 可以用來保護客户端作業系統中的私密資料。請緊記，主機將始終可以讀取這些私密資料，所以無法提供預期的物理保安性。";
 
 /* UTMAppleConfigurationDevices */
 "Trackpad" = "觸控板";
