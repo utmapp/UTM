@@ -644,7 +644,7 @@ import Virtualization // for getting network interfaces
             f()
         } else if drive.interface == .scsi {
             var bus = "scsi"
-            if system.architecture != .sparc && system.architecture != .sparc64 {
+            if system.architecture != .sparc && system.architecture != .sparc64 && system.architecture != .m68k {
                 bus = "scsi0"
                 if busindex == 0 {
                     f("-device")
