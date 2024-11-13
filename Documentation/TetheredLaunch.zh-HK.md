@@ -1,6 +1,6 @@
 # 捆綁式啟動
 
-在 iOS 14 當中，Apple [修複][1]了我們之前令 JIT 工作的“蠱惑招”。因此，下一個最佳的變通辦法涉及更多。這只限用於未越獄的裝置。如你已經越獄，就無需這樣做。
+在 iOS 14 當中，Apple [修複][1]了我們之前令 JIT 工作的“蠱惑招”。因此，下一個最佳的變通方法涉及更多。這只限用於未越獄的裝置。如你已經越獄，就無需這樣做。
 
 ## 先決條件
 
@@ -14,7 +14,7 @@
 
 安裝並依照 [iOS App Signer][4] 的說明執行操作。確保你的簽署證書與配置檔案匹配。選擇 UTM.ipa 發行版本作為輸入檔案，然後按一下「開始」。
 
-將已經簽署的 IPA 儲存為 `UTM-signed.ipa`，完成程序之後，將 `UTM-signed.ipa` 重新命名為`UTM-signed.zip`，並且開啟 ZIP 檔案。macOS 應將檔案解壓縮至名為 `Payload/` 的新目錄當中。
+將已經簽署的 IPA 儲存為 `UTM-signed.ipa`，完成程序之後，將 `UTM-signed.ipa` 重新命名為`UTM-signed.zip`，並且開啟 ZIP 檔案。macOS 應將檔案解壓縮至名稱為 `Payload/` 的新目錄當中。
 
 ## 部署
 
@@ -44,7 +44,7 @@ ios-deploy --justlaunch --noinstall --bundle /path/to/Payload/UTM.app
 
 ### 註冊套裝識別碼失敗（Failed to register bundle identifier）
 
-Xcode 可能在嘗試創建簽名配置文件時顯示此消息，你需要更改綁定識別碼，然後再試。
+Xcode 可能在嘗試製作簽名設定檔時顯示此訊息，你需要更改套裝識別碼，然後再試。
 
 [1]: https://github.com/utmapp/UTM/issues/397
 [2]: https://brew.sh
