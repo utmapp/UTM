@@ -15,6 +15,7 @@
 //
 
 import Foundation
+import System
 
 /// Tweaks and advanced QEMU settings.
 struct UTMQemuConfigurationQEMU: Codable {
@@ -189,6 +190,8 @@ extension UTMQemuConfigurationQEMU {
             if !fileManager.fileExists(atPath: varsURL.path) {
                 try await Task.detached {
                     try FileManager.default.copyItem(at: templateVarsURL, to: varsURL)
+                    let permissions: FilePermissions = [.ownerReadWrite, .groupRead, .otherRead]
+                    try FileManager.default.setAttributes([.posixPermissions: permissions.rawValue], ofItemAtPath: varsURL.path)
                 }.value
             }
             efiVarsURL = varsURL
