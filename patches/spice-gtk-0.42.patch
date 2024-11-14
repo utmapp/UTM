@@ -1,134 +1,7 @@
-From 2f16f6d4b0d6dde0d1d518f61c01f5f972caa008 Mon Sep 17 00:00:00 2001
-From: osy <osy@turing.llc>
-Date: Fri, 4 Mar 2022 13:15:16 -0800
-Subject: [PATCH 1/8] meson: move cairo dependency to GTK build only
-
-Cairo is only used in SpiceDisplay which is part of the GTK client. If
-we are building the GLib only client, it should be optional.
----
- meson.build | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/meson.build b/meson.build
-index 11173fd..ecc9d6d 100644
---- a/meson.build
-+++ b/meson.build
-@@ -107,8 +107,8 @@ foreach dep, version : deps
- endforeach
- 
- # mandatory dependencies, without specific version requirement
--# TODO: specify minimum version for cairo, jpeg and zlib?
--deps = ['cairo', 'libjpeg', 'zlib', 'json-glib-1.0']
-+# TODO: specify minimum version for jpeg and zlib?
-+deps = ['libjpeg', 'zlib', 'json-glib-1.0']
- if host_machine.system() == 'windows'
-   deps += 'gio-windows-2.0'
- else
-@@ -149,6 +149,8 @@ d = dependency('gtk+-3.0', version : '>= @0@'.format(gtk_version_required),
- summary_info += {'gtk': d.found()}
- if d.found()
-   spice_gtk_deps += d
-+  # TODO: specify minimum version for cairo?
-+  spice_gtk_deps += dependency('cairo')
-   if host_machine.system() != 'windows'
-     spice_gtk_deps += dependency('epoxy')
-     spice_gtk_deps += dependency('x11')
--- 
-2.32.0 (Apple Git-132)
-
-From 312a1fc6cf4a8d839639dce411107537e1791045 Mon Sep 17 00:00:00 2001
-From: osy <osy@turing.llc>
-Date: Fri, 4 Mar 2022 15:52:48 -0800
-Subject: [PATCH 2/8] coroutine: add support for libucontext
-
-libucontext is a lightweight implementation of ucontext for platforms
-that do not have a built-in implementation. This allows us to use the
-same code to support libucontext as ucontext.
----
- meson.build        |  7 +++++++
- meson_options.txt  |  2 +-
- src/continuation.c | 12 +++++++++++-
- src/meson.build    |  2 +-
- 4 files changed, 20 insertions(+), 3 deletions(-)
-
-diff --git a/meson.build b/meson.build
-index ecc9d6d..29615b1 100644
---- a/meson.build
-+++ b/meson.build
-@@ -319,6 +319,13 @@ if spice_gtk_coroutine == 'ucontext'
-   endif
-   endif
- 
-+if spice_gtk_coroutine == 'libucontext'
-+  d = dependency('libucontext')
-+  spice_glib_deps += d
-+  spice_gtk_config_data.set('WITH_UCONTEXT', '1')
-+  spice_gtk_config_data.set('HAVE_LIBUCONTEXT', '1')
-+endif
-+
- if spice_gtk_coroutine == 'gthread'
-   spice_gtk_config_data.set('WITH_GTHREAD', '1')
- endif
-diff --git a/meson_options.txt b/meson_options.txt
-index 3cbc7c6..5acfc9a 100644
---- a/meson_options.txt
-+++ b/meson_options.txt
-@@ -45,7 +45,7 @@ option('usb-ids-path',
- option('coroutine',
-     type : 'combo',
-     value : 'auto',
--    choices : ['auto', 'ucontext', 'gthread', 'winfiber'],
-+    choices : ['auto', 'ucontext', 'libucontext', 'gthread', 'winfiber'],
-     description : 'Use ucontext or GThread for coroutines')
- 
- option('introspection',
-diff --git a/src/continuation.c b/src/continuation.c
-index 65527ac..400169a 100644
---- a/src/continuation.c
-+++ b/src/continuation.c
-@@ -25,11 +25,21 @@
- #endif
- 
- #include <errno.h>
--#include <ucontext.h>
- #include <glib.h>
- 
- #include "continuation.h"
- 
-+#ifdef HAVE_LIBUCONTEXT
-+#include <libucontext/libucontext.h>
-+#define ucontext_t libucontext_ucontext_t
-+#define getcontext libucontext_getcontext
-+#define setcontext libucontext_setcontext
-+#define swapcontext libucontext_swapcontext
-+#define makecontext libucontext_makecontext
-+#else
-+#include <ucontext.h>
-+#endif
-+
- /*
-  * va_args to makecontext() must be type 'int', so passing
-  * the pointer we need may require several int args. This
-diff --git a/src/meson.build b/src/meson.build
-index a9dfc57..961779f 100644
---- a/src/meson.build
-+++ b/src/meson.build
-@@ -146,7 +146,7 @@ endif
- 
- if spice_gtk_coroutine == 'gthread'
-   spice_client_glib_sources += 'coroutine_gthread.c'
--elif spice_gtk_coroutine == 'ucontext'
-+elif spice_gtk_coroutine in ['ucontext', 'libucontext']
-   spice_client_glib_sources += ['continuation.c',
-                                 'continuation.h',
-                                 'coroutine_ucontext.c']
--- 
-2.32.0 (Apple Git-132)
-
-From fb47817a4963a6e64d76bccb562cf5dbe2f628c1 Mon Sep 17 00:00:00 2001
+From 07ba2d801b4a03125dee3f9d5f4a13cad8d62008 Mon Sep 17 00:00:00 2001
 From: osy <osy@turing.llc>
 Date: Fri, 4 Mar 2022 16:35:26 -0800
-Subject: [PATCH 3/8] spice-util: support for non-default GMainContext
+Subject: [PATCH 1/2] spice-util: support for non-default GMainContext
 
 When spice-gtk is used in an application with its own GMainContext, the
 wrong context will be used leading to various issues.
@@ -387,12 +260,12 @@ index 421b4b0..e161c83 100644
  #define SPICE_DEBUG(fmt, ...)                                   \
      do {                                                        \
 -- 
-2.32.0 (Apple Git-132)
+2.41.0
 
-From a02df4084ff43c5796f1ead29ab9d67da48dff1e Mon Sep 17 00:00:00 2001
+From 92ac46d9328afa036e2e3aebf0f7218ba5b2910f Mon Sep 17 00:00:00 2001
 From: osy <osy@turing.llc>
 Date: Fri, 4 Mar 2022 16:44:20 -0800
-Subject: [PATCH 4/8] spice-gtk: user specified GMainContext for events
+Subject: [PATCH 2/2] spice-gtk: user specified GMainContext for events
 
 Following the previous commit, this replaces all GLib calls that
 implicitly uses the default main context with versions that can use the
@@ -747,7 +620,7 @@ index bb97ad7..8cc2dd1 100644
  
      return id;
 diff --git a/src/spice-channel.c b/src/spice-channel.c
-index d6199a5..d5070a9 100644
+index 3fd42c5..813923a 100644
 --- a/src/spice-channel.c
 +++ b/src/spice-channel.c
 @@ -744,9 +744,9 @@ void spice_msg_out_send(SpiceMsgOut *out)
@@ -763,7 +636,7 @@ index d6199a5..d5070a9 100644
      }
  
  end:
-@@ -2703,7 +2703,7 @@ cleanup:
+@@ -2748,7 +2748,7 @@ cleanup:
          c->event = SPICE_CHANNEL_ERROR_CONNECT;
      }
  
@@ -772,7 +645,7 @@ index d6199a5..d5070a9 100644
      /* Co-routine exits now - the SpiceChannel object may no longer exist,
         so don't do anything else now unless you like SEGVs */
      return NULL;
-@@ -2762,7 +2762,7 @@ static gboolean channel_connect(SpiceChannel *channel, gboolean tls)
+@@ -2807,7 +2807,7 @@ static gboolean channel_connect(SpiceChannel *channel, gboolean tls)
      g_object_ref(G_OBJECT(channel)); /* Unref'd when co-routine exits */
  
      /* we connect in idle, to let previous coroutine exit, if present */
@@ -781,7 +654,7 @@ index d6199a5..d5070a9 100644
  
      return true;
  }
-@@ -2828,7 +2828,7 @@ static void channel_reset(SpiceChannel *channel, gboolean migrating)
+@@ -2873,7 +2873,7 @@ static void channel_reset(SpiceChannel *channel, gboolean migrating)
  
      CHANNEL_DEBUG(channel, "channel reset");
      if (c->connect_delayed_id) {
@@ -790,7 +663,7 @@ index d6199a5..d5070a9 100644
          c->connect_delayed_id = 0;
      }
  
-@@ -2860,7 +2860,7 @@ static void channel_reset(SpiceChannel *channel, gboolean migrating)
+@@ -2905,7 +2905,7 @@ static void channel_reset(SpiceChannel *channel, gboolean migrating)
      g_queue_foreach(&c->xmit_queue, (GFunc)spice_msg_out_unref, NULL);
      g_queue_clear(&c->xmit_queue);
      if (c->xmit_queue_wakeup_id) {
@@ -922,7 +795,7 @@ index bb3c6cd..9d161ee 100644
      coroutine_yield(NULL);
  
 diff --git a/src/spice-widget.c b/src/spice-widget.c
-index 5f7c061..3e3fe05 100644
+index 6311115..19dff68 100644
 --- a/src/spice-widget.c
 +++ b/src/spice-widget.c
 @@ -55,6 +55,7 @@
@@ -1025,416 +898,9 @@ index e26b939..6054f3e 100644
          g_clear_object(&self->task);
      }
 -- 
-2.32.0 (Apple Git-132)
+2.41.0
 
-From d24779edda0a889937131818b13e4f57a68a8169 Mon Sep 17 00:00:00 2001
-From: osy <osy@turing.llc>
-Date: Fri, 4 Mar 2022 21:23:51 -0800
-Subject: [PATCH 5/8] usb-device-cd: option to disable physical CD
-
-On iOS, there is no "sys/disk.h" header and cannot build the CD
-emulation code. This should not prevent the rest of USB redirection from
-working.
----
- meson.build         |  8 ++++++++
- meson_options.txt   |  4 ++++
- src/usb-device-cd.c | 36 +++++++++++++++++++++++++++++++++++-
- 3 files changed, 47 insertions(+), 1 deletion(-)
-
-diff --git a/meson.build b/meson.build
-index 29615b1..8c06666 100644
---- a/meson.build
-+++ b/meson.build
-@@ -228,11 +228,19 @@ if d1.found() and d2.found() and d3.found()
-     spice_glib_deps += [d1, d2, d3]
-     spice_gtk_config_data.set('USE_USBREDIR', '1')
-     spice_gtk_has_usbredir = true
-+    if get_option('physical-cd').allowed()
-+      spice_gtk_config_data.set('HAVE_PHYSICAL_CD', '1')
-+    endif
-   else
-     warning('USB redirection disabled on big endian machine as ' +
-             'usbredir only support little endian')
-   endif
- endif
-+summary_info += {'physical-cd': get_option('physical-cd')}
-+
-+if get_option('physical-cd').enabled() and not spice_gtk_has_usbredir
-+  error('Physical CD support cannot be enabled without USB redirection support!')
-+endif
- 
- d = dependency('libcap-ng', required : get_option('libcap-ng'))
- summary_info += {'libcap-ng': d.found()}
-diff --git a/meson_options.txt b/meson_options.txt
-index 5acfc9a..557ef6a 100644
---- a/meson_options.txt
-+++ b/meson_options.txt
-@@ -19,6 +19,10 @@ option('usbredir',
-     type : 'feature',
-     description : 'Enable usbredir support')
- 
-+option('physical-cd',
-+    type : 'feature',
-+    description : 'Enable support of physical CD drives')
-+
- option('libcap-ng',
-        type : 'feature',
-        description: 'Enable libcap-ng support for the USB acl helper')
-diff --git a/src/usb-device-cd.c b/src/usb-device-cd.c
-index 2bfeb3a..41d2e13 100644
---- a/src/usb-device-cd.c
-+++ b/src/usb-device-cd.c
-@@ -32,11 +32,14 @@
- 
- #ifdef G_OS_WIN32
- #include <windows.h>
-+#ifdef HAVE_PHYSICAL_CD
- #include <ntddcdrm.h>
- #include <ntddmmc.h>
-+#endif // HAVE_PHYSICAL_CD
- #else
- #include <sys/stat.h>
- #include <sys/ioctl.h>
-+#ifdef HAVE_PHYSICAL_CD
- #ifdef __APPLE__
- #include <sys/disk.h>
- #include <fcntl.h>
-@@ -44,6 +47,7 @@
- #include <linux/fs.h>
- #include <linux/cdrom.h>
- #endif
-+#endif // HAVE_PHYSICAL_CD
- #endif
- 
- #include "usb-emulation.h"
-@@ -120,6 +124,7 @@ static int cd_device_open_stream(SpiceCdLU *unit, const char *filename)
-     }
- 
-     struct stat file_stat = { 0 };
-+#ifdef HAVE_PHYSICAL_CD
-     if (fstat(fd, &file_stat) || file_stat.st_size == 0) {
-         file_stat.st_size = 0;
-         unit->device = 1;
-@@ -138,6 +143,12 @@ static int cd_device_open_stream(SpiceCdLU *unit, const char *filename)
-         }
- #endif
-     }
-+#else // HAVE_PHYSICAL_CD
-+    if (fstat(fd, &file_stat) != 0) {
-+        SPICE_DEBUG("%s: can't run stat on %s", __FUNCTION__, unit->filename);
-+        return -1;
-+    }
-+#endif
-     unit->size = file_stat.st_size;
-     close(fd);
-     if (unit->size) {
-@@ -153,6 +164,8 @@ static int cd_device_open_stream(SpiceCdLU *unit, const char *filename)
-     return 0;
- }
- 
-+#if defined HAVE_PHYSICAL_CD
-+
- static int cd_device_load(SpiceCdLU *unit, gboolean load)
- {
-     int error;
-@@ -214,7 +227,11 @@ static int cd_device_check(SpiceCdLU *unit)
-     return error;
- }
- 
--#else
-+#endif // HAVE_PHYSICAL_CD
-+
-+#else // G_OS_WIN32
-+
-+#ifdef HAVE_PHYSICAL_CD
- 
- static gboolean is_device_name(const char *filename)
- {
-@@ -261,6 +278,8 @@ static gboolean check_device(HANDLE h)
-                            &ret, NULL);
- }
- 
-+#endif // HAVE_PHYSICAL_CD
-+
- static int cd_device_open_stream(SpiceCdLU *unit, const char *filename)
- {
-     HANDLE h;
-@@ -275,8 +294,10 @@ static int cd_device_open_stream(SpiceCdLU *unit, const char *filename)
-     }
-     if (!filename) {
-         // reopening the stream on existing file name
-+#if defined HAVE_PHYSICAL_CD
-     } else if (is_device_name(filename)) {
-         unit->filename = g_strdup_printf("\\\\.\\%s", filename);
-+#endif
-     } else {
-         unit->filename = g_strdup(filename);
-     }
-@@ -287,6 +308,7 @@ static int cd_device_open_stream(SpiceCdLU *unit, const char *filename)
-     }
- 
-     LARGE_INTEGER size = { 0 };
-+#if defined HAVE_PHYSICAL_CD
-     if (!GetFileSizeEx(h, &size)) {
-         uint64_t buffer[256];
-         uint32_t res;
-@@ -304,6 +326,12 @@ static int cd_device_open_stream(SpiceCdLU *unit, const char *filename)
-                 __FUNCTION__, unit->filename, res);
-         }
-     }
-+#else
-+    if (!GetFileSizeEx(h, &size)) {
-+        SPICE_DEBUG("%s: can't get file size for %s", __FUNCTION__, unit->filename);
-+        return -1;
-+    }
-+#endif
-     unit->size = size.QuadPart;
-     CloseHandle(h);
-     if (unit->size) {
-@@ -318,6 +346,8 @@ static int cd_device_open_stream(SpiceCdLU *unit, const char *filename)
-     return 0;
- }
- 
-+#ifdef HAVE_PHYSICAL_CD
-+
- static int cd_device_load(SpiceCdLU *unit, gboolean load)
- {
-     int error = 0;
-@@ -363,6 +393,8 @@ static int cd_device_check(SpiceCdLU *unit)
-     return error;
- }
- 
-+#endif // HAVE_PHYSICAL_CD
-+
- #endif
- 
- static gboolean open_stream(SpiceCdLU *unit, const char *filename)
-@@ -380,6 +412,7 @@ static void close_stream(SpiceCdLU *unit)
- static gboolean load_lun(UsbCd *d, int unit, gboolean load)
- {
-     gboolean b = TRUE;
-+#ifdef HAVE_PHYSICAL_CD
-     if (load && d->units[unit].device) {
-         // there is one possible problem in case our backend is the
-         // local CD device and it is ejected
-@@ -389,6 +422,7 @@ static gboolean load_lun(UsbCd *d, int unit, gboolean load)
-             return FALSE;
-         }
-     }
-+#endif
- 
-     if (load) {
-         CdScsiMediaParameters media_params = { 0 };
--- 
-2.32.0 (Apple Git-132)
-
-From 7b572d38a2d4a32ecdd683cc4672abd00dcc07ff Mon Sep 17 00:00:00 2001
-From: osy <osy@turing.llc>
-Date: Sun, 6 Mar 2022 18:49:34 -0800
-Subject: [PATCH 6/8] gitlab-ci: test disable physical cd
-
----
- .gitlab-ci.yml | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
-index 3d4f533..cdd6575 100644
---- a/.gitlab-ci.yml
-+++ b/.gitlab-ci.yml
-@@ -36,7 +36,7 @@ fedora:
-     - ninja -C build-spice-protocol install
- 
-   script:
--    - meson --buildtype=release build-default --werror
-+    - meson --buildtype=release build-default --werror -Dphysical-cd=disabled
-     # Meson does not update submodules recursively
-     - git submodule update --init --recursive
-     # this fix an issue with Meson dist
-@@ -68,6 +68,6 @@ windows:
-   script:
-     - cd $CI_PROJECT_DIR
-     - mkdir build-win64 && cd build-win64
--    - mingw64-meson --buildtype=release -Dgtk_doc=disabled --werror
-+    - mingw64-meson --buildtype=release -Dgtk_doc=disabled --werror -Dphysical-cd=disabled
-     - ninja install
-     - (cd tests && DISPLAY= WINEPATH=/usr/x86_64-w64-mingw32/sys-root/mingw/bin wine test-coroutine.exe)
--- 
-2.32.0 (Apple Git-132)
-
-From 6069f4abaf26dadb2159ec67e7b362e2485d3652 Mon Sep 17 00:00:00 2001
-From: osy <osy@turing.llc>
-Date: Sun, 6 Mar 2022 18:55:14 -0800
-Subject: [PATCH 7/8] fix windows
-
----
- src/usb-device-cd.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
-
-diff --git a/src/usb-device-cd.c b/src/usb-device-cd.c
-index 41d2e13..d0cac30 100644
---- a/src/usb-device-cd.c
-+++ b/src/usb-device-cd.c
-@@ -231,8 +231,6 @@ static int cd_device_check(SpiceCdLU *unit)
- 
- #else // G_OS_WIN32
- 
--#ifdef HAVE_PHYSICAL_CD
--
- static gboolean is_device_name(const char *filename)
- {
-     return g_ascii_isalpha(filename[0]) && filename[1] == ':' &&
-@@ -253,6 +251,8 @@ static HANDLE open_file(const char *filename)
-     return h;
- }
- 
-+#ifdef HAVE_PHYSICAL_CD
-+
- static uint32_t ioctl_out(HANDLE h, uint32_t code, void *out_buffer, uint32_t out_size)
- {
-     uint32_t error;
-@@ -294,10 +294,8 @@ static int cd_device_open_stream(SpiceCdLU *unit, const char *filename)
-     }
-     if (!filename) {
-         // reopening the stream on existing file name
--#if defined HAVE_PHYSICAL_CD
-     } else if (is_device_name(filename)) {
-         unit->filename = g_strdup_printf("\\\\.\\%s", filename);
--#endif
-     } else {
-         unit->filename = g_strdup(filename);
-     }
--- 
-2.32.0 (Apple Git-132)
-
-From 394ec4a8d5f1c4df2c21c335a64627ebe31e03b1 Mon Sep 17 00:00:00 2001
-From: osy <osy@turing.llc>
-Date: Fri, 20 May 2022 08:53:53 -0700
-Subject: [PATCH 8/8] usb-backend: remove incorrect logic for detecting root
- hub
-
-There are valid devices (on Darwin) with address 0x1 that were ignored.
----
- src/usb-backend.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
-
-diff --git a/src/usb-backend.c b/src/usb-backend.c
-index 930ae4e..7c2df7f 100644
---- a/src/usb-backend.c
-+++ b/src/usb-backend.c
-@@ -121,9 +121,7 @@ static gboolean fill_usb_info(SpiceUsbDevice *dev)
-     UsbDeviceInformation *info = &dev->device_info;
-     get_usb_device_info_from_libusb_device(info, dev->libusb_device);
- 
--    if (info->address == 0xff || /* root hub (HCD) */
--        info->address <= 1 || /* root hub or bad address */
--        (info->class == LIBUSB_CLASS_HUB) /*hub*/) {
-+    if (info->class == LIBUSB_CLASS_HUB) /*hub*/ {
-         return FALSE;
-     }
-     return TRUE;
--- 
-2.32.0 (Apple Git-132)
-
-From b3eb04485cf4553b0e588a7ca78f7377e1c4f35e Mon Sep 17 00:00:00 2001
-From: Eli Schwartz <eschwartz93@gmail.com>
-Date: Mon, 27 Jun 2022 01:48:02 -0400
-Subject: [PATCH] fix invalid use of subprojects
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-
-The keycodemapdb Meson subproject provides a program and a source input.
-Since it is a subproject, Meson wants to sandbox that and requires it to
-be explicitly exported. But this never happened -- instead, we manually
-poked at files using the actual string path "subprojects/......"
-
-This was always a Meson sandbox violation, but Meson 0.63.0 started
-noticing it and erroring out.
-
-Instead, do the right thing. Update the subproject to a version that has
-a meson.build with actually meaningful contents -- namely, a files
-variable and a found program. Then use these in order to run the needed
-custom_target.
-
-In the process, it is also necessary to correct the argument ordering
-when running keymap-gen.
-
-Reviewed-by: Marc-André Lureau <marcandre.lureau@redhat.com>
----
- meson.build              | 7 ++++---
- src/meson.build          | 2 +-
- subprojects/keycodemapdb | 2 +-
- 3 files changed, 6 insertions(+), 5 deletions(-)
-
-diff --git a/meson.build b/meson.build
-index dc7b4272..00aff30e 100644
---- a/meson.build
-+++ b/meson.build
-@@ -49,9 +49,10 @@ spice_gtk_config_data.merge_from(spice_common.get_variable('spice_common_config_
- spice_glib_deps += spice_common.get_variable('spice_common_client_dep')
- spice_protocol_version = spice_common.get_variable('spice_protocol_version')
- 
--subproject('keycodemapdb')
--keymapgen = files('subprojects/keycodemapdb/tools/keymap-gen')
--keymapcsv = files('subprojects/keycodemapdb/data/keymaps.csv')
-+keycodemapdb = subproject('keycodemapdb')
-+
-+keymapgen = find_program('keymap-gen')
-+keymapcsv = keycodemapdb.get_variable('keymaps_csv')
- 
- #
- # check for system headers
-diff --git a/src/meson.build b/src/meson.build
-index 961779fc..32574e8e 100644
---- a/src/meson.build
-+++ b/src/meson.build
-@@ -312,7 +312,7 @@ if spice_gtk_has_gtk
-   foreach keymap : keymaps
-     varname = 'keymap_@0@2xtkbd'.format(keymap)
-     target = 'vncdisplay@0@.h'.format(varname)
--    cmd = [python, keymapgen, '--lang', 'glib2', '--varname', varname, 'code-map', keymapcsv, keymap, 'xtkbd']
-+    cmd = [python, keymapgen, 'code-map', '--lang', 'glib2', '--varname', varname, keymapcsv, keymap, 'xtkbd']
-     spice_client_gtk_sources += custom_target(target,
-                                               output : target,
-                                               capture : true,
--- 
-GitLab
-
-From e15649b83a78f89f57205927022115536d2c1698 Mon Sep 17 00:00:00 2001
-From: Eli Schwartz <eschwartz93@gmail.com>
-Date: Tue, 21 Jun 2022 20:18:22 -0400
-Subject: [PATCH] make the meson.build stub a bit more well-rounded by
- exporting files
-
-Provide variables for:
-- the found program keymap-gen
-- the CSV mapping table
-
-and for enhanced convenience, override keymap-gen
-
-This allows grabbing the variables from another Meson project without
-futzing with submodule paths, something that Meson doesn't really
-encourage.
----
- meson.build | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
-
-diff --git a/subprojects/keycodemapdb/meson.build b/subprojects/keycodemapdb/meson.build
-index eb9416b..6d263aa 100644
---- a/subprojects/keycodemapdb/meson.build
-+++ b/subprojects/keycodemapdb/meson.build
-@@ -1 +1,6 @@
--project('keycodemapdb')
-+project('keycodemapdb', meson_version: '>=0.46.0')
-+
-+keymap_gen = find_program('tools/keymap-gen')
-+meson.override_find_program('keymap-gen', keymap_gen)
-+
-+keymaps_csv = files('data/keymaps.csv')
--- 
-GitLab
-
-From d5dc89146697d075178fa916253e2a69a25964b8 Mon Sep 17 00:00:00 2001
+From f648e0730b8ddbb03f2f9e45c121a5bbcc3ba00f Mon Sep 17 00:00:00 2001
 From: osy <osy@turing.llc>
 Date: Sun, 6 Aug 2023 01:11:31 -0700
 Subject: [PATCH] meson: disable version script
@@ -1445,7 +911,7 @@ Fails to build on Xcode 15
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/meson.build b/src/meson.build
-index 961779f..5ef1e0d 100644
+index daff1aa..61e60fa 100644
 --- a/src/meson.build
 +++ b/src/meson.build
 @@ -205,7 +205,7 @@ spice_client_glib_lib = library('spice-client-glib-2.0', spice_client_glib_sourc
