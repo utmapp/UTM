@@ -5,5 +5,5 @@
 "NSLocalNetworkUsageDescription" = "UTM 使用本地网络查找并连接到 UTM 远程服务器。";
 
 /* Privacy - Microphone Usage Description */
-"NSMicrophoneUsageDescription" = "任何虚拟机都需要获得许可才能从麦克风录音。";
+"NSMicrophoneUsageDescription" = "任何虚拟机都需要权限才能通过麦克风录音。";
 

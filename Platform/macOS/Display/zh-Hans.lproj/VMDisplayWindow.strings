@@ -86,7 +86,7 @@
 "Ulf-oT-4cP.paletteLabel" = "重新调整控制台";
 
 /* Class = "NSToolbarItem"; toolTip = "Send console resize command"; ObjectID = "Ulf-oT-4cP"; */
-"Ulf-oT-4cP.toolTip" = "发送控制台重新调整命令";
+"Ulf-oT-4cP.toolTip" = "发送控制台重新调整大小命令";
 
 /* Class = "NSButton"; ibShadowedToolTip = "Starts/resumes the VM"; ObjectID = "ZTi-Hs-ge6"; */
 "ZTi-Hs-ge6.ibShadowedToolTip" = "启动/恢复虚拟机";

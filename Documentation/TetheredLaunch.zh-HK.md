@@ -1,53 +1,53 @@
-# 不完全啟動
+# 捆綁式啟動
 
- 在iOS14中，Apple[修補][1]了我們用來使JIT工作的“把戲”。 因此，下一個最佳的解決方案所涉及的範圍更廣。 這只支援非越獄設備。 如果你越獄了，你不需要這樣做。
+在 iOS 14 當中，Apple [修複][1]了我們之前令 JIT 工作的“蠱惑招”。因此，下一個最佳的變通方法涉及更多。這只限用於未越獄的裝置。如你已經越獄，就無需這樣做。
 
- ## 前條件
+## 先決條件
 
- * Xcode
- * [最新的正用版IPA][3]
- * [iOS App Signer][4]
- * [Homebrew][2]
- * [ios-deploy][5] (`brew install ios-deploy`)
+* Xcode
+* [最新版本的 IPA][3]
+* [iOS App Signer][4]
+* [Homebrew][2]
+* [ios-deploy][5] (`brew install ios-deploy`)
 
- ## 簽字
+## 簽署
 
- 安裝並按照[iOS App Signer][4]的說明進行操作。 請確保您的簽字證書和配置文件匹配。 選擇UTM.ipa正式版作為輸入文件並且按下開始。
+安裝並依照 [iOS App Signer][4] 的說明執行操作。確保你的簽署證書與配置檔案匹配。選擇 UTM.ipa 發行版本作為輸入檔案，然後按一下「開始」。
 
- 將已簽字的IPA保存為`UTM-signed.ipa`，過程完成後將`UTM-signed.ipa`重命名為`UTM-signed.zip`並且打開ZIP文件。  macOS會將文件提取至名為`Payload/`的新目錄。
+將已經簽署的 IPA 儲存為 `UTM-signed.ipa`，完成程序之後，將 `UTM-signed.ipa` 重新命名為`UTM-signed.zip`，並且開啟 ZIP 檔案。macOS 應將檔案解壓縮至名稱為 `Payload/` 的新目錄當中。
 
- ## 部署
+## 部署
 
- 要部署UTM，連接你的設備然後在終端中運行：
+如要部署 UTM，連接你的裝置並在終端機中執行：
 
- ```sh
- ios-deploy --bundle /path/to/Payload/UTM.app
- ```
+```sh
+ios-deploy --bundle /path/to/Payload/UTM.app
+```
 
- (提示：你可以把 `Payload/UTM.app` 拖放進終端來自動填充目錄。)
+（貼士：你可以拖放 `Payload/UTM.app` 至終端機以自動填充目錄。）
 
- ## 啟動
+## 啟動
 
- 當你每次希望啟動UTM時，都需要運行以下命令。  (你無法在iOS14中從主頁面正常啟動UTM否則它無法正常運行！)
+如你每次希望啟動 UTM，都需要執行以下內容。（在 iOS 14 當中，不應該透過主畫面啟動 UTM，否則它將無法正常工作！）
 
- ```sh
- ios-deploy --justlaunch --noinstall --bundle /path/to/Payload/UTM.app
- ```
+```sh
+ios-deploy --justlaunch --noinstall --bundle /path/to/Payload/UTM.app
+```
 
- (提示：如果您打開Xcode並轉到Window->Devices and Simulators並找到您的設備，那麼您可以選中“Connect via network”（通過網路連接）以便在沒有USB連線的情況下部署/啟動。你只 需要解鎖設備並靠近你的電腦。)
+（貼士：如你要開啟 Xcode 並轉到 Window > Devices and Simulators 找到你的裝置，則你可以選中「Connect via network」以便於在無 USB 連線的條件下部署/啟動。你只需要解鎖裝置並令它靠近你的電腦。）
 
- ## 疑難解答
+## 疑難排解
 
- ### 信任問題
+### 信任問題
 
- 如果你看見了消息：`The operation couldn't be completed. Unable to launch xxx because it has an invalid code signature, inadequate entitlements or its profile has not been explicitly trusted by the user.（無法完成操作。無法啟動xxx， 因為它的代碼簽名無效、授權不足或其配置文件未被用戶明確信任。 ）`，你需要打開設置-> 通用-> 設備管理，選擇開發者描述文件，然後選擇信任。
+如你看到訊息：`The operation couldn't be completed. Unable to launch xxx because it has an invalid code signature, inadequate entitlements or its profile has not been explicitly trusted by the user.`，你需要開啟設定 > 一般 > 裝置管理，選擇「開發者描述檔」，然後選擇「信任」。
 
- ### 註冊捆綁標識符失敗
+### 註冊套裝識別碼失敗（Failed to register bundle identifier）
 
- Xcode 可能在嘗試創建簽名配置文件時顯示此消息，您需要更改綁定標識符並重試。
+Xcode 可能在嘗試製作簽名設定檔時顯示此訊息，你需要更改套裝識別碼，然後再試。
 
- [1]: https://github.com/utmapp/UTM/issues/397
- [2]: https://brew.sh
- [3]: https://github.com/utmapp/UTM/releases
- [4]: https://dantheman827.github.io/ios-app-signer/
- [5]: https://github.com/ios-control/ios-deploy
+[1]: https://github.com/utmapp/UTM/issues/397
+[2]: https://brew.sh
+[3]: https://github.com/utmapp/UTM/releases
+[4]: https://dantheman827.github.io/ios-app-signer/
+[5]: https://github.com/ios-control/ios-deploy
