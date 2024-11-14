@@ -1735,7 +1735,7 @@
 "Emulated Network Card" = "模拟网卡";
 
 /* No comment provided by engineer. */
-"Emulated Serial Device" = "模拟序列设备";
+"Emulated Serial Device" = "模拟串行设备";
 
 /* No comment provided by engineer. */
 "Enable Balloon Device" = "启用 Balloon 设备";
@@ -2147,7 +2147,7 @@
 "Select an existing disk image." = "选择一个现有的磁盘映像。";
 
 /* No comment provided by engineer. */
-"Serial" = "序列";
+"Serial" = "串行端口";
 
 /* No comment provided by engineer. */
 "Server Address" = "服务器地址";
