@@ -16,7 +16,7 @@ git submodule update --init --recursive
 
 ## Dependencies
 
-The easy way is to get the prebuilt dependences from [GitHub Actions][1]. Pick the latest release and download all of the `Sysroot-macos-*` artifacts. You need to be logged in to GitHub to download artifacts. If you only intend to run locally, it is alright to just download the sysroot for your architecture. After downloading the prebuilt artifacts of your choice, extract them to the root directory where you cloned the repository.
+The easy way is to get the prebuilt dependencies from [GitHub Actions][1]. Pick the latest release and download all of the `Sysroot-macos-*` artifacts. You need to be logged in to GitHub to download artifacts. If you only intend to run locally, it is alright to just download the sysroot for your architecture. After downloading the prebuilt artifacts of your choice, extract them to the root directory where you cloned the repository.
 
 To build UTM, make sure you have the latest version of Xcode installed.
 
