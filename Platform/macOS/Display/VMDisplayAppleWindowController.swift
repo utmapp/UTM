@@ -83,7 +83,9 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         drivesToolbarItem.isEnabled = false
         usbToolbarItem.isEnabled = false
         resizeConsoleToolbarItem.isEnabled = false
-        if #available(macOS 12, *) {
+        if #available(macOS 13, *) {
+            sharedFolderToolbarItem.isEnabled = true
+        } else if #available(macOS 12, *) {
             sharedFolderToolbarItem.isEnabled = appleConfig.system.boot.operatingSystem == .linux
         } else {
             // stop() not available on macOS 11 for some reason
@@ -114,6 +116,10 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
     
     @IBAction override func sharedFolderButtonPressed(_ sender: Any) {
         guard #available(macOS 12, *) else {
+            return
+        }
+        guard appleConfig.system.boot.operatingSystem == .linux else {
+            openShareMenu(sender)
             return
         }
         if !isSharePathAlertShownOnce && !isSharePathAlertShownPersistent {
