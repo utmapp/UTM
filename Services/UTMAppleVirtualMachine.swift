@@ -189,12 +189,13 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             }
             if #available(macOS 12, *) {
                 Task { @MainActor in
+                    let tag = config.shareDirectoryTag
                     sharedDirectoriesChanged = config.sharedDirectoriesPublisher.sink { [weak self] newShares in
                         guard let self = self else {
                             return
                         }
                         self.vmQueue.async {
-                            self.updateSharedDirectories(with: newShares)
+                            self.updateSharedDirectories(with: newShares, tag: tag)
                         }
                     }
                 }
@@ -516,10 +517,10 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
     }
     
     @available(macOS 12, *)
-    private func updateSharedDirectories(with newShares: [UTMAppleConfigurationSharedDirectory]) {
+    private func updateSharedDirectories(with newShares: [UTMAppleConfigurationSharedDirectory], tag: String) {
         guard let fsConfig = apple?.directorySharingDevices.first(where: { device in
             if let device = device as? VZVirtioFileSystemDevice {
-                return device.tag == "share"
+                return device.tag == tag
             } else {
                 return false
             }
