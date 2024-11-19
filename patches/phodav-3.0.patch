@@ -1,0 +1,27 @@
+From ddca2a3c7a5cabf19ae94e4a6482457cb5fa1b30 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Tue, 12 Nov 2024 08:51:07 -0800
+Subject: [PATCH] meson: link statically with libsoup and libxml
+
+---
+ meson.build | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/meson.build b/meson.build
+index ac84b94..c425839 100644
+--- a/meson.build
++++ b/meson.build
+@@ -34,8 +34,8 @@ else
+   deps += dependency('gio-unix-2.0', version : '>= 2.44')
+ endif
+ 
+-deps += dependency('libsoup-3.0', version : '>= 3.0.0')
+-deps += dependency('libxml-2.0')
++deps += dependency('libsoup-3.0', version : '>= 3.0.0', static : true)
++deps += dependency('libxml-2.0', static : true)
+ 
+ d1 = dependency('avahi-gobject', required : get_option('avahi'))
+ d2 = dependency('avahi-client', required : get_option('avahi'))
+-- 
+2.41.0
+

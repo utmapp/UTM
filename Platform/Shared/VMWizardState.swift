@@ -325,7 +325,6 @@ enum VMBootDevice: Int, Identifiable {
                 bootloader.linuxInitialRamdiskURL = linuxInitialRamdiskURL
                 bootloader.linuxCommandLine = linuxBootArguments
                 config.system.boot = bootloader
-                config.system.genericPlatform = UTMAppleConfigurationGenericPlatform()
                 if let linuxRootImageURL = linuxRootImageURL {
                     config.drives.append(UTMAppleConfigurationDrive(existingURL: linuxRootImageURL))
                     isSkipDiskCreate = true
@@ -333,6 +332,7 @@ enum VMBootDevice: Int, Identifiable {
             } else {
                 config.system.boot = try UTMAppleConfigurationBoot(for: .linux)
             }
+            config.system.genericPlatform = UTMAppleConfigurationGenericPlatform()
             config.virtualization.hasRosetta = linuxHasRosetta
             #endif
         case .Windows:

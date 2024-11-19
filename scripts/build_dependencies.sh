@@ -208,8 +208,10 @@ generate_meson_cross() {
     echo "[built-in options]" >> $cross
     echo "c_args = [${CFLAGS:+$(meson_quote $CFLAGS)}]" >> $cross
     echo "cpp_args = [${CXXFLAGS:+$(meson_quote $CXXFLAGS)}]" >> $cross
+    echo "objc_args = [${CFLAGS:+$(meson_quote $CFLAGS)}]" >> $cross
     echo "c_link_args = [${LDFLAGS:+$(meson_quote $LDFLAGS)}]" >> $cross
     echo "cpp_link_args = [${LDFLAGS:+$(meson_quote $LDFLAGS)}]" >> $cross
+    echo "objc_link_args = [${LDFLAGS:+$(meson_quote $LDFLAGS)}]" >> $cross
     echo "[binaries]" >> $cross
     echo "c = [$(meson_quote $CC)]" >> $cross
     echo "cpp = [$(meson_quote $CXX)]" >> $cross
@@ -464,7 +466,7 @@ build_qemu_dependencies () {
     build $GETTEXT_SRC --disable-java
     build $PNG_SRC
     build $JPEG_TURBO_SRC
-    meson_build $GLIB_SRC -Dtests=false
+    meson_build $GLIB_SRC -Dtests=false -Ddtrace=disabled
     build $GPG_ERROR_SRC
     build $GCRYPT_SRC
     build $PIXMAN_SRC
@@ -499,9 +501,9 @@ build_spice_client () {
     meson_build $LIBUCONTEXT_REPO -Ddefault_library=static -Dfreestanding=true
     meson_build $JSON_GLIB_SRC -Dintrospection=disabled
     build $XML2_SRC --enable-shared=no --without-python
-    meson_build $SOUP_SRC --default-library static -Dsysprof=disabled -Dtls_check=false -Dintrospection=disabled
+    meson_build $SOUP_SRC -Dsysprof=disabled -Dtls_check=false -Dintrospection=disabled
     meson_build $PHODAV_SRC
-    meson_build $SPICE_CLIENT_SRC -Dcoroutine=libucontext -Dphysical-cd=disabled
+    meson_build $SPICE_CLIENT_SRC -Dcoroutine=libucontext
 }
 
 fixup () {

@@ -344,7 +344,7 @@
 		CE0B6ECC24AD677200FE012D /* gstriff-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63DE22653C7400FC7E63 /* gstriff-1.0.0.framework */; };
 		CE0B6ECD24AD677200FE012D /* gsttag-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63F622653C7400FC7E63 /* gsttag-1.0.0.framework */; };
 		CE0B6ECF24AD677200FE012D /* gstrtp-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63DD22653C7400FC7E63 /* gstrtp-1.0.0.framework */; };
-		CE0B6ED124AD677200FE012D /* phodav-2.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* phodav-2.0.0.framework */; };
+		CE0B6ED124AD677200FE012D /* phodav-3.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* phodav-3.0.0.framework */; };
 		CE0B6ED324AD677200FE012D /* libgstvideoconvert.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19542265425900355E14 /* libgstvideoconvert.a */; };
 		CE0B6ED724AD677200FE012D /* gstaudio-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63EF22653C7400FC7E63 /* gstaudio-1.0.0.framework */; };
 		CE0B6EDC24AD677200FE012D /* libgstapp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE9D19612265425900355E14 /* libgstapp.a */; };
@@ -390,7 +390,7 @@
 		CE0B6F2924AD67AD00FE012D /* gsttag-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F622653C7400FC7E63 /* gsttag-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0B6F2A24AD67AF00FE012D /* gstvideo-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F922653C7400FC7E63 /* gstvideo-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0B6F2F24AD67BE00FE012D /* json-glib-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E222653C7400FC7E63 /* json-glib-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0B6F3124AD67C100FE012D /* phodav-2.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* phodav-2.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE0B6F3124AD67C100FE012D /* phodav-3.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* phodav-3.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0B6F5424AD67FA00FE012D /* spice-client-glib-2.0.8.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FE22653C7500FC7E63 /* spice-client-glib-2.0.8.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0DF19425A83C1700A51894 /* qemu-aarch64-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FD22653C7500FC7E63 /* qemu-aarch64-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0DF19525A83C1700A51894 /* qemu-alpha-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641322653C7500FC7E63 /* qemu-alpha-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -495,7 +495,7 @@
 		CE2D934C24AD46670059923A /* ffi.7.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E322653C7400FC7E63 /* ffi.7.framework */; };
 		CE2D934D24AD46670059923A /* gstnet-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E522653C7400FC7E63 /* gstnet-1.0.0.framework */; };
 		CE2D934E24AD46670059923A /* gstbase-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E822653C7400FC7E63 /* gstbase-1.0.0.framework */; };
-		CE2D934F24AD46670059923A /* phodav-2.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* phodav-2.0.0.framework */; };
+		CE2D934F24AD46670059923A /* phodav-3.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* phodav-3.0.0.framework */; };
 		CE2D935024AD46670059923A /* gstcontroller-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63EE22653C7400FC7E63 /* gstcontroller-1.0.0.framework */; };
 		CE2D935124AD46670059923A /* gstaudio-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63EF22653C7400FC7E63 /* gstaudio-1.0.0.framework */; };
 		CE2D935224AD46670059923A /* gpg-error.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63F122653C7400FC7E63 /* gpg-error.0.framework */; };
@@ -543,7 +543,7 @@
 		CE2D938A24AD46670059923A /* gstrtp-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DD22653C7400FC7E63 /* gstrtp-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE2D938B24AD46670059923A /* gstriff-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DE22653C7400FC7E63 /* gstriff-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE2D938C24AD46670059923A /* qemu-ppc-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E722653C7400FC7E63 /* qemu-ppc-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE2D938D24AD46670059923A /* phodav-2.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* phodav-2.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE2D938D24AD46670059923A /* phodav-3.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* phodav-3.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE2D938E24AD46670059923A /* gthread-2.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DC22653C7300FC7E63 /* gthread-2.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE2D938F24AD46670059923A /* qemu-aarch64-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FD22653C7500FC7E63 /* qemu-aarch64-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE2D939024AD46670059923A /* qemu-mips-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FF22653C7500FC7E63 /* qemu-mips-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -770,7 +770,7 @@
 		CEA45F44263519B5002FA97D /* gstnet-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E522653C7400FC7E63 /* gstnet-1.0.0.framework */; };
 		CEA45F45263519B5002FA97D /* gstbase-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E822653C7400FC7E63 /* gstbase-1.0.0.framework */; };
 		CEA45F46263519B5002FA97D /* Logging in Frameworks */ = {isa = PBXBuildFile; productRef = CEA45E20263519B5002FA97D /* Logging */; };
-		CEA45F47263519B5002FA97D /* phodav-2.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* phodav-2.0.0.framework */; };
+		CEA45F47263519B5002FA97D /* phodav-3.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* phodav-3.0.0.framework */; };
 		CEA45F49263519B5002FA97D /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE0E9B86252FD06B0026E02B /* SwiftUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		CEA45F4A263519B5002FA97D /* gstcontroller-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63EE22653C7400FC7E63 /* gstcontroller-1.0.0.framework */; };
 		CEA45F4B263519B5002FA97D /* gstaudio-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63EF22653C7400FC7E63 /* gstaudio-1.0.0.framework */; };
@@ -816,7 +816,7 @@
 		CEA45F86263519B5002FA97D /* gstrtp-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DD22653C7400FC7E63 /* gstrtp-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F87263519B5002FA97D /* gstriff-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DE22653C7400FC7E63 /* gstriff-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F88263519B5002FA97D /* qemu-ppc-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E722653C7400FC7E63 /* qemu-ppc-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CEA45F89263519B5002FA97D /* phodav-2.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* phodav-2.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEA45F89263519B5002FA97D /* phodav-3.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* phodav-3.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F8A263519B5002FA97D /* gthread-2.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DC22653C7300FC7E63 /* gthread-2.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F8B263519B5002FA97D /* qemu-aarch64-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FD22653C7500FC7E63 /* qemu-aarch64-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F8F263519B5002FA97D /* gobject-2.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F522653C7400FC7E63 /* gobject-2.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -890,6 +890,14 @@
 		CEC794BD2949663C00121A9F /* UTMScripting.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC794BB2949663C00121A9F /* UTMScripting.swift */; };
 		CED234ED254796E500ED0A57 /* NumberTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED234EC254796E500ED0A57 /* NumberTextField.swift */; };
 		CED234EE254796E500ED0A57 /* NumberTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED234EC254796E500ED0A57 /* NumberTextField.swift */; };
+		CED297142CE425CB00F1E3EB /* soup-3.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CED297132CE425CA00F1E3EB /* soup-3.0.0.framework */; };
+		CED297152CE425CB00F1E3EB /* soup-3.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CED297132CE425CA00F1E3EB /* soup-3.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CED297192CE4263100F1E3EB /* soup-3.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CED297132CE425CA00F1E3EB /* soup-3.0.0.framework */; };
+		CED2971A2CE4263100F1E3EB /* soup-3.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CED297132CE425CA00F1E3EB /* soup-3.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CED2971B2CE4263600F1E3EB /* soup-3.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CED297132CE425CA00F1E3EB /* soup-3.0.0.framework */; };
+		CED2971C2CE4263600F1E3EB /* soup-3.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CED297132CE425CA00F1E3EB /* soup-3.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CED2971D2CE4263A00F1E3EB /* soup-3.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CED297132CE425CA00F1E3EB /* soup-3.0.0.framework */; };
+		CED2971E2CE4263A00F1E3EB /* soup-3.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CED297132CE425CA00F1E3EB /* soup-3.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CED779E52C78C82A00EB82AE /* UTMTips.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED779E42C78C82A00EB82AE /* UTMTips.swift */; };
 		CED779E62C78C82A00EB82AE /* UTMTips.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED779E42C78C82A00EB82AE /* UTMTips.swift */; };
 		CED779E72C78C82A00EB82AE /* UTMTips.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED779E42C78C82A00EB82AE /* UTMTips.swift */; };
@@ -1134,7 +1142,7 @@
 		CEF7F6562AEEDCC400E34952 /* gstbase-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E822653C7400FC7E63 /* gstbase-1.0.0.framework */; };
 		CEF7F6572AEEDCC400E34952 /* Logging in Frameworks */ = {isa = PBXBuildFile; productRef = CEF7F5842AEEDCC400E34952 /* Logging */; };
 		CEF7F6582AEEDCC400E34952 /* SwiftTerm in Frameworks */ = {isa = PBXBuildFile; productRef = CEF7F58E2AEEDCC400E34952 /* SwiftTerm */; };
-		CEF7F65A2AEEDCC400E34952 /* phodav-2.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* phodav-2.0.0.framework */; };
+		CEF7F65A2AEEDCC400E34952 /* phodav-3.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* phodav-3.0.0.framework */; };
 		CEF7F65C2AEEDCC400E34952 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE0E9B86252FD06B0026E02B /* SwiftUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		CEF7F65D2AEEDCC400E34952 /* gstcontroller-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63EE22653C7400FC7E63 /* gstcontroller-1.0.0.framework */; };
 		CEF7F65E2AEEDCC400E34952 /* gstaudio-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63EF22653C7400FC7E63 /* gstaudio-1.0.0.framework */; };
@@ -1180,7 +1188,7 @@
 		CEF7F6962AEEDCC400E34952 /* gsttag-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F622653C7400FC7E63 /* gsttag-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEF7F6982AEEDCC400E34952 /* gstrtp-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DD22653C7400FC7E63 /* gstrtp-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEF7F6992AEEDCC400E34952 /* gstriff-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DE22653C7400FC7E63 /* gstriff-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CEF7F69C2AEEDCC400E34952 /* phodav-2.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* phodav-2.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEF7F69C2AEEDCC400E34952 /* phodav-3.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* phodav-3.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEF7F69D2AEEDCC400E34952 /* gthread-2.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DC22653C7300FC7E63 /* gthread-2.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEF7F6A22AEEDCC400E34952 /* gobject-2.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F522653C7400FC7E63 /* gobject-2.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEF7F6A32AEEDCC400E34952 /* gmodule-2.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63D822653C7300FC7E63 /* gmodule-2.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -1289,6 +1297,7 @@
 				CE0B6F1F24AD679E00FE012D /* gstcontroller-1.0.0.framework in Embed Libraries */,
 				CEF83F8E250094EC00557D15 /* gpg-error.0.framework in Embed Libraries */,
 				CE0B6F1A24AD679500FE012D /* gstallocators-1.0.0.framework in Embed Libraries */,
+				CED297152CE425CB00F1E3EB /* soup-3.0.0.framework in Embed Libraries */,
 				CE03D08F24D9124200F76B84 /* gobject-2.0.0.framework in Embed Libraries */,
 				CE0B6F1D24AD679B00FE012D /* gstbase-1.0.0.framework in Embed Libraries */,
 				CE0B6F2224AD67A200FE012D /* gstnet-1.0.0.framework in Embed Libraries */,
@@ -1300,7 +1309,7 @@
 				CEF83F8B250094D700557D15 /* spice-server.1.framework in Embed Libraries */,
 				CE0B6F1B24AD679700FE012D /* gstapp-1.0.0.framework in Embed Libraries */,
 				CE0B6F2924AD67AD00FE012D /* gsttag-1.0.0.framework in Embed Libraries */,
-				CE0B6F3124AD67C100FE012D /* phodav-2.0.0.framework in Embed Libraries */,
+				CE0B6F3124AD67C100FE012D /* phodav-3.0.0.framework in Embed Libraries */,
 				CE0B6F2624AD67A900FE012D /* gstrtp-1.0.0.framework in Embed Libraries */,
 				CE0B6F2524AD67A700FE012D /* gstriff-1.0.0.framework in Embed Libraries */,
 				CE0B6F2424AD67A600FE012D /* gstreamer-1.0.0.framework in Embed Libraries */,
@@ -1396,7 +1405,7 @@
 				CE2D938B24AD46670059923A /* gstriff-1.0.0.framework in Embed Libraries */,
 				CE2D938C24AD46670059923A /* qemu-ppc-softmmu.framework in Embed Libraries */,
 				84C5068728CA5702007CE8FF /* Hypervisor.framework in Embed Libraries */,
-				CE2D938D24AD46670059923A /* phodav-2.0.0.framework in Embed Libraries */,
+				CE2D938D24AD46670059923A /* phodav-3.0.0.framework in Embed Libraries */,
 				CE2D938E24AD46670059923A /* gthread-2.0.0.framework in Embed Libraries */,
 				CE2D938F24AD46670059923A /* qemu-aarch64-softmmu.framework in Embed Libraries */,
 				CEA9059225FC6A3500801E7C /* usbredirparser.1.framework in Embed Libraries */,
@@ -1426,6 +1435,7 @@
 				CE2D93A324AD46670059923A /* gstvideo-1.0.0.framework in Embed Libraries */,
 				CE2D93A424AD46670059923A /* json-glib-1.0.0.framework in Embed Libraries */,
 				CE2D93A524AD46670059923A /* pixman-1.0.framework in Embed Libraries */,
+				CED2971A2CE4263100F1E3EB /* soup-3.0.0.framework in Embed Libraries */,
 				CE2D93A624AD46670059923A /* jpeg.62.framework in Embed Libraries */,
 				CE2D93A724AD46670059923A /* qemu-microblazeel-softmmu.framework in Embed Libraries */,
 				CE2D93A824AD46670059923A /* qemu-hppa-softmmu.framework in Embed Libraries */,
@@ -1479,12 +1489,13 @@
 				CEA45F7C263519B5002FA97D /* gstnet-1.0.0.framework in Embed Libraries */,
 				CEA45F7E263519B5002FA97D /* crypto.1.1.framework in Embed Libraries */,
 				CEA45F7F263519B5002FA97D /* qemu-riscv64-softmmu.framework in Embed Libraries */,
+				CED2971C2CE4263600F1E3EB /* soup-3.0.0.framework in Embed Libraries */,
 				CEA45F80263519B5002FA97D /* gstapp-1.0.0.framework in Embed Libraries */,
 				CEA45F84263519B5002FA97D /* gsttag-1.0.0.framework in Embed Libraries */,
 				CEA45F86263519B5002FA97D /* gstrtp-1.0.0.framework in Embed Libraries */,
 				CEA45F87263519B5002FA97D /* gstriff-1.0.0.framework in Embed Libraries */,
 				CEA45F88263519B5002FA97D /* qemu-ppc-softmmu.framework in Embed Libraries */,
-				CEA45F89263519B5002FA97D /* phodav-2.0.0.framework in Embed Libraries */,
+				CEA45F89263519B5002FA97D /* phodav-3.0.0.framework in Embed Libraries */,
 				CEA45F8A263519B5002FA97D /* gthread-2.0.0.framework in Embed Libraries */,
 				84937F20289767F0003148F4 /* zstd.1.framework in Embed Libraries */,
 				CEA45F8B263519B5002FA97D /* qemu-aarch64-softmmu.framework in Embed Libraries */,
@@ -1543,6 +1554,7 @@
 				CEF7F6832AEEDCC400E34952 /* gpg-error.0.framework in Embed Libraries */,
 				CEF7F6852AEEDCC400E34952 /* gstcontroller-1.0.0.framework in Embed Libraries */,
 				CEF7F6862AEEDCC400E34952 /* gstallocators-1.0.0.framework in Embed Libraries */,
+				CED2971E2CE4263A00F1E3EB /* soup-3.0.0.framework in Embed Libraries */,
 				CEF7F6872AEEDCC400E34952 /* gstbase-1.0.0.framework in Embed Libraries */,
 				CEF7F6882AEEDCC400E34952 /* ffi.7.framework in Embed Libraries */,
 				CEF7F6892AEEDCC400E34952 /* ssl.1.1.framework in Embed Libraries */,
@@ -1554,7 +1566,7 @@
 				CEF7F6962AEEDCC400E34952 /* gsttag-1.0.0.framework in Embed Libraries */,
 				CEF7F6982AEEDCC400E34952 /* gstrtp-1.0.0.framework in Embed Libraries */,
 				CEF7F6992AEEDCC400E34952 /* gstriff-1.0.0.framework in Embed Libraries */,
-				CEF7F69C2AEEDCC400E34952 /* phodav-2.0.0.framework in Embed Libraries */,
+				CEF7F69C2AEEDCC400E34952 /* phodav-3.0.0.framework in Embed Libraries */,
 				CEF7F69D2AEEDCC400E34952 /* gthread-2.0.0.framework in Embed Libraries */,
 				CEF7F6A22AEEDCC400E34952 /* gobject-2.0.0.framework in Embed Libraries */,
 				CEF7F6A32AEEDCC400E34952 /* gmodule-2.0.0.framework in Embed Libraries */,
@@ -1775,7 +1787,7 @@
 		CE03D0D324DCF6DD00F76B84 /* VMMetalViewInputDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMMetalViewInputDelegate.swift; sourceTree = "<group>"; };
 		CE056CA4242454100004B68A /* VMDisplayMetalViewController+Touch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VMDisplayMetalViewController+Touch.h"; sourceTree = "<group>"; };
 		CE056CA5242454100004B68A /* VMDisplayMetalViewController+Touch.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "VMDisplayMetalViewController+Touch.m"; sourceTree = "<group>"; };
-		CE059DC0243BD67100338317 /* phodav-2.0.0.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "phodav-2.0.0.framework"; path = "$(SYSROOT_DIR)/Frameworks/phodav-2.0.0.framework"; sourceTree = "<group>"; };
+		CE059DC0243BD67100338317 /* phodav-3.0.0.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "phodav-3.0.0.framework"; path = "$(SYSROOT_DIR)/Frameworks/phodav-3.0.0.framework"; sourceTree = "<group>"; };
 		CE059DC3243BFA3200338317 /* UTMLegacyQemuConfiguration+Sharing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMLegacyQemuConfiguration+Sharing.h"; sourceTree = "<group>"; };
 		CE059DC4243BFA3200338317 /* UTMLegacyQemuConfiguration+Sharing.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMLegacyQemuConfiguration+Sharing.m"; sourceTree = "<group>"; };
 		CE059DC6243E9E3400338317 /* UTMLocationManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMLocationManager.h; sourceTree = "<group>"; };
@@ -2016,6 +2028,7 @@
 		CECF02562B706ADD00409FC0 /* UTMRemoteConnectInterface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMRemoteConnectInterface.h; sourceTree = "<group>"; };
 		CECF02572B70909900409FC0 /* Info-Remote.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-Remote.plist"; sourceTree = "<group>"; };
 		CED234EC254796E500ED0A57 /* NumberTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberTextField.swift; sourceTree = "<group>"; };
+		CED297132CE425CA00F1E3EB /* soup-3.0.0.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "soup-3.0.0.framework"; path = "$(SYSROOT_DIR)/Frameworks/soup-3.0.0.framework"; sourceTree = "<group>"; };
 		CED779E42C78C82A00EB82AE /* UTMTips.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMTips.swift; sourceTree = "<group>"; };
 		CED779E92C7938D500EB82AE /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Localizable.strings; sourceTree = "<group>"; };
 		CED814E824C79F070042F0F1 /* VMConfigDriveCreateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigDriveCreateView.swift; sourceTree = "<group>"; };
@@ -2130,6 +2143,7 @@
 				CE2D933224AD46670059923A /* libgstvolume.a in Frameworks */,
 				CE2D933324AD46670059923A /* libgstcoreelements.a in Frameworks */,
 				CE2D933424AD46670059923A /* libgstvideorate.a in Frameworks */,
+				CED297192CE4263100F1E3EB /* soup-3.0.0.framework in Frameworks */,
 				CE2D933524AD46670059923A /* libgstjpeg.a in Frameworks */,
 				CE2D933624AD46670059923A /* libgstaudioresample.a in Frameworks */,
 				CE2D933724AD46670059923A /* libgstplayback.a in Frameworks */,
@@ -2165,7 +2179,7 @@
 				CE020BA724AEDEF000B44AB6 /* Logging in Frameworks */,
 				8401865A2887AFD50050AC51 /* SwiftTerm in Frameworks */,
 				CE02C8AC294EE4EC006DFE48 /* slirp.0.framework in Frameworks */,
-				CE2D934F24AD46670059923A /* phodav-2.0.0.framework in Frameworks */,
+				CE2D934F24AD46670059923A /* phodav-3.0.0.framework in Frameworks */,
 				CEA9059025FC6A1700801E7C /* usbredirparser.1.framework in Frameworks */,
 				CE0E9B87252FD06B0026E02B /* SwiftUI.framework in Frameworks */,
 				CE2D935024AD46670059923A /* gstcontroller-1.0.0.framework in Frameworks */,
@@ -2232,7 +2246,7 @@
 				CE0B6EF124AD677200FE012D /* libgstplayback.a in Frameworks */,
 				CE0B6EF424AD677200FE012D /* json-glib-1.0.0.framework in Frameworks */,
 				CEDD11C12B7C74D7004DDAC6 /* SwiftPortmap in Frameworks */,
-				CE0B6ED124AD677200FE012D /* phodav-2.0.0.framework in Frameworks */,
+				CE0B6ED124AD677200FE012D /* phodav-3.0.0.framework in Frameworks */,
 				CEF83F862500947D00557D15 /* gcrypt.20.framework in Frameworks */,
 				CE0B6ECB24AD677200FE012D /* gstcheck-1.0.0.framework in Frameworks */,
 				CE0B6F0724AD677200FE012D /* libgstvolume.a in Frameworks */,
@@ -2258,6 +2272,7 @@
 				84937EFF28960789003148F4 /* zstd.1.framework in Frameworks */,
 				CE0B6EE224AD677200FE012D /* gstnet-1.0.0.framework in Frameworks */,
 				CE03D08624D90F0700F76B84 /* gmodule-2.0.0.framework in Frameworks */,
+				CED297142CE425CB00F1E3EB /* soup-3.0.0.framework in Frameworks */,
 				CE03D0CA24D9142000F76B84 /* ssl.1.1.framework in Frameworks */,
 				CE0B6EC624AD677200FE012D /* gstfft-1.0.0.framework in Frameworks */,
 				CE0B6EE624AD677200FE012D /* libgstaudiorate.a in Frameworks */,
@@ -2297,6 +2312,7 @@
 				CEA45F2A263519B5002FA97D /* MetalKit.framework in Frameworks */,
 				84CF5DF3288E433F00D01721 /* SwiftUIVisualEffects in Frameworks */,
 				84818C0D2898A07F009EDB67 /* AVFAudio.framework in Frameworks */,
+				CED2971B2CE4263600F1E3EB /* soup-3.0.0.framework in Frameworks */,
 				CEA45F2B263519B5002FA97D /* libgstvolume.a in Frameworks */,
 				CEA45F2C263519B5002FA97D /* libgstcoreelements.a in Frameworks */,
 				CEA45F2D263519B5002FA97D /* libgstvideorate.a in Frameworks */,
@@ -2328,7 +2344,7 @@
 				CEA45F45263519B5002FA97D /* gstbase-1.0.0.framework in Frameworks */,
 				CEA45F46263519B5002FA97D /* Logging in Frameworks */,
 				84A0A88C2A47D5D70038F329 /* QEMUKit in Frameworks */,
-				CEA45F47263519B5002FA97D /* phodav-2.0.0.framework in Frameworks */,
+				CEA45F47263519B5002FA97D /* phodav-3.0.0.framework in Frameworks */,
 				CEA45F49263519B5002FA97D /* SwiftUI.framework in Frameworks */,
 				CEA45F4A263519B5002FA97D /* gstcontroller-1.0.0.framework in Frameworks */,
 				CEA45F4B263519B5002FA97D /* gstaudio-1.0.0.framework in Frameworks */,
@@ -2410,7 +2426,8 @@
 				CEF7F6562AEEDCC400E34952 /* gstbase-1.0.0.framework in Frameworks */,
 				CEF7F6572AEEDCC400E34952 /* Logging in Frameworks */,
 				CEF7F6582AEEDCC400E34952 /* SwiftTerm in Frameworks */,
-				CEF7F65A2AEEDCC400E34952 /* phodav-2.0.0.framework in Frameworks */,
+				CED2971D2CE4263A00F1E3EB /* soup-3.0.0.framework in Frameworks */,
+				CEF7F65A2AEEDCC400E34952 /* phodav-3.0.0.framework in Frameworks */,
 				CEF7F65C2AEEDCC400E34952 /* SwiftUI.framework in Frameworks */,
 				CEF7F65D2AEEDCC400E34952 /* gstcontroller-1.0.0.framework in Frameworks */,
 				CEF7F65E2AEEDCC400E34952 /* gstaudio-1.0.0.framework in Frameworks */,
@@ -2513,6 +2530,7 @@
 		CE2D63D622653C7300FC7E63 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CED297132CE425CA00F1E3EB /* soup-3.0.0.framework */,
 				CE064C642A563F4A003C833D /* swtpm.0.framework */,
 				CE02C8A8294EE4EA006DFE48 /* qemu-loongarch64-softmmu.framework */,
 				CE02C8A9294EE4EB006DFE48 /* slirp.0.framework */,
@@ -2529,7 +2547,7 @@
 				CEA9058825FC69D100801E7C /* usbredirparser.1.framework */,
 				CEA9053725F981E900801E7C /* usb-1.0.0.framework */,
 				CE0E9B86252FD06B0026E02B /* SwiftUI.framework */,
-				CE059DC0243BD67100338317 /* phodav-2.0.0.framework */,
+				CE059DC0243BD67100338317 /* phodav-3.0.0.framework */,
 				CE66450C2269313200B0849A /* MetalKit.framework */,
 				CE9D195D2265425900355E14 /* libgstadder.a */,
 				CE9D19612265425900355E14 /* libgstapp.a */,
