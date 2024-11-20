@@ -113,6 +113,10 @@ class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
             }
         }
 
+        if isSecondary && isDisplaySizeDynamic, let window = window {
+            restoreDynamicResolution(for: window)
+        }
+
         super.windowDidLoad()
     }
     
@@ -248,10 +252,10 @@ extension VMDisplayQemuMetalWindowController {
             return
         }
         if isDisplaySizeDynamic != supported {
-            displaySizeDidChange(size: displaySize)
+            displaySizeDidChange(size: displaySize, shouldSaveResolution: false)
             DispatchQueue.main.async {
                 if supported, let window = self.window {
-                    _ = self.updateGuestResolution(for: window, frameSize: window.frame.size)
+                    self.restoreDynamicResolution(for: window)
                 }
             }
         }
@@ -262,7 +266,7 @@ extension VMDisplayQemuMetalWindowController {
     
 // MARK: - Screen management
 extension VMDisplayQemuMetalWindowController {
-    fileprivate func displaySizeDidChange(size: CGSize) {
+    fileprivate func displaySizeDidChange(size: CGSize, shouldSaveResolution: Bool = true) {
         // cancel any pending resize
         cancelResize?.cancel()
         cancelResize = nil
@@ -281,6 +285,9 @@ extension VMDisplayQemuMetalWindowController {
                 _ = self.updateHostScaling(for: window, frameSize: window.frame.size)
             } else {
                 self.updateHostFrame(forGuestResolution: size)
+            }
+            if shouldSaveResolution {
+                self.saveDynamicResolution()
             }
         }
     }
@@ -412,6 +419,7 @@ extension VMDisplayQemuMetalWindowController {
         if isFullScreenAutoCapture {
             captureMouse()
         }
+        saveDynamicResolution()
     }
     
     func windowDidExitFullScreen(_ notification: Notification) {
@@ -419,6 +427,7 @@ extension VMDisplayQemuMetalWindowController {
         if isFullScreenAutoCapture {
             releaseMouse()
         }
+        saveDynamicResolution()
     }
     
     func windowDidBecomeMain(_ notification: Notification) {
@@ -446,6 +455,32 @@ extension VMDisplayQemuMetalWindowController {
     override func windowDidResignKey(_ notification: Notification) {
         releaseMouse()
         super.windowDidResignKey(notification)
+    }
+}
+
+// MARK: - Save and restore resolution
+@MainActor extension VMDisplayQemuMetalWindowController {
+    func saveDynamicResolution() {
+        guard isDisplaySizeDynamic else {
+            return
+        }
+        var resolution = UTMRegistryEntry.Resolution()
+        resolution.isFullscreen = isFullScreen
+        resolution.size = displaySize
+        vm.registryEntry.resolutionSettings[id] = resolution
+    }
+
+    func restoreDynamicResolution(for window: NSWindow) {
+        guard let resolution = vm.registryEntry.resolutionSettings[id] else {
+            return
+        }
+        if resolution.isFullscreen && !isFullScreen {
+            window.toggleFullScreen(self)
+        } else if resolution.size != .zero {
+            _ = self.updateGuestResolution(for: window, frameSize: resolution.size)
+        } else {
+            _ = self.updateGuestResolution(for: window, frameSize: window.frame.size)
+        }
     }
 }
 
