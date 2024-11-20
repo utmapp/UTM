@@ -37,8 +37,12 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
         appleConfig.displays.first!.isDynamicResolution
     }
 
+    private let checkSupportsReconfigurationTimeoutPeriod: Double = 1
+    private var checkSupportsReconfigurationTimeoutAttempts: Int = 60
     private var aspectRatioLocked: Bool = false
     private var screenChangedToken: Any?
+    private var isFullscreen: Bool = false
+    private var cancelCheckSupportsReconfiguration: DispatchWorkItem?
 
     @Setting("FullScreenAutoCapture") private var isFullScreenAutoCapture: Bool = false
     
@@ -62,6 +66,7 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
             NotificationCenter.default.removeObserver(screenChangedToken)
         }
         screenChangedToken = nil
+        stopPollingForSupportsReconfiguration()
         super.windowWillClose(notification)
     }
 
@@ -69,6 +74,7 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
         appleView.virtualMachine = appleVM.apple
         if #available(macOS 14, *) {
             appleView.automaticallyReconfiguresDisplay = isDynamicResolution
+            startPollingForSupportsReconfiguration()
         }
         super.enterLive()
     }
@@ -80,6 +86,7 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
         appleView.virtualMachine = nil
         captureMouseToolbarButton.state = .off
         captureMouseButtonPressed(self)
+        stopPollingForSupportsReconfiguration()
         super.enterSuspended(isBusy: busy)
     }
     
@@ -120,24 +127,31 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
     }
     
     func windowDidEnterFullScreen(_ notification: Notification) {
+        isFullscreen = true
         if isFullScreenAutoCapture {
             captureMouseToolbarButton.state = .on
             captureMouseButtonPressed(self)
         }
+        saveDynamicResolution()
     }
     
     func windowDidExitFullScreen(_ notification: Notification) {
+        isFullscreen = false
         if isFullScreenAutoCapture {
             captureMouseToolbarButton.state = .off
             captureMouseButtonPressed(self)
         }
+        saveDynamicResolution()
     }
     
     func windowDidResize(_ notification: Notification) {
-        if aspectRatioLocked && supportsReconfiguration && isDynamicResolution {
-            window!.resizeIncrements = NSSize(width: 1.0, height: 1.0)
-            window!.minSize = NSSize(width: 400, height: 400)
-            aspectRatioLocked = false
+        if supportsReconfiguration && isDynamicResolution {
+            if aspectRatioLocked {
+                window!.resizeIncrements = NSSize(width: 1.0, height: 1.0)
+                window!.minSize = NSSize(width: 400, height: 400)
+                aspectRatioLocked = false
+            }
+            saveDynamicResolution()
         }
     }
 
@@ -151,5 +165,56 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
         let heightScale = (screenSize.height - excessSize.height) / scaledSize.height
         let scale = min(min(widthScale, heightScale), 1.0)
         return CGSize(width: scaledSize.width * scale, height: scaledSize.height * scale)
+    }
+}
+
+// MARK: - Save and restore resolution
+@available(macOS 12, *)
+@MainActor extension VMDisplayAppleDisplayWindowController {
+    func saveDynamicResolution() {
+        guard supportsReconfiguration && isDynamicResolution else {
+            return
+        }
+        var resolution = UTMRegistryEntry.Resolution()
+        resolution.isFullscreen = isFullscreen
+        resolution.size = window!.contentRect(forFrameRect: window!.frame).size
+        vm.registryEntry.resolutionSettings[0] = resolution
+    }
+
+    func restoreDynamicResolution(for window: NSWindow) {
+        guard let resolution = vm.registryEntry.resolutionSettings[0] else {
+            return
+        }
+        if resolution.isFullscreen && !isFullscreen {
+            window.toggleFullScreen(self)
+        } else if resolution.size != .zero {
+            let frame = window.frameRect(forContentRect: CGRect(origin: window.frame.origin, size: resolution.size))
+            window.setFrame(frame, display: false, animate: true)
+        }
+    }
+
+    func startPollingForSupportsReconfiguration() {
+        cancelCheckSupportsReconfiguration?.cancel()
+        cancelCheckSupportsReconfiguration = DispatchWorkItem { [weak self] in
+            guard let self = self else {
+                return
+            }
+            if supportsReconfiguration, let window = window {
+                restoreDynamicResolution(for: window)
+                checkSupportsReconfigurationTimeoutAttempts = 0
+                cancelCheckSupportsReconfiguration = nil
+            } else if checkSupportsReconfigurationTimeoutAttempts > 0 {
+                checkSupportsReconfigurationTimeoutAttempts -= 1
+                DispatchQueue.main.asyncAfter(deadline: .now() + checkSupportsReconfigurationTimeoutPeriod, execute: cancelCheckSupportsReconfiguration!)
+            } else {
+                cancelCheckSupportsReconfiguration = nil
+            }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + checkSupportsReconfigurationTimeoutPeriod, execute: cancelCheckSupportsReconfiguration!)
+    }
+
+    func stopPollingForSupportsReconfiguration() {
+        cancelCheckSupportsReconfiguration?.cancel()
+        cancelCheckSupportsReconfiguration = nil
     }
 }
