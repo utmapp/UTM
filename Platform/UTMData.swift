@@ -473,7 +473,14 @@ enum AlertItem: Identifiable {
             throw UTMDataError.virtualMachineAlreadyExists
         }
         let vm = try VMData(creatingFromConfig: config, destinationUrl: Self.defaultStorageUrl)
-        try await save(vm: vm)
+        do {
+            try await save(vm: vm)
+        } catch {
+            if isDirectoryEmpty(vm.pathUrl) {
+                try? fileManager.removeItem(at: vm.pathUrl)
+            }
+            throw error
+        }
         listAdd(vm: vm)
         listSelect(vm: vm)
         return vm
@@ -696,7 +703,21 @@ enum AlertItem: Identifiable {
             }
         }
     }
-    
+
+    private func isDirectoryEmpty(_ pathURL: URL) -> Bool {
+        guard let enumerator = fileManager.enumerator(at: pathURL, includingPropertiesForKeys: [.isDirectoryKey]) else {
+            return false
+        }
+        for case let itemURL as URL in enumerator {
+            let isDirectory = (try? itemURL.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) ?? false
+            if !isDirectory {
+                return false
+            }
+        }
+        // if we get here, we only found empty directories
+        return true
+    }
+
     // MARK: - Downloading VMs
     
     #if os(macOS) && arch(arm64)
