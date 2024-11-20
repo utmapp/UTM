@@ -92,6 +92,17 @@
             </parameter>
         </command>
         
+        <command name="import" code="coreimpo" description="Import a new virtual machine from a file.">
+            <cocoa class="UTMScriptingImportCommand"/>
+            <parameter name="new" code="imcl" type="type" description="Specify 'virtual machine' here.">
+                <cocoa key="ObjectClass"/>
+            </parameter>
+            <parameter name="from" code="ifil" type="file" description="The virtual machine file (.utm) to import.">
+                <cocoa key="file"/>
+            </parameter>
+            <result type="specifier" description="The new virtual machine (as a specifier)."/>
+        </command>
+        
         <command name="export" code="coreexpo" description="Export a virtual machine to a specified location.">
             <cocoa class="UTMScriptingExportCommand"/>
             <access-group identifier="*"/>
