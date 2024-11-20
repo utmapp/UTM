@@ -922,6 +922,7 @@
 		CEE8B4C32B71E2BA0035AE86 /* UTMLoggingSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE020BAA24AEE00000B44AB6 /* UTMLoggingSwift.swift */; };
 		CEEC811B24E48EC700ACB0B3 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEEC811A24E48EC600ACB0B3 /* SettingsView.swift */; };
 		CEECE13C25E47D9500A2AAB8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEECE13B25E47D9500A2AAB8 /* AppDelegate.swift */; };
+		CEEF26A72CEDAEEA003F7B8C /* UTMDownloadMacSupportToolsTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEEF26A62CEDAEEA003F7B8C /* UTMDownloadMacSupportToolsTask.swift */; };
 		CEF01DB22B6724A300725A0F /* UTMSpiceVirtualMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF01DB12B6724A300725A0F /* UTMSpiceVirtualMachine.swift */; };
 		CEF01DB32B6724A300725A0F /* UTMSpiceVirtualMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF01DB12B6724A300725A0F /* UTMSpiceVirtualMachine.swift */; };
 		CEF01DB42B6724A300725A0F /* UTMSpiceVirtualMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF01DB12B6724A300725A0F /* UTMSpiceVirtualMachine.swift */; };
@@ -2052,6 +2053,7 @@
 		CEEB66452284B942002737B2 /* VMKeyboardButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMKeyboardButton.m; sourceTree = "<group>"; };
 		CEEC811A24E48EC600ACB0B3 /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		CEECE13B25E47D9500A2AAB8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		CEEF26A62CEDAEEA003F7B8C /* UTMDownloadMacSupportToolsTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMDownloadMacSupportToolsTask.swift; sourceTree = "<group>"; };
 		CEF01DB12B6724A300725A0F /* UTMSpiceVirtualMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMSpiceVirtualMachine.swift; sourceTree = "<group>"; };
 		CEF01DB62B674BF000725A0F /* UTMPipeInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMPipeInterface.swift; sourceTree = "<group>"; };
 		CEF0300526A25A6900667B63 /* VMWizardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMWizardView.swift; sourceTree = "<group>"; };
@@ -2645,6 +2647,7 @@
 				84B36D2427B704C200C22685 /* UTMDownloadVMTask.swift */,
 				844EC0FA2773EE49003C104A /* UTMDownloadIPSWTask.swift */,
 				843232B628C4816100CFBC97 /* UTMDownloadSupportToolsTask.swift */,
+				CEEF26A62CEDAEEA003F7B8C /* UTMDownloadMacSupportToolsTask.swift */,
 				835AA7B026AB7C85007A0411 /* UTMPendingVirtualMachine.swift */,
 				CE611BE629F50CAD001817BC /* UTMReleaseHelper.swift */,
 				847BF9A92A49C783000BD9AA /* VMData.swift */,
@@ -3838,6 +3841,7 @@
 				CEEC811B24E48EC700ACB0B3 /* SettingsView.swift in Sources */,
 				8443EFF42845641600B2E6E2 /* UTMQemuConfigurationDrive.swift in Sources */,
 				CEFE96772B69A7CC000F00C9 /* VMRemoteSessionState.swift in Sources */,
+				CEEF26A72CEDAEEA003F7B8C /* UTMDownloadMacSupportToolsTask.swift in Sources */,
 				CE2D957024AD4F990059923A /* VMRemovableDrivesView.swift in Sources */,
 				CE25124B29BFE273000790AB /* UTMScriptable.swift in Sources */,
 				CE0B6CFE24AD56AE00FE012D /* UTMLogging.m in Sources */,

@@ -92,6 +92,9 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
             restartToolbarItem.isEnabled = false
             sharedFolderToolbarItem.isEnabled = false
         }
+        if #available(macOS 15, *) {
+            drivesToolbarItem.isEnabled = true
+        }
     }
     
     override func enterSuspended(isBusy busy: Bool) {
@@ -285,7 +288,8 @@ extension VMDisplayAppleWindowController {
         if #available(macOS 15, *), appleConfig.system.boot.operatingSystem == .macOS {
             let item = NSMenuItem()
             item.title = NSLocalizedString("Install Guest Tools…", comment: "VMDisplayAppleWindowController")
-            item.isEnabled = true
+            item.isEnabled = !appleConfig.isGuestToolsInstallRequested
+            item.state = appleVM.hasGuestToolsAttached ? .on : .off
             item.target = self
             item.action = #selector(installGuestTools)
             menu.addItem(item)
@@ -323,6 +327,18 @@ extension VMDisplayAppleWindowController {
         menu.update()
     }
 
+    @nonobjc private func withErrorAlert(_ callback: @escaping () async throws -> Void) {
+        Task.detached(priority: .background) { [self] in
+            do {
+                try await callback()
+            } catch {
+                Task { @MainActor in
+                    showErrorAlert(error.localizedDescription)
+                }
+            }
+        }
+    }
+
     @available(macOS 15, *)
     func ejectDrive(sender: AnyObject) {
         guard let menu = sender as? NSMenuItem else {
@@ -330,14 +346,8 @@ extension VMDisplayAppleWindowController {
             return
         }
         let drive = appleConfig.drives[menu.tag]
-        Task.detached(priority: .background) { [self] in
-            do {
-                try await appleVM.eject(drive)
-            } catch {
-                Task { @MainActor in
-                    showErrorAlert(error.localizedDescription)
-                }
-            }
+        withErrorAlert {
+            try await self.appleVM.eject(drive)
         }
     }
 
@@ -355,14 +365,8 @@ extension VMDisplayAppleWindowController {
                 logger.debug("no file selected")
                 return
             }
-            Task.detached(priority: .background) { [self] in
-                do {
-                    try await appleVM.changeMedium(drive, to: url)
-                } catch {
-                    Task { @MainActor in
-                        showErrorAlert(error.localizedDescription)
-                    }
-                }
+            self.withErrorAlert {
+                try await self.appleVM.changeMedium(drive, to: url)
             }
         }
     }
@@ -384,6 +388,15 @@ extension VMDisplayAppleWindowController {
 
     @available(macOS 15, *)
     @MainActor private func installGuestTools(sender: AnyObject) {
+        if appleVM.hasGuestToolsAttached {
+            withErrorAlert {
+                try await self.appleVM.detachGuestTools()
+            }
+        } else {
+            showConfirmAlert(NSLocalizedString("An USB device containing the installer will be mounted in the virtual machine. Only macOS Sequoia (15.0) and newer guests are supported.", comment: "VMDisplayAppleDisplayController")) {
+                self.appleConfig.isGuestToolsInstallRequested = true
+            }
+        }
     }
 }
 

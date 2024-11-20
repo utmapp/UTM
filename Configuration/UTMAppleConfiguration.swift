@@ -36,7 +36,10 @@ final class UTMAppleConfiguration: UTMConfiguration {
     @Published private var _networks: [UTMAppleConfigurationNetwork] = [.init()]
     
     @Published private var _serials: [UTMAppleConfigurationSerial] = []
-    
+
+    /// Set to true to request guest tools install. Not saved.
+    @Published var isGuestToolsInstallRequested: Bool = false
+
     var backend: UTMBackend {
         .apple
     }

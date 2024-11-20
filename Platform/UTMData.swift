@@ -743,11 +743,8 @@ enum AlertItem: Identifiable {
             listRemove(pendingVM: task.pendingVM)
         }
     }
-    
-    func mountSupportTools(for vm: any UTMVirtualMachine) async throws {
-        guard let vm = vm as? any UTMSpiceVirtualMachine else {
-            throw UTMDataError.unsupportedBackend
-        }
+
+    private func mountWindowsSupportTools(for vm: any UTMSpiceVirtualMachine) async throws {
         let task = UTMDownloadSupportToolsTask(for: vm)
         if await task.hasExistingSupportTools {
             vm.config.qemu.isGuestToolsInstallRequested = false
@@ -764,6 +761,40 @@ enum AlertItem: Identifiable {
                 listRemove(pendingVM: task.pendingVM)
             }
         }
+    }
+
+    #if os(macOS)
+    @available(macOS 15, *)
+    private func mountMacSupportTools(for vm: UTMAppleVirtualMachine) async throws {
+        let task = UTMDownloadMacSupportToolsTask(for: vm)
+        if await task.hasExistingSupportTools {
+            vm.config.isGuestToolsInstallRequested = false
+            _ = try await task.mountTools()
+        } else {
+            listAdd(pendingVM: task.pendingVM)
+            Task {
+                do {
+                    _ = try await task.download()
+                } catch {
+                    showErrorAlert(message: error.localizedDescription)
+                }
+                vm.config.isGuestToolsInstallRequested = false
+                listRemove(pendingVM: task.pendingVM)
+            }
+        }
+    }
+    #endif
+
+    func mountSupportTools(for vm: any UTMVirtualMachine) async throws {
+        if let vm = vm as? any UTMSpiceVirtualMachine {
+            return try await mountWindowsSupportTools(for: vm)
+        }
+        #if os(macOS)
+        if #available(macOS 15, *), let vm = vm as? UTMAppleVirtualMachine, vm.config.system.boot.operatingSystem == .macOS {
+            return try await mountMacSupportTools(for: vm)
+        }
+        #endif
+        throw UTMDataError.unsupportedBackend
     }
     
     /// Cancel a download and discard any data

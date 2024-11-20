@@ -740,57 +740,18 @@ extension UTMAppleVirtualMachine: VZVirtualMachineDelegate {
 
 @available(macOS 15, *)
 extension UTMAppleVirtualMachine {
-    /// Eject a removable drive
-    /// - Parameter drive: Removable drive
-    func eject(_ drive: UTMAppleConfigurationDrive) async throws {
-        if state == .started {
-            if let oldUrl = activeResourceUrls.removeValue(forKey: drive.id) {
-                oldUrl.stopAccessingSecurityScopedResource()
-            }
-            if let device = removableDrives.removeValue(forKey: drive.id) as? any VZUSBDevice {
-                try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, any Error>) in
-                    vmQueue.async {
-                        guard let apple = self.apple, let usbController = apple.usbControllers.first else {
-                            continuation.resume(throwing: UTMAppleVirtualMachineError.operationNotAvailable)
-                            return
-                        }
-                        usbController.detach(device: device) { error in
-                            if let error = error {
-                                continuation.resume(throwing: error)
-                            } else {
-                                continuation.resume()
-                            }
-                        }
-                    }
-                }
-            }
+    private func detachDrive(id: String) async throws {
+        if let oldUrl = activeResourceUrls.removeValue(forKey: id) {
+            oldUrl.stopAccessingSecurityScopedResource()
         }
-        await registryEntry.removeExternalDrive(forId: drive.id)
-    }
-
-    /// Change mount image of a removable drive
-    /// - Parameters:
-    ///   - drive: Removable drive
-    ///   - url: New mount image
-    func changeMedium(_ drive: UTMAppleConfigurationDrive, to url: URL) async throws {
-        try await eject(drive)
-        if state == .started {
-            guard url.startAccessingSecurityScopedResource() else {
-                throw UTMAppleVirtualMachineError.cannotAccessResource(url)
-            }
-            activeResourceUrls[drive.id] = url
-            var newDrive = drive
-            newDrive.imageURL = url
-            let attachment = try newDrive.vzDiskImage()!
-            let configuration = VZUSBMassStorageDeviceConfiguration(attachment: attachment)
-            let device = VZUSBMassStorageDevice(configuration: configuration)
+        if let device = removableDrives.removeValue(forKey: id) as? any VZUSBDevice {
             try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, any Error>) in
                 vmQueue.async {
                     guard let apple = self.apple, let usbController = apple.usbControllers.first else {
                         continuation.resume(throwing: UTMAppleVirtualMachineError.operationNotAvailable)
                         return
                     }
-                    usbController.attach(device: device) { error in
+                    usbController.detach(device: device) { error in
                         if let error = error {
                             continuation.resume(throwing: error)
                         } else {
@@ -799,7 +760,59 @@ extension UTMAppleVirtualMachine {
                     }
                 }
             }
-            removableDrives[drive.id] = device
+        }
+    }
+
+    /// Eject a removable drive
+    /// - Parameter drive: Removable drive
+    func eject(_ drive: UTMAppleConfigurationDrive) async throws {
+        if state == .started {
+            try await detachDrive(id: drive.id)
+        }
+        await registryEntry.removeExternalDrive(forId: drive.id)
+    }
+
+    private func attachDrive(_ drive: VZDiskImageStorageDeviceAttachment, imageURL: URL, id: String) async throws {
+        if imageURL.startAccessingSecurityScopedResource() {
+            activeResourceUrls[id] = imageURL
+        }
+        let configuration = VZUSBMassStorageDeviceConfiguration(attachment: drive)
+        let device = VZUSBMassStorageDevice(configuration: configuration)
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, any Error>) in
+            vmQueue.async {
+                guard let apple = self.apple, let usbController = apple.usbControllers.first else {
+                    continuation.resume(throwing: UTMAppleVirtualMachineError.operationNotAvailable)
+                    return
+                }
+                usbController.attach(device: device) { error in
+                    if let error = error {
+                        continuation.resume(throwing: error)
+                    } else {
+                        continuation.resume()
+                    }
+                }
+            }
+        }
+        removableDrives[id] = device
+    }
+
+    /// Change mount image of a removable drive
+    /// - Parameters:
+    ///   - drive: Removable drive
+    ///   - url: New mount image
+    func changeMedium(_ drive: UTMAppleConfigurationDrive, to url: URL) async throws {
+        var newDrive = drive
+        newDrive.imageURL = url
+        let scopedAccess = url.startAccessingSecurityScopedResource()
+        defer {
+            if scopedAccess {
+                url.stopAccessingSecurityScopedResource()
+            }
+        }
+        let attachment = try newDrive.vzDiskImage()!
+        if state == .started {
+            try await detachDrive(id: drive.id)
+            try await attachDrive(attachment, imageURL: url, id: drive.id)
         }
         let file = try UTMRegistryEntry.File(url: url)
         await registryEntry.setExternalDrive(file, forId: drive.id)
@@ -851,6 +864,30 @@ extension UTMAppleVirtualMachine {
             }
         }
         self.removableDrives = removableDrives
+    }
+
+    private var guestToolsId: String {
+        "guest-tools"
+    }
+
+    var hasGuestToolsAttached: Bool {
+        removableDrives.keys.contains(guestToolsId)
+    }
+
+    func attachGuestTools(_ imageURL: URL) async throws {
+        try await detachDrive(id: guestToolsId)
+        let scopedAccess = imageURL.startAccessingSecurityScopedResource()
+        defer {
+            if scopedAccess {
+                imageURL.stopAccessingSecurityScopedResource()
+            }
+        }
+        let attachment = try VZDiskImageStorageDeviceAttachment(url: imageURL, readOnly: true)
+        try await attachDrive(attachment, imageURL: imageURL, id: guestToolsId)
+    }
+
+    func detachGuestTools() async throws {
+        try await detachDrive(id: guestToolsId)
     }
 }
 
