@@ -191,7 +191,7 @@ extension UTMAppleConfigurationVirtualization {
                 throw UTMAppleConfigurationError.rosettaNotSupported
             }
             #endif
-            if hasClipboardSharing && !isMacOSGuest {
+            if hasClipboardSharing {
                 let spiceClipboardAgent = VZSpiceAgentPortAttachment()
                 spiceClipboardAgent.sharesClipboard = true
                 let consolePort = VZVirtioConsolePortConfiguration()

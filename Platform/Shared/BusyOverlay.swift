@@ -27,8 +27,15 @@ struct BusyOverlay: View {
                 EmptyView()
             }
         }
-        .alert(item: $data.alertMessage) { alertMessage in
-            Alert(title: Text(alertMessage.message))
+        .alert(item: $data.alertItem) { item in
+            switch item {
+            case .downloadUrl(let url):
+                return Alert(title: Text("Download VM"), message: Text("Do you want to download '\(url)'?"), primaryButton: .cancel(), secondaryButton: .default(Text("Download")) {
+                    data.downloadUTMZip(from: url)
+                })
+            case .message(let message):
+                return Alert(title: Text(message))
+            }
         }
     }
 }

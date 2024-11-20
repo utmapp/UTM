@@ -183,5 +183,14 @@ struct VMContextMenuModifier: ViewModifier {
                 }
             }
         }
+        #if os(macOS)
+        .onChange(of: (vm.config as? UTMAppleConfiguration)?.isGuestToolsInstallRequested) { newValue in
+            if newValue == true {
+                data.busyWorkAsync {
+                    try await data.mountSupportTools(for: vm.wrapped!)
+                }
+            }
+        }
+        #endif
     }
 }

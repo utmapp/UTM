@@ -36,7 +36,9 @@ import Combine
     @Published private var _windowSettings: [Int: Window]
     
     @Published private var _terminalSettings: [Int: Terminal]
-    
+
+    @Published private var _resolutionSettings: [Int: Resolution]
+
     @Published private var _hasMigratedConfig: Bool
     
     @Published private var _macRecoveryIpsw: File?
@@ -50,6 +52,7 @@ import Combine
         case sharedDirectories = "SharedDirectories"
         case windowSettings = "WindowSettings"
         case terminalSettings = "TerminalSettings"
+        case resolutionSettings = "ResolutionSettings"
         case hasMigratedConfig = "MigratedConfig"
         case macRecoveryIpsw = "MacRecoveryIpsw"
     }
@@ -69,6 +72,7 @@ import Combine
         _sharedDirectories = []
         _windowSettings = [:]
         _terminalSettings = [:]
+        _resolutionSettings = [:]
         _hasMigratedConfig = false
     }
     
@@ -89,6 +93,7 @@ import Combine
         _sharedDirectories = try container.decode([File].self, forKey: .sharedDirectories).filter({ $0.isValid })
         _windowSettings = try container.decode([Int: Window].self, forKey: .windowSettings)
         _terminalSettings = try container.decodeIfPresent([Int: Terminal].self, forKey: .terminalSettings) ?? [:]
+        _resolutionSettings = try container.decodeIfPresent([Int: Resolution].self, forKey: .resolutionSettings) ?? [:]
         _hasMigratedConfig = try container.decodeIfPresent(Bool.self, forKey: .hasMigratedConfig) ?? false
         _macRecoveryIpsw = try container.decodeIfPresent(File.self, forKey: .macRecoveryIpsw)
     }
@@ -103,6 +108,7 @@ import Combine
         try container.encode(_sharedDirectories, forKey: .sharedDirectories)
         try container.encode(_windowSettings, forKey: .windowSettings)
         try container.encode(_terminalSettings, forKey: .terminalSettings)
+        try container.encode(_resolutionSettings, forKey: .resolutionSettings)
         if _hasMigratedConfig {
             try container.encode(_hasMigratedConfig, forKey: .hasMigratedConfig)
         }
@@ -201,7 +207,17 @@ extension UTMRegistryEntry: UTMRegistryEntryDecodable {}
             _terminalSettings = newValue
         }
     }
-    
+
+    var resolutionSettings: [Int: Resolution] {
+        get {
+            _resolutionSettings
+        }
+
+        set {
+            _resolutionSettings = newValue
+        }
+    }
+
     var hasMigratedConfig: Bool {
         get {
             _hasMigratedConfig
@@ -254,6 +270,7 @@ extension UTMRegistryEntry: UTMRegistryEntryDecodable {}
         sharedDirectories = other.sharedDirectories
         windowSettings = other.windowSettings
         terminalSettings = other.terminalSettings
+        resolutionSettings = other.resolutionSettings
         hasMigratedConfig = other.hasMigratedConfig
     }
     
@@ -491,6 +508,31 @@ extension UTMRegistryEntry {
             var container = encoder.container(keyedBy: CodingKeys.self)
             try container.encode(columns, forKey: .columns)
             try container.encode(rows, forKey: .rows)
+        }
+    }
+
+    struct Resolution: Codable, Equatable {
+        var size: CGSize = .zero
+
+        var isFullscreen: Bool = false
+
+        private enum CodingKeys: String, CodingKey {
+            case size = "Size"
+            case isFullscreen = "Fullscreen"
+        }
+
+        init() {}
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            size = try container.decode(CGSize.self, forKey: .size)
+            isFullscreen = try container.decode(Bool.self, forKey: .isFullscreen)
+        }
+
+        func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(size, forKey: .size)
+            try container.encode(isFullscreen, forKey: .isFullscreen)
         }
     }
 }

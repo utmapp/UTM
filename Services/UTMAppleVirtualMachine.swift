@@ -114,8 +114,10 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
     
     weak var screenshotDelegate: UTMScreenshotProvider?
     
-    private var activeResourceUrls: [URL] = []
-    
+    private var activeResourceUrls: [String: URL] = [:]
+
+    private var removableDrives: [String: Any] = [:]
+
     @MainActor required init(packageUrl: URL, configuration: UTMAppleConfiguration, isShortcut: Bool = false) throws {
         self.isScopedAccess = packageUrl.startAccessingSecurityScopedResource()
         // load configuration
@@ -187,14 +189,18 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             } else {
                 try await _start(options: options)
             }
+            if #available(macOS 15, *) {
+                try await attachExternalDrives()
+            }
             if #available(macOS 12, *) {
                 Task { @MainActor in
+                    let tag = config.shareDirectoryTag
                     sharedDirectoriesChanged = config.sharedDirectoriesPublisher.sink { [weak self] newShares in
                         guard let self = self else {
                             return
                         }
                         self.vmQueue.async {
-                            self.updateSharedDirectories(with: newShares)
+                            self.updateSharedDirectories(with: newShares, tag: tag)
                         }
                     }
                 }
@@ -516,10 +522,10 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
     }
     
     @available(macOS 12, *)
-    private func updateSharedDirectories(with newShares: [UTMAppleConfigurationSharedDirectory]) {
+    private func updateSharedDirectories(with newShares: [UTMAppleConfigurationSharedDirectory], tag: String) {
         guard let fsConfig = apple?.directorySharingDevices.first(where: { device in
             if let device = device as? VZVirtioFileSystemDevice {
-                return device.tag == "share"
+                return device.tag == tag
             } else {
                 return false
             }
@@ -614,7 +620,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             let drive = config.drives[i]
             if let url = drive.imageURL, drive.isExternal {
                 if url.startAccessingSecurityScopedResource() {
-                    activeResourceUrls.append(url)
+                    activeResourceUrls[drive.id] = url
                 } else {
                     config.drives[i].imageURL = nil
                     throw UTMAppleVirtualMachineError.cannotAccessResource(url)
@@ -625,7 +631,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             let share = config.sharedDirectories[i]
             if let url = share.directoryURL {
                 if url.startAccessingSecurityScopedResource() {
-                    activeResourceUrls.append(url)
+                    activeResourceUrls[share.id.uuidString] = url
                 } else {
                     config.sharedDirectories[i].directoryURL = nil
                     throw UTMAppleVirtualMachineError.cannotAccessResource(url)
@@ -635,7 +641,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
     }
     
     @MainActor private func stopAccesingResources() {
-        for url in activeResourceUrls {
+        for url in activeResourceUrls.values {
             url.stopAccessingSecurityScopedResource()
         }
         activeResourceUrls.removeAll()
@@ -649,6 +655,7 @@ extension UTMAppleVirtualMachine: VZVirtualMachineDelegate {
             apple = nil
             snapshotUnsupportedError = nil
         }
+        removableDrives.removeAll()
         sharedDirectoriesChanged = nil
         Task { @MainActor in
             stopAccesingResources()
@@ -728,6 +735,159 @@ extension UTMAppleVirtualMachine: VZVirtualMachineDelegate {
     
     var description: String {
         ""
+    }
+}
+
+@available(macOS 15, *)
+extension UTMAppleVirtualMachine {
+    private func detachDrive(id: String) async throws {
+        if let oldUrl = activeResourceUrls.removeValue(forKey: id) {
+            oldUrl.stopAccessingSecurityScopedResource()
+        }
+        if let device = removableDrives.removeValue(forKey: id) as? any VZUSBDevice {
+            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, any Error>) in
+                vmQueue.async {
+                    guard let apple = self.apple, let usbController = apple.usbControllers.first else {
+                        continuation.resume(throwing: UTMAppleVirtualMachineError.operationNotAvailable)
+                        return
+                    }
+                    usbController.detach(device: device) { error in
+                        if let error = error {
+                            continuation.resume(throwing: error)
+                        } else {
+                            continuation.resume()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /// Eject a removable drive
+    /// - Parameter drive: Removable drive
+    func eject(_ drive: UTMAppleConfigurationDrive) async throws {
+        if state == .started {
+            try await detachDrive(id: drive.id)
+        }
+        await registryEntry.removeExternalDrive(forId: drive.id)
+    }
+
+    private func attachDrive(_ drive: VZDiskImageStorageDeviceAttachment, imageURL: URL, id: String) async throws {
+        if imageURL.startAccessingSecurityScopedResource() {
+            activeResourceUrls[id] = imageURL
+        }
+        let configuration = VZUSBMassStorageDeviceConfiguration(attachment: drive)
+        let device = VZUSBMassStorageDevice(configuration: configuration)
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, any Error>) in
+            vmQueue.async {
+                guard let apple = self.apple, let usbController = apple.usbControllers.first else {
+                    continuation.resume(throwing: UTMAppleVirtualMachineError.operationNotAvailable)
+                    return
+                }
+                usbController.attach(device: device) { error in
+                    if let error = error {
+                        continuation.resume(throwing: error)
+                    } else {
+                        continuation.resume()
+                    }
+                }
+            }
+        }
+        removableDrives[id] = device
+    }
+
+    /// Change mount image of a removable drive
+    /// - Parameters:
+    ///   - drive: Removable drive
+    ///   - url: New mount image
+    func changeMedium(_ drive: UTMAppleConfigurationDrive, to url: URL) async throws {
+        var newDrive = drive
+        newDrive.imageURL = url
+        let scopedAccess = url.startAccessingSecurityScopedResource()
+        defer {
+            if scopedAccess {
+                url.stopAccessingSecurityScopedResource()
+            }
+        }
+        let attachment = try newDrive.vzDiskImage()!
+        if state == .started {
+            try await detachDrive(id: drive.id)
+            try await attachDrive(attachment, imageURL: url, id: drive.id)
+        }
+        let file = try UTMRegistryEntry.File(url: url)
+        await registryEntry.setExternalDrive(file, forId: drive.id)
+    }
+
+    private func _attachExternalDrives(_ drives: [any VZUSBDevice]) -> (any Error)? {
+        let group = DispatchGroup()
+        var lastError: (any Error)?
+        group.enter()
+        vmQueue.async {
+            defer {
+                group.leave()
+            }
+            guard let apple = self.apple, let usbController = apple.usbControllers.first else {
+                lastError = UTMAppleVirtualMachineError.operationNotAvailable
+                return
+            }
+            for device in drives {
+                group.enter()
+                usbController.attach(device: device) { error in
+                    if let error = error {
+                        lastError = error
+                    }
+                    group.leave()
+                }
+            }
+        }
+        group.wait()
+        return lastError
+    }
+
+    private func attachExternalDrives() async throws {
+        let removableDrives = try await config.drives.reduce(into: [String: any VZUSBDevice]()) { devices, drive in
+            guard drive.isExternal else {
+                return
+            }
+            guard let attachment = try drive.vzDiskImage() else {
+                return
+            }
+            let configuration = VZUSBMassStorageDeviceConfiguration(attachment: attachment)
+            devices[drive.id] = VZUSBMassStorageDevice(configuration: configuration)
+        }
+        let drives = Array(removableDrives.values)
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, any Error>) in
+            if let error = self._attachExternalDrives(drives) {
+                continuation.resume(throwing: error)
+            } else {
+                continuation.resume()
+            }
+        }
+        self.removableDrives = removableDrives
+    }
+
+    private var guestToolsId: String {
+        "guest-tools"
+    }
+
+    var hasGuestToolsAttached: Bool {
+        removableDrives.keys.contains(guestToolsId)
+    }
+
+    func attachGuestTools(_ imageURL: URL) async throws {
+        try await detachDrive(id: guestToolsId)
+        let scopedAccess = imageURL.startAccessingSecurityScopedResource()
+        defer {
+            if scopedAccess {
+                imageURL.stopAccessingSecurityScopedResource()
+            }
+        }
+        let attachment = try VZDiskImageStorageDeviceAttachment(url: imageURL, readOnly: true)
+        try await attachDrive(attachment, imageURL: imageURL, id: guestToolsId)
+    }
+
+    func detachGuestTools() async throws {
+        try await detachDrive(id: guestToolsId)
     }
 }
 

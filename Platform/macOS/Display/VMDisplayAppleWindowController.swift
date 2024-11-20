@@ -83,12 +83,17 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         drivesToolbarItem.isEnabled = false
         usbToolbarItem.isEnabled = false
         resizeConsoleToolbarItem.isEnabled = false
-        if #available(macOS 12, *) {
+        if #available(macOS 13, *) {
+            sharedFolderToolbarItem.isEnabled = true
+        } else if #available(macOS 12, *) {
             sharedFolderToolbarItem.isEnabled = appleConfig.system.boot.operatingSystem == .linux
         } else {
             // stop() not available on macOS 11 for some reason
             restartToolbarItem.isEnabled = false
             sharedFolderToolbarItem.isEnabled = false
+        }
+        if #available(macOS 15, *) {
+            drivesToolbarItem.isEnabled = true
         }
     }
     
@@ -114,6 +119,10 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
     
     @IBAction override func sharedFolderButtonPressed(_ sender: Any) {
         guard #available(macOS 12, *) else {
+            return
+        }
+        guard appleConfig.system.boot.operatingSystem == .linux else {
+            openShareMenu(sender)
             return
         }
         if !isSharePathAlertShownOnce && !isSharePathAlertShownPersistent {
@@ -252,6 +261,141 @@ extension VMDisplayAppleWindowController {
                 return
             }
             onComplete(url)
+        }
+    }
+}
+
+@objc extension VMDisplayAppleWindowController {
+    @IBAction override func drivesButtonPressed(_ sender: Any) {
+        let menu = NSMenu()
+        menu.autoenablesItems = false
+        let item = NSMenuItem()
+        item.title = NSLocalizedString("Querying drives status...", comment: "VMDisplayWindowController")
+        item.isEnabled = false
+        menu.addItem(item)
+        updateDrivesMenu(menu, drives: appleConfig.drives)
+        menu.popUp(positioning: nil, at: NSEvent.mouseLocation, in: nil)
+    }
+
+    @nonobjc func updateDrivesMenu(_ menu: NSMenu, drives: [UTMAppleConfigurationDrive]) {
+        menu.removeAllItems()
+        if drives.count == 0 {
+            let item = NSMenuItem()
+            item.title = NSLocalizedString("No drives connected.", comment: "VMDisplayWindowController")
+            item.isEnabled = false
+            menu.addItem(item)
+        }
+        if #available(macOS 15, *), appleConfig.system.boot.operatingSystem == .macOS {
+            let item = NSMenuItem()
+            item.title = NSLocalizedString("Install Guest Tools…", comment: "VMDisplayAppleWindowController")
+            item.isEnabled = !appleConfig.isGuestToolsInstallRequested
+            item.state = appleVM.hasGuestToolsAttached ? .on : .off
+            item.target = self
+            item.action = #selector(installGuestTools)
+            menu.addItem(item)
+        }
+        for i in drives.indices {
+            let drive = drives[i]
+            if !drive.isExternal {
+                continue // skip non-disks
+            }
+            let item = NSMenuItem()
+            item.title = label(for: drive)
+            if !drive.isExternal {
+                item.isEnabled = false
+            } else if #available(macOS 15, *) {
+                let submenu = NSMenu()
+                submenu.autoenablesItems = false
+                let eject = NSMenuItem(title: NSLocalizedString("Eject", comment: "VMDisplayWindowController"),
+                                       action: #selector(ejectDrive),
+                                       keyEquivalent: "")
+                eject.target = self
+                eject.tag = i
+                eject.isEnabled = drive.imageURL != nil
+                submenu.addItem(eject)
+                let change = NSMenuItem(title: NSLocalizedString("Change", comment: "VMDisplayWindowController"),
+                                        action: #selector(changeDriveImage),
+                                        keyEquivalent: "")
+                change.target = self
+                change.tag = i
+                change.isEnabled = true
+                submenu.addItem(change)
+                item.submenu = submenu
+            }
+            menu.addItem(item)
+        }
+        menu.update()
+    }
+
+    @nonobjc private func withErrorAlert(_ callback: @escaping () async throws -> Void) {
+        Task.detached(priority: .background) { [self] in
+            do {
+                try await callback()
+            } catch {
+                Task { @MainActor in
+                    showErrorAlert(error.localizedDescription)
+                }
+            }
+        }
+    }
+
+    @available(macOS 15, *)
+    func ejectDrive(sender: AnyObject) {
+        guard let menu = sender as? NSMenuItem else {
+            logger.error("wrong sender for ejectDrive")
+            return
+        }
+        let drive = appleConfig.drives[menu.tag]
+        withErrorAlert {
+            try await self.appleVM.eject(drive)
+        }
+    }
+
+    @available(macOS 15, *)
+    func openDriveImage(forDriveIndex index: Int) {
+        let drive = appleConfig.drives[index]
+        let openPanel = NSOpenPanel()
+        openPanel.title = NSLocalizedString("Select Drive Image", comment: "VMDisplayWindowController")
+        openPanel.allowedContentTypes = [.data]
+        openPanel.beginSheetModal(for: window!) { response in
+            guard response == .OK else {
+                return
+            }
+            guard let url = openPanel.url else {
+                logger.debug("no file selected")
+                return
+            }
+            self.withErrorAlert {
+                try await self.appleVM.changeMedium(drive, to: url)
+            }
+        }
+    }
+
+    @available(macOS 15, *)
+    func changeDriveImage(sender: AnyObject) {
+        guard let menu = sender as? NSMenuItem else {
+            logger.error("wrong sender for ejectDrive")
+            return
+        }
+        openDriveImage(forDriveIndex: menu.tag)
+    }
+
+    @nonobjc private func label(for drive: UTMAppleConfigurationDrive) -> String {
+        let imageURL = drive.imageURL
+        return String.localizedStringWithFormat(NSLocalizedString("USB Mass Storage: %@", comment: "VMDisplayAppleDisplayController"),
+                                                imageURL?.lastPathComponent ?? NSLocalizedString("none", comment: "VMDisplayAppleDisplayController"))
+    }
+
+    @available(macOS 15, *)
+    @MainActor private func installGuestTools(sender: AnyObject) {
+        if appleVM.hasGuestToolsAttached {
+            withErrorAlert {
+                try await self.appleVM.detachGuestTools()
+            }
+        } else {
+            showConfirmAlert(NSLocalizedString("An USB device containing the installer will be mounted in the virtual machine. Only macOS Sequoia (15.0) and newer guests are supported.", comment: "VMDisplayAppleDisplayController")) {
+                self.appleConfig.isGuestToolsInstallRequested = true
+            }
         }
     }
 }

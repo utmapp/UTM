@@ -1,0 +1,255 @@
+From 95102597efaddede487bd03c191fa0a08b70e3b6 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Mon, 11 Nov 2024 14:47:39 -0800
+Subject: [PATCH 1/2] soup-tld: disabled when libpsl is optional
+
+When building without libpsl, we no longer have soup-tld.c. As a result,
+we do not provide those APIs in the built library and additionally the
+following change is made to soup_cookie_jar_add_cookie_full()
+
+1. We no longer reject cookies for public domains
+2. If the accept policy is not SOUP_COOKIE_JAR_ACCEPT_ALWAYS we assume
+   all incoming cookie is third party and reject it.
+---
+ libsoup/cookies/soup-cookie-jar.c | 15 +++++++++++++++
+ libsoup/meson.build               |  5 ++++-
+ meson.build                       |  5 ++++-
+ tests/meson.build                 |  5 ++++-
+ 4 files changed, 27 insertions(+), 3 deletions(-)
+
+diff --git a/libsoup/cookies/soup-cookie-jar.c b/libsoup/cookies/soup-cookie-jar.c
+index bdb6697a..753c36b5 100644
+--- a/libsoup/cookies/soup-cookie-jar.c
++++ b/libsoup/cookies/soup-cookie-jar.c
+@@ -511,6 +511,7 @@ normalize_cookie_domain (const char *domain)
+ 	return domain;
+ }
+ 
++#ifdef HAVE_TLD
+ static gboolean
+ incoming_cookie_is_third_party (SoupCookieJar            *jar,
+ 				SoupCookie               *cookie,
+@@ -563,6 +564,16 @@ incoming_cookie_is_third_party (SoupCookieJar            *jar,
+ 
+         return retval;
+ }
++#else
++static gboolean
++incoming_cookie_is_third_party (SoupCookieJar            *jar,
++				SoupCookie               *cookie,
++				GUri                     *first_party,
++				SoupCookieJarAcceptPolicy policy)
++{
++	return TRUE;
++}
++#endif
+ 
+ static gboolean
+ string_contains_ctrlcode (const char *s)
+@@ -612,7 +623,11 @@ soup_cookie_jar_add_cookie_full (SoupCookieJar *jar, SoupCookie *cookie, GUri *u
+ 
+ 	/* Never accept cookies for public domains. */
+ 	if (!g_hostname_is_ip_address (soup_cookie_get_domain (cookie)) &&
++#ifdef HAVE_TLD
+ 	    soup_tld_domain_is_public_suffix (soup_cookie_get_domain (cookie))) {
++#else
++	    priv->accept_policy != SOUP_COOKIE_JAR_ACCEPT_ALWAYS){
++#endif
+ 		soup_cookie_free (cookie);
+ 		return;
+ 	}
+diff --git a/libsoup/meson.build b/libsoup/meson.build
+index d920b522..b889931d 100644
+--- a/libsoup/meson.build
++++ b/libsoup/meson.build
+@@ -87,11 +87,14 @@ soup_sources = [
+   'soup-session-feature.c',
+   'soup-socket-properties.c',
+   'soup-status.c',
+-  'soup-tld.c',
+   'soup-uri-utils.c',
+   'soup-version.c',
+ ]
+ 
++if libpsl_dep.found()
++  soup_sources += 'soup-tld.c'
++endif
++
+ soup_private_enum_headers = [
+   'soup-connection.h',
+ ]
+diff --git a/meson.build b/meson.build
+index f7c63389..50ca7b91 100644
+--- a/meson.build
++++ b/meson.build
+@@ -155,7 +155,10 @@ endif
+ 
+ libpsl_required_version = '>= 0.20'
+ libpsl_dep = dependency('libpsl', version : libpsl_required_version,
+-  fallback : ['libpsl', 'libpsl_dep'])
++  fallback : ['libpsl', 'libpsl_dep'], required : false)
++if libnghttp2_dep.found()
++  cdata.set('HAVE_TLD', true)
++endif
+ 
+ if cc.has_function('gmtime_r', prefix : '#include <time.h>', args : default_source_flag)
+     cdata.set('HAVE_GMTIME_R', '1')
+diff --git a/tests/meson.build b/tests/meson.build
+index 01a0c63f..cf24ef97 100644
+--- a/tests/meson.build
++++ b/tests/meson.build
+@@ -102,12 +102,15 @@ tests = [
+   },
+   {'name': 'streaming'},
+   {'name': 'timeout'},
+-  {'name': 'tld'},
+   {'name': 'uri-parsing'},
+   {'name': 'websocket',
+    'dependencies': [libz_dep]},
+ ]
+ 
++if libpsl_dep.found()
++  tests += [{'name': 'tld'}]
++endif
++
+ if brotlidec_dep.found()
+   tests += [{'name': 'brotli-decompressor'}]
+ 
+-- 
+2.41.0
+
+From e4ce620a7db4d2f1a581a8095fea32a182b353aa Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Mon, 11 Nov 2024 14:48:15 -0800
+Subject: [PATCH 2/2] build: make HTTP2 optional
+
+---
+ libsoup/meson.build                     | 13 ++++++++-----
+ libsoup/server/soup-server-connection.c |  4 ++++
+ libsoup/soup-connection.c               |  4 ++++
+ meson.build                             |  9 ++++++---
+ tests/meson.build                       |  7 +++++--
+ 5 files changed, 27 insertions(+), 10 deletions(-)
+
+diff --git a/libsoup/meson.build b/libsoup/meson.build
+index b889931d..f2f4a0d7 100644
+--- a/libsoup/meson.build
++++ b/libsoup/meson.build
+@@ -39,11 +39,7 @@ soup_sources = [
+   'http1/soup-message-io-data.c',
+   'http1/soup-message-io-source.c',
+ 
+-  'http2/soup-client-message-io-http2.c',
+-  'http2/soup-body-input-stream-http2.c',
+-
+   'server/http1/soup-server-message-io-http1.c',
+-  'server/http2/soup-server-message-io-http2.c',
+   'server/soup-auth-domain.c',
+   'server/soup-auth-domain-basic.c',
+   'server/soup-auth-domain-digest.c',
+@@ -70,7 +66,6 @@ soup_sources = [
+   'soup-form.c',
+   'soup-headers.c',
+   'soup-header-names.c',
+-  'soup-http2-utils.c',
+   'soup-init.c',
+   'soup-io-stream.c',
+   'soup-logger.c',
+@@ -95,6 +90,14 @@ if libpsl_dep.found()
+   soup_sources += 'soup-tld.c'
+ endif
+ 
++if libnghttp2_dep.found()
++  soup_sources += 'http2/soup-client-message-io-http2.c'
++  soup_sources += 'http2/soup-body-input-stream-http2.c'
++  soup_sources += 'server/http2/soup-server-message-io-http2.c'
++  soup_sources += 'soup-http2-utils.c'
++endif
++
++
+ soup_private_enum_headers = [
+   'soup-connection.h',
+ ]
+diff --git a/libsoup/server/soup-server-connection.c b/libsoup/server/soup-server-connection.c
+index cac4eaa7..02fdb497 100644
+--- a/libsoup/server/soup-server-connection.c
++++ b/libsoup/server/soup-server-connection.c
+@@ -395,10 +395,14 @@ soup_server_connection_connected (SoupServerConnection *conn)
+                                                                   conn);
+                 break;
+         case SOUP_HTTP_2_0:
++#ifdef WITH_HTTP2
+                 priv->io_data = soup_server_message_io_http2_new (conn,
+                                                                   g_steal_pointer (&priv->initial_msg),
+                                                                   (SoupMessageIOStartedFn)request_started_cb,
+                                                                   conn);
++#else
++                g_assert_not_reached();
++#endif
+                 break;
+         }
+         g_signal_emit (conn, signals[CONNECTED], 0);
+diff --git a/libsoup/soup-connection.c b/libsoup/soup-connection.c
+index 9100f8c9..fc28cd22 100644
+--- a/libsoup/soup-connection.c
++++ b/libsoup/soup-connection.c
+@@ -504,7 +504,11 @@ soup_connection_create_io_data (SoupConnection *conn)
+                 priv->io_data = soup_client_message_io_http1_new (conn);
+                 break;
+         case SOUP_HTTP_2_0:
++#ifdef WITH_HTTP2
+                 priv->io_data = soup_client_message_io_http2_new (conn);
++#else
++                g_assert_not_reached();
++#endif
+                 break;
+         }
+ }
+diff --git a/meson.build b/meson.build
+index 50ca7b91..1ec35873 100644
+--- a/meson.build
++++ b/meson.build
+@@ -112,9 +112,12 @@ glib_deps = [glib_dep, gmodule_dep, gobject_dep, gio_dep]
+ 
+ cdata = configuration_data()
+ 
+-libnghttp2_dep = dependency('libnghttp2')
+-if (libnghttp2_dep.version() == 'unknown' and (libnghttp2_dep.type_name() == 'internal' or cc.has_function('nghttp2_option_set_no_rfc9113_leading_and_trailing_ws_validation', prefix : '#include <nghttp2/nghttp2.h>', dependencies : libnghttp2_dep))) or libnghttp2_dep.version().version_compare('>=1.50')
+-    cdata.set('HAVE_NGHTTP2_OPTION_SET_NO_RFC9113_LEADING_AND_TRAILING_WS_VALIDATION', '1')
++libnghttp2_dep = dependency('libnghttp2', required : false)
++if libnghttp2_dep.found()
++  cdata.set('WITH_HTTP2', true)
++  if (libnghttp2_dep.version() == 'unknown' and (libnghttp2_dep.type_name() == 'internal' or cc.has_function('nghttp2_option_set_no_rfc9113_leading_and_trailing_ws_validation', prefix : '#include <nghttp2/nghttp2.h>', dependencies : libnghttp2_dep))) or libnghttp2_dep.version().version_compare('>=1.50')
++      cdata.set('HAVE_NGHTTP2_OPTION_SET_NO_RFC9113_LEADING_AND_TRAILING_WS_VALIDATION', '1')
++  endif
+ endif
+ 
+ sqlite_dep = dependency('sqlite3', required: false)
+diff --git a/tests/meson.build b/tests/meson.build
+index cf24ef97..6bd68868 100644
+--- a/tests/meson.build
++++ b/tests/meson.build
+@@ -78,8 +78,6 @@ tests = [
+   {'name': 'date'},
+   {'name': 'forms'},
+   {'name': 'header-parsing'},
+-  {'name': 'http2'},
+-  {'name': 'http2-body-stream'},
+   {'name': 'hsts'},
+   {'name': 'hsts-db'},
+   {'name': 'logger'},
+@@ -111,6 +109,11 @@ if libpsl_dep.found()
+   tests += [{'name': 'tld'}]
+ endif
+ 
++if libnghttp2_dep.found()
++  tests += [{'name': 'http2'}]
++  tests += [{'name': 'http2-body-stream'}]
++endif
++
+ if brotlidec_dep.found()
+   tests += [{'name': 'brotli-decompressor'}]
+ 
+-- 
+2.41.0
+

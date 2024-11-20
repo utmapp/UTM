@@ -67,6 +67,10 @@ struct UTMAppleConfigurationSystem: Codable {
         boot = try values.decode(UTMAppleConfigurationBoot.self, forKey: .boot)
         macPlatform = try values.decodeIfPresent(UTMAppleConfigurationMacPlatform.self, forKey: .macPlatform)
         genericPlatform = try values.decodeIfPresent(UTMAppleConfigurationGenericPlatform.self, forKey: .genericPlatform)
+        if boot.operatingSystem == .linux && genericPlatform == nil {
+            // fix a bug where this was not created
+            genericPlatform = UTMAppleConfigurationGenericPlatform()
+        }
     }
     
     func encode(to encoder: Encoder) throws {

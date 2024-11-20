@@ -36,14 +36,17 @@ typealias ConcreteVirtualMachine = UTMRemoteSpiceVirtualMachine
 typealias ConcreteVirtualMachine = UTMQemuVirtualMachine
 #endif
 
-struct AlertMessage: Identifiable {
-    var message: String
-    public var id: String {
-        message
-    }
-    
-    init(_ message: String) {
-        self.message = message
+enum AlertItem: Identifiable {
+    case message(String)
+    case downloadUrl(URL)
+
+    var id: Int {
+        switch self {
+        case .downloadUrl(let url):
+            return url.hashValue
+        case .message(let message):
+            return message.hashValue
+        }
     }
 }
 
@@ -61,8 +64,8 @@ struct AlertMessage: Identifiable {
     @Published var showNewVMSheet: Bool
     
     /// View: show an alert message
-    @Published var alertMessage: AlertMessage?
-    
+    @Published var alertItem: AlertItem?
+
     /// View: show busy spinner
     @Published var busy: Bool
     
@@ -398,7 +401,7 @@ struct AlertMessage: Identifiable {
     }
     
     func showErrorAlert(message: String) {
-        alertMessage = AlertMessage(message)
+        alertItem = .message(message)
     }
     
     func newVM() {
@@ -470,7 +473,14 @@ struct AlertMessage: Identifiable {
             throw UTMDataError.virtualMachineAlreadyExists
         }
         let vm = try VMData(creatingFromConfig: config, destinationUrl: Self.defaultStorageUrl)
-        try await save(vm: vm)
+        do {
+            try await save(vm: vm)
+        } catch {
+            if isDirectoryEmpty(vm.pathUrl) {
+                try? fileManager.removeItem(at: vm.pathUrl)
+            }
+            throw error
+        }
         listAdd(vm: vm)
         listSelect(vm: vm)
         return vm
@@ -744,7 +754,21 @@ struct AlertMessage: Identifiable {
             }
         }
     }
-    
+
+    private func isDirectoryEmpty(_ pathURL: URL) -> Bool {
+        guard let enumerator = fileManager.enumerator(at: pathURL, includingPropertiesForKeys: [.isDirectoryKey]) else {
+            return false
+        }
+        for case let itemURL as URL in enumerator {
+            let isDirectory = (try? itemURL.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) ?? false
+            if !isDirectory {
+                return false
+            }
+        }
+        // if we get here, we only found empty directories
+        return true
+    }
+
     // MARK: - Downloading VMs
     
     #if os(macOS) && arch(arm64)
@@ -791,11 +815,8 @@ struct AlertMessage: Identifiable {
             listRemove(pendingVM: task.pendingVM)
         }
     }
-    
-    func mountSupportTools(for vm: any UTMVirtualMachine) async throws {
-        guard let vm = vm as? any UTMSpiceVirtualMachine else {
-            throw UTMDataError.unsupportedBackend
-        }
+
+    private func mountWindowsSupportTools(for vm: any UTMSpiceVirtualMachine) async throws {
         let task = UTMDownloadSupportToolsTask(for: vm)
         if await task.hasExistingSupportTools {
             vm.config.qemu.isGuestToolsInstallRequested = false
@@ -812,6 +833,40 @@ struct AlertMessage: Identifiable {
                 listRemove(pendingVM: task.pendingVM)
             }
         }
+    }
+
+    #if os(macOS)
+    @available(macOS 15, *)
+    private func mountMacSupportTools(for vm: UTMAppleVirtualMachine) async throws {
+        let task = UTMDownloadMacSupportToolsTask(for: vm)
+        if await task.hasExistingSupportTools {
+            vm.config.isGuestToolsInstallRequested = false
+            _ = try await task.mountTools()
+        } else {
+            listAdd(pendingVM: task.pendingVM)
+            Task {
+                do {
+                    _ = try await task.download()
+                } catch {
+                    showErrorAlert(message: error.localizedDescription)
+                }
+                vm.config.isGuestToolsInstallRequested = false
+                listRemove(pendingVM: task.pendingVM)
+            }
+        }
+    }
+    #endif
+
+    func mountSupportTools(for vm: any UTMVirtualMachine) async throws {
+        if let vm = vm as? any UTMSpiceVirtualMachine {
+            return try await mountWindowsSupportTools(for: vm)
+        }
+        #if os(macOS)
+        if #available(macOS 15, *), let vm = vm as? UTMAppleVirtualMachine, vm.config.system.boot.operatingSystem == .macOS {
+            return try await mountMacSupportTools(for: vm)
+        }
+        #endif
+        throw UTMDataError.unsupportedBackend
     }
     
     /// Cancel a download and discard any data
@@ -961,7 +1016,7 @@ struct AlertMessage: Identifiable {
             } catch {
                 logger.error("\(error)")
                 DispatchQueue.main.async {
-                    self.alertMessage = AlertMessage(error.localizedDescription)
+                    self.alertItem = .message(error.localizedDescription)
                 }
             }
         }

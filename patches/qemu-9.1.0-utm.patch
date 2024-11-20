@@ -126,3 +126,31 @@ index 4c2dd33532..6e73c6e13e 100644
 -- 
 2.41.0
 
+From bf72f711841fc8d308015a5768f70563669ff766 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Mon, 11 Nov 2024 01:45:20 -0800
+Subject: [PATCH] hvf: arm: disable SME which is not properly handled by QEMU
+
+---
+ target/arm/hvf/hvf.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/target/arm/hvf/hvf.c b/target/arm/hvf/hvf.c
+index 5411af348b..e95e12c9c1 100644
+--- a/target/arm/hvf/hvf.c
++++ b/target/arm/hvf/hvf.c
+@@ -889,6 +889,11 @@ static bool hvf_arm_get_host_cpu_features(ARMHostCPUFeatures *ahcf)
+     r |= hv_vcpu_get_sys_reg(fd, HV_SYS_REG_MIDR_EL1, &ahcf->midr);
+     r |= hv_vcpu_destroy(fd);
+ 
++    /*
++     * Disable SME which is not properly handled by QEMU yet
++     */
++    host_isar.id_aa64pfr1 &= ~R_ID_AA64PFR1_SME_MASK;
++
+     ahcf->isar = host_isar;
+ 
+     /*
+-- 
+2.41.0
+

@@ -180,6 +180,16 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
             }
         }
     }
+    
+    @objc func export(_ command: NSCloneCommand) {
+        let exportUrl = command.evaluatedArguments?["file"] as? URL
+        withScriptCommand(command) { [self] in
+            guard vm.state == .stopped else {
+                throw ScriptingError.notStopped
+            }
+            try await data.export(vm: box, to: exportUrl!)
+        }
+    }
 }
 
 // MARK: - Guest agent suite

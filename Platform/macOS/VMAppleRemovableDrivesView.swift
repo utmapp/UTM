@@ -46,7 +46,15 @@ struct VMAppleRemovableDrivesView: View {
             return false
         }
     }
-    
+
+    private var hasLiveRemovableDrives: Bool {
+        if #available(macOS 15, *) {
+            return true
+        } else {
+            return false
+        }
+    }
+
     var body: some View {
         Group {
             ForEach($registryEntry.sharedDirectories) { $sharedDirectory in
@@ -95,7 +103,7 @@ struct VMAppleRemovableDrivesView: View {
                             }
                         } label: {
                             Label("External Drive", systemImage: "externaldrive")
-                        }.disabled(vm.hasSuspendState || vm.state != .stopped)
+                        }.disabled(vm.hasSuspendState || (vm.state != .stopped && !hasLiveRemovableDrives))
                     } else {
                         Label("\(diskImage.sizeString) Drive", systemImage: "internaldrive")
                     }
@@ -196,13 +204,23 @@ struct VMAppleRemovableDrivesView: View {
     private func selectRemovableImage(for diskImage: UTMAppleConfigurationDrive, result: Result<URL, Error>) {
         data.busyWorkAsync {
             let url = try result.get()
-            let file = try UTMRegistryEntry.File(url: url)
-            await registryEntry.setExternalDrive(file, forId: diskImage.id)
+            if #available(macOS 15, *) {
+                try await appleVM.changeMedium(diskImage, to: url)
+            } else {
+                let file = try UTMRegistryEntry.File(url: url)
+                await registryEntry.setExternalDrive(file, forId: diskImage.id)
+            }
         }
     }
     
     private func clearRemovableImage(_ diskImage: UTMAppleConfigurationDrive) {
-        registryEntry.removeExternalDrive(forId: diskImage.id)
+        data.busyWorkAsync {
+            if #available(macOS 15, *) {
+                try await appleVM.eject(diskImage)
+            } else {
+                await registryEntry.removeExternalDrive(forId: diskImage.id)
+            }
+        }
     }
 }
 

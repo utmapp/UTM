@@ -59,6 +59,17 @@ enum VMBootDevice: Int, Identifiable {
     case kernel
 }
 
+struct AlertMessage: Identifiable {
+    var message: String
+    public var id: String {
+        message
+    }
+
+    init(_ message: String) {
+        self.message = message
+    }
+}
+
 @MainActor class VMWizardState: ObservableObject {
     let bytesInMib = 1048576
     let bytesInGib = 1073741824
@@ -325,7 +336,6 @@ enum VMBootDevice: Int, Identifiable {
                 bootloader.linuxInitialRamdiskURL = linuxInitialRamdiskURL
                 bootloader.linuxCommandLine = linuxBootArguments
                 config.system.boot = bootloader
-                config.system.genericPlatform = UTMAppleConfigurationGenericPlatform()
                 if let linuxRootImageURL = linuxRootImageURL {
                     config.drives.append(UTMAppleConfigurationDrive(existingURL: linuxRootImageURL))
                     isSkipDiskCreate = true
@@ -333,6 +343,7 @@ enum VMBootDevice: Int, Identifiable {
             } else {
                 config.system.boot = try UTMAppleConfigurationBoot(for: .linux)
             }
+            config.system.genericPlatform = UTMAppleConfigurationGenericPlatform()
             config.virtualization.hasRosetta = linuxHasRosetta
             #endif
         case .Windows:

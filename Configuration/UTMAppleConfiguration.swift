@@ -36,7 +36,10 @@ final class UTMAppleConfiguration: UTMConfiguration {
     @Published private var _networks: [UTMAppleConfigurationNetwork] = [.init()]
     
     @Published private var _serials: [UTMAppleConfigurationSerial] = []
-    
+
+    /// Set to true to request guest tools install. Not saved.
+    @Published var isGuestToolsInstallRequested: Bool = false
+
     var backend: UTMBackend {
         .apple
     }
@@ -251,13 +254,7 @@ extension UTMAppleConfiguration {
         let vzconfig = VZVirtualMachineConfiguration()
         try system.fillVZConfiguration(vzconfig)
         if #available(macOS 12, *), !sharedDirectories.isEmpty {
-            let tag: String
-            if #available(macOS 13, *), system.boot.operatingSystem == .macOS {
-                tag = VZVirtioFileSystemDeviceConfiguration.macOSGuestAutomountTag
-            } else {
-                tag = "share"
-            }
-            let fsConfig = VZVirtioFileSystemDeviceConfiguration(tag: tag)
+            let fsConfig = VZVirtioFileSystemDeviceConfiguration(tag: shareDirectoryTag)
             fsConfig.share = UTMAppleConfigurationSharedDirectory.makeDirectoryShare(from: sharedDirectories)
             vzconfig.directorySharingDevices.append(fsConfig)
         } else if !sharedDirectories.isEmpty {
@@ -269,7 +266,11 @@ extension UTMAppleConfiguration {
                     return nil
                 }
                 if #available(macOS 13, *), drive.isExternal {
-                    return VZUSBMassStorageDeviceConfiguration(attachment: attachment)
+                    if #available(macOS 15, *) {
+                        return nil // we will handle removable drives in `UTMAppleVirtualMachine`
+                    } else {
+                        return VZUSBMassStorageDeviceConfiguration(attachment: attachment)
+                    }
                 } else if #available(macOS 14, *), drive.isNvme, system.boot.operatingSystem == .linux {
                     return VZNVMExpressControllerDeviceConfiguration(attachment: attachment)
                 } else {
@@ -303,7 +304,18 @@ extension UTMAppleConfiguration {
         } else if system.boot.operatingSystem != .macOS && !displays.isEmpty {
             throw UTMAppleConfigurationError.featureNotSupported
         }
+        if #available(macOS 15, *) {
+            vzconfig.usbControllers = [VZXHCIControllerConfiguration()]
+        }
         return vzconfig
+    }
+
+    var shareDirectoryTag: String {
+        if #available(macOS 13, *), system.boot.operatingSystem == .macOS {
+            return VZVirtioFileSystemDeviceConfiguration.macOSGuestAutomountTag
+        } else {
+            return "share"
+        }
     }
 }
 
