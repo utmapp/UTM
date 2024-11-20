@@ -1,9 +1,9 @@
 /* Bundle name */
-"CFBundleName" = "UTM 遠端";
+"CFBundleName" = "UTM 遙距";
 
 /* Privacy - Local Network Usage Description */
-"NSLocalNetworkUsageDescription" = "UTM 使用本地網絡尋找並連接至 UTM 遠端伺服器。";
+"NSLocalNetworkUsageDescription" = "UTM 使用區域網絡尋找並連接到 UTM 遙距伺服器。";
 
 /* Privacy - Microphone Usage Description */
-"NSMicrophoneUsageDescription" = "任何虛擬電腦都需要許可才能由咪高風進行錄製。";
+"NSMicrophoneUsageDescription" = "任何虛擬機器都需要權限才能從咪高風錄製。";
 

@@ -32,7 +32,7 @@
 "bCv-uH-SSy.normalTitle" = "⌃";
 
 /* Class = "UIButton"; accessibilityLabel = "Num Lock"; ObjectID = "BUk-Vf-yE5"; */
-"BUk-Vf-yE5.accessibilityLabel" = "Num Lock";
+"BUk-Vf-yE5.accessibilityLabel" = "Number Lock";
 
 /* Class = "UIButton"; normalTitle = "Num"; ObjectID = "BUk-Vf-yE5"; */
 "BUk-Vf-yE5.normalTitle" = "Num";
@@ -68,7 +68,7 @@
 "gUX-ez-mbt.normalTitle" = "F3";
 
 /* Class = "UIButton"; accessibilityLabel = "Page Down"; ObjectID = "h4q-XF-UMn"; */
-"h4q-XF-UMn.accessibilityLabel" = "下頁";
+"h4q-XF-UMn.accessibilityLabel" = "下一頁";
 
 /* Class = "UIButton"; normalTitle = "Pg Dn"; ObjectID = "h4q-XF-UMn"; */
 "h4q-XF-UMn.normalTitle" = "Pg Dn";
@@ -119,7 +119,7 @@
 "PWe-Va-Qi1.normalTitle" = "F1";
 
 /* Class = "UIButton"; accessibilityLabel = "Page Up"; ObjectID = "pX1-7o-dbU"; */
-"pX1-7o-dbU.accessibilityLabel" = "上頁";
+"pX1-7o-dbU.accessibilityLabel" = "上一頁";
 
 /* Class = "UIButton"; normalTitle = "Pg Up"; ObjectID = "pX1-7o-dbU"; */
 "pX1-7o-dbU.normalTitle" = "Pg Up";
