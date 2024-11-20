@@ -119,6 +119,9 @@ class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
     override func windowWillClose(_ notification: Notification) {
         vmDisplay?.removeRenderer(renderer!)
         stopAllCapture()
+        if let screenChangedToken = screenChangedToken {
+            NotificationCenter.default.removeObserver(screenChangedToken)
+        }
         screenChangedToken = nil
         super.windowWillClose(notification)
     }

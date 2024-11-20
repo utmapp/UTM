@@ -58,6 +58,9 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
     }
 
     override func windowWillClose(_ notification: Notification) {
+        if let screenChangedToken = screenChangedToken {
+            NotificationCenter.default.removeObserver(screenChangedToken)
+        }
         screenChangedToken = nil
         super.windowWillClose(notification)
     }
