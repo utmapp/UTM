@@ -1,9 +1,0 @@
-/* Bundle name */
-"CFBundleName" = "UTM 遙距";
-
-/* Privacy - Local Network Usage Description */
-"NSLocalNetworkUsageDescription" = "UTM 使用區域網絡尋找並連接到 UTM 遙距伺服器。";
-
-/* Privacy - Microphone Usage Description */
-"NSMicrophoneUsageDescription" = "任何虛擬機器都需要權限才能從咪高風錄製。";
-
