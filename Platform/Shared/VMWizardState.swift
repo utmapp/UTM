@@ -59,6 +59,17 @@ enum VMBootDevice: Int, Identifiable {
     case kernel
 }
 
+struct AlertMessage: Identifiable {
+    var message: String
+    public var id: String {
+        message
+    }
+
+    init(_ message: String) {
+        self.message = message
+    }
+}
+
 @MainActor class VMWizardState: ObservableObject {
     let bytesInMib = 1048576
     let bytesInGib = 1073741824

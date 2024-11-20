@@ -36,7 +36,6 @@ struct ContentView: View {
     @StateObject private var releaseHelper = UTMReleaseHelper()
     @State private var newPopupPresented = false
     @State private var openSheetPresented = false
-    @State private var alertItem: AlertItem?
     @Environment(\.openURL) var openURL
     @AppStorage("ServerAutostart") private var isServerAutostart: Bool = false
 
@@ -55,14 +54,6 @@ struct ContentView: View {
         }, content: {
             VMReleaseNotesView(helper: releaseHelper).padding()
         })
-        .alert(item: $alertItem) { item in
-            switch item {
-            case .downloadUrl(let url):
-                return Alert(title: Text("Download VM"), message: Text("Do you want to download '\(url)'?"), primaryButton: .cancel(), secondaryButton: .default(Text("Download")) {
-                    data.downloadUTMZip(from: url)
-                })
-            }
-        }
         .onReceive(NSNotification.ShowReleaseNotes) { _ in
             Task {
                 await releaseHelper.fetchReleaseNotes(force: true)
@@ -148,8 +139,8 @@ struct ContentView: View {
            components.host == "downloadVM",
            let urlParameter = components.queryItems?.first(where: { $0.name == "url" })?.value,
            let url = URL(string: urlParameter) {
-            if alertItem == nil {
-                alertItem = .downloadUrl(url)
+            if data.alertItem == nil {
+                data.alertItem = .downloadUrl(url)
             }
         } else if url.isFileURL {
             data.busyWorkAsync {
@@ -211,19 +202,6 @@ extension ContentView: DropDelegate {
         group.wait()
 
         return validURLs
-    }
-}
-
-extension ContentView {
-    private enum AlertItem: Identifiable {
-        case downloadUrl(URL)
-
-        var id: Int {
-            switch self {
-            case .downloadUrl(let url):
-                return url.hashValue
-            }
-        }
     }
 }
 

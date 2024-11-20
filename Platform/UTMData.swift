@@ -36,14 +36,17 @@ typealias ConcreteVirtualMachine = UTMRemoteSpiceVirtualMachine
 typealias ConcreteVirtualMachine = UTMQemuVirtualMachine
 #endif
 
-struct AlertMessage: Identifiable {
-    var message: String
-    public var id: String {
-        message
-    }
-    
-    init(_ message: String) {
-        self.message = message
+enum AlertItem: Identifiable {
+    case message(String)
+    case downloadUrl(URL)
+
+    var id: Int {
+        switch self {
+        case .downloadUrl(let url):
+            return url.hashValue
+        case .message(let message):
+            return message.hashValue
+        }
     }
 }
 
@@ -61,8 +64,8 @@ struct AlertMessage: Identifiable {
     @Published var showNewVMSheet: Bool
     
     /// View: show an alert message
-    @Published var alertMessage: AlertMessage?
-    
+    @Published var alertItem: AlertItem?
+
     /// View: show busy spinner
     @Published var busy: Bool
     
@@ -398,7 +401,7 @@ struct AlertMessage: Identifiable {
     }
     
     func showErrorAlert(message: String) {
-        alertMessage = AlertMessage(message)
+        alertItem = .message(message)
     }
     
     func newVM() {
@@ -910,7 +913,7 @@ struct AlertMessage: Identifiable {
             } catch {
                 logger.error("\(error)")
                 DispatchQueue.main.async {
-                    self.alertMessage = AlertMessage(error.localizedDescription)
+                    self.alertItem = .message(error.localizedDescription)
                 }
             }
         }

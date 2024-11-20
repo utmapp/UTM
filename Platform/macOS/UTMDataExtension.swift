@@ -50,7 +50,7 @@ extension UTMData {
             }
             if window == nil {
                 DispatchQueue.main.async {
-                    self.alertMessage = AlertMessage(NSLocalizedString("This virtual machine cannot be run on this machine.", comment: "UTMDataExtension"))
+                    self.alertItem = .message(NSLocalizedString("This virtual machine cannot be run on this machine.", comment: "UTMDataExtension"))
                 }
             }
         }
