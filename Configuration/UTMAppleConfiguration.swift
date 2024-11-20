@@ -263,7 +263,11 @@ extension UTMAppleConfiguration {
                     return nil
                 }
                 if #available(macOS 13, *), drive.isExternal {
-                    return VZUSBMassStorageDeviceConfiguration(attachment: attachment)
+                    if #available(macOS 15, *) {
+                        return nil // we will handle removable drives in `UTMAppleVirtualMachine`
+                    } else {
+                        return VZUSBMassStorageDeviceConfiguration(attachment: attachment)
+                    }
                 } else if #available(macOS 14, *), drive.isNvme, system.boot.operatingSystem == .linux {
                     return VZNVMExpressControllerDeviceConfiguration(attachment: attachment)
                 } else {
@@ -296,6 +300,9 @@ extension UTMAppleConfiguration {
             }
         } else if system.boot.operatingSystem != .macOS && !displays.isEmpty {
             throw UTMAppleConfigurationError.featureNotSupported
+        }
+        if #available(macOS 15, *) {
+            vzconfig.usbControllers = [VZXHCIControllerConfiguration()]
         }
         return vzconfig
     }
