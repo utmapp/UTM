@@ -34,7 +34,6 @@ struct ContentView: View {
     @State private var editMode = false
     @EnvironmentObject private var data: UTMData
     @StateObject private var releaseHelper = UTMReleaseHelper()
-    @State private var newPopupPresented = false
     @State private var openSheetPresented = false
     @Environment(\.openURL) var openURL
     @AppStorage("ServerAutostart") private var isServerAutostart: Bool = false
@@ -140,6 +139,7 @@ struct ContentView: View {
            let urlParameter = components.queryItems?.first(where: { $0.name == "url" })?.value,
            let url = URL(string: urlParameter) {
             if data.alertItem == nil {
+                data.showNewVMSheet = false
                 data.alertItem = .downloadUrl(url)
             }
         } else if url.isFileURL {
