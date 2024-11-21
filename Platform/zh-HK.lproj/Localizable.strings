@@ -817,7 +817,7 @@ UTMQemuConstants */
 "No empty removable drive found. Make sure you have at least one removable drive that is not in use." = "無法找到空的可移除式磁碟。確保你至少有一個未使用的可移除式磁碟。";
 
 /* UTMScriptingAppDelegate */
-"No file specified in the command." = "命令中未指定檔案。";
+"No file specified in the command." = "命令當中未指定檔案。";
 
 /* UTMScriptingAppDelegate */
 "No name specified in the configuration." = "設定當中未指定名稱。";
@@ -1354,7 +1354,7 @@ UTMQemuConstants */
 "This virtual machine is currently unavailable, make sure it is not open in another session." = "現時無法使用這個虛擬機器，確保它沒有在另一個會話當中開啟。";
 
 /* VMData */
-"This VM is not available or is configured for a backend that does not support remote clients." = "這個虛擬機器無法使用，或是被設定為不支援遠端客户端的後端。";
+"This VM is not available or is configured for a backend that does not support remote clients." = "這個虛擬機器無法使用，或是被設定為不支援遙距客户端的後端。";
 
 /* No comment provided by engineer. */
 "This VM is unavailable." = "這個虛擬機器無法使用。";
@@ -1483,7 +1483,7 @@ VMMetalView */
 "What's New" = "新功能";
 
 /* No comment provided by engineer. */
-"When the toolbar is hidden, the icon will disappear after a few seconds. To show the icon again, tap anywhere on the screen." = "當工具列隱藏時，圖示將會在幾秒鐘之後消失。如要再次顯示圖示，請在螢幕上的任意位置點一下。";
+"When the toolbar is hidden, the icon will disappear after a few seconds. To show the icon again, tap anywhere on the screen." = "當工具列隱藏時，圖示將會在幾秒鐘之後消失。如要再次顯示圖示，請點一下螢幕上的任意位置。";
 
 /* UTMDownloadSupportToolsTask */
 "Windows Guest Support Tools" = "Windows 客户端支援工具";
@@ -1552,7 +1552,7 @@ VMWizardOSMacView */
 "Allow access from external clients" = "允許外部客户端訪問";
 
 /* No comment provided by engineer. */
-"Allow Remote Connection" = "允許遠端連線";
+"Allow Remote Connection" = "允許遙距連線";
 
 /* No comment provided by engineer. */
 "Allows passing through additional input from trackpads. Only supported on macOS 13+ guests." = "允許透過觸控板額外輸入。只限支援 macOS 13+ 客户端。";
@@ -1561,7 +1561,7 @@ VMWizardOSMacView */
 "Any" = "任意";
 
 /* No comment provided by engineer. */
-"Apple Virtualization is experimental and only for advanced use cases. Leave unchecked to use QEMU, which is recommended." = "Apple 虛擬化為試驗性質，只限用作進階用例，不剔選框以使用推介的 QEMU。";
+"Apple Virtualization is experimental and only for advanced use cases. Leave unchecked to use QEMU, which is recommended." = "Apple 虛擬化為試驗性質，只限用作進階用例，保留取消剔選以使用推介的 QEMU。";
 
 /* No comment provided by engineer. */
 "Application" = "應用程式";
@@ -1825,10 +1825,10 @@ VMWizardOSMacView */
 "Force Enable CPU Flags" = "強制啟用 CPU 標記";
 
 /* No comment provided by engineer. */
-"Force multicore may improve speed of emulation but also might result in unstable and incorrect emulation." = "強行多核心可能會提高仿真速度，但亦會導致不穩定與不正確的仿真。";
+"Force multicore may improve speed of emulation but also might result in unstable and incorrect emulation." = "強制多核心可能會提高仿真速度，但亦會導致不穩定與不正確的仿真。";
 
 /* No comment provided by engineer. */
-"Force PS/2 controller" = "強行使用 PS/2 控制器";
+"Force PS/2 controller" = "強制使用 PS/2 控制器";
 
 /* No comment provided by engineer. */
 "FPS Limit" = "FPS 限制";
