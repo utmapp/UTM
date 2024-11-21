@@ -286,15 +286,18 @@
 
 // Display/VMDisplayAppleDisplayWindowController.swift
 "%@ (Terminal %lld)" = "%1$@（ターミナル%2$lld）";
-
-// Display/VMDisplayQemuDisplayController.swift
-"Disposable Mode" = "使い捨てモード";
 "Querying drives status..." = "ドライブの状態を確認中…";
 "No drives connected." = "デバイスが接続されていません。";
-"Install Windows Guest Tools…" = "Windowsゲストツールをインストール…";
+"Install Guest Tools…" = "ゲストツールをインストール…";
 "Eject" = "取り出す";
 "Change" = "変更";
 "Select Drive Image" = "ドライブイメージを選択してください";
+"USB Mass Storage: %@" = "USB Mass Storage: %@";
+"An USB device containing the installer will be mounted in the virtual machine. Only macOS Sequoia (15.0) and newer guests are supported." = "インストーラを含むUSBデバイスが仮想マシンにマウントされます。macOS Sequoia（15.0）以降のゲストにのみ対応しています。";
+
+// Display/VMDisplayQemuDisplayController.swift
+"Disposable Mode" = "使い捨てモード";
+"Install Windows Guest Tools…" = "Windowsゲストツールをインストール…";
 "USB Device" = "USBデバイス";
 "Confirm" = "確定";
 "Querying USB devices..." = "USBデバイスを確認中…";
@@ -554,9 +557,11 @@
 "Section" = "セクション";
 "Description" = "説明";
 
-// ContentView.swift
+// BusyOverlay.swift
 "Download VM" = "仮想マシンをダウンロード";
 "Do you want to download '%@'?" = "“%@”をダウンロードしますか?";
+
+// ContentView.swift
 "Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached. See https://getutm.app/install/ for more details." = "お使いのiOSバージョンは改造されていない状態での仮想マシンの実行に対応していません。脱獄（ジェイルブレイク）、またはリモートデバッガに接続された状態でUTMを実行する必要があります。詳細については、https://getutm.app/install/ を参照してください。";
 
 // DefaultTextField.swift
@@ -1042,6 +1047,9 @@
 "No empty removable drive found. Make sure you have at least one removable drive that is not in use." = "空のリムーバブルドライブが見つかりません。使用していないリムーバブルドライブが少なくとも1台あることを確認してください。";
 "The guest support tools have already been mounted." = "ゲストサポートツールはすでにマウントされています。";
 
+// UTMDownloadMacSupportToolsTask.swift
+"macOS Guest Support Tools" = "macOSゲストサポートツール";
+
 // UTMPendingVirtualMachine.swift
 "%@ remaining" = "残り%@";
 "%@/s" = "%@/秒";
@@ -1129,6 +1137,10 @@
 "A valid configuration must be specified." = "有効な構成を指定する必要があります。";
 "No name specified in the configuration." = "構成に名前が指定されていません。";
 "No architecture specified in the configuration." = "構成にアーキテクチャが指定されていません。";
+
+// UTMScriptingImportCommand.swift
+"A valid UTM file must be specified." = "有効なUTMファイルを指定する必要があります。";
+"No file specified in the command." = "コマンドにファイルが指定されていません。";
 
 
 
