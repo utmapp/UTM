@@ -1,4 +1,14 @@
 {
+  "appPolicies" : {
+    "eula" : "",
+    "policies" : [
+      {
+        "locale" : "en_US",
+        "policyText" : "",
+        "policyURL" : ""
+      }
+    ]
+  },
   "identifier" : "A2B91788",
   "nonRenewingSubscriptions" : [
 
@@ -13,6 +23,16 @@
           "description" : "A small one time donation.",
           "displayName" : "Transistor",
           "locale" : "en_US"
+        },
+        {
+          "description" : "一次性小额捐赠。",
+          "displayName" : "晶体管",
+          "locale" : "zh_CN"
+        },
+        {
+          "description" : "一次性的少量捐贈。",
+          "displayName" : "電晶體",
+          "locale" : "zh_TW"
         }
       ],
       "productID" : "consumable.small",
@@ -28,6 +48,16 @@
           "description" : "A medium one time donation.",
           "displayName" : "Chip",
           "locale" : "en_US"
+        },
+        {
+          "description" : "一次性中等捐赠。",
+          "displayName" : "芯片",
+          "locale" : "zh_CN"
+        },
+        {
+          "description" : "一次性的中等量捐贈。",
+          "displayName" : "晶片",
+          "locale" : "zh_TW"
         }
       ],
       "productID" : "consumable.medium",
@@ -43,6 +73,16 @@
           "description" : "A large one time donation.",
           "displayName" : "Computer",
           "locale" : "en_US"
+        },
+        {
+          "description" : "一次性大额捐赠。",
+          "displayName" : "计算机",
+          "locale" : "zh_CN"
+        },
+        {
+          "description" : "一次性的大量捐贈。",
+          "displayName" : "電腦",
+          "locale" : "zh_TW"
         }
       ],
       "productID" : "consumable.large",
@@ -106,7 +146,7 @@
 
   ],
   "version" : {
-    "major" : 3,
+    "major" : 4,
     "minor" : 0
   }
 }
