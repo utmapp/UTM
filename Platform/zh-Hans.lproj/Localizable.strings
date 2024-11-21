@@ -13,14 +13,15 @@
 /* QEMUConstant */
 "%@ (%@)" = "%1$@ (%2$@)";
 
-/* VMToolbarDriveMenuView */
+/* VMDisplayQemuDisplayController
+VMToolbarDriveMenuView */
 "%@ (%@): %@" = "%1$@ (%2$@): %3$@";
 
 /* VMDisplayMetalWindowController */
 "%@ (Display %lld)" = "%1$@ (显示 %2$lld)";
 
 /* VMDisplayAppleTerminalWindowController
-   VMDisplayQemuTerminalWindowController */
+VMDisplayQemuTerminalWindowController */
 "%@ (Terminal %lld)" = "%1$@ (终端 %2$lld)";
 
 /* VMRemovableDrivesView */
@@ -56,6 +57,9 @@
 /* UTMDonateView */
 "%d years" = "%d 年";
 
+/* No comment provided by engineer. */
+"• " = "• ";
+
 /* UTMScriptingAppDelegate */
 "A valid backend must be specified." = "必须指定有效的后端。";
 
@@ -64,6 +68,9 @@
 
 /* UTMAppleConfiguration */
 "A valid kernel image must be specified." = "必须指定有效的内核映像。";
+
+/* UTMScriptingAppDelegate */
+"A valid UTM file must be specified." = "必须指定一个有效的 UTM 文件。";
 
 /* VMDisplayAppleController */
 "Add…" = "添加…";
@@ -94,6 +101,9 @@
 
 /* UTMQemuImage */
 "An unknown QEMU error has occurred." = "发生了未知的 QEMU 错误。";
+
+/* VMDisplayAppleDisplayController */
+"An USB device containing the installer will be mounted in the virtual machine. Only macOS Sequoia (15.0) and newer guests are supported." = "包含安装程序的 USB 设备将安装在虚拟机中。仅支持 macOS Sequoia (15.0) 及更新版本的客户机。";
 
 /* No comment provided by engineer. */
 "ANGLE (Metal)" = "ANGLE (Metal)";
@@ -135,7 +145,7 @@
 "Background task is about to expire" = "后台任务即将终止";
 
 /* UTMLegacyQemuConfiguration
-   UTMQemuConstants */
+UTMQemuConstants */
 "BIOS" = "BIOS";
 
 /* No comment provided by engineer. */
@@ -168,7 +178,8 @@
 /* No comment provided by engineer. */
 "Boot VHDX Image" = "启动 VHDX 映像";
 
-/* UTMQemuConstants */
+/* UTMAppleConfigurationNetwork
+UTMQemuConstants */
 "Bridged (Advanced)" = "桥接 (高级)";
 
 /* No comment provided by engineer. */
@@ -183,14 +194,15 @@
 /* No comment provided by engineer. */
 "Build" = "构建版本";
 
-/* UTMQemuConstants */
+/* UTMAppleConfigurationTerminal
+UTMQemuConstants */
 "Built-in Terminal" = "内置终端";
 
 /* No comment provided by engineer. */
 "Busy…" = "正忙…";
 
 /* VMDisplayWindowController
-   VMQemuDisplayMetalWindowController */
+VMQemuDisplayMetalWindowController */
 "Cancel" = "取消";
 
 /* UTMAppleVirtualMachine */
@@ -233,7 +245,7 @@
 "CD/DVD" = "CD/DVD";
 
 /* UTMLegacyQemuConfiguration
-   UTMQemuConstants */
+UTMQemuConstants */
 "CD/DVD (ISO) Image" = "CD/DVD (ISO) 映像";
 
 /* No comment provided by engineer. */
@@ -264,7 +276,7 @@
 "Confirm Delete" = "确认删除";
 
 /* AppDelegate
-   VMDisplayWindowController */
+VMDisplayWindowController */
 "Confirmation" = "确认";
 
 /* No comment provided by engineer. */
@@ -322,7 +334,7 @@
 "Debug Logging" = "调试日志记录";
 
 /* QEMUConstantGenerated
-   UTMQemuConstants */
+UTMQemuConstants */
 "Default" = "默认";
 
 /* VMWizardSummaryView */
@@ -337,7 +349,8 @@
 /* VMDisplayAppleWindowController */
 "Directory sharing" = "目录共享";
 
-/* UTMQemuConstants */
+/* UTMAppleConfigurationDevices
+UTMQemuConstants */
 "Disabled" = "已停用";
 
 /* No comment provided by engineer. */
@@ -347,7 +360,7 @@
 "Discovered" = "已发现";
 
 /* UTMLegacyQemuConfiguration
-   UTMQemuConstants */
+UTMQemuConstants */
 "Disk Image" = "磁盘映像";
 
 /* VMDisplayAppleWindowController */
@@ -449,7 +462,8 @@
 /* UTMQemuVirtualMachine */
 "Failed to access drive image path." = "无法访问驱动器映像路径。";
 
-/* UTMRemoteServer */
+/* UTMRemoteClient
+UTMRemoteServer */
 "Failed to access file." = "无法访问文件。";
 
 /* UTMQemuVirtualMachine */
@@ -510,7 +524,7 @@
 "Failed to reconnect to the server." = "无法重新连接到服务器。";
 
 /* AppDelegate
-   VMDisplayWindowController */
+VMDisplayWindowController */
 "Failed to save suspend state" = "无法存储挂起状态。";
 
 /* UTMQemuVirtualMachine */
@@ -526,7 +540,7 @@
 "Fingerprint" = "指纹";
 
 /* Configuration boot device
-   UTMQemuConstants */
+UTMQemuConstants */
 "Floppy" = "软盘";
 
 /* No comment provided by engineer. */
@@ -622,6 +636,9 @@
 /* No comment provided by engineer. */
 "Information" = "信息";
 
+/* VMDisplayAppleWindowController */
+"Install Guest Tools…" = "安装客户机工具…";
+
 /* VMDisplayWindowController */
 "Install Windows Guest Tools…" = "安装 Windows 客户机工具…";
 
@@ -680,21 +697,21 @@
 "Linux" = "Linux";
 
 /* UTMLegacyQemuConfiguration
-   UTMQemuConstants */
+UTMQemuConstants */
 "Linux Device Tree Binary" = "Linux 设备树二进制文件";
 
 /* No comment provided by engineer. */
 "Linux initial ramdisk (optional)" = "Linux 初始 ramdisk (可选)";
 
 /* UTMLegacyQemuConfiguration
-   UTMQemuConstants */
+UTMQemuConstants */
 "Linux Kernel" = "Linux 内核";
 
 /* No comment provided by engineer. */
 "Linux kernel (required)" = "Linux 内核 (必选)";
 
 /* UTMLegacyQemuConfiguration
-   UTMQemuConstants */
+UTMQemuConstants */
 "Linux RAM Disk" = "Linux ramdisk";
 
 /* No comment provided by engineer. */
@@ -714,6 +731,9 @@
 
 /* UTMAppleConfigurationBoot */
 "macOS" = "macOS";
+
+/* UTMDownloadMacSupportToolsTask */
+"macOS Guest Support Tools" = "macOS 客户机支持工具";
 
 /* VMWizardOSMacView */
 "macOS guests are only supported on ARM64 devices." = "macOS 客户机仅支持 ARM64 设备。";
@@ -797,6 +817,9 @@
 "No empty removable drive found. Make sure you have at least one removable drive that is not in use." = "未找到空的可移动驱动器。确保你至少有一个未使用的可移动驱动器。";
 
 /* UTMScriptingAppDelegate */
+"No file specified in the command." = "命令中未指定文件。";
+
+/* UTMScriptingAppDelegate */
 "No name specified in the configuration." = "配置中未指定名称。";
 
 /* No comment provided by engineer. */
@@ -811,11 +834,14 @@
 /* No comment provided by engineer. */
 "No virtual machines found." = "未找到虚拟机。";
 
-/* VMToolbarDriveMenuView */
+/* VMDisplayAppleDisplayController
+VMDisplayQemuDisplayController
+VMToolbarDriveMenuView */
 "none" = "无";
 
-/* UTMLegacyQemuConfiguration
-   UTMQemuConstants */
+/* UTMAppleConfigurationBoot
+UTMLegacyQemuConfiguration
+UTMQemuConstants */
 "None" = "无";
 
 /* UTMQemuConstants */
@@ -851,7 +877,8 @@
 /* UTMScriptingVirtualMachineImpl */
 "Operation not available." = "操作不可用。";
 
-/* UTMData */
+/* UTMData
+UTMScriptingVirtualMachineImpl */
 "Operation not supported by the backend." = "操作不受后端支持。";
 
 /* No comment provided by engineer. */
@@ -923,7 +950,8 @@
 /* No comment provided by engineer. */
 "Prevent system from sleeping when any VM is running" = "当任何虚拟机运行时防止系统处于睡眠状态";
 
-/* UTMQemuConstants */
+/* UTMAppleConfigurationTerminal
+UTMQemuConstants */
 "Pseudo-TTY Device" = "虚拟终端设备";
 
 /* No comment provided by engineer. */
@@ -1047,7 +1075,7 @@
 "Select Drive Image" = "选择驱动器映像";
 
 /* VMDisplayAppleWindowController
-   VMDisplayWindowController */
+VMDisplayWindowController */
 "Select Shared Folder" = "选择共享的文件夹";
 
 /* SavePanel */
@@ -1066,7 +1094,7 @@
 "Sends power down request to the guest. This simulates pressing the power button on a PC." = "向客户机发送关闭电源请求。此操作模拟了按下 PC 上的电源按钮。";
 
 /* VMDisplayAppleWindowController
-   VMDisplayQemuDisplayController */
+VMDisplayQemuDisplayController */
 "Serial %lld" = "串行端口 %lld";
 
 /* Server view */
@@ -1084,7 +1112,8 @@
 /* No comment provided by engineer. */
 "Shared Directory" = "共享目录";
 
-/* UTMQemuConstants */
+/* UTMAppleConfigurationNetwork
+UTMQemuConstants */
 "Shared Network" = "共享网络";
 
 /* No comment provided by engineer. */
@@ -1393,6 +1422,9 @@
 /* VMQemuDisplayMetalWindowController */
 "USB Device" = "USB 设备";
 
+/* VMDisplayAppleDisplayController */
+"USB Mass Storage: %@" = "USB大容量存储设备：%@";
+
 /* No comment provided by engineer. */
 "USB Sharing" = "USB 共享";
 
@@ -1409,7 +1441,7 @@
 "User Guide" = "用户指南";
 
 /* UTMScriptingAppDelegate
-   UTMScriptingUSBDeviceImpl */
+UTMScriptingUSBDeviceImpl */
 "UTM is not ready to accept commands." = "UTM 尚未准备好接受命令。";
 
 /* No comment provided by engineer. */
@@ -1422,7 +1454,8 @@
 "VirtIO" = "VirtIO";
 
 /* UTMConfigurationInfo
-   UTMData */
+UTMData
+VMMetalView */
 "Virtual Machine" = "虚拟机";
 
 /* No comment provided by engineer. */
@@ -1477,7 +1510,7 @@
 "Your device has %llu MB of memory and the estimated usage is %llu MB." = "你的设备有 %llu MB 的内存，估计使用量为 %llu MB。";
 
 /* VMConfigAppleBootView
-   VMWizardOSMacView */
+VMWizardOSMacView */
 "Your machine does not support running this IPSW." = "你的机器不支持运行此 IPSW。";
 
 /* UTMDonateView */

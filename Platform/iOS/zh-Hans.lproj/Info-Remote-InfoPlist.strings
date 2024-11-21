@@ -1,9 +1,0 @@
-/* Bundle name */
-"CFBundleName" = "UTM 远程";
-
-/* Privacy - Local Network Usage Description */
-"NSLocalNetworkUsageDescription" = "UTM 使用本地网络查找和连接 UTM 远程服务器。";
-
-/* Privacy - Microphone Usage Description */
-"NSMicrophoneUsageDescription" = "任何虚拟机都需要权限才能通过麦克风录音。";
-
