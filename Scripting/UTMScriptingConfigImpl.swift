@@ -194,11 +194,6 @@ extension UTMScriptingConfigImpl {
             "argumentString": argument.string
         ]
         
-        // Only add fileUrls if it is not nil and contains URLs
-        if let fileUrls = argument.fileUrls, !fileUrls.isEmpty {
-            serializedArgument["fileUrls"] = fileUrls.map({ $0 as AnyHashable })
-        }
-        
         return serializedArgument
     }
     
@@ -522,12 +517,7 @@ extension UTMScriptingConfigImpl {
         let additionalArguments = records.compactMap { record -> QEMUArgument? in
             guard let argumentString = record["argumentString"] as? String else { return nil }
             var argument = QEMUArgument(argumentString)
-            // Qemu Additional Arguments in UI, only takes strings
-            // So, fileUrls of arguments will never be used
-            // This is here if they support in future
-            if let fileUrls = record["fileUrls"] as? [URL] {
-                argument.fileUrls = fileUrls
-            }
+            
             return argument
         }
         // Update entire additional arguments with new one.
