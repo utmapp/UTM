@@ -270,8 +270,8 @@
 		85EC516627CC8D10004A51DE /* VMConfigAdvancedNetworkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EC516327CC8C98004A51DE /* VMConfigAdvancedNetworkView.swift */; };
 		B329049C270FE136002707AC /* AltKit in Frameworks */ = {isa = PBXBuildFile; productRef = B329049B270FE136002707AC /* AltKit */; };
 		B3DDF57226E9BBA300CE47F0 /* AltKit in Frameworks */ = {isa = PBXBuildFile; productRef = B3DDF57126E9BBA300CE47F0 /* AltKit */; };
-		CD77BE442CB38F060074ADD2 /* UTMScriptingImportCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD77BE432CB38F060074ADD2 /* UTMScriptingImportCommand.swift */; };
 		CD77BE422CAB51B40074ADD2 /* UTMScriptingExportCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD77BE412CAB519F0074ADD2 /* UTMScriptingExportCommand.swift */; };
+		CD77BE442CB38F060074ADD2 /* UTMScriptingImportCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD77BE432CB38F060074ADD2 /* UTMScriptingImportCommand.swift */; };
 		CE020BA324AEDC7C00B44AB6 /* UTMData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE020BA224AEDC7C00B44AB6 /* UTMData.swift */; };
 		CE020BA424AEDC7C00B44AB6 /* UTMData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE020BA224AEDC7C00B44AB6 /* UTMData.swift */; };
 		CE020BA724AEDEF000B44AB6 /* Logging in Frameworks */ = {isa = PBXBuildFile; productRef = CE020BA624AEDEF000B44AB6 /* Logging */; };
@@ -1229,6 +1229,7 @@
 		CEFE96772B69A7CC000F00C9 /* VMRemoteSessionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEFE96762B69A7CC000F00C9 /* VMRemoteSessionState.swift */; };
 		CEFE98DF29485237007CB7A8 /* UTM.sdef in Resources */ = {isa = PBXBuildFile; fileRef = CEFE98DE29485237007CB7A8 /* UTM.sdef */; };
 		CEFE98E129485776007CB7A8 /* UTMScriptingVirtualMachineImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEFE98E029485776007CB7A8 /* UTMScriptingVirtualMachineImpl.swift */; };
+		F65F1F482CEEB78D00D9655B /* Info-Remote-InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F65F1F462CEEB78D00D9655B /* Info-Remote-InfoPlist.strings */; };
 		FF0307552A84E3B70049979B /* QEMULauncher-InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = FF0307532A84E3B70049979B /* QEMULauncher-InfoPlist.strings */; };
 		FFB02A8C266CB09C006CD71A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = FFB02A8A266CB09C006CD71A /* InfoPlist.strings */; };
 		FFB02A8D266CB09C006CD71A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = FFB02A8A266CB09C006CD71A /* InfoPlist.strings */; };
@@ -1777,8 +1778,8 @@
 		C03453AF2709E35100AD51AD /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		C03453B02709E35200AD51AD /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		C8958B6D243634DA002D86B4 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/Localizable.strings; sourceTree = "<group>"; };
-		CD77BE432CB38F060074ADD2 /* UTMScriptingImportCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMScriptingImportCommand.swift; sourceTree = "<group>"; };
 		CD77BE412CAB519F0074ADD2 /* UTMScriptingExportCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMScriptingExportCommand.swift; sourceTree = "<group>"; };
+		CD77BE432CB38F060074ADD2 /* UTMScriptingImportCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMScriptingImportCommand.swift; sourceTree = "<group>"; };
 		CE020BA224AEDC7C00B44AB6 /* UTMData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMData.swift; sourceTree = "<group>"; };
 		CE020BAA24AEE00000B44AB6 /* UTMLoggingSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMLoggingSwift.swift; sourceTree = "<group>"; };
 		CE020BB524B14F8400B44AB6 /* UTMVirtualMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMVirtualMachine.swift; sourceTree = "<group>"; };
@@ -2093,6 +2094,7 @@
 		E68D492228AC018E00D34C54 /* es-419 */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-419"; path = "es-419.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		E68D492328AC018E00D34C54 /* es-419 */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-419"; path = "es-419.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		E6F791192903EEC6000BAAC9 /* es-419 */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-419"; path = "es-419.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		F65F1F472CEEB78D00D9655B /* zh-HK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-HK"; path = "zh-HK.lproj/Info-Remote-InfoPlist.strings"; sourceTree = "<group>"; };
 		F6DA2DA52AAFED5F0070DCD1 /* zh-HK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-HK"; path = "zh-HK.lproj/VMDisplayMetalViewInputAccessory.strings"; sourceTree = "<group>"; };
 		F6DA2DA62AAFED5F0070DCD1 /* zh-HK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-HK"; path = "zh-HK.lproj/VMDisplayWindow.strings"; sourceTree = "<group>"; };
 		F6DA2DA72AAFED5F0070DCD1 /* zh-HK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-HK"; path = "zh-HK.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
@@ -2736,6 +2738,7 @@
 				CE95877426D74C2A0086BDE8 /* iOS.entitlements */,
 				CE2D954F24AD4F980059923A /* Info.plist */,
 				CECF02572B70909900409FC0 /* Info-Remote.plist */,
+				F65F1F462CEEB78D00D9655B /* Info-Remote-InfoPlist.strings */,
 				FFB02A8A266CB09C006CD71A /* InfoPlist.strings */,
 				CEB5C1192B8C4CD4008AAE5C /* Info-RemotePlist.strings */,
 				CEC1B00A2BBB211C0088119D /* PrivacyInfo.xcprivacy */,
@@ -3423,6 +3426,7 @@
 				CEF7F6792AEEDCC400E34952 /* Icons in Resources */,
 				CEB5C1172B8C4CD4008AAE5C /* Info-RemotePlist.strings in Resources */,
 				CEF7F67B2AEEDCC400E34952 /* Localizable.strings in Resources */,
+				F65F1F482CEEB78D00D9655B /* Info-Remote-InfoPlist.strings in Resources */,
 				CEF7F67C2AEEDCC400E34952 /* qemu in Resources */,
 				CEF7F67D2AEEDCC400E34952 /* VMDisplayMetalViewInputAccessory.xib in Resources */,
 				CEF7F67E2AEEDCC400E34952 /* Localizable.stringsdict in Resources */,
@@ -4363,6 +4367,14 @@
 				037DAA202B0B92580061ACB3 /* it */,
 			);
 			name = Localizable.stringsdict;
+			sourceTree = "<group>";
+		};
+		F65F1F462CEEB78D00D9655B /* Info-Remote-InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F65F1F472CEEB78D00D9655B /* zh-HK */,
+			);
+			name = "Info-Remote-InfoPlist.strings";
 			sourceTree = "<group>";
 		};
 		FF0307532A84E3B70049979B /* QEMULauncher-InfoPlist.strings */ = {
