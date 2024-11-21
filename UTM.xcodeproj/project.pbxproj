@@ -2095,6 +2095,7 @@
 		E68D492328AC018E00D34C54 /* es-419 */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-419"; path = "es-419.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		E6F791192903EEC6000BAAC9 /* es-419 */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-419"; path = "es-419.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		F65F1F472CEEB78D00D9655B /* zh-HK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-HK"; path = "zh-HK.lproj/Info-Remote-InfoPlist.strings"; sourceTree = "<group>"; };
+		F65F1F4A2CEEBC0900D9655B /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Info-Remote-InfoPlist.strings"; sourceTree = "<group>"; };
 		F6DA2DA52AAFED5F0070DCD1 /* zh-HK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-HK"; path = "zh-HK.lproj/VMDisplayMetalViewInputAccessory.strings"; sourceTree = "<group>"; };
 		F6DA2DA62AAFED5F0070DCD1 /* zh-HK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-HK"; path = "zh-HK.lproj/VMDisplayWindow.strings"; sourceTree = "<group>"; };
 		F6DA2DA72AAFED5F0070DCD1 /* zh-HK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-HK"; path = "zh-HK.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
@@ -4373,6 +4374,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				F65F1F472CEEB78D00D9655B /* zh-HK */,
+				F65F1F4A2CEEBC0900D9655B /* zh-Hans */,
 			);
 			name = "Info-Remote-InfoPlist.strings";
 			sourceTree = "<group>";
