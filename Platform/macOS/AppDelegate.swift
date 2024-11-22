@@ -37,8 +37,12 @@
         guard let data = data else {
             return []
         }
-        return data.virtualMachines.map { vm in
-            UTMScriptingVirtualMachineImpl(for: vm, data: data)
+        return data.virtualMachines.compactMap { vm in
+            if vm.wrapped != nil {
+                return UTMScriptingVirtualMachineImpl(for: vm, data: data)
+            } else {
+                return nil
+            }
         }
     }
     
