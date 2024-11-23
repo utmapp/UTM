@@ -6,6 +6,6 @@
 @end
 
 int main() {
-    [[LSApplicationWorkspace defaultWorkspace] installApplication:[NSURL fileURLWithPath:@"/Library/Caches/com.utmapp.UTM/UTM.ipa"] withOptions:[NSDictionary dictionaryWithObject:@"com.utmapp.UTM" forKey:@"CFBundleIdentifier"]]; // This function will remove the ipa file.
+    [[LSApplicationWorkspace defaultWorkspace] installApplication:[NSURL fileURLWithPath:@"/var/tmp/com.utmapp.UTM/UTM.ipa"] withOptions:[NSDictionary dictionaryWithObject:@"com.utmapp.UTM" forKey:@"CFBundleIdentifier"]]; // This function will remove the ipa file.
     return 0;
 }
