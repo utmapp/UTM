@@ -170,13 +170,20 @@ static NSDictionary *app_entitlements(void) {
     if (cs_lc == NULL)
         return nil;
 
+    NSString *fname = [NSString stringWithCString:dl_info.dli_fname encoding:NSUTF8StringEncoding];
+    NSURL *fpath = [NSURL fileURLWithPath:fname];
+
     // Read the code signature off disk, as it's apparently not loaded into memory
-    NSFileHandle *fileHandle = [NSFileHandle fileHandleForReadingFromURL:NSBundle.mainBundle.executableURL error:nil];
-    if (fileHandle == nil)
+    NSError *err = nil;
+    NSFileHandle *fileHandle = [NSFileHandle fileHandleForReadingFromURL:fpath error:&err];
+    if (fileHandle == nil || err != nil)
         return nil;
     [fileHandle seekToFileOffset:cs_lc->dataoff];
     NSData *csData = [fileHandle readDataOfLength:cs_lc->datasize];
     [fileHandle closeFile];
+    if (csData.length == 0) {
+        return nil;
+    }
     const struct cs_superblob *cs = csData.bytes;
     if (ntohl(cs->magic) != 0xfade0cc0)
         return nil;
