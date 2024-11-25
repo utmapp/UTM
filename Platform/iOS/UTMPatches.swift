@@ -39,32 +39,32 @@ fileprivate extension NSObject {
 
 /// We need to set these when the VM starts running since there is no way to do it from SwiftUI right now
 extension UIViewController {
-    private static var _childForHomeIndicatorAutoHiddenStorage: [UIViewController: UIViewController] = [:]
-    
-    @objc private dynamic var _childForHomeIndicatorAutoHidden: UIViewController? {
-        Self._childForHomeIndicatorAutoHiddenStorage[self]
+    private static var _utm__childForHomeIndicatorAutoHiddenStorage: [UIViewController: UIViewController] = [:]
+
+    @objc private dynamic var _utm__childForHomeIndicatorAutoHidden: UIViewController? {
+        Self._utm__childForHomeIndicatorAutoHiddenStorage[self]
     }
     
     @objc dynamic func setChildForHomeIndicatorAutoHidden(_ value: UIViewController?) {
         if let value = value {
-            Self._childForHomeIndicatorAutoHiddenStorage[self] = value
+            Self._utm__childForHomeIndicatorAutoHiddenStorage[self] = value
         } else {
-            Self._childForHomeIndicatorAutoHiddenStorage.removeValue(forKey: self)
+            Self._utm__childForHomeIndicatorAutoHiddenStorage.removeValue(forKey: self)
         }
         setNeedsUpdateOfHomeIndicatorAutoHidden()
     }
     
-    private static var _childViewControllerForPointerLockStorage: [UIViewController: UIViewController] = [:]
-    
-    @objc private dynamic var _childViewControllerForPointerLock: UIViewController? {
-        Self._childViewControllerForPointerLockStorage[self]
+    private static var _utm__childViewControllerForPointerLockStorage: [UIViewController: UIViewController] = [:]
+
+    @objc private dynamic var _utm__childViewControllerForPointerLock: UIViewController? {
+        Self._utm__childViewControllerForPointerLockStorage[self]
     }
     
     @objc dynamic func setChildViewControllerForPointerLock(_ value: UIViewController?) {
         if let value = value {
-            Self._childViewControllerForPointerLockStorage[self] = value
+            Self._utm__childViewControllerForPointerLockStorage[self] = value
         } else {
-            Self._childViewControllerForPointerLockStorage.removeValue(forKey: self)
+            Self._utm__childViewControllerForPointerLockStorage.removeValue(forKey: self)
         }
         setNeedsUpdateOfPrefersPointerLocked()
     }
@@ -72,10 +72,10 @@ extension UIViewController {
     /// SwiftUI currently does not provide a way to set the View Conrtoller's home indicator or pointer lock
     fileprivate static func patchViewController() {
         patch(#selector(getter: Self.childForHomeIndicatorAutoHidden),
-              with: #selector(getter: Self._childForHomeIndicatorAutoHidden),
+              with: #selector(getter: Self._utm__childForHomeIndicatorAutoHidden),
               class: Self.self)
         patch(#selector(getter: Self.childViewControllerForPointerLock),
-              with: #selector(getter: Self._childViewControllerForPointerLock),
+              with: #selector(getter: Self._utm__childViewControllerForPointerLock),
               class: Self.self)
     }
 }
@@ -83,8 +83,8 @@ extension UIViewController {
 extension UIPress {
     @objc static weak var pressResponderOverride: UIResponder?
     
-    @objc private dynamic var _responder: UIResponder? {
-        Self.pressResponderOverride ?? self._responder
+    @objc private dynamic var _utm__responder: UIResponder? {
+        Self.pressResponderOverride ?? self._utm__responder
     }
     
     /// On iOS 15.0, there is a bug where SwiftUI does not propogate the presses event down
@@ -93,7 +93,7 @@ extension UIPress {
         if #available(iOS 15.0, *) {
             if #unavailable(iOS 15.1) {
                 patch(#selector(getter: Self.responder),
-                      with: #selector(getter: Self._responder),
+                      with: #selector(getter: Self._utm__responder),
                       class: Self.self)
             }
         }
@@ -119,7 +119,7 @@ extension UIWindow {
     
     /// Replacement `sendEvent(_:)` function
     /// - Parameter event: The event to dispatch.
-    @objc private func xxx_sendEvent(_ event: UIEvent) {
+    @objc private func _utm__sendEvent(_ event: UIEvent) {
         if isIndirectPointerTouchIgnored && event.type == .touches {
             event.touches(for: self)?.forEach { touch in
                 if touch.type == .indirectPointer {
@@ -131,12 +131,12 @@ extension UIWindow {
                 }
             }
         }
-        xxx_sendEvent(event)
+        _utm__sendEvent(event)
     }
     
     fileprivate static func patchWindow() {
         patch(#selector(sendEvent),
-              with: #selector(xxx_sendEvent),
+              with: #selector(_utm__sendEvent),
               class: Self.self)
     }
 }
