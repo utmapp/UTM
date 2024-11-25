@@ -1,5 +1,5 @@
 #  UTM
-[![Build](https://github.com/utmapp/UTM/workflows/Build/badge.svg?branch=master&event=push)][1]
+[![Build](https://github.com/utmapp/UTM/workflows/Build/badge.svg?branch=main&event=push)][1]
 
 > এমন মেশিন আবিষ্কার করা সম্ভব যা যেকোনো ধরনের সিকোয়েনশিয়াল গণনা করতে পারে তা যত কঠিন গণনাই হোক না কেন 
 

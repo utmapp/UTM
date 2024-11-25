@@ -1,5 +1,5 @@
 #  UTM
-[![Build](https://github.com/utmapp/UTM/workflows/Build/badge.svg?branch=master&event=push)][1]
+[![Build](https://github.com/utmapp/UTM/workflows/Build/badge.svg?branch=main&event=push)][1]
 
 > Możliwe jest wymyślenie pojedynczej maszyny, której można użyć do obliczenia dowolnej sekwencji obliczeniowej.
 

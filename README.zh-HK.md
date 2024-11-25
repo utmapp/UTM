@@ -1,5 +1,5 @@
 #  UTM
-[![Build](https://github.com/utmapp/UTM/workflows/Build/badge.svg?branch=master&event=push)][1]
+[![Build](https://github.com/utmapp/UTM/workflows/Build/badge.svg?branch=main&event=push)][1]
 
 > 發明一個可用於計算任何可計算序列的機器是可行的。
 -- <cite>艾倫·圖靈（Alan Turing）, 1936 年</cite>

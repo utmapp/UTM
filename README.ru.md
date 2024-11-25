@@ -1,6 +1,6 @@
 # UTM
 
-[![Статус](https://github.com/utmapp/UTM/workflows/Build/badge.svg?branch=master&event=push)](https://github.com/utmapp/UTM/actions?query=event%3Arelease+workflow%3ABuild)
+[![Статус](https://github.com/utmapp/UTM/workflows/Build/badge.svg?branch=main&event=push)](https://github.com/utmapp/UTM/actions?query=event%3Arelease+workflow%3ABuild)
 
 > Возможно изобрести [такую машину](https://ru.wikipedia.org/wiki/Универсальная_машина_Тьюринга), которая справится с любой вычислимой последовательностью.
 
