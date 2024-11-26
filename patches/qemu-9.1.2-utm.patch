@@ -126,22 +126,587 @@ index 4c2dd33532..6e73c6e13e 100644
 -- 
 2.41.0
 
-From bf72f711841fc8d308015a5768f70563669ff766 Mon Sep 17 00:00:00 2001
+From d38822306046267f16ec5c32d614702db6a5e5a5 Mon Sep 17 00:00:00 2001
+From: Danny Canter <danny_canter@apple.com>
+Date: Fri, 13 Sep 2024 15:31:46 +0100
+Subject: [PATCH 1/4] hw/boards: Add hvf_get_physical_address_range to
+ MachineClass
+
+This addition will be necessary for some HVF related work to follow.
+For HVF on ARM there exists a set of APIs in macOS 13 to be able to
+adjust the IPA size for a given VM. This is useful as by default HVF
+uses 36 bits as the IPA size, so to support guests with > 64GB of RAM
+we'll need to reach for this.
+
+To have all the info necessary to carry this out however, we need some
+plumbing to be able to grab the memory map and compute the highest GPA
+prior to creating the VM. This is almost exactly like what kvm_type is
+used for on ARM today, and is also what this will be used for. We will
+compute the highest GPA and find what IPA size we'd need to satisfy this,
+and if it's valid (macOS today caps at 40b) we'll set this to be the IPA
+size in coming patches. This new method is only needed (today at least)
+on ARM, and obviously only for HVF/macOS, so admittedly it is much less
+generic than kvm_type today, but it seemed a somewhat sane way to get
+the information we need from the memmap at VM creation time.
+
+Signed-off-by: Danny Canter <danny_canter@apple.com>
+Message-id: 20240828111552.93482-2-danny_canter@apple.com
+Reviewed-by: Peter Maydell <peter.maydell@linaro.org>
+[PMM: removed explicit setting of field to NULL on x86]
+Signed-off-by: Peter Maydell <peter.maydell@linaro.org>
+---
+ hw/arm/virt.c       | 9 ++++++++-
+ include/hw/boards.h | 5 +++++
+ 2 files changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/hw/arm/virt.c b/hw/arm/virt.c
+index 35cbbf2d3d..8c20708625 100644
+--- a/hw/arm/virt.c
++++ b/hw/arm/virt.c
+@@ -2111,7 +2111,8 @@ static void machvirt_init(MachineState *machine)
+ 
+     /*
+      * In accelerated mode, the memory map is computed earlier in kvm_type()
+-     * to create a VM with the right number of IPA bits.
++     * for Linux, or hvf_get_physical_address_range() for macOS to create a
++     * VM with the right number of IPA bits.
+      */
+     if (!vms->memmap) {
+         Object *cpuobj;
+@@ -3038,6 +3039,11 @@ static int virt_kvm_type(MachineState *ms, const char *type_str)
+     return fixed_ipa ? 0 : requested_pa_size;
+ }
+ 
++static int virt_hvf_get_physical_address_range(MachineState *ms)
++{
++    return 0;
++}
++
+ static void virt_machine_class_init(ObjectClass *oc, void *data)
+ {
+     MachineClass *mc = MACHINE_CLASS(oc);
+@@ -3098,6 +3104,7 @@ static void virt_machine_class_init(ObjectClass *oc, void *data)
+     mc->valid_cpu_types = valid_cpu_types;
+     mc->get_default_cpu_node_id = virt_get_default_cpu_node_id;
+     mc->kvm_type = virt_kvm_type;
++    mc->hvf_get_physical_address_range = virt_hvf_get_physical_address_range;
+     assert(!mc->get_hotplug_handler);
+     mc->get_hotplug_handler = virt_machine_get_hotplug_handler;
+     hc->pre_plug = virt_machine_device_pre_plug_cb;
+diff --git a/include/hw/boards.h b/include/hw/boards.h
+index 48ff6d8b93..bfc7cc7f90 100644
+--- a/include/hw/boards.h
++++ b/include/hw/boards.h
+@@ -215,6 +215,10 @@ typedef struct {
+  *    Return the type of KVM corresponding to the kvm-type string option or
+  *    computed based on other criteria such as the host kernel capabilities.
+  *    kvm-type may be NULL if it is not needed.
++ * @hvf_get_physical_address_range:
++ *    Returns the physical address range in bits to use for the HVF virtual
++ *    machine based on the current boards memory map. This may be NULL if it
++ *    is not needed.
+  * @numa_mem_supported:
+  *    true if '--numa node.mem' option is supported and false otherwise
+  * @hotplug_allowed:
+@@ -256,6 +260,7 @@ struct MachineClass {
+     void (*reset)(MachineState *state, ShutdownCause reason);
+     void (*wakeup)(MachineState *state);
+     int (*kvm_type)(MachineState *machine, const char *arg);
++    int (*hvf_get_physical_address_range)(MachineState *machine);
+ 
+     BlockInterfaceType block_default_type;
+     int units_per_default_bus;
+-- 
+2.41.0
+
+From b60ce14906b018acfcf2da7cb9aa9d89076152d9 Mon Sep 17 00:00:00 2001
+From: Danny Canter <danny_canter@apple.com>
+Date: Fri, 13 Sep 2024 15:31:46 +0100
+Subject: [PATCH 2/4] hvf: Split up hv_vm_create logic per arch
+
+This is preliminary work to split up hv_vm_create
+logic per platform so we can support creating VMs
+with > 64GB of RAM on Apple Silicon machines. This
+is done via ARM HVF's hv_vm_config_create() (and
+other APIs that modify this config that will be
+coming in future patches). This should have no
+behavioral difference at all as hv_vm_config_create()
+just assigns the same default values as if you just
+passed NULL to the function.
+
+Signed-off-by: Danny Canter <danny_canter@apple.com>
+Message-id: 20240828111552.93482-3-danny_canter@apple.com
+Reviewed-by: Peter Maydell <peter.maydell@linaro.org>
+Signed-off-by: Peter Maydell <peter.maydell@linaro.org>
+---
+ accel/hvf/hvf-accel-ops.c |  2 +-
+ include/sysemu/hvf_int.h  |  2 +-
+ target/arm/hvf/hvf.c      | 32 ++++++++++++++++----------------
+ target/i386/hvf/hvf.c     |  8 ++++----
+ 4 files changed, 22 insertions(+), 22 deletions(-)
+
+diff --git a/accel/hvf/hvf-accel-ops.c b/accel/hvf/hvf-accel-ops.c
+index 7ddf044b39..359090acdf 100644
+--- a/accel/hvf/hvf-accel-ops.c
++++ b/accel/hvf/hvf-accel-ops.c
+@@ -322,7 +322,7 @@ static int hvf_accel_init(MachineState *ms)
+     hv_return_t ret;
+     HVFState *s;
+ 
+-    ret = hvf_arch_vm_create();
++    ret = hvf_arch_vm_create(ms, 0);
+     assert_hvf_ok(ret);
+ 
+     s = g_new0(HVFState, 1);
+diff --git a/include/sysemu/hvf_int.h b/include/sysemu/hvf_int.h
+index f7166956b5..763201dd71 100644
+--- a/include/sysemu/hvf_int.h
++++ b/include/sysemu/hvf_int.h
+@@ -79,9 +79,9 @@ struct AccelCPUState {
+ void assert_hvf_ok_impl(hv_return_t ret, const char *file, unsigned int line,
+                         const char *exp);
+ #define assert_hvf_ok(EX) assert_hvf_ok_impl((EX), __FILE__, __LINE__, #EX)
+-hv_return_t hvf_arch_vm_create(void);
+ const char *hvf_return_string(hv_return_t ret);
+ int hvf_arch_init(void);
++hv_return_t hvf_arch_vm_create(MachineState *ms, uint32_t pa_range);
+ int hvf_arch_init_vcpu(CPUState *cpu);
+ void hvf_arch_vcpu_destroy(CPUState *cpu);
+ int hvf_vcpu_exec(CPUState *);
+diff --git a/target/arm/hvf/hvf.c b/target/arm/hvf/hvf.c
+index 5411af348b..83106c5cc3 100644
+--- a/target/arm/hvf/hvf.c
++++ b/target/arm/hvf/hvf.c
+@@ -963,6 +963,22 @@ void hvf_arch_vcpu_destroy(CPUState *cpu)
+ {
+ }
+ 
++hv_return_t hvf_arch_vm_create(MachineState *ms, uint32_t pa_range)
++{
++    hv_return_t ret;
++    hv_vm_config_t config = hv_vm_config_create();
++#if defined(CONFIG_HVF_PRIVATE)
++    if (hvf_tso_mode) {
++        _hv_vm_config_set_isa(config, HV_VM_CONFIG_ISA_PRIVATE);
++    }
++    ret = hv_vm_create(config);
++#else
++    ret = hv_vm_create(config);
++#endif
++    os_release(config);
++    return ret;
++}
++
+ int hvf_arch_init_vcpu(CPUState *cpu)
+ {
+     ARMCPU *arm_cpu = ARM_CPU(cpu);
+@@ -2088,22 +2104,6 @@ static void hvf_vm_state_change(void *opaque, bool running, RunState state)
+     }
+ }
+ 
+-hv_return_t hvf_arch_vm_create(void)
+-{
+-#if defined(CONFIG_HVF_PRIVATE)
+-    hv_return_t ret;
+-    hv_vm_config_t config = hv_vm_config_create();
+-    if (hvf_tso_mode) {
+-        _hv_vm_config_set_isa(config, HV_VM_CONFIG_ISA_PRIVATE);
+-    }
+-    ret = hv_vm_create(config);
+-    os_release(config);
+-    return ret;
+-#else
+-    return hv_vm_create(HV_VM_DEFAULT);
+-#endif
+-}
+-
+ int hvf_arch_init(void)
+ {
+     hvf_state->vtimer_offset = mach_absolute_time();
+diff --git a/target/i386/hvf/hvf.c b/target/i386/hvf/hvf.c
+index 7f9491f115..68dc5d9cf7 100644
+--- a/target/i386/hvf/hvf.c
++++ b/target/i386/hvf/hvf.c
+@@ -218,14 +218,14 @@ void hvf_kick_vcpu_thread(CPUState *cpu)
+     hv_vcpu_interrupt(&cpu->accel->fd, 1);
+ }
+ 
+-hv_return_t hvf_arch_vm_create(void)
++int hvf_arch_init(void)
+ {
+-    return hv_vm_create(HV_VM_DEFAULT);
++    return 0;
+ }
+ 
+-int hvf_arch_init(void)
++hv_return_t hvf_arch_vm_create(MachineState *ms, uint32_t pa_range)
+ {
+-    return 0;
++    return hv_vm_create(HV_VM_DEFAULT);
+ }
+ 
+ int hvf_arch_init_vcpu(CPUState *cpu)
+-- 
+2.41.0
+
+From 48a2c54d46bac19946efd0488bf119a9607f7096 Mon Sep 17 00:00:00 2001
+From: Danny Canter <danny_canter@apple.com>
+Date: Fri, 13 Sep 2024 15:31:47 +0100
+Subject: [PATCH 3/4] hvf: arm: Implement and use
+ hvf_get_physical_address_range
+
+This patch's main focus is to use the previously added
+hvf_get_physical_address_range to inform VM creation
+about the IPA size we need for the VM, so we can extend
+the default 36b IPA size and support VMs with 64+GB of
+RAM. This is done by freezing the memory map, computing
+the highest GPA and then (depending on if the platform
+supports an IPA size that large) telling the kernel to
+use a size >= for the VM. In pursuit of this a couple of
+things related to how we handle the physical address range
+we expose to guests were altered, but for an explanation of
+what we were doing:
+
+Today, to get the IPA size we were reading id_aa64mmfr0_el1's
+PARange field from a newly made vcpu. Unfortunately, HVF just
+returns the hosts PARange directly for the initial value and
+not the IPA size that will actually back the VM, so we believe
+we have much more address space than we actually do today it seems.
+
+Starting in macOS 13.0 some APIs were introduced to be able to
+query the maximum IPA size the kernel supports, and to set the IPA
+size for a given VM. However, this still has a couple of issues
+on < macOS 15. Up until macOS 15 (and if the hardware supported
+it) the max IPA size was 39 bits which is not a valid PARange
+value, so we can't clamp down what we advertise in the vcpu's
+id_aa64mmfr0_el1 to our IPA size. Starting in macOS 15 however,
+the maximum IPA size is 40 bits (if it's supported in the hardware
+as well) which is also a valid PARange value so we can set our IPA
+size to the maximum as well as clamp down the PARange we advertise
+to the guest. This allows VMs with 64+ GB of RAM and should fix the
+oddness of the PARange situation as well.
+
+Signed-off-by: Danny Canter <danny_canter@apple.com>
+Message-id: 20240828111552.93482-4-danny_canter@apple.com
+Reviewed-by: Peter Maydell <peter.maydell@linaro.org>
+Signed-off-by: Peter Maydell <peter.maydell@linaro.org>
+---
+ accel/hvf/hvf-accel-ops.c | 12 +++++++-
+ hw/arm/virt.c             | 31 +++++++++++++++++++-
+ target/arm/hvf/hvf.c      | 59 ++++++++++++++++++++++++++++++++++++---
+ target/arm/hvf_arm.h      | 19 +++++++++++++
+ target/arm/internals.h    | 19 +++++++++++++
+ target/arm/ptw.c          | 15 ++++++++++
+ 6 files changed, 149 insertions(+), 6 deletions(-)
+
+diff --git a/accel/hvf/hvf-accel-ops.c b/accel/hvf/hvf-accel-ops.c
+index 359090acdf..5f467332db 100644
+--- a/accel/hvf/hvf-accel-ops.c
++++ b/accel/hvf/hvf-accel-ops.c
+@@ -53,6 +53,7 @@
+ #include "exec/address-spaces.h"
+ #include "exec/exec-all.h"
+ #include "gdbstub/enums.h"
++#include "hw/boards.h"
+ #include "sysemu/cpus.h"
+ #include "sysemu/hvf.h"
+ #include "sysemu/hvf_int.h"
+@@ -321,8 +322,17 @@ static int hvf_accel_init(MachineState *ms)
+     int x;
+     hv_return_t ret;
+     HVFState *s;
++    int pa_range = 36;
++    MachineClass *mc = MACHINE_GET_CLASS(ms);
++
++    if (mc->hvf_get_physical_address_range) {
++        pa_range = mc->hvf_get_physical_address_range(ms);
++        if (pa_range < 0) {
++            return -EINVAL;
++        }
++    }
+ 
+-    ret = hvf_arch_vm_create(ms, 0);
++    ret = hvf_arch_vm_create(ms, (uint32_t)pa_range);
+     assert_hvf_ok(ret);
+ 
+     s = g_new0(HVFState, 1);
+diff --git a/hw/arm/virt.c b/hw/arm/virt.c
+index 8c20708625..a67a22b25f 100644
+--- a/hw/arm/virt.c
++++ b/hw/arm/virt.c
+@@ -66,6 +66,7 @@
+ #include "hw/intc/arm_gicv3_its_common.h"
+ #include "hw/irq.h"
+ #include "kvm_arm.h"
++#include "hvf_arm.h"
+ #include "hw/firmware/smbios.h"
+ #include "qapi/visitor.h"
+ #include "qapi/qapi-visit-common.h"
+@@ -3041,7 +3042,35 @@ static int virt_kvm_type(MachineState *ms, const char *type_str)
+ 
+ static int virt_hvf_get_physical_address_range(MachineState *ms)
+ {
+-    return 0;
++    VirtMachineState *vms = VIRT_MACHINE(ms);
++
++    int default_ipa_size = hvf_arm_get_default_ipa_bit_size();
++    int max_ipa_size = hvf_arm_get_max_ipa_bit_size();
++
++    /* We freeze the memory map to compute the highest gpa */
++    virt_set_memmap(vms, max_ipa_size);
++
++    int requested_ipa_size = 64 - clz64(vms->highest_gpa);
++
++    /*
++     * If we're <= the default IPA size just use the default.
++     * If we're above the default but below the maximum, round up to
++     * the maximum. hvf_arm_get_max_ipa_bit_size() conveniently only
++     * returns values that are valid ARM PARange values.
++     */
++    if (requested_ipa_size <= default_ipa_size) {
++        requested_ipa_size = default_ipa_size;
++    } else if (requested_ipa_size <= max_ipa_size) {
++        requested_ipa_size = max_ipa_size;
++    } else {
++        error_report("-m and ,maxmem option values "
++                     "require an IPA range (%d bits) larger than "
++                     "the one supported by the host (%d bits)",
++                     requested_ipa_size, max_ipa_size);
++        return -1;
++    }
++
++    return requested_ipa_size;
+ }
+ 
+ static void virt_machine_class_init(ObjectClass *oc, void *data)
+diff --git a/target/arm/hvf/hvf.c b/target/arm/hvf/hvf.c
+index 83106c5cc3..377a3f9097 100644
+--- a/target/arm/hvf/hvf.c
++++ b/target/arm/hvf/hvf.c
+@@ -22,6 +22,7 @@
+ #include <mach/mach_time.h>
+ 
+ #include "exec/address-spaces.h"
++#include "hw/boards.h"
+ #include "hw/irq.h"
+ #include "qemu/main-loop.h"
+ #include "sysemu/cpus.h"
+@@ -304,6 +305,8 @@ static const bool windows_workaround_enabled = true;
+ 
+ static void hvf_wfi(CPUState *cpu);
+ 
++static uint32_t chosen_ipa_bit_size;
++
+ typedef struct HVFVTimer {
+     /* Vtimer value during migration and paused state */
+     uint64_t vtimer_val;
+@@ -846,6 +849,16 @@ static uint64_t hvf_get_reg(CPUState *cpu, int rt)
+     return val;
+ }
+ 
++static void clamp_id_aa64mmfr0_parange_to_ipa_size(uint64_t *id_aa64mmfr0)
++{
++    uint32_t ipa_size = chosen_ipa_bit_size ?
++            chosen_ipa_bit_size : hvf_arm_get_max_ipa_bit_size();
++
++    /* Clamp down the PARange to the IPA size the kernel supports. */
++    uint8_t index = round_down_to_parange_index(ipa_size);
++    *id_aa64mmfr0 = (*id_aa64mmfr0 & ~R_ID_AA64MMFR0_PARANGE_MASK) | index;
++}
++
+ static bool hvf_arm_get_host_cpu_features(ARMHostCPUFeatures *ahcf)
+ {
+     ARMISARegisters host_isar = {};
+@@ -889,6 +902,8 @@ static bool hvf_arm_get_host_cpu_features(ARMHostCPUFeatures *ahcf)
+     r |= hv_vcpu_get_sys_reg(fd, HV_SYS_REG_MIDR_EL1, &ahcf->midr);
+     r |= hv_vcpu_destroy(fd);
+ 
++    clamp_id_aa64mmfr0_parange_to_ipa_size(&host_isar.id_aa64mmfr0);
++
+     ahcf->isar = host_isar;
+ 
+     /*
+@@ -924,7 +939,6 @@ static hv_return_t hvf_vcpu_get_actlr(hv_vcpu_t vcpu, uint64_t* value)
+ #endif
+ }
+ 
+-
+ static hv_return_t hvf_vcpu_set_actlr(hv_vcpu_t vcpu, uint64_t value)
+ {
+ #if defined(CONFIG_HVF_PRIVATE)
+@@ -938,6 +952,30 @@ static hv_return_t hvf_vcpu_set_actlr(hv_vcpu_t vcpu, uint64_t value)
+ #endif
+ }
+ 
++uint32_t hvf_arm_get_default_ipa_bit_size(void)
++{
++    uint32_t default_ipa_size;
++    hv_return_t ret = hv_vm_config_get_default_ipa_size(&default_ipa_size);
++    assert_hvf_ok(ret);
++
++    return default_ipa_size;
++}
++
++uint32_t hvf_arm_get_max_ipa_bit_size(void)
++{
++    uint32_t max_ipa_size;
++    hv_return_t ret = hv_vm_config_get_max_ipa_size(&max_ipa_size);
++    assert_hvf_ok(ret);
++
++    /*
++     * We clamp any IPA size we want to back the VM with to a valid PARange
++     * value so the guest doesn't try and map memory outside of the valid range.
++     * This logic just clamps the passed in IPA bit size to the first valid
++     * PARange value <= to it.
++     */
++    return round_down_to_parange_bit_size(max_ipa_size);
++}
++
+ void hvf_arm_set_cpu_features_from_host(ARMCPU *cpu)
+ {
+     if (!arm_host_cpu_features.dtb_compatible) {
+@@ -967,14 +1005,22 @@ hv_return_t hvf_arch_vm_create(MachineState *ms, uint32_t pa_range)
+ {
+     hv_return_t ret;
+     hv_vm_config_t config = hv_vm_config_create();
++
+ #if defined(CONFIG_HVF_PRIVATE)
+     if (hvf_tso_mode) {
+         _hv_vm_config_set_isa(config, HV_VM_CONFIG_ISA_PRIVATE);
+     }
+-    ret = hv_vm_create(config);
+-#else
+-    ret = hv_vm_create(config);
+ #endif
++
++    ret = hv_vm_config_set_ipa_size(config, pa_range);
++    if (ret != HV_SUCCESS) {
++        goto cleanup;
++    }
++    chosen_ipa_bit_size = pa_range;
++
++    ret = hv_vm_create(config);
++
++cleanup:
+     os_release(config);
+     return ret;
+ }
+@@ -1045,6 +1091,11 @@ int hvf_arch_init_vcpu(CPUState *cpu)
+                               &arm_cpu->isar.id_aa64mmfr0);
+     assert_hvf_ok(ret);
+ 
++    clamp_id_aa64mmfr0_parange_to_ipa_size(&arm_cpu->isar.id_aa64mmfr0);
++    ret = hv_vcpu_set_sys_reg(cpu->accel->fd, HV_SYS_REG_ID_AA64MMFR0_EL1,
++                              arm_cpu->isar.id_aa64mmfr0);
++    assert_hvf_ok(ret);
++
+     /* enable TSO mode */
+     if (hvf_tso_mode) {
+         uint64_t actlr;
+diff --git a/target/arm/hvf_arm.h b/target/arm/hvf_arm.h
+index e848c1d27d..26c717b382 100644
+--- a/target/arm/hvf_arm.h
++++ b/target/arm/hvf_arm.h
+@@ -22,4 +22,23 @@ void hvf_arm_init_debug(void);
+ 
+ void hvf_arm_set_cpu_features_from_host(ARMCPU *cpu);
+ 
++#ifdef CONFIG_HVF
++
++uint32_t hvf_arm_get_default_ipa_bit_size(void);
++uint32_t hvf_arm_get_max_ipa_bit_size(void);
++
++#else
++
++static inline uint32_t hvf_arm_get_default_ipa_bit_size(void)
++{
++    return 0;
++}
++
++static inline uint32_t hvf_arm_get_max_ipa_bit_size(void)
++{
++    return 0;
++}
++
++#endif
++
+ #endif
+diff --git a/target/arm/internals.h b/target/arm/internals.h
+index 56d33f4c40..4024433976 100644
+--- a/target/arm/internals.h
++++ b/target/arm/internals.h
+@@ -436,6 +436,25 @@ static inline void update_spsel(CPUARMState *env, uint32_t imm)
+  */
+ unsigned int arm_pamax(ARMCPU *cpu);
+ 
++/*
++ * round_down_to_parange_index
++ * @bit_size: uint8_t
++ *
++ * Rounds down the bit_size supplied to the first supported ARM physical
++ * address range and returns the index for this. The index is intended to
++ * be used to set ID_AA64MMFR0_EL1's PARANGE bits.
++ */
++uint8_t round_down_to_parange_index(uint8_t bit_size);
++
++/*
++ * round_down_to_parange_bit_size
++ * @bit_size: uint8_t
++ *
++ * Rounds down the bit_size supplied to the first supported ARM physical
++ * address range bit size and returns this.
++ */
++uint8_t round_down_to_parange_bit_size(uint8_t bit_size);
++
+ /* Return true if extended addresses are enabled.
+  * This is always the case if our translation regime is 64 bit,
+  * but depends on TTBCR.EAE for 32 bit.
+diff --git a/target/arm/ptw.c b/target/arm/ptw.c
+index 65d7b07bc5..b6b725b62a 100644
+--- a/target/arm/ptw.c
++++ b/target/arm/ptw.c
+@@ -96,6 +96,21 @@ static const uint8_t pamax_map[] = {
+     [6] = 52,
+ };
+ 
++uint8_t round_down_to_parange_index(uint8_t bit_size)
++{
++    for (int i = ARRAY_SIZE(pamax_map) - 1; i >= 0; i--) {
++        if (pamax_map[i] <= bit_size) {
++            return i;
++        }
++    }
++    g_assert_not_reached();
++}
++
++uint8_t round_down_to_parange_bit_size(uint8_t bit_size)
++{
++    return pamax_map[round_down_to_parange_index(bit_size)];
++}
++
+ /*
+  * The cpu-specific constant value of PAMax; also used by hw/arm/virt.
+  * Note that machvirt_init calls this on a CPU that is inited but not realized!
+-- 
+2.41.0
+
+From 3c5e75b88dec02a14bd14dce0b0e62ba71686291 Mon Sep 17 00:00:00 2001
 From: osy <osy@turing.llc>
-Date: Mon, 11 Nov 2024 01:45:20 -0800
-Subject: [PATCH] hvf: arm: disable SME which is not properly handled by QEMU
+Date: Tue, 26 Nov 2024 13:25:01 -0800
+Subject: [PATCH 4/4] DO NOT MERGE: hvf: arm: disable SME which is not properly
+ handled by QEMU
 
 ---
  target/arm/hvf/hvf.c | 5 +++++
  1 file changed, 5 insertions(+)
 
 diff --git a/target/arm/hvf/hvf.c b/target/arm/hvf/hvf.c
-index 5411af348b..e95e12c9c1 100644
+index 377a3f9097..709a60b000 100644
 --- a/target/arm/hvf/hvf.c
 +++ b/target/arm/hvf/hvf.c
-@@ -889,6 +889,11 @@ static bool hvf_arm_get_host_cpu_features(ARMHostCPUFeatures *ahcf)
-     r |= hv_vcpu_get_sys_reg(fd, HV_SYS_REG_MIDR_EL1, &ahcf->midr);
-     r |= hv_vcpu_destroy(fd);
+@@ -904,6 +904,11 @@ static bool hvf_arm_get_host_cpu_features(ARMHostCPUFeatures *ahcf)
+ 
+     clamp_id_aa64mmfr0_parange_to_ipa_size(&host_isar.id_aa64mmfr0);
  
 +    /*
 +     * Disable SME which is not properly handled by QEMU yet
