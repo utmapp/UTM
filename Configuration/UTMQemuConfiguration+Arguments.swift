@@ -294,7 +294,12 @@ import Virtualization // for getting network interfaces
         if system.cpu.rawValue == system.architecture.cpuType.default.rawValue {
             // if default and not hypervisor, we don't pass any -cpu argument for x86 and use host for ARM
             if isHypervisorUsed {
-                #if !arch(x86_64)
+                #if arch(x86_64)
+                if let cpu = highestIntelCPUConfigurationForHost() {
+                    f("-cpu")
+                    f(cpu)
+                }
+                #else
                 f("-cpu")
                 f("host")
                 #endif
@@ -306,6 +311,9 @@ import Virtualization // for getting network interfaces
                 // ARM64 QEMU does not support "-cpu default" so we hard code a sensible default
                 f("-cpu")
                 f("cortex-a15")
+            } else if system.architecture == .x86_64, let cpu = highestIntelCPUConfigurationForHost() {
+                f("-cpu")
+                f(cpu)
             }
         } else {
             f("-cpu")
@@ -1062,6 +1070,32 @@ import Virtualization // for getting network interfaces
         "tpmdev=tpm0"
         f()
     }
+}
+
+@MainActor
+private extension UTMQemuConfiguration {
+    #if arch(x86_64)
+    func highestIntelCPUConfigurationForHost() -> String? {
+        let cpufamily = Self.sysctlIntRead("hw.cpufamily")
+        // source: https://github.com/apple-oss-distributions/xnu/blob/main/osfmk/mach/machine.h
+        switch cpufamily {
+        case 0x78ea4fbc: return "Penryn"
+        case 0x6b5a4cd2: return "Nehalem"
+        case 0x573b5eec: return "Westmere"
+        case 0x5490b78c: return "SandyBridge"
+        case 0x1f65e835: return "IvyBridge"
+        case 0x10b282dc: return "Haswell"
+        case 0x582ed09c: return "Broadwell"
+        case 0x37fc219f /* Skylake */, 0x0f817246 /* Kabylake */, 0x1cf8a03e /* Cometlake */: return "Skylake-Client"
+        case 0x38435547 /* Icelake */: return "Icelake-Server" // client doesn't exist
+        default: return nil
+        }
+    }
+    #else
+    func highestIntelCPUConfigurationForHost() -> String? {
+        return "Skylake-Client"
+    }
+    #endif
 }
 
 private extension String {
