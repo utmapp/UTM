@@ -349,7 +349,7 @@ index 7f9491f115..68dc5d9cf7 100644
 -- 
 2.41.0
 
-From 48a2c54d46bac19946efd0488bf119a9607f7096 Mon Sep 17 00:00:00 2001
+From 8cca027ff485a2271a63b6032dc200481aedc185 Mon Sep 17 00:00:00 2001
 From: Danny Canter <danny_canter@apple.com>
 Date: Fri, 13 Sep 2024 15:31:47 +0100
 Subject: [PATCH 3/4] hvf: arm: Implement and use
@@ -391,13 +391,13 @@ Message-id: 20240828111552.93482-4-danny_canter@apple.com
 Reviewed-by: Peter Maydell <peter.maydell@linaro.org>
 Signed-off-by: Peter Maydell <peter.maydell@linaro.org>
 ---
- accel/hvf/hvf-accel-ops.c | 12 +++++++-
- hw/arm/virt.c             | 31 +++++++++++++++++++-
- target/arm/hvf/hvf.c      | 59 ++++++++++++++++++++++++++++++++++++---
- target/arm/hvf_arm.h      | 19 +++++++++++++
- target/arm/internals.h    | 19 +++++++++++++
- target/arm/ptw.c          | 15 ++++++++++
- 6 files changed, 149 insertions(+), 6 deletions(-)
+ accel/hvf/hvf-accel-ops.c | 12 ++++++-
+ hw/arm/virt.c             | 31 +++++++++++++++++-
+ target/arm/hvf/hvf.c      | 69 +++++++++++++++++++++++++++++++++++++--
+ target/arm/hvf_arm.h      | 19 +++++++++++
+ target/arm/internals.h    | 19 +++++++++++
+ target/arm/ptw.c          | 15 +++++++++
+ 6 files changed, 160 insertions(+), 5 deletions(-)
 
 diff --git a/accel/hvf/hvf-accel-ops.c b/accel/hvf/hvf-accel-ops.c
 index 359090acdf..5f467332db 100644
@@ -480,7 +480,7 @@ index 8c20708625..a67a22b25f 100644
  
  static void virt_machine_class_init(ObjectClass *oc, void *data)
 diff --git a/target/arm/hvf/hvf.c b/target/arm/hvf/hvf.c
-index 83106c5cc3..377a3f9097 100644
+index 83106c5cc3..b315b392ee 100644
 --- a/target/arm/hvf/hvf.c
 +++ b/target/arm/hvf/hvf.c
 @@ -22,6 +22,7 @@
@@ -500,10 +500,12 @@ index 83106c5cc3..377a3f9097 100644
  typedef struct HVFVTimer {
      /* Vtimer value during migration and paused state */
      uint64_t vtimer_val;
-@@ -846,6 +849,16 @@ static uint64_t hvf_get_reg(CPUState *cpu, int rt)
+@@ -846,6 +849,20 @@ static uint64_t hvf_get_reg(CPUState *cpu, int rt)
      return val;
  }
  
++#if !defined(CONFIG_HVF_PRIVATE)
++
 +static void clamp_id_aa64mmfr0_parange_to_ipa_size(uint64_t *id_aa64mmfr0)
 +{
 +    uint32_t ipa_size = chosen_ipa_bit_size ?
@@ -514,19 +516,23 @@ index 83106c5cc3..377a3f9097 100644
 +    *id_aa64mmfr0 = (*id_aa64mmfr0 & ~R_ID_AA64MMFR0_PARANGE_MASK) | index;
 +}
 +
++#endif
++
  static bool hvf_arm_get_host_cpu_features(ARMHostCPUFeatures *ahcf)
  {
      ARMISARegisters host_isar = {};
-@@ -889,6 +902,8 @@ static bool hvf_arm_get_host_cpu_features(ARMHostCPUFeatures *ahcf)
+@@ -889,6 +906,10 @@ static bool hvf_arm_get_host_cpu_features(ARMHostCPUFeatures *ahcf)
      r |= hv_vcpu_get_sys_reg(fd, HV_SYS_REG_MIDR_EL1, &ahcf->midr);
      r |= hv_vcpu_destroy(fd);
  
++#if !defined(CONFIG_HVF_PRIVATE)
 +    clamp_id_aa64mmfr0_parange_to_ipa_size(&host_isar.id_aa64mmfr0);
++#endif
 +
      ahcf->isar = host_isar;
  
      /*
-@@ -924,7 +939,6 @@ static hv_return_t hvf_vcpu_get_actlr(hv_vcpu_t vcpu, uint64_t* value)
+@@ -924,7 +945,6 @@ static hv_return_t hvf_vcpu_get_actlr(hv_vcpu_t vcpu, uint64_t* value)
  #endif
  }
  
@@ -534,10 +540,12 @@ index 83106c5cc3..377a3f9097 100644
  static hv_return_t hvf_vcpu_set_actlr(hv_vcpu_t vcpu, uint64_t value)
  {
  #if defined(CONFIG_HVF_PRIVATE)
-@@ -938,6 +952,30 @@ static hv_return_t hvf_vcpu_set_actlr(hv_vcpu_t vcpu, uint64_t value)
+@@ -938,6 +958,34 @@ static hv_return_t hvf_vcpu_set_actlr(hv_vcpu_t vcpu, uint64_t value)
  #endif
  }
  
++#if !defined(CONFIG_HVF_PRIVATE)
++
 +uint32_t hvf_arm_get_default_ipa_bit_size(void)
 +{
 +    uint32_t default_ipa_size;
@@ -562,10 +570,12 @@ index 83106c5cc3..377a3f9097 100644
 +    return round_down_to_parange_bit_size(max_ipa_size);
 +}
 +
++#endif
++
  void hvf_arm_set_cpu_features_from_host(ARMCPU *cpu)
  {
      if (!arm_host_cpu_features.dtb_compatible) {
-@@ -967,14 +1005,22 @@ hv_return_t hvf_arch_vm_create(MachineState *ms, uint32_t pa_range)
+@@ -967,14 +1015,22 @@ hv_return_t hvf_arch_vm_create(MachineState *ms, uint32_t pa_range)
  {
      hv_return_t ret;
      hv_vm_config_t config = hv_vm_config_create();
@@ -575,15 +585,14 @@ index 83106c5cc3..377a3f9097 100644
          _hv_vm_config_set_isa(config, HV_VM_CONFIG_ISA_PRIVATE);
      }
 -    ret = hv_vm_create(config);
--#else
+ #else
 -    ret = hv_vm_create(config);
- #endif
-+
 +    ret = hv_vm_config_set_ipa_size(config, pa_range);
 +    if (ret != HV_SUCCESS) {
 +        goto cleanup;
 +    }
 +    chosen_ipa_bit_size = pa_range;
+ #endif
 +
 +    ret = hv_vm_create(config);
 +
@@ -591,27 +600,29 @@ index 83106c5cc3..377a3f9097 100644
      os_release(config);
      return ret;
  }
-@@ -1045,6 +1091,11 @@ int hvf_arch_init_vcpu(CPUState *cpu)
+@@ -1045,6 +1101,13 @@ int hvf_arch_init_vcpu(CPUState *cpu)
                                &arm_cpu->isar.id_aa64mmfr0);
      assert_hvf_ok(ret);
  
++#if !defined(CONFIG_HVF_PRIVATE)
 +    clamp_id_aa64mmfr0_parange_to_ipa_size(&arm_cpu->isar.id_aa64mmfr0);
 +    ret = hv_vcpu_set_sys_reg(cpu->accel->fd, HV_SYS_REG_ID_AA64MMFR0_EL1,
 +                              arm_cpu->isar.id_aa64mmfr0);
 +    assert_hvf_ok(ret);
++#endif
 +
      /* enable TSO mode */
      if (hvf_tso_mode) {
          uint64_t actlr;
 diff --git a/target/arm/hvf_arm.h b/target/arm/hvf_arm.h
-index e848c1d27d..26c717b382 100644
+index e848c1d27d..482768baa6 100644
 --- a/target/arm/hvf_arm.h
 +++ b/target/arm/hvf_arm.h
 @@ -22,4 +22,23 @@ void hvf_arm_init_debug(void);
  
  void hvf_arm_set_cpu_features_from_host(ARMCPU *cpu);
  
-+#ifdef CONFIG_HVF
++#if defined(CONFIG_HVF) && !defined(CONFIG_HVF_PRIVATE)
 +
 +uint32_t hvf_arm_get_default_ipa_bit_size(void);
 +uint32_t hvf_arm_get_max_ipa_bit_size(void);
@@ -690,7 +701,7 @@ index 65d7b07bc5..b6b725b62a 100644
 -- 
 2.41.0
 
-From 3c5e75b88dec02a14bd14dce0b0e62ba71686291 Mon Sep 17 00:00:00 2001
+From f215c8a8b5ccd50414741bd105dd1ec241ee74fa Mon Sep 17 00:00:00 2001
 From: osy <osy@turing.llc>
 Date: Tue, 26 Nov 2024 13:25:01 -0800
 Subject: [PATCH 4/4] DO NOT MERGE: hvf: arm: disable SME which is not properly
@@ -701,12 +712,12 @@ Subject: [PATCH 4/4] DO NOT MERGE: hvf: arm: disable SME which is not properly
  1 file changed, 5 insertions(+)
 
 diff --git a/target/arm/hvf/hvf.c b/target/arm/hvf/hvf.c
-index 377a3f9097..709a60b000 100644
+index b315b392ee..a63a7763a0 100644
 --- a/target/arm/hvf/hvf.c
 +++ b/target/arm/hvf/hvf.c
-@@ -904,6 +904,11 @@ static bool hvf_arm_get_host_cpu_features(ARMHostCPUFeatures *ahcf)
- 
+@@ -910,6 +910,11 @@ static bool hvf_arm_get_host_cpu_features(ARMHostCPUFeatures *ahcf)
      clamp_id_aa64mmfr0_parange_to_ipa_size(&host_isar.id_aa64mmfr0);
+ #endif
  
 +    /*
 +     * Disable SME which is not properly handled by QEMU yet
