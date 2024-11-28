@@ -349,7 +349,7 @@ index 7f9491f115..68dc5d9cf7 100644
 -- 
 2.41.0
 
-From 8cca027ff485a2271a63b6032dc200481aedc185 Mon Sep 17 00:00:00 2001
+From d2932160ce51a2d4e929253b1f133066cd16dba6 Mon Sep 17 00:00:00 2001
 From: Danny Canter <danny_canter@apple.com>
 Date: Fri, 13 Sep 2024 15:31:47 +0100
 Subject: [PATCH 3/4] hvf: arm: Implement and use
@@ -392,12 +392,12 @@ Reviewed-by: Peter Maydell <peter.maydell@linaro.org>
 Signed-off-by: Peter Maydell <peter.maydell@linaro.org>
 ---
  accel/hvf/hvf-accel-ops.c | 12 ++++++-
- hw/arm/virt.c             | 31 +++++++++++++++++-
+ hw/arm/virt.c             | 33 ++++++++++++++++++-
  target/arm/hvf/hvf.c      | 69 +++++++++++++++++++++++++++++++++++++--
  target/arm/hvf_arm.h      | 19 +++++++++++
  target/arm/internals.h    | 19 +++++++++++
  target/arm/ptw.c          | 15 +++++++++
- 6 files changed, 160 insertions(+), 5 deletions(-)
+ 6 files changed, 162 insertions(+), 5 deletions(-)
 
 diff --git a/accel/hvf/hvf-accel-ops.c b/accel/hvf/hvf-accel-ops.c
 index 359090acdf..5f467332db 100644
@@ -431,7 +431,7 @@ index 359090acdf..5f467332db 100644
  
      s = g_new0(HVFState, 1);
 diff --git a/hw/arm/virt.c b/hw/arm/virt.c
-index 8c20708625..a67a22b25f 100644
+index 8c20708625..5b1e375726 100644
 --- a/hw/arm/virt.c
 +++ b/hw/arm/virt.c
 @@ -66,6 +66,7 @@
@@ -479,6 +479,16 @@ index 8c20708625..a67a22b25f 100644
  }
  
  static void virt_machine_class_init(ObjectClass *oc, void *data)
+@@ -3104,7 +3133,9 @@ static void virt_machine_class_init(ObjectClass *oc, void *data)
+     mc->valid_cpu_types = valid_cpu_types;
+     mc->get_default_cpu_node_id = virt_get_default_cpu_node_id;
+     mc->kvm_type = virt_kvm_type;
++#if !defined(CONFIG_HVF_PRIVATE)
+     mc->hvf_get_physical_address_range = virt_hvf_get_physical_address_range;
++#endif
+     assert(!mc->get_hotplug_handler);
+     mc->get_hotplug_handler = virt_machine_get_hotplug_handler;
+     hc->pre_plug = virt_machine_device_pre_plug_cb;
 diff --git a/target/arm/hvf/hvf.c b/target/arm/hvf/hvf.c
 index 83106c5cc3..b315b392ee 100644
 --- a/target/arm/hvf/hvf.c
@@ -701,7 +711,7 @@ index 65d7b07bc5..b6b725b62a 100644
 -- 
 2.41.0
 
-From f215c8a8b5ccd50414741bd105dd1ec241ee74fa Mon Sep 17 00:00:00 2001
+From 60b68022e834efcb7ae72154ab5536a2b6b0c099 Mon Sep 17 00:00:00 2001
 From: osy <osy@turing.llc>
 Date: Tue, 26 Nov 2024 13:25:01 -0800
 Subject: [PATCH 4/4] DO NOT MERGE: hvf: arm: disable SME which is not properly
