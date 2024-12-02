@@ -510,7 +510,7 @@ import Virtualization // for getting network interfaces
     }
     
     private var resourceURL: URL {
-        Bundle.main.url(forResource: "qemu", withExtension: nil)!
+        FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!.appendingPathComponent("qemu", isDirectory: true)
     }
     
     private var soundBackend: UTMQEMUSoundBackend {
