@@ -419,7 +419,6 @@ extension VMDisplayQemuMetalWindowController {
         if isFullScreenAutoCapture {
             captureMouse()
         }
-        saveDynamicResolution()
     }
     
     func windowDidExitFullScreen(_ notification: Notification) {
@@ -427,7 +426,6 @@ extension VMDisplayQemuMetalWindowController {
         if isFullScreenAutoCapture {
             releaseMouse()
         }
-        saveDynamicResolution()
     }
     
     func windowDidBecomeMain(_ notification: Notification) {
@@ -476,8 +474,8 @@ extension VMDisplayQemuMetalWindowController {
         }
         if resolution.isFullscreen && !isFullScreen {
             window.toggleFullScreen(self)
-        } else if resolution.size != .zero {
-            _ = self.updateGuestResolution(for: window, frameSize: resolution.size)
+        } else if let vmDisplay = vmDisplay, resolution.size != .zero {
+            vmDisplay.requestResolution(CGRect(origin: .zero, size: resolution.size))
         } else {
             _ = self.updateGuestResolution(for: window, frameSize: window.frame.size)
         }
