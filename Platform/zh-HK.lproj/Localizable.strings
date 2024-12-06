@@ -882,7 +882,7 @@ UTMScriptingVirtualMachineImpl */
 "Operation not supported by the backend." = "操作不受後端支援。";
 
 /* No comment provided by engineer. */
-"Option (⌥) is Meta key" = "將 Option (⌥) 作為 Meta 鍵";
+"Option (⌥) is Meta key" = "將 Option (⌥) 做為 Meta 鍵";
 
 /* No comment provided by engineer. */
 "Options" = "選項";
@@ -1107,7 +1107,7 @@ VMDisplayQemuDisplayController */
 "Share USB devices from host" = "從主機分享 USB 裝置";
 
 /* No comment provided by engineer. */
-"Shared directories in macOS VMs are only available in macOS 13 and later." = "macOS 虛擬機器分享目錄只限 macOS 13 和以上版本可用。";
+"Shared directories in macOS VMs are only available in macOS 13 and later." = "macOS 虛擬機器分享目錄只可以在 macOS 13 及以後版本上使用。";
 
 /* No comment provided by engineer. */
 "Shared Directory" = "已分享目錄";
@@ -1315,13 +1315,13 @@ UTMQemuConstants */
 "This device is not supported by the target." = "目標不支援這個裝置。";
 
 /* VMConfigAppleSharingView */
-"This directory is already being shared." = "這個目錄被分享。";
+"This directory is already being shared." = "此目錄已被分享。";
 
 /* VMData */
-"This function is not implemented." = "這個功能未實現。";
+"This function is not implemented." = "此功能未實現。";
 
 /* UTMData */
-"This functionality is not yet implemented." = "這個功能未實現。";
+"This functionality is not yet implemented." = "此功能未實現。";
 
 /* UTMRemoteClient */
 "This host is not yet trusted. You should verify that the fingerprints match what is displayed on the host and then select Trust to continue." = "這個主機未受信任。你應該驗證這個指紋是否與主機上顯示的內容匹配，然後選擇「信任」以繼續。";
@@ -1336,13 +1336,13 @@ UTMQemuConstants */
 "This operating system is unsupported on your machine." = "你的電腦不支援這個作業系統。";
 
 /* UTMDataExtension */
-"This virtual machine cannot be run on this machine." = "這個虛擬機器無法在這個電腦上執行。";
+"This virtual machine cannot be run on this machine." = "這個虛擬機器無法在此電腦上執行。";
 
 /* UTMAppleConfiguration */
 "This virtual machine cannot run on the current host machine." = "這個虛擬機器無法在現時的主機上執行。";
 
 /* UTMAppleConfiguration */
-"This virtual machine contains an invalid hardware model. The configuration may be corrupted or is outdated." = "這個虛擬機器含有無效的硬體型號。其設定可能損毀或過時。";
+"This virtual machine contains an invalid hardware model. The configuration may be corrupted or is outdated." = "這個虛擬機器含有無效的硬件型號。其設定可能損毀或過時。";
 
 /* No comment provided by engineer. */
 "This virtual machine has been removed." = "這個虛擬機器被刪除。";
@@ -1777,7 +1777,7 @@ VMWizardOSMacView */
 "Enable Entropy Device" = "啟用 Entropy 裝置";
 
 /* No comment provided by engineer. */
-"Enable hardware OpenGL acceleration" = "啟用硬體 OpenGL 加速";
+"Enable hardware OpenGL acceleration" = "啟用硬件 OpenGL 加速";
 
 /* No comment provided by engineer. */
 "Enable Keyboard" = "啟用鍵盤";
@@ -1852,10 +1852,10 @@ VMWizardOSMacView */
 "Guest Port" = "客户端埠";
 
 /* No comment provided by engineer. */
-"Hardware interface on the guest used to mount this image. Different operating systems support different interfaces. The default will be the most common interface." = "用作裝載這個映像的客户端硬體介面。不同的作業系統支援不同的介面。預設值將會設定為最常見的介面。";
+"Hardware interface on the guest used to mount this image. Different operating systems support different interfaces. The default will be the most common interface." = "用作裝載這個映像的客户端硬件介面。不同的作業系統支援不同的介面。預設值將會設定為最常見的介面。";
 
 /* No comment provided by engineer. */
-"Hardware OpenGL Acceleration" = "硬體 OpenGL 加速";
+"Hardware OpenGL Acceleration" = "硬件 OpenGL 加速";
 
 /* No comment provided by engineer. */
 "Height" = "高度";
@@ -1892,7 +1892,7 @@ VMWizardOSMacView */
 
 /* VMConfigAppleDriveDetailsView
  VMConfigAppleDriveCreateView*/
-"If checked, use NVMe instead of virtio as the disk interface, available on macOS 14+ for Linux guests only. This interface is slower but less likely to encounter filesystem errors." = "如果勾選，將使用 NVMe 而非 virtio 作為磁碟介面，只限在 macOS 14+ 中適用 Linux 客户機器。這個介面的速度較慢，但較不容易遇到檔案系統錯誤。";
+"If checked, use NVMe instead of virtio as the disk interface, available on macOS 14+ for Linux guests only. This interface is slower but less likely to encounter filesystem errors." = "如果勾選，將使用 NVMe 而非 virtio 做為磁碟介面，只限在 macOS 14+ 中適用 Linux 客户機器。這個介面的速度較慢，但較不容易遇到檔案系統錯誤。";
 
 /* No comment provided by engineer. */
 "If disabled, the default combination Control+Option (⌃+⌥) will be used." = "如停用，將會使用預設組合鍵 Control + Option (⌃ + ⌥)。";
@@ -2042,13 +2042,13 @@ VMWizardOSMacView */
 "One Time Donation" = "一次捐贈";
 
 /* No comment provided by engineer. */
-"Only available if host architecture matches the target. Otherwise, TCG emulation is used." = "只限主機架構與目標匹配時可用。否則，將使用 TCG 仿真。";
+"Only available if host architecture matches the target. Otherwise, TCG emulation is used." = "只可以在主機架構與目標匹配時使用。否則，將使用 TCG 仿真。";
 
 /* No comment provided by engineer. */
-"Only available on macOS virtual machines." = "只限 macOS 虛擬機器可用。";
+"Only available on macOS virtual machines." = "只可以在 macOS 虛擬機器上使用。";
 
 /* No comment provided by engineer. */
-"Only available when Hypervisor is used on supported hardware. TSO speeds up Intel emulation in the guest at the cost of decreased performance in general." = "只限在受支援的硬體上使用 Hypervisor 時可用。TSO 提升了客户端的 Intel 仿真速度，但以總體的效能降低為代價。";
+"Only available when Hypervisor is used on supported hardware. TSO speeds up Intel emulation in the guest at the cost of decreased performance in general." = "只可以在受支援的硬件上使用 Hypervisor 時使用。TSO 提升了客户端的 Intel 仿真速度，但以總體的效能降低為代價。";
 
 /* No comment provided by engineer. */
 "Open VM Settings" = "開啟虛擬機器設定";
@@ -2336,7 +2336,7 @@ VMWizardOSMacView */
 "Use Hypervisor" = "使用 Hypervisor";
 
 /* No comment provided by engineer. */
-"Use local time for base clock" = "使用本地時間作為基本時鐘";
+"Use local time for base clock" = "使用本地時間做為基本時鐘";
 
 /* VMConfigAppleDriveDetailsView
  VMConfigAppleDriveCreateView*/
