@@ -96,6 +96,7 @@ extension UTMScriptingConfigImpl {
     private func serializeQemuConfiguration(_ config: UTMQemuConfiguration) -> [AnyHashable : Any] {
         [
             "name": config.information.name,
+            "icon": config.information.iconURL?.deletingPathExtension().lastPathComponent ?? "",
             "notes": config.information.notes ?? "",
             "architecture": config.system.architecture.rawValue,
             "machine": config.system.target.rawValue,
@@ -200,6 +201,7 @@ extension UTMScriptingConfigImpl {
     private func serializeAppleConfiguration(_ config: UTMAppleConfiguration) -> [AnyHashable : Any] {
         [
             "name": config.information.name,
+            "icon": config.information.iconURL?.deletingPathExtension().lastPathComponent ?? "",
             "notes": config.information.notes ?? "",
             "memory": config.system.memorySize,
             "cpuCores": config.system.cpuCount,
@@ -306,6 +308,13 @@ extension UTMScriptingConfigImpl {
         let config = config as! UTMQemuConfiguration
         if let name = record["name"] as? String, !name.isEmpty {
             config.information.name = name
+        }
+        if let icon = record["icon"] as? String, !icon.isEmpty {
+            if let url = UTMConfigurationInfo.builtinIcon(named: icon) {
+                config.information.iconURL = url
+            } else {
+                throw ConfigurationError.iconNotFound(icon: icon)
+            }
         }
         if let notes = record["notes"] as? String, !notes.isEmpty {
             config.information.notes = notes
@@ -530,6 +539,13 @@ extension UTMScriptingConfigImpl {
         if let name = record["name"] as? String, !name.isEmpty {
             config.information.name = name
         }
+        if let icon = record["icon"] as? String, !icon.isEmpty {
+            if let url = UTMConfigurationInfo.builtinIcon(named: icon) {
+                config.information.iconURL = url
+            } else {
+                throw ConfigurationError.iconNotFound(icon: icon)
+            }
+        }
         if let notes = record["notes"] as? String, !notes.isEmpty {
             config.information.notes = notes
         }
@@ -652,6 +668,7 @@ extension UTMScriptingConfigImpl {
         case invalidDriveDescription
         case indexNotFound(index: Int)
         case deviceNotSupported
+        case iconNotFound(icon: String)
         
         var errorDescription: String? {
             switch self {
@@ -659,6 +676,7 @@ extension UTMScriptingConfigImpl {
             case .invalidDriveDescription: return NSLocalizedString("Drive description is invalid.", comment: "UTMScriptingConfigImpl")
             case .indexNotFound(let index): return String.localizedStringWithFormat(NSLocalizedString("Index %lld cannot be found.", comment: "UTMScriptingConfigImpl"), index)
             case .deviceNotSupported: return NSLocalizedString("This device is not supported by the target.", comment: "UTMScriptingConfigImpl")
+            case .iconNotFound(let icon): return String.localizedStringWithFormat(NSLocalizedString("The icon named '%@' cannot be found in the built-in icons.", comment: "UTMScriptingConfigImpl"), icon)
             }
         }
     }

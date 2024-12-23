@@ -405,6 +405,9 @@
         <record-type name="qemu configuration" code="QeCf" description="QEMU virtual machine configuration.">
           <property name="name" code="pnam" type="text"
             description="Virtual machine name."/>
+        
+          <property name="icon" code="IcOn" type="text"
+            description="Virtual machine icon."/>
             
           <property name="notes" code="NoTe" type="text"
             description="User-specified notes."/>
@@ -566,6 +569,9 @@
         <record-type name="apple configuration" code="ApCf" description="Apple virtual machine configuration.">
           <property name="name" code="pnam" type="text"
             description="Virtual machine name."/>
+            
+          <property name="icon" code="IcOn" type="text"
+            description="Virtual machine icon."/>
             
           <property name="notes" code="NoTe" type="text"
             description="User-specified notes."/>
