@@ -43,6 +43,7 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
     private var screenChangedToken: Any?
     private var isFullscreen: Bool = false
     private var cancelCheckSupportsReconfiguration: DispatchWorkItem?
+    private var isReadyToSaveResolution: Bool = false
 
     @Setting("FullScreenAutoCapture") private var isFullScreenAutoCapture: Bool = false
     
@@ -109,12 +110,15 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
         let frame = window.frameRect(forContentRect: CGRect(origin: window.frame.origin, size: size))
         window.contentAspectRatio = size
         aspectRatioLocked = true
-        if supportsReconfiguration && isDynamicResolution {
+        let dynamicResolution = supportsReconfiguration && isDynamicResolution
+        if dynamicResolution {
             window.minSize = NSSize(width: 400, height: 400)
         } else {
             window.minSize = contentMinSize(in: window, for: size)
         }
-        window.setFrame(frame, display: false, animate: true)
+        if !dynamicResolution || !restoreDynamicResolution(for: window) {
+            window.setFrame(frame, display: false, animate: true)
+        }
         super.updateWindowFrame()
     }
     
@@ -172,7 +176,7 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
 @available(macOS 12, *)
 @MainActor extension VMDisplayAppleDisplayWindowController {
     func saveDynamicResolution() {
-        guard supportsReconfiguration && isDynamicResolution else {
+        guard supportsReconfiguration && isDynamicResolution && isReadyToSaveResolution else {
             return
         }
         var resolution = UTMRegistryEntry.Resolution()
@@ -181,9 +185,11 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
         vm.registryEntry.resolutionSettings[0] = resolution
     }
 
-    func restoreDynamicResolution(for window: NSWindow) {
+    @discardableResult
+    func restoreDynamicResolution(for window: NSWindow) -> Bool {
+        isReadyToSaveResolution = true
         guard let resolution = vm.registryEntry.resolutionSettings[0] else {
-            return
+            return false
         }
         if resolution.isFullscreen && !isFullscreen {
             window.toggleFullScreen(self)
@@ -191,6 +197,7 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
             let frame = window.frameRect(forContentRect: CGRect(origin: window.frame.origin, size: resolution.size))
             window.setFrame(frame, display: false, animate: true)
         }
+        return true
     }
 
     func startPollingForSupportsReconfiguration() {
@@ -216,5 +223,6 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
     func stopPollingForSupportsReconfiguration() {
         cancelCheckSupportsReconfiguration?.cancel()
         cancelCheckSupportsReconfiguration = nil
+        isReadyToSaveResolution = false
     }
 }
