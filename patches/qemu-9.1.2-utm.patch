@@ -1002,10 +1002,10 @@ index 73bde4ba0e..6f0f8f4488 100644
 -- 
 2.41.0
 
-From 7c60f74fafee1658625d98f198ca14b9c71456c9 Mon Sep 17 00:00:00 2001
+From 68c31798c0b148489fbca8924af418e894972ebf Mon Sep 17 00:00:00 2001
 From: Joelle van Dyne <j@getutm.app>
 Date: Sun, 22 Dec 2024 19:49:20 -0800
-Subject: [PATCH] hvf: arm: disable unavailable features on older macOS
+Subject: [PATCH 1/2] hvf: arm: disable unavailable features on older macOS
 
 IPA size queries were introduced in macOS 13. When QEMU is built targeting
 a lower version, the compile will fail. If targeting a higher version and
@@ -1015,11 +1015,11 @@ VMs with 64+ GB of RAM will not work if running on < macOS 13.
 
 Signed-off-by: Joelle van Dyne <j@getutm.app>
 ---
- target/arm/hvf/hvf.c | 59 ++++++++++++++++++++++++++++----------------
- 1 file changed, 38 insertions(+), 21 deletions(-)
+ target/arm/hvf/hvf.c | 69 ++++++++++++++++++++++++++++----------------
+ 1 file changed, 44 insertions(+), 25 deletions(-)
 
 diff --git a/target/arm/hvf/hvf.c b/target/arm/hvf/hvf.c
-index a63a7763a0..141fd35300 100644
+index a63a7763a0..ec4821a61a 100644
 --- a/target/arm/hvf/hvf.c
 +++ b/target/arm/hvf/hvf.c
 @@ -907,7 +907,9 @@ static bool hvf_arm_get_host_cpu_features(ARMHostCPUFeatures *ahcf)
@@ -1119,6 +1119,56 @@ index a63a7763a0..141fd35300 100644
 +
      return ret;
  }
+ 
+@@ -1107,10 +1124,12 @@ int hvf_arch_init_vcpu(CPUState *cpu)
+     assert_hvf_ok(ret);
+ 
+ #if !defined(CONFIG_HVF_PRIVATE)
+-    clamp_id_aa64mmfr0_parange_to_ipa_size(&arm_cpu->isar.id_aa64mmfr0);
+-    ret = hv_vcpu_set_sys_reg(cpu->accel->fd, HV_SYS_REG_ID_AA64MMFR0_EL1,
+-                              arm_cpu->isar.id_aa64mmfr0);
+-    assert_hvf_ok(ret);
++    if (__builtin_available(macOS 13.0, *)) {
++        clamp_id_aa64mmfr0_parange_to_ipa_size(&arm_cpu->isar.id_aa64mmfr0);
++        ret = hv_vcpu_set_sys_reg(cpu->accel->fd, HV_SYS_REG_ID_AA64MMFR0_EL1,
++                                arm_cpu->isar.id_aa64mmfr0);
++        assert_hvf_ok(ret);
++    }
+ #endif
+ 
+     /* enable TSO mode */
+-- 
+2.41.0
+
+From 540ba575f97a16518b96f760a6b1a2f1ee422c17 Mon Sep 17 00:00:00 2001
+From: Joelle van Dyne <j@getutm.app>
+Date: Mon, 23 Dec 2024 00:15:08 -0800
+Subject: [PATCH 2/2] hw/arm/virt: handle hvf with unknown max IPA size
+
+When it is not possible to determine the max IPA bit size, the helper
+function will return 0. We do not try to set up the memmap in this case
+and instead fall back to the default in machvirt_init().
+
+Signed-off-by: Joelle van Dyne <j@getutm.app>
+---
+ hw/arm/virt.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/hw/arm/virt.c b/hw/arm/virt.c
+index 5b1e375726..251fc58b42 100644
+--- a/hw/arm/virt.c
++++ b/hw/arm/virt.c
+@@ -3047,6 +3047,11 @@ static int virt_hvf_get_physical_address_range(MachineState *ms)
+     int default_ipa_size = hvf_arm_get_default_ipa_bit_size();
+     int max_ipa_size = hvf_arm_get_max_ipa_bit_size();
+ 
++    /* Unknown max ipa size, we'll let the caller figure it out */
++    if (max_ipa_size == 0) {
++        return 0;
++    }
++
+     /* We freeze the memory map to compute the highest gpa */
+     virt_set_memmap(vms, max_ipa_size);
  
 -- 
 2.41.0
