@@ -72,7 +72,9 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
     }
 
     override func enterLive() {
+        appleView.isHidden = false
         appleView.virtualMachine = appleVM.apple
+        screenshotView.isHidden = true
         if #available(macOS 14, *) {
             appleView.automaticallyReconfiguresDisplay = isDynamicResolution
             startPollingForSupportsReconfiguration()
@@ -82,9 +84,11 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
     
     override func enterSuspended(isBusy busy: Bool) {
         if !busy {
-            NSCursor.unhide() // in case it's hidden by the VM view
+            appleView.virtualMachine = nil
+            appleView.isHidden = true
+            screenshotView.image = vm.screenshot?.image
+            screenshotView.isHidden = false
         }
-        appleView.virtualMachine = nil
         captureMouseToolbarButton.state = .off
         captureMouseButtonPressed(self)
         stopPollingForSupportsReconfiguration()
