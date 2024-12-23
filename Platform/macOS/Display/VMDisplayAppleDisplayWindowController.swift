@@ -22,7 +22,11 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
     var appleView: VZVirtualMachineView! {
         mainView as? VZVirtualMachineView
     }
-    
+
+    override var contentView: NSView? {
+        appleView
+    }
+
     var supportsReconfiguration: Bool {
         guard #available(macOS 14, *) else {
             return false

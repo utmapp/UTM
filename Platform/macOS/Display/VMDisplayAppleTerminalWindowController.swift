@@ -21,7 +21,11 @@ class VMDisplayAppleTerminalWindowController: VMDisplayAppleWindowController, VM
     var terminalView: TerminalView! {
         mainView as? TerminalView
     }
-    
+
+    override var contentView: NSView? {
+        terminalView
+    }
+
     var serialConfig: UTMAppleConfigurationSerial! {
         appleConfig.serials[index]
     }

@@ -18,7 +18,11 @@ import Foundation
 
 class VMDisplayAppleWindowController: VMDisplayWindowController {
     var mainView: NSView?
-    
+
+    var contentView: NSView? {
+        nil
+    }
+
     var isInstallSuccessful: Bool = false
     
     var appleVM: UTMAppleVirtualMachine! {
@@ -402,7 +406,7 @@ extension VMDisplayAppleWindowController {
 
 extension VMDisplayAppleWindowController: UTMScreenshotProvider {
     var screenshot: UTMVirtualMachineScreenshot? {
-        if let image = mainView?.image() {
+        if let image = contentView?.image() {
             return UTMVirtualMachineScreenshot(wrapping: image)
         } else {
             return nil
