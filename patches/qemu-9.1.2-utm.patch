@@ -1002,3 +1002,124 @@ index 73bde4ba0e..6f0f8f4488 100644
 -- 
 2.41.0
 
+From 7c60f74fafee1658625d98f198ca14b9c71456c9 Mon Sep 17 00:00:00 2001
+From: Joelle van Dyne <j@getutm.app>
+Date: Sun, 22 Dec 2024 19:49:20 -0800
+Subject: [PATCH] hvf: arm: disable unavailable features on older macOS
+
+IPA size queries were introduced in macOS 13. When QEMU is built targeting
+a lower version, the compile will fail. If targeting a higher version and
+the binary is executed on an older version, QEMU will crash. This will
+restore the behaviour before IPA max size querying was added which means
+VMs with 64+ GB of RAM will not work if running on < macOS 13.
+
+Signed-off-by: Joelle van Dyne <j@getutm.app>
+---
+ target/arm/hvf/hvf.c | 59 ++++++++++++++++++++++++++++----------------
+ 1 file changed, 38 insertions(+), 21 deletions(-)
+
+diff --git a/target/arm/hvf/hvf.c b/target/arm/hvf/hvf.c
+index a63a7763a0..141fd35300 100644
+--- a/target/arm/hvf/hvf.c
++++ b/target/arm/hvf/hvf.c
+@@ -907,7 +907,9 @@ static bool hvf_arm_get_host_cpu_features(ARMHostCPUFeatures *ahcf)
+     r |= hv_vcpu_destroy(fd);
+ 
+ #if !defined(CONFIG_HVF_PRIVATE)
+-    clamp_id_aa64mmfr0_parange_to_ipa_size(&host_isar.id_aa64mmfr0);
++    if (__builtin_available(macOS 13.0, *)) {
++        clamp_id_aa64mmfr0_parange_to_ipa_size(&host_isar.id_aa64mmfr0);
++    }
+ #endif
+ 
+     /*
+@@ -967,26 +969,34 @@ static hv_return_t hvf_vcpu_set_actlr(hv_vcpu_t vcpu, uint64_t value)
+ 
+ uint32_t hvf_arm_get_default_ipa_bit_size(void)
+ {
+-    uint32_t default_ipa_size;
+-    hv_return_t ret = hv_vm_config_get_default_ipa_size(&default_ipa_size);
+-    assert_hvf_ok(ret);
++    if (__builtin_available(macOS 13.0, *)) {
++        uint32_t default_ipa_size;
++        hv_return_t ret = hv_vm_config_get_default_ipa_size(&default_ipa_size);
++        assert_hvf_ok(ret);
+ 
+-    return default_ipa_size;
++        return default_ipa_size;
++    } else {
++        return 0;
++    }
+ }
+ 
+ uint32_t hvf_arm_get_max_ipa_bit_size(void)
+ {
+-    uint32_t max_ipa_size;
+-    hv_return_t ret = hv_vm_config_get_max_ipa_size(&max_ipa_size);
+-    assert_hvf_ok(ret);
++    if (__builtin_available(macOS 13.0, *)) {
++        uint32_t max_ipa_size;
++        hv_return_t ret = hv_vm_config_get_max_ipa_size(&max_ipa_size);
++        assert_hvf_ok(ret);
+ 
+-    /*
+-     * We clamp any IPA size we want to back the VM with to a valid PARange
+-     * value so the guest doesn't try and map memory outside of the valid range.
+-     * This logic just clamps the passed in IPA bit size to the first valid
+-     * PARange value <= to it.
+-     */
+-    return round_down_to_parange_bit_size(max_ipa_size);
++        /*
++         * We clamp any IPA size we want to back the VM with to a valid PARange
++         * value so the guest doesn't try and map memory outside of the valid
++         * range. This logic just clamps the passed in IPA bit size to the first
++         * valid PARange value <= to it.
++         */
++        return round_down_to_parange_bit_size(max_ipa_size);
++    } else {
++        return 0;
++    }
+ }
+ 
+ #endif
+@@ -1019,24 +1029,31 @@ void hvf_arch_vcpu_destroy(CPUState *cpu)
+ hv_return_t hvf_arch_vm_create(MachineState *ms, uint32_t pa_range)
+ {
+     hv_return_t ret;
+-    hv_vm_config_t config = hv_vm_config_create();
++    hv_vm_config_t config = NULL;
+ 
+ #if defined(CONFIG_HVF_PRIVATE)
+     if (hvf_tso_mode) {
++        config = hv_vm_config_create();
+         _hv_vm_config_set_isa(config, HV_VM_CONFIG_ISA_PRIVATE);
+     }
+ #else
+-    ret = hv_vm_config_set_ipa_size(config, pa_range);
+-    if (ret != HV_SUCCESS) {
+-        goto cleanup;
++    if (__builtin_available(macOS 13.0, *)) {
++        config = hv_vm_config_create();
++        ret = hv_vm_config_set_ipa_size(config, pa_range);
++        if (ret != HV_SUCCESS) {
++            goto cleanup;
++        }
++        chosen_ipa_bit_size = pa_range;
+     }
+-    chosen_ipa_bit_size = pa_range;
+ #endif
+ 
+     ret = hv_vm_create(config);
+ 
+ cleanup:
+-    os_release(config);
++    if (config) {
++        os_release(config);
++    }
++
+     return ret;
+ }
+ 
+-- 
+2.41.0
+
