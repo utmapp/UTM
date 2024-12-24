@@ -156,6 +156,7 @@ final class UTMQemuVirtualMachine: UTMSpiceVirtualMachine {
     private var changeCursorRequestInProgress: Bool = false
 
     private static var resourceCacheOperationQueue = DispatchQueue(label: "Resource Cache Operation")
+    private static var isResourceCacheUpdated = false
 
     #if WITH_SERVER
     @Setting("ServerPort") private var serverPort: Int = 0
@@ -957,10 +958,16 @@ extension UTMQemuVirtualMachine {
     }
 
     func ensureQemuResourceCacheUpToDate() async throws {
+        guard !Self.isResourceCacheUpdated else {
+            return
+        }
         try await withCheckedThrowingContinuation { continuation in
             Self.resourceCacheOperationQueue.async { [weak self] in
                 do {
-                    try self?._ensureQemuResourceCacheUpToDate()
+                    if !Self.isResourceCacheUpdated {
+                        try self?._ensureQemuResourceCacheUpToDate()
+                        Self.isResourceCacheUpdated = true
+                    }
                     continuation.resume()
                 } catch {
                     continuation.resume(throwing: error)
