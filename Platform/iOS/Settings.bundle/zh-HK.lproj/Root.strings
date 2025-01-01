@@ -2,10 +2,10 @@
 "Apple Pencil Input" = "Apple Pencil 輸入";
 
 /* (No Comment) */
-"Auto save on background" = "於背景自動儲存";
+"Auto save on background" = "在背景自動儲存";
 
 /* (No Comment) */
-"Auto save on low memory" = "於記憶體不足時自動儲存";
+"Auto save on low memory" = "在記憶體不足時自動儲存";
 
 /* (No Comment) */
 "Background" = "背景";
@@ -17,7 +17,7 @@
 "Caps" = "Caps";
 
 /* (No Comment) */
-"Click & Hold" = "按一下並按住";
+"Click & Hold" = "按住";
 
 /* (No Comment) */
 "Continue running VM in the background" = "在背景執行虛擬機器";
@@ -38,7 +38,7 @@
 "D-UP" = "向上鍵";
 
 /* (No Comment) */
-"Disabled" = "已禁用";
+"Disabled" = "已停用";
 
 /* (No Comment) */
 "Down" = "下";
@@ -71,19 +71,19 @@
 "Left" = "左";
 
 /* (No Comment) */
-"Long Press" = "長按";
+"Long Press" = "長時間按下";
 
 /* (No Comment) */
 "Menu" = "選單";
 
 /* (No Comment) */
-"Mouse Left Button" = "滑鼠左鍵";
+"Mouse Left Button" = "滑鼠左側按鈕";
 
 /* (No Comment) */
-"Mouse Middle Button" = "滑鼠中鍵";
+"Mouse Middle Button" = "滑鼠中間按鈕";
 
 /* (No Comment) */
-"Mouse Right Button" = "滑鼠右鍵";
+"Mouse Right Button" = "滑鼠右側按鈕";
 
 /* (No Comment) */
 "Mouse Wheel" = "滑鼠滾輪";

@@ -59,13 +59,13 @@
 "kT2-2U-cYm.toolTip" = "開始/暫停虛擬機器";
 
 /* Class = "NSToolbarItem"; label = "Windows"; ObjectID = "MQ2-L1-yl7"; */
-"MQ2-L1-yl7.label" = "Windows";
+"MQ2-L1-yl7.label" = "視窗";
 
 /* Class = "NSToolbarItem"; paletteLabel = "Windows"; ObjectID = "MQ2-L1-yl7"; */
-"MQ2-L1-yl7.paletteLabel" = "Windows";
+"MQ2-L1-yl7.paletteLabel" = "視窗";
 
 /* Class = "NSToolbarItem"; toolTip = "Windows"; ObjectID = "MQ2-L1-yl7"; */
-"MQ2-L1-yl7.toolTip" = "Windows";
+"MQ2-L1-yl7.toolTip" = "視窗";
 
 /* Class = "NSWindow"; title = "UTM"; ObjectID = "QvC-M9-y7g"; */
 "QvC-M9-y7g.title" = "UTM";
