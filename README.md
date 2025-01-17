@@ -1,5 +1,28 @@
-#  UTM
+#  UTM (UTMRemote-iOS14)
 [![Build](https://github.com/utmapp/UTM/workflows/Build/badge.svg?branch=main&event=push)][1]
+
+## The Problem
+
+The UTM Remote application on the App Store and Github build has a crash problem (the latest build experienced is 4.6.4) when attempting to connect to the UTM Server. There is no problem with pairing and saving the UTM Server. The problem is possibly occurring on iOS 14, devices on iOS 15 do not seem to crash. The initially experienced device is iPad Air 2 on iOS 14.5.1
+
+To detect the problem, the first method was to look at the logs from the iPad and run the Console on Mac to see possible messages regarding the crash. In the Console, "Fatal error: No ObservableObject of type UTMRemoteData found. A View.environmentObject(_:) for UTMRemoteData may be missing as an ancestor of this view." message was found as a possible cause for the crash. The [issue][6] was opened in the Github repository.
+
+* Missing Environment Object: The ServerConnectView without specifying the environment object of UTMRemoteData in the view call results in a crash.
+* Awaiting Behaviour Difference: For the function of connecting to the server, iOS 14 handles the awaiting situation differently in multithreading, returning nil for the environment object even if the ServerConnectView data was previously set in the view call.
+
+## The Solution
+
+Attempting to fix the problem was hard because of many issues such as building dependencies, Xcode support for the Simulator, and unsupported Swift Tools. Firstly, a macOS virtual machine was installed to develop the application securely. Then, some frameworks required version 10.0.0 for Swift tools. The virtual machine was updated to the latest macOS version, followed by Xcode. The dependencies were built and the application could be built successfully but the lowest iOS support for Simulator was iOS 15.0. The device support was at iOS 13.0 but the virtual machine did not have USB passthrough, making it impossible to develop at iOS 14. The final attempt was to install Xcode 16.4 on the real device and move the project files from the virtual machine to the real device. When the project was opened with Xcode 16.4, a framework had ambiguity errors, they were fixed by unlocking the file and adding specifying statements in the code. The changes in the framework were reverted when building UTM with the script. The real device test was made possible.
+
+The changes in the code were added with "if #available" statements.
+
+* Missing Environment Object: The ServerConnectView call was specified with the environment object of UTMRemoteData.
+* Awaiting Behaviour Difference: The function of connecting to the server was enclosed with Task. The priority was set to userInteractive so, the flow was changed not to be called when the environment object is nil.
+
+## Final
+
+The application on the device did not crash after applying the changes, proceeding to the view of virtual machines. The virtual machines were running with no problem.
+
 
 > It is possible to invent a single machine which can be used to compute any computable sequence.
 
@@ -76,3 +99,4 @@ Continuous integration hosting is provided by [MacStadium](https://www.macstadiu
   [3]: https://github.com/ktemkin/qemu/blob/with_tcti/tcg/aarch64-tcti/README.md
   [4]: https://github.com/ish-app/ish
   [5]: https://github.com/holzschu/a-shell
+  [6]: https://github.com/utmapp/UTM/issues/6970
