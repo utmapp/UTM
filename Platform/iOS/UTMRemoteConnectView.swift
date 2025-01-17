@@ -99,8 +99,12 @@ struct UTMRemoteConnectView: View {
             Alert(title: Text(item.message))
         }
         .sheet(item: $selectedServer) { server in
-            ServerConnectView(remoteClientState: remoteClientState, server: server, isAutoConnect: $isAutoConnect)
-                .environmentObject(data)
+            if #available(iOS 15, *) {
+                ServerConnectView(remoteClientState: remoteClientState, server: server, isAutoConnect: $isAutoConnect)
+            } else {
+                ServerConnectView(remoteClientState: remoteClientState, server: server, isAutoConnect: $isAutoConnect)
+                    .environmentObject(data)
+            }
         }
         .onAppear {
             Task {
