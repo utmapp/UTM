@@ -561,6 +561,10 @@
         <record-type name="qemu argument" code="QeAr" description="QEMU argument configuration.">
           <property name="argument string" code="ArSt" type="text"
             description="The QEMU argument as a string."/>
+          <property name="file urls" code="FlUr" 
+            description="Optional URLs associated with this argument.">
+            <type type="file" list="yes"/>
+          </property>
         </record-type>
         
         <record-type name="apple configuration" code="ApCf" description="Apple virtual machine configuration.">
