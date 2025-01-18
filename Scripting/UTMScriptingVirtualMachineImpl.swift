@@ -90,6 +90,12 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
         }
     }
     
+    var qemuProcess: UTMQemuSystem? {
+        get async {
+            await (vm as? UTMQemuVirtualMachine)?.system
+        }
+    }
+    
     override var objectSpecifier: NSScriptObjectSpecifier? {
         let appDescription = NSApplication.classDescription() as! NSScriptClassDescription
         return NSUniqueIDSpecifier(containerClassDescription: appDescription,

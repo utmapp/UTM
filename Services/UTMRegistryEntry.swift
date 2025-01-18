@@ -260,6 +260,10 @@ extension UTMRegistryEntry: UTMRegistryEntryDecodable {}
         }
     }
     
+    func appendSharedDirectory(_ file: File) {
+        sharedDirectories.append(file)
+    }
+    
     func removeAllSharedDirectories() {
         sharedDirectories = []
     }

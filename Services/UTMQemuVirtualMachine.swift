@@ -129,7 +129,8 @@ final class UTMQemuVirtualMachine: UTMSpiceVirtualMachine {
 
     private let qemuVM = QEMUVirtualMachine()
     
-    private var system: UTMQemuSystem? {
+    /// QEMU Process interface
+    var system: UTMQemuSystem? {
         get async {
             await qemuVM.launcher as? UTMQemuSystem
         }

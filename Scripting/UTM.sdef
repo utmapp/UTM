@@ -712,4 +712,27 @@
           <direct-parameter description="The USB device to disconnect." type="usb device"/>
         </command>
     </suite>
+    
+    <suite name="UTM Registry Suite" code="UTMr" description="UTM virtual machine registry suite. Use this to update virtual machine registry.">
+           <access-group identifier="com.utmapp.UTM.vm-access" />
+           
+           <class-extension extends="virtual machine" description="Virtual machine registry.">
+               <property name="registry" code="ReGs" access="r"
+                   description="The registry of the virtual machine.">
+                   <type type="file" list="yes"/>
+               </property>
+               
+               <responds-to command="update registry">
+                   <cocoa method="updateRegistry:"/>
+               </responds-to>
+           </class-extension>
+           
+           <command name="update registry" code="UTMrUpDt" description="Update the registry of the virtual machine.">
+               <direct-parameter description="Virtual machine to update." type="virtual machine"/>
+               <parameter name="with" code="UpRg" description="The registry to update the virtual machine. Currently you can only change the shared directory with this!">
+                   <cocoa key="newRegistry"/>
+                   <type type="file" list="yes"/>
+               </parameter>
+           </command>
+    </suite>
 </dictionary>
