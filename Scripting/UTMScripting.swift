@@ -132,6 +132,12 @@ import ScriptingBridge
     case udp = 0x55645070 /* 'UdPp' */
 }
 
+// MARK: UTMScriptingQemuScaler
+@objc public enum UTMScriptingQemuScaler : AEKeyword {
+    case linear = 0x51734c69 /* 'QsLi' */
+    case nearest = 0x51734e65 /* 'QsNe' */
+}
+
 // MARK: UTMScriptingAppleNetworkMode
 @objc public enum UTMScriptingAppleNetworkMode : AEKeyword {
     case shared = 0x53685264 /* 'ShRd' */
