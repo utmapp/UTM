@@ -570,6 +570,12 @@
           <property name="notes" code="NoTe" type="text"
             description="User-specified notes."/>
             
+          <property name="operating system" code="OpSy" type="text" access="r"
+            description="Operating system (cannot be changed after creation)."/>
+            
+          <property name="ipsw" code="IpSw" type="file"
+            description="Macos recovery IPSW (cannot be changed after creation)."/>
+              
           <property name="memory" code="MeMy" type="integer"
             description="RAM size (in mebibytes)."/>
             
