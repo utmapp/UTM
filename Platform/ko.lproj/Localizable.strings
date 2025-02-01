@@ -1,727 +1,1169 @@
-/* VMConfigDriveCreateViewController */
-"A file already exists for this name, if you proceed, it will be replaced." = "동일한 이름의 파일이 존재합니다. 계속 진행할 시 새로운 것으로 대체됩니다.";
 
-/* No comment provided by engineer. */
-"Acceleration" = "가속";
+/** UTM **/
 
-/* No comment provided by engineer. */
-"Additional Settings" = "추가 설정";
+/* Configuration */
 
-/* No comment provided by engineer. */
-"Advanced: Bypass configuration and manually specify arguments" = "고급: 모든 설정을 무시하고 수동으로 구문 설정";
-
-/* VMConfigSystemView */
-"Allocating too much memory will crash the VM. Your device has %llu MB of memory and the estimated usage is %llu MB." = "너무 많은 양의 메모리를 할당하면 VM이 충돌할 수 있습니다. 이 기기는 총 %1$llu MB 메모리를 탑재하였으며, 현재 %2$llu MB 사용중입니다.";
-
-/* No comment provided by engineer. */
-"Always use native (HiDPI) resolution" = "항상 네이티브 해상도（HiDPI） 사용";
-
-/* VMDisplayWindowController */
-"An internal error has occured." = "내부 오류가 발생했습니다.";
-
-/* VMDisplayViewController */
-"An internal error has occured. UTM will terminate." = "내부 오류가 발생했습니다. UTM을 종료합니다.";
-
-/* No comment provided by engineer. */
-"Another Tab" = "다른 탭";
-
-/* No comment provided by engineer. */
-"Architecture" = "아키텍쳐";
-
-/* VMConfigDirectoryPickerViewController */
-"Are you sure you want to delete this directory? All files and subdirectories WILL be deleted." = "이 폴더를 지우겠습니까? 폴더의 모든 내용이 삭제됩니다.";
-
-/* Delete confirmation */
-"Are you sure you want to delete this VM? Any drives associated will also be deleted." = "이 VM을 지우겠습니까? 관련된 드라이브 또한 삭제됩니다.";
-
-/* VMDisplayViewController */
-"Are you sure you want to exit UTM?." = "UTM을 종료하시겠습니까?";
-
-/* VMConfigDrivePickerViewController */
-"Are you sure you want to permanently delete this disk image?" = "이 디스크이미지를 영구적으로 제거하시겠습니까?";
-
-/* VMDisplayViewController */
-"Are you sure you want to reset this VM? Any unsaved changes will be lost." = "VM을 리셋하시겠습니까? 모든 저장하지 않은 변경사항은 유실됩니다.";
-
-/* VMDisplayViewController */
-"Are you sure you want to stop this VM and exit? Any unsaved changes will be lost." = "VM을 종료하겠습니까? 모든 저장하지 않은 변경사항은 유실됩니다.";
-
-/* No comment provided by engineer. */
-"Argument" = "구문";
-
-/* UTMLegacyQemuConfiguration */
-"BIOS" = "BIOS";
-
-/* No comment provided by engineer. */
-"Blinking Cursor" = "커서 깜박임";
-
-/* No comment provided by engineer. */
-"Browse" = "선택";
-
-/* VMConfigSharingViewController */
-"Browse…" = "탐색";
-
-/* Cancel button
-   VMConfigDirectoryPickerViewController
-   VMConfigPortForwardingViewController
-   VMRemovableDrivesViewController */
-"Cancel" = "취소";
-
-/* VMConfigDriveCreateViewController */
-"Cannot create directory for disk image." = "디스크이미지를 위한 폴더를 생성할 수 없습니다.";
-
-/* VMListViewController */
-"Cannot find VM." = "VM을 찾을 수 없습니다.";
-
-/* UTMVirtualMachine+Sharing */
-"Cannot start shared directory before SPICE starts." = "SPICE가 시작하기 전 공유폴더를 시작할 수 없습니다.";
-
-/* VMDisplayMetalWindowController */
-"Captured mouse" = "Captured mouse";
-
-/* Configuration boot device */
+// Legacy/UTMLegacyQemuConfiguration+Constants.m
+"Hard Disk" = "하드 디스크";
 "CD/DVD" = "CD/DVD";
-
-/* UTMLegacyQemuConfiguration */
-"CD/DVD Image" = "CD/DVD";
-
-/* VMRemovableDrivesViewController */
-"Change" = "변경";
-
-/* No comment provided by engineer. */
-"Clear" = "초기화";
-
-/* No comment provided by engineer. */
-"Clipboard Sharing" = "클립보드 공유";
-
-/* Clone context menu */
-"Clone" = "복제";
-
-/* No comment provided by engineer. */
-"Command to send when resizing the console. Placeholder $COLS is the number of columns and $ROWS is the number of rows." = "콘솔의 크기를 변경할 때 명령어를 보냅니다. $COLS 인자는 열, $ROWS 인자는 행을 말합니다.";
-
-/* UTMVirtualMachine */
-"Config format incorrect." = "구성설정 형식이 잘못되었습니다.";
-
-/* No comment provided by engineer. */
-"Confirm Delete" = "삭제 확인";
-
-/* VMDisplayWindowController */
-"Confirmation" = "확인";
-
-/* No comment provided by engineer. */
-"Console Only" = "콘솔 인터페이스";
-
-/* No comment provided by engineer. */
-"CPU Count" = "CPU 개수";
-
-/* Create button */
-"Create" = "생성";
-
-/* VMConfigDirectoryPickerViewController */
-"Create Directory" = "폴더 생성";
-
-/* VMConfigDriveCreateViewController */
-"Creating disk..." = "디스크 생성중...";
-
-/* No comment provided by engineer. */
-"Debug Logging" = "디버그 로그 활성화";
-
-/* No comment provided by engineer. */
-"Default" = "기본값";
-
-/* Delete button
-   Delete context menu
-   VMConfigDirectoryPickerViewController */
-"Delete" = "삭제";
-
-/* VMConfigDrivesViewController */
-"Delete Data" = "데이터 삭제";
-
-/* Delete VM overlay */
-"Deleting %@..." = "%@ 삭제중...";
-
-/* No comment provided by engineer. */
-"DHCP Domain Name" = "DHCP 도메인 이름";
-
-/* No comment provided by engineer. */
-"DHCP Host" = "DHCP 호스트";
-
-/* No comment provided by engineer. */
-"DHCP Start" = "DHCP 시작";
-
-/* VMConfigDirectoryPickerViewController */
-"Directory Name" = "폴더 이름";
-
-/* VMDisplayTerminalViewController */
-"Disable this bar in Settings -> General -> Keyboards -> Shortcuts" = "설정 앱 -> 일반 -> 키보드 -> 단축키 옵션을 통해 이 바를 비활성화하세요.";
-
-/* VMConfigDriveCreateViewController */
-"Disk creation failed." = "디스크 생성에 실패했습니다.";
-
-/* UTMLegacyQemuConfiguration */
-"Disk Image" = "Hard Drive";
-
-/* No comment provided by engineer. */
-"DNS Search Domains" = "DNS 검색 도메인";
-
-/* No comment provided by engineer. */
-"DNS Server" = "DNS 서버";
-
-/* No comment provided by engineer. */
-"DNS Server (IPv6)" = "DNS 서버(IPv6)";
-
-/* VMConfigDrivesViewController */
-"Do you want to also delete the disk image data? If yes, the data will be lost. Otherwise, you can create a new drive with the existing data." = "디스크이미지 데이터를 지우겠습니까? 데이터가 삭제됩니다. 취소할 경우, 기존 데이터로 새로운 드라이브를 생성할 수 있습니다.";
-
-/* VMConfigDirectoryPickerViewController
-   VMConfigPortForwardingViewController */
-"Done" = "확인";
-
-/* No comment provided by engineer. */
-"Downscaling" = "다운스케일링";
-
-/* VMRemovableDrivesViewController */
-"Drive Options" = "드라이브 옵션";
-
-/* VMRemovableDrivesViewController */
-"Eject" = "꺼내기";
-
-/* No comment provided by engineer. */
-"Emulated Audio Card" = "오디오 카드";
-
-/* No comment provided by engineer. */
-"Emulated Network Card" = "네트워크 카드";
-
-/* No comment provided by engineer. */
-"Enable Clipboard Sharing" = "클립보드 공유 활성화";
-
-/* No comment provided by engineer. */
-"Enable Directory Sharing" = "공유폴더 활성화";
-
-/* No comment provided by engineer. */
-"Enabled" = "활성화";
-
-/* VMDisplayWindowController */
-"Error" = "에러";
-
-/* UTMJSONStream */
-"Error parsing JSON." = "JSON 파싱 중 에러";
-
-/* VMConfigDriveCreateViewController */
-"Error renaming file" = "파일 이름 변경 중 에러";
-
-/* UTMVirtualMachine+Drives */
-"Failed create bookmark." = "북마크 생성에 실패했습니다.";
-
-/* UTMVirtualMachine+Drives */
-"Failed to access drive image path." = "드라이브 이미지 경로 접근에 실패했습니다.";
-
-/* VMConfigInfoView */
-"Failed to check name." = "이름 체크에 실패했습니다.";
-
-/* UTMData */
-"Failed to clone VM." = "VM 복제에 실패했습니다.";
-
-/* UTMSpiceIO */
-"Failed to connect to SPICE server." = "SPICE 서버 연결에 실패했습니다.";
-
-/* VMRemovableDrivesViewController */
-"Failed to get VM object." = "VM 요소를 가져오는 데 실패했습니다.";
-
-/* UTMVirtualMachine */
-"Failed to load plist" = "plist를 불러오는 데 실패했습니다.";
-
-/* UTMData */
-"Failed to parse imported VM." = "추가된 VM을 파싱하는 데 실패했습니다.";
-
-/* VMDisplayViewController */
-"Failed to save VM state. Do you have at least one read-write drive attached that supports snapshots?" = "VM 상태 저장에 실패했습니다. 적어도 하나 이상의 스냅샷을 지원하는 쓰기 드라이브가 있는지 확인하세요.";
-
-/* No comment provided by engineer. */
-"Fit To Screen" = "화면에 맞춤";
-
-/* Configuration boot device */
-"Floppy" = "Floppy";
-
-/* No comment provided by engineer. */
-"Font" = "폰트";
-
-/* No comment provided by engineer. */
-"Font Size" = "폰트 크기";
-
-/* No comment provided by engineer. */
-"Force Multicore" = "멀티코어 강제 활성화";
-
-/* No comment provided by engineer. */
-"Full Graphics" = "그래픽 인터페이스";
-
-/* No comment provided by engineer. */
-"Gesture and Cursor Settings" = "제스쳐, 커서 설정";
-
-/* No comment provided by engineer. */
-"Go to Gallery" = "UTM 갤러리 방문";
-
-/* No comment provided by engineer. */
-"Guest Address" = "게스트 주소";
-
-/* VMConfigPortForwardingViewController */
-"Guest address (optional)" = "게스트 주소(선택)";
-
-/* No comment provided by engineer. */
-"Guest Network" = "게스트 네트워크";
-
-/* No comment provided by engineer. */
-"Guest Network (IPv6)" = "게스트 네트워크(IPv6)";
-
-/* UTMQemuManager */
-"Guest panic" = "Guest panic";
-
-/* No comment provided by engineer. */
-"Guest Port" = "게스트 포트";
-
-/* VMConfigPortForwardingViewController */
-"Guest port (required)" = "게스트 포트(필수)";
-
-/* Configuration boot device */
-"Hard Disk" = "하드디스크";
-
-/* No comment provided by engineer. */
-"Hardware" = "장치";
-
-/* VMDisplayViewController */
-"Hint: To show the toolbar again, use a three-finger swipe down on the screen." = "팁: 도구모음을 다시 보려면, 세 손가락으로 화면을 쓸어내리세요.";
-
-/* No comment provided by engineer. */
-"Host Address" = "호스트 주소";
-
-/* No comment provided by engineer. */
-"Host Address (IPv6)" = "호스트 주소(IPv6)";
-
-/* VMConfigPortForwardingViewController */
-"Host address (optional)" = "호스트 주소(선택)";
-
-/* No comment provided by engineer. */
-"Host Port" = "호스트 포트";
-
-/* VMConfigPortForwardingViewController */
-"Host port (required)" = "호스트 포트(필수)";
-
-/* No comment provided by engineer. */
-"Icon" = "아이콘";
-
-/* No comment provided by engineer. */
-"Image Type" = "이미지 종류";
-
-/* Import button */
-"Import…" = "추가";
-
-/* Save VM overlay */
-"Importing %@..." = "%@ 추가중...";
-
-/* No comment provided by engineer. */
-"Interface" = "인터페이스";
-
-/* UTMQemu */
-"Internal error has occurred." = "내부 오류가 발생했습니다.";
-
-/* UTMVirtualMachine */
-"Internal error starting main loop." = "main loop 시작 중 내부 오류가 발생했습니다.";
-
-/* UTMVirtualMachine */
-"Internal error starting VM." = "VM 시작 중 내부 오류가 발생했습니다.";
-
-/* VMDisplayMetalWindowController */
-"Internal error." = "내부 오류.";
-
-/* VMConfigSystemViewController */
-"Invalid core count." = "잘못된 코어 값입니다.";
-
-/* UTMData */
-"Invalid drive size." = "잘못된 드라이브 크기 값입니다.";
-
-/* VMRemovableDrivesViewController */
-"Invalid file selected." = "잘못된 파일 선택입니다.";
-
-/* VMConfigSystemViewController */
-"Invalid memory size." = "잘못된 메모리 크기 값입니다.";
-
-/* VMConfigDriveCreateViewController */
-"Invalid name" = "잘못된 이름";
-
-/* VMConfigDriveCreateViewController */
-"Invalid size" = "잘못된 크기";
-
-/* VMListViewController */
-"Invalid UTM not imported." = "Invalid UTM not imported.";
-
-/* No comment provided by engineer. */
-"Invert Mouse Scroll" = "마우스 스크롤 반전";
-
-/* No comment provided by engineer. */
-"IP Configuration" = "IP 구성설정";
-
-/* No comment provided by engineer. */
-"Isolate Guest from Host" = "호스트로부터 게스트 분리";
-
-/* No comment provided by engineer. */
-"JIT Cache" = "JIT 캐시";
-
-/* VMConfigSystemViewController */
-"JIT cache size cannot be larger than 2GB." = "JIT 캐시는 2GB를 초과할 수 없습니다.";
-
-/* VMConfigSystemViewController */
-"JIT cache size too small." = "JIT 캐시가 너무 작습니다.";
-
-/* No comment provided by engineer. */
-"Legacy" = "레거시";
-
-/* No comment provided by engineer. */
-"Legacy (PS/2) Mode" = "레거시 (PS/2) 모드";
-
-/* UTMLegacyQemuConfiguration */
-"Linear" = "선형 보간법";
-
-/* UTMLegacyQemuConfiguration */
-"Linux Device Tree Binary" = "Linux Device Tree Binary";
-
-/* UTMLegacyQemuConfiguration */
-"Linux Kernel" = "Linux Kernel";
-
-/* UTMLegacyQemuConfiguration */
-"Linux RAM Disk" = "Linux RAM Disk";
-
-/* No comment provided by engineer. */
-"Logging" = "로그";
-
-/* UTMQemuManager */
-"Manager being deallocated, killing pending RPC." = "Manager being deallocated, killing pending RPC.";
-
-/* No comment provided by engineer. */
-"MiB" = "MiB";
-
-/* No comment provided by engineer. */
-"Memory" = "메모리";
-
-/* VMDisplayMetalWindowController */
-"Metal is not supported on this device. Cannot render display." = "이 기기에서 Metal을 지원하지 않습니다. 디스플레이를 렌더링할 수 없습니다.";
-
-/* No comment provided by engineer. */
-"Mouse Wheel" = "마우스 휠";
-
-/* Save VM overlay */
-"Moving %@..." = "%@ 이동중...";
-
-/* Clone VM name prompt title */
-"Name" = "이름";
-
-/* VMConfigInfoView */
-"Name is an invalid filename." = "잘못된 파일이름입니다.";
-
-/* UTMLegacyQemuConfiguration */
-"Nearest Neighbor" = "최근접 이웃 보간법";
-
-/* No comment provided by engineer. */
-"New" = "추가";
-
-/* VMConfigPortForwardingViewController */
-"New port forward" = "포트포워딩 추가";
-
-/* No comment provided by engineer. */
-"New VM" = "VM 추가";
-
-/* Clone VM name prompt message */
-"New VM name" = "새 VM 이름";
-
-/* No comment provided by engineer. */
-"New…" = "추가…";
-
-/* No button
-   VMDisplayViewController
-   VMListViewController */
-"No" = "아니오";
-
-/* UTMQemuManager */
-"No connection for RPC." = "No connection for RPC.";
-
-/* VMConfigExistingViewController */
-"No debug log found!" = "디버그 로그가 없습니다!";
-
-/* No comment provided by engineer. */
-"No drives added." = "드라이브가 없습니다.";
-
-/* VMDisplayWindowController */
-"No drives connected." = "연결된 드라이브가 없습니다.";
-
-/* UTMData */
-"No log found!" = "로그가 없습니다!";
-
-/* UTMDrive */
-"none" = "none";
-
-/* No comment provided by engineer. */
+"Floppy" = "플로피 디스크";
 "None" = "없음";
-
-/* No comment provided by engineer. */
-"Note: select the path to share from the main screen." = "팁: 공유폴더 경로는 VM 정보 요약 화면에서 지정할 수 있습니다.";
-
-/* No comment provided by engineer. */
-"Notes" = "메모";
-
-/* OK button
-   OK Button */
-"OK" = "확인";
-
-/* VMDisplayWindowController */
-"Pause" = "중지";
-
-/* VMDisplayWindowController */
-"Play" = "시작";
-
-/* No comment provided by engineer. */
-"Port Forward" = "포트포워딩";
-
-/* No comment provided by engineer. */
-"Protocol" = "프로토콜";
-
-/* No comment provided by engineer. */
-"PS/2 has higher compatibility with older operating systems but does not support custom cursor settings." = "PS/2는 오래된 운영체제에서 더 나은 호환성을 가지지만 커스텀 커서에 관한 설정을 지원하지 않습니다.";
-
-/* No comment provided by engineer. */
-"QEMU Arguments" = "QEMU 구문";
-
-/* UTMQemu */
-"QEMU exited from an error: %@" = "QEMU는 다음의 에러로 인해 종료되었습니다: %@";
-
-/* No comment provided by engineer. */
-"QEMU Machine Properties" = "QEMU 추가 구문";
-
-/* VMDisplayWindowController */
-"Querying drives status..." = "Querying drives status...";
-
-/* No comment provided by engineer. */
-"Read Only" = "읽기 전용";
-
-/* No comment provided by engineer. */
-"Removable" = "제거 가능";
-
-/* No comment provided by engineer. */
-"Requires SPICE guest agent tools to be installed." = "SPICE guest agent tools 도구가 설치되어 있어야 합니다.";
-
-/* No comment provided by engineer. */
-"Requires SPICE guest agent tools to be installed. Retina Mode is recommended only if the guest OS supports HiDPI." = "SPICE guest agent tools 도구가 설치되어 있어야 합니다. 레티나 모드는 게스트 OS가 HiDPI를 지원할 시에만 권장합니다.";
-
-/* No comment provided by engineer. */
-"Requires SPICE WebDAV service to be installed." = "SPICE WebDAV 서비스가 설치되어 있어야 합니다.";
-
-/* No comment provided by engineer. */
-"Resize Console Command" = "콘솔창 조절 명령어";
-
-/* No comment provided by engineer. */
-"Resolution" = "해상도";
-
-/* No comment provided by engineer. */
-"Retina Mode" = "레티나 모드";
-
-/* VMDisplayViewController */
-"Running low on memory! UTM might soon be killed by iOS. You can prevent this by decreasing the amount of memory and/or JIT cache assigned to this VM" = "메모리가 부족한 상태입니다! iOS에 의해 UTM은 종료될 수 있습니다. 메모리 양을 줄이거나 JIT 캐시를 조정하여 이를 방지할 수 있습니다.";
-
-/* No comment provided by engineer. */
-"Running qemu-img more than once is unimplemented. Restart the app to create another disk." = "qemu-img를 여러개 실행하는 것은 아직 구현하지 않았습니다. 애플리케이션을 다시 시작하여 새로운 디스크이미지를 만드세요.";
-
-/* No comment provided by engineer. */
-"Save" = "저장";
-
-/* Save VM overlay */
-"Saving %@..." = "%@ 저장중...";
-
-/* No comment provided by engineer. */
-"Scaling" = "스케일링";
-
-/* VMDisplayWindowController */
-"Select Drive Image" = "디스크이미지 선택";
-
-/* VMDisplayWindowController */
-"Select Shared Folder" = "공유폴더 선택";
-
-/* No comment provided by engineer. */
-"Selected:" = "선택:";
-
-/* No comment provided by engineer. */
-"Set to 0 for default which is 1/4 of the allocated Memory size. This is in addition to the host memory!" = "0으로 설정 시 기본값인 메모리 크기의 1/4를 할당합니다. 위에서 설정한 메모리 크기와 별개입니다!";
-
-/* No comment provided by engineer. */
-"Set to 0 to use maximum supported CPUs. Force multicore might result in incorrect emulation." = "0으로 설정 시 가능한 최대 CPU의 개수를 설정합니다. 멀티코어 강제 활성화시 부정확한 에뮬레이션을 일으킬 수 있습니다.";
-
-/* Share context menu */
-"Share" = "공유";
-
-/* No comment provided by engineer. */
-"Shared Directory" = "공유폴더";
-
-/* VMConfigSharingViewController */
-"Shared path has moved. Please re-choose." = "공유폴더 경로가 이동되었습니다. 다시 선택하세요.";
-
-/* VMConfigSharingViewController */
-"Shared path is no longer valid. Please re-choose." = "공유폴더 경로가 잘못되었습니다. 다시 선택하세요.";
-
-/* No comment provided by engineer. */
-"Show Advanced Settings" = "고급 설정 보기";
-
-/* No comment provided by engineer. */
-"Size" = "크기";
-
-/* No comment provided by engineer. */
-"Start from Scratch" = "새로 시작하기";
-
-/* No comment provided by engineer. */
-"Style" = "스타일";
-
-/* No comment provided by engineer. */
-"System" = "시스템";
-
-/* VMConfigPortForwardingViewController */
-"TCP Forward" = "TCP Forward";
-
-/* No comment provided by engineer. */
-"Test" = "테스트";
-
-/* No comment provided by engineer. */
-"The First Tab" = "처음 탭";
-
-/* No comment provided by engineer. */
-"The Last Tab" = "마지막 탭";
-
-/* VMConfigSystemViewController */
-"The total memory usage is close to your device's limit. iOS will kill the VM if it consumes too much memory." = "총 메모리 사용량이 기기의 최대치에 가까워졌습니다. 너무 많은 메모리를 사용 시 iOS가 VM을 종료시킬 수 있습니다.";
-
-/* No comment provided by engineer. */
-"Theme" = "테마";
-
-/* VMDisplayWindowController */
-"This may corrupt the VM and any unsaved changes will be lost. To quit safely, shut down from the guest." = "저장하지 않은 변경사항은 유실됩니다. 게스트 운영체제에서 안전하게 종료하세요.";
-
-/* UTMVirtualMachine+Drives */
-"This version of UTM does not allow file access outside of UTM's Documents directory." = "이 버전의 UTM은 UTM 도큐먼트 폴더 외의 파일 액세스를 지원하지 않습니다.";
-
-/* VMDisplayWindowController */
-"This will reset the VM and any unsaved state will be lost." = "저장하지 않은 변경사항은 유실됩니다.";
-
-/* UTMQemuManager */
-"Timed out waiting for RPC." = "Timed out waiting for RPC.";
-
-/* VMDisplayMetalWindowController */
-"To release the mouse cursor, press ⌃+⌥ (Ctrl+Opt or Ctrl+Alt) at the same time." = "마우스 커서를 해제하려면 ⌃+⌥（Ctrl+Opt 또는 Ctrl+Alt）를 입력하세요.";
-
-/* No comment provided by engineer. */
-"Try to use hardware hypervisor when available" = "가능한 경우 하드웨어 가속 사용";
-
-/* No comment provided by engineer. */
-"Type" = "인터페이스";
-
-/* VMConfigPortForwardingViewController */
-"UDP Forward" = "UDP Forward";
-
-/* UTMLegacyQemuConfigurationExtension */
-"Unknown" = "Unknown";
-
-/* No comment provided by engineer. */
-"Upscaling" = "업스케일링";
-
-/* No comment provided by engineer. */
-"VM display size is fixed" = "VM 디스플레이 크기 고정";
-
-/* UTMVirtualMachine+Sharing */
-"VM frontend does not support shared directories." = "VM 프론트엔드는 공유폴더를 지원하지 않습니다.";
-
-/* VMConfigSystemViewController */
-"Warning: iOS will kill apps that use more than 80% of the device's total memory." = "주의: iOS는 전체 메모리의 80% 이상을 사용 시 애플리케이션을 종료합니다.";
-
-/* No comment provided by engineer. */
-"Welcome to UTM" = "UTM에 오신 것을 환영합니다";
-
-/* Startup message */
-"Welcome to UTM! Due to a bug in iOS, if you force kill this app, the system will be unstable and you cannot launch UTM again until you reboot. The recommended way to terminate this app is the button on the top left." = "UTM에 오신것을 환영합니다! iOS의 버그로 인해, 애플리케이션을 강제종료 할 시 시스템이 불안정해지고 재부팅하기 전까지 UTM을 다시 실행할 수 없습니다. 좌측상단의 X 버튼으로 UTM을 종료하는 것을 권장합니다.";
-
-/* VMConfigDrivePickerViewController */
-"Would you like to import an existing disk image or create a new one?" = "기존의 디스크이미지를 불러오시겠습니까, 아니면 새로 만드시겠습니까?";
-
-/* VMDisplayViewController
-   VMListViewController
-   Yes button */
-"Yes" = "예";
-
-/* No comment provided by engineer. */
-"You can download an existing VM configuration for popular operating systems from the UTM gallery or start from scratch." = "UTM 갤러리에서 샘플 VM을 다운로드하거나, 처음부터 새로 시작할 수 있습니다.";
-
-/* VMConfigDriveDetailsViewController */
-"You must select a disk image." = "디스크이미지를 반드시 선택하여야 합니다.";
-
-/* VMDisplayViewController */
-"You must terminate the running VM before you can import a new VM." = "새로운 VM을 추가하기 위해선 기존의 VM을 종료하여야 합니다.";
-
-/* No comment provided by engineer. */
-"Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached." = "이 기기의 iOS 버전은 UTM을 구동하기 위해 탈옥하거나, 디버깅이 활성화된 상태이어야 합니다.";
-
-/* No comment provided by engineer. */
-"Information" = "정보";
-
-/* No comment provided by engineer. */
+"Disk Image" = "디스크 이미지";
+"CD/DVD (ISO) Image" = "CD/DVD (ISO) 이미지";
+"BIOS" = "BIOS";
+"Linux Kernel" = "Linux 커널";
+"Linux RAM Disk" = "Linux RAM 디스크";
+"Linux Device Tree Binary" = "Linux 디바이스 트리 바이너리 (DTB)";
+
+// UTMConfiguration.swift
+"This configuration is too old and is not supported." = "이 구성 파일은 너무 오래되어 더 이상 지원되지 않습니다.";
+"This configuration is saved with a newer version of UTM and is not compatible with this version." = "이 구성 파일은 상위 버전의 UTM에서 저장되어 현재 버전과 호환되지 않습니다.";
+"An invalid value of '%@' is used in the configuration file." = "구성 파일에 유효하지 않은 값 '%@'이(가) 사용되었습니다.";
+"The backend for this configuration is not supported." = "이 구성 파일의 백엔드는 더 이상 지원되지 않습니다.";
+"The drive '%@' already exists and cannot be created." = "드라이브 '%@'이(가) 이미 존재하여 새로 생성할 수 없습니다.";
+"An internal error has occurred." = "내부 오류가 발생하였습니다.";
+
+// UTMConfigurationInfo.swift
+"Virtual Machine" = "가상 머신";
+
+// UTMAppleConfiguration.swift
+"This is not a valid Apple Virtualization configuration." = "유효한 Apple 가상화 구성이 아닙니다.";
+"This virtual machine cannot run on the current host machine." = "이 가상 머신은 현재 호스트 기기에서 실행할 수 없습니다.";
+"A valid kernel image must be specified." = "유효한 커널 이미지를 지정해야 합니다.";
+"This virtual machine contains an invalid hardware model. The configuration may be corrupted or is outdated." = "이 가상 머신은 유효하지 않은 하드웨어 모델을 사용합니다. 구성 파일이 손상되었거나 오래되었을 수 있습니다.";
+"Rosetta is not supported on the current host machine." = "Rosetta가 현재 호스트 기기에서 지원되지 않습니다.";
+"The host operating system needs to be updated to support one or more features requested by the guest." = "게스트에서 요청한 하나 또는 여러 기능을 지원하려면 호스트 기기의 운영체제를 업데이트해야 합니다.";
+
+// UTMAppleConfigurationBoot.swift
+"Linux" = "Linux";
+"macOS" = "macOS";
+
+// UTMAppleConfigurationNetwork.swift
+"Shared Network" = "공유 네트워크";
+"Bridged (Advanced)" = "브리지 (고급)";
+
+// UTMAppleConfigurationSerial.swift
+"Built-in Terminal" = "내장 터미널";
+"Pseudo-TTY Device" = "의사 TTY 장치";
+
+// UTMAppleConfigurationVirtualization.swift
+"Disabled" = "비활성화";
+"Generic Mouse" = "일반 마우스";
+"Mac Trackpad (macOS 13+)" = "Mac 트랙패드 (macOS 13 이상)";
+"Generic USB" = "일반 USB";
+"Mac Keyboard (macOS 14+)" = "Mac 키보드 (macOS 14 이상)";
+
+// UTMQemuConfiguration.swift
+"Failed to migrate configuration from a previous UTM version." = "이전 UTM 버전으로부터 구성을 마이그레이션하는 데 실패하였습니다.";
+"UEFI is not supported with this architecture." = "이 아키텍처에서는 UEFI가 지원되지 않습니다.";
+
+// QEMUConstant.swift
+"Linear" = "선형 보간";
+"Nearest Neighbor" = "최근접 이웃 보간";
+"USB 2.0" = "USB 2.0";
+"USB 3.0 (XHCI)" = "USB 3.0 (XHCI)";
+"Emulated VLAN" = "에뮬레이트된 VLAN";
+"Host Only" = "호스트 전용";
+"TCP" = "TCP";
+"UDP" = "UDP";
+"Default" = "기본값";
+"Italic, Bold" = "이탤릭, 볼드";
+"Italic" = "이탤릭";
+"Bold" = "볼드";
+"Regular" = "레귤러";
+"%@ (%@)" = "%1$@ (%2$@)";
+"TCP Client Connection" = "TCP 클라이언트 연결";
+"TCP Server Connection" = "TCP 서버 연결";
+"Automatic Serial Device (max 4)" = "자동 직렬 장치 (최대 4개)";
+"Manual Serial Device (advanced)" = "수동 직렬 장치 (고급)";
+"GDB Debug Stub" = "GDB 디버그 Stub";
+"QEMU Monitor (HMP)" = "QEMU 모니터 (HMP)";
+"None (Advanced)" = "없음 (고급)";
+"IDE" = "IDE";
+"SCSI" = "SCSI";
+"SD Card" = "SD 카드";
+"MTD (NAND/NOR)" = "MTD (NAND/NOR)";
+"Floppy" = "플로피 디스크";
+"PC System Flash" = "PC 시스템 플래시";
+"VirtIO" = "VirtIO";
+"NVMe" = "NVMe";
+"USB" = "USB";
+"SPICE WebDAV" = "SPICE WebDAV";
+"VirtFS" = "VirtFS";
+
+
+/* Services */
+
+// UTMPipeInterface.swift
+"Failed to create pipe for communications." = "통신을 위한 파이프를 생성할 수 없습니다.";
+
+// UTMProcess.m
+"Internal error has occurred." = "내부 오류가 발생하였습니다.";
+
+// UTMQemuImage.swift
+"An unknown QEMU error has occurred." = "알 수 없는 QEMU 오류가 발생하였습니다.";
+
+// UTMSpiceIO.m
+"Failed to change current directory." = "작업 디렉터리를 변경할 수 없습니다.";
+"Failed to start SPICE client." = "SPICE 클라이언트를 시작할 수 없습니다.";
+"Internal error trying to connect to SPICE server." = "SPICE 서버에 연결 중 내부 오류가 발생하였습니다.";
+
+// UTMVirtualMachine.swift
+"Not implemented." = "구현되지 않은 기능입니다.";
+
+// UTMAppleVirtualMachine.swift
+"Cannot create virtual terminal." = "가상 터미널을 생성할 수 없습니다.";
+"Cannot access resource: %@" = "리소스에 접근할 수 없습니다: %@";
+"The operating system cannot be installed on this machine." = "이 기기에 운영체제를 설치할 수 없습니다.";
+"The operation is not available." = "이 작업은 수행할 수 없습니다.";
+
+// UTMQemuVirtualMachine.swift
+"Suspend state cannot be saved when running in disposible mode." = "임시 모드로 실행 중일 때는 일시 중지 상태를 저장할 수 없습니다.";
+"Suspend is not supported for virtualization." = "가상화 모드에서는 일시 중지가 지원되지 않습니다.";
+"Suspend is not supported when GPU acceleration is enabled." = "GPU 가속이 활성화된 경우 일시 중지가 지원되지 않습니다.";
+"Suspend is not supported when an emulated NVMe device is active." = "에뮬레이트된 NVMe 장치가 활성 상태인 경우 일시 중지가 지원되지 않습니다.";
+"Failed to access data from shortcut." = "바로가기로부터 데이터에 접근할 수 없습니다.";
+"This build of UTM does not support emulating the architecture of this VM." = "현재 UTM 빌드에서는 이 가상 머신의 아키텍처를 에뮬레이트할 수 없습니다.";
+"Failed to access drive image path." = "드라이브 이미지 경로에 접근할 수 없습니다.";
+"Failed to access shared directory." = "공유 디렉터리에 접근할 수 없습니다.";
+"The virtual machine is in an invalid state." = "가상 머신이 유효하지 않은 상태입니다.";
+"Failed to save VM snapshot. Usually this means at least one device does not support snapshots. %@" = "가상 머신 스냅샷을 저장할 수 없었습니다. 하나 이상의 장치가 스냅샷을 지원하지 않기 때문일 수도 있습니다. %@";
+"Failed to generate TLS key for server." = "서버 TLS 키를 생성할 수 없습니다.";
+
+
+/* Platform/iOS */
+
+// UTMDataExtension.swift
+"This virtual machine is already running. In order to run it from this device, you must stop it first." = "이 가상 머신은 이미 실행 중입니다. 이 기기에서 실행하려면 먼저 가상 머신을 중지해야 합니다.";
+
+// UTMDonateView.swift
+"Your support is the driving force that helps UTM stay independent. Your contribution, no matter the size, makes a significant difference. It enables us to develop new features and maintain existing ones. Thank you for considering a donation to support us." = "모든 지원은 UTM을 독립적으로 유지하게 만들어주는 원동력입니다. 규모에 상관 없이 모든 기여는 UTM에 새로운 기능을 추가하고 유지하는 데에 큰 도움이 됩니다. 기부를 고려해 주셔서 감사드립니다.";
+"GitHub Sponsors" = "GitHub 스폰서";
+"Support UTM" = "UTM 지원";
+"One Time Donation" = "일시(1회) 기부";
+"Recurring Donation" = "정기 기부";
+"Manage Subscriptions…" = "구독 관리…";
+"Restore Purchases" = "구매 내역 복구";
+"%d days" = "%d일";
+"day" = "1일";
+"%d weeks" = "%d주";
+"week" = "1주";
+"%d months" = "%d개월";
+"month" = "1개월";
+"%d years" = "%d년";
+"year" = "1년";
+"period" = "기간";
+"Your purchase could not be verified by the App Store." = "App Store를 통한 구매를 검증할 수 없습니다.";
+
+// UTMSingleWindowView.swift
+"Waiting for VM to connect to display..." = "가상 머신의 디스플레이 연결을 기다리는 중…";
+
+// UTMRemoteConnectView.swift
+"Select a UTM Server" = "UTM 서버 선택";
+"Help" = "도움말";
+"New Connection" = "새 연결";
+"Saved" = "저장됨";
+"Edit…" = "편집…";
+"Delete" = "제거";
+"Discovered" = "발견됨";
+"Make sure the latest version of UTM is running on your Mac and UTM Server is enabled. You can download UTM from the Mac App Store." = "사용자의 Mac에서 최신 버전의 UTM이 실행 중이고 UTM 서버가 활성화되어 있는지 확인해 주세요. Mac App Store에서 UTM을 다운로드할 수 있습니다.";
+"Name (optional)" = "이름 (선택 사항)";
+"Hostname or IP address" = "호스트명 또는 IP 주소";
+"Port" = "포트";
+"Host" = "호스트";
+"Fingerprint" = "지문";
+"Password" = "비밀번호";
+"Save Password" = "비밀번호 저장";
+"Close" = "닫기";
+"Cancel" = "취소";
+"Trust" = "신뢰";
+"Connect" = "연결";
+"Timed out trying to connect." = "연결 시간이 초과되었습니다.";
+
+// UTMSettingsView.swift
 "Settings" = "설정";
 
-/* No comment provided by engineer. */
+// VMConfigNetworkPortForwardView.swift
+"Port Forward" = "포트 포워딩";
+"%@ ➡️ %@" = "%1$@ ➡️ %2$@";
+"New" = "새 항목";
+"Save" = "저장";
+
+// VMDrivesSettingsView.swift
+"Confirm Delete" = "제거 확인";
+"Are you sure you want to permanently delete this disk image?" = "이 디스크 이미지를 영구적으로 삭제하시겠습니까?";
+"EFI Variables" = "EFI 변수";
+"%@ Drive" = "%@ 드라이브";
+"Done" = "완료";
+
+// VMSettingsView.swift
+"Information" = "정보";
+"System" = "시스템";
 "QEMU" = "QEMU";
-
-/* No comment provided by engineer. */
-"Drives" = "드라이브";
-
-/* No comment provided by engineer. */
-"Display" = "디스플레이";
-
-/* No comment provided by engineer. */
 "Input" = "입력";
-
-/* No comment provided by engineer. */
-"Network" = "네트워크";
-
-/* No comment provided by engineer. */
-"Sound" = "소리";
-
-/* No comment provided by engineer. */
 "Sharing" = "공유";
+"Show all devices…" = "모든 장치 표시…";
+"Devices" = "장치";
+"Display" = "디스플레이";
+"Serial" = "직렬 포트";
+"Network" = "네트워크";
+"Sound" = "사운드";
+"Drives" = "드라이브";
+"Version" = "버전";
+"Build" = "빌드";
 
-/* No comment provided by engineer. */
-"Machine" = "시스템";
+// VMToolbarView.swift
+"Power Off" = "전원 끄기";
+"Force Kill" = "강제 종료";
+"Pause" = "일시 정지";
+"Play" = "재생";
+"Restart" = "재시작";
+"Zoom" = "줌";
+"Keyboard" = "키보드";
+"Hide" = "숨기기";
 
-/* No comment provided by engineer. */
-"Create a New Virtual Machine" = "새 가상머신 만들기";
+// VMToolbarDisplayMenuView.swift
+"Serial %lld: %@" = "직렬 포트 %1$lld: %2$@";
+"Current Window" = "현재 창";
+"Zoom/Reset" = "줌 / 초기화";
+"External Monitor" = "외부 모니터";
+"New Window…" = "새 창…";
 
-/* No comment provided by engineer. */
-"Browse UTM Gallery" = "UTM 갤러리 둘러보기";
+// VMToolbarDriveMenuView.swift
+"none" = "없음";
+"Change…" = "변경…";
+"Clear…" = "초기화…";
+"Shared Directory: %@" = "공유 디렉터리: %@";
+"Eject…" = "꺼내기…";
+"Disk" = "디스크";
+"%@ (%@): %@" = "%1$@ (%2$@): %3$@";
 
-/* No comment provided by engineer. */
-"User Guide" = "유저 가이드";
+// VMToolbarUSBMenuView.swift
+"No USB devices detected." = "USB 장치가 발견되지 않았습니다.";
 
-/* No comment provided by engineer. */
-"Export Debug Log" = "디버그 로그 내보내기";
+// VMWindowView.swift
+"Resume" = "재개";
+"Are you sure you want to stop this VM and exit? Any unsaved changes will be lost." = "이 가상 머신을 멈추고 종료하시겠습니까? 저장되지 않은 변경 사항을 잃게 됩니다.";
+"No" = "아니오";
+"Yes" = "예";
+"Are you sure you want to exit UTM?" = "UTM을 종료하시겠습니까?";
+"Are you sure you want to reset this VM? Any unsaved changes will be lost." = "이 가상 머신을 리셋하시겠습니까? 저장되지 않은 변경 사항을 잃게 됩니다.";
+"Would you like to connect '%@' to this virtual machine?" = "이 가상 머신에 '%@'을(를) 연결하시겠습니까?";
+"OK" = "확인";
+"Running low on memory! UTM might soon be killed by iOS. You can prevent this by decreasing the amount of memory and/or JIT cache assigned to this VM" = "메모리가 부족합니다! UTM이 iOS에 의해 곧 종료됩니다. 이 가상 머신에 할당된 메모리 또는 JIT 캐시 용량를 낮추면 이를 방지할 수 있습니다.";
+"No output device is selected for this window." = "이 창에 대한 출력 장치가 선택되지 않았습니다.";
 
-/* No comment provided by engineer. */
-"Generic" = "기본";
+// VMWizardView.swift
+"Continue" = "계속";
 
-/* No comment provided by engineer. */
-"Operating System" = "운영체제";
 
-/* No comment provided by engineer. */
-"Custom" = "커스텀";
+/* Platform/macOS */
 
-/* No comment provided by engineer. */
+// Display/VMDisplayWindowController.swift
+"This may corrupt the VM and any unsaved changes will be lost. To quit safely, shut down from the guest." = "이 작업은 가상 머신에 손상을 줄 수 있고 저장되지 않은 변경 사항을 잃게 만들 수 있습니다. 안전하게 종료하려면 게스트 내에서 시스템 종료를 진행해 주시기 바랍니다.";
+"This will reset the VM and any unsaved state will be lost." = "이 작업은 가상 머신을 리셋하고 저장되지 않은 변경 사항을 잃게 만듭니다.";
+"Error" = "오류";
+"Confirmation" = "확인";
+"Failed to save suspend state" = "일시 중지 상태를 저장할 수 없습니다.";
+"Closing this window will kill the VM." = "이 창을 닫으면 가상 머신을 강제 종료하게 됩니다.";
+"Request power down" = "전원 끄기 요청";
+"Sends power down request to the guest. This simulates pressing the power button on a PC." = "게스트에게 전원을 끄라는 요청을 보냅니다. 이는 PC의 전원 버튼을 짧게 누르는 행동을 흉내냅니다.";
+"Force shut down" = "강제 전원 끄기";
+"Tells the VM process to shut down with risk of data corruption. This simulates holding down the power button on a PC." = "가상 머신 프로세스에 데이터 손상을 감수하고 전원 끄기 신호를 보냅니다. 이는 PC의 전원 버튼을 길게 누르는 행동을 흉내냅니다.";
+"Force kill" = "강제 종료";
+"Force kill the VM process with high risk of data corruption." = "가상 머신 프로세스를 강제 종료합니다. 매우 높은 데이터 손상 위험이 있습니다.";
+
+// Display/VMDisplayAppleWindowController.swift
+"Would you like to install macOS? If an existing operating system is already installed on the primary drive of this VM, then it will be erased." = "macOS를 설치하시겠습니까? 이 가상 머신의 주 드라이브에 이미 운영체제가 설치되어 있다면, 그 운영체제는 지워집니다.";
+"Directory sharing" = "디렉터리 공유";
+"To access the shared directory, the guest OS must have Virtiofs drivers installed. You can then run `sudo mount -t virtiofs share /path/to/share` to mount to the share path." = "공유 디렉터리에 접근하려면 게스트 OS에 Virtiofs 드라이버가 설치되어 있어야 합니다. 그런 다음 `sudo mount -t virtiofs share /path/to/share`를 실행하여 공유 경로에 마운트할 수 있습니다.";
+"Read Only" = "읽기 전용";
+"Remove…" = "제거…";
+"Add…" = "추가…";
+"Select Shared Folder" = "공유 폴더 선택";
+"Installation: %@" = "설치: %@";
+"Serial %lld" = "직렬 포트 %lld";
+
+// Display/VMDisplayAppleDisplayWindowController.swift
+"%@ (Terminal %lld)" = "%1$@ (터미널 %2$lld)";
+"Querying drives status..." = "드라이브 상태 조회 중…";
+"No drives connected." = "연결된 드라이브가 없습니다.";
+"Install Guest Tools…" = "게스트 도구 설치…";
+"Eject" = "꺼내기";
+"Change" = "변경";
+"Select Drive Image" = "드라이브 이미지 선택";
+"USB Mass Storage: %@" = "USB 대용량 저장소: %@";
+"An USB device containing the installer will be mounted in the virtual machine. Only macOS Sequoia (15.0) and newer guests are supported." = "설치 프로그램이 포함된 USB 장치가 가상 머신에 마운트됩니다. macOS Sequoia (15.0) 이상의 게스트만 지원됩니다.";
+
+// Display/VMDisplayQemuDisplayController.swift
+"Disposable Mode" = "임시 모드";
+"Install Windows Guest Tools…" = "Windows 게스트 도구 설치…";
+"USB Device" = "USB 장치";
+"Confirm" = "확인";
+"Querying USB devices..." = "USB 장치 조회 중…";
+"Serial %lld: %@" = "직렬 포트 %1$lld: %2$@";
+"Display %lld: %@" = "디스플레이 %1$lld: %2$@";
+
+// Display/VMDisplayQemuMetalWindowController.swift
+"%@ (Display %lld)" = "%1$@ (디스플레이 %2$lld)";
+"Metal is not supported on this device. Cannot render display." = "Metal이 이 기기에서 지원되지 않습니다. 디스플레이를 렌더링할 수 없습니다.";
+"Internal error." = "내부 오류가 발생했습니다.";
+"Press %@ to release cursor" = "%@를 눌러 커서 해제";
+"⌘+⌥" = "⌘＋⌥";
+"⌃+⌥" = "⌃＋⌥";
+"Captured mouse" = "마우스가 캡처됨";
+"To release the mouse cursor, press %@ at the same time." = "마우스 커서를 해제하기 위해선, %@ 키 조합을 동시에 누르세요.";
+"⌘+⌥ (Cmd+Opt)" = "⌘+⌥ (Command+Option)";
+"⌃+⌥ (Ctrl+Opt)" = "⌃+⌥ (Control+Option)";
+
+// Display/VMMetalView.swift
+"Capture Input" = "입력 캡처";
+"To capture input or to release the capture, press Command and Option at the same time." = "입력을 캡처 또는 해제하려면, Command 키와 Option 키를 동시에 누르세요.";
+
+// AppDelegate.swift
+"Quitting UTM will kill all running VMs." = "UTM을 종료하면 실행 중인 모든 가상 머신이 강제 종료됩니다.";
+
+// SettingsView.swift
+"Application" = "프로그램";
+"Keep UTM running after last window is closed and all VMs are shut down" = "마지막 창이 닫히고 모든 가상 머신이 종료된 후에도 UTM 실행 유지";
+"Show dock icon" = "Dock에 아이콘 표시";
+"Show menu bar icon" = "메뉴 바에 아이콘 표시";
+"Prevent system from sleeping when any VM is running" = "실행 중인 가상 머신이 있으면 시스템 절전 방지";
+"Do not show confirmation when closing a running VM" = "실행 중인 가상 머신을 종료할 때 확인 메시지 표시 안 함";
+"Closing a VM without properly shutting it down could result in data loss." = "가상 머신을 정상적으로 종료하지 않으면 데이터 손상이 발생할 수 있습니다.";
+"Do not save VM screenshot to disk" = "디스크에 가상 머신 스크린샷 저장 안 함";
+"If enabled, any existing screenshot will be deleted the next time the VM is started." = "활성화하면 가상 머신이 시작될 때 이미 존재하는 스크린샷이 삭제됩니다.";
+"QEMU Graphics Acceleration" = "QEMU 그래픽 가속";
+"Renderer Backend" = "렌더링 백엔드";
+"ANGLE (OpenGL)" = "ANGLE (OpenGL)";
+"ANGLE (Metal)" = "ANGLE (Metal)";
+"By default, the best renderer for this device will be used. You can override this with to always use a specific renderer. This only applies to QEMU VMs with GPU accelerated graphics." = "기본적으로 이 기기에 가장 적합한 렌더러가 사용됩니다. 특정 렌더러를 사용하도록 설정할 수도 있습니다. 이 설정은 GPU 가속 그래픽을 사용하는 QEMU 가상 머신에만 적용됩니다.";
+"FPS Limit" = "FPS 제한";
+"If set, a frame limit can improve smoothness in rendering by preventing stutters when set to the lowest value your device can handle." = "FPS 제한을 이 기기가 처리할 수 있는 최저 값으로 설정하면 끊김 현상을 줄여주어 렌더링이 더 부드러워질 수 있습니다.";
+"QEMU Sound" = "QEMU 사운드";
+"Sound Backend" = "사운드 백엔드";
+"SPICE with GStreamer (Input & Output)" = "SPICE + GStreamer (입력 및 출력 가능)";
+"CoreAudio (Output Only)" = "CoreAudio (출력만 가능)";
+"Mouse/Keyboard" = "마우스/키보드";
+"Capture input automatically when entering full screen" = "전체 화면 진입 시 자동으로 입력 캡처";
+"If enabled, input capture will toggle automatically when entering and exiting full screen mode." = "활성화하면 전체 화면으로 진입하거나 해제할 때 입력 캡처가 자동으로 전환됩니다.";
+"Capture input automatically when window is focused" = "창이 포커스되면 자동으로 입력 캡처";
+"If enabled, input capture will toggle automatically when the VM's window is focused." = "활성화하면 가상 머신 창이 포커스될 때 입력 캡처가 자동으로 전환됩니다.";
+"Console" = "콘솔";
+"Option (⌥) is Meta key" = "Option(⌥) 키를 Meta 키로 사용";
+"If enabled, Option will be mapped to the Meta key which can be useful for emacs. Otherwise, option will work as the system intended (such as for entering international text)." = "활성화하면 Option 키가 Meta 키로 매핑됩니다. Emacs와 같은 프로그램을 사용할 때 유용합니다. 비활성화하면 Option 키는 시스템이 지정한 대로 작동합니다 (다국어 문자 입력 등).";
+"QEMU Pointer" = "QEMU 포인터";
+"Hold Control (⌃) for right click" = "Control(⌃) 키를 길게 눌러 마우스 오른쪽 클릭";
+"Invert scrolling" = "스크롤 방향 반전";
+"If enabled, scroll wheel input will be inverted." = "활성화하면 마우스 스크롤의 방향이 반대로 바뀝니다.";
+"QEMU Keyboard" = "QEMU 키보드";
+"Use Command+Option (⌘+⌥) for input capture/release" = "Command+Option(⌘＋⌥) 키 조합을 입력 캡처/해제에 사용";
+"If disabled, the default combination Control+Option (⌃+⌥) will be used." = "비활성화하면 Control+Option(⌃＋⌥) 키 조합이 대신 사용됩니다.";
+"Caps Lock (⇪) is treated as a key" = "Caps Lock(⇪) 키를 독립 키로 취급";
+"If enabled, caps lock will be handled like other keys. If disabled, it is treated as a toggle that is synchronized with the host." = "활성화하면 Caps Lock 키가 일반 키처럼 처리됩니다. 비활성화하면 호스트와 동기화되는 토글 키로 취급됩니다.";
+"Num Lock is forced on" = "NumLock 강제 켜기";
+"If enabled, num lock will always be on to the guest. Note this may make your keyboard's num lock indicator out of sync." = "활성화하면 NumLock 토글이 게스트에서 항상 켜집니다. 키보드의 NumLock 표시가 제대로 동기화되지 않을 수 있습니다.";
+"QEMU USB" = "QEMU USB";
+"Do not show prompt when USB device is plugged in" = "USB 장치를 연결했을 때 메시지 표시하지 않기";
+"Startup" = "시작";
+"Automatically start UTM server" = "UTM 서버 자동 시작";
+"Reject unknown connections by default" = "기본적으로 알 수 없는 연결 거부";
+"If checked, you will not be prompted about any unknown connection and they will be rejected." = "활성화하면 알 수 없는 연결이 발생할 때 메시지를 표시하지 않고 자동으로 연결을 거부합니다.";
+"Allow access from external clients" = "외부 클라이언트의 접근 허용";
+"By default, the server is only available on LAN but setting this will use UPnP/NAT-PMP to port forward to WAN." = "기본적으로 서버는 로컬 네트워크(LAN) 내에서만 사용할 수 있지만, 이 설정을 활성화하면 외부 네트워크(WAN)으로 포트 포워딩하기 위해 UPnP/NAT-PMP를 사용합니다.";
+"Any" = "임의";
+"Specify a port number to listen on. This is required if external clients are permitted." = "연결을 받을 포트 번호를 지정할 수 있습니다. 외부 클라이언트 연결을 허용할 경우 포트 번호를 반드시 지정해야 합니다.";
+"Authentication" = "인증";
+"Require Password" = "비밀번호 요구";
+"If enabled, clients must enter a password. This is required if you want to access the server externally." = "활성화하면 클라이언트는 연결을 위해 비밀번호를 입력해야 합니다. 서버를 외부로 노출시키고자 한다면 이 설정을 활성화해야 합니다.";
+
+// UTMApp.swift
+"UTM" = "UTM";
+"UTM Server" = "UTM 서버";
+
+// UTMDataExtension.swift
+"This virtual machine cannot be run on this machine." = "이 가상 머신은 이 기기에서 실행될 수 없습니다.";
+
+// UTMMenuBarExtraScene.swift
+"Show UTM" = "UTM 표시";
+"Show the main window." = "메인 창을 표시합니다.";
+"Hide dock icon on next launch" = "다음 실행 시 Dock 아이콘 숨기기";
+"Requires restarting UTM to take affect." = "활성화하려면 UTM을 다시 시작해야 합니다.";
+"No virtual machines found." = "가상 머신이 존재하지 않습니다.";
+"Quit" = "종료";
+"Terminate UTM and stop all running VMs." = "UTM을 종료하고 실행 중인 모든 가상 머신을 중지합니다.";
+"Start" = "시작";
+"Stop" = "중지";
+"Suspend" = "일시 중지";
+"Reset" = "리셋";
+"Busy…" = "처리 중…";
+
+// UTMServer.swift
+"Enable UTM Server" = "UTM 서버 활성화";
+"Reset Identity" = "ID 초기화";
+"Do you want to forget all clients and generate a new server identity? Any clients that previously paired with this server will be instructed to manually unpair with this server before they can connect again." = "모든 클라이언트를 잊고 새로운 서버 ID를 생성하시겠습니까? 이전에 이 서버와 페어링했던 모든 클라이언트에게 서버와의 연결을 위해선 페어링을 직접 해제하라고 안내합니다.";
+"Server IP: %s, Port: %s" = "서버 IP: %1$s, 포트: %2$s";
+"Running" = "실행 중";
+"Name" = "이름";
+"Last Seen" = "마지막 접속";
 "Status" = "상태";
+"Connected" = "연결됨";
+"Blocked" = "차단됨";
+"Approve" = "승인";
+"Block" = "차단";
+"Disconnect" = "연결 해제";
+"Do you want to forget the selected client(s)?" = "선택한 클라이언트를 잊으시겠습니까?";
 
-/* No comment provided by engineer. */
-"Not running" = "실행중이지 않음";
+// VMConfigAppleBootView.swift
+"Operating System" = "운영체제";
+"Bootloader" = "부트로더";
+"UEFI" = "UEFI";
+"Please select an uncompressed Linux kernel image." = "압축되지 않은 Linux 커널 이미지를 선택해 주세요.";
+"Please select a macOS recovery IPSW." = "macOS 복구 IPSW를 선택해 주세요.";
+"This operating system is unsupported on your machine." = "이 운영체제는 이 기기에서 지원되지 않습니다.";
+"Select a file." = "파일을 선택해 주세요.";
+"Linux Settings" = "Linux 설정";
+"Kernel Image" = "커널 이미지";
+"Ramdisk (optional)" = "RAM 디스크 (선택 사항)";
+"Clear" = "초기화";
+"Boot Arguments" = "부팅 파라미터";
+"macOS Settings" = "macOS 설정";
+"IPSW Install Image" = "IPSW 설치 이미지";
+"Your machine does not support running this IPSW." = "이 기기는 이 IPSW를 실행할 수 없습니다.";
 
-/* No comment provided by engineer. */
-"Running" = "실행중";
+// VMConfigAppleDisplayView.swift
+"Custom" = "사용자 지정";
+"Resolution" = "해상도";
+"Width" = "너비";
+"Height" = "높이";
+"HiDPI (Retina)" = "HiDPI (레티나)";
+"Only available on macOS virtual machines." = "macOS 가상 머신에서만 사용 가능합니다.";
+"Dynamic Resolution" = "동적 해상도";
+"Only available on macOS 14+ virtual machines." = "macOS 14 이상 가상 머신에서만 사용 가능합니다.";
 
-/* No comment provided by engineer. */
-"Suspended" = "중지됨";
+// VMConfigAppleDriveCreateView.swift
+"Removable" = "제거 가능";
+"If checked, the drive image will be stored with the VM." = "활성화하면 드라이브 이미지가 가상 머신과 함께 저장됩니다.";
+"Use NVMe Interface" = "NVMe 인터페이스 사용";
+"If checked, use NVMe instead of virtio as the disk interface, available on macOS 14+ for Linux guests only. This interface is slower but less likely to encounter filesystem errors." = "활성화하면 디스크 인터페이스로 virtio 대신 NVMe를 사용합니다. macOS 14 이상에서 Linux 게스트일 때만 사용 가능합니다. NVMe 인터페이스는 다소 느리지만 파일 시스템 오류가 발생할 가능성이 낮습니다.";
+
+// VMConfigAppleDriveDetailsView.swift
+"Removable Drive" = "제거 가능한 드라이브";
+"(New Drive)" = "(새 드라이브)";
+"Read Only?" = "읽기 전용";
+"Delete Drive" = "드라이브 제거";
+"Delete this drive." = "이 드라이브를 제거합니다.";
+
+// VMConfigAppleNetworkingView.swift
+"Network Mode" = "네트워크 모드";
+"MAC Address" = "MAC 주소";
+"Random" = "랜덤";
+"Bridged Settings" = "브리지 네트워크 설정";
+"Interface" = "인터페이스";
+"Automatic" = "자동";
+"Invalid MAC address." = "유효하지 않은 MAC 주소입니다.";
+
+// VMConfigAppleSerialView.swift
+"Connection" = "연결";
+"Mode" = "모드";
+
+// VMConfigAppleSharingView.swift
+"Shared directories in macOS VMs are only available in macOS 13 and later." = "macOS 가상 머신 내 공유 디렉터리는 macOS 13 이상에서만 사용 가능합니다.";
+"Shared Path" = "공유 대상 경로";
+"Add" = "추가";
+"This directory is already being shared." = "이 디렉터리는 이미 공유 중입니다.";
+"Add read only" = "읽기 전용으로 추가";
+
+// VMConfigAppleSystemView.swift
+"CPU Cores" = "CPU 코어 수";
+
+// VMConfigAppleVirtualizationView.swift
+"Enable Balloon Device" = "Balloon 장치 활성화";
+"Enable Entropy Device" = "엔트로피 장치 활성화";
+"Enable Sound" = "사운드 활성화";
+"Pointer" = "포인터";
+"Use Trackpad" = "트랙패드 사용";
+"Allows passing through additional input from trackpads. Only supported on macOS 13+ guests." = "트랙패드의 추가적인 입력 신호를 전달할 수 있습니다. macOS 13 이상 게스트에서만 지원됩니다.";
+"Enable Rosetta on Linux (x86_64 Emulation)" = "Linux 상에서 Rosetta 활성화 (x86_64 에뮬레이션)";
+"If enabled, a virtiofs share tagged 'rosetta' will be available on the Linux guest for installing Rosetta for emulating x86_64 on ARM64." = "활성화하면 Linux 게스트 내에 'rosetta'로 태그된 virtiofs 공유가 제공됩니다. 이를 통해 ARM64에서 x86_64을 에뮬레이션하기 위한 Rosetta를 설치할 수 있습니다.";
+"Enable Clipboard Sharing" = "클립보드 공유 활성화";
+"Requires SPICE guest agent tools to be installed." = "SPICE 게스트 에이전트 도구가 설치되어 있어야 합니다.";
+
+// VMConfigNetworkPortForwardView.swift
+"Protocol" = "프로토콜";
+"Guest Address" = "게스트 주소";
+"Guest Port" = "게스트 포트";
+"Host Address" = "호스트 주소";
+"Host Port" = "호스트 포트";
+"New…" = "새로 만들기…";
+
+// VMSessionState.swift
+"Connection to the server was lost." = "서버와의 연결이 끊어졌습니다.";
+"Background task is about to expire" = "백그라운드 작업이 곧 만료됩니다.";
+"Switch back to UTM to avoid termination." = "UTM으로 전환하여 종료를 방지하세요.";
+
+// VMConfigQEMUArgumentsView.swift
+"Arguments" = "파라미터";
+"Export QEMU Command…" = "QEMU 명령줄 내보내기…";
+"Export all arguments as a text file. This is only for debugging purposes as UTM's built-in QEMU differs from upstream QEMU in supported arguments." = "모든 QEMU 명령줄(파라미터)를 텍스트 파일로 내보냅니다. UTM의 내장 QEMU는 일반 업스트림 QEMU와 지원 파라미터가 다르므로 디버깅 목적으로만 활용하세요.";
+"Move Up" = "위로 이동";
+"Move Down" = "아래로 이동";
+
+// VMDrivesSettingsView.swift
+"Add a new drive." = "새 드라이브 추가";
+"Browse…" = "찾아보기…";
+"Import…" = "가져오기…";
+"Select an existing disk image." = "기존 디스크 이미지를 선택해 주세요.";
+"Create" = "생성";
+"Create an empty drive." = "빈 드라이브를 생성합니다.";
+"%@ Image" = "%@ 이미지";
+
+// VMAppleRemovableDrivesView.swift
+"Remove" = "제거";
+"Shared Directory" = "공유 디렉터리";
+"External Drive" = "외부 드라이브";
+"New Shared Directory…" = "새로운 공유 디렉터리…";
+"(empty)" = "(비어 있음)";
+
+// VMAppleSettingsView.swift
+"Boot" = "부팅";
+"Virtualization" = "가상화";
+
+// VMAppleSettingsAddDeviceMenuView.swift
+"Add a new device." = "새 장치를 추가합니다.";
+
+// VMWizardView.swift
+"Go Back" = "뒤로 가기";
+
+// SavePanel.swift
+"Select where to save debug log:" = "디버그 로그를 저장할 위치를 선택하세요 :";
+"Select where to save UTM Virtual Machine:" = "UTM 가상 머신을 저장할 위치를 선택하세요 :";
+"Select where to export QEMU command:" = "QEMU 명령줄을 내보낼 위치를 선택하세요 :";
+
+
+/* Platform/visionOS */
+
+// VMToolbarOrnamentModifier.swift
+"Hide Controls" = "컨트롤 숨김";
+"Show Controls" = "컨트롤 표시";
+
+
+/* Platform/Shared */
+
+// DestructiveButton.swift
+"Test" = "테스트";
+
+// DetailedSection.swift
+"Section" = "섹션";
+"Description" = "설명";
+
+// BusyOverlay.swift
+"Download VM" = "가상 머신 다운로드";
+"Do you want to download '%@'?" = "'%@'을(를) 다운로드 하시겠습니까?";
+
+// ContentView.swift
+"Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached. See https://getutm.app/install/ for more details." = "현재 실행 중인 iOS 버전은 수정되지 않는 이상 가상 머신 실행을 지원하지 않습니다. UTM을 실행하려면 기기를 탈옥하거나 원격 디버거에 연결한 상태여야 합니다. 자세한 내용은 https://getutm.app/install/ 를 참조하세요.";
+
+// DefaultTextField.swift
+"Prompt" = "프롬프트";
+
+// FileBrowseField.swift
+"Path" = "경로";
+
+// RAMSlider.swift
+"Size" = "크기";
+"MiB" = "MiB";
+
+// SizeTextField.swift
+"The amount of storage to allocate for this image. Ignored if importing an image. If this is a raw image, then an empty file of this size will be stored with the VM. Otherwise, the disk image will dynamically expand up to this size." = "이 이미지에 할당할 저장 공간의 크기를 지정합니다. 이미지를 가져오는 경우 이 값은 무시됩니다. Raw 이미지인 경우, 이 크기의 빈 파일이 가상 머신과 함께 저장됩니다. 그렇지 않으면 디스크 이미지는 이 크기까지 동적으로 확장됩니다.";
+"GiB" = "GiB";
+
+// VMCardView.swift
+"Run" = "실행";
+
+// VMCommands.swift
+"Open…" = "열기…";
+"What's New" = "새로운 기능";
+"Virtual Machine Gallery" = "가상 머신 갤러리";
+"Support" = "지원";
+"License" = "라이선스";
+
+// VMConfigConstantPicker.swift
+"Selected:" = "선택:";
+"Text" = "텍스트";
+
+// VMConfigDisplayView.swift
+"Hardware" = "하드웨어";
+"Emulated Display Card" = "디스플레이 카드 에뮬레이션";
+"GPU Acceleration Supported" = "GPU 가속 지원됨";
+"Guest drivers are required for 3D acceleration." = "3D 가속을 위해선 게스트 드라이버가 설치되어 있어야 합니다.";
+"VGA Device RAM (MB)" = "VGA 장치 RAM (MB)";
+"Auto Resolution" = "자동 해상도 설정";
+"Resize display to window size automatically" = "창 크기에 맞게 디스플레이 해상도 자동 조정";
+"Resize display to screen size and orientation automatically" = "화면 크기 및 방향에 맞게 디스플레이 자동 조정";
+"Scaling" = "스케일링";
+"Upscaling" = "확대";
+"Downscaling" = "축소";
+"Retina Mode" = "레티나 모드";
+
+// VMConfigDisplayConsoleView.swift
+"Style" = "스타일";
+"Theme" = "테마";
+"Text Color" = "글자 색상";
+"Background Color" = "배경 색상";
+"Font" = "글꼴";
+"Font Size" = "글꼴 크기";
+"Blinking cursor?" = "커서 깜빡이기";
+"Resize Console Command" = "콘솔 크기 조정 명령어";
+"Command to send when resizing the console. Placeholder $COLS is the number of columns and $ROWS is the number of rows." = "콘솔 크기가 조정될 때 전송할 명령어입니다. `$COLS`는 열 수, `$ROWS`는 행 수를 나타냅니다.";
+"stty cols $COLS rows $ROWS\n" = "stty cols $COLS rows $ROWS\n";
+
+// VMConfigDriveCreateView.swift
+"If checked, no drive image will be stored with the VM. Instead you can mount/unmount image while the VM is running." = "활성화한 경우 드라이브 이미지가 가상 머신과 함께 저장되지 않습니다. 대신 가상 머신이 실행 중일 때 이미지를 마운트/언마운트 할 수 있습니다.";
+"Hardware interface on the guest used to mount this image. Different operating systems support different interfaces. The default will be the most common interface." = "이미지를 마운트하기 위해 게스트에서 사용하는 하드웨어 인터페이스입니다. 다양한 운영체제가 다양한 인터페이스를 지원합니다. 기본 값은 가장 일반적으로 사용되는 인터페이스입니다.";
+"Raw Image" = "Raw 이미지";
+"Advanced. If checked, a raw disk image is used. Raw disk image does not support snapshots and will not dynamically expand in size." = "고급 설정입니다. 활성화한 경우, Raw 디스크 이미지가 사용됩니다. Raw 디스크 이미지는 스냅샷을 지원하지 않고, 크기가 동적으로 확장되지 않습니다.";
+
+// VMConfigDriveDetailsView.swift
+"(new)" = "(새 드라이브)";
+"Image Type" = "이미지 종류";
+"Update Interface" = "인터페이스 업데이트";
+"Older versions of UTM added each IDE device to a separate bus. Check this to change the configuration to place two units on each bus." = "이전 버전의 UTM에선 각 IDE 장치를 별도의 버스에 추가했습니다. 이 설정을 활성화하면 각 버스에 두 개의 장치를 배치하도록 구성을 변경합니다.";
+"Reclaim Space" = "저장 공간 회수";
+"Reclaim disk space by re-converting the disk image." = "디스크 이미지를 다시 변환하여 저장 공간을 확보합니다.";
+"Compress" = "압축";
+"Compress by re-converting the disk image and compressing the data." = "디스크 이미지를 다시 변환하고 데이터를 압축하여 저장 공간을 확보합니다.";
+"Resize…" = "크기 변경…";
+"Increase the size of the disk image." = "디스크 이미지의 크기를 늘립니다.";
+"Would you like to re-convert this disk image to reclaim unused space? Note this will require enough temporary space to perform the conversion. You are strongly encouraged to back-up this VM before proceeding." = "이 디스크 이미지를 다시 변환하여 사용되지 않은 저장 공간을 확보하시겠습니까? 이 변환 작업은 충분한 임시 저장 공간을 필요로 합니다. 이 작업을 진행하기 전에 가상 머신을 백업하시는 것을 강력히 권장합니다.";
+"Reclaim" = "회수";
+"Would you like to re-convert this disk image to reclaim unused space and apply compression? Note this will require enough temporary space to perform the conversion. Compression only applies to existing data and new data will still be written uncompressed. You are strongly encouraged to back-up this VM before proceeding." = "이 디스크 이미지를 다시 변환하여 사용되지 않은 저장 공간을 확보하고 압축을 적용하시겠습니까? 이 변환 작업은 충분한 임시 저장 공간을 필요로 합니다. 압축은 이미 존재하는 데이터에만 적용되며 새로운 데이터는 압축이 적용되지 않은 채로 저장됩니다. 이 작업을 진행하기 전에 가상 머신을 백업하시는 것을 강력히 권장합니다.";
+"Resizing is experimental and could result in data loss. You are strongly encouraged to back-up this VM before proceeding. Would you like to resize to %lld GiB?" = "크기 변경은 실험적인 기능이며 데이터 손실이 발생할 수 있습니다. 이 작업을 진행하기 전에 가상 머신을 백업하시는 것을 강력히 권장합니다. %lld GiB로 크기를 변경하시겠습니까?";
+"Minimum size: %@" = "최소 크기: %@";
+"Resize" = "크기 변경";
+"Calculating current size..." = "현재 크기 계산 중…";
+
+// VMConfigInfoView.swift
+"Generic" = "일반";
+"Notes" = "메모";
+"Icon" = "아이콘";
+"Choose" = "선택";
+"AIX" = "AIX";
+"iOS" = "iOS";
+"Windows 7" = "Windows 7";
+"AlmaLinux" = "AlmaLinux";
+"Alpine" = "Alpine";
+"AmigaOS" = "AmigaOS";
+"Android" = "Android";
+"Apple TV" = "Apple TV";
+"Arch Linux" = "Arch Linux";
+"BackTrack" = "BackTrack";
+"Bada" = "Bada";
+"BeOS" = "BeOS";
+"CentOS" = "CentOS";
+"Chrome OS" = "Chrome OS";
+"CyanogenMod" = "CyanogenMod";
+"Debian" = "Debian";
+"Elementary OS" = "elementary OS";
+"Fedora" = "Fedora";
+"Firefox OS" = "Firefox OS";
+"FreeBSD" = "FreeBSD";
+"Gentoo" = "Gentoo";
+"Haiku OS" = "Haiku OS";
+"HP-UX" = "HP-UX";
+"KaiOS" = "KaiOS";
+"Knoppix" = "Knoppix";
+"Kubuntu" = "Kubuntu";
+"Linux" = "Linux";
+"Lubuntu" = "Lubuntu";
+"macOS" = "macOS";
+"Maemo" = "Maemo";
+"Mandriva" = "Mandriva";
+"MeeGo" = "MeeGo";
+"Linux Mint" = "Linux Mint";
+"NetBSD" = "NetBSD";
+"Nintendo" = "Nintendo";
+"NixOS" = "NixOS";
+"OpenBSD" = "OpenBSD";
+"OpenWrt" = "OpenWrt";
+"OS/2" = "OS/2";
+"Palm OS" = "Palm OS";
+"PlayStation Portable" = "PlayStation Portable";
+"PlayStation" = "PlayStation";
+"Pop!_OS" = "Pop!_OS";
+"Red Hat" = "Red Hat";
+"Remix OS" = "Remix OS";
+"RISC OS" = "RISC OS";
+"Sabayon" = "Sabayon";
+"Sailfish OS" = "Sailfish OS";
+"Slackware" = "Slackware";
+"Solaris" = "Solaris";
+"openSUSE" = "openSUSE";
+"Syllable" = "Syllable";
+"Symbian" = "Symbian";
+"ThreadX" = "ThreadX";
+"Tizen" = "Tizen";
+"Ubuntu" = "Ubuntu";
+"webOS" = "webOS";
+"Windows 11" = "Windows 11";
+"Windows 9x" = "Windows 9x";
+"Windows XP" = "Windows XP";
+"Windows" = "Windows";
+"Xbox" = "Xbox";
+"Xubuntu" = "Xubuntu";
+"YunOS" = "YunOS";
+
+// VMConfigInputView.swift
+"If enabled, the default input devices will be emulated on the USB bus." = "활성화한 경우 기본 입력 장치가 USB 버스에서 에뮬레이트됩니다.";
+"USB Support" = "USB 지원";
+"USB Sharing" = "USB 공유";
+"USB sharing not supported in this build of UTM." = "이 UTM 빌드에서는 USB 공유가 지원되지 않습니다.";
+"Share USB devices from host" = "호스트로부터 USB 장치 공유";
+"Maximum Shared USB Devices" = "최대 공유 USB 장치 개수";
+"Additional Settings" = "추가 설정";
+"Gesture and Cursor Settings" = "제스처 및 커서 설정";
+
+// VMConfigNetworkView.swift
+"Bridged Interface" = "브리지 네트워크 인터페이스";
+"Emulated Network Card" = "네트워크 카드 에뮬레이션";
+"Show Advanced Settings" = "고급 설정 표시";
+"IP Configuration" = "IP 구성";
+
+// VMConfigAdvancedNetworkView.swift
+"Isolate Guest from Host" = "호스트로부터 게스트 격리";
+"Guest Network" = "게스트 네트워크";
+"Guest Network (IPv6)" = "게스트 네트워크 (IPv6)";
+"Host Address (IPv6)" = "호스트 주소 (IPv6)";
+"DHCP Start" = "DHCP 할당 시작 주소";
+"DHCP End" = "DHCP 할당 종료 주소";
+"DHCP Domain Name" = "DHCP 도메인 이름";
+"DNS Server" = "DNS 서버";
+"DNS Server (IPv6)" = "DNS 서버 (IPv6)";
+"DNS Search Domains" = "DNS 검색 도메인";
+
+// VMConfigQEMUView.swift
+"Logging" = "로깅";
+"Debug Logging" = "디버그 로깅";
+"Export Debug Log" = "디버그 로그 내보내기";
+"Tweaks" = "트윅";
+"These are advanced settings affecting QEMU which should be kept default unless you are running into issues." = "QEMU에 영향을 주는 고급 설정입니다. 문제가 발생하지 않는 한 기본 설정을 유지해야 합니다.";
+"UEFI Boot" = "UEFI 부팅";
+"Should be off for older operating systems such as Windows 7 or lower." = "Windows 7 이하와 같은 오래된 운영체제에선 꺼두어야 합니다.";
+"RNG Device" = "난수 생성(RNG) 장치";
+"Should be on always unless the guest cannot boot because of this." = "게스트가 이 장치로 인해 부팅을 할 수 없는 경우를 제외하고는 항상 켜두어야 합니다.";
+"Balloon Device" = "Balloon 장치";
+"TPM 2.0 Device" = "TPM 2.0 장치";
+"TPM can be used to protect secrets in the guest operating system. Note that the host will always be able to read these secrets and therefore no expectation of physical security is provided." = "TPM은 게스트 운영체제 내 보안 데이터를 보호하기 위해 사용됩니다. 단, 호스트는 항상 이러한 보안 데이터를 읽을 수 있어 실질적인 보안을 기대하기 힘듭니다.";
+"Use Hypervisor" = "하이퍼바이저 사용";
+"Only available if host architecture matches the target. Otherwise, TCG emulation is used." = "호스트 아키텍처가 게스트 아키텍처와 동일할 때만 사용 가능합니다. 비활성화한 경우 TCG 에뮬레이션이 사용됩니다.";
+"Use TSO" = "TSO 사용";
+"Only available when Hypervisor is used on supported hardware. TSO speeds up Intel emulation in the guest at the cost of decreased performance in general." = "하이퍼바이저가 지원되는 하드웨어 상에서 사용될 때 사용 가능합니다. TSO는 전반적인 성능을 희생하여 게스트 내 x86 에뮬레이션 속도를 개선합니다.";
+"Use local time for base clock" = "베이스 시계에 로컬 시간 사용";
+"If checked, use local time for RTC which is required for Windows. Otherwise, use UTC clock." = "활성화한 경우 RTC에 로컬 시간을 사용합니다. Windows에서 이 설정이 필요합니다. 비활성화한 경우 UTC 시간을 사용합니다.";
+"Force PS/2 controller" = "PS/2 컨트롤러 강제 사용";
+"Instantiate PS/2 controller even when USB input is supported. Required for older Windows." = "USB 입력이 지원되는 경우에도 PS/2 컨트롤러를 활성화합니다. 오래된 Windows에서 필요합니다.";
+"Maintenance" = "유지보수";
+"Options here only apply on next boot and are not saved." = "이 설정들은 다음 부팅 시점에만 적용되며 별도로 저장되지 않습니다.";
+"Reset UEFI Variables" = "UEFI 변수 초기화";
+"You can use this if your boot options are corrupted or if you wish to re-enroll in the default keys for secure boot." = "부팅 옵션이 손상되었거나 보안 부팅을 위한 기본 키를 다시 등록하고자 할 때 사용할 수 있습니다.";
+"QEMU Machine Properties" = "QEMU 머신 속성";
+"This is appended to the -machine argument." = "`-machine` 파라미터에 추가됩니다.";
+"QEMU Arguments" = "QEMU 파라미터";
+"(Delete)" = "(삭제)";
+
+// VMConfigSerialView.swift
+"Target" = "대상";
+"Wait for Connection" = "연결 대기";
+"Allow Remote Connection" = "원격 연결 허용";
+"Emulated Serial Device" = "에뮬레이트된 직렬 포트 장치";
+"TCP" = "TCP";
+"Server Address" = "서버 주소";
+"The target does not support hardware emulated serial connections." = "대상이 하드웨어 에뮬레이트된 직렬 연결을 지원하지 않습니다.";
+
+// VMConfigSharingView.swift
+"Clipboard Sharing" = "클립보드 공유";
+"WebDAV requires installing SPICE daemon. VirtFS requires installing device drivers." = "WebDAV는 SPICE 데몬을 설치해야 합니다. VirtFS는 장치 드라이버를 설치해야 합니다.";
+"Directory Share Mode" = "디렉터리 공유 모드";
+
+// VMConfigSoundView.swift
+"Emulated Audio Card" = "에뮬레이트된 사운드 카드";
+"This audio card is not supported." = "이 사운드 카드는 지원되지 않습니다.";
+
+// VMConfigSystemView.swift
+"CPU" = "CPU";
+"Force Enable CPU Flags" = "CPU 플래그 강제 활성화";
+"If checked, the CPU flag will be enabled. Otherwise, the default value will be used." = "활성화한 경우, CPU 플래그가 활성화됩니다. 그렇지 않으면 기본 값이 사용됩니다.";
+"Force Disable CPU Flags" = "CPU 플래그 강제 비활성화";
+"If checked, the CPU flag will be disabled. Otherwise, the default value will be used." = "활성화한 경우, CPU 플래그가 비활성화됩니다. 그렇지 않으면 기본 값이 사용됩니다.";
+"Force multicore may improve speed of emulation but also might result in unstable and incorrect emulation." = "멀티코어 강제 활성화 시 에뮬레이션 속도가 개선될 수 있지만, 불안정하고 부정확한 결과를 초래할 수 있습니다.";
+"Cores" = "코어";
+"Force Multicore" = "멀티코어 강제 활성화";
+"JIT Cache" = "JIT 캐시";
+"Default is 1/4 of the RAM size (above). The JIT cache size is additive to the RAM size in the total memory usage!" = "기본 값은 상단의 RAM 크기의 1/4 입니다. JIT 캐시 크기는 RAM 크기와는 별도이며 총 메모리 사용량에 합산됩니다!";
+"Allocating too much memory will crash the VM." = "너무 많은 메모리를 할당하면 가상 머신이 정상적으로 실행되지 않을 수 있습니다.";
+"This change will reset all settings" = "이 변경 사항은 모든 설정을 초기화 시킵니다.";
+"Your device has %llu MB of memory and the estimated usage is %llu MB." = "이 기기의 가용 메모리는 %1$llu MB 이며, 예상 메모리 사용량은 %2$llu MB 입니다.";
+"Any unsaved changes will be lost." = "저장하지 않은 변경 사항을 잃게 됩니다.";
+"Architecture" = "아키텍처";
+"The selected architecture is unsupported in this version of UTM." = "이 UTM 버전에선 선택한 아키텍처가 지원되지 않습니다.";
+"Hide Unused…" = "미사용 숨기기…";
+"Show All…" = "모두 표시…";
+
+// VMConfirmActionModifier.swift
+"Do you want to copy this VM and all its data to internal storage?" = "이 가상 머신 및 데이터를 내부 저장소로 복사하시겠습니까?";
+"Do you want to duplicate this VM and all its data?" = "이 가상 머신 및 데이터를 복제하시겠습니까?";
+"Do you want to delete this VM and all its data?" = "이 가상 머신 및 데이터를 삭제하시겠습니까?";
+"Do you want to remove this shortcut? The data will not be deleted." = "이 바로 가기를 제거하시겠습니까? 데이터는 삭제되지 않습니다.";
+"Do you want to force stop this VM and lose all unsaved data?" = "이 가상 머신을 강제 종료하고 저장하지 않은 데이터를 모두 잃으시겠습니까?";
+"Do you want to move this VM to another location? This will copy the data to the new location, delete the data from the original location, and then create a shortcut." = "이 가상 머신을 다른 위치로 이동하시겠습니까? 이 작업은 데이터를 새 위치로 복사하고, 원본 위치의 데이터를 삭제한 후 바로 가기를 생성합니다.";
+
+// VMContextMenuModifier.swift
+"Show in Finder" = "Finder에 표시";
+"Reveal where the VM is stored." = "가상 머신이 저장된 위치를 표시합니다.";
+"Edit" = "편집";
+"Modify settings for this VM." = "이 가상 머신의 설정을 편집합니다.";
+"Stop the running VM." = "실행 중인 가상 머신을 중지합니다.";
+"Run the VM in the foreground." = "가상 머신을 포그라운드에서 실행합니다.";
+"Run Recovery" = "복구 실행";
+"Boot into recovery mode." = "복구 모드로 부팅합니다.";
+"Run without saving changes" = "변경 사항 저장 없이 실행";
+"Run the VM in the foreground, without saving data changes to disk." = "디스크에 데이터 변경 사항을 저장하지 않는 채로 가상 머신을 포그라운드에서 실행합니다.";
+"Download and mount the guest tools for Windows." = "Windows용 게스트 도구를 다운로드 및 마운트합니다.";
+"Share…" = "공유…";
+"Share a copy of this VM and all its data." = "이 가상 머신 및 데이터의 복사본을 공유합니다.";
+"Move…" = "이동…";
+"Move this VM from internal storage to elsewhere." = "이 가상 머신을 내부 저장소에서 다른 위치로 이동합니다.";
+"Clone…" = "복제…";
+"Duplicate this VM along with all its data." = "이 가상 머신 및 데이터를 복제합니다.";
+"New from template…" = "템플릿으로부터 새로 만들기…";
+"Create a new VM with the same configuration as this one but without any data." = "데이터를 제외하고 이 가상 머신과 같은 설정으로 새 가상 머신을 만듭니다.";
+"Delete this shortcut. The underlying data will not be deleted." = "이 바로 가기를 제거합니다. 데이터는 삭제되지 않습니다.";
+"Delete this VM and all its data." = "이 가상 머신 및 데이터를 삭제합니다.";
+
+// VMDetailsView.swift
+"This virtual machine has been removed." = "이 가상 머신은 삭제되었습니다.";
+"Status" = "상태";
+"Architecture" = "아키텍처";
+"Machine" = "머신";
+"Memory" = "메모리";
+"Serial (TTY)" = "직렬 포트 (TTY)";
+"Serial (Client)" = "직렬 포트 (클라이언트)";
+"Serial (Server)" = "직렬 포트 (서버)";
+"Inactive" = "비활성";
+
+// VMNavigationListView.swift
+"Donate" = "기부";
+"Pending" = "대기 중";
+"New VM" = "새로운 가상 머신";
+"Create a new VM" = "가상 머신을 새로 생성합니다.";
+
+// VMPlaceholderView.swift
+"Welcome to UTM" = "UTM에 오신 것을 환영합니다.";
+"Create a New Virtual Machine" = "새로운 가상 머신 생성";
+"Browse UTM Gallery" = "UTM 갤러리 탐색";
+"User Guide" = "사용자 가이드";
+"Support" = "지원";
+"Server" = "서버";
+
+// VMRemovableDrivesView.swift
+"%@ %@" = "%1$@ %2$@";
+
+// VMSettingsAddDeviceMenuView.swift
+"Import Drive…" = "드라이브 가져오기…";
+"New Drive…" = "새 드라이브…";
+
+// VMToolbarModifier.swift
+"Remove selected shortcut" = "선택한 바로 가기를 제거합니다.";
+"Delete selected VM" = "선택한 가상 머신을 삭제합니다.";
+"Clone" = "복제";
+"Clone selected VM" = "선택한 가상 머신을 복제합니다.";
+"Move" = "이동";
+"Move selected VM" = "선택한 가상 머신을 이동합니다.";
+"Share" = "공유";
+"Share selected VM" = "선택한 가상 머신을 공유합니다.";
+"Stop selected VM" = "선택한 가상 머신을 중지합니다.";
+"Run selected VM" = "선택한 가상 머신을 실행합니다.";
+"Edit selected VM" = "선택한 가상 머신을 편집합니다.";
+"Preferences" = "환경 설정";
+"Show UTM preferences" = "UTM 환경 설정을 표시합니다.";
+
+// VMWizardDrivesView.swift
+"Storage" = "저장소";
+"Specify the size of the drive where data will be stored into." = "데이터가 저장될 드라이브의 크기를 지정합니다.";
+
+// VMWizardHardwareView.swift
+"Hardware OpenGL Acceleration" = "하드웨어 OpenGL 가속";
+"There are known issues in some newer Linux drivers including black screen, broken compositing, and apps failing to render." = "최신 Linux 드라이버에서 블랙 스크린, 불안정한 컴포지션, 프로그램의 렌더링 실패 등의 문제가 발생한다는 보고가 있습니다.";
+"Enable hardware OpenGL acceleration" = "하드웨어 OpenGL 가속 활성화";
+
+// VMWizardOSLinuxView.swift
+"Virtualization Engine" = "가상화 엔진";
+"Apple Virtualization is experimental and only for advanced use cases. Leave unchecked to use QEMU, which is recommended." = "Apple 가상화는 실험적인 기능이며 특정 상황에서만 사용하여야 합니다. 권장 엔진인 QEMU를 사용하려면 체크를 해제한 채로 두세요.";
+"Use Apple Virtualization" = "Apple 가상화 사용";
+"Boot from kernel image" = "커널 이미지로부터 부팅";
+"If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO." = "설정한 경우, 커널 이미지 및 initrd로 직접 부팅합니다. 그렇지 않으면 지원되는 ISO 이미지로 부팅합니다.";
+"Debian Install Guide" = "Debian 설치 가이드";
+"Ubuntu Install Guide" = "Ubuntu 설치 가이드";
+"Boot Image Type" = "부팅 이미지 종류";
+"Enable Rosetta (x86_64 Emulation)" = "Rosetta 활성화 (x86_64 에뮬레이션)";
+"Installation Instructions" = "설치 지침";
+"Additional Options" = "추가 설정";
+"Uncompressed Linux kernel (required)" = "무압축 Linux 커널 (필수)";
+"Linux kernel (required)" = "Linux 커널 (필수)";
+"Uncompressed Linux initial ramdisk (optional)" = "무압축 Linux initrd (선택 사항)";
+"Linux initial ramdisk (optional)" = "Linux initrd (선택 사항)";
+"Linux Root FS Image (optional)" = "Linux 루트 파일 시스템 이미지 (선택 사항)";
+"Boot ISO Image (optional)" = "부팅 ISO 이미지 (선택 사항)";
+"Boot ISO Image" = "부팅 ISO 이미지";
+
+// VMWizardOSMacView.swift
+"To install macOS, you need to download a recovery IPSW. If you do not select an existing IPSW, the latest macOS IPSW will be downloaded from Apple." = "macOS를 설치하기 위해선 복구 IPSW 파일을 다운로드해야 합니다. IPSW 파일을 지정하지 않으면 Apple 서버로부터 최신 macOS IPSW 파일을 다운로드합니다.";
+"Drag and drop IPSW file here" = "여기에 IPSW 파일 드래그 앤 드롭";
+"Import IPSW" = "IPSW 파일 가져오기";
+"macOS guests are only supported on ARM64 devices." = "macOS 게스트는 ARM64 기기에서만 지원됩니다.";
+
+// VMWizardOSOtherView.swift
+"Other" = "기타";
+"Boot Device" = "부팅 장치";
+"CD/DVD Image" = "CD/DVD 이미지";
+"Floppy Image" = "플로피 디스크 이미지";
+"Boot IMG Image" = "부팅 IMG 이미지";
+"Legacy Hardware" = "레거시 하드웨어";
+"If checked, emulated devices with higher compatibility will be instantiated at the cost of performance." = "활성화한 경우, 성능을 희생하여 더 높은 호환성을 지닌 장치들을 에뮬레이트합니다.";
+"Options" = "옵션";
+
+// VMWizardOSView.swift
+"macOS 12+" = "macOS 12 이상";
+"Windows" = "Windows";
+"Preconfigured" = "사전 구성";
+
+// VMWizardOSWindowsView.swift
+"Install Windows 10 or higher" = "Windows 10 이상 설치";
+"Import VHDX Image" = "VHDX 이미지 가져오기";
+"Download Windows 11 for ARM64 Preview VHDX" = "Windows 11 ARM64 미리 보기 VHDX 다운로드";
+"Fetch latest Windows installer…" = "최신 Windows 설치 이미지 가져오기…";
+"Windows Install Guide" = "Windows 설치 가이드";
+"Image File Type" = "이미지 파일 종류";
+"Boot VHDX Image" = "부팅 VHDX 이미지";
+"Some older systems do not support UEFI boot, such as Windows 7 and below." = "Windows 7 이하와 같은 오래된 시스템은 UEFI 부팅을 지원하지 않습니다.";
+"Secure Boot with TPM 2.0" = "TPM 2.0과 함께 보안 부팅 사용";
+"Download and mount the guest support package for Windows. This is required for some features including dynamic resolution and clipboard sharing." = "Windows용 게스트 지원 패키지를 다운로드 및 마운트합니다. 동적 해상도나 클립보드 공유와 같은 기능을 사용하기 위해선 이 패키지를 설치해야 합니다.";
+"Install drivers and SPICE tools" = "드라이버 및 SPICE 도구 설치";
+
+// VMWizardSharingView.swift
+"Shared Directory Path" = "공유 디렉터리 경로";
+"Optionally select a directory to make accessible inside the VM. Note that support for shared directories varies by the guest operating system and may require additional guest drivers to be installed. See UTM support pages for more details." = "가상 머신 내에서 접근 가능한 디렉터리를 선택적으로 지정할 수 있습니다. 공유 디렉터리 지원 여부는 게스트 운영체제에 따라 다르며, 추가적인 게스트 드라이버 설치가 필요할 수 있습니다. 자세한 내용은 UTM 지원 페이지를 참고해 주세요.";
+"Share is read only" = "읽기 전용 공유";
+
+// VMWizardStartView.swift
+"Virtualize" = "가상화";
+"Faster, but can only run the native CPU architecture." = "빠른 성능. 호스트와 같은 CPU 아키텍처만 실행할 수 있음.";
+"Emulate" = "에뮬레이션";
+"Slower, but can run other CPU architectures." = "느린 성능. 다른 CPU 아키텍처도 실행할 수 있음.";
+"Virtualization is not supported on your system." = "이 시스템에선 가상화가 지원되지 않습니다.";
+"This build does not emulation." = "이 빌드는 에뮬레이션을 지원하지 않습니다.";
+"Download prebuilt from UTM Gallery…" = "UTM 갤러리에서 이미 만들어진 가상 머신 다운로드…";
+"Existing" = "기존 가상 머신";
+
+// VMWizardStartViewTCI.swift
+"New Machine" = "새 가상 머신";
+"Create a new emulated machine from scratch." = "에뮬레이트할 가상 머신을 처음부터 새로 생성합니다.";
+
+// VMWizardState.swift
+"Please select a boot image." = "부팅 이미지를 선택해 주세요.";
+"Please select a kernel file." = "커널 파일을 선택해 주세요.";
+"Failed to get latest macOS version from Apple." = "Apple 서버로부터 최신 macOS 버전을 가져오는 데 실패했습니다.";
+"macOS is not supported with QEMU." = "macOS는 QEMU에서 지원되지 않습니다.";
+"Unavailable for this platform." = "이 플랫폼에선 지원되지 않습니다.";
+"The selected boot image contains the word '%@' but the guest architecture is '%@'. Please ensure you have selected an image that is compatible with '%@'." = "선택한 부팅 이미지에 단어 '%1$@'가 포함되어 있지만, 게스트 아키텍처는 '%2$@' 입니다. '%3$@' 아키텍처와 호환되는 이미지인지 확인해 주세요.";
+
+// VMWizardSummaryView.swift
+"Default Cores" = "기본 코어 수";
+"Summary" = "요약";
+"Open VM Settings" = "가상 머신 설정 열기";
+"Engine" = "엔진";
+"Apple Virtualization" = "Apple 가상화";
+"Use Virtualization" = "가상화 사용";
+"RAM" = "RAM";
+"Skip Boot Image" = "부팅 이미지 생략";
+"Boot Image" = "부팅 이미지";
+"IPSW" = "IPSW";
+"Kernel" = "커널";
+"Initial Ramdisk" = "초기 RAM 디스크 (initrd)";
+"Root Image" = "루트 이미지";
+"Use Rosetta" = "Rosetta 사용";
+"Share Directory" = "디렉터리 공유";
+"Directory" = "디렉터리";
+
+// VMReleaseNotesView.swift
+"No release notes found for version %@." = "버전 %@에 대한 릴리즈 노트를 찾을 수 없습니다.";
+"Show All" = "전부 표시";
+"\u2022 " = "\u2022 ";
+
+// UTMPendingVMView.swift
+"Extracting…" = "추출 중…";
+"%1$@ of %2$@ (%3$@)" = "%1$@ / %2$@ (%3$@)";
+"Preparing…" = "준비 중…";
+"Cancel Download" = "다운로드 취소";
+
+// UTMUnavailableVMView.swift
+"This virtual machine must be re-added to UTM by opening it with Finder. You can find it at the path: %@" = "이 가상 머신은 Finder에서 열어 UTM에 다시 추가해야 합니다. 다음 경로에서 가상 머신을 찾을 수 있습니다: %@";
+"This virtual machine cannot be found at: %@" = "가상 머신이 이 경로에 존재하지 않습니다: %@";
+
+// UTMTips.swift
+"Support UTM" = "UTM 지원";
+"Enjoying the app? Consider making a donation to support development." = "프로그램을 유용하게 사용하고 있나요? 개발을 지원하기 위해 기부를 고려해 주세요.";
+"No Thanks" = "지금은 하지 않기";
+"Tap to hide/show toolbar" = "탭하여 툴바 숨기기/표시";
+"When the toolbar is hidden, the icon will disappear after a few seconds. To show the icon again, tap anywhere on the screen." = "툴바가 숨겨진 경우, 아이콘이 몇 초 후에 사라집니다. 아이콘을 다시 표시하려면 화면을 탭하세요.";
+"Start Here" = "여기서부터 시작";
+"Create a new virtual machine or import an existing one." = "새로운 가상 머신을 생성하거나 기존 가상 머신을 가져옵니다.";
+
+
+/* Platform */
+
+// UTMData.swift
+"An existing virtual machine already exists with this name." = "같은 이름을 가진 가상 머신이 이미 존재합니다.";
+"This virtual machine is currently unavailable, make sure it is not open in another session." = "이 가상 머신은 현재 사용할 수 없습니다. 다른 세션에서 열려 있지 않은지 확인해 주세요.";
+"Failed to clone VM." = "가상 머신을 복제하는 데 실패했습니다.";
+"Unable to add a shortcut to the new location." = "새로운 위치로 바로 가기를 추가할 수 없습니다.";
+"Cannot import this VM. Either the configuration is invalid, created in a newer version of UTM, or on a platform that is incompatible with this version of UTM." = "이 가상 머신을 가져올 수 없습니다. 구성이 잘못되었거나, 상위 UTM 버전에서 생성되었거나, 이 UTM 버전과 호환되지 않는 플랫폼에서 생성되었을 수 있습니다.";
+"Failed to parse imported VM." = "가져온 가상 머신의 구성을 파싱하는 데 실패했습니다.";
+"Cannot find AltServer for JIT enable. You cannot run VMs until JIT is enabled." = "JIT 활성화를 위한 AltServer를 찾을 수 없스니다. JIT가 활성화되기 전까지는 가상 머신을 실행할 수 없습니다.";
+"AltJIT error: %@" = "AltJIT 오류: %@";
+"Failed to attach to JitStreamer:\n%@" = "JitStreamer에 연결하는 데 실패했습니다. :\n%@";
+"Failed to decode JitStreamer response." = "JitStreamer 응답을 디코딩하는 데 실패했습니다.";
+"Failed to attach to JitStreamer." = "JitStreamer에 연결하는 데 실패했습니다.";
+"Invalid JitStreamer attach URL:\n%@" = "JitStreamer 연결 URL이 유효하지 않습니다. :\n%@";
+"This functionality is not yet implemented." = "이 기능은 아직 구현되지 않았습니다.";
+"Failed to reconnect to the server." = "서버에 다시 연결하는 데 실패했습니다.";
+
+// UTMDownloadVMTask.swift
+"There is no UTM file in the downloaded ZIP archive." = "다운로드한 ZIP 아카이브에 UTM 파일이 없습니다.";
+"Failed to parse the downloaded VM." = "다운로드한 가상 머신을 파싱하는 데 실패했습니다.";
+
+// UTMDownloadSupportToolsTask.swift
+"Windows Guest Support Tools" = "Windows 게스트 지원 도구";
+"No empty removable drive found. Make sure you have at least one removable drive that is not in use." = "비어 있는 제거 가능 드라이브를 찾을 수 없습니다. 사용하고 있지 않는 제거 가능 드라이브가 하나 이상 있는지 확인해 주세요.";
+"The guest support tools have already been mounted." = "게스트 지원 도구가 이미 마운트되어 있습니다.";
+
+// UTMDownloadMacSupportToolsTask.swift
+"macOS Guest Support Tools" = "macOS 게스트 지원 도구";
+
+// UTMPendingVirtualMachine.swift
+"%@ remaining" = "%@ 남음";
+"%@/s" = "%@/초";
+
+// VMData.swift
+"(Unavailable)" = "(사용 불가)";
+"Virtual machine not loaded." = "가상 머신이 로드되지 않았습니다.";
+"Unavailable" = "사용 불가";
+"Suspended" = "일시 중지됨";
+"Stopped" = "정지됨";
+"Starting" = "시작 중";
+"Started" = "시작됨";
+"Pausing" = "일시 정지 중";
+"Paused" = "일시 정지됨";
+"Resuming" = "재개 중";
+"Stopping" = "정지 중";
+"Saving" = "저장 중";
+"Restoring" = "복원 중";
+"This function is not implemented." = "이 기능은 구현되지 않았습니다.";
+"This VM is not available or is configured for a backend that does not support remote clients." = "이 가상 머신을 사용할 수 없거나 원격 클라이언트를 지원하지 않는 백엔드를 사용하는 것으로 구성되어 있습니다.";
+
+
+/* Remote */
+
+// UTMRemoteKeyManager.swift
+"Failed to generate a key pair." = "키 쌍을 생성하는 데 실패했습니다.";
+"Failed to parse generated key pair." = "생성된 키 쌍을 파싱하는 데 실패했습니다.";
+"Failed to import generated key." = "생성된 키를 가져오는 데 실패했습니다.";
+
+// UTMRemoteClient.swift
+"Failed to determine host name." = "호스트명을 확인하는 데 실패했습니다.";
+"Failed to get host fingerprint." = "호스트 지문을 취득하는 데 실패했습니다.";
+"Password is required." = "비밀번호가 필요합니다.";
+"Password is incorrect." = "비밀번호가 올바르지 않습니다.";
+"This host is not yet trusted. You should verify that the fingerprints match what is displayed on the host and then select Trust to continue." = "이 호스트는 아직 신뢰되지 않았습니다. 호스트에 표시되는 지문과 일치하는지 확인한 후 '신뢰' 버튼을 눌러 진행해 주세요.";
+"The server interface version does not match the client." = "서버 인터페이스 버전이 클라이언트와 일치하지 않습니다.";
+
+// UTMRemoteSpiceVirtualMachine.swift
+"Failed to connect to SPICE: %@" = "SPICE에 연결할 수 없습니다. : %@";
+"An operation is already in progress." = "작업이 이미 진행 중입니다.";
+
+// UTMRemoteServer.swift
+"Allow" = "허용";
+"Deny" = "거부";
+"Disconnect" = "연결 끊기";
+"New unknown remote client connection." = "새로운 알 수 없는 원격 클라이언트가 연결되었습니다.";
+"New trusted remote client connection." = "새로운 신뢰하는 원격 클라이언트가 연결되었습니다.";
+"Unknown Remote Client" = "알 수 없는 원격 클라이언트";
+"A client with fingerprint '%@' is attempting to connect." = "지문 '%@'을(를) 가진 클라이언트가 연결을 시도하고 있습니다.";
+"Remote Client Connected" = "원격 클라이언트 연결됨";
+"Established connection from %@." = "%@(으)로부터 연결이 수립되었습니다.";
+"UTM Remote Server Error" = "UTM 원격 서버 오류";
+"Cannot reserve port %d for external access from NAT. Make sure no other device on the network has reserved it." = "포트 %d를 NAT에서 외부 접근용으로 점유할 수 없습니다. 네트워크의 다른 장치가 해당 포트를 점유하지 않았는지 확인해 주세요.";
+"Not authenticated." = "인증되지 않았습니다.";
+"The client interface version does not match the server." = "클라이언트 인터페이스 버전이 서버와 일치하지 않습니다.";
+"Cannot find VM with ID: %@" = "ID에 해당하는 가상 머신을 찾을 수 없습니다. ID: %@";
+"Invalid backend." = "유효하지 않은 백엔드입니다.";
+"Failed to access file." = "파일에 접근할 수 없습니다.";
+
+
+/* Scripting */
+
+// UTMScriptingUSBDeviceImpl.swift
+"UTM is not ready to accept commands." = "UTM이 명령어를 받을 준비가 되지 않았습니다.";
+"The device cannot be found." = "장치를 찾을 수 없습니다.";
+"The device is not currently connected." = "장치가 현재 연결되지 않았습니다.";
+
+// UTMScriptingVirtualMachineImpl.swift
+"Operation not available." = "작업을 사용할 수 없습니다.";
+"Operation not supported by the backend." = "작업이 해당 백엔드에서 지원되지 않습니다.";
+"The virtual machine is not running." = "가상 머신이 실행 중이지 않습니다.";
+"The virtual machine must be stopped before this operation can be performed." = "이 작업을 실행하기 위해선 가상 머신이 정지되어 있어야 합니다.";
+"The QEMU guest agent is not running or not installed on the guest." = "QEMU 게스트 에이전트가 실행 중이지 않거나 게스트에 설치되어 있지 않습니다.";
+"One or more required parameters are missing or invalid." = "하나 이상의 파라미터가 지정되어 있지 않거나 유효하지 않습니다.";
+
+// UTMScriptingConfigImpl.swift
+"Identifier '%@' cannot be found." = "식별자 '%@'을(를) 찾을 수 없습니다.";
+"Drive description is invalid." = "드라이브 설명이 유효하지 않습니다.";
+"Index %lld cannot be found." = "인덱스 %lld을(를) 찾을 수 없습니다.";
+"This device is not supported by the target." = "이 장치는 대상에서 지원되지 않습니다.";
+
+// UTMScriptingCreateCommand.swift
+"A valid backend must be specified." = "유효한 백엔드를 지정해야 합니다.";
+"This backend is not supported on your machine." = "이 백엔드는 이 기기에서 지원되지 않습니다.";
+"A valid configuration must be specified." = "유효한 구성을 지정해야 합니다.";
+"No name specified in the configuration." = "구성에 이름이 지정되어 있지 않습니다.";
+"No architecture specified in the configuration." = "구성에 아키텍처가 지정되어 있지 않습니다.";
+
+// UTMScriptingImportCommand.swift
+"A valid UTM file must be specified." = "유효한 UTM 파일을 지정해야 합니다.";
+"No file specified in the command." = "명령어에 파일이 지정되어 있지 않습니다.";
+
+
+
+/** QEMUKit **/
+
+/* Sources/QEMUKit */
+
+// UTMQemuVirtualMachine.swift
+"QEMU exited from an error: %@" = "QEMU가 오류로 인해 종료됨: %@";
+
+
+/* Sources/QEMUKitInternal */
+
+// UTMQemuGuestAgent.m
+"Mismatched id from guest-sync-delimited." = "guest-sync-delimited에서 ID가 일치하지 않습니다.";
+
+// UTMJSONStream.m
+"Error parsing JSON." = "JSON 파싱 중 오류가 발생했습니다.";
+"Port is not connected." = "포트가 연결되어 있지 않습니다.";
+
+// UTMQemuManager.m
+"Timed out waiting for RPC." = "RPC 대기 시간이 초과되었습니다.";
+"Manager being deallocated, killing pending RPC." = "매니저가 메모리에서 해제되고 있습니다. 대기 중인 RPC를 종료합니다.";
+
+// UTMQemuMonitor.m
+"Guest panic" = "게스트가 패닉 상태에 빠졌습니다.";
