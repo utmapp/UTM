@@ -2086,6 +2086,11 @@
 		E2D64BE0241EAEBE0034E0C6 /* UTMSpiceIODelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMSpiceIODelegate.h; sourceTree = "<group>"; };
 		E5B2D0362D4E199E003FCEC2 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/Localizable.strings; sourceTree = "<group>"; };
 		E5B2D0372D4E19C0003FCEC2 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		E5F4A2662D4E700300662468 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/VMDisplayWindow.strings; sourceTree = "<group>"; };
+		E5F4A2672D4E702000662468 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		E5F4A2682D4E726B00662468 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		E5F4A2692D4E736C00662468 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = "ko.lproj/Info-RemotePlist.strings"; sourceTree = "<group>"; };
+		E5F4A26D2D4E749100662468 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/VMDisplayMetalViewInputAccessory.strings; sourceTree = "<group>"; };
 		E68D491B28AC018600D34C54 /* es-419 */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-419"; path = "es-419.lproj/VMDisplayMetalViewInputAccessory.strings"; sourceTree = "<group>"; };
 		E68D491C28AC018700D34C54 /* es-419 */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-419"; path = "es-419.lproj/VMDisplayWindow.strings"; sourceTree = "<group>"; };
 		E68D491D28AC018D00D34C54 /* es-419 */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-419"; path = "es-419.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
@@ -4316,6 +4321,7 @@
 				F6DA2DAF2AAFEE060070DCD1 /* zh-Hans */,
 				61EBDE9F2AACA83100B959A2 /* ru */,
 				037DAA1C2B0B92580061ACB3 /* it */,
+				E5F4A2662D4E700300662468 /* ko */,
 			);
 			name = VMDisplayWindow.xib;
 			sourceTree = "<group>";
@@ -4333,6 +4339,7 @@
 				FF0307572A84E3B70049979B /* zh-Hant */,
 				F6DA2DA52AAFED5F0070DCD1 /* zh-HK */,
 				F6DA2DAE2AAFEE060070DCD1 /* zh-Hans */,
+				E5F4A26D2D4E749100662468 /* ko */,
 			);
 			name = VMDisplayMetalViewInputAccessory.xib;
 			sourceTree = "<group>";
@@ -4345,6 +4352,7 @@
 				45D72A962B94CEF5000D16E9 /* pl */,
 				CE11C0382BD4656700E103A0 /* zh-HK */,
 				CE11C0392BD4656900E103A0 /* zh-Hans */,
+				E5F4A2692D4E736C00662468 /* ko */,
 			);
 			name = "Info-RemotePlist.strings";
 			sourceTree = "<group>";
@@ -4392,6 +4400,7 @@
 				61EBDEA02AACA83100B959A2 /* ru */,
 				037DAA1D2B0B92580061ACB3 /* it */,
 				45D72A952B94CEE0000D16E9 /* pl */,
+				E5F4A2682D4E726B00662468 /* ko */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -4411,6 +4420,7 @@
 				F6DA2DA82AAFED5F0070DCD1 /* zh-HK */,
 				61EBDEA12AACA83100B959A2 /* ru */,
 				037DAA1E2B0B92580061ACB3 /* it */,
+				E5F4A2672D4E702000662468 /* ko */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";

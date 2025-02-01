@@ -1,0 +1,8 @@
+/* Bundle name */
+"CFBundleName" = "UTM 원격 접속";
+
+/* Privacy - Local Network Usage Description */
+"NSLocalNetworkUsageDescription" = "로컬 네트워크 내의 UTM 원격 서버를 찾고 연결합니다.";
+
+/* Privacy - Microphone Usage Description */
+"NSMicrophoneUsageDescription" = "가상 머신에서 마이크를 통해 소리를 녹음하려면 권한이 부여되어야 합니다.";
