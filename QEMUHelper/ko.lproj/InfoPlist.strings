@@ -1,0 +1,9 @@
+/* Bundle display name */
+"CFBundleDisplayName" = "QEMUHelper";
+
+/* Bundle name */
+"CFBundleName" = "QEMUHelper";
+
+/* Copyright (human-readable) */
+"NSHumanReadableCopyright" = "Copyright © 2020 osy. 모든 권리 보유.";
+
