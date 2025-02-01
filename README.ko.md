@@ -5,7 +5,7 @@
 
 -- <cite>엘런 튜링, 1936</cite>
 
-UTM은 iOS와 macOS를 위한 완전한 시스템 에뮬레이터, 가상머신입니다. 이것은 QEMU를 기반으로 합니다. 요컨데 당신은 이것을 통해, Windows나 Linux와 같은 운영체제들을 Mac, iPhone, iPad 등에서 구동할 수 있습니다. 자세한 내용은 https://getutm.app/ 와 https://mac.getutm.app/ 를 읽어주세요.
+UTM은 QEMU를 기반으로 하는, iOS와 macOS를 위한 완전한 시스템 에뮬레이터 및 가상 머신 호스트 프로그램입니다. 이 프로그램을 이용해 Windows나 Linux와 같은 운영체제들을 Mac, iPhone, iPad 등에서 구동할 수 있습니다. 자세한 내용은 https://getutm.app/ 및 https://mac.getutm.app/ 를 참고해주세요.
 
 <p align="center">
   <img width="450px" alt="iPhone에서 동작하는 UTM" src="screen.png">
@@ -13,61 +13,61 @@ UTM은 iOS와 macOS를 위한 완전한 시스템 에뮬레이터, 가상머신�
   <img width="450px" alt="MacBook에서 동작하는 UTM" src="screenmac.png">
 </p>
 
-## 주요기능
+## 주요 기능
 
-* QMEU를 활용한 완전한 시스템 에뮬레이션(MMU, 기타 기기들)
-* x86_64, ARM64, and RISC-V를 포함한 30가지 이상의 프로세서 지원
-* SPICE와 QXL을 활용한 VGA 그래픽 모드
+* QEMU를 이용한 완전한 시스템 에뮬레이션 (MMU, 기타 기기들)
+* x86_64, ARM64, RISC-V를 포함한 30가지 이상의 프로세서 지원
+* SPICE 및 QXL을 이용한 VGA 그래픽 모드
 * 텍스트 터미널 모드
-* USB 장치들
+* USB 장치 연결
 * QEMU TCG를 활용한 JIT 기반 가속
-* 초기부터 macOS 11과 iOS 11+를 위해 디자인된, 최신 및 최고의 API를 활용한 프론트엔드
-* 당신의 기기에서 바로 가상머신을 생성하고, 관리하고, 구동하기
+* macOS 11 / iOS 11 이상에서 제공되는 최신·최고의 API를 사용한 프론트엔드
+* 사용자의 기기에서 직접 가상 머신 생성·관리·구동
 
 ## macOS 추가 기능
 
 * Hypervisor.framework와 QEMU를 활용한 하드웨어 가속 가상화
-* macOS 12+에서 Virtualization.framework를 통해 macOS 게스트 구동
+* macOS 12 이상에서 Virtualization.framework를 통해 macOS 게스트 구동
 
 ## UTM SE
 
-UTM/QEMU이 최고의 성능을 내기 위해서는 동적 코드 생성이(JIT) 필요합니다. iOS 기기에서 JIT는 jailbroken를 요구하거나, 특정 iOS 버전에서 발견된 다양한 해결책 중 하나를 필요로 합니다.(자세한 내용은 "설치" 부분을 참고해주세요."
+UTM/QEMU가 최고의 성능을 내기 위해서는 동적 코드 생성(JIT)이 필요합니다. iOS 기기에서 JIT을 사용하기 위해서는 기기를 탈옥하거나, 특정 iOS 버전에서 사용 가능한 다양한 해결책 중 하나를 사용해야 합니다. ("설치" 항목을 참고해주세요.)
 
-UTM SE("slow edition")은 [threaded interpreter][3]를 사용합니다. 이는 전통적인 인터프리터보다는 좋지만, 그래도 여전히 JIT보다는 느립니다. 이 기술은 [iSH][4]가 동적 실행을 위해 하는 일과 유사한데요. 결과적으로 UTM SE는 탈옥이나 JIT 해결책을 요구하진 않고, 정규 앱으로 나란히 메모리에 적재될 수 있습니다.
+UTM SE ("slow edition")은 [스레드된 인터프리터][3]를 사용합니다. 이는 전통적인 인터프리터보다는 성능은 좋지만, 여전히 JIT보다는 느립니다. 이 기법은 [iSH][4]가 동적 실행을 위한 구현 방식과 유사합니다. 결과적으로 UTM SE는 탈옥이나 JIT 해결책을 요구하지 않고, 일반 앱처럼 사이드로딩될 수 있습니다.
 
-빌드 시간과 크기를 최적하기 위해서, UTM SE에는 ARM, PPC, RISC-V, x86(32bit와 64bit 변종 모두) 아키텍처들만이  포함되어 있습니다. 
+빌드 소요 시간과 프로그램 크기를 최적하기 위해, UTM SE에는 ARM, PPC, RISC-V, x86 (전부 32비트 및 64비트 포함) 아키텍처만 포함됩니다.
 
 ## 설치
 
-iOS를 위한 UTM (SE): https://getutm.app/install/
+iOS용 UTM (SE): https://getutm.app/install/
 
-macOS를 위한 UTM: https://mac.getutm.app/
+macOS용 UTM: https://mac.getutm.app/
 
 ## 개발
 
-### [macOS 개발](Documentation/MacDevelopment.md)
+### [macOS 개발 문서](Documentation/MacDevelopment.md)
 
-### [iOS 개발](Documentation/iOSDevelopment.md)
+### [iOS 개발 문서](Documentation/iOSDevelopment.md)
 
-## 관련사항
+## 관련 사항
 
-* [iSH][4]: iOS에서 x86 Linux 앱을 실행하기 위해, 사용자 모드 Linux 터미널 인터페이스를 에뮬레이트
-* [a-shell][5]: 기본적으로 iOS용으로 구축되면서, 터미널 인터페이스를 통해 액세스할 수 있는, 범용 유닉스 명령 및 유틸리티 패키지
+* [iSH][4]: iOS에서 x86 Linux 프로그램을 실행하기 위해 사용자 모드 Linux 터미널 인터페이스를 에뮬레이트하는 앱
+* [a-shell][5]: iOS용으로 빌드되고 터미널 인터페이스를 통해 접근 가능한 범용 Unix 명령어 및 유틸리티를 모아둔 앱
 
-## 라이센스
+## 라이선스
 
-UTM은 permissive Apache 2.0 license를 따르며 배포되었습니다. 하지만 몇몇 (L)GPL 컴포넌트들을 사용하는데요. 대부분은 동적으로 연결되어있지만, gstreamer 플러그인은 정적으로 연결되어 있고, 일부 코드는 qemu에서 가져왔습니다. 이 앱을 재배포 하려는 경우 꼭 이에 유의하시길 바랍니다.
+UTM은 Permissive 형태인 Apache 2.0 라이선스 하에 배포됩니다. (L)GPL 라이선스를 사용하는 컴포넌트가 있지만, 대부분은 동적으로 링크하여 사용합니다. 예외적으로 GStreamer 플러그인은 정적 링크하여 사용하고, 코드 일부분은 QEMU에서 가져와 사용합니다. 이 프로그램을 재배포하고자 한다면 이에 주의해주시기 바랍니다.
 
-일부 아이콘은 [www.flaticon.com](https://www.flaticon.com/)에서 [Freepik](https://www.freepik.com)를 통해 만들어졌습니다.
+[Freepik](https://www.freepik.com) 산하 [www.flaticon.com](https://www.flaticon.com/)에서 제공되는 아이콘을 일부 사용하였습니다.
 
-추가적으로 UTM 프론트엔드는 아래의 MIT/BSD 라이센스를 사용하는 컴포넌트들에 의존하고 있습니다.
+추가적으로 UTM 프론트엔드는 아래의 MIT 또는 BSD 라이선스를 사용하는 컴포넌트들에 의존하고 있습니다.
 
 * [IQKeyboardManager](https://github.com/hackiftekhar/IQKeyboardManager)
 * [SwiftTerm](https://github.com/migueldeicaza/SwiftTerm)
 * [ZIP Foundation](https://github.com/weichsel/ZIPFoundation)
 * [InAppSettingsKit](https://github.com/futuretap/InAppSettingsKit)
 
-지속 통합 호스팅은 다음을 통해 제공됩니다. [MacStadium](https://www.macstadium.com/opensource)
+지속적 통합(CI) 호스팅은 [MacStadium](https://www.macstadium.com/opensource)에서 제공하고 있습니다.
 
 [<img src="https://uploads-ssl.webflow.com/5ac3c046c82724970fc60918/5c019d917bba312af7553b49_MacStadium-developerlogo.png" alt="MacStadium logo" width="250">](https://www.macstadium.com)
 
