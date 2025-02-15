@@ -125,7 +125,7 @@
 // UTMVirtualMachine.m
 "Suspended" = "Suspendue";
 "Stopped" = "Arrêtée";
-"Starting" = "Déamarre";
+"Starting" = "Démarre";
 "Started" = "Démarrée";
 "Pausing" = "Mise en pause";
 "Paused" = "En pause";
