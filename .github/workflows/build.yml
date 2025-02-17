@@ -97,7 +97,7 @@ jobs:
         run: tar -acf sysroot.tgz sysroot*
       - name: Upload Sysroot
         if: steps.cache-sysroot.outputs.cache-hit != 'true' || github.event_name == 'release' || github.event.inputs.test_release == 'true'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Sysroot-${{ matrix.platform }}-${{ matrix.arch }}
           path: sysroot.tgz
@@ -142,7 +142,7 @@ jobs:
         run: tar -acf sysroot.tgz sysroot-macOS-arm64_x86_64
       - name: Upload Sysroot
         if: steps.cache-sysroot-universal.outputs.cache-hit != 'true' || github.event_name == 'release' || github.event.inputs.test_release == 'true'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Sysroot-macos-universal
           path: sysroot.tgz
@@ -187,7 +187,7 @@ jobs:
           ./scripts/build_utm.sh -k ${{ matrix.configuration.sdk }} -s ${{ matrix.configuration.scheme }} -a ${{ matrix.configuration.arch }} -o UTM
           tar -acf UTM.xcarchive.tgz UTM.xcarchive
       - name: Upload UTM
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: UTM-${{ matrix.configuration.scheme }}-${{ matrix.configuration.platform }}-${{ matrix.configuration.arch }}
           path: UTM.xcarchive.tgz
@@ -222,7 +222,7 @@ jobs:
         env:
           SIGNING_TEAM_ID: ${{ vars.SIGNING_TEAM_ID }}
       - name: Upload UTM
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: UTM-macos-universal
           path: UTM.xcarchive.tgz
@@ -247,7 +247,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Download Artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: UTM-${{ matrix.configuration.scheme }}-${{ matrix.configuration.platform }}-arm64
       - name: Install ldid + dpkg
@@ -258,7 +258,7 @@ jobs:
           ./scripts/package.sh ${{ matrix.configuration.mode }} UTM.xcarchive .
       - name: Upload Artifact
         if: github.event_name != 'release'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.configuration.name }}
           path: ${{ matrix.configuration.path }}
@@ -332,7 +332,7 @@ jobs:
       - name: Install appdmg
         run: npm install -g appdmg
       - name: Download Artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: UTM-macos-universal
       - name: Package for Release
@@ -354,7 +354,7 @@ jobs:
           API_KEY: ${{ vars.CONNECT_KEY_ID }}
       - name: Upload Artifact
         if: github.event_name != 'release'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: UTM-dmg
           path: UTM.dmg
@@ -406,7 +406,7 @@ jobs:
           LAUNCHER_PROFILE_DATA: ${{ vars.APP_STORE_LAUNCHER_PROFILE_DATA }}
           LAUNCHER_PROFILE_UUID: ${{ vars.APP_STORE_LAUNCHER_PROFILE_UUID }}
       - name: Download Artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: UTM-macos-universal
       - name: Package for App Store
@@ -419,7 +419,7 @@ jobs:
           HELPER_PROFILE_UUID: ${{ vars.APP_STORE_HELPER_PROFILE_UUID }}
           LAUNCHER_PROFILE_UUID: ${{ vars.APP_STORE_LAUNCHER_PROFILE_UUID }}
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: UTM-pkg
           path: UTM.pkg
@@ -474,7 +474,7 @@ jobs:
           IOS_SE_PROFILE_DATA: ${{ vars.IOS_SE_PROFILE_DATA }}
           IOS_SE_PROFILE_UUID: ${{ vars.IOS_SE_PROFILE_UUID }}
       - name: Download Artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: UTM-${{ matrix.configuration.scheme }}-${{ matrix.configuration.platform }}-arm64
       - name: Package for App Store
@@ -485,7 +485,7 @@ jobs:
           SIGNING_TEAM_ID: ${{ vars.SIGNING_TEAM_ID }}
           PROFILE_UUID: ${{ matrix.configuration.scheme == 'iOS-Remote' && vars.IOS_REMOTE_PROFILE_UUID || vars.IOS_SE_PROFILE_UUID }}
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.configuration.name }}
           path: ${{ matrix.configuration.path }}
