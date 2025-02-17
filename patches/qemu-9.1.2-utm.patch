@@ -1173,3 +1173,37 @@ index 5b1e375726..251fc58b42 100644
 -- 
 2.41.0
 
+From dbe8b4f5efb748178bfa41cbff8875202a941421 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Mon, 17 Feb 2025 07:19:28 -0800
+Subject: [PATCH] hvf: arm: more verbose error when ISV=0
+
+---
+ target/arm/hvf/hvf.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/target/arm/hvf/hvf.c b/target/arm/hvf/hvf.c
+index ec4821a61a..c558f3acd2 100644
+--- a/target/arm/hvf/hvf.c
++++ b/target/arm/hvf/hvf.c
+@@ -2062,7 +2062,16 @@ int hvf_vcpu_exec(CPUState *cpu)
+             break;
+         }
+ 
+-        assert(isv);
++        if (!isv) {
++            uint64_t pc;
++            uint32_t insn;
++
++            pc = hvf_get_reg(cpu, HV_REG_PC);
++            address_space_read(&address_space_memory, pc,
++                               MEMTXATTRS_UNSPECIFIED, &insn, sizeof(insn));
++            error_report("Failed to handle EC_DATAABORT. ISV=0 with PC=0x%llx: 0x%08X. Please report this bug.", pc, insn);
++            abort();
++        }
+ 
+         if (iswrite) {
+             val = hvf_get_reg(cpu, srt);
+-- 
+2.41.0
+
