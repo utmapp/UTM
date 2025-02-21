@@ -1173,3 +1173,670 @@ index 5b1e375726..251fc58b42 100644
 -- 
 2.41.0
 
+From a23f13b6e84a6eb287ce226cdf9baf22ea58f479 Mon Sep 17 00:00:00 2001
+From: Joelle van Dyne <j@getutm.app>
+Date: Sat, 8 Feb 2025 11:41:19 -0800
+Subject: [PATCH 1/5] hvf: arm: sign extend when SSE=1
+
+According to the ARM manual, when SSE=1 the data item must be sign
+extended.
+
+Signed-off-by: Joelle van Dyne <j@getutm.app>
+---
+ target/arm/hvf/hvf.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/target/arm/hvf/hvf.c b/target/arm/hvf/hvf.c
+index ec4821a61a..6a0b5a80d3 100644
+--- a/target/arm/hvf/hvf.c
++++ b/target/arm/hvf/hvf.c
+@@ -1951,6 +1951,11 @@ static void hvf_sync_vtimer(CPUState *cpu)
+     }
+ }
+ 
++static inline uint64_t sign_extend(uint64_t value, uint32_t bits)
++{
++    return (uint64_t)((int64_t)(value << (64 - bits)) >> (64 - bits));
++}
++
+ int hvf_vcpu_exec(CPUState *cpu)
+ {
+     ARMCPU *arm_cpu = ARM_CPU(cpu);
+@@ -2046,6 +2051,7 @@ int hvf_vcpu_exec(CPUState *cpu)
+         bool isv = syndrome & ARM_EL_ISV;
+         bool iswrite = (syndrome >> 6) & 1;
+         bool s1ptw = (syndrome >> 7) & 1;
++        bool sse = (syndrome >> 21) & 1;
+         uint32_t sas = (syndrome >> 22) & 3;
+         uint32_t len = 1 << sas;
+         uint32_t srt = (syndrome >> 16) & 0x1f;
+@@ -2073,6 +2079,9 @@ int hvf_vcpu_exec(CPUState *cpu)
+             address_space_read(&address_space_memory,
+                                hvf_exit->exception.physical_address,
+                                MEMTXATTRS_UNSPECIFIED, &val, len);
++            if (sse && len != sizeof(uint64_t)) {
++                val = sign_extend(val, len * 8);
++            }
+             hvf_set_reg(cpu, srt, val);
+         }
+ 
+-- 
+2.41.0
+
+From 29e1c11a6d705eca501c846867de543f5104a333 Mon Sep 17 00:00:00 2001
+From: Joelle van Dyne <j@getutm.app>
+Date: Sat, 8 Feb 2025 11:56:04 -0800
+Subject: [PATCH 2/5] cpu-exec: support single-step without debug
+
+Currently, single-stepping is tied to GDB debugging. This means that when
+EXCP_DEBUG is returned, a debug exception is triggered in many cases. We
+define a new EXCP_SINGLESTEP to differentiate the case where we want a
+single step to not be tied to a debug exception. We also define a new flag
+for cpu->singlestep_enabled called SSTEP_NODEBUG which is set when we want
+to use single-step for purposes other than debugging.
+
+Signed-off-by: Joelle van Dyne <j@getutm.app>
+---
+ accel/tcg/cpu-exec.c      | 35 +++++++++++++++++++++++++----------
+ cpu-target.c              |  7 +++++--
+ include/exec/cpu-common.h |  1 +
+ include/hw/core/cpu.h     |  1 +
+ target/arm/internals.h    |  3 ++-
+ 5 files changed, 34 insertions(+), 13 deletions(-)
+
+diff --git a/accel/tcg/cpu-exec.c b/accel/tcg/cpu-exec.c
+index 91e9accf91..d2dc937316 100644
+--- a/accel/tcg/cpu-exec.c
++++ b/accel/tcg/cpu-exec.c
+@@ -333,7 +333,7 @@ static bool check_for_breakpoints_slow(CPUState *cpu, vaddr pc,
+      * so that one could (gdb) singlestep into the guest kernel's
+      * architectural breakpoint handler.
+      */
+-    if (cpu->singlestep_enabled) {
++    if (cpu->singlestep_enabled && !(cpu->singlestep_enabled & SSTEP_NODEBUG)) {
+         return false;
+     }
+ 
+@@ -503,7 +503,11 @@ cpu_tb_exec(CPUState *cpu, TranslationBlock *itb, int *tb_exit)
+      * is handled in cpu_handle_exception.
+      */
+     if (unlikely(cpu->singlestep_enabled) && cpu->exception_index == -1) {
+-        cpu->exception_index = EXCP_DEBUG;
++        if (!(cpu->singlestep_enabled & SSTEP_NODEBUG)) {
++            cpu->exception_index = EXCP_DEBUG;
++        } else {
++            cpu->exception_index = EXCP_SINGLESTEP;
++        }
+         cpu_loop_exit(cpu);
+     }
+ 
+@@ -755,13 +759,20 @@ static inline bool cpu_handle_exception(CPUState *cpu, int *ret)
+         cpu->exception_index = -1;
+ 
+         if (unlikely(cpu->singlestep_enabled)) {
+-            /*
+-             * After processing the exception, ensure an EXCP_DEBUG is
+-             * raised when single-stepping so that GDB doesn't miss the
+-             * next instruction.
+-             */
+-            *ret = EXCP_DEBUG;
+-            cpu_handle_debug_exception(cpu);
++            if (!(cpu->singlestep_enabled & SSTEP_NODEBUG)) {
++                /*
++                 * After processing the exception, ensure an EXCP_DEBUG is
++                 * raised when single-stepping so that GDB doesn't miss the
++                 * next instruction.
++                 */
++                *ret = EXCP_DEBUG;
++                cpu_handle_debug_exception(cpu);
++            } else {
++                /*
++                 * In case of non-debug single step, just return
++                 */
++                *ret = EXCP_SINGLESTEP;
++            }
+             return true;
+         }
+     } else if (!replay_has_interrupt()) {
+@@ -866,7 +877,11 @@ static inline bool cpu_handle_interrupt(CPUState *cpu,
+                  * next instruction.
+                  */
+                 if (unlikely(cpu->singlestep_enabled)) {
+-                    cpu->exception_index = EXCP_DEBUG;
++                    if (!(cpu->singlestep_enabled & SSTEP_NODEBUG)) {
++                        cpu->exception_index = EXCP_DEBUG;
++                    } else {
++                        cpu->exception_index = EXCP_SINGLESTEP;
++                    }
+                     bql_unlock();
+                     return true;
+                 }
+diff --git a/cpu-target.c b/cpu-target.c
+index 499facf774..df24003ab7 100644
+--- a/cpu-target.c
++++ b/cpu-target.c
+@@ -322,9 +322,12 @@ void list_cpus(void)
+    CPU loop after each instruction */
+ void cpu_single_step(CPUState *cpu, int enabled)
+ {
+-    if (cpu->singlestep_enabled != enabled) {
+-        cpu->singlestep_enabled = enabled;
++    int previous = cpu->singlestep_enabled;
++    bool prev_debug_en = previous && !(previous & SSTEP_NODEBUG);
++    bool cur_debug_en = enabled && !(enabled & SSTEP_NODEBUG);
+ 
++    cpu->singlestep_enabled = enabled;
++    if (prev_debug_en != cur_debug_en) {
+ #if !defined(CONFIG_USER_ONLY)
+         const AccelOpsClass *ops = cpus_get_accel();
+         if (ops->update_guest_debug) {
+diff --git a/include/exec/cpu-common.h b/include/exec/cpu-common.h
+index 2e1b499cb7..b715417f5a 100644
+--- a/include/exec/cpu-common.h
++++ b/include/exec/cpu-common.h
+@@ -22,6 +22,7 @@
+ #define EXCP_HALTED     0x10003 /* cpu is halted (waiting for external event) */
+ #define EXCP_YIELD      0x10004 /* cpu wants to yield timeslice to another */
+ #define EXCP_ATOMIC     0x10005 /* stop-the-world and emulate atomic */
++#define EXCP_SINGLESTEP 0x10006 /* singlestep without debugging */
+ 
+ void cpu_exec_init_all(void);
+ void cpu_exec_step_atomic(CPUState *cpu);
+diff --git a/include/hw/core/cpu.h b/include/hw/core/cpu.h
+index 1c9c775df6..5844532d14 100644
+--- a/include/hw/core/cpu.h
++++ b/include/hw/core/cpu.h
+@@ -1069,6 +1069,7 @@ void qemu_init_vcpu(CPUState *cpu);
+ #define SSTEP_ENABLE  0x1  /* Enable simulated HW single stepping */
+ #define SSTEP_NOIRQ   0x2  /* Do not use IRQ while single stepping */
+ #define SSTEP_NOTIMER 0x4  /* Do not Timers while single stepping */
++#define SSTEP_NODEBUG 0x8  /* Single-stepping is not for debugging */
+ 
+ /**
+  * cpu_single_step:
+diff --git a/target/arm/internals.h b/target/arm/internals.h
+index 4024433976..0433e22d13 100644
+--- a/target/arm/internals.h
++++ b/target/arm/internals.h
+@@ -57,7 +57,8 @@ static inline bool excp_is_internal(int excp)
+         || excp == EXCP_HALTED
+         || excp == EXCP_EXCEPTION_EXIT
+         || excp == EXCP_KERNEL_TRAP
+-        || excp == EXCP_SEMIHOST;
++        || excp == EXCP_SEMIHOST
++        || excp == EXCP_SINGLESTEP;
+ }
+ 
+ /*
+-- 
+2.41.0
+
+From c87c1fd05acead13016cbe14553a6292088af064 Mon Sep 17 00:00:00 2001
+From: Joelle van Dyne <j@getutm.app>
+Date: Sat, 8 Feb 2025 12:08:35 -0800
+Subject: [PATCH 3/5] cpu-target: support emulation from non-TCG accels
+
+We create a toggle to allow TCG emulation to be used dynamically when
+running other accelerators. Tracking dirty code can be expensive so we
+need to flush the TLBs and TBs every time we toggle emulation mode. Plugin
+support is currently disabled when running in this mode.
+
+Signed-off-by: Joelle van Dyne <j@getutm.app>
+---
+ accel/tcg/plugin-gen.c    |  4 ++++
+ accel/tcg/tb-maint.c      |  2 +-
+ accel/tcg/tcg-accel-ops.c |  3 ++-
+ cpu-target.c              | 13 +++++++++++++
+ include/hw/core/cpu.h     | 10 ++++++++++
+ plugins/core.c            | 12 ++++++++++++
+ system/physmem.c          |  5 +++--
+ 7 files changed, 45 insertions(+), 4 deletions(-)
+
+diff --git a/accel/tcg/plugin-gen.c b/accel/tcg/plugin-gen.c
+index 99643dd960..451a13f772 100644
+--- a/accel/tcg/plugin-gen.c
++++ b/accel/tcg/plugin-gen.c
+@@ -380,6 +380,10 @@ bool plugin_gen_tb_start(CPUState *cpu, const DisasContextBase *db)
+ {
+     struct qemu_plugin_tb *ptb;
+ 
++    if (cpu->emulation_enabled) {
++        return false;
++    }
++
+     if (!test_bit(QEMU_PLUGIN_EV_VCPU_TB_TRANS,
+                   cpu->plugin_state->event_mask)) {
+         return false;
+diff --git a/accel/tcg/tb-maint.c b/accel/tcg/tb-maint.c
+index 0acfb8bfc5..f497c5a04f 100644
+--- a/accel/tcg/tb-maint.c
++++ b/accel/tcg/tb-maint.c
+@@ -788,7 +788,7 @@ done:
+ 
+ void tb_flush(CPUState *cpu)
+ {
+-    if (tcg_enabled()) {
++    if (tcg_enabled() || unlikely(cpu->emulation_enabled)) {
+         unsigned tb_flush_count = qatomic_read(&tb_ctx.tb_flush_count);
+ 
+         if (cpu_in_serial_context(cpu)) {
+diff --git a/accel/tcg/tcg-accel-ops.c b/accel/tcg/tcg-accel-ops.c
+index e405d78069..016fd6fb0c 100644
+--- a/accel/tcg/tcg-accel-ops.c
++++ b/accel/tcg/tcg-accel-ops.c
+@@ -32,6 +32,7 @@
+ #include "qemu/main-loop.h"
+ #include "qemu/guest-random.h"
+ #include "qemu/timer.h"
++#include "exec/cpu-common.h"
+ #include "exec/exec-all.h"
+ #include "exec/hwaddr.h"
+ #include "exec/tb-flush.h"
+@@ -78,7 +79,7 @@ void tcg_cpu_destroy(CPUState *cpu)
+ int tcg_cpu_exec(CPUState *cpu)
+ {
+     int ret;
+-    assert(tcg_enabled());
++    assert(tcg_enabled() || cpu->emulation_enabled);
+     cpu_exec_start(cpu);
+     ret = cpu_exec(cpu);
+     cpu_exec_end(cpu);
+diff --git a/cpu-target.c b/cpu-target.c
+index df24003ab7..f3aed0d6ec 100644
+--- a/cpu-target.c
++++ b/cpu-target.c
+@@ -339,6 +339,19 @@ void cpu_single_step(CPUState *cpu, int enabled)
+     }
+ }
+ 
++void cpu_emulate(CPUState *cpu, bool enabled)
++{
++    if (cpu->emulation_enabled != enabled) {
++        cpu->emulation_enabled = enabled;
++
++        if (enabled) {
++            /* FIXME: track dirty code to improve performance */
++            tb_flush(cpu);
++            tlb_flush(cpu);
++        }
++    }
++}
++
+ void cpu_abort(CPUState *cpu, const char *fmt, ...)
+ {
+     va_list ap;
+diff --git a/include/hw/core/cpu.h b/include/hw/core/cpu.h
+index 5844532d14..3c55a74570 100644
+--- a/include/hw/core/cpu.h
++++ b/include/hw/core/cpu.h
+@@ -566,6 +566,9 @@ struct CPUState {
+     /* track IOMMUs whose translations we've cached in the TCG TLB */
+     GArray *iommu_notifiers;
+ 
++    /* doing emulation when not in TCG backend */
++    bool emulation_enabled;
++
+     /*
+      * MUST BE LAST in order to minimize the displacement to CPUArchState.
+      */
+@@ -1080,6 +1083,13 @@ void qemu_init_vcpu(CPUState *cpu);
+  */
+ void cpu_single_step(CPUState *cpu, int enabled);
+ 
++/**
++ * cpu_emulate:
++ * @cpu: CPU to set to emulation mode
++ * @enabled: enable emulation mode
++ */
++void cpu_emulate(CPUState *cpu, bool enabled);
++
+ /* Breakpoint/watchpoint flags */
+ #define BP_MEM_READ           0x01
+ #define BP_MEM_WRITE          0x02
+diff --git a/plugins/core.c b/plugins/core.c
+index 2897453cac..4919c14b3c 100644
+--- a/plugins/core.c
++++ b/plugins/core.c
+@@ -55,6 +55,10 @@ struct qemu_plugin_ctx *plugin_id_to_ctx_locked(qemu_plugin_id_t id)
+ 
+ static void plugin_cpu_update__async(CPUState *cpu, run_on_cpu_data data)
+ {
++    if (cpu->emulation_enabled) {
++        return;
++    }
++
+     bitmap_copy(cpu->plugin_state->event_mask,
+                 &data.host_ulong, QEMU_PLUGIN_EV_MAX);
+     tcg_flush_jmp_cache(cpu);
+@@ -499,6 +503,10 @@ qemu_plugin_vcpu_syscall(CPUState *cpu, int64_t num, uint64_t a1, uint64_t a2,
+     struct qemu_plugin_cb *cb, *next;
+     enum qemu_plugin_event ev = QEMU_PLUGIN_EV_VCPU_SYSCALL;
+ 
++    if (cpu->emulation_enabled) {
++        return;
++    }
++
+     if (!test_bit(ev, cpu->plugin_state->event_mask)) {
+         return;
+     }
+@@ -521,6 +529,10 @@ void qemu_plugin_vcpu_syscall_ret(CPUState *cpu, int64_t num, int64_t ret)
+     struct qemu_plugin_cb *cb, *next;
+     enum qemu_plugin_event ev = QEMU_PLUGIN_EV_VCPU_SYSCALL_RET;
+ 
++    if (cpu->emulation_enabled) {
++        return;
++    }
++
+     if (!test_bit(ev, cpu->plugin_state->event_mask)) {
+         return;
+     }
+diff --git a/system/physmem.c b/system/physmem.c
+index dc1db3a384..84880bd18d 100644
+--- a/system/physmem.c
++++ b/system/physmem.c
+@@ -2588,7 +2588,9 @@ static void tcg_commit_cpu(CPUState *cpu, run_on_cpu_data data)
+     CPUAddressSpace *cpuas = data.host_ptr;
+ 
+     cpuas->memory_dispatch = address_space_to_dispatch(cpuas->as);
+-    tlb_flush(cpu);
++    if (tcg_enabled() || cpu->emulation_enabled) {
++        tlb_flush(cpu);
++    }
+ }
+ 
+ static void tcg_commit(MemoryListener *listener)
+@@ -2596,7 +2598,6 @@ static void tcg_commit(MemoryListener *listener)
+     CPUAddressSpace *cpuas;
+     CPUState *cpu;
+ 
+-    assert(tcg_enabled());
+     /* since each CPU stores ram addresses in its TLB cache, we must
+        reset the modified entries */
+     cpuas = container_of(listener, CPUAddressSpace, tcg_as_listener);
+-- 
+2.41.0
+
+From b7ad29e8b0c313281d4203935d2fcacdbcb44a26 Mon Sep 17 00:00:00 2001
+From: Joelle van Dyne <j@getutm.app>
+Date: Sat, 8 Feb 2025 12:15:31 -0800
+Subject: [PATCH 4/5] hvf: arm: emulate instruction when ISV=0
+
+On a data abort, the processor will try to decode the faulting instruction
+so the hypervisor can emulate the read/write. However, it is not always
+able to do this and ISV=0 whenever the instruction is not decoded. This is
+the case for example if the faulting instruction is SIMD or a LDP/STP.
+
+When this happens, we can use TCG to emulate the faulting instruction.
+This is needed if the processor uses one of these instructions to access
+memory that is currently unmapped such as with VGA VRAM.
+
+Signed-off-by: Joelle van Dyne <j@getutm.app>
+---
+ accel/hvf/hvf-accel-ops.c |   2 +-
+ include/sysemu/hvf_int.h  |   2 +-
+ system/physmem.c          |   2 +-
+ target/arm/hvf/hvf.c      | 100 ++++++++++++++++++++++++++++++++++++--
+ target/arm/hvf_arm.h      |   5 ++
+ target/i386/hvf/hvf.c     |   2 +-
+ 6 files changed, 106 insertions(+), 7 deletions(-)
+
+diff --git a/accel/hvf/hvf-accel-ops.c b/accel/hvf/hvf-accel-ops.c
+index 5f467332db..b90654ec20 100644
+--- a/accel/hvf/hvf-accel-ops.c
++++ b/accel/hvf/hvf-accel-ops.c
+@@ -348,7 +348,7 @@ static int hvf_accel_init(MachineState *ms)
+     hvf_state = s;
+     memory_listener_register(&hvf_memory_listener, &address_space_memory);
+ 
+-    return hvf_arch_init();
++    return hvf_arch_init(ms);
+ }
+ 
+ #if defined(__aarch64__)
+diff --git a/include/sysemu/hvf_int.h b/include/sysemu/hvf_int.h
+index 763201dd71..6492ac748b 100644
+--- a/include/sysemu/hvf_int.h
++++ b/include/sysemu/hvf_int.h
+@@ -80,7 +80,7 @@ void assert_hvf_ok_impl(hv_return_t ret, const char *file, unsigned int line,
+                         const char *exp);
+ #define assert_hvf_ok(EX) assert_hvf_ok_impl((EX), __FILE__, __LINE__, #EX)
+ const char *hvf_return_string(hv_return_t ret);
+-int hvf_arch_init(void);
++int hvf_arch_init(MachineState *ms);
+ hv_return_t hvf_arch_vm_create(MachineState *ms, uint32_t pa_range);
+ int hvf_arch_init_vcpu(CPUState *cpu);
+ void hvf_arch_vcpu_destroy(CPUState *cpu);
+diff --git a/system/physmem.c b/system/physmem.c
+index 84880bd18d..6ccef7659c 100644
+--- a/system/physmem.c
++++ b/system/physmem.c
+@@ -769,7 +769,7 @@ void cpu_address_space_init(CPUState *cpu, int asidx,
+     newas = &cpu->cpu_ases[asidx];
+     newas->cpu = cpu;
+     newas->as = as;
+-    if (tcg_enabled()) {
++    if (tcg_enabled() || hvf_enabled()) {
+         newas->tcg_as_listener.log_global_after_sync = tcg_log_global_after_sync;
+         newas->tcg_as_listener.commit = tcg_commit;
+         newas->tcg_as_listener.name = "tcg";
+diff --git a/target/arm/hvf/hvf.c b/target/arm/hvf/hvf.c
+index 6a0b5a80d3..a7303ab404 100644
+--- a/target/arm/hvf/hvf.c
++++ b/target/arm/hvf/hvf.c
+@@ -36,6 +36,17 @@
+ 
+ #include "gdbstub/enums.h"
+ 
++#if defined(CONFIG_TCG)
++#include "accel/tcg/internal-common.h"
++#include "accel/tcg/tcg-accel-ops.h"
++#include "exec/tb-flush.h"
++#include "hw/core/cpu.h"
++#include "qapi/error.h"
++#include "qemu/units.h"
++#include "tcg/tcg.h"
++#include "tcg/startup.h"
++#endif /* defined(CONFIG_TCG) */
++
+ #define MDSCR_EL1_SS_SHIFT  0
+ #define MDSCR_EL1_MDE_SHIFT 15
+ #define HV_VM_DEFAULT NULL
+@@ -154,6 +165,17 @@ void hvf_arm_init_debug(void)
+ 
+ #endif
+ 
++#if defined(CONFIG_TCG)
++void hvf_arm_init_emulator(int splitwx, unsigned max_cpus)
++{
++    mttcg_enabled = true;
++    page_init();
++    tb_htable_init();
++    tcg_init(64 * MiB, splitwx, max_cpus);
++    tcg_prologue_init();
++}
++#endif /* defined(CONFIG_TCG) */
++
+ #define HVF_SYSREG(crn, crm, op0, op1, op2) \
+         ENCODE_AA64_CP_REG(CP_REG_ARM64_SYSREG_CP, crn, crm, op0, op1, op2)
+ 
+@@ -1024,6 +1046,9 @@ void hvf_arm_set_cpu_features_from_host(ARMCPU *cpu)
+ 
+ void hvf_arch_vcpu_destroy(CPUState *cpu)
+ {
++#if defined(CONFIG_TCG)
++    tcg_exec_unrealizefn(cpu);
++#endif
+ }
+ 
+ hv_return_t hvf_arch_vm_create(MachineState *ms, uint32_t pa_range)
+@@ -1142,13 +1167,26 @@ int hvf_arch_init_vcpu(CPUState *cpu)
+         assert_hvf_ok(ret);
+     }
+ 
++    /* enable TCG emulator */
++#if defined(CONFIG_TCG)
++    tcg_register_thread();
++    tcg_cpu_init_cflags(cpu, current_machine->smp.max_cpus > 1);
++    tcg_exec_realizefn(cpu, &error_fatal);
++#endif
++
+     return 0;
+ }
+ 
+ void hvf_kick_vcpu_thread(CPUState *cpu)
+ {
+-    cpus_kick_thread(cpu);
+-    hv_vcpus_exit(&cpu->accel->fd, 1);
++    if (cpu->emulation_enabled) {
++        cpu_exit(cpu);
++    } else {
++        cpus_kick_thread(cpu);
++        if (cpu->accel) {
++            hv_vcpus_exit(&cpu->accel->fd, 1);
++        }
++    }
+ }
+ 
+ static void hvf_raise_exception(CPUState *cpu, uint32_t excp,
+@@ -1956,6 +1994,50 @@ static inline uint64_t sign_extend(uint64_t value, uint32_t bits)
+     return (uint64_t)((int64_t)(value << (64 - bits)) >> (64 - bits));
+ }
+ 
++#if defined(CONFIG_TCG)
++static int emulate_single_instruction(CPUState *cpu)
++{
++    ARMCPU *arm_cpu = ARM_CPU(cpu);
++    CPUARMState *env = &arm_cpu->env;
++    int prev_ss_enable = cpu->singlestep_enabled;
++    int ret;
++
++    cpu_synchronize_state(cpu);
++    arm_rebuild_hflags(env);
++    cpu_emulate(cpu, true);
++    cpu_single_step(cpu, SSTEP_NODEBUG | SSTEP_ENABLE);
++    do {
++        if (cpu_can_run(cpu)) {
++            bql_unlock();
++            ret = tcg_cpu_exec(cpu);
++            bql_lock();
++            if (ret == EXCP_ATOMIC) {
++                bql_unlock();
++                cpu_exec_step_atomic(cpu);
++                bql_lock();
++                ret = 0;
++            }
++            /* retry if we got an interrupt */
++            if (ret != EXCP_INTERRUPT) {
++                break;
++            }
++        }
++
++        qatomic_set_mb(&cpu->exit_request, 0);
++        qemu_wait_io_event(cpu);
++    } while (!cpu->unplug || cpu_can_run(cpu));
++    cpu_single_step(cpu, prev_ss_enable);
++    cpu_emulate(cpu, false);
++    cpu->accel->dirty = true;
++    flush_cpu_state(cpu);
++    if (!ret && prev_ss_enable) {
++        /* if single-stepping, always return EXCP_DEBUG */
++        ret = EXCP_DEBUG;
++    }
++    return ret;
++}
++#endif
++
+ int hvf_vcpu_exec(CPUState *cpu)
+ {
+     ARMCPU *arm_cpu = ARM_CPU(cpu);
+@@ -2068,7 +2150,15 @@ int hvf_vcpu_exec(CPUState *cpu)
+             break;
+         }
+ 
++#if defined(CONFIG_TCG)
++        if (unlikely(!isv)) {
++            ret = emulate_single_instruction(cpu);
++            advance_pc = false;
++            break;
++        }
++#else
+         assert(isv);
++#endif
+ 
+         if (iswrite) {
+             val = hvf_get_reg(cpu, srt);
+@@ -2200,7 +2290,7 @@ static void hvf_vm_state_change(void *opaque, bool running, RunState state)
+     }
+ }
+ 
+-int hvf_arch_init(void)
++int hvf_arch_init(MachineState *ms)
+ {
+     hvf_state->vtimer_offset = mach_absolute_time();
+     vmstate_register(NULL, 0, &vmstate_hvf_vtimer, &vtimer);
+@@ -2210,6 +2300,10 @@ int hvf_arch_init(void)
+     hvf_arm_init_debug();
+ #endif
+ 
++#if defined(CONFIG_TCG)
++    hvf_arm_init_emulator(0, ms->smp.max_cpus);
++#endif
++
+     return 0;
+ }
+ 
+diff --git a/target/arm/hvf_arm.h b/target/arm/hvf_arm.h
+index 482768baa6..716a9b787a 100644
+--- a/target/arm/hvf_arm.h
++++ b/target/arm/hvf_arm.h
+@@ -41,4 +41,9 @@ static inline uint32_t hvf_arm_get_max_ipa_bit_size(void)
+ 
+ #endif
+ 
++/**
++ * hvf_arm_init_emulator() - initialize TCG emulator
++ */
++void hvf_arm_init_emulator(int splitwx, unsigned max_cpus);
++
+ #endif
+diff --git a/target/i386/hvf/hvf.c b/target/i386/hvf/hvf.c
+index 68dc5d9cf7..1faaf5a929 100644
+--- a/target/i386/hvf/hvf.c
++++ b/target/i386/hvf/hvf.c
+@@ -218,7 +218,7 @@ void hvf_kick_vcpu_thread(CPUState *cpu)
+     hv_vcpu_interrupt(&cpu->accel->fd, 1);
+ }
+ 
+-int hvf_arch_init(void)
++int hvf_arch_init(MachineState *ms)
+ {
+     return 0;
+ }
+-- 
+2.41.0
+
+From 59a4b533f319f6b28112df48504b08549d7c8915 Mon Sep 17 00:00:00 2001
+From: Joelle van Dyne <j@getutm.app>
+Date: Sat, 8 Feb 2025 12:19:35 -0800
+Subject: [PATCH 5/5] hw/arm/virt: enable VGA
+
+Signed-off-by: Joelle van Dyne <j@getutm.app>
+---
+ hw/arm/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/hw/arm/Kconfig b/hw/arm/Kconfig
+index 54ea6d5f9c..700e6f3370 100644
+--- a/hw/arm/Kconfig
++++ b/hw/arm/Kconfig
+@@ -12,6 +12,7 @@ config ARM_VIRT
+     imply TPM_TIS_I2C
+     imply NVDIMM
+     imply IOMMUFD
++    imply VIRTIO_VGA
+     select ARM_GIC
+     select ACPI
+     select ARM_SMMUV3
+-- 
+2.41.0
+
