@@ -1,0 +1,161 @@
+/* Class = "UIButton"; normalTitle = "F7"; ObjectID = "3yi-Pr-1ih"; */
+"3yi-Pr-1ih.normalTitle" = "F7";
+
+/* Class = "UIButton"; accessibilityLabel = "Tab"; ObjectID = "7pj-Jz-7JR"; */
+"7pj-Jz-7JR.accessibilityLabel" = "탭";
+
+/* Class = "UIButton"; normalTitle = "⇥"; ObjectID = "7pj-Jz-7JR"; */
+"7pj-Jz-7JR.normalTitle" = "⇥";
+
+/* Class = "UIButton"; accessibilityLabel = "Right"; ObjectID = "8Lh-4D-Fz6"; */
+"8Lh-4D-Fz6.accessibilityLabel" = "오른쪽";
+
+/* Class = "UIButton"; normalTitle = "→"; ObjectID = "8Lh-4D-Fz6"; */
+"8Lh-4D-Fz6.normalTitle" = "→";
+
+/* Class = "UIButton"; accessibilityLabel = "Paste"; ObjectID = "740-aI-39P"; */
+"740-aI-39P.accessibilityLabel" = "붙여넣기";
+
+/* Class = "UIButton"; normalTitle = "F10"; ObjectID = "AhH-ij-IF8"; */
+"AhH-ij-IF8.normalTitle" = "F10";
+
+/* Class = "UIButton"; accessibilityLabel = "Right"; ObjectID = "AY8-eJ-bAP"; */
+"AY8-eJ-bAP.accessibilityLabel" = "오른쪽";
+
+/* Class = "UIButton"; normalTitle = "Del"; ObjectID = "AY8-eJ-bAP"; */
+"AY8-eJ-bAP.normalTitle" = "Del";
+
+/* Class = "UIButton"; accessibilityLabel = "Control"; ObjectID = "bCv-uH-SSy"; */
+"bCv-uH-SSy.accessibilityLabel" = "컨트롤";
+
+/* Class = "UIButton"; normalTitle = "⌃"; ObjectID = "bCv-uH-SSy"; */
+"bCv-uH-SSy.normalTitle" = "⌃";
+
+/* Class = "UIButton"; accessibilityLabel = "Num Lock"; ObjectID = "BUk-Vf-yE5"; */
+"BUk-Vf-yE5.accessibilityLabel" = "넘버 락";
+
+/* Class = "UIButton"; normalTitle = "Num"; ObjectID = "BUk-Vf-yE5"; */
+"BUk-Vf-yE5.normalTitle" = "Num";
+
+/* Class = "UIButton"; accessibilityLabel = "Up"; ObjectID = "BUL-js-yMh"; */
+"BUL-js-yMh.accessibilityLabel" = "위쪽";
+
+/* Class = "UIButton"; normalTitle = "↑"; ObjectID = "BUL-js-yMh"; */
+"BUL-js-yMh.normalTitle" = "↑";
+
+/* Class = "UIButton"; normalTitle = "F4"; ObjectID = "c7C-CG-EBg"; */
+"c7C-CG-EBg.normalTitle" = "F4";
+
+/* Class = "UIButton"; normalTitle = "F5"; ObjectID = "DxX-zu-urb"; */
+"DxX-zu-urb.normalTitle" = "F5";
+
+/* Class = "UIButton"; normalTitle = "F12"; ObjectID = "EDi-KP-KwO"; */
+"EDi-KP-KwO.normalTitle" = "F12";
+
+/* Class = "UIButton"; accessibilityLabel = "Left"; ObjectID = "EVa-2J-CRA"; */
+"EVa-2J-CRA.accessibilityLabel" = "왼쪽";
+
+/* Class = "UIButton"; normalTitle = "←"; ObjectID = "EVa-2J-CRA"; */
+"EVa-2J-CRA.normalTitle" = "←";
+
+/* Class = "UIButton"; accessibilityLabel = "Caps Lock"; ObjectID = "FDV-W6-qlO"; */
+"FDV-W6-qlO.accessibilityLabel" = "캡스 락";
+
+/* Class = "UIButton"; normalTitle = "Caps"; ObjectID = "FDV-W6-qlO"; */
+"FDV-W6-qlO.normalTitle" = "Caps";
+
+/* Class = "UIButton"; normalTitle = "F3"; ObjectID = "gUX-ez-mbt"; */
+"gUX-ez-mbt.normalTitle" = "F3";
+
+/* Class = "UIButton"; accessibilityLabel = "Page Down"; ObjectID = "h4q-XF-UMn"; */
+"h4q-XF-UMn.accessibilityLabel" = "페이지 다운";
+
+/* Class = "UIButton"; normalTitle = "Pg Dn"; ObjectID = "h4q-XF-UMn"; */
+"h4q-XF-UMn.normalTitle" = "Pg Dn";
+
+/* Class = "UIButton"; accessibilityLabel = "Option"; ObjectID = "jxu-AQ-u8c"; */
+"jxu-AQ-u8c.accessibilityLabel" = "옵션";
+
+/* Class = "UIButton"; normalTitle = "⌥"; ObjectID = "jxu-AQ-u8c"; */
+"jxu-AQ-u8c.normalTitle" = "⌥";
+
+/* Class = "UIButton"; normalTitle = "F2"; ObjectID = "kd1-fj-kXM"; */
+"kd1-fj-kXM.normalTitle" = "F2";
+
+/* Class = "UIButton"; accessibilityLabel = "Insert"; ObjectID = "kO0-HZ-5w2"; */
+"kO0-HZ-5w2.accessibilityLabel" = "인서트";
+
+/* Class = "UIButton"; normalTitle = "Ins"; ObjectID = "kO0-HZ-5w2"; */
+"kO0-HZ-5w2.normalTitle" = "Ins";
+
+/* Class = "UIButton"; normalTitle = "F8"; ObjectID = "LlV-Ae-CrL"; */
+"LlV-Ae-CrL.normalTitle" = "F8";
+
+/* Class = "UIButton"; accessibilityLabel = "Home"; ObjectID = "LU6-kH-vN3"; */
+"LU6-kH-vN3.accessibilityLabel" = "홈";
+
+/* Class = "UIButton"; normalTitle = "Home"; ObjectID = "LU6-kH-vN3"; */
+"LU6-kH-vN3.normalTitle" = "Home";
+
+/* Class = "UIButton"; accessibilityLabel = "Escape"; ObjectID = "n12-9R-99C"; */
+"n12-9R-99C.accessibilityLabel" = "이스케이프";
+
+/* Class = "UIButton"; normalTitle = "⎋"; ObjectID = "n12-9R-99C"; */
+"n12-9R-99C.normalTitle" = "⎋";
+
+/* Class = "UIButton"; accessibilityLabel = "Print Screen"; ObjectID = "Pes-KN-KzU"; */
+"Pes-KN-KzU.accessibilityLabel" = "프린트 스크린";
+
+/* Class = "UIButton"; normalTitle = "Pr Scr"; ObjectID = "Pes-KN-KzU"; */
+"Pes-KN-KzU.normalTitle" = "Pr Scr";
+
+/* Class = "UIButton"; accessibilityLabel = "Command"; ObjectID = "Pjh-3m-tFX"; */
+"Pjh-3m-tFX.accessibilityLabel" = "커맨드";
+
+/* Class = "UIButton"; normalTitle = "⌘"; ObjectID = "Pjh-3m-tFX"; */
+"Pjh-3m-tFX.normalTitle" = "⌘";
+
+/* Class = "UIButton"; normalTitle = "F1"; ObjectID = "PWe-Va-Qi1"; */
+"PWe-Va-Qi1.normalTitle" = "F1";
+
+/* Class = "UIButton"; accessibilityLabel = "Page Up"; ObjectID = "pX1-7o-dbU"; */
+"pX1-7o-dbU.accessibilityLabel" = "페이지 업";
+
+/* Class = "UIButton"; normalTitle = "Pg Up"; ObjectID = "pX1-7o-dbU"; */
+"pX1-7o-dbU.normalTitle" = "Pg Up";
+
+/* Class = "UIButton"; accessibilityLabel = "Shift"; ObjectID = "QPo-cD-UlK"; */
+"QPo-cD-UlK.accessibilityLabel" = "시프트";
+
+/* Class = "UIButton"; normalTitle = "⇧"; ObjectID = "QPo-cD-UlK"; */
+"QPo-cD-UlK.normalTitle" = "⇧";
+
+/* Class = "UIButton"; normalTitle = "F6"; ObjectID = "Rb5-vO-sIx"; */
+"Rb5-vO-sIx.normalTitle" = "F6";
+
+/* Class = "UIButton"; accessibilityLabel = "Down"; ObjectID = "RCo-l7-gvf"; */
+"RCo-l7-gvf.accessibilityLabel" = "아래쪽";
+
+/* Class = "UIButton"; normalTitle = "↓"; ObjectID = "RCo-l7-gvf"; */
+"RCo-l7-gvf.normalTitle" = "↓";
+
+/* Class = "UIButton"; normalTitle = "F11"; ObjectID = "rfk-su-cFq"; */
+"rfk-su-cFq.normalTitle" = "F11";
+
+/* Class = "UIButton"; accessibilityLabel = "Hide Keyboard"; ObjectID = "rtU-Yt-FhT"; */
+"rtU-Yt-FhT.accessibilityLabel" = "키보드 숨기기";
+
+/* Class = "UIButton"; accessibilityLabel = "Scroll Lock"; ObjectID = "sF1-tj-hUG"; */
+"sF1-tj-hUG.accessibilityLabel" = "스크롤 락";
+
+/* Class = "UIButton"; normalTitle = "Scroll"; ObjectID = "sF1-tj-hUG"; */
+"sF1-tj-hUG.normalTitle" = "Scroll";
+
+/* Class = "UIButton"; accessibilityLabel = "End"; ObjectID = "TOV-fV-TTa"; */
+"TOV-fV-TTa.accessibilityLabel" = "엔드";
+
+/* Class = "UIButton"; normalTitle = "End"; ObjectID = "TOV-fV-TTa"; */
+"TOV-fV-TTa.normalTitle" = "End";
+
+/* Class = "UIButton"; normalTitle = "F9"; ObjectID = "UNT-ei-lIn"; */
+"UNT-ei-lIn.normalTitle" = "F9";

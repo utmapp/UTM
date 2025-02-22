@@ -1,0 +1,17 @@
+/* Privacy - Local Network Usage Description */
+"NSLocalNetworkUsageDescription" = "가상 머신이 로컬 네트워크에 접근할 수 있도록 합니다. UTM 또한 로컬 서버와 통신하기 위해 네트워크를 사용할 수 있습니다.";
+
+/* Privacy - Location Always and When In Use Usage Description */
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "UTM의 백그라운드 프로세스를 활성 상태로 유지하기 위해 정기적으로 위치 데이터를 요청합니다. 위치 데이터는 어떠한 곳으로도 전송되지 않습니다.";
+
+/* Privacy - Location Always Usage Description */
+"NSLocationAlwaysUsageDescription" = "UTM의 백그라운드 프로세스를 활성 상태로 유지하기 위해 정기적으로 위치 데이터를 요청합니다. 위치 데이터는 어떠한 곳으로도 전송되지 않습니다.";
+
+/* Privacy - Location When In Use Usage Description */
+"NSLocationWhenInUseUsageDescription" = "UTM의 백그라운드 프로세스를 활성 상태로 유지하기 위해 정기적으로 위치 데이터를 요청합니다. 위치 데이터는 어떠한 곳으로도 전송되지 않습니다.";
+
+/* Privacy - Microphone Usage Description */
+"NSMicrophoneUsageDescription" = "가상 머신에서 마이크를 통해 소리를 녹음하려면 권한이 부여되어야 합니다.";
+
+/* (No Comment) */
+"UTM virtual machine" = "UTM 가상 머신";
