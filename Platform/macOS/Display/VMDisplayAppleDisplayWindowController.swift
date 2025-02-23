@@ -234,3 +234,28 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
         isReadyToSaveResolution = false
     }
 }
+
+extension VMDisplayAppleWindowController {
+    @objc override func didWake(_ notification: NSNotification) {
+        Task {
+            if #available(macOS 12, *) {
+                if let appleVM = self.appleVM as? UTMAppleVirtualMachine,
+                   let connection = appleVM.socketConnection {
+                    let message = "wakeup"
+                    if let data = message.data(using: .utf8) {
+                        let fd = connection.fileDescriptor
+                        if fd != -1 {
+                            data.withUnsafeBytes { (buffer: UnsafeRawBufferPointer) in
+                                let bytes = buffer.bindMemory(to: UInt8.self).baseAddress!
+                                let result = write(fd, bytes, data.count)
+                                if result == -1 {
+                                    NSLog("Failed to write wakeup command to socket: \(String(cString: strerror(errno)))")
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
