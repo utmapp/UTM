@@ -110,7 +110,7 @@
 "Space" = "空格";
 
 /* (No Comment) */
-"Tablet mode (always show cursor)" = "平板模式 (总是显示光标)";
+"Tablet mode (always show cursor)" = "平板模式 (始终显示光标)";
 
 /* (No Comment) */
 "Tablet mode (try hiding cursor)" = "平板模式 (尝试隐藏光标)";
@@ -122,7 +122,7 @@
 "Touch Input" = "触摸输入";
 
 /* (No Comment) */
-"Touch mode (always show cursor)" = "触摸模式 (总是显示光标)";
+"Touch mode (always show cursor)" = "触摸模式 (始终显示光标)";
 
 /* (No Comment) */
 "Touch mode (try hiding cursor)" = "触摸模式 (尝试隐藏光标)";
@@ -187,7 +187,7 @@
 "License" = "许可";
 
 /* (No Comment) */
-"Prefer device to external microphone" = "首选外置麦克风设备";
+"Prefer device to external microphone" = "偏好外置麦克风设备";
 
 /* (No Comment) */
 "Renderer Backend" = "渲染器后端";

@@ -1423,7 +1423,7 @@ UTMQemuConstants */
 "USB Device" = "USB 设备";
 
 /* VMDisplayAppleDisplayController */
-"USB Mass Storage: %@" = "USB大容量存储设备：%@";
+"USB Mass Storage: %@" = "USB 海量储存设备：%@";
 
 /* No comment provided by engineer. */
 "USB Sharing" = "USB 共享";

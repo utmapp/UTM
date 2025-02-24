@@ -32,7 +32,7 @@
 "bCv-uH-SSy.normalTitle" = "⌃";
 
 /* Class = "UIButton"; accessibilityLabel = "Num Lock"; ObjectID = "BUk-Vf-yE5"; */
-"BUk-Vf-yE5.accessibilityLabel" = "数字锁定";
+"BUk-Vf-yE5.accessibilityLabel" = "Num Lock";
 
 /* Class = "UIButton"; normalTitle = "Num"; ObjectID = "BUk-Vf-yE5"; */
 "BUk-Vf-yE5.normalTitle" = "Num";
@@ -83,7 +83,7 @@
 "kd1-fj-kXM.normalTitle" = "F2";
 
 /* Class = "UIButton"; accessibilityLabel = "Insert"; ObjectID = "kO0-HZ-5w2"; */
-"kO0-HZ-5w2.accessibilityLabel" = "插入";
+"kO0-HZ-5w2.accessibilityLabel" = "Insert";
 
 /* Class = "UIButton"; normalTitle = "Ins"; ObjectID = "kO0-HZ-5w2"; */
 "kO0-HZ-5w2.normalTitle" = "Ins";
@@ -92,19 +92,19 @@
 "LlV-Ae-CrL.normalTitle" = "F8";
 
 /* Class = "UIButton"; accessibilityLabel = "Home"; ObjectID = "LU6-kH-vN3"; */
-"LU6-kH-vN3.accessibilityLabel" = "主页";
+"LU6-kH-vN3.accessibilityLabel" = "Home";
 
 /* Class = "UIButton"; normalTitle = "Home"; ObjectID = "LU6-kH-vN3"; */
 "LU6-kH-vN3.normalTitle" = "Home";
 
 /* Class = "UIButton"; accessibilityLabel = "Escape"; ObjectID = "n12-9R-99C"; */
-"n12-9R-99C.accessibilityLabel" = "Esc";
+"n12-9R-99C.accessibilityLabel" = "Escape";
 
 /* Class = "UIButton"; normalTitle = "⎋"; ObjectID = "n12-9R-99C"; */
 "n12-9R-99C.normalTitle" = "⎋";
 
 /* Class = "UIButton"; accessibilityLabel = "Print Screen"; ObjectID = "Pes-KN-KzU"; */
-"Pes-KN-KzU.accessibilityLabel" = "截图";
+"Pes-KN-KzU.accessibilityLabel" = "Print Screen";
 
 /* Class = "UIButton"; normalTitle = "Pr Scr"; ObjectID = "Pes-KN-KzU"; */
 "Pes-KN-KzU.normalTitle" = "Pr Scr";
@@ -146,13 +146,13 @@
 "rtU-Yt-FhT.accessibilityLabel" = "隐藏键盘";
 
 /* Class = "UIButton"; accessibilityLabel = "Scroll Lock"; ObjectID = "sF1-tj-hUG"; */
-"sF1-tj-hUG.accessibilityLabel" = "滚动锁定";
+"sF1-tj-hUG.accessibilityLabel" = "Scroll Lock";
 
 /* Class = "UIButton"; normalTitle = "Scroll"; ObjectID = "sF1-tj-hUG"; */
 "sF1-tj-hUG.normalTitle" = "Scroll";
 
 /* Class = "UIButton"; accessibilityLabel = "End"; ObjectID = "TOV-fV-TTa"; */
-"TOV-fV-TTa.accessibilityLabel" = "结束";
+"TOV-fV-TTa.accessibilityLabel" = "End";
 
 /* Class = "UIButton"; normalTitle = "End"; ObjectID = "TOV-fV-TTa"; */
 "TOV-fV-TTa.normalTitle" = "End";

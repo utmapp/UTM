@@ -23,7 +23,7 @@
 "Bkx-Ph-j0D.paletteLabel" = "停止";
 
 /* Class = "NSToolbarItem"; toolTip = "Shuts down and stops the VM"; ObjectID = "Bkx-Ph-j0D"; */
-"Bkx-Ph-j0D.toolTip" = "關機並停止虛擬電腦";
+"Bkx-Ph-j0D.toolTip" = "關機並停止虛擬機器";
 
 /* Class = "NSToolbarItem"; label = "Toolbar Item"; ObjectID = "C8Y-BQ-Y6m"; */
 "C8Y-BQ-Y6m.label" = "工具列項目";
@@ -47,7 +47,7 @@
 "G7P-HJ-bcy.paletteLabel" = "重新啟動";
 
 /* Class = "NSToolbarItem"; toolTip = "Restarts the VM"; ObjectID = "G7P-HJ-bcy"; */
-"G7P-HJ-bcy.toolTip" = "重新啟動虛擬電腦";
+"G7P-HJ-bcy.toolTip" = "重新啟動虛擬機器";
 
 /* Class = "NSToolbarItem"; label = "Start/Pause"; ObjectID = "kT2-2U-cYm"; */
 "kT2-2U-cYm.label" = "開始/暫停";
@@ -56,16 +56,16 @@
 "kT2-2U-cYm.paletteLabel" = "開始/暫停";
 
 /* Class = "NSToolbarItem"; toolTip = "Start/pause the VM"; ObjectID = "kT2-2U-cYm"; */
-"kT2-2U-cYm.toolTip" = "開始/暫停虛擬電腦";
+"kT2-2U-cYm.toolTip" = "開始/暫停虛擬機器";
 
 /* Class = "NSToolbarItem"; label = "Windows"; ObjectID = "MQ2-L1-yl7"; */
-"MQ2-L1-yl7.label" = "Windows";
+"MQ2-L1-yl7.label" = "視窗";
 
 /* Class = "NSToolbarItem"; paletteLabel = "Windows"; ObjectID = "MQ2-L1-yl7"; */
-"MQ2-L1-yl7.paletteLabel" = "Windows";
+"MQ2-L1-yl7.paletteLabel" = "視窗";
 
 /* Class = "NSToolbarItem"; toolTip = "Windows"; ObjectID = "MQ2-L1-yl7"; */
-"MQ2-L1-yl7.toolTip" = "Windows";
+"MQ2-L1-yl7.toolTip" = "視窗";
 
 /* Class = "NSWindow"; title = "UTM"; ObjectID = "QvC-M9-y7g"; */
 "QvC-M9-y7g.title" = "UTM";
@@ -89,5 +89,5 @@
 "Ulf-oT-4cP.toolTip" = "傳送調整主控台指令";
 
 /* Class = "NSButton"; ibShadowedToolTip = "Starts/resumes the VM"; ObjectID = "ZTi-Hs-ge6"; */
-"ZTi-Hs-ge6.ibShadowedToolTip" = "開始/恢復虛擬電腦";
+"ZTi-Hs-ge6.ibShadowedToolTip" = "開始/恢復虛擬機器";
 
