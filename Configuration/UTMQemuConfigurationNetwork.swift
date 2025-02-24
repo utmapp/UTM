@@ -66,6 +66,9 @@ struct UTMQemuConfigurationNetwork: Codable, Identifiable {
     /// DNS search domain for emulated VLAN.
     var vlanDnsSearchDomain: String?
     
+    /// Network UUID to attach to in host mode
+    var hostNetUuid: String?
+    
     let id = UUID()
     
     /// Generate a random MAC address
@@ -99,6 +102,7 @@ struct UTMQemuConfigurationNetwork: Codable, Identifiable {
         case vlanDnsServerAddress = "VlanDnsServerAddress"
         case vlanDnsServerAddressIPv6 = "VlanDnsServerAddressIPv6"
         case vlanDnsSearchDomain = "VlanDnsSearchDomain"
+        case hostNetUuid = "HostNetUuid"
     }
     
     init() {
@@ -122,6 +126,7 @@ struct UTMQemuConfigurationNetwork: Codable, Identifiable {
         vlanDnsServerAddress = try values.decodeIfPresent(String.self, forKey: .vlanDnsServerAddress)
         vlanDnsServerAddressIPv6 = try values.decodeIfPresent(String.self, forKey: .vlanDnsServerAddressIPv6)
         vlanDnsSearchDomain = try values.decodeIfPresent(String.self, forKey: .vlanDnsSearchDomain)
+        hostNetUuid = try values.decodeIfPresent(UUID.self, forKey: .hostNetUuid)?.uuidString
     }
     
     func encode(to encoder: Encoder) throws {
@@ -144,6 +149,9 @@ struct UTMQemuConfigurationNetwork: Codable, Identifiable {
         try container.encodeIfPresent(vlanDnsServerAddress, forKey: .vlanDnsServerAddress)
         try container.encodeIfPresent(vlanDnsServerAddressIPv6, forKey: .vlanDnsServerAddressIPv6)
         try container.encodeIfPresent(vlanDnsSearchDomain, forKey: .vlanDnsSearchDomain)
+        if mode == .host {
+            try container.encodeIfPresent(hostNetUuid, forKey: .hostNetUuid)
+        }
     }
 }
 
