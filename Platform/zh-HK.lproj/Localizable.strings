@@ -1495,7 +1495,7 @@ VMMetalView */
 "Would you like to install macOS? If an existing operating system is already installed on the primary drive of this VM, then it will be erased." = "你想安裝 macOS 嗎？如此虛擬機器的主磁碟已安裝現有的作業系統，則其會被清除。";
 
 /* No comment provided by engineer. */
-"Would you like to re-convert this disk image to reclaim unused space and apply compression? Note this will require enough temporary space to perform the conversion. Compression only applies to existing data and new data will still be written uncompressed. You are strongly encouraged to back-up this VM before proceeding." = "你想重新轉換此磁碟映像檔以回收未使用的空間並套用壓縮嗎？請注意，這將需要足夠的臨時空間以執行轉換，壓縮只套用至現有的資料，新資料仍將以未壓縮寫入。進行前，強烈建議你備份此虛擬機器";
+"Would you like to re-convert this disk image to reclaim unused space and apply compression? Note this will require enough temporary space to perform the conversion. Compression only applies to existing data and new data will still be written uncompressed. You are strongly encouraged to back-up this VM before proceeding." = "你想重新轉換此磁碟映像檔以回收未使用的空間並套用壓縮嗎？請注意，這將需要足夠的臨時空間以執行轉換，壓縮只套用至現有的資料，新資料仍將以未壓縮寫入。進行前，強烈建議你備份此虛擬機器。";
 
 /* No comment provided by engineer. */
 "Would you like to re-convert this disk image to reclaim unused space? Note this will require enough temporary space to perform the conversion. You are strongly encouraged to back-up this VM before proceeding." = "你想重新轉換此磁碟映像檔以回收未使用的空間嗎？請注意，這將需要足夠的臨時空間以執行轉換。進行前，強烈建議你備份此虛擬機器。";
@@ -1813,7 +1813,7 @@ VMWizardOSMacView */
 "Failed to parse download URL." = "無法解析已下載的 URL。";
 
 /* No comment provided by engineer. */
-"Fetch latest Windows installer…" = "取得最新的 Windows 安裝工具⋯";
+"Fetch latest Windows installer…" = "取得最新的 Windows 安裝程式⋯";
 
 /* No comment provided by engineer. */
 "Font" = "字體";
