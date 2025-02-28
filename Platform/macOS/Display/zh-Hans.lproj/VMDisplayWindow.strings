@@ -38,7 +38,7 @@
 "FN7-zs-mWC.paletteLabel" = "捕获输入";
 
 /* Class = "NSToolbarItem"; toolTip = "Capture input devices"; ObjectID = "FN7-zs-mWC"; */
-"FN7-zs-mWC.toolTip" = "捕获鼠标光标";
+"FN7-zs-mWC.toolTip" = "捕获输入设备";
 
 /* Class = "NSToolbarItem"; label = "Restart"; ObjectID = "G7P-HJ-bcy"; */
 "G7P-HJ-bcy.label" = "重新启动";
@@ -80,14 +80,14 @@
 "tlw-Fb-ne3.toolTip" = "USB 设备";
 
 /* Class = "NSToolbarItem"; label = "Resize Console"; ObjectID = "Ulf-oT-4cP"; */
-"Ulf-oT-4cP.label" = "重新调整控制台";
+"Ulf-oT-4cP.label" = "调整控制台大小";
 
 /* Class = "NSToolbarItem"; paletteLabel = "Resize Console"; ObjectID = "Ulf-oT-4cP"; */
-"Ulf-oT-4cP.paletteLabel" = "重新调整控制台";
+"Ulf-oT-4cP.paletteLabel" = "调整控制台大小";
 
 /* Class = "NSToolbarItem"; toolTip = "Send console resize command"; ObjectID = "Ulf-oT-4cP"; */
-"Ulf-oT-4cP.toolTip" = "发送控制台重新调整大小命令";
+"Ulf-oT-4cP.toolTip" = "发送调整控制台大小命令";
 
 /* Class = "NSButton"; ibShadowedToolTip = "Starts/resumes the VM"; ObjectID = "ZTi-Hs-ge6"; */
-"ZTi-Hs-ge6.ibShadowedToolTip" = "启动/恢复虚拟机";
+"ZTi-Hs-ge6.ibShadowedToolTip" = "启动/继续运行虚拟机";
 
