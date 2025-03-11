@@ -36,6 +36,9 @@ final class UTMAppleConfiguration: UTMConfiguration {
     @Published private var _networks: [UTMAppleConfigurationNetwork] = [.init()]
     
     @Published private var _serials: [UTMAppleConfigurationSerial] = []
+    
+    /// Custom mount tag for shared directories
+    @Published private var _sharedDirectoryMountTag: String?
 
     /// Set to true to request guest tools install. Not saved.
     @Published var isGuestToolsInstallRequested: Bool = false
@@ -55,6 +58,7 @@ final class UTMAppleConfiguration: UTMConfiguration {
         case serials = "Serial"
         case backend = "Backend"
         case configurationVersion = "ConfigurationVersion"
+        case sharedDirectoryMountTag = "SharedDirectoryMountTag"
     }
     
     init() {
@@ -81,6 +85,7 @@ final class UTMAppleConfiguration: UTMConfiguration {
         _drives = try values.decode([UTMAppleConfigurationDrive].self, forKey: .drives)
         _networks = try values.decode([UTMAppleConfigurationNetwork].self, forKey: .networks)
         _serials = try values.decode([UTMAppleConfigurationSerial].self, forKey: .serials)
+        _sharedDirectoryMountTag = try values.decodeIfPresent(String.self, forKey: .sharedDirectoryMountTag)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -94,6 +99,7 @@ final class UTMAppleConfiguration: UTMConfiguration {
         try container.encode(_serials, forKey: .serials)
         try container.encode(UTMBackend.apple, forKey: .backend)
         try container.encode(Self.currentVersion, forKey: .configurationVersion)
+        try container.encodeIfPresent(_sharedDirectoryMountTag, forKey: .sharedDirectoryMountTag)
     }
 }
 
@@ -311,10 +317,30 @@ extension UTMAppleConfiguration {
     }
 
     var shareDirectoryTag: String {
+        if let customTag = _sharedDirectoryMountTag, !customTag.isEmpty {
+            return customTag
+        }
         if #available(macOS 13, *), system.boot.operatingSystem == .macOS {
             return VZVirtioFileSystemDeviceConfiguration.macOSGuestAutomountTag
         } else {
             return "share"
+        }
+    }
+    
+    /// Get or set the custom mount tag for shared directories.
+    /// Only applies when the guest OS is macOS and the host is running macOS 13 or later.
+    var sharedDirectoryMountTag: String? {
+        get {
+            if #available(macOS 13, *), system.boot.operatingSystem == .macOS {
+                return _sharedDirectoryMountTag
+            }
+            return nil
+        }
+        set {
+            if #available(macOS 13, *), system.boot.operatingSystem == .macOS {
+                let trimmed = newValue?.trimmingCharacters(in: .whitespacesAndNewlines)
+                _sharedDirectoryMountTag = trimmed?.isEmpty == true ? nil : trimmed
+            }
         }
     }
 }
