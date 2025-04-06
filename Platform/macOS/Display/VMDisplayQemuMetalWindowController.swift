@@ -487,8 +487,11 @@ extension VMDisplayQemuMetalWindowController: VMMetalViewInputDelegate {
     var shouldUseCmdOptForCapture: Bool {
         isAlternativeCaptureKey || NSWorkspace.shared.isVoiceOverEnabled
     }
-    
+
     func captureMouse() {
+        guard NSApp.modalWindow == nil && window?.attachedSheet == nil else {
+            return // don't capture if modal is shown
+        }
         let action = { () -> Void in
             self.qemuVM.requestInputTablet(false)
             self.metalView?.captureMouse()
