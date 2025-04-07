@@ -24,7 +24,8 @@ class VMMetalView: MTKView {
     private(set) var isMouseCaptured = false
     private(set) var isFirstResponder = false
     private(set) var isMouseInWindow = false
-    
+    @Setting("HandleInitialClick") private var isHandleInitialClick: Bool = false
+
     /// On ISO keyboards we have to switch `kVK_ISO_Section` and `kVK_ANSI_Grave`
     /// from: https://chromium.googlesource.com/chromium/src/+/lkgr/ui/events/keycodes/keyboard_code_conversion_mac.mm
     private func convertToCurrentLayout(for keycode: Int) -> Int {
@@ -270,6 +271,18 @@ class VMMetalView: MTKView {
         logger.trace("scroll: \(event.deltaY)")
         inputDelegate?.mouseScroll(dy: event.deltaY,
                                    button: NSEvent.pressedMouseButtons.inputButtons())
+    }
+
+    override func acceptsFirstMouse(for event: NSEvent?) -> Bool {
+        guard isHandleInitialClick && !isMouseCaptured else {
+            return false
+        }
+        if let location = event?.locationInWindow {
+            let converted = convert(location, from: nil)
+            inputDelegate?.mouseMove(absolutePoint: converted,
+                                     button: NSEvent.pressedMouseButtons.inputButtons())
+        }
+        return true
     }
 }
 

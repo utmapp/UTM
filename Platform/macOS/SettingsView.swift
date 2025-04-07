@@ -136,6 +136,7 @@ struct InputSettingsView: View {
     @AppStorage("IsCapsLockKey") var isCapsLockKey = false
     @AppStorage("IsNumLockForced") var isNumLockForced = false
     @AppStorage("InvertScroll") var isInvertScroll = false
+    @AppStorage("HandleInitialClick") var isHandleInitialClick = false
     @AppStorage("NoUsbPrompt") var isNoUsbPrompt = false
     
     var body: some View {
@@ -162,6 +163,9 @@ struct InputSettingsView: View {
                 Toggle(isOn: $isInvertScroll, label: {
                     Text("Invert scrolling")
                 }).help("If enabled, scroll wheel input will be inverted.")
+                Toggle(isOn: $isHandleInitialClick) {
+                    Text("Handle input on initial click")
+                }.help("If enabled, when the VM is out of focus, the first click will be handled by the VM. Otherwise, the first click will only bring the window into focus.")
             }
             
             Section(header: Text("QEMU Keyboard")) {
