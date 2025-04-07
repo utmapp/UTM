@@ -36,8 +36,9 @@ struct VMConfigAppleSharingView: View {
                 TableColumn("Read Only?") { share in
                     Toggle("", isOn: .constant(share.isReadOnly))
                         .disabled(true)
+                        .help("To change this, remove the shared directory and add it again.")
                 }
-            }.frame(minHeight: 300)
+            }
             HStack {
                 Spacer()
                 Button("Delete") {

@@ -58,7 +58,7 @@ struct VMAppleSettingsView: View {
             if hasVenturaFeatures || config.system.boot.operatingSystem == .linux {
                 NavigationLink {
                     VMConfigAppleSharingView(config: config)
-                        .scrollable()
+                        .padding()
                         .settingsToolbar()
                 } label: {
                     Label("Sharing", systemImage: "person.crop.circle")
