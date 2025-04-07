@@ -16,7 +16,7 @@
 
 import SwiftUI
 
-private let kTimeoutSeconds: UInt64 = 15
+private let kTimeoutSeconds: UInt64 = 60
 
 struct UTMRemoteConnectView: View {
     @ObservedObject var remoteClientState: UTMRemoteClient.State
