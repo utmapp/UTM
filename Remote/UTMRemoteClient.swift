@@ -594,3 +594,12 @@ extension UTMRemoteClient {
         }
     }
 }
+
+extension Connection.ConnectionError: @retroactive LocalizedError {
+    public var errorDescription: String? {
+        switch self {
+        case .localNetworkDenied:
+            return NSLocalizedString("Please allow this app to access your local network when prompted.", comment: "UTMRemoteClient")
+        }
+    }
+}
