@@ -118,6 +118,16 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
 
     private var removableDrives: [String: Any] = [:]
 
+    var socketConnection: VZVirtioSocketConnection?
+
+    @available(macOS 12, *)
+    private class SocketState {
+        var delegate: UTMSocketDelegate?
+        var listener: VZVirtioSocketListener?
+    }
+
+    private var socketState: Any? // Will store SocketState when available
+
     @MainActor required init(packageUrl: URL, configuration: UTMAppleConfiguration, isShortcut: Bool = false) throws {
         self.isScopedAccess = packageUrl.startAccessingSecurityScopedResource()
         // load configuration
@@ -192,6 +202,33 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             if #available(macOS 15, *) {
                 try await attachExternalDrives()
             }
+
+            // Add VZVirtioSocketListener call
+            if #available(macOS 12, *) {
+                vmQueue.async { [weak self] in
+                    guard let self = self else { return }
+
+                    // Wait until state is .started using a polling loop on vmQueue
+                    while self.state != .started {
+                        Thread.sleep(forTimeInterval: 0.1)
+                    }
+
+                    if let virtioSocket = self.apple?.socketDevices.first as? VZVirtioSocketDevice {
+                        let localListener = VZVirtioSocketListener()
+                        let delegate = UTMSocketDelegate(owner: self)
+                        localListener.delegate = delegate
+                        virtioSocket.setSocketListener(localListener, forPort: 43218)
+
+                        if socketState == nil {
+                            socketState = SocketState()
+                        }
+                        let state = socketState as! SocketState
+                        state.listener = localListener
+                        state.delegate = delegate
+                    }
+                }
+            }
+
             if #available(macOS 12, *) {
                 Task { @MainActor in
                     let tag = config.shareDirectoryTag
@@ -503,6 +540,10 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             config.serials[i].interface = serialPort
         }
         let vzConfig = try config.appleVZConfiguration()
+        if #available(macOS 11, *) {
+            let socketDevice = VZVirtioSocketDeviceConfiguration()
+            vzConfig.socketDevices = [socketDevice]
+        }
         vmQueue.async { [self] in
             apple = VZVirtualMachine(configuration: vzConfig, queue: vmQueue)
             apple!.delegate = self
@@ -985,5 +1026,20 @@ extension UTMAppleVirtualMachine {
                 delegate?.virtualMachine(self, didErrorWithMessage: error.localizedDescription)
             }
         }
+    }
+}
+
+@available(macOS 12, *)
+class UTMSocketDelegate: NSObject, VZVirtioSocketListenerDelegate {
+    weak var owner: UTMAppleVirtualMachine?
+
+    init(owner: UTMAppleVirtualMachine) {
+        self.owner = owner
+        super.init()
+    }
+
+    func listener(_ listener: VZVirtioSocketListener, shouldAcceptNewConnection connection: VZVirtioSocketConnection, from socketDevice: VZVirtioSocketDevice) -> Bool {
+        owner?.socketConnection = connection
+        return true
     }
 }
