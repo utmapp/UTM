@@ -93,7 +93,7 @@ extension UTMAPICommand {
     private var utmAppUrl: URL {
         if let executableURL = Bundle.main.executableURL?.resolvingSymlinksInPath() {
             let utmURL = executableURL.deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
-            if utmURL.lastPathComponent == "UTM.app" {
+            if utmURL.pathExtension == "app" {
                 return utmURL
             }
         }
