@@ -1,5 +1,5 @@
 /* Bundle name */
-"CFBundleName" = "UTM 远程服务";
+"CFBundleName" = "UTM 远程";
 
 /* Privacy - Local Network Usage Description */
 "NSLocalNetworkUsageDescription" = "UTM 使用本地网络查找并连接到 UTM 远程服务器。";

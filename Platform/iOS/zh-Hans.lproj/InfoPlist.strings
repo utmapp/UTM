@@ -5,13 +5,13 @@
 "NSLocalNetworkUsageDescription" = "虚拟机可能会访问本地网络。UTM 也可能会使用本地网络与本地服务器通信。";
 
 /* Privacy - Location Always and When In Use Usage Description */
-"NSLocationAlwaysAndWhenInUseUsageDescription" = "UTM 定期请求位置数据，以确保系统维持后台进程处于活动状态。位置数据永远不会脱离设备。";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "UTM 定期请求位置数据，以确保系统保持后台进程活跃。位置数据绝不会脱离设备。";
 
 /* Privacy - Location Always Usage Description */
-"NSLocationAlwaysUsageDescription" = "UTM 定期请求位置数据，以确保系统维持后台进程处于活动状态。位置数据永远不会脱离设备。";
+"NSLocationAlwaysUsageDescription" = "UTM 定期请求位置数据，以确保系统保持后台进程活跃。位置数据绝不会脱离设备。";
 
 /* Privacy - Location When In Use Usage Description */
-"NSLocationWhenInUseUsageDescription" = "UTM 定期请求位置数据，以确保系统维持后台进程处于活动状态。位置数据永远不会脱离设备。";
+"NSLocationWhenInUseUsageDescription" = "UTM 定期请求位置数据，以确保系统保持后台进程活跃。位置数据绝不会脱离设备。";
 
 /* Privacy - Microphone Usage Description */
 "NSMicrophoneUsageDescription" = "任何虚拟机都需要权限才能通过麦克风录音。";

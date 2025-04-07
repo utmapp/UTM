@@ -70,7 +70,7 @@ VMDisplayQemuTerminalWindowController */
 "A valid kernel image must be specified." = "必须指定有效的内核映像。";
 
 /* UTMScriptingAppDelegate */
-"A valid UTM file must be specified." = "必须指定一个有效的 UTM 文件。";
+"A valid UTM file must be specified." = "必须指定有效的 UTM 文件。";
 
 /* VMDisplayAppleController */
 "Add…" = "添加…";
@@ -88,7 +88,7 @@ VMDisplayQemuTerminalWindowController */
 "AltJIT error: %@" = "AltJIT 错误：%@";
 
 /* UTMData */
-"An existing virtual machine already exists with this name." = "已存在一个该名称的虚拟机。";
+"An existing virtual machine already exists with this name." = "已存在该名称的虚拟机。";
 
 /* UTMConfiguration */
 "An internal error has occurred." = "发生了内部错误。";
@@ -927,7 +927,7 @@ UTMScriptingVirtualMachineImpl */
 "Please select a kernel file." = "请选择一个内核文件。";
 
 /* No comment provided by engineer. */
-"Please select a macOS recovery IPSW." = "请选择一个 macOS 恢复 IPSW 文件。";
+"Please select a macOS recovery IPSW." = "请选择一个 macOS IPSW 恢复文件。";
 
 /* No comment provided by engineer. */
 "Please select an uncompressed Linux kernel image." = "请选择一个未压缩的 Linux 内核映像。";
@@ -945,7 +945,7 @@ UTMScriptingVirtualMachineImpl */
 "Preparing…" = "正在准备…";
 
 /* VMDisplayQemuMetalWindowController */
-"Press %@ to release cursor" = "按下 %@ 释放光标";
+"Press %@ to release cursor" = "按下 %@ 来释放光标";
 
 /* No comment provided by engineer. */
 "Prevent system from sleeping when any VM is running" = "当任何虚拟机运行时防止系统处于睡眠状态";
@@ -1027,7 +1027,7 @@ UTMQemuConstants */
 "Resize display to window size automatically" = "自动将显示调整为窗口大小";
 
 /* No comment provided by engineer. */
-"Resizing is experimental and could result in data loss. You are strongly encouraged to back-up this VM before proceeding. Would you like to resize to %@ GiB?" = "调整驱动器大小是实验性功能，可能会导致数据丢失。在继续操作之前，强烈建议你备份此虚拟机。你要将大小调整为 %@ GB 吗？";
+"Resizing is experimental and could result in data loss. You are strongly encouraged to back-up this VM before proceeding. Would you like to resize to %@ GiB?" = "调整驱动器大小是实验性功能，可能会导致数据丢失。在继续操作之前，强烈建议你备份此虚拟机。你要将大小调整为 %@ GiB 吗？";
 
 /* VMData */
 "Restoring" = "正在恢复";
@@ -1423,7 +1423,7 @@ UTMQemuConstants */
 "USB Device" = "USB 设备";
 
 /* VMDisplayAppleDisplayController */
-"USB Mass Storage: %@" = "USB大容量存储设备：%@";
+"USB Mass Storage: %@" = "USB 海量储存设备：%@";
 
 /* No comment provided by engineer. */
 "USB Sharing" = "USB 共享";
