@@ -21,6 +21,7 @@ private let kTimeoutSeconds: UInt64 = 15
 struct UTMRemoteConnectView: View {
     @ObservedObject var remoteClientState: UTMRemoteClient.State
     @Environment(\.openURL) private var openURL
+    @Environment(\.scenePhase) private var scenePhase
     @EnvironmentObject private var data: UTMRemoteData
     @State private var selectedServer: UTMRemoteClient.State.SavedServer?
     @State private var isAutoConnect: Bool = false
@@ -98,7 +99,9 @@ struct UTMRemoteConnectView: View {
                 }
             }.listStyle(.insetGrouped)
         }.alert(item: $remoteClientState.alertMessage) { item in
-            Alert(title: Text(item.message), dismissButton: .default(Text("Retry")) {
+            Alert(title: Text(item.message), primaryButton: .default(Text("Open Settings")) {
+                UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+            }, secondaryButton: .cancel(Text("Retry")) {
                 if !remoteClientState.isScanning {
                     Task {
                         await remoteClient.startScanning()
@@ -122,6 +125,13 @@ struct UTMRemoteConnectView: View {
         .onDisappear {
             Task {
                 await remoteClient.stopScanning()
+            }
+        }
+        .onChange(of: scenePhase) { newValue in
+            if newValue == .active && !remoteClientState.isScanning {
+                Task {
+                    await remoteClient.startScanning()
+                }
             }
         }
     }
