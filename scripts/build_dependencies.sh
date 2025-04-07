@@ -89,7 +89,7 @@ download () {
     if [ -f "$TARGET" -a -z "$REDOWNLOAD" ]; then
         echo "${GREEN}$TARGET already downloaded! Run with -d to force re-download.${NC}"
     else
-        echo "${GREEN}Downloading ${URL}...${NC}"
+        echo "${GREEN}Downloading ${URL}${NC}"
         curl -L -O "$URL"
         mv "$FILE" "$TARGET"
     fi
