@@ -268,52 +268,37 @@ private struct ServerConnectView: View {
                 remoteClientState.showErrorAlert(NSLocalizedString("Timed out trying to connect.", comment: "UTMRemoteConnectView"))
             }
             if #available(iOS 15, *) {
-                do {
-                    try await remoteClient.connect(server)
-                } catch {
-                    if case UTMRemoteClient.ConnectionError.passwordRequired = error {
-                        withAnimation {
-                            isPasswordRequired = true
-                            isTrustButton = false
-                        }
-                    } else if case UTMRemoteClient.ConnectionError.fingerprintUntrusted(let fingerprint) = error, server.fingerprint.isEmpty {
-                        withAnimation {
-                            server.fingerprint = fingerprint
-                            isTrustButton = true
-                        }
-                        remoteClientState.showErrorAlert(error.localizedDescription)
-                    } else if error is CancellationError {
-                        // ignore it
-                    } else {
-                        remoteClientState.showErrorAlert(error.localizedDescription)
-                    }
-                }
+                await _connect()
             } else {
                 Task(priority: .userInteractive) {
-                    do {
-                        try await remoteClient.connect(server)
-                    } catch {
-                        if case UTMRemoteClient.ConnectionError.passwordRequired = error {
-                            withAnimation {
-                                isPasswordRequired = true
-                                isTrustButton = false
-                            }
-                        } else if case UTMRemoteClient.ConnectionError.fingerprintUntrusted(let fingerprint) = error, server.fingerprint.isEmpty {
-                            withAnimation {
-                                server.fingerprint = fingerprint
-                                isTrustButton = true
-                            }
-                            remoteClientState.showErrorAlert(error.localizedDescription)
-                        } else if error is CancellationError {
-                            // ignore it
-                        } else {
-                            remoteClientState.showErrorAlert(error.localizedDescription)
-                        }
-                    }
+                    await _connect()
                 }
             }
             timeoutTask.cancel()
             connectionTask = nil
+        }
+    }
+
+    private func _connect() async {
+        do {
+            try await remoteClient.connect(server)
+        } catch {
+            if case UTMRemoteClient.ConnectionError.passwordRequired = error {
+                withAnimation {
+                    isPasswordRequired = true
+                    isTrustButton = false
+                }
+            } else if case UTMRemoteClient.ConnectionError.fingerprintUntrusted(let fingerprint) = error, server.fingerprint.isEmpty {
+                withAnimation {
+                    server.fingerprint = fingerprint
+                    isTrustButton = true
+                }
+                remoteClientState.showErrorAlert(error.localizedDescription)
+            } else if error is CancellationError {
+                // ignore it
+            } else {
+                remoteClientState.showErrorAlert(error.localizedDescription)
+            }
         }
     }
 }
