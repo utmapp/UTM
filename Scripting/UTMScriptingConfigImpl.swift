@@ -194,6 +194,10 @@ extension UTMScriptingConfigImpl {
         var serializedArgument: [AnyHashable: Any] = [
             "argumentString": argument.string
         ]
+        // Only add fileUrls if it is not nil and contains URLs
+        if let fileUrls = argument.fileUrls, !fileUrls.isEmpty {
+            serializedArgument["fileUrls"] = fileUrls.map({ $0 as AnyHashable })
+        }
         
         return serializedArgument
     }
@@ -526,7 +530,10 @@ extension UTMScriptingConfigImpl {
         let additionalArguments = records.compactMap { record -> QEMUArgument? in
             guard let argumentString = record["argumentString"] as? String else { return nil }
             var argument = QEMUArgument(argumentString)
-            
+            // fileUrls are used as required resources by QEMU.
+            if let fileUrls = record["fileUrls"] as? [URL] {
+                argument.fileUrls = fileUrls
+            }
             return argument
         }
         // Update entire additional arguments with new one.
