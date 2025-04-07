@@ -180,24 +180,29 @@ extension VMDisplayAppleWindowController {
             let name = sharedDirectory.url.lastPathComponent
             item.title = name
             let submenu = NSMenu()
+            submenu.autoenablesItems = false
             let ro = NSMenuItem(title: NSLocalizedString("Read Only", comment: "VMDisplayAppleController"),
                                    action: #selector(flipReadOnlyShare),
                                    keyEquivalent: "")
             ro.target = self
             ro.tag = i
             ro.state = sharedDirectory.isReadOnly ? .on : .off
+            // we cannot toggle read-only state if we originally obtained the bookmark as read-only
+            ro.isEnabled = !appleConfig.sharedDirectories[i].isReadOnly
             submenu.addItem(ro)
             let change = NSMenuItem(title: NSLocalizedString("Change…", comment: "VMDisplayAppleController"),
                                    action: #selector(changeShare),
                                    keyEquivalent: "")
             change.target = self
             change.tag = i
+            change.isEnabled = true
             submenu.addItem(change)
             let remove = NSMenuItem(title: NSLocalizedString("Remove…", comment: "VMDisplayAppleController"),
                                    action: #selector(removeShare),
                                    keyEquivalent: "")
             remove.target = self
             remove.tag = i
+            remove.isEnabled = true
             submenu.addItem(remove)
             item.submenu = submenu
             menu.addItem(item)
