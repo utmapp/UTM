@@ -32,7 +32,9 @@ struct UTMRemoteConnectView: View {
     var body: some View {
         VStack {
             HStack {
-                ProgressView().progressViewStyle(.circular)
+                if remoteClientState.isScanning {
+                    ProgressView().progressViewStyle(.circular)
+                }
                 Spacer()
                 Text("Select a UTM Server")
                     .font(.headline)
@@ -96,7 +98,13 @@ struct UTMRemoteConnectView: View {
                 }
             }.listStyle(.insetGrouped)
         }.alert(item: $remoteClientState.alertMessage) { item in
-            Alert(title: Text(item.message))
+            Alert(title: Text(item.message), dismissButton: .default(Text("Retry")) {
+                if !remoteClientState.isScanning {
+                    Task {
+                        await remoteClient.startScanning()
+                    }
+                }
+            })
         }
         .sheet(item: $selectedServer) { server in
             ServerConnectView(remoteClientState: remoteClientState, server: server, isAutoConnect: $isAutoConnect)

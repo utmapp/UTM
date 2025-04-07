@@ -50,7 +50,15 @@ actor UTMRemoteClient {
 
     func startScanning() {
         scanTask = Task {
+            await MainActor.run {
+                state.isScanning = true
+            }
             await withErrorAlert {
+                defer {
+                    Task { @MainActor in
+                        state.isScanning = false
+                    }
+                }
                 for try await results in Connection.browse(forServiceType: service) {
                     await self.didFindResults(results)
                 }
