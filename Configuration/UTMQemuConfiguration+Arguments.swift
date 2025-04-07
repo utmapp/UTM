@@ -432,7 +432,7 @@ import Virtualization // for getting network interfaces
                 properties = properties.appendingDefaultPropertyName("i8042", value: "off")
             }
             #if os(macOS)
-            if sound.contains(where: { $0.hardware.rawValue == "pcspk" }) {
+            if useCoreAudioBackend && sound.contains(where: { $0.hardware.rawValue == "pcspk" }) {
                 properties = properties.appendingDefaultPropertyName("pcspk-audiodev", value: "audio1")
             }
             #endif
@@ -570,7 +570,7 @@ import Virtualization // for getting network interfaces
             if _sound.hardware.rawValue.contains("hda") {
                 f()
                 f("-device")
-                if soundBackend == .qemuSoundBackendCoreAudio {
+                if soundBackend == .qemuSoundBackendCoreAudio && useCoreAudioBackend {
                     "hda-output"
                     "audiodev=audio1"
                 } else {
@@ -579,7 +579,7 @@ import Virtualization // for getting network interfaces
                 }
                 f()
             } else {
-                if soundBackend == .qemuSoundBackendCoreAudio {
+                if soundBackend == .qemuSoundBackendCoreAudio && useCoreAudioBackend {
                     f("audiodev=audio1")
                 } else {
                     f("audiodev=audio0")
