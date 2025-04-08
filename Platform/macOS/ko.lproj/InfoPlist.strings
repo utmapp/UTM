@@ -1,0 +1,5 @@
+/* Privacy - Microphone Usage Description */
+"NSMicrophoneUsageDescription" = "가상 머신에서 마이크를 통해 소리를 녹음하려면 권한이 부여되어야 합니다.";
+
+/* (No Comment) */
+"UTM virtual machine" = "UTM 가상 머신";
