@@ -32,6 +32,7 @@ struct UTMApp: App {
                     data.showErrorAlert(message: message)
                 }
             }
+            .modifier(UpdateAlertModifier())
     }
     
     @SceneBuilder
@@ -69,6 +70,15 @@ struct UTMApp: App {
             return newBody
         } else {
             return oldBody
+        }
+    }
+}
+
+private struct UpdateAlertModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        ZStack {
+            content
+            UTMUpdateAlert()
         }
     }
 }
