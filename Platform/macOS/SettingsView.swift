@@ -41,7 +41,7 @@ struct SettingsView: View {
                 .tabItem {
                     Label("Server", systemImage: "server.rack")
                 }
-        }.frame(minWidth: 600, minHeight: 350, alignment: .topLeading)
+        }.frame(minWidth: 600, minHeight: 400, alignment: .topLeading)
     }
 }
 
