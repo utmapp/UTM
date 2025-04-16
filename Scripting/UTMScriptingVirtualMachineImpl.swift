@@ -111,15 +111,27 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
     
     @objc func start(_ command: NSScriptCommand) {
         let shouldSaveState = command.evaluatedArguments?["saveFlag"] as? Bool ?? true
+        let bootRecoveryMode = command.evaluatedArguments?["bootRecoveryFlag"] as? Bool ?? false
+
         withScriptCommand(command) { [self] in
+            var options: UTMVirtualMachineStartOptions = []
+
             if !shouldSaveState {
                 guard type(of: vm).capabilities.supportsDisposibleMode else {
                     throw ScriptingError.operationNotSupported
                 }
+                options.insert(.bootDisposibleMode)
             }
+            if bootRecoveryMode {
+                guard type(of: vm).capabilities.supportsRecoveryMode else {
+                    throw ScriptingError.operationNotSupported
+                }
+                options.insert(.bootRecovery)
+            }
+
             data.run(vm: box, startImmediately: false)
             if vm.state == .stopped {
-                try await vm.start(options: shouldSaveState ? [] : .bootDisposibleMode)
+                try await vm.start(options: options)
             } else if vm.state == .paused {
                 try await vm.resume()
             } else {

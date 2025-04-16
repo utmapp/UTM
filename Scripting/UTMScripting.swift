@@ -210,7 +210,7 @@ extension SBObject: UTMScriptingWindow {}
     @objc optional var name: String { get } // The name of the VM.
     @objc optional var backend: UTMScriptingBackend { get } // Emulation/virtualization engine used.
     @objc optional var status: UTMScriptingStatus { get } // Current running status.
-    @objc optional func startSaving(_ saving: Bool) // Start a virtual machine or resume a suspended virtual machine.
+    @objc optional func startSaving(_ saving: Bool, recovery: Bool) // Start a virtual machine or resume a suspended virtual machine.
     @objc optional func suspendSaving(_ saving: Bool) // Suspend a running virtual machine to memory.
     @objc optional func stopBy(_ by: UTMScriptingStopMethod) // Shuts down a running virtual machine.
     @objc optional func delete() // Delete a virtual machine. All data will be deleted, there is no confirmation!
