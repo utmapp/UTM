@@ -61,6 +61,9 @@
           <parameter name="saving" code="SaVe" description="When false, do not save the VM changes to disk. Default value is true." type="boolean" optional="yes">
             <cocoa key="saveFlag"/>
           </parameter>
+          <parameter name="recovery" code="ReCo" description="When true, start the VM in recovery mode. Default value is false." type="boolean" optional="yes">
+            <cocoa key="bootRecoveryFlag"/>
+          </parameter>
         </command>
         
         <command name="suspend" code="UTMvsusp" description="Suspend a running virtual machine to memory.">
