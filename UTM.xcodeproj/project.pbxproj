@@ -303,8 +303,8 @@
 		CE03D08F24D9124200F76B84 /* gobject-2.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F522653C7400FC7E63 /* gobject-2.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE03D09024D9124800F76B84 /* intl.8.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DA22653C7300FC7E63 /* intl.8.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE03D09124D9124900F76B84 /* jpeg.62.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63D922653C7300FC7E63 /* jpeg.62.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE03D0C424D913AA00F76B84 /* ffi.7.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E322653C7400FC7E63 /* ffi.7.framework */; };
-		CE03D0C524D913AF00F76B84 /* ffi.7.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E322653C7400FC7E63 /* ffi.7.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE03D0C424D913AA00F76B84 /* ffi.8.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E322653C7400FC7E63 /* ffi.8.framework */; };
+		CE03D0C524D913AF00F76B84 /* ffi.8.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E322653C7400FC7E63 /* ffi.8.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE03D0C624D913C600F76B84 /* opus.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D640322653C7500FC7E63 /* opus.0.framework */; };
 		CE03D0C724D913E600F76B84 /* opus.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640322653C7500FC7E63 /* opus.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE03D0C824D913FD00F76B84 /* pixman-1.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D641922653C7600FC7E63 /* pixman-1.0.framework */; };
@@ -495,7 +495,7 @@
 		CE2D934724AD46670059923A /* gstriff-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63DE22653C7400FC7E63 /* gstriff-1.0.0.framework */; };
 		CE2D934924AD46670059923A /* gstreamer-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E022653C7400FC7E63 /* gstreamer-1.0.0.framework */; };
 		CE2D934B24AD46670059923A /* json-glib-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E222653C7400FC7E63 /* json-glib-1.0.0.framework */; };
-		CE2D934C24AD46670059923A /* ffi.7.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E322653C7400FC7E63 /* ffi.7.framework */; };
+		CE2D934C24AD46670059923A /* ffi.8.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E322653C7400FC7E63 /* ffi.8.framework */; };
 		CE2D934D24AD46670059923A /* gstnet-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E522653C7400FC7E63 /* gstnet-1.0.0.framework */; };
 		CE2D934E24AD46670059923A /* gstbase-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E822653C7400FC7E63 /* gstbase-1.0.0.framework */; };
 		CE2D934F24AD46670059923A /* phodav-3.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE059DC0243BD67100338317 /* phodav-3.0.0.framework */; };
@@ -530,7 +530,7 @@
 		CE2D937824AD46670059923A /* gstcontroller-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63EE22653C7400FC7E63 /* gstcontroller-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE2D937924AD46670059923A /* gstallocators-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641122653C7500FC7E63 /* gstallocators-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE2D937A24AD46670059923A /* gstbase-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E822653C7400FC7E63 /* gstbase-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE2D937B24AD46670059923A /* ffi.7.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E322653C7400FC7E63 /* ffi.7.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CE2D937B24AD46670059923A /* ffi.8.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E322653C7400FC7E63 /* ffi.8.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE2D937C24AD46670059923A /* ssl.1.1.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641722653C7500FC7E63 /* ssl.1.1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE2D937D24AD46670059923A /* gio-2.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F822653C7400FC7E63 /* gio-2.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE2D937E24AD46670059923A /* png16.16.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640522653C7500FC7E63 /* png16.16.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -769,7 +769,7 @@
 		CEA45F3F263519B5002FA97D /* gstriff-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63DE22653C7400FC7E63 /* gstriff-1.0.0.framework */; };
 		CEA45F41263519B5002FA97D /* gstreamer-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E022653C7400FC7E63 /* gstreamer-1.0.0.framework */; };
 		CEA45F42263519B5002FA97D /* json-glib-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E222653C7400FC7E63 /* json-glib-1.0.0.framework */; };
-		CEA45F43263519B5002FA97D /* ffi.7.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E322653C7400FC7E63 /* ffi.7.framework */; };
+		CEA45F43263519B5002FA97D /* ffi.8.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E322653C7400FC7E63 /* ffi.8.framework */; };
 		CEA45F44263519B5002FA97D /* gstnet-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E522653C7400FC7E63 /* gstnet-1.0.0.framework */; };
 		CEA45F45263519B5002FA97D /* gstbase-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E822653C7400FC7E63 /* gstbase-1.0.0.framework */; };
 		CEA45F46263519B5002FA97D /* Logging in Frameworks */ = {isa = PBXBuildFile; productRef = CEA45E20263519B5002FA97D /* Logging */; };
@@ -807,7 +807,7 @@
 		CEA45F74263519B5002FA97D /* gstcontroller-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63EE22653C7400FC7E63 /* gstcontroller-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F75263519B5002FA97D /* gstallocators-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641122653C7500FC7E63 /* gstallocators-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F76263519B5002FA97D /* gstbase-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E822653C7400FC7E63 /* gstbase-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CEA45F77263519B5002FA97D /* ffi.7.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E322653C7400FC7E63 /* ffi.7.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEA45F77263519B5002FA97D /* ffi.8.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E322653C7400FC7E63 /* ffi.8.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F78263519B5002FA97D /* ssl.1.1.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641722653C7500FC7E63 /* ssl.1.1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F7A263519B5002FA97D /* gio-2.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F822653C7400FC7E63 /* gio-2.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F7B263519B5002FA97D /* png16.16.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640522653C7500FC7E63 /* png16.16.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -1141,7 +1141,7 @@
 		CEF7F6512AEEDCC400E34952 /* AVFAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84818C0B2898A07A009EDB67 /* AVFAudio.framework */; };
 		CEF7F6522AEEDCC400E34952 /* gstreamer-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E022653C7400FC7E63 /* gstreamer-1.0.0.framework */; };
 		CEF7F6532AEEDCC400E34952 /* json-glib-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E222653C7400FC7E63 /* json-glib-1.0.0.framework */; };
-		CEF7F6542AEEDCC400E34952 /* ffi.7.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E322653C7400FC7E63 /* ffi.7.framework */; };
+		CEF7F6542AEEDCC400E34952 /* ffi.8.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E322653C7400FC7E63 /* ffi.8.framework */; };
 		CEF7F6552AEEDCC400E34952 /* gstnet-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E522653C7400FC7E63 /* gstnet-1.0.0.framework */; };
 		CEF7F6562AEEDCC400E34952 /* gstbase-1.0.0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63E822653C7400FC7E63 /* gstbase-1.0.0.framework */; };
 		CEF7F6572AEEDCC400E34952 /* Logging in Frameworks */ = {isa = PBXBuildFile; productRef = CEF7F5842AEEDCC400E34952 /* Logging */; };
@@ -1182,7 +1182,7 @@
 		CEF7F6852AEEDCC400E34952 /* gstcontroller-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63EE22653C7400FC7E63 /* gstcontroller-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEF7F6862AEEDCC400E34952 /* gstallocators-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641122653C7500FC7E63 /* gstallocators-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEF7F6872AEEDCC400E34952 /* gstbase-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E822653C7400FC7E63 /* gstbase-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CEF7F6882AEEDCC400E34952 /* ffi.7.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E322653C7400FC7E63 /* ffi.7.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEF7F6882AEEDCC400E34952 /* ffi.8.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E322653C7400FC7E63 /* ffi.8.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEF7F6892AEEDCC400E34952 /* ssl.1.1.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641722653C7500FC7E63 /* ssl.1.1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEF7F68B2AEEDCC400E34952 /* gio-2.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F822653C7400FC7E63 /* gio-2.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEF7F68D2AEEDCC400E34952 /* png16.16.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640522653C7500FC7E63 /* png16.16.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -1330,7 +1330,7 @@
 				CE03D0CF24D9A33000F76B84 /* iconv.2.framework in Embed Libraries */,
 				CE03D0CD24D9144500F76B84 /* crypto.1.1.framework in Embed Libraries */,
 				CE03D08E24D9124100F76B84 /* gmodule-2.0.0.framework in Embed Libraries */,
-				CE03D0C524D913AF00F76B84 /* ffi.7.framework in Embed Libraries */,
+				CE03D0C524D913AF00F76B84 /* ffi.8.framework in Embed Libraries */,
 				CEF83F8D250094E700557D15 /* gthread-2.0.0.framework in Embed Libraries */,
 				CE064C662A563F4B003C833D /* swtpm.0.framework in Embed Libraries */,
 				CE03D09024D9124800F76B84 /* intl.8.framework in Embed Libraries */,
@@ -1388,7 +1388,7 @@
 				CE2D937824AD46670059923A /* gstcontroller-1.0.0.framework in Embed Libraries */,
 				CE2D937924AD46670059923A /* gstallocators-1.0.0.framework in Embed Libraries */,
 				CE2D937A24AD46670059923A /* gstbase-1.0.0.framework in Embed Libraries */,
-				CE2D937B24AD46670059923A /* ffi.7.framework in Embed Libraries */,
+				CE2D937B24AD46670059923A /* ffi.8.framework in Embed Libraries */,
 				CE2D937C24AD46670059923A /* ssl.1.1.framework in Embed Libraries */,
 				CEA9059125FC6A3300801E7C /* usbredirhost.1.framework in Embed Libraries */,
 				CE2D937D24AD46670059923A /* gio-2.0.0.framework in Embed Libraries */,
@@ -1485,7 +1485,7 @@
 				CEA45F74263519B5002FA97D /* gstcontroller-1.0.0.framework in Embed Libraries */,
 				CEA45F75263519B5002FA97D /* gstallocators-1.0.0.framework in Embed Libraries */,
 				CEA45F76263519B5002FA97D /* gstbase-1.0.0.framework in Embed Libraries */,
-				CEA45F77263519B5002FA97D /* ffi.7.framework in Embed Libraries */,
+				CEA45F77263519B5002FA97D /* ffi.8.framework in Embed Libraries */,
 				CEA45F78263519B5002FA97D /* ssl.1.1.framework in Embed Libraries */,
 				CEA45F7A263519B5002FA97D /* gio-2.0.0.framework in Embed Libraries */,
 				CEA45F7B263519B5002FA97D /* png16.16.framework in Embed Libraries */,
@@ -1559,7 +1559,7 @@
 				CEF7F6862AEEDCC400E34952 /* gstallocators-1.0.0.framework in Embed Libraries */,
 				CED2971E2CE4263A00F1E3EB /* soup-3.0.0.framework in Embed Libraries */,
 				CEF7F6872AEEDCC400E34952 /* gstbase-1.0.0.framework in Embed Libraries */,
-				CEF7F6882AEEDCC400E34952 /* ffi.7.framework in Embed Libraries */,
+				CEF7F6882AEEDCC400E34952 /* ffi.8.framework in Embed Libraries */,
 				CEF7F6892AEEDCC400E34952 /* ssl.1.1.framework in Embed Libraries */,
 				CEF7F68B2AEEDCC400E34952 /* gio-2.0.0.framework in Embed Libraries */,
 				CEF7F68D2AEEDCC400E34952 /* png16.16.framework in Embed Libraries */,
@@ -1835,7 +1835,7 @@
 		CE2D63E022653C7400FC7E63 /* gstreamer-1.0.0.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "gstreamer-1.0.0.framework"; path = "$(SYSROOT_DIR)/Frameworks/gstreamer-1.0.0.framework"; sourceTree = "<group>"; };
 		CE2D63E122653C7400FC7E63 /* qemu-sh4eb-softmmu.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "qemu-sh4eb-softmmu.framework"; path = "$(SYSROOT_DIR)/Frameworks/qemu-sh4eb-softmmu.framework"; sourceTree = "<group>"; };
 		CE2D63E222653C7400FC7E63 /* json-glib-1.0.0.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "json-glib-1.0.0.framework"; path = "$(SYSROOT_DIR)/Frameworks/json-glib-1.0.0.framework"; sourceTree = "<group>"; };
-		CE2D63E322653C7400FC7E63 /* ffi.7.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ffi.7.framework; path = "$(SYSROOT_DIR)/Frameworks/ffi.7.framework"; sourceTree = "<group>"; };
+		CE2D63E322653C7400FC7E63 /* ffi.8.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ffi.8.framework; path = "$(SYSROOT_DIR)/Frameworks/ffi.8.framework"; sourceTree = "<group>"; };
 		CE2D63E422653C7400FC7E63 /* qemu-microblaze-softmmu.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "qemu-microblaze-softmmu.framework"; path = "$(SYSROOT_DIR)/Frameworks/qemu-microblaze-softmmu.framework"; sourceTree = "<group>"; };
 		CE2D63E522653C7400FC7E63 /* gstnet-1.0.0.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "gstnet-1.0.0.framework"; path = "$(SYSROOT_DIR)/Frameworks/gstnet-1.0.0.framework"; sourceTree = "<group>"; };
 		CE2D63E622653C7400FC7E63 /* qemu-cris-softmmu.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "qemu-cris-softmmu.framework"; path = "$(SYSROOT_DIR)/Frameworks/qemu-cris-softmmu.framework"; sourceTree = "<group>"; };
@@ -2186,7 +2186,7 @@
 				CE2D934924AD46670059923A /* gstreamer-1.0.0.framework in Frameworks */,
 				CE2D934B24AD46670059923A /* json-glib-1.0.0.framework in Frameworks */,
 				CE89CB0E2B8B1B5A006B2CC2 /* VisionKeyboardKit in Frameworks */,
-				CE2D934C24AD46670059923A /* ffi.7.framework in Frameworks */,
+				CE2D934C24AD46670059923A /* ffi.8.framework in Frameworks */,
 				CE2D934D24AD46670059923A /* gstnet-1.0.0.framework in Frameworks */,
 				CE2D934E24AD46670059923A /* gstbase-1.0.0.framework in Frameworks */,
 				CE020BA724AEDEF000B44AB6 /* Logging in Frameworks */,
@@ -2249,7 +2249,7 @@
 				848F71E6277A2466006A0240 /* SwiftTerm in Frameworks */,
 				CE03D08824D90F0700F76B84 /* gio-2.0.0.framework in Frameworks */,
 				CE0B6EEC24AD677200FE012D /* libgstautodetect.a in Frameworks */,
-				CE03D0C424D913AA00F76B84 /* ffi.7.framework in Frameworks */,
+				CE03D0C424D913AA00F76B84 /* ffi.8.framework in Frameworks */,
 				CE03D0CC24D9144100F76B84 /* crypto.1.1.framework in Frameworks */,
 				84A0A8882A47D5C50038F329 /* QEMUKit in Frameworks */,
 				84B36D2227B3265400C22685 /* CocoaSpice in Frameworks */,
@@ -2352,7 +2352,7 @@
 				CEA45F3F263519B5002FA97D /* gstriff-1.0.0.framework in Frameworks */,
 				CEA45F41263519B5002FA97D /* gstreamer-1.0.0.framework in Frameworks */,
 				CEA45F42263519B5002FA97D /* json-glib-1.0.0.framework in Frameworks */,
-				CEA45F43263519B5002FA97D /* ffi.7.framework in Frameworks */,
+				CEA45F43263519B5002FA97D /* ffi.8.framework in Frameworks */,
 				CEA45F44263519B5002FA97D /* gstnet-1.0.0.framework in Frameworks */,
 				CEA45F45263519B5002FA97D /* gstbase-1.0.0.framework in Frameworks */,
 				CEA45F46263519B5002FA97D /* Logging in Frameworks */,
@@ -2434,7 +2434,7 @@
 				CEF7F6512AEEDCC400E34952 /* AVFAudio.framework in Frameworks */,
 				CEF7F6522AEEDCC400E34952 /* gstreamer-1.0.0.framework in Frameworks */,
 				CEF7F6532AEEDCC400E34952 /* json-glib-1.0.0.framework in Frameworks */,
-				CEF7F6542AEEDCC400E34952 /* ffi.7.framework in Frameworks */,
+				CEF7F6542AEEDCC400E34952 /* ffi.8.framework in Frameworks */,
 				CEF7F6552AEEDCC400E34952 /* gstnet-1.0.0.framework in Frameworks */,
 				CEF7F6562AEEDCC400E34952 /* gstbase-1.0.0.framework in Frameworks */,
 				CEF7F6572AEEDCC400E34952 /* Logging in Frameworks */,
@@ -2582,7 +2582,7 @@
 				CE9D19642265425A00355E14 /* libgstvideotestsrc.a */,
 				CE9D19572265425900355E14 /* libgstvolume.a */,
 				CE2D640A22653C7500FC7E63 /* crypto.1.1.framework */,
-				CE2D63E322653C7400FC7E63 /* ffi.7.framework */,
+				CE2D63E322653C7400FC7E63 /* ffi.8.framework */,
 				CE2D63F322653C7400FC7E63 /* gcrypt.20.framework */,
 				CE2D63F822653C7400FC7E63 /* gio-2.0.0.framework */,
 				CE2D640422653C7500FC7E63 /* glib-2.0.0.framework */,

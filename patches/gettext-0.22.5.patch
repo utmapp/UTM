@@ -70,3 +70,13 @@ diff --color -Naur a/libtextstyle/lib/get_progname_of.c b/libtextstyle/lib/get_p
  # endif
  #endif
  
+--- a/gettext-tools/configure	2024-02-21 08:36:27
++++ b/gettext-tools/configure	2025-06-10 15:27:46
+@@ -72592,6 +72592,7 @@
+             REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR=1
+   else
+     HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR=0
++    REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR=1
+   fi
+ 
+ 
