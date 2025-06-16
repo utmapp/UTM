@@ -985,7 +985,7 @@ UTMQemuConstants */
 "Quitting UTM will kill all running VMs." = "結束 UTM 會結束所有執行的虛擬機器。";
 
 /* No comment provided by engineer. */
-"Raw Image" = "Raw 映像檔";
+"Raw Image" = "raw 映像檔";
 
 /* VMDisplayAppleController */
 "Read Only" = "唯讀";
@@ -1366,10 +1366,10 @@ UTMQemuConstants */
 "Timed out trying to connect." = "嘗試連接超時。";
 
 /* VMDisplayAppleWindowController */
-"To access the shared directory, the guest OS must have Virtiofs drivers installed. You can then run `sudo mount -t virtiofs share /path/to/share` to mount to the share path." = "要取用分享目錄，客户端作業系統必須安裝 VirtioFS 驅動程式。然後你可以執行「sudo mount -t virtiofs share /path/to/share」以裝載到分享路徑。";
+"To access the shared directory, the guest OS must have Virtiofs drivers installed. You can then run `sudo mount -t virtiofs share /path/to/share` to mount to the share path." = "如要取用分享目錄，客户端作業系統必須安裝 VirtioFS 驅動程式。然後你可以執行「sudo mount -t virtiofs share /path/to/share」以裝載到分享路徑。";
 
 /* VMMetalView */
-"To capture input or to release the capture, press Command and Option at the same time." = "要擷取或放開輸入，請同時按一下 Command + Option。";
+"To capture input or to release the capture, press Command and Option at the same time." = "如要擷取或放開輸入，請同時按一下 Command + Option。";
 
 /* No comment provided by engineer. */
 "To install macOS, you need to download a recovery IPSW. If you do not select an existing IPSW, the latest macOS IPSW will be downloaded from Apple." = "如要安裝 macOS，你需要下載 IPSW 還原檔。如你未選擇現有的 IPSW，將會從 Apple 下載最新的 macOS IPSW。";
@@ -1546,7 +1546,7 @@ VMWizardOSMacView */
 "Advanced" = "進階";
 
 /* No comment provided by engineer. */
-"Advanced. If checked, a raw disk image is used. Raw disk image does not support snapshots and will not dynamically expand in size." = "進階選項。如選擇，將會使用 Raw 磁碟映像。Raw 磁碟映像不支援快照，亦不會動態擴充套件大小。";
+"Advanced. If checked, a raw disk image is used. Raw disk image does not support snapshots and will not dynamically expand in size." = "進階選項。如選擇，將會使用 raw 磁碟映像。raw 磁碟映像不支援快照，亦不會動態擴充套件大小。";
 
 /* No comment provided by engineer. */
 "Allow access from external clients" = "允許外部客户端訪問";
@@ -1931,7 +1931,7 @@ VMWizardOSMacView */
 "If set, a frame limit can improve smoothness in rendering by preventing stutters when set to the lowest value your device can handle." = "如設定，當設定為你的裝置可以處理的最低值時，幀限制可以避免卡頓，以提升算圖的平順度。";
 
 /* No comment provided by engineer. */
-"If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO." = "如設定，直接從 Raw 核心映像檔與 initrd 啟動。否則從支援的 ISO 啟動。";
+"If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO." = "如設定，直接從 raw 核心映像檔與 initrd 啟動。否則從支援的 ISO 啟動。";
 
 /* No comment provided by engineer. */
 "Image Type" = "映像檔種類";
@@ -1982,7 +1982,7 @@ VMWizardOSMacView */
 "Keyboard" = "鍵盤";
 
 /* No comment provided by engineer. */
-"Last Seen" = "上次記錄時間";
+"Last Seen" = "上次偵測到";
 
 /* No comment provided by engineer. */
 "Legacy Hardware" = "舊式硬件";
@@ -2285,7 +2285,7 @@ VMWizardOSMacView */
 "Text Color" = "文字顏色";
 
 /* No comment provided by engineer. */
-"The amount of storage to allocate for this image. Ignored if importing an image. If this is a raw image, then an empty file of this size will be stored with the VM. Otherwise, the disk image will dynamically expand up to this size." = "為此映像檔分配的儲存空間用量。如輸入映像檔，則會忽略。如此為 Raw 映像檔，則此大小的空檔案將會與虛擬機器一起儲存。否則，磁碟映像檔將會動態擴充至此大小。";
+"The amount of storage to allocate for this image. Ignored if importing an image. If this is a raw image, then an empty file of this size will be stored with the VM. Otherwise, the disk image will dynamically expand up to this size." = "為此映像檔分配的儲存空間用量。如輸入映像檔，則會忽略。如此為 raw 映像檔，則此大小的空檔案將會與虛擬機器一起儲存。否則，磁碟映像檔將會動態擴充至此大小。";
 
 /* No comment provided by engineer. */
 "Theme" = "主題";
