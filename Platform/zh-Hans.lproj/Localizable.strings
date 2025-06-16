@@ -103,7 +103,7 @@ VMDisplayQemuTerminalWindowController */
 "An unknown QEMU error has occurred." = "发生了未知的 QEMU 错误。";
 
 /* VMDisplayAppleDisplayController */
-"An USB device containing the installer will be mounted in the virtual machine. Only macOS Sequoia (15.0) and newer guests are supported." = "包含安装程序的 USB 设备将安装在虚拟机中。仅支持 macOS Sequoia (15.0) 及更新版本的客户机。";
+"An USB device containing the installer will be mounted in the virtual machine. Only macOS Sequoia (15.0) and newer guests are supported." = "包含安装程序的 USB 设备将装载到虚拟机中。仅支持 macOS Sequoia (15.0) 及更新版本的客户机。";
 
 /* No comment provided by engineer. */
 "ANGLE (Metal)" = "ANGLE (Metal)";
@@ -142,7 +142,7 @@ VMDisplayQemuTerminalWindowController */
 "Automatic Serial Device (max 4)" = "自动串行设备 (最大值 4)";
 
 /* VMSessionState */
-"Background task is about to expire" = "后台任务即将终止";
+"Background task is about to expire" = "后台任务即将过期";
 
 /* UTMLegacyQemuConfiguration
 UTMQemuConstants */
@@ -715,7 +715,7 @@ UTMQemuConstants */
 "Linux RAM Disk" = "Linux ramdisk";
 
 /* No comment provided by engineer. */
-"Linux Root FS Image (optional)" = "Linux Root FS 映像 (可选)";
+"Linux Root FS Image (optional)" = "Linux rootfs 映像 (可选)";
 
 /* No comment provided by engineer. */
 "Linux Settings" = "Linux 设置";
@@ -848,13 +848,13 @@ UTMQemuConstants */
 "None (Advanced)" = "无 (高级)";
 
 /* UTMRemoteServer */
-"Not authenticated." = "未";
+"Not authenticated." = "未认证。";
 
 /* UTMVirtualMachine */
 "Not implemented." = "未实现。";
 
 /* No comment provided by engineer. */
-"Notes" = "注意";
+"Notes" = "注释";
 
 /* No comment provided by engineer. */
 "Num Lock is forced on" = "强制打开数字锁定 (Num Lock)";
@@ -882,7 +882,7 @@ UTMScriptingVirtualMachineImpl */
 "Operation not supported by the backend." = "操作不受后端支持。";
 
 /* No comment provided by engineer. */
-"Option (⌥) is Meta key" = "将 Option (⌥) 键视为 Meta 键处理";
+"Option (⌥) is Meta key" = "将 Option (⌥) 键视为 Meta 键";
 
 /* No comment provided by engineer. */
 "Options" = "选项";
@@ -985,7 +985,7 @@ UTMQemuConstants */
 "Quitting UTM will kill all running VMs." = "退出 UTM 将终止所有正在运行的虚拟机。";
 
 /* No comment provided by engineer. */
-"Raw Image" = "RAW 映像";
+"Raw Image" = "raw 映像";
 
 /* VMDisplayAppleController */
 "Read Only" = "只读";
@@ -1249,7 +1249,7 @@ UTMQemuConstants */
 "The drive '%@' already exists and cannot be created." = "驱动器“%@”已存在，无法创建。";
 
 /* UTMDownloadSupportToolsTaskError */
-"The guest support tools have already been mounted." = "客户机支持工具已挂载。";
+"The guest support tools have already been mounted." = "客户机支持工具已装载。";
 
 /* UTMRemoteClient */
 "The host fingerprint does not match the saved value. This means that UTM Server was reset, a different host is using the same name, or an attacker is pretending to be the host. For your protection, you need to delete this saved host to continue." = "主机指纹与存储的值不匹配。这意味着 UTM 服务器被重置、不同的主机使用相同的名称，或者攻击者正在冒充主机。为了保护你的安全，你需要删除已存储的主机才能继续。";
@@ -1303,7 +1303,7 @@ UTMQemuConstants */
 "This build of UTM does not support emulating the architecture of this VM." = "此 UTM 版本不支持模拟此虚拟机的架构。";
 
 /* VMConfigSystemView */
-"This change will reset all settings" = "此更改将重置所有设置。";
+"This change will reset all settings" = "此更改将重置所有设置";
 
 /* UTMConfiguration */
 "This configuration is saved with a newer version of UTM and is not compatible with this version." = "此配置是用较新版本的 UTM 存储的，并且与此版本不兼容。";
@@ -1366,7 +1366,7 @@ UTMQemuConstants */
 "Timed out trying to connect." = "尝试连接超时。";
 
 /* VMDisplayAppleWindowController */
-"To access the shared directory, the guest OS must have Virtiofs drivers installed. You can then run `sudo mount -t virtiofs share /path/to/share` to mount to the share path." = "若要访问共享目录，客户机操作系统必须安装 VirtioFS 驱动程序。然后，你可以运行命令 `sudo mount -t virtiofs share [要共享的目录]` 来挂载到共享路径。";
+"To access the shared directory, the guest OS must have Virtiofs drivers installed. You can then run `sudo mount -t virtiofs share /path/to/share` to mount to the share path." = "若要访问共享目录，客户机操作系统必须安装 VirtioFS 驱动程序。然后，你可以运行命令 `sudo mount -t virtiofs share [要共享的目录]` 来装载到共享路径。";
 
 /* VMMetalView */
 "To capture input or to release the capture, press Command and Option at the same time." = "若要捕获或释放捕获输入，请同时按下 Command 和 Option 键。";
@@ -1375,7 +1375,7 @@ UTMQemuConstants */
 "To install macOS, you need to download a recovery IPSW. If you do not select an existing IPSW, the latest macOS IPSW will be downloaded from Apple." = "若要安装 macOS，你需要下载 IPSW 恢复文件。如果你没有选择现有的 IPSW，将会从 Apple 下载最新的 macOS IPSW。";
 
 /* VMDisplayQemuMetalWindowController */
-"To release the mouse cursor, press %@ at the same time." = "你要释放鼠标光标，请同时按 %@。";
+"To release the mouse cursor, press %@ at the same time." = "若要释放鼠标光标，请同时按 %@。";
 
 /* No comment provided by engineer. */
 "Trust" = "信任";
@@ -1517,10 +1517,10 @@ VMWizardOSMacView */
 "Your purchase could not be verified by the App Store." = "App Store 无法验证你的购买。";
 
 /* No comment provided by engineer. */
-"Your support is the driving force that helps UTM stay independent. Your contribution, no matter the size, makes a significant difference. It enables us to develop new features and maintain existing ones. Thank you for considering a donation to support us." = "你的支持是 UTM 保持独立的动力。无论你的贡献多少，都会产生重大的影响。这可以让我们开发功能，并维护现有的功能。感谢你考虑捐赠支持我们。";
+"Your support is the driving force that helps UTM stay independent. Your contribution, no matter the size, makes a significant difference. It enables us to develop new features and maintain existing ones. Thank you for considering a donation to support us." = "你的支持是 UTM 保持独立的动力。你的贡献，无论多少，都会产生重大影响。这可以让我们开发功能，并维护现有的功能。感谢你考虑捐赠支持我们。";
 
 /* ContentView */
-"Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached. See https://getutm.app/install/ for more details." = "你的 iOS 版本不支持在未经修改的情况下运行虚拟机，必须在越狱时运行 UTM，或者连接远程调试器。有关更多详细信息，请参阅 https://getutm.app/install/。";
+"Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached. See https://getutm.app/install/ for more details." = "你的 iOS 版本不支持在未经修改的情况下运行虚拟机，必须在越狱时运行 UTM，或者附加远程调试器。有关更多详细信息，请参阅 https://getutm.app/install/。";
 
 // Additional Strings (These strings are unable to be extracted by Xcode)
 
@@ -1546,7 +1546,7 @@ VMWizardOSMacView */
 "Advanced" = "高级";
 
 /* No comment provided by engineer. */
-"Advanced. If checked, a raw disk image is used. Raw disk image does not support snapshots and will not dynamically expand in size." = "高级选项。若选中，将使用 Raw 磁盘映像。Raw 磁盘映像既不支持快照，也不会动态地扩充大小。";
+"Advanced. If checked, a raw disk image is used. Raw disk image does not support snapshots and will not dynamically expand in size." = "高级选项。若选中，将使用 raw 磁盘映像。raw 磁盘映像既不支持快照，也不会动态地扩充大小。";
 
 /* No comment provided by engineer. */
 "Allow access from external clients" = "允许外部客户机访问";
@@ -1675,7 +1675,7 @@ VMWizardOSMacView */
 "Debian Install Guide" = "Debian 安装指南";
 
 /* No comment provided by engineer. */
-"Default is 1/4 of the RAM size (above). The JIT cache size is additive to the RAM size in the total memory usage!" = "默认为内存大小的 1/4 (见上)。JIT 缓存与内存的大小都会包含在总内存使用量中！";
+"Default is 1/4 of the RAM size (above). The JIT cache size is additive to the RAM size in the total memory usage!" = "默认为内存大小的 1/4 (见上)。JIT 缓存与内存的大小均会包含在总内存使用量中！";
 
 /* No comment provided by engineer. */
 "Delete this drive." = "删除此驱动器。";
@@ -1732,7 +1732,7 @@ VMWizardOSMacView */
 "Duplicate this VM along with all its data." = "复制此虚拟机及其所有数据。";
 
 /* No comment provided by engineer. */
-"Download and mount the guest support package for Windows. This is required for some features including dynamic resolution and clipboard sharing." = "下载并装载 Windows 的客户机支持包。此支持包对于一些功能而言为必需，包括动态分辨率与剪贴板共享。";
+"Download and mount the guest support package for Windows. This is required for some features including dynamic resolution and clipboard sharing." = "下载并装载 Windows 客户机支持包。此支持包对于一些功能而言为必需，包括动态分辨率与剪贴板共享。";
 
 /* No comment provided by engineer. */
 "Download and mount the guest tools for Windows." = "下载并装载 Windows 客户机工具。";
@@ -1852,7 +1852,7 @@ VMWizardOSMacView */
 "Guest Port" = "客户机端口";
 
 /* No comment provided by engineer. */
-"Hardware interface on the guest used to mount this image. Different operating systems support different interfaces. The default will be the most common interface." = "用于挂载此映像的客户机硬件接口。不同的操作系统支持不同的接口。默认值为最常用的接口。";
+"Hardware interface on the guest used to mount this image. Different operating systems support different interfaces. The default will be the most common interface." = "用于装载此映像的客户机硬件接口。不同的操作系统支持不同的接口。默认值为最常用的接口。";
 
 /* No comment provided by engineer. */
 "Hardware OpenGL Acceleration" = "硬件 OpenGL 加速";
@@ -1876,7 +1876,7 @@ VMWizardOSMacView */
 "Host Port" = "主机端口";
 
 /* No comment provided by engineer. */
-"If checked, no drive image will be stored with the VM. Instead you can mount/unmount image while the VM is running." = "若选中，虚拟机将不会存储驱动器映像。相反，你可以在虚拟机运行时挂载/卸载映像。";
+"If checked, no drive image will be stored with the VM. Instead you can mount/unmount image while the VM is running." = "若选中，虚拟机将不会存储驱动器映像。相反，你可以在虚拟机运行时装载/卸载映像。";
 
 /* No comment provided by engineer. */
 "If checked, the CPU flag will be enabled. Otherwise, the default value will be used." = "若选中，将启用 CPU 标志。否则将使用默认值。";
@@ -1931,7 +1931,7 @@ VMWizardOSMacView */
 "If set, a frame limit can improve smoothness in rendering by preventing stutters when set to the lowest value your device can handle." = "若设置，则当设置为设备可以处理的最低值时，帧限制可以防止卡顿，从而提高渲染的流畅度。";
 
 /* No comment provided by engineer. */
-"If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO." = "若设置，将直接通过 Raw 内核映像和 initrd 启动。否则通过受支持的 ISO 启动。";
+"If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO." = "若设置，将直接通过 raw 内核映像和 initrd 启动。否则通过受支持的 ISO 启动。";
 
 /* No comment provided by engineer. */
 "Image Type" = "映像类型";
@@ -1982,7 +1982,7 @@ VMWizardOSMacView */
 "Keyboard" = "键盘";
 
 /* No comment provided by engineer. */
-"Last Seen" = "最后上线于";
+"Last Seen" = "上次记录于";
 
 /* No comment provided by engineer. */
 "Legacy Hardware" = "旧版硬件";
@@ -2285,7 +2285,7 @@ VMWizardOSMacView */
 "Text Color" = "文字颜色";
 
 /* No comment provided by engineer. */
-"The amount of storage to allocate for this image. Ignored if importing an image. If this is a raw image, then an empty file of this size will be stored with the VM. Otherwise, the disk image will dynamically expand up to this size." = "为此映像分配的存储空间。在导入映像时，此参数会被忽略。若导入的是 Raw 映像，则虚拟机将存储一个与此相同大小的空文件。否则，磁盘映像将动态扩展至此大小。";
+"The amount of storage to allocate for this image. Ignored if importing an image. If this is a raw image, then an empty file of this size will be stored with the VM. Otherwise, the disk image will dynamically expand up to this size." = "为此映像分配的存储空间。在导入映像时，此参数会被忽略。若导入的是 raw 映像，则虚拟机将存储一个与此相同大小的空文件。否则，磁盘映像将动态扩展至此大小。";
 
 /* No comment provided by engineer. */
 "Theme" = "主题";
