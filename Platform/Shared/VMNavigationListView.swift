@@ -67,8 +67,11 @@ struct VMNavigationListView: View {
                 }
             }
         }.onMove(perform: move)
+        
+        #if !os(iOS) // Disable slide to delete on iOS
         #if !WITH_REMOTE // FIXME: implement remote feature
         .onDelete(perform: delete)
+        #endif
         #endif
 
         if data.pendingVMs.count > 0 {
