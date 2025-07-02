@@ -50,3 +50,12 @@ PROVISIONING_PROFILE_SPECIFIER_HELPER = 00000000-1111-2222-3333-555555555555
 // from the following file
 //   - QEMULauncher/QEMULauncher.entitlements
 PROVISIONING_PROFILE_SPECIFIER_LAUNCHER = 00000000-1111-2222-3333-555555555555
+
+// If you are signed in to your developer account on Xcode, leave this as is
+// Otherwise, change it to 'Manual' and fill in the profile specifiers below
+CODE_SIGN_STYLE_IOS = Automatic
+
+// If using manual iOS signing, fill the profile specifiers for each app
+PROVISIONING_PROFILE_SPECIFIER_IOS = 
+PROVISIONING_PROFILE_SPECIFIER_SE = 
+PROVISIONING_PROFILE_SPECIFIER_REMOTE = 
