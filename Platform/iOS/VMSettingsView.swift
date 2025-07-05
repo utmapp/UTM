@@ -92,15 +92,19 @@ struct VMSettingsView: View {
             .navigationTitle("Settings")
             #endif
             .navigationViewStyle(.stack)
-            .navigationBarItems(leading: HStack {
+            .settingsNavigation(addDeviceContent: {
                 if #available(iOS 15, *) {
                     VMSettingsAddDeviceMenuView(config: config, isCreateDriveShown: $devicesState.isCreateDriveShown, isImportDriveShown: $devicesState.isImportDriveShown)
+                }
+            }, editContent: {
+                if #available(iOS 15, *) {
                     EditButton()
                 }
-            }, trailing: HStack {
+            }, cancelContent: {
                 Button(action: cancel) {
                     Text("Cancel")
                 }
+            }, saveContent: {
                 Button(action: save) {
                     Text("Save")
                 }
@@ -237,6 +241,39 @@ private extension View {
             self
         } else {
             self.id(UUID())
+        }
+    }
+    
+    @ViewBuilder func settingsNavigation(@ViewBuilder addDeviceContent: () -> some View, @ViewBuilder editContent: () -> some View, @ViewBuilder cancelContent: () -> some View, @ViewBuilder saveContent: () -> some View) -> some View {
+        if #available(iOS 26, visionOS 26, *) {
+            self.toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    addDeviceContent()
+                }
+                #if os(iOS)
+                ToolbarSpacer(placement: .topBarLeading)
+                #endif
+                ToolbarItem(placement: .topBarLeading) {
+                    editContent()
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    cancelContent()
+                }
+                #if os(iOS)
+                ToolbarSpacer(placement: .topBarTrailing)
+                #endif
+                ToolbarItem(placement: .topBarTrailing) {
+                    saveContent()
+                }
+            }
+        } else {
+            self.navigationBarItems(leading: HStack {
+                addDeviceContent()
+                editContent()
+            }, trailing: HStack {
+                cancelContent()
+                saveContent()
+            })
         }
     }
 }
