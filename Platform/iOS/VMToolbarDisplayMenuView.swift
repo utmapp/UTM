@@ -102,3 +102,14 @@ private struct Badge: View {
         }
     }
 }
+
+private extension View {
+    @ViewBuilder
+    func customBadge(_ count: Int) -> some View {
+        if #available(iOS 15, *) {
+            self.badge(count)
+        } else {
+            self.overlay(Badge(count: count), alignment: .topTrailing)
+        }
+    }
+}

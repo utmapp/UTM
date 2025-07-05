@@ -23,7 +23,7 @@ struct VMToolbarView: View {
     @State private var shake: Bool = true
     @State private var isMoving: Bool = false
     @State private var isIdle: Bool = false
-    @State private var dragPosition: CGPoint = .zero
+    @State private var dragOffset: CGSize = .zero
     @State private var shortIdleTask: DispatchWorkItem?
     
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
@@ -33,20 +33,20 @@ struct VMToolbarView: View {
     
     @Binding var state: VMWindowState
     
+    @Namespace private var namespace
+    
     private var spacing: CGFloat {
-        let direction: CGFloat
-        let distance: CGFloat
-        if location == .topLeft || location == .bottomLeft {
-            direction = -1
+        let add: CGFloat
+        if #available(iOS 26, *) {
+            add = 0
         } else {
-            direction = 1
+            add = 8
         }
         if horizontalSizeClass == .compact || verticalSizeClass == .compact {
-            distance = 40
+            return add + 0
         } else {
-            distance = 56
+            return add + 8
         }
-        return direction * distance
     }
     
     private var nameOfHideIcon: String {
@@ -80,63 +80,71 @@ struct VMToolbarView: View {
     }
     
     var body: some View {
-        GeometryReader { geometry in
-            Group {
-                Button {
-                    if state.isRunning {
-                        state.alert = .powerDown
-                    } else {
-                        state.alert = .terminateApp
+        if #available(iOS 26, *) {
+            GlassEffectContainer(spacing: spacing) {
+                toolbarBody
+            }
+        } else {
+            toolbarBody
+        }
+    }
+    
+    @ViewBuilder
+    var toolbarBody: some View {
+        toolbarContainer { geometry in
+            if !isCollapsed {
+                Group {
+                    Button {
+                        if state.isRunning {
+                            state.alert = .powerDown
+                        } else {
+                            state.alert = .terminateApp
+                        }
+                    } label: {
+                        if state.isRunning {
+                            Label("Power Off", systemImage: "power")
+                        } else {
+                            Label("Force Kill", systemImage: "xmark")
+                        }
+                    }.animationUniqueID("power", in: namespace)
+                    Button {
+                        session.pauseResume()
+                    } label: {
+                        Label(state.isRunning ? "Pause" : "Play", systemImage: state.isRunning ? "pause" : "play")
+                    }.animationUniqueID("pause", in: namespace)
+                    Button {
+                        state.alert = .restart
+                    } label: {
+                        Label("Restart", systemImage: "restart")
+                    }.animationUniqueID("restart", in: namespace)
+                    Button {
+                        if case .serial(_, _) = state.device {
+                            let template = session.qemuConfig.serials[state.device!.configIndex].terminal?.resizeCommand
+                            state.toggleDisplayResize(command: template)
+                        } else {
+                            state.toggleDisplayResize()
+                        }
+                    } label: {
+                        Label("Zoom", systemImage: state.isViewportChanged ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
+                    }.animationUniqueID("resize", in: namespace)
+                    #if WITH_USB
+                    if session.vm.hasUsbRedirection {
+                        VMToolbarUSBMenuView()
+                            .animationUniqueID("usb", in: namespace)
                     }
-                } label: {
-                    if state.isRunning {
-                        Label("Power Off", systemImage: "power")
-                    } else {
-                        Label("Force Kill", systemImage: "xmark")
-                    }
-                }.offset(offset(for: 8))
-                Button {
-                    session.pauseResume()
-                } label: {
-                    Label(state.isRunning ? "Pause" : "Play", systemImage: state.isRunning ? "pause" : "play")
-                }.offset(offset(for: 7))
-                Button {
-                    state.alert = .restart
-                } label: {
-                    Label("Restart", systemImage: "restart")
-                }.offset(offset(for: 6))
-                Button {
-                    if case .serial(_, _) = state.device {
-                        let template = session.qemuConfig.serials[state.device!.configIndex].terminal?.resizeCommand
-                        state.toggleDisplayResize(command: template)
-                    } else {
-                        state.toggleDisplayResize()
-                    }
-                } label: {
-                    Label("Zoom", systemImage: state.isViewportChanged ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
-                }.offset(offset(for: 5))
-                #if WITH_USB
-                if session.vm.hasUsbRedirection {
-                    VMToolbarUSBMenuView()
-                    .offset(offset(for: 4))
-                }
-                #endif
-                VMToolbarDriveMenuView(config: session.qemuConfig)
-                .offset(offset(for: 3))
-                VMToolbarDisplayMenuView(state: $state)
-                .offset(offset(for: 2))
-                Button {
-                    state.isKeyboardRequested = !state.isKeyboardShown
-                } label: {
-                    Label("Keyboard", systemImage: "keyboard")
-                }.offset(offset(for: 1))
-            }.buttonStyle(.toolbar(horizontalSizeClass: horizontalSizeClass, verticalSizeClass: verticalSizeClass))
-            .menuStyle(.toolbar)
-            .disabled(state.isBusy)
-            .opacity(isCollapsed ? 0 : 1)
-            .position(position(for: geometry))
-            .transition(.slide)
-            .animation(.default)
+                    #endif
+                    VMToolbarDriveMenuView(config: session.qemuConfig)
+                        .animationUniqueID("drive", in: namespace)
+                    VMToolbarDisplayMenuView(state: $state)
+                        .animationUniqueID("display", in: namespace)
+                    Button {
+                        state.isKeyboardRequested = !state.isKeyboardShown
+                    } label: {
+                        Label("Keyboard", systemImage: "keyboard")
+                    }.animationUniqueID("keyboard", in: namespace)
+                }.toolbarButtonStyle(horizontalSizeClass: horizontalSizeClass, verticalSizeClass: verticalSizeClass)
+                .disabled(state.isBusy)
+            }
             Button {
                 resetIdle()
                 longIdleTimeout.assertUserInteraction()
@@ -145,25 +153,26 @@ struct VMToolbarView: View {
                 }
             } label: {
                 Label("Hide", systemImage: isCollapsed ? nameOfHideIcon : nameOfShowIcon)
-            }.buttonStyle(.toolbar(horizontalSizeClass: horizontalSizeClass, verticalSizeClass: verticalSizeClass))
+            }.toolbarButtonStyle(horizontalSizeClass: horizontalSizeClass, verticalSizeClass: verticalSizeClass)
+            .animationUniqueID("hide", in: namespace)
             .modifier(HideToolbarTipModifier(isCollapsed: $isCollapsed))
             .opacity(toolbarToggleOpacity)
             .modifier(Shake(shake: shake))
-            .position(position(for: geometry))
+            .offset(dragOffset)
             .highPriorityGesture(
-                DragGesture()
+                DragGesture(coordinateSpace: .named("Window"))
                     .onChanged { value in
                         withOptionalAnimation {
                             isCollapsed = true
+                            isMoving = true
+                            dragOffset = value.translation
                         }
-                        isMoving = true
-                        dragPosition = value.location
                     }
                     .onEnded { value in
                         withOptionalAnimation {
                             location = closestLocation(to: value.location, for: geometry)
                             isMoving = false
-                            dragPosition = position(for: geometry)
+                            dragOffset = .zero
                         }
                         resetIdle()
                         longIdleTimeout.assertUserInteraction()
@@ -185,32 +194,51 @@ struct VMToolbarView: View {
         }
     }
     
+    @ViewBuilder
+    private func toolbarContainer<Content: View>(@ViewBuilder body: @escaping (GeometryProxy) -> Content) -> some View {
+        GeometryReader { geometry in
+            switch location {
+            case .topRight:
+                VStack(alignment: .trailing) {
+                    HStack(alignment: .top, spacing: spacing) {
+                        Spacer()
+                        body(geometry)
+                    }.padding(.trailing)
+                    Spacer()
+                }.padding(.top)
+            case .bottomRight:
+                VStack(alignment: .trailing) {
+                    Spacer()
+                    HStack(alignment: .bottom, spacing: spacing) {
+                        Spacer()
+                        body(geometry)
+                    }.padding(.trailing)
+                }.padding(.bottom)
+            case .topLeft:
+                VStack(alignment: .leading) {
+                    HStack(alignment: .top, spacing: spacing) {
+                        body(geometry)
+                        Spacer()
+                    }.padding(.leading)
+                    Spacer()
+                }.padding(.top)
+            case .bottomLeft:
+                VStack(alignment: .leading) {
+                    Spacer()
+                    HStack(alignment: .bottom, spacing: spacing) {
+                        body(geometry)
+                        Spacer()
+                    }.padding(.leading)
+                }.padding(.bottom)
+            }
+        }.coordinateSpace(name: "Window")
+    }
+    
     private func withOptionalAnimation<Result>(_ animation: Animation? = .default, _ body: () throws -> Result) rethrows -> Result {
         if UIAccessibility.isReduceMotionEnabled {
             return try body()
         } else {
             return try withAnimation(animation, body)
-        }
-    }
-    
-    private func position(for geometry: GeometryProxy) -> CGPoint {
-        let yoffset: CGFloat = 48
-        var xoffset: CGFloat = 48
-        guard !isMoving else {
-            return dragPosition
-        }
-        if session.vm.hasUsbRedirection && !isCollapsed {
-            xoffset -= 12
-        }
-        switch location {
-        case .topRight:
-            return CGPoint(x: geometry.size.width - xoffset, y: yoffset)
-        case .bottomRight:
-            return CGPoint(x: geometry.size.width - xoffset, y: geometry.size.height - yoffset)
-        case .topLeft:
-            return CGPoint(x: xoffset, y: yoffset)
-        case .bottomLeft:
-            return CGPoint(x: xoffset, y: geometry.size.height - yoffset)
         }
     }
     
@@ -224,15 +252,6 @@ struct VMToolbarView: View {
         } else {
             return .topRight
         }
-    }
-    
-    private func offset(for index: Int) -> CGSize {
-        var sub = 0
-        if !session.vm.hasUsbRedirection && index >= 4 {
-            sub = 1
-        }
-        let x = isCollapsed ? 0 : -CGFloat(index-sub)*spacing
-        return CGSize(width: x, height: 0)
     }
     
     private func resetIdle() {
@@ -325,6 +344,47 @@ struct ToolbarMenuStyle: MenuStyle, ToolbarButtonBaseStyle {
     
     func makeBody(configuration: Configuration) -> some View {
         return makeBodyBase(label: Menu(configuration), isPressed: false)
+    }
+}
+
+private extension View {
+    @ViewBuilder
+    func toolbarButtonStyle(horizontalSizeClass: UserInterfaceSizeClass? = nil, verticalSizeClass: UserInterfaceSizeClass? = nil) -> some View {
+        if #available(iOS 26, *) {
+            self
+                .menuStyle(.button)
+                .buttonStyle(.glass)
+                .buttonBorderShape(.circle)
+                .labelStyle(.iconOnly)
+                .tint(.white)
+                .controlSize(forHorizontalSizeClass: horizontalSizeClass)
+        } else {
+            self
+                .buttonStyle(.toolbar(horizontalSizeClass: horizontalSizeClass, verticalSizeClass: verticalSizeClass))
+                .menuStyle(.toolbar)
+        }
+    }
+    
+    @ViewBuilder
+    func animationUniqueID(_ id: (some Hashable & Sendable)?, in namespace: Namespace.ID) -> some View {
+        if #available(iOS 26, *) {
+            self
+                .glassEffectID(id, in: namespace)
+                .matchedGeometryEffect(id: id, in: namespace)
+        } else {
+            self
+                .matchedGeometryEffect(id: id, in: namespace)
+        }
+    }
+    
+    @available(iOS 15, *)
+    @ViewBuilder
+    func controlSize(forHorizontalSizeClass horizontalSizeClass: UserInterfaceSizeClass?) -> some View {
+        if horizontalSizeClass == .regular {
+            self.controlSize(.large)
+        } else {
+            self
+        }
     }
 }
 
