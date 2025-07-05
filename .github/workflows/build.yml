@@ -25,6 +25,7 @@ on:
 env:
   BUILD_XCODE_PATH: /Applications/Xcode_26.0.app
   RUNNER_IMAGE: macos-15
+  SEGMENT_DOWNLOAD_TIMEOUT_MINS: 60
 
 jobs:
   configuration:
@@ -71,11 +72,12 @@ jobs:
           [[ "$(xcode-select -p)" == "${{ env.BUILD_XCODE_PATH }}"* ]] || sudo xcode-select -s "${{ env.BUILD_XCODE_PATH }}"
       - name: Cache Sysroot
         id: cache-sysroot
-        uses: osy/actions-cache@v3
+        uses: actions/cache@v4
         with:
           path: sysroot-${{ matrix.platform }}-${{ matrix.arch }}
           key: ${{ matrix.platform }}-${{ matrix.arch }}-${{ hashFiles('scripts/build_dependencies.sh') }}-${{ hashFiles('patches/**') }}
           upload-chunk-size: 1048576 # 1 MiB
+          lookup-only: true
       - name: Setup Path
         shell: bash
         run: |
@@ -110,29 +112,27 @@ jobs:
         uses: actions/checkout@v3
       - name: Cache Sysroot (Universal Mac)
         id: cache-sysroot-universal
-        uses: osy/actions-cache@v3
+        uses: actions/cache@v4
         with:
           path: sysroot-macOS-arm64_x86_64
           key: macos-universal-${{ hashFiles('scripts/build_dependencies.sh', 'scripts/pack_dependencies.sh') }}-${{ hashFiles('patches/**') }}
+          lookup-only: true
       - name: Cache Sysroot (arm64)
         if: steps.cache-sysroot-universal.outputs.cache-hit != 'true'
         id: cache-sysroot-arm64
-        uses: osy/actions-cache@v3
+        uses: actions/cache@v4
         with:
           path: sysroot-macos-arm64
           key: macos-arm64-${{ hashFiles('scripts/build_dependencies.sh') }}-${{ hashFiles('patches/**') }}
+          fail-on-cache-miss: true
       - name: Cache Sysroot (x86_64)
         if: steps.cache-sysroot-universal.outputs.cache-hit != 'true'
         id: cache-sysroot-x86_64
-        uses: osy/actions-cache@v3
+        uses: actions/cache@v4
         with:
           path: sysroot-macos-x86_64
           key: macos-x86_64-${{ hashFiles('scripts/build_dependencies.sh') }}-${{ hashFiles('patches/**') }}
-      - name: Check Cache
-        if: steps.cache-sysroot-universal.outputs.cache-hit != 'true' && (steps.cache-sysroot-arm64.outputs.cache-hit != 'true' || steps.cache-sysroot-x86_64.outputs.cache-hit != 'true')
-        uses: actions/github-script@v6
-        with:
-          script: core.setFailed('Cached sysroot not found!')
+          fail-on-cache-miss: true
       - name: Pack Universal Sysroot
         if: steps.cache-sysroot-universal.outputs.cache-hit != 'true'
         run: |
@@ -169,15 +169,11 @@ jobs:
           submodules: recursive
       - name: Cache Sysroot
         id: cache-sysroot
-        uses: osy/actions-cache@v3
+        uses: actions/cache@v4
         with:
           path: sysroot-${{ matrix.configuration.platform }}-${{ matrix.configuration.arch }}
           key: ${{ matrix.configuration.platform }}-${{ matrix.configuration.arch }}-${{ hashFiles('scripts/build_dependencies.sh') }}-${{ hashFiles('patches/**') }}
-      - name: Check Cache
-        if: steps.cache-sysroot.outputs.cache-hit != 'true'
-        uses: actions/github-script@v6
-        with:
-          script: core.setFailed('Cached sysroot not found!')
+          fail-on-cache-miss: true
       - name: Setup Xcode
         shell: bash
         run: |
@@ -202,15 +198,11 @@ jobs:
           submodules: recursive
       - name: Cache Sysroot
         id: cache-sysroot
-        uses: osy/actions-cache@v3
+        uses: actions/cache@v4
         with:
           path: sysroot-macOS-arm64_x86_64
           key: macos-universal-${{ hashFiles('scripts/build_dependencies.sh', 'scripts/pack_dependencies.sh') }}-${{ hashFiles('patches/**') }}
-      - name: Check Cache
-        if: steps.cache-sysroot.outputs.cache-hit != 'true'
-        uses: actions/github-script@v6
-        with:
-          script: core.setFailed('Cached sysroot not found!')
+          fail-on-cache-miss: true
       - name: Setup Xcode
         shell: bash
         run: |
