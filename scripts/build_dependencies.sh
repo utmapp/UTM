@@ -442,22 +442,21 @@ build_hypervisor () {
     pwd="$(pwd)"
     cd "$BUILD_DIR/Hypervisor.git"
 
+    case $PLATFORM in
+    *simulator* )
+        scheme="HypervisorSimulator"
+        ;;
+    * )
+        scheme="Hypervisor"
+        ;;
+    esac
+
     echo "${GREEN}Building Hypervisor...${NC}"
-    env -i PATH=$PATH xcodebuild archive -archivePath "Hypervisor" -scheme "Hypervisor" -sdk $SDK -configuration Release
+    env -i PATH=$PATH xcodebuild archive -archivePath "Hypervisor" -scheme "$scheme" -sdk $SDK -configuration Release
 
     rsync -a "Hypervisor.xcarchive/Products/Library/Frameworks/" "$PREFIX/Frameworks"
     cd "$pwd"
     export PATH=$OLD_PATH
-}
-
-generate_fake_hypervisor () {
-    mkdir "$PREFIX/Frameworks/Hypervisor.framework"
-    touch "$PREFIX/Frameworks/Hypervisor.framework/Hypervisor"
-    /usr/libexec/PlistBuddy -c "Add :CFBundleExecutable string Hypervisor" "$PREFIX/Frameworks/Hypervisor.framework/Info.plist"
-    /usr/libexec/PlistBuddy -c "Add :CFBundleIdentifier string com.pomegranate.Hypervisor" "$PREFIX/Frameworks/Hypervisor.framework/Info.plist"
-    /usr/libexec/PlistBuddy -c "Add :MinimumOSVersion string $SDKMINVER" "$PREFIX/Frameworks/Hypervisor.framework/Info.plist"
-    /usr/libexec/PlistBuddy -c "Add :CFBundleVersion string 1" "$PREFIX/Frameworks/Hypervisor.framework/Info.plist"
-    /usr/libexec/PlistBuddy -c "Add :CFBundleShortVersionString string 1.0" "$PREFIX/Frameworks/Hypervisor.framework/Info.plist"
 }
 
 build_qemu_dependencies () {
@@ -492,7 +491,7 @@ build_qemu_dependencies () {
     meson_build $EPOXY_REPO -Dtests=false -Dglx=no -Degl=yes
     meson_build $VIRGLRENDERER_REPO -Dtests=false -Dcheck-gl-errors=false
     # Hypervisor for iOS
-    if [ "$PLATFORM" == "ios" ]; then
+    if [ "$PLATFORM" == "ios" ] || [ "$PLATFORM" == "ios_simulator" ]; then
         build_hypervisor
     fi
 }
@@ -802,10 +801,6 @@ build_qemu_dependencies
 build $QEMU_DIR --cross-prefix="" $QEMU_PLATFORM_BUILD_FLAGS
 build_spice_client
 fixup_all
-# Fake Hypervisor to get iOS Simulator to build
-if [ "$PLATFORM" == "ios_simulator" ]; then
-    generate_fake_hypervisor
-fi
 remove_shared_gst_plugins # another hack...
 echo "${GREEN}All done!${NC}"
 touch "$BUILD_DIR/BUILD_SUCCESS"
