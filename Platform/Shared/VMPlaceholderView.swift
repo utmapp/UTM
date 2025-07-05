@@ -56,11 +56,9 @@ fileprivate struct VMPlaceholderViewNew: View {
                 }
                 #if os(macOS)
                 GridRow {
-                    Button {
+                    TileButton(Label(String.server, systemImage: "server.rack"), width: nil, height: 50, compact: true) {
                         openWindow(id: "server")
-                    } label: {
-                        Label(String.server, systemImage: "server.rack")
-                    }.buttonStyle(BigButtonStyle(width: nil, height: 50))
+                    }
                     .gridCellColumns(2)
                     .gridCellUnsizedAxes(.horizontal)
                 }
@@ -115,18 +113,44 @@ fileprivate extension String {
 
 private struct TileButton: View {
     let label: Label<Text, Image>
+    let width: CGFloat?
+    let height: CGFloat?
+    let compact: Bool
     let action: () -> Void
     
-    init(_ label: Label<Text, Image>, action: @escaping () -> Void) {
+    init(_ label: Label<Text, Image>, width: CGFloat? = 150, height: CGFloat? = 150, compact: Bool = false, action: @escaping () -> Void) {
         self.label = label
         self.action = action
+        self.width = width
+        self.height = height
+        self.compact = compact
     }
     
     var body: some View {
-        Button(action: action, label: {
-            label
-                .labelStyle(TileLabelStyle())
-        }).buttonStyle(BigButtonStyle(width: 150, height: 150))
+        if #available(iOS 26, macOS 26, visionOS 26, *) {
+            Button(action: action, label: {
+                if compact {
+                    label
+                        .frame(minWidth: width, maxWidth: .infinity, minHeight: height)
+                } else {
+                    label
+                        .labelStyle(TileLabelStyle())
+                        .frame(width: width, height: height)
+                }
+            })
+            .buttonStyle(.bordered)
+            .buttonSizing(.fitted)
+            .buttonBorderShape(.roundedRectangle)
+        } else {
+            Button(action: action, label: {
+                if compact {
+                    label
+                } else {
+                    label
+                        .labelStyle(TileLabelStyle())
+                }
+            }).buttonStyle(BigButtonStyle(width: width, height: height))
+        }
     }
 }
 
