@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, nonatomic) IBOutlet UIInputView *inputAccessoryView;
 @property (strong, nonatomic) IBOutletCollection(VMKeyboardButton) NSArray *customKeyModifierButtons;
 
-@property (nonatomic) IBOutlet CSMTKView *mtkView;
+@property (nonatomic) IBOutlet MTKView *mtkView;
 @property (nonatomic) IBOutlet VMKeyboardView *keyboardView;
 
 @property (nonatomic, nullable) CSInput *vmInput;

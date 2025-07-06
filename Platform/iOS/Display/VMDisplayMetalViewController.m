@@ -54,7 +54,7 @@ static const NSInteger kResizeTimeoutSecs = 5;
 - (void)loadView {
     [super loadView];
     self.keyboardView = [[VMKeyboardView alloc] initWithFrame:CGRectZero];
-    self.mtkView = [[CSMTKView alloc] initWithFrame:CGRectZero];
+    self.mtkView = [[MTKView alloc] initWithFrame:CGRectZero];
     self.keyboardView.delegate = self;
     [self.view insertSubview:self.keyboardView atIndex:0];
     [self.view insertSubview:self.mtkView atIndex:1];
