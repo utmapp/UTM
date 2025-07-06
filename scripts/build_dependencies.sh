@@ -462,7 +462,7 @@ build_hypervisor () {
 build_qemu_dependencies () {
     build $FFI_SRC
     build $ICONV_SRC
-    build $GETTEXT_SRC --disable-java
+    gl_cv_onwards_func_strchrnul=future build $GETTEXT_SRC --disable-java
     build $PNG_SRC
     build $JPEG_TURBO_SRC
     meson_build $GLIB_SRC -Dtests=false -Ddtrace=disabled
