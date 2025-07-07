@@ -17,7 +17,6 @@ TARGETS = [
     Name("arm", "ARM (aarch32)"),
     Name("aarch64", "ARM64 (aarch64)"),
     Name("avr", "AVR"),
-    Name("cris", "CRIS"),
     Name("hppa", "HPPA"),
     Name("i386", "i386 (x86)"),
     Name("loongarch64", "LoongArch64"),
@@ -356,11 +355,9 @@ def main(argv):
     allSerialCards = []
     # parse outputs
     for target in TARGETS:
-        path = '{}/{}-softmmu/qemu-system-{}'.format(base, target.name, target.name)
+        path = '{}/qemu-system-{}-unsigned'.format(base, target.name)
         if not os.path.exists(path):
-            path = '{}/qemu-system-{}'.format(base, target.name)
-            if not os.path.exists(path):
-                raise "Invalid path."
+            raise "Invalid path."
         machines = sortItems(getMachines(target, path))
         default = getDefaultMachine(target.name, machines)
         allMachines.append(Architecture(target.name, machines, default))

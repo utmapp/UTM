@@ -23,7 +23,6 @@ enum QEMUArchitecture: String, CaseIterable, QEMUConstant {
     case arm
     case aarch64
     case avr
-    case cris
     case hppa
     case i386
     case loongarch64
@@ -56,7 +55,6 @@ enum QEMUArchitecture: String, CaseIterable, QEMUConstant {
         case .arm: return "ARM (aarch32)"
         case .aarch64: return "ARM64 (aarch64)"
         case .avr: return "AVR"
-        case .cris: return "CRIS"
         case .hppa: return "HPPA"
         case .i386: return "i386 (x86)"
         case .loongarch64: return "LoongArch64"
@@ -111,6 +109,18 @@ enum QEMUCPU_alpha: String, CaseIterable, QEMUCPU {
 }
 
 enum QEMUCPU_arm: String, CaseIterable, QEMUCPU {
+    case pxa250
+    case pxa255
+    case pxa260
+    case pxa261
+    case pxa262
+    case pxa270
+    case pxa270_a0 = "pxa270-a0"
+    case pxa270_a1 = "pxa270-a1"
+    case pxa270_b0 = "pxa270-b0"
+    case pxa270_b1 = "pxa270-b1"
+    case pxa270_c0 = "pxa270-c0"
+    case pxa270_c5 = "pxa270-c5"
     case `default` = "default"
     case arm1026
     case arm1136
@@ -133,24 +143,24 @@ enum QEMUCPU_arm: String, CaseIterable, QEMUCPU {
     case cortex_r52 = "cortex-r52"
     case cortex_r5f = "cortex-r5f"
     case max
-    case pxa250
-    case pxa255
-    case pxa260
-    case pxa261
-    case pxa262
-    case pxa270
-    case pxa270_a0 = "pxa270-a0"
-    case pxa270_a1 = "pxa270-a1"
-    case pxa270_b0 = "pxa270-b0"
-    case pxa270_b1 = "pxa270-b1"
-    case pxa270_c0 = "pxa270-c0"
-    case pxa270_c5 = "pxa270-c5"
     case sa1100
     case sa1110
     case ti925t
 
     var prettyValue: String {
         switch self {
+        case .pxa250: return "(deprecated) (pxa250)"
+        case .pxa255: return "(deprecated) (pxa255)"
+        case .pxa260: return "(deprecated) (pxa260)"
+        case .pxa261: return "(deprecated) (pxa261)"
+        case .pxa262: return "(deprecated) (pxa262)"
+        case .pxa270: return "(deprecated) (pxa270)"
+        case .pxa270_a0: return "(deprecated) (pxa270-a0)"
+        case .pxa270_a1: return "(deprecated) (pxa270-a1)"
+        case .pxa270_b0: return "(deprecated) (pxa270-b0)"
+        case .pxa270_b1: return "(deprecated) (pxa270-b1)"
+        case .pxa270_c0: return "(deprecated) (pxa270-c0)"
+        case .pxa270_c5: return "(deprecated) (pxa270-c5)"
         case .`default`: return NSLocalizedString("Default", comment: "QEMUConstantGenerated")
         case .arm1026: return "arm1026"
         case .arm1136: return "arm1136"
@@ -173,18 +183,6 @@ enum QEMUCPU_arm: String, CaseIterable, QEMUCPU {
         case .cortex_r52: return "cortex-r52"
         case .cortex_r5f: return "cortex-r5f"
         case .max: return "max"
-        case .pxa250: return "pxa250"
-        case .pxa255: return "pxa255"
-        case .pxa260: return "pxa260"
-        case .pxa261: return "pxa261"
-        case .pxa262: return "pxa262"
-        case .pxa270: return "pxa270"
-        case .pxa270_a0: return "pxa270-a0"
-        case .pxa270_a1: return "pxa270-a1"
-        case .pxa270_b0: return "pxa270-b0"
-        case .pxa270_b1: return "pxa270-b1"
-        case .pxa270_c0: return "pxa270-c0"
-        case .pxa270_c5: return "pxa270-c5"
         case .sa1100: return "sa1100"
         case .sa1110: return "sa1110"
         case .ti925t: return "ti925t"
@@ -193,6 +191,18 @@ enum QEMUCPU_arm: String, CaseIterable, QEMUCPU {
 }
 
 enum QEMUCPU_aarch64: String, CaseIterable, QEMUCPU {
+    case pxa250
+    case pxa255
+    case pxa260
+    case pxa261
+    case pxa262
+    case pxa270
+    case pxa270_a0 = "pxa270-a0"
+    case pxa270_a1 = "pxa270-a1"
+    case pxa270_b0 = "pxa270-b0"
+    case pxa270_b1 = "pxa270-b1"
+    case pxa270_c0 = "pxa270-c0"
+    case pxa270_c5 = "pxa270-c5"
     case `default` = "default"
     case a64fx
     case arm1026
@@ -227,24 +237,24 @@ enum QEMUCPU_aarch64: String, CaseIterable, QEMUCPU {
     case neoverse_n1 = "neoverse-n1"
     case neoverse_n2 = "neoverse-n2"
     case neoverse_v1 = "neoverse-v1"
-    case pxa250
-    case pxa255
-    case pxa260
-    case pxa261
-    case pxa262
-    case pxa270
-    case pxa270_a0 = "pxa270-a0"
-    case pxa270_a1 = "pxa270-a1"
-    case pxa270_b0 = "pxa270-b0"
-    case pxa270_b1 = "pxa270-b1"
-    case pxa270_c0 = "pxa270-c0"
-    case pxa270_c5 = "pxa270-c5"
     case sa1100
     case sa1110
     case ti925t
 
     var prettyValue: String {
         switch self {
+        case .pxa250: return "(deprecated) (pxa250)"
+        case .pxa255: return "(deprecated) (pxa255)"
+        case .pxa260: return "(deprecated) (pxa260)"
+        case .pxa261: return "(deprecated) (pxa261)"
+        case .pxa262: return "(deprecated) (pxa262)"
+        case .pxa270: return "(deprecated) (pxa270)"
+        case .pxa270_a0: return "(deprecated) (pxa270-a0)"
+        case .pxa270_a1: return "(deprecated) (pxa270-a1)"
+        case .pxa270_b0: return "(deprecated) (pxa270-b0)"
+        case .pxa270_b1: return "(deprecated) (pxa270-b1)"
+        case .pxa270_c0: return "(deprecated) (pxa270-c0)"
+        case .pxa270_c5: return "(deprecated) (pxa270-c5)"
         case .`default`: return NSLocalizedString("Default", comment: "QEMUConstantGenerated")
         case .a64fx: return "a64fx"
         case .arm1026: return "arm1026"
@@ -279,18 +289,6 @@ enum QEMUCPU_aarch64: String, CaseIterable, QEMUCPU {
         case .neoverse_n1: return "neoverse-n1"
         case .neoverse_n2: return "neoverse-n2"
         case .neoverse_v1: return "neoverse-v1"
-        case .pxa250: return "pxa250"
-        case .pxa255: return "pxa255"
-        case .pxa260: return "pxa260"
-        case .pxa261: return "pxa261"
-        case .pxa262: return "pxa262"
-        case .pxa270: return "pxa270"
-        case .pxa270_a0: return "pxa270-a0"
-        case .pxa270_a1: return "pxa270-a1"
-        case .pxa270_b0: return "pxa270-b0"
-        case .pxa270_b1: return "pxa270-b1"
-        case .pxa270_c0: return "pxa270-c0"
-        case .pxa270_c5: return "pxa270-c5"
         case .sa1100: return "sa1100"
         case .sa1110: return "sa1110"
         case .ti925t: return "ti925t"
@@ -310,28 +308,6 @@ enum QEMUCPU_avr: String, CaseIterable, QEMUCPU {
         case .avr5: return "avr5"
         case .avr51: return "avr51"
         case .avr6: return "avr6"
-        }
-    }
-}
-
-enum QEMUCPU_cris: String, CaseIterable, QEMUCPU {
-    case `default` = "default"
-    case crisv10
-    case crisv11
-    case crisv17
-    case crisv32
-    case crisv8
-    case crisv9
-
-    var prettyValue: String {
-        switch self {
-        case .`default`: return NSLocalizedString("Default", comment: "QEMUConstantGenerated")
-        case .crisv10: return "crisv10"
-        case .crisv11: return "crisv11"
-        case .crisv17: return "crisv17"
-        case .crisv32: return "crisv32"
-        case .crisv8: return "crisv8"
-        case .crisv9: return "crisv9"
         }
     }
 }
@@ -376,6 +352,7 @@ enum QEMUCPU_i386: String, CaseIterable, QEMUCPU {
     case Broadwell_noTSX_IBRS = "Broadwell-noTSX-IBRS"
     case Cascadelake_Server = "Cascadelake-Server"
     case Cascadelake_Server_noTSX = "Cascadelake-Server-noTSX"
+    case ClearwaterForest
     case kvm32_v1 = "kvm32-v1"
     case kvm64_v1 = "kvm64-v1"
     case Conroe
@@ -429,12 +406,14 @@ enum QEMUCPU_i386: String, CaseIterable, QEMUCPU {
     case KnightsMill_v1 = "KnightsMill-v1"
     case Cascadelake_Server_v1 = "Cascadelake-Server-v1"
     case Cascadelake_Server_v5 = "Cascadelake-Server-v5"
-    case Cascadelake_Server_v3 = "Cascadelake-Server-v3"
     case Cascadelake_Server_v4 = "Cascadelake-Server-v4"
+    case Cascadelake_Server_v3 = "Cascadelake-Server-v3"
     case Cascadelake_Server_v2 = "Cascadelake-Server-v2"
+    case ClearwaterForest_v1 = "ClearwaterForest-v1"
     case Cooperlake_v1 = "Cooperlake-v1"
     case Cooperlake_v2 = "Cooperlake-v2"
     case GraniteRapids_v1 = "GraniteRapids-v1"
+    case GraniteRapids_v2 = "GraniteRapids-v2"
     case Icelake_Server_v1 = "Icelake-Server-v1"
     case Icelake_Server_v3 = "Icelake-Server-v3"
     case Icelake_Server_v4 = "Icelake-Server-v4"
@@ -446,6 +425,7 @@ enum QEMUCPU_i386: String, CaseIterable, QEMUCPU {
     case SapphireRapids_v2 = "SapphireRapids-v2"
     case SapphireRapids_v3 = "SapphireRapids-v3"
     case SierraForest_v1 = "SierraForest-v1"
+    case SierraForest_v2 = "SierraForest-v2"
     case Skylake_Server_v1 = "Skylake-Server-v1"
     case Skylake_Server_v2 = "Skylake-Server-v2"
     case Skylake_Server_v3 = "Skylake-Server-v3"
@@ -482,6 +462,9 @@ enum QEMUCPU_i386: String, CaseIterable, QEMUCPU {
     case Westmere_v2 = "Westmere-v2"
     case Westmere_v1 = "Westmere-v1"
     case Westmere_IBRS = "Westmere-IBRS"
+    case YongFeng
+    case YongFeng_v1 = "YongFeng-v1"
+    case YongFeng_v2 = "YongFeng-v2"
     case athlon
     case base
     case core2duo
@@ -526,6 +509,7 @@ enum QEMUCPU_i386: String, CaseIterable, QEMUCPU {
         case .Broadwell_noTSX_IBRS: return "Broadwell-noTSX-IBRS"
         case .Cascadelake_Server: return "Cascadelake-Server"
         case .Cascadelake_Server_noTSX: return "Cascadelake-Server-noTSX"
+        case .ClearwaterForest: return "ClearwaterForest"
         case .kvm32_v1: return "Common 32-bit KVM processor (kvm32-v1)"
         case .kvm64_v1: return "Common KVM processor (kvm64-v1)"
         case .Conroe: return "Conroe"
@@ -579,12 +563,14 @@ enum QEMUCPU_i386: String, CaseIterable, QEMUCPU {
         case .KnightsMill_v1: return "Intel Xeon Phi Processor (Knights Mill) (KnightsMill-v1)"
         case .Cascadelake_Server_v1: return "Intel Xeon Processor (Cascadelake) (Cascadelake-Server-v1)"
         case .Cascadelake_Server_v5: return "Intel Xeon Processor (Cascadelake) [ARCH_CAPABILITIES, EPT switching, XSAVES, no TSX] (Cascadelake-Server-v5)"
+        case .Cascadelake_Server_v4: return "Intel Xeon Processor (Cascadelake) [ARCH_CAPABILITIES, EPT switching, no TSX] (Cascadelake-Server-v4)"
         case .Cascadelake_Server_v3: return "Intel Xeon Processor (Cascadelake) [ARCH_CAPABILITIES, no TSX] (Cascadelake-Server-v3)"
-        case .Cascadelake_Server_v4: return "Intel Xeon Processor (Cascadelake) [ARCH_CAPABILITIES, no TSX] (Cascadelake-Server-v4)"
         case .Cascadelake_Server_v2: return "Intel Xeon Processor (Cascadelake) [ARCH_CAPABILITIES] (Cascadelake-Server-v2)"
+        case .ClearwaterForest_v1: return "Intel Xeon Processor (ClearwaterForest) (ClearwaterForest-v1)"
         case .Cooperlake_v1: return "Intel Xeon Processor (Cooperlake) (Cooperlake-v1)"
         case .Cooperlake_v2: return "Intel Xeon Processor (Cooperlake) [XSAVES] (Cooperlake-v2)"
         case .GraniteRapids_v1: return "Intel Xeon Processor (GraniteRapids) (GraniteRapids-v1)"
+        case .GraniteRapids_v2: return "Intel Xeon Processor (GraniteRapids) (GraniteRapids-v2)"
         case .Icelake_Server_v1: return "Intel Xeon Processor (Icelake) (Icelake-Server-v1)"
         case .Icelake_Server_v3: return "Intel Xeon Processor (Icelake) (Icelake-Server-v3)"
         case .Icelake_Server_v4: return "Intel Xeon Processor (Icelake) (Icelake-Server-v4)"
@@ -596,10 +582,11 @@ enum QEMUCPU_i386: String, CaseIterable, QEMUCPU {
         case .SapphireRapids_v2: return "Intel Xeon Processor (SapphireRapids) (SapphireRapids-v2)"
         case .SapphireRapids_v3: return "Intel Xeon Processor (SapphireRapids) (SapphireRapids-v3)"
         case .SierraForest_v1: return "Intel Xeon Processor (SierraForest) (SierraForest-v1)"
+        case .SierraForest_v2: return "Intel Xeon Processor (SierraForest) (SierraForest-v2)"
         case .Skylake_Server_v1: return "Intel Xeon Processor (Skylake) (Skylake-Server-v1)"
         case .Skylake_Server_v2: return "Intel Xeon Processor (Skylake, IBRS) (Skylake-Server-v2)"
         case .Skylake_Server_v3: return "Intel Xeon Processor (Skylake, IBRS, no TSX) (Skylake-Server-v3)"
-        case .Skylake_Server_v4: return "Intel Xeon Processor (Skylake, IBRS, no TSX) (Skylake-Server-v4)"
+        case .Skylake_Server_v4: return "Intel Xeon Processor (Skylake, IBRS, no TSX) [IBRS, EPT switching, no TSX] (Skylake-Server-v4)"
         case .Skylake_Server_v5: return "Intel Xeon Processor (Skylake, IBRS, no TSX) [IBRS, XSAVES, EPT switching, no TSX] (Skylake-Server-v5)"
         case .n270_v1: return "Intel(R) Atom(TM) CPU N270 @ 1.60GHz (n270-v1)"
         case .core2duo_v1: return "Intel(R) Core(TM)2 Duo CPU T7700 @ 2.40GHz (core2duo-v1)"
@@ -632,6 +619,9 @@ enum QEMUCPU_i386: String, CaseIterable, QEMUCPU {
         case .Westmere_v2: return "Westmere E56xx/L56xx/X56xx (IBRS update) (Westmere-v2)"
         case .Westmere_v1: return "Westmere E56xx/L56xx/X56xx (Nehalem-C) (Westmere-v1)"
         case .Westmere_IBRS: return "Westmere-IBRS"
+        case .YongFeng: return "YongFeng"
+        case .YongFeng_v1: return "Zhaoxin YongFeng Processor (YongFeng-v1)"
+        case .YongFeng_v2: return "Zhaoxin YongFeng Processor [with the correct model number] (YongFeng-v2)"
         case .athlon: return "athlon"
         case .base: return "base CPU model type with no features enabled (base)"
         case .core2duo: return "core2duo"
@@ -1903,6 +1893,7 @@ enum QEMUCPU_ppc64: String, CaseIterable, QEMUCPU {
     case g2
     case mpc603
     case g2hip3
+    case power11_v2_0 = "power11_v2.0"
     case e300c1
     case mpc8343
     case mpc8343a
@@ -2160,6 +2151,7 @@ enum QEMUCPU_ppc64: String, CaseIterable, QEMUCPU {
     case mpc8560
     case nitro
     case power10
+    case power11
     case power5_ = "power5+"
     case power5_v2_1 = "power5+_v2.1"
     case power5gs
@@ -2325,6 +2317,7 @@ enum QEMUCPU_ppc64: String, CaseIterable, QEMUCPU {
         case .g2: return "PVR 00810011 (g2)"
         case .mpc603: return "PVR 00810100 (mpc603)"
         case .g2hip3: return "PVR 00810101 (g2hip3)"
+        case .power11_v2_0: return "PVR 00821200 (power11_v2.0)"
         case .e300c1: return "PVR 00830010 (e300c1)"
         case .mpc8343: return "PVR 00830010 (mpc8343)"
         case .mpc8343a: return "PVR 00830010 (mpc8343a)"
@@ -2582,6 +2575,7 @@ enum QEMUCPU_ppc64: String, CaseIterable, QEMUCPU {
         case .mpc8560: return "mpc8560"
         case .nitro: return "nitro"
         case .power10: return "power10"
+        case .power11: return "power11"
         case .power5_: return "power5+"
         case .power5_v2_1: return "power5+_v2.1"
         case .power5gs: return "power5gs"
@@ -2610,7 +2604,6 @@ enum QEMUCPU_ppc64: String, CaseIterable, QEMUCPU {
 
 enum QEMUCPU_riscv32: String, CaseIterable, QEMUCPU {
     case `default` = "default"
-    case any
     case lowrisc_ibex = "lowrisc-ibex"
     case max
     case rv32
@@ -2623,7 +2616,6 @@ enum QEMUCPU_riscv32: String, CaseIterable, QEMUCPU {
     var prettyValue: String {
         switch self {
         case .`default`: return NSLocalizedString("Default", comment: "QEMUConstantGenerated")
-        case .any: return "any"
         case .lowrisc_ibex: return "lowrisc-ibex"
         case .max: return "max"
         case .rv32: return "rv32"
@@ -2638,36 +2630,58 @@ enum QEMUCPU_riscv32: String, CaseIterable, QEMUCPU {
 
 enum QEMUCPU_riscv64: String, CaseIterable, QEMUCPU {
     case `default` = "default"
-    case any
+    case lowrisc_ibex = "lowrisc-ibex"
     case max
+    case max32
+    case rv32
+    case rv32e
+    case rv32i
     case rv64
     case rv64e
     case rv64i
     case rva22s64
     case rva22u64
+    case rva23s64
+    case rva23u64
     case shakti_c = "shakti-c"
+    case sifive_e31 = "sifive-e31"
+    case sifive_e34 = "sifive-e34"
     case sifive_e51 = "sifive-e51"
+    case sifive_u34 = "sifive-u34"
     case sifive_u54 = "sifive-u54"
     case thead_c906 = "thead-c906"
+    case tt_ascalon = "tt-ascalon"
     case veyron_v1 = "veyron-v1"
     case x_rv128 = "x-rv128"
+    case xiangshan_nanhu = "xiangshan-nanhu"
 
     var prettyValue: String {
         switch self {
         case .`default`: return NSLocalizedString("Default", comment: "QEMUConstantGenerated")
-        case .any: return "any"
+        case .lowrisc_ibex: return "lowrisc-ibex"
         case .max: return "max"
+        case .max32: return "max32"
+        case .rv32: return "rv32"
+        case .rv32e: return "rv32e"
+        case .rv32i: return "rv32i"
         case .rv64: return "rv64"
         case .rv64e: return "rv64e"
         case .rv64i: return "rv64i"
         case .rva22s64: return "rva22s64"
         case .rva22u64: return "rva22u64"
+        case .rva23s64: return "rva23s64"
+        case .rva23u64: return "rva23u64"
         case .shakti_c: return "shakti-c"
+        case .sifive_e31: return "sifive-e31"
+        case .sifive_e34: return "sifive-e34"
         case .sifive_e51: return "sifive-e51"
+        case .sifive_u34: return "sifive-u34"
         case .sifive_u54: return "sifive-u54"
         case .thead_c906: return "thead-c906"
+        case .tt_ascalon: return "tt-ascalon"
         case .veyron_v1: return "veyron-v1"
         case .x_rv128: return "x-rv128"
+        case .xiangshan_nanhu: return "xiangshan-nanhu"
         }
     }
 }
@@ -2691,6 +2705,10 @@ enum QEMUCPU_s390x: String, CaseIterable, QEMUCPU {
     case gen16a_base = "gen16a-base"
     case gen16b
     case gen16b_base = "gen16b-base"
+    case gen17a
+    case gen17a_base = "gen17a-base"
+    case gen17b
+    case gen17b_base = "gen17b-base"
     case z10BC
     case z10BC_base = "z10BC-base"
     case z10BC_2 = "z10BC.2"
@@ -2773,6 +2791,10 @@ enum QEMUCPU_s390x: String, CaseIterable, QEMUCPU {
         case .gen16a_base: return "IBM 3931 GA1 (static, migration-safe) (gen16a-base)"
         case .gen16b: return "IBM 3932 GA1 (migration-safe) (gen16b)"
         case .gen16b_base: return "IBM 3932 GA1 (static, migration-safe) (gen16b-base)"
+        case .gen17a: return "IBM 9175 GA1 (migration-safe) (gen17a)"
+        case .gen17a_base: return "IBM 9175 GA1 (static, migration-safe) (gen17a-base)"
+        case .gen17b: return "IBM 9176 GA1 (migration-safe) (gen17b)"
+        case .gen17b_base: return "IBM 9176 GA1 (static, migration-safe) (gen17b-base)"
         case .z10BC: return "IBM System z10 BC GA1 (migration-safe) (z10BC)"
         case .z10BC_base: return "IBM System z10 BC GA1 (static, migration-safe) (z10BC-base)"
         case .z10BC_2: return "IBM System z10 BC GA2 (migration-safe) (z10BC.2)"
@@ -3006,6 +3028,7 @@ enum QEMUCPU_x86_64: String, CaseIterable, QEMUCPU {
     case Broadwell_noTSX_IBRS = "Broadwell-noTSX-IBRS"
     case Cascadelake_Server = "Cascadelake-Server"
     case Cascadelake_Server_noTSX = "Cascadelake-Server-noTSX"
+    case ClearwaterForest
     case kvm32_v1 = "kvm32-v1"
     case kvm64_v1 = "kvm64-v1"
     case Conroe
@@ -3059,12 +3082,14 @@ enum QEMUCPU_x86_64: String, CaseIterable, QEMUCPU {
     case KnightsMill_v1 = "KnightsMill-v1"
     case Cascadelake_Server_v1 = "Cascadelake-Server-v1"
     case Cascadelake_Server_v5 = "Cascadelake-Server-v5"
-    case Cascadelake_Server_v3 = "Cascadelake-Server-v3"
     case Cascadelake_Server_v4 = "Cascadelake-Server-v4"
+    case Cascadelake_Server_v3 = "Cascadelake-Server-v3"
     case Cascadelake_Server_v2 = "Cascadelake-Server-v2"
+    case ClearwaterForest_v1 = "ClearwaterForest-v1"
     case Cooperlake_v1 = "Cooperlake-v1"
     case Cooperlake_v2 = "Cooperlake-v2"
     case GraniteRapids_v1 = "GraniteRapids-v1"
+    case GraniteRapids_v2 = "GraniteRapids-v2"
     case Icelake_Server_v1 = "Icelake-Server-v1"
     case Icelake_Server_v3 = "Icelake-Server-v3"
     case Icelake_Server_v4 = "Icelake-Server-v4"
@@ -3076,6 +3101,7 @@ enum QEMUCPU_x86_64: String, CaseIterable, QEMUCPU {
     case SapphireRapids_v2 = "SapphireRapids-v2"
     case SapphireRapids_v3 = "SapphireRapids-v3"
     case SierraForest_v1 = "SierraForest-v1"
+    case SierraForest_v2 = "SierraForest-v2"
     case Skylake_Server_v1 = "Skylake-Server-v1"
     case Skylake_Server_v2 = "Skylake-Server-v2"
     case Skylake_Server_v3 = "Skylake-Server-v3"
@@ -3112,6 +3138,9 @@ enum QEMUCPU_x86_64: String, CaseIterable, QEMUCPU {
     case Westmere_v2 = "Westmere-v2"
     case Westmere_v1 = "Westmere-v1"
     case Westmere_IBRS = "Westmere-IBRS"
+    case YongFeng
+    case YongFeng_v1 = "YongFeng-v1"
+    case YongFeng_v2 = "YongFeng-v2"
     case athlon
     case base
     case core2duo
@@ -3156,6 +3185,7 @@ enum QEMUCPU_x86_64: String, CaseIterable, QEMUCPU {
         case .Broadwell_noTSX_IBRS: return "Broadwell-noTSX-IBRS"
         case .Cascadelake_Server: return "Cascadelake-Server"
         case .Cascadelake_Server_noTSX: return "Cascadelake-Server-noTSX"
+        case .ClearwaterForest: return "ClearwaterForest"
         case .kvm32_v1: return "Common 32-bit KVM processor (kvm32-v1)"
         case .kvm64_v1: return "Common KVM processor (kvm64-v1)"
         case .Conroe: return "Conroe"
@@ -3209,12 +3239,14 @@ enum QEMUCPU_x86_64: String, CaseIterable, QEMUCPU {
         case .KnightsMill_v1: return "Intel Xeon Phi Processor (Knights Mill) (KnightsMill-v1)"
         case .Cascadelake_Server_v1: return "Intel Xeon Processor (Cascadelake) (Cascadelake-Server-v1)"
         case .Cascadelake_Server_v5: return "Intel Xeon Processor (Cascadelake) [ARCH_CAPABILITIES, EPT switching, XSAVES, no TSX] (Cascadelake-Server-v5)"
+        case .Cascadelake_Server_v4: return "Intel Xeon Processor (Cascadelake) [ARCH_CAPABILITIES, EPT switching, no TSX] (Cascadelake-Server-v4)"
         case .Cascadelake_Server_v3: return "Intel Xeon Processor (Cascadelake) [ARCH_CAPABILITIES, no TSX] (Cascadelake-Server-v3)"
-        case .Cascadelake_Server_v4: return "Intel Xeon Processor (Cascadelake) [ARCH_CAPABILITIES, no TSX] (Cascadelake-Server-v4)"
         case .Cascadelake_Server_v2: return "Intel Xeon Processor (Cascadelake) [ARCH_CAPABILITIES] (Cascadelake-Server-v2)"
+        case .ClearwaterForest_v1: return "Intel Xeon Processor (ClearwaterForest) (ClearwaterForest-v1)"
         case .Cooperlake_v1: return "Intel Xeon Processor (Cooperlake) (Cooperlake-v1)"
         case .Cooperlake_v2: return "Intel Xeon Processor (Cooperlake) [XSAVES] (Cooperlake-v2)"
         case .GraniteRapids_v1: return "Intel Xeon Processor (GraniteRapids) (GraniteRapids-v1)"
+        case .GraniteRapids_v2: return "Intel Xeon Processor (GraniteRapids) (GraniteRapids-v2)"
         case .Icelake_Server_v1: return "Intel Xeon Processor (Icelake) (Icelake-Server-v1)"
         case .Icelake_Server_v3: return "Intel Xeon Processor (Icelake) (Icelake-Server-v3)"
         case .Icelake_Server_v4: return "Intel Xeon Processor (Icelake) (Icelake-Server-v4)"
@@ -3226,10 +3258,11 @@ enum QEMUCPU_x86_64: String, CaseIterable, QEMUCPU {
         case .SapphireRapids_v2: return "Intel Xeon Processor (SapphireRapids) (SapphireRapids-v2)"
         case .SapphireRapids_v3: return "Intel Xeon Processor (SapphireRapids) (SapphireRapids-v3)"
         case .SierraForest_v1: return "Intel Xeon Processor (SierraForest) (SierraForest-v1)"
+        case .SierraForest_v2: return "Intel Xeon Processor (SierraForest) (SierraForest-v2)"
         case .Skylake_Server_v1: return "Intel Xeon Processor (Skylake) (Skylake-Server-v1)"
         case .Skylake_Server_v2: return "Intel Xeon Processor (Skylake, IBRS) (Skylake-Server-v2)"
         case .Skylake_Server_v3: return "Intel Xeon Processor (Skylake, IBRS, no TSX) (Skylake-Server-v3)"
-        case .Skylake_Server_v4: return "Intel Xeon Processor (Skylake, IBRS, no TSX) (Skylake-Server-v4)"
+        case .Skylake_Server_v4: return "Intel Xeon Processor (Skylake, IBRS, no TSX) [IBRS, EPT switching, no TSX] (Skylake-Server-v4)"
         case .Skylake_Server_v5: return "Intel Xeon Processor (Skylake, IBRS, no TSX) [IBRS, XSAVES, EPT switching, no TSX] (Skylake-Server-v5)"
         case .n270_v1: return "Intel(R) Atom(TM) CPU N270 @ 1.60GHz (n270-v1)"
         case .core2duo_v1: return "Intel(R) Core(TM)2 Duo CPU T7700 @ 2.40GHz (core2duo-v1)"
@@ -3262,6 +3295,9 @@ enum QEMUCPU_x86_64: String, CaseIterable, QEMUCPU {
         case .Westmere_v2: return "Westmere E56xx/L56xx/X56xx (IBRS update) (Westmere-v2)"
         case .Westmere_v1: return "Westmere E56xx/L56xx/X56xx (Nehalem-C) (Westmere-v1)"
         case .Westmere_IBRS: return "Westmere-IBRS"
+        case .YongFeng: return "YongFeng"
+        case .YongFeng_v1: return "Zhaoxin YongFeng Processor (YongFeng-v1)"
+        case .YongFeng_v2: return "Zhaoxin YongFeng Processor [with the correct model number] (YongFeng-v2)"
         case .athlon: return "athlon"
         case .base: return "base CPU model type with no features enabled (base)"
         case .core2duo: return "core2duo"
@@ -3330,8 +3366,6 @@ typealias QEMUCPUFlag_aarch64 = AnyQEMUConstant
 
 typealias QEMUCPUFlag_avr = AnyQEMUConstant
 
-typealias QEMUCPUFlag_cris = AnyQEMUConstant
-
 typealias QEMUCPUFlag_hppa = AnyQEMUConstant
 
 enum QEMUCPUFlag_i386: String, CaseIterable, QEMUCPUFlag {
@@ -3365,6 +3399,10 @@ enum QEMUCPUFlag_i386: String, CaseIterable, QEMUCPUFlag {
     case avx_vnni = "avx-vnni"
     case avx_vnni_int16 = "avx-vnni-int16"
     case avx_vnni_int8 = "avx-vnni-int8"
+    case avx10
+    case avx10_128 = "avx10-128"
+    case avx10_256 = "avx10-256"
+    case avx10_512 = "avx10-512"
     case avx2
     case avx512_4fmaps = "avx512-4fmaps"
     case avx512_4vnniw = "avx512-4vnniw"
@@ -3384,6 +3422,8 @@ enum QEMUCPUFlag_i386: String, CaseIterable, QEMUCPUFlag {
     case avx512vbmi2
     case avx512vl
     case avx512vnni
+    case bhi_ctrl = "bhi-ctrl"
+    case bhi_no = "bhi-no"
     case bmi1
     case bmi2
     case bus_lock_detect = "bus-lock-detect"
@@ -3401,17 +3441,20 @@ enum QEMUCPUFlag_i386: String, CaseIterable, QEMUCPUFlag {
     case cx16
     case cx8
     case dca
+    case ddpd_u = "ddpd-u"
     case de
     case decodeassists
     case ds
     case ds_cpl = "ds-cpl"
     case dtes64
+    case eraps
     case erms
     case est
     case extapic
     case f16c
     case fb_clear = "fb-clear"
     case fbsdp_no = "fbsdp-no"
+    case fdp_excptn_only = "fdp-excptn-only"
     case flush_l1d = "flush-l1d"
     case flushbyasid
     case fma
@@ -3433,13 +3476,16 @@ enum QEMUCPUFlag_i386: String, CaseIterable, QEMUCPUFlag {
     case hypervisor
     case ia64
     case ibpb
+    case ibpb_brtype = "ibpb-brtype"
     case ibrs
     case ibrs_all = "ibrs-all"
     case ibs
+    case intel_psfd = "intel-psfd"
     case intel_pt = "intel-pt"
     case intel_pt_lip = "intel-pt-lip"
     case invpcid
     case invtsc
+    case ipred_ctrl = "ipred-ctrl"
     case kvm_asyncpf = "kvm-asyncpf"
     case kvm_asyncpf_int = "kvm-asyncpf-int"
     case kvm_asyncpf_vmexit = "kvm-asyncpf-vmexit"
@@ -3499,6 +3545,7 @@ enum QEMUCPUFlag_i386: String, CaseIterable, QEMUCPUFlag {
     case pdpe1gb
     case perfctr_core = "perfctr-core"
     case perfctr_nb = "perfctr-nb"
+    case perfmon_v2 = "perfmon-v2"
     case pfthreshold
     case pge
     case phe
@@ -3522,9 +3569,11 @@ enum QEMUCPUFlag_i386: String, CaseIterable, QEMUCPUFlag {
     case rdtscp
     case rfds_clear = "rfds-clear"
     case rfds_no = "rfds-no"
+    case rrsba_ctrl = "rrsba-ctrl"
     case rsba
     case rtm
     case sbdr_ssdp_no = "sbdr-ssdp-no"
+    case sbpb
     case sep
     case serialize
     case sgx
@@ -3540,13 +3589,18 @@ enum QEMUCPUFlag_i386: String, CaseIterable, QEMUCPUFlag {
     case sgx2
     case sgxlc
     case sha_ni = "sha-ni"
+    case sha512
     case skinit
     case skip_l1dfl_vmentry = "skip-l1dfl-vmentry"
+    case sm3
+    case sm4
     case smap
     case smep
     case smx
     case spec_ctrl = "spec-ctrl"
     case split_lock_detect = "split-lock-detect"
+    case srso_no = "srso-no"
+    case srso_user_kernel_no = "srso-user-kernel-no"
     case ss
     case ssb_no = "ssb-no"
     case ssbd
@@ -3601,6 +3655,7 @@ enum QEMUCPUFlag_i386: String, CaseIterable, QEMUCPUFlag {
     case vmx_entry_ia32e_mode = "vmx-entry-ia32e-mode"
     case vmx_entry_load_bndcfgs = "vmx-entry-load-bndcfgs"
     case vmx_entry_load_efer = "vmx-entry-load-efer"
+    case vmx_entry_load_fred = "vmx-entry-load-fred"
     case vmx_entry_load_pat = "vmx-entry-load-pat"
     case vmx_entry_load_perf_global_ctrl = "vmx-entry-load-perf-global-ctrl"
     case vmx_entry_load_pkrs = "vmx-entry-load-pkrs"
@@ -3624,6 +3679,7 @@ enum QEMUCPUFlag_i386: String, CaseIterable, QEMUCPUFlag {
     case vmx_exit_save_efer = "vmx-exit-save-efer"
     case vmx_exit_save_pat = "vmx-exit-save-pat"
     case vmx_exit_save_preemption_timer = "vmx-exit-save-preemption-timer"
+    case vmx_exit_secondary_ctls = "vmx-exit-secondary-ctls"
     case vmx_flexpriority = "vmx-flexpriority"
     case vmx_hlt_exit = "vmx-hlt-exit"
     case vmx_ins_outs = "vmx-ins-outs"
@@ -3694,6 +3750,7 @@ enum QEMUCPUFlag_i386: String, CaseIterable, QEMUCPUFlag {
     case xstore
     case xstore_en = "xstore-en"
     case xtpr
+    case zero_fcs_fds = "zero-fcs-fds"
 
     var prettyValue: String {
         switch self {
@@ -3727,6 +3784,10 @@ enum QEMUCPUFlag_i386: String, CaseIterable, QEMUCPUFlag {
         case .avx_vnni: return "avx-vnni"
         case .avx_vnni_int16: return "avx-vnni-int16"
         case .avx_vnni_int8: return "avx-vnni-int8"
+        case .avx10: return "avx10"
+        case .avx10_128: return "avx10-128"
+        case .avx10_256: return "avx10-256"
+        case .avx10_512: return "avx10-512"
         case .avx2: return "avx2"
         case .avx512_4fmaps: return "avx512-4fmaps"
         case .avx512_4vnniw: return "avx512-4vnniw"
@@ -3746,6 +3807,8 @@ enum QEMUCPUFlag_i386: String, CaseIterable, QEMUCPUFlag {
         case .avx512vbmi2: return "avx512vbmi2"
         case .avx512vl: return "avx512vl"
         case .avx512vnni: return "avx512vnni"
+        case .bhi_ctrl: return "bhi-ctrl"
+        case .bhi_no: return "bhi-no"
         case .bmi1: return "bmi1"
         case .bmi2: return "bmi2"
         case .bus_lock_detect: return "bus-lock-detect"
@@ -3763,17 +3826,20 @@ enum QEMUCPUFlag_i386: String, CaseIterable, QEMUCPUFlag {
         case .cx16: return "cx16"
         case .cx8: return "cx8"
         case .dca: return "dca"
+        case .ddpd_u: return "ddpd-u"
         case .de: return "de"
         case .decodeassists: return "decodeassists"
         case .ds: return "ds"
         case .ds_cpl: return "ds-cpl"
         case .dtes64: return "dtes64"
+        case .eraps: return "eraps"
         case .erms: return "erms"
         case .est: return "est"
         case .extapic: return "extapic"
         case .f16c: return "f16c"
         case .fb_clear: return "fb-clear"
         case .fbsdp_no: return "fbsdp-no"
+        case .fdp_excptn_only: return "fdp-excptn-only"
         case .flush_l1d: return "flush-l1d"
         case .flushbyasid: return "flushbyasid"
         case .fma: return "fma"
@@ -3795,13 +3861,16 @@ enum QEMUCPUFlag_i386: String, CaseIterable, QEMUCPUFlag {
         case .hypervisor: return "hypervisor"
         case .ia64: return "ia64"
         case .ibpb: return "ibpb"
+        case .ibpb_brtype: return "ibpb-brtype"
         case .ibrs: return "ibrs"
         case .ibrs_all: return "ibrs-all"
         case .ibs: return "ibs"
+        case .intel_psfd: return "intel-psfd"
         case .intel_pt: return "intel-pt"
         case .intel_pt_lip: return "intel-pt-lip"
         case .invpcid: return "invpcid"
         case .invtsc: return "invtsc"
+        case .ipred_ctrl: return "ipred-ctrl"
         case .kvm_asyncpf: return "kvm-asyncpf"
         case .kvm_asyncpf_int: return "kvm-asyncpf-int"
         case .kvm_asyncpf_vmexit: return "kvm-asyncpf-vmexit"
@@ -3861,6 +3930,7 @@ enum QEMUCPUFlag_i386: String, CaseIterable, QEMUCPUFlag {
         case .pdpe1gb: return "pdpe1gb"
         case .perfctr_core: return "perfctr-core"
         case .perfctr_nb: return "perfctr-nb"
+        case .perfmon_v2: return "perfmon-v2"
         case .pfthreshold: return "pfthreshold"
         case .pge: return "pge"
         case .phe: return "phe"
@@ -3884,9 +3954,11 @@ enum QEMUCPUFlag_i386: String, CaseIterable, QEMUCPUFlag {
         case .rdtscp: return "rdtscp"
         case .rfds_clear: return "rfds-clear"
         case .rfds_no: return "rfds-no"
+        case .rrsba_ctrl: return "rrsba-ctrl"
         case .rsba: return "rsba"
         case .rtm: return "rtm"
         case .sbdr_ssdp_no: return "sbdr-ssdp-no"
+        case .sbpb: return "sbpb"
         case .sep: return "sep"
         case .serialize: return "serialize"
         case .sgx: return "sgx"
@@ -3902,13 +3974,18 @@ enum QEMUCPUFlag_i386: String, CaseIterable, QEMUCPUFlag {
         case .sgx2: return "sgx2"
         case .sgxlc: return "sgxlc"
         case .sha_ni: return "sha-ni"
+        case .sha512: return "sha512"
         case .skinit: return "skinit"
         case .skip_l1dfl_vmentry: return "skip-l1dfl-vmentry"
+        case .sm3: return "sm3"
+        case .sm4: return "sm4"
         case .smap: return "smap"
         case .smep: return "smep"
         case .smx: return "smx"
         case .spec_ctrl: return "spec-ctrl"
         case .split_lock_detect: return "split-lock-detect"
+        case .srso_no: return "srso-no"
+        case .srso_user_kernel_no: return "srso-user-kernel-no"
         case .ss: return "ss"
         case .ssb_no: return "ssb-no"
         case .ssbd: return "ssbd"
@@ -3963,6 +4040,7 @@ enum QEMUCPUFlag_i386: String, CaseIterable, QEMUCPUFlag {
         case .vmx_entry_ia32e_mode: return "vmx-entry-ia32e-mode"
         case .vmx_entry_load_bndcfgs: return "vmx-entry-load-bndcfgs"
         case .vmx_entry_load_efer: return "vmx-entry-load-efer"
+        case .vmx_entry_load_fred: return "vmx-entry-load-fred"
         case .vmx_entry_load_pat: return "vmx-entry-load-pat"
         case .vmx_entry_load_perf_global_ctrl: return "vmx-entry-load-perf-global-ctrl"
         case .vmx_entry_load_pkrs: return "vmx-entry-load-pkrs"
@@ -3986,6 +4064,7 @@ enum QEMUCPUFlag_i386: String, CaseIterable, QEMUCPUFlag {
         case .vmx_exit_save_efer: return "vmx-exit-save-efer"
         case .vmx_exit_save_pat: return "vmx-exit-save-pat"
         case .vmx_exit_save_preemption_timer: return "vmx-exit-save-preemption-timer"
+        case .vmx_exit_secondary_ctls: return "vmx-exit-secondary-ctls"
         case .vmx_flexpriority: return "vmx-flexpriority"
         case .vmx_hlt_exit: return "vmx-hlt-exit"
         case .vmx_ins_outs: return "vmx-ins-outs"
@@ -4056,6 +4135,7 @@ enum QEMUCPUFlag_i386: String, CaseIterable, QEMUCPUFlag {
         case .xstore: return "xstore"
         case .xstore_en: return "xstore-en"
         case .xtpr: return "xtpr"
+        case .zero_fcs_fds: return "zero-fcs-fds"
         }
     }
 }
@@ -4179,6 +4259,10 @@ enum QEMUCPUFlag_x86_64: String, CaseIterable, QEMUCPUFlag {
     case avx_vnni = "avx-vnni"
     case avx_vnni_int16 = "avx-vnni-int16"
     case avx_vnni_int8 = "avx-vnni-int8"
+    case avx10
+    case avx10_128 = "avx10-128"
+    case avx10_256 = "avx10-256"
+    case avx10_512 = "avx10-512"
     case avx2
     case avx512_4fmaps = "avx512-4fmaps"
     case avx512_4vnniw = "avx512-4vnniw"
@@ -4198,6 +4282,8 @@ enum QEMUCPUFlag_x86_64: String, CaseIterable, QEMUCPUFlag {
     case avx512vbmi2
     case avx512vl
     case avx512vnni
+    case bhi_ctrl = "bhi-ctrl"
+    case bhi_no = "bhi-no"
     case bmi1
     case bmi2
     case bus_lock_detect = "bus-lock-detect"
@@ -4215,17 +4301,20 @@ enum QEMUCPUFlag_x86_64: String, CaseIterable, QEMUCPUFlag {
     case cx16
     case cx8
     case dca
+    case ddpd_u = "ddpd-u"
     case de
     case decodeassists
     case ds
     case ds_cpl = "ds-cpl"
     case dtes64
+    case eraps
     case erms
     case est
     case extapic
     case f16c
     case fb_clear = "fb-clear"
     case fbsdp_no = "fbsdp-no"
+    case fdp_excptn_only = "fdp-excptn-only"
     case flush_l1d = "flush-l1d"
     case flushbyasid
     case fma
@@ -4247,13 +4336,16 @@ enum QEMUCPUFlag_x86_64: String, CaseIterable, QEMUCPUFlag {
     case hypervisor
     case ia64
     case ibpb
+    case ibpb_brtype = "ibpb-brtype"
     case ibrs
     case ibrs_all = "ibrs-all"
     case ibs
+    case intel_psfd = "intel-psfd"
     case intel_pt = "intel-pt"
     case intel_pt_lip = "intel-pt-lip"
     case invpcid
     case invtsc
+    case ipred_ctrl = "ipred-ctrl"
     case kvm_asyncpf = "kvm-asyncpf"
     case kvm_asyncpf_int = "kvm-asyncpf-int"
     case kvm_asyncpf_vmexit = "kvm-asyncpf-vmexit"
@@ -4313,6 +4405,7 @@ enum QEMUCPUFlag_x86_64: String, CaseIterable, QEMUCPUFlag {
     case pdpe1gb
     case perfctr_core = "perfctr-core"
     case perfctr_nb = "perfctr-nb"
+    case perfmon_v2 = "perfmon-v2"
     case pfthreshold
     case pge
     case phe
@@ -4336,9 +4429,11 @@ enum QEMUCPUFlag_x86_64: String, CaseIterable, QEMUCPUFlag {
     case rdtscp
     case rfds_clear = "rfds-clear"
     case rfds_no = "rfds-no"
+    case rrsba_ctrl = "rrsba-ctrl"
     case rsba
     case rtm
     case sbdr_ssdp_no = "sbdr-ssdp-no"
+    case sbpb
     case sep
     case serialize
     case sgx
@@ -4354,13 +4449,18 @@ enum QEMUCPUFlag_x86_64: String, CaseIterable, QEMUCPUFlag {
     case sgx2
     case sgxlc
     case sha_ni = "sha-ni"
+    case sha512
     case skinit
     case skip_l1dfl_vmentry = "skip-l1dfl-vmentry"
+    case sm3
+    case sm4
     case smap
     case smep
     case smx
     case spec_ctrl = "spec-ctrl"
     case split_lock_detect = "split-lock-detect"
+    case srso_no = "srso-no"
+    case srso_user_kernel_no = "srso-user-kernel-no"
     case ss
     case ssb_no = "ssb-no"
     case ssbd
@@ -4415,6 +4515,7 @@ enum QEMUCPUFlag_x86_64: String, CaseIterable, QEMUCPUFlag {
     case vmx_entry_ia32e_mode = "vmx-entry-ia32e-mode"
     case vmx_entry_load_bndcfgs = "vmx-entry-load-bndcfgs"
     case vmx_entry_load_efer = "vmx-entry-load-efer"
+    case vmx_entry_load_fred = "vmx-entry-load-fred"
     case vmx_entry_load_pat = "vmx-entry-load-pat"
     case vmx_entry_load_perf_global_ctrl = "vmx-entry-load-perf-global-ctrl"
     case vmx_entry_load_pkrs = "vmx-entry-load-pkrs"
@@ -4438,6 +4539,7 @@ enum QEMUCPUFlag_x86_64: String, CaseIterable, QEMUCPUFlag {
     case vmx_exit_save_efer = "vmx-exit-save-efer"
     case vmx_exit_save_pat = "vmx-exit-save-pat"
     case vmx_exit_save_preemption_timer = "vmx-exit-save-preemption-timer"
+    case vmx_exit_secondary_ctls = "vmx-exit-secondary-ctls"
     case vmx_flexpriority = "vmx-flexpriority"
     case vmx_hlt_exit = "vmx-hlt-exit"
     case vmx_ins_outs = "vmx-ins-outs"
@@ -4508,6 +4610,7 @@ enum QEMUCPUFlag_x86_64: String, CaseIterable, QEMUCPUFlag {
     case xstore
     case xstore_en = "xstore-en"
     case xtpr
+    case zero_fcs_fds = "zero-fcs-fds"
 
     var prettyValue: String {
         switch self {
@@ -4541,6 +4644,10 @@ enum QEMUCPUFlag_x86_64: String, CaseIterable, QEMUCPUFlag {
         case .avx_vnni: return "avx-vnni"
         case .avx_vnni_int16: return "avx-vnni-int16"
         case .avx_vnni_int8: return "avx-vnni-int8"
+        case .avx10: return "avx10"
+        case .avx10_128: return "avx10-128"
+        case .avx10_256: return "avx10-256"
+        case .avx10_512: return "avx10-512"
         case .avx2: return "avx2"
         case .avx512_4fmaps: return "avx512-4fmaps"
         case .avx512_4vnniw: return "avx512-4vnniw"
@@ -4560,6 +4667,8 @@ enum QEMUCPUFlag_x86_64: String, CaseIterable, QEMUCPUFlag {
         case .avx512vbmi2: return "avx512vbmi2"
         case .avx512vl: return "avx512vl"
         case .avx512vnni: return "avx512vnni"
+        case .bhi_ctrl: return "bhi-ctrl"
+        case .bhi_no: return "bhi-no"
         case .bmi1: return "bmi1"
         case .bmi2: return "bmi2"
         case .bus_lock_detect: return "bus-lock-detect"
@@ -4577,17 +4686,20 @@ enum QEMUCPUFlag_x86_64: String, CaseIterable, QEMUCPUFlag {
         case .cx16: return "cx16"
         case .cx8: return "cx8"
         case .dca: return "dca"
+        case .ddpd_u: return "ddpd-u"
         case .de: return "de"
         case .decodeassists: return "decodeassists"
         case .ds: return "ds"
         case .ds_cpl: return "ds-cpl"
         case .dtes64: return "dtes64"
+        case .eraps: return "eraps"
         case .erms: return "erms"
         case .est: return "est"
         case .extapic: return "extapic"
         case .f16c: return "f16c"
         case .fb_clear: return "fb-clear"
         case .fbsdp_no: return "fbsdp-no"
+        case .fdp_excptn_only: return "fdp-excptn-only"
         case .flush_l1d: return "flush-l1d"
         case .flushbyasid: return "flushbyasid"
         case .fma: return "fma"
@@ -4609,13 +4721,16 @@ enum QEMUCPUFlag_x86_64: String, CaseIterable, QEMUCPUFlag {
         case .hypervisor: return "hypervisor"
         case .ia64: return "ia64"
         case .ibpb: return "ibpb"
+        case .ibpb_brtype: return "ibpb-brtype"
         case .ibrs: return "ibrs"
         case .ibrs_all: return "ibrs-all"
         case .ibs: return "ibs"
+        case .intel_psfd: return "intel-psfd"
         case .intel_pt: return "intel-pt"
         case .intel_pt_lip: return "intel-pt-lip"
         case .invpcid: return "invpcid"
         case .invtsc: return "invtsc"
+        case .ipred_ctrl: return "ipred-ctrl"
         case .kvm_asyncpf: return "kvm-asyncpf"
         case .kvm_asyncpf_int: return "kvm-asyncpf-int"
         case .kvm_asyncpf_vmexit: return "kvm-asyncpf-vmexit"
@@ -4675,6 +4790,7 @@ enum QEMUCPUFlag_x86_64: String, CaseIterable, QEMUCPUFlag {
         case .pdpe1gb: return "pdpe1gb"
         case .perfctr_core: return "perfctr-core"
         case .perfctr_nb: return "perfctr-nb"
+        case .perfmon_v2: return "perfmon-v2"
         case .pfthreshold: return "pfthreshold"
         case .pge: return "pge"
         case .phe: return "phe"
@@ -4698,9 +4814,11 @@ enum QEMUCPUFlag_x86_64: String, CaseIterable, QEMUCPUFlag {
         case .rdtscp: return "rdtscp"
         case .rfds_clear: return "rfds-clear"
         case .rfds_no: return "rfds-no"
+        case .rrsba_ctrl: return "rrsba-ctrl"
         case .rsba: return "rsba"
         case .rtm: return "rtm"
         case .sbdr_ssdp_no: return "sbdr-ssdp-no"
+        case .sbpb: return "sbpb"
         case .sep: return "sep"
         case .serialize: return "serialize"
         case .sgx: return "sgx"
@@ -4716,13 +4834,18 @@ enum QEMUCPUFlag_x86_64: String, CaseIterable, QEMUCPUFlag {
         case .sgx2: return "sgx2"
         case .sgxlc: return "sgxlc"
         case .sha_ni: return "sha-ni"
+        case .sha512: return "sha512"
         case .skinit: return "skinit"
         case .skip_l1dfl_vmentry: return "skip-l1dfl-vmentry"
+        case .sm3: return "sm3"
+        case .sm4: return "sm4"
         case .smap: return "smap"
         case .smep: return "smep"
         case .smx: return "smx"
         case .spec_ctrl: return "spec-ctrl"
         case .split_lock_detect: return "split-lock-detect"
+        case .srso_no: return "srso-no"
+        case .srso_user_kernel_no: return "srso-user-kernel-no"
         case .ss: return "ss"
         case .ssb_no: return "ssb-no"
         case .ssbd: return "ssbd"
@@ -4777,6 +4900,7 @@ enum QEMUCPUFlag_x86_64: String, CaseIterable, QEMUCPUFlag {
         case .vmx_entry_ia32e_mode: return "vmx-entry-ia32e-mode"
         case .vmx_entry_load_bndcfgs: return "vmx-entry-load-bndcfgs"
         case .vmx_entry_load_efer: return "vmx-entry-load-efer"
+        case .vmx_entry_load_fred: return "vmx-entry-load-fred"
         case .vmx_entry_load_pat: return "vmx-entry-load-pat"
         case .vmx_entry_load_perf_global_ctrl: return "vmx-entry-load-perf-global-ctrl"
         case .vmx_entry_load_pkrs: return "vmx-entry-load-pkrs"
@@ -4800,6 +4924,7 @@ enum QEMUCPUFlag_x86_64: String, CaseIterable, QEMUCPUFlag {
         case .vmx_exit_save_efer: return "vmx-exit-save-efer"
         case .vmx_exit_save_pat: return "vmx-exit-save-pat"
         case .vmx_exit_save_preemption_timer: return "vmx-exit-save-preemption-timer"
+        case .vmx_exit_secondary_ctls: return "vmx-exit-secondary-ctls"
         case .vmx_flexpriority: return "vmx-flexpriority"
         case .vmx_hlt_exit: return "vmx-hlt-exit"
         case .vmx_ins_outs: return "vmx-ins-outs"
@@ -4870,6 +4995,7 @@ enum QEMUCPUFlag_x86_64: String, CaseIterable, QEMUCPUFlag {
         case .xstore: return "xstore"
         case .xstore_en: return "xstore-en"
         case .xtpr: return "xtpr"
+        case .zero_fcs_fds: return "zero-fcs-fds"
         }
     }
 }
@@ -4935,28 +5061,23 @@ enum QEMUTarget_arm: String, CaseIterable, QEMUTarget {
     case sabrelite
     case mcimx6ul_evk = "mcimx6ul-evk"
     case mcimx7d_sabre = "mcimx7d-sabre"
-    case connex
-    case verdex
     case rainier_bmc = "rainier-bmc"
     case fp5280g2_bmc = "fp5280g2-bmc"
     case kudo_bmc = "kudo-bmc"
-    case mainstone
     case musicpal
     case fby35
     case mori_bmc = "mori-bmc"
     case netduino2
     case netduinoplus2
-    case n800
-    case n810
     case npcm750_evb = "npcm750-evb"
     case sonorapass_bmc = "sonorapass-bmc"
     case olimex_stm32_h405 = "olimex-stm32-h405"
     case palmetto_bmc = "palmetto-bmc"
     case romulus_bmc = "romulus-bmc"
-    case tacoma_bmc = "tacoma-bmc"
     case witherspoon_bmc = "witherspoon-bmc"
     case orangepi_pc = "orangepi-pc"
-    case cheetah
+    case virt
+    case virt_10_0 = "virt-10.0"
     case virt_2_10 = "virt-2.10"
     case virt_2_11 = "virt-2.11"
     case virt_2_12 = "virt-2.12"
@@ -4982,8 +5103,8 @@ enum QEMUTarget_arm: String, CaseIterable, QEMUTarget {
     case virt_8_1 = "virt-8.1"
     case virt_8_2 = "virt-8.2"
     case virt_9_0 = "virt-9.0"
-    case virt
     case virt_9_1 = "virt-9.1"
+    case virt_9_2 = "virt-9.2"
     case qcom_dc_scm_v1_bmc = "qcom-dc-scm-v1-bmc"
     case qcom_firework_bmc = "qcom-firework-bmc"
     case quanta_gbs_bmc = "quanta-gbs-bmc"
@@ -4996,11 +5117,6 @@ enum QEMUTarget_arm: String, CaseIterable, QEMUTarget {
     case nuri
     case smdkc210
     case collie
-    case tosa
-    case akita
-    case spitz
-    case borzoi
-    case terrier
     case sx1_v1 = "sx1-v1"
     case sx1
     case emcraft_sf2 = "emcraft-sf2"
@@ -5009,7 +5125,6 @@ enum QEMUTarget_arm: String, CaseIterable, QEMUTarget {
     case supermicrox11_bmc = "supermicrox11-bmc"
     case supermicro_x11spi_bmc = "supermicro-x11spi-bmc"
     case xilinx_zynq_a9 = "xilinx-zynq-a9"
-    case z2
     case cubieboard
     case none
 
@@ -5059,28 +5174,23 @@ enum QEMUTarget_arm: String, CaseIterable, QEMUTarget {
         case .sabrelite: return "Freescale i.MX6 Quad SABRE Lite Board (Cortex-A9) (sabrelite)"
         case .mcimx6ul_evk: return "Freescale i.MX6UL Evaluation Kit (Cortex-A7) (mcimx6ul-evk)"
         case .mcimx7d_sabre: return "Freescale i.MX7 DUAL SABRE (Cortex-A7) (mcimx7d-sabre)"
-        case .connex: return "Gumstix Connex (PXA255) (deprecated) (connex)"
-        case .verdex: return "Gumstix Verdex Pro XL6P COMs (PXA270) (deprecated) (verdex)"
         case .rainier_bmc: return "IBM Rainier BMC (Cortex-A7) (rainier-bmc)"
         case .fp5280g2_bmc: return "Inspur FP5280G2 BMC (ARM1176) (fp5280g2-bmc)"
         case .kudo_bmc: return "Kudo BMC (Cortex-A9) (kudo-bmc)"
-        case .mainstone: return "Mainstone II (PXA27x) (deprecated) (mainstone)"
         case .musicpal: return "Marvell 88w8618 / MusicPal (ARM926EJ-S) (musicpal)"
         case .fby35: return "Meta Platforms fby35 (fby35)"
         case .mori_bmc: return "Mori BMC (Cortex-A9) (mori-bmc)"
         case .netduino2: return "Netduino 2 Machine (Cortex-M3) (netduino2)"
         case .netduinoplus2: return "Netduino Plus 2 Machine (Cortex-M4) (netduinoplus2)"
-        case .n800: return "Nokia N800 tablet aka. RX-34 (OMAP2420) (deprecated) (n800)"
-        case .n810: return "Nokia N810 tablet aka. RX-44 (OMAP2420) (deprecated) (n810)"
         case .npcm750_evb: return "Nuvoton NPCM750 Evaluation Board (Cortex-A9) (npcm750-evb)"
         case .sonorapass_bmc: return "OCP SonoraPass BMC (ARM1176) (sonorapass-bmc)"
         case .olimex_stm32_h405: return "Olimex STM32-H405 (Cortex-M4) (olimex-stm32-h405)"
         case .palmetto_bmc: return "OpenPOWER Palmetto BMC (ARM926EJ-S) (palmetto-bmc)"
         case .romulus_bmc: return "OpenPOWER Romulus BMC (ARM1176) (romulus-bmc)"
-        case .tacoma_bmc: return "OpenPOWER Tacoma BMC (Cortex-A7) (deprecated) (tacoma-bmc)"
         case .witherspoon_bmc: return "OpenPOWER Witherspoon BMC (ARM1176) (witherspoon-bmc)"
         case .orangepi_pc: return "Orange Pi PC (Cortex-A7) (orangepi-pc)"
-        case .cheetah: return "Palm Tungsten|E aka. Cheetah PDA (OMAP310) (deprecated) (cheetah)"
+        case .virt: return "QEMU 10.0 ARM Virtual Machine (alias of virt-10.0) (virt)"
+        case .virt_10_0: return "QEMU 10.0 ARM Virtual Machine (virt-10.0)"
         case .virt_2_10: return "QEMU 2.10 ARM Virtual Machine (deprecated) (virt-2.10)"
         case .virt_2_11: return "QEMU 2.11 ARM Virtual Machine (deprecated) (virt-2.11)"
         case .virt_2_12: return "QEMU 2.12 ARM Virtual Machine (deprecated) (virt-2.12)"
@@ -5098,16 +5208,16 @@ enum QEMUTarget_arm: String, CaseIterable, QEMUTarget {
         case .virt_5_2: return "QEMU 5.2 ARM Virtual Machine (deprecated) (virt-5.2)"
         case .virt_6_0: return "QEMU 6.0 ARM Virtual Machine (deprecated) (virt-6.0)"
         case .virt_6_1: return "QEMU 6.1 ARM Virtual Machine (deprecated) (virt-6.1)"
-        case .virt_6_2: return "QEMU 6.2 ARM Virtual Machine (virt-6.2)"
-        case .virt_7_0: return "QEMU 7.0 ARM Virtual Machine (virt-7.0)"
+        case .virt_6_2: return "QEMU 6.2 ARM Virtual Machine (deprecated) (virt-6.2)"
+        case .virt_7_0: return "QEMU 7.0 ARM Virtual Machine (deprecated) (virt-7.0)"
         case .virt_7_1: return "QEMU 7.1 ARM Virtual Machine (virt-7.1)"
         case .virt_7_2: return "QEMU 7.2 ARM Virtual Machine (virt-7.2)"
         case .virt_8_0: return "QEMU 8.0 ARM Virtual Machine (virt-8.0)"
         case .virt_8_1: return "QEMU 8.1 ARM Virtual Machine (virt-8.1)"
         case .virt_8_2: return "QEMU 8.2 ARM Virtual Machine (virt-8.2)"
         case .virt_9_0: return "QEMU 9.0 ARM Virtual Machine (virt-9.0)"
-        case .virt: return "QEMU 9.1 ARM Virtual Machine (alias of virt-9.1) (virt)"
         case .virt_9_1: return "QEMU 9.1 ARM Virtual Machine (virt-9.1)"
+        case .virt_9_2: return "QEMU 9.2 ARM Virtual Machine (virt-9.2)"
         case .qcom_dc_scm_v1_bmc: return "Qualcomm DC-SCM V1 BMC (Cortex A7) (qcom-dc-scm-v1-bmc)"
         case .qcom_firework_bmc: return "Qualcomm DC-SCM V1/Firework BMC (Cortex A7) (qcom-firework-bmc)"
         case .quanta_gbs_bmc: return "Quanta GBS (Cortex-A9) (quanta-gbs-bmc)"
@@ -5120,11 +5230,6 @@ enum QEMUTarget_arm: String, CaseIterable, QEMUTarget {
         case .nuri: return "Samsung NURI board (Exynos4210) (nuri)"
         case .smdkc210: return "Samsung SMDKC210 board (Exynos4210) (smdkc210)"
         case .collie: return "Sharp SL-5500 (Collie) PDA (SA-1110) (collie)"
-        case .tosa: return "Sharp SL-6000 (Tosa) PDA (PXA255) (deprecated) (tosa)"
-        case .akita: return "Sharp SL-C1000 (Akita) PDA (PXA270) (deprecated) (akita)"
-        case .spitz: return "Sharp SL-C3000 (Spitz) PDA (PXA270) (deprecated) (spitz)"
-        case .borzoi: return "Sharp SL-C3100 (Borzoi) PDA (PXA270) (deprecated) (borzoi)"
-        case .terrier: return "Sharp SL-C3200 (Terrier) PDA (PXA270) (deprecated) (terrier)"
         case .sx1_v1: return "Siemens SX1 (OMAP310) V1 (sx1-v1)"
         case .sx1: return "Siemens SX1 (OMAP310) V2 (sx1)"
         case .emcraft_sf2: return "SmartFusion2 SOM kit from Emcraft (M2S010) (emcraft-sf2)"
@@ -5132,8 +5237,7 @@ enum QEMUTarget_arm: String, CaseIterable, QEMUTarget {
         case .lm3s811evb: return "Stellaris LM3S811EVB (Cortex-M3) (lm3s811evb)"
         case .supermicrox11_bmc: return "Supermicro X11 BMC (ARM926EJ-S) (supermicrox11-bmc)"
         case .supermicro_x11spi_bmc: return "Supermicro X11 SPI BMC (ARM1176) (supermicro-x11spi-bmc)"
-        case .xilinx_zynq_a9: return "Xilinx Zynq Platform Baseboard for Cortex-A9 (xilinx-zynq-a9)"
-        case .z2: return "Zipit Z2 (PXA27x) (deprecated) (z2)"
+        case .xilinx_zynq_a9: return "Xilinx Zynq 7000 Platform Baseboard for Cortex-A9 (xilinx-zynq-a9)"
         case .cubieboard: return "cubietech cubieboard (Cortex-A8) (cubieboard)"
         case .none: return "empty machine (none)"
         }
@@ -5163,10 +5267,13 @@ enum QEMUTarget_aarch64: String, CaseIterable, QEMUTarget {
     case versatileab
     case versatilepb
     case imx25_pdk = "imx25-pdk"
+    case vmapple
     case ast1030_evb = "ast1030-evb"
     case ast2500_evb = "ast2500-evb"
     case ast2600_evb = "ast2600-evb"
     case ast2700_evb = "ast2700-evb"
+    case ast2700a0_evb = "ast2700a0-evb"
+    case ast2700a1_evb = "ast2700a1-evb"
     case b_l475e_iot01a = "b-l475e-iot01a"
     case microbit
     case bpim2u
@@ -5182,29 +5289,26 @@ enum QEMUTarget_aarch64: String, CaseIterable, QEMUTarget {
     case sabrelite
     case mcimx6ul_evk = "mcimx6ul-evk"
     case mcimx7d_sabre = "mcimx7d-sabre"
-    case connex
-    case verdex
     case rainier_bmc = "rainier-bmc"
     case fp5280g2_bmc = "fp5280g2-bmc"
     case kudo_bmc = "kudo-bmc"
-    case mainstone
     case musicpal
     case fby35
     case mori_bmc = "mori-bmc"
+    case imx8mp_evk = "imx8mp-evk"
     case netduino2
     case netduinoplus2
-    case n800
-    case n810
     case npcm750_evb = "npcm750-evb"
+    case npcm845_evb = "npcm845-evb"
     case sonorapass_bmc = "sonorapass-bmc"
     case olimex_stm32_h405 = "olimex-stm32-h405"
     case palmetto_bmc = "palmetto-bmc"
     case romulus_bmc = "romulus-bmc"
-    case tacoma_bmc = "tacoma-bmc"
     case witherspoon_bmc = "witherspoon-bmc"
     case orangepi_pc = "orangepi-pc"
-    case cheetah
     case sbsa_ref = "sbsa-ref"
+    case virt
+    case virt_10_0 = "virt-10.0"
     case virt_2_10 = "virt-2.10"
     case virt_2_11 = "virt-2.11"
     case virt_2_12 = "virt-2.12"
@@ -5230,8 +5334,8 @@ enum QEMUTarget_aarch64: String, CaseIterable, QEMUTarget {
     case virt_8_1 = "virt-8.1"
     case virt_8_2 = "virt-8.2"
     case virt_9_0 = "virt-9.0"
-    case virt
     case virt_9_1 = "virt-9.1"
+    case virt_9_2 = "virt-9.2"
     case qcom_dc_scm_v1_bmc = "qcom-dc-scm-v1-bmc"
     case qcom_firework_bmc = "qcom-firework-bmc"
     case quanta_gbs_bmc = "quanta-gbs-bmc"
@@ -5247,11 +5351,6 @@ enum QEMUTarget_aarch64: String, CaseIterable, QEMUTarget {
     case nuri
     case smdkc210
     case collie
-    case tosa
-    case akita
-    case spitz
-    case borzoi
-    case terrier
     case sx1_v1 = "sx1-v1"
     case sx1
     case emcraft_sf2 = "emcraft-sf2"
@@ -5262,7 +5361,6 @@ enum QEMUTarget_aarch64: String, CaseIterable, QEMUTarget {
     case xlnx_versal_virt = "xlnx-versal-virt"
     case xilinx_zynq_a9 = "xilinx-zynq-a9"
     case xlnx_zcu102 = "xlnx-zcu102"
-    case z2
     case cubieboard
     case none
 
@@ -5294,10 +5392,13 @@ enum QEMUTarget_aarch64: String, CaseIterable, QEMUTarget {
         case .versatileab: return "ARM Versatile/AB (ARM926EJ-S) (versatileab)"
         case .versatilepb: return "ARM Versatile/PB (ARM926EJ-S) (versatilepb)"
         case .imx25_pdk: return "ARM i.MX25 PDK board (ARM926) (imx25-pdk)"
+        case .vmapple: return "Apple aarch64 Virtual Machine (vmapple)"
         case .ast1030_evb: return "Aspeed AST1030 MiniBMC (Cortex-M4) (ast1030-evb)"
         case .ast2500_evb: return "Aspeed AST2500 EVB (ARM1176) (ast2500-evb)"
         case .ast2600_evb: return "Aspeed AST2600 EVB (Cortex-A7) (ast2600-evb)"
-        case .ast2700_evb: return "Aspeed AST2700 EVB (Cortex-A35) (ast2700-evb)"
+        case .ast2700_evb: return "Aspeed AST2700 A0 EVB (Cortex-A35) (alias of ast2700a0-evb) (ast2700-evb)"
+        case .ast2700a0_evb: return "Aspeed AST2700 A0 EVB (Cortex-A35) (ast2700a0-evb)"
+        case .ast2700a1_evb: return "Aspeed AST2700 A1 EVB (Cortex-A35) (ast2700a1-evb)"
         case .b_l475e_iot01a: return "B-L475E-IOT01A Discovery Kit (Cortex-M4) (b-l475e-iot01a)"
         case .microbit: return "BBC micro:bit (Cortex-M0) (microbit)"
         case .bpim2u: return "Bananapi M2U (Cortex-A7) (bpim2u)"
@@ -5313,29 +5414,26 @@ enum QEMUTarget_aarch64: String, CaseIterable, QEMUTarget {
         case .sabrelite: return "Freescale i.MX6 Quad SABRE Lite Board (Cortex-A9) (sabrelite)"
         case .mcimx6ul_evk: return "Freescale i.MX6UL Evaluation Kit (Cortex-A7) (mcimx6ul-evk)"
         case .mcimx7d_sabre: return "Freescale i.MX7 DUAL SABRE (Cortex-A7) (mcimx7d-sabre)"
-        case .connex: return "Gumstix Connex (PXA255) (deprecated) (connex)"
-        case .verdex: return "Gumstix Verdex Pro XL6P COMs (PXA270) (deprecated) (verdex)"
         case .rainier_bmc: return "IBM Rainier BMC (Cortex-A7) (rainier-bmc)"
         case .fp5280g2_bmc: return "Inspur FP5280G2 BMC (ARM1176) (fp5280g2-bmc)"
         case .kudo_bmc: return "Kudo BMC (Cortex-A9) (kudo-bmc)"
-        case .mainstone: return "Mainstone II (PXA27x) (deprecated) (mainstone)"
         case .musicpal: return "Marvell 88w8618 / MusicPal (ARM926EJ-S) (musicpal)"
         case .fby35: return "Meta Platforms fby35 (fby35)"
         case .mori_bmc: return "Mori BMC (Cortex-A9) (mori-bmc)"
+        case .imx8mp_evk: return "NXP i.MX 8M Plus EVK Board (imx8mp-evk)"
         case .netduino2: return "Netduino 2 Machine (Cortex-M3) (netduino2)"
         case .netduinoplus2: return "Netduino Plus 2 Machine (Cortex-M4) (netduinoplus2)"
-        case .n800: return "Nokia N800 tablet aka. RX-34 (OMAP2420) (deprecated) (n800)"
-        case .n810: return "Nokia N810 tablet aka. RX-44 (OMAP2420) (deprecated) (n810)"
         case .npcm750_evb: return "Nuvoton NPCM750 Evaluation Board (Cortex-A9) (npcm750-evb)"
+        case .npcm845_evb: return "Nuvoton NPCM845 Evaluation Board (Cortex-A35) (npcm845-evb)"
         case .sonorapass_bmc: return "OCP SonoraPass BMC (ARM1176) (sonorapass-bmc)"
         case .olimex_stm32_h405: return "Olimex STM32-H405 (Cortex-M4) (olimex-stm32-h405)"
         case .palmetto_bmc: return "OpenPOWER Palmetto BMC (ARM926EJ-S) (palmetto-bmc)"
         case .romulus_bmc: return "OpenPOWER Romulus BMC (ARM1176) (romulus-bmc)"
-        case .tacoma_bmc: return "OpenPOWER Tacoma BMC (Cortex-A7) (deprecated) (tacoma-bmc)"
         case .witherspoon_bmc: return "OpenPOWER Witherspoon BMC (ARM1176) (witherspoon-bmc)"
         case .orangepi_pc: return "Orange Pi PC (Cortex-A7) (orangepi-pc)"
-        case .cheetah: return "Palm Tungsten|E aka. Cheetah PDA (OMAP310) (deprecated) (cheetah)"
         case .sbsa_ref: return "QEMU 'SBSA Reference' ARM Virtual Machine (sbsa-ref)"
+        case .virt: return "QEMU 10.0 ARM Virtual Machine (alias of virt-10.0) (virt)"
+        case .virt_10_0: return "QEMU 10.0 ARM Virtual Machine (virt-10.0)"
         case .virt_2_10: return "QEMU 2.10 ARM Virtual Machine (deprecated) (virt-2.10)"
         case .virt_2_11: return "QEMU 2.11 ARM Virtual Machine (deprecated) (virt-2.11)"
         case .virt_2_12: return "QEMU 2.12 ARM Virtual Machine (deprecated) (virt-2.12)"
@@ -5353,16 +5451,16 @@ enum QEMUTarget_aarch64: String, CaseIterable, QEMUTarget {
         case .virt_5_2: return "QEMU 5.2 ARM Virtual Machine (deprecated) (virt-5.2)"
         case .virt_6_0: return "QEMU 6.0 ARM Virtual Machine (deprecated) (virt-6.0)"
         case .virt_6_1: return "QEMU 6.1 ARM Virtual Machine (deprecated) (virt-6.1)"
-        case .virt_6_2: return "QEMU 6.2 ARM Virtual Machine (virt-6.2)"
-        case .virt_7_0: return "QEMU 7.0 ARM Virtual Machine (virt-7.0)"
+        case .virt_6_2: return "QEMU 6.2 ARM Virtual Machine (deprecated) (virt-6.2)"
+        case .virt_7_0: return "QEMU 7.0 ARM Virtual Machine (deprecated) (virt-7.0)"
         case .virt_7_1: return "QEMU 7.1 ARM Virtual Machine (virt-7.1)"
         case .virt_7_2: return "QEMU 7.2 ARM Virtual Machine (virt-7.2)"
         case .virt_8_0: return "QEMU 8.0 ARM Virtual Machine (virt-8.0)"
         case .virt_8_1: return "QEMU 8.1 ARM Virtual Machine (virt-8.1)"
         case .virt_8_2: return "QEMU 8.2 ARM Virtual Machine (virt-8.2)"
         case .virt_9_0: return "QEMU 9.0 ARM Virtual Machine (virt-9.0)"
-        case .virt: return "QEMU 9.1 ARM Virtual Machine (alias of virt-9.1) (virt)"
         case .virt_9_1: return "QEMU 9.1 ARM Virtual Machine (virt-9.1)"
+        case .virt_9_2: return "QEMU 9.2 ARM Virtual Machine (virt-9.2)"
         case .qcom_dc_scm_v1_bmc: return "Qualcomm DC-SCM V1 BMC (Cortex A7) (qcom-dc-scm-v1-bmc)"
         case .qcom_firework_bmc: return "Qualcomm DC-SCM V1/Firework BMC (Cortex A7) (qcom-firework-bmc)"
         case .quanta_gbs_bmc: return "Quanta GBS (Cortex-A9) (quanta-gbs-bmc)"
@@ -5378,11 +5476,6 @@ enum QEMUTarget_aarch64: String, CaseIterable, QEMUTarget {
         case .nuri: return "Samsung NURI board (Exynos4210) (nuri)"
         case .smdkc210: return "Samsung SMDKC210 board (Exynos4210) (smdkc210)"
         case .collie: return "Sharp SL-5500 (Collie) PDA (SA-1110) (collie)"
-        case .tosa: return "Sharp SL-6000 (Tosa) PDA (PXA255) (deprecated) (tosa)"
-        case .akita: return "Sharp SL-C1000 (Akita) PDA (PXA270) (deprecated) (akita)"
-        case .spitz: return "Sharp SL-C3000 (Spitz) PDA (PXA270) (deprecated) (spitz)"
-        case .borzoi: return "Sharp SL-C3100 (Borzoi) PDA (PXA270) (deprecated) (borzoi)"
-        case .terrier: return "Sharp SL-C3200 (Terrier) PDA (PXA270) (deprecated) (terrier)"
         case .sx1_v1: return "Siemens SX1 (OMAP310) V1 (sx1-v1)"
         case .sx1: return "Siemens SX1 (OMAP310) V2 (sx1)"
         case .emcraft_sf2: return "SmartFusion2 SOM kit from Emcraft (M2S010) (emcraft-sf2)"
@@ -5391,9 +5484,8 @@ enum QEMUTarget_aarch64: String, CaseIterable, QEMUTarget {
         case .supermicrox11_bmc: return "Supermicro X11 BMC (ARM926EJ-S) (supermicrox11-bmc)"
         case .supermicro_x11spi_bmc: return "Supermicro X11 SPI BMC (ARM1176) (supermicro-x11spi-bmc)"
         case .xlnx_versal_virt: return "Xilinx Versal Virtual development board (xlnx-versal-virt)"
-        case .xilinx_zynq_a9: return "Xilinx Zynq Platform Baseboard for Cortex-A9 (xilinx-zynq-a9)"
+        case .xilinx_zynq_a9: return "Xilinx Zynq 7000 Platform Baseboard for Cortex-A9 (xilinx-zynq-a9)"
         case .xlnx_zcu102: return "Xilinx ZynqMP ZCU102 board with 4xA53s and 2xR5Fs based on the value of smp (xlnx-zcu102)"
-        case .z2: return "Zipit Z2 (PXA27x) (deprecated) (z2)"
         case .cubieboard: return "cubietech cubieboard (Cortex-A8) (cubieboard)"
         case .none: return "empty machine (none)"
         }
@@ -5425,22 +5517,6 @@ enum QEMUTarget_avr: String, CaseIterable, QEMUTarget {
         case .arduino_mega_2560_v3: return "Arduino Mega 2560 (ATmega2560) (arduino-mega-2560-v3)"
         case .uno: return "Arduino UNO (ATmega328P) (alias of arduino-uno) (uno)"
         case .arduino_uno: return "Arduino UNO (ATmega328P) (arduino-uno)"
-        case .none: return "empty machine (none)"
-        }
-    }
-}
-
-enum QEMUTarget_cris: String, CaseIterable, QEMUTarget {
-    case axis_dev88 = "axis-dev88"
-    case none
-
-    static var `default`: QEMUTarget_cris {
-        .axis_dev88
-    }
-
-    var prettyValue: String {
-        switch self {
-        case .axis_dev88: return "AXIS devboard 88 (default) (axis-dev88)"
         case .none: return "empty machine (none)"
         }
     }
@@ -5489,6 +5565,7 @@ enum QEMUTarget_i386: String, CaseIterable, QEMUTarget {
     case pc_q35_6_1 = "pc-q35-6.1"
     case pc_q35_6_2 = "pc-q35-6.2"
     case pc_q35_7_0 = "pc-q35-7.0"
+    case pc_q35_10_0 = "pc-q35-10.0"
     case pc_q35_7_1 = "pc-q35-7.1"
     case pc_q35_7_2 = "pc-q35-7.2"
     case pc_q35_8_0 = "pc-q35-8.0"
@@ -5496,8 +5573,9 @@ enum QEMUTarget_i386: String, CaseIterable, QEMUTarget {
     case pc_q35_8_2 = "pc-q35-8.2"
     case pc_q35_9_0 = "pc-q35-9.0"
     case pc_q35_9_1 = "pc-q35-9.1"
+    case pc_q35_9_2 = "pc-q35-9.2"
     case pc
-    case pc_i440fx_9_1 = "pc-i440fx-9.1"
+    case pc_i440fx_10_0 = "pc-i440fx-10.0"
     case pc_i440fx_2_10 = "pc-i440fx-2.10"
     case pc_i440fx_2_11 = "pc-i440fx-2.11"
     case pc_i440fx_2_12 = "pc-i440fx-2.12"
@@ -5525,6 +5603,8 @@ enum QEMUTarget_i386: String, CaseIterable, QEMUTarget {
     case pc_i440fx_8_1 = "pc-i440fx-8.1"
     case pc_i440fx_8_2 = "pc-i440fx-8.2"
     case pc_i440fx_9_0 = "pc-i440fx-9.0"
+    case pc_i440fx_9_1 = "pc-i440fx-9.1"
+    case pc_i440fx_9_2 = "pc-i440fx-9.2"
     case none
     case microvm
 
@@ -5535,7 +5615,7 @@ enum QEMUTarget_i386: String, CaseIterable, QEMUTarget {
     var prettyValue: String {
         switch self {
         case .isapc: return "ISA-only PC (isapc)"
-        case .q35: return "Standard PC (Q35 + ICH9, 2009) (alias of pc-q35-9.1) (q35)"
+        case .q35: return "Standard PC (Q35 + ICH9, 2009) (alias of pc-q35-10.0) (q35)"
         case .pc_q35_2_10: return "Standard PC (Q35 + ICH9, 2009) (deprecated) (pc-q35-2.10)"
         case .pc_q35_2_11: return "Standard PC (Q35 + ICH9, 2009) (deprecated) (pc-q35-2.11)"
         case .pc_q35_2_12: return "Standard PC (Q35 + ICH9, 2009) (deprecated) (pc-q35-2.12)"
@@ -5556,8 +5636,9 @@ enum QEMUTarget_i386: String, CaseIterable, QEMUTarget {
         case .pc_q35_5_2: return "Standard PC (Q35 + ICH9, 2009) (deprecated) (pc-q35-5.2)"
         case .pc_q35_6_0: return "Standard PC (Q35 + ICH9, 2009) (deprecated) (pc-q35-6.0)"
         case .pc_q35_6_1: return "Standard PC (Q35 + ICH9, 2009) (deprecated) (pc-q35-6.1)"
-        case .pc_q35_6_2: return "Standard PC (Q35 + ICH9, 2009) (pc-q35-6.2)"
-        case .pc_q35_7_0: return "Standard PC (Q35 + ICH9, 2009) (pc-q35-7.0)"
+        case .pc_q35_6_2: return "Standard PC (Q35 + ICH9, 2009) (deprecated) (pc-q35-6.2)"
+        case .pc_q35_7_0: return "Standard PC (Q35 + ICH9, 2009) (deprecated) (pc-q35-7.0)"
+        case .pc_q35_10_0: return "Standard PC (Q35 + ICH9, 2009) (pc-q35-10.0)"
         case .pc_q35_7_1: return "Standard PC (Q35 + ICH9, 2009) (pc-q35-7.1)"
         case .pc_q35_7_2: return "Standard PC (Q35 + ICH9, 2009) (pc-q35-7.2)"
         case .pc_q35_8_0: return "Standard PC (Q35 + ICH9, 2009) (pc-q35-8.0)"
@@ -5565,8 +5646,9 @@ enum QEMUTarget_i386: String, CaseIterable, QEMUTarget {
         case .pc_q35_8_2: return "Standard PC (Q35 + ICH9, 2009) (pc-q35-8.2)"
         case .pc_q35_9_0: return "Standard PC (Q35 + ICH9, 2009) (pc-q35-9.0)"
         case .pc_q35_9_1: return "Standard PC (Q35 + ICH9, 2009) (pc-q35-9.1)"
-        case .pc: return "Standard PC (i440FX + PIIX, 1996) (alias of pc-i440fx-9.1) (pc)"
-        case .pc_i440fx_9_1: return "Standard PC (i440FX + PIIX, 1996) (default) (pc-i440fx-9.1)"
+        case .pc_q35_9_2: return "Standard PC (Q35 + ICH9, 2009) (pc-q35-9.2)"
+        case .pc: return "Standard PC (i440FX + PIIX, 1996) (alias of pc-i440fx-10.0) (pc)"
+        case .pc_i440fx_10_0: return "Standard PC (i440FX + PIIX, 1996) (default) (pc-i440fx-10.0)"
         case .pc_i440fx_2_10: return "Standard PC (i440FX + PIIX, 1996) (deprecated) (pc-i440fx-2.10)"
         case .pc_i440fx_2_11: return "Standard PC (i440FX + PIIX, 1996) (deprecated) (pc-i440fx-2.11)"
         case .pc_i440fx_2_12: return "Standard PC (i440FX + PIIX, 1996) (deprecated) (pc-i440fx-2.12)"
@@ -5586,14 +5668,16 @@ enum QEMUTarget_i386: String, CaseIterable, QEMUTarget {
         case .pc_i440fx_5_2: return "Standard PC (i440FX + PIIX, 1996) (deprecated) (pc-i440fx-5.2)"
         case .pc_i440fx_6_0: return "Standard PC (i440FX + PIIX, 1996) (deprecated) (pc-i440fx-6.0)"
         case .pc_i440fx_6_1: return "Standard PC (i440FX + PIIX, 1996) (deprecated) (pc-i440fx-6.1)"
-        case .pc_i440fx_6_2: return "Standard PC (i440FX + PIIX, 1996) (pc-i440fx-6.2)"
-        case .pc_i440fx_7_0: return "Standard PC (i440FX + PIIX, 1996) (pc-i440fx-7.0)"
+        case .pc_i440fx_6_2: return "Standard PC (i440FX + PIIX, 1996) (deprecated) (pc-i440fx-6.2)"
+        case .pc_i440fx_7_0: return "Standard PC (i440FX + PIIX, 1996) (deprecated) (pc-i440fx-7.0)"
         case .pc_i440fx_7_1: return "Standard PC (i440FX + PIIX, 1996) (pc-i440fx-7.1)"
         case .pc_i440fx_7_2: return "Standard PC (i440FX + PIIX, 1996) (pc-i440fx-7.2)"
         case .pc_i440fx_8_0: return "Standard PC (i440FX + PIIX, 1996) (pc-i440fx-8.0)"
         case .pc_i440fx_8_1: return "Standard PC (i440FX + PIIX, 1996) (pc-i440fx-8.1)"
         case .pc_i440fx_8_2: return "Standard PC (i440FX + PIIX, 1996) (pc-i440fx-8.2)"
         case .pc_i440fx_9_0: return "Standard PC (i440FX + PIIX, 1996) (pc-i440fx-9.0)"
+        case .pc_i440fx_9_1: return "Standard PC (i440FX + PIIX, 1996) (pc-i440fx-9.1)"
+        case .pc_i440fx_9_2: return "Standard PC (i440FX + PIIX, 1996) (pc-i440fx-9.2)"
         case .none: return "empty machine (none)"
         case .microvm: return "microvm (i386) (microvm)"
         }
@@ -5610,7 +5694,7 @@ enum QEMUTarget_loongarch64: String, CaseIterable, QEMUTarget {
 
     var prettyValue: String {
         switch self {
-        case .virt: return "(null) (default) (virt)"
+        case .virt: return "QEMU LoongArch Virtual Machine (default) (virt)"
         case .none: return "empty machine (none)"
         }
     }
@@ -5621,6 +5705,8 @@ enum QEMUTarget_m68k: String, CaseIterable, QEMUTarget {
     case mcf5208evb
     case q800
     case next_cube = "next-cube"
+    case virt
+    case virt_10_0 = "virt-10.0"
     case virt_6_0 = "virt-6.0"
     case virt_6_1 = "virt-6.1"
     case virt_6_2 = "virt-6.2"
@@ -5631,8 +5717,8 @@ enum QEMUTarget_m68k: String, CaseIterable, QEMUTarget {
     case virt_8_1 = "virt-8.1"
     case virt_8_2 = "virt-8.2"
     case virt_9_0 = "virt-9.0"
-    case virt
     case virt_9_1 = "virt-9.1"
+    case virt_9_2 = "virt-9.2"
     case none
 
     static var `default`: QEMUTarget_m68k {
@@ -5645,18 +5731,20 @@ enum QEMUTarget_m68k: String, CaseIterable, QEMUTarget {
         case .mcf5208evb: return "MCF5208EVB (default) (mcf5208evb)"
         case .q800: return "Macintosh Quadra 800 (q800)"
         case .next_cube: return "NeXT Cube (next-cube)"
+        case .virt: return "QEMU 10.0 M68K Virtual Machine (alias of virt-10.0) (virt)"
+        case .virt_10_0: return "QEMU 10.0 M68K Virtual Machine (virt-10.0)"
         case .virt_6_0: return "QEMU 6.0 M68K Virtual Machine (deprecated) (virt-6.0)"
         case .virt_6_1: return "QEMU 6.1 M68K Virtual Machine (deprecated) (virt-6.1)"
-        case .virt_6_2: return "QEMU 6.2 M68K Virtual Machine (virt-6.2)"
-        case .virt_7_0: return "QEMU 7.0 M68K Virtual Machine (virt-7.0)"
+        case .virt_6_2: return "QEMU 6.2 M68K Virtual Machine (deprecated) (virt-6.2)"
+        case .virt_7_0: return "QEMU 7.0 M68K Virtual Machine (deprecated) (virt-7.0)"
         case .virt_7_1: return "QEMU 7.1 M68K Virtual Machine (virt-7.1)"
         case .virt_7_2: return "QEMU 7.2 M68K Virtual Machine (virt-7.2)"
         case .virt_8_0: return "QEMU 8.0 M68K Virtual Machine (virt-8.0)"
         case .virt_8_1: return "QEMU 8.1 M68K Virtual Machine (virt-8.1)"
         case .virt_8_2: return "QEMU 8.2 M68K Virtual Machine (virt-8.2)"
         case .virt_9_0: return "QEMU 9.0 M68K Virtual Machine (virt-9.0)"
-        case .virt: return "QEMU 9.1 M68K Virtual Machine (alias of virt-9.1) (virt)"
         case .virt_9_1: return "QEMU 9.1 M68K Virtual Machine (virt-9.1)"
+        case .virt_9_2: return "QEMU 9.2 M68K Virtual Machine (virt-9.2)"
         case .none: return "empty machine (none)"
         }
     }
@@ -5675,8 +5763,8 @@ enum QEMUTarget_microblaze: String, CaseIterable, QEMUTarget {
     var prettyValue: String {
         switch self {
         case .petalogix_s3adsp1800: return "PetaLogix linux refdesign for xilinx Spartan 3ADSP1800 (default) (petalogix-s3adsp1800)"
-        case .petalogix_ml605: return "PetaLogix linux refdesign for xilinx ml605 little endian (petalogix-ml605)"
-        case .xlnx_zynqmp_pmu: return "Xilinx ZynqMP PMU machine (xlnx-zynqmp-pmu)"
+        case .petalogix_ml605: return "PetaLogix linux refdesign for xilinx ml605 (big endian) (deprecated) (petalogix-ml605)"
+        case .xlnx_zynqmp_pmu: return "Xilinx ZynqMP PMU machine (big endian) (deprecated) (xlnx-zynqmp-pmu)"
         case .none: return "empty machine (none)"
         }
     }
@@ -5695,8 +5783,8 @@ enum QEMUTarget_microblazeel: String, CaseIterable, QEMUTarget {
     var prettyValue: String {
         switch self {
         case .petalogix_s3adsp1800: return "PetaLogix linux refdesign for xilinx Spartan 3ADSP1800 (default) (petalogix-s3adsp1800)"
-        case .petalogix_ml605: return "PetaLogix linux refdesign for xilinx ml605 little endian (petalogix-ml605)"
-        case .xlnx_zynqmp_pmu: return "Xilinx ZynqMP PMU machine (xlnx-zynqmp-pmu)"
+        case .petalogix_ml605: return "PetaLogix linux refdesign for xilinx ml605 (little endian) (petalogix-ml605)"
+        case .xlnx_zynqmp_pmu: return "Xilinx ZynqMP PMU machine (little endian) (xlnx-zynqmp-pmu)"
         case .none: return "empty machine (none)"
         }
     }
@@ -5818,7 +5906,6 @@ enum QEMUTarget_ppc: String, CaseIterable, QEMUTarget {
     case none
     case ppce500
     case mpc8544ds
-    case ref405ep
 
     static var `default`: QEMUTarget_ppc {
         .g3beige
@@ -5828,16 +5915,15 @@ enum QEMUTarget_ppc: String, CaseIterable, QEMUTarget {
         switch self {
         case .amigaone: return "Eyetech AmigaOne/Mai Logic Teron (amigaone)"
         case .pegasos2: return "Genesi/bPlan Pegasos II (pegasos2)"
-        case .g3beige: return "Heathrow based PowerMAC (default) (g3beige)"
+        case .g3beige: return "Heathrow based PowerMac (default) (g3beige)"
         case ._40p: return "IBM RS/6000 7020 (40p) (40p)"
-        case .mac99: return "Mac99 based PowerMAC (mac99)"
+        case .mac99: return "Mac99 based PowerMac (mac99)"
         case .virtex_ml507: return "Xilinx Virtex ML507 reference design (virtex-ml507)"
         case .sam460ex: return "aCube Sam460ex (sam460ex)"
         case .bamboo: return "bamboo (bamboo)"
         case .none: return "empty machine (none)"
         case .ppce500: return "generic paravirt e500 platform (ppce500)"
         case .mpc8544ds: return "mpc8544ds (mpc8544ds)"
-        case .ref405ep: return "ref405ep (deprecated) (ref405ep)"
         }
     }
 }
@@ -5860,20 +5946,7 @@ enum QEMUTarget_ppc64: String, CaseIterable, QEMUTarget {
     case ppce500
     case mpc8544ds
     case pseries
-    case pseries_9_1 = "pseries-9.1"
-    case pseries_2_1 = "pseries-2.1"
-    case pseries_2_10 = "pseries-2.10"
-    case pseries_2_11 = "pseries-2.11"
-    case pseries_2_12 = "pseries-2.12"
-    case pseries_2_12_sxxm = "pseries-2.12-sxxm"
-    case pseries_2_2 = "pseries-2.2"
-    case pseries_2_3 = "pseries-2.3"
-    case pseries_2_4 = "pseries-2.4"
-    case pseries_2_5 = "pseries-2.5"
-    case pseries_2_6 = "pseries-2.6"
-    case pseries_2_7 = "pseries-2.7"
-    case pseries_2_8 = "pseries-2.8"
-    case pseries_2_9 = "pseries-2.9"
+    case pseries_10_0 = "pseries-10.0"
     case pseries_3_0 = "pseries-3.0"
     case pseries_3_1 = "pseries-3.1"
     case pseries_4_0 = "pseries-4.0"
@@ -5892,45 +5965,33 @@ enum QEMUTarget_ppc64: String, CaseIterable, QEMUTarget {
     case pseries_8_1 = "pseries-8.1"
     case pseries_8_2 = "pseries-8.2"
     case pseries_9_0 = "pseries-9.0"
-    case ref405ep
+    case pseries_9_1 = "pseries-9.1"
+    case pseries_9_2 = "pseries-9.2"
 
     static var `default`: QEMUTarget_ppc64 {
-        .pseries_9_1
+        .pseries_10_0
     }
 
     var prettyValue: String {
         switch self {
         case .amigaone: return "Eyetech AmigaOne/Mai Logic Teron (amigaone)"
         case .pegasos2: return "Genesi/bPlan Pegasos II (pegasos2)"
-        case .g3beige: return "Heathrow based PowerMAC (g3beige)"
+        case .g3beige: return "Heathrow based PowerMac (g3beige)"
         case .powernv: return "IBM PowerNV (Non-Virtualized) POWER10 (alias of powernv10) (powernv)"
         case .powernv10: return "IBM PowerNV (Non-Virtualized) POWER10 (powernv10)"
         case .powernv10_rainier: return "IBM PowerNV (Non-Virtualized) POWER10 Rainier (powernv10-rainier)"
         case .powernv8: return "IBM PowerNV (Non-Virtualized) POWER8 (powernv8)"
         case .powernv9: return "IBM PowerNV (Non-Virtualized) POWER9 (powernv9)"
         case ._40p: return "IBM RS/6000 7020 (40p) (40p)"
-        case .mac99: return "Mac99 based PowerMAC (mac99)"
+        case .mac99: return "Mac99 based PowerMac (mac99)"
         case .virtex_ml507: return "Xilinx Virtex ML507 reference design (virtex-ml507)"
         case .sam460ex: return "aCube Sam460ex (sam460ex)"
         case .bamboo: return "bamboo (bamboo)"
         case .none: return "empty machine (none)"
         case .ppce500: return "generic paravirt e500 platform (ppce500)"
         case .mpc8544ds: return "mpc8544ds (mpc8544ds)"
-        case .pseries: return "pSeries Logical Partition (PAPR compliant) (alias of pseries-9.1) (pseries)"
-        case .pseries_9_1: return "pSeries Logical Partition (PAPR compliant) (default) (pseries-9.1)"
-        case .pseries_2_1: return "pSeries Logical Partition (PAPR compliant) (deprecated) (pseries-2.1)"
-        case .pseries_2_10: return "pSeries Logical Partition (PAPR compliant) (deprecated) (pseries-2.10)"
-        case .pseries_2_11: return "pSeries Logical Partition (PAPR compliant) (deprecated) (pseries-2.11)"
-        case .pseries_2_12: return "pSeries Logical Partition (PAPR compliant) (deprecated) (pseries-2.12)"
-        case .pseries_2_12_sxxm: return "pSeries Logical Partition (PAPR compliant) (deprecated) (pseries-2.12-sxxm)"
-        case .pseries_2_2: return "pSeries Logical Partition (PAPR compliant) (deprecated) (pseries-2.2)"
-        case .pseries_2_3: return "pSeries Logical Partition (PAPR compliant) (deprecated) (pseries-2.3)"
-        case .pseries_2_4: return "pSeries Logical Partition (PAPR compliant) (deprecated) (pseries-2.4)"
-        case .pseries_2_5: return "pSeries Logical Partition (PAPR compliant) (deprecated) (pseries-2.5)"
-        case .pseries_2_6: return "pSeries Logical Partition (PAPR compliant) (deprecated) (pseries-2.6)"
-        case .pseries_2_7: return "pSeries Logical Partition (PAPR compliant) (deprecated) (pseries-2.7)"
-        case .pseries_2_8: return "pSeries Logical Partition (PAPR compliant) (deprecated) (pseries-2.8)"
-        case .pseries_2_9: return "pSeries Logical Partition (PAPR compliant) (deprecated) (pseries-2.9)"
+        case .pseries: return "pSeries Logical Partition (PAPR compliant) (alias of pseries-10.0) (pseries)"
+        case .pseries_10_0: return "pSeries Logical Partition (PAPR compliant) (default) (pseries-10.0)"
         case .pseries_3_0: return "pSeries Logical Partition (PAPR compliant) (deprecated) (pseries-3.0)"
         case .pseries_3_1: return "pSeries Logical Partition (PAPR compliant) (deprecated) (pseries-3.1)"
         case .pseries_4_0: return "pSeries Logical Partition (PAPR compliant) (deprecated) (pseries-4.0)"
@@ -5941,20 +6002,22 @@ enum QEMUTarget_ppc64: String, CaseIterable, QEMUTarget {
         case .pseries_5_2: return "pSeries Logical Partition (PAPR compliant) (deprecated) (pseries-5.2)"
         case .pseries_6_0: return "pSeries Logical Partition (PAPR compliant) (deprecated) (pseries-6.0)"
         case .pseries_6_1: return "pSeries Logical Partition (PAPR compliant) (deprecated) (pseries-6.1)"
-        case .pseries_6_2: return "pSeries Logical Partition (PAPR compliant) (pseries-6.2)"
-        case .pseries_7_0: return "pSeries Logical Partition (PAPR compliant) (pseries-7.0)"
+        case .pseries_6_2: return "pSeries Logical Partition (PAPR compliant) (deprecated) (pseries-6.2)"
+        case .pseries_7_0: return "pSeries Logical Partition (PAPR compliant) (deprecated) (pseries-7.0)"
         case .pseries_7_1: return "pSeries Logical Partition (PAPR compliant) (pseries-7.1)"
         case .pseries_7_2: return "pSeries Logical Partition (PAPR compliant) (pseries-7.2)"
         case .pseries_8_0: return "pSeries Logical Partition (PAPR compliant) (pseries-8.0)"
         case .pseries_8_1: return "pSeries Logical Partition (PAPR compliant) (pseries-8.1)"
         case .pseries_8_2: return "pSeries Logical Partition (PAPR compliant) (pseries-8.2)"
         case .pseries_9_0: return "pSeries Logical Partition (PAPR compliant) (pseries-9.0)"
-        case .ref405ep: return "ref405ep (deprecated) (ref405ep)"
+        case .pseries_9_1: return "pSeries Logical Partition (PAPR compliant) (pseries-9.1)"
+        case .pseries_9_2: return "pSeries Logical Partition (PAPR compliant) (pseries-9.2)"
         }
     }
 }
 
 enum QEMUTarget_riscv32: String, CaseIterable, QEMUTarget {
+    case amd_microblaze_v_generic = "amd-microblaze-v-generic"
     case opentitan
     case sifive_e
     case sifive_u
@@ -5968,6 +6031,7 @@ enum QEMUTarget_riscv32: String, CaseIterable, QEMUTarget {
 
     var prettyValue: String {
         switch self {
+        case .amd_microblaze_v_generic: return "AMD Microblaze-V generic platform (amd-microblaze-v-generic)"
         case .opentitan: return "RISC-V Board compatible with OpenTitan (opentitan)"
         case .sifive_e: return "RISC-V Board compatible with SiFive E SDK (sifive_e)"
         case .sifive_u: return "RISC-V Board compatible with SiFive U SDK (sifive_u)"
@@ -5979,6 +6043,7 @@ enum QEMUTarget_riscv32: String, CaseIterable, QEMUTarget {
 }
 
 enum QEMUTarget_riscv64: String, CaseIterable, QEMUTarget {
+    case amd_microblaze_v_generic = "amd-microblaze-v-generic"
     case microchip_icicle_kit = "microchip-icicle-kit"
     case shakti_c
     case sifive_e
@@ -5993,6 +6058,7 @@ enum QEMUTarget_riscv64: String, CaseIterable, QEMUTarget {
 
     var prettyValue: String {
         switch self {
+        case .amd_microblaze_v_generic: return "AMD Microblaze-V generic platform (amd-microblaze-v-generic)"
         case .microchip_icicle_kit: return "Microchip PolarFire SoC Icicle Kit (microchip-icicle-kit)"
         case .shakti_c: return "RISC-V Board compatible with Shakti SDK (shakti_c)"
         case .sifive_e: return "RISC-V Board compatible with SiFive E SDK (sifive_e)"
@@ -6023,14 +6089,11 @@ enum QEMUTarget_rx: String, CaseIterable, QEMUTarget {
 }
 
 enum QEMUTarget_s390x: String, CaseIterable, QEMUTarget {
+    case s390_ccw_virtio = "s390-ccw-virtio"
+    case s390_ccw_virtio_10_0 = "s390-ccw-virtio-10.0"
     case s390_ccw_virtio_2_10 = "s390-ccw-virtio-2.10"
     case s390_ccw_virtio_2_11 = "s390-ccw-virtio-2.11"
     case s390_ccw_virtio_2_12 = "s390-ccw-virtio-2.12"
-    case s390_ccw_virtio_2_4 = "s390-ccw-virtio-2.4"
-    case s390_ccw_virtio_2_5 = "s390-ccw-virtio-2.5"
-    case s390_ccw_virtio_2_6 = "s390-ccw-virtio-2.6"
-    case s390_ccw_virtio_2_7 = "s390-ccw-virtio-2.7"
-    case s390_ccw_virtio_2_8 = "s390-ccw-virtio-2.8"
     case s390_ccw_virtio_2_9 = "s390-ccw-virtio-2.9"
     case s390_ccw_virtio_3_0 = "s390-ccw-virtio-3.0"
     case s390_ccw_virtio_3_1 = "s390-ccw-virtio-3.1"
@@ -6050,24 +6113,21 @@ enum QEMUTarget_s390x: String, CaseIterable, QEMUTarget {
     case s390_ccw_virtio_8_1 = "s390-ccw-virtio-8.1"
     case s390_ccw_virtio_8_2 = "s390-ccw-virtio-8.2"
     case s390_ccw_virtio_9_0 = "s390-ccw-virtio-9.0"
-    case s390_ccw_virtio = "s390-ccw-virtio"
     case s390_ccw_virtio_9_1 = "s390-ccw-virtio-9.1"
+    case s390_ccw_virtio_9_2 = "s390-ccw-virtio-9.2"
     case none
 
     static var `default`: QEMUTarget_s390x {
-        .s390_ccw_virtio_9_1
+        .s390_ccw_virtio_10_0
     }
 
     var prettyValue: String {
         switch self {
+        case .s390_ccw_virtio: return "Virtual s390x machine (version 10.0) (alias of s390-ccw-virtio-10.0) (s390-ccw-virtio)"
+        case .s390_ccw_virtio_10_0: return "Virtual s390x machine (version 10.0) (default) (s390-ccw-virtio-10.0)"
         case .s390_ccw_virtio_2_10: return "Virtual s390x machine (version 2.10) (deprecated) (s390-ccw-virtio-2.10)"
         case .s390_ccw_virtio_2_11: return "Virtual s390x machine (version 2.11) (deprecated) (s390-ccw-virtio-2.11)"
         case .s390_ccw_virtio_2_12: return "Virtual s390x machine (version 2.12) (deprecated) (s390-ccw-virtio-2.12)"
-        case .s390_ccw_virtio_2_4: return "Virtual s390x machine (version 2.4) (deprecated) (s390-ccw-virtio-2.4)"
-        case .s390_ccw_virtio_2_5: return "Virtual s390x machine (version 2.5) (deprecated) (s390-ccw-virtio-2.5)"
-        case .s390_ccw_virtio_2_6: return "Virtual s390x machine (version 2.6) (deprecated) (s390-ccw-virtio-2.6)"
-        case .s390_ccw_virtio_2_7: return "Virtual s390x machine (version 2.7) (deprecated) (s390-ccw-virtio-2.7)"
-        case .s390_ccw_virtio_2_8: return "Virtual s390x machine (version 2.8) (deprecated) (s390-ccw-virtio-2.8)"
         case .s390_ccw_virtio_2_9: return "Virtual s390x machine (version 2.9) (deprecated) (s390-ccw-virtio-2.9)"
         case .s390_ccw_virtio_3_0: return "Virtual s390x machine (version 3.0) (deprecated) (s390-ccw-virtio-3.0)"
         case .s390_ccw_virtio_3_1: return "Virtual s390x machine (version 3.1) (deprecated) (s390-ccw-virtio-3.1)"
@@ -6079,16 +6139,16 @@ enum QEMUTarget_s390x: String, CaseIterable, QEMUTarget {
         case .s390_ccw_virtio_5_2: return "Virtual s390x machine (version 5.2) (deprecated) (s390-ccw-virtio-5.2)"
         case .s390_ccw_virtio_6_0: return "Virtual s390x machine (version 6.0) (deprecated) (s390-ccw-virtio-6.0)"
         case .s390_ccw_virtio_6_1: return "Virtual s390x machine (version 6.1) (deprecated) (s390-ccw-virtio-6.1)"
-        case .s390_ccw_virtio_6_2: return "Virtual s390x machine (version 6.2) (s390-ccw-virtio-6.2)"
-        case .s390_ccw_virtio_7_0: return "Virtual s390x machine (version 7.0) (s390-ccw-virtio-7.0)"
+        case .s390_ccw_virtio_6_2: return "Virtual s390x machine (version 6.2) (deprecated) (s390-ccw-virtio-6.2)"
+        case .s390_ccw_virtio_7_0: return "Virtual s390x machine (version 7.0) (deprecated) (s390-ccw-virtio-7.0)"
         case .s390_ccw_virtio_7_1: return "Virtual s390x machine (version 7.1) (s390-ccw-virtio-7.1)"
         case .s390_ccw_virtio_7_2: return "Virtual s390x machine (version 7.2) (s390-ccw-virtio-7.2)"
         case .s390_ccw_virtio_8_0: return "Virtual s390x machine (version 8.0) (s390-ccw-virtio-8.0)"
         case .s390_ccw_virtio_8_1: return "Virtual s390x machine (version 8.1) (s390-ccw-virtio-8.1)"
         case .s390_ccw_virtio_8_2: return "Virtual s390x machine (version 8.2) (s390-ccw-virtio-8.2)"
         case .s390_ccw_virtio_9_0: return "Virtual s390x machine (version 9.0) (s390-ccw-virtio-9.0)"
-        case .s390_ccw_virtio: return "Virtual s390x machine (version 9.1) (alias of s390-ccw-virtio-9.1) (s390-ccw-virtio)"
-        case .s390_ccw_virtio_9_1: return "Virtual s390x machine (version 9.1) (default) (s390-ccw-virtio-9.1)"
+        case .s390_ccw_virtio_9_1: return "Virtual s390x machine (version 9.1) (s390-ccw-virtio-9.1)"
+        case .s390_ccw_virtio_9_2: return "Virtual s390x machine (version 9.2) (s390-ccw-virtio-9.2)"
         case .none: return "empty machine (none)"
         }
     }
@@ -6097,17 +6157,15 @@ enum QEMUTarget_s390x: String, CaseIterable, QEMUTarget {
 enum QEMUTarget_sh4: String, CaseIterable, QEMUTarget {
     case none
     case r2d
-    case shix
 
     static var `default`: QEMUTarget_sh4 {
-        .shix
+        .none
     }
 
     var prettyValue: String {
         switch self {
         case .none: return "empty machine (none)"
         case .r2d: return "r2d-plus board (r2d)"
-        case .shix: return "shix card (default) (deprecated) (shix)"
         }
     }
 }
@@ -6115,17 +6173,15 @@ enum QEMUTarget_sh4: String, CaseIterable, QEMUTarget {
 enum QEMUTarget_sh4eb: String, CaseIterable, QEMUTarget {
     case none
     case r2d
-    case shix
 
     static var `default`: QEMUTarget_sh4eb {
-        .shix
+        .none
     }
 
     var prettyValue: String {
         switch self {
         case .none: return "empty machine (none)"
         case .r2d: return "r2d-plus board (r2d)"
-        case .shix: return "shix card (default) (deprecated) (shix)"
         }
     }
 }
@@ -6227,6 +6283,7 @@ enum QEMUTarget_x86_64: String, CaseIterable, QEMUTarget {
     case pc_q35_6_1 = "pc-q35-6.1"
     case pc_q35_6_2 = "pc-q35-6.2"
     case pc_q35_7_0 = "pc-q35-7.0"
+    case pc_q35_10_0 = "pc-q35-10.0"
     case pc_q35_7_1 = "pc-q35-7.1"
     case pc_q35_7_2 = "pc-q35-7.2"
     case pc_q35_8_0 = "pc-q35-8.0"
@@ -6234,8 +6291,9 @@ enum QEMUTarget_x86_64: String, CaseIterable, QEMUTarget {
     case pc_q35_8_2 = "pc-q35-8.2"
     case pc_q35_9_0 = "pc-q35-9.0"
     case pc_q35_9_1 = "pc-q35-9.1"
+    case pc_q35_9_2 = "pc-q35-9.2"
     case pc
-    case pc_i440fx_9_1 = "pc-i440fx-9.1"
+    case pc_i440fx_10_0 = "pc-i440fx-10.0"
     case pc_i440fx_2_10 = "pc-i440fx-2.10"
     case pc_i440fx_2_11 = "pc-i440fx-2.11"
     case pc_i440fx_2_12 = "pc-i440fx-2.12"
@@ -6263,6 +6321,8 @@ enum QEMUTarget_x86_64: String, CaseIterable, QEMUTarget {
     case pc_i440fx_8_1 = "pc-i440fx-8.1"
     case pc_i440fx_8_2 = "pc-i440fx-8.2"
     case pc_i440fx_9_0 = "pc-i440fx-9.0"
+    case pc_i440fx_9_1 = "pc-i440fx-9.1"
+    case pc_i440fx_9_2 = "pc-i440fx-9.2"
     case none
     case microvm
 
@@ -6273,7 +6333,7 @@ enum QEMUTarget_x86_64: String, CaseIterable, QEMUTarget {
     var prettyValue: String {
         switch self {
         case .isapc: return "ISA-only PC (isapc)"
-        case .q35: return "Standard PC (Q35 + ICH9, 2009) (alias of pc-q35-9.1) (q35)"
+        case .q35: return "Standard PC (Q35 + ICH9, 2009) (alias of pc-q35-10.0) (q35)"
         case .pc_q35_2_10: return "Standard PC (Q35 + ICH9, 2009) (deprecated) (pc-q35-2.10)"
         case .pc_q35_2_11: return "Standard PC (Q35 + ICH9, 2009) (deprecated) (pc-q35-2.11)"
         case .pc_q35_2_12: return "Standard PC (Q35 + ICH9, 2009) (deprecated) (pc-q35-2.12)"
@@ -6294,8 +6354,9 @@ enum QEMUTarget_x86_64: String, CaseIterable, QEMUTarget {
         case .pc_q35_5_2: return "Standard PC (Q35 + ICH9, 2009) (deprecated) (pc-q35-5.2)"
         case .pc_q35_6_0: return "Standard PC (Q35 + ICH9, 2009) (deprecated) (pc-q35-6.0)"
         case .pc_q35_6_1: return "Standard PC (Q35 + ICH9, 2009) (deprecated) (pc-q35-6.1)"
-        case .pc_q35_6_2: return "Standard PC (Q35 + ICH9, 2009) (pc-q35-6.2)"
-        case .pc_q35_7_0: return "Standard PC (Q35 + ICH9, 2009) (pc-q35-7.0)"
+        case .pc_q35_6_2: return "Standard PC (Q35 + ICH9, 2009) (deprecated) (pc-q35-6.2)"
+        case .pc_q35_7_0: return "Standard PC (Q35 + ICH9, 2009) (deprecated) (pc-q35-7.0)"
+        case .pc_q35_10_0: return "Standard PC (Q35 + ICH9, 2009) (pc-q35-10.0)"
         case .pc_q35_7_1: return "Standard PC (Q35 + ICH9, 2009) (pc-q35-7.1)"
         case .pc_q35_7_2: return "Standard PC (Q35 + ICH9, 2009) (pc-q35-7.2)"
         case .pc_q35_8_0: return "Standard PC (Q35 + ICH9, 2009) (pc-q35-8.0)"
@@ -6303,8 +6364,9 @@ enum QEMUTarget_x86_64: String, CaseIterable, QEMUTarget {
         case .pc_q35_8_2: return "Standard PC (Q35 + ICH9, 2009) (pc-q35-8.2)"
         case .pc_q35_9_0: return "Standard PC (Q35 + ICH9, 2009) (pc-q35-9.0)"
         case .pc_q35_9_1: return "Standard PC (Q35 + ICH9, 2009) (pc-q35-9.1)"
-        case .pc: return "Standard PC (i440FX + PIIX, 1996) (alias of pc-i440fx-9.1) (pc)"
-        case .pc_i440fx_9_1: return "Standard PC (i440FX + PIIX, 1996) (default) (pc-i440fx-9.1)"
+        case .pc_q35_9_2: return "Standard PC (Q35 + ICH9, 2009) (pc-q35-9.2)"
+        case .pc: return "Standard PC (i440FX + PIIX, 1996) (alias of pc-i440fx-10.0) (pc)"
+        case .pc_i440fx_10_0: return "Standard PC (i440FX + PIIX, 1996) (default) (pc-i440fx-10.0)"
         case .pc_i440fx_2_10: return "Standard PC (i440FX + PIIX, 1996) (deprecated) (pc-i440fx-2.10)"
         case .pc_i440fx_2_11: return "Standard PC (i440FX + PIIX, 1996) (deprecated) (pc-i440fx-2.11)"
         case .pc_i440fx_2_12: return "Standard PC (i440FX + PIIX, 1996) (deprecated) (pc-i440fx-2.12)"
@@ -6324,14 +6386,16 @@ enum QEMUTarget_x86_64: String, CaseIterable, QEMUTarget {
         case .pc_i440fx_5_2: return "Standard PC (i440FX + PIIX, 1996) (deprecated) (pc-i440fx-5.2)"
         case .pc_i440fx_6_0: return "Standard PC (i440FX + PIIX, 1996) (deprecated) (pc-i440fx-6.0)"
         case .pc_i440fx_6_1: return "Standard PC (i440FX + PIIX, 1996) (deprecated) (pc-i440fx-6.1)"
-        case .pc_i440fx_6_2: return "Standard PC (i440FX + PIIX, 1996) (pc-i440fx-6.2)"
-        case .pc_i440fx_7_0: return "Standard PC (i440FX + PIIX, 1996) (pc-i440fx-7.0)"
+        case .pc_i440fx_6_2: return "Standard PC (i440FX + PIIX, 1996) (deprecated) (pc-i440fx-6.2)"
+        case .pc_i440fx_7_0: return "Standard PC (i440FX + PIIX, 1996) (deprecated) (pc-i440fx-7.0)"
         case .pc_i440fx_7_1: return "Standard PC (i440FX + PIIX, 1996) (pc-i440fx-7.1)"
         case .pc_i440fx_7_2: return "Standard PC (i440FX + PIIX, 1996) (pc-i440fx-7.2)"
         case .pc_i440fx_8_0: return "Standard PC (i440FX + PIIX, 1996) (pc-i440fx-8.0)"
         case .pc_i440fx_8_1: return "Standard PC (i440FX + PIIX, 1996) (pc-i440fx-8.1)"
         case .pc_i440fx_8_2: return "Standard PC (i440FX + PIIX, 1996) (pc-i440fx-8.2)"
         case .pc_i440fx_9_0: return "Standard PC (i440FX + PIIX, 1996) (pc-i440fx-9.0)"
+        case .pc_i440fx_9_1: return "Standard PC (i440FX + PIIX, 1996) (pc-i440fx-9.1)"
+        case .pc_i440fx_9_2: return "Standard PC (i440FX + PIIX, 1996) (pc-i440fx-9.2)"
         case .none: return "empty machine (none)"
         case .microvm: return "microvm (i386) (microvm)"
         }
@@ -6452,7 +6516,7 @@ enum QEMUDisplayDevice_arm: String, CaseIterable, QEMUDisplayDevice {
     var prettyValue: String {
         switch self {
         case .cirrus_vga: return "Cirrus CLGD 54xx VGA (cirrus-vga)"
-        case .dm163: return "DM163 (dm163)"
+        case .dm163: return "DM163 8x3-channel constant current LED driver (dm163)"
         case .led: return "LED (led)"
         case .VGA: return "VGA"
         case .ati_vga: return "ati-vga"
@@ -6477,6 +6541,7 @@ enum QEMUDisplayDevice_aarch64: String, CaseIterable, QEMUDisplayDevice {
     case VGA
     case ati_vga = "ati-vga"
     case bochs_display = "bochs-display"
+    case apple_gfx_pci = "apple-gfx-pci"
     case ramfb
     case secondary_vga = "secondary-vga"
     case ssd0323
@@ -6490,11 +6555,12 @@ enum QEMUDisplayDevice_aarch64: String, CaseIterable, QEMUDisplayDevice {
     var prettyValue: String {
         switch self {
         case .cirrus_vga: return "Cirrus CLGD 54xx VGA (cirrus-vga)"
-        case .dm163: return "DM163 (dm163)"
+        case .dm163: return "DM163 8x3-channel constant current LED driver (dm163)"
         case .led: return "LED (led)"
         case .VGA: return "VGA"
         case .ati_vga: return "ati-vga"
         case .bochs_display: return "bochs-display"
+        case .apple_gfx_pci: return "macOS Paravirtualized Graphics PCI Display Controller (apple-gfx-pci)"
         case .ramfb: return "ram framebuffer standalone device (ramfb)"
         case .secondary_vga: return "secondary-vga"
         case .ssd0323: return "ssd0323"
@@ -6509,8 +6575,6 @@ enum QEMUDisplayDevice_aarch64: String, CaseIterable, QEMUDisplayDevice {
 }
 
 typealias QEMUDisplayDevice_avr = AnyQEMUConstant
-
-typealias QEMUDisplayDevice_cris = AnyQEMUConstant
 
 enum QEMUDisplayDevice_hppa: String, CaseIterable, QEMUDisplayDevice {
     case cirrus_vga = "cirrus-vga"
@@ -6601,8 +6665,6 @@ enum QEMUDisplayDevice_loongarch64: String, CaseIterable, QEMUDisplayDevice {
     case virtio_gpu_pci = "virtio-gpu-pci"
     case virtio_ramfb = "virtio-ramfb"
     case virtio_ramfb_gl = "virtio-ramfb-gl"
-    case virtio_vga = "virtio-vga"
-    case virtio_vga_gl = "virtio-vga-gl"
 
     var prettyValue: String {
         switch self {
@@ -6618,8 +6680,6 @@ enum QEMUDisplayDevice_loongarch64: String, CaseIterable, QEMUDisplayDevice {
         case .virtio_gpu_pci: return "virtio-gpu-pci"
         case .virtio_ramfb: return "virtio-ramfb"
         case .virtio_ramfb_gl: return "virtio-ramfb-gl (GPU Supported)"
-        case .virtio_vga: return "virtio-vga"
-        case .virtio_vga_gl: return "virtio-vga-gl (GPU Supported)"
         }
     }
 }
@@ -7336,8 +7396,6 @@ enum QEMUNetworkDevice_aarch64: String, CaseIterable, QEMUNetworkDevice {
 
 typealias QEMUNetworkDevice_avr = AnyQEMUConstant
 
-typealias QEMUNetworkDevice_cris = AnyQEMUConstant
-
 enum QEMUNetworkDevice_hppa: String, CaseIterable, QEMUNetworkDevice {
     case e1000
     case e1000_82544gc = "e1000-82544gc"
@@ -7863,6 +7921,7 @@ enum QEMUNetworkDevice_or1k: String, CaseIterable, QEMUNetworkDevice {
 }
 
 enum QEMUNetworkDevice_ppc: String, CaseIterable, QEMUNetworkDevice {
+    case eTSEC
     case e1000e
     case igb
     case e1000
@@ -7897,6 +7956,7 @@ enum QEMUNetworkDevice_ppc: String, CaseIterable, QEMUNetworkDevice {
 
     var prettyValue: String {
         switch self {
+        case .eTSEC: return "Freescale Enhanced Three-Speed Ethernet Controller (eTSEC)"
         case .e1000e: return "Intel 82574L GbE Controller (e1000e)"
         case .igb: return "Intel 82576 Gigabit Ethernet Controller (igb)"
         case .e1000: return "Intel Gigabit Ethernet (e1000)"
@@ -7933,6 +7993,7 @@ enum QEMUNetworkDevice_ppc: String, CaseIterable, QEMUNetworkDevice {
 }
 
 enum QEMUNetworkDevice_ppc64: String, CaseIterable, QEMUNetworkDevice {
+    case eTSEC
     case e1000e
     case igb
     case e1000
@@ -7968,6 +8029,7 @@ enum QEMUNetworkDevice_ppc64: String, CaseIterable, QEMUNetworkDevice {
 
     var prettyValue: String {
         switch self {
+        case .eTSEC: return "Freescale Enhanced Three-Speed Ethernet Controller (eTSEC)"
         case .e1000e: return "Intel 82574L GbE Controller (e1000e)"
         case .igb: return "Intel 82576 Gigabit Ethernet Controller (igb)"
         case .e1000: return "Intel Gigabit Ethernet (e1000)"
@@ -8626,8 +8688,6 @@ enum QEMUSoundDevice_aarch64: String, CaseIterable, QEMUSoundDevice {
 
 typealias QEMUSoundDevice_avr = AnyQEMUConstant
 
-typealias QEMUSoundDevice_cris = AnyQEMUConstant
-
 enum QEMUSoundDevice_hppa: String, CaseIterable, QEMUSoundDevice {
     case sb16
     case cs4231a
@@ -9244,8 +9304,6 @@ enum QEMUSerialDevice_aarch64: String, CaseIterable, QEMUSerialDevice {
 
 typealias QEMUSerialDevice_avr = AnyQEMUConstant
 
-typealias QEMUSerialDevice_cris = AnyQEMUConstant
-
 enum QEMUSerialDevice_hppa: String, CaseIterable, QEMUSerialDevice {
     case isa_serial = "isa-serial"
     case pci_serial = "pci-serial"
@@ -9789,7 +9847,6 @@ extension QEMUArchitecture {
         case .arm: return QEMUCPU_arm.self
         case .aarch64: return QEMUCPU_aarch64.self
         case .avr: return QEMUCPU_avr.self
-        case .cris: return QEMUCPU_cris.self
         case .hppa: return QEMUCPU_hppa.self
         case .i386: return QEMUCPU_i386.self
         case .loongarch64: return QEMUCPU_loongarch64.self
@@ -9824,7 +9881,6 @@ extension QEMUArchitecture {
         case .arm: return QEMUCPUFlag_arm.self
         case .aarch64: return QEMUCPUFlag_aarch64.self
         case .avr: return QEMUCPUFlag_avr.self
-        case .cris: return QEMUCPUFlag_cris.self
         case .hppa: return QEMUCPUFlag_hppa.self
         case .i386: return QEMUCPUFlag_i386.self
         case .loongarch64: return QEMUCPUFlag_loongarch64.self
@@ -9859,7 +9915,6 @@ extension QEMUArchitecture {
         case .arm: return QEMUTarget_arm.self
         case .aarch64: return QEMUTarget_aarch64.self
         case .avr: return QEMUTarget_avr.self
-        case .cris: return QEMUTarget_cris.self
         case .hppa: return QEMUTarget_hppa.self
         case .i386: return QEMUTarget_i386.self
         case .loongarch64: return QEMUTarget_loongarch64.self
@@ -9894,7 +9949,6 @@ extension QEMUArchitecture {
         case .arm: return QEMUDisplayDevice_arm.self
         case .aarch64: return QEMUDisplayDevice_aarch64.self
         case .avr: return QEMUDisplayDevice_avr.self
-        case .cris: return QEMUDisplayDevice_cris.self
         case .hppa: return QEMUDisplayDevice_hppa.self
         case .i386: return QEMUDisplayDevice_i386.self
         case .loongarch64: return QEMUDisplayDevice_loongarch64.self
@@ -9929,7 +9983,6 @@ extension QEMUArchitecture {
         case .arm: return QEMUNetworkDevice_arm.self
         case .aarch64: return QEMUNetworkDevice_aarch64.self
         case .avr: return QEMUNetworkDevice_avr.self
-        case .cris: return QEMUNetworkDevice_cris.self
         case .hppa: return QEMUNetworkDevice_hppa.self
         case .i386: return QEMUNetworkDevice_i386.self
         case .loongarch64: return QEMUNetworkDevice_loongarch64.self
@@ -9964,7 +10017,6 @@ extension QEMUArchitecture {
         case .arm: return QEMUSoundDevice_arm.self
         case .aarch64: return QEMUSoundDevice_aarch64.self
         case .avr: return QEMUSoundDevice_avr.self
-        case .cris: return QEMUSoundDevice_cris.self
         case .hppa: return QEMUSoundDevice_hppa.self
         case .i386: return QEMUSoundDevice_i386.self
         case .loongarch64: return QEMUSoundDevice_loongarch64.self
@@ -9999,7 +10051,6 @@ extension QEMUArchitecture {
         case .arm: return QEMUSerialDevice_arm.self
         case .aarch64: return QEMUSerialDevice_aarch64.self
         case .avr: return QEMUSerialDevice_avr.self
-        case .cris: return QEMUSerialDevice_cris.self
         case .hppa: return QEMUSerialDevice_hppa.self
         case .i386: return QEMUSerialDevice_i386.self
         case .loongarch64: return QEMUSerialDevice_loongarch64.self

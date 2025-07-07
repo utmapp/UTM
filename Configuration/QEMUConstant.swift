@@ -409,7 +409,6 @@ extension QEMUArchitecture {
     var hasAgentSupport: Bool {
         switch self {
         case .avr: return false
-        case .cris: return false
         case .m68k: return false
         case .microblaze, .microblazeel: return false
         case .rx: return false

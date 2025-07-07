@@ -398,7 +398,6 @@
 		CE0DF19425A83C1700A51894 /* qemu-aarch64-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FD22653C7500FC7E63 /* qemu-aarch64-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0DF19525A83C1700A51894 /* qemu-alpha-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D641322653C7500FC7E63 /* qemu-alpha-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0DF19625A83C1700A51894 /* qemu-arm-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640722653C7500FC7E63 /* qemu-arm-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE0DF19725A83C1700A51894 /* qemu-cris-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E622653C7400FC7E63 /* qemu-cris-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0DF19825A83C1700A51894 /* qemu-hppa-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F222653C7400FC7E63 /* qemu-hppa-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0DF19925A83C1700A51894 /* qemu-i386-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63D722653C7300FC7E63 /* qemu-i386-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE0DF19A25A83C1700A51894 /* qemu-m68k-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63EB22653C7400FC7E63 /* qemu-m68k-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -535,7 +534,6 @@
 		CE2D937D24AD46670059923A /* gio-2.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F822653C7400FC7E63 /* gio-2.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE2D937E24AD46670059923A /* png16.16.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640522653C7500FC7E63 /* png16.16.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE2D937F24AD46670059923A /* gstnet-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E522653C7400FC7E63 /* gstnet-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CE2D938024AD46670059923A /* qemu-cris-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E622653C7400FC7E63 /* qemu-cris-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE2D938124AD46670059923A /* crypto.1.1.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640A22653C7500FC7E63 /* crypto.1.1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE2D938224AD46670059923A /* qemu-riscv64-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FB22653C7500FC7E63 /* qemu-riscv64-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CE2D938324AD46670059923A /* gstapp-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DB22653C7300FC7E63 /* gstapp-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -1340,7 +1338,6 @@
 				CE0DF19425A83C1700A51894 /* qemu-aarch64-softmmu.framework in Embed Libraries */,
 				CE0DF19525A83C1700A51894 /* qemu-alpha-softmmu.framework in Embed Libraries */,
 				CE0DF19625A83C1700A51894 /* qemu-arm-softmmu.framework in Embed Libraries */,
-				CE0DF19725A83C1700A51894 /* qemu-cris-softmmu.framework in Embed Libraries */,
 				CE0DF19825A83C1700A51894 /* qemu-hppa-softmmu.framework in Embed Libraries */,
 				CE02C8B4294EE59A006DFE48 /* slirp.0.framework in Embed Libraries */,
 				84937F0028960789003148F4 /* zstd.1.framework in Embed Libraries */,
@@ -1395,7 +1392,6 @@
 				CE02C8AD294EE4EC006DFE48 /* slirp.0.framework in Embed Libraries */,
 				CE2D937E24AD46670059923A /* png16.16.framework in Embed Libraries */,
 				CE2D937F24AD46670059923A /* gstnet-1.0.0.framework in Embed Libraries */,
-				CE2D938024AD46670059923A /* qemu-cris-softmmu.framework in Embed Libraries */,
 				CE2D938124AD46670059923A /* crypto.1.1.framework in Embed Libraries */,
 				CE2D938224AD46670059923A /* qemu-riscv64-softmmu.framework in Embed Libraries */,
 				CE2D938324AD46670059923A /* gstapp-1.0.0.framework in Embed Libraries */,
@@ -1838,7 +1834,6 @@
 		CE2D63E322653C7400FC7E63 /* ffi.8.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ffi.8.framework; path = "$(SYSROOT_DIR)/Frameworks/ffi.8.framework"; sourceTree = "<group>"; };
 		CE2D63E422653C7400FC7E63 /* qemu-microblaze-softmmu.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "qemu-microblaze-softmmu.framework"; path = "$(SYSROOT_DIR)/Frameworks/qemu-microblaze-softmmu.framework"; sourceTree = "<group>"; };
 		CE2D63E522653C7400FC7E63 /* gstnet-1.0.0.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "gstnet-1.0.0.framework"; path = "$(SYSROOT_DIR)/Frameworks/gstnet-1.0.0.framework"; sourceTree = "<group>"; };
-		CE2D63E622653C7400FC7E63 /* qemu-cris-softmmu.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "qemu-cris-softmmu.framework"; path = "$(SYSROOT_DIR)/Frameworks/qemu-cris-softmmu.framework"; sourceTree = "<group>"; };
 		CE2D63E722653C7400FC7E63 /* qemu-ppc-softmmu.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "qemu-ppc-softmmu.framework"; path = "$(SYSROOT_DIR)/Frameworks/qemu-ppc-softmmu.framework"; sourceTree = "<group>"; };
 		CE2D63E822653C7400FC7E63 /* gstbase-1.0.0.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "gstbase-1.0.0.framework"; path = "$(SYSROOT_DIR)/Frameworks/gstbase-1.0.0.framework"; sourceTree = "<group>"; };
 		CE2D63EB22653C7400FC7E63 /* qemu-m68k-softmmu.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "qemu-m68k-softmmu.framework"; path = "$(SYSROOT_DIR)/Frameworks/qemu-m68k-softmmu.framework"; sourceTree = "<group>"; };
@@ -2616,7 +2611,6 @@
 				CE2D63FD22653C7500FC7E63 /* qemu-aarch64-softmmu.framework */,
 				CE2D641322653C7500FC7E63 /* qemu-alpha-softmmu.framework */,
 				CE2D640722653C7500FC7E63 /* qemu-arm-softmmu.framework */,
-				CE2D63E622653C7400FC7E63 /* qemu-cris-softmmu.framework */,
 				CE2D63F222653C7400FC7E63 /* qemu-hppa-softmmu.framework */,
 				CE2D63D722653C7300FC7E63 /* qemu-i386-softmmu.framework */,
 				CE2D63EB22653C7400FC7E63 /* qemu-m68k-softmmu.framework */,
