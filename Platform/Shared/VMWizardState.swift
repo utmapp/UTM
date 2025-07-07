@@ -536,6 +536,9 @@ struct AlertMessage: Identifiable {
     }
     
     func generateConfig() throws -> any UTMConfiguration {
+        guard name != nil else {
+            throw VMWizardError.nameEmpty
+        }
         if useVirtualization && useAppleVirtualization {
             #if os(macOS)
             return try generateAppleConfig()
@@ -601,12 +604,14 @@ extension VMWizardState {
 
 enum VMWizardError: Error {
     case confusedArchitectureWarning(String, QEMUArchitecture, String)
+    case nameEmpty
 }
 
 extension VMWizardError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .confusedArchitectureWarning(let pattern, let architecture, let expected): return String.localizedStringWithFormat(NSLocalizedString("The selected boot image contains the word '%@' but the guest architecture is '%@'. Please ensure you have selected an image that is compatible with '%@'.", comment: "VMWizardState"), pattern, architecture.prettyValue, expected)
+        case .nameEmpty: return NSLocalizedString("Name cannot be empty.", comment: "VMWizardState")
         }
     }
 }
