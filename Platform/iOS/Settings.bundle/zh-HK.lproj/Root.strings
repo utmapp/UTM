@@ -20,7 +20,7 @@
 "Click & Hold" = "按住";
 
 /* (No Comment) */
-"Continue running VM in the background" = "在背景執行虛擬機器";
+"Continue running VM in the background" = "在背景執行虛擬機";
 
 /* (No Comment) */
 "Cursor" = "指標";
@@ -169,7 +169,7 @@
 "Disable screen dimming when idle" = "閒置時停用變暗螢幕";
 
 /* (No Comment) */
-"Do not save VM screenshot to disk" = "不要儲存虛擬機器的螢幕截圖至磁碟";
+"Do not save VM screenshot to disk" = "不要儲存虛擬機的螢幕截圖至磁碟";
 
 /* (No Comment) */
 "FPS Limit" = "FPS 限制";

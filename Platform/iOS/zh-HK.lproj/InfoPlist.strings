@@ -2,7 +2,7 @@
 "CFBundleName" = "UTM";
 
 /* Privacy - Local Network Usage Description */
-"NSLocalNetworkUsageDescription" = "虛擬機器可能會取用區域網絡。UTM 亦可能會使用區域網絡與本地伺服器通訊。";
+"NSLocalNetworkUsageDescription" = "虛擬機可能會取用區域網絡。UTM 亦可能會使用區域網絡與本地伺服器通訊。";
 
 /* Privacy - Location Always and When In Use Usage Description */
 "NSLocationAlwaysAndWhenInUseUsageDescription" = "UTM 定期請求位置資料，以確保系統保持背景程序處於啟用狀態。位置資料絕對不會離開裝置。";
@@ -14,8 +14,8 @@
 "NSLocationWhenInUseUsageDescription" = "UTM 定期請求位置資料，以確保系統保持背景程序處於啟用狀態。位置資料絕對不會離開裝置。";
 
 /* Privacy - Microphone Usage Description */
-"NSMicrophoneUsageDescription" = "任何虛擬機器都需要權限才能從咪高風錄製。";
+"NSMicrophoneUsageDescription" = "任何虛擬機都需要權限才能從咪高風錄製。";
 
 /* (No Comment) */
-"UTM virtual machine" = "UTM 虛擬機器";
+"UTM virtual machine" = "UTM 虛擬機";
 

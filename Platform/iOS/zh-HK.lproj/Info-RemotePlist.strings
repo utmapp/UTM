@@ -5,5 +5,5 @@
 "NSLocalNetworkUsageDescription" = "UTM 使用區域網絡尋找並連接到 UTM 遙距伺服器。";
 
 /* Privacy - Microphone Usage Description */
-"NSMicrophoneUsageDescription" = "任何虛擬機器都需要權限才能從咪高風錄製。";
+"NSMicrophoneUsageDescription" = "任何虛擬機都需要權限才能從咪高風錄製。";
 
