@@ -356,7 +356,7 @@ private extension View {
                 .buttonStyle(.glass)
                 .buttonBorderShape(.circle)
                 .labelStyle(.iconOnly)
-                .tint(.white)
+                .tint(.primary)
                 .controlSize(forHorizontalSizeClass: horizontalSizeClass)
         } else {
             self
