@@ -26,6 +26,7 @@
 #include "UTMLegacyQemuConfiguration+System.h"
 #include "UTMLegacyQemuConfigurationPortForward.h"
 #include "UTMLogging.h"
+#include "UTMASIFImage.h"
 #if !defined(WITH_REMOTE)
 #include "UTMProcess.h"
 #include "UTMQemuSystem.h"
