@@ -546,6 +546,9 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             defer {
                 ipswUrl.stopAccessingSecurityScopedResource()
             }
+            guard FileManager.default.isReadableFile(atPath: ipswUrl.path) else {
+                throw UTMAppleVirtualMachineError.ipswNotReadable
+            }
             try await beginAccessingResources()
             try await createAppleVM()
             #if os(macOS) && arch(arm64)
@@ -899,6 +902,7 @@ enum UTMAppleVirtualMachineError: Error {
     case cannotAccessResource(URL)
     case operatingSystemInstallNotSupported
     case operationNotAvailable
+    case ipswNotReadable
 }
 
 extension UTMAppleVirtualMachineError: LocalizedError {
@@ -910,6 +914,8 @@ extension UTMAppleVirtualMachineError: LocalizedError {
             return NSLocalizedString("The operating system cannot be installed on this machine.", comment: "UTMAppleVirtualMachine")
         case .operationNotAvailable:
             return NSLocalizedString("The operation is not available.", comment: "UTMAppleVirtualMachine")
+        case .ipswNotReadable:
+            return NSLocalizedString("The recovery IPSW cannot be read. Please select a new IPSW in Boot settings.", comment: "UTMAppleVirtualMachine")
         }
     }
 }
