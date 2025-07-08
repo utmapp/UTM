@@ -49,8 +49,9 @@ struct UTMApp: App {
     @available(macOS 13, *)
     @SceneBuilder
     var newBody: some Scene {
-        Window("UTM", id: "home") {
+        Window("UTM Library", id: "home") {
             homeWindow
+                .navigationTitle("UTM")
         }.commands {
             VMCommands()
         }
