@@ -212,7 +212,7 @@ struct NetworkSettingsView: View {
     
     var body: some View {
         Form {
-            Section(header: Text("Host networks")) {
+            Section(header: Text("Host Networks")) {
                 Table($hostNetworks, selection: $selectedID) {
                     TableColumn("Name") { $network in
                         TextField(
@@ -236,7 +236,7 @@ struct NetworkSettingsView: View {
                         .foregroundStyle(UUID(uuidString: network.uuid) == nil ? .red : .primary)
                     }
                     .width(min: 160)
-                }
+                }.help("QEMU machines in 'Host' network mode can be placed in the same network to communicate with each other.")
                 HStack {
                     Button("Import from VMware Fusion") {
                         isImporterPresented.toggle()
@@ -251,7 +251,7 @@ struct NetworkSettingsView: View {
                             
                             saveData()
                         }
-                    }.help("Navigate to `/Library/Preferences/VMware Fusion` (⌘+Shift+G) and select the `networking` file")
+                    }.help("Navigate to '/Library/Preferences/VMware Fusion' (⌘+Shift+G) and select the 'networking' file")
                     Spacer()
                     Button("Delete") {
                         hostNetworks.removeAll { network in
