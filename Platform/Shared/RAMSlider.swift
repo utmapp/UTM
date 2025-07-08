@@ -17,7 +17,7 @@
 import SwiftUI
 
 struct RAMSlider: View {
-    let validMemoryValues = [32, 64, 128, 256, 512, 768, 1024, 1536, 2048, 3072, 4096, 6144, 8192, 10240, 12288, 14336, 16384, 32768]
+    let validMemoryValues = [32, 64, 128, 256, 512, 768, 1024, 1536, 2048, 3072, 4096, 6144, 8192, 10240, 12288, 14336, 16384, 32768, 65536]
     
     let validateMemorySize: (Bool) -> Void
     @Binding var systemMemory: NSNumber?
