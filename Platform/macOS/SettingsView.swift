@@ -37,6 +37,12 @@ struct SettingsView: View {
                 .tabItem {
                     Label("Input", systemImage: "keyboard")
                 }
+            if #available(macOS 12, *) {
+                NetworkSettingsView().padding()
+                    .tabItem {
+                        Label("Network", systemImage: "network")
+                    }
+            }
             ServerSettingsView().padding()
                 .tabItem {
                     Label("Server", systemImage: "server.rack")
@@ -186,6 +192,83 @@ struct InputSettingsView: View {
                 })
             }
         }
+    }
+}
+
+@available(macOS 12, *)
+struct NetworkSettingsView: View {
+    @AppStorage("HostNetworks") var hostNetworksData: Data = Data()
+    @State private var hostNetworks: [UTMConfigurationHostNetwork] = []
+    @State private var selectedID: UUID?
+    @State private var isImporterPresented: Bool = false
+    
+    private func loadData() {
+        hostNetworks = (try? PropertyListDecoder().decode([UTMConfigurationHostNetwork].self, from: hostNetworksData)) ?? []
+    }
+    
+    private func saveData() {
+        hostNetworksData = (try? PropertyListEncoder().encode(hostNetworks)) ?? Data()
+    }
+    
+    var body: some View {
+        Form {
+            Section(header: Text("Host networks")) {
+                Table($hostNetworks, selection: $selectedID) {
+                    TableColumn("Name") { $network in
+                        TextField(
+                            "Name",
+                            text: $network.name
+                        )
+                        .labelsHidden()
+                    }
+                    TableColumn("UUID") { $network in
+                        TextField(
+                            "UUID",
+                            text: $network.uuid,
+                            onEditingChanged: { (editingChanged) in
+                                if !editingChanged && UUID(uuidString: network.uuid) != nil {
+                                    saveData()
+                                }
+                            }
+                        )
+                        .labelsHidden()
+                        .autocorrectionDisabled()
+                        .foregroundStyle(UUID(uuidString: network.uuid) == nil ? .red : .primary)
+                    }
+                    .width(min: 160)
+                }
+                HStack {
+                    Button("Import from VMware Fusion") {
+                        isImporterPresented.toggle()
+                    }.fileImporter(isPresented: $isImporterPresented, allowedContentTypes: [.data]) { result in
+                        
+                        if let url = try? result.get() {
+                            for network in UTMConfigurationHostNetwork.parseVMware(from: url) {
+                                if !hostNetworks.contains(where: {$0.uuid == network.uuid}) {
+                                    hostNetworks.append(network)
+                                }
+                            }
+                            
+                            saveData()
+                        }
+                    }.help("Navigate to `/Library/Preferences/VMware Fusion` (⌘+Shift+G) and select the `networking` file")
+                    Spacer()
+                    Button("Delete") {
+                        hostNetworks.removeAll { network in
+                            network.id == selectedID
+                        }
+                        selectedID = nil
+                        saveData()
+                        
+                    }.disabled(selectedID == nil)
+                    Button("Add") {
+                        let network = UTMConfigurationHostNetwork(name: "Network \(hostNetworks.count)")
+                        hostNetworks.append(network)
+                        saveData()
+                    }
+                }
+            }
+        }.onAppear(perform: loadData)
     }
 }
 

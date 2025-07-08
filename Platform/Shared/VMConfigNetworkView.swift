@@ -20,9 +20,15 @@ import Virtualization
 #endif
 
 struct VMConfigNetworkView: View {
+    @AppStorage("HostNetworks") var hostNetworksData: Data = Data()
     @Binding var config: UTMQemuConfigurationNetwork
     @Binding var system: UTMQemuConfigurationSystem
+    @State private var hostNetworks: [UTMConfigurationHostNetwork] = []
     @State private var showAdvanced: Bool = false
+    
+    private func loadData() {
+        hostNetworks = (try? PropertyListDecoder().decode([UTMConfigurationHostNetwork].self, from: hostNetworksData)) ?? []
+    }
     
     var body: some View {
         VStack {
@@ -40,9 +46,22 @@ struct VMConfigNetworkView: View {
                             }
                         }
                     }
+                    if config.mode == .host {
+                        Picker("Host Network", selection: $config.hostNetUuid) {
+                            Text("Default (private)")
+                                .tag(nil as String?)
+                            ForEach(hostNetworks) { interface in
+                                Text(interface.name)
+                                    .tag(interface.uuid as String?)
+                            }
+                        }
+                        if config.hostNetUuid != nil {
+                            Text("Note: No DHCP will be provided by UTM")
+                        }
+                    }
                     #endif
                     VMConfigConstantPicker("Emulated Network Card", selection: $config.hardware, type: system.architecture.networkDeviceType)
-                }
+                }.onAppear(perform: loadData)
                 
                 HStack {
                     DefaultTextField("MAC Address", text: $config.macAddress, prompt: "00:00:00:00:00:00")

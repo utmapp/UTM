@@ -893,6 +893,9 @@ import Virtualization // for getting network interfaces
                 useVMnet = true
                 "vmnet-host"
                 "id=net\(i)"
+                if let netUuid = networks[i].hostNetUuid {
+                    "net-uuid=\(netUuid)"
+                }
             } else {
                 "user"
                 "id=net\(i)"
