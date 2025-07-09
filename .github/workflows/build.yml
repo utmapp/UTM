@@ -70,39 +70,46 @@ jobs:
         shell: bash
         run: |
           [[ "$(xcode-select -p)" == "${{ env.BUILD_XCODE_PATH }}"* ]] || sudo xcode-select -s "${{ env.BUILD_XCODE_PATH }}"
-      - name: Cache Sysroot
+      - name: Check Cache
         id: cache-sysroot
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
-          path: sysroot-${{ matrix.platform }}-${{ matrix.arch }}
-          key: ${{ matrix.platform }}-${{ matrix.arch }}-${{ hashFiles('scripts/build_dependencies.sh') }}-${{ hashFiles('patches/**') }}
-          upload-chunk-size: 1048576 # 1 MiB
-          lookup-only: true
+          path: ./sysroot-${{ matrix.platform }}-${{ matrix.arch }}
+          key: ${{ matrix.platform }}-${{ matrix.arch }}-${{ hashFiles('scripts/build_dependencies.sh') }}-${{ hashFiles('patches/**') }}-${{ github.sha }}
+          restore-keys: ${{ matrix.platform }}-${{ matrix.arch }}-${{ hashFiles('scripts/build_dependencies.sh') }}-${{ hashFiles('patches/**') }}
+          lookup-only: github.event_name != 'release' && github.event.inputs.test_release != 'true'
       - name: Setup Path
         shell: bash
         run: |
           echo "/usr/local/opt/bison/bin:/opt/homebrew/opt/bison/bin" >> $GITHUB_PATH
       - name: Install Requirements
-        if: (steps.cache-sysroot.outputs.cache-hit != 'true' || github.event.inputs.rebuild_sysroot == 'true') && needs.configuration.outputs.runner == env.RUNNER_IMAGE
+        if: (steps.cache-sysroot.outputs.cache-matched-key == '' || github.event.inputs.rebuild_sysroot == 'true') && needs.configuration.outputs.runner == env.RUNNER_IMAGE
         run: |
           brew uninstall cmake
           brew install bison pkg-config gettext glib-utils libgpg-error nasm make meson
           pip3 install --user six pyparsing
           rm -f /usr/local/lib/pkgconfig/*.pc
       - name: Build Sysroot
-        if: steps.cache-sysroot.outputs.cache-hit != 'true' || github.event.inputs.rebuild_sysroot == 'true'
+        if: steps.cache-sysroot.outputs.cache-matched-key == '' || github.event.inputs.rebuild_sysroot == 'true'
         run: ./scripts/build_dependencies.sh -p ${{ matrix.platform }} -a ${{ matrix.arch }}
         env:
           NCPU: ${{ endsWith(matrix.platform, '-tci') && '1' || '0' }} # limit 1 CPU for TCI build due to memory issues, 0 = unlimited for other builds
       - name: Compress Sysroot
-        if: steps.cache-sysroot.outputs.cache-hit != 'true' || github.event_name == 'release' || github.event.inputs.test_release == 'true'
+        if: steps.cache-sysroot.outputs.cache-matched-key == '' || github.event_name == 'release' || github.event.inputs.test_release == 'true' || github.event.inputs.rebuild_sysroot == 'true'
         run: tar -acf sysroot.tgz sysroot*
       - name: Upload Sysroot
-        if: steps.cache-sysroot.outputs.cache-hit != 'true' || github.event_name == 'release' || github.event.inputs.test_release == 'true'
+        if: steps.cache-sysroot.outputs.cache-matched-key == '' || github.event_name == 'release' || github.event.inputs.test_release == 'true' || github.event.inputs.rebuild_sysroot == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: Sysroot-${{ matrix.platform }}-${{ matrix.arch }}
           path: sysroot.tgz
+      - name: Save Cache
+        if: steps.cache-sysroot.outputs.cache-matched-key == ''
+        uses: actions/cache/save@v4
+        with:
+          path: ./sysroot-${{ matrix.platform }}-${{ matrix.arch }}
+          key: ${{ steps.cache-sysroot.outputs.cache-primary-key }}
+          upload-chunk-size: 1048576 # 1 MiB
   build-sysroot-universal:
     name: Build Sysroot (Universal Mac)
     runs-on: ${{ fromJSON(needs.configuration.outputs.github-runner) }}
@@ -110,42 +117,50 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Cache Sysroot (Universal Mac)
+      - name: Check Cache (Universal Mac)
         id: cache-sysroot-universal
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
-          path: sysroot-macOS-arm64_x86_64
-          key: macos-universal-${{ hashFiles('scripts/build_dependencies.sh', 'scripts/pack_dependencies.sh') }}-${{ hashFiles('patches/**') }}
-          lookup-only: true
+          path: ./sysroot-macOS-arm64_x86_64
+          key: macos-universal-${{ hashFiles('scripts/build_dependencies.sh', 'scripts/pack_dependencies.sh') }}-${{ hashFiles('patches/**') }}-${{ github.sha }}
+          restore-keys: macos-universal-${{ hashFiles('scripts/build_dependencies.sh', 'scripts/pack_dependencies.sh') }}-${{ hashFiles('patches/**') }}
+          lookup-only: github.event_name != 'release' && github.event.inputs.test_release != 'true'
       - name: Cache Sysroot (arm64)
-        if: steps.cache-sysroot-universal.outputs.cache-hit != 'true'
+        if: steps.cache-sysroot-universal.outputs.cache-matched-key == ''
         id: cache-sysroot-arm64
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
-          path: sysroot-macos-arm64
+          path: ./sysroot-macos-arm64
           key: macos-arm64-${{ hashFiles('scripts/build_dependencies.sh') }}-${{ hashFiles('patches/**') }}
           fail-on-cache-miss: true
       - name: Cache Sysroot (x86_64)
-        if: steps.cache-sysroot-universal.outputs.cache-hit != 'true'
+        if: steps.cache-sysroot-universal.outputs.cache-matched-key == ''
         id: cache-sysroot-x86_64
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
-          path: sysroot-macos-x86_64
+          path: ./sysroot-macos-x86_64
           key: macos-x86_64-${{ hashFiles('scripts/build_dependencies.sh') }}-${{ hashFiles('patches/**') }}
           fail-on-cache-miss: true
       - name: Pack Universal Sysroot
-        if: steps.cache-sysroot-universal.outputs.cache-hit != 'true'
+        if: steps.cache-sysroot-universal.outputs.cache-matched-key == ''
         run: |
           ./scripts/pack_dependencies.sh . macos arm64 x86_64
       - name: Compress Sysroot
-        if: steps.cache-sysroot-universal.outputs.cache-hit != 'true' || github.event_name == 'release' || github.event.inputs.test_release == 'true'
+        if: steps.cache-sysroot-universal.outputs.cache-matched-key == '' || github.event_name == 'release' || github.event.inputs.test_release == 'true' || github.event.inputs.rebuild_sysroot == 'true'
         run: tar -acf sysroot.tgz sysroot-macOS-arm64_x86_64
       - name: Upload Sysroot
-        if: steps.cache-sysroot-universal.outputs.cache-hit != 'true' || github.event_name == 'release' || github.event.inputs.test_release == 'true'
+        if: steps.cache-sysroot-universal.outputs.cache-matched-key == '' || github.event_name == 'release' || github.event.inputs.test_release == 'true' || github.event.inputs.rebuild_sysroot == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: Sysroot-macos-universal
           path: sysroot.tgz
+      - name: Save Cache (Universal Mac)
+        if: steps.cache-sysroot-universal.outputs.cache-matched-key == ''
+        uses: actions/cache/save@v4
+        with:
+          path: ./sysroot-macOS-arm64_x86_64
+          key: ${{ steps.cache-sysroot-universal.outputs.cache-primary-key }}
+          upload-chunk-size: 1048576 # 1 MiB
   build-utm:
     name: Build UTM
     runs-on: ${{ fromJSON(needs.configuration.outputs.runner) }}
@@ -169,9 +184,9 @@ jobs:
           submodules: recursive
       - name: Cache Sysroot
         id: cache-sysroot
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
-          path: sysroot-${{ matrix.configuration.platform }}-${{ matrix.configuration.arch }}
+          path: ./sysroot-${{ matrix.configuration.platform }}-${{ matrix.configuration.arch }}
           key: ${{ matrix.configuration.platform }}-${{ matrix.configuration.arch }}-${{ hashFiles('scripts/build_dependencies.sh') }}-${{ hashFiles('patches/**') }}
           fail-on-cache-miss: true
       - name: Setup Xcode
@@ -198,9 +213,9 @@ jobs:
           submodules: recursive
       - name: Cache Sysroot
         id: cache-sysroot
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
-          path: sysroot-macOS-arm64_x86_64
+          path: ./sysroot-macOS-arm64_x86_64
           key: macos-universal-${{ hashFiles('scripts/build_dependencies.sh', 'scripts/pack_dependencies.sh') }}-${{ hashFiles('patches/**') }}
           fail-on-cache-miss: true
       - name: Setup Xcode
