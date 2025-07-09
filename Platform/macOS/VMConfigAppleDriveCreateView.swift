@@ -23,9 +23,17 @@ struct VMConfigAppleDriveCreateView: View {
     @Binding var config: UTMAppleConfigurationDrive
     @State private var isGiB: Bool = true
     
+    private var isASIFSupported: Bool {
+        if #available(macOS 26, *) {
+            return UTMASIFImage.sharedInstance() != nil
+        } else {
+            return false
+        }
+    }
+    
     var body: some View {
         Form {
-            VStack {
+            VStack(alignment: .leading) {
                 Toggle(isOn: $config.isExternal.animation(), label: {
                     Text("Removable")
                 }).help("If checked, the drive image will be stored with the VM.")
@@ -37,12 +45,21 @@ struct VMConfigAppleDriveCreateView: View {
                     } else {
                         config.sizeMib = 10240
                         config.isReadOnly = false
+                        config.isASIF = isASIFSupported
                     }
                 }
                 if #available(macOS 14, *), !config.isExternal {
                     Toggle(isOn: $config.isNvme.animation(), label: {
                         Text("Use NVMe Interface")
                     }).help("If checked, use NVMe instead of virtio as the disk interface, available on macOS 14+ for Linux guests only. This interface is slower but less likely to encounter filesystem errors.")
+                }
+                if isASIFSupported {
+                    Toggle(isOn: $config.isASIF) {
+                        Text("Use Apple Sparse Image Format")
+                    }.help("ASIF is more efficient and performant but is not compatible with older versions of macOS hosts.")
+                    .onAppear {
+                        config.isASIF = isASIFSupported
+                    }
                 }
                 if !config.isExternal {
                     SizeTextField($config.sizeMib)

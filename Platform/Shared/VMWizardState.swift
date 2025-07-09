@@ -358,6 +358,9 @@ struct AlertMessage: Identifiable {
             if #available(macOS 14, *), useNvmeAsDiskInterface {
                 newDisk.isNvme = true
             }
+            if #available(macOS 26, *), UTMASIFImage.sharedInstance() != nil {
+                newDisk.isASIF = true
+            }
             config.drives.append(newDisk)
         }
         if #available(macOS 12, *), let sharingDirectoryURL = sharingDirectoryURL {

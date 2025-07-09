@@ -76,7 +76,15 @@ extension UTMConfigurationDrive {
                 throw UTMConfigurationError.driveAlreadyExists(newURL)
             }
             if isRawImage {
+                #if os(macOS)
+                if let appleDrive = self as? UTMAppleConfigurationDrive, appleDrive.isASIF {
+                    try await createAsifImage(at: newURL, size: sizeMib)
+                } else {
+                    try await createRawImage(at: newURL, size: sizeMib)
+                }
+                #else
                 try await createRawImage(at: newURL, size: sizeMib)
+                #endif
             } else {
                 try await createQcow2Image(at: newURL, size: sizeMib)
             }
@@ -111,6 +119,16 @@ extension UTMConfigurationDrive {
             }
         }.value
         #endif
+    }
+    
+    private func createAsifImage(at newURL: URL, size sizeMib: Int) async throws {
+        let numBlocks = sizeMib * Int(bytesInMib) / 512
+        guard let asif = UTMASIFImage.sharedInstance() else {
+            throw UTMConfigurationError.cannotCreateDiskImage
+        }
+        try await Task.detached {
+            try asif.createBlank(with: newURL, numBlocks: numBlocks)
+        }.value
     }
     
     #if os(macOS)

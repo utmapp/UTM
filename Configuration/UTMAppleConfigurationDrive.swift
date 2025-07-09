@@ -28,6 +28,7 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
     var isNvme: Bool
     var imageURL: URL?
     var imageName: String?
+    var isASIF: Bool = false // not saved
     
     private(set) var id = UUID().uuidString
     
@@ -121,6 +122,7 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
         isNvme.hash(into: &hasher)
         isExternal.hash(into: &hasher)
         id.hash(into: &hasher)
+        isASIF.hash(into: &hasher)
     }
     
     func clone() -> UTMAppleConfigurationDrive {
