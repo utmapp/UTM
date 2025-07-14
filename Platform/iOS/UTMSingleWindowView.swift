@@ -44,7 +44,7 @@ struct UTMSingleWindowView: View {
                 VMWindowView(id: identifier!, isInteractive: isInteractive).environmentObject(session)
             } else if isInteractive {
                 #if WITH_REMOTE
-                RemoteContentView(remoteClientState: data.remoteClient.state).environmentObject(data)
+                RemoteContentView(remoteClientState: data!.remoteClient.state).environmentObject(data!)
                 #else
                 ContentView().environmentObject(data!)
                 #endif
