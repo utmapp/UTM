@@ -15,11 +15,30 @@
 //
 
 import SwiftUI
+import AppIntents
 
 struct UTMApp: App {
+    #if WITH_REMOTE
+    private let data: UTMRemoteData
+    #else
+    private let data: UTMData
+    #endif
+
+    init() {
+        #if WITH_REMOTE
+        let data = UTMRemoteData()
+        #else
+        let data = UTMData()
+        #endif
+        self.data = data
+        if #available(iOS 16, *) {
+            AppDependencyManager.shared.add(dependency: data)
+        }
+    }
+
     var body: some Scene {
         WindowGroup {
-            UTMSingleWindowView()
+            UTMSingleWindowView(data: data)
         }.commands {
             VMCommands()
         }

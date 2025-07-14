@@ -18,21 +18,24 @@ import SwiftUI
 
 @MainActor
 struct UTMSingleWindowView: View {
-    let isInteractive: Bool
+    private var isInteractive: Bool {
+        data != nil
+    }
 
     #if WITH_REMOTE
-    @State private var data: UTMRemoteData = UTMRemoteData()
+    typealias DataType = UTMRemoteData
     #else
-    @State private var data: UTMData = UTMData()
+    typealias DataType = UTMData
     #endif
+    private let data: DataType?
     @State private var session: VMSessionState?
     @State private var identifier: VMSessionState.WindowID?
 
     private let vmSessionCreatedNotification = NotificationCenter.default.publisher(for: .vmSessionCreated)
     private let vmSessionEndedNotification = NotificationCenter.default.publisher(for: .vmSessionEnded)
     
-    init(isInteractive: Bool = true) {
-        self.isInteractive = isInteractive
+    init(data: DataType? = nil) {
+        self.data = data
     }
     
     var body: some View {
@@ -43,7 +46,7 @@ struct UTMSingleWindowView: View {
                 #if WITH_REMOTE
                 RemoteContentView(remoteClientState: data.remoteClient.state).environmentObject(data)
                 #else
-                ContentView().environmentObject(data)
+                ContentView().environmentObject(data!)
                 #endif
             } else {
                 VStack {
@@ -79,6 +82,6 @@ struct UTMSingleWindowView: View {
 
 struct UTMSingleWindowView_Previews: PreviewProvider {
     static var previews: some View {
-        UTMSingleWindowView()
+        UTMSingleWindowView(data: UTMSingleWindowView.DataType())
     }
 }

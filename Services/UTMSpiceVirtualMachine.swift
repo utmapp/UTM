@@ -177,3 +177,10 @@ extension UTMSpiceVirtualMachine {
         }
     }
 }
+
+// MARK: - Headless
+extension UTMSpiceVirtualMachine {
+    @MainActor var isHeadless: Bool {
+        config.displays.isEmpty && config.serials.filter({ $0.mode == .builtin }).isEmpty
+    }
+}

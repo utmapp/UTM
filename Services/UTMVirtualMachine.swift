@@ -70,7 +70,10 @@ protocol UTMVirtualMachine: AnyObject, Identifiable {
 
     /// If non-null, `saveSnapshot` and `restoreSnapshot` will not work due to the reason specified
     var snapshotUnsupportedError: Error? { get }
-    
+
+    /// If true, this VM does not have any active display
+    var isHeadless: Bool { get }
+
     static func isVirtualMachine(url: URL) -> Bool
     
     /// Get name of UTM virtual machine from a file
@@ -207,7 +210,7 @@ protocol UTMVirtualMachineDelegate: AnyObject {
 }
 
 /// Virtual machine state
-enum UTMVirtualMachineState: Codable {
+enum UTMVirtualMachineState: Int, Codable, CaseIterable, Sendable {
     case stopped
     case starting
     case started
@@ -232,7 +235,7 @@ struct UTMVirtualMachineStartOptions: OptionSet, Codable {
 }
 
 /// Method to stop the VM
-enum UTMVirtualMachineStopMethod: Codable {
+enum UTMVirtualMachineStopMethod: Int, Codable, CaseIterable, Sendable {
     /// Sends a request to the guest to shut down gracefully.
     case request
     /// Sends a hardware power down signal.

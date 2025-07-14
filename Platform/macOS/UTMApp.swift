@@ -15,11 +15,20 @@
 //
 
 import SwiftUI
+import AppIntents
 
 struct UTMApp: App {
-    @State var data = UTMData()
+    let data: UTMData
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate: AppDelegate
-    
+
+    init() {
+        let data = UTMData()
+        self.data = data
+        if #available(macOS 13, *) {
+            AppDependencyManager.shared.add(dependency: data)
+        }
+    }
+
     @ViewBuilder
     var homeWindow: some View {
         ContentView().environmentObject(data)

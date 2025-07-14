@@ -118,6 +118,10 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
 
     private var removableDrives: [String: Any] = [:]
 
+    @MainActor var isHeadless: Bool {
+        config.displays.isEmpty && config.serials.filter({ $0.mode == .builtin }).isEmpty
+    }
+
     @MainActor required init(packageUrl: URL, configuration: UTMAppleConfiguration, isShortcut: Bool = false) throws {
         self.isScopedAccess = packageUrl.startAccessingSecurityScopedResource()
         // load configuration
