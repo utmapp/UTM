@@ -676,6 +676,10 @@
 		CE88A1602E24B2B400EAA28E /* UTMInputIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE88A15F2E24B2B400EAA28E /* UTMInputIntent.swift */; };
 		CE88A1612E24B2B400EAA28E /* UTMInputIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE88A15F2E24B2B400EAA28E /* UTMInputIntent.swift */; };
 		CE88A1622E24B2B400EAA28E /* UTMInputIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE88A15F2E24B2B400EAA28E /* UTMInputIntent.swift */; };
+		CE88A1652E24E4C000EAA28E /* VMKeyboardMap.m in Sources */ = {isa = PBXBuildFile; fileRef = CE88A1642E24E4C000EAA28E /* VMKeyboardMap.m */; };
+		CE88A1662E24E4C000EAA28E /* VMKeyboardMap.m in Sources */ = {isa = PBXBuildFile; fileRef = CE88A1642E24E4C000EAA28E /* VMKeyboardMap.m */; };
+		CE88A1672E24E4C000EAA28E /* VMKeyboardMap.m in Sources */ = {isa = PBXBuildFile; fileRef = CE88A1642E24E4C000EAA28E /* VMKeyboardMap.m */; };
+		CE88A1682E24E4C000EAA28E /* VMKeyboardMap.m in Sources */ = {isa = PBXBuildFile; fileRef = CE88A1642E24E4C000EAA28E /* VMKeyboardMap.m */; };
 		CE89CB0E2B8B1B5A006B2CC2 /* VisionKeyboardKit in Frameworks */ = {isa = PBXBuildFile; platformFilters = (xros, ); productRef = CE89CB0D2B8B1B5A006B2CC2 /* VisionKeyboardKit */; };
 		CE89CB102B8B1B6A006B2CC2 /* VisionKeyboardKit in Frameworks */ = {isa = PBXBuildFile; platformFilters = (xros, ); productRef = CE89CB0F2B8B1B6A006B2CC2 /* VisionKeyboardKit */; };
 		CE89CB122B8B1B7A006B2CC2 /* VisionKeyboardKit in Frameworks */ = {isa = PBXBuildFile; platformFilters = (xros, ); productRef = CE89CB112B8B1B7A006B2CC2 /* VisionKeyboardKit */; };
@@ -1986,6 +1990,8 @@
 		CE88A1532E247CCE00EAA28E /* UTMIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMIntent.swift; sourceTree = "<group>"; };
 		CE88A1572E247D0100EAA28E /* UTMActionIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMActionIntent.swift; sourceTree = "<group>"; };
 		CE88A15F2E24B2B400EAA28E /* UTMInputIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMInputIntent.swift; sourceTree = "<group>"; };
+		CE88A1632E24E4C000EAA28E /* VMKeyboardMap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMKeyboardMap.h; sourceTree = "<group>"; };
+		CE88A1642E24E4C000EAA28E /* VMKeyboardMap.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMKeyboardMap.m; sourceTree = "<group>"; };
 		CE928C2926ABE6690099F293 /* UTMAppleVirtualMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMAppleVirtualMachine.swift; sourceTree = "<group>"; };
 		CE928C3026ACCDEA0099F293 /* VMAppleRemovableDrivesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMAppleRemovableDrivesView.swift; sourceTree = "<group>"; };
 		CE9375A024BBDDD10074066F /* VMConfigDriveDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigDriveDetailsView.swift; sourceTree = "<group>"; };
@@ -3045,6 +3051,8 @@
 				84909A8C27CACD5C005605F1 /* UTMPlaceholderVMView.swift */,
 				84909A9027CADAE0005605F1 /* UTMUnavailableVMView.swift */,
 				CED779E42C78C82A00EB82AE /* UTMTips.swift */,
+				CE88A1632E24E4C000EAA28E /* VMKeyboardMap.h */,
+				CE88A1642E24E4C000EAA28E /* VMKeyboardMap.m */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -3734,6 +3742,7 @@
 				CE2D930524AD46670059923A /* VMDisplayMetalViewController.m in Sources */,
 				848D99C428670F650055C215 /* UTMQemuConfiguration+Arguments.swift in Sources */,
 				CEB63A7624F4654400CAF323 /* Main.swift in Sources */,
+				CE88A1652E24E4C000EAA28E /* VMKeyboardMap.m in Sources */,
 				848F71E8277A2A4E006A0240 /* UTMSerialPort.swift in Sources */,
 				CE2D958F24AD4FF00059923A /* VMCardView.swift in Sources */,
 				8432329028C2CDAD00CFBC97 /* VMNavigationListView.swift in Sources */,
@@ -3833,6 +3842,7 @@
 				83C15C5F26CC441500ADFD45 /* KeyCodeMap.swift in Sources */,
 				84C505AE28C588EC007CE8FF /* SizeTextField.swift in Sources */,
 				CE25125329C80A18000790AB /* UTMScriptingCloneCommand.swift in Sources */,
+				CE88A1682E24E4C000EAA28E /* VMKeyboardMap.m in Sources */,
 				CE2D956A24AD4F990059923A /* VMPlaceholderView.swift in Sources */,
 				CEF0306626A2AFDF00667B63 /* VMWizardOSLinuxView.swift in Sources */,
 				CEE7E938287CFDB100282049 /* UTMLegacyQemuConfiguration+Constants.m in Sources */,
@@ -3984,6 +3994,7 @@
 				CE231D432BDDF280006D6DC3 /* UTMDonateView.swift in Sources */,
 				CE65BABF26A4D8DD0001BD6B /* VMConfigDisplayConsoleView.swift in Sources */,
 				848F71ED277A2F47006A0240 /* UTMSerialPortDelegate.swift in Sources */,
+				CE88A1662E24E4C000EAA28E /* VMKeyboardMap.m in Sources */,
 				83A004BA26A8CC95001AC09E /* UTMDownloadTask.swift in Sources */,
 				8401868A288A44C20050AC51 /* VMWindowState.swift in Sources */,
 				843BF8312844853E0029D60D /* UTMQemuConfigurationNetwork.swift in Sources */,
@@ -4249,6 +4260,7 @@
 				CEF7F5F02AEEDCC400E34952 /* NumberTextField.swift in Sources */,
 				CEF7F5F12AEEDCC400E34952 /* VMToolbarOrnamentModifier.swift in Sources */,
 				CEF01DB42B6724A300725A0F /* UTMSpiceVirtualMachine.swift in Sources */,
+				CE88A1672E24E4C000EAA28E /* VMKeyboardMap.m in Sources */,
 				CEF7F5F22AEEDCC400E34952 /* VMCommands.swift in Sources */,
 				CEF7F5F32AEEDCC400E34952 /* UTMLegacyQemuConfiguration+Networking.m in Sources */,
 				CEF7F5F42AEEDCC400E34952 /* VMConfirmActionModifier.swift in Sources */,
