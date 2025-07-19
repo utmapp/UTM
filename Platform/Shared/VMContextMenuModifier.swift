@@ -112,11 +112,10 @@ struct VMContextMenuModifier: ViewModifier {
                 #if os(iOS) || os(visionOS)
                 if let qemuConfig = vm.config as? UTMQemuConfiguration {
                     Button {
-                        qemuConfig.qemu.isGuestToolsInstallRequested = true
+                        NotificationCenter.default.post(name: NSNotification.InstallGuestTools, object: vm.wrapped!)
                     } label: {
                         Label("Install Windows Guest Tools…", systemImage: "wrench.and.screwdriver")
                     }.help("Download and mount the guest tools for Windows.")
-                    .disabled(qemuConfig.qemu.isGuestToolsInstallRequested)
                 }
                 #endif
                 
@@ -176,21 +175,5 @@ struct VMContextMenuModifier: ViewModifier {
                 showSharePopup.toggle()
             }
         })
-        .onChange(of: (vm.config as? UTMQemuConfiguration)?.qemu.isGuestToolsInstallRequested) { newValue in
-            if newValue == true {
-                data.busyWorkAsync {
-                    try await data.mountSupportTools(for: vm.wrapped!)
-                }
-            }
-        }
-        #if os(macOS)
-        .onChange(of: (vm.config as? UTMAppleConfiguration)?.isGuestToolsInstallRequested) { newValue in
-            if newValue == true {
-                data.busyWorkAsync {
-                    try await data.mountSupportTools(for: vm.wrapped!)
-                }
-            }
-        }
-        #endif
     }
 }

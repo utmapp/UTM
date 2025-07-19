@@ -94,7 +94,7 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
         } else {
             let item = NSMenuItem()
             item.title = NSLocalizedString("Install Windows Guest Tools…", comment: "VMDisplayWindowController")
-            item.isEnabled = !vmQemuConfig.qemu.isGuestToolsInstallRequested
+            item.isEnabled = true
             item.target = self
             item.action = #selector(installWindowsGuestTools)
             menu.addItem(item)
@@ -191,7 +191,7 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
     }
     
     @MainActor private func installWindowsGuestTools(sender: AnyObject) {
-        vmQemuConfig.qemu.isGuestToolsInstallRequested = true
+        NotificationCenter.default.post(name: NSNotification.InstallGuestTools, object: self.qemuVM)
     }
 }
 

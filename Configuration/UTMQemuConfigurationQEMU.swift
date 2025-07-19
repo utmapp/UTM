@@ -64,9 +64,6 @@ struct UTMQemuConfigurationQEMU: Codable {
     /// If true, changes to the VM will not be committed to disk. Not saved.
     var isDisposable: Bool = false
     
-    /// Set to true to request guest tools install. Not saved.
-    var isGuestToolsInstallRequested: Bool = false
-    
     /// Set to true to request UEFI variable reset. Not saved.
     var isUefiVariableResetRequested: Bool = false
     

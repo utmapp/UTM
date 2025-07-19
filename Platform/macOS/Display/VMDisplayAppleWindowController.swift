@@ -297,7 +297,7 @@ extension VMDisplayAppleWindowController {
         if #available(macOS 15, *), appleConfig.system.boot.operatingSystem == .macOS {
             let item = NSMenuItem()
             item.title = NSLocalizedString("Install Guest Tools…", comment: "VMDisplayAppleWindowController")
-            item.isEnabled = !appleConfig.isGuestToolsInstallRequested
+            item.isEnabled = true
             item.state = appleVM.hasGuestToolsAttached ? .on : .off
             item.target = self
             item.action = #selector(installGuestTools)
@@ -403,7 +403,7 @@ extension VMDisplayAppleWindowController {
             }
         } else {
             showConfirmAlert(NSLocalizedString("An USB device containing the installer will be mounted in the virtual machine. Only macOS Sequoia (15.0) and newer guests are supported.", comment: "VMDisplayAppleDisplayController")) {
-                self.appleConfig.isGuestToolsInstallRequested = true
+                NotificationCenter.default.post(name: NSNotification.InstallGuestTools, object: self.appleVM)
             }
         }
     }
