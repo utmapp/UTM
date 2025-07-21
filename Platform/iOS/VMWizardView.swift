@@ -64,11 +64,11 @@ fileprivate struct WizardToolbar: ViewModifier {
                         data.busyWorkAsync {
                             let config = try await wizardState.generateConfig()
                             if let qemuConfig = config as? UTMQemuConfiguration {
-                                _ = try await data.create(config: qemuConfig)
+                                let vm = try await data.create(config: qemuConfig)
                                 if #available(iOS 15, *) {
                                     // This is broken on iOS 14
                                     await MainActor.run {
-                                        qemuConfig.qemu.isGuestToolsInstallRequested = wizardState.isGuestToolsInstallRequested
+                                        NotificationCenter.default.post(name: NSNotification.InstallGuestTools, object: vm.wrapped!)
                                     }
                                 }
                             } else {

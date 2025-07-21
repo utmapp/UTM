@@ -27,6 +27,7 @@
 #include "UTMLegacyQemuConfigurationPortForward.h"
 #include "UTMLogging.h"
 #include "UTMASIFImage.h"
+#include "VMKeyboardMap.h"
 #if !defined(WITH_REMOTE)
 #include "UTMProcess.h"
 #include "UTMQemuSystem.h"

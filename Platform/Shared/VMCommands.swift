@@ -58,4 +58,5 @@ extension NSNotification {
     static let NewVirtualMachine = NSNotification.Name("NewVirtualMachine")
     static let OpenVirtualMachine = NSNotification.Name("OpenVirtualMachine")
     static let ShowReleaseNotes = NSNotification.Name("ShowReleaseNotes")
+    static let InstallGuestTools = NSNotification.Name("InstallGuestTools")
 }

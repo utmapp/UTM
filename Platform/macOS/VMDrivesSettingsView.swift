@@ -78,7 +78,7 @@ struct VMDrivesSettingsView<Drive: UTMConfigurationDrive>: View {
         } label: {
             Label("New…", systemImage: "externaldrive.badge.plus")
         }
-        .buttonStyle(.link)
+        .buttonStyle(.borderless)
         .help("Add a new drive.")
         .fileImporter(isPresented: $importDrivePresented, allowedContentTypes: [.item], onCompletion: importDrive)
         .onChange(of: newDrivePopover, perform: { showPopover in

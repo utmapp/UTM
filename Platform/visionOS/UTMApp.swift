@@ -16,19 +16,27 @@
 
 import SwiftUI
 import VisionKeyboardKit
+import AppIntents
 
 @MainActor
 struct UTMApp: App {
     #if WITH_REMOTE
-    @State private var data: UTMRemoteData = UTMRemoteData()
+    private typealias DataType = UTMRemoteData
     #else
-    @State private var data: UTMData = UTMData()
+    private typealias DataType = UTMData
     #endif
+    private let data: DataType
     @Environment(\.openWindow) private var openWindow
     @Environment(\.dismissWindow) private var dismissWindow
 
     private let vmSessionCreatedNotification = NotificationCenter.default.publisher(for: .vmSessionCreated)
     private let vmSessionEndedNotification = NotificationCenter.default.publisher(for: .vmSessionEnded)
+
+    init() {
+        let data = DataType()
+        self.data = data
+        AppDependencyManager.shared.add(dependency: data)
+    }
 
     private var contentView: some View {
         #if WITH_REMOTE

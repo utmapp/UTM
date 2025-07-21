@@ -819,7 +819,6 @@ enum AlertItem: Identifiable {
     private func mountWindowsSupportTools(for vm: any UTMSpiceVirtualMachine) async throws {
         let task = UTMDownloadSupportToolsTask(for: vm)
         if await task.hasExistingSupportTools {
-            vm.config.qemu.isGuestToolsInstallRequested = false
             _ = try await task.mountTools()
         } else {
             listAdd(pendingVM: task.pendingVM)
@@ -829,7 +828,6 @@ enum AlertItem: Identifiable {
                 } catch {
                     showErrorAlert(message: error.localizedDescription)
                 }
-                vm.config.qemu.isGuestToolsInstallRequested = false
                 listRemove(pendingVM: task.pendingVM)
             }
         }
@@ -840,7 +838,6 @@ enum AlertItem: Identifiable {
     private func mountMacSupportTools(for vm: UTMAppleVirtualMachine) async throws {
         let task = UTMDownloadMacSupportToolsTask(for: vm)
         if await task.hasExistingSupportTools {
-            vm.config.isGuestToolsInstallRequested = false
             _ = try await task.mountTools()
         } else {
             listAdd(pendingVM: task.pendingVM)
@@ -850,7 +847,6 @@ enum AlertItem: Identifiable {
                 } catch {
                     showErrorAlert(message: error.localizedDescription)
                 }
-                vm.config.isGuestToolsInstallRequested = false
                 listRemove(pendingVM: task.pendingVM)
             }
         }

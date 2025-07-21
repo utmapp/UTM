@@ -70,6 +70,17 @@ struct ContentView: View {
                 openSheetPresented = true
             }
         }.fileImporter(isPresented: $openSheetPresented, allowedContentTypes: [.UTM, .UTMextension], allowsMultipleSelection: true, onCompletion: selectImportedUTM)
+        .onReceive(NSNotification.InstallGuestTools) { notification in
+            guard let vm = notification.object as? any UTMVirtualMachine else {
+                logger.error("InstallGuestTools notification but no VM object is provided!")
+                return
+            }
+            Task {
+                data.busyWorkAsync {
+                    try await data.mountSupportTools(for: vm)
+                }
+            }
+        }
         .onDrop(of: [.fileURL], delegate: self)
         .onAppear {
             Task {

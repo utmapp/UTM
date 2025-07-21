@@ -419,6 +419,10 @@ extension VMDisplayWindowController {
             menu.addItem(item3)
         }
         stopToolbarItem.menu = menu
+        if #unavailable(macOS 12), let view = stopToolbarItem.value(forKey: "_control") as? NSView {
+            // BUG in macOS 11 results in the button not working without this
+            stopToolbarItem.view = view
+        }
     }
     
     @MainActor @objc private func requestPowerDown(sender: AnyObject) {
