@@ -1,7 +1,7 @@
 From 594fe2f680f571dfe1d69281b803bdcbac925f7a Mon Sep 17 00:00:00 2001
 From: osy <osy@turing.llc>
 Date: Fri, 18 Jul 2025 13:29:23 -0700
-Subject: [PATCH] tcg/tcti: implement vector immediate shifts
+Subject: [PATCH 1/2] tcg/tcti: implement vector immediate shifts
 
 This now seems to be required as a result of the introduction of
 gen_gvec_rev{16,32,64} in 38f9950c8e0315d7b26803018a3f73d5f42e6703.
@@ -246,6 +246,30 @@ index 275c4ba943..ebed824500 100755
  vector_dnm("cmeq", "cmeq Vd.S, Vn.S, Vm.S", scalar="cmeq Dd, Dn, Dm")
  vector_dnm("cmgt", "cmgt Vd.S, Vn.S, Vm.S", scalar="cmgt Dd, Dn, Dm")
  vector_dnm("cmge", "cmge Vd.S, Vn.S, Vm.S", scalar="cmge Dd, Dn, Dm")
+-- 
+2.41.0
+
+From 35ba52817dbea01821b429737e989bc54a14d411 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Tue, 22 Jul 2025 10:13:34 -0700
+Subject: [PATCH 2/2] tcg/tcti: fix goto as first instruction
+
+---
+ accel/tcg/tcg-accel-ops.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/accel/tcg/tcg-accel-ops.c b/accel/tcg/tcg-accel-ops.c
+index 0e8c4c1c67..e07f60357f 100644
+--- a/accel/tcg/tcg-accel-ops.c
++++ b/accel/tcg/tcg-accel-ops.c
+@@ -68,6 +68,7 @@ void tcg_cpu_init_cflags(CPUState *cpu, bool parallel)
+     // GOTO_PTR is too complex to emit a simple gadget for.
+     // We'll let C handle it, since the overhead is similar.
+     cflags |= CF_NO_GOTO_PTR;
++    cpu->cflags_next_tb = CF_NO_GOTO_PTR;
+ #endif
+     tcg_cflags_set(cpu, cflags);
+ }
 -- 
 2.41.0
 
