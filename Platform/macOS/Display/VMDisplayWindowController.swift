@@ -212,7 +212,7 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
     func showErrorAlert(_ message: String, completionHandler handler: ((NSApplication.ModalResponse) -> Void)? = nil) {
         window?.resignKey()
         let alert = NSAlert()
-        alert.alertStyle = .critical
+        alert.alertStyle = .warning
         alert.messageText = NSLocalizedString("Error", comment: "VMDisplayWindowController")
         alert.informativeText = message
         alert.beginSheetModal(for: window!, completionHandler: handler)
