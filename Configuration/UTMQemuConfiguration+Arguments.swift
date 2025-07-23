@@ -473,10 +473,9 @@ import Virtualization // for getting network interfaces
             f("-global")
             f("ICH9-LPC.disable_s3=1") // applies for pc-q35-* types
         }
-        if qemu.hasUefiBoot {
+        if qemu.hasUefiBoot, let prefix = UTMQemuConfigurationQEMU.uefiImagePrefix(forArchitecture: system.architecture) {
             let secure = isSecureBootUsed ? "-secure" : ""
-            let code = system.target.rawValue == "microvm" ? "microvm" : "code"
-            let bios = resourceURL.appendingPathComponent("edk2-\(system.architecture.rawValue)\(secure)-\(code).fd")
+            let bios = resourceURL.appendingPathComponent("\(prefix)\(secure)-code.fd")
             let vars = qemu.efiVarsURL ?? URL(fileURLWithPath: "/\(QEMUPackageFileName.efiVariables.rawValue)")
             if !hasCustomBios && FileManager.default.fileExists(atPath: bios.path) {
                 f("-drive")

@@ -49,6 +49,7 @@ DEFAULTS = {
     "arm": "virt",
     "avr": "mega",
     "i386": "q35",
+    "riscv64": "virt",
     "rx": "gdbsim-r5f562n7",
     "tricore": "tricore_testboard",
     "x86_64": "q35"

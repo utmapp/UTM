@@ -6053,7 +6053,7 @@ enum QEMUTarget_riscv64: String, CaseIterable, QEMUTarget {
     case none
 
     static var `default`: QEMUTarget_riscv64 {
-        .spike
+        .virt
     }
 
     var prettyValue: String {
