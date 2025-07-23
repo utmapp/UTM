@@ -43,6 +43,10 @@ struct SettingsView: View {
                         Label("Network", systemImage: "network")
                     }
             }
+            FileSettingsView().padding()
+                .tabItem {
+                    Label("File", systemImage: "folder")
+                }
             ServerSettingsView().padding()
                 .tabItem {
                     Label("Server", systemImage: "server.rack")
@@ -269,6 +273,20 @@ struct NetworkSettingsView: View {
                 }
             }
         }.onAppear(perform: loadData)
+    }
+}
+
+struct FileSettingsView: View {
+    @AppStorage("UseFileLock") var isUseFileLock = true
+
+    var body: some View {
+        Form {
+            Section(header: Text("QEMU Backend")) {
+                Toggle(isOn: $isUseFileLock) {
+                    Text("Lock drive images when in use")
+                }.help("If enabled, all writable drive images will be locked when the VM is running. Read-only drive images will not be locked.")
+            }
+        }
     }
 }
 

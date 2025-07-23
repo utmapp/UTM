@@ -92,6 +92,11 @@ import Virtualization // for getting network interfaces
         #endif
     }
 
+    /// Global setting to always use file lock or not
+    private var isUseFileLock: Bool {
+        return UserDefaults.standard.value(forKey: "UseFileLock") == nil || UserDefaults.standard.bool(forKey: "UseFileLock")
+    }
+
     /// Combined generated and user specified arguments.
     @QEMUArgumentBuilder var allArguments: [QEMUArgument] {
         generatedArguments
@@ -486,8 +491,11 @@ import Virtualization // for getting network interfaces
                 f("-drive")
                 "if=pflash"
                 "unit=1"
-                "file="
+                "file.filename="
                 vars
+                if !isUseFileLock {
+                    "file.locking=off"
+                }
                 f()
             }
         }
@@ -766,6 +774,9 @@ import Virtualization // for getting network interfaces
         } else {
             "discard=unmap"
             "detect-zeroes=unmap"
+        }
+        if !isUseFileLock {
+            "file.locking=off"
         }
         f()
     }

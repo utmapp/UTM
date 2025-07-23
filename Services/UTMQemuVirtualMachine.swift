@@ -159,6 +159,8 @@ final class UTMQemuVirtualMachine: UTMSpiceVirtualMachine {
     private static var resourceCacheOperationQueue = DispatchQueue(label: "Resource Cache Operation")
     private static var isResourceCacheUpdated = false
 
+    @Setting("UseFileLock") private var isUseFileLock = true
+
     #if WITH_SERVER
     @Setting("ServerPort") private var serverPort: Int = 0
     private var spicePort: SwiftPortmap.Port?
@@ -820,7 +822,8 @@ extension UTMQemuVirtualMachine {
         }
         await registryEntry.updateExternalDriveRemoteBookmark(bookmark, forId: drive.id)
         if let qemu = await monitor, qemu.isConnected && !isAccessOnly {
-            try qemu.changeMedium(forDrive: "drive\(drive.id)", path: path, locking: false)
+            let isLocked = isUseFileLock && !drive.isReadOnly
+            try qemu.changeMedium(forDrive: "drive\(drive.id)", path: path, locking: isLocked)
         }
     }
 
