@@ -26,6 +26,7 @@ struct VMWizardOSOtherView: View {
                 Text("None").tag(VMBootDevice.none)
                 Text("CD/DVD Image").tag(VMBootDevice.cd)
                 Text("Floppy Image").tag(VMBootDevice.floppy)
+                Text("Drive Image").tag(VMBootDevice.drive)
             }.pickerStyle(.inline)
             .onChange(of: wizardState.bootDevice) { bootDevice in
                 if bootDevice == .floppy {
@@ -42,6 +43,8 @@ struct VMWizardOSOtherView: View {
                 } header: {
                     if wizardState.bootDevice == .cd {
                         Text("Boot ISO Image")
+                    } else if wizardState.bootDevice == .drive {
+                        Text("Import Disk Image")
                     } else {
                         Text("Boot IMG Image")
                     }

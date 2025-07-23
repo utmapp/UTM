@@ -57,6 +57,7 @@ enum VMBootDevice: Int, Identifiable {
     case cd
     case floppy
     case kernel
+    case drive
 }
 
 struct AlertMessage: Identifiable {
@@ -256,7 +257,11 @@ struct AlertMessage: Identifiable {
                 alertMessage = AlertMessage(NSLocalizedString("Invalid RAM size specified.", comment: "VMWizardState"))
                 return
             }
-            nextPage = .drives
+            if bootDevice == .drive {
+                nextPage = .sharing
+            } else {
+                nextPage = .drives
+            }
             #if arch(arm64)
             if operatingSystem == .Windows && windowsBootVhdx != nil {
                 nextPage = .sharing
@@ -468,9 +473,11 @@ struct AlertMessage: Identifiable {
             mainDriveInterface = UTMQemuConfigurationDrive.defaultInterface(forArchitecture: systemArchitecture, target: systemTarget, imageType: .disk)
         }
         if bootDevice != .none && bootImageURL != nil {
-            var bootDrive = UTMQemuConfigurationDrive(forArchitecture: systemArchitecture, target: systemTarget, isExternal: true)
+            var bootDrive = UTMQemuConfigurationDrive(forArchitecture: systemArchitecture, target: systemTarget, isExternal: bootDevice != .drive)
             if bootDevice == .floppy {
                 bootDrive.interface = .floppy
+            } else if bootDevice == .drive {
+                bootDrive.interface = mainDriveInterface
             }
             bootDrive.imageURL = bootImageURL
             config.drives.append(bootDrive)
@@ -520,7 +527,7 @@ struct AlertMessage: Identifiable {
                 config.drives.append(diskDrive)
             }
         }
-        if windowsBootVhdx == nil {
+        if windowsBootVhdx == nil && bootDevice != .drive {
             var diskImage = UTMQemuConfigurationDrive()
             diskImage.sizeMib = storageSizeGib * bytesInGib / bytesInMib
             diskImage.imageType = .disk

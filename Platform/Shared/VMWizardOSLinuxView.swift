@@ -36,14 +36,6 @@ struct VMWizardOSLinuxView: View {
         }
     }
 
-    private var useLinuxKernel: Binding<Bool> {
-        Binding {
-            wizardState.bootDevice == .kernel
-        } set: { value in
-            wizardState.bootDevice = value ? .kernel : .cd
-        }
-    }
-
     var body: some View {
         VMWizardContent("Linux") {
 #if os(macOS)
@@ -53,24 +45,24 @@ struct VMWizardOSLinuxView: View {
                 }
             }
 #endif
-            
-            Section {
-                Toggle("Boot from kernel image", isOn: useLinuxKernel)
-                    .help("If set, boot directly from a raw kernel image and initrd. Otherwise, boot from a supported ISO.")
-                    .disabled(wizardState.useAppleVirtualization && !hasVenturaFeatures)
-                if wizardState.bootDevice != .kernel {
-                    if wizardState.useAppleVirtualization {
-                        Link(destination: URL(string: "https://docs.getutm.app/guides/debian/")!) {
-                            Label("Debian Install Guide", systemImage: "link")
-                        }.buttonStyle(.borderless)
-                    } else {
-                        Link(destination: URL(string: "https://docs.getutm.app/guides/ubuntu/")!) {
-                            Label("Ubuntu Install Guide", systemImage: "link")
-                        }.buttonStyle(.borderless)
-                    }
+
+            Picker("Boot Image Type", selection: $wizardState.bootDevice) {
+                Text("Boot from kernel image").tag(VMBootDevice.kernel)
+                if !wizardState.useAppleVirtualization || hasVenturaFeatures {
+                    Text("Boot from ISO image").tag(VMBootDevice.cd)
+                    Text("Import existing drive").tag(VMBootDevice.drive)
                 }
-            } header: {
-                Text("Boot Image Type")
+            }.pickerStyle(.inline)
+            if wizardState.bootDevice != .kernel {
+                if wizardState.useAppleVirtualization {
+                    Link(destination: URL(string: "https://docs.getutm.app/guides/debian/")!) {
+                        Label("Debian Install Guide", systemImage: "link")
+                    }.buttonStyle(.borderless)
+                } else {
+                    Link(destination: URL(string: "https://docs.getutm.app/guides/ubuntu/")!) {
+                        Label("Ubuntu Install Guide", systemImage: "link")
+                    }.buttonStyle(.borderless)
+                }
             }
             
             #if arch(arm64)
@@ -139,7 +131,11 @@ struct VMWizardOSLinuxView: View {
                         selectImage = .bootImage
                     }
                 } header: {
-                    Text("Boot ISO Image")
+                    if wizardState.bootDevice == .drive {
+                        Text("Import Disk Image")
+                    } else {
+                        Text("Boot ISO Image")
+                    }
                 }
             }
             if wizardState.isBusy {
@@ -164,7 +160,6 @@ struct VMWizardOSLinuxView: View {
                     wizardState.linuxRootImageURL = url
                 case .bootImage:
                     wizardState.bootImageURL = url
-                    wizardState.bootDevice = .cd
                 }
             }
         }
