@@ -114,7 +114,9 @@ struct VMWizardView: View {
                             if let qemuConfig = config as? UTMQemuConfiguration {
                                 let vm = try await data.create(config: qemuConfig)
                                 await MainActor.run {
-                                    NotificationCenter.default.post(name: NSNotification.InstallGuestTools, object: vm.wrapped!)
+                                    if wizardState.isGuestToolsInstallRequested {
+                                        NotificationCenter.default.post(name: NSNotification.InstallGuestTools, object: vm.wrapped!)
+                                    }
                                 }
                             } else if let appleConfig = config as? UTMAppleConfiguration {
                                 _ = try await data.create(config: appleConfig)

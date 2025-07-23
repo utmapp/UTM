@@ -68,7 +68,9 @@ fileprivate struct WizardToolbar: ViewModifier {
                                 if #available(iOS 15, *) {
                                     // This is broken on iOS 14
                                     await MainActor.run {
-                                        NotificationCenter.default.post(name: NSNotification.InstallGuestTools, object: vm.wrapped!)
+                                        if wizardState.isGuestToolsInstallRequested {
+                                            NotificationCenter.default.post(name: NSNotification.InstallGuestTools, object: vm.wrapped!)
+                                        }
                                     }
                                 }
                             } else {
