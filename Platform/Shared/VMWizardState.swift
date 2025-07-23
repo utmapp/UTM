@@ -142,6 +142,7 @@ struct AlertMessage: Identifiable {
     @Published var storageSizeGib: Int = 8
     #endif
     @Published var systemCpuCount: Int = 0
+    @Published var isDisplayEnabled: Bool = true
     @Published var isGLEnabled: Bool = false
     @Published var sharingDirectoryURL: URL?
     @Published var sharingReadOnly: Bool = false
@@ -465,6 +466,11 @@ struct AlertMessage: Identifiable {
             if allCards.contains(where: { $0 == newCard }) {
                 config.displays[0].hardware = AnyQEMUConstant(rawValue: newCard)!
             }
+        }
+        if operatingSystem == .Linux && !isDisplayEnabled {
+            config.displays = []
+            let newSerial = UTMQemuConfigurationSerial(forArchitecture: systemArchitecture, target: systemTarget)!
+            config.serials = [newSerial]
         }
         let mainDriveInterface: QEMUDriveInterface
         if systemArchitecture == .aarch64 && operatingSystem == .Windows {

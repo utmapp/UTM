@@ -108,10 +108,16 @@ struct VMWizardHardwareView: View {
             
             
             if !wizardState.useAppleVirtualization && wizardState.operatingSystem == .Linux {
-                DetailedSection("Hardware OpenGL Acceleration", description: "There are known issues in some newer Linux drivers including black screen, broken compositing, and apps failing to render.") {
+                DetailedSection("Disply Output", description: "There are known issues in some newer Linux drivers including black screen, broken compositing, and apps failing to render.") {
+                    Toggle("Enable display output", isOn: $wizardState.isDisplayEnabled)
+                        .onChange(of: wizardState.isDisplayEnabled) { newValue in
+                            if !newValue {
+                                wizardState.isGLEnabled = false
+                            }
+                        }
                     Toggle("Enable hardware OpenGL acceleration", isOn: $wizardState.isGLEnabled)
+                        .disabled(!wizardState.isDisplayEnabled)
                 }
-                
             }
         }
         .textFieldStyle(.roundedBorder)
