@@ -455,7 +455,7 @@ import Virtualization // for getting network interfaces
         let target = system.target.rawValue
         let architecture = system.architecture.rawValue
         var properties = qemu.machinePropertyOverride ?? ""
-        if target.hasPrefix("pc") || target.hasPrefix("q35") || target == "isapc" {
+        if isPcCompatible {
             properties = properties.appendingDefaultPropertyName("vmport", value: "off")
             // disable PS/2 emulation if we are not legacy input and it's not explicitly enabled
             if isUsbUsed && !qemu.hasPS2Controller {
@@ -648,10 +648,17 @@ import Virtualization // for getting network interfaces
             }
         }
     }
-    
+
+    private var isPcCompatible: Bool {
+        guard system.architecture == .x86_64 || system.architecture == .i386 else {
+            return false
+        }
+        return system.target.rawValue.starts(with: "pc") || system.target.rawValue == "q35" || system.target.rawValue == "isapc"
+    }
+
     /// These machines are hard coded to have one IDE unit per bus in QEMU
     private var isIdeInterfaceSingleUnit: Bool {
-        system.target.rawValue.contains("q35") ||
+        isPcCompatible ||
         system.target.rawValue == "microvm" ||
         system.target.rawValue == "cubieboard" ||
         system.target.rawValue == "highbank" ||
@@ -749,7 +756,7 @@ import Virtualization // for getting network interfaces
             }
             f()
         } else if drive.interface == .floppy {
-            if system.target.rawValue.hasPrefix("q35") {
+            if isPcCompatible {
                 f("-device")
                 "isa-fdc"
                 "id=fdc\(busindex)"
@@ -836,7 +843,7 @@ import Virtualization // for getting network interfaces
         let buses = (maxDevices + 2) / 3
         if input.usbBusSupport == .usb3_0 {
             var controller = "qemu-xhci"
-            if system.target.rawValue.hasPrefix("pc") || system.target.rawValue.hasPrefix("q35") {
+            if isPcCompatible {
                 controller = "nec-usb-xhci"
             }
             for i in 0..<buses {
