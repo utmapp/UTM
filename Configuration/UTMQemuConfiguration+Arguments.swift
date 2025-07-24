@@ -97,6 +97,22 @@ import Virtualization // for getting network interfaces
         return UserDefaults.standard.value(forKey: "UseFileLock") == nil || UserDefaults.standard.bool(forKey: "UseFileLock")
     }
 
+    /// Special arguments should disable use of bootindex
+    private var shouldDisableBootIndex: Bool {
+        // currently, we only identified this issue in PPC machines
+        guard system.architecture == .ppc || system.architecture == .ppc64 else {
+            return false
+        }
+        let arguments = parsedUserArguments
+        for (index, arg) in arguments.enumerated() {
+            // when user specifies '-prom-env boot-device=hd:,\yaboot' for example, it should inhibit bootindex
+            if arg == "-prom-env" && index != arguments.count - 1 && arguments[index+1].starts(with: "boot-device=") {
+                return true
+            }
+        }
+        return false
+    }
+
     /// Combined generated and user specified arguments.
     @QEMUArgumentBuilder var allArguments: [QEMUArgument] {
         generatedArguments
@@ -124,8 +140,10 @@ import Virtualization // for getting network interfaces
         sharingArguments
         miscArguments
     }
-    
-    @QEMUArgumentBuilder private var userArguments: [QEMUArgument] {
+
+    /// Take user arguments and replace any quotes
+    private var parsedUserArguments: [String] {
+        var list = [String]()
         let regex = try! NSRegularExpression(pattern: "((?:[^\"\\s]*\"[^\"]*\"[^\"\\s]*)+|[^\"\\s]+)")
         for arg in qemu.additionalArguments {
             let argString = arg.string
@@ -135,9 +153,16 @@ import Virtualization // for getting network interfaces
                 for match in split {
                     let matchRange = Range(match.range(at: 1), in: argString)!
                     let fragment = argString[matchRange]
-                    f(fragment.replacingOccurrences(of: "\"", with: ""))
+                    list.append(fragment.replacingOccurrences(of: "\"", with: ""))
                 }
             }
+        }
+        return list
+    }
+
+    @QEMUArgumentBuilder private var userArguments: [QEMUArgument] {
+        for arg in parsedUserArguments {
+            f(arg)
         }
     }
     
@@ -597,10 +622,11 @@ import Virtualization // for getting network interfaces
     
     @QEMUArgumentBuilder private var drivesArguments: [QEMUArgument] {
         var busInterfaceMap: [String: Int] = [:]
+        let disableBootindex = shouldDisableBootIndex
         for drive in drives {
             let hasImage = !drive.isExternal && drive.imageURL != nil
             if drive.imageType == .disk || drive.imageType == .cd {
-                driveArgument(for: drive, busInterfaceMap: &busInterfaceMap)
+                driveArgument(for: drive, busInterfaceMap: &busInterfaceMap, disableBootIndex: disableBootindex)
             } else if hasImage {
                 switch drive.imageType {
                 case .bios:
@@ -633,7 +659,7 @@ import Virtualization // for getting network interfaces
         system.target.rawValue == "xlnx_zcu102"
     }
     
-    @QEMUArgumentBuilder private func driveArgument(for drive: UTMQemuConfigurationDrive, busInterfaceMap: inout [String: Int]) -> [QEMUArgument] {
+    @QEMUArgumentBuilder private func driveArgument(for drive: UTMQemuConfigurationDrive, busInterfaceMap: inout [String: Int], disableBootIndex: Bool = false) -> [QEMUArgument] {
         let isRemovable = drive.imageType == .cd || drive.isExternal
         let isCd = drive.imageType == .cd && drive.interface != .floppy
         var bootindex = busInterfaceMap["boot", default: 0]
@@ -654,7 +680,9 @@ import Virtualization // for getting network interfaces
             }
             busindex += 1
             "drive=drive\(drive.id)"
-            "bootindex=\(bootindex)"
+            if !disableBootIndex {
+                "bootindex=\(bootindex)"
+            }
             bootindex += 1
             f()
         } else if drive.interface == .scsi {
@@ -677,7 +705,9 @@ import Virtualization // for getting network interfaces
             "scsi-id=\(busindex)"
             busindex += 1
             "drive=drive\(drive.id)"
-            "bootindex=\(bootindex)"
+            if !disableBootIndex {
+                "bootindex=\(bootindex)"
+            }
             bootindex += 1
             f()
         } else if drive.interface == .virtio {
@@ -688,7 +718,9 @@ import Virtualization // for getting network interfaces
                 "virtio-blk-pci"
             }
             "drive=drive\(drive.id)"
-            "bootindex=\(bootindex)"
+            if !disableBootIndex {
+                "bootindex=\(bootindex)"
+            }
             bootindex += 1
             f()
         } else if drive.interface == .nvme {
@@ -696,7 +728,9 @@ import Virtualization // for getting network interfaces
             "nvme"
             "drive=drive\(drive.id)"
             "serial=\(drive.id)"
-            "bootindex=\(bootindex)"
+            if !disableBootIndex {
+                "bootindex=\(bootindex)"
+            }
             bootindex += 1
             f()
         } else if drive.interface == .usb {
@@ -706,7 +740,9 @@ import Virtualization // for getting network interfaces
             "usb-storage"
             "drive=drive\(drive.id)"
             "removable=\(isRemovable)"
-            "bootindex=\(bootindex)"
+            if !disableBootIndex {
+                "bootindex=\(bootindex)"
+            }
             bootindex += 1
             if isUsb3 {
                 "bus=usb-bus.0"
@@ -717,7 +753,9 @@ import Virtualization // for getting network interfaces
                 f("-device")
                 "isa-fdc"
                 "id=fdc\(busindex)"
-                "bootindexA=\(bootindex)"
+                if !disableBootIndex {
+                    "bootindexA=\(bootindex)"
+                }
                 bootindex += 1
                 f()
                 f("-device")
