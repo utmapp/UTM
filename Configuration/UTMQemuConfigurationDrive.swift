@@ -47,6 +47,9 @@ struct UTMQemuConfigurationDrive: UTMConfigurationDrive {
     /// Interface version for backwards compatibility
     var interfaceVersion: Int = Self.latestInterfaceVersion
     
+    /// Meaning differs by interface. Allows manually specifying where the device is located on the bus.
+    var interfaceLocation: [Int]?
+    
     /// If true, the created image will be raw format and not QCOW2. Not saved.
     var isRawImage: Bool = false
     
@@ -58,6 +61,7 @@ struct UTMQemuConfigurationDrive: UTMConfigurationDrive {
         case imageType = "ImageType"
         case interface = "Interface"
         case interfaceVersion = "InterfaceVersion"
+        case interfaceLocation = "InterfaceLocation"
         case identifier = "Identifier"
         case isReadOnly = "ReadOnly"
     }
@@ -81,6 +85,7 @@ struct UTMQemuConfigurationDrive: UTMConfigurationDrive {
         imageType = try values.decode(QEMUDriveImageType.self, forKey: .imageType)
         interface = try values.decode(QEMUDriveInterface.self, forKey: .interface)
         interfaceVersion = try values.decodeIfPresent(Int.self, forKey: .interfaceVersion) ?? 0
+        interfaceLocation = try values.decodeIfPresent([Int].self, forKey: .interfaceLocation)
         id = try values.decode(String.self, forKey: .identifier)
     }
     
@@ -97,6 +102,7 @@ struct UTMQemuConfigurationDrive: UTMConfigurationDrive {
             try container.encode(QEMUDriveInterface.none, forKey: .interface)
         }
         try container.encode(interfaceVersion, forKey: .interfaceVersion)
+        try container.encodeIfPresent(interfaceLocation, forKey: .interfaceLocation)
         try container.encode(id, forKey: .identifier)
     }
     
@@ -109,6 +115,7 @@ struct UTMQemuConfigurationDrive: UTMConfigurationDrive {
         imageType.hash(into: &hasher)
         interface.hash(into: &hasher)
         interfaceVersion.hash(into: &hasher)
+        interfaceLocation?.hash(into: &hasher)
         isRawImage.hash(into: &hasher)
     }
     

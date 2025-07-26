@@ -44,6 +44,11 @@ struct VMConfigDriveDetailsView: View {
     @State private var isResizePopoverShown: Bool = false
     @State private var proposedSizeMib: Int = 0
     
+    @State private var hasAutoLocation: Bool = true
+    @State private var locationA: Int = 0
+    @State private var locationB: Int = 0
+    @State private var locationC: Int = 0
+    
     var body: some View {
         Form {
             Toggle(isOn: $config.isExternal.animation(), label: {
@@ -87,6 +92,8 @@ struct VMConfigDriveDetailsView: View {
                         if interface == .floppy && config.imageType == .cd {
                             config.imageType = .disk
                         }
+                        hasAutoLocation = true
+                        updateLocation()
                     }
             }
             if config.interface == .ide && config.interfaceVersion != UTMQemuConfigurationDrive.latestInterfaceVersion {
@@ -95,6 +102,29 @@ struct VMConfigDriveDetailsView: View {
                 } label: {
                     Text("Update Interface")
                 }.help("Older versions of UTM added each IDE device to a separate bus. Check this to change the configuration to place two units on each bus.")
+            }
+            
+            if config.interface == .ide || config.interface == .scsi {
+                Toggle("Automatically assign bus location", isOn: $hasAutoLocation)
+                    .help("Some older operating systems expect a drive to be on a specific location. Most users should leave this enabled.")
+                    .onChange(of: hasAutoLocation) { _ in updateLocation() }
+                if !hasAutoLocation {
+                    DetailedSection("Bus Location", description: "If you have multiple drives on the same interface, you must specify bus location for all of them.") {
+                        if config.interface == .ide {
+                            NumberTextField("Bus", number: $locationA)
+                                .onChange(of: locationA) { _ in updateLocation() }
+                            NumberTextField("Unit", number: $locationB)
+                                .onChange(of: locationB) { _ in updateLocation() }
+                            NumberTextField("Index", number: $locationC)
+                                .onChange(of: locationC) { _ in updateLocation() }
+                        } else if config.interface == .scsi {
+                            NumberTextField("Target", number: $locationA)
+                                .onChange(of: locationA) { _ in updateLocation() }
+                            NumberTextField("LUN", number: $locationB)
+                                .onChange(of: locationB) { _ in updateLocation() }
+                        }
+                    }
+                }
             }
             
             if let imageUrl = config.imageURL {
@@ -152,6 +182,36 @@ struct VMConfigDriveDetailsView: View {
                 }
             }
             #endif
+        }
+        .onAppear {
+            fetchLocation()
+        }
+    }
+    
+    private func fetchLocation() {
+        if let interfaceLocation = config.interfaceLocation {
+            hasAutoLocation = false
+            locationA = interfaceLocation.count > 0 ? interfaceLocation[0] : 0
+            locationB = interfaceLocation.count > 1 ? interfaceLocation[1] : 0
+            locationC = interfaceLocation.count > 2 ? interfaceLocation[2] : 0
+        }
+    }
+    
+    private func updateLocation() {
+        guard !hasAutoLocation else {
+            locationA = 0
+            locationB = 0
+            locationC = 0
+            config.interfaceLocation = nil
+            return
+        }
+        switch config.interface {
+        case .ide:
+            config.interfaceLocation = [locationA, locationB, locationC]
+        case .scsi:
+            config.interfaceLocation = [locationA, locationB]
+        default:
+            config.interfaceLocation = nil
         }
     }
     
