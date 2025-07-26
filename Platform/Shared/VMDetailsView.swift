@@ -15,6 +15,9 @@
 //
 
 import SwiftUI
+import OSLog
+
+private let logger = Logger(subsystem: "UTM", category: "VMDetailsView")
 
 struct VMDetailsView: View {
     @ObservedObject var vm: VMData
@@ -31,6 +34,7 @@ struct VMDetailsView: View {
     #endif
 
     @State private var size: Int64 = 0
+    @State private var guestIPs: [String] = []
 
     private var sizeLabel: String {
         return ByteCountFormatter.string(fromByteCount: size, countStyle: .binary)
@@ -54,7 +58,7 @@ struct VMDetailsView: View {
                 let notes = vm.detailsNotes ?? ""
                 if regularScreenSizeClass && !notes.isEmpty {
                     HStack(alignment: .top) {
-                        Details(vm: vm, sizeLabel: sizeLabel)
+                        Details(vm: vm, sizeLabel: sizeLabel, guestIPs: guestIPs)
                             .frame(maxWidth: .infinity)
                         Text(notes)
                             .font(.body)
@@ -77,7 +81,7 @@ struct VMDetailsView: View {
                     #endif
                 } else {
                     VStack {
-                        Details(vm: vm, sizeLabel: sizeLabel)
+                        Details(vm: vm, sizeLabel: sizeLabel, guestIPs: guestIPs)
                         if !notes.isEmpty {
                             Text(notes)
                                 .font(.body)
@@ -117,6 +121,31 @@ struct VMDetailsView: View {
                     await vm.loadScreenshotFromServer()
                 }
                 #endif
+            }
+            .onChange(of: vm.state) { state in
+                if state == .started {
+                    Task {
+                        if let qemuVM = vm.wrapped as? UTMQemuVirtualMachine,
+                           let guestAgent = await qemuVM.guestAgent {
+                            do {
+                                let interfaces = try await guestAgent.guestNetworkGetInterfaces()
+                                var ips: [String] = []
+                                for interface in interfaces {
+                                    for ip in interface.ipAddresses {
+                                        if !ip.ipAddress.hasPrefix("127.") && ip.ipAddress != "::1" && ip.ipAddress != "0:0:0:0:0:0:0:1" {
+                                            ips.append(ip.ipAddress)
+                                        }
+                                    }
+                                }
+                                guestIPs = ips
+                            } catch {
+                                logger.error("Failed to get guest IP addresses: \(error.localizedDescription)")
+                            }
+                        }
+                    }
+                } else if state == .stopped {
+                    guestIPs = []
+                }
             }
         }
     }
@@ -211,7 +240,14 @@ struct Screenshot: View {
 struct Details: View {
     @ObservedObject var vm: VMData
     let sizeLabel: String
+    let guestIPs: [String]
     @EnvironmentObject private var data: UTMData
+    
+    private func formatPortForward(_ forward: UTMQemuConfigurationPortForward) -> String {
+        let hostAddr = forward.hostAddress ?? "*"
+        let guestAddr = forward.guestAddress ?? "*"
+        return "\(forward.protocol.rawValue) \(hostAddr):\(forward.hostPort) : \(guestAddr):\(forward.guestPort)"
+    }
     
     var body: some View {
         VStack {
@@ -252,6 +288,86 @@ struct Details: View {
                 Spacer()
                 Text(sizeLabel)
                     .foregroundColor(.secondary)
+            }
+            #if os(macOS)
+            if let appleConfig = vm.config as? UTMAppleConfiguration {
+                ForEach(appleConfig.networks) { network in
+                    HStack {
+                        plainLabel("Network", systemImage: "network")
+                        Spacer()
+                        Text("\(network.mode.prettyValue) (\(network.macAddress))")
+                            .foregroundColor(.secondary)
+                    }
+                    if network.mode == .bridged, let interface = network.bridgeInterface {
+                        HStack {
+                            plainLabel("Bridge Interface", systemImage: "arrow.triangle.branch")
+                            Spacer()
+                            Text(interface)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                }
+            }
+            #endif
+            if let qemuConfig = vm.config as? UTMQemuConfiguration {
+                ForEach(qemuConfig.networks) { network in
+                    HStack {
+                        plainLabel("Network", systemImage: "network")
+                        Spacer()
+                        Text("\(network.mode.prettyValue) (\(network.hardware.prettyValue))")
+                            .foregroundColor(.secondary)
+                    }
+                    HStack {
+                        plainLabel("MAC Address", systemImage: "number")
+                        Spacer()
+                        Text(network.macAddress)
+                            .foregroundColor(.secondary)
+                    }
+                    if network.mode == .bridged, let interface = network.bridgeInterface {
+                        HStack {
+                            plainLabel("Bridge Interface", systemImage: "arrow.triangle.branch")
+                            Spacer()
+                            Text(interface)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    if network.mode == .emulated {
+                        if let guestAddress = network.vlanGuestAddress {
+                            HStack {
+                                plainLabel("Guest Network", systemImage: "arrow.right.circle")
+                                Spacer()
+                                Text(guestAddress)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        if let hostAddress = network.vlanHostAddress {
+                            HStack {
+                                plainLabel("Host Address", systemImage: "arrow.left.circle")
+                                Spacer()
+                                Text(hostAddress)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        if !guestIPs.isEmpty {
+                            HStack {
+                                plainLabel("Guest IP", systemImage: "network.badge.shield.half.filled")
+                                Spacer()
+                                Text(guestIPs.joined(separator: ", "))
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        if !network.portForward.isEmpty {
+                            ForEach(network.portForward) { forward in
+                                HStack {
+                                    plainLabel("Port Forward", systemImage: "arrow.triangle.2.circlepath")
+                                    Spacer()
+                                    Text(formatPortForward(forward))
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+                        }
+                    }
+                }
             }
             #if os(macOS)
             if let appleConfig = vm.config as? UTMAppleConfiguration {
