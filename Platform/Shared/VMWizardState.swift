@@ -130,7 +130,6 @@ struct AlertMessage: Identifiable {
     @Published var linuxRootImageURL: URL?
     @Published var linuxBootArguments: String = ""
     @Published var linuxHasRosetta: Bool = false
-    @Published var windowsBootVhdx: URL?
     @Published var isWindows10OrHigher: Bool = true
     @Published var systemArchitecture: QEMUArchitecture = .x86_64
     @Published var systemTarget: any QEMUTarget = QEMUTarget_x86_64.default
@@ -248,7 +247,7 @@ struct AlertMessage: Identifiable {
             }
             nextPage = .hardware
         case .windowsBoot:
-            guard bootImageURL != nil || windowsBootVhdx != nil else {
+            guard bootImageURL != nil else {
                 alertMessage = AlertMessage(NSLocalizedString("Please select a boot image.", comment: "VMWizardState"))
                 return
             }
@@ -263,11 +262,6 @@ struct AlertMessage: Identifiable {
             } else {
                 nextPage = .drives
             }
-            #if arch(arm64)
-            if operatingSystem == .Windows && windowsBootVhdx != nil {
-                nextPage = .sharing
-            }
-            #endif
             if operatingSystem == .Linux && linuxRootImageURL != nil {
                 nextPage = .sharing
                 if useAppleVirtualization {
@@ -354,10 +348,6 @@ struct AlertMessage: Identifiable {
             #endif
         case .Windows:
             config.information.iconURL = UTMConfigurationInfo.builtinIcon(named: "windows")
-            if let windowsBootVhdx = windowsBootVhdx {
-                config.drives.append(UTMAppleConfigurationDrive(existingURL: windowsBootVhdx, isExternal: false))
-                isSkipDiskCreate = true
-            }
         }
         if !isSkipDiskCreate {
             var newDisk = UTMAppleConfigurationDrive(newSize: storageSizeGib * bytesInGib / bytesInMib)
@@ -523,17 +513,8 @@ struct AlertMessage: Identifiable {
         case .Windows:
             config.information.iconURL = UTMConfigurationInfo.builtinIcon(named: "windows")
             config.qemu.hasRTCLocalTime = true
-            if let windowsBootVhdx = windowsBootVhdx {
-                var rootImage = UTMQemuConfigurationDrive()
-                rootImage.imageURL = windowsBootVhdx
-                rootImage.imageType = .disk
-                rootImage.interface = mainDriveInterface
-                config.drives.append(rootImage)
-                let diskDrive = UTMQemuConfigurationDrive(forArchitecture: systemArchitecture, target: systemTarget, isExternal: true)
-                config.drives.append(diskDrive)
-            }
         }
-        if windowsBootVhdx == nil && bootDevice != .drive {
+        if bootDevice != .drive {
             var diskImage = UTMQemuConfigurationDrive()
             diskImage.sizeMib = storageSizeGib * bytesInGib / bytesInMib
             diskImage.imageType = .disk
