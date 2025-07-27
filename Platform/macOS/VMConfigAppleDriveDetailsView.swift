@@ -74,6 +74,7 @@ struct VMConfigAppleDriveDetailsView: View {
                         ResizePopoverView(imageURL: imageUrl, proposedSizeMib: $proposedSizeMib) {
                             confirmAlert = .resize(imageUrl)
                         }.padding()
+                        .frame(minHeight: 120)
                     }
                 }
             }.alert(item: $confirmAlert) { item in
