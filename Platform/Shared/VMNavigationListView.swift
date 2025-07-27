@@ -22,7 +22,7 @@ struct VMNavigationListView: View {
     
     var body: some View {
         if #available(iOS 16, macOS 13, *) {
-            NavigationSplitView(columnVisibility: .constant(.doubleColumn)) {
+            CompatibleNavigationSplitView {
                 List(selection: $data.selectedVM) {
                     listBody
                 }.modifier(VMListModifier())
@@ -98,6 +98,23 @@ struct VMNavigationListView: View {
         for vm in selected {
             data.cancelDownload(for: vm)
         }
+    }
+}
+
+@available(iOS 16, macOS 13, *)
+private struct CompatibleNavigationSplitView<Sidebar, Detail> : View where Sidebar : View, Detail : View {
+    @State private var columnVisibility: NavigationSplitViewVisibility = .doubleColumn
+    
+    let sidebar: () -> Sidebar
+    let detail: () -> Detail
+
+    init(@ViewBuilder sidebar: @escaping () -> Sidebar, @ViewBuilder detail: @escaping () -> Detail) {
+        self.sidebar = sidebar
+        self.detail = detail
+    }
+    
+    var body: some View {
+        NavigationSplitView(columnVisibility: $columnVisibility, sidebar: sidebar, detail: detail)
     }
 }
 
