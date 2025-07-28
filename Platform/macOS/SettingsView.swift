@@ -257,6 +257,8 @@ struct InputSettingsView: View {
     @AppStorage("HandleInitialClick") var isHandleInitialClick = false
     @AppStorage("NoUsbPrompt") var isNoUsbPrompt = false
     
+    @State private var isKeyboardShortcutsShown = false
+    
     var body: some View {
         Form {
             Section(header: Text("Mouse/Keyboard")) {
@@ -287,6 +289,9 @@ struct InputSettingsView: View {
             }
             
             Section(header: Text("QEMU Keyboard")) {
+                Button("Keyboard Shortcuts…") {
+                    isKeyboardShortcutsShown.toggle()
+                }.help("Set up custom keyboard shortcuts that can be triggered from the keyboard menu.")
                 Toggle(isOn: $isAlternativeCaptureKey, label: {
                     Text("Use Command+Option (⌘+⌥) for input capture/release")
                 }).help("If disabled, the default combination Control+Option (⌃+⌥) will be used.")
@@ -299,6 +304,10 @@ struct InputSettingsView: View {
                 Toggle(isOn: $isCtrlCmdSwapped, label: {
                     Text("Swap Control (⌃) and Command (⌘) keys")
                 }).help("This does not apply to key binding outside the guest.")
+            }
+            .sheet(isPresented: $isKeyboardShortcutsShown) {
+                VMKeyboardShortcutsView().padding()
+                    .frame(idealWidth: 400)
             }
             
             Section(header: Text("QEMU USB")) {

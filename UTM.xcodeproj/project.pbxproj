@@ -149,6 +149,11 @@
 		845F95E42A57628400A016D7 /* UTMSWTPM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845F95E22A57628400A016D7 /* UTMSWTPM.swift */; };
 		845F95E52A57628400A016D7 /* UTMSWTPM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845F95E22A57628400A016D7 /* UTMSWTPM.swift */; };
 		846D878629050B6B0095F10B /* InAppSettingsKit in Frameworks */ = {isa = PBXBuildFile; platformFilter = ios; productRef = 846D878529050B6B0095F10B /* InAppSettingsKit */; };
+		846F8D582E3850620037162B /* VMKeyboardShortcutsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846F8D572E3850620037162B /* VMKeyboardShortcutsView.swift */; };
+		846F8D5A2E3891FE0037162B /* UTMKeyboardShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846F8D592E3891FE0037162B /* UTMKeyboardShortcuts.swift */; };
+		846F8D5B2E3891FE0037162B /* UTMKeyboardShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846F8D592E3891FE0037162B /* UTMKeyboardShortcuts.swift */; };
+		846F8D5C2E3891FE0037162B /* UTMKeyboardShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846F8D592E3891FE0037162B /* UTMKeyboardShortcuts.swift */; };
+		846F8D5D2E3891FE0037162B /* UTMKeyboardShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846F8D592E3891FE0037162B /* UTMKeyboardShortcuts.swift */; };
 		8471770627CC974F00D3A50B /* DefaultTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8471770527CC974F00D3A50B /* DefaultTextField.swift */; };
 		8471770727CC974F00D3A50B /* DefaultTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8471770527CC974F00D3A50B /* DefaultTextField.swift */; };
 		8471770827CC974F00D3A50B /* DefaultTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8471770527CC974F00D3A50B /* DefaultTextField.swift */; };
@@ -642,6 +647,7 @@
 		CE612AC624D3B50700FA6300 /* VMDisplayWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE612AC524D3B50700FA6300 /* VMDisplayWindowController.swift */; };
 		CE65BABF26A4D8DD0001BD6B /* VMConfigDisplayConsoleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8401FDA5269D44E400265F0D /* VMConfigDisplayConsoleView.swift */; };
 		CE65BAC026A4D8DE0001BD6B /* VMConfigDisplayConsoleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8401FDA5269D44E400265F0D /* VMConfigDisplayConsoleView.swift */; };
+		CE68E5412E38A278006B3645 /* QEMUKit in Frameworks */ = {isa = PBXBuildFile; productRef = CE68E5402E38A278006B3645 /* QEMUKit */; };
 		CE6C13CA2B63610C003B7032 /* UTMRemoteMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6C13C92B63610C003B7032 /* UTMRemoteMessage.swift */; };
 		CE6C13CB2B63610C003B7032 /* UTMRemoteMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6C13C92B63610C003B7032 /* UTMRemoteMessage.swift */; };
 		CE6D21DC2553A6ED001D29C5 /* VMConfirmActionModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6D21DB2553A6ED001D29C5 /* VMConfirmActionModifier.swift */; };
@@ -1725,6 +1731,8 @@
 		845F170A289CB07200944904 /* VMDisplayAppleDisplayWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayAppleDisplayWindowController.swift; sourceTree = "<group>"; };
 		845F170C289CB3DE00944904 /* VMDisplayTerminal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayTerminal.swift; sourceTree = "<group>"; };
 		845F95E22A57628400A016D7 /* UTMSWTPM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMSWTPM.swift; sourceTree = "<group>"; };
+		846F8D572E3850620037162B /* VMKeyboardShortcutsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMKeyboardShortcutsView.swift; sourceTree = "<group>"; };
+		846F8D592E3891FE0037162B /* UTMKeyboardShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMKeyboardShortcuts.swift; sourceTree = "<group>"; };
 		8471770527CC974F00D3A50B /* DefaultTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultTextField.swift; sourceTree = "<group>"; };
 		8471772727CD3CAB00D3A50B /* DetailedSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailedSection.swift; sourceTree = "<group>"; };
 		847BF9A92A49C783000BD9AA /* VMData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMData.swift; sourceTree = "<group>"; };
@@ -2477,6 +2485,7 @@
 				CEF7F65D2AEEDCC400E34952 /* gstcontroller-1.0.0.framework in Frameworks */,
 				CEF7F65E2AEEDCC400E34952 /* gstaudio-1.0.0.framework in Frameworks */,
 				CEF7F65F2AEEDCC400E34952 /* gpg-error.0.framework in Frameworks */,
+				CE68E5412E38A278006B3645 /* QEMUKit in Frameworks */,
 				CEF7F6602AEEDCC400E34952 /* gcrypt.20.framework in Frameworks */,
 				CEF7F6612AEEDCC400E34952 /* InAppSettingsKit in Frameworks */,
 				CEF7F6622AEEDCC400E34952 /* gobject-2.0.0.framework in Frameworks */,
@@ -2729,6 +2738,7 @@
 				CE928C3026ACCDEA0099F293 /* VMAppleRemovableDrivesView.swift */,
 				84C584E4268F8C65000FCABF /* VMAppleSettingsView.swift */,
 				845F1706289B5E2600944904 /* VMAppleSettingsAddDeviceMenuView.swift */,
+				846F8D572E3850620037162B /* VMKeyboardShortcutsView.swift */,
 				84C584E2268F8AE7000FCABF /* VMQEMUSettingsView.swift */,
 				CE2D953D24AD4F980059923A /* VMSettingsView.swift */,
 				CEF0300526A25A6900667B63 /* VMWizardView.swift */,
@@ -2873,6 +2883,7 @@
 				CE2D954624AD4F980059923A /* UTMExtensions.swift */,
 				CEB63A7924F469E300CAF323 /* UTMJailbreak.m */,
 				CEB63A7824F468BA00CAF323 /* UTMJailbreak.h */,
+				846F8D592E3891FE0037162B /* UTMKeyboardShortcuts.swift */,
 				CE059DC6243E9E3400338317 /* UTMLocationManager.h */,
 				CE059DC7243E9E3400338317 /* UTMLocationManager.m */,
 				CE6EDCE0241DA0E900A719DC /* UTMLogging.h */,
@@ -3310,6 +3321,7 @@
 				CE9B153B2B11A4B4003A32DD /* SwiftConnect */,
 				CE89CB112B8B1B7A006B2CC2 /* VisionKeyboardKit */,
 				CE231D592BE03791006D6DC3 /* SwiftCopyfile */,
+				CE68E5402E38A278006B3645 /* QEMUKit */,
 			);
 			productName = UTM;
 			productReference = CEF7F6D32AEEDCC400E34952 /* UTM Remote.app */;
@@ -3722,6 +3734,7 @@
 				84C2E8652AA429E800B17308 /* VMWizardContent.swift in Sources */,
 				841E58CB28937EE200137A20 /* UTMExternalSceneDelegate.swift in Sources */,
 				CEB63A7A24F469E300CAF323 /* UTMJailbreak.m in Sources */,
+				846F8D5D2E3891FE0037162B /* UTMKeyboardShortcuts.swift in Sources */,
 				841619B228431DA5000034B2 /* UTMQemuConfigurationQEMU.swift in Sources */,
 				843BF82428441EAD0029D60D /* UTMQemuConfigurationDisplay.swift in Sources */,
 				CE8011202AD4E9E8009001C2 /* UTMApp.swift in Sources */,
@@ -3880,6 +3893,7 @@
 				CE03D0D424DCF6DD00F76B84 /* VMMetalViewInputDelegate.swift in Sources */,
 				848F71EA277A2A4E006A0240 /* UTMSerialPort.swift in Sources */,
 				CE25124D29C55816000790AB /* UTMScriptingConfigImpl.swift in Sources */,
+				846F8D582E3850620037162B /* VMKeyboardShortcutsView.swift in Sources */,
 				CE0B6D0224AD56AE00FE012D /* UTMProcess.m in Sources */,
 				CEF0306026A2AFDF00667B63 /* VMWizardState.swift in Sources */,
 				CEF0300826A25A6900667B63 /* VMWizardView.swift in Sources */,
@@ -3964,6 +3978,7 @@
 				CE25124929BFDBA6000790AB /* UTMScriptingGuestFileImpl.swift in Sources */,
 				848A98C8287206AE006F0550 /* VMConfigAppleVirtualizationView.swift in Sources */,
 				CE9B153F2B11A63E003A32DD /* UTMRemoteServer.swift in Sources */,
+				846F8D5A2E3891FE0037162B /* UTMKeyboardShortcuts.swift in Sources */,
 				847BF9AC2A49C783000BD9AA /* VMData.swift in Sources */,
 				CE25124729BFDB87000790AB /* UTMScriptingGuestProcessImpl.swift in Sources */,
 				CE2D958824AD4F990059923A /* VMConfigPortForwardForm.swift in Sources */,
@@ -4010,6 +4025,7 @@
 				CEA45E43263519B5002FA97D /* UTMLegacyQemuConfigurationPortForward.m in Sources */,
 				843BF841284555E70029D60D /* UTMQemuConfigurationPortForward.swift in Sources */,
 				84A0A8842A47D52E0038F329 /* UTMQemuPort.swift in Sources */,
+				846F8D5B2E3891FE0037162B /* UTMKeyboardShortcuts.swift in Sources */,
 				848D99C528670F650055C215 /* UTMQemuConfiguration+Arguments.swift in Sources */,
 				CEA45E4B263519B5002FA97D /* BusyOverlay.swift in Sources */,
 				84937F032897451C003148F4 /* VMToolbarDriveMenuView.swift in Sources */,
@@ -4255,6 +4271,7 @@
 				CEF7F5EA2AEEDCC400E34952 /* VMConfigConstantPicker.swift in Sources */,
 				03FA9C742B9BBDB000C53A5A /* UTMConfigurationHostNetwork.swift in Sources */,
 				CEF7F5EC2AEEDCC400E34952 /* VMToolbarModifier.swift in Sources */,
+				846F8D5C2E3891FE0037162B /* UTMKeyboardShortcuts.swift in Sources */,
 				CEF7F5ED2AEEDCC400E34952 /* VMCursor.m in Sources */,
 				CEF7F5EE2AEEDCC400E34952 /* VMConfigDriveDetailsView.swift in Sources */,
 				CEF7F5F02AEEDCC400E34952 /* NumberTextField.swift in Sources */,
@@ -5585,6 +5602,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = CE231D502BE03617006D6DC3 /* XCRemoteSwiftPackageReference "SwiftCopyfile" */;
 			productName = SwiftCopyfile;
+		};
+		CE68E5402E38A278006B3645 /* QEMUKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 84A0A8862A47D5C50038F329 /* XCRemoteSwiftPackageReference "QEMUKit" */;
+			productName = QEMUKit;
 		};
 		CE89CB0D2B8B1B5A006B2CC2 /* VisionKeyboardKit */ = {
 			isa = XCSwiftPackageProductDependency;

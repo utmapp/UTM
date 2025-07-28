@@ -16,6 +16,7 @@
 
 import CocoaSpiceRenderer
 import Carbon.HIToolbox
+import SwiftUI
 
 class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
     var metalView: VMMetalView!
@@ -678,5 +679,57 @@ extension VMDisplayQemuMetalWindowController: VMMetalViewInputDelegate {
         if !vmInput.keyLock.contains(.num) {
             vmInput.keyLock.insert(.num)
         }
+    }
+}
+
+// MARK: - Keyboard shortcuts menu
+extension VMDisplayQemuMetalWindowController {
+    override func keyboardShortcutsButtonPressed(_ sender: Any) {
+        let menu = NSMenu()
+        let keyboardShortcuts = UTMKeyboardShortcuts.shared.loadKeyboardShortcuts()
+        for (index, keyboardShortcut) in keyboardShortcuts.enumerated() {
+            let item = NSMenuItem()
+            item.title = keyboardShortcut.title
+            item.target = self
+            item.action = #selector(keyboardShortcutHandler)
+            item.tag = index
+            menu.addItem(item)
+        }
+        menu.addItem(.separator())
+        let item = NSMenuItem()
+        item.title = NSLocalizedString("Edit…", comment: "VMDisplayQemuMetalWindowController")
+        item.target = self
+        item.action = #selector(keyboardShortcutEdit)
+        menu.addItem(item)
+        menu.popUp(positioning: nil, at: NSEvent.mouseLocation, in: nil)
+    }
+    
+    @MainActor @objc private func keyboardShortcutHandler(sender: AnyObject) {
+        let keyboardShortcuts = UTMKeyboardShortcuts.shared.loadKeyboardShortcuts()
+        let item = sender as! NSMenuItem
+        let index = item.tag
+        guard index < keyboardShortcuts.count else {
+            return
+        }
+        let keys = keyboardShortcuts[index]
+        withErrorAlert {
+            try await self.qemuVM.monitor?.sendKeys(keys)
+        }
+    }
+    
+    @MainActor @objc private func keyboardShortcutEdit(sender: AnyObject) {
+        guard let window = window else {
+            return
+        }
+        let content = NSHostingController(rootView: VMKeyboardShortcutsView {
+            if let sheet = window.attachedSheet {
+                window.endSheet(sheet)
+            }
+        }.padding())
+        var fittingSize = content.view.fittingSize
+        fittingSize.width = 400
+        let sheetWindow = NSWindow(contentViewController: content)
+        sheetWindow.setContentSize(fittingSize)
+        window.beginSheet(sheetWindow)
     }
 }
