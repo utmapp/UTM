@@ -51,7 +51,7 @@ struct SettingsView: View {
                 .tabItem {
                     Label("Server", systemImage: "server.rack")
                 }
-        }.frame(minWidth: 600, minHeight: 370, alignment: .topLeading)
+        }.frame(minWidth: 600, minHeight: 400, alignment: .topLeading)
     }
 }
 
@@ -153,6 +153,7 @@ struct InputSettingsView: View {
     @AppStorage("AlternativeCaptureKey") var isAlternativeCaptureKey = false
     @AppStorage("IsCapsLockKey") var isCapsLockKey = false
     @AppStorage("IsNumLockForced") var isNumLockForced = false
+    @AppStorage("IsCtrlCmdSwapped") var isCtrlCmdSwapped = false
     @AppStorage("InvertScroll") var isInvertScroll = false
     @AppStorage("HandleInitialClick") var isHandleInitialClick = false
     @AppStorage("NoUsbPrompt") var isNoUsbPrompt = false
@@ -196,6 +197,9 @@ struct InputSettingsView: View {
                 Toggle(isOn: $isNumLockForced, label: {
                     Text("Num Lock is forced on")
                 }).help("If enabled, num lock will always be on to the guest. Note this may make your keyboard's num lock indicator out of sync.")
+                Toggle(isOn: $isCtrlCmdSwapped, label: {
+                    Text("Swap Control (⌃) and Command (⌘) keys")
+                }).help("This does not apply to key binding outside the guest.")
             }
             
             Section(header: Text("QEMU USB")) {
