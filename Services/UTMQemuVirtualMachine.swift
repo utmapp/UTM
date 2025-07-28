@@ -538,7 +538,9 @@ extension UTMQemuVirtualMachine {
         guard let monitor = await monitor else {
             throw UTMQemuVirtualMachineError.invalidVmState
         }
-        await takeScreenshot()
+        if isScreenshotEnabled {
+            await takeScreenshot()
+        }
         try await monitor.qemuStop()
     }
     

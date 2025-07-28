@@ -331,8 +331,12 @@ struct UTMVirtualMachineScreenshot {
 }
 
 extension UTMVirtualMachine {
-    private var isScreenshotSaveEnabled: Bool {
-        !UserDefaults.standard.bool(forKey: "NoSaveScreenshot")
+    nonisolated var isScreenshotEnabled: Bool {
+        !UserDefaults.standard.bool(forKey: "NoScreenshot")
+    }
+
+    nonisolated private var isScreenshotSaveEnabled: Bool {
+        isScreenshotEnabled && !UserDefaults.standard.bool(forKey: "NoSaveScreenshot")
     }
     
     private var screenshotUrl: URL {
@@ -347,6 +351,9 @@ extension UTMVirtualMachine {
         let timer = Timer(timeInterval: kScreenshotPeriodSeconds, repeats: true) { [weak self] timer in
             guard let self = self else {
                 timer.invalidate()
+                return
+            }
+            guard self.isScreenshotEnabled else {
                 return
             }
             if self.state == .started {

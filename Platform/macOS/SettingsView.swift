@@ -91,6 +91,7 @@ struct ApplicationSettingsView: View {
 }
 
 struct DisplaySettingsView: View {
+    @AppStorage("NoScreenshot") var isNoScreenshot = false
     @AppStorage("NoSaveScreenshot") var isNoSaveScreenshot = false
     @AppStorage("QEMURendererBackend") var qemuRendererBackend: UTMQEMURendererBackend = .qemuRendererBackendDefault
     @AppStorage("QEMURendererFPSLimit") var qemuRendererFpsLimit: Int = 0
@@ -98,9 +99,16 @@ struct DisplaySettingsView: View {
     var body: some View {
         Form {
             Section(header: Text("Display")) {
+                Toggle(isOn: $isNoScreenshot) {
+                    Text("Disable VM screenshot")
+                }.help("No VM screenshots will be taken.")
+                .onChange(of: isNoScreenshot) { newValue in
+                    isNoSaveScreenshot = newValue
+                }
                 Toggle(isOn: $isNoSaveScreenshot) {
                     Text("Do not save VM screenshot to disk")
                 }.help("If enabled, any existing screenshot will be deleted the next time the VM is started.")
+                .disabled(isNoScreenshot)
             }
             
             Section(header: Text("QEMU Graphics Acceleration")) {

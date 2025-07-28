@@ -326,9 +326,11 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
                     continuation.resume(throwing: UTMAppleVirtualMachineError.operationNotAvailable)
                     return
                 }
-                Task { @MainActor in
-                    await self.takeScreenshot()
-                    try? self.saveScreenshot()
+                if self.isScreenshotEnabled {
+                    Task { @MainActor in
+                        await self.takeScreenshot()
+                        try? self.saveScreenshot()
+                    }
                 }
                 apple.pause { result in
                     continuation.resume(with: result)
