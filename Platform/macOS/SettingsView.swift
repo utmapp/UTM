@@ -18,40 +18,139 @@ import SwiftUI
 
 @available(macOS 11, *)
 struct SettingsView: View {
-    
-    var body: some View {
-        TabView {
-            ApplicationSettingsView().padding()
-                .tabItem {
-                    Label("Application", systemImage: "app.badge")
+    private enum Selection: CaseIterable, Identifiable {
+        case application
+        case display
+        case sound
+        case input
+        case network
+        case file
+        case server
+
+        var id: Self {
+            return self
+        }
+
+        var isAvailable: Bool {
+            if self == .network {
+                if #unavailable(macOS 12) {
+                    return false
                 }
-            DisplaySettingsView().padding()
-                .tabItem {
-                    Label("Display", systemImage: "rectangle.on.rectangle")
-                }
-            SoundSettingsView().padding()
-                .tabItem {
-                    Label("Sound", systemImage: "speaker.wave.2")
-                }
-            InputSettingsView().padding()
-                .tabItem {
-                    Label("Input", systemImage: "keyboard")
-                }
-            if #available(macOS 12, *) {
-                NetworkSettingsView().padding()
-                    .tabItem {
-                        Label("Network", systemImage: "network")
-                    }
             }
-            FileSettingsView().padding()
-                .tabItem {
-                    Label("File", systemImage: "folder")
+            return true
+        }
+
+        var title: LocalizedStringKey {
+            switch self {
+            case .application:
+                return "Application"
+            case .display:
+                return "Display"
+            case .sound:
+                return "Sound"
+            case .input:
+                return "Input"
+            case .network:
+                return "Network"
+            case .file:
+                return "File"
+            case .server:
+                return "Server"
+            }
+        }
+
+        var systemImage: String {
+            switch self {
+            case .application:
+                return "app.badge"
+            case .display:
+                return "rectangle.on.rectangle"
+            case .sound:
+                return "speaker.wave.2"
+            case .input:
+                return "keyboard"
+            case .network:
+                return "network"
+            case .file:
+                return "folder"
+            case .server:
+                return "server.rack"
+            }
+        }
+
+        @ViewBuilder
+        var view: some View {
+            switch self {
+            case .application:
+                ApplicationSettingsView()
+            case .display:
+                DisplaySettingsView()
+            case .sound:
+                SoundSettingsView()
+            case .input:
+                InputSettingsView()
+            case .network:
+                if #available(macOS 12, *) {
+                    NetworkSettingsView()
+                } else {
+                    EmptyView()
                 }
-            ServerSettingsView().padding()
-                .tabItem {
-                    Label("Server", systemImage: "server.rack")
+            case .file:
+                FileSettingsView()
+            case .server:
+                ServerSettingsView()
+            }
+        }
+    }
+
+    @State private var selection: Selection = .application
+
+    var body: some View {
+        if #available(macOS 26, *) {
+            newBody
+        } else {
+            oldBody
+        }
+    }
+
+    @available(macOS 15, *)
+    @ViewBuilder
+    var newBody: some View {
+        NavigationSplitView {
+            List(Selection.allCases, selection: $selection) { category in
+                if category.isAvailable {
+                    Label(category.title, systemImage: category.systemImage)
                 }
-        }.frame(minWidth: 600, minHeight: 400, alignment: .topLeading)
+            }.toolbar(removing: .sidebarToggle)
+        } detail: {
+            VStack(alignment: .leading) {
+                HStack(alignment: .top) {
+                    selection.view.padding()
+                    Spacer()
+                }
+                Spacer()
+            }
+        }
+    }
+
+    @ViewBuilder
+    var oldBody: some View {
+        TabView {
+            ForEach(Selection.allCases) { category in
+                if category.isAvailable {
+                    VStack(alignment: .leading) {
+                        HStack(alignment: .top) {
+                            category.view.padding()
+                            Spacer()
+                        }
+                        Spacer()
+                    }
+                    .tabItem {
+                        Label(category.title, systemImage: category.systemImage)
+                    }
+                }
+            }
+        }
     }
 }
 
