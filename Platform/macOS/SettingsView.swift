@@ -160,7 +160,8 @@ struct ApplicationSettingsView: View {
     @AppStorage("ShowMenuIcon") var isMenuIconShown = false
     @AppStorage("PreventIdleSleep") var isPreventIdleSleep = false
     @AppStorage("NoQuitConfirmation") var isNoQuitConfirmation = false
-    
+    @AppStorage("NoUsbPrompt") var isNoUsbPrompt = false
+
     var body: some View {
         Form {
             Toggle(isOn: $isKeepRunningAfterLastWindowClosed, label: {
@@ -185,6 +186,12 @@ struct ApplicationSettingsView: View {
             Toggle(isOn: $isNoQuitConfirmation, label: {
                 Text("Do not show confirmation when closing a running VM")
             }).help("Closing a VM without properly shutting it down could result in data loss.")
+
+            Section(header: Text("QEMU USB")) {
+                Toggle(isOn: $isNoUsbPrompt, label: {
+                    Text("Do not show prompt when USB device is plugged in")
+                })
+            }
         }
     }
 }
@@ -255,7 +262,6 @@ struct InputSettingsView: View {
     @AppStorage("IsCtrlCmdSwapped") var isCtrlCmdSwapped = false
     @AppStorage("InvertScroll") var isInvertScroll = false
     @AppStorage("HandleInitialClick") var isHandleInitialClick = false
-    @AppStorage("NoUsbPrompt") var isNoUsbPrompt = false
     
     @State private var isKeyboardShortcutsShown = false
     
@@ -308,12 +314,6 @@ struct InputSettingsView: View {
             .sheet(isPresented: $isKeyboardShortcutsShown) {
                 VMKeyboardShortcutsView().padding()
                     .frame(idealWidth: 400)
-            }
-            
-            Section(header: Text("QEMU USB")) {
-                Toggle(isOn: $isNoUsbPrompt, label: {
-                    Text("Do not show prompt when USB device is plugged in")
-                })
             }
         }
     }
