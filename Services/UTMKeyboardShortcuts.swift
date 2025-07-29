@@ -15,8 +15,6 @@
 //
 
 import Foundation
-import QEMUKit
-import QEMUKitInternal
 
 final class UTMKeyboardShortcuts {
     static let shared = UTMKeyboardShortcuts()

@@ -517,6 +517,21 @@ extension VMSessionState {
         vm.requestVmReset()
     }
     
+    #if !WITH_REMOTE
+    func sendKeys(keys: [QEMUKeyCode]) {
+        Task {
+            guard let monitor = await (vm as? UTMQemuVirtualMachine)?.monitor else {
+                return
+            }
+            do {
+                try await monitor.sendKeys(keys)
+            } catch {
+                self.nonfatalError = error.localizedDescription
+            }
+        }
+    }
+    #endif
+    
     func didReceiveMemoryWarning() {
         let shouldAutosave = UserDefaults.standard.bool(forKey: "AutosaveLowMemory")
         
