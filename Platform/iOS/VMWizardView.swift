@@ -103,6 +103,7 @@ fileprivate struct WizardWrapper: View {
             NavigationLink(destination: WizardWrapper(page: .operatingSystem, wizardState: wizardState, onDismiss: onDismiss), tag: .operatingSystem, selection: $nextPage) {}
             NavigationLink(destination: WizardWrapper(page: .linuxBoot, wizardState: wizardState, onDismiss: onDismiss), tag: .linuxBoot, selection: $nextPage) {}
             NavigationLink(destination: WizardWrapper(page: .windowsBoot, wizardState: wizardState, onDismiss: onDismiss), tag: .windowsBoot, selection: $nextPage) {}
+            NavigationLink(destination: WizardWrapper(page: .classicMacOSBoot, wizardState: wizardState, onDismiss: onDismiss), tag: .classicMacOSBoot, selection: $nextPage) {}
             NavigationLink(destination: WizardWrapper(page: .otherBoot, wizardState: wizardState, onDismiss: onDismiss), tag: .otherBoot, selection: $nextPage) {}
             NavigationLink(destination: WizardWrapper(page: .hardware, wizardState: wizardState, onDismiss: onDismiss), tag: .hardware, selection: $nextPage) {}
             NavigationLink(destination: WizardWrapper(page: .drives, wizardState: wizardState, onDismiss: onDismiss), tag: .drives, selection: $nextPage) {}
@@ -181,6 +182,8 @@ fileprivate struct WizardViewWrapper: View {
             VMWizardOSWindowsView(wizardState: wizardState)
         case .otherBoot:
             VMWizardOSOtherView(wizardState: wizardState)
+        case .classicMacOSBoot:
+            VMWizardOSClassicMacView(wizardState: wizardState)
         case .hardware:
             VMWizardHardwareView(wizardState: wizardState)
         case .drives:

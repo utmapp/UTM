@@ -73,6 +73,10 @@ extension UTMQemuConfigurationSharing {
         } else if (architecture == .arm || architecture == .aarch64) && (rawTarget.hasPrefix("virt-") || rawTarget == "virt") {
             directoryShareMode = .webdav
             hasClipboardSharing = true
+        } else if architecture == .m68k && rawTarget == QEMUTarget_m68k.q800.rawValue {
+            directoryShareMode = .virtfs
+        } else if [.ppc, .ppc64].contains(architecture) && rawTarget == QEMUTarget_ppc.mac99.rawValue {
+            directoryShareMode = .virtfs
         }
     }
 }

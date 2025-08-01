@@ -273,3 +273,30 @@ index 0e8c4c1c67..e07f60357f 100644
 -- 
 2.41.0
 
+From 344a5a3cbe3df0c373743969493afe7d1c4fb4d6 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Sat, 2 Aug 2025 19:22:04 -0700
+Subject: [PATCH] pc-bios: add classicvirtio drivers for m68k/ppc
+
+---
+ pc-bios/m68k-declrom   | Bin 0 -> 106496 bytes
+ pc-bios/meson.build    |   2 ++
+ pc-bios/ppc-ndrvloader | Bin 0 -> 191172 bytes
+ 3 files changed, 2 insertions(+)
+ create mode 100755 pc-bios/m68k-declrom
+ create mode 100644 pc-bios/ppc-ndrvloader
+
+diff --git a/pc-bios/meson.build b/pc-bios/meson.build
+index 9fb9659c45..63e10cc6df 100644
+--- a/pc-bios/meson.build
++++ b/pc-bios/meson.build
+@@ -85,6 +85,8 @@ blobs = [
+   'npcm8xx_bootrom.bin',
+   'vof.bin',
+   'vof-nvram.bin',
++  'm68k-declrom',
++  'ppc-ndrvloader',
+ ]
+ 
+ dtc = find_program('dtc', required: false)
+

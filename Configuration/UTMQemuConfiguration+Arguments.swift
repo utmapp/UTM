@@ -136,6 +136,7 @@ import Virtualization // for getting network interfaces
         if isUsbUsed {
             usbArguments
         }
+        otherInputsArguments
         drivesArguments
         sharingArguments
         miscArguments
@@ -241,6 +242,10 @@ import Virtualization // for getting network interfaces
         }
     }
 
+    private func shouldSkipDisplay(_ display: UTMQemuConfigurationDisplay) -> Bool {
+        return display.hardware.rawValue == QEMUDisplayDevice_m68k.nubus_macfb.rawValue
+    }
+
     @QEMUArgumentBuilder private var displayArguments: [QEMUArgument] {
         if displays.isEmpty {
             f("-nographic")
@@ -253,12 +258,17 @@ import Virtualization // for getting network interfaces
             f()
         } else {
             for display in displays {
-                f("-device")
-                filterDisplayIfRemote(display.hardware)
-                if let vgaRamSize = displays[0].vgaRamMib {
-                    "vgamem_mb=\(vgaRamSize)"
+                if !shouldSkipDisplay(display) {
+                    f("-device")
+                    filterDisplayIfRemote(display.hardware)
+                    if let vgaRamSize = displays[0].vgaRamMib {
+                        "vgamem_mb=\(vgaRamSize)"
+                    }
+                    if display.hardware.rawValue.lowercased().contains("vga") && isClassicMacNewWorld {
+                        "edid=on"
+                    }
+                    f()
                 }
-                f()
             }
         }
     }
@@ -275,6 +285,14 @@ import Virtualization // for getting network interfaces
 
     private var isRemoteSpice: Bool {
         qemu.spiceServerPort != nil
+    }
+
+    private var isClassicMacM68K: Bool {
+        system.architecture == .m68k && system.target.rawValue == QEMUTarget_m68k.q800.rawValue
+    }
+
+    private var isClassicMacNewWorld: Bool {
+        [.ppc, .ppc64].contains(system.architecture) && system.target.rawValue == QEMUTarget_ppc.mac99.rawValue
     }
 
     @QEMUArgumentBuilder private var serialArguments: [QEMUArgument] {
@@ -485,7 +503,12 @@ import Virtualization // for getting network interfaces
                 properties = properties.appendingDefaultPropertyName("gic-version", value: "3")
             }
         }
-        if target == "mac99" {
+        if isClassicMacM68K {
+            if sound.contains(where: { $0.hardware.rawValue == QEMUSoundDevice_m68k.asc.rawValue }) {
+                properties = properties.appendingDefaultPropertyName("audiodev", value: "audio0")
+            }
+        }
+        if isClassicMacNewWorld {
             properties = properties.appendingDefaultPropertyName("via", value: "pmu")
         }
         return properties
@@ -522,6 +545,25 @@ import Virtualization // for getting network interfaces
                 }
                 f()
             }
+        }
+        if isClassicMacM68K {
+            let declrom = resourceURL.appendingPathComponent("m68k-declrom")
+            f("-device")
+            "nubus-virtio-mmio"
+            "romfile="
+            declrom
+            f()
+        }
+        if isClassicMacNewWorld {
+            let ndrvloader = resourceURL.appendingPathComponent("ppc-ndrvloader")
+            f("-device")
+            "loader"
+            "addr=0x4000000"
+            "file="
+            ndrvloader
+            f()
+            f("-prom-env")
+            f("boot-command=init-program go")
         }
         f("-m")
         system.memorySize
@@ -572,7 +614,11 @@ import Virtualization // for getting network interfaces
         return false
         #endif
     }
-    
+
+    private func isInternalAudioDevice(_ device: any QEMUSoundDevice) -> Bool {
+        [QEMUSoundDevice_i386.pcspk.rawValue, QEMUSoundDevice_ppc.screamer.rawValue, QEMUSoundDevice_m68k.asc.rawValue].contains(device.rawValue)
+    }
+
     @QEMUArgumentBuilder private var soundArguments: [QEMUArgument] {
         if sound.isEmpty {
             f("-audio")
@@ -596,7 +642,7 @@ import Virtualization // for getting network interfaces
         "spice"
         f("id=audio0")
         // screamer has no extra device, pcspk is handled in machineProperties
-        for _sound in sound.filter({ $0.hardware.rawValue != "screamer" && $0.hardware.rawValue != "pcspk" }) {
+        for _sound in sound.filter({ !isInternalAudioDevice($0.hardware) }) {
             f("-device")
             _sound.hardware
             if _sound.hardware.rawValue.contains("hda") {
@@ -834,7 +880,7 @@ import Virtualization // for getting network interfaces
         }
         f()
     }
-    
+
     @QEMUArgumentBuilder private var usbArguments: [QEMUArgument] {
         if system.target.rawValue.hasPrefix("virt") {
             f("-device")
@@ -842,8 +888,10 @@ import Virtualization // for getting network interfaces
         } else {
             f("-usb")
         }
-        f("-device")
-        f("usb-tablet,bus=usb-bus.0")
+        if !isClassicMacNewWorld {
+            f("-device")
+            f("usb-tablet,bus=usb-bus.0")
+        }
         f("-device")
         f("usb-mouse,bus=usb-bus.0")
         f("-device")
@@ -881,7 +929,18 @@ import Virtualization // for getting network interfaces
         }
         #endif
     }
-    
+
+    @QEMUArgumentBuilder private var otherInputsArguments: [QEMUArgument] {
+        if isClassicMacNewWorld {
+            f("-device")
+            f("virtio-tablet-pci")
+        }
+        if isClassicMacM68K {
+            f("-device")
+            f("virtio-tablet-device")
+        }
+    }
+
     private func parseNetworkSubnet(from network: UTMQemuConfigurationNetwork) -> (start: String, end: String, mask: String)? {
         guard let net = network.vlanGuestAddress else {
             return nil
@@ -928,10 +987,13 @@ import Virtualization // for getting network interfaces
     
     @QEMUArgumentBuilder private var networkArguments: [QEMUArgument] {
         for i in networks.indices {
-            if isSparc {
+            if (isSparc && networks[i].hardware.rawValue == QEMUNetworkDevice_sparc.lance.rawValue) ||
+                (isClassicMacM68K && networks[i].hardware.rawValue == QEMUNetworkDevice_m68k.dp8393x.rawValue) {
                 f("-net")
                 "nic"
-                "model=lance"
+                if networks[i].hardware.rawValue == QEMUNetworkDevice_sparc.lance.rawValue {
+                    "model=lance"
+                }
                 "macaddr=\(networks[i].macAddress)"
                 "netdev=net\(i)"
                 f()
@@ -1076,11 +1138,17 @@ import Virtualization // for getting network interfaces
             f("-device")
             if system.architecture == .s390x {
                 "virtio-9p-ccw"
+            } else if system.architecture == .m68k {
+                "virtio-9p-device"
             } else {
                 "virtio-9p-pci"
             }
             "fsdev=virtfs0"
-            "mount_tag=share"
+            if isClassicMacM68K || isClassicMacNewWorld {
+                "mount_tag=share_1"
+            } else {
+                "mount_tag=share"
+            }
         }
     }
     

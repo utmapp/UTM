@@ -30,6 +30,7 @@ enum VMWizardPage: Int, Identifiable {
     case macOSBoot
     case linuxBoot
     case windowsBoot
+    case classicMacOSBoot
     case otherBoot
     case hardware
     case drives
@@ -37,15 +38,34 @@ enum VMWizardPage: Int, Identifiable {
     case summary
 }
 
-enum VMWizardOS: String, Identifiable {
-    var id: String {
-        return self.rawValue
-    }
-    
+enum VMWizardOS: Identifiable {
+    var id: Self { self }
+
     case Other
     case macOS
     case Linux
     case Windows
+    case ClassicMacOS
+
+    var name: LocalizedStringKey {
+        switch self {
+        case .Other: return "Other"
+        case .macOS: return "macOS"
+        case .Linux: return "Linux"
+        case .Windows: return "Windows"
+        case .ClassicMacOS: return "Mac OS"
+        }
+    }
+
+    var defaultIconName: String? {
+        switch self {
+        case .Other: return nil
+        case .macOS: return "mac"
+        case .Linux: return "linux"
+        case .Windows: return "windows"
+        case .ClassicMacOS: return "macos"
+        }
+    }
 }
 
 enum VMBootDevice: Int, Identifiable {
@@ -131,6 +151,7 @@ struct AlertMessage: Identifiable {
     @Published var linuxBootArguments: String = ""
     @Published var linuxHasRosetta: Bool = false
     @Published var isWindows10OrHigher: Bool = true
+    @Published var quadra800RomUrl: URL?
     @Published var systemArchitecture: QEMUArchitecture = .x86_64
     @Published var systemTarget: any QEMUTarget = QEMUTarget_x86_64.default
     #if os(macOS)
@@ -148,7 +169,8 @@ struct AlertMessage: Identifiable {
     @Published var name: String?
     @Published var isOpenSettingsAfterCreation: Bool = false
     @Published var useNvmeAsDiskInterface = false
-    
+    @Published var machineProperties: String?
+
     /// SwiftUI BUG: on macOS 12, when VoiceOver is enabled and isBusy changes the disable state of a button being clicked, 
     var isNeverDisabledWorkaround: Bool {
         #if os(macOS)
@@ -217,6 +239,8 @@ struct AlertMessage: Identifiable {
                 nextPage = .linuxBoot
             case .Windows:
                 nextPage = .windowsBoot
+            case .ClassicMacOS:
+                nextPage = .hardware
             }
         case .otherBoot:
             guard bootDevice == .none || bootImageURL != nil else {
@@ -271,6 +295,19 @@ struct AlertMessage: Identifiable {
                     }
                 }
             }
+            if operatingSystem == .ClassicMacOS {
+                nextPage = .classicMacOSBoot
+            }
+        case .classicMacOSBoot:
+            guard bootImageURL != nil else {
+                alertMessage = AlertMessage(NSLocalizedString("Please select a boot image.", comment: "VMWizardState"))
+                return
+            }
+            guard systemTarget.rawValue != QEMUTarget_m68k.q800.rawValue || quadra800RomUrl != nil else {
+                alertMessage = AlertMessage(NSLocalizedString("Please select a ROM file.", comment: "VMWizardState"))
+                return
+            }
+            nextPage = .drives
         case .drives:
             guard storageSizeGib > 0 else {
                 alertMessage = AlertMessage(NSLocalizedString("Invalid drive size specified.", comment: "VMWizardState"))
@@ -316,11 +353,13 @@ struct AlertMessage: Identifiable {
             config.drives.append(UTMAppleConfigurationDrive(existingURL: bootImageURL, isExternal: true))
         }
         var isSkipDiskCreate = false
+        if let iconName = operatingSystem.defaultIconName {
+            config.information.iconURL = UTMConfigurationInfo.builtinIcon(named: iconName)
+        }
         switch operatingSystem {
-        case .Other:
+        case .Other, .ClassicMacOS, .Windows:
             break
         case .macOS:
-            config.information.iconURL = UTMConfigurationInfo.builtinIcon(named: "mac")
             #if os(macOS) && arch(arm64)
             if #available(macOS 12, *) {
                 config.system.boot = try! UTMAppleConfigurationBoot(for: .macOS)
@@ -329,7 +368,6 @@ struct AlertMessage: Identifiable {
             }
             #endif
         case .Linux:
-            config.information.iconURL = UTMConfigurationInfo.builtinIcon(named: "linux")
             #if os(macOS)
             if bootDevice == .kernel {
                 var bootloader = try UTMAppleConfigurationBoot(for: .linux, linuxKernelURL: linuxKernelURL!)
@@ -346,8 +384,6 @@ struct AlertMessage: Identifiable {
             config.system.genericPlatform = UTMAppleConfigurationGenericPlatform()
             config.virtualization.hasRosetta = linuxHasRosetta
             #endif
-        case .Windows:
-            config.information.iconURL = UTMConfigurationInfo.builtinIcon(named: "windows")
         }
         if !isSkipDiskCreate {
             var newDisk = UTMAppleConfigurationDrive(newSize: storageSizeGib * bytesInGib / bytesInMib)
@@ -422,6 +458,8 @@ struct AlertMessage: Identifiable {
     #endif
     
     private func generateQemuConfig() throws -> UTMQemuConfiguration {
+        let isClassicMacM68K = systemArchitecture == .m68k && systemTarget.rawValue == QEMUTarget_m68k.q800.rawValue
+        let isClassicMacPPC = [.ppc, .ppc64].contains(systemArchitecture) && systemTarget.rawValue == QEMUTarget_ppc.mac99.rawValue
         let config = UTMQemuConfiguration()
         config.information.name = name!
         config.system.architecture = systemArchitecture
@@ -475,8 +513,16 @@ struct AlertMessage: Identifiable {
             } else if bootDevice == .drive {
                 bootDrive.interface = mainDriveInterface
             }
+            if isClassicMacM68K {
+                //bootDrive.interfaceLocation = [3, 0]
+            } else if isClassicMacPPC {
+                //bootDrive.interfaceLocation = [0, 1]
+            }
             bootDrive.imageURL = bootImageURL
             config.drives.append(bootDrive)
+        }
+        if let iconName = operatingSystem.defaultIconName {
+            config.information.iconURL = UTMConfigurationInfo.builtinIcon(named: iconName)
         }
         switch operatingSystem {
         case .Other:
@@ -484,7 +530,6 @@ struct AlertMessage: Identifiable {
         case .macOS:
             throw NSLocalizedString("macOS is not supported with QEMU.", comment: "VMWizardState")
         case .Linux:
-            config.information.iconURL = UTMConfigurationInfo.builtinIcon(named: "linux")
             if bootDevice == .kernel {
                 var kernel = UTMQemuConfigurationDrive()
                 kernel.imageURL = linuxKernelURL
@@ -511,15 +556,41 @@ struct AlertMessage: Identifiable {
                 }
             }
         case .Windows:
-            config.information.iconURL = UTMConfigurationInfo.builtinIcon(named: "windows")
             config.qemu.hasRTCLocalTime = true
+        case .ClassicMacOS:
+            if systemArchitecture == .ppc || systemArchitecture == .ppc64 {
+                config.qemu.machinePropertyOverride = machineProperties
+            }
+            if systemArchitecture == .m68k {
+                var pramDrive = UTMQemuConfigurationDrive()
+                pramDrive.sizeMib = 1
+                pramDrive.imageType = .disk
+                pramDrive.interface = .mtd
+                config.drives.append(pramDrive)
+                if let quadra800RomUrl = quadra800RomUrl {
+                    var bios = UTMQemuConfigurationDrive()
+                    bios.imageURL = quadra800RomUrl
+                    bios.imageType = .bios
+                    bios.isRawImage = true
+                    config.drives.append(bios)
+                }
+            }
         }
         if bootDevice != .drive {
             var diskImage = UTMQemuConfigurationDrive()
             diskImage.sizeMib = storageSizeGib * bytesInGib / bytesInMib
             diskImage.imageType = .disk
             diskImage.interface = mainDriveInterface
-            config.drives.append(diskImage)
+            if isClassicMacM68K {
+                //diskImage.interfaceLocation = [0, 0]
+            } else if isClassicMacPPC {
+                //diskImage.interfaceLocation = [0, 0]
+            }
+            if isClassicMacPPC || isClassicMacM68K {
+                config.drives.insert(diskImage, at: 0)
+            } else {
+                config.drives.append(diskImage)
+            }
             if operatingSystem == .Windows && isGuestToolsInstallRequested {
                 let toolsDiskDrive = UTMQemuConfigurationDrive(forArchitecture: systemArchitecture, target: systemTarget, isExternal: true)
                 config.drives.append(toolsDiskDrive)
@@ -527,7 +598,9 @@ struct AlertMessage: Identifiable {
         }
         if legacyHardware {
             config.qemu.hasUefiBoot = false
-            config.input.usbBusSupport = .usb2_0
+            if systemArchitecture.hasUsbSupport && systemTarget.hasUsbSupport {
+                config.input.usbBusSupport = .usb2_0
+            }
         }
         return config
     }

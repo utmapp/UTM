@@ -648,6 +648,10 @@
 		CE65BAC026A4D8DE0001BD6B /* VMConfigDisplayConsoleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8401FDA5269D44E400265F0D /* VMConfigDisplayConsoleView.swift */; };
 		CE68E5442E3912E0006B3645 /* VMKeyboardShortcutsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE68E5422E3912E0006B3645 /* VMKeyboardShortcutsView.swift */; };
 		CE68E5452E3912E0006B3645 /* VMKeyboardShortcutsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE68E5422E3912E0006B3645 /* VMKeyboardShortcutsView.swift */; };
+		CE68E5482E3C3E0A006B3645 /* VMWizardOSClassicMacView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE68E5472E3C3E0A006B3645 /* VMWizardOSClassicMacView.swift */; };
+		CE68E5492E3C3E0A006B3645 /* VMWizardOSClassicMacView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE68E5472E3C3E0A006B3645 /* VMWizardOSClassicMacView.swift */; };
+		CE68E54A2E3C3E0A006B3645 /* VMWizardOSClassicMacView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE68E5472E3C3E0A006B3645 /* VMWizardOSClassicMacView.swift */; };
+		CE68E54B2E3C3E0A006B3645 /* VMWizardOSClassicMacView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE68E5472E3C3E0A006B3645 /* VMWizardOSClassicMacView.swift */; };
 		CE6C13CA2B63610C003B7032 /* UTMRemoteMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6C13C92B63610C003B7032 /* UTMRemoteMessage.swift */; };
 		CE6C13CB2B63610C003B7032 /* UTMRemoteMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6C13C92B63610C003B7032 /* UTMRemoteMessage.swift */; };
 		CE6D21DC2553A6ED001D29C5 /* VMConfirmActionModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6D21DB2553A6ED001D29C5 /* VMConfirmActionModifier.swift */; };
@@ -1974,6 +1978,7 @@
 		CE612AC524D3B50700FA6300 /* VMDisplayWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayWindowController.swift; sourceTree = "<group>"; };
 		CE66450C2269313200B0849A /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
 		CE68E5422E3912E0006B3645 /* VMKeyboardShortcutsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMKeyboardShortcutsView.swift; sourceTree = "<group>"; };
+		CE68E5472E3C3E0A006B3645 /* VMWizardOSClassicMacView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMWizardOSClassicMacView.swift; sourceTree = "<group>"; };
 		CE6B240A25F1F3CE0020D43E /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		CE6B240F25F1F43A0020D43E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CE6B241025F1F4B30020D43E /* QEMULauncher.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = QEMULauncher.entitlements; sourceTree = "<group>"; };
@@ -3048,6 +3053,7 @@
 				84C2E8642AA429E800B17308 /* VMWizardContent.swift */,
 				CEBE820226A4C1B5007AAB12 /* VMWizardDrivesView.swift */,
 				CEF0307326A2B40B00667B63 /* VMWizardHardwareView.swift */,
+				CE68E5472E3C3E0A006B3645 /* VMWizardOSClassicMacView.swift */,
 				CEF0305726A2AFDE00667B63 /* VMWizardOSLinuxView.swift */,
 				CEF0305826A2AFDE00667B63 /* VMWizardOSMacView.swift */,
 				CEF0305426A2AFDD00667B63 /* VMWizardOSOtherView.swift */,
@@ -3652,6 +3658,7 @@
 				843BF83C2845494C0029D60D /* UTMQemuConfigurationSerial.swift in Sources */,
 				CEF0305126A2AFBF00667B63 /* Spinner.swift in Sources */,
 				CE88A1552E247CCE00EAA28E /* UTMIntent.swift in Sources */,
+				CE68E5492E3C3E0A006B3645 /* VMWizardOSClassicMacView.swift in Sources */,
 				CE88A09F2E1DDB4200EAA28E /* UTMASIFImage.m in Sources */,
 				843BF840284555E70029D60D /* UTMQemuConfigurationPortForward.swift in Sources */,
 				CE611BE729F50CAD001817BC /* UTMReleaseHelper.swift in Sources */,
@@ -3858,6 +3865,7 @@
 				CE25125329C80A18000790AB /* UTMScriptingCloneCommand.swift in Sources */,
 				CE88A1682E24E4C000EAA28E /* VMKeyboardMap.m in Sources */,
 				CE2D956A24AD4F990059923A /* VMPlaceholderView.swift in Sources */,
+				CE68E54B2E3C3E0A006B3645 /* VMWizardOSClassicMacView.swift in Sources */,
 				CEF0306626A2AFDF00667B63 /* VMWizardOSLinuxView.swift in Sources */,
 				CEE7E938287CFDB100282049 /* UTMLegacyQemuConfiguration+Constants.m in Sources */,
 				CEFE98E129485776007CB7A8 /* UTMScriptingVirtualMachineImpl.swift in Sources */,
@@ -4078,6 +4086,7 @@
 				8401865F2887B1620050AC51 /* VMDisplayTerminalViewController.swift in Sources */,
 				CEA45E8F263519B5002FA97D /* VMContextMenuModifier.swift in Sources */,
 				85EC516527CC8D0F004A51DE /* VMConfigAdvancedNetworkView.swift in Sources */,
+				CE68E54A2E3C3E0A006B3645 /* VMWizardOSClassicMacView.swift in Sources */,
 				CE88A1612E24B2B400EAA28E /* UTMInputIntent.swift in Sources */,
 				03FA9C732B9BBDB000C53A5A /* UTMConfigurationHostNetwork.swift in Sources */,
 				CEA45E91263519B5002FA97D /* VMDisplayMetalViewController+Pencil.m in Sources */,
@@ -4243,6 +4252,7 @@
 				CEF7F5CD2AEEDCC400E34952 /* UTMConfigurationTerminal.swift in Sources */,
 				CEF7F5CE2AEEDCC400E34952 /* VMWindowView.swift in Sources */,
 				CEF7F5CF2AEEDCC400E34952 /* UTMPendingVMView.swift in Sources */,
+				CE68E5482E3C3E0A006B3645 /* VMWizardOSClassicMacView.swift in Sources */,
 				CEE8B4C32B71E2BA0035AE86 /* UTMLoggingSwift.swift in Sources */,
 				CEF7F5D02AEEDCC400E34952 /* UTMSpiceIO.m in Sources */,
 				CEF7F5D12AEEDCC400E34952 /* UTMUnavailableVMView.swift in Sources */,

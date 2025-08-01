@@ -34,6 +34,17 @@ struct VMWizardOSView: View {
                     }
                 }
                 #endif
+                if !wizardState.useVirtualization {
+                    Button {
+                        wizardState.operatingSystem = .ClassicMacOS
+                        wizardState.useAppleVirtualization = false
+                        wizardState.isGuestToolsInstallRequested = false
+                        wizardState.legacyHardware = true
+                        wizardState.next()
+                    } label: {
+                        OperatingSystem(imageName: "macos", name: "Classic Mac OS")
+                    }
+                }
                 Button {
                     wizardState.operatingSystem = .Windows
                     wizardState.useAppleVirtualization = false

@@ -7594,10 +7594,12 @@ enum QEMUNetworkDevice_loongarch64: String, CaseIterable, QEMUNetworkDevice {
 
 enum QEMUNetworkDevice_m68k: String, CaseIterable, QEMUNetworkDevice {
     case virtio_net_device = "virtio-net-device"
+    case dp8393x = "dp8393x"
 
     var prettyValue: String {
         switch self {
         case .virtio_net_device: return "virtio-net-device"
+        case .dp8393x: return "SONIC DP8393x (Q800 only)"
         }
     }
 }
@@ -8774,10 +8776,12 @@ enum QEMUSoundDevice_loongarch64: String, CaseIterable, QEMUSoundDevice {
 
 enum QEMUSoundDevice_m68k: String, CaseIterable, QEMUSoundDevice {
     case virtio_sound_device = "virtio-sound-device"
+    case asc = "asc"
 
     var prettyValue: String {
         switch self {
         case .virtio_sound_device: return "virtio-sound-device"
+        case .asc: return "Apple Sound Chip (Q800 only)"
         }
     }
 }

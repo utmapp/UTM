@@ -91,7 +91,7 @@ struct VMWizardSummaryView: View {
                 if os == .Other {
                     wizardState.name = data.newDefaultVMName()
                 } else {
-                    wizardState.name = data.newDefaultVMName(base: os.rawValue)
+                    wizardState.name = data.newDefaultVMName(base: os.name.localizedString)
                 }
             }
             if #available(iOS 15, macOS 12, *) {
@@ -136,7 +136,7 @@ struct VMWizardSummaryView: View {
     
     var boot: some View {
         Group {
-            TextField("Operating System", text: .constant(NSLocalizedString(wizardState.operatingSystem.rawValue, comment: "VMWizardSummaryView")))
+            TextField("Operating System", text: .constant(wizardState.operatingSystem.name.localizedString))
             if let bootImageURL = wizardState.bootImageURL {
                 TextField("Boot Image", text: .constant(bootImageURL.path))
             }

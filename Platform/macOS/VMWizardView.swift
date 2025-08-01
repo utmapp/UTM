@@ -60,6 +60,9 @@ struct VMWizardView: View {
             case .windowsBoot:
                 VMWizardOSWindowsView(wizardState: wizardState)
                     .transition(wizardState.slide)
+            case .classicMacOSBoot:
+                VMWizardOSClassicMacView(wizardState: wizardState)
+                    .transition(wizardState.slide)
             case .hardware:
                 VMWizardHardwareView(wizardState: wizardState)
                     .transition(wizardState.slide)
