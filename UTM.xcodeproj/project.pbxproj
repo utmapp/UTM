@@ -3322,7 +3322,6 @@
 				CE9B153B2B11A4B4003A32DD /* SwiftConnect */,
 				CE89CB112B8B1B7A006B2CC2 /* VisionKeyboardKit */,
 				CE231D592BE03791006D6DC3 /* SwiftCopyfile */,
-				CE68E5402E38A278006B3645 /* QEMUKit */,
 			);
 			productName = UTM;
 			productReference = CEF7F6D32AEEDCC400E34952 /* UTM Remote.app */;
@@ -5604,11 +5603,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = CE231D502BE03617006D6DC3 /* XCRemoteSwiftPackageReference "SwiftCopyfile" */;
 			productName = SwiftCopyfile;
-		};
-		CE68E5402E38A278006B3645 /* QEMUKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 84A0A8862A47D5C50038F329 /* XCRemoteSwiftPackageReference "QEMUKit" */;
-			productName = QEMUKit;
 		};
 		CE89CB0D2B8B1B5A006B2CC2 /* VisionKeyboardKit */ = {
 			isa = XCSwiftPackageProductDependency;
