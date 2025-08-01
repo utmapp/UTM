@@ -30,6 +30,7 @@ enum VMWizardPage: Int, Identifiable {
     case macOSBoot
     case linuxBoot
     case windowsBoot
+    case classicMacOSBoot
     case otherBoot
     case hardware
     case drives
@@ -46,6 +47,7 @@ enum VMWizardOS: String, Identifiable {
     case macOS
     case Linux
     case Windows
+    case ClassicMacOS
 }
 
 enum VMBootDevice: Int, Identifiable {
@@ -131,6 +133,7 @@ struct AlertMessage: Identifiable {
     @Published var linuxBootArguments: String = ""
     @Published var linuxHasRosetta: Bool = false
     @Published var isWindows10OrHigher: Bool = true
+    @Published var quadra800Rom: URL?
     @Published var systemArchitecture: QEMUArchitecture = .x86_64
     @Published var systemTarget: any QEMUTarget = QEMUTarget_x86_64.default
     #if os(macOS)
@@ -217,6 +220,8 @@ struct AlertMessage: Identifiable {
                 nextPage = .linuxBoot
             case .Windows:
                 nextPage = .windowsBoot
+            case .ClassicMacOS:
+                nextPage = .hardware
             }
         case .otherBoot:
             guard bootDevice == .none || bootImageURL != nil else {
@@ -271,6 +276,11 @@ struct AlertMessage: Identifiable {
                     }
                 }
             }
+            if operatingSystem == .ClassicMacOS {
+                nextPage = .classicMacOSBoot
+            }
+        case .classicMacOSBoot:
+            nextPage = .drives
         case .drives:
             guard storageSizeGib > 0 else {
                 alertMessage = AlertMessage(NSLocalizedString("Invalid drive size specified.", comment: "VMWizardState"))
@@ -348,6 +358,8 @@ struct AlertMessage: Identifiable {
             #endif
         case .Windows:
             config.information.iconURL = UTMConfigurationInfo.builtinIcon(named: "windows")
+        case .ClassicMacOS:
+            config.information.iconURL = UTMConfigurationInfo.builtinIcon(named: "macos")
         }
         if !isSkipDiskCreate {
             var newDisk = UTMAppleConfigurationDrive(newSize: storageSizeGib * bytesInGib / bytesInMib)
@@ -513,6 +525,8 @@ struct AlertMessage: Identifiable {
         case .Windows:
             config.information.iconURL = UTMConfigurationInfo.builtinIcon(named: "windows")
             config.qemu.hasRTCLocalTime = true
+        case .ClassicMacOS:
+            break
         }
         if bootDevice != .drive {
             var diskImage = UTMQemuConfigurationDrive()
