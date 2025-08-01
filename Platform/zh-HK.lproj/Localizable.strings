@@ -72,6 +72,9 @@ VMDisplayQemuTerminalWindowController */
 /* UTMScriptingAppDelegate */
 "A valid UTM file must be specified." = "必須指定有效的 UTM 檔案。";
 
+/* No comment provided by engineer. */
+"Add" = "加入";
+
 /* VMDisplayAppleController */
 "Add…" = "新增⋯";
 
@@ -164,7 +167,10 @@ UTMQemuConstants */
 "Boot Arguments" = "啟動引數";
 
 /* No comment provided by engineer. */
-"Boot Image Type" = "啟動映像檔種類";
+"Boot from ISO image" = "從 ISO 映像檔啟動";
+
+/* No comment provided by engineer. */
+"Boot from kernel image" = "從核心映像檔啟動";
 
 /* No comment provided by engineer. */
 "Boot IMG Image" = "啟動 IMG 映像檔";
@@ -174,9 +180,6 @@ UTMQemuConstants */
 
 /* No comment provided by engineer. */
 "Boot ISO Image (optional)" = "啟動 ISO 映像檔 (可留空)";
-
-/* No comment provided by engineer. */
-"Boot VHDX Image" = "啟動 VHDX 映像檔 (可留空)";
 
 /* UTMAppleConfigurationNetwork
 UTMQemuConstants */
@@ -337,6 +340,9 @@ VMDisplayWindowController */
 UTMQemuConstants */
 "Default" = "預設";
 
+/* No comment provided by engineer. */
+"Default (private)" = "預設（私人）";
+
 /* VMWizardSummaryView */
 "Default Cores" = "預設核心";
 
@@ -348,6 +354,9 @@ UTMQemuConstants */
 
 /* VMDisplayAppleWindowController */
 "Directory sharing" = "目錄分享";
+
+/* No comment provided by engineer. */
+"Disable VM screenshot" = "停用虛擬機螢幕截圖";
 
 /* UTMAppleConfigurationDevices
 UTMQemuConstants */
@@ -409,6 +418,9 @@ UTMQemuConstants */
 "Do you want to remove this shortcut? The data will not be deleted." = "你要刪除此捷徑嗎？資料不會被刪除。";
 
 /* No comment provided by engineer. */
+"Done" = "完成";
+
+/* No comment provided by engineer. */
 "Download" = "下載";
 
 /* No comment provided by engineer. */
@@ -424,7 +436,16 @@ UTMQemuConstants */
 "Drive description is invalid." = "磁碟描述無效。";
 
 /* No comment provided by engineer. */
+"Drive Image" = "磁碟映像檔";
+
+/* No comment provided by engineer. */
 "Drives" = "磁碟";
+
+/* No comment provided by engineer. */
+"Edit" = "編輯";
+
+/* VMDisplayQemuMetalWindowController */
+"Edit…" = "編輯⋯";
 
 /* VMDrivesSettingsView */
 "EFI Variables" = "EFI 變數";
@@ -582,14 +603,14 @@ UTMQemuConstants */
 /* No comment provided by engineer. */
 "Guest drivers are required for 3D acceleration." = "需要客户端驅動程式才能使用 3D 加速。";
 
+/* No comment provided by engineer. */
+"Handle input on initial click" = "第一次點按時處理輸入";
+
 /* Configuration boot device */
 "Hard Disk" = "硬碟";
 
 /* No comment provided by engineer. */
 "Hardware" = "硬件";
-
-/* No comment provided by engineer. */
-"Hello" = "你好";
 
 /* No comment provided by engineer. */
 "Hide Unused…" = "隱藏未使用的⋯";
@@ -599,6 +620,9 @@ UTMQemuConstants */
 
 /* No comment provided by engineer. */
 "Host" = "主機";
+
+/* No comment provided by engineer. */
+"Host Networks" = "主機網絡";
 
 /* UTMQemuConstants */
 "Host Only" = "僅主機";
@@ -619,7 +643,16 @@ UTMQemuConstants */
 "Image File Type" = "映像檔種類";
 
 /* No comment provided by engineer. */
+"Image format: %@" = "映像檔格式：%@";
+
+/* No comment provided by engineer. */
+"Import Disk Image" = "輸入磁碟映像檔";
+
+/* No comment provided by engineer. */
 "Import Drive…" = "輸入磁碟⋯";
+
+/* No comment provided by engineer. */
+"Import existing drive" = "輸入現有磁碟";
 
 /* No comment provided by engineer. */
 "Import IPSW" = "輸入 IPSW";
@@ -721,6 +754,9 @@ UTMQemuConstants */
 "Linux Settings" = "Linux 設定";
 
 /* No comment provided by engineer. */
+"Lock drive images when in use" = "使用時鎖定磁碟映像檔";
+
+/* No comment provided by engineer. */
 "Logging" = "記錄";
 
 /* UTMAppleConfigurationDevices */
@@ -786,6 +822,9 @@ UTMQemuConstants */
 /* No comment provided by engineer. */
 "Name (optional)" = "名稱 (可留空)";
 
+/* VMWizardState */
+"Name cannot be empty." = "名稱不能留空。";
+
 /* UTMQemuConstants */
 "Nearest Neighbor" = "近鄰取樣";
 
@@ -850,8 +889,12 @@ UTMQemuConstants */
 /* UTMRemoteServer */
 "Not authenticated." = "未認證。";
 
-/* UTMVirtualMachine */
+/* UTMASIFImage
+UTMVirtualMachine */
 "Not implemented." = "尚未執行。";
+
+/* No comment provided by engineer. */
+"Note: No DHCP will be provided by UTM" = "注意：UTM 不會提供 DHCP";
 
 /* No comment provided by engineer. */
 "Notes" = "備註";
@@ -867,6 +910,9 @@ UTMQemuConstants */
 
 /* UTMScriptingVirtualMachineImpl */
 "One or more required parameters are missing or invalid." = "一個或多個所需的引數缺失或無效。";
+
+/* No comment provided by engineer. */
+"Open Settings" = "開啟󠄁設定";
 
 /* No comment provided by engineer. */
 "Open…" = "開啟⋯";
@@ -920,6 +966,9 @@ UTMScriptingVirtualMachineImpl */
 /* VMDisplayWindowController */
 "Play" = "播放";
 
+/* UTMRemoteClient */
+"Please allow this app to access your local network when prompted or in Settings." = "請在提示時或「設定」中允許此應用程式取用你的區域網絡。";
+
 /* VMWizardState */
 "Please select a boot image." = "請選擇一個啟動映像檔。";
 
@@ -956,6 +1005,9 @@ UTMQemuConstants */
 
 /* No comment provided by engineer. */
 "QEMU Arguments" = "QEMU 引數";
+
+/* No comment provided by engineer. */
+"QEMU Backend" = "QEMU 後端";
 
 /* No comment provided by engineer. */
 "QEMU Graphics Acceleration" = "QEMU 圖形加速";
@@ -1038,6 +1090,9 @@ UTMQemuConstants */
 /* No comment provided by engineer. */
 "Retina Mode" = "Retina 模式";
 
+/* No comment provided by engineer. */
+"Retry" = "再試";
+
 /* UTMAppleConfiguration */
 "Rosetta is not supported on the current host machine." = "目前的主機不支援 Rosetta。";
 
@@ -1086,9 +1141,6 @@ VMDisplayWindowController */
 
 /* SavePanel */
 "Select where to save UTM Virtual Machine:" = "選取儲存 UTM 虛擬機的位置：";
-
-/* No comment provided by engineer. */
-"Selected:" = "已選取：";
 
 /* VMDisplayWindowController */
 "Sends power down request to the guest. This simulates pressing the power button on a PC." = "傳送關閉電源要求至客户端。此操作模擬了按一下 PC 上的電源按鈕。";
@@ -1203,6 +1255,9 @@ UTMQemuConstants */
 /* UTMSWTPM */
 "SW TPM failed to start. %@" = "SW TPM 無法啟動。%@";
 
+/* No comment provided by engineer. */
+"Swap Control (⌃) and Command (⌘) keys" = "交換 Control (⌃) 與 Command (⌘) 鍵";
+
 /* VMSessionState */
 "Switch back to UTM to avoid termination." = "切換回至 UTM 以避免終止。";
 
@@ -1223,15 +1278,6 @@ UTMQemuConstants */
 
 /* VMDisplayWindowController */
 "Tells the VM process to shut down with risk of data corruption. This simulates holding down the power button on a PC." = "讓虛擬機程序關機，會有風險損毀資料。此操作模擬了在 PC 上按一下電源按鈕。";
-
-/* No comment provided by engineer. */
-"Test" = "測試";
-
-/* No comment provided by engineer. */
-"Test 1" = "測試 1";
-
-/* No comment provided by engineer. */
-"Test 2" = "測試 2";
 
 /* UTMConfiguration */
 "The backend for this configuration is not supported." = "不支援此設定的後端。";
@@ -1257,6 +1303,9 @@ UTMQemuConstants */
 /* UTMAppleConfiguration */
 "The host operating system needs to be updated to support one or more features requested by the guest." = "需要更新主機作業系統以支援客户端要求的一個或多個功能。";
 
+/* UTMScriptingConfigImpl */
+"The icon named '%@' cannot be found in the built-in icons." = "在內建圖示中找不到名為「%@」的圖示。";
+
 /* UTMAppleVirtualMachine */
 "The operating system cannot be installed on this machine." = "無法在此電腦上安裝作業系統。";
 
@@ -1265,6 +1314,9 @@ UTMQemuConstants */
 
 /* UTMScriptingVirtualMachineImpl */
 "The QEMU guest agent is not running or not installed on the guest." = "QEMU 客户端代理程式未執行，或是未在客户端上安裝。";
+
+/* UTMAppleVirtualMachine */
+"The recovery IPSW cannot be read. Please select a new IPSW in Boot settings." = "無法讀取 IPSW 還原檔。請在啟󠄁動設定裡選擇一個新的 IPSW。";
 
 /* No comment provided by engineer. */
 "The selected architecture is unsupported in this version of UTM." = "此版本的 UTM 不支援所選的架構。";
@@ -1380,9 +1432,6 @@ UTMQemuConstants */
 /* No comment provided by engineer. */
 "Trust" = "信任";
 
-/* No comment provided by engineer. */
-"u{2022} " = "u{2022}";
-
 /* UTMQemuConstants */
 "UDP" = "UDP";
 
@@ -1408,6 +1457,9 @@ UTMQemuConstants */
 "Uncompressed Linux kernel (required)" = "未壓縮的 Linux 核心映像檔 (必填)";
 
 /* No comment provided by engineer. */
+"Update" = "更新";
+
+/* No comment provided by engineer. */
 "Update Interface" = "更新介面";
 
 /* UTMQemuConstants */
@@ -1430,6 +1482,9 @@ UTMQemuConstants */
 
 /* No comment provided by engineer. */
 "USB sharing not supported in this build of UTM." = "此 UTM 構建不支援 USB 分享。";
+
+/* No comment provided by engineer. */
+"Use Apple Sparse Image Format" = "使用 Apple Sparse 映像檔格式";
 
 /* No comment provided by engineer. */
 "Use Command+Option (⌘+⌥) for input capture/release" = "使用 Command + Option (⌘ + ⌥) 以擷取/放開輸入";
@@ -1505,6 +1560,9 @@ VMMetalView */
 
 /* No comment provided by engineer. */
 "Yes" = "是";
+
+/* UTMAppleVirtualMachine */
+"You need to update macOS to run this virtual machine. A separate pop-up should prompt you to install this update. If you are trying to install a new beta version of macOS, you must manually download the Device Support package from the Apple Developer website." = "你需要更新 macOS 以執行此虛擬機。一個單獨的彈出式視窗應當會提示你安裝此更新。如你嘗試安裝新的 macOS Beta 版本，你必須從 Apple Developer 網站手動下載裝置支援包。";
 
 /* VMConfigSystemView */
 "Your device has %llu MB of memory and the estimated usage is %llu MB." = "你的裝置有 %1$llu MB 的記憶體，預計使用量為 %2$llu MB。";
@@ -1610,6 +1668,9 @@ VMWizardOSMacView */
 
 /* No comment provided by engineer. */
 "Boot into recovery mode." = "啟動至「還原模式」。";
+
+/* No comment provided by engineer. */
+"Boot VHDX Image" = "啟動 VHDX 映像檔 (可留空)";
 
 /* No comment provided by engineer. */
 "Bootloader" = "Bootloader";
@@ -1859,6 +1920,9 @@ VMWizardOSMacView */
 
 /* No comment provided by engineer. */
 "Height" = "高度";
+
+/* No comment provided by engineer. */
+"Hello" = "你好";
 
 /* No comment provided by engineer. */
 "Hide" = "隱藏";
@@ -2180,6 +2244,9 @@ VMWizardOSMacView */
 "Select an existing disk image." = "選擇一個現有的磁碟映像。";
 
 /* No comment provided by engineer. */
+"Selected:" = "已選取：";
+
+/* No comment provided by engineer. */
 "Serial" = "序列";
 
 /* No comment provided by engineer. */
@@ -2279,6 +2346,15 @@ VMWizardOSMacView */
 "Terminate UTM and stop all running VMs." = "終止 UTM 並停止所有正在執行的虛擬機。";
 
 /* No comment provided by engineer. */
+"Test" = "測試";
+
+/* No comment provided by engineer. */
+"Test 1" = "測試 1";
+
+/* No comment provided by engineer. */
+"Test 2" = "測試 2";
+
+/* No comment provided by engineer. */
 "Text" = "文字";
 
 /* No comment provided by engineer. */
@@ -2316,6 +2392,9 @@ VMWizardOSMacView */
 
 /* No comment provided by engineer. */
 "Tweaks" = "調整";
+
+/* No comment provided by engineer. */
+"u{2022} " = "u{2022}";
 
 /* No comment provided by engineer. */
 "Ubuntu Install Guide" = "Ubuntu 安裝指南";
