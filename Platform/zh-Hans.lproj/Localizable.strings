@@ -2004,6 +2004,9 @@ VMWizardOSMacView */
 "Import Drive…" = "导入驱动器…";
 
 /* No comment provided by engineer. */
+"Import from VMware Fusion" = "从 VMware Fusion 导入";
+
+/* No comment provided by engineer. */
 "Import VHDX Image" = "导入 VHDX 映像";
 
 /* No comment provided by engineer. */
@@ -2143,6 +2146,9 @@ VMWizardOSMacView */
 
 /* No comment provided by engineer. */
 "QEMU Machine Properties" = "QEMU 虚拟机属性";
+
+/* No comment provided by engineer. */
+"QEMU machines in 'Host' network mode can be placed in the same network to communicate with each other." = "处于“主机”网络模式的 QEMU 虚拟机可在同一网络中相互通信。";
 
 /* No comment provided by engineer. */
 "Quit" = "退出";
