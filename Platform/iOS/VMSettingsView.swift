@@ -59,7 +59,7 @@ struct VMSettingsView: View {
                                 .labelStyle(.roundRectIcon)
                         })
                     NavigationLink(
-                        destination: VMConfigInputView(config: $config.input).navigationTitle("Input"),
+                        destination: VMConfigInputView(config: $config.input, hasUsbSupport: config.system.architecture.hasUsbSupport).navigationTitle("Input"),
                         label: {
                             Label("Input", systemImage: "keyboard")
                                 .labelStyle(.roundRectIcon)
