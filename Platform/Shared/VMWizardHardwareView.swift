@@ -136,19 +136,17 @@ struct VMWizardHardwareView: View {
                 }
 
             } else if wizardState.operatingSystem == .ClassicMacOS {
-                Section {
-                    Picker("Machine", selection: $classicMacSystem) {
-                        ForEach(ClassicMacSystem.allCases) { system in
-                            Text(system.title).tag(system)
-                        }
-                    }.pickerStyle(.inline)
-                    .onChange(of: classicMacSystem) { newValue in
-                        wizardState.systemArchitecture = newValue.architecture
-                        wizardState.systemTarget = newValue.target
-                        wizardState.systemMemoryMib = newValue.defaultRam
-                        wizardState.systemCpuCount = 1
-                        wizardState.storageSizeGib = 2
+                Picker("Machine", selection: $classicMacSystem) {
+                    ForEach(ClassicMacSystem.allCases) { system in
+                        Text(system.title).tag(system)
                     }
+                }.pickerStyle(.inline)
+                .onChange(of: classicMacSystem) { newValue in
+                    wizardState.systemArchitecture = newValue.architecture
+                    wizardState.systemTarget = newValue.target
+                    wizardState.systemMemoryMib = newValue.defaultRam
+                    wizardState.systemCpuCount = 1
+                    wizardState.storageSizeGib = 2
                 }
             }
             Section {

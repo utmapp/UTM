@@ -73,7 +73,10 @@ struct VMWizardOSClassicMacView: View {
                         ForEach(PpcVia.allCases) { item in
                             Text(item.title).tag(item)
                         }
-                    }.pickerStyle(.inline)
+                    }
+                    #if os(macOS)
+                    .pickerStyle(.inline)
+                    #endif
                     .help("Different versions of Mac OS require different VIA option.")
                     .onChange(of: ppcVia) { newValue in
                         wizardState.machineProperties = newValue.machineProperties
