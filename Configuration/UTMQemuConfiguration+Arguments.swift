@@ -725,18 +725,13 @@ import Virtualization // for getting network interfaces
             } else {
                 "ide-hd"
             }
-            if let location = drive.interfaceLocation, location.count == 3 {
-                "bus=ide.\(location[0])"
-                "unit=\(location[1])"
-                "index=\(location[2])"
-            } else if drive.interfaceVersion >= 1 && !isIdeInterfaceSingleUnit {
+            if drive.interfaceVersion >= 1 && !isIdeInterfaceSingleUnit {
                 "bus=ide.\(busindex / 2)"
                 "unit=\(busindex % 2)"
-                busindex += 1
             } else {
                 "bus=ide.\(busindex)"
-                busindex += 1
             }
+            busindex += 1
             "drive=drive\(drive.id)"
             if !disableBootIndex {
                 "bootindex=\(bootindex)"
@@ -760,13 +755,8 @@ import Virtualization // for getting network interfaces
             }
             "bus=\(bus).0"
             "channel=0"
-            if let location = drive.interfaceLocation, location.count == 2 {
-                "scsi-id=\(location[0])"
-                "lun=\(location[1])"
-            } else {
-                "scsi-id=\(busindex)"
-                busindex += 1
-            }
+            "scsi-id=\(busindex)"
+            busindex += 1
             "drive=drive\(drive.id)"
             if !disableBootIndex {
                 "bootindex=\(bootindex)"
