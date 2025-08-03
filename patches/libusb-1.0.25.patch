@@ -1,7 +1,7 @@
 From b5a7dca8cba163ca15b873c3ac9c81ec5622e827 Mon Sep 17 00:00:00 2001
 From: osy <50960678+osy@users.noreply.github.com>
 Date: Sat, 15 May 2021 23:29:54 -0700
-Subject: [PATCH] darwin: reset by re-enumerate on non-macOS platforms
+Subject: [PATCH 1/3] darwin: reset by re-enumerate on non-macOS platforms
 
 On non-macOS platforms, ResetDevice() does nothing so we use the "old" way of
 calling re-enumerate. If the device is captured, we have to re-enumerate, then
@@ -11,7 +11,7 @@ re-capture, re-authorize, and finally restore the state.
  1 file changed, 26 insertions(+), 2 deletions(-)
 
 diff --git a/libusb/os/darwin_usb.c b/libusb/os/darwin_usb.c
-index 903422c..c2a4813 100644
+index 903422c6..c2a48135 100644
 --- a/libusb/os/darwin_usb.c
 +++ b/libusb/os/darwin_usb.c
 @@ -95,6 +95,8 @@ static enum libusb_error process_new_device (struct libusb_context *ctx, struct
@@ -64,5 +64,144 @@ index 903422c..c2a4813 100644
  
  static io_service_t usb_find_interface_matching_location (const io_name_t class_name, UInt8 interface_number, UInt32 location) {
 -- 
-2.32.0 (Apple Git-132)
+2.41.0
+
+From c6cfa4b7eac9aed6228ac627531d54e2cefadf22 Mon Sep 17 00:00:00 2001
+From: Benjamin Berg <bberg@redhat.com>
+Date: Thu, 7 Apr 2022 12:43:08 +0200
+Subject: [PATCH 2/3] darwin: Fix crash in log handler when stopping event
+ thread
+
+The darwin event thread (in contrast to other OS implementations) tries
+to log to the context that created it. However, this context is only
+guaranteed to be valid until the thread has started. It may be that
+another context is the last one to be destroyed, causing the event
+thread to log using an already destroyed context.
+
+Fix this by only passing on ctx where it is acceptable.
+
+Fixes #1108
+---
+ libusb/os/darwin_usb.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/libusb/os/darwin_usb.c b/libusb/os/darwin_usb.c
+index c2a48135..2c273e3a 100644
+--- a/libusb/os/darwin_usb.c
++++ b/libusb/os/darwin_usb.c
+@@ -495,6 +495,7 @@ static void *darwin_event_thread_main (void *arg0) {
+   io_iterator_t          libusb_rem_device_iterator;
+   io_iterator_t          libusb_add_device_iterator;
+ 
++  /* ctx must only be used for logging during thread startup */
+   usbi_dbg (ctx, "creating hotplug event source");
+ 
+   runloop = CFRunLoopGetCurrent ();
+@@ -516,7 +517,7 @@ static void *darwin_event_thread_main (void *arg0) {
+   kresult = IOServiceAddMatchingNotification (libusb_notification_port, kIOTerminatedNotification,
+                                               IOServiceMatching(darwin_device_class),
+                                               darwin_devices_detached,
+-                                              ctx, &libusb_rem_device_iterator);
++                                              NULL, &libusb_rem_device_iterator);
+ 
+   if (kresult != kIOReturnSuccess) {
+     usbi_err (ctx, "could not add hotplug event source: %s", darwin_error_str (kresult));
+@@ -529,7 +530,7 @@ static void *darwin_event_thread_main (void *arg0) {
+   kresult = IOServiceAddMatchingNotification(libusb_notification_port, kIOFirstMatchNotification,
+                                               IOServiceMatching(darwin_device_class),
+                                               darwin_devices_attached,
+-                                              ctx, &libusb_add_device_iterator);
++                                              NULL, &libusb_add_device_iterator);
+ 
+   if (kresult != kIOReturnSuccess) {
+     usbi_err (ctx, "could not add hotplug event source: %s", darwin_error_str (kresult));
+@@ -554,7 +555,7 @@ static void *darwin_event_thread_main (void *arg0) {
+   /* run the runloop */
+   CFRunLoopRun();
+ 
+-  usbi_dbg (ctx, "darwin event thread exiting");
++  usbi_dbg (NULL, "darwin event thread exiting");
+ 
+   /* signal the main thread that the hotplug runloop has finished. */
+   pthread_mutex_lock (&libusb_darwin_at_mutex);
+-- 
+2.41.0
+
+From 2c55fbe171830b9ac28c5fbdf56cc785942d2b44 Mon Sep 17 00:00:00 2001
+From: Nathan Hjelm <hjelmn@google.com>
+Date: Wed, 6 Apr 2022 10:24:14 -0600
+Subject: [PATCH 3/3] darwin: Do not clear device data toggle on macOS 10.5 or
+ newer
+
+Historically Mac OS X always cleared the data toggle on the host side. For
+consistency, libusb has been calling ClearPipeStallBothEnds to also clear the
+device side toggle. Newer versions of the IOUSBLib do not clear the host side
+toggle so there is no need to make this call. Additionally, some buggy devices
+may fail to correctly implement clearing the data toggle.
+
+Signed-off-by: Nathan Hjelm <hjelmn@google.com>
+[Tormod: Return result from AbortPipe]
+Signed-off-by: Tormod Volden <debian.tormod@gmail.com>
+---
+ libusb/io.c            | 10 +++++++---
+ libusb/os/darwin_usb.c | 12 +++++++-----
+ 2 files changed, 14 insertions(+), 8 deletions(-)
+
+diff --git a/libusb/io.c b/libusb/io.c
+index 0d2ac9ea..2a4025b1 100644
+--- a/libusb/io.c
++++ b/libusb/io.c
+@@ -3,8 +3,8 @@
+  * I/O functions for libusb
+  * Copyright © 2007-2009 Daniel Drake <dsd@gentoo.org>
+  * Copyright © 2001 Johannes Erdfelt <johannes@erdfelt.com>
+- * Copyright © 2019 Nathan Hjelm <hjelmn@cs.umm.edu>
+- * Copyright © 2019 Google LLC. All rights reserved.
++ * Copyright © 2019-2022 Nathan Hjelm <hjelmn@cs.unm.edu>
++ * Copyright © 2019-2022 Google LLC. All rights reserved.
+  *
+  * This library is free software; you can redistribute it and/or
+  * modify it under the terms of the GNU Lesser General Public
+@@ -311,7 +311,11 @@ if (r == 0 && actual_length == sizeof(data)) {
+  * libusb_cancel_transfer() is asynchronous/non-blocking in itself. When the
+  * cancellation actually completes, the transfer's callback function will
+  * be invoked, and the callback function should check the transfer status to
+- * determine that it was cancelled.
++ * determine that it was cancelled. On macOS and iOS it is not possible to
++ * cancel a single transfer. In this case cancelling one tranfer on an endpoint
++ * will cause all transfers on that endpoint to be cancelled. In some cases
++ * the call may cause the endpoint to stall. A call to \ref libusb_clear_halt
++ * may be needed.
+  *
+  * Freeing the transfer after it has been cancelled but before cancellation
+  * has completed will result in undefined behaviour.
+diff --git a/libusb/os/darwin_usb.c b/libusb/os/darwin_usb.c
+index 2c273e3a..560fe1db 100644
+--- a/libusb/os/darwin_usb.c
++++ b/libusb/os/darwin_usb.c
+@@ -2238,15 +2238,17 @@ static int darwin_abort_transfers (struct usbi_transfer *itransfer) {
+   /* abort transactions */
+ #if InterfaceVersion >= 550
+   if (LIBUSB_TRANSFER_TYPE_BULK_STREAM == transfer->type)
+-    (*(cInterface->interface))->AbortStreamsPipe (cInterface->interface, pipeRef, itransfer->stream_id);
++    kresult = (*(cInterface->interface))->AbortStreamsPipe (cInterface->interface, pipeRef, itransfer->stream_id);
+   else
+ #endif
+-    (*(cInterface->interface))->AbortPipe (cInterface->interface, pipeRef);
++    kresult = (*(cInterface->interface))->AbortPipe (cInterface->interface, pipeRef);
+ 
+-  usbi_dbg (ctx, "calling clear pipe stall to clear the data toggle bit");
+-
+-  /* newer versions of darwin support clearing additional bits on the device's endpoint */
++#if InterfaceVersion <= 245
++  /* with older releases of IOUSBFamily the OS always clears the host side data toggle. for
++     consistency also clear the data toggle on the device. */
++  usbi_dbg (ctx, "calling ClearPipeStallBothEnds to clear the data toggle bit");
+   kresult = (*(cInterface->interface))->ClearPipeStallBothEnds(cInterface->interface, pipeRef);
++#endif
+ 
+   return darwin_to_libusb (kresult);
+ }
+-- 
+2.41.0
 
