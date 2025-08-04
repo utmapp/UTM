@@ -153,6 +153,10 @@
 		846F8D5A2E3891FE0037162B /* UTMKeyboardShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846F8D592E3891FE0037162B /* UTMKeyboardShortcuts.swift */; };
 		846F8D5B2E3891FE0037162B /* UTMKeyboardShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846F8D592E3891FE0037162B /* UTMKeyboardShortcuts.swift */; };
 		846F8D5D2E3891FE0037162B /* UTMKeyboardShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846F8D592E3891FE0037162B /* UTMKeyboardShortcuts.swift */; };
+		846F8D622E4072960037162B /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 846F8D612E4072960037162B /* AppIcon.icon */; };
+		846F8D632E4072960037162B /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 846F8D612E4072960037162B /* AppIcon.icon */; };
+		846F8D662E4072AA0037162B /* AppIcon-Remote.icon in Resources */ = {isa = PBXBuildFile; fileRef = 846F8D652E4072AA0037162B /* AppIcon-Remote.icon */; };
+		846F8D692E4075F00037162B /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 846F8D612E4072960037162B /* AppIcon.icon */; };
 		8471770627CC974F00D3A50B /* DefaultTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8471770527CC974F00D3A50B /* DefaultTextField.swift */; };
 		8471770727CC974F00D3A50B /* DefaultTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8471770527CC974F00D3A50B /* DefaultTextField.swift */; };
 		8471770827CC974F00D3A50B /* DefaultTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8471770527CC974F00D3A50B /* DefaultTextField.swift */; };
@@ -1736,6 +1740,8 @@
 		845F95E22A57628400A016D7 /* UTMSWTPM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMSWTPM.swift; sourceTree = "<group>"; };
 		846F8D572E3850620037162B /* VMKeyboardShortcutsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMKeyboardShortcutsView.swift; sourceTree = "<group>"; };
 		846F8D592E3891FE0037162B /* UTMKeyboardShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMKeyboardShortcuts.swift; sourceTree = "<group>"; };
+		846F8D612E4072960037162B /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AppIcon.icon; sourceTree = "<group>"; };
+		846F8D652E4072AA0037162B /* AppIcon-Remote.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = "AppIcon-Remote.icon"; sourceTree = "<group>"; };
 		8471770527CC974F00D3A50B /* DefaultTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultTextField.swift; sourceTree = "<group>"; };
 		8471772727CD3CAB00D3A50B /* DetailedSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailedSection.swift; sourceTree = "<group>"; };
 		847BF9A92A49C783000BD9AA /* VMData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMData.swift; sourceTree = "<group>"; };
@@ -2712,6 +2718,8 @@
 				CE550BD52259479D0063E575 /* Assets.xcassets */,
 				521F3EFB2414F73800130500 /* Localizable.strings */,
 				CED8DF7928A120C100C34345 /* Localizable.stringsdict */,
+				846F8D612E4072960037162B /* AppIcon.icon */,
+				846F8D652E4072AA0037162B /* AppIcon-Remote.icon */,
 			);
 			path = Platform;
 			sourceTree = "<group>";
@@ -3442,6 +3450,7 @@
 				CE061CE6289EB6250000351C /* VMDisplayMetalViewInputAccessory.xib in Resources */,
 				CED8DF7528A120C100C34345 /* Localizable.stringsdict in Resources */,
 				CE2D937224AD46670059923A /* Settings.bundle in Resources */,
+				846F8D632E4072960037162B /* AppIcon.icon in Resources */,
 				CE0B6CED24AD532A00FE012D /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3452,6 +3461,7 @@
 			files = (
 				CE0B6CEC24AD532500FE012D /* Assets.xcassets in Resources */,
 				CEF83F262500901300557D15 /* qemu in Resources */,
+				846F8D692E4075F00037162B /* AppIcon.icon in Resources */,
 				CE4698FA24C8FBD9008C1BD6 /* Icons in Resources */,
 				CE2D959024AD50D50059923A /* Localizable.strings in Resources */,
 				FFB02A90266CB09C006CD71A /* InfoPlist.strings in Resources */,
@@ -3480,6 +3490,7 @@
 				CE061CE7289EB6250000351C /* VMDisplayMetalViewInputAccessory.xib in Resources */,
 				CED8DF7628A120C100C34345 /* Localizable.stringsdict in Resources */,
 				CEA45F6D263519B5002FA97D /* Settings.bundle in Resources */,
+				846F8D622E4072960037162B /* AppIcon.icon in Resources */,
 				CEA45F6F263519B5002FA97D /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3498,6 +3509,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CEF7F6792AEEDCC400E34952 /* Icons in Resources */,
+				846F8D662E4072AA0037162B /* AppIcon-Remote.icon in Resources */,
 				CEB5C1172B8C4CD4008AAE5C /* Info-RemotePlist.strings in Resources */,
 				CEF7F67B2AEEDCC400E34952 /* Localizable.strings in Resources */,
 				CEF7F67C2AEEDCC400E34952 /* qemu in Resources */,
@@ -4737,7 +4749,7 @@
 		CE2D952A24AD48BF0059923A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-macOS";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
@@ -4771,7 +4783,7 @@
 		CE2D952B24AD48BF0059923A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-macOS";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;

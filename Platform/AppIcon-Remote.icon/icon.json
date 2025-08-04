@@ -1,0 +1,133 @@
+{
+  "fill-specializations" : [
+    {
+      "value" : {
+        "linear-gradient" : [
+          "display-p3:0.46275,0.94118,0.33333,1.00000",
+          "display-p3:0.09020,0.23922,0.11765,1.00000"
+        ]
+      }
+    },
+    {
+      "appearance" : "dark",
+      "value" : "system-dark"
+    }
+  ],
+  "groups" : [
+    {
+      "blend-mode" : "normal",
+      "blur-material" : null,
+      "hidden" : false,
+      "layers" : [
+        {
+          "fill-specializations" : [
+            {
+              "value" : {
+                "solid" : "srgb:1.00000,1.00000,1.00000,1.00000"
+              }
+            },
+            {
+              "appearance" : "dark",
+              "value" : {
+                "linear-gradient" : [
+                  "display-p3:0.46275,0.94118,0.33333,1.00000",
+                  "display-p3:0.09020,0.23922,0.11765,1.00000"
+                ]
+              }
+            }
+          ],
+          "image-name" : "InnerCircle.svg",
+          "name" : "InnerCircle",
+          "opacity" : 1
+        },
+        {
+          "fill-specializations" : [
+            {
+              "value" : {
+                "solid" : "srgb:1.00000,1.00000,1.00000,1.00000"
+              }
+            },
+            {
+              "appearance" : "dark",
+              "value" : {
+                "linear-gradient" : [
+                  "display-p3:0.46275,0.94118,0.33333,1.00000",
+                  "display-p3:0.09020,0.23922,0.11765,1.00000"
+                ]
+              }
+            }
+          ],
+          "image-name" : "Ring3.svg",
+          "name" : "Ring3",
+          "opacity" : 1
+        },
+        {
+          "fill-specializations" : [
+            {
+              "value" : {
+                "solid" : "srgb:1.00000,1.00000,1.00000,1.00000"
+              }
+            },
+            {
+              "appearance" : "dark",
+              "value" : {
+                "linear-gradient" : [
+                  "display-p3:0.46275,0.94118,0.33333,1.00000",
+                  "display-p3:0.09020,0.23922,0.11765,1.00000"
+                ]
+              }
+            }
+          ],
+          "image-name" : "Ring2.svg",
+          "name" : "Ring2",
+          "opacity" : 1
+        },
+        {
+          "fill-specializations" : [
+            {
+              "value" : {
+                "solid" : "srgb:1.00000,1.00000,1.00000,1.00000"
+              }
+            },
+            {
+              "appearance" : "dark",
+              "value" : {
+                "linear-gradient" : [
+                  "display-p3:0.46275,0.94118,0.33333,1.00000",
+                  "display-p3:0.09020,0.23922,0.11765,1.00000"
+                ]
+              }
+            }
+          ],
+          "image-name" : "Ring1.svg",
+          "name" : "Ring1",
+          "opacity" : 1
+        }
+      ],
+      "lighting" : "individual",
+      "opacity" : 1,
+      "position" : {
+        "scale" : 1,
+        "translation-in-points" : [
+          0,
+          0
+        ]
+      },
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "specular" : true,
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "circles" : [
+      "watchOS"
+    ],
+    "squares" : "shared"
+  }
+}
