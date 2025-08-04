@@ -747,6 +747,13 @@ import Virtualization // for getting network interfaces
                     f("lsi53c895a,id=scsi0")
                 }
             }
+            if system.architecture == .m68k && system.target.rawValue == QEMUTarget_m68k.virt.rawValue {
+                bus = "scsi0"
+                if busindex == 0 {
+                    f("-device")
+                    f("virtio-scsi-device,id=scsi0")
+                }
+            }
             f("-device")
             if isCd {
                 "scsi-cd"
@@ -767,6 +774,8 @@ import Virtualization // for getting network interfaces
             f("-device")
             if system.architecture == .s390x {
                 "virtio-blk-ccw"
+            } else if system.architecture == .m68k {
+                "virtio-blk-device"
             } else {
                 "virtio-blk-pci"
             }
