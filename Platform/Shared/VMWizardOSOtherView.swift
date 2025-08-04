@@ -19,18 +19,24 @@ import SwiftUI
 struct VMWizardOSOtherView: View {
     @ObservedObject var wizardState: VMWizardState
     @State private var isFileImporterPresented: Bool = false
-    
+
+    private var supportsUefi: Bool {
+        UTMQemuConfigurationQEMU.uefiImagePrefix(forArchitecture: wizardState.systemArchitecture) != nil
+    }
+
     var body: some View {
         VMWizardContent("Other") {
             Picker("Boot Device", selection: $wizardState.bootDevice) {
                 Text("None").tag(VMBootDevice.none)
                 Text("CD/DVD Image").tag(VMBootDevice.cd)
-                Text("Floppy Image").tag(VMBootDevice.floppy)
+                if wizardState.legacyHardware {
+                    Text("Floppy Image").tag(VMBootDevice.floppy)
+                }
                 Text("Drive Image").tag(VMBootDevice.drive)
             }.pickerStyle(.inline)
-            .onChange(of: wizardState.bootDevice) { bootDevice in
-                if bootDevice == .floppy {
-                    wizardState.legacyHardware = true
+            .onAppear {
+                if !wizardState.legacyHardware && wizardState.bootDevice == .floppy {
+                    wizardState.bootDevice = .none
                 }
             }
             if wizardState.bootDevice != .none {
@@ -50,11 +56,14 @@ struct VMWizardOSOtherView: View {
                     }
                 }
             }
-            Section {
-                Toggle("Legacy Hardware", isOn: $wizardState.legacyHardware)
-                    .help("If checked, emulated devices with higher compatibility will be instantiated at the cost of performance.")
-            } header: {
-                Text("Options")
+            DetailedSection("Options") {
+                Toggle("UEFI Boot", isOn: $wizardState.systemBootUefi)
+                    .disabled(!supportsUefi)
+                    .onAppear {
+                        if !supportsUefi {
+                            wizardState.systemBootUefi = false
+                        }
+                    }
             }
         }
         .fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.data], onCompletion: processImage)

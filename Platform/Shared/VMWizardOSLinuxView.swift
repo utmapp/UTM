@@ -53,6 +53,11 @@ struct VMWizardOSLinuxView: View {
                     Text("Import existing drive").tag(VMBootDevice.drive)
                 }
             }.pickerStyle(.inline)
+            .onAppear {
+                if ![.kernel, .cd, .drive].contains(wizardState.bootDevice) {
+                    wizardState.bootDevice = .cd
+                }
+            }
             if wizardState.bootDevice != .kernel {
                 if wizardState.useAppleVirtualization {
                     Link(destination: URL(string: "https://docs.getutm.app/guides/debian/")!) {

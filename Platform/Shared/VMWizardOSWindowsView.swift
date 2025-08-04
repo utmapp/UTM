@@ -22,6 +22,7 @@ struct VMWizardOSWindowsView: View {
     
     var body: some View {
         VMWizardContent("Windows") {
+            #if !WITH_QEMU_TCI
             Section {
                 Toggle("Install Windows 10 or higher", isOn: $wizardState.isWindows10OrHigher)
                     .onChange(of: wizardState.isWindows10OrHigher) { newValue in
@@ -30,11 +31,13 @@ struct VMWizardOSWindowsView: View {
                             wizardState.systemBootTpm = true
                             wizardState.isGuestToolsInstallRequested = true
                         } else {
+                            wizardState.systemBootUefi = false
                             wizardState.systemBootTpm = false
                             wizardState.isGuestToolsInstallRequested = false
                         }
                     }
-                
+                    .disabled(wizardState.legacyHardware)
+
                 if wizardState.isWindows10OrHigher {
                     #if os(macOS)
                     Button {
@@ -59,7 +62,8 @@ struct VMWizardOSWindowsView: View {
             } header: {
                 Text("Image File Type")
             }
-            
+            #endif
+
             Section {
                 FileBrowseField(url: $wizardState.bootImageURL, isFileImporterPresented: $isFileImporterPresented, hasClearButton: false)
                 
@@ -92,6 +96,15 @@ struct VMWizardOSWindowsView: View {
             }
         }
         .fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.data], onCompletion: processImage)
+        .onAppear {
+            wizardState.bootDevice = .cd
+            #if WITH_QEMU_TCI
+            wizardState.legacyHardware = true
+            #endif
+            if wizardState.legacyHardware {
+                wizardState.isWindows10OrHigher = false
+            }
+        }
     }
     
     private func processImage(_ result: Result<URL, Error>) {
@@ -99,7 +112,6 @@ struct VMWizardOSWindowsView: View {
             let url = try result.get()
             await MainActor.run {
                 wizardState.bootImageURL = url
-                wizardState.bootDevice = .cd
             }
         }
     }

@@ -24,7 +24,6 @@ struct VMWizardStartViewTCI: View {
             Section {
                 Button {
                     wizardState.useVirtualization = false
-                    wizardState.operatingSystem = .Other
                     wizardState.next()
                 } label: {
                     HStack {

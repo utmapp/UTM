@@ -224,12 +224,14 @@ struct AlertMessage: Identifiable {
         var nextPage = currentPage
         switch currentPage {
         case .start:
-            #if WITH_QEMU_TCI
-            nextPage = .otherBoot
-            #else
             nextPage = .operatingSystem
-            #endif
         case .operatingSystem:
+            nextPage = .hardware
+        case .hardware:
+            guard systemMemoryMib > 0 else {
+                alertMessage = AlertMessage(NSLocalizedString("Invalid RAM size specified.", comment: "VMWizardState"))
+                return
+            }
             switch operatingSystem {
             case .Other:
                 nextPage = .otherBoot
@@ -240,46 +242,33 @@ struct AlertMessage: Identifiable {
             case .Windows:
                 nextPage = .windowsBoot
             case .ClassicMacOS:
-                nextPage = .hardware
+                nextPage = .classicMacOSBoot
             }
-        case .otherBoot:
-            guard bootDevice == .none || bootImageURL != nil else {
+        case .otherBoot, .macOSBoot, .linuxBoot, .windowsBoot, .classicMacOSBoot:
+            guard [.kernel, .none].contains(bootDevice) || bootImageURL != nil else {
                 alertMessage = AlertMessage(NSLocalizedString("Please select a boot image.", comment: "VMWizardState"))
                 return
             }
-            nextPage = .hardware
-        case .macOSBoot:
-            #if os(macOS) && arch(arm64)
-            if #available(macOS 12, *) {
-                if macPlatform == nil || macRecoveryIpswURL == nil {
-                    fetchLatestPlatform()
+            if currentPage == .macOSBoot {
+                #if os(macOS) && arch(arm64)
+                if #available(macOS 12, *) {
+                    if macPlatform == nil || macRecoveryIpswURL == nil {
+                        fetchLatestPlatform()
+                    }
                 }
-                nextPage = .hardware
+                #endif
             }
-            #endif
-        case .linuxBoot:
-            if bootDevice == .kernel {
-                guard linuxKernelURL != nil else {
+            if currentPage == .linuxBoot {
+                guard bootDevice != .kernel || linuxKernelURL != nil else {
                     alertMessage = AlertMessage(NSLocalizedString("Please select a kernel file.", comment: "VMWizardState"))
                     return
                 }
-            } else {
-                guard bootImageURL != nil else {
-                    alertMessage = AlertMessage(NSLocalizedString("Please select a boot image.", comment: "VMWizardState"))
+            }
+            if currentPage == .classicMacOSBoot {
+                guard systemTarget.rawValue != QEMUTarget_m68k.q800.rawValue || quadra800RomUrl != nil else {
+                    alertMessage = AlertMessage(NSLocalizedString("Please select a ROM file.", comment: "VMWizardState"))
                     return
                 }
-            }
-            nextPage = .hardware
-        case .windowsBoot:
-            guard bootImageURL != nil else {
-                alertMessage = AlertMessage(NSLocalizedString("Please select a boot image.", comment: "VMWizardState"))
-                return
-            }
-            nextPage = .hardware
-        case .hardware:
-            guard systemMemoryMib > 0 else {
-                alertMessage = AlertMessage(NSLocalizedString("Invalid RAM size specified.", comment: "VMWizardState"))
-                return
             }
             if bootDevice == .drive {
                 nextPage = .sharing
@@ -295,19 +284,6 @@ struct AlertMessage: Identifiable {
                     }
                 }
             }
-            if operatingSystem == .ClassicMacOS {
-                nextPage = .classicMacOSBoot
-            }
-        case .classicMacOSBoot:
-            guard bootImageURL != nil else {
-                alertMessage = AlertMessage(NSLocalizedString("Please select a boot image.", comment: "VMWizardState"))
-                return
-            }
-            guard systemTarget.rawValue != QEMUTarget_m68k.q800.rawValue || quadra800RomUrl != nil else {
-                alertMessage = AlertMessage(NSLocalizedString("Please select a ROM file.", comment: "VMWizardState"))
-                return
-            }
-            nextPage = .drives
         case .drives:
             guard storageSizeGib > 0 else {
                 alertMessage = AlertMessage(NSLocalizedString("Invalid drive size specified.", comment: "VMWizardState"))
@@ -476,10 +452,13 @@ struct AlertMessage: Identifiable {
             // change default sharing to virtfs if linux
             config.sharing.directoryShareMode = .virtfs
         }
-        if operatingSystem == .Windows {
-            // only change UEFI settings for Windows
+        if operatingSystem == .Windows || operatingSystem == .Other {
+            // only change UEFI settings for Windows or Other
             config.qemu.hasUefiBoot = systemBootUefi
-            config.qemu.hasTPMDevice = systemBootTpm
+            config.qemu.hasTPMDevice = operatingSystem == .Windows && systemBootTpm
+        } else if legacyHardware {
+            config.qemu.hasUefiBoot = false
+            config.qemu.hasTPMDevice = false
         }
         if operatingSystem == .Linux && config.displays.first != nil {
             // change default display to virtio-gpu if supported
@@ -596,11 +575,8 @@ struct AlertMessage: Identifiable {
                 config.drives.append(toolsDiskDrive)
             }
         }
-        if legacyHardware {
-            config.qemu.hasUefiBoot = false
-            if systemArchitecture.hasUsbSupport && systemTarget.hasUsbSupport {
-                config.input.usbBusSupport = .usb2_0
-            }
+        if legacyHardware && systemArchitecture.hasUsbSupport && systemTarget.hasUsbSupport {
+            config.input.usbBusSupport = .usb2_0
         }
         return config
     }

@@ -104,6 +104,9 @@ struct VMWizardOSClassicMacView: View {
                 }
             }
         }
+        .onAppear {
+            wizardState.bootDevice = .cd
+        }
     }
 }
 

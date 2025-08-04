@@ -48,6 +48,9 @@ struct VMWizardOSMacView: View {
         }
         .fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.ipsw], onCompletion: processIpsw)
         .onDrop(of: [.fileURL], delegate: self)
+        .onAppear {
+            wizardState.bootDevice = .none
+        }
     }
     
     private func processIpsw(_ result: Result<URL, Error>) {
@@ -68,7 +71,6 @@ struct VMWizardOSMacView: View {
                 wizardState.macPlatform = UTMAppleConfigurationMacPlatform(newHardware: model)
                 wizardState.macRecoveryIpswURL = url
                 wizardState.macPlatformVersion = image.buildVersion.integerPrefix()
-                wizardState.bootDevice = .none
                 wizardState.bootImageURL = nil
                 wizardState.next()
             }
