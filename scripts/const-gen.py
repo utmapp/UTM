@@ -49,16 +49,19 @@ DEFAULTS = {
     "arm": "virt",
     "avr": "mega",
     "i386": "q35",
+    "riscv64": "virt",
     "rx": "gdbsim-r5f562n7",
     "tricore": "tricore_testboard",
     "x86_64": "q35"
 }
 
 AUDIO_SCREAMER = Device('screamer', 'macio', '', 'Screamer (Mac99 only)')
-AUDIO_PCSPK = Device('pcspk', 'macio', '', 'PC Speaker')
+AUDIO_PCSPK = Device('pcspk', 'none', '', 'PC Speaker')
+AUDIO_ASC = Device('asc', 'none', '', 'Apple Sound Chip (Q800 only)')
 DISPLAY_TCX = Device('tcx', 'none', '', 'Sun TCX')
 DISPLAY_CG3 = Device('cg3', 'none', '', 'Sun cgthree')
 NETWORK_LANCE = Device('lance', 'none', '', 'Lance (Am7990)')
+NETWORK_DP8393X = Device('dp8393x', 'none', '', 'SONIC DP8393x (Q800 only)')
 
 ADD_DEVICES = {
     "ppc": {
@@ -90,6 +93,14 @@ ADD_DEVICES = {
             AUDIO_PCSPK
         ])
     },
+    "m68k": {
+        "Sound devices": set([
+            AUDIO_ASC
+        ]),
+        "Network devices": set([
+            NETWORK_DP8393X
+        ])
+    }
 }
 
 HEADER = '''//

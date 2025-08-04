@@ -60,7 +60,8 @@ struct SizeTextField: View {
     
     private func convertToMib(fromSize size: Int) -> Int {
         if isGiB {
-            return size * mibToGib
+            let (partial, overflow) = size.multipliedReportingOverflow(by: mibToGib)
+            return overflow ? 0 : partial
         } else {
             return size
         }

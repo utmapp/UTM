@@ -92,6 +92,27 @@ import Virtualization // for getting network interfaces
         #endif
     }
 
+    /// Global setting to always use file lock or not
+    private var isUseFileLock: Bool {
+        return UserDefaults.standard.value(forKey: "UseFileLock") == nil || UserDefaults.standard.bool(forKey: "UseFileLock")
+    }
+
+    /// Special arguments should disable use of bootindex
+    private var shouldDisableBootIndex: Bool {
+        // currently, we only identified this issue in PPC machines
+        guard system.architecture == .ppc || system.architecture == .ppc64 else {
+            return false
+        }
+        let arguments = parsedUserArguments
+        for (index, arg) in arguments.enumerated() {
+            // when user specifies '-prom-env boot-device=hd:,\yaboot' for example, it should inhibit bootindex
+            if arg == "-prom-env" && index != arguments.count - 1 && arguments[index+1].starts(with: "boot-device=") {
+                return true
+            }
+        }
+        return false
+    }
+
     /// Combined generated and user specified arguments.
     @QEMUArgumentBuilder var allArguments: [QEMUArgument] {
         generatedArguments
@@ -115,12 +136,15 @@ import Virtualization // for getting network interfaces
         if isUsbUsed {
             usbArguments
         }
+        otherInputsArguments
         drivesArguments
         sharingArguments
         miscArguments
     }
-    
-    @QEMUArgumentBuilder private var userArguments: [QEMUArgument] {
+
+    /// Take user arguments and replace any quotes
+    private var parsedUserArguments: [String] {
+        var list = [String]()
         let regex = try! NSRegularExpression(pattern: "((?:[^\"\\s]*\"[^\"]*\"[^\"\\s]*)+|[^\"\\s]+)")
         for arg in qemu.additionalArguments {
             let argString = arg.string
@@ -130,9 +154,16 @@ import Virtualization // for getting network interfaces
                 for match in split {
                     let matchRange = Range(match.range(at: 1), in: argString)!
                     let fragment = argString[matchRange]
-                    f(fragment.replacingOccurrences(of: "\"", with: ""))
+                    list.append(fragment.replacingOccurrences(of: "\"", with: ""))
                 }
             }
+        }
+        return list
+    }
+
+    @QEMUArgumentBuilder private var userArguments: [QEMUArgument] {
+        for arg in parsedUserArguments {
+            f(arg)
         }
     }
     
@@ -211,6 +242,10 @@ import Virtualization // for getting network interfaces
         }
     }
 
+    private func shouldSkipDisplay(_ display: UTMQemuConfigurationDisplay) -> Bool {
+        return display.hardware.rawValue == QEMUDisplayDevice_m68k.nubus_macfb.rawValue
+    }
+
     @QEMUArgumentBuilder private var displayArguments: [QEMUArgument] {
         if displays.isEmpty {
             f("-nographic")
@@ -223,12 +258,17 @@ import Virtualization // for getting network interfaces
             f()
         } else {
             for display in displays {
-                f("-device")
-                filterDisplayIfRemote(display.hardware)
-                if let vgaRamSize = displays[0].vgaRamMib {
-                    "vgamem_mb=\(vgaRamSize)"
+                if !shouldSkipDisplay(display) {
+                    f("-device")
+                    filterDisplayIfRemote(display.hardware)
+                    if let vgaRamSize = displays[0].vgaRamMib {
+                        "vgamem_mb=\(vgaRamSize)"
+                    }
+                    if display.hardware.rawValue.lowercased().contains("vga") && isClassicMacNewWorld {
+                        "edid=on"
+                    }
+                    f()
                 }
-                f()
             }
         }
     }
@@ -245,6 +285,14 @@ import Virtualization // for getting network interfaces
 
     private var isRemoteSpice: Bool {
         qemu.spiceServerPort != nil
+    }
+
+    private var isClassicMacM68K: Bool {
+        system.architecture == .m68k && system.target.rawValue == QEMUTarget_m68k.q800.rawValue
+    }
+
+    private var isClassicMacNewWorld: Bool {
+        [.ppc, .ppc64].contains(system.architecture) && system.target.rawValue == QEMUTarget_ppc.mac99.rawValue
     }
 
     @QEMUArgumentBuilder private var serialArguments: [QEMUArgument] {
@@ -425,7 +473,7 @@ import Virtualization // for getting network interfaces
         let target = system.target.rawValue
         let architecture = system.architecture.rawValue
         var properties = qemu.machinePropertyOverride ?? ""
-        if target.hasPrefix("pc") || target.hasPrefix("q35") || target == "isapc" {
+        if isPcCompatible {
             properties = properties.appendingDefaultPropertyName("vmport", value: "off")
             // disable PS/2 emulation if we are not legacy input and it's not explicitly enabled
             if isUsbUsed && !qemu.hasPS2Controller {
@@ -455,7 +503,12 @@ import Virtualization // for getting network interfaces
                 properties = properties.appendingDefaultPropertyName("gic-version", value: "3")
             }
         }
-        if target == "mac99" {
+        if isClassicMacM68K {
+            if sound.contains(where: { $0.hardware.rawValue == QEMUSoundDevice_m68k.asc.rawValue }) {
+                properties = properties.appendingDefaultPropertyName("audiodev", value: "audio0")
+            }
+        }
+        if isClassicMacNewWorld {
             properties = properties.appendingDefaultPropertyName("via", value: "pmu")
         }
         return properties
@@ -468,10 +521,9 @@ import Virtualization // for getting network interfaces
             f("-global")
             f("ICH9-LPC.disable_s3=1") // applies for pc-q35-* types
         }
-        if qemu.hasUefiBoot {
+        if qemu.hasUefiBoot, let prefix = UTMQemuConfigurationQEMU.uefiImagePrefix(forArchitecture: system.architecture) {
             let secure = isSecureBootUsed ? "-secure" : ""
-            let code = system.target.rawValue == "microvm" ? "microvm" : "code"
-            let bios = resourceURL.appendingPathComponent("edk2-\(system.architecture.rawValue)\(secure)-\(code).fd")
+            let bios = resourceURL.appendingPathComponent("\(prefix)\(secure)-code.fd")
             let vars = qemu.efiVarsURL ?? URL(fileURLWithPath: "/\(QEMUPackageFileName.efiVariables.rawValue)")
             if !hasCustomBios && FileManager.default.fileExists(atPath: bios.path) {
                 f("-drive")
@@ -486,10 +538,32 @@ import Virtualization // for getting network interfaces
                 f("-drive")
                 "if=pflash"
                 "unit=1"
-                "file="
+                "file.filename="
                 vars
+                if !isUseFileLock {
+                    "file.locking=off"
+                }
                 f()
             }
+        }
+        if isClassicMacM68K {
+            let declrom = resourceURL.appendingPathComponent("m68k-declrom")
+            f("-device")
+            "nubus-virtio-mmio"
+            "romfile="
+            declrom
+            f()
+        }
+        if isClassicMacNewWorld {
+            let ndrvloader = resourceURL.appendingPathComponent("ppc-ndrvloader")
+            f("-device")
+            "loader"
+            "addr=0x4000000"
+            "file="
+            ndrvloader
+            f()
+            f("-prom-env")
+            f("boot-command=init-program go")
         }
         f("-m")
         system.memorySize
@@ -540,7 +614,11 @@ import Virtualization // for getting network interfaces
         return false
         #endif
     }
-    
+
+    private func isInternalAudioDevice(_ device: any QEMUSoundDevice) -> Bool {
+        [QEMUSoundDevice_i386.pcspk.rawValue, QEMUSoundDevice_ppc.screamer.rawValue, QEMUSoundDevice_m68k.asc.rawValue].contains(device.rawValue)
+    }
+
     @QEMUArgumentBuilder private var soundArguments: [QEMUArgument] {
         if sound.isEmpty {
             f("-audio")
@@ -564,7 +642,7 @@ import Virtualization // for getting network interfaces
         "spice"
         f("id=audio0")
         // screamer has no extra device, pcspk is handled in machineProperties
-        for _sound in sound.filter({ $0.hardware.rawValue != "screamer" && $0.hardware.rawValue != "pcspk" }) {
+        for _sound in sound.filter({ !isInternalAudioDevice($0.hardware) }) {
             f("-device")
             _sound.hardware
             if _sound.hardware.rawValue.contains("hda") {
@@ -590,10 +668,11 @@ import Virtualization // for getting network interfaces
     
     @QEMUArgumentBuilder private var drivesArguments: [QEMUArgument] {
         var busInterfaceMap: [String: Int] = [:]
+        let disableBootindex = shouldDisableBootIndex
         for drive in drives {
             let hasImage = !drive.isExternal && drive.imageURL != nil
             if drive.imageType == .disk || drive.imageType == .cd {
-                driveArgument(for: drive, busInterfaceMap: &busInterfaceMap)
+                driveArgument(for: drive, busInterfaceMap: &busInterfaceMap, disableBootIndex: disableBootindex)
             } else if hasImage {
                 switch drive.imageType {
                 case .bios:
@@ -615,10 +694,17 @@ import Virtualization // for getting network interfaces
             }
         }
     }
-    
+
+    private var isPcCompatible: Bool {
+        guard system.architecture == .x86_64 || system.architecture == .i386 else {
+            return false
+        }
+        return system.target.rawValue.starts(with: "pc") || system.target.rawValue == "q35" || system.target.rawValue == "isapc"
+    }
+
     /// These machines are hard coded to have one IDE unit per bus in QEMU
     private var isIdeInterfaceSingleUnit: Bool {
-        system.target.rawValue.contains("q35") ||
+        isPcCompatible ||
         system.target.rawValue == "microvm" ||
         system.target.rawValue == "cubieboard" ||
         system.target.rawValue == "highbank" ||
@@ -626,7 +712,7 @@ import Virtualization // for getting network interfaces
         system.target.rawValue == "xlnx_zcu102"
     }
     
-    @QEMUArgumentBuilder private func driveArgument(for drive: UTMQemuConfigurationDrive, busInterfaceMap: inout [String: Int]) -> [QEMUArgument] {
+    @QEMUArgumentBuilder private func driveArgument(for drive: UTMQemuConfigurationDrive, busInterfaceMap: inout [String: Int], disableBootIndex: Bool = false) -> [QEMUArgument] {
         let isRemovable = drive.imageType == .cd || drive.isExternal
         let isCd = drive.imageType == .cd && drive.interface != .floppy
         var bootindex = busInterfaceMap["boot", default: 0]
@@ -647,7 +733,9 @@ import Virtualization // for getting network interfaces
             }
             busindex += 1
             "drive=drive\(drive.id)"
-            "bootindex=\(bootindex)"
+            if !disableBootIndex {
+                "bootindex=\(bootindex)"
+            }
             bootindex += 1
             f()
         } else if drive.interface == .scsi {
@@ -657,6 +745,13 @@ import Virtualization // for getting network interfaces
                 if busindex == 0 {
                     f("-device")
                     f("lsi53c895a,id=scsi0")
+                }
+            }
+            if system.architecture == .m68k && system.target.rawValue == QEMUTarget_m68k.virt.rawValue {
+                bus = "scsi0"
+                if busindex == 0 {
+                    f("-device")
+                    f("virtio-scsi-device,id=scsi0")
                 }
             }
             f("-device")
@@ -670,18 +765,24 @@ import Virtualization // for getting network interfaces
             "scsi-id=\(busindex)"
             busindex += 1
             "drive=drive\(drive.id)"
-            "bootindex=\(bootindex)"
+            if !disableBootIndex {
+                "bootindex=\(bootindex)"
+            }
             bootindex += 1
             f()
         } else if drive.interface == .virtio {
             f("-device")
             if system.architecture == .s390x {
                 "virtio-blk-ccw"
+            } else if system.architecture == .m68k {
+                "virtio-blk-device"
             } else {
                 "virtio-blk-pci"
             }
             "drive=drive\(drive.id)"
-            "bootindex=\(bootindex)"
+            if !disableBootIndex {
+                "bootindex=\(bootindex)"
+            }
             bootindex += 1
             f()
         } else if drive.interface == .nvme {
@@ -689,7 +790,9 @@ import Virtualization // for getting network interfaces
             "nvme"
             "drive=drive\(drive.id)"
             "serial=\(drive.id)"
-            "bootindex=\(bootindex)"
+            if !disableBootIndex {
+                "bootindex=\(bootindex)"
+            }
             bootindex += 1
             f()
         } else if drive.interface == .usb {
@@ -699,18 +802,22 @@ import Virtualization // for getting network interfaces
             "usb-storage"
             "drive=drive\(drive.id)"
             "removable=\(isRemovable)"
-            "bootindex=\(bootindex)"
+            if !disableBootIndex {
+                "bootindex=\(bootindex)"
+            }
             bootindex += 1
             if isUsb3 {
                 "bus=usb-bus.0"
             }
             f()
         } else if drive.interface == .floppy {
-            if system.target.rawValue.hasPrefix("q35") {
+            if isPcCompatible {
                 f("-device")
                 "isa-fdc"
                 "id=fdc\(busindex)"
-                "bootindexA=\(bootindex)"
+                if !disableBootIndex {
+                    "bootindexA=\(bootindex)"
+                }
                 bootindex += 1
                 f()
                 f("-device")
@@ -767,9 +874,12 @@ import Virtualization // for getting network interfaces
             "discard=unmap"
             "detect-zeroes=unmap"
         }
+        if !isUseFileLock {
+            "file.locking=off"
+        }
         f()
     }
-    
+
     @QEMUArgumentBuilder private var usbArguments: [QEMUArgument] {
         if system.target.rawValue.hasPrefix("virt") {
             f("-device")
@@ -777,8 +887,10 @@ import Virtualization // for getting network interfaces
         } else {
             f("-usb")
         }
-        f("-device")
-        f("usb-tablet,bus=usb-bus.0")
+        if !isClassicMacNewWorld {
+            f("-device")
+            f("usb-tablet,bus=usb-bus.0")
+        }
         f("-device")
         f("usb-mouse,bus=usb-bus.0")
         f("-device")
@@ -788,7 +900,7 @@ import Virtualization // for getting network interfaces
         let buses = (maxDevices + 2) / 3
         if input.usbBusSupport == .usb3_0 {
             var controller = "qemu-xhci"
-            if system.target.rawValue.hasPrefix("pc") || system.target.rawValue.hasPrefix("q35") {
+            if isPcCompatible {
                 controller = "nec-usb-xhci"
             }
             for i in 0..<buses {
@@ -816,7 +928,18 @@ import Virtualization // for getting network interfaces
         }
         #endif
     }
-    
+
+    @QEMUArgumentBuilder private var otherInputsArguments: [QEMUArgument] {
+        if isClassicMacNewWorld {
+            f("-device")
+            f("virtio-tablet-pci")
+        }
+        if isClassicMacM68K {
+            f("-device")
+            f("virtio-tablet-device")
+        }
+    }
+
     private func parseNetworkSubnet(from network: UTMQemuConfigurationNetwork) -> (start: String, end: String, mask: String)? {
         guard let net = network.vlanGuestAddress else {
             return nil
@@ -863,10 +986,13 @@ import Virtualization // for getting network interfaces
     
     @QEMUArgumentBuilder private var networkArguments: [QEMUArgument] {
         for i in networks.indices {
-            if isSparc {
+            if (isSparc && networks[i].hardware.rawValue == QEMUNetworkDevice_sparc.lance.rawValue) ||
+                (isClassicMacM68K && networks[i].hardware.rawValue == QEMUNetworkDevice_m68k.dp8393x.rawValue) {
                 f("-net")
                 "nic"
-                "model=lance"
+                if networks[i].hardware.rawValue == QEMUNetworkDevice_sparc.lance.rawValue {
+                    "model=lance"
+                }
                 "macaddr=\(networks[i].macAddress)"
                 "netdev=net\(i)"
                 f()
@@ -1011,11 +1137,17 @@ import Virtualization // for getting network interfaces
             f("-device")
             if system.architecture == .s390x {
                 "virtio-9p-ccw"
+            } else if system.architecture == .m68k {
+                "virtio-9p-device"
             } else {
                 "virtio-9p-pci"
             }
             "fsdev=virtfs0"
-            "mount_tag=share"
+            if isClassicMacM68K || isClassicMacNewWorld {
+                "mount_tag=share_1"
+            } else {
+                "mount_tag=share"
+            }
         }
     }
     

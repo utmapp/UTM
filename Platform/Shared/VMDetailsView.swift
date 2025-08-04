@@ -187,6 +187,10 @@ struct Screenshot: View {
     let large: Bool
     @EnvironmentObject private var data: UTMData
     
+    @Environment(\.colorScheme) private var colorScheme
+    private let darkOverlay = Color(red: 75/255, green: 74/255, blue: 77/255)
+    private let lightOverlay = Color(red: 230/255, green: 229/255, blue: 235/255)
+    
     var body: some View {
         ZStack {
             Rectangle()
@@ -203,8 +207,9 @@ struct Screenshot: View {
                 #endif
             }
             Rectangle()
-                .fill(Color(red: 230/255, green: 229/255, blue: 235/255))
-                .blendMode(.hardLight)
+                .fill(colorScheme == .dark ? darkOverlay : lightOverlay)
+                .blendMode(colorScheme == .dark ? .multiply : .hardLight)
+                .optionalBackgroundExtensionEffect()
             #if os(visionOS)
                 .overlay {
                     if vm.isStopped || vm.isTakeoverAllowed {
@@ -226,7 +231,7 @@ struct Screenshot: View {
                     Label("Run", systemImage: "play.circle.fill")
                         .labelStyle(.iconOnly)
                         .font(Font.system(size: 96))
-                        .foregroundColor(Color.black)
+                        .foregroundColor(.primary)
                 }).buttonStyle(.plain)
                 #endif
             }
@@ -234,6 +239,17 @@ struct Screenshot: View {
         #if os(visionOS)
         .frame(maxWidth: 500)
         #endif
+    }
+}
+
+private extension View {
+    @ViewBuilder
+    func optionalBackgroundExtensionEffect() -> some View {
+        if #available(iOS 26, macOS 26, visionOS 26, *) {
+            self.backgroundExtensionEffect()
+        } else {
+            self
+        }
     }
 }
 

@@ -130,7 +130,7 @@ extension UTMQemuConfigurationDrive {
             } else {
                 return .virtio
             }
-        } else if architecture == .sparc || architecture == .sparc64 {
+        } else if architecture == .sparc || architecture == .sparc64 || architecture == .m68k {
             return .scsi
         } else {
             return .ide

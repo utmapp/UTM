@@ -326,9 +326,11 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
                     continuation.resume(throwing: UTMAppleVirtualMachineError.operationNotAvailable)
                     return
                 }
-                Task { @MainActor in
-                    await self.takeScreenshot()
-                    try? self.saveScreenshot()
+                if self.isScreenshotEnabled {
+                    Task { @MainActor in
+                        await self.takeScreenshot()
+                        try? self.saveScreenshot()
+                    }
                 }
                 apple.pause { result in
                     continuation.resume(with: result)
@@ -583,6 +585,10 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             await stopAccesingResources()
             delegate?.virtualMachine(self, didCompleteInstallation: false)
             state = .stopped
+            let error = error as NSError
+            if error.domain == "VZErrorDomain" && error.code == 10006 {
+                throw UTMAppleVirtualMachineError.deviceSupportOutdated
+            }
             throw error
         }
     }
@@ -907,6 +913,7 @@ enum UTMAppleVirtualMachineError: Error {
     case operatingSystemInstallNotSupported
     case operationNotAvailable
     case ipswNotReadable
+    case deviceSupportOutdated
 }
 
 extension UTMAppleVirtualMachineError: LocalizedError {
@@ -920,6 +927,8 @@ extension UTMAppleVirtualMachineError: LocalizedError {
             return NSLocalizedString("The operation is not available.", comment: "UTMAppleVirtualMachine")
         case .ipswNotReadable:
             return NSLocalizedString("The recovery IPSW cannot be read. Please select a new IPSW in Boot settings.", comment: "UTMAppleVirtualMachine")
+        case .deviceSupportOutdated:
+            return NSLocalizedString("You need to update macOS to run this virtual machine. A separate pop-up should prompt you to install this update. If you are trying to install a new beta version of macOS, you must manually download the Device Support package from the Apple Developer website.", comment: "UTMAppleVirtualMachine")
         }
     }
 }

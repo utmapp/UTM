@@ -25,6 +25,7 @@ struct VMToolbarView: View {
     @State private var isIdle: Bool = false
     @State private var dragOffset: CGSize = .zero
     @State private var shortIdleTask: DispatchWorkItem?
+    @State private var isKeyShortcutsShown: Bool = false
     
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.verticalSizeClass) private var verticalSizeClass
@@ -138,10 +139,26 @@ struct VMToolbarView: View {
                     VMToolbarDisplayMenuView(state: $state)
                         .animationUniqueID("display", in: namespace)
                     Button {
+                        // ignore if we are showing shortcuts
+                        guard !isKeyShortcutsShown else {
+                            return
+                        }
                         state.isKeyboardRequested = !state.isKeyboardShown
                     } label: {
                         Label("Keyboard", systemImage: "keyboard")
                     }.animationUniqueID("keyboard", in: namespace)
+                    #if !WITH_REMOTE
+                    .simultaneousGesture(
+                        LongPressGesture().onEnded { _ in
+                            isKeyShortcutsShown.toggle()
+                        }
+                    )
+                    .sheet(isPresented: $isKeyShortcutsShown) {
+                        VMKeyboardShortcutsView { keys in
+                            session.sendKeys(keys: keys)
+                        }
+                    }
+                    #endif
                 }.toolbarButtonStyle(horizontalSizeClass: horizontalSizeClass, verticalSizeClass: verticalSizeClass)
                 .disabled(state.isBusy)
             }

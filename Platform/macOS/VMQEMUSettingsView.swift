@@ -59,7 +59,7 @@ struct VMQEMUSettingsView: View {
             }
         }
         NavigationLink {
-            VMConfigInputView(config: $config.input)
+            VMConfigInputView(config: $config.input, hasUsbSupport: config.system.architecture.hasUsbSupport)
                 .scrollable()
                 .settingsToolbar()
         } label: {

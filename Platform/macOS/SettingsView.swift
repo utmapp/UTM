@@ -18,36 +18,139 @@ import SwiftUI
 
 @available(macOS 11, *)
 struct SettingsView: View {
-    
-    var body: some View {
-        TabView {
-            ApplicationSettingsView().padding()
-                .tabItem {
-                    Label("Application", systemImage: "app.badge")
+    private enum Selection: CaseIterable, Identifiable {
+        case application
+        case display
+        case sound
+        case input
+        case network
+        case file
+        case server
+
+        var id: Self {
+            return self
+        }
+
+        var isAvailable: Bool {
+            if self == .network {
+                if #unavailable(macOS 12) {
+                    return false
                 }
-            DisplaySettingsView().padding()
-                .tabItem {
-                    Label("Display", systemImage: "rectangle.on.rectangle")
-                }
-            SoundSettingsView().padding()
-                .tabItem {
-                    Label("Sound", systemImage: "speaker.wave.2")
-                }
-            InputSettingsView().padding()
-                .tabItem {
-                    Label("Input", systemImage: "keyboard")
-                }
-            if #available(macOS 12, *) {
-                NetworkSettingsView().padding()
-                    .tabItem {
-                        Label("Network", systemImage: "network")
-                    }
             }
-            ServerSettingsView().padding()
-                .tabItem {
-                    Label("Server", systemImage: "server.rack")
+            return true
+        }
+
+        var title: LocalizedStringKey {
+            switch self {
+            case .application:
+                return "Application"
+            case .display:
+                return "Display"
+            case .sound:
+                return "Sound"
+            case .input:
+                return "Input"
+            case .network:
+                return "Network"
+            case .file:
+                return "File"
+            case .server:
+                return "Server"
+            }
+        }
+
+        var systemImage: String {
+            switch self {
+            case .application:
+                return "app.badge"
+            case .display:
+                return "rectangle.on.rectangle"
+            case .sound:
+                return "speaker.wave.2"
+            case .input:
+                return "keyboard"
+            case .network:
+                return "network"
+            case .file:
+                return "folder"
+            case .server:
+                return "server.rack"
+            }
+        }
+
+        @ViewBuilder
+        var view: some View {
+            switch self {
+            case .application:
+                ApplicationSettingsView()
+            case .display:
+                DisplaySettingsView()
+            case .sound:
+                SoundSettingsView()
+            case .input:
+                InputSettingsView()
+            case .network:
+                if #available(macOS 12, *) {
+                    NetworkSettingsView()
+                } else {
+                    EmptyView()
                 }
-        }.frame(minWidth: 600, minHeight: 370, alignment: .topLeading)
+            case .file:
+                FileSettingsView()
+            case .server:
+                ServerSettingsView()
+            }
+        }
+    }
+
+    @State private var selection: Selection = .application
+
+    var body: some View {
+        if #available(macOS 26, *) {
+            newBody
+        } else {
+            oldBody
+        }
+    }
+
+    @available(macOS 15, *)
+    @ViewBuilder
+    var newBody: some View {
+        NavigationSplitView {
+            List(Selection.allCases, selection: $selection) { category in
+                if category.isAvailable {
+                    Label(category.title, systemImage: category.systemImage)
+                }
+            }.toolbar(removing: .sidebarToggle)
+        } detail: {
+            VStack(alignment: .leading) {
+                HStack(alignment: .top) {
+                    selection.view.padding()
+                    Spacer()
+                }
+                Spacer()
+            }
+        }
+    }
+
+    @ViewBuilder
+    var oldBody: some View {
+        TabView {
+            ForEach(Selection.allCases) { category in
+                if category.isAvailable {
+                    VStack(alignment: .leading) {
+                        HStack(alignment: .top) {
+                            category.view.padding()
+                            Spacer()
+                        }
+                        Spacer()
+                    }
+                    .tabItem {
+                        Label(category.title, systemImage: category.systemImage)
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -57,7 +160,8 @@ struct ApplicationSettingsView: View {
     @AppStorage("ShowMenuIcon") var isMenuIconShown = false
     @AppStorage("PreventIdleSleep") var isPreventIdleSleep = false
     @AppStorage("NoQuitConfirmation") var isNoQuitConfirmation = false
-    
+    @AppStorage("NoUsbPrompt") var isNoUsbPrompt = false
+
     var body: some View {
         Form {
             Toggle(isOn: $isKeepRunningAfterLastWindowClosed, label: {
@@ -82,11 +186,18 @@ struct ApplicationSettingsView: View {
             Toggle(isOn: $isNoQuitConfirmation, label: {
                 Text("Do not show confirmation when closing a running VM")
             }).help("Closing a VM without properly shutting it down could result in data loss.")
+
+            Section(header: Text("QEMU USB")) {
+                Toggle(isOn: $isNoUsbPrompt, label: {
+                    Text("Do not show prompt when USB device is plugged in")
+                })
+            }
         }
     }
 }
 
 struct DisplaySettingsView: View {
+    @AppStorage("NoScreenshot") var isNoScreenshot = false
     @AppStorage("NoSaveScreenshot") var isNoSaveScreenshot = false
     @AppStorage("QEMURendererBackend") var qemuRendererBackend: UTMQEMURendererBackend = .qemuRendererBackendDefault
     @AppStorage("QEMURendererFPSLimit") var qemuRendererFpsLimit: Int = 0
@@ -94,9 +205,16 @@ struct DisplaySettingsView: View {
     var body: some View {
         Form {
             Section(header: Text("Display")) {
+                Toggle(isOn: $isNoScreenshot) {
+                    Text("Disable VM screenshot")
+                }.help("No VM screenshots will be taken.")
+                .onChange(of: isNoScreenshot) { newValue in
+                    isNoSaveScreenshot = newValue
+                }
                 Toggle(isOn: $isNoSaveScreenshot) {
                     Text("Do not save VM screenshot to disk")
                 }.help("If enabled, any existing screenshot will be deleted the next time the VM is started.")
+                .disabled(isNoScreenshot)
             }
             
             Section(header: Text("QEMU Graphics Acceleration")) {
@@ -141,9 +259,11 @@ struct InputSettingsView: View {
     @AppStorage("AlternativeCaptureKey") var isAlternativeCaptureKey = false
     @AppStorage("IsCapsLockKey") var isCapsLockKey = false
     @AppStorage("IsNumLockForced") var isNumLockForced = false
+    @AppStorage("IsCtrlCmdSwapped") var isCtrlCmdSwapped = false
     @AppStorage("InvertScroll") var isInvertScroll = false
     @AppStorage("HandleInitialClick") var isHandleInitialClick = false
-    @AppStorage("NoUsbPrompt") var isNoUsbPrompt = false
+    
+    @State private var isKeyboardShortcutsShown = false
     
     var body: some View {
         Form {
@@ -175,6 +295,9 @@ struct InputSettingsView: View {
             }
             
             Section(header: Text("QEMU Keyboard")) {
+                Button("Keyboard Shortcuts…") {
+                    isKeyboardShortcutsShown.toggle()
+                }.help("Set up custom keyboard shortcuts that can be triggered from the keyboard menu.")
                 Toggle(isOn: $isAlternativeCaptureKey, label: {
                     Text("Use Command+Option (⌘+⌥) for input capture/release")
                 }).help("If disabled, the default combination Control+Option (⌃+⌥) will be used.")
@@ -184,12 +307,13 @@ struct InputSettingsView: View {
                 Toggle(isOn: $isNumLockForced, label: {
                     Text("Num Lock is forced on")
                 }).help("If enabled, num lock will always be on to the guest. Note this may make your keyboard's num lock indicator out of sync.")
+                Toggle(isOn: $isCtrlCmdSwapped, label: {
+                    Text("Swap Control (⌃) and Command (⌘) keys")
+                }).help("This does not apply to key binding outside the guest.")
             }
-            
-            Section(header: Text("QEMU USB")) {
-                Toggle(isOn: $isNoUsbPrompt, label: {
-                    Text("Do not show prompt when USB device is plugged in")
-                })
+            .sheet(isPresented: $isKeyboardShortcutsShown) {
+                VMKeyboardShortcutsView().padding()
+                    .frame(idealWidth: 400)
             }
         }
     }
@@ -269,6 +393,20 @@ struct NetworkSettingsView: View {
                 }
             }
         }.onAppear(perform: loadData)
+    }
+}
+
+struct FileSettingsView: View {
+    @AppStorage("UseFileLock") var isUseFileLock = true
+
+    var body: some View {
+        Form {
+            Section(header: Text("QEMU Backend")) {
+                Toggle(isOn: $isUseFileLock) {
+                    Text("Lock drive images when in use")
+                }.help("If enabled, all writable drive images will be locked when the VM is running. Read-only drive images will not be locked.")
+            }
+        }
     }
 }
 

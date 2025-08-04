@@ -87,6 +87,7 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         drivesToolbarItem.isEnabled = false
         usbToolbarItem.isEnabled = false
         resizeConsoleToolbarItem.isEnabled = false
+        keyboardShortcutsItem.isEnabled = false
         if #available(macOS 13, *) {
             sharedFolderToolbarItem.isEnabled = true
         } else if #available(macOS 12, *) {
@@ -334,18 +335,6 @@ extension VMDisplayAppleWindowController {
             menu.addItem(item)
         }
         menu.update()
-    }
-
-    @nonobjc private func withErrorAlert(_ callback: @escaping () async throws -> Void) {
-        Task.detached(priority: .background) { [self] in
-            do {
-                try await callback()
-            } catch {
-                Task { @MainActor in
-                    showErrorAlert(error.localizedDescription)
-                }
-            }
-        }
     }
 
     @available(macOS 15, *)

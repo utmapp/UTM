@@ -35,7 +35,8 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
     @IBOutlet weak var sharedFolderToolbarItem: NSToolbarItem!
     @IBOutlet weak var resizeConsoleToolbarItem: NSToolbarItem!
     @IBOutlet weak var windowsToolbarItem: NSToolbarItem!
-    
+    @IBOutlet weak var keyboardShortcutsItem: NSToolbarItem!
+
     var shouldAutoStartVM: Bool = true
     var vm: (any UTMVirtualMachine)!
     var onClose: (() -> Void)?
@@ -121,7 +122,10 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
     
     @IBAction dynamic func windowsButtonPressed(_ sender: Any) {
     }
-    
+
+    @IBAction dynamic func keyboardShortcutsButtonPressed(_ sender: Any) {
+    }
+
     // MARK: - UI states
     
     override func windowDidLoad() {
@@ -162,6 +166,7 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
         captureMouseToolbarItem.isEnabled = true
         resizeConsoleToolbarItem.isEnabled = true
         windowsToolbarItem.isEnabled = true
+        keyboardShortcutsItem.isEnabled = true
         window!.makeFirstResponder(displayView.subviews.first)
         if isPreventIdleSleep && !isSecondary {
             var preventIdleSleepAssertion: IOPMAssertionID = .zero
@@ -200,6 +205,7 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
         sharedFolderToolbarItem.isEnabled = false
         usbToolbarItem.isEnabled = false
         windowsToolbarItem.isEnabled = false
+        keyboardShortcutsItem.isEnabled = false
         window!.makeFirstResponder(nil)
         if let preventIdleSleepAssertion = preventIdleSleepAssertion {
             IOPMAssertionRelease(preventIdleSleepAssertion)
@@ -212,7 +218,7 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
     func showErrorAlert(_ message: String, completionHandler handler: ((NSApplication.ModalResponse) -> Void)? = nil) {
         window?.resignKey()
         let alert = NSAlert()
-        alert.alertStyle = .critical
+        alert.alertStyle = .warning
         alert.messageText = NSLocalizedString("Error", comment: "VMDisplayWindowController")
         alert.informativeText = message
         alert.beginSheetModal(for: window!, completionHandler: handler)
@@ -230,6 +236,18 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
         alert.beginSheetModal(for: window!) { response in
             if response == .alertFirstButtonReturn {
                 handler?()
+            }
+        }
+    }
+    
+    @nonobjc func withErrorAlert(_ callback: @escaping () async throws -> Void) {
+        Task.detached(priority: .background) { [self] in
+            do {
+                try await callback()
+            } catch {
+                Task { @MainActor in
+                    showErrorAlert(error.localizedDescription)
+                }
             }
         }
     }

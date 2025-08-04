@@ -127,6 +127,18 @@ struct UTMQemuConfigurationQEMU: Codable {
         try container.encodeIfPresent(machinePropertyOverride, forKey: .machinePropertyOverride)
         try container.encode(additionalArguments, forKey: .additionalArguments)
     }
+
+    static func uefiImagePrefix(forArchitecture architecture: QEMUArchitecture, isVars: Bool = false) -> String? {
+        switch architecture {
+        case .arm: return "edk2-arm"
+        case .aarch64: return isVars ? "edk2-arm" : "edk2-aarch64"
+        case .i386: return "edk2-i386"
+        case .x86_64: return isVars ? "edk2-i386" : "edk2-x86_64"
+        case .loongarch64: return "edk2-loongarch64"
+        case .riscv64: return "edk2-riscv"
+        default: return nil
+        }
+    }
 }
 
 // MARK: - Default construction
@@ -138,7 +150,7 @@ extension UTMQemuConfigurationQEMU {
         if rawTarget.hasPrefix("pc") || rawTarget.hasPrefix("q35") {
             hasUefiBoot = true
             hasRNGDevice = true
-        } else if (architecture == .arm || architecture == .aarch64) && (rawTarget.hasPrefix("virt-") || rawTarget == "virt") {
+        } else if Self.uefiImagePrefix(forArchitecture: architecture) != nil && (rawTarget.hasPrefix("virt-") || rawTarget == "virt") {
             hasUefiBoot = true
             hasRNGDevice = true
         }
@@ -176,10 +188,8 @@ extension UTMQemuConfigurationQEMU {
             // save EFI variables
             let resourceURL = Bundle.main.url(forResource: "qemu", withExtension: nil)!
             let templateVarsURL: URL
-            if system.architecture == .arm || system.architecture == .aarch64 {
-                templateVarsURL = resourceURL.appendingPathComponent("edk2-arm-vars.fd")
-            } else if system.architecture == .i386 || system.architecture == .x86_64 {
-                templateVarsURL = resourceURL.appendingPathComponent("edk2-i386-vars.fd")
+            if let prefix = Self.uefiImagePrefix(forArchitecture: system.architecture, isVars: true) {
+                templateVarsURL = resourceURL.appendingPathComponent("\(prefix)-vars.fd")
             } else {
                 throw UTMQemuConfigurationError.uefiNotSupported
             }

@@ -18,12 +18,14 @@ import SwiftUI
 
 struct VMConfigInputView: View {
     @Binding var config: UTMQemuConfigurationInput
-    
+    let hasUsbSupport: Bool
+
     var body: some View {
         VStack {
             Form {
                 DetailedSection("USB", description: "If enabled, the default input devices will be emulated on the USB bus.") {
                     VMConfigConstantPicker("USB Support", selection: $config.usbBusSupport)
+                        .disabled(!hasUsbSupport)
                 }
                 
                 #if WITH_USB
@@ -99,7 +101,7 @@ struct VMConfigInputView_Previews: PreviewProvider {
     @State static private var config = UTMQemuConfigurationInput()
     
     static var previews: some View {
-        VMConfigInputView(config: $config)
+        VMConfigInputView(config: $config, hasUsbSupport: true)
             #if os(macOS)
             .scrollable()
             #endif

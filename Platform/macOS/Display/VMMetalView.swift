@@ -25,6 +25,7 @@ class VMMetalView: MTKView {
     private(set) var isFirstResponder = false
     private(set) var isMouseInWindow = false
     @Setting("HandleInitialClick") private var isHandleInitialClick: Bool = false
+    @Setting("IsCtrlCmdSwapped") private var isCtrlCmdSwapped = false
 
     /// On ISO keyboards we have to switch `kVK_ISO_Section` and `kVK_ANSI_Grave`
     /// from: https://chromium.googlesource.com/chromium/src/+/lkgr/ui/events/keycodes/keyboard_code_conversion_mac.mm
@@ -197,7 +198,8 @@ class VMMetalView: MTKView {
         }
         if !modifier.isDisjoint(with: [.command, .leftCommand, .rightCommand]) {
             let vk = modifier.contains(.rightCommand) ? kVK_RightCommand : kVK_Command
-            let sc = Int(KeyCodeMap.keyCodeToScanCodes[vk]!.down)
+            let vkSwapped = modifier.contains(.rightCommand) ? kVK_RightControl : kVK_Control
+            let sc = Int(KeyCodeMap.keyCodeToScanCodes[isCtrlCmdSwapped ? vkSwapped : vk]!.down)
             if press {
                 inputDelegate?.keyDown(scanCode: sc)
             } else {
@@ -206,7 +208,8 @@ class VMMetalView: MTKView {
         }
         if !modifier.isDisjoint(with: [.control, .leftControl, .rightControl]) {
             let vk = modifier.contains(.rightControl) ? kVK_RightControl : kVK_Control
-            let sc = Int(KeyCodeMap.keyCodeToScanCodes[vk]!.down)
+            let vkSwapped = modifier.contains(.rightCommand) ? kVK_RightCommand : kVK_Command
+            let sc = Int(KeyCodeMap.keyCodeToScanCodes[isCtrlCmdSwapped ? vkSwapped : vk]!.down)
             if press {
                 inputDelegate?.keyDown(scanCode: sc)
             } else {

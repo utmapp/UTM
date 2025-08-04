@@ -22,7 +22,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (nullable instancetype)sharedInstance;
 
-- (BOOL)createBlankWithURL:(NSURL *)url numBlocks:(NSInteger)numBlocks error:(NSError * _Nullable *)error;
+- (BOOL)createBlankWithURL:(NSURL *)url numBlocks:(NSInteger)numBlocks error:(NSError * _Nullable *)error API_AVAILABLE(macosx(13), ios(16), tvos(16), watchos(9));
+- (BOOL)resizeWithURL:(NSURL *)url size:(NSInteger)size error:(NSError * _Nullable *)error API_AVAILABLE(macosx(14), ios(17), tvos(17), watchos(10));
+- (nullable NSDictionary<NSString *, NSObject *> *)retrieveInfo:(NSURL *)url error:(NSError * _Nullable *)error API_AVAILABLE(macosx(14), ios(17), tvos(17), watchos(10));
 
 @end
 

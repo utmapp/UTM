@@ -22,10 +22,16 @@ extern NSString *const kUTMErrorDomain;
 
 @interface UTMASIFImage ()
 
-@property (nonatomic, nonnull) Class DICreateASIFParams;
 @property (nonatomic, nonnull) Class DiskImages2;
-@property (nonatomic, nonnull) SEL DICreateASIFParamsInitSelector;
-@property (nonatomic, nonnull) SEL DiskImages2CreateSelector;
+@property (nonatomic) Class DICreateASIFParams;
+@property (nonatomic) Class DIResizeParams;
+@property (nonatomic) Class DIImageInfoParams;
+@property (nonatomic) SEL DICreateASIFParamsInitSelector;
+@property (nonatomic) SEL DIResizeParamsInitSelector;
+@property (nonatomic) SEL DIImageInfoParamsInitSelector;
+@property (nonatomic) SEL DiskImages2CreateSelector;
+@property (nonatomic) SEL DiskImages2ResizeSelector;
+@property (nonatomic) SEL DiskImages2RetrieveInfoSelector;
 @property (nonatomic, nonnull, readonly) NSError *notimplementedError;
 
 @end
@@ -64,24 +70,51 @@ extern NSString *const kUTMErrorDomain;
     self.DICreateASIFParams = [bundle classNamed:@"DICreateASIFParams"];
     if (!self.DICreateASIFParams) {
         UTMLog(@"Failed to load DICreateASIFParams");
-        return NO;
     }
     self.DiskImages2 = [bundle classNamed:@"DiskImages2"];
     if (!self.DiskImages2) {
         UTMLog(@"Failed to load DiskImages2");
         return NO;
     }
+    self.DIResizeParams = [bundle classNamed:@"DIResizeParams"];
+    if (!self.DICreateASIFParams) {
+        UTMLog(@"Failed to load DIResizeParams");
+    }
+    self.DIImageInfoParams = [bundle classNamed:@"DIImageInfoParams"];
+    if (!self.DICreateASIFParams) {
+        UTMLog(@"Failed to load DIImageInfoParams");
+    }
 
     self.DICreateASIFParamsInitSelector = NSSelectorFromString(@"initWithURL:numBlocks:error:");
     self.DiskImages2CreateSelector = NSSelectorFromString(@"createBlankWithParams:error:");
+    self.DIResizeParamsInitSelector = NSSelectorFromString(@"initWithURL:size:error:");
+    self.DiskImages2ResizeSelector = NSSelectorFromString(@"resizeWithParams:error:");
+    self.DIImageInfoParamsInitSelector = NSSelectorFromString(@"initWithURL:error:");
+    self.DiskImages2RetrieveInfoSelector = NSSelectorFromString(@"retrieveInfoWithParams:error:");
 
     if (![self.DICreateASIFParams instancesRespondToSelector:self.DICreateASIFParamsInitSelector]) {
         UTMLog(@"DICreateASIFParams does not respond to 'initWithURL:numBlocks:error:'");
-        return NO;
+        self.DICreateASIFParamsInitSelector = nil;
     }
     if (![self.DiskImages2 respondsToSelector:self.DiskImages2CreateSelector]) {
         UTMLog(@"DiskImages2 does not respond to '+createBlankWithParams:error:'");
-        return NO;
+        self.DiskImages2CreateSelector = nil;
+    }
+    if (![self.DIResizeParams instancesRespondToSelector:self.DIResizeParamsInitSelector]) {
+        UTMLog(@"DIResizeParams does not respond to 'initWithURL:size:error:'");
+        self.DIResizeParamsInitSelector = nil;
+    }
+    if (![self.DiskImages2 respondsToSelector:self.DiskImages2ResizeSelector]) {
+        UTMLog(@"DiskImages2 does not respond to '+resizeWithParams:error:'");
+        self.DiskImages2ResizeSelector = nil;
+    }
+    if (![self.DIImageInfoParams instancesRespondToSelector:self.DIImageInfoParamsInitSelector]) {
+        UTMLog(@"DIImageInfoParams does not respond to 'initWithURL:error:'");
+        self.DIImageInfoParamsInitSelector = nil;
+    }
+    if (![self.DiskImages2 respondsToSelector:self.DiskImages2RetrieveInfoSelector]) {
+        UTMLog(@"DiskImages2 does not respond to '+retrieveInfoWithParams:error:'");
+        self.DiskImages2RetrieveInfoSelector = nil;
     }
     return YES;
 }
@@ -90,22 +123,26 @@ extern NSString *const kUTMErrorDomain;
     return [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Not implemented.", "UTMASIFImage")}];
 }
 
-- (id)callDICreateASIFParamsInitWithURL:(NSURL *)url numBlocks:(NSInteger)numBlocks error:(NSError * _Nullable *)error {
-    id params = [self.DICreateASIFParams alloc];
-    if (!params) {
+- (id)callInitSelector:(SEL)selector class:(Class)class URL:(NSURL *)url hasArg1:(BOOL)hasArg1 arg1:(NSInteger)arg1 error:(NSError * _Nullable *)error {
+    id params = [class alloc];
+    if (!params || !class || !selector) {
         *error = self.notimplementedError;
         return nil;
     }
 
-    NSMethodSignature *sig = [params methodSignatureForSelector:self.DICreateASIFParamsInitSelector];
+    NSMethodSignature *sig = [params methodSignatureForSelector:selector];
     NSInvocation *inv = [NSInvocation invocationWithMethodSignature:sig];
-    [inv setSelector:self.DICreateASIFParamsInitSelector];
+    [inv setSelector:selector];
     [inv setTarget:params];
 
     // Set arguments: indexes 0 and 1 are self and _cmd
     [inv setArgument:&url atIndex:2];
-    [inv setArgument:&numBlocks atIndex:3];
-    [inv setArgument:error atIndex:4];
+    if (hasArg1) {
+        [inv setArgument:&arg1 atIndex:3];
+        [inv setArgument:error atIndex:4];
+    } else {
+        [inv setArgument:error atIndex:3];
+    }
 
     [inv invoke];
 
@@ -114,10 +151,15 @@ extern NSString *const kUTMErrorDomain;
     return result;
 }
 
-- (BOOL)callDiskImage2CreateBlankWithParams:(id)params error:(NSError * _Nullable *)error {
-    NSMethodSignature *sig = [self.DiskImages2 methodSignatureForSelector:self.DiskImages2CreateSelector];
+- (BOOL)callDiskImage2Selector:(SEL)selector params:(id)params error:(NSError * _Nullable *)error {
+    if (!selector) {
+        *error = self.notimplementedError;
+        return nil;
+    }
+
+    NSMethodSignature *sig = [self.DiskImages2 methodSignatureForSelector:selector];
     NSInvocation *inv = [NSInvocation invocationWithMethodSignature:sig];
-    [inv setSelector:self.DiskImages2CreateSelector];
+    [inv setSelector:selector];
     [inv setTarget:self.DiskImages2];
 
     [inv setArgument:&params atIndex:2];
@@ -130,12 +172,31 @@ extern NSString *const kUTMErrorDomain;
     return success;
 }
 
-- (BOOL)createBlankWithURL:(NSURL *)url numBlocks:(NSInteger)numBlocks error:(NSError * _Nullable *)error {
-    id params = [self callDICreateASIFParamsInitWithURL:url numBlocks:numBlocks error:error];
+- (BOOL)createBlankWithURL:(NSURL *)url numBlocks:(NSInteger)numBlocks error:(NSError * _Nullable *)error API_AVAILABLE(macosx(13), ios(16), tvos(16), watchos(9)) {
+    id params = [self callInitSelector:self.DICreateASIFParamsInitSelector class:self.DICreateASIFParams URL:url hasArg1:YES arg1:numBlocks error:error];
     if (!params) {
         return NO;
     }
-    return [self callDiskImage2CreateBlankWithParams:params error:error];
+    return [self callDiskImage2Selector:self.DiskImages2CreateSelector params:params error:error];
+}
+
+- (BOOL)resizeWithURL:(NSURL *)url size:(NSInteger)size error:(NSError * _Nullable *)error API_AVAILABLE(macosx(14), ios(17), tvos(17), watchos(10)) {
+    id params = [self callInitSelector:self.DIResizeParamsInitSelector class:self.DIResizeParams URL:url hasArg1:YES arg1:size error:error];
+    if (!params) {
+        return NO;
+    }
+    return [self callDiskImage2Selector:self.DiskImages2ResizeSelector params:params error:error];
+}
+
+- (nullable NSDictionary<NSString *, NSObject *> *)retrieveInfo:(NSURL *)url error:(NSError * _Nullable *)error API_AVAILABLE(macosx(14), ios(17), tvos(17), watchos(10)) {
+    id params = [self callInitSelector:self.DIImageInfoParamsInitSelector class:self.DIImageInfoParams URL:url hasArg1:NO arg1:0 error:error];
+    if (!params) {
+        return nil;
+    }
+    if (![self callDiskImage2Selector:self.DiskImages2RetrieveInfoSelector params:params error:error]) {
+        return nil;
+    }
+    return [params valueForKey:@"imageInfo"];
 }
 
 @end

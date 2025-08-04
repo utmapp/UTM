@@ -137,6 +137,7 @@ struct VMConfigDriveDetailsView: View {
                         ResizePopoverView(imageURL: imageUrl, proposedSizeMib: $proposedSizeMib) {
                             confirmAlert = .resize(imageUrl)
                         }.padding()
+                        .frame(minHeight: 100)
                     }
                 }
             }.alert(item: $confirmAlert) { item in

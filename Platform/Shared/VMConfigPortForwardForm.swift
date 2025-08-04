@@ -26,7 +26,7 @@ struct VMConfigPortForwardForm: View {
                 .help("Guest Address")
             NumberTextField("Guest Port", number: $forward.guestPort, prompt: "1234")
                 .help("Guest Port")
-            DefaultTextField("Host Address", text: $forward.hostAddress.bound, prompt: "127.0.0.1")
+            DefaultTextField("Host Address", text: $forward.hostAddress.bound, prompt: "0.0.0.0")
                 .help("Host Address")
             NumberTextField("Host Port", number: $forward.hostPort, prompt: "1234")
                 .help("Host Port")

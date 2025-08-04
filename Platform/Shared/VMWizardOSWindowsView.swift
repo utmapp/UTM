@@ -19,10 +19,10 @@ import SwiftUI
 struct VMWizardOSWindowsView: View {
     @ObservedObject var wizardState: VMWizardState
     @State private var isFileImporterPresented: Bool = false
-    @State private var useVhdx: Bool = false
     
     var body: some View {
         VMWizardContent("Windows") {
+            #if !WITH_QEMU_TCI
             Section {
                 Toggle("Install Windows 10 or higher", isOn: $wizardState.isWindows10OrHigher)
                     .onChange(of: wizardState.isWindows10OrHigher) { newValue in
@@ -31,36 +31,29 @@ struct VMWizardOSWindowsView: View {
                             wizardState.systemBootTpm = true
                             wizardState.isGuestToolsInstallRequested = true
                         } else {
+                            wizardState.systemBootUefi = false
                             wizardState.systemBootTpm = false
                             wizardState.isGuestToolsInstallRequested = false
                         }
                     }
-                
+                    .disabled(wizardState.legacyHardware)
+
                 if wizardState.isWindows10OrHigher {
-                    Toggle("Import VHDX Image", isOn: $useVhdx)
                     #if os(macOS)
-                    if useVhdx {
-                        #if arch(arm64)
-                        Link(destination: URL(string: "https://www.microsoft.com/en-us/software-download/windowsinsiderpreviewARM64")!) {
-                            Label("Download Windows 11 for ARM64 Preview VHDX", systemImage: "link")
-                        }.buttonStyle(.borderless)
-                        #endif
-                    } else if #available(macOS 12, *) { // CrystalFetch is only available on macOS 12+
-                        Button {
-                            let downloadCrystalFetch = URL(string: "https://mac.getutm.app/crystalfetch/")!
-                            if let crystalFetch = NSWorkspace.shared.urlForApplication(withBundleIdentifier: "llc.turing.CrystalFetch") {
-                                NSWorkspace.shared.openApplication(at: crystalFetch, configuration: .init()) { _, error in
-                                    if error != nil {
-                                        NSWorkspace.shared.open(downloadCrystalFetch)
-                                    }
+                    Button {
+                        let downloadCrystalFetch = URL(string: "https://mac.getutm.app/crystalfetch/")!
+                        if let crystalFetch = NSWorkspace.shared.urlForApplication(withBundleIdentifier: "llc.turing.CrystalFetch") {
+                            NSWorkspace.shared.openApplication(at: crystalFetch, configuration: .init()) { _, error in
+                                if error != nil {
+                                    NSWorkspace.shared.open(downloadCrystalFetch)
                                 }
-                            } else {
-                                NSWorkspace.shared.open(downloadCrystalFetch)
                             }
-                        } label: {
-                            Label("Fetch latest Windows installer…", systemImage: "link")
-                        }.buttonStyle(.link)
-                    }
+                        } else {
+                            NSWorkspace.shared.open(downloadCrystalFetch)
+                        }
+                    } label: {
+                        Label("Fetch latest Windows installer…", systemImage: "link")
+                    }.buttonStyle(.link)
                     #endif
                     Link(destination: URL(string: "https://docs.getutm.app/guides/windows/")!) {
                         Label("Windows Install Guide", systemImage: "link")
@@ -69,31 +62,16 @@ struct VMWizardOSWindowsView: View {
             } header: {
                 Text("Image File Type")
             }
-            .onAppear {
-                // SwiftUI bug: on macOS 11, onAppear() is called every time the check box is clicked
-                if #available(iOS 15, macOS 12, *) {
-                    if wizardState.windowsBootVhdx != nil {
-                        useVhdx = true
-                    }
-                }
-            }
-            
+            #endif
+
             Section {
-                if useVhdx {
-                    FileBrowseField(url: $wizardState.windowsBootVhdx, isFileImporterPresented: $isFileImporterPresented, hasClearButton: false)
-                } else {
-                    FileBrowseField(url: $wizardState.bootImageURL, isFileImporterPresented: $isFileImporterPresented, hasClearButton: false)
-                }
+                FileBrowseField(url: $wizardState.bootImageURL, isFileImporterPresented: $isFileImporterPresented, hasClearButton: false)
                 
                 if wizardState.isBusy {
                     Spinner(size: .large)
                 }
             } header: {
-                if useVhdx {
-                    Text("Boot VHDX Image")
-                } else {
-                    Text("Boot ISO Image")
-                }
+                Text("Boot ISO Image")
             }
             
             if !wizardState.isWindows10OrHigher {
@@ -118,21 +96,22 @@ struct VMWizardOSWindowsView: View {
             }
         }
         .fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.data], onCompletion: processImage)
+        .onAppear {
+            wizardState.bootDevice = .cd
+            #if WITH_QEMU_TCI
+            wizardState.legacyHardware = true
+            #endif
+            if wizardState.legacyHardware {
+                wizardState.isWindows10OrHigher = false
+            }
+        }
     }
     
     private func processImage(_ result: Result<URL, Error>) {
         wizardState.busyWorkAsync {
             let url = try result.get()
             await MainActor.run {
-                if useVhdx {
-                    wizardState.windowsBootVhdx = url
-                    wizardState.bootImageURL = nil
-                    wizardState.bootDevice = .none
-                } else {
-                    wizardState.windowsBootVhdx = nil
-                    wizardState.bootImageURL = url
-                    wizardState.bootDevice = .cd
-                }
+                wizardState.bootImageURL = url
             }
         }
     }

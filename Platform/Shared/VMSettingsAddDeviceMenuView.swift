@@ -36,7 +36,7 @@ struct VMSettingsAddDeviceMenuView: View {
     }
     
     private var isAddDisplayEnabled: Bool {
-        if config.system.architecture == .sparc || config.system.architecture == .sparc64 {
+        if [.sparc, .sparc64, .m68k].contains(config.system.architecture) {
             return config.displays.count < 1
         } else {
             return !config.system.architecture.displayDeviceType.allRawValues.isEmpty

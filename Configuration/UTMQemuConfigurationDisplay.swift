@@ -86,6 +86,8 @@ extension UTMQemuConfigurationDisplay {
             hardware = QEMUDisplayDevice_x86_64.isa_vga
         } else if rawTarget.hasPrefix("virt-") || rawTarget == "virt" {
             hardware = QEMUDisplayDevice_aarch64.virtio_ramfb
+        } else if architecture == .m68k && rawTarget == QEMUTarget_m68k.q800.rawValue {
+            hardware = QEMUDisplayDevice_m68k.nubus_macfb
         } else {
             let cards = architecture.displayDeviceType.allRawValues
             if cards.contains("VGA") {

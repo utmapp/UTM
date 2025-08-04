@@ -55,6 +55,7 @@ class VMDisplayQemuTerminalWindowController: VMDisplayQemuWindowController, VMDi
         isSizeChangeIgnored = true
         setupTerminal(terminalView, using: serialConfig!.terminal!, id: id, for: window!)
         isSizeChangeIgnored = false
+        keyboardShortcutsItem.isEnabled = false
     }
     
     override func enterSuspended(isBusy busy: Bool) {

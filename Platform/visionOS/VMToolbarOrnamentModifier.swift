@@ -28,6 +28,7 @@ struct VMToolbarOrnamentModifier: ViewModifier {
     @AppStorage("ToolbarIsCollapsed") private var isCollapsed: Bool = false
     @Environment(\.openWindow) private var openWindow
     @Environment(\.dismissWindow) private var dismissWindow
+    @State private var isKeyShortcutsShown = false
 
     func body(content: Content) -> some View {
         content.ornament(visibility: isCollapsed ? .hidden : .visible, attachmentAnchor: .scene(.top)) {
@@ -112,6 +113,18 @@ struct VMToolbarOrnamentModifier: ViewModifier {
                         handleKeyEvent(keyCode, modifier: modifier, isKeyDown: true)
                     }
                 }
+                #if !WITH_REMOTE
+                .simultaneousGesture(
+                    LongPressGesture().onEnded { _ in
+                        isKeyShortcutsShown.toggle()
+                    }
+                )
+                .sheet(isPresented: $isKeyShortcutsShown) {
+                    VMKeyboardShortcutsView { keys in
+                        session.sendKeys(keys: keys)
+                    }
+                }
+                #endif
                 Divider()
                 Button {
                     isCollapsed = true

@@ -108,7 +108,7 @@ extension UTMScriptingConfigImpl {
             "drives": config.drives.map({ serializeQemuDriveExisting($0) }),
             "networkInterfaces": config.networks.enumerated().map({ serializeQemuNetwork($1, index: $0) }),
             "serialPorts": config.serials.enumerated().map({ serializeQemuSerial($1, index: $0) }),
-            "displays": config.displays.map({ serializeQemuDisplay($0)}),
+            "displays": config.displays.enumerated().map({ serializeQemuDisplay($1, index: $0)}),
             "qemuAdditionalArguments": config.qemu.additionalArguments.map({ serializeQemuAdditionalArgument($0)}),
         ]
     }
@@ -198,9 +198,9 @@ extension UTMScriptingConfigImpl {
         }
     }
     
-    private func serializeQemuDisplay(_ config: UTMQemuConfigurationDisplay) -> [AnyHashable : Any] {
+    private func serializeQemuDisplay(_ config: UTMQemuConfigurationDisplay, index: Int) -> [AnyHashable : Any] {
         [
-            "id": config.id.uuidString,
+            "index": index,
             "hardware": config.hardware.rawValue,
             "dynamicResolution": config.isDynamicResolution,
             "nativeResolution": config.isNativeResolution,
@@ -232,7 +232,7 @@ extension UTMScriptingConfigImpl {
             "drives": config.drives.map({ serializeAppleDriveExisting($0) }),
             "networkInterfaces": config.networks.enumerated().map({ serializeAppleNetwork($1, index: $0) }),
             "serialPorts": config.serials.enumerated().map({ serializeAppleSerial($1, index: $0) }),
-            "displays": config.displays.map({ serializeAppleDisplay($0)}),
+            "displays": config.displays.enumerated().map({ serializeAppleDisplay($1, index: $0)}),
         ]
     }
     
@@ -281,9 +281,9 @@ extension UTMScriptingConfigImpl {
         ]
     }
     
-    private func serializeAppleDisplay(_ config: UTMAppleConfigurationDisplay) -> [AnyHashable : Any] {
+    private func serializeAppleDisplay(_ config: UTMAppleConfigurationDisplay, index: Int) -> [AnyHashable : Any] {
         [
-            "id": config.id.uuidString,
+            "index": index,
             "dynamicResolution": config.isDynamicResolution,
         ]
     }

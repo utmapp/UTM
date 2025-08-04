@@ -674,7 +674,7 @@ ios* | visionos* )
     case $PLATFORM in
     *-tci )
         if [ "$ARCH" == "arm64" ]; then
-            TCI_BUILD_FLAGS="--enable-tcg-threaded-interpreter --target-list=aarch64-softmmu,arm-softmmu,i386-softmmu,ppc-softmmu,ppc64-softmmu,riscv32-softmmu,riscv64-softmmu,x86_64-softmmu --extra-cflags=-Wno-unused-command-line-argument --extra-ldflags=-Wl,-no_deduplicate --extra-ldflags=-Wl,-random_uuid --extra-ldflags=-Wl,-no_compact_unwind"
+            TCI_BUILD_FLAGS="--enable-tcg-threaded-interpreter --target-list=aarch64-softmmu,i386-softmmu,ppc-softmmu,ppc64-softmmu,riscv64-softmmu,x86_64-softmmu,m68k-softmmu --extra-cflags=-Wno-unused-command-line-argument --extra-ldflags=-Wl,-no_deduplicate --extra-ldflags=-Wl,-random_uuid --extra-ldflags=-Wl,-no_compact_unwind"
         else
             TCI_BUILD_FLAGS="--enable-tcg-interpreter"
         fi

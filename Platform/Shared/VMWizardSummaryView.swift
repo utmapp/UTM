@@ -91,7 +91,7 @@ struct VMWizardSummaryView: View {
                 if os == .Other {
                     wizardState.name = data.newDefaultVMName()
                 } else {
-                    wizardState.name = data.newDefaultVMName(base: os.rawValue)
+                    wizardState.name = data.newDefaultVMName(base: os.name.localizedString)
                 }
             }
             if #available(iOS 15, macOS 12, *) {
@@ -136,18 +136,17 @@ struct VMWizardSummaryView: View {
     
     var boot: some View {
         Group {
-            TextField("Operating System", text: .constant(NSLocalizedString(wizardState.operatingSystem.rawValue, comment: "VMWizardSummaryView")))
+            TextField("Operating System", text: .constant(wizardState.operatingSystem.name.localizedString))
             if let bootImageURL = wizardState.bootImageURL {
                 TextField("Boot Image", text: .constant(bootImageURL.path))
             }
-            switch wizardState.operatingSystem {
-            case .macOS:
+            if wizardState.operatingSystem == .macOS {
                 #if os(macOS) && arch(arm64)
                 TextField("IPSW", text: .constant(wizardState.macRecoveryIpswURL?.path ?? ""))
                 #else
                 EmptyView()
                 #endif
-            case .Linux:
+            } else if wizardState.operatingSystem == .Linux {
                 TextField("Kernel", text: .constant(wizardState.linuxKernelURL?.path ?? ""))
                 TextField("Initial Ramdisk", text: .constant(wizardState.linuxInitialRamdiskURL?.path ?? ""))
                 TextField("Root Image", text: .constant(wizardState.linuxRootImageURL?.path ?? ""))
@@ -157,10 +156,6 @@ struct VMWizardSummaryView: View {
                     Toggle("Use Rosetta", isOn: $wizardState.linuxHasRosetta)
                 }
                 #endif
-            case .Windows, .Other:
-                if let windowsBootVhdx = wizardState.windowsBootVhdx {
-                    TextField("Disk Image", text: .constant(windowsBootVhdx.path))
-                }
             }
         }
     }

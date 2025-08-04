@@ -570,9 +570,9 @@
         </record-type>
         
         <record-type name="qemu display configuration" code="QdYc" description="QEMU virtual display configuration.">
-          <property name="id" code="ID  " type="text" access="r"
-            description="The unique identifier for this display (if empty, a new display will be created)."/>
-            
+          <property name="index" code="pidx" type="integer"
+            description="The position of the configuration to update. It can be empty to create a new device. Index is invalid after updating the configuration and must be reset to the current position."/>
+
           <property name="hardware" code="HaWe" type="text"
             description="Name of the emulated display card (required. if given hardware not found, the default will be used)."/>
             

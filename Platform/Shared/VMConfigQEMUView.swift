@@ -37,7 +37,7 @@ struct VMConfigQEMUView: View {
     }
     
     private var supportsUefi: Bool {
-        [.arm, .aarch64, .i386, .x86_64].contains(system.architecture)
+        UTMQemuConfigurationQEMU.uefiImagePrefix(forArchitecture: system.architecture) != nil
     }
     
     private var supportsPs2: Bool {

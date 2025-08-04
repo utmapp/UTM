@@ -411,6 +411,7 @@ extension QEMUArchitecture {
         case .avr: return false
         case .m68k: return false
         case .microblaze, .microblazeel: return false
+        case .ppc, .ppc64: return false
         case .rx: return false
         case .sparc, .sparc64: return false
         case .tricore: return false
@@ -429,6 +430,7 @@ extension QEMUArchitecture {
         switch self {
         case .s390x: return false
         case .sparc, .sparc64: return false
+        case .m68k: return false
         default: return true
         }
     }
@@ -496,12 +498,11 @@ extension QEMUTarget {
 extension QEMUArchitecture {
     var isHidden: Bool {
         switch self {
-        case .arm: return false
         case .aarch64: return false
         case .i386: return false
+        case .m68k: return false
         case .ppc: return false
         case .ppc64: return false
-        case .riscv32: return false
         case .riscv64: return false
         case .x86_64: return false
         default: return true

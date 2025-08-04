@@ -14,6 +14,7 @@
                 <outlet property="captureMouseToolbarItem" destination="FN7-zs-mWC" id="qzI-Kk-0D1"/>
                 <outlet property="displayView" destination="M5X-Is-pc9" id="U6s-s4-48i"/>
                 <outlet property="drivesToolbarItem" destination="bKL-Th-FFw" id="3SQ-Qt-5jn"/>
+                <outlet property="keyboardShortcutsItem" destination="0aR-4a-Su7" id="hUV-ll-S6s"/>
                 <outlet property="overlayView" destination="nKs-QY-EOf" id="sD4-fu-HIL"/>
                 <outlet property="resizeConsoleToolbarItem" destination="Ulf-oT-4cP" id="gIb-1X-LHA"/>
                 <outlet property="restartToolbarItem" destination="G7P-HJ-bcy" id="R8T-hV-Gr6"/>
@@ -36,7 +37,7 @@
             <windowCollectionBehavior key="collectionBehavior" fullScreenPrimary="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="240" width="800" height="600"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1728" height="1079"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="3008" height="1667"/>
             <view key="contentView" wantsLayer="YES" id="EiT-Mj-1SZ">
                 <rect key="frame" x="0.0" y="0.0" width="800" height="600"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -144,6 +145,19 @@
                             </connections>
                         </button>
                     </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="8B5CDC68-CEC0-4C3D-8E0A-AFA4A3BE8BA5" label="Keyboard Shortcuts" paletteLabel="Keyboard Shortcuts" toolTip="Keyboard shortcuts" image="keyboard" catalog="system" bordered="YES" sizingBehavior="auto" id="0aR-4a-Su7">
+                        <button key="view" verticalHuggingPriority="750" id="Ut7-KA-ER4">
+                            <rect key="frame" x="40" y="14" width="31" height="23"/>
+                            <autoresizingMask key="autoresizingMask"/>
+                            <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="keyboard" catalog="system" imagePosition="only" alignment="center" alternateImage="command.square" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="M2Z-2r-cfE">
+                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                <font key="font" metaFont="system"/>
+                            </buttonCell>
+                            <connections>
+                                <action selector="keyboardShortcutsButtonPressed:" target="-2" id="u8k-Gr-q6g"/>
+                            </connections>
+                        </button>
+                    </toolbarItem>
                     <toolbarItem implicitItemIdentifier="E86439F7-239E-4570-B1FE-FFF2B4BA3F10" label="Capture Input" paletteLabel="Capture Input" toolTip="Capture input devices" image="cursorarrow.rays" catalog="system" sizingBehavior="auto" id="FN7-zs-mWC">
                         <button key="view" verticalHuggingPriority="750" id="Ge3-wo-FzQ">
                             <rect key="frame" x="26" y="14" width="28" height="23"/>
@@ -227,6 +241,7 @@
                     <toolbarItem reference="Bkx-Ph-j0D"/>
                     <toolbarItem reference="kT2-2U-cYm"/>
                     <toolbarItem reference="G7P-HJ-bcy"/>
+                    <toolbarItem reference="0aR-4a-Su7"/>
                     <toolbarItem reference="FN7-zs-mWC"/>
                     <toolbarItem reference="Ulf-oT-4cP"/>
                     <toolbarItem reference="tlw-Fb-ne3"/>
@@ -253,7 +268,8 @@
         <image name="arrow.up.left.and.arrow.down.right" catalog="system" width="16" height="15"/>
         <image name="command.square" catalog="system" width="15" height="14"/>
         <image name="cursorarrow.rays" catalog="system" width="16" height="16"/>
-        <image name="folder.badge.person.crop" catalog="system" width="19" height="14"/>
+        <image name="folder.badge.person.crop" catalog="system" width="20" height="15"/>
+        <image name="keyboard" catalog="system" width="19" height="13"/>
         <image name="opticaldisc" catalog="system" width="15" height="15"/>
         <image name="play.circle.fill" catalog="system" width="15" height="15"/>
         <image name="play.fill" catalog="system" width="12" height="13"/>

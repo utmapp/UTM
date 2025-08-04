@@ -149,6 +149,14 @@
 		845F95E42A57628400A016D7 /* UTMSWTPM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845F95E22A57628400A016D7 /* UTMSWTPM.swift */; };
 		845F95E52A57628400A016D7 /* UTMSWTPM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845F95E22A57628400A016D7 /* UTMSWTPM.swift */; };
 		846D878629050B6B0095F10B /* InAppSettingsKit in Frameworks */ = {isa = PBXBuildFile; platformFilter = ios; productRef = 846D878529050B6B0095F10B /* InAppSettingsKit */; };
+		846F8D582E3850620037162B /* VMKeyboardShortcutsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846F8D572E3850620037162B /* VMKeyboardShortcutsView.swift */; };
+		846F8D5A2E3891FE0037162B /* UTMKeyboardShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846F8D592E3891FE0037162B /* UTMKeyboardShortcuts.swift */; };
+		846F8D5B2E3891FE0037162B /* UTMKeyboardShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846F8D592E3891FE0037162B /* UTMKeyboardShortcuts.swift */; };
+		846F8D5D2E3891FE0037162B /* UTMKeyboardShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846F8D592E3891FE0037162B /* UTMKeyboardShortcuts.swift */; };
+		846F8D622E4072960037162B /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 846F8D612E4072960037162B /* AppIcon.icon */; };
+		846F8D632E4072960037162B /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 846F8D612E4072960037162B /* AppIcon.icon */; };
+		846F8D662E4072AA0037162B /* AppIcon-Remote.icon in Resources */ = {isa = PBXBuildFile; fileRef = 846F8D652E4072AA0037162B /* AppIcon-Remote.icon */; };
+		846F8D692E4075F00037162B /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 846F8D612E4072960037162B /* AppIcon.icon */; };
 		8471770627CC974F00D3A50B /* DefaultTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8471770527CC974F00D3A50B /* DefaultTextField.swift */; };
 		8471770727CC974F00D3A50B /* DefaultTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8471770527CC974F00D3A50B /* DefaultTextField.swift */; };
 		8471770827CC974F00D3A50B /* DefaultTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8471770527CC974F00D3A50B /* DefaultTextField.swift */; };
@@ -642,6 +650,14 @@
 		CE612AC624D3B50700FA6300 /* VMDisplayWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE612AC524D3B50700FA6300 /* VMDisplayWindowController.swift */; };
 		CE65BABF26A4D8DD0001BD6B /* VMConfigDisplayConsoleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8401FDA5269D44E400265F0D /* VMConfigDisplayConsoleView.swift */; };
 		CE65BAC026A4D8DE0001BD6B /* VMConfigDisplayConsoleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8401FDA5269D44E400265F0D /* VMConfigDisplayConsoleView.swift */; };
+		CE68E5442E3912E0006B3645 /* VMKeyboardShortcutsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE68E5422E3912E0006B3645 /* VMKeyboardShortcutsView.swift */; };
+		CE68E5452E3912E0006B3645 /* VMKeyboardShortcutsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE68E5422E3912E0006B3645 /* VMKeyboardShortcutsView.swift */; };
+		CE68E5482E3C3E0A006B3645 /* VMWizardOSClassicMacView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE68E5472E3C3E0A006B3645 /* VMWizardOSClassicMacView.swift */; };
+		CE68E5492E3C3E0A006B3645 /* VMWizardOSClassicMacView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE68E5472E3C3E0A006B3645 /* VMWizardOSClassicMacView.swift */; };
+		CE68E54A2E3C3E0A006B3645 /* VMWizardOSClassicMacView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE68E5472E3C3E0A006B3645 /* VMWizardOSClassicMacView.swift */; };
+		CE68E54B2E3C3E0A006B3645 /* VMWizardOSClassicMacView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE68E5472E3C3E0A006B3645 /* VMWizardOSClassicMacView.swift */; };
+		CE68E54F2E404C4F006B3645 /* qemu-m68k-softmmu.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE2D63EB22653C7400FC7E63 /* qemu-m68k-softmmu.framework */; };
+		CE68E5502E404C4F006B3645 /* qemu-m68k-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63EB22653C7400FC7E63 /* qemu-m68k-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CE6C13CA2B63610C003B7032 /* UTMRemoteMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6C13C92B63610C003B7032 /* UTMRemoteMessage.swift */; };
 		CE6C13CB2B63610C003B7032 /* UTMRemoteMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6C13C92B63610C003B7032 /* UTMRemoteMessage.swift */; };
 		CE6D21DC2553A6ED001D29C5 /* VMConfirmActionModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6D21DB2553A6ED001D29C5 /* VMConfirmActionModifier.swift */; };
@@ -849,11 +865,9 @@
 		CEA45F8B263519B5002FA97D /* qemu-aarch64-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FD22653C7500FC7E63 /* qemu-aarch64-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F8F263519B5002FA97D /* gobject-2.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F522653C7400FC7E63 /* gobject-2.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F90263519B5002FA97D /* gmodule-2.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63D822653C7300FC7E63 /* gmodule-2.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CEA45F93263519B5002FA97D /* qemu-riscv32-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63FA22653C7400FC7E63 /* qemu-riscv32-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F97263519B5002FA97D /* qemu-ppc64-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640C22653C7500FC7E63 /* qemu-ppc64-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F9A263519B5002FA97D /* glib-2.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640422653C7500FC7E63 /* glib-2.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F9B263519B5002FA97D /* qemu-x86_64-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640022653C7500FC7E63 /* qemu-x86_64-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		CEA45F9E263519B5002FA97D /* qemu-arm-softmmu.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D640722653C7500FC7E63 /* qemu-arm-softmmu.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45F9F263519B5002FA97D /* intl.8.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63DA22653C7300FC7E63 /* intl.8.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45FA0263519B5002FA97D /* gstreamer-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63E022653C7400FC7E63 /* gstreamer-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		CEA45FA1263519B5002FA97D /* gstvideo-1.0.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE2D63F922653C7400FC7E63 /* gstvideo-1.0.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -1527,15 +1541,14 @@
 				CEA45F8B263519B5002FA97D /* qemu-aarch64-softmmu.framework in Embed Libraries */,
 				CEA45F8F263519B5002FA97D /* gobject-2.0.0.framework in Embed Libraries */,
 				CEA45F90263519B5002FA97D /* gmodule-2.0.0.framework in Embed Libraries */,
-				CEA45F93263519B5002FA97D /* qemu-riscv32-softmmu.framework in Embed Libraries */,
 				CEA45F97263519B5002FA97D /* qemu-ppc64-softmmu.framework in Embed Libraries */,
 				CEA45F9A263519B5002FA97D /* glib-2.0.0.framework in Embed Libraries */,
 				CEA45F9B263519B5002FA97D /* qemu-x86_64-softmmu.framework in Embed Libraries */,
 				CE064C6C2A563F75003C833D /* swtpm.0.framework in Embed Libraries */,
-				CEA45F9E263519B5002FA97D /* qemu-arm-softmmu.framework in Embed Libraries */,
 				CEA45F9F263519B5002FA97D /* intl.8.framework in Embed Libraries */,
 				CEA45FA0263519B5002FA97D /* gstreamer-1.0.0.framework in Embed Libraries */,
 				CEA45FA1263519B5002FA97D /* gstvideo-1.0.0.framework in Embed Libraries */,
+				CE68E5502E404C4F006B3645 /* qemu-m68k-softmmu.framework in Embed Libraries */,
 				CEA45FA2263519B5002FA97D /* json-glib-1.0.0.framework in Embed Libraries */,
 				CEA45FA3263519B5002FA97D /* pixman-1.0.framework in Embed Libraries */,
 				CEA45FA4263519B5002FA97D /* jpeg.62.framework in Embed Libraries */,
@@ -1725,6 +1738,10 @@
 		845F170A289CB07200944904 /* VMDisplayAppleDisplayWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayAppleDisplayWindowController.swift; sourceTree = "<group>"; };
 		845F170C289CB3DE00944904 /* VMDisplayTerminal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayTerminal.swift; sourceTree = "<group>"; };
 		845F95E22A57628400A016D7 /* UTMSWTPM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMSWTPM.swift; sourceTree = "<group>"; };
+		846F8D572E3850620037162B /* VMKeyboardShortcutsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMKeyboardShortcutsView.swift; sourceTree = "<group>"; };
+		846F8D592E3891FE0037162B /* UTMKeyboardShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMKeyboardShortcuts.swift; sourceTree = "<group>"; };
+		846F8D612E4072960037162B /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AppIcon.icon; sourceTree = "<group>"; };
+		846F8D652E4072AA0037162B /* AppIcon-Remote.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = "AppIcon-Remote.icon"; sourceTree = "<group>"; };
 		8471770527CC974F00D3A50B /* DefaultTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultTextField.swift; sourceTree = "<group>"; };
 		8471772727CD3CAB00D3A50B /* DetailedSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailedSection.swift; sourceTree = "<group>"; };
 		847BF9A92A49C783000BD9AA /* VMData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMData.swift; sourceTree = "<group>"; };
@@ -1965,6 +1982,8 @@
 		CE611BEA29F50D3E001817BC /* VMReleaseNotesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMReleaseNotesView.swift; sourceTree = "<group>"; };
 		CE612AC524D3B50700FA6300 /* VMDisplayWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayWindowController.swift; sourceTree = "<group>"; };
 		CE66450C2269313200B0849A /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
+		CE68E5422E3912E0006B3645 /* VMKeyboardShortcutsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMKeyboardShortcutsView.swift; sourceTree = "<group>"; };
+		CE68E5472E3C3E0A006B3645 /* VMWizardOSClassicMacView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMWizardOSClassicMacView.swift; sourceTree = "<group>"; };
 		CE6B240A25F1F3CE0020D43E /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		CE6B240F25F1F43A0020D43E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CE6B241025F1F4B30020D43E /* QEMULauncher.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = QEMULauncher.entitlements; sourceTree = "<group>"; };
@@ -2356,6 +2375,7 @@
 				CEA45F29263519B5002FA97D /* IQKeyboardManagerSwift in Frameworks */,
 				CEA45F2A263519B5002FA97D /* MetalKit.framework in Frameworks */,
 				84CF5DF3288E433F00D01721 /* SwiftUIVisualEffects in Frameworks */,
+				CE68E54F2E404C4F006B3645 /* qemu-m68k-softmmu.framework in Frameworks */,
 				84818C0D2898A07F009EDB67 /* AVFAudio.framework in Frameworks */,
 				CED2971B2CE4263600F1E3EB /* soup-3.0.0.framework in Frameworks */,
 				CEA45F2B263519B5002FA97D /* libgstvolume.a in Frameworks */,
@@ -2698,6 +2718,8 @@
 				CE550BD52259479D0063E575 /* Assets.xcassets */,
 				521F3EFB2414F73800130500 /* Localizable.strings */,
 				CED8DF7928A120C100C34345 /* Localizable.stringsdict */,
+				846F8D612E4072960037162B /* AppIcon.icon */,
+				846F8D652E4072AA0037162B /* AppIcon-Remote.icon */,
 			);
 			path = Platform;
 			sourceTree = "<group>";
@@ -2729,6 +2751,7 @@
 				CE928C3026ACCDEA0099F293 /* VMAppleRemovableDrivesView.swift */,
 				84C584E4268F8C65000FCABF /* VMAppleSettingsView.swift */,
 				845F1706289B5E2600944904 /* VMAppleSettingsAddDeviceMenuView.swift */,
+				846F8D572E3850620037162B /* VMKeyboardShortcutsView.swift */,
 				84C584E2268F8AE7000FCABF /* VMQEMUSettingsView.swift */,
 				CE2D953D24AD4F980059923A /* VMSettingsView.swift */,
 				CEF0300526A25A6900667B63 /* VMWizardView.swift */,
@@ -2765,6 +2788,7 @@
 				84CF5DD2288DCE6400D01721 /* VMDisplayHostedView.swift */,
 				84018685288A3B5B0050AC51 /* VMSessionState.swift */,
 				CE2D955124AD4F980059923A /* VMDrivesSettingsView.swift */,
+				CE68E5422E3912E0006B3645 /* VMKeyboardShortcutsView.swift */,
 				CE2D954C24AD4F980059923A /* VMSettingsView.swift */,
 				84C60FB62681A41B00B58C00 /* VMToolbarView.swift */,
 				84E6F6FC289319AE00080EEF /* VMToolbarDisplayMenuView.swift */,
@@ -2873,6 +2897,7 @@
 				CE2D954624AD4F980059923A /* UTMExtensions.swift */,
 				CEB63A7924F469E300CAF323 /* UTMJailbreak.m */,
 				CEB63A7824F468BA00CAF323 /* UTMJailbreak.h */,
+				846F8D592E3891FE0037162B /* UTMKeyboardShortcuts.swift */,
 				CE059DC6243E9E3400338317 /* UTMLocationManager.h */,
 				CE059DC7243E9E3400338317 /* UTMLocationManager.m */,
 				CE6EDCE0241DA0E900A719DC /* UTMLogging.h */,
@@ -3036,6 +3061,7 @@
 				84C2E8642AA429E800B17308 /* VMWizardContent.swift */,
 				CEBE820226A4C1B5007AAB12 /* VMWizardDrivesView.swift */,
 				CEF0307326A2B40B00667B63 /* VMWizardHardwareView.swift */,
+				CE68E5472E3C3E0A006B3645 /* VMWizardOSClassicMacView.swift */,
 				CEF0305726A2AFDE00667B63 /* VMWizardOSLinuxView.swift */,
 				CEF0305826A2AFDE00667B63 /* VMWizardOSMacView.swift */,
 				CEF0305426A2AFDD00667B63 /* VMWizardOSOtherView.swift */,
@@ -3424,6 +3450,7 @@
 				CE061CE6289EB6250000351C /* VMDisplayMetalViewInputAccessory.xib in Resources */,
 				CED8DF7528A120C100C34345 /* Localizable.stringsdict in Resources */,
 				CE2D937224AD46670059923A /* Settings.bundle in Resources */,
+				846F8D632E4072960037162B /* AppIcon.icon in Resources */,
 				CE0B6CED24AD532A00FE012D /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3434,6 +3461,7 @@
 			files = (
 				CE0B6CEC24AD532500FE012D /* Assets.xcassets in Resources */,
 				CEF83F262500901300557D15 /* qemu in Resources */,
+				846F8D692E4075F00037162B /* AppIcon.icon in Resources */,
 				CE4698FA24C8FBD9008C1BD6 /* Icons in Resources */,
 				CE2D959024AD50D50059923A /* Localizable.strings in Resources */,
 				FFB02A90266CB09C006CD71A /* InfoPlist.strings in Resources */,
@@ -3462,6 +3490,7 @@
 				CE061CE7289EB6250000351C /* VMDisplayMetalViewInputAccessory.xib in Resources */,
 				CED8DF7628A120C100C34345 /* Localizable.stringsdict in Resources */,
 				CEA45F6D263519B5002FA97D /* Settings.bundle in Resources */,
+				846F8D622E4072960037162B /* AppIcon.icon in Resources */,
 				CEA45F6F263519B5002FA97D /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3480,6 +3509,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CEF7F6792AEEDCC400E34952 /* Icons in Resources */,
+				846F8D662E4072AA0037162B /* AppIcon-Remote.icon in Resources */,
 				CEB5C1172B8C4CD4008AAE5C /* Info-RemotePlist.strings in Resources */,
 				CEF7F67B2AEEDCC400E34952 /* Localizable.strings in Resources */,
 				CEF7F67C2AEEDCC400E34952 /* qemu in Resources */,
@@ -3640,6 +3670,7 @@
 				843BF83C2845494C0029D60D /* UTMQemuConfigurationSerial.swift in Sources */,
 				CEF0305126A2AFBF00667B63 /* Spinner.swift in Sources */,
 				CE88A1552E247CCE00EAA28E /* UTMIntent.swift in Sources */,
+				CE68E5492E3C3E0A006B3645 /* VMWizardOSClassicMacView.swift in Sources */,
 				CE88A09F2E1DDB4200EAA28E /* UTMASIFImage.m in Sources */,
 				843BF840284555E70029D60D /* UTMQemuConfigurationPortForward.swift in Sources */,
 				CE611BE729F50CAD001817BC /* UTMReleaseHelper.swift in Sources */,
@@ -3718,10 +3749,12 @@
 				CE2D92F224AD46670059923A /* VMKeyboardButton.m in Sources */,
 				84B36D2527B704C200C22685 /* UTMDownloadVMTask.swift in Sources */,
 				8432329828C3017F00CFBC97 /* GlobalFileImporter.swift in Sources */,
+				CE68E5442E3912E0006B3645 /* VMKeyboardShortcutsView.swift in Sources */,
 				84CE3DAE2904C17C00FF068B /* IASKAppSettings.swift in Sources */,
 				84C2E8652AA429E800B17308 /* VMWizardContent.swift in Sources */,
 				841E58CB28937EE200137A20 /* UTMExternalSceneDelegate.swift in Sources */,
 				CEB63A7A24F469E300CAF323 /* UTMJailbreak.m in Sources */,
+				846F8D5D2E3891FE0037162B /* UTMKeyboardShortcuts.swift in Sources */,
 				841619B228431DA5000034B2 /* UTMQemuConfigurationQEMU.swift in Sources */,
 				843BF82428441EAD0029D60D /* UTMQemuConfigurationDisplay.swift in Sources */,
 				CE8011202AD4E9E8009001C2 /* UTMApp.swift in Sources */,
@@ -3844,6 +3877,7 @@
 				CE25125329C80A18000790AB /* UTMScriptingCloneCommand.swift in Sources */,
 				CE88A1682E24E4C000EAA28E /* VMKeyboardMap.m in Sources */,
 				CE2D956A24AD4F990059923A /* VMPlaceholderView.swift in Sources */,
+				CE68E54B2E3C3E0A006B3645 /* VMWizardOSClassicMacView.swift in Sources */,
 				CEF0306626A2AFDF00667B63 /* VMWizardOSLinuxView.swift in Sources */,
 				CEE7E938287CFDB100282049 /* UTMLegacyQemuConfiguration+Constants.m in Sources */,
 				CEFE98E129485776007CB7A8 /* UTMScriptingVirtualMachineImpl.swift in Sources */,
@@ -3880,6 +3914,7 @@
 				CE03D0D424DCF6DD00F76B84 /* VMMetalViewInputDelegate.swift in Sources */,
 				848F71EA277A2A4E006A0240 /* UTMSerialPort.swift in Sources */,
 				CE25124D29C55816000790AB /* UTMScriptingConfigImpl.swift in Sources */,
+				846F8D582E3850620037162B /* VMKeyboardShortcutsView.swift in Sources */,
 				CE0B6D0224AD56AE00FE012D /* UTMProcess.m in Sources */,
 				CEF0306026A2AFDF00667B63 /* VMWizardState.swift in Sources */,
 				CEF0300826A25A6900667B63 /* VMWizardView.swift in Sources */,
@@ -3964,6 +3999,7 @@
 				CE25124929BFDBA6000790AB /* UTMScriptingGuestFileImpl.swift in Sources */,
 				848A98C8287206AE006F0550 /* VMConfigAppleVirtualizationView.swift in Sources */,
 				CE9B153F2B11A63E003A32DD /* UTMRemoteServer.swift in Sources */,
+				846F8D5A2E3891FE0037162B /* UTMKeyboardShortcuts.swift in Sources */,
 				847BF9AC2A49C783000BD9AA /* VMData.swift in Sources */,
 				CE25124729BFDB87000790AB /* UTMScriptingGuestProcessImpl.swift in Sources */,
 				CE2D958824AD4F990059923A /* VMConfigPortForwardForm.swift in Sources */,
@@ -4010,6 +4046,7 @@
 				CEA45E43263519B5002FA97D /* UTMLegacyQemuConfigurationPortForward.m in Sources */,
 				843BF841284555E70029D60D /* UTMQemuConfigurationPortForward.swift in Sources */,
 				84A0A8842A47D52E0038F329 /* UTMQemuPort.swift in Sources */,
+				846F8D5B2E3891FE0037162B /* UTMKeyboardShortcuts.swift in Sources */,
 				848D99C528670F650055C215 /* UTMQemuConfiguration+Arguments.swift in Sources */,
 				CEA45E4B263519B5002FA97D /* BusyOverlay.swift in Sources */,
 				84937F032897451C003148F4 /* VMToolbarDriveMenuView.swift in Sources */,
@@ -4061,6 +4098,7 @@
 				8401865F2887B1620050AC51 /* VMDisplayTerminalViewController.swift in Sources */,
 				CEA45E8F263519B5002FA97D /* VMContextMenuModifier.swift in Sources */,
 				85EC516527CC8D0F004A51DE /* VMConfigAdvancedNetworkView.swift in Sources */,
+				CE68E54A2E3C3E0A006B3645 /* VMWizardOSClassicMacView.swift in Sources */,
 				CE88A1612E24B2B400EAA28E /* UTMInputIntent.swift in Sources */,
 				03FA9C732B9BBDB000C53A5A /* UTMConfigurationHostNetwork.swift in Sources */,
 				CEA45E91263519B5002FA97D /* VMDisplayMetalViewController+Pencil.m in Sources */,
@@ -4077,6 +4115,7 @@
 				CEA45EA8263519B5002FA97D /* VMDisplayMetalViewController+Gamepad.m in Sources */,
 				848D99C12866D9CE0055C215 /* QEMUArgumentBuilder.swift in Sources */,
 				CEA45EB3263519B5002FA97D /* UTMLogging.m in Sources */,
+				CE68E5452E3912E0006B3645 /* VMKeyboardShortcutsView.swift in Sources */,
 				848D99B928630A780055C215 /* VMConfigSerialView.swift in Sources */,
 				CEA45EB7263519B5002FA97D /* VMToolbarModifier.swift in Sources */,
 				CEA45EB9263519B5002FA97D /* VMCursor.m in Sources */,
@@ -4225,6 +4264,7 @@
 				CEF7F5CD2AEEDCC400E34952 /* UTMConfigurationTerminal.swift in Sources */,
 				CEF7F5CE2AEEDCC400E34952 /* VMWindowView.swift in Sources */,
 				CEF7F5CF2AEEDCC400E34952 /* UTMPendingVMView.swift in Sources */,
+				CE68E5482E3C3E0A006B3645 /* VMWizardOSClassicMacView.swift in Sources */,
 				CEE8B4C32B71E2BA0035AE86 /* UTMLoggingSwift.swift in Sources */,
 				CEF7F5D02AEEDCC400E34952 /* UTMSpiceIO.m in Sources */,
 				CEF7F5D12AEEDCC400E34952 /* UTMUnavailableVMView.swift in Sources */,
@@ -4709,7 +4749,7 @@
 		CE2D952A24AD48BF0059923A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-macOS";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
@@ -4743,7 +4783,7 @@
 		CE2D952B24AD48BF0059923A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-macOS";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
