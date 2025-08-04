@@ -44,7 +44,7 @@ struct VMConfigAppleNetworkingView: View {
                         Text("Automatic")
                             .tag(nil as String?)
                         ForEach(VZBridgedNetworkInterface.networkInterfaces, id: \.identifier) { interface in
-                            Text(interface.identifier)
+                            Text(interface.localizedDisplayName.map { "\($0) (\(interface.identifier))" } ?? interface.identifier)
                                 .tag(interface.identifier as String?)
                         }
                     }
