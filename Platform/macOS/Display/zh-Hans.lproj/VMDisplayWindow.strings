@@ -1,3 +1,12 @@
+/* Class = "NSToolbarItem"; label = "Keyboard Shortcuts"; ObjectID = "0aR-4a-Su7"; */
+"0aR-4a-Su7.label" = "键盘快捷键";
+
+/* Class = "NSToolbarItem"; paletteLabel = "Keyboard Shortcuts"; ObjectID = "0aR-4a-Su7"; */
+"0aR-4a-Su7.paletteLabel" = "键盘快捷键";
+
+/* Class = "NSToolbarItem"; toolTip = "Keyboard shortcuts"; ObjectID = "0aR-4a-Su7"; */
+"0aR-4a-Su7.toolTip" = "键盘快捷键";
+
 /* Class = "NSToolbarItem"; label = "Shared Folder"; ObjectID = "7EC-GE-fIl"; */
 "7EC-GE-fIl.label" = "共享文件夹";
 
