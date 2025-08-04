@@ -498,12 +498,11 @@ extension QEMUTarget {
 extension QEMUArchitecture {
     var isHidden: Bool {
         switch self {
-        case .arm: return false
         case .aarch64: return false
         case .i386: return false
+        case .m68k: return false
         case .ppc: return false
         case .ppc64: return false
-        case .riscv32: return false
         case .riscv64: return false
         case .x86_64: return false
         default: return true
