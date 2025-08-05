@@ -978,6 +978,9 @@ UTMScriptingVirtualMachineImpl */
 /* No comment provided by engineer. */
 "Please select a macOS recovery IPSW." = "请选择一个 macOS IPSW 恢复文件。";
 
+/* VMWizardState */
+"Please select a ROM file." = "请选择一个 ROM 文件。";
+
 /* No comment provided by engineer. */
 "Please select an uncompressed Linux kernel image." = "请选择一个未压缩的 Linux 内核映像。";
 
@@ -1769,6 +1772,9 @@ VMWizardOSMacView */
 "Disk" = "磁盘";
 
 /* No comment provided by engineer. */
+"Display Output" = "显示输出";
+
+/* No comment provided by engineer. */
 "DHCP Domain Name" = "DHCP 域名";
 
 /* No comment provided by engineer. */
@@ -1835,6 +1841,9 @@ VMWizardOSMacView */
 "Enable Balloon Device" = "启用 Balloon 设备";
 
 /* No comment provided by engineer. */
+"Enable display output" = "启用显示输出";
+
+/* No comment provided by engineer. */
 "Enable Entropy Device" = "启用 Entropy 设备";
 
 /* No comment provided by engineer. */
@@ -1862,6 +1871,9 @@ VMWizardOSMacView */
 "Engine" = "引擎";
 
 /* No comment provided by engineer. */
+"Expert Mode" = "专家模式";
+
+/* No comment provided by engineer. */
 "Export all arguments as a text file. This is only for debugging purposes as UTM's built-in QEMU differs from upstream QEMU in supported arguments." = "将所有参数导出为文本文件。此功能仅用于调试目的，因为 UTM 的内置 QEMU 与上游 QEMU 在支持的参数上有所不同。";
 
 /* No comment provided by engineer. */
@@ -1875,6 +1887,9 @@ VMWizardOSMacView */
 
 /* No comment provided by engineer. */
 "Fetch latest Windows installer…" = "获取最新的 Windows 安装程序…";
+
+/* No comment provided by engineer. */
+"File" = "文件";
 
 /* No comment provided by engineer. */
 "Font" = "字体";
@@ -2047,6 +2062,9 @@ VMWizardOSMacView */
 
 /* No comment provided by engineer. */
 "Keyboard" = "键盘";
+
+/* No comment provided by engineer. */
+"Keyboard Shortcuts…" = "键盘快捷键…";
 
 /* No comment provided by engineer. */
 "Last Seen" = "上次记录于";
