@@ -61,22 +61,22 @@ import Virtualization // for getting network interfaces
         socketURL.appendingPathComponent(information.uuid.uuidString).appendingPathExtension("swtpm")
     }
     
-    /// Used only if in remote sever mode.
+    /// Used only if in remote server mode.
     var monitorPipeURL: URL {
         socketURL.appendingPathComponent(information.uuid.uuidString).appendingPathExtension("qmp")
     }
 
-    /// Used only if in remote sever mode.
+    /// Used only if in remote server mode.
     var guestAgentPipeURL: URL {
         socketURL.appendingPathComponent(information.uuid.uuidString).appendingPathExtension("qga")
     }
 
-    /// Used only if in remote sever mode.
+    /// Used only if in remote server mode.
     var spiceTlsKeyUrl: URL {
         socketURL.appendingPathComponent(information.uuid.uuidString).appendingPathExtension("pem")
     }
 
-    /// Used only if in remote sever mode.
+    /// Used only if in remote server mode.
     var spiceTlsCertUrl: URL {
         socketURL.appendingPathComponent(information.uuid.uuidString).appendingPathExtension("crt")
     }
