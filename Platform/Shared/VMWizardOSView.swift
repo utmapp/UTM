@@ -29,7 +29,7 @@ struct VMWizardOSView: View {
                         wizardState.isGuestToolsInstallRequested = false
                         wizardState.next()
                     } label: {
-                        OperatingSystem(imageName: "mac", name: "macOS 12+")
+                        OperatingSystem(imageName: "Logo-macOS", name: "macOS 12+")
                     }
                 }
                 #endif
@@ -40,7 +40,7 @@ struct VMWizardOSView: View {
                         wizardState.isGuestToolsInstallRequested = false
                         wizardState.next()
                     } label: {
-                        OperatingSystem(imageName: "macos", name: "Classic Mac OS")
+                        OperatingSystem(imageName: "Logo-macOS", name: "Classic Mac OS")
                     }
                 }
                 Button {
@@ -49,18 +49,14 @@ struct VMWizardOSView: View {
                     wizardState.isGuestToolsInstallRequested = true
                     wizardState.next()
                 } label: {
-                    if wizardState.useVirtualization {
-                        OperatingSystem(imageName: "windows-11", name: "Windows")
-                    } else {
-                        OperatingSystem(imageName: "windows-9x", name: "Windows")
-                    }
+                    OperatingSystem(imageName: "Logo-Windows", name: "Windows")
                 }
                 Button {
                     wizardState.operatingSystem = .Linux
                     wizardState.isGuestToolsInstallRequested = false
                     wizardState.next()
                 } label: {
-                    OperatingSystem(imageName: "linux", name: "Linux")
+                    OperatingSystem(imageName: "Logo-Linux", name: "Linux")
                 }
             } header: {
                 Text("Preconfigured")
@@ -95,18 +91,13 @@ struct OperatingSystem: View {
     let imageName: String
     let name: LocalizedStringKey
     
-    private var imageURL: URL {
-        let path = Bundle.main.path(forResource: imageName, ofType: "png", inDirectory: "Icons")!
-        return URL(fileURLWithPath: path)
-    }
-    
 #if os(macOS)
     private var icon: Image {
-        Image(nsImage: NSImage(byReferencing: imageURL))
+        Image(nsImage: NSImage(named: imageName)!)
     }
 #else
     private var icon: Image {
-        Image(uiImage: UIImage(contentsOfURL: imageURL)!)
+        Image(uiImage: UIImage(named: imageName)!)
     }
 #endif
     
