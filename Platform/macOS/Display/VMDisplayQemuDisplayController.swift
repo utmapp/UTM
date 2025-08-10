@@ -40,7 +40,15 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
             return ""
         }
     }
-    
+
+    var primaryDisplayController: VMDisplayQemuWindowController {
+        if isSecondary {
+            return (primaryWindow as? VMDisplayQemuWindowController)!
+        } else {
+            return self
+        }
+    }
+
     convenience init(vm: UTMQemuVirtualMachine, id: Int) {
         self.init(vm: vm, onClose: nil)
         self.id = id
@@ -390,8 +398,8 @@ extension VMDisplayQemuWindowController {
         item.title = NSLocalizedString("Querying USB devices...", comment: "VMQemuDisplayMetalWindowController")
         item.isEnabled = false
         menu.addItem(item)
-        DispatchQueue.global(qos: .userInitiated).async {
-            let devices = self.vmUsbManager?.usbDevices ?? []
+        DispatchQueue.global(qos: .userInitiated).async { [self] in
+            let devices = primaryDisplayController.vmUsbManager?.usbDevices ?? []
             DispatchQueue.main.async {
                 self.updateUsbDevicesMenu(menu, devices: devices)
             }
@@ -410,9 +418,9 @@ extension VMDisplayQemuWindowController {
         }
         for (i, device) in devices.enumerated() {
             let item = NSMenuItem()
-            let canRedirect = vmUsbManager?.canRedirectUsbDevice(device, errorMessage: nil) ?? false
-            let isConnected = vmUsbManager?.isUsbDeviceConnected(device) ?? false
-            let isConnectedToSelf = connectedUsbDevices.contains(device)
+            let canRedirect = primaryDisplayController.vmUsbManager?.canRedirectUsbDevice(device, errorMessage: nil) ?? false
+            let isConnected = primaryDisplayController.vmUsbManager?.isUsbDeviceConnected(device) ?? false
+            let isConnectedToSelf = primaryDisplayController.connectedUsbDevices.contains(device)
             item.title = device.name ?? device.description
             let blocked = usbBlockList.contains { (usbVid, usbPid) in usbVid == device.usbVendorId && usbPid == device.usbProductId }
             item.isEnabled = !blocked && canRedirect && (isConnectedToSelf || !isConnected)
@@ -448,7 +456,7 @@ extension VMDisplayQemuWindowController {
             logger.error("wrong sender for connectUsbDevice")
             return
         }
-        guard let usbManager = vmUsbManager else {
+        guard let usbManager = primaryDisplayController.vmUsbManager else {
             logger.error("cannot get usb manager")
             return
         }
@@ -457,7 +465,7 @@ extension VMDisplayQemuWindowController {
             self.withErrorAlert {
                 try await usbManager.connectUsbDevice(device)
                 await MainActor.run {
-                    self.connectedUsbDevices.append(device)
+                    self.primaryDisplayController.connectedUsbDevices.append(device)
                 }
             }
         }
@@ -468,12 +476,12 @@ extension VMDisplayQemuWindowController {
             logger.error("wrong sender for disconnectUsbDevice")
             return
         }
-        guard let usbManager = vmUsbManager else {
+        guard let usbManager = primaryDisplayController.vmUsbManager else {
             logger.error("cannot get usb manager")
             return
         }
         let device = allUsbDevices[menu.tag]
-        connectedUsbDevices.removeAll(where: { $0 == device })
+        primaryDisplayController.connectedUsbDevices.removeAll(where: { $0 == device })
         Task.detached {
             self.withErrorAlert {
                 try await usbManager.disconnectUsbDevice(device)
@@ -495,6 +503,9 @@ extension VMDisplayQemuWindowController {
     }
 
     func autoConnectUsbDevices() {
+        guard !isSecondary else {
+            return
+        }
         guard let usbManager = vmUsbManager else {
             return
         }
