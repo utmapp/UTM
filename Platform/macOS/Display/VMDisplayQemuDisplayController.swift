@@ -275,6 +275,7 @@ extension VMDisplayQemuWindowController: UTMSpiceIODelegate {
             vmUsbManager = usbManager
             if let usbManager = usbManager {
                 usbManager.delegate = self
+                autoConnectUsbDevices()
             }
         }
         for subwindow in secondaryWindows {
@@ -415,10 +416,28 @@ extension VMDisplayQemuWindowController {
             item.title = device.name ?? device.description
             let blocked = usbBlockList.contains { (usbVid, usbPid) in usbVid == device.usbVendorId && usbPid == device.usbProductId }
             item.isEnabled = !blocked && canRedirect && (isConnectedToSelf || !isConnected)
-            item.state = isConnectedToSelf ? .on : .off;
+            item.state = isConnectedToSelf ? .on : .off
             item.tag = i
-            item.target = self
-            item.action = isConnectedToSelf ? #selector(disconnectUsbDevice) : #selector(connectUsbDevice)
+
+            let submenu = NSMenu()
+            let connectItem = NSMenuItem()
+            connectItem.title = isConnectedToSelf ? NSLocalizedString("Disconnect…", comment: "VMDisplayQemuDisplayController") : NSLocalizedString("Connect…", comment: "VMDisplayQemuDisplayController")
+            connectItem.isEnabled = !blocked && canRedirect && (isConnectedToSelf || !isConnected)
+            connectItem.tag = i
+            connectItem.target = self
+            connectItem.action = isConnectedToSelf ? #selector(disconnectUsbDevice) : #selector(connectUsbDevice)
+            submenu.addItem(connectItem)
+
+            let autoItem = NSMenuItem()
+            autoItem.title = NSLocalizedString("Auto connect on start", comment: "VMDisplayQemuDisplayController")
+            autoItem.isEnabled = !blocked && canRedirect
+            autoItem.state = isAutoConnect(device) ? .on : .off
+            autoItem.tag = i
+            autoItem.target = self
+            autoItem.action = #selector(setAutoConnect)
+            submenu.addItem(autoItem)
+
+            item.submenu = submenu
             menu.addItem(item)
         }
         menu.update()
@@ -435,14 +454,10 @@ extension VMDisplayQemuWindowController {
         }
         let device = allUsbDevices[menu.tag]
         Task.detached {
-            do {
+            self.withErrorAlert {
                 try await usbManager.connectUsbDevice(device)
                 await MainActor.run {
                     self.connectedUsbDevices.append(device)
-                }
-            } catch {
-                await MainActor.run {
-                    self.showErrorAlert(error.localizedDescription)
                 }
             }
         }
@@ -460,11 +475,40 @@ extension VMDisplayQemuWindowController {
         let device = allUsbDevices[menu.tag]
         connectedUsbDevices.removeAll(where: { $0 == device })
         Task.detached {
-            do {
+            self.withErrorAlert {
                 try await usbManager.disconnectUsbDevice(device)
-            } catch {
-                await MainActor.run {
-                    self.showErrorAlert(error.localizedDescription)
+            }
+        }
+    }
+
+    func isAutoConnect(_ device: CSUSBDevice) -> Bool {
+        return qemuVM.isAutoConnect(for: device)
+    }
+
+    @objc func setAutoConnect(sender: AnyObject) {
+        guard let menu = sender as? NSMenuItem else {
+            logger.error("wrong sender for autoConnect")
+            return
+        }
+        let device = allUsbDevices[menu.tag]
+        qemuVM.setAutoConnect(!qemuVM.isAutoConnect(for: device), for: device)
+    }
+
+    func autoConnectUsbDevices() {
+        guard let usbManager = vmUsbManager else {
+            return
+        }
+        DispatchQueue.global(qos: .userInitiated).async {
+            guard let devices = self.vmUsbManager?.usbDevices else {
+                return
+            }
+            let filtered = devices.filter({ self.isAutoConnect($0) })
+            for device in filtered {
+                self.withErrorAlert {
+                    try await usbManager.connectUsbDevice(device)
+                    await MainActor.run {
+                        self.connectedUsbDevices.append(device)
+                    }
                 }
             }
         }
