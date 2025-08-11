@@ -300,3 +300,40 @@ index 9fb9659c45..63e10cc6df 100644
  
  dtc = find_program('dtc', required: false)
 
+From a172998c2f8bcbd29afeb8cab9b97e43ef3a22b5 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Sun, 10 Aug 2025 21:54:34 -0700
+Subject: [PATCH] pc-bios: use 2023 Microsoft UEFI certificates
+
+Restore non-secure vars variants as well.
+---
+ pc-bios/edk2-arm-secure-vars.fd.bz2  | Bin 0 -> 12654 bytes
+ pc-bios/edk2-arm-vars.fd.bz2         | Bin 6710 -> 595 bytes
+ pc-bios/edk2-i386-secure-vars.fd.bz2 | Bin 0 -> 12986 bytes
+ pc-bios/edk2-i386-vars.fd.bz2        | Bin 7727 -> 612 bytes
+ pc-bios/meson.build                  |   2 ++
+ 5 files changed, 2 insertions(+)
+ create mode 100644 pc-bios/edk2-arm-secure-vars.fd.bz2
+ create mode 100644 pc-bios/edk2-i386-secure-vars.fd.bz2
+
+diff --git a/pc-bios/meson.build b/pc-bios/meson.build
+index 63e10cc6df..1e1b553795 100644
+--- a/pc-bios/meson.build
++++ b/pc-bios/meson.build
+@@ -4,11 +4,13 @@ if unpack_edk2_blobs
+     'edk2-aarch64-code.fd',
+     'edk2-aarch64-secure-code.fd',
+     'edk2-arm-code.fd',
++    'edk2-arm-secure-vars.fd',
+     'edk2-arm-vars.fd',
+     'edk2-riscv-code.fd',
+     'edk2-riscv-vars.fd',
+     'edk2-i386-code.fd',
+     'edk2-i386-secure-code.fd',
++    'edk2-i386-secure-vars.fd',
+     'edk2-i386-vars.fd',
+     'edk2-x86_64-code.fd',
+     'edk2-x86_64-secure-code.fd',
+-- 
+2.41.0
+
