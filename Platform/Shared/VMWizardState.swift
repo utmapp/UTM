@@ -576,6 +576,9 @@ struct AlertMessage: Identifiable {
                 config.drives.append(toolsDiskDrive)
             }
         }
+        if legacyHardware && operatingSystem == .Windows {
+            config.qemu.hasPS2Controller = true
+        }
         if legacyHardware && systemArchitecture.hasUsbSupport && systemTarget.hasUsbSupport {
             config.input.usbBusSupport = .usb2_0
         }
