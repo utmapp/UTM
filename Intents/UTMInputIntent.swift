@@ -111,7 +111,7 @@ struct UTMSendKeystrokesIntent: UTMIntent {
     @Parameter(title: "Virtual Machine", requestValueDialog: "Select a virtual machine")
     var vmEntity: UTMVirtualMachineEntity
 
-    @Parameter(title: "Keystrokes", description: "Text will be converted to a sequnce of keystrokes.")
+    @Parameter(title: "Keystrokes", description: "Text will be converted to a sequence of keystrokes.")
     var keystrokes: String
 
     @Parameter(title: "Modifiers", description: "The modifier keys will be held down while the keystroke sequence is sent.", default: [])
