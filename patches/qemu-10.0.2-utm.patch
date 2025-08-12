@@ -337,3 +337,59 @@ index 63e10cc6df..1e1b553795 100644
 -- 
 2.41.0
 
+From 0f1d6606c28d0ae81a1b311972c5c54e5e867bf0 Mon Sep 17 00:00:00 2001
+From: Mark Cave-Ayland <mark.cave-ayland@ilande.co.uk>
+Date: Wed, 11 Jun 2025 14:03:15 +0100
+Subject: [PATCH] target/i386: fix TB exit logic in gen_movl_seg() when writing
+ to SS
+
+Before commit e54ef98c8a ("target/i386: do not trigger IRQ shadow for LSS"), any
+write to SS in gen_movl_seg() would cause a TB exit. The changes introduced by
+this commit were intended to restrict the DISAS_EOB_INHIBIT_IRQ exit to the case
+where inhibit_irq is true, but missed that a DISAS_EOB_NEXT exit can still be
+required when writing to SS and inhibit_irq is false.
+
+Comparing the PE(s) && !VM86(s) section with the logic in x86_update_hflags(), we
+can see that the DISAS_EOB_NEXT exit is still required for the !CODE32 case when
+writing to SS in gen_movl_seg() because any change to the SS flags can affect
+hflags. Similarly we can see that the existing CODE32 case is still correct since
+a change to any of DS, ES and SS can affect hflags. Finally for the
+gen_op_movl_seg_real() case an explicit TB exit is not needed because the segment
+register selector does not affect hflags.
+
+Update the logic in gen_movl_seg() so that a write to SS with inhibit_irq set to
+false where PE(s) && !VM86(s) will generate a DISAS_EOB_NEXT exit along with the
+inline comment. This has the effect of allowing Win98SE to boot in QEMU once
+again.
+
+Signed-off-by: Mark Cave-Ayland <mark.cave-ayland@ilande.co.uk>
+Fixes: e54ef98c8a ("target/i386: do not trigger IRQ shadow for LSS")
+Resolves: https://gitlab.com/qemu-project/qemu/-/issues/2987
+Link: https://lore.kernel.org/r/20250611130315.383151-1-mark.cave-ayland@ilande.co.uk
+Reviewed-by: Peter Maydell <peter.maydell@linaro.org>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+---
+ target/i386/tcg/translate.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/target/i386/tcg/translate.c b/target/i386/tcg/translate.c
+index 0fcddc2ec0..0cb87d0201 100644
+--- a/target/i386/tcg/translate.c
++++ b/target/i386/tcg/translate.c
+@@ -2033,8 +2033,11 @@ static void gen_movl_seg(DisasContext *s, X86Seg seg_reg, TCGv src, bool inhibit
+         tcg_gen_trunc_tl_i32(sel, src);
+         gen_helper_load_seg(tcg_env, tcg_constant_i32(seg_reg), sel);
+ 
+-        /* For move to DS/ES/SS, the addseg or ss32 flags may change.  */
+-        if (CODE32(s) && seg_reg < R_FS) {
++        /*
++         * For moves to SS, the SS32 flag may change. For CODE32 only, changes
++         * to SS, DS and ES may change the ADDSEG flags.
++         */
++        if (seg_reg == R_SS || (CODE32(s) && seg_reg < R_FS)) {
+             s->base.is_jmp = DISAS_EOB_NEXT;
+         }
+     } else {
+-- 
+2.41.0
+
