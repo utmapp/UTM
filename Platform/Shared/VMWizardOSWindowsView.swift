@@ -65,16 +65,32 @@ struct VMWizardOSWindowsView: View {
             #endif
 
             Section {
+                if wizardState.legacyHardware {
+                    Picker("Boot Device", selection: $wizardState.bootDevice) {
+                        Text("CD/DVD Image").tag(VMBootDevice.cd)
+                        Text("Floppy Image").tag(VMBootDevice.floppy)
+                    }.pickerStyle(.inline)
+                    .onAppear {
+                        if !wizardState.legacyHardware && wizardState.bootDevice == .floppy {
+                            wizardState.bootDevice = .cd
+                        }
+                    }
+                }
+
                 FileBrowseField(url: $wizardState.bootImageURL, isFileImporterPresented: $isFileImporterPresented, hasClearButton: false)
                 
                 if wizardState.isBusy {
                     Spinner(size: .large)
                 }
             } header: {
-                Text("Boot ISO Image")
+                if wizardState.bootDevice == .cd {
+                    Text("Boot ISO Image")
+                } else {
+                    Text("Boot IMG Image")
+                }
             }
             
-            if !wizardState.isWindows10OrHigher {
+            if !wizardState.isWindows10OrHigher && !wizardState.legacyHardware {
                 DetailedSection("", description: "Some older systems do not support UEFI boot, such as Windows 7 and below.") {
                     Toggle("UEFI Boot", isOn: $wizardState.systemBootUefi)
                         .onChange(of: wizardState.systemBootUefi) { newValue in
@@ -103,6 +119,9 @@ struct VMWizardOSWindowsView: View {
             #endif
             if wizardState.legacyHardware {
                 wizardState.isWindows10OrHigher = false
+                wizardState.isGuestToolsInstallRequested = false
+                wizardState.systemBootUefi = false
+                wizardState.systemBootTpm = false
             }
         }
     }

@@ -571,7 +571,9 @@ struct AlertMessage: Identifiable {
             } else {
                 config.drives.append(diskImage)
             }
-            if operatingSystem == .Windows && isGuestToolsInstallRequested {
+            if (operatingSystem == .Windows && isGuestToolsInstallRequested) ||
+               (legacyHardware && bootDevice == .floppy) {
+                // extra CD drive for guest tools OR first CD drive for floppy boot systems
                 let toolsDiskDrive = UTMQemuConfigurationDrive(forArchitecture: systemArchitecture, target: systemTarget, isExternal: true)
                 config.drives.append(toolsDiskDrive)
             }
