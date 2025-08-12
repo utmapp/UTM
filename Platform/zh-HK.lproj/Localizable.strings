@@ -138,6 +138,9 @@ VMDisplayQemuTerminalWindowController */
 /* No comment provided by engineer. */
 "Authentication" = "認證";
 
+/* VMDisplayQemuDisplayController */
+"Auto connect on start" = "啟󠄁動時自動連接";
+
 /* No comment provided by engineer. */
 "Automatic" = "自動";
 
@@ -285,6 +288,9 @@ VMDisplayWindowController */
 /* No comment provided by engineer. */
 "Connect" = "連接";
 
+/* VMDisplayQemuDisplayController */
+"Connect…" = "連接⋯";
+
 /* No comment provided by engineer. */
 "Connected" = "已連接";
 
@@ -365,6 +371,9 @@ UTMQemuConstants */
 /* No comment provided by engineer. */
 "Disconnect" = "中斷連接";
 
+/* VMDisplayQemuDisplayController */
+"Disconnect…" = "中斷連接⋯";
+
 /* No comment provided by engineer. */
 "Discovered" = "偵測到";
 
@@ -416,6 +425,9 @@ UTMQemuConstants */
 
 /* No comment provided by engineer. */
 "Do you want to remove this shortcut? The data will not be deleted." = "你要刪除此捷徑嗎？資料不會被刪除。";
+
+/* No comment provided by engineer. */
+"Do you wish to reset all saved USB devices?" = "你要重設所有儲存的 USB 裝置嗎？";
 
 /* No comment provided by engineer. */
 "Done" = "完成";
@@ -2113,6 +2125,9 @@ VMWizardOSMacView */
 
 /* No comment provided by engineer. */
 "New from template…" = "從樣板新增⋯";
+
+/* No comment provided by engineer. */
+"New Key" = "新增按鍵";
 
 /* No comment provided by engineer. */
 "New Shared Directory…" = "新增分享目錄⋯";
