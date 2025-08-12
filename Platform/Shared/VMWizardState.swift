@@ -456,6 +456,7 @@ struct AlertMessage: Identifiable {
             // only change UEFI settings for Windows or Other
             config.qemu.hasUefiBoot = systemBootUefi
             config.qemu.hasTPMDevice = operatingSystem == .Windows && systemBootTpm
+            config.qemu.hasPreloadedSecureBootKeys = config.qemu.hasTPMDevice
         } else if legacyHardware {
             config.qemu.hasUefiBoot = false
             config.qemu.hasTPMDevice = false

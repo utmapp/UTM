@@ -162,6 +162,8 @@ struct ApplicationSettingsView: View {
     @AppStorage("NoQuitConfirmation") var isNoQuitConfirmation = false
     @AppStorage("NoUsbPrompt") var isNoUsbPrompt = false
 
+    @State private var isConfirmResetAutoConnect = false
+
     var body: some View {
         Form {
             Toggle(isOn: $isKeepRunningAfterLastWindowClosed, label: {
@@ -191,6 +193,14 @@ struct ApplicationSettingsView: View {
                 Toggle(isOn: $isNoUsbPrompt, label: {
                     Text("Do not show prompt when USB device is plugged in")
                 })
+                Button("Reset auto connect devices…") {
+                    isConfirmResetAutoConnect.toggle()
+                }.help("Clears all saved USB devices.")
+                .alert(isPresented: $isConfirmResetAutoConnect) {
+                    Alert(title: Text("Do you wish to reset all saved USB devices?"), primaryButton: .cancel(), secondaryButton: .destructive(Text("Reset")) {
+                        UTMUSBManager.shared.usbDevices.removeAll()
+                    })
+                }
             }
         }
     }

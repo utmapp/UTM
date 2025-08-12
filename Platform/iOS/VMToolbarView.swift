@@ -373,7 +373,7 @@ private extension View {
                 .buttonStyle(.glass)
                 .buttonBorderShape(.circle)
                 .labelStyle(.iconOnly)
-                .tint(.primary)
+                .foregroundStyle(.primary)
                 .controlSize(forHorizontalSizeClass: horizontalSizeClass)
         } else {
             self

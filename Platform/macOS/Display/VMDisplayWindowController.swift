@@ -240,7 +240,7 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
         }
     }
     
-    @nonobjc func withErrorAlert(_ callback: @escaping () async throws -> Void) {
+    @nonobjc nonisolated func withErrorAlert(_ callback: @escaping () async throws -> Void) {
         Task.detached(priority: .background) { [self] in
             do {
                 try await callback()
