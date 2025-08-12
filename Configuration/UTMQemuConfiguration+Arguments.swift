@@ -891,10 +891,12 @@ import Virtualization // for getting network interfaces
             f("-device")
             f("usb-tablet,bus=usb-bus.0")
         }
-        f("-device")
-        f("usb-mouse,bus=usb-bus.0")
-        f("-device")
-        f("usb-kbd,bus=usb-bus.0")
+        if !qemu.hasPS2Controller {
+            f("-device")
+            f("usb-mouse,bus=usb-bus.0")
+            f("-device")
+            f("usb-kbd,bus=usb-bus.0")
+        }
         #if WITH_USB
         let maxDevices = input.maximumUsbShare
         let buses = (maxDevices + 2) / 3
