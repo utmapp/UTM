@@ -393,3 +393,37 @@ index 0fcddc2ec0..0cb87d0201 100644
 -- 
 2.41.0
 
+From a3955f90f898cfa8efcdeeab285324dcbb033b31 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Mon, 11 Aug 2025 22:24:52 -0700
+Subject: [PATCH] hw/i386/pc: no floppy when defaults disabled
+
+---
+ hw/i386/pc_piix.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/hw/i386/pc_piix.c b/hw/i386/pc_piix.c
+index 6c91e2d292..86978f4671 100644
+--- a/hw/i386/pc_piix.c
++++ b/hw/i386/pc_piix.c
+@@ -465,7 +465,7 @@ static void pc_i440fx_machine_options(MachineClass *m)
+     m->default_machine_opts = "firmware=bios-256k.bin";
+     m->default_display = "std";
+     m->default_nic = "e1000";
+-    m->no_floppy = !module_object_class_by_name(TYPE_ISA_FDC);
++    m->no_floppy = !defaults_enabled() || !module_object_class_by_name(TYPE_ISA_FDC);
+     m->no_parallel = !module_object_class_by_name(TYPE_ISA_PARALLEL);
+     machine_class_allow_dynamic_sysbus_dev(m, TYPE_RAMFB_DEVICE);
+     machine_class_allow_dynamic_sysbus_dev(m, TYPE_VMBUS_BRIDGE);
+@@ -811,7 +811,7 @@ static void isapc_machine_options(MachineClass *m)
+     pcmc->has_reserved_memory = false;
+     m->default_nic = "ne2k_isa";
+     m->default_cpu_type = X86_CPU_TYPE_NAME("486");
+-    m->no_floppy = !module_object_class_by_name(TYPE_ISA_FDC);
++    m->no_floppy = !defaults_enabled() || !module_object_class_by_name(TYPE_ISA_FDC);
+     m->no_parallel = !module_object_class_by_name(TYPE_ISA_PARALLEL);
+ }
+ 
+-- 
+2.41.0
+
