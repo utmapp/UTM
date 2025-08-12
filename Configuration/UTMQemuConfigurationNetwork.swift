@@ -162,7 +162,11 @@ extension UTMQemuConfigurationNetwork {
         self.init()
         let rawTarget = target.rawValue
         if rawTarget.hasPrefix("pc") {
-            hardware = QEMUNetworkDevice_x86_64.rtl8139
+            if architecture == .i386 {
+                hardware = QEMUNetworkDevice_i386.ne2k_isa
+            } else {
+                hardware = QEMUNetworkDevice_x86_64.rtl8139
+            }
         } else if rawTarget.hasPrefix("q35") {
             hardware = QEMUNetworkDevice_x86_64.e1000
         } else if rawTarget == "isapc" {
