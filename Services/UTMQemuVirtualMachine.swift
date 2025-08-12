@@ -726,6 +726,9 @@ extension UTMQemuVirtualMachine {
         }
         do {
             let index = try await monitor.mouseIndex(forAbsolute: tablet)
+            guard index > -1 else {
+                return
+            }
             try await monitor.mouseSelect(index)
             ioService?.primaryInput?.requestMouseMode(!tablet)
         } catch {
