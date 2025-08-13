@@ -1,6 +1,6 @@
 # 捆綁式啟動
 
-在 iOS 14 當中，Apple [修複][1]了我們之前令 JIT 工作的“蠱惑招”。因此，下一個最佳的變通方法涉及更多。這只限用於未越獄的裝置。如你已經越獄，就無需這樣做。
+在 iOS 14 當中，Apple [修複][1]了我們之前令 JIT 工作的「蠱惑招」。因此，下一個最佳變通方法涉及的就更多了。這只限用於未越獄（Jailbreak）的裝置。如你已經越獄，就無需這樣做。
 
 ## 先決條件
 
@@ -12,9 +12,9 @@
 
 ## 簽署
 
-安裝並依照 [iOS App Signer][4] 的說明執行操作。確保你的簽署證書與配置檔案匹配。選擇 UTM.ipa 發行版本作為輸入檔案，然後按一下「開始」。
+安裝並依循 [iOS App Signer][4] 的說明執行操作。確保你的簽署證書與配置檔案匹配。選擇 UTM.ipa 發行版本做為輸入檔案，然後按一下「開始（Start）」。
 
-將已經簽署的 IPA 儲存為 `UTM-signed.ipa`，完成程序之後，將 `UTM-signed.ipa` 重新命名為`UTM-signed.zip`，並且開啟 ZIP 檔案。macOS 應將檔案解壓縮至名稱為 `Payload/` 的新目錄當中。
+將已簽署的 IPA 儲存為 `UTM-signed.ipa`，當程序完成之後，重新命名 `UTM-signed.ipa` 為 `UTM-signed.zip`，並開啟 ZIP 檔案。macOS 應當將檔案解壓縮至名為 `Payload/` 的新目錄裡。
 
 ## 部署
 
@@ -34,7 +34,7 @@ ios-deploy --bundle /path/to/Payload/UTM.app
 ios-deploy --justlaunch --noinstall --bundle /path/to/Payload/UTM.app
 ```
 
-（貼士：如你要開啟 Xcode 並轉到 Window > Devices and Simulators 找到你的裝置，則你可以選中「Connect via network」以便於在無 USB 連線的條件下部署/啟動。你只需要解鎖裝置並令它靠近你的電腦。）
+（貼士：如你開啟 Xcode 並轉到 Window > Devices and Simulators 找到你的裝置，則可以選擇「Connect via network」以便於在無 USB 連線的條件下部署/啟動。你只需要解鎖裝置，並令它靠近你的電腦。）
 
 ## 疑難排解
 

@@ -1,6 +1,6 @@
 # 捆绑启动
 
-在 iOS 14 中，Apple [修补][1]了我们用来让 JIT 工作的“把戏”。因此，下一个最佳的解决方案所涉及的范围更广。这一操作只适用于非越狱设备。如果你已经越狱，就不需要这样做了。
+在 iOS 14 中，Apple [修补][1]了我们用来让 JIT 工作的“把戏”。因此，下一个最佳变通方案所涉及的范围更广。这一操作只适用于未经越狱（Jailbreak）过的设备。若你已经越狱，就不需要这样做了。
 
 ## 前置条件
 
@@ -12,9 +12,9 @@
 
 ## 签名
 
-安装并按照 [iOS App Signer][4] 的说明进行操作。确保你的签名证书和配置文件相匹配。选择 UTM.ipa 版本作为输入的文件，然后点击“开始”。
+安装并按照 [iOS App Signer][4] 的说明进行操作。确保你的签名证书和配置文件相匹配。选择 UTM.ipa 版本作为输入的文件，然后点击“开始（Start）”。
 
-将已签名的 IPA 保存为 `UTM-signed.ipa`，完成操作后将 `UTM-signed.ipa` 重命名为 `UTM-signed.zip`，打开 ZIP 文件。 macOS 会将文件提取到名为`Payload/`的新目录中。
+将已签名的 IPA 保存为 `UTM-signed.ipa`，完成操作后将 `UTM-signed.ipa` 重命名为 `UTM-signed.zip`，打开 ZIP 文件。macOS 会将文件提取到名为`Payload/`的新目录中。
 
 ## 部署
 
@@ -28,13 +28,13 @@ ios-deploy --bundle /path/to/Payload/UTM.app
 
 ## 启动
 
-当你每次希望启动 UTM 时，都需要运行如下命令。（不能在 iOS 14 中从主屏幕启动 UTM，否则它将无法正常工作！）
+当你每次希望启动 UTM 时，都需要运行如下命令。（在 iOS 14 中，不要从主屏幕启动 UTM，否则它将无法正常工作！）
 
 ```sh
 ios-deploy --justlaunch --noinstall --bundle /path/to/Payload/UTM.app
 ```
 
-（提示：如果你打开了 Xcode 并转到窗口（Window）> 设备和模拟器（Devices and Simulators）并找到你的设备，可以勾选“通过网络连接”，以便在没有 USB 电缆的情况下部署/启动。只需要解锁设备并靠近你的电脑即可。）
+（提示：如果你打开了 Xcode 并转到窗口（Window）> 设备和模拟器（Devices and Simulators）找到你的设备，可以勾选“通过网络连接”，以便在没有 USB 电缆的情况下部署/启动。只需要解锁设备并靠近你的电脑即可。）
 
 ## 疑难解答
 
