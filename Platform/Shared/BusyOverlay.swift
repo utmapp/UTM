@@ -35,6 +35,8 @@ struct BusyOverlay: View {
                 })
             case .message(let message):
                 return Alert(title: Text(message))
+            case .localizedMessage(let message):
+                return Alert(title: Text(message))
             }
         }
     }
