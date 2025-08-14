@@ -3353,7 +3353,7 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 1410;
 				LastUpgradeCheck = 1500;
-				ORGANIZATIONNAME = osy;
+				ORGANIZATIONNAME = "Turing Software, LLC";
 				TargetAttributes = {
 					8401FD61269BE9C500265F0D = {
 						CreatedOnToolsVersion = 12.4;
