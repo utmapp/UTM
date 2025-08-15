@@ -456,6 +456,7 @@ struct AlertMessage: Identifiable {
             // only change UEFI settings for Windows or Other
             config.qemu.hasUefiBoot = systemBootUefi
             config.qemu.hasTPMDevice = operatingSystem == .Windows && systemBootTpm
+            config.qemu.hasPreloadedSecureBootKeys = config.qemu.hasTPMDevice
         } else if legacyHardware {
             config.qemu.hasUefiBoot = false
             config.qemu.hasTPMDevice = false
@@ -570,10 +571,15 @@ struct AlertMessage: Identifiable {
             } else {
                 config.drives.append(diskImage)
             }
-            if operatingSystem == .Windows && isGuestToolsInstallRequested {
+            if (operatingSystem == .Windows && isGuestToolsInstallRequested) ||
+               (legacyHardware && bootDevice == .floppy) {
+                // extra CD drive for guest tools OR first CD drive for floppy boot systems
                 let toolsDiskDrive = UTMQemuConfigurationDrive(forArchitecture: systemArchitecture, target: systemTarget, isExternal: true)
                 config.drives.append(toolsDiskDrive)
             }
+        }
+        if legacyHardware && operatingSystem == .Windows {
+            config.qemu.hasPS2Controller = true
         }
         if legacyHardware && systemArchitecture.hasUsbSupport && systemTarget.hasUsbSupport {
             config.input.usbBusSupport = .usb2_0

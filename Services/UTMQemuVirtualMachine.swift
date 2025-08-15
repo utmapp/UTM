@@ -238,15 +238,9 @@ extension UTMQemuVirtualMachine {
         guard let efiVarsURL = config.qemu.efiVarsURL else {
             return
         }
-        var doesVarsExist = FileManager.default.fileExists(atPath: efiVarsURL.path)
-        if config.qemu.isUefiVariableResetRequested {
-            if doesVarsExist {
-                try FileManager.default.removeItem(at: efiVarsURL)
-                doesVarsExist = false
-            }
-            config.qemu.isUefiVariableResetRequested = false
-        }
-        if !doesVarsExist {
+        if !FileManager.default.fileExists(atPath: efiVarsURL.path) {
+            config.qemu.isUefiVariableResetRequested = true
+            config.qemu.hasPreloadedSecureBootKeys = config.qemu.hasTPMDevice
             _ = try await config.qemu.saveData(to: efiVarsURL.deletingLastPathComponent(), for: config.system)
         }
     }
@@ -732,6 +726,9 @@ extension UTMQemuVirtualMachine {
         }
         do {
             let index = try await monitor.mouseIndex(forAbsolute: tablet)
+            guard index > -1 else {
+                return
+            }
             try await monitor.mouseSelect(index)
             ioService?.primaryInput?.requestMouseMode(!tablet)
         } catch {

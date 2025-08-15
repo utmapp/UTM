@@ -77,10 +77,12 @@ extension UTMQemuConfigurationDisplay {
     init?(forArchitecture architecture: QEMUArchitecture, target: any QEMUTarget) {
         self.init()
         let rawTarget = target.rawValue
-        if !architecture.hasAgentSupport || rawTarget == "isapc" {
+        if !architecture.hasAgentSupport || rawTarget.hasPrefix("pc") || rawTarget == "isapc" {
             isDynamicResolution = false
         }
-        if rawTarget.hasPrefix("pc") || rawTarget.hasPrefix("q35") {
+        if rawTarget.hasPrefix("pc") {
+            hardware = QEMUDisplayDevice_i386.cirrus_vga
+        } else if rawTarget.hasPrefix("q35") {
             hardware = QEMUDisplayDevice_x86_64.virtio_vga
         } else if rawTarget == "isapc" {
             hardware = QEMUDisplayDevice_x86_64.isa_vga

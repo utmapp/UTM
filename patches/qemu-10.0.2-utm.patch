@@ -300,3 +300,130 @@ index 9fb9659c45..63e10cc6df 100644
  
  dtc = find_program('dtc', required: false)
 
+From a172998c2f8bcbd29afeb8cab9b97e43ef3a22b5 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Sun, 10 Aug 2025 21:54:34 -0700
+Subject: [PATCH] pc-bios: use 2023 Microsoft UEFI certificates
+
+Restore non-secure vars variants as well.
+---
+ pc-bios/edk2-arm-secure-vars.fd.bz2  | Bin 0 -> 12654 bytes
+ pc-bios/edk2-arm-vars.fd.bz2         | Bin 6710 -> 595 bytes
+ pc-bios/edk2-i386-secure-vars.fd.bz2 | Bin 0 -> 12986 bytes
+ pc-bios/edk2-i386-vars.fd.bz2        | Bin 7727 -> 612 bytes
+ pc-bios/meson.build                  |   2 ++
+ 5 files changed, 2 insertions(+)
+ create mode 100644 pc-bios/edk2-arm-secure-vars.fd.bz2
+ create mode 100644 pc-bios/edk2-i386-secure-vars.fd.bz2
+
+diff --git a/pc-bios/meson.build b/pc-bios/meson.build
+index 63e10cc6df..1e1b553795 100644
+--- a/pc-bios/meson.build
++++ b/pc-bios/meson.build
+@@ -4,11 +4,13 @@ if unpack_edk2_blobs
+     'edk2-aarch64-code.fd',
+     'edk2-aarch64-secure-code.fd',
+     'edk2-arm-code.fd',
++    'edk2-arm-secure-vars.fd',
+     'edk2-arm-vars.fd',
+     'edk2-riscv-code.fd',
+     'edk2-riscv-vars.fd',
+     'edk2-i386-code.fd',
+     'edk2-i386-secure-code.fd',
++    'edk2-i386-secure-vars.fd',
+     'edk2-i386-vars.fd',
+     'edk2-x86_64-code.fd',
+     'edk2-x86_64-secure-code.fd',
+-- 
+2.41.0
+
+From 0f1d6606c28d0ae81a1b311972c5c54e5e867bf0 Mon Sep 17 00:00:00 2001
+From: Mark Cave-Ayland <mark.cave-ayland@ilande.co.uk>
+Date: Wed, 11 Jun 2025 14:03:15 +0100
+Subject: [PATCH] target/i386: fix TB exit logic in gen_movl_seg() when writing
+ to SS
+
+Before commit e54ef98c8a ("target/i386: do not trigger IRQ shadow for LSS"), any
+write to SS in gen_movl_seg() would cause a TB exit. The changes introduced by
+this commit were intended to restrict the DISAS_EOB_INHIBIT_IRQ exit to the case
+where inhibit_irq is true, but missed that a DISAS_EOB_NEXT exit can still be
+required when writing to SS and inhibit_irq is false.
+
+Comparing the PE(s) && !VM86(s) section with the logic in x86_update_hflags(), we
+can see that the DISAS_EOB_NEXT exit is still required for the !CODE32 case when
+writing to SS in gen_movl_seg() because any change to the SS flags can affect
+hflags. Similarly we can see that the existing CODE32 case is still correct since
+a change to any of DS, ES and SS can affect hflags. Finally for the
+gen_op_movl_seg_real() case an explicit TB exit is not needed because the segment
+register selector does not affect hflags.
+
+Update the logic in gen_movl_seg() so that a write to SS with inhibit_irq set to
+false where PE(s) && !VM86(s) will generate a DISAS_EOB_NEXT exit along with the
+inline comment. This has the effect of allowing Win98SE to boot in QEMU once
+again.
+
+Signed-off-by: Mark Cave-Ayland <mark.cave-ayland@ilande.co.uk>
+Fixes: e54ef98c8a ("target/i386: do not trigger IRQ shadow for LSS")
+Resolves: https://gitlab.com/qemu-project/qemu/-/issues/2987
+Link: https://lore.kernel.org/r/20250611130315.383151-1-mark.cave-ayland@ilande.co.uk
+Reviewed-by: Peter Maydell <peter.maydell@linaro.org>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+---
+ target/i386/tcg/translate.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/target/i386/tcg/translate.c b/target/i386/tcg/translate.c
+index 0fcddc2ec0..0cb87d0201 100644
+--- a/target/i386/tcg/translate.c
++++ b/target/i386/tcg/translate.c
+@@ -2033,8 +2033,11 @@ static void gen_movl_seg(DisasContext *s, X86Seg seg_reg, TCGv src, bool inhibit
+         tcg_gen_trunc_tl_i32(sel, src);
+         gen_helper_load_seg(tcg_env, tcg_constant_i32(seg_reg), sel);
+ 
+-        /* For move to DS/ES/SS, the addseg or ss32 flags may change.  */
+-        if (CODE32(s) && seg_reg < R_FS) {
++        /*
++         * For moves to SS, the SS32 flag may change. For CODE32 only, changes
++         * to SS, DS and ES may change the ADDSEG flags.
++         */
++        if (seg_reg == R_SS || (CODE32(s) && seg_reg < R_FS)) {
+             s->base.is_jmp = DISAS_EOB_NEXT;
+         }
+     } else {
+-- 
+2.41.0
+
+From a3955f90f898cfa8efcdeeab285324dcbb033b31 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Mon, 11 Aug 2025 22:24:52 -0700
+Subject: [PATCH] hw/i386/pc: no floppy when defaults disabled
+
+---
+ hw/i386/pc_piix.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/hw/i386/pc_piix.c b/hw/i386/pc_piix.c
+index 6c91e2d292..86978f4671 100644
+--- a/hw/i386/pc_piix.c
++++ b/hw/i386/pc_piix.c
+@@ -465,7 +465,7 @@ static void pc_i440fx_machine_options(MachineClass *m)
+     m->default_machine_opts = "firmware=bios-256k.bin";
+     m->default_display = "std";
+     m->default_nic = "e1000";
+-    m->no_floppy = !module_object_class_by_name(TYPE_ISA_FDC);
++    m->no_floppy = !defaults_enabled() || !module_object_class_by_name(TYPE_ISA_FDC);
+     m->no_parallel = !module_object_class_by_name(TYPE_ISA_PARALLEL);
+     machine_class_allow_dynamic_sysbus_dev(m, TYPE_RAMFB_DEVICE);
+     machine_class_allow_dynamic_sysbus_dev(m, TYPE_VMBUS_BRIDGE);
+@@ -811,7 +811,7 @@ static void isapc_machine_options(MachineClass *m)
+     pcmc->has_reserved_memory = false;
+     m->default_nic = "ne2k_isa";
+     m->default_cpu_type = X86_CPU_TYPE_NAME("486");
+-    m->no_floppy = !module_object_class_by_name(TYPE_ISA_FDC);
++    m->no_floppy = !defaults_enabled() || !module_object_class_by_name(TYPE_ISA_FDC);
+     m->no_parallel = !module_object_class_by_name(TYPE_ISA_PARALLEL);
+ }
+ 
+-- 
+2.41.0
+

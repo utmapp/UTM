@@ -76,6 +76,9 @@ struct UTMQemuConfigurationQEMU: Codable {
     /// Set to a password shared with the client. Not saved.
     var spiceServerPassword: String?
 
+    /// When resetting UEFI vars, also set up Secure Boot keys
+    var hasPreloadedSecureBootKeys: Bool = false
+
     enum CodingKeys: String, CodingKey {
         case hasDebugLog = "DebugLog"
         case hasUefiBoot = "UEFIBoot"
@@ -188,18 +191,25 @@ extension UTMQemuConfigurationQEMU {
             // save EFI variables
             let resourceURL = Bundle.main.url(forResource: "qemu", withExtension: nil)!
             let templateVarsURL: URL
+            let secure = hasPreloadedSecureBootKeys ? "-secure" : ""
             if let prefix = Self.uefiImagePrefix(forArchitecture: system.architecture, isVars: true) {
-                templateVarsURL = resourceURL.appendingPathComponent("\(prefix)-vars.fd")
+                templateVarsURL = resourceURL.appendingPathComponent("\(prefix)\(secure)-vars.fd")
             } else {
                 throw UTMQemuConfigurationError.uefiNotSupported
             }
             let varsURL = dataURL.appendingPathComponent(QEMUPackageFileName.efiVariables.rawValue)
-            if !fileManager.fileExists(atPath: varsURL.path) {
+            let isExisting = fileManager.fileExists(atPath: varsURL.path)
+            if !isExisting || isUefiVariableResetRequested {
                 try await Task.detached {
+                    if isExisting {
+                        try FileManager.default.removeItem(at: varsURL)
+                    }
                     try FileManager.default.copyItem(at: templateVarsURL, to: varsURL)
                     let permissions: FilePermissions = [.ownerReadWrite, .groupRead, .otherRead]
                     try FileManager.default.setAttributes([.posixPermissions: permissions.rawValue], ofItemAtPath: varsURL.path)
                 }.value
+                isUefiVariableResetRequested = false
+                hasPreloadedSecureBootKeys = false
             }
             efiVarsURL = varsURL
             existing.append(varsURL)

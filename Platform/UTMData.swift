@@ -15,11 +15,11 @@
 //
 
 import Foundation
+import SwiftUI
 #if os(macOS)
 import AppKit
 #else
 import UIKit
-import SwiftUI
 #endif
 #if canImport(AltKit) && WITH_JIT
 import AltKit
@@ -38,6 +38,7 @@ typealias ConcreteVirtualMachine = UTMQemuVirtualMachine
 
 enum AlertItem: Identifiable {
     case message(String)
+    case localizedMessage(LocalizedStringKey)
     case downloadUrl(URL)
 
     var id: Int {
@@ -46,6 +47,8 @@ enum AlertItem: Identifiable {
             return url.hashValue
         case .message(let message):
             return message.hashValue
+        case .localizedMessage(let message):
+            return message.localizedString.hashValue
         }
     }
 }
@@ -403,7 +406,11 @@ enum AlertItem: Identifiable {
     func showErrorAlert(message: String) {
         alertItem = .message(message)
     }
-    
+
+    func showLocalizedErrorAlert(_ message: LocalizedStringKey) {
+        alertItem = .localizedMessage(message)
+    }
+
     func newVM() {
         showSettingsModal = false
         showNewVMSheet = true
@@ -679,6 +686,10 @@ enum AlertItem: Identifiable {
         }
         listAdd(vm: vm)
         listSelect(vm: vm)
+        // warn user if imported .utm has custom arguments
+        if let qemuConfig = vm.wrapped?.config as? UTMQemuConfiguration, !qemuConfig.qemu.additionalArguments.isEmpty {
+            showLocalizedErrorAlert("This virtual machine uses custom QEMU arguments which is potentially dangerous and can cause damage to your machine. You should only run this virtual machine if you trust it.")
+        }
     }
     
     /// Handles UTM file URLs similar to importUTM, with few differences
