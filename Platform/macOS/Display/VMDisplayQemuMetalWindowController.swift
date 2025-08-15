@@ -157,7 +157,7 @@ class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
             displaySizeDidChange(size: vmDisplay.displaySize)
         }
         super.enterLive()
-        resizeConsoleToolbarItem.isEnabled = false // disable item
+        setControl(.resize, isEnabled: false) // disable item
         if isWindowFocusAutoCapture {
             captureMouse()
         }
@@ -684,8 +684,7 @@ extension VMDisplayQemuMetalWindowController: VMMetalViewInputDelegate {
 
 // MARK: - Keyboard shortcuts menu
 extension VMDisplayQemuMetalWindowController {
-    override func keyboardShortcutsButtonPressed(_ sender: Any) {
-        let menu = NSMenu()
+    override func updateKeyboardShortcutMenu(_ menu: NSMenu) {
         let keyboardShortcuts = UTMKeyboardShortcuts.shared.loadKeyboardShortcuts()
         for (index, keyboardShortcut) in keyboardShortcuts.enumerated() {
             let item = NSMenuItem()
@@ -701,7 +700,6 @@ extension VMDisplayQemuMetalWindowController {
         item.target = self
         item.action = #selector(keyboardShortcutEdit)
         menu.addItem(item)
-        menu.popUp(positioning: nil, at: NSEvent.mouseLocation, in: nil)
     }
     
     @MainActor @objc private func keyboardShortcutHandler(sender: AnyObject) {

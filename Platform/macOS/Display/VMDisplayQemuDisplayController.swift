@@ -58,9 +58,9 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
         if !isSecondary {
             qemuVM.ioServiceDelegate = self
         }
-        drivesToolbarItem.isEnabled = vmQemuConfig.drives.count > 0
-        sharedFolderToolbarItem.isEnabled = vmQemuConfig.sharing.directoryShareMode == .webdav // virtfs cannot dynamically change
-        usbToolbarItem.isEnabled = qemuVM.hasUsbRedirection
+        setControl(.drives, isEnabled: vmQemuConfig.drives.count > 0)
+        setControl(.sharedFolder, isEnabled: vmQemuConfig.sharing.directoryShareMode == .webdav) // virtfs cannot dynamically change
+        setControl(.usb, isEnabled: qemuVM.hasUsbRedirection)
         window!.title = defaultTitle
         window!.subtitle = defaultSubtitle
         super.enterLive()
@@ -81,15 +81,13 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
 // MARK: - Removable drives
 
 @objc extension VMDisplayQemuWindowController {
-    @IBAction override func drivesButtonPressed(_ sender: Any) {
-        let menu = NSMenu()
+    override func updateDrivesMenu(_ menu: NSMenu) {
         menu.autoenablesItems = false
         let item = NSMenuItem()
         item.title = NSLocalizedString("Querying drives status...", comment: "VMDisplayWindowController")
         item.isEnabled = false
         menu.addItem(item)
         updateDrivesMenu(menu, drives: vmQemuConfig.drives)
-        menu.popUp(positioning: nil, at: NSEvent.mouseLocation, in: nil)
     }
     
     @nonobjc func updateDrivesMenu(_ menu: NSMenu, drives: [UTMQemuConfigurationDrive]) {
@@ -229,6 +227,11 @@ extension VMDisplayQemuWindowController {
                 }
             }
         }
+    }
+
+    override func updateSharedFolderMenu(_ menu: NSMenu) {
+        let browse = NSMenuItem(title: NSLocalizedString("Browse…", comment: "VMDisplayQemuWindowController"), action: #selector(sharedFolderButtonPressed), keyEquivalent: "")
+        menu.addItem(browse)
     }
 }
 
@@ -391,8 +394,7 @@ let usbBlockList = [
 
 extension VMDisplayQemuWindowController {
     
-    @IBAction override func usbButtonPressed(_ sender: Any) {
-        let menu = NSMenu()
+    override func updateUsbMenu(_ menu: NSMenu) {
         menu.autoenablesItems = false
         let item = NSMenuItem()
         item.title = NSLocalizedString("Querying USB devices...", comment: "VMQemuDisplayMetalWindowController")
@@ -404,7 +406,6 @@ extension VMDisplayQemuWindowController {
                 self.updateUsbDevicesMenu(menu, devices: devices)
             }
         }
-        menu.popUp(positioning: nil, at: NSEvent.mouseLocation, in: nil)
     }
     
     func updateUsbDevicesMenu(_ menu: NSMenu, devices: [CSUSBDevice]) {
@@ -529,10 +530,12 @@ extension VMDisplayQemuWindowController {
 // MARK: - Window management
 
 extension VMDisplayQemuWindowController {
-    @IBAction override func windowsButtonPressed(_ sender: Any) {
-        let menu = NSMenu()
+    override func updateWindowsMenu(_ menu: NSMenu) {
         menu.autoenablesItems = false
-        for display in qemuVM.ioService!.displays {
+        guard let displays = qemuVM.ioService?.displays else {
+            return
+        }
+        for display in displays {
             let id = display.monitorID
             guard id < vmQemuConfig.displays.count else {
                 continue
@@ -566,7 +569,6 @@ extension VMDisplayQemuWindowController {
             item.action = #selector(showWindowFromSerial)
             menu.addItem(item)
         }
-        menu.popUp(positioning: nil, at: NSEvent.mouseLocation, in: nil)
     }
     
     @objc private func showWindowFromDisplay(sender: AnyObject) {
