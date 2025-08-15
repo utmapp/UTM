@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17506" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24118.1" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaDFRPlugin" version="17008"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17506"/>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaDFRPlugin" version="24006"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24118.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
         <capability name="the Touch Bar" minToolsVersion="8.1" minSystemVersion="10.12.2" requiredIntegratedClassName="NSTouchBar"/>
     </dependencies>
@@ -68,14 +69,14 @@
                             </progressIndicator>
                             <button toolTip="Starts/resumes the VM" translatesAutoresizingMaskIntoConstraints="NO" id="ZTi-Hs-ge6" userLabel="Play Button">
                                 <rect key="frame" x="300" y="197" width="200" height="206"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="200" id="dy7-LO-AqQ"/>
-                                    <constraint firstAttribute="width" constant="200" id="jeW-Sr-S47"/>
-                                </constraints>
                                 <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="play.circle.fill" catalog="system" imagePosition="only" alignment="center" imageScaling="proportionallyUpOrDown" inset="2" id="mPs-BZ-Bc0">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="200" id="dy7-LO-AqQ"/>
+                                    <constraint firstAttribute="width" constant="200" id="jeW-Sr-S47"/>
+                                </constraints>
                                 <connections>
                                     <action selector="startPauseButtonPressed:" target="-2" id="Tst-4i-SvJ"/>
                                 </connections>
@@ -184,9 +185,9 @@
                             </connections>
                         </button>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="25B28B29-2844-41D5-A3D4-DD33723B7764" label="USB" paletteLabel="USB" toolTip="USB devices" image="Toolbar USB" sizingBehavior="auto" id="tlw-Fb-ne3">
+                    <toolbarItem implicitItemIdentifier="25B28B29-2844-41D5-A3D4-DD33723B7764" label="USB Devices" paletteLabel="USB Devices" toolTip="USB devices" image="Toolbar USB" sizingBehavior="auto" id="tlw-Fb-ne3">
                         <button key="view" verticalHuggingPriority="750" id="TXS-HH-LSR">
-                            <rect key="frame" x="0.0" y="14" width="30" height="23"/>
+                            <rect key="frame" x="23" y="14" width="30" height="23"/>
                             <autoresizingMask key="autoresizingMask"/>
                             <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="Toolbar USB" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="QSt-cp-DTl">
                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -223,9 +224,9 @@
                             </connections>
                         </button>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="7D4A0EDC-50D2-43DC-81BE-DF49E227BDAD" label="Windows" paletteLabel="Windows" toolTip="Windows" image="rectangle.on.rectangle" catalog="system" bordered="YES" sizingBehavior="auto" id="MQ2-L1-yl7">
+                    <toolbarItem implicitItemIdentifier="7D4A0EDC-50D2-43DC-81BE-DF49E227BDAD" label="Displays" paletteLabel="Displays" toolTip="Windows" image="rectangle.on.rectangle" catalog="system" bordered="YES" sizingBehavior="auto" id="MQ2-L1-yl7">
                         <button key="view" verticalHuggingPriority="750" id="zHN-gd-wYW">
-                            <rect key="frame" x="12" y="14" width="31" height="23"/>
+                            <rect key="frame" x="10" y="14" width="31" height="23"/>
                             <autoresizingMask key="autoresizingMask"/>
                             <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="rectangle.on.rectangle" catalog="system" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="VmL-Zu-YQ8">
                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
