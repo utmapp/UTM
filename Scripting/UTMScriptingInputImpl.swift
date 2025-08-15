@@ -60,7 +60,7 @@ private let kDelayNs: UInt64 = 20000000
     @objc func sendKeystroke(_ command: NSScriptCommand) {
         let keystrokes = command.evaluatedArguments?["keystrokes"] as? String
         let _modifiers = command.evaluatedArguments?["modifiers"] as? [AEKeyword] ?? []
-        let modifiers = _modifiers.map({ UTMScriptingModifierKey(rawValue: $0)! })
+        let modifiers = _modifiers.compactMap({ UTMScriptingModifierKey(rawValue: $0) })
         withScriptCommand(command) { [self] in
             func scanCodeToSpice(_ scanCode: Int) -> Int32 {
                 var keyCode = scanCode
@@ -95,7 +95,7 @@ private let kDelayNs: UInt64 = 20000000
     @objc func sendMouseClick(_ command: NSScriptCommand) {
         let coordinate = command.evaluatedArguments?["coordinate"] as? [Int]
         let _mouseButton = command.evaluatedArguments?["button"] as? AEKeyword ?? UTMScriptingMouseButton.left.rawValue
-        let mouseButton = UTMScriptingMouseButton(rawValue: _mouseButton)!
+        let mouseButton = UTMScriptingMouseButton(rawValue: _mouseButton) ?? .left
         let monitorNumber = command.evaluatedArguments?["monitor"] as? Int ?? 1
         withScriptCommand(command) { [self] in
             guard let coordinate = coordinate, coordinate.count == 2 else {
