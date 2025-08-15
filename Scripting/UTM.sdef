@@ -787,4 +787,68 @@
                </parameter>
            </command>
     </suite>
+
+    <suite name="UTM Input Automation Suite" code="UTMi" description="UTM virtual machine input automation suite. Only supported on QEMU backend.">
+        <access-group identifier="com.utmapp.UTM.vm-access" />
+
+        <class-extension extends="virtual machine" description="Input automation.">
+            <responds-to command="input scan code">
+              <cocoa method="sendScanCode:"/>
+            </responds-to>
+            <responds-to command="input keystroke">
+              <cocoa method="sendKeystroke:"/>
+            </responds-to>
+            <responds-to command="input mouse click">
+              <cocoa method="sendMouseClick:"/>
+            </responds-to>
+        </class-extension>
+
+        <command name="input scan code" code="UTMiInSc" description="Send raw PC AT scan codes. Only supported on QEMU backend.">
+          <direct-parameter description="Virtual machine to send scan code to." type="virtual machine"/>
+          <parameter name="codes" code="ScCd" description="List of PC AT scan codes.">
+            <type type="integer" list="yes"/>
+            <cocoa key="codes"/>
+          </parameter>
+        </command>
+
+        <enumeration name="modifier key" code="MoKy" description="Modifier key to send with keystroke.">
+            <enumerator name="caps lock" code="MoCl" description="Caps Lock (⇪)"/>
+            <enumerator name="shift" code="MoSh" description="Shift (⇧)"/>
+            <enumerator name="control" code="MoCt" description="Control (⌃)"/>
+            <enumerator name="option" code="MoOp" description="Option (⌥)"/>
+            <enumerator name="command" code="MoCm" description="Command (⌘)"/>
+            <enumerator name="escape" code="MoEs" description="Escape (⎋)"/>
+        </enumeration>
+
+        <command name="input keystroke" code="UTMiInKs" description="Send text as a sequence of keystrokes to the virtual machine. Only supported on QEMU backend.">
+          <direct-parameter description="Virtual machine to send keystrokes to." type="virtual machine"/>
+          <parameter name="text" code="InTx" description="ASCII characters to send as a sequence." type="text">
+            <cocoa key="keystrokes"/>
+          </parameter>
+          <parameter name="with modifiers" code="KsMd" description="List of modifier keys to hold down while sending key sequence." optional="yes">
+            <type type="modifier key" list="yes"/>
+            <cocoa key="modifiers"/>
+          </parameter>
+        </command>
+
+        <enumeration name="mouse button" code="MsBt" description="Mouse button.">
+            <enumerator name="left" code="MsLf" description="Left Click"/>
+            <enumerator name="right" code="MsRt" description="Right Click"/>
+            <enumerator name="middle" code="MsMd" description="Middle Click"/>
+        </enumeration>
+
+        <command name="input mouse click" code="UTMiInMc" description="Send a mouse position and click to the virtual machine. Only supported on QEMU backend.">
+          <direct-parameter description="Virtual machine to send scan code to." type="virtual machine"/>
+          <parameter name="at" code="McAt" description="X-Y coordinate of the absolute position on screen to perform the click. Must be a list of two numbers.">
+            <type type="integer" list="yes"/>
+            <cocoa key="coordinate"/>
+          </parameter>
+          <parameter name="to" code="McTo" description="Which monitor to target (starting at 1). If omitted, the first monitor will be used." type="integer" optional="yes">
+            <cocoa key="monitor"/>
+          </parameter>
+          <parameter name="with mouse button" code="McBt" description="Mouse button to click. If omitted, a left click will be used." type="mouse button" optional="yes">
+            <cocoa key="button"/>
+          </parameter>
+        </command>
+    </suite>
 </dictionary>
