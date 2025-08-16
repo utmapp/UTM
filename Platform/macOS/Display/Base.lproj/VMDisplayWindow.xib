@@ -146,9 +146,9 @@
                             </connections>
                         </button>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="8B5CDC68-CEC0-4C3D-8E0A-AFA4A3BE8BA5" label="Keyboard Shortcuts" paletteLabel="Keyboard Shortcuts" toolTip="Keyboard shortcuts" image="keyboard" catalog="system" bordered="YES" sizingBehavior="auto" id="0aR-4a-Su7">
+                    <toolbarItem implicitItemIdentifier="8B5CDC68-CEC0-4C3D-8E0A-AFA4A3BE8BA5" label="Send Key" paletteLabel="Send Key" toolTip="Keyboard shortcuts" image="keyboard" catalog="system" bordered="YES" sizingBehavior="auto" id="0aR-4a-Su7">
                         <button key="view" verticalHuggingPriority="750" id="Ut7-KA-ER4">
-                            <rect key="frame" x="40" y="14" width="31" height="23"/>
+                            <rect key="frame" x="13" y="14" width="31" height="23"/>
                             <autoresizingMask key="autoresizingMask"/>
                             <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="keyboard" catalog="system" imagePosition="only" alignment="center" alternateImage="command.square" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="M2Z-2r-cfE">
                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -242,7 +242,6 @@
                     <toolbarItem reference="Bkx-Ph-j0D"/>
                     <toolbarItem reference="kT2-2U-cYm"/>
                     <toolbarItem reference="G7P-HJ-bcy"/>
-                    <toolbarItem reference="0aR-4a-Su7"/>
                     <toolbarItem reference="FN7-zs-mWC"/>
                     <toolbarItem reference="Ulf-oT-4cP"/>
                     <toolbarItem reference="tlw-Fb-ne3"/>
