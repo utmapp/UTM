@@ -2106,3 +2106,172 @@
 
 /* No comment provided by engineer. */
 "If enabled, clients must enter a password. This is required if you want to access the server externally." = "Se abilitato, i client dovranno inserire una password. Richiesto se vuoi accedere da client esterni.";
+
+
+/* No comment provided by engineer. */
+"Check for Updates…" = "Controlla Aggiornamenti…";
+
+/* UpdateAvailableView */
+"UTM %@ is available" = "UTM %@ è disponibile";
+
+/* UpdateAvailableView */
+"Your current version is %@" = "La tua versione attuale è %@";
+
+/* UpdateAvailableView */
+"Critical Update" = "Aggiornamento Critico";
+
+/* UpdateAvailableView */
+"Beta" = "Beta";
+
+/* UpdateAvailableView */
+"What's New" = "Novità";
+
+/* UpdateAvailableView */
+"Show Full Release Notes" = "Mostra Note di Rilascio Complete";
+
+/* UpdateAvailableView */
+"Installing Update..." = "Installazione Aggiornamento...";
+
+/* UpdateAvailableView */
+"UTM will restart when installation is complete" = "UTM si riavvierà al completamento dell'installazione";
+
+/* UpdateAvailableView */
+"Skip This Version" = "Salta Questa Versione";
+
+/* UpdateAvailableView */
+"Remind Me Later" = "Ricordamelo Dopo";
+
+/* UpdateAvailableView */
+"Cancel Download" = "Annulla Download";
+
+/* UpdateAvailableView */
+"Download & Install" = "Scarica e Installa";
+
+/* UpdateAvailableView */
+"Downloading UTM %@" = "Scaricamento UTM %@";
+
+/* UpdateAvailableView */
+"Installing Update" = "Installazione Aggiornamento";
+
+/* UpdateAvailableView */
+"Update Failed" = "Aggiornamento Fallito";
+
+/* UpdateAvailableView */
+"Please check your internet connection and try again." = "Controlla la tua connessione internet e riprova.";
+
+/* UpdateAvailableView */
+"Free up some disk space and try again." = "Libera spazio su disco e riprova.";
+
+/* UpdateAvailableView */
+"This might be a temporary issue. Please try again." = "Potrebbe essere un problema temporaneo. Riprova.";
+
+/* UpdateAvailableView */
+"Cancel" = "Annulla";
+
+/* UpdateAvailableView */
+"Try Again" = "Riprova";
+
+/* UpdateSettingsView */
+"Update Preferences" = "Preferenze Aggiornamento";
+
+/* UpdateSettingsView */
+"Automatically check for updates" = "Controlla automaticamente per aggiornamenti";
+
+/* UpdateSettingsView */
+"UTM will check for updates periodically in the background" = "UTM controllerà per aggiornamenti periodicamente in background";
+
+/* UpdateSettingsView */
+"Automatically download updates" = "Scarica automaticamente gli aggiornamenti";
+
+/* UpdateSettingsView */
+"Updates will be downloaded automatically when available" = "Gli aggiornamenti verranno scaricati automaticamente quando disponibili";
+
+/* UpdateSettingsView */
+"Update Channel" = "Canale di rilascio";
+
+/* UpdateSettingsView */
+"Choose which types of releases to receive" = "Scegli che tipo di rilasci ricevere";
+
+/* UpdateSettingsView */
+"Include pre-release versions" = "Includi versioni pre-rilascio";
+
+/* UpdateSettingsView */
+"Include beta and pre-release versions in update checks" = "Includi versioni beta e pre-rilascio nei controlli aggiornamenti";
+
+/* UpdateSettingsView */
+"Update Check" = "Controllo Aggiornamenti";
+
+/* UpdateSettingsView */
+"Check for updates:" = "Controlla per aggiornamenti:";
+
+/* UpdateSettingsView */
+"Checking..." = "Controllo...";
+
+/* UpdateSettingsView */
+"Error: %@" = "Errore: %@";
+
+/* UpdateSettingsView */
+"Check Now" = "Controlla Ora";
+
+/* UpdateSettingsView */
+"Current Version" = "Versione Attuale";
+
+/* UpdateSettingsView */
+"Version" = "Versione";
+
+/* UpdateSettingsView */
+"Last checked" = "Ultimo controllo";
+
+/* UpdateSettingsView */
+"Status" = "Stato";
+
+/* UpdateSettingsView */
+"Update Available" = "Aggiornamento Disponibile";
+
+/* UpdateSettingsView */
+"Up to Date" = "Aggiornato";
+
+/* UpdateSettingsView */
+"UTM %@" = "UTM %@";
+
+/* UpdateSettingsView */
+"Critical" = "Critico";
+
+/* UpdateSettingsView */
+"Size: %@" = "Dimensione: %@";
+
+/* UpdateSettingsView */
+"Downloading..." = "Scaricamento...";
+
+/* UpdateSettingsView */
+"Installing..." = "Installazione...";
+
+/* UpdateSettingsView */
+"Release Notes" = "Note di Rilascio";
+
+/* UpdateSettingsView */
+"Done" = "Fatto";
+
+/* UTMMenuBarExtraScene */
+"Update Available: %@" = "Aggiornamento Disponibile: %@";
+
+/* UTMMenuBarExtraScene */
+"Check for Updates" = "Controlla Aggiornamenti";
+
+"Updates" = "Aggiornamenti";
+
+/* UTMUpdateiOSHandler */
+"A new version of UTM (%@) is available. Since you're using a sideloaded version, please update manually using your preferred sideloading method." = "Una nuova versione di UTM (%@) è disponibile. Dato che stai usando una versione sideloaded, aggiorna manualmente usando il tuo metodo di sideloading preferito.";
+
+/* UTMUpdateiOSHandler */
+"View Release" = "Visualizza Rilascio";
+
+/* UTMUpdateiOSHandler */
+"Copy IPA URL" = "Copia URL IPA";
+
+/* UTMUpdateiOSHandler */
+"Later" = "Più Tardi";
+
+
+/* UpdateSettingsView/UpdateAvailableView */
+"Released %@" = "Rilasciato %@";

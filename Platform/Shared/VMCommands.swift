@@ -34,9 +34,16 @@ struct VMCommands: Commands {
         SidebarCommands()
         ToolbarCommands()
         CommandGroup(replacing: .help) {
+            Button(action: { NotificationCenter.default.post(name: NSNotification.CheckForUpdates, object: nil) }, label: {
+                Text("Check for Updates…")
+            }).keyboardShortcut(KeyEquivalent("u"), modifiers: [.command])
+            
             Button(action: { NotificationCenter.default.post(name: NSNotification.ShowReleaseNotes, object: nil) }, label: {
                 Text("What's New")
             }).keyboardShortcut(KeyEquivalent("1"), modifiers: [.command, .control])
+            
+            Divider()
+            
             Button(action: { openLink("https://mac.getutm.app/gallery/") }, label: {
                 Text("Virtual Machine Gallery")
             }).keyboardShortcut(KeyEquivalent("2"), modifiers: [.command, .control])
@@ -58,5 +65,6 @@ extension NSNotification {
     static let NewVirtualMachine = NSNotification.Name("NewVirtualMachine")
     static let OpenVirtualMachine = NSNotification.Name("OpenVirtualMachine")
     static let ShowReleaseNotes = NSNotification.Name("ShowReleaseNotes")
+    static let CheckForUpdates = NSNotification.Name("CheckForUpdates")
     static let InstallGuestTools = NSNotification.Name("InstallGuestTools")
 }
