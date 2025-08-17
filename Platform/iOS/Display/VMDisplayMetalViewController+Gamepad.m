@@ -138,15 +138,15 @@ const CGFloat kThumbstickSpeedMultiplier = 1000; // in points per second
         case 0:
             break;
         case -1:
-            [self.vmInput sendMouseButton:kCSInputButtonLeft pressed:isPressed];
+            [self.vmInput sendMouseButton:kCSInputButtonLeft mask:self.mouseButtonDown pressed:isPressed];
             self.mouseLeftDown = isPressed;
             break;
         case -3:
-            [self.vmInput sendMouseButton:kCSInputButtonRight pressed:isPressed];
+            [self.vmInput sendMouseButton:kCSInputButtonRight mask:self.mouseButtonDown pressed:isPressed];
             self.mouseRightDown = isPressed;
             break;
         case -2:
-            [self.vmInput sendMouseButton:kCSInputButtonMiddle pressed:isPressed];
+            [self.vmInput sendMouseButton:kCSInputButtonMiddle mask:self.mouseButtonDown pressed:isPressed];
             self.mouseMiddleDown = isPressed;
             break;
         default:
