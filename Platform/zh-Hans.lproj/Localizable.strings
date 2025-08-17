@@ -194,7 +194,7 @@ UTMQemuConstants */
 /* Welcome view */
 "Browse UTM Gallery" = "浏览 UTM 库";
 
-/* No comment provided by engineer. */
+/* VMDisplayQemuWindowController */
 "Browse…" = "浏览…";
 
 /* No comment provided by engineer. */
@@ -387,6 +387,9 @@ UTMQemuConstants */
 /* VMDisplayQemuDisplayController */
 "Display %lld: %@" = "显示 %1$lld：%2$@";
 
+/* VMDisplayWindowController */
+"Displays" = "显示";
+
 /* VMDisplayQemuDisplayController */
 "Disposable Mode" = "一次性模式";
 
@@ -450,7 +453,7 @@ UTMQemuConstants */
 /* No comment provided by engineer. */
 "Drive Image" = "驱动器映像";
 
-/* No comment provided by engineer. */
+/* VMDisplayWindowController */
 "Drives" = "驱动器";
 
 /* No comment provided by engineer. */
@@ -975,9 +978,6 @@ UTMScriptingVirtualMachineImpl */
 /* UTMDonateView */
 "period" = "周期";
 
-/* VMDisplayWindowController */
-"Play" = "启动";
-
 /* UTMRemoteClient */
 "Please allow this app to access your local network when prompted or in Settings." = "在提示或设置中，请允许此应用访问你的本地网络。";
 
@@ -1001,6 +1001,9 @@ UTMScriptingVirtualMachineImpl */
 
 /* No comment provided by engineer. */
 "Port Forward" = "端口转发";
+
+/* VMDisplayWindowController */
+"Power" = "电源";
 
 /* No comment provided by engineer. */
 "Preconfigured" = "预配置";
@@ -1096,6 +1099,9 @@ UTMQemuConstants */
 /* No comment provided by engineer. */
 "Resizing is experimental and could result in data loss. You are strongly encouraged to back-up this VM before proceeding. Would you like to resize to %@ GiB?" = "调整驱动器大小是实验性功能，可能会导致数据丢失。在继续操作之前，强烈建议你备份此虚拟机。你要将大小调整为 %@ GiB 吗？";
 
+/* VMDisplayWindowController */
+"Restart" = "重新启动";
+
 /* VMData */
 "Restoring" = "正在恢复";
 
@@ -1158,6 +1164,9 @@ VMDisplayWindowController */
 "Select where to save UTM Virtual Machine:" = "选择存储 UTM 虚拟机的位置：";
 
 /* VMDisplayWindowController */
+"Send Key" = "发送按键";
+
+/* VMDisplayWindowController */
 "Sends power down request to the guest. This simulates pressing the power button on a PC." = "向客户机发送关闭电源请求。此操作模拟了按下 PC 上的电源按钮。";
 
 /* VMDisplayAppleWindowController
@@ -1178,6 +1187,9 @@ VMDisplayQemuDisplayController */
 
 /* No comment provided by engineer. */
 "Shared Directory" = "共享目录";
+
+/* VMDisplayWindowController */
+"Shared Folder" = "共享文件夹";
 
 /* UTMAppleConfigurationNetwork
 UTMQemuConstants */
@@ -1218,6 +1230,9 @@ UTMQemuConstants */
 
 /* No comment provided by engineer. */
 "SPICE with GStreamer (Input & Output)" = "带有 GStreamer 的 SPICE (输入与输出)";
+
+/* VMDisplayWindowController */
+"Start" = "开始";
 
 /* No comment provided by engineer. */
 "Start Here" = "从这里开始";
@@ -1489,6 +1504,9 @@ UTMQemuConstants */
 /* VMQemuDisplayMetalWindowController */
 "USB Device" = "USB 设备";
 
+/* VMDisplayWindowController */
+"USB Devices" = "USB 设备";
+
 /* VMDisplayAppleDisplayController */
 "USB Mass Storage: %@" = "USB 海量储存设备：%@";
 
@@ -1525,6 +1543,7 @@ UTMScriptingUSBDeviceImpl */
 
 /* UTMConfigurationInfo
 UTMData
+VMDisplayWindowController
 VMMetalView */
 "Virtual Machine" = "虚拟机";
 
@@ -2161,6 +2180,9 @@ VMWizardOSMacView */
 
 /* No comment provided by engineer. */
 "Path" = "路径";
+
+/* VMDisplayWindowController */
+"Play" = "启动";
 
 /* No comment provided by engineer. */
 "Pointer" = "鼠标指针";
