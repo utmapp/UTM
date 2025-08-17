@@ -26,11 +26,12 @@ class VMMetalView: MTKView {
     private(set) var isMouseInWindow = false
     @Setting("HandleInitialClick") private var isHandleInitialClick: Bool = false
     @Setting("IsCtrlCmdSwapped") private var isCtrlCmdSwapped = false
+    @Setting("IsISOKeySwapped") private var isISOKeySwapped = false
 
     /// On ISO keyboards we have to switch `kVK_ISO_Section` and `kVK_ANSI_Grave`
     /// from: https://chromium.googlesource.com/chromium/src/+/lkgr/ui/events/keycodes/keyboard_code_conversion_mac.mm
     private func convertToCurrentLayout(for keycode: Int) -> Int {
-        guard KBGetLayoutType(Int16(LMGetKbdType())) == kKeyboardISO else {
+        guard !isISOKeySwapped && KBGetLayoutType(Int16(LMGetKbdType())) == kKeyboardISO else {
             return keycode
         }
         switch keycode {
