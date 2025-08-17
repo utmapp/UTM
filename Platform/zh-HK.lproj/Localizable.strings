@@ -194,7 +194,7 @@ UTMQemuConstants */
 /* Welcome view */
 "Browse UTM Gallery" = "瀏覽 UTM 虛擬機庫";
 
-/* No comment provided by engineer. */
+/* VMDisplayQemuWindowController */
 "Browse…" = "瀏覽⋯";
 
 /* No comment provided by engineer. */
@@ -387,6 +387,9 @@ UTMQemuConstants */
 /* VMDisplayQemuDisplayController */
 "Display %lld: %@" = "顯示 %1$lld：%2$@";
 
+/* VMDisplayWindowController */
+"Displays" = "顯示器";
+
 /* VMDisplayQemuDisplayController */
 "Disposable Mode" = "即棄式模式";
 
@@ -450,7 +453,7 @@ UTMQemuConstants */
 /* No comment provided by engineer. */
 "Drive Image" = "磁碟映像檔";
 
-/* No comment provided by engineer. */
+/* VMDisplayWindowController */
 "Drives" = "磁碟";
 
 /* No comment provided by engineer. */
@@ -975,9 +978,6 @@ UTMScriptingVirtualMachineImpl */
 /* UTMDonateView */
 "period" = "時段";
 
-/* VMDisplayWindowController */
-"Play" = "播放";
-
 /* UTMRemoteClient */
 "Please allow this app to access your local network when prompted or in Settings." = "請在提示時或「設定」中允許此應用程式取用你的區域網絡。";
 
@@ -1001,6 +1001,9 @@ UTMScriptingVirtualMachineImpl */
 
 /* No comment provided by engineer. */
 "Port Forward" = "連接埠轉寄";
+
+/* VMDisplayWindowController */
+"Power" = "電源";
 
 /* No comment provided by engineer. */
 "Preconfigured" = "預設定";
@@ -1096,6 +1099,9 @@ UTMQemuConstants */
 /* No comment provided by engineer. */
 "Resizing is experimental and could result in data loss. You are strongly encouraged to back-up this VM before proceeding. Would you like to resize to %@ GiB?" = "調整空間大小是試驗性功能，可能會引致資料遺失。進行前，強烈建議你備份此虛擬機。你想調整大小為 %@ GiB 嗎？";
 
+/* VMDisplayWindowController */
+"Restart" = "重新啟動";
+
 /* VMData */
 "Restoring" = "正在還原";
 
@@ -1158,6 +1164,9 @@ VMDisplayWindowController */
 "Select where to save UTM Virtual Machine:" = "選取儲存 UTM 虛擬機的位置：";
 
 /* VMDisplayWindowController */
+"Send Key" = "傳送按鍵";
+
+/* VMDisplayWindowController */
 "Sends power down request to the guest. This simulates pressing the power button on a PC." = "傳送關閉電源要求至客户端。此操作模擬了按一下 PC 上的電源按鈕。";
 
 /* VMDisplayAppleWindowController
@@ -1177,11 +1186,14 @@ VMDisplayQemuDisplayController */
 "Shared directories in macOS VMs are only available in macOS 13 and later." = "macOS 虛擬機分享目錄只可以在 macOS 13 和較新版本上使用。";
 
 /* No comment provided by engineer. */
-"Shared Directory" = "已分享目錄";
+"Shared Directory" = "分享的目錄";
+
+/* VMDisplayWindowController */
+"Shared Folder" = "分享的資料夾";
 
 /* UTMAppleConfigurationNetwork
 UTMQemuConstants */
-"Shared Network" = "已分享網絡";
+"Shared Network" = "分享的網絡";
 
 /* No comment provided by engineer. */
 "Sharing" = "分享";
@@ -1218,6 +1230,9 @@ UTMQemuConstants */
 
 /* No comment provided by engineer. */
 "SPICE with GStreamer (Input & Output)" = "SPICE with GStreamer (輸入與輸出)";
+
+/* VMDisplayWindowController */
+"Start" = "啟動";
 
 /* No comment provided by engineer. */
 "Start Here" = "從這裡開始";
@@ -1489,6 +1504,9 @@ UTMQemuConstants */
 /* VMQemuDisplayMetalWindowController */
 "USB Device" = "USB 裝置";
 
+/* VMDisplayWindowController */
+"USB Devices" = "USB 裝置";
+
 /* VMDisplayAppleDisplayController */
 "USB Mass Storage: %@" = "USB 大容量儲存裝置：%@";
 
@@ -1525,6 +1543,7 @@ UTMScriptingUSBDeviceImpl */
 
 /* UTMConfigurationInfo
 UTMData
+VMDisplayWindowController
 VMMetalView */
 "Virtual Machine" = "虛擬機";
 
@@ -2161,6 +2180,9 @@ VMWizardOSMacView */
 
 /* No comment provided by engineer. */
 "Path" = "路徑";
+
+/* VMDisplayWindowController */
+"Play" = "播放";
 
 /* No comment provided by engineer. */
 "Pointer" = "指標";
