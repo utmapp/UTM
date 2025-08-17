@@ -651,6 +651,7 @@
 		CE65BABF26A4D8DD0001BD6B /* VMConfigDisplayConsoleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8401FDA5269D44E400265F0D /* VMConfigDisplayConsoleView.swift */; };
 		CE65BAC026A4D8DE0001BD6B /* VMConfigDisplayConsoleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8401FDA5269D44E400265F0D /* VMConfigDisplayConsoleView.swift */; };
 		CE6804802E493D71001671E9 /* UTMUSBManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE68047D2E493D71001671E9 /* UTMUSBManager.swift */; };
+		CE6804852E4E5D84001671E9 /* UTMScriptingInputImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6804842E4E5D84001671E9 /* UTMScriptingInputImpl.swift */; };
 		CE68E5442E3912E0006B3645 /* VMKeyboardShortcutsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE68E5422E3912E0006B3645 /* VMKeyboardShortcutsView.swift */; };
 		CE68E5452E3912E0006B3645 /* VMKeyboardShortcutsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE68E5422E3912E0006B3645 /* VMKeyboardShortcutsView.swift */; };
 		CE68E5482E3C3E0A006B3645 /* VMWizardOSClassicMacView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE68E5472E3C3E0A006B3645 /* VMWizardOSClassicMacView.swift */; };
@@ -1984,6 +1985,7 @@
 		CE612AC524D3B50700FA6300 /* VMDisplayWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayWindowController.swift; sourceTree = "<group>"; };
 		CE66450C2269313200B0849A /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
 		CE68047D2E493D71001671E9 /* UTMUSBManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMUSBManager.swift; sourceTree = "<group>"; };
+		CE6804842E4E5D84001671E9 /* UTMScriptingInputImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMScriptingInputImpl.swift; sourceTree = "<group>"; };
 		CE68E5422E3912E0006B3645 /* VMKeyboardShortcutsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMKeyboardShortcutsView.swift; sourceTree = "<group>"; };
 		CE68E5472E3C3E0A006B3645 /* VMWizardOSClassicMacView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMWizardOSClassicMacView.swift; sourceTree = "<group>"; };
 		CE6B240A25F1F3CE0020D43E /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
@@ -3114,6 +3116,7 @@
 				CEC794B9294924E300121A9F /* UTMScriptingSerialPortImpl.swift */,
 				CE25124829BFDBA6000790AB /* UTMScriptingGuestFileImpl.swift */,
 				CE25124629BFDB87000790AB /* UTMScriptingGuestProcessImpl.swift */,
+				CE6804842E4E5D84001671E9 /* UTMScriptingInputImpl.swift */,
 				CD84C2082D3B446D00829850 /* UTMScriptingRegistryEntryImpl.swift */,
 				CE25124C29C55816000790AB /* UTMScriptingConfigImpl.swift */,
 				CE25125429C80CD4000790AB /* UTMScriptingCreateCommand.swift */,
@@ -3353,7 +3356,7 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 1410;
 				LastUpgradeCheck = 1500;
-				ORGANIZATIONNAME = osy;
+				ORGANIZATIONNAME = "Turing Software, LLC";
 				TargetAttributes = {
 					8401FD61269BE9C500265F0D = {
 						CreatedOnToolsVersion = 12.4;
@@ -3910,6 +3913,7 @@
 				848A98B8286A1589006F0550 /* UTMAppleConfigurationDisplay.swift in Sources */,
 				848A98BE286A1B62006F0550 /* UTMAppleConfigurationDrive.swift in Sources */,
 				CE93758924B930270074066F /* BusyOverlay.swift in Sources */,
+				CE6804852E4E5D84001671E9 /* UTMScriptingInputImpl.swift in Sources */,
 				848A98CA28720CFC006F0550 /* VMConfigAppleSerialView.swift in Sources */,
 				848D99C22866D9CE0055C215 /* QEMUArgumentBuilder.swift in Sources */,
 				8401FDA0269D266E00265F0D /* VMConfigAppleBootView.swift in Sources */,

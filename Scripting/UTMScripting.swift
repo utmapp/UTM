@@ -144,6 +144,23 @@ import ScriptingBridge
     case bridged = 0x42724764 /* 'BrGd' */
 }
 
+// MARK: UTMScriptingModifierKey
+@objc public enum UTMScriptingModifierKey : AEKeyword {
+    case capsLock = 0x4d6f436c /* 'MoCl' */
+    case shift = 0x4d6f5368 /* 'MoSh' */
+    case control = 0x4d6f4374 /* 'MoCt' */
+    case option = 0x4d6f4f70 /* 'MoOp' */
+    case command = 0x4d6f436d /* 'MoCm' */
+    case escape = 0x4d6f4573 /* 'MoEs' */
+}
+
+// MARK: UTMScriptingMouseButton
+@objc public enum UTMScriptingMouseButton : AEKeyword {
+    case left = 0x4d734c66 /* 'MsLf' */
+    case right = 0x4d735274 /* 'MsRt' */
+    case middle = 0x4d734d64 /* 'MsMd' */
+}
+
 // MARK: UTMScriptingGenericMethods
 @objc public protocol UTMScriptingGenericMethods {
     @objc optional func closeSaving(_ saving: UTMScriptingSaveOptions, savingIn: URL!) // Close a document.
@@ -164,7 +181,6 @@ import ScriptingBridge
     @objc optional func `open`(_ x: Any!) -> Any // Open a document.
     @objc optional func print(_ x: Any!, withProperties: [AnyHashable : Any]!, printDialog: Bool) // Print a document.
     @objc optional func quitSaving(_ saving: UTMScriptingSaveOptions) // Quit the application.
-    @objc optional func exists(_ x: Any!) -> Bool // Verify that an object exists.
     @objc optional func importNew(_ new_: NSNumber!, from: URL!) -> SBObject // Import a new virtual machine from a file.
     @objc optional func virtualMachines() -> SBElementArray
     @objc optional var autoTerminate: Bool { get } // Auto terminate the application when all windows are closed?
@@ -220,10 +236,15 @@ extension SBObject: UTMScriptingWindow {}
     @objc optional func executeAt(_ at: String!, withArguments: [String]!, withEnvironment: [String]!, usingInput: String!, base64Encoding: Bool, outputCapturing: Bool) -> UTMScriptingGuestProcess // Execute a command or script on the guest.
     @objc optional func queryIp() -> [Any] // Query the guest for all IP addresses on its network interfaces (excluding loopback).
     @objc optional func updateConfigurationWith(_ with: Any!) // Update the configuration of the virtual machine. The VM must be in the stopped state.
+    @objc optional func updateRegistryWith(_ with: [URL]!) // Update the registry of the virtual machine.
+    @objc optional func inputScanCodeCodes(_ codes: [NSNumber]!) // Send raw PC AT scan codes. Only supported on QEMU backend.
+    @objc optional func inputKeystrokeText(_ text: String!, withModifiers: [NSAppleEventDescriptor]!) // Send text as a sequence of keystrokes to the virtual machine. Only supported on QEMU backend.
+    @objc optional func inputMouseClickAt(_ at: [NSNumber]!, to: Int, withMouseButton: UTMScriptingMouseButton) // Send a mouse position and click to the virtual machine. Only supported on QEMU backend.
     @objc optional func guestFiles() -> SBElementArray
     @objc optional func guestProcesses() -> SBElementArray
     @objc optional var configuration: Any { get } // The configuration of the virtual machine.
     @objc optional func usbDevices() -> SBElementArray
+    @objc optional var registry: [URL] { get } // The registry of the virtual machine.
 }
 extension SBObject: UTMScriptingVirtualMachine {}
 

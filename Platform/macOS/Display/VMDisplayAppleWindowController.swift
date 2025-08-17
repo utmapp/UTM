@@ -84,21 +84,17 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         window!.subtitle = defaultSubtitle
         updateWindowFrame()
         super.enterLive()
-        drivesToolbarItem.isEnabled = false
-        usbToolbarItem.isEnabled = false
-        resizeConsoleToolbarItem.isEnabled = false
-        keyboardShortcutsItem.isEnabled = false
+        setControl([.drives, .usb, .resize, .keyboardShortcut], isEnabled: false)
         if #available(macOS 13, *) {
-            sharedFolderToolbarItem.isEnabled = true
+            setControl(.sharedFolder, isEnabled: true)
         } else if #available(macOS 12, *) {
-            sharedFolderToolbarItem.isEnabled = appleConfig.system.boot.operatingSystem == .linux
+            setControl(.sharedFolder, isEnabled: appleConfig.system.boot.operatingSystem == .linux)
         } else {
             // stop() not available on macOS 11 for some reason
-            restartToolbarItem.isEnabled = false
-            sharedFolderToolbarItem.isEnabled = false
+            setControl([.restart, .sharedFolder], isEnabled: false)
         }
         if #available(macOS 15, *) {
-            drivesToolbarItem.isEnabled = true
+            setControl(.drives, isEnabled: true)
         }
     }
     
@@ -127,7 +123,7 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
             return
         }
         guard appleConfig.system.boot.operatingSystem == .linux else {
-            openShareMenu(sender)
+            super.sharedFolderButtonPressed(sender)
             return
         }
         if !isSharePathAlertShownOnce && !isSharePathAlertShownPersistent {
@@ -142,7 +138,7 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
                 self.isSharePathAlertShownOnce = true
             }
         } else {
-            openShareMenu(sender)
+            super.sharedFolderButtonPressed(sender)
         }
     }
     
@@ -170,10 +166,8 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
     }
 }
 
-@available(macOS 12, *)
 extension VMDisplayAppleWindowController {
-    func openShareMenu(_ sender: Any) {
-        let menu = NSMenu()
+    override func updateSharedFolderMenu(_ menu: NSMenu) {
         let entry = appleVM.registryEntry
         for i in entry.sharedDirectories.indices {
             let item = NSMenuItem()
@@ -213,9 +207,8 @@ extension VMDisplayAppleWindowController {
                                keyEquivalent: "")
         add.target = self
         menu.addItem(add)
-        menu.popUp(positioning: nil, at: NSEvent.mouseLocation, in: nil)
     }
-    
+
     @objc func addShare(sender: AnyObject) {
         pickShare { url in
             if let sharedDirectory = try? UTMRegistryEntry.File(url: url) {
@@ -276,15 +269,13 @@ extension VMDisplayAppleWindowController {
 }
 
 @objc extension VMDisplayAppleWindowController {
-    @IBAction override func drivesButtonPressed(_ sender: Any) {
-        let menu = NSMenu()
+    override func updateDrivesMenu(_ menu: NSMenu) {
         menu.autoenablesItems = false
         let item = NSMenuItem()
         item.title = NSLocalizedString("Querying drives status...", comment: "VMDisplayWindowController")
         item.isEnabled = false
         menu.addItem(item)
         updateDrivesMenu(menu, drives: appleConfig.drives)
-        menu.popUp(positioning: nil, at: NSEvent.mouseLocation, in: nil)
     }
 
     @nonobjc func updateDrivesMenu(_ menu: NSMenu, drives: [UTMAppleConfigurationDrive]) {
@@ -409,8 +400,7 @@ extension VMDisplayAppleWindowController: UTMScreenshotProvider {
 }
 
 extension VMDisplayAppleWindowController {
-    @IBAction override func windowsButtonPressed(_ sender: Any) {
-        let menu = NSMenu()
+    override func updateWindowsMenu(_ menu: NSMenu) {
         menu.autoenablesItems = false
         if #available(macOS 12, *), !appleConfig.displays.isEmpty {
             let item = NSMenuItem()
@@ -439,7 +429,6 @@ extension VMDisplayAppleWindowController {
             item.action = #selector(showWindowFromSerial)
             menu.addItem(item)
         }
-        menu.popUp(positioning: nil, at: NSEvent.mouseLocation, in: nil)
     }
     
     @available(macOS 12, *)
