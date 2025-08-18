@@ -335,6 +335,7 @@ struct InputSettingsView: View {
 
 @available(macOS 12, *)
 struct NetworkSettingsView: View {
+    @AppStorage("IsRegenerateMACOnClone") var isRegenerateMACOnClone = false
     @AppStorage("HostNetworks") var hostNetworksData: Data = Data()
     @State private var hostNetworks: [UTMConfigurationHostNetwork] = []
     @State private var selectedID: UUID?
@@ -350,6 +351,10 @@ struct NetworkSettingsView: View {
     
     var body: some View {
         Form {
+            Section(header: Text("Cloning")) {
+                Toggle("Regenerate MAC addresses on clone", isOn: $isRegenerateMACOnClone)
+                    .help("When cloning a VM, regenerate MAC addresses on every network interface to prevent conflicts.")
+            }
             Section(header: Text("Host Networks")) {
                 Table($hostNetworks, selection: $selectedID) {
                     TableColumn("Name") { $network in
