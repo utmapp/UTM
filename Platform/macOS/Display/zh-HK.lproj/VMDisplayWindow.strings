@@ -1,8 +1,8 @@
-/* Class = "NSToolbarItem"; label = "Keyboard Shortcuts"; ObjectID = "0aR-4a-Su7"; */
-"0aR-4a-Su7.label" = "鍵盤快捷鍵";
+/* Class = "NSToolbarItem"; label = "Send Key"; ObjectID = "0aR-4a-Su7"; */
+"0aR-4a-Su7.label" = "傳送按鍵";
 
-/* Class = "NSToolbarItem"; paletteLabel = "Keyboard Shortcuts"; ObjectID = "0aR-4a-Su7"; */
-"0aR-4a-Su7.paletteLabel" = "鍵盤快捷鍵";
+/* Class = "NSToolbarItem"; paletteLabel = "Send Key"; ObjectID = "0aR-4a-Su7"; */
+"0aR-4a-Su7.paletteLabel" = "傳送按鍵";
 
 /* Class = "NSToolbarItem"; toolTip = "Keyboard shortcuts"; ObjectID = "0aR-4a-Su7"; */
 "0aR-4a-Su7.toolTip" = "鍵盤快捷鍵";
@@ -67,11 +67,11 @@
 /* Class = "NSToolbarItem"; toolTip = "Start/pause the VM"; ObjectID = "kT2-2U-cYm"; */
 "kT2-2U-cYm.toolTip" = "開始/暫停虛擬機";
 
-/* Class = "NSToolbarItem"; label = "Windows"; ObjectID = "MQ2-L1-yl7"; */
-"MQ2-L1-yl7.label" = "視窗";
+/* Class = "NSToolbarItem"; label = "Displays"; ObjectID = "MQ2-L1-yl7"; */
+"MQ2-L1-yl7.label" = "顯示器";
 
-/* Class = "NSToolbarItem"; paletteLabel = "Windows"; ObjectID = "MQ2-L1-yl7"; */
-"MQ2-L1-yl7.paletteLabel" = "視窗";
+/* Class = "NSToolbarItem"; paletteLabel = "Displays"; ObjectID = "MQ2-L1-yl7"; */
+"MQ2-L1-yl7.paletteLabel" = "顯示器";
 
 /* Class = "NSToolbarItem"; toolTip = "Windows"; ObjectID = "MQ2-L1-yl7"; */
 "MQ2-L1-yl7.toolTip" = "視窗";
@@ -79,11 +79,11 @@
 /* Class = "NSWindow"; title = "UTM"; ObjectID = "QvC-M9-y7g"; */
 "QvC-M9-y7g.title" = "UTM";
 
-/* Class = "NSToolbarItem"; label = "USB"; ObjectID = "tlw-Fb-ne3"; */
-"tlw-Fb-ne3.label" = "USB";
+/* Class = "NSToolbarItem"; label = "USB Devices"; ObjectID = "tlw-Fb-ne3"; */
+"tlw-Fb-ne3.label" = "USB 裝置";
 
-/* Class = "NSToolbarItem"; paletteLabel = "USB"; ObjectID = "tlw-Fb-ne3"; */
-"tlw-Fb-ne3.paletteLabel" = "USB";
+/* Class = "NSToolbarItem"; paletteLabel = "USB Devices"; ObjectID = "tlw-Fb-ne3"; */
+"tlw-Fb-ne3.paletteLabel" = "USB 裝置";
 
 /* Class = "NSToolbarItem"; toolTip = "USB devices"; ObjectID = "tlw-Fb-ne3"; */
 "tlw-Fb-ne3.toolTip" = "USB 裝置";
