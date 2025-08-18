@@ -184,6 +184,7 @@ import ScriptingBridge
     @objc optional func importNew(_ new_: NSNumber!, from: URL!) -> SBObject // Import a new virtual machine from a file.
     @objc optional func virtualMachines() -> SBElementArray
     @objc optional var autoTerminate: Bool { get } // Auto terminate the application when all windows are closed?
+    @objc optional var UTMVersion: String { get } // The version number of UTM.
     @objc optional func setAutoTerminate(_ autoTerminate: Bool) // Auto terminate the application when all windows are closed?
     @objc optional func usbDevices() -> SBElementArray
 }
