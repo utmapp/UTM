@@ -70,24 +70,22 @@ NS_AVAILABLE_IOS(13.4)
     };
     mouse.mouseInput.leftButton.pressedChangedHandler = ^(GCControllerButtonInput * _Nonnull button, float value, BOOL pressed) {
         self.mouseLeftDown = pressed;
-        [self.vmInput sendMouseButton:kCSInputButtonLeft pressed:pressed];
+        [self.vmInput sendMouseButton:kCSInputButtonLeft mask:self.mouseButtonDown pressed:pressed];
     };
     mouse.mouseInput.rightButton.pressedChangedHandler = ^(GCControllerButtonInput * _Nonnull button, float value, BOOL pressed) {
         self.mouseRightDown = pressed;
-        [self.vmInput sendMouseButton:kCSInputButtonRight pressed:pressed];
+        [self.vmInput sendMouseButton:kCSInputButtonRight mask:self.mouseButtonDown pressed:pressed];
 
     };
     mouse.mouseInput.middleButton.pressedChangedHandler = ^(GCControllerButtonInput * _Nonnull button, float value, BOOL pressed) {
         self.mouseMiddleDown = pressed;
-        [self.vmInput sendMouseButton:kCSInputButtonMiddle pressed:pressed];
+        [self.vmInput sendMouseButton:kCSInputButtonMiddle mask:self.mouseButtonDown pressed:pressed];
     };
-    for (int i = 0; i < MIN(4, mouse.mouseInput.auxiliaryButtons.count); i++) {
+    for (int i = 0; i < MIN(2, mouse.mouseInput.auxiliaryButtons.count); i++) {
         mouse.mouseInput.auxiliaryButtons[i].pressedChangedHandler = ^(GCControllerButtonInput * _Nonnull button, float value, BOOL pressed) {
             switch (i) {
-                case 0: [self.vmInput sendMouseButton:kCSInputButtonUp pressed:pressed]; break;
-                case 1: [self.vmInput sendMouseButton:kCSInputButtonDown pressed:pressed]; break;
-                case 2: [self.vmInput sendMouseButton:kCSInputButtonSide pressed:pressed]; break;
-                case 3: [self.vmInput sendMouseButton:kCSInputButtonExtra pressed:pressed]; break;
+                case 0: self.mouseSideDown = pressed; [self.vmInput sendMouseButton:kCSInputButtonSide mask:self.mouseButtonDown pressed:pressed]; break;
+                case 1: self.mouseExtraDown = pressed; [self.vmInput sendMouseButton:kCSInputButtonExtra mask:self.mouseButtonDown pressed:pressed]; break;
                 default: break;
             }
         };

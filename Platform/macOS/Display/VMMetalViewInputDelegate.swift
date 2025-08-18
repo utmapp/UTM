@@ -16,11 +16,11 @@
 
 protocol VMMetalViewInputDelegate: AnyObject {
     var shouldUseCmdOptForCapture: Bool { get }
-    func mouseMove(absolutePoint: CGPoint, button: CSInputButton)
-    func mouseMove(relativePoint: CGPoint, button: CSInputButton)
-    func mouseDown(button: CSInputButton)
-    func mouseUp(button: CSInputButton)
-    func mouseScroll(dy: CGFloat, button: CSInputButton)
+    func mouseMove(absolutePoint: CGPoint, buttonMask: CSInputButton)
+    func mouseMove(relativePoint: CGPoint, buttonMask: CSInputButton)
+    func mouseDown(button: CSInputButton, mask: CSInputButton)
+    func mouseUp(button: CSInputButton, mask: CSInputButton)
+    func mouseScroll(dy: CGFloat, buttonMask: CSInputButton)
     func keyDown(scanCode: Int)
     func keyUp(scanCode: Int)
     func syncCapsLock(with modifier: NSEvent.ModifierFlags?)

@@ -604,7 +604,7 @@ private class LazyMenuItem: NSMenuItem, NSMenuDelegate {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func menuNeedsUpdate(_ menu: NSMenu) {
+    func menuWillOpen(_ menu: NSMenu) {
         menu.removeAllItems()
         menuUpdate(menu)
     }

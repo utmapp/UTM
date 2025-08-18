@@ -153,8 +153,11 @@ import Virtualization // for getting network interfaces
                 let split = regex.matches(in: argString, options: [], range: range)
                 for match in split {
                     let matchRange = Range(match.range(at: 1), in: argString)!
-                    let fragment = argString[matchRange]
-                    list.append(fragment.replacingOccurrences(of: "\"", with: ""))
+                    var fragment = argString[matchRange]
+                    if fragment.first == "\"" && fragment.last == "\"" {
+                        fragment = fragment.dropFirst().dropLast()
+                    }
+                    list.append(String(fragment))
                 }
             }
         }
@@ -780,6 +783,7 @@ import Virtualization // for getting network interfaces
                 "virtio-blk-pci"
             }
             "drive=drive\(drive.id)"
+            "serial=\(drive.id)"
             if !disableBootIndex {
                 "bootindex=\(bootindex)"
             }

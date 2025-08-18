@@ -516,12 +516,20 @@ enum AlertItem: Identifiable {
     @discardableResult func clone(vm: VMData) async throws -> VMData {
         let newName: String = newDefaultVMName(base: vm.detailsTitleLabel)
         let newPath = ConcreteVirtualMachine.virtualMachinePath(for: newName, in: documentsURL)
+        let isRegenerateMACOnClone = UserDefaults.standard.bool(forKey: "IsRegenerateMACOnClone")
 
         try await copyItemWithCopyfile(at: vm.pathUrl, to: newPath)
         guard let newVM = try? VMData(url: newPath) else {
             throw UTMDataError.cloneFailed
         }
         newVM.wrapped!.changeUuid(to: UUID(), name: newName, copyingEntry: nil)
+        if isRegenerateMACOnClone {
+            if let config = newVM.wrapped!.config as? UTMQemuConfiguration {
+                for i in config.networks.indices {
+                    config.networks[i].macAddress = UTMQemuConfigurationNetwork.randomMacAddress()
+                }
+            }
+        }
         try await newVM.save()
         var index = virtualMachines.firstIndex(of: vm)
         if index != nil {

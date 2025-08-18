@@ -272,7 +272,8 @@ struct InputSettingsView: View {
     @AppStorage("IsCtrlCmdSwapped") var isCtrlCmdSwapped = false
     @AppStorage("InvertScroll") var isInvertScroll = false
     @AppStorage("HandleInitialClick") var isHandleInitialClick = false
-    
+    @AppStorage("IsISOKeySwapped") var isISOKeySwapped = false
+
     @State private var isKeyboardShortcutsShown = false
     
     var body: some View {
@@ -320,6 +321,9 @@ struct InputSettingsView: View {
                 Toggle(isOn: $isCtrlCmdSwapped, label: {
                     Text("Swap Control (⌃) and Command (⌘) keys")
                 }).help("This does not apply to key binding outside the guest.")
+                Toggle(isOn: $isISOKeySwapped) {
+                    Text("Swap the leftmost key on the number row and the key next to left shift on ISO keyboards")
+                }.help("This only applies to ISO layout keyboards.")
             }
             .sheet(isPresented: $isKeyboardShortcutsShown) {
                 VMKeyboardShortcutsView().padding()
@@ -331,6 +335,7 @@ struct InputSettingsView: View {
 
 @available(macOS 12, *)
 struct NetworkSettingsView: View {
+    @AppStorage("IsRegenerateMACOnClone") var isRegenerateMACOnClone = false
     @AppStorage("HostNetworks") var hostNetworksData: Data = Data()
     @State private var hostNetworks: [UTMConfigurationHostNetwork] = []
     @State private var selectedID: UUID?
@@ -346,6 +351,10 @@ struct NetworkSettingsView: View {
     
     var body: some View {
         Form {
+            Section(header: Text("Cloning")) {
+                Toggle("Regenerate MAC addresses on clone", isOn: $isRegenerateMACOnClone)
+                    .help("When cloning a VM, regenerate MAC addresses on every network interface to prevent conflicts.")
+            }
             Section(header: Text("Host Networks")) {
                 Table($hostNetworks, selection: $selectedID) {
                     TableColumn("Name") { $network in

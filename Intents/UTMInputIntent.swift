@@ -217,9 +217,9 @@ struct UTMMouseClickIntent: UTMIntent {
         try await vm.changeInputTablet(true)
         input.sendMousePosition(mouseButton.toSpiceButton(), absolutePoint: CGPoint(x: xPosition, y: yPosition), forMonitorID: monitorNumber-1)
         try await Task.sleep(nanoseconds: kDelayNs)
-        input.sendMouseButton(mouseButton.toSpiceButton(), pressed: true)
+        input.sendMouseButton(mouseButton.toSpiceButton(), mask: [], pressed: true)
         try await Task.sleep(nanoseconds: kDelayNs)
-        input.sendMouseButton(mouseButton.toSpiceButton(), pressed: false)
+        input.sendMouseButton(mouseButton.toSpiceButton(), mask: [], pressed: false)
         return .result()
     }
 }
