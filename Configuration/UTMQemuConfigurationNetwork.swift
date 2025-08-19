@@ -69,6 +69,9 @@ struct UTMQemuConfigurationNetwork: Codable, Identifiable {
     /// Network UUID to attach to in host mode
     var hostNetUuid: String?
     
+    /// Can be set to be displayed to the user. Not saved.
+    var currentIpAddresses: [String] = []
+
     let id = UUID()
     
     /// Generate a random MAC address
