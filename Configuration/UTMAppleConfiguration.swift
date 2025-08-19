@@ -273,7 +273,7 @@ extension UTMAppleConfiguration {
                 } else {
                     let device = VZVirtioBlockDeviceConfiguration(attachment: attachment)
                     if #available(macOS 12.3, *) {
-                        device.blockDeviceIdentifier = drive.id
+                        device.blockDeviceIdentifier = drive.serial
                     }
                     return device
                 }

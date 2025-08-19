@@ -783,7 +783,7 @@ import Virtualization // for getting network interfaces
                 "virtio-blk-pci"
             }
             "drive=drive\(drive.id)"
-            "serial=\(drive.id)"
+            "serial=\(drive.serial)"
             if !disableBootIndex {
                 "bootindex=\(bootindex)"
             }

@@ -48,6 +48,11 @@ extension UTMConfigurationDrive {
     static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.hashValue == rhs.hashValue
     }
+    
+    /// Serial number derived from drive identifier
+    var serial: String {
+        String(self.id.replacingOccurrences(of: "-", with: "").prefix(20))
+    }
 }
 
 // MARK: - Saving data
