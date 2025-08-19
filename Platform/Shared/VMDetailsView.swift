@@ -31,6 +31,8 @@ struct VMDetailsView: View {
     #endif
 
     @State private var size: Int64 = 0
+    @State private var updateTask: Task<Void, Never>?
+    private let updateIpIntervalNs = UInt64(10 * 1_000_000_000)
 
     private var sizeLabel: String {
         return ByteCountFormatter.string(fromByteCount: size, countStyle: .binary)
@@ -116,27 +118,90 @@ struct VMDetailsView: View {
                 if let vm = vm.wrapped as? UTMRemoteSpiceVirtualMachine {
                     await vm.loadScreenshotFromServer()
                 }
+                #else
+                while !Task.isCancelled {
+                    await updateGuestIPs()
+                    try? await Task.sleep(nanoseconds: updateIpIntervalNs)
+                }
                 #endif
             }
         }
     }
+
+    #if !WITH_REMOTE
+    private func clearGuestIPs() {
+        guard let qemuVM = vm.wrapped as? UTMQemuVirtualMachine else {
+            return
+        }
+        for i in qemuVM.config.networks.indices {
+            qemuVM.config.networks[i].currentIpAddresses = []
+        }
+    }
+
+    private func updateGuestIPs() async {
+        guard let qemuVM = vm.wrapped as? UTMQemuVirtualMachine else {
+            clearGuestIPs()
+            return
+        }
+        guard let guestAgent = await qemuVM.guestAgent, qemuVM.state == .started else {
+            clearGuestIPs()
+            return
+        }
+        guard let interfaces = try? await guestAgent.guestNetworkGetInterfaces() else {
+            clearGuestIPs()
+            logger.error("Failed to get guest IP addresses")
+            return
+        }
+        for i in qemuVM.config.networks.indices {
+            let macAddress = qemuVM.config.networks[i].macAddress
+            if let interface = interfaces.first(where: { $0.hardwareAddress?.caseInsensitiveCompare(macAddress) == .orderedSame }) {
+                let ipAddresses = interface.ipAddresses.compactMap {
+                    if !$0.isIpV6Address && !$0.ipAddress.hasPrefix("127.") {
+                        return $0.ipAddress
+                    } else if $0.isIpV6Address && $0.ipAddress != "::1" && $0.ipAddress != "0:0:0:0:0:0:0:1" {
+                        return $0.ipAddress
+                    } else {
+                        return nil
+                    }
+                }
+                qemuVM.config.networks[i].currentIpAddresses = ipAddresses
+            }
+        }
+    }
+    #endif
 }
 
 private extension View {
+    @ViewBuilder
     func taskOnAppear<T>(id value: T, priority: TaskPriority = .userInitiated, _ action: @escaping @Sendable @MainActor () async -> Void) -> some View where T : Equatable & Hashable {
         #if os(visionOS) // FIXME: visionOS crashes with task()
-        self.onAppear {
-            Task(priority: priority, operation: action)
-        }.id(value)
+        self.cancellableTask(priority: priority, action).id(value)
         #else
         if #available(macOS 12, iOS 15, *) {
-            return self.task(id: value, priority: priority, action)
+            self.task(id: value, priority: priority, action)
         } else {
-            return self.onAppear {
-                Task(priority: priority, operation: action)
-            }.id(value)
+            self.cancellableTask(priority: priority, action).id(value)
         }
         #endif
+    }
+
+    @ViewBuilder
+    private func cancellableTask(priority: TaskPriority, _ action: @escaping @Sendable @MainActor () async -> Void) -> some View {
+        self.modifier(CancellableTaskViewModifier(priority: priority, action: action))
+    }
+}
+
+private struct CancellableTaskViewModifier: ViewModifier {
+    let priority: TaskPriority
+    let action: @Sendable @MainActor () async -> Void
+    @State private var task: Task<Void, Never>?
+
+    func body(content: Content) -> some View {
+        content.onAppear {
+            task = Task(priority: priority, operation: action)
+        }.onDisappear {
+            task?.cancel()
+        }
     }
 }
 
@@ -229,6 +294,12 @@ struct Details: View {
     let sizeLabel: String
     @EnvironmentObject private var data: UTMData
     
+    private func formatPortForward(_ forward: UTMQemuConfigurationPortForward) -> String {
+        let hostAddr = forward.hostAddress ?? "*"
+        let guestAddr = forward.guestAddress ?? "*"
+        return "\(forward.protocol.rawValue) \(hostAddr):\(forward.hostPort) : \(guestAddr):\(forward.guestPort)"
+    }
+    
     var body: some View {
         VStack {
             if vm.isShortcut {
@@ -268,6 +339,66 @@ struct Details: View {
                 Spacer()
                 Text(sizeLabel)
                     .foregroundColor(.secondary)
+            }
+            #if os(macOS)
+            if let appleConfig = vm.config as? UTMAppleConfiguration {
+                ForEach(appleConfig.networks) { network in
+                    HStack {
+                        plainLabel("Network", systemImage: "network")
+                        Spacer()
+                        Text("\(network.mode.prettyValue) (\(network.macAddress))")
+                            .foregroundColor(.secondary)
+                    }
+                    if network.mode == .bridged, let interface = network.bridgeInterface {
+                        HStack {
+                            plainLabel("Bridge Interface", systemImage: "arrow.triangle.branch")
+                            Spacer()
+                            Text(interface)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                }
+            }
+            #endif
+            if let qemuConfig = vm.config as? UTMQemuConfiguration {
+                ForEach(qemuConfig.networks) { network in
+                    HStack {
+                        plainLabel("Network", systemImage: "network")
+                        Spacer()
+                        Text("\(network.mode.prettyValue) (\(network.hardware.prettyValue))")
+                            .foregroundColor(.secondary)
+                    }
+                    HStack {
+                        plainLabel("MAC Address", systemImage: "number")
+                        Spacer()
+                        OptionalSelectableText(network.macAddress)
+                    }
+                    ForEach(network.currentIpAddresses) { guestIP in
+                        HStack {
+                            plainLabel("Guest IP", systemImage: "network.badge.shield.half.filled")
+                            Spacer()
+                            OptionalSelectableText(guestIP)
+                        }
+                    }
+                    if network.mode == .bridged, let interface = network.bridgeInterface {
+                        HStack {
+                            plainLabel("Bridge Interface", systemImage: "arrow.triangle.branch")
+                            Spacer()
+                            Text(interface)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    if network.mode == .emulated && !network.portForward.isEmpty {
+                        ForEach(network.portForward) { forward in
+                            HStack {
+                                plainLabel("Port Forward", systemImage: "arrow.triangle.2.circlepath")
+                                Spacer()
+                                Text(formatPortForward(forward))
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+                }
             }
             #if os(macOS)
             if let appleConfig = vm.config as? UTMAppleConfiguration {
@@ -314,9 +445,9 @@ struct Details: View {
         .truncationMode(.tail)
     }
     
-    private func plainLabel(_ text: String, systemImage: String) -> some View {
+    private func plainLabel(_ text: LocalizedStringKey, systemImage: String) -> some View {
         return Label {
-            Text(LocalizedStringKey(text))
+            Text(text)
         } icon: {
             Image(systemName: systemImage).foregroundColor(.primary)
         }
