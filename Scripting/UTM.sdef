@@ -26,7 +26,7 @@
           <property name="auto terminate" code="kRlW" type="boolean" description="Auto terminate the application when all windows are closed?">
               <cocoa key="isAutoTerminate"/>
           </property>
-          <property name="UTM version" code="UTMv" type="text" access="r" description="The version number of UTM.">
+          <property name="UTM version" code="UTMV" type="text" access="r" description="The version number of UTM.">
               <cocoa key="version"/>
           </property>
         </class-extension>
