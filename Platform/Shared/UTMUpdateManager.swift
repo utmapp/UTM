@@ -277,7 +277,7 @@ class UTMUpdateManager: UTMReleaseHelper {
         }
         
         let isPrerelease = json["prerelease"] as? Bool ?? false
-        let isCritical = body.lowercased().contains("critical") || body.lowercased().contains("security")
+        let isCritical = body.lowercased().contains("critical")
         
         return UpdateInfo(
             version: version,
