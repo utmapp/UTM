@@ -123,7 +123,7 @@ class UTMInstaller {
         let mountPoint = try await mountDMG(dmgURL)
         
         defer {
-            try unmountDMG(mountPoint)
+            try? unmountDMG(mountPoint)
         }
         
         let appURL = try findAppBundle(in: mountPoint)
