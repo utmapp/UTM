@@ -439,28 +439,27 @@ class UTMUpdateManager: UTMReleaseHelper {
             let installer = UTMInstaller()
             try await installer.installUpdate(from: url)
             
-            // Installation successful
-            await handleInstallationSuccess()
+            // Installation guidance shown - reset state but don't restart
+            await handleInstallationGuidanceShown()
         } catch {
             updateError = error as? UpdateError ?? .installationFailed(error.localizedDescription)
             isInstalling = false
         }
     }
     
-    private func handleInstallationSuccess() async {
+    private func handleInstallationGuidanceShown() async {
         // Clean up downloaded file
         if let downloadManager = downloadManager {
             downloadManager.cleanupDownload()
         }
         
-        // Reset state
+        // Reset downloading/installing state, but keep update info visible
         isDownloading = false
         isInstalling = false
-        isUpdateAvailable = false
-        updateInfo = nil
         downloadProgress = 0.0
         
-        // App will restart as part of installation process
+        // Keep isUpdateAvailable true and updateInfo to allow user to try again if needed
+        // The user will manually dismiss this when they complete the installation
     }
     
     // MARK: - Public Interface

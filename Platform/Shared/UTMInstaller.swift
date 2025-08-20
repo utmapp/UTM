@@ -29,6 +29,7 @@ class UTMInstaller {
         case backupFailed
         case platformNotSupported
         case insufficientDiskSpace
+        case mountFailed
         
         var errorDescription: String? {
             switch self {
@@ -44,13 +45,15 @@ class UTMInstaller {
                 return "Platform not supported for automatic updates"
             case .insufficientDiskSpace:
                 return "Insufficient disk space for installation"
+            case .mountFailed:
+                return "Failed to mount DMG file"
             }
         }
     }
     
     func installUpdate(from downloadURL: URL) async throws {
         #if os(macOS)
-        try await installMacOSUpdate(from: downloadURL)
+        try await openDMGAndShowInstructions(from: downloadURL)
         #elseif os(iOS)
         try await installiOSUpdate(from: downloadURL)
         #else
@@ -59,109 +62,66 @@ class UTMInstaller {
     }
     
     #if os(macOS)
-    private func installMacOSUpdate(from downloadURL: URL) async throws {
-        try validateDownloadedFile(at: downloadURL)
+    private func openDMGAndShowInstructions(from downloadURL: URL) async throws {
+        // Mount the DMG
+        let mountPoint = try await mountDMG(downloadURL)
         
-        try checkDiskSpace(for: downloadURL)
+        // Show the mounted volume in Finder
+        try showMountedDMGInFinder(mountPoint)
         
-        let backupURL = try createBackup()
-        
-        do {
-            if downloadURL.pathExtension.lowercased() == "dmg" {
-                try await installFromDMG(downloadURL)
-            } else {
-                throw InstallationError.invalidBundle
-            }
-            
-            try restartApplication()
-            
-        } catch {
-            // Rollback on failure
-            try? rollbackFromBackup(backupURL)
-            throw InstallationError.installationFailed(error.localizedDescription)
-        }
+        // Show installation instructions to the user
+        try showInstallationInstructions()
     }
     
-    private func validateDownloadedFile(at url: URL) throws {
-        guard FileManager.default.fileExists(atPath: url.path) else {
-            throw InstallationError.invalidBundle
-        }
-
-        // additional validation could be added here:
-        // - code signature verification
-        // - bundle structure validation
-        // - checksum verification
+    private func showMountedDMGInFinder(_ mountPoint: URL) throws {
+        NSWorkspace.shared.open(mountPoint)
     }
     
-    private func checkDiskSpace(for downloadURL: URL) throws {
-        let fileAttributes = try FileManager.default.attributesOfItem(atPath: downloadURL.path)
-        let fileSize = fileAttributes[.size] as? Int64 ?? 0
-        
-        // estimate required space (file size + extraction space + backup space)
-        let requiredSpace = fileSize * 3
-        
-        if let availableSpace = try? FileManager.default.url(for: .applicationDirectory, in: .localDomainMask, appropriateFor: nil, create: false).resourceValues(forKeys: [.volumeAvailableCapacityForImportantUsageKey]).volumeAvailableCapacityForImportantUsage {
-            if availableSpace < requiredSpace {
-                throw InstallationError.insufficientDiskSpace
+    private func showInstallationInstructions() throws {
+        DispatchQueue.main.async {
+            let alert = NSAlert()
+            alert.messageText = NSLocalizedString("Installation Instructions", comment: "UTMInstaller")
+            alert.informativeText = NSLocalizedString("Please follow these steps to complete the update:\n\n1. Save any unsaved work in your virtual machines\n2. Quit UTM completely\n3. Drag the new UTM.app from the opened DMG to your Applications folder (replace the existing version)\n4. Restart UTM\n\nThe DMG will remain mounted until you manually eject it.", comment: "UTMInstaller")
+            alert.addButton(withTitle: NSLocalizedString("OK", comment: "UTMInstaller"))
+            alert.addButton(withTitle: NSLocalizedString("Quit UTM Now", comment: "UTMInstaller"))
+            alert.alertStyle = .informational
+            
+            let response = alert.runModal()
+            
+            if response == .alertSecondButtonReturn {
+                // User chose to quit UTM now
+                NSApplication.shared.terminate(nil)
             }
         }
     }
     
-    private func createBackup() throws -> URL {
-        let currentAppURL = Bundle.main.bundleURL
-        
-        let backupDirectory = FileManager.default.temporaryDirectory.appendingPathComponent("UTMBackup-\(UUID().uuidString)")
-        let backupURL = backupDirectory.appendingPathComponent(currentAppURL.lastPathComponent)
-        
-        try FileManager.default.createDirectory(at: backupDirectory, withIntermediateDirectories: true)
-        try FileManager.default.copyItem(at: currentAppURL, to: backupURL)
-        
-        return backupURL
-    }
-    
-    private func installFromDMG(_ dmgURL: URL) async throws {
-        let mountPoint = try await mountDMG(dmgURL)
-        
-        defer {
-            try? unmountDMG(mountPoint)
-        }
-        
-        let appURL = try findAppBundle(in: mountPoint)
-        
-        try installAppBundle(from: appURL)
-    }
-    
-    private func installFromZIP(_ zipURL: URL) async throws {
-        let extractionURL = try await extractZIP(zipURL)
-        
-        defer {
-            try? FileManager.default.removeItem(at: extractionURL)
-        }
-        
-        let appURL = try findAppBundle(in: extractionURL)
-        
-        try installAppBundle(from: appURL)
-    }
     
     private func mountDMG(_ dmgURL: URL) async throws -> URL {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/usr/bin/hdiutil")
         process.arguments = ["attach", dmgURL.path, "-nobrowse", "-quiet", "-plist"]
+
+        print("process.arguments: \(process.arguments ?? [""])")
+        print("process.environment: \(process.environment ?? [:])")
+        print("Mounting DMG at: \(dmgURL.path)")
+        
         
         let pipe = Pipe()
         process.standardOutput = pipe
         
         try process.run()
         process.waitUntilExit()
+
+        print("process.terminationStatus: \(process.terminationStatus)")
         
         guard process.terminationStatus == 0 else {
-            throw InstallationError.installationFailed("Failed to mount DMG")
+            throw InstallationError.mountFailed
         }
         
         let data = pipe.fileHandleForReading.readDataToEndOfFile()
         guard let plist = try PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any],
               let systemEntities = plist["system-entities"] as? [[String: Any]] else {
-            throw InstallationError.installationFailed("Failed to parse mount output")
+            throw InstallationError.mountFailed
         }
         
         for entity in systemEntities {
@@ -170,108 +130,7 @@ class UTMInstaller {
             }
         }
         
-        throw InstallationError.installationFailed("No mount point found")
-    }
-    
-    private func unmountDMG(_ mountPoint: URL) throws {
-        let process = Process()
-        process.executableURL = URL(fileURLWithPath: "/usr/bin/hdiutil")
-        process.arguments = ["detach", mountPoint.path, "-quiet"]
-        
-        try process.run()
-        process.waitUntilExit()
-    }
-    
-    private func extractZIP(_ zipURL: URL) async throws -> URL {
-        let extractionURL = FileManager.default.temporaryDirectory.appendingPathComponent("UTMExtraction-\(UUID().uuidString)")
-        try FileManager.default.createDirectory(at: extractionURL, withIntermediateDirectories: true)
-        
-        let process = Process()
-        process.executableURL = URL(fileURLWithPath: "/usr/bin/unzip")
-        process.arguments = ["-q", zipURL.path, "-d", extractionURL.path]
-        
-        try process.run()
-        process.waitUntilExit()
-        
-        guard process.terminationStatus == 0 else {
-            throw InstallationError.installationFailed("Failed to extract ZIP")
-        }
-        
-        return extractionURL
-    }
-    
-    private func findAppBundle(in directory: URL) throws -> URL {
-        let contents = try FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: [.isDirectoryKey])
-        
-        for item in contents {
-            if item.pathExtension == "app" {
-                return item
-            }
-            
-            // look in subdirectories
-            let resourceValues = try item.resourceValues(forKeys: [.isDirectoryKey])
-            if resourceValues.isDirectory == true {
-                if let appURL = try? findAppBundle(in: item) {
-                    return appURL
-                }
-            }
-        }
-        
-        throw InstallationError.invalidBundle
-    }
-    
-    private func installAppBundle(from sourceURL: URL) throws {
-        let currentAppURL = Bundle.main.bundleURL
-        
-        try FileManager.default.removeItem(at: currentAppURL)
-        
-        try FileManager.default.copyItem(at: sourceURL, to: currentAppURL)
-        
-        try setExecutablePermissions(for: currentAppURL)
-    }
-    
-    private func setExecutablePermissions(for appURL: URL) throws {
-        let executableURL = appURL.appendingPathComponent("Contents/MacOS").appendingPathComponent(appURL.deletingPathExtension().lastPathComponent)
-        
-        let attributes: [FileAttributeKey: Any] = [
-            .posixPermissions: 0o755
-        ]
-        
-        try FileManager.default.setAttributes(attributes, ofItemAtPath: executableURL.path)
-    }
-    
-    private func rollbackFromBackup(_ backupURL: URL) throws {
-        let currentAppURL = Bundle.main.bundleURL
-        
-        try? FileManager.default.removeItem(at: currentAppURL)
-        
-        try FileManager.default.copyItem(at: backupURL, to: currentAppURL)
-    }
-    
-    private func restartApplication() throws {
-        let appURL = Bundle.main.bundleURL
-        
-        // create a script to restart the app after a delay
-        let script = """
-        #!/bin/bash
-        sleep 2
-        open "\(appURL.path)"
-        """
-        
-        let scriptURL = FileManager.default.temporaryDirectory.appendingPathComponent("restart_utm.sh")
-        try script.write(to: scriptURL, atomically: true, encoding: .utf8)
-        
-        // make script executable
-        try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: scriptURL.path)
-        
-        // execute script
-        let process = Process()
-        process.executableURL = URL(fileURLWithPath: "/bin/bash")
-        process.arguments = [scriptURL.path]
-        process.launch()
-        
-        // exit current app
-        NSApp.terminate(nil)
+        throw InstallationError.mountFailed
     }
     
     #endif

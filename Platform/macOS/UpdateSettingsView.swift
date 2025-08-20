@@ -217,7 +217,7 @@ struct UpdateAvailableSection: View {
                         ProgressView()
                             .scaleEffect(0.5)
                         
-                        Text(NSLocalizedString("Installing...", comment: "UpdateSettingsView"))
+                        Text(NSLocalizedString("Preparing installation...", comment: "UpdateSettingsView"))
                             .font(.caption)
                     }
                 }
@@ -243,7 +243,7 @@ struct UpdateAvailableSection: View {
                     } else if !updateManager.isInstalling {
                         if #available(macOS 12.0, *) {
                             
-                            Button(NSLocalizedString("Download & Install", comment: "UpdateSettingsView")) {
+                            Button(NSLocalizedString("Download & Open DMG", comment: "UpdateSettingsView")) {
                                 Task {
                                     await updateManager.downloadAndInstall()
                                 }
@@ -251,7 +251,7 @@ struct UpdateAvailableSection: View {
                             .buttonStyle(.borderedProminent)
                         } else {
                             
-                            Button(NSLocalizedString("Download & Install", comment: "UpdateSettingsView")) {
+                            Button(NSLocalizedString("Download & Open DMG", comment: "UpdateSettingsView")) {
                                 Task {
                                     await updateManager.downloadAndInstall()
                                 }

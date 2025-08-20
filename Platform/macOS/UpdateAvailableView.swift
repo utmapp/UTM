@@ -94,10 +94,6 @@ struct UpdateAvailableView: View {
                     
                     Text(NSLocalizedString("Installing Update...", comment: "UpdateAvailableView"))
                         .font(.headline)
-                    
-                    Text(NSLocalizedString("UTM will restart when installation is complete", comment: "UpdateAvailableView"))
-                        .font(.caption)
-                        .foregroundColor(.secondary)
                 }
                 .padding()
                 .background(Color.secondary.opacity(0.1))
@@ -143,7 +139,7 @@ struct UpdateAvailableView: View {
                 } else if !updateManager.isInstalling {
                     if #available(macOS 12.0, *) {
                         
-                        Button(NSLocalizedString("Download & Install", comment: "UpdateAvailableView")) {
+                        Button(NSLocalizedString("Download & Open DMG", comment: "UpdateAvailableView")) {
                             Task {
                                 await updateManager.downloadAndInstall()
                             }
@@ -152,7 +148,7 @@ struct UpdateAvailableView: View {
                         .disabled(updateManager.isDownloading || updateManager.isInstalling)
                     } else {
                         
-                        Button(NSLocalizedString("Download & Install", comment: "UpdateAvailableView")) {
+                        Button(NSLocalizedString("Download & Open DMG", comment: "UpdateAvailableView")) {
                             Task {
                                 await updateManager.downloadAndInstall()
                             }
@@ -196,16 +192,17 @@ struct UpdateProgressView: View {
             } else if updateManager.isInstalling {
                 VStack(spacing: 8) {
                     
-                    Text(NSLocalizedString("Installing Update", comment: "UpdateAvailableView"))
+                    Text(NSLocalizedString("Preparing Installation", comment: "UpdateAvailableView"))
                         .font(.headline)
                     
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle())
                     
                     
-                    Text(NSLocalizedString("UTM will restart when installation is complete", comment: "UpdateAvailableView"))
+                    Text(NSLocalizedString("Opening DMG and showing installation instructions", comment: "UpdateAvailableView"))
                         .font(.caption)
                         .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
                 }
             }
         }
