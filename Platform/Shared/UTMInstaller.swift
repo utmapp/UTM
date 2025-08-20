@@ -34,19 +34,19 @@ class UTMInstaller {
         var errorDescription: String? {
             switch self {
             case .notAuthorized:
-                return "Installation not authorized"
+                return NSLocalizedString("Installation not authorized", comment: "UTMInstaller")
             case .invalidBundle:
-                return "Invalid application bundle"
+                return NSLocalizedString("Invalid application bundle", comment: "UTMInstaller")
             case .installationFailed(let reason):
-                return "Installation failed: \(reason)"
+                return String.localizedStringWithFormat(NSLocalizedString("Installation failed: %@", comment: "UTMInstaller"), reason)
             case .backupFailed:
-                return "Failed to create backup"
+                return NSLocalizedString("Failed to create backup", comment: "UTMInstaller")
             case .platformNotSupported:
-                return "Platform not supported for automatic updates"
+                return NSLocalizedString("Platform not supported for automatic updates", comment: "UTMInstaller")
             case .insufficientDiskSpace:
-                return "Insufficient disk space for installation"
+                return NSLocalizedString("Insufficient disk space for installation", comment: "UTMInstaller")
             case .mountFailed:
-                return "Failed to mount DMG file"
+                return NSLocalizedString("Failed to mount DMG file", comment: "UTMInstaller")
             }
         }
     }
@@ -63,74 +63,88 @@ class UTMInstaller {
     
     #if os(macOS)
     private func openDMGAndShowInstructions(from downloadURL: URL) async throws {
-        // Mount the DMG
-        let mountPoint = try await mountDMG(downloadURL)
-        
-        // Show the mounted volume in Finder
-        try showMountedDMGInFinder(mountPoint)
+        // Try to mount the DMG
+        do {
+            _ = try await mountDMG(downloadURL)
+        } catch {
+            NSWorkspace.shared.open(downloadURL)
+        }
         
         // Show installation instructions to the user
-        try showInstallationInstructions()
+        await showInstallationInstructions()
     }
     
-    private func showMountedDMGInFinder(_ mountPoint: URL) throws {
-        NSWorkspace.shared.open(mountPoint)
-    }
-    
-    private func showInstallationInstructions() throws {
-        DispatchQueue.main.async {
-            let alert = NSAlert()
-            alert.messageText = NSLocalizedString("Installation Instructions", comment: "UTMInstaller")
-            alert.informativeText = NSLocalizedString("Please follow these steps to complete the update:\n\n1. Save any unsaved work in your virtual machines\n2. Quit UTM completely\n3. Drag the new UTM.app from the opened DMG to your Applications folder (replace the existing version)\n4. Restart UTM\n\nThe DMG will remain mounted until you manually eject it.", comment: "UTMInstaller")
-            alert.addButton(withTitle: NSLocalizedString("OK", comment: "UTMInstaller"))
-            alert.addButton(withTitle: NSLocalizedString("Quit UTM Now", comment: "UTMInstaller"))
-            alert.alertStyle = .informational
-            
-            let response = alert.runModal()
-            
-            if response == .alertSecondButtonReturn {
-                // User chose to quit UTM now
-                NSApplication.shared.terminate(nil)
+    private func showInstallationInstructions() async {
+        return await withCheckedContinuation { continuation in
+            DispatchQueue.main.async {
+                let alert = NSAlert()
+                alert.messageText = NSLocalizedString("Installation Instructions", comment: "UTMInstaller")
+                alert.informativeText = NSLocalizedString("Please follow these steps to complete the update:\n\n1. Save any unsaved work in your virtual machines\n2. Quit UTM completely\n3. Double-click the mounted DMG file to view its contents\n4. Drag the new UTM.app from the DMG to your Applications folder (replace the existing version)\n5. Restart UTM\n\nThe DMG file has been mounted and is ready for installation.", comment: "UTMInstaller")
+                alert.addButton(withTitle: NSLocalizedString("OK", comment: "UTMInstaller"))
+                alert.addButton(withTitle: NSLocalizedString("Quit UTM Now", comment: "UTMInstaller"))
+                alert.alertStyle = .informational
+                
+                let response = alert.runModal()
+                
+                if response == .alertSecondButtonReturn {
+                    // close any existing alerts and quit
+                    DispatchQueue.main.async {
+                        // Close all open modal windows/alerts
+                        for window in NSApplication.shared.windows {
+                            window.close()
+                        }
+                        
+                        NSApplication.shared.terminate(nil)
+                    }
+                }
+                
+                continuation.resume(returning: ())
             }
         }
     }
-    
     
     private func mountDMG(_ dmgURL: URL) async throws -> URL {
-        let process = Process()
-        process.executableURL = URL(fileURLWithPath: "/usr/bin/hdiutil")
-        process.arguments = ["attach", dmgURL.path, "-nobrowse", "-quiet", "-plist"]
-
-        print("process.arguments: \(process.arguments ?? [""])")
-        print("process.environment: \(process.environment ?? [:])")
-        print("Mounting DMG at: \(dmgURL.path)")
-        
-        
-        let pipe = Pipe()
-        process.standardOutput = pipe
-        
-        try process.run()
-        process.waitUntilExit()
-
-        print("process.terminationStatus: \(process.terminationStatus)")
-        
-        guard process.terminationStatus == 0 else {
-            throw InstallationError.mountFailed
-        }
-        
-        let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        guard let plist = try PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any],
-              let systemEntities = plist["system-entities"] as? [[String: Any]] else {
-            throw InstallationError.mountFailed
-        }
-        
-        for entity in systemEntities {
-            if let mountPoint = entity["mount-point"] as? String {
-                return URL(fileURLWithPath: mountPoint)
+        return try await withCheckedThrowingContinuation { continuation in
+            DispatchQueue.main.async {
+                // macOS will mount automatically
+                let success = NSWorkspace.shared.open(dmgURL)
+                
+                if success {
+                    // wait a moment for the mount to complete
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                        let volumeName = dmgURL.deletingPathExtension().lastPathComponent
+                        let possiblePaths = [
+                            "/Volumes/\(volumeName)",
+                            "/Volumes/UTM",
+                            "/Volumes/UTM SE"
+                        ]
+                        
+                        for path in possiblePaths {
+                            if FileManager.default.fileExists(atPath: path) {
+                                continuation.resume(returning: URL(fileURLWithPath: path))
+                                return
+                            }
+                        }
+                        
+                        // if we can't find a specific volume, check all volumes
+                        let volumesURL = URL(fileURLWithPath: "/Volumes")
+                        if let contents = try? FileManager.default.contentsOfDirectory(at: volumesURL, includingPropertiesForKeys: nil) {
+                            for volumeURL in contents {
+                                let appURL = volumeURL.appendingPathComponent("UTM.app")
+                                if FileManager.default.fileExists(atPath: appURL.path) {
+                                    continuation.resume(returning: volumeURL)
+                                    return
+                                }
+                            }
+                        }
+                        
+                        continuation.resume(throwing: InstallationError.mountFailed)
+                    }
+                } else {
+                    continuation.resume(throwing: InstallationError.mountFailed)
+                }
             }
         }
-        
-        throw InstallationError.mountFailed
     }
     
     #endif
@@ -168,7 +182,7 @@ class UTMInstaller {
     private func redirectToAppStore() async throws {
         guard let appID = Bundle.main.infoDictionary?["UTMAppStoreID"] as? String,
               let url = URL(string: "itms-apps://itunes.apple.com/app/id\(appID)") else {
-            throw InstallationError.installationFailed("Cannot construct App Store URL")
+            throw InstallationError.installationFailed(NSLocalizedString("Cannot construct App Store URL", comment: "UTMInstaller"))
         }
         
         await UIApplication.shared.open(url)
@@ -176,7 +190,7 @@ class UTMInstaller {
     
     private func showTestFlightUpdate() async throws {
         guard let url = URL(string: "itms-beta://") else {
-            throw InstallationError.installationFailed("Cannot open TestFlight")
+            throw InstallationError.installationFailed(NSLocalizedString("Cannot open TestFlight", comment: "UTMInstaller"))
         }
         
         await UIApplication.shared.open(url)
