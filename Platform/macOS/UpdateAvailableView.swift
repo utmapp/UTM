@@ -40,7 +40,7 @@ struct UpdateAvailableView: View {
                     .foregroundColor(.secondary)
                 
                 HStack {
-                    Text(String.localizedStringWithFormat(NSLocalizedString("Released %@", comment: "UpdateAvailableView"), updateInfo.releaseDate.abbreviatedDateString))
+                    Text(String.localizedStringWithFormat(NSLocalizedString("Released: %@", comment: "UpdateAvailableView"), updateInfo.releaseDate.abbreviatedDateString))
                     
                     if updateInfo.isCritical {
                         

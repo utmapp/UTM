@@ -79,7 +79,7 @@ class UTMInstaller {
             DispatchQueue.main.async {
                 let alert = NSAlert()
                 alert.messageText = NSLocalizedString("Installation Instructions", comment: "UTMInstaller")
-                alert.informativeText = NSLocalizedString("Please follow these steps to complete the update:\n\n1. Save any unsaved work in your virtual machines\n2. Quit UTM completely\n3. Double-click the mounted DMG file to view its contents\n4. Drag the new UTM.app from the DMG to your Applications folder (replace the existing version)\n5. Restart UTM\n\nThe DMG file has been mounted and is ready for installation.", comment: "UTMInstaller")
+                alert.informativeText = NSLocalizedString("Please follow these steps to complete the update:\n\n1. Save any unsaved work in your virtual machines\n2. Quit UTM completely\n3. Drag the new UTM.app from the DMG to your Applications folder (replace the existing version)\n4. Restart UTM\n\nThe DMG file has been mounted and is ready for installation.", comment: "UTMInstaller")
                 alert.addButton(withTitle: NSLocalizedString("OK", comment: "UTMInstaller"))
                 alert.addButton(withTitle: NSLocalizedString("Quit UTM Now", comment: "UTMInstaller"))
                 alert.alertStyle = .informational

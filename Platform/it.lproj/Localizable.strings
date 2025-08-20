@@ -2330,4 +2330,10 @@
 "Cannot open TestFlight" = "Impossibile aprire TestFlight";
 
 /* UpdateSettingsView/UpdateAvailableView */
-"Released: %@" = "Rilasciato %@";
+"Released: %@" = "Rilasciato: %@";
+
+"Please follow these steps to complete the update:\n\n1. Save any unsaved work in your virtual machines\n2. Quit UTM completely\n3. Drag the new UTM.app from the DMG to your Applications folder (replace the existing version)\n4. Restart UTM\n\nThe DMG file has been mounted and is ready for installation." = "Segui questi passaggi per completare l'aggiornamento:\n\n1. Salva eventuali lavori non salvati nelle tue macchine virtuali\n2. Esci completamente da UTM\n3. Trascina il nuovo UTM.app dal DMG nella tua cartella Applicazioni (sostituisci la versione esistente)\n4. Riavvia UTM\n\nIl file DMG è stato montato ed è pronto per l'installazione.";
+
+"Quit UTM Now" = "Esci da UTM ora";
+
+"Installation Instructions" = "Istruzioni per l'installazione";

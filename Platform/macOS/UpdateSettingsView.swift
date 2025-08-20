@@ -193,7 +193,7 @@ struct UpdateAvailableSection: View {
                     }
                 }
                 
-                Text(String.localizedStringWithFormat(NSLocalizedString("Released %@", comment: "UpdateSettingsView"), updateInfo.releaseDate.abbreviatedDateString))
+                Text(String.localizedStringWithFormat(NSLocalizedString("Released: %@", comment: "UpdateSettingsView"), updateInfo.releaseDate.abbreviatedDateString))
                     .font(.caption)
                     .foregroundColor(.secondary)
                 
