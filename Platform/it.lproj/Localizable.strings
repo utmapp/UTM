@@ -2145,7 +2145,7 @@
 "Cancel Download" = "Annulla Download";
 
 /* UpdateAvailableView */
-"Download & Install" = "Scarica e Installa";
+"Download" = "Scarica";
 
 /* UpdateAvailableView */
 "Downloading UTM %@" = "Scaricamento UTM %@";
@@ -2272,6 +2272,62 @@
 /* UTMUpdateiOSHandler */
 "Later" = "Più Tardi";
 
+/* UTMUpdateManager */
+"Stable" = "Stabile";
+
+/* UTMUpdateManager */
+"Beta" = "Beta";
+
+/* UTMUpdateManager */
+"All Releases" = "Tutte le Versioni";
+
+/* UTMUpdateManager */
+"Network connection unavailable" = "Connessione di rete non disponibile";
+
+/* UTMUpdateManager */
+"Download failed: %@" = "Download fallito: %@";
+
+/* UTMUpdateManager */
+"Update verification failed" = "Verifica dell'aggiornamento fallita";
+
+/* UTMUpdateManager */
+"Installation failed: %@" = "Installazione fallita: %@";
+
+/* UTMUpdateManager */
+"Insufficient disk space for update" = "Spazio su disco insufficiente per l'aggiornamento";
+
+/* UTMUpdateManager */
+"This update requires a newer system version" = "Questo aggiornamento richiede una versione di sistema più recente";
+
+/* UTMUpdateManager */
+"Invalid response from update server" = "Risposta non valida dal server di aggiornamento";
+
+/* UTMUpdateManager */
+"No update available" = "Nessun aggiornamento disponibile";
+
+/* UTMInstaller */
+"Installation not authorized" = "Installazione non autorizzata";
+
+/* UTMInstaller */
+"Invalid application bundle" = "Bundle dell'applicazione non valido";
+
+/* UTMInstaller */
+"Failed to create backup" = "Impossibile creare il backup";
+
+/* UTMInstaller */
+"Platform not supported for automatic updates" = "Piattaforma non supportata per gli aggiornamenti automatici";
+
+/* UTMInstaller */
+"Insufficient disk space for installation" = "Spazio su disco insufficiente per l'installazione";
+
+/* UTMInstaller */
+"Failed to mount DMG file" = "Impossibile montare il file DMG";
+
+/* UTMInstaller */
+"Cannot construct App Store URL" = "Impossibile costruire l'URL dell'App Store";
+
+/* UTMInstaller */
+"Cannot open TestFlight" = "Impossibile aprire TestFlight";
 
 /* UpdateSettingsView/UpdateAvailableView */
-"Released %@" = "Rilasciato %@";
+"Released: %@" = "Rilasciato %@";
