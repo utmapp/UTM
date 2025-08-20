@@ -148,7 +148,7 @@ extension UTMDownloadManager: URLSessionDownloadDelegate {
     nonisolated func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
         // Move file to a permanent location
         let documentsPath = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
-        let destinationURL = documentsPath.appendingPathComponent("UTMUpdate-\(UUID().uuidString)")
+        let destinationURL = documentsPath.appendingPathComponent("UTMUpdate-\(UUID().uuidString).dmg")
         
         do {
             try FileManager.default.moveItem(at: location, to: destinationURL)
