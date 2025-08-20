@@ -290,17 +290,9 @@
 		868B9CBA2E437EB4001509C3 /* UTMUpdateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 868B9CB72E437EB4001509C3 /* UTMUpdateManager.swift */; };
 		868B9CBB2E437EB4001509C3 /* UTMUpdateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 868B9CB72E437EB4001509C3 /* UTMUpdateManager.swift */; };
 		868B9CBF2E437F3A001509C3 /* UTMInstaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 868B9CBC2E437F3A001509C3 /* UTMInstaller.swift */; };
-		868B9CC02E437F3A001509C3 /* UTMUpdateErrorHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 868B9CBD2E437F3A001509C3 /* UTMUpdateErrorHandler.swift */; };
-		868B9CC12E437F3A001509C3 /* UTMUpdateSecurity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 868B9CBE2E437F3A001509C3 /* UTMUpdateSecurity.swift */; };
 		868B9CC22E437F3A001509C3 /* UTMInstaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 868B9CBC2E437F3A001509C3 /* UTMInstaller.swift */; };
-		868B9CC32E437F3A001509C3 /* UTMUpdateErrorHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 868B9CBD2E437F3A001509C3 /* UTMUpdateErrorHandler.swift */; };
-		868B9CC42E437F3A001509C3 /* UTMUpdateSecurity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 868B9CBE2E437F3A001509C3 /* UTMUpdateSecurity.swift */; };
 		868B9CC52E437F3A001509C3 /* UTMInstaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 868B9CBC2E437F3A001509C3 /* UTMInstaller.swift */; };
-		868B9CC62E437F3A001509C3 /* UTMUpdateErrorHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 868B9CBD2E437F3A001509C3 /* UTMUpdateErrorHandler.swift */; };
-		868B9CC72E437F3A001509C3 /* UTMUpdateSecurity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 868B9CBE2E437F3A001509C3 /* UTMUpdateSecurity.swift */; };
 		868B9CC82E437F3A001509C3 /* UTMInstaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 868B9CBC2E437F3A001509C3 /* UTMInstaller.swift */; };
-		868B9CC92E437F3A001509C3 /* UTMUpdateErrorHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 868B9CBD2E437F3A001509C3 /* UTMUpdateErrorHandler.swift */; };
-		868B9CCA2E437F3A001509C3 /* UTMUpdateSecurity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 868B9CBE2E437F3A001509C3 /* UTMUpdateSecurity.swift */; };
 		868B9CCC2E438027001509C3 /* UTMDownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 868B9CCB2E438027001509C3 /* UTMDownloadManager.swift */; };
 		868B9CCD2E438027001509C3 /* UTMDownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 868B9CCB2E438027001509C3 /* UTMDownloadManager.swift */; };
 		868B9CCE2E438027001509C3 /* UTMDownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 868B9CCB2E438027001509C3 /* UTMDownloadManager.swift */; };
@@ -1844,8 +1836,6 @@
 		863B2F712E411FD7009CD2BD /* UTMUpdateiOSHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMUpdateiOSHandler.swift; sourceTree = "<group>"; };
 		868B9CB72E437EB4001509C3 /* UTMUpdateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMUpdateManager.swift; sourceTree = "<group>"; };
 		868B9CBC2E437F3A001509C3 /* UTMInstaller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMInstaller.swift; sourceTree = "<group>"; };
-		868B9CBD2E437F3A001509C3 /* UTMUpdateErrorHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMUpdateErrorHandler.swift; sourceTree = "<group>"; };
-		868B9CBE2E437F3A001509C3 /* UTMUpdateSecurity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMUpdateSecurity.swift; sourceTree = "<group>"; };
 		868B9CCB2E438027001509C3 /* UTMDownloadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMDownloadManager.swift; sourceTree = "<group>"; };
 		86DFBFDB2E42391E001F5A61 /* MarkdownRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownRenderer.swift; sourceTree = "<group>"; };
 		9786BB59294056960032B858 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -3057,8 +3047,6 @@
 			children = (
 				868B9CCB2E438027001509C3 /* UTMDownloadManager.swift */,
 				868B9CBC2E437F3A001509C3 /* UTMInstaller.swift */,
-				868B9CBD2E437F3A001509C3 /* UTMUpdateErrorHandler.swift */,
-				868B9CBE2E437F3A001509C3 /* UTMUpdateSecurity.swift */,
 				868B9CB72E437EB4001509C3 /* UTMUpdateManager.swift */,
 				CEF0304C26A2AFBE00667B63 /* BigButtonStyle.swift */,
 				84B36D2827B790BE00C22685 /* DestructiveButton.swift */,
@@ -3690,8 +3678,6 @@
 				CE2D927C24AD46670059923A /* UTMProcess.m in Sources */,
 				CEBE820326A4C1B5007AAB12 /* VMWizardDrivesView.swift in Sources */,
 				868B9CBF2E437F3A001509C3 /* UTMInstaller.swift in Sources */,
-				868B9CC02E437F3A001509C3 /* UTMUpdateErrorHandler.swift in Sources */,
-				868B9CC12E437F3A001509C3 /* UTMUpdateSecurity.swift in Sources */,
 				84018689288A44C20050AC51 /* VMWindowState.swift in Sources */,
 				84258C42288F806400C66366 /* VMToolbarUSBMenuView.swift in Sources */,
 				CE2D928024AD46670059923A /* UTMLegacyQemuConfigurationPortForward.m in Sources */,
@@ -3968,8 +3954,6 @@
 				848F71EA277A2A4E006A0240 /* UTMSerialPort.swift in Sources */,
 				CE25124D29C55816000790AB /* UTMScriptingConfigImpl.swift in Sources */,
 				868B9CC52E437F3A001509C3 /* UTMInstaller.swift in Sources */,
-				868B9CC62E437F3A001509C3 /* UTMUpdateErrorHandler.swift in Sources */,
-				868B9CC72E437F3A001509C3 /* UTMUpdateSecurity.swift in Sources */,
 				846F8D582E3850620037162B /* VMKeyboardShortcutsView.swift in Sources */,
 				CE0B6D0224AD56AE00FE012D /* UTMProcess.m in Sources */,
 				CEF0306026A2AFDF00667B63 /* VMWizardState.swift in Sources */,
@@ -4145,8 +4129,6 @@
 				CEA45E6F263519B5002FA97D /* VMConfigInfoView.swift in Sources */,
 				CEA45E72263519B5002FA97D /* VMKeyboardView.m in Sources */,
 				868B9CC22E437F3A001509C3 /* UTMInstaller.swift in Sources */,
-				868B9CC32E437F3A001509C3 /* UTMUpdateErrorHandler.swift in Sources */,
-				868B9CC42E437F3A001509C3 /* UTMUpdateSecurity.swift in Sources */,
 				848D99B5286300160055C215 /* QEMUArgument.swift in Sources */,
 				CEA45E7A263519B5002FA97D /* UTMSpiceIO.m in Sources */,
 				CEF0306B26A2AFDF00667B63 /* VMWizardStartView.swift in Sources */,
@@ -4381,8 +4363,6 @@
 				CEF7F5FD2AEEDCC400E34952 /* QEMUConstantGenerated.swift in Sources */,
 				CEF7F5FE2AEEDCC400E34952 /* VMKeyboardButton.m in Sources */,
 				868B9CC82E437F3A001509C3 /* UTMInstaller.swift in Sources */,
-				868B9CC92E437F3A001509C3 /* UTMUpdateErrorHandler.swift in Sources */,
-				868B9CCA2E437F3A001509C3 /* UTMUpdateSecurity.swift in Sources */,
 				CEF7F5FF2AEEDCC400E34952 /* UTMDownloadVMTask.swift in Sources */,
 				CEF7F6002AEEDCC400E34952 /* GlobalFileImporter.swift in Sources */,
 				CEF7F6022AEEDCC400E34952 /* VMWizardContent.swift in Sources */,
