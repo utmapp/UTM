@@ -95,9 +95,9 @@ class UTMUpdateManager: UTMReleaseHelper {
         
         var displayName: String {
             switch self {
-            case .stable: return "Stable"
-            case .beta: return "Beta"
-            case .all: return "All Releases"
+            case .stable: return NSLocalizedString("Stable", comment: "UTMUpdateManager")
+            case .beta: return NSLocalizedString("Beta", comment: "UTMUpdateManager")
+            case .all: return NSLocalizedString("All Releases", comment: "UTMUpdateManager")
             }
         }
     }
@@ -115,21 +115,21 @@ class UTMUpdateManager: UTMReleaseHelper {
         var errorDescription: String? {
             switch self {
             case .networkUnavailable:
-                return "Network connection unavailable"
+                return NSLocalizedString("Network connection unavailable", comment: "UTMUpdateManager")
             case .downloadFailed(let reason):
-                return "Download failed: \(reason)"
+                return String.localizedStringWithFormat(NSLocalizedString("Download failed: %@", comment: "UTMUpdateManager"), reason)
             case .verificationFailed:
-                return "Update verification failed"
+                return NSLocalizedString("Update verification failed", comment: "UTMUpdateManager")
             case .installationFailed(let reason):
-                return "Installation failed: \(reason)"
+                return String.localizedStringWithFormat(NSLocalizedString("Installation failed: %@", comment: "UTMUpdateManager"), reason)
             case .insufficientSpace:
-                return "Insufficient disk space for update"
+                return NSLocalizedString("Insufficient disk space for update", comment: "UTMUpdateManager")
             case .unsupportedVersion:
-                return "This update requires a newer system version"
+                return NSLocalizedString("This update requires a newer system version", comment: "UTMUpdateManager")
             case .invalidResponse:
-                return "Invalid response from update server"
+                return NSLocalizedString("Invalid response from update server", comment: "UTMUpdateManager")
             case .noUpdateAvailable:
-                return "No update available"
+                return NSLocalizedString("No update available", comment: "UTMUpdateManager")
             }
         }
     }

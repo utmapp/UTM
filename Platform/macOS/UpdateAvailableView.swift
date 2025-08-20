@@ -139,7 +139,7 @@ struct UpdateAvailableView: View {
                 } else if !updateManager.isInstalling {
                     if #available(macOS 12.0, *) {
                         
-                        Button(NSLocalizedString("Download & Open DMG", comment: "UpdateAvailableView")) {
+                        Button(NSLocalizedString("Download", comment: "UpdateAvailableView")) {
                             Task {
                                 await updateManager.downloadAndInstall()
                             }
@@ -148,7 +148,7 @@ struct UpdateAvailableView: View {
                         .disabled(updateManager.isDownloading || updateManager.isInstalling)
                     } else {
                         
-                        Button(NSLocalizedString("Download & Open DMG", comment: "UpdateAvailableView")) {
+                        Button(NSLocalizedString("Download", comment: "UpdateAvailableView")) {
                             Task {
                                 await updateManager.downloadAndInstall()
                             }

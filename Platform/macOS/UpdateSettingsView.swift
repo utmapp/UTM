@@ -243,7 +243,7 @@ struct UpdateAvailableSection: View {
                     } else if !updateManager.isInstalling {
                         if #available(macOS 12.0, *) {
                             
-                            Button(NSLocalizedString("Download & Open DMG", comment: "UpdateSettingsView")) {
+                            Button(NSLocalizedString("Download", comment: "UpdateSettingsView")) {
                                 Task {
                                     await updateManager.downloadAndInstall()
                                 }
@@ -251,7 +251,7 @@ struct UpdateAvailableSection: View {
                             .buttonStyle(.borderedProminent)
                         } else {
                             
-                            Button(NSLocalizedString("Download & Open DMG", comment: "UpdateSettingsView")) {
+                            Button(NSLocalizedString("Download", comment: "UpdateSettingsView")) {
                                 Task {
                                     await updateManager.downloadAndInstall()
                                 }
@@ -315,7 +315,7 @@ struct UpdateReleaseNotesView: View {
                                 .fontWeight(.semibold)
                             
                             HStack {
-                                Text(String.localizedStringWithFormat(NSLocalizedString("Released %@", comment: "UpdateSettingsView"), updateInfo.releaseDate.abbreviatedDateString))
+                                Text(String.localizedStringWithFormat(NSLocalizedString("Released: %@", comment: "UpdateSettingsView"), updateInfo.releaseDate.abbreviatedDateString))
                                     .font(.subheadline)
                                     .foregroundColor(.secondary)
                                 
