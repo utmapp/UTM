@@ -255,6 +255,7 @@ extension UTMScriptingConfigImpl {
         switch mode {
         case .shared: return .shared
         case .bridged: return .bridged
+        case .host: return .host
         }
     }
     
