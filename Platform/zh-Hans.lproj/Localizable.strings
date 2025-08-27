@@ -270,6 +270,9 @@ UTMQemuConstants */
 "Clear" = "清除";
 
 /* No comment provided by engineer. */
+"Cloning" = "复制";
+
+/* No comment provided by engineer. */
 "Close" = "关闭";
 
 /* VMQemuDisplayMetalWindowController */
@@ -1288,6 +1291,9 @@ UTMQemuConstants */
 /* No comment provided by engineer. */
 "Swap Control (⌃) and Command (⌘) keys" = "交换 Control (⌃) 与 Command (⌘) 键";
 
+/* No comment provided by engineer. */
+"Swap the leftmost key on the number row and the key next to left shift on ISO keyboards" = "在 ISO 键盘上交换数字行上最左边的按键与左 Shift 旁边的按键";
+
 /* VMSessionState */
 "Switch back to UTM to avoid termination." = "切换回 UTM 以避免终止。";
 
@@ -2227,6 +2233,9 @@ VMWizardOSMacView */
 "Reclaim Space" = "释放空间";
 
 /* No comment provided by engineer. */
+"Regenerate MAC addresses on clone" = "复制时重新生成 MAC 地址";
+
+/* No comment provided by engineer. */
 "Reject unknown connections by default" = "默认情况下拒绝未知连接";
 
 /* No comment provided by engineer. */
@@ -2243,6 +2252,9 @@ VMWizardOSMacView */
 
 /* No comment provided by engineer. */
 "Requires SPICE guest agent tools to be installed." = "需要安装 SPICE 客户机代理工具。";
+
+/* No comment provided by engineer. */
+"Reset auto connect devices…" = "重置自动连接的设备";
 
 /* No comment provided by engineer. */
 "Reset UEFI Variables" = "重置 UEFI 变量";
@@ -2493,6 +2505,9 @@ VMWizardOSMacView */
 
 /* No comment provided by engineer. */
 "Use Virtualization" = "使用虚拟化";
+
+/* No comment provided by engineer. */
+"UTM Library" = "UTM 资源库";
 
 /* No comment provided by engineer. */
 "UTM Server" = "UTM 服务器";
