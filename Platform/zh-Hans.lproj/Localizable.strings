@@ -430,7 +430,7 @@ UTMQemuConstants */
 "Do you want to move this VM to another location? This will copy the data to the new location, delete the data from the original location, and then create a shortcut." = "你要将此虚拟机移动到别处吗？这将会复制数据到新位置，删除原始位置的数据，然后创建一个快捷方式。";
 
 /* No comment provided by engineer. */
-"Do you want to remove this shortcut? The data will not be deleted." = "你要删除此快捷方式吗？数据不会被删除。";
+"Do you want to remove this shortcut? The data will not be deleted." = "你要移除此快捷方式吗？数据不会被删除。";
 
 /* No comment provided by engineer. */
 "Do you wish to reset all saved USB devices?" = "你要重置所有保存的 USB 设备吗？";
@@ -2512,7 +2512,7 @@ VMWizardOSMacView */
 "This virtual machine must be re-added to UTM by opening it with Finder. You can find it at the path: %@" = "必须使用访达打开此虚拟机，将其重新添加到 UTM 中。你可以通过此路径找到：%@";
 
 /* No comment provided by engineer. */
-"To change this, remove the shared directory and add it again." = "若要更改此选项，请删除共享目录并重新添加。";
+"To change this, remove the shared directory and add it again." = "若要更改此选项，请移除共享目录并重新添加。";
 
 /* No comment provided by engineer. */
 "TPM 2.0 Device" = "TPM 2.0 设备";
