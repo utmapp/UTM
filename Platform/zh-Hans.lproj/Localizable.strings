@@ -1671,6 +1671,9 @@ VMWizardOSMacView */
 "Arguments" = "参数";
 
 /* No comment provided by engineer. */
+"ASIF is more efficient and performant but is not compatible with older versions of macOS hosts." = "ASIF 更高效、性能更强，但与旧版本的 macOS 主机不兼容。";
+
+/* No comment provided by engineer. */
 "Auto Resolution" = "自动调整分辨率";
 
 /* No comment provided by engineer. */
@@ -1728,6 +1731,9 @@ VMWizardOSMacView */
 "By default, the best renderer for this device will be used. You can override this with to always use a specific renderer. This only applies to QEMU VMs with GPU accelerated graphics." = "默认情況下，将会使用最适合此设备的渲染器。你可以覆盖此选项，以始终使用特定的渲染器。此选项仅适用于具有 GPU 加速图形的 QEMU 虚拟机。";
 
 /* No comment provided by engineer. */
+"By default, the server is only available on LAN but setting this will use UPnP/NAT-PMP to port forward to WAN." = "默认情况下，服务器仅在局域网上可用，但设置此选项后，将使用 UPnP/NAT-PMP 来端口转发到广域网。";
+
+/* No comment provided by engineer. */
 "Calculating current size..." = "计算当前大小…";
 
 /* No comment provided by engineer. */
@@ -1738,6 +1744,9 @@ VMWizardOSMacView */
 
 /* No comment provided by engineer. */
 "Clear…" = "清除…";
+
+/* No comment provided by engineer. */
+"Clears all saved USB devices." = "清除所有已保存的 USB 设备。";
 
 /* No comment provided by engineer. */
 "Clipboard Sharing" = "剪贴板共享";
@@ -1798,6 +1807,9 @@ VMWizardOSMacView */
 
 /* No comment provided by engineer. */
 "Devices" = "设备";
+
+/* No comment provided by engineer. */
+"Different versions of Mac OS require different VIA option." = "不同版本的 Mac OS 需要不同的 VIA 选项。";
 
 /* No comment provided by engineer. */
 "Directory" = "目录";
@@ -1899,6 +1911,9 @@ VMWizardOSMacView */
 "Enable Rosetta on Linux (x86_64 Emulation)" = "在 Linux 中启用 Rosetta (x86_64 模拟)";
 
 /* No comment provided by engineer. */
+"Enable Secure Boot with Microsoft UEFI keys. This is required to Secure Boot Windows." = "使用 Microsoft UEFI 密钥启用安全启动。此密钥对于安全启动 Windows 为必需。";
+
+/* No comment provided by engineer. */
 "Enable Sound" = "启用声音";
 
 /* No comment provided by engineer. */
@@ -1992,6 +2007,9 @@ VMWizardOSMacView */
 "Host Port" = "主机端口";
 
 /* No comment provided by engineer. */
+"If checked, emulated devices with higher compatibility will be instantiated at the cost of performance." = "若选中，将实例化具有更高兼容性的模拟设备，但性能会有所下降。";
+
+/* No comment provided by engineer. */
 "If checked, no drive image will be stored with the VM. Instead you can mount/unmount image while the VM is running." = "若选中，虚拟机将不会存储驱动器映像。相反，你可以在虚拟机运行时装载/卸载映像。";
 
 /* No comment provided by engineer. */
@@ -2011,16 +2029,25 @@ VMWizardOSMacView */
 "If checked, use NVMe instead of virtio as the disk interface, available on macOS 14+ for Linux guests only. This interface is slower but less likely to encounter filesystem errors." = "若选中，将使用 NVMe 而不是 virtio 作为磁盘接口，仅适用于 macOS 14+ 上的 Linux 客户机。此接口速度较慢，但不太容易遇到文件系统错误。";
 
 /* No comment provided by engineer. */
+"If checked, you will not be prompted about any unknown connection and they will be rejected." = "若选中，你不会收到任何未知连接的提示，且这些连接将被拒绝。";
+
+/* No comment provided by engineer. */
 "If disabled, the default combination Control+Option (⌃+⌥) will be used." = "若停用，将使用默认组合键 Control + Option (⌃ + ⌥)。";
 
 /* No comment provided by engineer. */
 "If enabled, a virtiofs share tagged 'rosetta' will be available on the Linux guest for installing Rosetta for emulating x86_64 on ARM64." = "若启用，标为“rosetta”的 virtiofs 共享将在 Linux 客户机上可用，用于安装 Rosetta，并在 arm64 上模拟 x86_64。";
 
 /* No comment provided by engineer. */
+"If enabled, all writable drive images will be locked when the VM is running. Read-only drive images will not be locked." = "若启用，在虚拟机运行时，所有可写入的驱动器映像都将被锁定。只读驱动器映像不会被锁定。";
+
+/* No comment provided by engineer. */
 "If enabled, any existing screenshot will be deleted the next time the VM is started." = "若启用，下次启动虚拟机时，任何现有的快照都将被删除。";
 
 /* No comment provided by engineer. */
 "If enabled, caps lock will be handled like other keys. If disabled, it is treated as a toggle that is synchronized with the host." = "若启用，Caps Lock 将和其他按键一样处理。若停用，它将被视为与主机同步的切换键。";
+
+/* No comment provided by engineer. */
+"If enabled, clients must enter a password. This is required if you want to access the server externally." = "若启用，客户端必须输入密码。若你想从外部访问服务器，则此密码为必需。";
 
 /* No comment provided by engineer. */
 "If enabled, input capture will toggle automatically when entering and exiting full screen mode." = "若启用，输入捕捉会在进入和退出全屏模式时自动切换。";
@@ -2042,6 +2069,9 @@ VMWizardOSMacView */
 
 /* No comment provided by engineer. */
 "If enabled, the default input devices will be emulated on the USB bus." = "若启用，默认输入设备将在 USB 总线上模拟。";
+
+/* No comment provided by engineer. */
+"If enabled, when the VM is out of focus, the first click will be handled by the VM. Otherwise, the first click will only bring the window into focus." = "若启用，当虚拟机失去聚焦时，首次点击将由虚拟机处理。否则，首次点击仅会使窗口聚焦。";
 
 /* No comment provided by engineer. */
 "If set, a frame limit can improve smoothness in rendering by preventing stutters when set to the lowest value your device can handle." = "若设置，则当设置为设备可以处理的最低值时，帧限制可以防止卡顿，从而提高渲染的流畅度。";
@@ -2110,6 +2140,9 @@ VMWizardOSMacView */
 "Legacy Hardware" = "旧版硬件";
 
 /* No comment provided by engineer. */
+"List all supported hardware. May require manual configuration to boot." = "列出所有支持的硬件。可能需要手动配置才能启动。";
+
+/* No comment provided by engineer. */
 "MAC Address" = "MAC 地址";
 
 /* No comment provided by engineer. */
@@ -2140,6 +2173,9 @@ VMWizardOSMacView */
 "Move this VM from internal storage to elsewhere." = "将此虚拟机从内部存储空间移动到其他地方。";
 
 /* No comment provided by engineer. */
+"Navigate to '/Library/Preferences/VMware Fusion' (⌘+Shift+G) and select the 'networking' file" = "导览至 '/Library/Preferences/VMware Fusion' (⌘⇧G) 并选择“networking”文件";
+
+/* No comment provided by engineer. */
 "Network" = "网络";
 
 /* No comment provided by engineer. */
@@ -2161,6 +2197,9 @@ VMWizardOSMacView */
 "New VM" = "新建虚拟机";
 
 /* No comment provided by engineer. */
+"No VM screenshots will be taken." = "不会截屏虚拟机。";
+
+/* No comment provided by engineer. */
 "Older versions of UTM added each IDE device to a separate bus. Check this to change the configuration to place two units on each bus." = "旧版本的 UTM 会将每个 IDE 设备添加到单独的总线上。选中此项可更改配置，以在每个总线上放置两个设备。";
 
 /* No comment provided by engineer. */
@@ -2170,10 +2209,13 @@ VMWizardOSMacView */
 "Only available if host architecture matches the target. Otherwise, TCG emulation is used." = "仅当主机架构和目标匹配时才可用。否则，将使用 TCG 模拟。";
 
 /* No comment provided by engineer. */
+"Only available on macOS 14+ virtual machines." = "仅在 macOS 14+ 虚拟机上可用。";
+
+/* No comment provided by engineer. */
 "Only available on macOS virtual machines." = "仅限 macOS 虚拟机可用。";
 
 /* No comment provided by engineer. */
-"Only available when Hypervisor is used on supported hardware. TSO speeds up Intel emulation in the guest at the cost of decreased performance in general." = "只有在支持的硬件上使用 Hypervisor 时才可用。TSO 加快了客户机中的 Intel 模拟速度，但总体性能却有所下降。";
+"Only available when Hypervisor is used on supported hardware. TSO speeds up Intel emulation in the guest at the cost of decreased performance in general." = "只有在支持的硬件上使用 Hypervisor 时才可用。TSO 加快了客户机中的 Intel 模拟速度，但总体性能会有所下降。";
 
 /* No comment provided by engineer. */
 "Open VM Settings" = "打开虚拟机设置";
@@ -2198,6 +2240,9 @@ VMWizardOSMacView */
 
 /* No comment provided by engineer. */
 "Power Off" = "关闭电源";
+
+/* No comment provided by engineer. */
+"Preload Secure Boot Keys" = "预加载安全启动密钥";
 
 /* No comment provided by engineer. */
 "Prompt" = "提示";
@@ -2326,6 +2371,9 @@ VMWizardOSMacView */
 "Server Address" = "服务器地址";
 
 /* No comment provided by engineer. */
+"Set up custom keyboard shortcuts that can be triggered from the keyboard menu." = "设置可以从键盘菜单触发的自定义键盘快捷键。";
+
+/* No comment provided by engineer. */
 "Settings" = "设置";
 
 /* No comment provided by engineer. */
@@ -2392,6 +2440,9 @@ VMWizardOSMacView */
 "Sound Backend" = "声音后端";
 
 /* No comment provided by engineer. */
+"Specify a port number to listen on. This is required if external clients are permitted." = "指定要监听的端口号。若允许外部客户机，此端口号为必需。";
+
+/* No comment provided by engineer. */
 "Start" = "开始";
 
 /* No comment provided by engineer. */
@@ -2446,13 +2497,22 @@ VMWizardOSMacView */
 "These are advanced settings affecting QEMU which should be kept default unless you are running into issues." = "这些属于 QEMU 的高级设置，除非遇到问题，否则应当保持默认值。";
 
 /* No comment provided by engineer. */
+"This does not apply to key binding outside the guest." = "这不适用于客户机以外的键位绑定。";
+
+/* No comment provided by engineer. */
 "This is appended to the -machine argument." = "这会添加到 -machine 参数的末端。";
+
+/* No comment provided by engineer. */
+"This only applies to ISO layout keyboards." = "这仅适用于 ISO 布局键盘。";
 
 /* No comment provided by engineer. */
 "This virtual machine cannot be found at: %@" = "虚拟机无法通过此路径找到：%@";
 
 /* No comment provided by engineer. */
 "This virtual machine must be re-added to UTM by opening it with Finder. You can find it at the path: %@" = "必须使用访达打开此虚拟机，将其重新添加到 UTM 中。你可以通过此路径找到：%@";
+
+/* No comment provided by engineer. */
+"To change this, remove the shared directory and add it again." = "若要更改此选项，请删除共享目录并重新添加。";
 
 /* No comment provided by engineer. */
 "TPM 2.0 Device" = "TPM 2.0 设备";
@@ -2531,10 +2591,16 @@ VMWizardOSMacView */
 "WebDAV requires installing SPICE daemon. VirtFS requires installing device drivers." = "WebDAV 需要安装 SPICE 守护程序。VirtFS 需要安装设备驱动程序。";
 
 /* No comment provided by engineer. */
+"When cloning a VM, regenerate MAC addresses on every network interface to prevent conflicts." = "克隆虚拟机时，对每个网络接口重新生成 MAC 地址，以避免产生冲突。";
+
+/* No comment provided by engineer. */
 "Width" = "宽度";
 
 /* No comment provided by engineer. */
 "Windows Install Guide" = "Windows 安装指南";
+
+/* No comment provided by engineer. */
+"You can configure additional host networks in UTM Settings." = "你可以在 UTM 设置中配置其他主机网络。";
 
 /* No comment provided by engineer. */
 "You can use this if your boot options are corrupted or if you wish to re-enroll in the default keys for secure boot." = "若你的启动选项已损坏，或者希望重新注册安全启动的默认密钥，可以使用此功能。";
