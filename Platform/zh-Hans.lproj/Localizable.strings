@@ -1647,7 +1647,7 @@ VMWizardOSMacView */
 "Advanced. If checked, a raw disk image is used. Raw disk image does not support snapshots and will not dynamically expand in size." = "高级选项。若选中，将使用 raw 磁盘映像。raw 磁盘映像既不支持快照，也不会动态地扩充大小。";
 
 /* No comment provided by engineer. */
-"Allow access from external clients" = "允许外部客户机访问";
+"Allow access from external clients" = "允许外部客户端访问";
 
 /* No comment provided by engineer. */
 "Allow Remote Connection" = "允许远程连接";
@@ -2221,7 +2221,7 @@ VMWizardOSMacView */
 "Open VM Settings" = "打开虚拟机设置";
 
 /* No comment provided by engineer. */
-"Optionally select a directory to make accessible inside the VM. Note that support for shared directories varies by the guest operating system and may require additional guest drivers to be installed. See UTM support pages for more details." = "(可选) 选择一个可在虚拟机内访问的目录。请注意，客户操作系统对共享目录的支持各不相同，可能需要安装额外的客户驱动程序。有关详细信息，请参阅 UTM 支持页面。";
+"Optionally select a directory to make accessible inside the VM. Note that support for shared directories varies by the guest operating system and may require additional guest drivers to be installed. See UTM support pages for more details." = "(可选) 选择一个可在虚拟机内访问的目录。请注意，客户机操作系统对共享目录的支持各不相同，可能需要安装额外的客户机驱动程序。有关详细信息，请参阅 UTM 支持页面。";
 
 /* No comment provided by engineer. */
 "Options here only apply on next boot and are not saved." = "此处的选项只在下次启动时生效，不会存储。";
