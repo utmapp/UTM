@@ -110,9 +110,13 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
             self.vm.requestVmStop(force: isKill)
         }
     }
-    
+
     @IBAction func stopButtonPressed(_ sender: Any) {
-        stop(isKill: false)
+        if vm.state == .started || vm.state == .paused {
+            stop(isKill: false)
+        } else {
+            stop(isKill: true)
+        }
     }
     
     @IBAction func startPauseButtonPressed(_ sender: Any) {

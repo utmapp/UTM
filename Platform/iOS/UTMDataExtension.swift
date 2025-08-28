@@ -45,7 +45,11 @@ extension UTMData {
         if wrapped.registryEntry.isSuspended {
             wrapped.requestVmDeleteState()
         }
-        wrapped.requestVmStop()
+        if wrapped.state == .started || wrapped.state == .paused {
+            wrapped.requestVmStop()
+        } else {
+            wrapped.requestVmStop(force: true)
+        }
     }
     
     func close(vm: VMData) {
