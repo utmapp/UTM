@@ -110,9 +110,13 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
             self.vm.requestVmStop(force: isKill)
         }
     }
-    
+
     @IBAction func stopButtonPressed(_ sender: Any) {
-        stop(isKill: false)
+        if vm.state == .started || vm.state == .paused {
+            stop(isKill: false)
+        } else {
+            stop(isKill: true)
+        }
     }
     
     @IBAction func startPauseButtonPressed(_ sender: Any) {
@@ -459,6 +463,7 @@ extension VMDisplayWindowController: NSWindowDelegate {
         if let preventIdleSleepAssertion = preventIdleSleepAssertion {
             IOPMAssertionRelease(preventIdleSleepAssertion)
         }
+        cleanupMenu()
         isFinalizing = true
         onClose?()
     }
@@ -542,6 +547,7 @@ extension VMDisplayWindowController {
     @objc func setupMainMenu() -> NSMenu {
         NotificationCenter.default.addObserver(self, selector: #selector(windowBecameMain), name: NSWindow.didBecomeMainNotification, object: window)
         NotificationCenter.default.addObserver(self, selector: #selector(windowResignedMain), name: NSWindow.didResignMainNotification, object: window)
+        NotificationCenter.default.addObserver(self, selector: #selector(menuDidRemoveItem), name: NSMenu.didRemoveItemNotification, object: NSApp.mainMenu)
         let menu = NSMenu()
         menu.autoenablesItems = false
         stopMenuItem = NSMenuItem()
@@ -576,15 +582,33 @@ extension VMDisplayWindowController {
         return menu
     }
 
-    @objc func windowBecameMain() {
-        if let mainMenu = NSApp.mainMenu {
+    func cleanupMenu() {
+        NotificationCenter.default.removeObserver(self, name: NSWindow.didBecomeMainNotification, object: window)
+        NotificationCenter.default.removeObserver(self, name: NSWindow.didResignMainNotification, object: window)
+        NotificationCenter.default.removeObserver(self, name: NSMenu.didRemoveItemNotification, object: NSApp.mainMenu)
+        if let mainMenu = NSApp.mainMenu, mainMenu.items.contains(mainMenuItem!) {
+            mainMenu.removeItem(mainMenuItem)
+        }
+    }
+
+    @objc func windowBecameMain(_ notification: Notification) {
+        if let mainMenu = NSApp.mainMenu, !mainMenu.items.contains(mainMenuItem) {
             mainMenu.insertItem(mainMenuItem, at: 3)
         }
     }
 
-    @objc func windowResignedMain() {
-        if let mainMenu = NSApp.mainMenu {
+    @objc func windowResignedMain(_ notification: Notification) {
+        if let mainMenu = NSApp.mainMenu, mainMenu.items.contains(mainMenuItem) {
             mainMenu.removeItem(mainMenuItem)
+        }
+    }
+
+    @objc func menuDidRemoveItem(_ notification: Notification) {
+        guard let window = window, window.isMainWindow else {
+            return
+        }
+        if let mainMenu = NSApp.mainMenu, !mainMenu.items.contains(mainMenuItem) {
+            mainMenu.insertItem(mainMenuItem, at: 3)
         }
     }
 }

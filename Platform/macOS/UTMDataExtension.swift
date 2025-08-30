@@ -115,7 +115,11 @@ extension UTMData {
             if wrapped.registryEntry.isSuspended {
                 try? await wrapped.deleteSnapshot(name: nil)
             }
-            try? await wrapped.stop(usingMethod: .force)
+            if vm.state == .started || vm.state == .paused {
+                try? await wrapped.stop(usingMethod: .force)
+            } else {
+                try? await wrapped.stop(usingMethod: .kill)
+            }
             await MainActor.run {
                 self.close(vm: vm)
             }

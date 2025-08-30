@@ -270,6 +270,9 @@ UTMQemuConstants */
 "Clear" = "清除";
 
 /* No comment provided by engineer. */
+"Cloning" = "製作副本";
+
+/* No comment provided by engineer. */
 "Close" = "關閉";
 
 /* VMQemuDisplayMetalWindowController */
@@ -427,7 +430,7 @@ UTMQemuConstants */
 "Do you want to move this VM to another location? This will copy the data to the new location, delete the data from the original location, and then create a shortcut." = "你要移動此虛擬機至其他位置嗎？這將會複製資料至新位置，刪除原始位置資料，並製作捷徑。";
 
 /* No comment provided by engineer. */
-"Do you want to remove this shortcut? The data will not be deleted." = "你要刪除此捷徑嗎？資料不會被刪除。";
+"Do you want to remove this shortcut? The data will not be deleted." = "你要移除此捷徑嗎？資料不會被刪除。";
 
 /* No comment provided by engineer. */
 "Do you wish to reset all saved USB devices?" = "你要重設所有儲存的 USB 裝置嗎？";
@@ -1073,10 +1076,10 @@ UTMQemuConstants */
 "Removable Drive" = "可移除的磁碟";
 
 /* No comment provided by engineer. */
-"Remove" = "刪除";
+"Remove" = "移除";
 
 /* VMDisplayAppleController */
-"Remove…" = "刪除⋯";
+"Remove…" = "移除⋯";
 
 /* VMDisplayWindowController */
 "Request power down" = "要求關閉電源";
@@ -1142,26 +1145,26 @@ UTMQemuConstants */
 "SD Card" = "SD 卡";
 
 /* No comment provided by engineer. */
-"Select a file." = "選取檔案。";
+"Select a file." = "選擇檔案。";
 
 /* No comment provided by engineer. */
-"Select a UTM Server" = "選取 UTM 伺服器";
+"Select a UTM Server" = "選擇 UTM 伺服器";
 
 /* VMDisplayWindowController */
-"Select Drive Image" = "選取磁碟映像檔";
+"Select Drive Image" = "選擇磁碟映像檔";
 
 /* VMDisplayAppleWindowController
 VMDisplayWindowController */
-"Select Shared Folder" = "選取分享的資料夾";
+"Select Shared Folder" = "選擇分享的資料夾";
 
 /* SavePanel */
-"Select where to export QEMU command:" = "選取輸出 QEMU 指令的位置：";
+"Select where to export QEMU command:" = "選擇輸出 QEMU 指令的位置：";
 
 /* SavePanel */
-"Select where to save debug log:" = "選取儲存除錯記錄的位置：";
+"Select where to save debug log:" = "選擇儲存除錯記錄的位置：";
 
 /* SavePanel */
-"Select where to save UTM Virtual Machine:" = "選取儲存 UTM 虛擬機的位置：";
+"Select where to save UTM Virtual Machine:" = "選擇儲存 UTM 虛擬機的位置：";
 
 /* VMDisplayWindowController */
 "Send Key" = "傳送按鍵";
@@ -1287,6 +1290,9 @@ UTMQemuConstants */
 
 /* No comment provided by engineer. */
 "Swap Control (⌃) and Command (⌘) keys" = "交換 Control (⌃) 與 Command (⌘) 鍵";
+
+/* No comment provided by engineer. */
+"Swap the leftmost key on the number row and the key next to left shift on ISO keyboards" = "在 ISO 鍵盤上交換數字行最左邊與左 Shift 旁邊的按鍵";
 
 /* VMSessionState */
 "Switch back to UTM to avoid termination." = "切換回至 UTM 以避免終止。";
@@ -1665,6 +1671,9 @@ VMWizardOSMacView */
 "Arguments" = "引數";
 
 /* No comment provided by engineer. */
+"ASIF is more efficient and performant but is not compatible with older versions of macOS hosts." = "ASIF 更加高效、執行效能更高，但與舊版的 macOS 主機不相容。";
+
+/* No comment provided by engineer. */
 "Auto Resolution" = "自動調整解像度";
 
 /* No comment provided by engineer. */
@@ -1722,6 +1731,9 @@ VMWizardOSMacView */
 "By default, the best renderer for this device will be used. You can override this with to always use a specific renderer. This only applies to QEMU VMs with GPU accelerated graphics." = "根據預設，將會使用最適合此裝置的算圖器。你可以覆蓋它以始終使用特定的算圖器，此設定只套用至支援 GPU 加速圖形的 QEMU 虛擬機。";
 
 /* No comment provided by engineer. */
+"By default, the server is only available on LAN but setting this will use UPnP/NAT-PMP to port forward to WAN." = "根據預設，只可以在 LAN 上使用伺服器，不過，設定此選項可以使用 UPnP/NAT-PMP 連接埠轉寄至 WAN。";
+
+/* No comment provided by engineer. */
 "Calculating current size..." = "計算現時大小⋯";
 
 /* No comment provided by engineer. */
@@ -1732,6 +1744,9 @@ VMWizardOSMacView */
 
 /* No comment provided by engineer. */
 "Clear…" = "清除⋯";
+
+/* No comment provided by engineer. */
+"Clears all saved USB devices." = "清除所有儲存的 USB 裝置。";
 
 /* No comment provided by engineer. */
 "Clipboard Sharing" = "剪貼板分享";
@@ -1792,6 +1807,9 @@ VMWizardOSMacView */
 
 /* No comment provided by engineer. */
 "Devices" = "裝置";
+
+/* No comment provided by engineer. */
+"Different versions of Mac OS require different VIA option." = "不同版本的 macOS 要求不同的 VIA 選項。";
 
 /* No comment provided by engineer. */
 "Directory" = "目錄";
@@ -1893,6 +1911,9 @@ VMWizardOSMacView */
 "Enable Rosetta on Linux (x86_64 Emulation)" = "在 Linux 中啟用 Rosetta (x86_64 模擬)";
 
 /* No comment provided by engineer. */
+"Enable Secure Boot with Microsoft UEFI keys. This is required to Secure Boot Windows." = "使用 Microsoft UEFI 鑰匙啟用保安啟󠄁動。這對於保安啟󠄁動 Windows 為必需。";
+
+/* No comment provided by engineer. */
 "Enable Sound" = "啟用聲音";
 
 /* No comment provided by engineer. */
@@ -1986,6 +2007,9 @@ VMWizardOSMacView */
 "Host Port" = "主機埠";
 
 /* No comment provided by engineer. */
+"If checked, emulated devices with higher compatibility will be instantiated at the cost of performance." = "如選擇，更高相容性的模擬裝置將會被實例化，但以效能降低為代價。";
+
+/* No comment provided by engineer. */
 "If checked, no drive image will be stored with the VM. Instead you can mount/unmount image while the VM is running." = "如選擇，將不會儲存磁碟映像檔至虛擬機。然而，你可以在執行虛擬機時裝載/卸除安裝映像。";
 
 /* No comment provided by engineer. */
@@ -2005,16 +2029,25 @@ VMWizardOSMacView */
 "If checked, use NVMe instead of virtio as the disk interface, available on macOS 14+ for Linux guests only. This interface is slower but less likely to encounter filesystem errors." = "如選擇，將會使用 NVMe 而非 virtio 作為磁碟介面，只可在 macOS 14+ 的 Linux 客户端上使用。此介面的速度較慢，但較不易遇到檔案系統錯誤。";
 
 /* No comment provided by engineer. */
+"If checked, you will not be prompted about any unknown connection and they will be rejected." = "如選擇，你將不會收到任何不明連線的提示，這些連線亦會被拒絕。";
+
+/* No comment provided by engineer. */
 "If disabled, the default combination Control+Option (⌃+⌥) will be used." = "如停用，將會使用預設組合鍵 Control + Option (⌃ + ⌥)。";
 
 /* No comment provided by engineer. */
 "If enabled, a virtiofs share tagged 'rosetta' will be available on the Linux guest for installing Rosetta for emulating x86_64 on ARM64." = "如啟用，Linux 客户端會有一個標記為「rosetta」的 virtiofs 分享，用於在 ARM64 上安裝 Rosetta 以模擬 x86_64。";
 
 /* No comment provided by engineer. */
+"If enabled, all writable drive images will be locked when the VM is running. Read-only drive images will not be locked." = "如啟󠄁用，執行虛擬機时，所有可寫的磁碟映像檔都將會被鎖定。唯讀磁碟映像檔不會被被鎖定。";
+
+/* No comment provided by engineer. */
 "If enabled, any existing screenshot will be deleted the next time the VM is started." = "如啟用，下次啟動虛擬機時，所有現有的螢幕截圖將會刪除。";
 
 /* No comment provided by engineer. */
 "If enabled, caps lock will be handled like other keys. If disabled, it is treated as a toggle that is synchronized with the host." = "如啟用，Caps Lock 將會同其他鍵一般處理。如停用，它將會被視為開關鍵，並與主機同步。";
+
+/* No comment provided by engineer. */
+"If enabled, clients must enter a password. This is required if you want to access the server externally." = "如啟󠄁用，客户端必須輸入密碼。如你要取用伺服器，這個為必需。";
 
 /* No comment provided by engineer. */
 "If enabled, input capture will toggle automatically when entering and exiting full screen mode." = "如啟用，在進入和離開全螢幕模式時，將會自動切換輸入擷取。";
@@ -2036,6 +2069,9 @@ VMWizardOSMacView */
 
 /* No comment provided by engineer. */
 "If enabled, the default input devices will be emulated on the USB bus." = "如啟用，預設輸入裝置將會在 USB 匯流排上模擬。";
+
+/* No comment provided by engineer. */
+"If enabled, when the VM is out of focus, the first click will be handled by the VM. Otherwise, the first click will only bring the window into focus." = "如啟用，當聚焦虛擬機視窗失去時，第一次點按將會由虛擬機處理。否則，第一次點按只會讓視窗聚焦。";
 
 /* No comment provided by engineer. */
 "If set, a frame limit can improve smoothness in rendering by preventing stutters when set to the lowest value your device can handle." = "如設定，當設定為你的裝置可以處理的最低值時，幀限制可以避免卡頓，以提升算圖的平順度。";
@@ -2104,6 +2140,9 @@ VMWizardOSMacView */
 "Legacy Hardware" = "舊式硬件";
 
 /* No comment provided by engineer. */
+"List all supported hardware. May require manual configuration to boot." = "列出所有支援的硬件。可能需要手動設定才能啟動。";
+
+/* No comment provided by engineer. */
 "MAC Address" = "MAC 位址";
 
 /* No comment provided by engineer. */
@@ -2134,6 +2173,9 @@ VMWizardOSMacView */
 "Move this VM from internal storage to elsewhere." = "將此虛擬機從內置儲存裝置移至其他地方。";
 
 /* No comment provided by engineer. */
+"Navigate to '/Library/Preferences/VMware Fusion' (⌘+Shift+G) and select the 'networking' file" = "導覽到「/Library/Preferences/VMware Fusion（⌘+Shift+G）」並選擇「networking」檔案";
+
+/* No comment provided by engineer. */
 "Network" = "網絡";
 
 /* No comment provided by engineer. */
@@ -2155,6 +2197,9 @@ VMWizardOSMacView */
 "New VM" = "新增虛擬機";
 
 /* No comment provided by engineer. */
+"No VM screenshots will be taken." = "不會拍攝螢幕截圖。";
+
+/* No comment provided by engineer. */
 "Older versions of UTM added each IDE device to a separate bus. Check this to change the configuration to place two units on each bus." = "舊版本的 UTM 將每個 IDE 裝置加至單獨的匯流排中。選擇此以變更設定，在每個匯流排上放置兩個單元。";
 
 /* No comment provided by engineer. */
@@ -2162,6 +2207,9 @@ VMWizardOSMacView */
 
 /* No comment provided by engineer. */
 "Only available if host architecture matches the target. Otherwise, TCG emulation is used." = "只可以在主機架構與目標相符時使用。否則，將會使用 TCG 模擬。";
+
+/* No comment provided by engineer. */
+"Only available on macOS 14+ virtual machines." = "只可以在 macOS 14+ 的虛擬機上使用。";
 
 /* No comment provided by engineer. */
 "Only available on macOS virtual machines." = "只可以在 macOS 虛擬機上使用。";
@@ -2192,6 +2240,9 @@ VMWizardOSMacView */
 
 /* No comment provided by engineer. */
 "Power Off" = "關閉電源";
+
+/* No comment provided by engineer. */
+"Preload Secure Boot Keys" = "預載入保安啟󠄁動鑰匙";
 
 /* No comment provided by engineer. */
 "Prompt" = "提示";
@@ -2227,6 +2278,9 @@ VMWizardOSMacView */
 "Reclaim Space" = "回收空間";
 
 /* No comment provided by engineer. */
+"Regenerate MAC addresses on clone" = "製作副本時重新產生 MAC 位址";
+
+/* No comment provided by engineer. */
 "Reject unknown connections by default" = "根據預設拒絕不明連線";
 
 /* No comment provided by engineer. */
@@ -2243,6 +2297,9 @@ VMWizardOSMacView */
 
 /* No comment provided by engineer. */
 "Requires SPICE guest agent tools to be installed." = "需要安裝 SPICE 客户端代理程式工具。";
+
+/* No comment provided by engineer. */
+"Reset auto connect devices…" = "重設自動連接的裝置";
 
 /* No comment provided by engineer. */
 "Reset UEFI Variables" = "重設 UEFI 變數";
@@ -2266,10 +2323,10 @@ VMWizardOSMacView */
 "Resume" = "繼續";
 
 /* No comment provided by engineer. */
-"Resume running VM." = "繼續正在執行的虛擬機。";
+"Resume running VM." = "繼續執行虛擬機。";
 
 /* No comment provided by engineer. */
-"Reveal where the VM is stored." = "顯示虛擬機的儲存位置。";
+"Reveal where the VM is stored." = "顯示虛擬機儲存的位置。";
 
 /* No comment provided by engineer. */
 "RNG Device" = "RNG 裝置";
@@ -2305,13 +2362,16 @@ VMWizardOSMacView */
 "Select an existing disk image." = "選擇一個現有的磁碟映像。";
 
 /* No comment provided by engineer. */
-"Selected:" = "已選取：";
+"Selected:" = "已選擇：";
 
 /* No comment provided by engineer. */
 "Serial" = "序列";
 
 /* No comment provided by engineer. */
 "Server Address" = "伺服器位址";
+
+/* No comment provided by engineer. */
+"Set up custom keyboard shortcuts that can be triggered from the keyboard menu." = "設定自訂快捷鍵以透過鍵盤選單觸發。";
 
 /* No comment provided by engineer. */
 "Settings" = "設定";
@@ -2380,6 +2440,9 @@ VMWizardOSMacView */
 "Sound Backend" = "聲音後端";
 
 /* No comment provided by engineer. */
+"Specify a port number to listen on. This is required if external clients are permitted." = "指定要聽取的連接埠號。如允許外部客户端，此連接埠號為必需。";
+
+/* No comment provided by engineer. */
 "Start" = "啟動";
 
 /* No comment provided by engineer. */
@@ -2434,13 +2497,22 @@ VMWizardOSMacView */
 "These are advanced settings affecting QEMU which should be kept default unless you are running into issues." = "這些是影響 QEMU 的進階設定，除非遇到問題，否則你應當保持預設值。";
 
 /* No comment provided by engineer. */
+"This does not apply to key binding outside the guest." = "此設定不會套用至客户端以外的按鍵綁定。";
+
+/* No comment provided by engineer. */
 "This is appended to the -machine argument." = "這會加至 -machine 引數的尾端。";
 
 /* No comment provided by engineer. */
-"This virtual machine cannot be found at: %@" = "虛擬機無法在此位置找到：%@";
+"This only applies to ISO layout keyboards." = "此設定只套用至 ISO 佈局的鍵盤。";
+
+/* No comment provided by engineer. */
+"This virtual machine cannot be found at: %@" = "無法在此位置找到這個虛擬機：%@";
 
 /* No comment provided by engineer. */
 "This virtual machine must be re-added to UTM by opening it with Finder. You can find it at the path: %@" = "必須以 Finder 開啟此虛擬機，將其重新加至 UTM。你可以透過此路徑找到它：%@";
+
+/* No comment provided by engineer. */
+"To change this, remove the shared directory and add it again." = "如要更改此選項，請移除分享的目錄並重新加回。";
 
 /* No comment provided by engineer. */
 "TPM 2.0 Device" = "TPM 2.0 裝置";
@@ -2495,6 +2567,9 @@ VMWizardOSMacView */
 "Use Virtualization" = "使用虛擬化";
 
 /* No comment provided by engineer. */
+"UTM Library" = "UTM 資料庫";
+
+/* No comment provided by engineer. */
 "UTM Server" = "UTM 伺服器";
 
 /* No comment provided by engineer. */
@@ -2516,10 +2591,16 @@ VMWizardOSMacView */
 "WebDAV requires installing SPICE daemon. VirtFS requires installing device drivers." = "WebDAV 需要安裝 SPICE 服務程式。VirtFS 需要安裝裝置驅動程式。";
 
 /* No comment provided by engineer. */
+"When cloning a VM, regenerate MAC addresses on every network interface to prevent conflicts." = "製作虛擬機副本時，為避免衝突，對於每個網絡介面重新產生 MAC 位址。";
+
+/* No comment provided by engineer. */
 "Width" = "寬度";
 
 /* No comment provided by engineer. */
 "Windows Install Guide" = "Windows 安裝指南";
+
+/* No comment provided by engineer. */
+"You can configure additional host networks in UTM Settings." = "你可以在 UTM 設定中設定其他主機網絡。";
 
 /* No comment provided by engineer. */
 "You can use this if your boot options are corrupted or if you wish to re-enroll in the default keys for secure boot." = "如你的引導選項已損毀，或是你希望重新註冊保安啟動的預設鑰匙，可以使用此選項。";

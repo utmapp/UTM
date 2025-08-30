@@ -202,7 +202,6 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
 }
 
 - (void)spiceDisconnected:(CSConnection *)connection {
-    NSAssert(connection == self.spiceConnection, @"Unknown connection");
     self.isConnected = NO;
     if ([self.delegate respondsToSelector:@selector(spiceDidDisconnect)]) {
         [self.delegate spiceDidDisconnect];
@@ -210,7 +209,6 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
 }
 
 - (void)spiceError:(CSConnection *)connection code:(CSConnectionError)code message:(nullable NSString *)message {
-    NSAssert(connection == self.spiceConnection, @"Unknown connection");
     self.isConnected = NO;
 #if defined(WITH_REMOTE)
     [self.connectDelegate remoteInterface:self didErrorWithMessage:message];

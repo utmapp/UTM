@@ -25,14 +25,14 @@
           "locale" : "en_US"
         },
         {
-          "description" : "一次性小额捐赠。",
+          "description" : "一次小小的捐赠。",
           "displayName" : "晶体管",
-          "locale" : "zh_CN"
+          "locale" : "zh_Hans"
         },
         {
-          "description" : "一次性的少量捐贈。",
+          "description" : "一次性的小額度捐贈。",
           "displayName" : "電晶體",
-          "locale" : "zh_TW"
+          "locale" : "zh_Hant"
         }
       ],
       "productID" : "consumable.small",
@@ -50,14 +50,14 @@
           "locale" : "en_US"
         },
         {
-          "description" : "一次性中等捐赠。",
+          "description" : "一次中等的捐赠。",
           "displayName" : "芯片",
-          "locale" : "zh_CN"
+          "locale" : "zh_Hans"
         },
         {
-          "description" : "一次性的中等量捐贈。",
+          "description" : "一次性的中等額度捐贈。",
           "displayName" : "晶片",
-          "locale" : "zh_TW"
+          "locale" : "zh_Hant"
         }
       ],
       "productID" : "consumable.medium",
@@ -75,14 +75,14 @@
           "locale" : "en_US"
         },
         {
-          "description" : "一次性大额捐赠。",
+          "description" : "一次大笔的捐赠。",
           "displayName" : "计算机",
-          "locale" : "zh_CN"
+          "locale" : "zh_Hans"
         },
         {
-          "description" : "一次性的大量捐贈。",
+          "description" : "一次性的大額度捐贈。",
           "displayName" : "電腦",
-          "locale" : "zh_TW"
+          "locale" : "zh_Hant"
         }
       ],
       "productID" : "consumable.large",
