@@ -505,6 +505,10 @@ import Virtualization // for getting network interfaces
             if system.architecture == .aarch64 && emulatedCpuCount.0 > 8 {
                 properties = properties.appendingDefaultPropertyName("gic-version", value: "3")
             }
+            // Workaround for SPICE WebDAV crashes on ARM64 virtualization
+            if system.architecture == .aarch64 && isHypervisorUsed {
+                properties = properties.appendingDefaultPropertyName("its", value: "off")
+            }
         }
         if isClassicMacM68K {
             if sound.contains(where: { $0.hardware.rawValue == QEMUSoundDevice_m68k.asc.rawValue }) {
