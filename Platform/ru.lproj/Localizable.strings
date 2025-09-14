@@ -1526,7 +1526,7 @@
 "Start" = "Запуск";
 
 /* UTMVirtualMachine */
-"Started" = "Запущенно";
+"Started" = "Запущена";
 
 /* UTMVirtualMachine */
 "Starting" = "Запускается";
