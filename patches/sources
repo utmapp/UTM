@@ -22,7 +22,7 @@ SPICE_PROTOCOL_SRC="https://www.spice-space.org/download/releases/spice-protocol
 SPICE_SERVER_SRC="https://www.spice-space.org/download/releases/spice-server/spice-0.14.3.tar.bz2"
 USB_SRC="https://github.com/libusb/libusb/releases/download/v1.0.25/libusb-1.0.25.tar.bz2"
 USBREDIR_SRC="https://www.spice-space.org/download/usbredir/usbredir-0.14.0.tar.xz"
-SLIRP_SRC="https://gitlab.freedesktop.org/slirp/libslirp/-/archive/v4.9.1/libslirp-v4.9.1.tar.gz"
+SLIRP_SRC="https://github.com/utmapp/libslirp/releases/download/v4.9.1-release-mirror/libslirp-v4.9.1.tar.gz"
 QEMU_SRC="https://github.com/utmapp/qemu/releases/download/v10.0.2-utm/qemu-10.0.2-utm.tar.xz"
 
 # Source files for spice-client
