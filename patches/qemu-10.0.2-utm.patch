@@ -427,24 +427,24 @@ index 6c91e2d292..86978f4671 100644
 -- 
 2.41.0
 
-From 4904c333425bbc882ebd975a100b7495c1c37514 Mon Sep 17 00:00:00 2001
+From 60fb87f41c44a4fd76d6e4538d1746a6c3be162c Mon Sep 17 00:00:00 2001
 From: osy <osy@turing.llc>
 Date: Sun, 14 Sep 2025 00:55:51 -0700
 Subject: [PATCH] tcg: new JIT workaround for iOS 26
 
-We map the JIT region originally as RX and also mirror map it
-as RX. Then we use attached debugger to flag the mirror
-mapping as debugger owned. Finally, we change the original map
-to RW which should not invalidate code-signing as the mirror
-is debugger owned.
+We map the JIT region originally as RX and also mirror map
+it as RX. Then we use attached debugger to flag the mirror
+mapping as debugger owned. Finally, we change the original
+map to RW which should not invalidate code-signing as the
+mirror is debugger owned.
 
 Thanks to @JJTech0130 for this workaround.
 ---
- tcg/region.c | 69 ++++++++++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 67 insertions(+), 2 deletions(-)
+ tcg/region.c | 64 ++++++++++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 62 insertions(+), 2 deletions(-)
 
 diff --git a/tcg/region.c b/tcg/region.c
-index 70996b5ab1..031688b85c 100644
+index 70996b5ab1..a36c692bc3 100644
 --- a/tcg/region.c
 +++ b/tcg/region.c
 @@ -623,14 +623,57 @@ extern kern_return_t mach_vm_remap(vm_map_t target_task,
@@ -493,35 +493,30 @@ index 70996b5ab1..031688b85c 100644
      mach_vm_address_t buf_rw, buf_rx;
      vm_prot_t cur_prot, max_prot;
 +    int orig_prot = PROT_READ | PROT_WRITE;
- 
--    /* Map the read-write portion via normal anon memory. */
--    if (!alloc_code_gen_buffer_anon(size, PROT_READ | PROT_WRITE,
++
 +#if TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR
 +    /* iOS 26 with TXM requires new workaround*/
 +    if (__builtin_available(iOS 26, visionOS 26, watchOS 26, tvOS 26, *)) {
 +        orig_prot = PROT_READ | PROT_EXEC;
 +    }
 +#endif
-+
+ 
+-    /* Map the read-write portion via normal anon memory. */
+-    if (!alloc_code_gen_buffer_anon(size, PROT_READ | PROT_WRITE,
 +    if (!alloc_code_gen_buffer_anon(size, orig_prot,
                                      MAP_PRIVATE | MAP_ANONYMOUS, errp)) {
          return -1;
      }
-@@ -662,6 +705,28 @@ static int alloc_code_gen_buffer_splitwx_vmremap(size_t size, Error **errp)
+@@ -662,6 +705,23 @@ static int alloc_code_gen_buffer_splitwx_vmremap(size_t size, Error **errp)
          return -1;
      }
  
 +#if TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR
 +    if (__builtin_available(iOS 26, visionOS 26, watchOS 26, tvOS 26, *)) {
-+        if (!is_debugger_attached()) {
-+            error_setg(errp, "debugger must be attached for jit workaround");
-+            munmap((void *)buf_rx, size);
-+            munmap((void *)buf_rw, size);
-+            return -1;
++        if (is_debugger_attached()) {
++            /* let debugger modify the page permission */
++            break_prepare_jit_region(buf_rx, size);
 +        }
-+
-+        /* give let debugger modify the page permission */
-+        break_prepare_jit_region(buf_rx, size);
 +
 +        /* finally mark the read-write portion as RW */
 +        if (mprotect((void *)buf_rw, size, PROT_READ | PROT_WRITE) != 0) {
