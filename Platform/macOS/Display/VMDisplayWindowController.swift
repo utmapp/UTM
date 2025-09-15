@@ -491,8 +491,7 @@ extension VMDisplayWindowController: NSToolbarItemValidation {
 
 // MARK: - Stop menu
 extension VMDisplayWindowController {
-    private func setupStopButtonMenu() {
-        let menu = NSMenu()
+    private func updateStopButtonMenu(_ menu: NSMenu) {
         menu.autoenablesItems = false
         let item1 = NSMenuItem()
         item1.title = NSLocalizedString("Request power down", comment: "VMDisplayWindowController")
@@ -514,6 +513,11 @@ extension VMDisplayWindowController {
             item3.action = #selector(forceKill)
             menu.addItem(item3)
         }
+    }
+
+    private func setupStopButtonMenu() {
+        let menu = NSMenu()
+        updateStopButtonMenu(menu)
         stopToolbarItem.menu = menu
         if #unavailable(macOS 12), let view = stopToolbarItem.value(forKey: "_control") as? NSView {
             // BUG in macOS 11 results in the button not working without this
@@ -552,7 +556,9 @@ extension VMDisplayWindowController {
         menu.autoenablesItems = false
         stopMenuItem = NSMenuItem()
         stopMenuItem.title = NSLocalizedString("Power", comment: "VMDisplayWindowController")
-        stopMenuItem.submenu = stopToolbarItem.menu
+        let stopMenu = NSMenu()
+        updateStopButtonMenu(stopMenu)
+        stopMenuItem.submenu = stopMenu
         menu.addItem(stopMenuItem)
         startPauseMenuItem = NSMenuItem(title: "", action: #selector(startPauseButtonPressed), keyEquivalent: "")
         menu.addItem(startPauseMenuItem)
