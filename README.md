@@ -37,6 +37,9 @@ UTM SE ("slow edition") uses a [threaded interpreter][3] which performs better t
 
 To optimize for size and build times, only the following architectures are included in UTM SE: ARM, PPC, RISC-V, and x86 (all with both 32-bit and 64-bit variants).
 
+# WARNING
+# UTM does NOT support macOS under Intel Platform, it only supports Windows and Linux.
+
 ## Install
 
 UTM (SE) for iOS: https://getutm.app/install/
