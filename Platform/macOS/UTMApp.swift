@@ -16,7 +16,6 @@
 
 import SwiftUI
 import AppIntents
-import CoreSpotlight
 
 struct UTMApp: App {
     let data: UTMData
@@ -36,16 +35,12 @@ struct UTMApp: App {
             .onAppear {
                 appDelegate.data = data
                 NSApp.scriptingDelegate = appDelegate
-                Task { await reindexVms() }
             }
             .onReceive(.vmSessionError) { notification in
                 if let message = notification.userInfo?["Message"] as? String {
                     data.showErrorAlert(message: message)
                 }
-            }
-            .onChange(of: data.virtualMachines) { _ in
-                Task { await reindexVms() }
-            }
+            }  
     }
     
     @SceneBuilder
@@ -86,22 +81,5 @@ struct UTMApp: App {
             return oldBody
         }
     }
-
-    @MainActor
-    private func reindexVms() async {
-        guard #available(macOS 15, *) else { return }
-        let entities = data.virtualMachines.map { UTMVirtualMachineEntity(from: $0) }
-        do {
-            let index = CSSearchableIndex.default()
-            try await index.deleteAppEntities(ofType: UTMVirtualMachineEntity.self)
-            if !entities.isEmpty {
-                try await index.indexAppEntities(entities)
-                logger.debug("[Indexing] Indexed \(entities.count) VM entities for Spotlight")
-            } else {
-                logger.debug("[Indexing] Cleared VM entity index (no entities)")
-            }
-        } catch {
-            logger.error("[Indexing] Failed to (re)index VM entities: \(error.localizedDescription)")
-        }
-    }
+    
 }

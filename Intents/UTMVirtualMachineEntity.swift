@@ -15,7 +15,6 @@
 //
 
 import AppIntents
-import CoreSpotlight
 
 @available(iOS 16, macOS 13, tvOS 16, watchOS 9, *)
 struct UTMVirtualMachineEntity: AppEntity {
@@ -62,21 +61,6 @@ struct UTMVirtualMachineEntity: AppEntity {
     }
 }
 
-@available(iOS 18, macOS 15, *)
-extension UTMVirtualMachineEntity: IndexedEntity {
-    // Spotlight searchable attributes for this VM entity
-    var attributeSet: CSSearchableItemAttributeSet {
-        let attrs = CSSearchableItemAttributeSet()
-        attrs.title = name
-        attrs.contentDescription = description
-        if let iconURL {
-            attrs.thumbnailURL = iconURL
-        }
-        // Light keywords for common queries
-        attrs.keywords = ["vm", "virtual machine", String(describing: state)]
-        return attrs
-    }
-}
 
 @available(iOS 16, macOS 13, tvOS 16, watchOS 9, *)
 extension UTMVirtualMachineState: AppEnum {
