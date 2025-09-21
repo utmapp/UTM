@@ -25,7 +25,7 @@ struct UTMVirtualMachineEntityQuery: EntityQuery, EntityStringQuery {
         await MainActor.run {
             data
                 .virtualMachines
-                .filter({ $0.isLoaded && identifiers.contains($0.id) })
+                .filter({ identifiers.contains($0.id) })
                 .map({ UTMVirtualMachineEntity(from: $0) })
         }
     }
@@ -34,7 +34,7 @@ struct UTMVirtualMachineEntityQuery: EntityQuery, EntityStringQuery {
         await MainActor.run {
             data
                 .virtualMachines
-                .filter({ $0.isLoaded && $0.detailsTitleLabel.localizedCaseInsensitiveContains(matching) })
+                .filter({ $0.detailsTitleLabel.localizedCaseInsensitiveContains(matching) })
                 .map({ UTMVirtualMachineEntity(from: $0) })
         }
     }
@@ -43,7 +43,6 @@ struct UTMVirtualMachineEntityQuery: EntityQuery, EntityStringQuery {
         await MainActor.run {
             data
                 .virtualMachines
-                .filter({ $0.isLoaded })
                 .map({ UTMVirtualMachineEntity(from: $0) })
         }
     }
