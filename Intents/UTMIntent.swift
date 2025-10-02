@@ -40,8 +40,11 @@ extension UTMIntent {
 extension UTMIntent {
     @MainActor
     func perform() async throws -> T {
-        guard let vm = data.virtualMachines.first(where: { $0.id == vmEntity.id }), vm.isLoaded else {
+        guard let vm = data.virtualMachines.first(where: { $0.id == vmEntity.id }) else {
             throw UTMIntentError.virtualMachineNotFound
+        }
+        if !vm.isLoaded {
+            do { try vm.load() } catch { throw UTMIntentError.localizedError(error) }
         }
         do {
             return try await perform(with: vm.wrapped!, boxed: vm)

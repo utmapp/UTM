@@ -15,9 +15,13 @@
 //
 
 import AppIntents
+#if os(macOS)
+import AppKit
+#endif
 
 @available(iOS 16, macOS 13, tvOS 16, watchOS 9, *)
 struct UTMStatusActionIntent: UTMIntent {
+    static var id: String = "UTMStatusActionIntent"
     static let title: LocalizedStringResource = "Get Virtual Machine Status"
     static let description = IntentDescription("Get the status of a virtual machine.")
     static var parameterSummary: some ParameterSummary {
@@ -38,6 +42,7 @@ struct UTMStatusActionIntent: UTMIntent {
 
 @available(iOS 16, macOS 13, tvOS 16, watchOS 9, *)
 struct UTMStartActionIntent: UTMIntent {
+    static var id: String = "UTMStartActionIntent"
     static let title: LocalizedStringResource = "Start Virtual Machine"
     static let description = IntentDescription("Start a virtual machine.")
     static var parameterSummary: some ParameterSummary {
@@ -78,7 +83,12 @@ struct UTMStartActionIntent: UTMIntent {
             }
             options.insert(.bootDisposibleMode)
         }
+        #if os(macOS)
+        // Ensure the app comes to the foreground before presenting VM UI
+        NSApp.activate(ignoringOtherApps: true)
+        #endif
         data.run(vm: boxed, options: options)
+        // For platforms that support foreground continuation, request it (no-op on older SDKs).
         if !vm.isHeadless {
             if #available(iOS 26, macOS 26, tvOS 26, watchOS 26, visionOS 26, *), systemContext.currentMode.canContinueInForeground {
                 try await continueInForeground(alwaysConfirm: false)
@@ -90,6 +100,7 @@ struct UTMStartActionIntent: UTMIntent {
 
 @available(iOS 16, macOS 13, tvOS 16, watchOS 9, *)
 struct UTMStopActionIntent: UTMIntent {
+    static var id: String = "UTMStopActionIntent"
     static let title: LocalizedStringResource = "Stop Virtual Machine"
     static let description = IntentDescription("Stop a virtual machine.")
     static var parameterSummary: some ParameterSummary {
@@ -128,6 +139,7 @@ extension UTMVirtualMachineStopMethod: AppEnum {
 
 @available(iOS 16, macOS 13, tvOS 16, watchOS 9, *)
 struct UTMPauseActionIntent: UTMIntent {
+    static var id: String = "UTMPauseActionIntent"
     static let title: LocalizedStringResource = "Pause Virtual Machine"
     static let description = IntentDescription("Pause a virtual machine.")
     static var parameterSummary: some ParameterSummary {
@@ -157,6 +169,7 @@ struct UTMPauseActionIntent: UTMIntent {
 
 @available(iOS 16, macOS 13, tvOS 16, watchOS 9, *)
 struct UTMResumeActionIntent: UTMIntent {
+    static var id: String = "UTMResumeActionIntent"
     static let title: LocalizedStringResource = "Resume Virtual Machine"
     static let description = IntentDescription("Resume a virtual machine.")
     static var parameterSummary: some ParameterSummary {
@@ -172,7 +185,7 @@ struct UTMResumeActionIntent: UTMIntent {
     @MainActor
     func perform(with vm: any UTMVirtualMachine, boxed: VMData) async throws -> some IntentResult {
         try await vm.resume()
-        if vm.isHeadless {
+        if !vm.isHeadless {
             if #available(iOS 26, macOS 26, tvOS 26, watchOS 26, visionOS 26, *), systemContext.currentMode.canContinueInForeground {
                 try await continueInForeground(alwaysConfirm: false)
             }
@@ -183,6 +196,7 @@ struct UTMResumeActionIntent: UTMIntent {
 
 @available(iOS 16, macOS 13, tvOS 16, watchOS 9, *)
 struct UTMRestartActionIntent: UTMIntent {
+    static var id: String = "UTMRestartActionIntent"
     static let title: LocalizedStringResource = "Restart Virtual Machine"
     static let description = IntentDescription("Restart a virtual machine.")
     static var parameterSummary: some ParameterSummary {
@@ -198,7 +212,7 @@ struct UTMRestartActionIntent: UTMIntent {
     @MainActor
     func perform(with vm: any UTMVirtualMachine, boxed: VMData) async throws -> some IntentResult {
         try await vm.restart()
-        if vm.isHeadless {
+        if !vm.isHeadless {
             if #available(iOS 26, macOS 26, tvOS 26, watchOS 26, visionOS 26, *), systemContext.currentMode.canContinueInForeground {
                 try await continueInForeground(alwaysConfirm: false)
             }
