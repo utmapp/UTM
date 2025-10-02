@@ -319,6 +319,8 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
 - (void)startSharingDirectory {
     if (self.sharedDirectory) {
         UTMLog(@"setting share directory to %@", self.sharedDirectory.path);
+        UTMLog(@"directory exists: %@", [[NSFileManager defaultManager] fileExistsAtPath:self.sharedDirectory.path] ? @"YES" : @"NO");
+        UTMLog(@"read-only mode: %@", (self.options & UTMSpiceIOOptionsIsShareReadOnly) ? @"YES" : @"NO");
         [self.sharedDirectory startAccessingSecurityScopedResource];
         [self.spiceConnection.session setSharedDirectory:self.sharedDirectory.path readOnly:(self.options & UTMSpiceIOOptionsIsShareReadOnly) == UTMSpiceIOOptionsIsShareReadOnly];
     }
