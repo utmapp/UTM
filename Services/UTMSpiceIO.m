@@ -154,14 +154,16 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
     self.spiceConnection.delegate = nil;
     self.spiceConnection = nil;
     self.spice = nil;
-    self.primaryDisplay = nil;
-    [self.mutableDisplays removeAllObjects];
-    self.primaryInput = nil;
-    self.primarySerial = nil;
-    [self.mutableSerials removeAllObjects];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.primaryDisplay = nil;
+        [self.mutableDisplays removeAllObjects];
+        self.primaryInput = nil;
+        self.primarySerial = nil;
+        [self.mutableSerials removeAllObjects];
 #if defined(WITH_USB)
-    self.primaryUsbManager = nil;
+        self.primaryUsbManager = nil;
 #endif
+    });
 }
 
 - (void)screenshotWithCompletion:(screenshotCallback_t)completion {
@@ -178,66 +180,82 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
 - (void)spiceConnected:(CSConnection *)connection {
     NSAssert(connection == self.spiceConnection, @"Unknown connection");
     self.isConnected = YES;
+    dispatch_async(dispatch_get_main_queue(), ^{
 #if defined(WITH_USB)
-    self.primaryUsbManager = connection.usbManager;
-    [self.delegate spiceDidChangeUsbManager:connection.usbManager];
+        self.primaryUsbManager = connection.usbManager;
+        [self.delegate spiceDidChangeUsbManager:connection.usbManager];
 #endif
 #if defined(WITH_REMOTE)
-    [self.connectDelegate remoteInterfaceDidConnect:self];
+        [self.connectDelegate remoteInterfaceDidConnect:self];
 #endif
+    });
 }
 
 - (void)spiceInputAvailable:(CSConnection *)connection input:(CSInput *)input {
-    if (self.primaryInput == nil) {
-        self.primaryInput = input;
-        [self.delegate spiceDidCreateInput:input];
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (self.primaryInput == nil) {
+            self.primaryInput = input;
+            [self.delegate spiceDidCreateInput:input];
+        }
+    });
 }
 
 - (void)spiceInputUnavailable:(CSConnection *)connection input:(CSInput *)input {
-    if (self.primaryInput == input) {
-        self.primaryInput = nil;
-        [self.delegate spiceDidDestroyInput:input];
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (self.primaryInput == input) {
+            self.primaryInput = nil;
+            [self.delegate spiceDidDestroyInput:input];
+        }
+    });
 }
 
 - (void)spiceDisconnected:(CSConnection *)connection {
     self.isConnected = NO;
-    if ([self.delegate respondsToSelector:@selector(spiceDidDisconnect)]) {
-        [self.delegate spiceDidDisconnect];
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if ([self.delegate respondsToSelector:@selector(spiceDidDisconnect)]) {
+            [self.delegate spiceDidDisconnect];
+        }
+    });
 }
 
 - (void)spiceError:(CSConnection *)connection code:(CSConnectionError)code message:(nullable NSString *)message {
     self.isConnected = NO;
+    dispatch_async(dispatch_get_main_queue(), ^{
 #if defined(WITH_REMOTE)
-    [self.connectDelegate remoteInterface:self didErrorWithMessage:message];
+        [self.connectDelegate remoteInterface:self didErrorWithMessage:message];
 #else
-    [self.connectDelegate qemuInterface:self didErrorWithMessage:message];
+        [self.connectDelegate qemuInterface:self didErrorWithMessage:message];
 #endif
+    });
 }
 
 - (void)spiceDisplayCreated:(CSConnection *)connection display:(CSDisplay *)display {
     NSAssert(connection == self.spiceConnection, @"Unknown connection");
-    if (display.isPrimaryDisplay) {
-        self.primaryDisplay = display;
-    }
-    [self.mutableDisplays addObject:display];
-    [self.delegate spiceDidCreateDisplay:display];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (display.isPrimaryDisplay) {
+            self.primaryDisplay = display;
+        }
+        [self.mutableDisplays addObject:display];
+        [self.delegate spiceDidCreateDisplay:display];
+    });
 }
 
 - (void)spiceDisplayUpdated:(CSConnection *)connection display:(CSDisplay *)display {
     NSAssert(connection == self.spiceConnection, @"Unknown connection");
-    [self.delegate spiceDidUpdateDisplay:display];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.delegate spiceDidUpdateDisplay:display];
+    });
 }
 
 - (void)spiceDisplayDestroyed:(CSConnection *)connection display:(CSDisplay *)display {
     NSAssert(connection == self.spiceConnection, @"Unknown connection");
-    [self.mutableDisplays removeObject:display];
-    if (self.primaryDisplay == display) {
-        self.primaryDisplay = nil;
-    }
-    [self.delegate spiceDidDestroyDisplay:display];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.mutableDisplays removeObject:display];
+        if (self.primaryDisplay == display) {
+            self.primaryDisplay = nil;
+        }
+        [self.delegate spiceDidDestroyDisplay:display];
+    });
 }
 
 - (void)spiceAgentConnected:(CSConnection *)connection supportingFeatures:(CSConnectionAgentFeature)features {
@@ -249,39 +267,43 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
 }
 
 - (void)spiceForwardedPortOpened:(CSConnection *)connection port:(CSPort *)port {
-    if ([port.name isEqualToString:@"org.qemu.monitor.qmp.0"]) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if ([port.name isEqualToString:@"org.qemu.monitor.qmp.0"]) {
 #if !defined(WITH_REMOTE)
-        UTMQemuPort *qemuPort = [[UTMQemuPort alloc] initFrom:port];
-        [self.connectDelegate qemuInterface:self didCreateMonitorPort:qemuPort];
+            UTMQemuPort *qemuPort = [[UTMQemuPort alloc] initFrom:port];
+            [self.connectDelegate qemuInterface:self didCreateMonitorPort:qemuPort];
 #endif
-    }
-    if ([port.name isEqualToString:@"org.qemu.guest_agent.0"]) {
+        }
+        if ([port.name isEqualToString:@"org.qemu.guest_agent.0"]) {
 #if !defined(WITH_REMOTE)
-        UTMQemuPort *qemuPort = [[UTMQemuPort alloc] initFrom:port];
-        [self.connectDelegate qemuInterface:self didCreateGuestAgentPort:qemuPort];
+            UTMQemuPort *qemuPort = [[UTMQemuPort alloc] initFrom:port];
+            [self.connectDelegate qemuInterface:self didCreateGuestAgentPort:qemuPort];
 #endif
-    }
-    if ([port.name isEqualToString:@"com.utmapp.terminal.0"]) {
-        self.primarySerial = port;
-    }
-    if ([port.name hasPrefix:@"com.utmapp.terminal."]) {
-        [self.mutableSerials addObject:port];
-        [self.delegate spiceDidCreateSerial:port];
-    }
+        }
+        if ([port.name isEqualToString:@"com.utmapp.terminal.0"]) {
+            self.primarySerial = port;
+        }
+        if ([port.name hasPrefix:@"com.utmapp.terminal."]) {
+            [self.mutableSerials addObject:port];
+            [self.delegate spiceDidCreateSerial:port];
+        }
+    });
 }
 
 - (void)spiceForwardedPortClosed:(CSConnection *)connection port:(CSPort *)port {
-    if ([port.name isEqualToString:@"org.qemu.monitor.qmp.0"]) {
-    }
-    if ([port.name isEqualToString:@"org.qemu.guest_agent.0"]) {
-    }
-    if ([port.name hasPrefix:@"com.utmapp.terminal."]) {
-        [self.mutableSerials removeObject:port];
-        if (self.primarySerial == port) {
-            self.primarySerial = nil;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if ([port.name isEqualToString:@"org.qemu.monitor.qmp.0"]) {
         }
-        [self.delegate spiceDidDestroySerial:port];
-    }
+        if ([port.name isEqualToString:@"org.qemu.guest_agent.0"]) {
+        }
+        if ([port.name hasPrefix:@"com.utmapp.terminal."]) {
+            [self.mutableSerials removeObject:port];
+            if (self.primarySerial == port) {
+                self.primarySerial = nil;
+            }
+            [self.delegate spiceDidDestroySerial:port];
+        }
+    });
 }
 
 #pragma mark - Shared Directory
@@ -314,34 +336,36 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
 
 - (void)setDelegate:(id<UTMSpiceIODelegate>)delegate {
     _delegate = delegate;
-    // make sure to send initial data
-    if (self.primaryInput) {
-        [self.delegate spiceDidCreateInput:self.primaryInput];
-    }
-    if (self.primaryDisplay) {
-        [self.delegate spiceDidCreateDisplay:self.primaryDisplay];
-    }
-    if (self.primarySerial) {
-        [self.delegate spiceDidCreateSerial:self.primarySerial];
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        // make sure to send initial data
+        if (self.primaryInput) {
+            [self.delegate spiceDidCreateInput:self.primaryInput];
+        }
+        if (self.primaryDisplay) {
+            [self.delegate spiceDidCreateDisplay:self.primaryDisplay];
+        }
+        if (self.primarySerial) {
+            [self.delegate spiceDidCreateSerial:self.primarySerial];
+        }
 #if defined(WITH_USB)
-    if (self.primaryUsbManager) {
-        [self.delegate spiceDidChangeUsbManager:self.primaryUsbManager];
-    }
+        if (self.primaryUsbManager) {
+            [self.delegate spiceDidChangeUsbManager:self.primaryUsbManager];
+        }
 #endif
-    if ([self.delegate respondsToSelector:@selector(spiceDynamicResolutionSupportDidChange:)]) {
-        [self.delegate spiceDynamicResolutionSupportDidChange:self.dynamicResolutionSupported];
-    }
-    for (CSDisplay *display in self.mutableDisplays) {
-        if (display != self.primaryDisplay) {
-            [self.delegate spiceDidCreateDisplay:display];
+        if ([self.delegate respondsToSelector:@selector(spiceDynamicResolutionSupportDidChange:)]) {
+            [self.delegate spiceDynamicResolutionSupportDidChange:self.dynamicResolutionSupported];
         }
-    }
-    for (CSPort *port in self.mutableSerials) {
-        if (port != self.primarySerial) {
-            [self.delegate spiceDidCreateSerial:port];
+        for (CSDisplay *display in self.mutableDisplays) {
+            if (display != self.primaryDisplay) {
+                [self.delegate spiceDidCreateDisplay:display];
+            }
         }
-    }
+        for (CSPort *port in self.mutableSerials) {
+            if (port != self.primarySerial) {
+                [self.delegate spiceDidCreateSerial:port];
+            }
+        }
+    });
 }
 
 - (void)setDynamicResolutionSupported:(BOOL)dynamicResolutionSupported {

@@ -947,3 +947,98 @@ index cde286e7..22f151c1 100644
 -- 
 2.41.0
 
+From 80a7d8ed3d6f3b6750432c1c87a74b2b1db03685 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Wed, 1 Oct 2025 12:00:09 -0700
+Subject: [PATCH 1/2] darwin: handle error from GetConfigurationDescriptorPtr
+
+When a device is disconnected or otherwise `dpriv->device` is invalid,
+`GetConfigurationDescriptorPtr` will return `kIOReturnNoDevice` and
+`IOUSBConfigurationDescriptorPtr` will not be set. This means that we
+have an uninitialized pointer that is read from which is... very bad.
+---
+ libusb/os/darwin_usb.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
+
+diff --git a/libusb/os/darwin_usb.c b/libusb/os/darwin_usb.c
+index 58414a31..d385a0e8 100644
+--- a/libusb/os/darwin_usb.c
++++ b/libusb/os/darwin_usb.c
+@@ -698,9 +698,9 @@ static int get_configuration_index (struct libusb_device *dev, UInt8 config_valu
+     return darwin_to_libusb (kresult);
+ 
+   for (i = 0 ; i < numConfig ; i++) {
+-    (*(priv->device))->GetConfigurationDescriptorPtr (priv->device, i, &desc);
++    kresult = (*(priv->device))->GetConfigurationDescriptorPtr (priv->device, i, &desc);
+ 
+-    if (desc->bConfigurationValue == config_value)
++    if (kresult == kIOReturnSuccess && desc->bConfigurationValue == config_value)
+       return i;
+   }
+ 
+@@ -1823,7 +1823,11 @@ static int darwin_reenumerate_device (struct libusb_device_handle *dev_handle, b
+   cached_configurations = alloca (sizeof (*cached_configurations) * descriptor.bNumConfigurations);
+ 
+   for (i = 0 ; i < descriptor.bNumConfigurations ; ++i) {
+-    (*(dpriv->device))->GetConfigurationDescriptorPtr (dpriv->device, i, &cached_configuration);
++    kresult = (*(dpriv->device))->GetConfigurationDescriptorPtr (dpriv->device, i, &cached_configuration);
++    if (kresult != kIOReturnSuccess) {
++      dpriv->in_reenumerate = false;
++      return LIBUSB_ERROR_NOT_FOUND;
++    }
+     memcpy (cached_configurations + i, cached_configuration, sizeof (cached_configurations[i]));
+   }
+ 
+@@ -1883,8 +1887,8 @@ static int darwin_reenumerate_device (struct libusb_device_handle *dev_handle, b
+   }
+ 
+   for (i = 0 ; i < descriptor.bNumConfigurations ; ++i) {
+-    (void) (*(dpriv->device))->GetConfigurationDescriptorPtr (dpriv->device, i, &cached_configuration);
+-    if (memcmp (cached_configuration, cached_configurations + i, sizeof (cached_configurations[i]))) {
++    kresult = (*(dpriv->device))->GetConfigurationDescriptorPtr (dpriv->device, i, &cached_configuration);
++    if (kresult != kIOReturnSuccess || memcmp (cached_configuration, cached_configurations + i, sizeof (cached_configurations[i]))) {
+       usbi_dbg (ctx, "darwin/reenumerate_device: configuration descriptor %d changed", i);
+       return LIBUSB_ERROR_NOT_FOUND;
+     }
+-- 
+2.41.0
+
+From 9eaebb714169264c346bcba0100ac650aba40002 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Wed, 1 Oct 2025 12:17:02 -0700
+Subject: [PATCH 2/2] darwin: do not set NULL device in darwin_reload_device
+
+We need to maintain the invariant that `device` is never an invalid
+pointer because another thread might be concurrently accessing it. We
+want that thread to error from an outdated `device` rather than crash
+on a NULL pointer.
+---
+ libusb/os/darwin_usb.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/libusb/os/darwin_usb.c b/libusb/os/darwin_usb.c
+index d385a0e8..6407d7b6 100644
+--- a/libusb/os/darwin_usb.c
++++ b/libusb/os/darwin_usb.c
+@@ -2540,13 +2540,15 @@ static bool darwin_has_capture_entitlements (void) {
+ static int darwin_reload_device (struct libusb_device_handle *dev_handle) {
+   struct darwin_cached_device *dpriv = DARWIN_CACHED_DEVICE(dev_handle->dev);
+   enum libusb_error err;
++  usb_device_t **new_device;
+ 
+   usbi_mutex_lock(&darwin_cached_devices_mutex);
+-  (*(dpriv->device))->Release(dpriv->device);
+-  dpriv->device = darwin_device_from_service (HANDLE_CTX (dev_handle), dpriv->service);
+-  if (!dpriv->device) {
++  new_device = darwin_device_from_service (HANDLE_CTX (dev_handle), dpriv->service);
++  if (!new_device) {
+     err = LIBUSB_ERROR_NO_DEVICE;
+   } else {
++    (*(dpriv->device))->Release(dpriv->device);
++    dpriv->device = new_device;
+     err = LIBUSB_SUCCESS;
+   }
+   usbi_mutex_unlock(&darwin_cached_devices_mutex);
+-- 
+2.41.0
+
