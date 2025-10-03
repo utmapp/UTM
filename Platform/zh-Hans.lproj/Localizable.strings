@@ -781,7 +781,7 @@ UTMQemuConstants */
 "Mac Keyboard (macOS 14+)" = "Mac 键盘 (macOS 14+)";
 
 /* UTMAppleConfigurationDevices */
-"Mac Trackpad (macOS 13+)" = "Mac 触控板 (macOS 14+)";
+"Mac Trackpad (macOS 13+)" = "Mac 触控板 (macOS 13+)";
 
 /* UTMAppleConfigurationBoot */
 "macOS" = "macOS";
@@ -1526,7 +1526,7 @@ UTMQemuConstants */
 "Use Apple Sparse Image Format" = "使用 Apple Sparse 映像格式";
 
 /* No comment provided by engineer. */
-"Use Command+Option (⌘+⌥) for input capture/release" = "使用 Command + Option (⌘ + ⌥) 捕获/释放输入";
+"Use Command+Option (⌘+⌥) for input capture/release" = "使用 Command + Option (⌘⌥) 捕获/释放输入";
 
 /* No comment provided by engineer. */
 "Use NVMe Interface" = "使用 NVMe 磁盘接口";
@@ -1653,7 +1653,7 @@ VMWizardOSMacView */
 "Allow Remote Connection" = "允许远程连接";
 
 /* No comment provided by engineer. */
-"Allows passing through additional input from trackpads. Only supported on macOS 13+ guests." = "允许通过触控板额外输入。仅支持 macOS 13 及以上的客户机。";
+"Allows passing through additional input from trackpads. Only supported on macOS 13+ guests." = "允许通过触控板额外输入。仅支持 macOS 13+ 的客户机。";
 
 /* No comment provided by engineer. */
 "Any" = "任意";
@@ -2026,13 +2026,13 @@ VMWizardOSMacView */
 
 /* VMConfigAppleDriveDetailsView
  VMConfigAppleDriveCreateView*/
-"If checked, use NVMe instead of virtio as the disk interface, available on macOS 14+ for Linux guests only. This interface is slower but less likely to encounter filesystem errors." = "若选中，将使用 NVMe 而不是 virtio 作为磁盘接口，仅适用于 macOS 14+ 上的 Linux 客户机。此接口速度较慢，但不太容易遇到文件系统错误。";
+"If checked, use NVMe instead of virtio as the disk interface, available on macOS 14+ for Linux guests only. This interface is slower but less likely to encounter filesystem errors." = "若选中，将使用 NVMe 而不是 virtio 作为磁盘接口，仅适用于 macOS 14+ 的 Linux 客户机。此接口速度较慢，但不太容易遇到文件系统错误。";
 
 /* No comment provided by engineer. */
 "If checked, you will not be prompted about any unknown connection and they will be rejected." = "若选中，你不会收到任何未知连接的提示，且这些连接将被拒绝。";
 
 /* No comment provided by engineer. */
-"If disabled, the default combination Control+Option (⌃+⌥) will be used." = "若停用，将使用默认组合键 Control + Option (⌃ + ⌥)。";
+"If disabled, the default combination Control+Option (⌃+⌥) will be used." = "若停用，将使用默认组合键 Control + Option (⌃⌥)。";
 
 /* No comment provided by engineer. */
 "If enabled, a virtiofs share tagged 'rosetta' will be available on the Linux guest for installing Rosetta for emulating x86_64 on ARM64." = "若启用，标为“rosetta”的 virtiofs 共享将在 Linux 客户机上可用，用于安装 Rosetta，并在 arm64 上模拟 x86_64。";
@@ -2173,7 +2173,7 @@ VMWizardOSMacView */
 "Move this VM from internal storage to elsewhere." = "将此虚拟机从内部存储空间移动到其他地方。";
 
 /* No comment provided by engineer. */
-"Navigate to '/Library/Preferences/VMware Fusion' (⌘+Shift+G) and select the 'networking' file" = "导览至 '/Library/Preferences/VMware Fusion' (⌘⇧G) 并选择“networking”文件";
+"Navigate to '/Library/Preferences/VMware Fusion' (⌘+Shift+G) and select the 'networking' file" = "导览至 '/Library/Preferences/VMware Fusion' (Command + Shift + G) 并选择“networking”文件";
 
 /* No comment provided by engineer. */
 "Network" = "网络";
@@ -2510,6 +2510,9 @@ VMWizardOSMacView */
 
 /* No comment provided by engineer. */
 "This virtual machine must be re-added to UTM by opening it with Finder. You can find it at the path: %@" = "必须使用访达打开此虚拟机，将其重新添加到 UTM 中。你可以通过此路径找到：%@";
+
+/* No comment provided by engineer. */
+"This virtual machine uses custom QEMU arguments which is potentially dangerous and can cause damage to your machine. You should only run this virtual machine if you trust it." = "此虚拟机使用了自定义的 QEMU 参数，这可能存在风险，并可能对你的机器造成损害。仅在你信任该虚拟机时，才应该运行它。";
 
 /* No comment provided by engineer. */
 "To change this, remove the shared directory and add it again." = "若要更改此选项，请移除共享目录并重新添加。";

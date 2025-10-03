@@ -1457,7 +1457,7 @@ UTMQemuConstants */
 "To access the shared directory, the guest OS must have Virtiofs drivers installed. You can then run `sudo mount -t virtiofs share /path/to/share` to mount to the share path." = "如要取用分享目錄，客户端作業系統必須安裝 VirtioFS 驅動程式。然後你可以執行「sudo mount -t virtiofs share /path/to/share」以裝載到分享路徑。";
 
 /* VMMetalView */
-"To capture input or to release the capture, press Command and Option at the same time." = "如要擷取或放開輸入，請同時按一下 Command + Option。";
+"To capture input or to release the capture, press Command and Option at the same time." = "如要擷取或放開輸入，請同時按一下 Command + Option (⌘⌥)。";
 
 /* No comment provided by engineer. */
 "To install macOS, you need to download a recovery IPSW. If you do not select an existing IPSW, the latest macOS IPSW will be downloaded from Apple." = "如要安裝 macOS，你需要下載 IPSW 還原檔。如你未選擇現有的 IPSW，將會從 Apple 下載最新的 macOS IPSW。";
@@ -1526,7 +1526,7 @@ UTMQemuConstants */
 "Use Apple Sparse Image Format" = "使用 Apple Sparse 映像檔格式";
 
 /* No comment provided by engineer. */
-"Use Command+Option (⌘+⌥) for input capture/release" = "使用 Command + Option (⌘ + ⌥) 以擷取/放開輸入";
+"Use Command+Option (⌘+⌥) for input capture/release" = "使用 Command + Option (⌘⌥) 以擷取/放開輸入";
 
 /* No comment provided by engineer. */
 "Use NVMe Interface" = "使用 NVMe 介面";
@@ -2032,7 +2032,7 @@ VMWizardOSMacView */
 "If checked, you will not be prompted about any unknown connection and they will be rejected." = "如選擇，你將不會收到任何不明連線的提示，這些連線亦會被拒絕。";
 
 /* No comment provided by engineer. */
-"If disabled, the default combination Control+Option (⌃+⌥) will be used." = "如停用，將會使用預設組合鍵 Control + Option (⌃ + ⌥)。";
+"If disabled, the default combination Control+Option (⌃+⌥) will be used." = "如停用，將會使用預設組合鍵 Control + Option (⌃⌥)。";
 
 /* No comment provided by engineer. */
 "If enabled, a virtiofs share tagged 'rosetta' will be available on the Linux guest for installing Rosetta for emulating x86_64 on ARM64." = "如啟用，Linux 客户端會有一個標記為「rosetta」的 virtiofs 分享，用於在 ARM64 上安裝 Rosetta 以模擬 x86_64。";
@@ -2173,7 +2173,7 @@ VMWizardOSMacView */
 "Move this VM from internal storage to elsewhere." = "將此虛擬機從內置儲存裝置移至其他地方。";
 
 /* No comment provided by engineer. */
-"Navigate to '/Library/Preferences/VMware Fusion' (⌘+Shift+G) and select the 'networking' file" = "導覽到「/Library/Preferences/VMware Fusion（⌘+Shift+G）」並選擇「networking」檔案";
+"Navigate to '/Library/Preferences/VMware Fusion' (⌘+Shift+G) and select the 'networking' file" = "導覽到「/Library/Preferences/VMware Fusion」(Command + Shift + G) 並選擇「networking」檔案";
 
 /* No comment provided by engineer. */
 "Network" = "網絡";
@@ -2510,6 +2510,9 @@ VMWizardOSMacView */
 
 /* No comment provided by engineer. */
 "This virtual machine must be re-added to UTM by opening it with Finder. You can find it at the path: %@" = "必須以 Finder 開啟此虛擬機，將其重新加至 UTM。你可以透過此路徑找到它：%@";
+
+/* No comment provided by engineer. */
+"This virtual machine uses custom QEMU arguments which is potentially dangerous and can cause damage to your machine. You should only run this virtual machine if you trust it." = "此虛擬機使用自訂 QEMU 引數，可能會存在風險，並可能損毁你的機器。只有當你信任此虛擬機時，才應該執行它。";
 
 /* No comment provided by engineer. */
 "To change this, remove the shared directory and add it again." = "如要更改此選項，請移除分享的目錄並重新加回。";
