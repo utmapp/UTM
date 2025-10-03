@@ -21,13 +21,13 @@ UTM 是一個為 iOS 與 macOS 而設的全功能系統模擬器與虛擬機主�
 * 文字終端模式
 * USB 裝置
 * 使用 QEMU TCG 的基於 JIT 的加速
-* 使用最新最靚的 API，為 macOS 11+ 與 iOS 11+ 從頭開始設計前端
+* 採用最新最靚的 API，為 macOS 11+ 與 iOS 11+ 從頭開始設計前端
 * 直接從你的裝置製作、管理與執行虛擬機
 
 ## 其他 macOS 功能
 
 * 使用 Hypervisor.framework 與 QEMU 進行硬件加速虛擬化
-* 在 macOS 12+ 上使用 Virtualization.framework 啟動 macOS 客户端
+* 於 macOS 12+ 上使用 Virtualization.framework 啟動 macOS 客户端
 
 ## UTM SE
 
@@ -41,7 +41,7 @@ UTM SE（「慢速版」）使用[執行緒解釋器][3]，其效能雖然優於
 
 iOS 版本 UTM (SE)：https://getutm.app/install/
 
-UTM 亦可以在 macOS 上使用：https://mac.getutm.app/
+UTM 亦可以於 macOS 上使用：https://mac.getutm.app/
 
 ## 開發
 
@@ -51,8 +51,8 @@ UTM 亦可以在 macOS 上使用：https://mac.getutm.app/
 
 ## 相關項目
 
-* [iSH][4]：模擬使用者模式的 Linux 終端介面，用於在 iOS 上執行 x86 Linux 應用程式
-* [a-shell][5]：為 iOS 原生構建的通用 Unix 命令和實用程式包，可透過終端介面訪問
+* [iSH][4]：模擬用户模式的 Linux 終端介面，用於在 iOS 上執行 x86 Linux 應用程式
+* [a-shell][5]：為 iOS 原生構建的通用 Unix 命令與工具程式包，可透過終端介面訪問
 
 ## 許可證
 
