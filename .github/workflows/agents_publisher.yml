@@ -1,0 +1,29 @@
+name: Agents Publisher CI
+
+on:
+  push:
+    paths:
+      - 'Scripting/agents_publisher/**'
+      - '.github/workflows/agents_publisher.yml'
+  pull_request:
+    paths:
+      - 'Scripting/agents_publisher/**'
+      - '.github/workflows/agents_publisher.yml'
+
+jobs:
+  lint-test-build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Scripting/agents_publisher
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Cargo fmt
+        run: cargo fmt -- --check
+      - name: Cargo clippy
+        run: cargo clippy --all-targets -- -D warnings
+      - name: Cargo test
+        run: cargo test
+      - name: Docker build
+        run: docker build -t agents-publisher-ci .

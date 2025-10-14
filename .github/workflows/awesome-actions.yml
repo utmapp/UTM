@@ -1,0 +1,41 @@
+name: Awesome GitHub Actions Report
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'automation/awesome-actions/**'
+      - '.github/workflows/awesome-actions.yml'
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Compile LaTeX report
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: main.tex
+          working_directory: automation/awesome-actions
+
+      - name: Install Pandoc
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pandoc
+
+      - name: Generate site artifacts
+        run: |
+          set -euo pipefail
+          mkdir -p docs
+          cp automation/awesome-actions/main.pdf docs/awesome-actions-report.pdf
+          pandoc automation/awesome-actions/main.tex -s -o docs/awesome-actions-report.html
+
+      - name: Upload artefacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: awesome-actions-site
+          path: |
+            docs/awesome-actions-report.pdf
+            docs/awesome-actions-report.html
