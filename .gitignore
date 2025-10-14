@@ -71,3 +71,4 @@ build*/
 sysroot*/
 .DS_Store
 CodeSigning.xcconfig
+Scripting/agents_publisher/target/

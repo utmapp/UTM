@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Awesome GitHub Actions PDF Preview</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: #101418;
+        color: #f5f7fa;
+      }
+      header {
+        padding: 1.5rem;
+        background: #1c2330;
+        border-bottom: 1px solid #2f3a4a;
+      }
+      h1 {
+        margin: 0;
+        font-size: 1.5rem;
+      }
+      main {
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+      iframe {
+        width: 100%;
+        height: 85vh;
+        border: none;
+        background: #fff;
+      }
+      footer {
+        padding: 1rem;
+        font-size: 0.875rem;
+        color: #c7ccd6;
+        background: #1c2330;
+        border-top: 1px solid #2f3a4a;
+      }
+      a {
+        color: #7bd6ff;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Awesome GitHub Actions PDF Preview</h1>
+      <p>
+        This view reflects the most recent LaTeX-rendered output uploaded by the
+        Awesome GitHub Actions workflow.
+      </p>
+    </header>
+    <main>
+      <section>
+        <p>
+          Download the standalone PDF:
+          <a href="./awesome-actions-report.pdf">awesome-actions-report.pdf</a>
+        </p>
+      </section>
+      <section>
+        <iframe
+          src="./awesome-actions-report.pdf"
+          title="Awesome GitHub Actions PDF"
+        >
+        </iframe>
+      </section>
+    </main>
+    <footer>
+      Last synchronised by automation. Conversation transcripts are stored in
+      <code>Documentation/conversations/</code>.
+    </footer>
+  </body>
+</html>
