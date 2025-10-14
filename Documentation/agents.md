@@ -37,3 +37,8 @@ codebase healthy while enabling quick experimentation.
   approval in Apple developer tooling.
 - Offer follow-up tasks for manual QA if the change touches UI flows that are
   hard to exercise via automation.
+- Produce a GitHub Pages update summarising any generated PDF artefacts from the
+  "Awesome GitHub Actions" LaTeX logs and link the freshly rendered pages. Make
+  sure the site remains up to date even when only automation runs.
+- Archive the latest session transcript under `Documentation/conversations/`
+  before concluding the change so future agents can reference prior context.

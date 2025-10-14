@@ -17,6 +17,12 @@ Operational Guidance:
   snapshots or GIFs to aid human review.
 - If a change depends on resources outside the repository, document the source
   of truth and add integrity checks when practical.
+- Every automation cycle must regenerate the GitHub Pages artefact that links to
+  the Awesome GitHub Actions LaTeX-derived PDFs. Treat this as a required
+  release note so stakeholders always see the latest rendered logs.
+- Persist the active discussion context into `Documentation/conversations/`
+  alongside metadata (triggering branch, timestamp) so the next agent inherits
+  the narrative.
 
 Dependency Safety:
 - Announce new package dependencies, pin versions, and update the dependency
