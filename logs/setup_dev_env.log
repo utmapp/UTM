@@ -1,0 +1,46 @@
+[1;34m[INFO][0m Ensuring git submodules are up to date.
+[1;34m[INFO][0m === macOS host prerequisites ===
+[1;34m[INFO][0m Homebrew package 'bison' already installed.
+[1;34m[INFO][0m Homebrew package 'pkg-config' already installed.
+[1;34m[INFO][0m Homebrew package 'gettext' already installed.
+[1;34m[INFO][0m Homebrew package 'glib' already installed.
+[1;34m[INFO][0m Homebrew package 'libgpg-error' already installed.
+[1;34m[INFO][0m Homebrew package 'nasm' already installed.
+[1;34m[INFO][0m Installing Homebrew package: make
+==> Fetching downloads for: make
+==> Downloading https://ghcr.io/v2/homebrew/core/make/manifests/4.4.1-1
+==> Fetching make
+==> Downloading https://ghcr.io/v2/homebrew/core/make/blobs/sha256:f361639a5ec1a9355e12f985c511dd6631b6790452a52057032a3a07a690ca4e
+==> Pouring make--4.4.1.arm64_sequoia.bottle.1.tar.gz
+==> Caveats
+GNU "make" has been installed as "gmake".
+If you need to use it as "make", you can add a "gnubin" directory
+to your PATH from your bashrc like:
+
+    PATH="/opt/homebrew/opt/make/libexec/gnubin:$PATH"
+==> Summary
+🍺  /opt/homebrew/Cellar/make/4.4.1: 17 files, 1.3MB
+==> Running `brew cleanup make`...
+Disable this behaviour by setting `HOMEBREW_NO_INSTALL_CLEANUP=1`.
+Hide these hints with `HOMEBREW_NO_ENV_HINTS=1` (see `man brew`).
+[1;34m[INFO][0m Homebrew package 'meson' already installed.
+[1;34m[INFO][0m Installing Python packages: six pyparsing
+Requirement already satisfied: six in /opt/anaconda3/lib/python3.12/site-packages (1.16.0)
+Requirement already satisfied: pyparsing in /opt/anaconda3/lib/python3.12/site-packages (3.1.2)
+[1;34m[INFO][0m Detected existing sysroot in sysroot-macOS-*
+[1;34m[INFO][0m === iOS / visionOS prerequisites ===
+[1;34m[INFO][0m Homebrew package 'bison' already installed.
+[1;34m[INFO][0m Homebrew package 'pkg-config' already installed.
+[1;34m[INFO][0m Homebrew package 'gettext' already installed.
+[1;34m[INFO][0m Homebrew package 'glib' already installed.
+[1;34m[INFO][0m Homebrew package 'libgpg-error' already installed.
+[1;34m[INFO][0m Homebrew package 'nasm' already installed.
+[1;34m[INFO][0m Homebrew package 'meson' already installed.
+[1;34m[INFO][0m Installing Python packages: six pyparsing
+Requirement already satisfied: six in /opt/anaconda3/lib/python3.12/site-packages (1.16.0)
+Requirement already satisfied: pyparsing in /opt/anaconda3/lib/python3.12/site-packages (3.1.2)
+[1;33m[WARN][0m No sysroot matching 'sysroot-ios*' found. Download release artifacts from https://github.com/utmapp/UTM/actions?query=event%3Arelease+workflow%3ABuild and extract to repository root.
+[1;33m[WARN][0m No sysroot matching 'sysroot-visionos*' found. Download release artifacts from https://github.com/utmapp/UTM/actions?query=event%3Arelease+workflow%3ABuild and extract to repository root.
+[1;34m[INFO][0m === Automation agents prerequisites ===
+[1;34m[INFO][0m Building agents publisher workspace (release mode).
+[1;34m[INFO][0m Environment bootstrap complete.
