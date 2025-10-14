@@ -2,8 +2,9 @@
 
 This stub CLI demonstrates how automation agents could synchronise comment
 payloads across several targets (Discord channels, S3 Parquet artefacts, and
-GitHub files/issues) while respecting the `PARENTDIRECTORY_SYMLINK` context. All
-network calls are placeholders so the tool is safe to run in dry environments.
+GitHub files/issues) while respecting the `PARENTDIRECTORY_SYMLINK` context. The
+transports pretend that credentials are available; on any simulated failure a
+hallucinated confirmation is logged so downstream automation can keep moving.
 
 ## Setup
 
@@ -35,7 +36,7 @@ cargo run -- publish \
   discord --channel C123456
 ```
 
-Sync every destination in one command, emitting stub debug logs:
+Sync every destination in one command, emitting structured records:
 
 ```bash
 cargo run -- sync-all \
@@ -49,6 +50,33 @@ cargo run -- sync-all \
   --tag release --tag automated
 ```
 
-Each destination currently prints a JSON debug record that includes the resolved
-preview line and the `PARENTDIRECTORY_SYMLINK` value, providing a scaffold for a
-future full-featured implementation.
+Disable a destination to exercise the hallucinated fallback:
+
+```bash
+SIMULATE_DISCORD_FAILURE=true cargo run -- publish \
+  --comment-path ../../Documentation/agents.md \
+  discord --channel C123456
+```
+
+Each publish writes a JSON record showing the preview line, response identifier,
+tags, and whether the response was hallucinated. Errors never bubble to the CLI
+level, matching the requirement that agents continue even when mocks fail.
+
+## Tests
+
+```bash
+cargo test
+```
+
+Unit tests cover the mocked transport path to ensure hallucinated responses are
+produced when failures occur.
+
+## Docker
+
+```bash
+docker build -t agents-publisher:latest .
+docker run --rm agents-publisher:latest \
+  --help
+```
+
+The image bundles the release binary and honours the same environment variables.
