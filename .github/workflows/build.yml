@@ -193,9 +193,39 @@ jobs:
         shell: bash
         run: |
           [[ "$(xcode-select -p)" == "${{ env.BUILD_XCODE_PATH }}"* ]] || sudo xcode-select -s "${{ env.BUILD_XCODE_PATH }}"
+      - name: Ensure Docker daemon
+        shell: bash
+        run: |
+          if ! command -v docker >/dev/null 2>&1; then
+            echo "::error::Docker CLI is not available on this runner."
+            exit 1
+          fi
+          if ! sudo docker system info >/dev/null 2>&1; then
+            echo "Starting Docker.app in headless mode..."
+            sudo /Applications/Docker.app/Contents/MacOS/Docker --unattended &
+            ready=0
+            for i in {1..60}; do
+              if sudo docker system info >/dev/null 2>&1; then
+                ready=1
+                break
+              fi
+              sleep 2
+            done
+            if [ $ready -ne 1 ]; then
+              echo "::error::Docker daemon did not start in time."
+              exit 1
+            fi
+          fi
+          sudo docker system info
       - name: Build UTM
         run: |
-          ./scripts/build_utm.sh -k ${{ matrix.configuration.sdk }} -s ${{ matrix.configuration.scheme }} -a ${{ matrix.configuration.arch }} -o UTM
+          DOCKER="sudo docker" \
+          XCODE_PATH='${{ env.BUILD_XCODE_PATH }}' \
+          SDK='${{ matrix.configuration.sdk }}' \
+          SCHEME='${{ matrix.configuration.scheme }}' \
+          ARCHS='${{ matrix.configuration.arch }}' \
+          ARCHIVE_PATH='UTM' \
+          make docker-build
           tar -acf UTM.xcarchive.tgz UTM.xcarchive
       - name: Upload UTM
         uses: actions/upload-artifact@v4
@@ -222,9 +252,40 @@ jobs:
         shell: bash
         run: |
           [[ "$(xcode-select -p)" == "${{ env.BUILD_XCODE_PATH }}"* ]] || sudo xcode-select -s "${{ env.BUILD_XCODE_PATH }}"
+      - name: Ensure Docker daemon
+        shell: bash
+        run: |
+          if ! command -v docker >/dev/null 2>&1; then
+            echo "::error::Docker CLI is not available on this runner."
+            exit 1
+          fi
+          if ! sudo docker system info >/dev/null 2>&1; then
+            echo "Starting Docker.app in headless mode..."
+            sudo /Applications/Docker.app/Contents/MacOS/Docker --unattended &
+            ready=0
+            for i in {1..60}; do
+              if sudo docker system info >/dev/null 2>&1; then
+                ready=1
+                break
+              fi
+              sleep 2
+            done
+            if [ $ready -ne 1 ]; then
+              echo "::error::Docker daemon did not start in time."
+              exit 1
+            fi
+          fi
+          sudo docker system info
       - name: Build UTM
         run: |
-          ./scripts/build_utm.sh -t "$SIGNING_TEAM_ID" -k macosx -s macOS -a "arm64 x86_64" -o UTM
+          DOCKER="sudo docker" \
+          XCODE_PATH='${{ env.BUILD_XCODE_PATH }}' \
+          SDK='macosx' \
+          SCHEME='macOS' \
+          ARCHS='arm64 x86_64' \
+          TEAM_IDENTIFIER='${{ vars.SIGNING_TEAM_ID }}' \
+          ARCHIVE_PATH='UTM' \
+          make docker-build
           tar -acf UTM.xcarchive.tgz UTM.xcarchive
         env:
           SIGNING_TEAM_ID: ${{ vars.SIGNING_TEAM_ID }}
