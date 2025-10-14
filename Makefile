@@ -22,7 +22,7 @@ endif
 ARCH_FLAGS := $(foreach arch,$(ARCHS),-arch $(arch))
 TEAM_FLAG := $(if $(strip $(TEAM_IDENTIFIER)),-t $(TEAM_IDENTIFIER),)
 
-.PHONY: build archive clean docker-image docker-build docker-shell docker-clean
+.PHONY: build archive clean docker-image docker-build docker-shell docker-clean changelog
 
 build:
 	@echo "Building $(SCHEME) ($(CONFIGURATION)) for $(SDK) [$(ARCHS)]"
@@ -63,3 +63,7 @@ docker-shell: docker-image
 
 docker-clean:
 	$(DOCKER) image rm $(DOCKER_IMAGE) || true
+
+changelog:
+	@echo "Generating changelog against $${UPSTREAM_REMOTE:-upstream}/$${UPSTREAM_BRANCH:-main}"
+	python3 scripts/make_changelog.py
