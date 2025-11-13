@@ -371,7 +371,7 @@ private let ICON_TITLE_MAP: [String: LocalizedStringKey] = [
     "sailfish-os": "Sailfish OS",
     "slackware": "Slackware",
     "solaris": "Solaris",
-    "suse": "SUSE",
+    "SUSE": "SUSE",
     "syllable": "Syllable",
     "symbian": "Symbian",
     "threadx": "ThreadX",
