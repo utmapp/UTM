@@ -968,7 +968,18 @@ extension UTMAppleVirtualMachine {
     }
     
     @MainActor func updateConfigFromRegistry() {
-        config.sharedDirectories = registryEntry.sharedDirectories.map({ UTMAppleConfigurationSharedDirectory(directoryURL: $0.url, isReadOnly: $0.isReadOnly )})
+        // Only update shared directories if they actually changed to avoid unnecessary virtiofs reconnections
+        let newShares = registryEntry.sharedDirectories.map({ UTMAppleConfigurationSharedDirectory(directoryURL: $0.url, isReadOnly: $0.isReadOnly )})
+
+        let sharesChanged = newShares.count != config.sharedDirectories.count ||
+            zip(newShares, config.sharedDirectories).contains { new, old in
+                new.directoryURL != old.directoryURL || new.isReadOnly != old.isReadOnly
+            }
+
+        if sharesChanged {
+            config.sharedDirectories = newShares
+        }
+
         for i in config.drives.indices {
             let id = config.drives[i].id
             if config.drives[i].isExternal {
