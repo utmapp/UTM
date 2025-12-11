@@ -26,11 +26,12 @@ class VMMetalView: MTKView {
     private(set) var isMouseInWindow = false
     @Setting("HandleInitialClick") private var isHandleInitialClick: Bool = false
     @Setting("IsCtrlCmdSwapped") private var isCtrlCmdSwapped = false
+    @Setting("IsISOKeySwapped") private var isISOKeySwapped = false
 
     /// On ISO keyboards we have to switch `kVK_ISO_Section` and `kVK_ANSI_Grave`
     /// from: https://chromium.googlesource.com/chromium/src/+/lkgr/ui/events/keycodes/keyboard_code_conversion_mac.mm
     private func convertToCurrentLayout(for keycode: Int) -> Int {
-        guard KBGetLayoutType(Int16(LMGetKbdType())) == kKeyboardISO else {
+        guard !isISOKeySwapped && KBGetLayoutType(Int16(LMGetKbdType())) == kKeyboardISO else {
             return keycode
         }
         switch keycode {
@@ -106,40 +107,40 @@ class VMMetalView: MTKView {
     
     override func mouseDown(with event: NSEvent) {
         logger.trace("mouse down: \(event.buttonNumber)")
-        inputDelegate?.mouseDown(button: .left)
+        inputDelegate?.mouseDown(button: .left, mask: NSEvent.pressedMouseButtons.inputButtons())
     }
     
     override func rightMouseDown(with event: NSEvent) {
         logger.trace("right mouse down: \(event.buttonNumber)")
-        inputDelegate?.mouseDown(button: .right)
+        inputDelegate?.mouseDown(button: .right, mask: NSEvent.pressedMouseButtons.inputButtons())
     }
     
     override func otherMouseDown(with event: NSEvent) {
         logger.trace("other mouse down: \(event.buttonNumber)")
         switch event.buttonNumber {
-        case 2: inputDelegate?.mouseDown(button: .middle)
-        case 3: inputDelegate?.mouseDown(button: .side)
-        case 4: inputDelegate?.mouseDown(button: .extra)
+        case 2: inputDelegate?.mouseDown(button: .middle, mask: NSEvent.pressedMouseButtons.inputButtons())
+        case 3: inputDelegate?.mouseDown(button: .side, mask: NSEvent.pressedMouseButtons.inputButtons())
+        case 4: inputDelegate?.mouseDown(button: .extra, mask: NSEvent.pressedMouseButtons.inputButtons())
         default: break
         }
     }
     
     override func mouseUp(with event: NSEvent) {
         logger.trace("mouse up: \(event.buttonNumber)")
-        inputDelegate?.mouseUp(button: .left)
+        inputDelegate?.mouseUp(button: .left, mask: NSEvent.pressedMouseButtons.inputButtons())
     }
     
     override func rightMouseUp(with event: NSEvent) {
         logger.trace("right mouse up: \(event.buttonNumber)")
-        inputDelegate?.mouseUp(button: .right)
+        inputDelegate?.mouseUp(button: .right, mask: NSEvent.pressedMouseButtons.inputButtons())
     }
     
     override func otherMouseUp(with event: NSEvent) {
         logger.trace("other mouse up: \(event.buttonNumber)")
         switch event.buttonNumber {
-        case 2: inputDelegate?.mouseUp(button: .middle)
-        case 3: inputDelegate?.mouseUp(button: .side)
-        case 4: inputDelegate?.mouseUp(button: .extra)
+        case 2: inputDelegate?.mouseUp(button: .middle, mask: NSEvent.pressedMouseButtons.inputButtons())
+        case 3: inputDelegate?.mouseUp(button: .side, mask: NSEvent.pressedMouseButtons.inputButtons())
+        case 4: inputDelegate?.mouseUp(button: .extra, mask: NSEvent.pressedMouseButtons.inputButtons())
         default: break
         }
     }
@@ -260,12 +261,12 @@ class VMMetalView: MTKView {
         logger.trace("mouse moved: \(event.deltaX), \(event.deltaY)")
         if isMouseCaptured {
             inputDelegate?.mouseMove(relativePoint: CGPoint(x: event.deltaX, y: -event.deltaY),
-                                     button: NSEvent.pressedMouseButtons.inputButtons())
+                                     buttonMask: NSEvent.pressedMouseButtons.inputButtons())
         } else {
             let location = event.locationInWindow
             let converted = convert(location, from: nil)
             inputDelegate?.mouseMove(absolutePoint: converted,
-                                     button: NSEvent.pressedMouseButtons.inputButtons())
+                                     buttonMask: NSEvent.pressedMouseButtons.inputButtons())
         }
     }
     
@@ -273,7 +274,7 @@ class VMMetalView: MTKView {
         guard event.deltaY != 0 else { return }
         logger.trace("scroll: \(event.deltaY)")
         inputDelegate?.mouseScroll(dy: event.deltaY,
-                                   button: NSEvent.pressedMouseButtons.inputButtons())
+                                   buttonMask: NSEvent.pressedMouseButtons.inputButtons())
     }
 
     override func acceptsFirstMouse(for event: NSEvent?) -> Bool {
@@ -283,7 +284,7 @@ class VMMetalView: MTKView {
         if let location = event?.locationInWindow {
             let converted = convert(location, from: nil)
             inputDelegate?.mouseMove(absolutePoint: converted,
-                                     button: NSEvent.pressedMouseButtons.inputButtons())
+                                     buttonMask: NSEvent.pressedMouseButtons.inputButtons())
         }
         return true
     }
@@ -383,6 +384,12 @@ private extension Int {
         }
         if self & (1 << 2) != 0 {
             pressed.formUnion(.middle)
+        }
+        if self & (1 << 3) != 0 {
+            pressed.formUnion(.side)
+        }
+        if self & (1 << 4) != 0 {
+            pressed.formUnion(.extra)
         }
         return pressed
     }

@@ -271,7 +271,11 @@ extension UTMAppleConfiguration {
                 } else if #available(macOS 14, *), drive.isNvme, system.boot.operatingSystem == .linux {
                     return VZNVMExpressControllerDeviceConfiguration(attachment: attachment)
                 } else {
-                    return VZVirtioBlockDeviceConfiguration(attachment: attachment)
+                    let device = VZVirtioBlockDeviceConfiguration(attachment: attachment)
+                    if #available(macOS 12.3, *) {
+                        device.blockDeviceIdentifier = drive.serial
+                    }
+                    return device
                 }
             }
         }

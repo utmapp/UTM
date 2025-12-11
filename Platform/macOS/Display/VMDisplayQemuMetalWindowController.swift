@@ -157,7 +157,7 @@ class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
             displaySizeDidChange(size: vmDisplay.displaySize)
         }
         super.enterLive()
-        resizeConsoleToolbarItem.isEnabled = false // disable item
+        setControl(.resize, isEnabled: false) // disable item
         if isWindowFocusAutoCapture {
             captureMouse()
         }
@@ -537,7 +537,7 @@ extension VMDisplayQemuMetalWindowController: VMMetalViewInputDelegate {
         self.window?.subtitle = defaultSubtitle
     }
     
-    func mouseMove(absolutePoint: CGPoint, button: CSInputButton) {
+    func mouseMove(absolutePoint: CGPoint, buttonMask: CSInputButton) {
         guard let window = self.window else { return }
         guard let vmInput = vmInput, !vmInput.serverModeCursor else {
             logger.trace("requesting client mode cursor")
@@ -551,18 +551,18 @@ extension VMDisplayQemuMetalWindowController: VMMetalViewInputDelegate {
         let newY = (frameSize.height - absolutePoint.y) * currentScreenScale / viewportScale
         let point = CGPoint(x: newX, y: newY)
         logger.trace("move cursor: cocoa (\(absolutePoint.x), \(absolutePoint.y)), native (\(newX), \(newY))")
-        vmInput.sendMousePosition(button, absolutePoint: point, forMonitorID: vmDisplay?.monitorID ?? 0)
+        vmInput.sendMousePosition(buttonMask, absolutePoint: point, forMonitorID: vmDisplay?.monitorID ?? 0)
         vmDisplay?.cursor?.move(to: point) // required to show cursor on screen
     }
     
-    func mouseMove(relativePoint: CGPoint, button: CSInputButton) {
+    func mouseMove(relativePoint: CGPoint, buttonMask: CSInputButton) {
         guard let vmInput = vmInput, vmInput.serverModeCursor else {
             logger.trace("requesting server mode cursor")
             qemuVM.requestInputTablet(false)
             return
         }
         let translated = CGPoint(x: relativePoint.x, y: -relativePoint.y)
-        vmInput.sendMouseMotion(button, relativePoint: translated, forMonitorID: vmDisplay?.monitorID ?? 0)
+        vmInput.sendMouseMotion(buttonMask, relativePoint: translated, forMonitorID: vmDisplay?.monitorID ?? 0)
     }
     
     private func modifyMouseButton(_ button: CSInputButton) -> CSInputButton {
@@ -575,17 +575,17 @@ extension VMDisplayQemuMetalWindowController: VMMetalViewInputDelegate {
         return buttonMod
     }
     
-    func mouseDown(button: CSInputButton) {
-        vmInput?.sendMouseButton(modifyMouseButton(button), pressed: true)
+    func mouseDown(button: CSInputButton, mask: CSInputButton) {
+        vmInput?.sendMouseButton(modifyMouseButton(button), mask: modifyMouseButton(mask), pressed: true)
     }
     
-    func mouseUp(button: CSInputButton) {
-        vmInput?.sendMouseButton(modifyMouseButton(button), pressed: false)
+    func mouseUp(button: CSInputButton, mask: CSInputButton) {
+        vmInput?.sendMouseButton(modifyMouseButton(button), mask: modifyMouseButton(mask), pressed: false)
     }
     
-    func mouseScroll(dy: CGFloat, button: CSInputButton) {
+    func mouseScroll(dy: CGFloat, buttonMask: CSInputButton) {
         let scrollDy = isInvertScroll ? -dy : dy
-        vmInput?.sendMouseScroll(.smooth, button: button, dy: scrollDy)
+        vmInput?.sendMouseScroll(.smooth, buttonMask: buttonMask, dy: scrollDy)
     }
     
     private func sendExtendedKey(_ button: CSInputKey, keyCode: Int) {
@@ -684,8 +684,7 @@ extension VMDisplayQemuMetalWindowController: VMMetalViewInputDelegate {
 
 // MARK: - Keyboard shortcuts menu
 extension VMDisplayQemuMetalWindowController {
-    override func keyboardShortcutsButtonPressed(_ sender: Any) {
-        let menu = NSMenu()
+    override func updateKeyboardShortcutMenu(_ menu: NSMenu) {
         let keyboardShortcuts = UTMKeyboardShortcuts.shared.loadKeyboardShortcuts()
         for (index, keyboardShortcut) in keyboardShortcuts.enumerated() {
             let item = NSMenuItem()
@@ -701,7 +700,6 @@ extension VMDisplayQemuMetalWindowController {
         item.target = self
         item.action = #selector(keyboardShortcutEdit)
         menu.addItem(item)
-        menu.popUp(positioning: nil, at: NSEvent.mouseLocation, in: nil)
     }
     
     @MainActor @objc private func keyboardShortcutHandler(sender: AnyObject) {

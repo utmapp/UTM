@@ -111,7 +111,7 @@ struct UTMSendKeystrokesIntent: UTMIntent {
     @Parameter(title: "Virtual Machine", requestValueDialog: "Select a virtual machine")
     var vmEntity: UTMVirtualMachineEntity
 
-    @Parameter(title: "Keystrokes", description: "Text will be converted to a sequnce of keystrokes.")
+    @Parameter(title: "Keystrokes", description: "Text will be converted to a sequence of keystrokes.")
     var keystrokes: String
 
     @Parameter(title: "Modifiers", description: "The modifier keys will be held down while the keystroke sequence is sent.", default: [])
@@ -217,9 +217,9 @@ struct UTMMouseClickIntent: UTMIntent {
         try await vm.changeInputTablet(true)
         input.sendMousePosition(mouseButton.toSpiceButton(), absolutePoint: CGPoint(x: xPosition, y: yPosition), forMonitorID: monitorNumber-1)
         try await Task.sleep(nanoseconds: kDelayNs)
-        input.sendMouseButton(mouseButton.toSpiceButton(), pressed: true)
+        input.sendMouseButton(mouseButton.toSpiceButton(), mask: [], pressed: true)
         try await Task.sleep(nanoseconds: kDelayNs)
-        input.sendMouseButton(mouseButton.toSpiceButton(), pressed: false)
+        input.sendMouseButton(mouseButton.toSpiceButton(), mask: [], pressed: false)
         return .result()
     }
 }

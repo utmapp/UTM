@@ -17,25 +17,48 @@
 import IOKit.pwr_mgt
 
 class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
-    
+    enum Control {
+        case power
+        case startPause
+        case restart
+        case captureInput
+        case usb
+        case drives
+        case sharedFolder
+        case resize
+        case windows
+        case keyboardShortcut
+    }
+
     @IBOutlet weak var displayView: NSView!
     @IBOutlet weak var screenshotView: NSImageView!
-    @IBOutlet weak var overlayView: NSVisualEffectView!
-    @IBOutlet weak var activityIndicator: NSProgressIndicator!
-    @IBOutlet weak var startButton: NSButton!
-    
-    @IBOutlet weak var toolbar: NSToolbar!
-    @IBOutlet weak var stopToolbarItem: NSMenuToolbarItem!
-    @IBOutlet weak var startPauseToolbarItem: NSToolbarItem!
-    @IBOutlet weak var restartToolbarItem: NSToolbarItem!
-    @IBOutlet weak var captureMouseToolbarItem: NSToolbarItem!
+    @IBOutlet private weak var overlayView: NSVisualEffectView!
+    @IBOutlet private weak var activityIndicator: NSProgressIndicator!
+    @IBOutlet private weak var startButton: NSButton!
+
+    @IBOutlet private weak var toolbar: NSToolbar!
+    @IBOutlet private weak var stopToolbarItem: NSMenuToolbarItem!
+    @IBOutlet private weak var startPauseToolbarItem: NSToolbarItem!
+    @IBOutlet private weak var restartToolbarItem: NSToolbarItem!
+    @IBOutlet private weak var captureMouseToolbarItem: NSToolbarItem!
     @IBOutlet weak var captureMouseToolbarButton: NSButton!
-    @IBOutlet weak var usbToolbarItem: NSToolbarItem!
-    @IBOutlet weak var drivesToolbarItem: NSToolbarItem!
-    @IBOutlet weak var sharedFolderToolbarItem: NSToolbarItem!
-    @IBOutlet weak var resizeConsoleToolbarItem: NSToolbarItem!
-    @IBOutlet weak var windowsToolbarItem: NSToolbarItem!
-    @IBOutlet weak var keyboardShortcutsItem: NSToolbarItem!
+    @IBOutlet private weak var usbToolbarItem: NSToolbarItem!
+    @IBOutlet private weak var drivesToolbarItem: NSToolbarItem!
+    @IBOutlet private weak var sharedFolderToolbarItem: NSToolbarItem!
+    @IBOutlet private weak var resizeConsoleToolbarItem: NSToolbarItem!
+    @IBOutlet private weak var windowsToolbarItem: NSToolbarItem!
+    @IBOutlet private weak var keyboardShortcutsItem: NSToolbarItem!
+
+    private var mainMenu: NSMenu!
+    private var mainMenuItem: NSMenuItem!
+    private var stopMenuItem: NSMenuItem!
+    private var startPauseMenuItem: NSMenuItem!
+    private var restartMenuItem: NSMenuItem!
+    private var usbMenuItem: NSMenuItem!
+    private var drivesMenuItem: NSMenuItem!
+    private var sharedFolderMenuItem: NSMenuItem!
+    private var windowsMenuItem: NSMenuItem!
+    private var keyboardShortcutMenuItem: NSMenuItem!
 
     var shouldAutoStartVM: Bool = true
     var vm: (any UTMVirtualMachine)!
@@ -60,7 +83,13 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
     override weak var owner: AnyObject? {
         self
     }
-    
+
+    @objc dynamic func updateUsbMenu(_ menu: NSMenu) {}
+    @objc dynamic func updateDrivesMenu(_ menu: NSMenu) {}
+    @objc dynamic func updateSharedFolderMenu(_ menu: NSMenu) {}
+    @objc dynamic func updateWindowsMenu(_ menu: NSMenu) {}
+    @objc dynamic func updateKeyboardShortcutMenu(_ menu: NSMenu) {}
+
     convenience init(vm: any UTMVirtualMachine, onClose: (() -> Void)?) {
         self.init(window: nil)
         self.vm = vm
@@ -81,9 +110,13 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
             self.vm.requestVmStop(force: isKill)
         }
     }
-    
+
     @IBAction func stopButtonPressed(_ sender: Any) {
-        stop(isKill: false)
+        if vm.state == .started || vm.state == .paused {
+            stop(isKill: false)
+        } else {
+            stop(isKill: true)
+        }
     }
     
     @IBAction func startPauseButtonPressed(_ sender: Any) {
@@ -112,18 +145,73 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
     }
     
     @IBAction dynamic func usbButtonPressed(_ sender: Any) {
+        let menu = NSMenu()
+        updateUsbMenu(menu)
+        menu.popUp(positioning: nil, at: NSEvent.mouseLocation, in: nil)
     }
     
     @IBAction dynamic func drivesButtonPressed(_ sender: Any) {
+        let menu = NSMenu()
+        updateDrivesMenu(menu)
+        menu.popUp(positioning: nil, at: NSEvent.mouseLocation, in: nil)
     }
     
     @IBAction dynamic func sharedFolderButtonPressed(_ sender: Any) {
+        let menu = NSMenu()
+        updateSharedFolderMenu(menu)
+        menu.popUp(positioning: nil, at: NSEvent.mouseLocation, in: nil)
     }
     
     @IBAction dynamic func windowsButtonPressed(_ sender: Any) {
+        let menu = NSMenu()
+        updateWindowsMenu(menu)
+        menu.popUp(positioning: nil, at: NSEvent.mouseLocation, in: nil)
     }
 
     @IBAction dynamic func keyboardShortcutsButtonPressed(_ sender: Any) {
+        let menu = NSMenu()
+        updateKeyboardShortcutMenu(menu)
+        menu.popUp(positioning: nil, at: NSEvent.mouseLocation, in: nil)
+    }
+
+    @MainActor
+    func setControl(_ controls: [Control], isEnabled: Bool) {
+        for control in controls {
+            switch control {
+            case .power:
+                stopToolbarItem.isEnabled = isEnabled
+                stopMenuItem.isEnabled = isEnabled
+            case .startPause:
+                startPauseToolbarItem.isEnabled = isEnabled
+                startPauseMenuItem.isEnabled = isEnabled
+            case .restart:
+                restartToolbarItem.isEnabled = isEnabled
+                restartMenuItem.isEnabled = isEnabled
+            case .captureInput:
+                captureMouseToolbarItem.isEnabled = isEnabled
+            case .usb:
+                usbToolbarItem.isEnabled = isEnabled
+                usbMenuItem.isEnabled = isEnabled
+            case .drives:
+                drivesToolbarItem.isEnabled = isEnabled
+                drivesMenuItem.isEnabled = isEnabled
+            case .sharedFolder:
+                sharedFolderToolbarItem.isEnabled = isEnabled
+                sharedFolderMenuItem.isEnabled = isEnabled
+            case .resize:
+                resizeConsoleToolbarItem.isEnabled = isEnabled
+            case .windows:
+                windowsToolbarItem.isEnabled = isEnabled
+            case .keyboardShortcut:
+                keyboardShortcutsItem.isEnabled = isEnabled
+                keyboardShortcutMenuItem.isEnabled = isEnabled
+            }
+        }
+    }
+
+    @MainActor
+    func setControl(_ control: Control, isEnabled: Bool) {
+        setControl([control], isEnabled: isEnabled)
     }
 
     // MARK: - UI states
@@ -131,7 +219,8 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
     override func windowDidLoad() {
         window!.recalculateKeyViewLoop()
         setupStopButtonMenu()
-        
+        setupMainMenu()
+
         if vm.state == .stopped {
             enterSuspended(isBusy: false)
         } else {
@@ -160,13 +249,8 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
         let pauseDescription = NSLocalizedString("Pause", comment: "VMDisplayWindowController")
         startPauseToolbarItem.image = NSImage(systemSymbolName: "pause", accessibilityDescription: pauseDescription)
         startPauseToolbarItem.label = pauseDescription
-        startPauseToolbarItem.isEnabled = true
-        stopToolbarItem.isEnabled = true
-        restartToolbarItem.isEnabled = true
-        captureMouseToolbarItem.isEnabled = true
-        resizeConsoleToolbarItem.isEnabled = true
-        windowsToolbarItem.isEnabled = true
-        keyboardShortcutsItem.isEnabled = true
+        startPauseMenuItem.title = pauseDescription
+        setControl([.startPause, .power, .restart, .captureInput, .resize, .windows, .keyboardShortcut], isEnabled: true)
         window!.makeFirstResponder(displayView.subviews.first)
         if isPreventIdleSleep && !isSecondary {
             var preventIdleSleepAssertion: IOPMAssertionID = .zero
@@ -182,30 +266,23 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
     
     func enterSuspended(isBusy busy: Bool) {
         overlayView.isHidden = false
-        let playDescription = NSLocalizedString("Play", comment: "VMDisplayWindowController")
+        let playDescription = NSLocalizedString("Start", comment: "VMDisplayWindowController")
         let stopped = vm.state == .stopped
         startPauseToolbarItem.image = NSImage(systemSymbolName: "play.fill", accessibilityDescription: playDescription)
         startPauseToolbarItem.label = playDescription
+        startPauseMenuItem.title = playDescription
         if busy {
             activityIndicator.startAnimation(self)
-            startPauseToolbarItem.isEnabled = false
-            stopToolbarItem.isEnabled = false
-            restartToolbarItem.isEnabled = false
+            setControl([.startPause, .power, .restart], isEnabled: false)
             startButton.isHidden = true
         } else {
             activityIndicator.stopAnimation(self)
             startPauseToolbarItem.isEnabled = true
+            setControl(.startPause, isEnabled: true)
             startButton.isHidden = false
-            stopToolbarItem.isEnabled = !stopped
-            restartToolbarItem.isEnabled = !stopped
+            setControl([.power, .restart], isEnabled: !stopped)
         }
-        captureMouseToolbarItem.isEnabled = false
-        resizeConsoleToolbarItem.isEnabled = false
-        drivesToolbarItem.isEnabled = false
-        sharedFolderToolbarItem.isEnabled = false
-        usbToolbarItem.isEnabled = false
-        windowsToolbarItem.isEnabled = false
-        keyboardShortcutsItem.isEnabled = false
+        setControl([.captureInput, .resize, .drives, .sharedFolder, .usb, .windows, .keyboardShortcut], isEnabled: false)
         window!.makeFirstResponder(nil)
         if let preventIdleSleepAssertion = preventIdleSleepAssertion {
             IOPMAssertionRelease(preventIdleSleepAssertion)
@@ -240,7 +317,7 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
         }
     }
     
-    @nonobjc func withErrorAlert(_ callback: @escaping () async throws -> Void) {
+    @nonobjc nonisolated func withErrorAlert(_ callback: @escaping () async throws -> Void) {
         Task.detached(priority: .background) { [self] in
             do {
                 try await callback()
@@ -386,6 +463,7 @@ extension VMDisplayWindowController: NSWindowDelegate {
         if let preventIdleSleepAssertion = preventIdleSleepAssertion {
             IOPMAssertionRelease(preventIdleSleepAssertion)
         }
+        cleanupMenu()
         isFinalizing = true
         onClose?()
     }
@@ -413,8 +491,7 @@ extension VMDisplayWindowController: NSToolbarItemValidation {
 
 // MARK: - Stop menu
 extension VMDisplayWindowController {
-    private func setupStopButtonMenu() {
-        let menu = NSMenu()
+    private func updateStopButtonMenu(_ menu: NSMenu) {
         menu.autoenablesItems = false
         let item1 = NSMenuItem()
         item1.title = NSLocalizedString("Request power down", comment: "VMDisplayWindowController")
@@ -436,6 +513,11 @@ extension VMDisplayWindowController {
             item3.action = #selector(forceKill)
             menu.addItem(item3)
         }
+    }
+
+    private func setupStopButtonMenu() {
+        let menu = NSMenu()
+        updateStopButtonMenu(menu)
         stopToolbarItem.menu = menu
         if #unavailable(macOS 12), let view = stopToolbarItem.value(forKey: "_control") as? NSView {
             // BUG in macOS 11 results in the button not working without this
@@ -460,5 +542,100 @@ extension VMDisplayWindowController {
 extension VMDisplayWindowController {
     @objc func didWake(_ notification: NSNotification) {
         // do something in subclass
+    }
+}
+
+// MARK: - Main menu
+extension VMDisplayWindowController {
+    @discardableResult
+    @objc func setupMainMenu() -> NSMenu {
+        NotificationCenter.default.addObserver(self, selector: #selector(windowBecameMain), name: NSWindow.didBecomeMainNotification, object: window)
+        NotificationCenter.default.addObserver(self, selector: #selector(windowResignedMain), name: NSWindow.didResignMainNotification, object: window)
+        NotificationCenter.default.addObserver(self, selector: #selector(menuDidRemoveItem), name: NSMenu.didRemoveItemNotification, object: NSApp.mainMenu)
+        let menu = NSMenu()
+        menu.autoenablesItems = false
+        stopMenuItem = NSMenuItem()
+        stopMenuItem.title = NSLocalizedString("Power", comment: "VMDisplayWindowController")
+        let stopMenu = NSMenu()
+        updateStopButtonMenu(stopMenu)
+        stopMenuItem.submenu = stopMenu
+        menu.addItem(stopMenuItem)
+        startPauseMenuItem = NSMenuItem(title: "", action: #selector(startPauseButtonPressed), keyEquivalent: "")
+        menu.addItem(startPauseMenuItem)
+        restartMenuItem = NSMenuItem(title: NSLocalizedString("Restart", comment: "VMDisplayWindowController"), action: #selector(restartButtonPressed), keyEquivalent: "")
+        menu.addItem(restartMenuItem)
+        menu.addItem(.separator())
+        keyboardShortcutMenuItem = LazyMenuItem { [weak self] in self?.updateKeyboardShortcutMenu($0) }
+        keyboardShortcutMenuItem.title = NSLocalizedString("Send Key", comment: "VMDisplayWindowController")
+        menu.addItem(keyboardShortcutMenuItem)
+        menu.addItem(.separator())
+        usbMenuItem = LazyMenuItem { [weak self] in self?.updateUsbMenu($0) }
+        usbMenuItem.title = NSLocalizedString("USB Devices", comment: "VMDisplayWindowController")
+        menu.addItem(usbMenuItem)
+        drivesMenuItem = LazyMenuItem { [weak self] in self?.updateDrivesMenu($0) }
+        drivesMenuItem.title = NSLocalizedString("Drives", comment: "VMDisplayWindowController")
+        menu.addItem(drivesMenuItem)
+        sharedFolderMenuItem = LazyMenuItem { [weak self] in self?.updateSharedFolderMenu($0) }
+        sharedFolderMenuItem.title = NSLocalizedString("Shared Folder", comment: "VMDisplayWindowController")
+        menu.addItem(sharedFolderMenuItem)
+        windowsMenuItem = LazyMenuItem { [weak self] in self?.updateWindowsMenu($0) }
+        windowsMenuItem.title = NSLocalizedString("Displays", comment: "VMDisplayWindowController")
+        menu.addItem(windowsMenuItem)
+        mainMenu = menu
+        mainMenuItem = NSMenuItem()
+        mainMenuItem.title = NSLocalizedString("Virtual Machine", comment: "VMDisplayWindowController")
+        mainMenuItem.submenu = menu
+        return menu
+    }
+
+    func cleanupMenu() {
+        NotificationCenter.default.removeObserver(self, name: NSWindow.didBecomeMainNotification, object: window)
+        NotificationCenter.default.removeObserver(self, name: NSWindow.didResignMainNotification, object: window)
+        NotificationCenter.default.removeObserver(self, name: NSMenu.didRemoveItemNotification, object: NSApp.mainMenu)
+        if let mainMenu = NSApp.mainMenu, mainMenu.items.contains(mainMenuItem!) {
+            mainMenu.removeItem(mainMenuItem)
+        }
+    }
+
+    @objc func windowBecameMain(_ notification: Notification) {
+        if let mainMenu = NSApp.mainMenu, !mainMenu.items.contains(mainMenuItem) {
+            mainMenu.insertItem(mainMenuItem, at: 3)
+        }
+    }
+
+    @objc func windowResignedMain(_ notification: Notification) {
+        if let mainMenu = NSApp.mainMenu, mainMenu.items.contains(mainMenuItem) {
+            mainMenu.removeItem(mainMenuItem)
+        }
+    }
+
+    @objc func menuDidRemoveItem(_ notification: Notification) {
+        guard let window = window, window.isMainWindow else {
+            return
+        }
+        if let mainMenu = NSApp.mainMenu, !mainMenu.items.contains(mainMenuItem) {
+            mainMenu.insertItem(mainMenuItem, at: 3)
+        }
+    }
+}
+
+private class LazyMenuItem: NSMenuItem, NSMenuDelegate {
+    private var menuUpdate: (NSMenu) -> Void
+
+    init(menuUpdate: @escaping (NSMenu) -> Void) {
+        self.menuUpdate = menuUpdate
+        super.init(title: "", action: nil, keyEquivalent: "")
+        let menu = NSMenu()
+        menu.delegate = self
+        self.submenu = menu
+    }
+
+    required init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    func menuWillOpen(_ menu: NSMenu) {
+        menu.removeAllItems()
+        menuUpdate(menu)
     }
 }

@@ -25,6 +25,7 @@ struct UTMCtl: ParsableCommand {
         commandName: "utmctl",
         abstract: "CLI tool for controlling UTM virtual machines.",
         subcommands: [
+            Version.self,
             List.self,
             Status.self,
             Start.self,
@@ -161,6 +162,20 @@ fileprivate extension UTMScriptingStatus {
         case .resuming: return "resuming"
         case .stopping: return "stopping"
         @unknown default: return "unknown"
+        }
+    }
+}
+
+extension UTMCtl {
+    struct Version: UTMAPICommand {
+        static var configuration = CommandConfiguration(
+            abstract: "Display the version number of the application."
+        )
+
+        @OptionGroup var environment: EnvironmentOptions
+
+        func run(with application: UTMScriptingApplication) throws {
+            print("\(application.UTMVersion ?? "")")
         }
     }
 }

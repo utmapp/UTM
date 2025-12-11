@@ -125,6 +125,12 @@ const CGFloat kScrollResistance = 10.0f;
     if (self.mouseMiddleDown) {
         button |= kCSInputButtonMiddle;
     }
+    if (self.mouseSideDown) {
+        button |= kCSInputButtonSide;
+    }
+    if (self.mouseExtraDown) {
+        button |= kCSInputButtonExtra;
+    }
     return button;
 }
 
@@ -384,7 +390,7 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
     if (self.isInvertScroll) {
         translation.y = -translation.y;
     }
-    [self.vmInput sendMouseScroll:kCSInputScrollSmooth button:self.mouseButtonDown dy:translation.y];
+    [self.vmInput sendMouseScroll:kCSInputScrollSmooth buttonMask:self.mouseButtonDown dy:translation.y];
     return translation;
 }
 
@@ -392,12 +398,12 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
     if (!self.serverModeCursor) {
         self.cursor.center = location;
     }
-    [self.vmInput sendMouseButton:button pressed:YES];
+    [self.vmInput sendMouseButton:button mask:kCSInputButtonNone pressed:YES];
     [self onDelay:0.05f action:^{
         self.mouseLeftDown = NO;
         self.mouseRightDown = NO;
         self.mouseMiddleDown = NO;
-        [self.vmInput sendMouseButton:button pressed:NO];
+        [self.vmInput sendMouseButton:button mask:kCSInputButtonNone pressed:NO];
     }];
 #if !defined(TARGET_OS_VISION) || !TARGET_OS_VISION
     [self.clickFeedbackGenerator selectionChanged];
@@ -405,6 +411,16 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
 }
 
 - (void)dragCursor:(UIGestureRecognizerState)state primary:(BOOL)primary secondary:(BOOL)secondary middle:(BOOL)middle {
+    CSInputButton button = kCSInputButtonNone;
+    if (middle) {
+        button = kCSInputButtonMiddle;
+    }
+    if (secondary) {
+        button = kCSInputButtonRight;
+    }
+    if (primary) {
+        button = kCSInputButtonLeft;
+    }
     if (state == UIGestureRecognizerStateBegan) {
 #if !defined(TARGET_OS_VISION) || !TARGET_OS_VISION
         [self.clickFeedbackGenerator selectionChanged];
@@ -418,12 +434,12 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
         if (middle) {
             self.mouseMiddleDown = YES;
         }
-        [self.vmInput sendMouseButton:self.mouseButtonDown pressed:YES];
+        [self.vmInput sendMouseButton:button mask:self.mouseButtonDown pressed:YES];
     } else if (state == UIGestureRecognizerStateEnded) {
         self.mouseLeftDown = NO;
         self.mouseRightDown = NO;
         self.mouseMiddleDown = NO;
-        [self.vmInput sendMouseButton:self.mouseButtonDown pressed:NO];
+        [self.vmInput sendMouseButton:button mask:self.mouseButtonDown pressed:NO];
     }
 }
 
@@ -487,9 +503,9 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
     if (sender.state == UIGestureRecognizerStateEnded &&
         self.twoFingerScrollType == VMGestureTypeMouseWheel) {
         if (sender == self.swipeScrollUp) {
-            [self.vmInput sendMouseScroll:kCSInputScrollUp button:self.mouseButtonDown dy:0];
+            [self.vmInput sendMouseScroll:kCSInputScrollUp buttonMask:self.mouseButtonDown dy:0];
         } else if (sender == self.swipeScrollDown) {
-            [self.vmInput sendMouseScroll:kCSInputScrollDown button:self.mouseButtonDown dy:0];
+            [self.vmInput sendMouseScroll:kCSInputScrollDown buttonMask:self.mouseButtonDown dy:0];
         } else {
             NSAssert(0, @"Invalid call to gestureSwipeScroll");
         }

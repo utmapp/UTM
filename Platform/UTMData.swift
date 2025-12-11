@@ -15,11 +15,11 @@
 //
 
 import Foundation
+import SwiftUI
 #if os(macOS)
 import AppKit
 #else
 import UIKit
-import SwiftUI
 #endif
 #if canImport(AltKit) && WITH_JIT
 import AltKit
@@ -38,6 +38,7 @@ typealias ConcreteVirtualMachine = UTMQemuVirtualMachine
 
 enum AlertItem: Identifiable {
     case message(String)
+    case localizedMessage(LocalizedStringKey)
     case downloadUrl(URL)
 
     var id: Int {
@@ -46,6 +47,8 @@ enum AlertItem: Identifiable {
             return url.hashValue
         case .message(let message):
             return message.hashValue
+        case .localizedMessage(let message):
+            return message.localizedString.hashValue
         }
     }
 }
@@ -403,7 +406,11 @@ enum AlertItem: Identifiable {
     func showErrorAlert(message: String) {
         alertItem = .message(message)
     }
-    
+
+    func showLocalizedErrorAlert(_ message: LocalizedStringKey) {
+        alertItem = .localizedMessage(message)
+    }
+
     func newVM() {
         showSettingsModal = false
         showNewVMSheet = true
@@ -509,12 +516,20 @@ enum AlertItem: Identifiable {
     @discardableResult func clone(vm: VMData) async throws -> VMData {
         let newName: String = newDefaultVMName(base: vm.detailsTitleLabel)
         let newPath = ConcreteVirtualMachine.virtualMachinePath(for: newName, in: documentsURL)
+        let isRegenerateMACOnClone = UserDefaults.standard.bool(forKey: "IsRegenerateMACOnClone")
 
         try await copyItemWithCopyfile(at: vm.pathUrl, to: newPath)
         guard let newVM = try? VMData(url: newPath) else {
             throw UTMDataError.cloneFailed
         }
         newVM.wrapped!.changeUuid(to: UUID(), name: newName, copyingEntry: nil)
+        if isRegenerateMACOnClone {
+            if let config = newVM.wrapped!.config as? UTMQemuConfiguration {
+                for i in config.networks.indices {
+                    config.networks[i].macAddress = UTMQemuConfigurationNetwork.randomMacAddress()
+                }
+            }
+        }
         try await newVM.save()
         var index = virtualMachines.firstIndex(of: vm)
         if index != nil {
@@ -679,6 +694,10 @@ enum AlertItem: Identifiable {
         }
         listAdd(vm: vm)
         listSelect(vm: vm)
+        // warn user if imported .utm has custom arguments
+        if let qemuConfig = vm.wrapped?.config as? UTMQemuConfiguration, !qemuConfig.qemu.additionalArguments.isEmpty {
+            showLocalizedErrorAlert("This virtual machine uses custom QEMU arguments which is potentially dangerous and can cause damage to your machine. You should only run this virtual machine if you trust it.")
+        }
     }
     
     /// Handles UTM file URLs similar to importUTM, with few differences

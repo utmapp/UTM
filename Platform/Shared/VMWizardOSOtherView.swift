@@ -37,6 +37,8 @@ struct VMWizardOSOtherView: View {
             .onAppear {
                 if !wizardState.legacyHardware && wizardState.bootDevice == .floppy {
                     wizardState.bootDevice = .none
+                } else if wizardState.legacyHardware {
+                    wizardState.systemBootUefi = false
                 }
             }
             if wizardState.bootDevice != .none {
@@ -56,14 +58,16 @@ struct VMWizardOSOtherView: View {
                     }
                 }
             }
-            DetailedSection("Options") {
-                Toggle("UEFI Boot", isOn: $wizardState.systemBootUefi)
-                    .disabled(!supportsUefi)
-                    .onAppear {
-                        if !supportsUefi {
-                            wizardState.systemBootUefi = false
+            if !wizardState.legacyHardware {
+                DetailedSection("Options") {
+                    Toggle("UEFI Boot", isOn: $wizardState.systemBootUefi)
+                        .disabled(!supportsUefi)
+                        .onAppear {
+                            if !supportsUefi {
+                                wizardState.systemBootUefi = false
+                            }
                         }
-                    }
+                }
             }
         }
         .fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.data], onCompletion: processImage)

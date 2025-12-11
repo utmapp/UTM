@@ -30,6 +30,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL mouseLeftDown;
 @property (nonatomic) BOOL mouseRightDown;
 @property (nonatomic) BOOL mouseMiddleDown;
+@property (nonatomic) BOOL mouseSideDown;
+@property (nonatomic) BOOL mouseExtraDown;
 @property (nonatomic) BOOL pencilForceRightClickOnce;
 @property (nonatomic, nullable) VMCursor *cursor;
 @property (nonatomic, nullable) VMScroll *scroll;

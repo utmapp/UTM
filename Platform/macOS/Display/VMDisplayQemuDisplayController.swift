@@ -40,7 +40,15 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
             return ""
         }
     }
-    
+
+    var primaryDisplayController: VMDisplayQemuWindowController {
+        if isSecondary {
+            return (primaryWindow as? VMDisplayQemuWindowController)!
+        } else {
+            return self
+        }
+    }
+
     convenience init(vm: UTMQemuVirtualMachine, id: Int) {
         self.init(vm: vm, onClose: nil)
         self.id = id
@@ -50,9 +58,9 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
         if !isSecondary {
             qemuVM.ioServiceDelegate = self
         }
-        drivesToolbarItem.isEnabled = vmQemuConfig.drives.count > 0
-        sharedFolderToolbarItem.isEnabled = vmQemuConfig.sharing.directoryShareMode == .webdav // virtfs cannot dynamically change
-        usbToolbarItem.isEnabled = qemuVM.hasUsbRedirection
+        setControl(.drives, isEnabled: vmQemuConfig.drives.count > 0)
+        setControl(.sharedFolder, isEnabled: vmQemuConfig.sharing.directoryShareMode == .webdav) // virtfs cannot dynamically change
+        setControl(.usb, isEnabled: qemuVM.hasUsbRedirection)
         window!.title = defaultTitle
         window!.subtitle = defaultSubtitle
         super.enterLive()
@@ -73,15 +81,13 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
 // MARK: - Removable drives
 
 @objc extension VMDisplayQemuWindowController {
-    @IBAction override func drivesButtonPressed(_ sender: Any) {
-        let menu = NSMenu()
+    override func updateDrivesMenu(_ menu: NSMenu) {
         menu.autoenablesItems = false
         let item = NSMenuItem()
         item.title = NSLocalizedString("Querying drives status...", comment: "VMDisplayWindowController")
         item.isEnabled = false
         menu.addItem(item)
         updateDrivesMenu(menu, drives: vmQemuConfig.drives)
-        menu.popUp(positioning: nil, at: NSEvent.mouseLocation, in: nil)
     }
     
     @nonobjc func updateDrivesMenu(_ menu: NSMenu, drives: [UTMQemuConfigurationDrive]) {
@@ -222,6 +228,11 @@ extension VMDisplayQemuWindowController {
             }
         }
     }
+
+    override func updateSharedFolderMenu(_ menu: NSMenu) {
+        let browse = NSMenuItem(title: NSLocalizedString("Browse…", comment: "VMDisplayQemuWindowController"), action: #selector(sharedFolderButtonPressed), keyEquivalent: "")
+        menu.addItem(browse)
+    }
 }
 
 // MARK: - SPICE base implementation
@@ -275,6 +286,7 @@ extension VMDisplayQemuWindowController: UTMSpiceIODelegate {
             vmUsbManager = usbManager
             if let usbManager = usbManager {
                 usbManager.delegate = self
+                autoConnectUsbDevices()
             }
         }
         for subwindow in secondaryWindows {
@@ -382,20 +394,18 @@ let usbBlockList = [
 
 extension VMDisplayQemuWindowController {
     
-    @IBAction override func usbButtonPressed(_ sender: Any) {
-        let menu = NSMenu()
+    override func updateUsbMenu(_ menu: NSMenu) {
         menu.autoenablesItems = false
         let item = NSMenuItem()
         item.title = NSLocalizedString("Querying USB devices...", comment: "VMQemuDisplayMetalWindowController")
         item.isEnabled = false
         menu.addItem(item)
-        DispatchQueue.global(qos: .userInitiated).async {
-            let devices = self.vmUsbManager?.usbDevices ?? []
+        DispatchQueue.global(qos: .userInitiated).async { [self] in
+            let devices = primaryDisplayController.vmUsbManager?.usbDevices ?? []
             DispatchQueue.main.async {
                 self.updateUsbDevicesMenu(menu, devices: devices)
             }
         }
-        menu.popUp(positioning: nil, at: NSEvent.mouseLocation, in: nil)
     }
     
     func updateUsbDevicesMenu(_ menu: NSMenu, devices: [CSUSBDevice]) {
@@ -409,16 +419,34 @@ extension VMDisplayQemuWindowController {
         }
         for (i, device) in devices.enumerated() {
             let item = NSMenuItem()
-            let canRedirect = vmUsbManager?.canRedirectUsbDevice(device, errorMessage: nil) ?? false
-            let isConnected = vmUsbManager?.isUsbDeviceConnected(device) ?? false
-            let isConnectedToSelf = connectedUsbDevices.contains(device)
+            let canRedirect = primaryDisplayController.vmUsbManager?.canRedirectUsbDevice(device, errorMessage: nil) ?? false
+            let isConnected = primaryDisplayController.vmUsbManager?.isUsbDeviceConnected(device) ?? false
+            let isConnectedToSelf = primaryDisplayController.connectedUsbDevices.contains(device)
             item.title = device.name ?? device.description
             let blocked = usbBlockList.contains { (usbVid, usbPid) in usbVid == device.usbVendorId && usbPid == device.usbProductId }
             item.isEnabled = !blocked && canRedirect && (isConnectedToSelf || !isConnected)
-            item.state = isConnectedToSelf ? .on : .off;
+            item.state = isConnectedToSelf ? .on : .off
             item.tag = i
-            item.target = self
-            item.action = isConnectedToSelf ? #selector(disconnectUsbDevice) : #selector(connectUsbDevice)
+
+            let submenu = NSMenu()
+            let connectItem = NSMenuItem()
+            connectItem.title = isConnectedToSelf ? NSLocalizedString("Disconnect…", comment: "VMDisplayQemuDisplayController") : NSLocalizedString("Connect…", comment: "VMDisplayQemuDisplayController")
+            connectItem.isEnabled = !blocked && canRedirect && (isConnectedToSelf || !isConnected)
+            connectItem.tag = i
+            connectItem.target = self
+            connectItem.action = isConnectedToSelf ? #selector(disconnectUsbDevice) : #selector(connectUsbDevice)
+            submenu.addItem(connectItem)
+
+            let autoItem = NSMenuItem()
+            autoItem.title = NSLocalizedString("Auto connect on start", comment: "VMDisplayQemuDisplayController")
+            autoItem.isEnabled = !blocked && canRedirect
+            autoItem.state = isAutoConnect(device) ? .on : .off
+            autoItem.tag = i
+            autoItem.target = self
+            autoItem.action = #selector(setAutoConnect)
+            submenu.addItem(autoItem)
+
+            item.submenu = submenu
             menu.addItem(item)
         }
         menu.update()
@@ -429,20 +457,16 @@ extension VMDisplayQemuWindowController {
             logger.error("wrong sender for connectUsbDevice")
             return
         }
-        guard let usbManager = vmUsbManager else {
+        guard let usbManager = primaryDisplayController.vmUsbManager else {
             logger.error("cannot get usb manager")
             return
         }
         let device = allUsbDevices[menu.tag]
         Task.detached {
-            do {
+            self.withErrorAlert {
                 try await usbManager.connectUsbDevice(device)
                 await MainActor.run {
-                    self.connectedUsbDevices.append(device)
-                }
-            } catch {
-                await MainActor.run {
-                    self.showErrorAlert(error.localizedDescription)
+                    self.primaryDisplayController.connectedUsbDevices.append(device)
                 }
             }
         }
@@ -453,18 +477,50 @@ extension VMDisplayQemuWindowController {
             logger.error("wrong sender for disconnectUsbDevice")
             return
         }
-        guard let usbManager = vmUsbManager else {
+        guard let usbManager = primaryDisplayController.vmUsbManager else {
             logger.error("cannot get usb manager")
             return
         }
         let device = allUsbDevices[menu.tag]
-        connectedUsbDevices.removeAll(where: { $0 == device })
+        primaryDisplayController.connectedUsbDevices.removeAll(where: { $0 == device })
         Task.detached {
-            do {
+            self.withErrorAlert {
                 try await usbManager.disconnectUsbDevice(device)
-            } catch {
-                await MainActor.run {
-                    self.showErrorAlert(error.localizedDescription)
+            }
+        }
+    }
+
+    func isAutoConnect(_ device: CSUSBDevice) -> Bool {
+        return qemuVM.isAutoConnect(for: device)
+    }
+
+    @objc func setAutoConnect(sender: AnyObject) {
+        guard let menu = sender as? NSMenuItem else {
+            logger.error("wrong sender for autoConnect")
+            return
+        }
+        let device = allUsbDevices[menu.tag]
+        qemuVM.setAutoConnect(!qemuVM.isAutoConnect(for: device), for: device)
+    }
+
+    func autoConnectUsbDevices() {
+        guard !isSecondary else {
+            return
+        }
+        guard let usbManager = vmUsbManager else {
+            return
+        }
+        DispatchQueue.global(qos: .userInitiated).async {
+            guard let devices = self.vmUsbManager?.usbDevices else {
+                return
+            }
+            let filtered = devices.filter({ self.isAutoConnect($0) })
+            for device in filtered {
+                self.withErrorAlert {
+                    try await usbManager.connectUsbDevice(device)
+                    await MainActor.run {
+                        self.connectedUsbDevices.append(device)
+                    }
                 }
             }
         }
@@ -474,10 +530,12 @@ extension VMDisplayQemuWindowController {
 // MARK: - Window management
 
 extension VMDisplayQemuWindowController {
-    @IBAction override func windowsButtonPressed(_ sender: Any) {
-        let menu = NSMenu()
+    override func updateWindowsMenu(_ menu: NSMenu) {
         menu.autoenablesItems = false
-        for display in qemuVM.ioService!.displays {
+        guard let displays = qemuVM.ioService?.displays else {
+            return
+        }
+        for display in displays {
             let id = display.monitorID
             guard id < vmQemuConfig.displays.count else {
                 continue
@@ -511,7 +569,6 @@ extension VMDisplayQemuWindowController {
             item.action = #selector(showWindowFromSerial)
             menu.addItem(item)
         }
-        menu.popUp(positioning: nil, at: NSEvent.mouseLocation, in: nil)
     }
     
     @objc private func showWindowFromDisplay(sender: AnyObject) {

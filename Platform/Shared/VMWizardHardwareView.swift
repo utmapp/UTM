@@ -38,7 +38,7 @@ struct VMWizardHardwareView: View {
             //case .powerMacG3Beige: "Power Macintosh G3 (1997, Beige)"
             case .powerMacG4: "Power Macintosh G4 (1999, PPC)"
             //case .powerMacG5: "Power Macintosh G5 (2003, PPC64)"
-            case .i440FX: "Intel i440FX based PC (1996, x86_64)"
+            case .i440FX: "Intel i440FX based PC (1996, i386)"
             case .q35: "Intel ICH9 based PC (2009, x86_64)"
             case .arm64Virt: "ARM64 virtual machine (2014, ARM64)"
             case .riscv64Virt: "RISC-V64 virtual machine (2018, RISC-V64)"
@@ -51,7 +51,7 @@ struct VMWizardHardwareView: View {
             //case .powerMacG3Beige: return .ppc
             case .powerMacG4: return .ppc
             //case .powerMacG5: return .ppc64
-            case .i440FX: return .x86_64
+            case .i440FX: return .i386
             case .q35: return .x86_64
             case .arm64Virt: return .aarch64
             case .riscv64Virt: return .riscv64
@@ -64,7 +64,7 @@ struct VMWizardHardwareView: View {
             //case .powerMacG3Beige: return QEMUTarget_ppc.g3beige
             case .powerMacG4: return QEMUTarget_ppc.mac99
             //case .powerMacG5: return QEMUTarget_ppc.mac99
-            case .i440FX: return QEMUTarget_x86_64.pc
+            case .i440FX: return QEMUTarget_i386.pc
             case .q35: return QEMUTarget_x86_64.q35
             case .arm64Virt: return QEMUTarget_aarch64.virt
             case .riscv64Virt: return QEMUTarget_riscv64.virt
@@ -97,6 +97,7 @@ struct VMWizardHardwareView: View {
             //case .powerMacG3Beige: return 512
             case .powerMacG4: return 512
             //case .powerMacG5: return 512
+            case .i440FX: return 512
             #if os(macOS)
             default: return 4096
             #else
@@ -108,6 +109,7 @@ struct VMWizardHardwareView: View {
         var defaultStorageGiB: Int {
             switch self {
             case .quadra800, .powerMacG4: return 2
+            case .i440FX: return 2
             #if os(macOS)
             default: return 64
             #else
@@ -269,7 +271,7 @@ struct VMWizardHardwareView: View {
             
             
             if !wizardState.useAppleVirtualization && wizardState.operatingSystem == .Linux {
-                DetailedSection("Disply Output", description: "There are known issues in some newer Linux drivers including black screen, broken compositing, and apps failing to render.") {
+                DetailedSection("Display Output", description: "There are known issues in some newer Linux drivers including black screen, broken compositing, and apps failing to render.") {
                     Toggle("Enable display output", isOn: $wizardState.isDisplayEnabled)
                         .onChange(of: wizardState.isDisplayEnabled) { newValue in
                             if !newValue {

@@ -162,6 +162,7 @@ private struct TileLabelStyle: LabelStyle {
                 .font(.system(size: 48.0, weight: .medium))
                 .padding(.bottom)
             configuration.title
+                .lineLimit(nil)
                 .multilineTextAlignment(.center)
         }
     }

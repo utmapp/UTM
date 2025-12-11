@@ -61,22 +61,22 @@ import Virtualization // for getting network interfaces
         socketURL.appendingPathComponent(information.uuid.uuidString).appendingPathExtension("swtpm")
     }
     
-    /// Used only if in remote sever mode.
+    /// Used only if in remote server mode.
     var monitorPipeURL: URL {
         socketURL.appendingPathComponent(information.uuid.uuidString).appendingPathExtension("qmp")
     }
 
-    /// Used only if in remote sever mode.
+    /// Used only if in remote server mode.
     var guestAgentPipeURL: URL {
         socketURL.appendingPathComponent(information.uuid.uuidString).appendingPathExtension("qga")
     }
 
-    /// Used only if in remote sever mode.
+    /// Used only if in remote server mode.
     var spiceTlsKeyUrl: URL {
         socketURL.appendingPathComponent(information.uuid.uuidString).appendingPathExtension("pem")
     }
 
-    /// Used only if in remote sever mode.
+    /// Used only if in remote server mode.
     var spiceTlsCertUrl: URL {
         socketURL.appendingPathComponent(information.uuid.uuidString).appendingPathExtension("crt")
     }
@@ -153,8 +153,11 @@ import Virtualization // for getting network interfaces
                 let split = regex.matches(in: argString, options: [], range: range)
                 for match in split {
                     let matchRange = Range(match.range(at: 1), in: argString)!
-                    let fragment = argString[matchRange]
-                    list.append(fragment.replacingOccurrences(of: "\"", with: ""))
+                    var fragment = argString[matchRange]
+                    if fragment.first == "\"" && fragment.last == "\"" {
+                        fragment = fragment.dropFirst().dropLast()
+                    }
+                    list.append(String(fragment))
                 }
             }
         }
@@ -780,6 +783,7 @@ import Virtualization // for getting network interfaces
                 "virtio-blk-pci"
             }
             "drive=drive\(drive.id)"
+            "serial=\(drive.serial)"
             if !disableBootIndex {
                 "bootindex=\(bootindex)"
             }
@@ -891,10 +895,12 @@ import Virtualization // for getting network interfaces
             f("-device")
             f("usb-tablet,bus=usb-bus.0")
         }
-        f("-device")
-        f("usb-mouse,bus=usb-bus.0")
-        f("-device")
-        f("usb-kbd,bus=usb-bus.0")
+        if !qemu.hasPS2Controller {
+            f("-device")
+            f("usb-mouse,bus=usb-bus.0")
+            f("-device")
+            f("usb-kbd,bus=usb-bus.0")
+        }
         #if WITH_USB
         let maxDevices = input.maximumUsbShare
         let buses = (maxDevices + 2) / 3

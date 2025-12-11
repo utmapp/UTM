@@ -69,6 +69,9 @@ struct UTMQemuConfigurationNetwork: Codable, Identifiable {
     /// Network UUID to attach to in host mode
     var hostNetUuid: String?
     
+    /// Can be set to be displayed to the user. Not saved.
+    var currentIpAddresses: [String] = []
+
     let id = UUID()
     
     /// Generate a random MAC address
@@ -162,7 +165,11 @@ extension UTMQemuConfigurationNetwork {
         self.init()
         let rawTarget = target.rawValue
         if rawTarget.hasPrefix("pc") {
-            hardware = QEMUNetworkDevice_x86_64.rtl8139
+            if architecture == .i386 {
+                hardware = QEMUNetworkDevice_i386.ne2k_isa
+            } else {
+                hardware = QEMUNetworkDevice_x86_64.rtl8139
+            }
         } else if rawTarget.hasPrefix("q35") {
             hardware = QEMUNetworkDevice_x86_64.e1000
         } else if rawTarget == "isapc" {
