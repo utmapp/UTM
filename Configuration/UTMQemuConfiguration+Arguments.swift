@@ -878,7 +878,7 @@ import Virtualization // for getting network interfaces
             "discard=unmap"
             "detect-zeroes=unmap"
         }
-        if !isUseFileLock {
+        if !isUseFileLock && (!isCd || drive.imageURL != nil) {
             "file.locking=off"
         }
         f()
