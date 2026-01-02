@@ -534,3 +534,30 @@ index 70996b5ab1..a36c692bc3 100644
 -- 
 2.41.0
 
+From 338fdd995e8f665edbdb1acd0f1b63f2ca3c266c Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Fri, 2 Jan 2026 12:41:52 -0800
+Subject: [PATCH] ui/spice-display: fix typo in spice_iosurface_resize
+
+---
+ ui/spice-display.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/ui/spice-display.c b/ui/spice-display.c
+index b47722ea4f..c7688256e9 100644
+--- a/ui/spice-display.c
++++ b/ui/spice-display.c
+@@ -912,8 +912,8 @@ static void spice_iosurface_destroy(SimpleSpiceDisplay *ssd)
+ static int spice_iosurface_resize(SimpleSpiceDisplay *ssd, int width, int height)
+ {
+     if (ssd->iosurface) {
+-        if (IOSurfaceGetHeight(ssd->iosurface) != width ||
+-            IOSurfaceGetWidth(ssd->iosurface) != height) {
++        if (IOSurfaceGetHeight(ssd->iosurface) != height ||
++            IOSurfaceGetWidth(ssd->iosurface) != width) {
+             spice_iosurface_destroy(ssd);
+             return spice_iosurface_create(ssd, width, height);
+         } else {
+-- 
+2.50.1 (Apple Git-155)
+
