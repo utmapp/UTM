@@ -20,8 +20,7 @@ import AppKit
 #endif
 
 @available(iOS 16, macOS 13, tvOS 16, watchOS 9, *)
-struct UTMStatusActionIntent: UTMIntent {
-    static var id: String = "UTMStatusActionIntent"
+struct UTMStatusActionIntent: AppIntent, UTMIntent {
     static let title: LocalizedStringResource = "Get Virtual Machine Status"
     static let description = IntentDescription("Get the status of a virtual machine.")
     static var parameterSummary: some ParameterSummary {
@@ -41,8 +40,7 @@ struct UTMStatusActionIntent: UTMIntent {
 }
 
 @available(iOS 16, macOS 13, tvOS 16, watchOS 9, *)
-struct UTMStartActionIntent: UTMIntent {
-    static var id: String = "UTMStartActionIntent"
+struct UTMStartActionIntent: AppIntent, UTMIntent {
     static let title: LocalizedStringResource = "Start Virtual Machine"
     static let description = IntentDescription("Start a virtual machine.")
     static var parameterSummary: some ParameterSummary {
@@ -99,8 +97,7 @@ struct UTMStartActionIntent: UTMIntent {
 }
 
 @available(iOS 16, macOS 13, tvOS 16, watchOS 9, *)
-struct UTMStopActionIntent: UTMIntent {
-    static var id: String = "UTMStopActionIntent"
+struct UTMStopActionIntent: AppIntent, UTMIntent {
     static let title: LocalizedStringResource = "Stop Virtual Machine"
     static let description = IntentDescription("Stop a virtual machine.")
     static var parameterSummary: some ParameterSummary {
@@ -138,8 +135,7 @@ extension UTMVirtualMachineStopMethod: AppEnum {
 }
 
 @available(iOS 16, macOS 13, tvOS 16, watchOS 9, *)
-struct UTMPauseActionIntent: UTMIntent {
-    static var id: String = "UTMPauseActionIntent"
+struct UTMPauseActionIntent: AppIntent, UTMIntent {
     static let title: LocalizedStringResource = "Pause Virtual Machine"
     static let description = IntentDescription("Pause a virtual machine.")
     static var parameterSummary: some ParameterSummary {
@@ -168,8 +164,7 @@ struct UTMPauseActionIntent: UTMIntent {
 }
 
 @available(iOS 16, macOS 13, tvOS 16, watchOS 9, *)
-struct UTMResumeActionIntent: UTMIntent {
-    static var id: String = "UTMResumeActionIntent"
+struct UTMResumeActionIntent: AppIntent, UTMIntent {
     static let title: LocalizedStringResource = "Resume Virtual Machine"
     static let description = IntentDescription("Resume a virtual machine.")
     static var parameterSummary: some ParameterSummary {
@@ -195,8 +190,7 @@ struct UTMResumeActionIntent: UTMIntent {
 }
 
 @available(iOS 16, macOS 13, tvOS 16, watchOS 9, *)
-struct UTMRestartActionIntent: UTMIntent {
-    static var id: String = "UTMRestartActionIntent"
+struct UTMRestartActionIntent: AppIntent, UTMIntent {
     static let title: LocalizedStringResource = "Restart Virtual Machine"
     static let description = IntentDescription("Restart a virtual machine.")
     static var parameterSummary: some ParameterSummary {

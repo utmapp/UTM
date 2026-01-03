@@ -19,8 +19,7 @@ import AppIntents
 private let kDelayNs: UInt64 = 20000000
 
 @available(iOS 16, macOS 13, tvOS 16, watchOS 9, *)
-struct UTMSendScanCodeIntent: UTMIntent {
-    static var id: String = "UTMSendScanCodeIntent"
+struct UTMSendScanCodeIntent: AppIntent, UTMIntent {
     static let title: LocalizedStringResource = "Send Scan Code"
     static let description = IntentDescription("Send a sequence of raw keyboard scan codes to the virtual machine. Only supported on QEMU backend.")
     static var parameterSummary: some ParameterSummary {
@@ -63,8 +62,7 @@ struct UTMSendScanCodeIntent: UTMIntent {
 }
 
 @available(iOS 16, macOS 13, tvOS 16, watchOS 9, *)
-struct UTMSendKeystrokesIntent: UTMIntent {
-    static var id: String = "UTMSendKeystrokesIntent"
+struct UTMSendKeystrokesIntent: AppIntent, UTMIntent {
     static let title: LocalizedStringResource = "Send Keystrokes"
     static let description = IntentDescription("Send text as a sequence of keystrokes to the virtual machine. Only supported on QEMU backend.")
     static var parameterSummary: some ParameterSummary {
@@ -155,8 +153,7 @@ struct UTMSendKeystrokesIntent: UTMIntent {
 }
 
 @available(iOS 16, macOS 13, tvOS 16, watchOS 9, *)
-struct UTMMouseClickIntent: UTMIntent {
-    static var id: String = "UTMMouseClickIntent"
+struct UTMMouseClickIntent: AppIntent, UTMIntent {
     static let title: LocalizedStringResource = "Send Mouse Click"
     static let description = IntentDescription("Send a mouse position and click to the virtual machine. Only supported on QEMU backend.")
     static var parameterSummary: some ParameterSummary {
