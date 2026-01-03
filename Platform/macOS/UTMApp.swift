@@ -40,7 +40,7 @@ struct UTMApp: App {
                 if let message = notification.userInfo?["Message"] as? String {
                     data.showErrorAlert(message: message)
                 }
-            }
+            }  
     }
     
     @SceneBuilder
@@ -81,4 +81,5 @@ struct UTMApp: App {
             return oldBody
         }
     }
+    
 }
