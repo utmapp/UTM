@@ -39,7 +39,7 @@ LIBUCONTEXT_COMMIT="9b1d8f01a6e99166f9808c79966abe10786de8b6"
 
 # Source files for GPU acceleration
 WEBKIT_REPO="https://github.com/utmapp/WebKit.git"
-WEBKIT_COMMIT="fd69e8e0ecf1abe7813eeddacd6682b14515c85a"
+WEBKIT_COMMIT="e9f29559b009011a1ee420d67e1994d3d5295f1a"
 WEBKIT_SUBDIRS="Source/ThirdParty/ANGLE Configurations Tools/ccache"
 EPOXY_REPO="https://github.com/utmapp/libepoxy.git"
 EPOXY_COMMIT="266d2290a437c655f7419e85af06bfbb73a720c4"
