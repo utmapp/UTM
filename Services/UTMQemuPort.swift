@@ -24,26 +24,44 @@ import CocoaSpice
 @objc class UTMQemuPort: NSObject, QEMUPort {
     var readDataHandler: readDataHandler_t? {
         didSet {
-            updateDelegate()
+            portDataQueue.async { [self] in
+                if let _cachedData = cachedData {
+                    readDataHandler?(_cachedData)
+                    cachedData = nil
+                }
+            }
         }
     }
     
     var errorHandler: errorHandler_t? {
         didSet {
-            updateDelegate()
+            portDataQueue.async { [self] in
+                if let _cachedError = cachedError {
+                    errorHandler?(_cachedError)
+                    cachedError = nil
+                }
+            }
         }
     }
     
     var disconnectHandler: disconnectHandler_t? {
         didSet {
-            updateDelegate()
+            portDataQueue.async { [self] in
+                if !isOpen {
+                    disconnectHandler?()
+                }
+            }
         }
     }
     
     var isOpen: Bool = true
     
     private let port: CSPort
-    
+
+    private let portDataQueue = DispatchQueue(label: "UTM Port Data Queue")
+    private var cachedError: String?
+    private var cachedData: Data?
+
     func write(_ data: Data) {
         port.write(data)
     }
@@ -53,28 +71,33 @@ import CocoaSpice
         super.init()
         port.delegate = self
     }
-    
-    /// We defer setting of delegate to after `readDataHandler` is set in order to handle cached data.
-    private func updateDelegate() {
-        if readDataHandler != nil || errorHandler != nil || disconnectHandler != nil {
-            port.delegate = self
-        } else {
-            port.delegate = nil
-        }
-    }
 }
 
 extension UTMQemuPort: CSPortDelegate {
     func portDidDisconect(_ port: CSPort) {
-        isOpen = false
-        disconnectHandler?()
+        portDataQueue.async { [self] in
+            isOpen = false
+            disconnectHandler?()
+        }
     }
     
     func port(_ port: CSPort, didError error: String) {
-        errorHandler?(error)
+        portDataQueue.async { [self] in
+            if let errorHandler = errorHandler {
+                errorHandler(error)
+            } else {
+                cachedError = error
+            }
+        }
     }
     
     func port(_ port: CSPort, didRecieveData data: Data) {
-        readDataHandler?(data)
+        portDataQueue.async { [self] in
+            if let readDataHandler = readDataHandler {
+                readDataHandler(data)
+            } else {
+                cachedData = data
+            }
+        }
     }
 }
