@@ -365,6 +365,7 @@ private let ICON_TITLE_MAP: [String: LocalizedStringKey] = [
     "red-hat": "Red Hat",
     "remix-os": "Remix OS",
     "risc-os": "RISC OS",
+    "rocky-linux": "Rocky Linux",
     "sabayon": "Sabayon",
     "sailfish-os": "Sailfish OS",
     "slackware": "Slackware",
