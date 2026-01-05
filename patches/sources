@@ -42,9 +42,9 @@ WEBKIT_REPO="https://github.com/utmapp/WebKit.git"
 WEBKIT_COMMIT="e9f29559b009011a1ee420d67e1994d3d5295f1a"
 WEBKIT_SUBDIRS="Source/ThirdParty/ANGLE Configurations Tools/ccache"
 EPOXY_REPO="https://github.com/utmapp/libepoxy.git"
-EPOXY_COMMIT="266d2290a437c655f7419e85af06bfbb73a720c4"
+EPOXY_COMMIT="5014658f79e4d6872a1ad6754da9098ccd9d4fc5"
 VIRGLRENDERER_REPO="https://github.com/utmapp/virglrenderer.git"
-VIRGLRENDERER_COMMIT="dc039d9ecd74fc671a85bfbe7c4e4bc552b7b855"
+VIRGLRENDERER_COMMIT="31d91c3860749534aed7bd26af8f47f7de412681"
 
 # Decompiled Hypervisor for iOS
 HYPERVISOR_REPO="https://github.com/utmapp/Hypervisor.git"

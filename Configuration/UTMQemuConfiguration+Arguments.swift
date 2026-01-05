@@ -201,7 +201,7 @@ import Virtualization // for getting network interfaces
         } else {
             "streaming-video=filter"
         }
-        "gl=\(isGLSupported && !isRemoteSpice ? "on" : "off")"
+        "gl=\(glBackend)"
         f()
         f("-chardev")
         if isRemoteSpice {
@@ -281,7 +281,28 @@ import Virtualization // for getting network interfaces
             display.hardware.rawValue.contains("-gl-") || display.hardware.rawValue.hasSuffix("-gl")
         }
     }
-    
+
+    private var rendererBackend: UTMQEMURendererBackend {
+        let rawValue = UserDefaults.standard.integer(forKey: "QEMURendererBackend")
+        return UTMQEMURendererBackend(rawValue: rawValue) ?? .qemuRendererBackendDefault
+    }
+
+    private var glBackend: String {
+        if isGLSupported && !isRemoteSpice {
+            #if os(macOS)
+            if rendererBackend == .qemuRendererBackendCGL {
+                return "core"
+            } else {
+                return "es"
+            }
+            #else
+            return "on"
+            #endif
+        } else {
+            return "off"
+        }
+    }
+
     private var isSparc: Bool {
         system.architecture == .sparc || system.architecture == .sparc64
     }

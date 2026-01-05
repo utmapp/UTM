@@ -561,3 +561,2719 @@ index b47722ea4f..c7688256e9 100644
 -- 
 2.50.1 (Apple Git-155)
 
+From 0820637620267d67799ec24ba62609ccf5241bad Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Sat, 8 Nov 2025 16:18:44 -0800
+Subject: [PATCH 1/9] Revert "Use virgl_renderer_borrow_texture_for_scanout"
+
+This reverts commit 8b9e3062a4c2e243f0f80482385ebccbb8357f71.
+---
+ hw/display/virtio-gpu-virgl.c | 105 ++++++++--------------------------
+ include/ui/console.h          |  25 ++++----
+ include/ui/gtk.h              |  14 +++--
+ include/ui/sdl2.h             |   7 ++-
+ include/ui/spice-display.h    |   4 +-
+ ui/console.c                  |  25 +++++---
+ ui/dbus-console.c             |   7 ++-
+ ui/dbus-listener.c            |  23 +-------
+ ui/egl-headless.c             |  23 +-------
+ ui/gtk-egl.c                  |  27 ++-------
+ ui/gtk-gl-area.c              |  24 +-------
+ ui/sdl2-gl.c                  |  13 ++---
+ ui/spice-display.c            |  36 +++++-------
+ 13 files changed, 107 insertions(+), 226 deletions(-)
+
+diff --git a/hw/display/virtio-gpu-virgl.c b/hw/display/virtio-gpu-virgl.c
+index d78c2e4892..145a0b3879 100644
+--- a/hw/display/virtio-gpu-virgl.c
++++ b/hw/display/virtio-gpu-virgl.c
+@@ -396,87 +396,11 @@ static void virgl_cmd_resource_flush(VirtIOGPU *g,
+     }
+ }
+ 
+-static GLuint virgl_borrow_texture_for_scanout(uint32_t id, bool *y_0_top,
+-                                               uint32_t *width,
+-                                               uint32_t *height,
+-                                               void **d3d_tex2d)
+-{
+-    struct virgl_renderer_texture_info info;
+-    int ret;
+-
+-    memset(&info, 0, sizeof(info));
+-
+-    ret = virgl_renderer_borrow_texture_for_scanout(id, &info);
+-    if (ret == -1) {
+-        return 0;
+-    }
+-
+-    if (y_0_top) {
+-        *y_0_top = info.flags & VIRTIO_GPU_RESOURCE_FLAG_Y_0_TOP;
+-    }
+-
+-    if (width) {
+-        *width = info.width;
+-    }
+-
+-    if (height) {
+-        *height = info.height;
+-    }
+-
+-    if (d3d_tex2d) {
+-        *d3d_tex2d = NULL;
+-    }
+-
+-    return info.tex_id;
+-}
+-
+-#if VIRGL_VERSION_MAJOR >= 1
+-static GLuint virgl_borrow_d3d_info_for_scanout(uint32_t id, bool *y_0_top,
+-                                                uint32_t *width,
+-                                                uint32_t *height,
+-                                                void **d3d_tex2d)
+-{
+-    int ret;
+-    struct virgl_renderer_resource_info info;
+-    struct virgl_renderer_resource_info_ext ext;
+-    void *d3d_tex2d = NULL;
+-
+-    memset(&ext, 0, sizeof(ext));
+-
+-    ret = virgl_renderer_resource_get_info_ext(id, &ext);
+-    info = ext.base;
+-    d3d_tex2d = ext.d3d_tex2d;
+-    if (ret) {
+-        qemu_log_mask(LOG_GUEST_ERROR,
+-                        "%s: illegal resource specified %d\n",
+-                        __func__, id);
+-        return 0;
+-    }
+-
+-    if (y_0_top) {
+-        *y_0_top = info.flags & VIRTIO_GPU_RESOURCE_FLAG_Y_0_TOP;
+-    }
+-
+-    if (width) {
+-        *width = info.width;
+-    }
+-
+-    if (height) {
+-        *height = info.height;
+-    }
+-
+-    if (d3d_tex2d) {
+-        *d3d_tex2d = ext.d3d_tex2d;
+-    }
+-
+-    return info.tex_id;
+-}
+-#endif
+-
+ static void virgl_cmd_set_scanout(VirtIOGPU *g,
+                                   struct virtio_gpu_ctrl_command *cmd)
+ {
+     struct virtio_gpu_set_scanout ss;
++    int ret;
+ 
+     VIRTIO_GPU_FILL_CMD(ss);
+     trace_virtio_gpu_cmd_set_scanout(ss.scanout_id, ss.resource_id,
+@@ -491,18 +415,35 @@ static void virgl_cmd_set_scanout(VirtIOGPU *g,
+     g->parent_obj.enable = 1;
+ 
+     if (ss.resource_id && ss.r.width && ss.r.height) {
+-        DisplayGLTextureBorrower borrower;
++        struct virgl_renderer_resource_info info;
++        void *d3d_tex2d = NULL;
++
+ #if VIRGL_VERSION_MAJOR >= 1
+-        borrower = virgl_borrow_d3d_info_for_scanout;
++        struct virgl_renderer_resource_info_ext ext;
++        memset(&ext, 0, sizeof(ext));
++        ret = virgl_renderer_resource_get_info_ext(ss.resource_id, &ext);
++        info = ext.base;
++        d3d_tex2d = ext.d3d_tex2d;
+ #else
+-        borrower = virgl_borrow_texture_for_scanout;
++        memset(&info, 0, sizeof(info));
++        ret = virgl_renderer_resource_get_info(ss.resource_id, &info);
+ #endif
++        if (ret) {
++            qemu_log_mask(LOG_GUEST_ERROR,
++                          "%s: illegal resource specified %d\n",
++                          __func__, ss.resource_id);
++            cmd->error = VIRTIO_GPU_RESP_ERR_INVALID_RESOURCE_ID;
++            return;
++        }
+         qemu_console_resize(g->parent_obj.scanout[ss.scanout_id].con,
+                             ss.r.width, ss.r.height);
+         virgl_renderer_force_ctx_0();
+         dpy_gl_scanout_texture(
+-            g->parent_obj.scanout[ss.scanout_id].con, ss.resource_id,
+-            borrower, ss.r.x, ss.r.y, ss.r.width, ss.r.height);
++            g->parent_obj.scanout[ss.scanout_id].con, info.tex_id,
++            info.flags & VIRTIO_GPU_RESOURCE_FLAG_Y_0_TOP,
++            info.width, info.height,
++            ss.r.x, ss.r.y, ss.r.width, ss.r.height,
++            d3d_tex2d);
+     } else {
+         dpy_gfx_replace_surface(
+             g->parent_obj.scanout[ss.scanout_id].con, NULL);
+diff --git a/include/ui/console.h b/include/ui/console.h
+index 8717931ed3..46b3128185 100644
+--- a/include/ui/console.h
++++ b/include/ui/console.h
+@@ -131,18 +131,16 @@ struct QemuConsoleClass {
+     ObjectClass parent_class;
+ };
+ 
+-typedef uint32_t (* DisplayGLTextureBorrower)(uint32_t id, bool *y_0_top,
+-                                              uint32_t *width,
+-                                              uint32_t *height,
+-                                              void **d3d_tex2d);
+-
+ typedef struct ScanoutTexture {
+     uint32_t backing_id;
+-    DisplayGLTextureBorrower backing_borrow;
++    bool backing_y_0_top;
++    uint32_t backing_width;
++    uint32_t backing_height;
+     uint32_t x;
+     uint32_t y;
+     uint32_t width;
+     uint32_t height;
++    void *d3d_tex2d;
+ } ScanoutTexture;
+ 
+ typedef struct QemuUIInfo {
+@@ -242,9 +240,12 @@ typedef struct DisplayChangeListenerOps {
+     /* required if GL */
+     void (*dpy_gl_scanout_texture)(DisplayChangeListener *dcl,
+                                    uint32_t backing_id,
+-                                   DisplayGLTextureBorrower backing_borrow,
++                                   bool backing_y_0_top,
++                                   uint32_t backing_width,
++                                   uint32_t backing_height,
+                                    uint32_t x, uint32_t y,
+-                                   uint32_t w, uint32_t h);
++                                   uint32_t w, uint32_t h,
++                                   void *d3d_tex2d);
+     /* optional (default to true if has dpy_gl_scanout_dmabuf) */
+     bool (*dpy_has_dmabuf)(DisplayChangeListener *dcl);
+     /* optional */
+@@ -324,9 +325,11 @@ bool dpy_gfx_check_format(QemuConsole *con,
+                           pixman_format_code_t format);
+ 
+ void dpy_gl_scanout_disable(QemuConsole *con);
+-void dpy_gl_scanout_texture(QemuConsole *con, uint32_t backing_id,
+-                            DisplayGLTextureBorrower backing_borrow,
+-                            uint32_t x, uint32_t y, uint32_t w, uint32_t h);
++void dpy_gl_scanout_texture(QemuConsole *con,
++                            uint32_t backing_id, bool backing_y_0_top,
++                            uint32_t backing_width, uint32_t backing_height,
++                            uint32_t x, uint32_t y, uint32_t w, uint32_t h,
++                            void *d3d_tex2d);
+ void dpy_gl_scanout_dmabuf(QemuConsole *con,
+                            QemuDmaBuf *dmabuf);
+ void dpy_gl_cursor_dmabuf(QemuConsole *con, QemuDmaBuf *dmabuf,
+diff --git a/include/ui/gtk.h b/include/ui/gtk.h
+index bfd1075b6d..aa3d637029 100644
+--- a/include/ui/gtk.h
++++ b/include/ui/gtk.h
+@@ -171,9 +171,12 @@ QEMUGLContext gd_egl_create_context(DisplayGLCtx *dgc,
+ void gd_egl_scanout_disable(DisplayChangeListener *dcl);
+ void gd_egl_scanout_texture(DisplayChangeListener *dcl,
+                             uint32_t backing_id,
+-                            DisplayGLTextureBorrower backing_borrow,
++                            bool backing_y_0_top,
++                            uint32_t backing_width,
++                            uint32_t backing_height,
+                             uint32_t x, uint32_t y,
+-                            uint32_t w, uint32_t h);
++                            uint32_t w, uint32_t h,
++                            void *d3d_tex2d);
+ void gd_egl_scanout_dmabuf(DisplayChangeListener *dcl,
+                            QemuDmaBuf *dmabuf);
+ void gd_egl_cursor_dmabuf(DisplayChangeListener *dcl,
+@@ -205,9 +208,12 @@ void gd_gl_area_scanout_dmabuf(DisplayChangeListener *dcl,
+                                QemuDmaBuf *dmabuf);
+ void gd_gl_area_scanout_texture(DisplayChangeListener *dcl,
+                                 uint32_t backing_id,
+-                                DisplayGLTextureBorrower backing_borrow,
++                                bool backing_y_0_top,
++                                uint32_t backing_width,
++                                uint32_t backing_height,
+                                 uint32_t x, uint32_t y,
+-                                uint32_t w, uint32_t h);
++                                uint32_t w, uint32_t h,
++                                void *d3d_tex2d);
+ void gd_gl_area_scanout_disable(DisplayChangeListener *dcl);
+ void gd_gl_area_scanout_flush(DisplayChangeListener *dcl,
+                               uint32_t x, uint32_t y, uint32_t w, uint32_t h);
+diff --git a/include/ui/sdl2.h b/include/ui/sdl2.h
+index c079f9c5e0..dbe6e3d973 100644
+--- a/include/ui/sdl2.h
++++ b/include/ui/sdl2.h
+@@ -88,9 +88,12 @@ int sdl2_gl_make_context_current(DisplayGLCtx *dgc,
+ void sdl2_gl_scanout_disable(DisplayChangeListener *dcl);
+ void sdl2_gl_scanout_texture(DisplayChangeListener *dcl,
+                              uint32_t backing_id,
+-                             DisplayGLTextureBorrower backing_borrow,
++                             bool backing_y_0_top,
++                             uint32_t backing_width,
++                             uint32_t backing_height,
+                              uint32_t x, uint32_t y,
+-                             uint32_t w, uint32_t h);
++                             uint32_t w, uint32_t h,
++                             void *d3d_tex2d);
+ void sdl2_gl_scanout_flush(DisplayChangeListener *dcl,
+                            uint32_t x, uint32_t y, uint32_t w, uint32_t h);
+ 
+diff --git a/include/ui/spice-display.h b/include/ui/spice-display.h
+index 6f8305888d..4b9121bfb5 100644
+--- a/include/ui/spice-display.h
++++ b/include/ui/spice-display.h
+@@ -141,8 +141,8 @@ struct SimpleSpiceDisplay {
+ #if defined(CONFIG_ANGLE)
+     EGLSurface esurface;
+     egl_fb iosurface_fb;
+-    DisplayGLTextureBorrower backing_borrow;
+-    uint32_t backing_id;
++    GLuint tex_id;
++    bool y_0_top;
+ #endif
+     bool render_cursor;
+ 
+diff --git a/ui/console.c b/ui/console.c
+index 4a0d205d73..480cd63f90 100644
+--- a/ui/console.c
++++ b/ui/console.c
+@@ -288,11 +288,14 @@ static void displaychangelistener_display_console(DisplayChangeListener *dcl,
+                dcl->ops->dpy_gl_scanout_texture) {
+         dcl->ops->dpy_gl_scanout_texture(dcl,
+                                          con->scanout.texture.backing_id,
+-                                         con->scanout.texture.backing_borrow,
++                                         con->scanout.texture.backing_y_0_top,
++                                         con->scanout.texture.backing_width,
++                                         con->scanout.texture.backing_height,
+                                          con->scanout.texture.x,
+                                          con->scanout.texture.y,
+                                          con->scanout.texture.width,
+-                                         con->scanout.texture.height);
++                                         con->scanout.texture.height,
++                                         con->scanout.texture.d3d_tex2d);
+     }
+ }
+ 
+@@ -1015,25 +1018,31 @@ void dpy_gl_scanout_disable(QemuConsole *con)
+ 
+ void dpy_gl_scanout_texture(QemuConsole *con,
+                             uint32_t backing_id,
+-                            DisplayGLTextureBorrower backing_borrow,
++                            bool backing_y_0_top,
++                            uint32_t backing_width,
++                            uint32_t backing_height,
+                             uint32_t x, uint32_t y,
+-                            uint32_t width, uint32_t height)
++                            uint32_t width, uint32_t height,
++                            void *d3d_tex2d)
+ {
+     DisplayState *s = con->ds;
+     DisplayChangeListener *dcl;
+ 
+     con->scanout.kind = SCANOUT_TEXTURE;
+     con->scanout.texture = (ScanoutTexture) {
+-        backing_id, backing_borrow,
+-        x, y, width, height
++        backing_id, backing_y_0_top, backing_width, backing_height,
++        x, y, width, height, d3d_tex2d,
+     };
+     QLIST_FOREACH(dcl, &s->listeners, next) {
+         if (con != dcl->con) {
+             continue;
+         }
+         if (dcl->ops->dpy_gl_scanout_texture) {
+-            dcl->ops->dpy_gl_scanout_texture(dcl, backing_id, backing_borrow,
+-                                             x, y, width, height);
++            dcl->ops->dpy_gl_scanout_texture(dcl, backing_id,
++                                             backing_y_0_top,
++                                             backing_width, backing_height,
++                                             x, y, width, height,
++                                             d3d_tex2d);
+         }
+     }
+ }
+diff --git a/ui/dbus-console.c b/ui/dbus-console.c
+index 31939d0207..85e215ef23 100644
+--- a/ui/dbus-console.c
++++ b/ui/dbus-console.c
+@@ -94,9 +94,12 @@ dbus_gl_scanout_disable(DisplayChangeListener *dcl)
+ static void
+ dbus_gl_scanout_texture(DisplayChangeListener *dcl,
+                         uint32_t tex_id,
+-                        DisplayGLTextureBorrower backing_borrow,
++                        bool backing_y_0_top,
++                        uint32_t backing_width,
++                        uint32_t backing_height,
+                         uint32_t x, uint32_t y,
+-                        uint32_t w, uint32_t h)
++                        uint32_t w, uint32_t h,
++                        void *d3d_tex2d)
+ {
+     DBusDisplayConsole *ddc = container_of(dcl, DBusDisplayConsole, dcl);
+ 
+diff --git a/ui/dbus-listener.c b/ui/dbus-listener.c
+index abcc96287b..51244c9240 100644
+--- a/ui/dbus-listener.c
++++ b/ui/dbus-listener.c
+@@ -491,7 +491,7 @@ static bool dbus_scanout_map(DBusDisplayListener *ddl)
+ #endif /* WIN32 */
+ 
+ #ifdef CONFIG_OPENGL
+-static void dbus_scanout_borrowed_texture(DisplayChangeListener *dcl,
++static void dbus_scanout_texture(DisplayChangeListener *dcl,
+                                  uint32_t tex_id,
+                                  bool backing_y_0_top,
+                                  uint32_t backing_width,
+@@ -540,25 +540,6 @@ static void dbus_scanout_borrowed_texture(DisplayChangeListener *dcl,
+ #endif
+ }
+ 
+-static void dbus_scanout_texture(DisplayChangeListener *dcl,
+-                                 uint32_t backing_id,
+-                                 DisplayGLTextureBorrower backing_borrow,
+-                                 uint32_t x, uint32_t y,
+-                                 uint32_t w, uint32_t h)
+-{
+-    bool backing_y_0_top;
+-    uint32_t backing_width;
+-    uint32_t backing_height;
+-    void *d3d_tex2d;
+-    uint32_t tex_id = backing_borrow(backing_id, &backing_y_0_top,
+-                                     &backing_width, &backing_height,
+-                                     &d3d_tex2d);
+-
+-    dbus_scanout_borrowed_texture(dcl, tex_id, backing_y_0_top,
+-                                  backing_width, backing_height,
+-                                  x, y, w, h, d3d_tex2d);
+-}
+-
+ #ifdef CONFIG_GBM
+ static void dbus_cursor_dmabuf(DisplayChangeListener *dcl,
+                                QemuDmaBuf *dmabuf, bool have_hot,
+@@ -798,7 +779,7 @@ static void dbus_gl_gfx_switch(DisplayChangeListener *dcl,
+         int height = surface_height(ddl->ds);
+ 
+         /* TODO: lazy send dmabuf (there are unnecessary sent otherwise) */
+-        dbus_scanout_borrowed_texture(&ddl->dcl, ddl->ds->texture, false,
++        dbus_scanout_texture(&ddl->dcl, ddl->ds->texture, false,
+                              width, height, 0, 0, width, height, NULL);
+     }
+ }
+diff --git a/ui/egl-headless.c b/ui/egl-headless.c
+index 96bbf52fd0..ba8d099f80 100644
+--- a/ui/egl-headless.c
++++ b/ui/egl-headless.c
+@@ -63,7 +63,7 @@ static void egl_scanout_disable(DisplayChangeListener *dcl)
+     egl_fb_destroy(&edpy->blit_fb);
+ }
+ 
+-static void egl_scanout_imported_texture(DisplayChangeListener *dcl,
++static void egl_scanout_texture(DisplayChangeListener *dcl,
+                                 uint32_t backing_id,
+                                 bool backing_y_0_top,
+                                 uint32_t backing_width,
+@@ -88,25 +88,6 @@ static void egl_scanout_imported_texture(DisplayChangeListener *dcl,
+     }
+ }
+ 
+-static void egl_scanout_texture(DisplayChangeListener *dcl,
+-                                uint32_t backing_id,
+-                                DisplayGLTextureBorrower backing_borrow,
+-                                uint32_t x, uint32_t y,
+-                                uint32_t w, uint32_t h)
+-{
+-    bool backing_y_0_top;
+-    uint32_t backing_width;
+-    uint32_t backing_height;
+-    void *d3d_tex2d;
+-
+-    GLuint backing_texture = backing_borrow(backing_id, &backing_y_0_top,
+-                                            &backing_width, &backing_height,
+-                                            &d3d_tex2d);
+-    egl_scanout_imported_texture(dcl, backing_texture, backing_y_0_top,
+-                                 backing_width, backing_height,
+-                                 x, y, w, h, d3d_tex2d);
+-}
+-
+ #ifdef CONFIG_GBM
+ 
+ static void egl_scanout_dmabuf(DisplayChangeListener *dcl,
+@@ -123,7 +104,7 @@ static void egl_scanout_dmabuf(DisplayChangeListener *dcl,
+     width = qemu_dmabuf_get_width(dmabuf);
+     height = qemu_dmabuf_get_height(dmabuf);
+ 
+-    egl_scanout_imported_texture(dcl, texture, false, width, height, 0, 0,
++    egl_scanout_texture(dcl, texture, false, width, height, 0, 0,
+                         width, height, NULL);
+ }
+ 
+diff --git a/ui/gtk-egl.c b/ui/gtk-egl.c
+index d600456159..341afd41fb 100644
+--- a/ui/gtk-egl.c
++++ b/ui/gtk-egl.c
+@@ -233,7 +233,7 @@ void gd_egl_scanout_disable(DisplayChangeListener *dcl)
+     gtk_egl_set_scanout_mode(vc, false);
+ }
+ 
+-void gd_egl_scanout_borrowed_texture(DisplayChangeListener *dcl,
++void gd_egl_scanout_texture(DisplayChangeListener *dcl,
+                             uint32_t backing_id, bool backing_y_0_top,
+                             uint32_t backing_width, uint32_t backing_height,
+                             uint32_t x, uint32_t y,
+@@ -263,25 +263,8 @@ void gd_egl_scanout_borrowed_texture(DisplayChangeListener *dcl,
+                          backing_id, false);
+ }
+ 
+-void gd_egl_scanout_texture(DisplayChangeListener *dcl, uint32_t backing_id,
+-                            DisplayGLTextureBorrower backing_borrow,
+-                            uint32_t x, uint32_t y,
+-                            uint32_t w, uint32_t h)
+-{
+-    bool backing_y_0_top;
+-    uint32_t backing_width;
+-    uint32_t backing_height;
+-    void *d3d_tex2d;
+-
+-    GLuint backing_texture = backing_borrow(backing_id, &backing_y_0_top,
+-                                            &backing_width, &backing_height,
+-                                            &d3d_tex2d);
+-    gd_egl_scanout_borrowed_texture(dcl, backing_texture, backing_y_0_top,
+-                                    backing_width, backing_height,
+-                                    x, y, w, h, d3d_tex2d);
+-}
+-
+-void gd_egl_scanout_dmabuf(DisplayChangeListener *dcl, QemuDmaBuf *dmabuf)
++void gd_egl_scanout_dmabuf(DisplayChangeListener *dcl,
++                           QemuDmaBuf *dmabuf)
+ {
+ #ifdef CONFIG_GBM
+     VirtualConsole *vc = container_of(dcl, VirtualConsole, gfx.dcl);
+@@ -305,8 +288,8 @@ void gd_egl_scanout_dmabuf(DisplayChangeListener *dcl, QemuDmaBuf *dmabuf)
+     backing_height = qemu_dmabuf_get_backing_height(dmabuf);
+     y0_top = qemu_dmabuf_get_y0_top(dmabuf);
+ 
+-    gd_egl_scanout_borrowed_texture(dcl, texture, y0_top, backing_width,
+-                                    backing_height, x, y, width, height, NULL);
++    gd_egl_scanout_texture(dcl, texture, y0_top, backing_width, backing_height,
++                           x, y, width, height, NULL);
+ 
+     if (qemu_dmabuf_get_allow_fences(dmabuf)) {
+         vc->gfx.guest_fb.dmabuf = dmabuf;
+diff --git a/ui/gtk-gl-area.c b/ui/gtk-gl-area.c
+index 32bca91cbb..2c9a0db425 100644
+--- a/ui/gtk-gl-area.c
++++ b/ui/gtk-gl-area.c
+@@ -248,7 +248,7 @@ void gd_gl_area_destroy_context(DisplayGLCtx *dgc, QEMUGLContext ctx)
+     g_clear_object(&ctx);
+ }
+ 
+-void gd_gl_area_scanout_borrowed_texture(DisplayChangeListener *dcl,
++void gd_gl_area_scanout_texture(DisplayChangeListener *dcl,
+                                 uint32_t backing_id,
+                                 bool backing_y_0_top,
+                                 uint32_t backing_width,
+@@ -277,26 +277,6 @@ void gd_gl_area_scanout_borrowed_texture(DisplayChangeListener *dcl,
+                          backing_id, false);
+ }
+ 
+-void gd_gl_area_scanout_texture(DisplayChangeListener *dcl,
+-                                uint32_t backing_id,
+-                                DisplayGLTextureBorrower backing_borrow,
+-                                uint32_t x, uint32_t y,
+-                                uint32_t w, uint32_t h)
+-{
+-    bool backing_y_0_top;
+-    uint32_t backing_width;
+-    uint32_t backing_height;
+-    void *d3d_tex2d;
+-
+-    GLuint backing_texture = backing_borrow(backing_id, &backing_y_0_top,
+-                                            &backing_width, &backing_height,
+-                                            &d3d_tex2d);
+-    gd_gl_area_scanout_borrowed_texture(dcl, backing_texture,
+-                                        backing_y_0_top,
+-                                        backing_width, backing_height,
+-                                        x, y, w, h, d3d_tex2d);
+-}
+-
+ void gd_gl_area_scanout_disable(DisplayChangeListener *dcl)
+ {
+     VirtualConsole *vc = container_of(dcl, VirtualConsole, gfx.dcl);
+@@ -341,7 +321,7 @@ void gd_gl_area_scanout_dmabuf(DisplayChangeListener *dcl,
+     backing_height = qemu_dmabuf_get_backing_height(dmabuf);
+     y0_top = qemu_dmabuf_get_y0_top(dmabuf);
+ 
+-    gd_gl_area_scanout_borrowed_texture(dcl, texture, y0_top,
++    gd_gl_area_scanout_texture(dcl, texture, y0_top,
+                                backing_width, backing_height,
+                                x, y, width, height, NULL);
+ 
+diff --git a/ui/sdl2-gl.c b/ui/sdl2-gl.c
+index b164fb6b28..1d8ff3fab0 100644
+--- a/ui/sdl2-gl.c
++++ b/ui/sdl2-gl.c
+@@ -201,15 +201,14 @@ void sdl2_gl_scanout_disable(DisplayChangeListener *dcl)
+ 
+ void sdl2_gl_scanout_texture(DisplayChangeListener *dcl,
+                              uint32_t backing_id,
+-                             DisplayGLTextureBorrower backing_borrow,
++                             bool backing_y_0_top,
++                             uint32_t backing_width,
++                             uint32_t backing_height,
+                              uint32_t x, uint32_t y,
+-                             uint32_t w, uint32_t h)
++                             uint32_t w, uint32_t h,
++                             void *d3d_tex2d)
+ {
+     struct sdl2_console *scon = container_of(dcl, struct sdl2_console, dcl);
+-    bool backing_y_0_top;
+-    uint32_t backing_width;
+-    uint32_t backing_height;
+-    void *d3d_tex2d;
+ 
+     assert(scon->opengl);
+ 
+@@ -227,7 +226,7 @@ void sdl2_gl_scanout_texture(DisplayChangeListener *dcl,
+ 
+     sdl2_set_scanout_mode(scon, true);
+     egl_fb_setup_for_tex(&scon->guest_fb, backing_width, backing_height,
+-                         backing_texture, false);
++                         backing_id, false);
+ }
+ 
+ void sdl2_gl_scanout_flush(DisplayChangeListener *dcl,
+diff --git a/ui/spice-display.c b/ui/spice-display.c
+index c7688256e9..61cdda0e8a 100644
+--- a/ui/spice-display.c
++++ b/ui/spice-display.c
+@@ -1132,36 +1132,30 @@ static void qemu_spice_gl_scanout_disable(DisplayChangeListener *dcl)
+     spice_iosurface_destroy(ssd);
+ #endif
+ #if defined(CONFIG_ANGLE)
+-    ssd->backing_borrow = NULL;
+-    ssd->backing_id = -1;
++    ssd->tex_id = -1;
+ #endif
+ }
+ 
+ static void qemu_spice_gl_scanout_texture(DisplayChangeListener *dcl,
+-                                          uint32_t backing_id,
+-                                          DisplayGLTextureBorrower backing_borrow,
++                                          uint32_t tex_id,
++                                          bool y_0_top,
++                                          uint32_t backing_width,
++                                          uint32_t backing_height,
+                                           uint32_t x, uint32_t y,
+-                                          uint32_t w, uint32_t h)
++                                          uint32_t w, uint32_t h,
++                                          void *d3d_tex2d)
+ {
+     SimpleSpiceDisplay *ssd = container_of(dcl, SimpleSpiceDisplay, dcl);
+     EGLint stride = 0, fourcc = 0;
+     int fd = -1;
+-    bool y_0_top;
+-    uint32_t backing_width;
+-    uint32_t backing_height;
+-    void *d3d_tex2d;
+-
+-    GLuint tex_id = backing_borrow(backing_id, &y_0_top,
+-                                   &backing_width, &backing_height,
+-                                   &d3d_tex2d);
+-    assert(tex_id);
++
+ #if defined(CONFIG_GBM)
+     fd = egl_get_fd_for_texture(tex_id, &stride, &fourcc, NULL);
+ #elif defined(CONFIG_IOSURFACE)
+     if (spice_iosurface_resize(ssd, backing_width, backing_height)) {
+ #if defined(CONFIG_ANGLE)
+-        ssd->backing_borrow = backing_borrow;
+-        ssd->backing_id = backing_id;
++        ssd->tex_id = tex_id;
++        ssd->y_0_top = y_0_top;
+ #endif
+         fd = spice_iosurface_create_fd(ssd, &fourcc);
+     } else {
+@@ -1253,11 +1247,10 @@ static void qemu_spice_gl_update(DisplayChangeListener *dcl,
+     EGLint stride = 0, fourcc = 0;
+     int fd;
+     bool render_cursor = false;
++    uint32_t texture;
+ #endif
+     bool y_0_top = false; /* FIXME */
+     uint64_t cookie;
+-    int fd;
+-    uint32_t width, height, texture;
+ 
+     if (!ssd->have_scanout) {
+         return;
+@@ -1331,8 +1324,8 @@ static void qemu_spice_gl_update(DisplayChangeListener *dcl,
+         glFlush();
+     }
+ #elif defined(CONFIG_ANGLE) && defined(CONFIG_IOSURFACE)
+-    GLuint tex_id = ssd->backing_borrow(ssd->backing_id, &y_0_top,
+-                                        NULL, NULL, NULL);
++    GLuint tex_id = ssd->tex_id;
++    y_0_top = ssd->y_0_top;
+     spice_iosurface_blit(ssd, tex_id, !y_0_top, false);
+     //TODO: cursor stuff
+ #endif
+@@ -1403,8 +1396,7 @@ static void qemu_spice_display_init_one(QemuConsole *con)
+ #endif
+ #if defined(CONFIG_ANGLE)
+         ssd->esurface = EGL_NO_SURFACE;
+-        ssd->backing_borrow = NULL;
+-        ssd->backing_id = -1;
++        ssd->tex_id = -1;
+ #endif
+     }
+ #endif
+-- 
+2.41.0
+
+From 11c36e637e854a63d07dc902e82378c8e2a9071f Mon Sep 17 00:00:00 2001
+From: Joelle van Dyne <j@getutm.app>
+Date: Sat, 29 Nov 2025 22:53:18 -0800
+Subject: [PATCH 2/9] egl-helpers: store handle to native device
+
+Make way for other platforms by making the variable more general. Also we
+will be using the device in the future so let's save the pointer in the
+global instead of just a boolean flag.
+
+Signed-off-by: Joelle van Dyne <j@getutm.app>
+---
+ hw/display/virtio-gpu-virgl.c | 2 +-
+ include/ui/egl-helpers.h      | 2 +-
+ ui/egl-helpers.c              | 4 ++--
+ 3 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/hw/display/virtio-gpu-virgl.c b/hw/display/virtio-gpu-virgl.c
+index 145a0b3879..0511c6a478 100644
+--- a/hw/display/virtio-gpu-virgl.c
++++ b/hw/display/virtio-gpu-virgl.c
+@@ -1104,7 +1104,7 @@ int virtio_gpu_virgl_init(VirtIOGPU *g)
+     }
+ #endif
+ #ifdef VIRGL_RENDERER_D3D11_SHARE_TEXTURE
+-    if (qemu_egl_angle_d3d) {
++    if (qemu_egl_angle_native_device) {
+         flags |= VIRGL_RENDERER_D3D11_SHARE_TEXTURE;
+     }
+ #endif
+diff --git a/include/ui/egl-helpers.h b/include/ui/egl-helpers.h
+index eb08ef1990..2930aef7e3 100644
+--- a/include/ui/egl-helpers.h
++++ b/include/ui/egl-helpers.h
+@@ -15,7 +15,7 @@
+ extern EGLDisplay *qemu_egl_display;
+ extern EGLConfig qemu_egl_config;
+ extern DisplayGLMode qemu_egl_mode;
+-extern bool qemu_egl_angle_d3d;
++extern void *qemu_egl_angle_native_device;
+ 
+ typedef struct egl_fb {
+     int width;
+diff --git a/ui/egl-helpers.c b/ui/egl-helpers.c
+index 7b403b87a5..42d2d511b1 100644
+--- a/ui/egl-helpers.c
++++ b/ui/egl-helpers.c
+@@ -27,7 +27,7 @@
+ EGLDisplay *qemu_egl_display;
+ EGLConfig qemu_egl_config;
+ DisplayGLMode qemu_egl_mode;
+-bool qemu_egl_angle_d3d;
++void *qemu_egl_angle_native_device;
+ 
+ /* ------------------------------------------------------------------ */
+ 
+@@ -640,7 +640,7 @@ int qemu_egl_init_dpy_win32(EGLNativeDisplayType dpy, DisplayGLMode mode)
+         }
+ 
+         trace_egl_init_d3d11_device(device);
+-        qemu_egl_angle_d3d = device != NULL;
++        qemu_egl_angle_native_device = d3d11_device;
+     }
+ #endif
+ 
+-- 
+2.41.0
+
+From e02ff2b56fedb74e1161498950b55d2284a2788d Mon Sep 17 00:00:00 2001
+From: Joelle van Dyne <j@getutm.app>
+Date: Sat, 3 Jan 2026 14:32:15 -0800
+Subject: [PATCH 3/9] console: rename `d3d_tex2d` to `native`
+
+In order to support native texture scanout beyond D3D, we make this more
+generic allowing for multiple native texture handle types.
+
+Signed-off-by: Joelle van Dyne <j@getutm.app>
+---
+ hw/display/virtio-gpu-virgl.c | 10 +++++++---
+ include/ui/console.h          | 20 +++++++++++++++++---
+ include/ui/gtk.h              |  4 ++--
+ include/ui/sdl2.h             |  2 +-
+ ui/console.c                  |  8 ++++----
+ ui/dbus-console.c             |  2 +-
+ ui/dbus-listener.c            |  8 ++++----
+ ui/egl-headless.c             |  4 ++--
+ ui/gtk-egl.c                  |  4 ++--
+ ui/gtk-gl-area.c              |  4 ++--
+ ui/sdl2-gl.c                  |  2 +-
+ ui/spice-display.c            |  2 +-
+ 12 files changed, 44 insertions(+), 26 deletions(-)
+
+diff --git a/hw/display/virtio-gpu-virgl.c b/hw/display/virtio-gpu-virgl.c
+index 0511c6a478..eac49fbae8 100644
+--- a/hw/display/virtio-gpu-virgl.c
++++ b/hw/display/virtio-gpu-virgl.c
+@@ -416,14 +416,18 @@ static void virgl_cmd_set_scanout(VirtIOGPU *g,
+ 
+     if (ss.resource_id && ss.r.width && ss.r.height) {
+         struct virgl_renderer_resource_info info;
+-        void *d3d_tex2d = NULL;
++        ScanoutTextureNative native = NO_NATIVE_TEXTURE;
+ 
+ #if VIRGL_VERSION_MAJOR >= 1
+         struct virgl_renderer_resource_info_ext ext;
+         memset(&ext, 0, sizeof(ext));
+         ret = virgl_renderer_resource_get_info_ext(ss.resource_id, &ext);
+         info = ext.base;
+-        d3d_tex2d = ext.d3d_tex2d;
++        native = (ScanoutTextureNative){
++            .type = ext.d3d_tex2d ? SCANOUT_TEXTURE_NATIVE_TYPE_D3D :
++                                    SCANOUT_TEXTURE_NATIVE_TYPE_NONE,
++            .handle = ext.d3d_tex2d,
++        };
+ #else
+         memset(&info, 0, sizeof(info));
+         ret = virgl_renderer_resource_get_info(ss.resource_id, &info);
+@@ -443,7 +447,7 @@ static void virgl_cmd_set_scanout(VirtIOGPU *g,
+             info.flags & VIRTIO_GPU_RESOURCE_FLAG_Y_0_TOP,
+             info.width, info.height,
+             ss.r.x, ss.r.y, ss.r.width, ss.r.height,
+-            d3d_tex2d);
++            native);
+     } else {
+         dpy_gfx_replace_surface(
+             g->parent_obj.scanout[ss.scanout_id].con, NULL);
+diff --git a/include/ui/console.h b/include/ui/console.h
+index 46b3128185..445e563150 100644
+--- a/include/ui/console.h
++++ b/include/ui/console.h
+@@ -131,6 +131,20 @@ struct QemuConsoleClass {
+     ObjectClass parent_class;
+ };
+ 
++typedef enum ScanoutTextureNativeType {
++    SCANOUT_TEXTURE_NATIVE_TYPE_NONE,
++    SCANOUT_TEXTURE_NATIVE_TYPE_D3D,
++} ScanoutTextureNativeType;
++
++typedef struct ScanoutTextureNative {
++    ScanoutTextureNativeType type;
++    void *handle;
++} ScanoutTextureNative;
++
++#define NO_NATIVE_TEXTURE ((ScanoutTextureNative){ \
++    .type = SCANOUT_TEXTURE_NATIVE_TYPE_NONE \
++})
++
+ typedef struct ScanoutTexture {
+     uint32_t backing_id;
+     bool backing_y_0_top;
+@@ -140,7 +154,7 @@ typedef struct ScanoutTexture {
+     uint32_t y;
+     uint32_t width;
+     uint32_t height;
+-    void *d3d_tex2d;
++    ScanoutTextureNative native;
+ } ScanoutTexture;
+ 
+ typedef struct QemuUIInfo {
+@@ -245,7 +259,7 @@ typedef struct DisplayChangeListenerOps {
+                                    uint32_t backing_height,
+                                    uint32_t x, uint32_t y,
+                                    uint32_t w, uint32_t h,
+-                                   void *d3d_tex2d);
++                                   ScanoutTextureNative native);
+     /* optional (default to true if has dpy_gl_scanout_dmabuf) */
+     bool (*dpy_has_dmabuf)(DisplayChangeListener *dcl);
+     /* optional */
+@@ -329,7 +343,7 @@ void dpy_gl_scanout_texture(QemuConsole *con,
+                             uint32_t backing_id, bool backing_y_0_top,
+                             uint32_t backing_width, uint32_t backing_height,
+                             uint32_t x, uint32_t y, uint32_t w, uint32_t h,
+-                            void *d3d_tex2d);
++                            ScanoutTextureNative native);
+ void dpy_gl_scanout_dmabuf(QemuConsole *con,
+                            QemuDmaBuf *dmabuf);
+ void dpy_gl_cursor_dmabuf(QemuConsole *con, QemuDmaBuf *dmabuf,
+diff --git a/include/ui/gtk.h b/include/ui/gtk.h
+index aa3d637029..6aacd70ea2 100644
+--- a/include/ui/gtk.h
++++ b/include/ui/gtk.h
+@@ -176,7 +176,7 @@ void gd_egl_scanout_texture(DisplayChangeListener *dcl,
+                             uint32_t backing_height,
+                             uint32_t x, uint32_t y,
+                             uint32_t w, uint32_t h,
+-                            void *d3d_tex2d);
++                            ScanoutTextureNative native);
+ void gd_egl_scanout_dmabuf(DisplayChangeListener *dcl,
+                            QemuDmaBuf *dmabuf);
+ void gd_egl_cursor_dmabuf(DisplayChangeListener *dcl,
+@@ -213,7 +213,7 @@ void gd_gl_area_scanout_texture(DisplayChangeListener *dcl,
+                                 uint32_t backing_height,
+                                 uint32_t x, uint32_t y,
+                                 uint32_t w, uint32_t h,
+-                                void *d3d_tex2d);
++                                ScanoutTextureNative native);
+ void gd_gl_area_scanout_disable(DisplayChangeListener *dcl);
+ void gd_gl_area_scanout_flush(DisplayChangeListener *dcl,
+                               uint32_t x, uint32_t y, uint32_t w, uint32_t h);
+diff --git a/include/ui/sdl2.h b/include/ui/sdl2.h
+index dbe6e3d973..fdefb88229 100644
+--- a/include/ui/sdl2.h
++++ b/include/ui/sdl2.h
+@@ -93,7 +93,7 @@ void sdl2_gl_scanout_texture(DisplayChangeListener *dcl,
+                              uint32_t backing_height,
+                              uint32_t x, uint32_t y,
+                              uint32_t w, uint32_t h,
+-                             void *d3d_tex2d);
++                             ScanoutTextureNative native);
+ void sdl2_gl_scanout_flush(DisplayChangeListener *dcl,
+                            uint32_t x, uint32_t y, uint32_t w, uint32_t h);
+ 
+diff --git a/ui/console.c b/ui/console.c
+index 480cd63f90..d8d58fc14a 100644
+--- a/ui/console.c
++++ b/ui/console.c
+@@ -295,7 +295,7 @@ static void displaychangelistener_display_console(DisplayChangeListener *dcl,
+                                          con->scanout.texture.y,
+                                          con->scanout.texture.width,
+                                          con->scanout.texture.height,
+-                                         con->scanout.texture.d3d_tex2d);
++                                         con->scanout.texture.native);
+     }
+ }
+ 
+@@ -1023,7 +1023,7 @@ void dpy_gl_scanout_texture(QemuConsole *con,
+                             uint32_t backing_height,
+                             uint32_t x, uint32_t y,
+                             uint32_t width, uint32_t height,
+-                            void *d3d_tex2d)
++                            ScanoutTextureNative native)
+ {
+     DisplayState *s = con->ds;
+     DisplayChangeListener *dcl;
+@@ -1031,7 +1031,7 @@ void dpy_gl_scanout_texture(QemuConsole *con,
+     con->scanout.kind = SCANOUT_TEXTURE;
+     con->scanout.texture = (ScanoutTexture) {
+         backing_id, backing_y_0_top, backing_width, backing_height,
+-        x, y, width, height, d3d_tex2d,
++        x, y, width, height, native,
+     };
+     QLIST_FOREACH(dcl, &s->listeners, next) {
+         if (con != dcl->con) {
+@@ -1042,7 +1042,7 @@ void dpy_gl_scanout_texture(QemuConsole *con,
+                                              backing_y_0_top,
+                                              backing_width, backing_height,
+                                              x, y, width, height,
+-                                             d3d_tex2d);
++                                             native);
+         }
+     }
+ }
+diff --git a/ui/dbus-console.c b/ui/dbus-console.c
+index 85e215ef23..651f0daeaf 100644
+--- a/ui/dbus-console.c
++++ b/ui/dbus-console.c
+@@ -99,7 +99,7 @@ dbus_gl_scanout_texture(DisplayChangeListener *dcl,
+                         uint32_t backing_height,
+                         uint32_t x, uint32_t y,
+                         uint32_t w, uint32_t h,
+-                        void *d3d_tex2d)
++                        ScanoutTextureNative native)
+ {
+     DBusDisplayConsole *ddc = container_of(dcl, DBusDisplayConsole, dcl);
+ 
+diff --git a/ui/dbus-listener.c b/ui/dbus-listener.c
+index 51244c9240..f5dabaeb85 100644
+--- a/ui/dbus-listener.c
++++ b/ui/dbus-listener.c
+@@ -498,7 +498,7 @@ static void dbus_scanout_texture(DisplayChangeListener *dcl,
+                                  uint32_t backing_height,
+                                  uint32_t x, uint32_t y,
+                                  uint32_t w, uint32_t h,
+-                                 void *d3d_tex2d)
++                                 ScanoutTextureNative native)
+ {
+     trace_dbus_scanout_texture(tex_id, backing_y_0_top,
+                                backing_width, backing_height, x, y, w, h);
+@@ -530,8 +530,8 @@ static void dbus_scanout_texture(DisplayChangeListener *dcl,
+     assert(surface_width(ddl->ds) == w);
+     assert(surface_height(ddl->ds) == h);
+ 
+-    if (d3d_tex2d) {
+-        dbus_scanout_share_d3d_texture(ddl, d3d_tex2d, backing_y_0_top,
++    if (native.type == SCANOUT_TEXTURE_NATIVE_TYPE_D3D) {
++        dbus_scanout_share_d3d_texture(ddl, native.handle, backing_y_0_top,
+                                        backing_width, backing_height, x, y, w, h);
+     } else {
+         dbus_scanout_map(ddl);
+@@ -780,7 +780,7 @@ static void dbus_gl_gfx_switch(DisplayChangeListener *dcl,
+ 
+         /* TODO: lazy send dmabuf (there are unnecessary sent otherwise) */
+         dbus_scanout_texture(&ddl->dcl, ddl->ds->texture, false,
+-                             width, height, 0, 0, width, height, NULL);
++                             width, height, 0, 0, width, height, NO_NATIVE_TEXTURE);
+     }
+ }
+ #endif
+diff --git a/ui/egl-headless.c b/ui/egl-headless.c
+index ba8d099f80..5a403d13e6 100644
+--- a/ui/egl-headless.c
++++ b/ui/egl-headless.c
+@@ -70,7 +70,7 @@ static void egl_scanout_texture(DisplayChangeListener *dcl,
+                                 uint32_t backing_height,
+                                 uint32_t x, uint32_t y,
+                                 uint32_t w, uint32_t h,
+-                                void *d3d_tex2d)
++                                ScanoutTextureNative native)
+ {
+     egl_dpy *edpy = container_of(dcl, egl_dpy, dcl);
+ 
+@@ -105,7 +105,7 @@ static void egl_scanout_dmabuf(DisplayChangeListener *dcl,
+     height = qemu_dmabuf_get_height(dmabuf);
+ 
+     egl_scanout_texture(dcl, texture, false, width, height, 0, 0,
+-                        width, height, NULL);
++                        width, height, NO_NATIVE_TEXTURE);
+ }
+ 
+ static void egl_cursor_dmabuf(DisplayChangeListener *dcl,
+diff --git a/ui/gtk-egl.c b/ui/gtk-egl.c
+index 341afd41fb..2b94079b15 100644
+--- a/ui/gtk-egl.c
++++ b/ui/gtk-egl.c
+@@ -238,7 +238,7 @@ void gd_egl_scanout_texture(DisplayChangeListener *dcl,
+                             uint32_t backing_width, uint32_t backing_height,
+                             uint32_t x, uint32_t y,
+                             uint32_t w, uint32_t h,
+-                            void *d3d_tex2d)
++                            ScanoutTextureNative native)
+ {
+     VirtualConsole *vc = container_of(dcl, VirtualConsole, gfx.dcl);
+ 
+@@ -289,7 +289,7 @@ void gd_egl_scanout_dmabuf(DisplayChangeListener *dcl,
+     y0_top = qemu_dmabuf_get_y0_top(dmabuf);
+ 
+     gd_egl_scanout_texture(dcl, texture, y0_top, backing_width, backing_height,
+-                           x, y, width, height, NULL);
++                           x, y, width, height, NO_NATIVE_TEXTURE);
+ 
+     if (qemu_dmabuf_get_allow_fences(dmabuf)) {
+         vc->gfx.guest_fb.dmabuf = dmabuf;
+diff --git a/ui/gtk-gl-area.c b/ui/gtk-gl-area.c
+index 2c9a0db425..f7ed03890d 100644
+--- a/ui/gtk-gl-area.c
++++ b/ui/gtk-gl-area.c
+@@ -255,7 +255,7 @@ void gd_gl_area_scanout_texture(DisplayChangeListener *dcl,
+                                 uint32_t backing_height,
+                                 uint32_t x, uint32_t y,
+                                 uint32_t w, uint32_t h,
+-                                void *d3d_tex2d)
++                                ScanoutTextureNative native)
+ {
+     VirtualConsole *vc = container_of(dcl, VirtualConsole, gfx.dcl);
+ 
+@@ -323,7 +323,7 @@ void gd_gl_area_scanout_dmabuf(DisplayChangeListener *dcl,
+ 
+     gd_gl_area_scanout_texture(dcl, texture, y0_top,
+                                backing_width, backing_height,
+-                               x, y, width, height, NULL);
++                               x, y, width, height, NO_NATIVE_TEXTURE);
+ 
+     if (qemu_dmabuf_get_allow_fences(dmabuf)) {
+         vc->gfx.guest_fb.dmabuf = dmabuf;
+diff --git a/ui/sdl2-gl.c b/ui/sdl2-gl.c
+index 1d8ff3fab0..5b0080a0f9 100644
+--- a/ui/sdl2-gl.c
++++ b/ui/sdl2-gl.c
+@@ -206,7 +206,7 @@ void sdl2_gl_scanout_texture(DisplayChangeListener *dcl,
+                              uint32_t backing_height,
+                              uint32_t x, uint32_t y,
+                              uint32_t w, uint32_t h,
+-                             void *d3d_tex2d)
++                             ScanoutTextureNative native)
+ {
+     struct sdl2_console *scon = container_of(dcl, struct sdl2_console, dcl);
+ 
+diff --git a/ui/spice-display.c b/ui/spice-display.c
+index 61cdda0e8a..83a54e69a0 100644
+--- a/ui/spice-display.c
++++ b/ui/spice-display.c
+@@ -1143,7 +1143,7 @@ static void qemu_spice_gl_scanout_texture(DisplayChangeListener *dcl,
+                                           uint32_t backing_height,
+                                           uint32_t x, uint32_t y,
+                                           uint32_t w, uint32_t h,
+-                                          void *d3d_tex2d)
++                                          ScanoutTextureNative native)
+ {
+     SimpleSpiceDisplay *ssd = container_of(dcl, SimpleSpiceDisplay, dcl);
+     EGLint stride = 0, fourcc = 0;
+-- 
+2.41.0
+
+From 270b5d8db6802cc937e2beaf5c87030da1dc39e2 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Sun, 4 Jan 2026 13:39:26 -0800
+Subject: [PATCH 4/9] ui/spice-display: move display early init logic to
+ spice-display.c
+
+---
+ include/ui/qemu-spice.h |  1 +
+ ui/spice-core.c         | 29 +----------------------------
+ ui/spice-display.c      | 39 +++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 41 insertions(+), 28 deletions(-)
+
+diff --git a/include/ui/qemu-spice.h b/include/ui/qemu-spice.h
+index b7d493742c..5f5b9e2147 100644
+--- a/include/ui/qemu-spice.h
++++ b/include/ui/qemu-spice.h
+@@ -27,6 +27,7 @@
+ #include "qemu/config-file.h"
+ 
+ void qemu_spice_input_init(void);
++void qemu_spice_display_early_init(void);
+ void qemu_spice_display_init(void);
+ void qemu_spice_display_init_done(void);
+ bool qemu_spice_have_display_interface(QemuConsole *con);
+diff --git a/ui/spice-core.c b/ui/spice-core.c
+index 1c3b3b395a..43715cb60d 100644
+--- a/ui/spice-core.c
++++ b/ui/spice-core.c
+@@ -837,34 +837,7 @@ static void qemu_spice_init(void)
+     g_free(x509_cacert_file);
+     g_free(password);
+ 
+-#ifdef HAVE_SPICE_GL
+-    if (qemu_opt_get_bool(opts, "gl", 0)) {
+-        if ((port != 0) || (tls_port != 0)) {
+-            error_report("SPICE GL support is local-only for now and "
+-                         "incompatible with -spice port/tls-port");
+-            exit(1);
+-        }
+-#if defined(CONFIG_GBM)
+-        egl_init(qemu_opt_get(opts, "rendernode"), DISPLAY_GL_MODE_ON, &error_fatal);
+-#elif defined(CONFIG_ANGLE)
+-        if (qemu_egl_init_dpy_angle(DISPLAY_GL_MODE_ES)) {
+-            error_report("SPICE GL failed to initialize ANGLE display");
+-            exit(1);
+-        }
+-
+-        spice_gl_ctx = qemu_egl_init_ctx();
+-        if (!spice_gl_ctx) {
+-            error_report("egl: egl_init_ctx failed");
+-            exit(1);
+-        }
+-#else
+-        error_report("No backend to support SPICE GL");
+-        exit(1);
+-#endif
+-        display_opengl = 1;
+-        spice_opengl = 1;
+-    }
+-#endif
++    qemu_spice_display_early_init();
+ }
+ 
+ static int qemu_spice_add_interface(SpiceBaseInstance *sin)
+diff --git a/ui/spice-display.c b/ui/spice-display.c
+index 83a54e69a0..7faa922092 100644
+--- a/ui/spice-display.c
++++ b/ui/spice-display.c
+@@ -24,6 +24,7 @@
+ #include "qemu/option.h"
+ #include "qemu/queue.h"
+ #include "ui/console.h"
++#include "system/system.h"
+ #include "trace.h"
+ #ifdef CONFIG_IOSURFACE
+ #include <TargetConditionals.h>
+@@ -1426,6 +1427,44 @@ static void qemu_spice_display_init_one(QemuConsole *con)
+     register_displaychangelistener(&ssd->dcl);
+ }
+ 
++void qemu_spice_display_early_init(void)
++{
++#ifdef HAVE_SPICE_GL
++    QemuOptsList *olist = qemu_find_opts("spice");
++    QemuOpts *opts = QTAILQ_FIRST(&olist->head);
++    int port, tls_port;
++
++    port = qemu_opt_get_number(opts, "port", 0);
++    tls_port = qemu_opt_get_number(opts, "tls-port", 0);
++    if (qemu_opt_get_bool(opts, "gl", 0)) {
++        if ((port != 0) || (tls_port != 0)) {
++            error_report("SPICE GL support is local-only for now and "
++                         "incompatible with -spice port/tls-port");
++            exit(1);
++        }
++#if defined(CONFIG_GBM)
++        egl_init(qemu_opt_get(opts, "rendernode"), DISPLAY_GL_MODE_ON, &error_fatal);
++#elif defined(CONFIG_ANGLE)
++        if (qemu_egl_init_dpy_angle(DISPLAY_GL_MODE_ES)) {
++            error_report("SPICE GL failed to initialize ANGLE display");
++            exit(1);
++        }
++
++        spice_gl_ctx = qemu_egl_init_ctx();
++        if (!spice_gl_ctx) {
++            error_report("egl: egl_init_ctx failed");
++            exit(1);
++        }
++#else
++        error_report("No backend to support SPICE GL");
++        exit(1);
++#endif
++        display_opengl = 1;
++        spice_opengl = 1;
++    }
++#endif
++}
++
+ void qemu_spice_display_init(void)
+ {
+     QemuOptsList *olist = qemu_find_opts("spice");
+-- 
+2.41.0
+
+From 11b76bf6761f10a586497200745bda9ef2bb9732 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Sun, 4 Jan 2026 15:56:00 -0800
+Subject: [PATCH 5/9] Revert "shaders: support byte swapping of pixels"
+
+This reverts commit e73864e11d4f3224174a677a96925d253ccf892d.
+---
+ include/ui/egl-helpers.h         |  4 ++--
+ include/ui/shader.h              |  2 +-
+ include/ui/surface.h             |  1 -
+ ui/console-gl.c                  |  5 ++---
+ ui/egl-headless.c                |  4 ++--
+ ui/egl-helpers.c                 |  8 ++++----
+ ui/gtk-egl.c                     |  4 ++--
+ ui/shader.c                      | 26 +++++---------------------
+ ui/shader/meson.build            |  1 -
+ ui/shader/texture-blit-swap.frag |  7 -------
+ ui/spice-display.c               | 10 +++++-----
+ 11 files changed, 23 insertions(+), 49 deletions(-)
+ delete mode 100644 ui/shader/texture-blit-swap.frag
+
+diff --git a/include/ui/egl-helpers.h b/include/ui/egl-helpers.h
+index 2930aef7e3..5dd2a6dac0 100644
+--- a/include/ui/egl-helpers.h
++++ b/include/ui/egl-helpers.h
+@@ -41,9 +41,9 @@ void egl_fb_blit(egl_fb *dst, egl_fb *src, bool flip);
+ void egl_fb_read(DisplaySurface *dst, egl_fb *src);
+ void egl_fb_read_rect(DisplaySurface *dst, egl_fb *src, int x, int y, int w, int h);
+ 
+-void egl_texture_blit(QemuGLShader *gls, egl_fb *dst, egl_fb *src, bool flip, bool swap);
++void egl_texture_blit(QemuGLShader *gls, egl_fb *dst, egl_fb *src, bool flip);
+ void egl_texture_blend(QemuGLShader *gls, egl_fb *dst, egl_fb *src, bool flip,
+-                       bool swap, int x, int y, double scale_x, double scale_y);
++                       int x, int y, double scale_x, double scale_y);
+ 
+ extern EGLContext qemu_egl_rn_ctx;
+ 
+diff --git a/include/ui/shader.h b/include/ui/shader.h
+index 252192793a..4c5acb2ce8 100644
+--- a/include/ui/shader.h
++++ b/include/ui/shader.h
+@@ -5,7 +5,7 @@
+ 
+ typedef struct QemuGLShader QemuGLShader;
+ 
+-void qemu_gl_run_texture_blit(QemuGLShader *gls, bool flip, bool swapped);
++void qemu_gl_run_texture_blit(QemuGLShader *gls, bool flip);
+ 
+ QemuGLShader *qemu_gl_init_shader(void);
+ void qemu_gl_fini_shader(QemuGLShader *gls);
+diff --git a/include/ui/surface.h b/include/ui/surface.h
+index 68ce190e26..f16f7be8be 100644
+--- a/include/ui/surface.h
++++ b/include/ui/surface.h
+@@ -22,7 +22,6 @@ typedef struct DisplaySurface {
+     GLenum glformat;
+     GLenum gltype;
+     GLuint texture;
+-    bool   glswapped;
+ #endif
+     qemu_pixman_shareable share_handle;
+     uint32_t share_handle_offset;
+diff --git a/ui/console-gl.c b/ui/console-gl.c
+index 9cdb0bd482..103b954017 100644
+--- a/ui/console-gl.c
++++ b/ui/console-gl.c
+@@ -56,9 +56,8 @@ void surface_gl_create_texture(QemuGLShader *gls,
+     switch (surface_format(surface)) {
+     case PIXMAN_BE_b8g8r8x8:
+     case PIXMAN_BE_b8g8r8a8:
+-        surface->glformat = GL_RGBA;
++        surface->glformat = GL_BGRA_EXT;
+         surface->gltype = GL_UNSIGNED_BYTE;
+-        surface->glswapped = true;
+         break;
+     case PIXMAN_BE_x8r8g8b8:
+     case PIXMAN_BE_a8r8g8b8:
+@@ -126,7 +125,7 @@ void surface_gl_render_texture(QemuGLShader *gls,
+     glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
+     glClear(GL_COLOR_BUFFER_BIT);
+ 
+-    qemu_gl_run_texture_blit(gls, false, false);
++    qemu_gl_run_texture_blit(gls, false);
+ }
+ 
+ void surface_gl_destroy_texture(QemuGLShader *gls,
+diff --git a/ui/egl-headless.c b/ui/egl-headless.c
+index 5a403d13e6..0f0c3b21f5 100644
+--- a/ui/egl-headless.c
++++ b/ui/egl-headless.c
+@@ -161,9 +161,9 @@ static void egl_scanout_flush(DisplayChangeListener *dcl,
+     if (edpy->cursor_fb.texture) {
+         /* have cursor -> render using textures */
+         egl_texture_blit(edpy->gls, &edpy->blit_fb, &edpy->guest_fb,
+-                         !edpy->y_0_top, false);
++                         !edpy->y_0_top);
+         egl_texture_blend(edpy->gls, &edpy->blit_fb, &edpy->cursor_fb,
+-                          !edpy->y_0_top, false, edpy->pos_x, edpy->pos_y,
++                          !edpy->y_0_top, edpy->pos_x, edpy->pos_y,
+                           1.0, 1.0);
+     } else {
+         /* no cursor -> use simple framebuffer blit */
+diff --git a/ui/egl-helpers.c b/ui/egl-helpers.c
+index 42d2d511b1..6d0304fa40 100644
+--- a/ui/egl-helpers.c
++++ b/ui/egl-helpers.c
+@@ -198,17 +198,17 @@ void egl_fb_read_rect(DisplaySurface *dst, egl_fb *src, int x, int y, int w, int
+     glPixelStorei(GL_PACK_ROW_LENGTH, 0);
+ }
+ 
+-void egl_texture_blit(QemuGLShader *gls, egl_fb *dst, egl_fb *src, bool flip, bool swap)
++void egl_texture_blit(QemuGLShader *gls, egl_fb *dst, egl_fb *src, bool flip)
+ {
+     glBindFramebuffer(GL_FRAMEBUFFER_EXT, dst->framebuffer);
+     glViewport(0, 0, dst->width, dst->height);
+     glEnable(GL_TEXTURE_2D);
+     glBindTexture(src->texture_target, src->texture);
+-    qemu_gl_run_texture_blit(gls, flip, swap);
++    qemu_gl_run_texture_blit(gls, flip);
+ }
+ 
+ void egl_texture_blend(QemuGLShader *gls, egl_fb *dst, egl_fb *src, bool flip,
+-                       bool swap, int x, int y, double scale_x, double scale_y)
++                       int x, int y, double scale_x, double scale_y)
+ {
+     glBindFramebuffer(GL_FRAMEBUFFER_EXT, dst->framebuffer);
+     int w = scale_x * src->width;
+@@ -222,7 +222,7 @@ void egl_texture_blend(QemuGLShader *gls, egl_fb *dst, egl_fb *src, bool flip,
+     glBindTexture(src->texture_target, src->texture);
+     glEnable(GL_BLEND);
+     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+-    qemu_gl_run_texture_blit(gls, flip, swap);
++    qemu_gl_run_texture_blit(gls, flip);
+     glDisable(GL_BLEND);
+ }
+ 
+diff --git a/ui/gtk-egl.c b/ui/gtk-egl.c
+index 2b94079b15..6b6ac1789b 100644
+--- a/ui/gtk-egl.c
++++ b/ui/gtk-egl.c
+@@ -355,9 +355,9 @@ void gd_egl_scanout_flush(DisplayChangeListener *dcl,
+     egl_fb_setup_default(&vc->gfx.win_fb, ww, wh);
+     if (vc->gfx.cursor_fb.texture) {
+         egl_texture_blit(vc->gfx.gls, &vc->gfx.win_fb, &vc->gfx.guest_fb,
+-                         vc->gfx.y0_top, false);
++                         vc->gfx.y0_top);
+         egl_texture_blend(vc->gfx.gls, &vc->gfx.win_fb, &vc->gfx.cursor_fb,
+-                          vc->gfx.y0_top, false,
++                          vc->gfx.y0_top,
+                           vc->gfx.cursor_x, vc->gfx.cursor_y,
+                           vc->gfx.scale_x, vc->gfx.scale_y);
+     } else {
+diff --git a/ui/shader.c b/ui/shader.c
+index a0fb21c0c0..c5c9f754cc 100644
+--- a/ui/shader.c
++++ b/ui/shader.c
+@@ -30,13 +30,10 @@
+ #include "ui/shader/texture-blit-vert.h"
+ #include "ui/shader/texture-blit-flip-vert.h"
+ #include "ui/shader/texture-blit-frag.h"
+-#include "ui/shader/texture-blit-swap-frag.h"
+ 
+ struct QemuGLShader {
+     GLint texture_blit_prog;
+     GLint texture_blit_flip_prog;
+-    GLint texture_blit_swap_prog;
+-    GLint texture_blit_flip_swap_prog;
+     GLint texture_blit_vao;
+ };
+ 
+@@ -72,17 +69,11 @@ static GLuint qemu_gl_init_texture_blit(GLint texture_blit_prog)
+     return vao;
+ }
+ 
+-void qemu_gl_run_texture_blit(QemuGLShader *gls, bool flip, bool swapped)
++void qemu_gl_run_texture_blit(QemuGLShader *gls, bool flip)
+ {
+-    if (flip && swapped) {
+-        glUseProgram(gls->texture_blit_flip_swap_prog);
+-    } else if (flip && !swapped) {
+-        glUseProgram(gls->texture_blit_flip_prog);
+-    } else if (!flip && swapped) {
+-        glUseProgram(gls->texture_blit_swap_prog);
+-    } else { // !flip && !swapped
+-        glUseProgram(gls->texture_blit_prog);
+-    }
++    glUseProgram(flip
++                 ? gls->texture_blit_flip_prog
++                 : gls->texture_blit_prog);
+     glBindVertexArray(gls->texture_blit_vao);
+     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+ }
+@@ -174,14 +165,7 @@ QemuGLShader *qemu_gl_init_shader(void)
+     strcpy(vert_src_body, texture_blit_flip_vert_src);
+     gls->texture_blit_flip_prog = qemu_gl_create_compile_link_program
+         (vert_src, frag_src);
+-    strcpy(frag_src_body, texture_blit_swap_frag_src);
+-    gls->texture_blit_flip_swap_prog = qemu_gl_create_compile_link_program
+-        (vert_src, frag_src);
+-    strcpy(vert_src_body, texture_blit_vert_src);
+-    gls->texture_blit_swap_prog = qemu_gl_create_compile_link_program
+-        (vert_src, frag_src);
+-    if (!gls->texture_blit_prog || !gls->texture_blit_flip_prog ||
+-        !gls->texture_blit_swap_prog || !gls->texture_blit_flip_swap_prog) {
++    if (!gls->texture_blit_prog || !gls->texture_blit_flip_prog) {
+         exit(1);
+     }
+ 
+diff --git a/ui/shader/meson.build b/ui/shader/meson.build
+index 14f4699cec..3137e65578 100644
+--- a/ui/shader/meson.build
++++ b/ui/shader/meson.build
+@@ -1,6 +1,5 @@
+ shaders = [
+   ['texture-blit', 'frag'],
+-  ['texture-blit-swap', 'frag'],
+   ['texture-blit', 'vert'],
+   ['texture-blit-flip', 'vert'],
+ ]
+diff --git a/ui/shader/texture-blit-swap.frag b/ui/shader/texture-blit-swap.frag
+deleted file mode 100644
+index 8c97bcbac5..0000000000
+--- a/ui/shader/texture-blit-swap.frag
++++ /dev/null
+@@ -1,7 +0,0 @@
+-uniform sampler2D image;
+-in  mediump vec2 ex_tex_coord;
+-out mediump vec4 out_frag_color;
+-
+-void main(void) {
+-     out_frag_color = texture(image, ex_tex_coord).zyxw;
+-}
+diff --git a/ui/spice-display.c b/ui/spice-display.c
+index 7faa922092..f56f56dd71 100644
+--- a/ui/spice-display.c
++++ b/ui/spice-display.c
+@@ -951,7 +951,7 @@ static int spice_iosurface_create_fd(SimpleSpiceDisplay *ssd, int *fourcc)
+     return fds[0];
+ }
+ 
+-static void spice_iosurface_blit(SimpleSpiceDisplay *ssd, GLuint src_texture, bool flip, bool swap)
++static void spice_iosurface_blit(SimpleSpiceDisplay *ssd, GLuint src_texture, bool flip)
+ {
+     egl_fb tmp_fb = { .texture = src_texture, .texture_target = GL_TEXTURE_2D };
+     if (!ssd->iosurface) {
+@@ -960,7 +960,7 @@ static void spice_iosurface_blit(SimpleSpiceDisplay *ssd, GLuint src_texture, bo
+ 
+ #if defined(CONFIG_ANGLE)
+     eglMakeCurrent(qemu_egl_display, ssd->esurface, ssd->esurface, spice_gl_ctx);
+-    egl_texture_blit(ssd->gls, &ssd->iosurface_fb, &tmp_fb, flip, swap);
++    egl_texture_blit(ssd->gls, &ssd->iosurface_fb, &tmp_fb, flip);
+ #endif
+ }
+ 
+@@ -1045,7 +1045,7 @@ static void spice_gl_update(DisplayChangeListener *dcl,
+     surface_gl_update_texture(ssd->gls, ssd->ds, x, y, w, h);
+ #if defined(CONFIG_IOSURFACE)
+     if (!qemu_console_is_gl_blocked(ssd->dcl.con)) {
+-        spice_iosurface_blit(ssd, ssd->ds->texture, true, ssd->ds->glswapped);
++        spice_iosurface_blit(ssd, ssd->ds->texture, true);
+     }
+ #endif
+     ssd->gl_updates++;
+@@ -1319,7 +1319,7 @@ static void qemu_spice_gl_update(DisplayChangeListener *dcl,
+         ptr_y = ssd->ptr_y;
+         qemu_mutex_unlock(&ssd->lock);
+         egl_texture_blit(ssd->gls, &ssd->blit_fb, &ssd->guest_fb,
+-                         !y_0_top, false);
++                         !y_0_top);
+         egl_texture_blend(ssd->gls, &ssd->blit_fb, &ssd->cursor_fb,
+                           !y_0_top, false, ptr_x, ptr_y, 1.0, 1.0);
+         glFlush();
+@@ -1327,7 +1327,7 @@ static void qemu_spice_gl_update(DisplayChangeListener *dcl,
+ #elif defined(CONFIG_ANGLE) && defined(CONFIG_IOSURFACE)
+     GLuint tex_id = ssd->tex_id;
+     y_0_top = ssd->y_0_top;
+-    spice_iosurface_blit(ssd, tex_id, !y_0_top, false);
++    spice_iosurface_blit(ssd, tex_id, !y_0_top);
+     //TODO: cursor stuff
+ #endif
+ 
+-- 
+2.41.0
+
+From e9dc30b4c4cdf10d82681a28b4bf2e328624a8b9 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Sun, 4 Jan 2026 16:07:59 -0800
+Subject: [PATCH 6/9] Revert "egl-headless: Allow to test with Mesa on macOS"
+
+This reverts commit edba23a4d49e6c6c7b88e10be5f5f29e5d98f2ee.
+---
+ include/ui/egl-helpers.h |  2 --
+ ui/egl-headless.c        | 21 ---------------------
+ ui/egl-helpers.c         |  5 -----
+ ui/meson.build           |  2 +-
+ 4 files changed, 1 insertion(+), 29 deletions(-)
+
+diff --git a/include/ui/egl-helpers.h b/include/ui/egl-helpers.h
+index 5dd2a6dac0..a2961d067b 100644
+--- a/include/ui/egl-helpers.h
++++ b/include/ui/egl-helpers.h
+@@ -68,8 +68,6 @@ EGLSurface qemu_egl_init_buffer_surface(EGLContext ectx, EGLenum buftype,
+                                         EGLClientBuffer buffer, const EGLint *attrib_list);
+ bool qemu_egl_destroy_surface(EGLSurface surface);
+ 
+-int qemu_egl_init_dpy_surfaceless(DisplayGLMode mode);
+-
+ #if defined(CONFIG_X11) || defined(CONFIG_GBM)
+ 
+ int qemu_egl_init_dpy_x11(EGLNativeDisplayType dpy, DisplayGLMode mode);
+diff --git a/ui/egl-headless.c b/ui/egl-headless.c
+index 0f0c3b21f5..ef5cc02dcc 100644
+--- a/ui/egl-headless.c
++++ b/ui/egl-headless.c
+@@ -19,10 +19,6 @@ typedef struct egl_dpy {
+     uint32_t pos_y;
+ } egl_dpy;
+ 
+-#ifndef CONFIG_GBM
+-static EGLContext ctx;
+-#endif
+-
+ /* ------------------------------------------------------------------ */
+ 
+ static void egl_refresh(DisplayChangeListener *dcl)
+@@ -46,12 +42,8 @@ static void egl_gfx_switch(DisplayChangeListener *dcl,
+ static QEMUGLContext egl_create_context(DisplayGLCtx *dgc,
+                                         QEMUGLParams *params)
+ {
+-#ifdef CONFIG_GBM
+     eglMakeCurrent(qemu_egl_display, EGL_NO_SURFACE, EGL_NO_SURFACE,
+                    qemu_egl_rn_ctx);
+-#else
+-    eglMakeCurrent(qemu_egl_display, EGL_NO_SURFACE, EGL_NO_SURFACE, ctx);
+-#endif
+     return qemu_egl_create_context(dgc, params);
+ }
+ 
+@@ -221,20 +213,7 @@ static void early_egl_headless_init(DisplayOptions *opts)
+         mode = opts->gl;
+     }
+ 
+-#ifdef CONFIG_GBM
+     egl_init(opts->u.egl_headless.rendernode, mode, &error_fatal);
+-#else
+-    if (qemu_egl_init_dpy_surfaceless(mode)) {
+-        error_report("egl: display init failed");
+-        exit(1);
+-    }
+-
+-    ctx = qemu_egl_init_ctx();
+-    if (!ctx) {
+-        error_report("egl: egl_init_ctx failed");
+-        exit(1);
+-    }
+-#endif
+ }
+ 
+ static void egl_headless_init(DisplayState *ds, DisplayOptions *opts)
+diff --git a/ui/egl-helpers.c b/ui/egl-helpers.c
+index 6d0304fa40..6a9c68495b 100644
+--- a/ui/egl-helpers.c
++++ b/ui/egl-helpers.c
+@@ -584,11 +584,6 @@ static int qemu_egl_init_dpy(EGLNativeDisplayType dpy,
+ 
+ #endif
+ 
+-int qemu_egl_init_dpy_surfaceless(DisplayGLMode mode)
+-{
+-    return qemu_egl_init_dpy(EGL_DEFAULT_DISPLAY, EGL_PLATFORM_SURFACELESS_MESA, mode);
+-}
+-
+ #if defined(CONFIG_X11) || defined(CONFIG_GBM)
+ int qemu_egl_init_dpy_x11(EGLNativeDisplayType dpy, DisplayGLMode mode)
+ {
+diff --git a/ui/meson.build b/ui/meson.build
+index b2f7541dad..a731a60f3a 100644
+--- a/ui/meson.build
++++ b/ui/meson.build
+@@ -69,7 +69,7 @@ endif
+ if opengl.found()
+   egl_headless_ss = ss.source_set()
+   egl_headless_ss.add(when: [opengl, pixman],
+-                      if_true: files('egl-headless.c'))
++                      if_true: [files('egl-headless.c'), gbm])
+   ui_modules += {'egl-headless' : egl_headless_ss}
+ endif
+ 
+-- 
+2.41.0
+
+From 23f2733351953e46875be219b39d024e2cadb675 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Sun, 4 Jan 2026 16:28:21 -0800
+Subject: [PATCH 7/9] ui/egl: rename CONFIG_ANGLE to CONFIG_EGL
+
+Synchronize with @akihikodaki's fork
+---
+ include/ui/egl-helpers.h   |   9 +--
+ include/ui/spice-display.h |   2 +-
+ meson.build                |  11 ++-
+ ui/egl-helpers.c           | 149 +++++++++++++++++++------------------
+ ui/spice-core.c            |   2 +-
+ ui/spice-display.c         |  28 ++++---
+ 6 files changed, 101 insertions(+), 100 deletions(-)
+
+diff --git a/include/ui/egl-helpers.h b/include/ui/egl-helpers.h
+index a2961d067b..ecf814bec3 100644
+--- a/include/ui/egl-helpers.h
++++ b/include/ui/egl-helpers.h
+@@ -6,9 +6,6 @@
+ #ifdef CONFIG_GBM
+ #include <gbm.h>
+ #endif
+-#ifdef CONFIG_ANGLE
+-#include <EGL/eglext_angle.h>
+-#endif
+ #include "ui/console.h"
+ #include "ui/shader.h"
+ 
+@@ -68,6 +65,8 @@ EGLSurface qemu_egl_init_buffer_surface(EGLContext ectx, EGLenum buftype,
+                                         EGLClientBuffer buffer, const EGLint *attrib_list);
+ bool qemu_egl_destroy_surface(EGLSurface surface);
+ 
++int qemu_egl_init_dpy_cocoa(DisplayGLMode mode);
++
+ #if defined(CONFIG_X11) || defined(CONFIG_GBM)
+ 
+ int qemu_egl_init_dpy_x11(EGLNativeDisplayType dpy, DisplayGLMode mode);
+@@ -79,10 +78,6 @@ int qemu_egl_init_dpy_mesa(EGLNativeDisplayType dpy, DisplayGLMode mode);
+ int qemu_egl_init_dpy_win32(EGLNativeDisplayType dpy, DisplayGLMode mode);
+ #endif
+ 
+-#if defined(CONFIG_ANGLE)
+-int qemu_egl_init_dpy_angle(DisplayGLMode mode);
+-#endif
+-
+ EGLContext qemu_egl_init_ctx(void);
+ bool qemu_egl_has_dmabuf(void);
+ 
+diff --git a/include/ui/spice-display.h b/include/ui/spice-display.h
+index 4b9121bfb5..5a0b5a0c8f 100644
+--- a/include/ui/spice-display.h
++++ b/include/ui/spice-display.h
+@@ -138,7 +138,7 @@ struct SimpleSpiceDisplay {
+     IOSurfaceRef iosurface;
+     int surface_send_fd;
+ #endif
+-#if defined(CONFIG_ANGLE)
++#if defined(CONFIG_EGL)
+     EGLSurface esurface;
+     egl_fb iosurface_fb;
+     GLuint tex_id;
+diff --git a/meson.build b/meson.build
+index abe0dcf01c..fff146e5c2 100644
+--- a/meson.build
++++ b/meson.build
+@@ -1784,14 +1784,13 @@ if not get_option('coreaudio').auto() or (host_os == 'darwin' and have_system)
+                          required: get_option('coreaudio'))
+ endif
+ 
++egl = not_found
+ opengl = not_found
+ if not get_option('opengl').auto() or have_system or have_vhost_user_gpu
+-  epoxy = dependency('epoxy', method: 'pkg-config',
++  opengl = dependency('epoxy', method: 'pkg-config',
+                       required: get_option('opengl'))
+-  if cc.has_header('epoxy/egl.h', dependencies: epoxy)
+-    opengl = epoxy
+-  elif get_option('opengl').enabled()
+-    error('epoxy/egl.h not found')
++  if cc.has_header('epoxy/egl.h', dependencies: opengl)
++    egl = opengl
+   endif
+ endif
+ gbm = not_found
+@@ -2538,6 +2537,7 @@ if numa.found()
+                        cc.has_function('numa_has_preferred_many',
+                                        dependencies: numa))
+ endif
++config_host_data.set('CONFIG_EGL', egl.found())
+ config_host_data.set('CONFIG_OPENGL', opengl.found())
+ config_host_data.set('CONFIG_PLUGIN', get_option('plugins'))
+ config_host_data.set('CONFIG_RBD', rbd.found())
+@@ -2661,7 +2661,6 @@ config_host_data.set('HAVE_PTY_H', cc.has_header('pty.h'))
+ config_host_data.set('HAVE_SYS_DISK_H', cc.has_header('sys/disk.h'))
+ config_host_data.set('HAVE_SYS_IOCCOM_H', cc.has_header('sys/ioccom.h'))
+ config_host_data.set('HAVE_SYS_KCOV_H', cc.has_header('sys/kcov.h'))
+-config_host_data.set('CONFIG_ANGLE', cc.has_header('EGL/eglext_angle.h'))
+ if host_os == 'windows'
+   config_host_data.set('HAVE_AFUNIX_H', cc.has_header('afunix.h'))
+ endif
+diff --git a/ui/egl-helpers.c b/ui/egl-helpers.c
+index 6a9c68495b..f35223592e 100644
+--- a/ui/egl-helpers.c
++++ b/ui/egl-helpers.c
+@@ -472,9 +472,73 @@ bool qemu_egl_destroy_surface(EGLSurface surface)
+     return eglDestroySurface(qemu_egl_display, surface);
+ }
+ 
++static int qemu_egl_init_dpy(EGLDisplay dpy, DisplayGLMode mode)
++{
++    static const EGLint conf_att_core[] = {
++        EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
++        EGL_RENDERABLE_TYPE, EGL_OPENGL_BIT,
++        EGL_RED_SIZE,   5,
++        EGL_GREEN_SIZE, 5,
++        EGL_BLUE_SIZE,  5,
++        EGL_ALPHA_SIZE, 0,
++        EGL_NONE,
++    };
++    static const EGLint conf_att_gles[] = {
++        EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
++        EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
++        EGL_RED_SIZE,   5,
++        EGL_GREEN_SIZE, 5,
++        EGL_BLUE_SIZE,  5,
++        EGL_ALPHA_SIZE, 0,
++        EGL_NONE,
++    };
++    EGLint major, minor;
++    EGLBoolean b;
++    EGLint n;
++    bool gles = (mode == DISPLAY_GL_MODE_ES);
++
++    qemu_egl_display = dpy;
++
++    b = eglInitialize(qemu_egl_display, &major, &minor);
++    if (b == EGL_FALSE) {
++        error_report("egl: eglInitialize failed");
++        return -1;
++    }
++
++    b = eglBindAPI(gles ?  EGL_OPENGL_ES_API : EGL_OPENGL_API);
++    if (b == EGL_FALSE) {
++        error_report("egl: eglBindAPI failed (%s mode)",
++                     gles ? "gles" : "core");
++        return -1;
++    }
++
++    b = eglChooseConfig(qemu_egl_display,
++                        gles ? conf_att_gles : conf_att_core,
++                        &qemu_egl_config, 1, &n);
++    if (b == EGL_FALSE || n != 1) {
++        error_report("egl: eglChooseConfig failed (%s mode)",
++                     gles ? "gles" : "core");
++        return -1;
++    }
++
++    qemu_egl_mode = gles ? DISPLAY_GL_MODE_ES : DISPLAY_GL_MODE_CORE;
++    return 0;
++}
++
++int qemu_egl_init_dpy_cocoa(DisplayGLMode mode)
++{
++    EGLDisplay dpy = eglGetDisplay(EGL_DEFAULT_DISPLAY);
++    if (dpy == EGL_NO_DISPLAY) {
++        error_report("egl: eglGetDisplay failed");
++        return -1;
++    }
++
++    return qemu_egl_init_dpy(dpy, mode);
++}
++
+ /* ---------------------------------------------------------------------- */
+ 
+-#if defined(CONFIG_X11) || defined(CONFIG_GBM) || defined(CONFIG_ANGLE) || defined(WIN32)
++#if defined(CONFIG_X11) || defined(CONFIG_GBM) || defined(WIN32)
+ 
+ /*
+  * Taken from glamor_egl.h from the Xorg xserver, which is MIT licensed
+@@ -504,15 +568,16 @@ bool qemu_egl_destroy_surface(EGLSurface surface)
+  * platform extensions (EGL_KHR_platform_gbm and friends) yet it doesn't seem
+  * like mesa will be able to advertise these (even though it can do EGL 1.5).
+  */
+-static EGLDisplay qemu_egl_get_display(EGLNativeDisplayType native,
+-                                       EGLenum platform)
++static int qemu_egl_init_dpy_platform(EGLNativeDisplayType native,
++                                      EGLenum platform,
++                                      DisplayGLMode mode)
+ {
+     EGLDisplay dpy = EGL_NO_DISPLAY;
+ 
+     /* In practise any EGL 1.5 implementation would support the EXT extension */
+     if (epoxy_has_egl_extension(NULL, "EGL_EXT_platform_base")) {
+         if (platform != 0) {
+-            dpy = eglGetPlatformDisplayEXT(platform, (void *)native, NULL);
++            dpy = eglGetPlatformDisplayEXT(platform, native, NULL);
+         }
+     }
+ 
+@@ -520,66 +585,13 @@ static EGLDisplay qemu_egl_get_display(EGLNativeDisplayType native,
+         /* fallback */
+         dpy = eglGetDisplay(native);
+     }
+-    return dpy;
+-}
+-
+-static int qemu_egl_init_dpy(EGLNativeDisplayType dpy,
+-                             EGLenum platform,
+-                             DisplayGLMode mode)
+-{
+-    static const EGLint conf_att_core[] = {
+-        EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
+-        EGL_RENDERABLE_TYPE, EGL_OPENGL_BIT,
+-        EGL_RED_SIZE,   5,
+-        EGL_GREEN_SIZE, 5,
+-        EGL_BLUE_SIZE,  5,
+-        EGL_ALPHA_SIZE, 0,
+-        EGL_NONE,
+-    };
+-    static const EGLint conf_att_gles[] = {
+-        EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
+-        EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+-        EGL_RED_SIZE,   5,
+-        EGL_GREEN_SIZE, 5,
+-        EGL_BLUE_SIZE,  5,
+-        EGL_ALPHA_SIZE, 0,
+-        EGL_NONE,
+-    };
+-    EGLint major, minor;
+-    EGLBoolean b;
+-    EGLint n;
+-    bool gles = (mode == DISPLAY_GL_MODE_ES);
+-
+-    qemu_egl_display = qemu_egl_get_display(dpy, platform);
+-    if (qemu_egl_display == EGL_NO_DISPLAY) {
+-        error_report("egl: eglGetDisplay failed: %s", qemu_egl_get_error_string());
+-        return -1;
+-    }
+-
+-    b = eglInitialize(qemu_egl_display, &major, &minor);
+-    if (b == EGL_FALSE) {
+-        error_report("egl: eglInitialize failed: %s", qemu_egl_get_error_string());
+-        return -1;
+-    }
+-
+-    b = eglBindAPI(gles ?  EGL_OPENGL_ES_API : EGL_OPENGL_API);
+-    if (b == EGL_FALSE) {
+-        error_report("egl: eglBindAPI failed (%s mode): %s",
+-                     gles ? "gles" : "core", qemu_egl_get_error_string());
+-        return -1;
+-    }
+ 
+-    b = eglChooseConfig(qemu_egl_display,
+-                        gles ? conf_att_gles : conf_att_core,
+-                        &qemu_egl_config, 1, &n);
+-    if (b == EGL_FALSE || n != 1) {
+-        error_report("egl: eglChooseConfig failed (%s mode): %s",
+-                     gles ? "gles" : "core", qemu_egl_get_error_string());
++    if (dpy == EGL_NO_DISPLAY) {
++        error_report("egl: eglGetDisplay failed");
+         return -1;
+     }
+ 
+-    qemu_egl_mode = gles ? DISPLAY_GL_MODE_ES : DISPLAY_GL_MODE_CORE;
+-    return 0;
++    return qemu_egl_init_dpy(dpy, mode);
+ }
+ 
+ #endif
+@@ -588,18 +600,18 @@ static int qemu_egl_init_dpy(EGLNativeDisplayType dpy,
+ int qemu_egl_init_dpy_x11(EGLNativeDisplayType dpy, DisplayGLMode mode)
+ {
+ #ifdef EGL_KHR_platform_x11
+-    return qemu_egl_init_dpy(dpy, EGL_PLATFORM_X11_KHR, mode);
++    return qemu_egl_init_dpy_platform(dpy, EGL_PLATFORM_X11_KHR, mode);
+ #else
+-    return qemu_egl_init_dpy(dpy, 0, mode);
++    return qemu_egl_init_dpy_platform(dpy, 0, mode);
+ #endif
+ }
+ 
+ int qemu_egl_init_dpy_mesa(EGLNativeDisplayType dpy, DisplayGLMode mode)
+ {
+ #ifdef EGL_MESA_platform_gbm
+-    return qemu_egl_init_dpy(dpy, EGL_PLATFORM_GBM_MESA, mode);
++    return qemu_egl_init_dpy_platform(dpy, EGL_PLATFORM_GBM_MESA, mode);
+ #else
+-    return qemu_egl_init_dpy(dpy, 0, mode);
++    return qemu_egl_init_dpy_platform(dpy, 0, mode);
+ #endif
+ }
+ #endif
+@@ -643,15 +655,6 @@ int qemu_egl_init_dpy_win32(EGLNativeDisplayType dpy, DisplayGLMode mode)
+ }
+ #endif
+ 
+-#if defined(CONFIG_ANGLE)
+-
+-int qemu_egl_init_dpy_angle(DisplayGLMode mode)
+-{
+-    return qemu_egl_init_dpy(EGL_DEFAULT_DISPLAY, EGL_PLATFORM_ANGLE_ANGLE, mode);
+-}
+-
+-#endif
+-
+ bool qemu_egl_has_dmabuf(void)
+ {
+     if (qemu_egl_display == EGL_NO_DISPLAY) {
+diff --git a/ui/spice-core.c b/ui/spice-core.c
+index 43715cb60d..5b0fa38ecf 100644
+--- a/ui/spice-core.c
++++ b/ui/spice-core.c
+@@ -52,7 +52,7 @@ static int spice_have_target_host;
+ 
+ static QemuThread me;
+ 
+-#ifdef CONFIG_ANGLE
++#ifdef CONFIG_EGL
+ extern EGLContext spice_gl_ctx;
+ #endif
+ 
+diff --git a/ui/spice-display.c b/ui/spice-display.c
+index f56f56dd71..67aaf9ae89 100644
+--- a/ui/spice-display.c
++++ b/ui/spice-display.c
+@@ -29,7 +29,7 @@
+ #ifdef CONFIG_IOSURFACE
+ #include <TargetConditionals.h>
+ #endif
+-#ifdef CONFIG_ANGLE
++#ifdef CONFIG_EGL
+ #include <GLES2/gl2.h>
+ #include <GLES2/gl2ext.h>
+ #endif
+@@ -38,7 +38,7 @@
+ 
+ bool spice_opengl;
+ 
+-#ifdef CONFIG_ANGLE
++#ifdef CONFIG_EGL
+ EGLContext spice_gl_ctx;
+ #endif
+ 
+@@ -806,6 +806,10 @@ static const DisplayChangeListenerOps display_listener_ops = {
+ 
+ #if defined(CONFIG_IOSURFACE)
+ 
++#ifndef EGL_IOSURFACE_WRITE_HINT_ANGLE
++#define EGL_IOSURFACE_WRITE_HINT_ANGLE (0x0002)
++#endif
++
+ static void AddIntegerValue(CFMutableDictionaryRef dictionary, const CFStringRef key, int32_t value)
+ {
+     CFNumberRef number = CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &value);
+@@ -833,7 +837,7 @@ static int spice_iosurface_create(SimpleSpiceDisplay *ssd, int width, int height
+         return 0;
+     }
+ 
+-#if defined(CONFIG_ANGLE)
++#if defined(CONFIG_EGL)
+     EGLint target = 0;
+     GLenum tex_target = 0;
+     if (eglGetConfigAttrib(qemu_egl_display,
+@@ -892,7 +896,7 @@ static void spice_iosurface_destroy(SimpleSpiceDisplay *ssd)
+     if (!ssd->iosurface) {
+         return;
+     }
+-#if defined(CONFIG_ANGLE)
++#if defined(CONFIG_EGL)
+     eglMakeCurrent(qemu_egl_display, ssd->esurface, ssd->esurface, spice_gl_ctx);
+     eglReleaseTexImage(qemu_egl_display, ssd->esurface, EGL_BACK_BUFFER);
+     egl_fb_destroy(&ssd->iosurface_fb);
+@@ -958,7 +962,7 @@ static void spice_iosurface_blit(SimpleSpiceDisplay *ssd, GLuint src_texture, bo
+         return;
+     }
+ 
+-#if defined(CONFIG_ANGLE)
++#if defined(CONFIG_EGL)
+     eglMakeCurrent(qemu_egl_display, ssd->esurface, ssd->esurface, spice_gl_ctx);
+     egl_texture_blit(ssd->gls, &ssd->iosurface_fb, &tmp_fb, flip);
+ #endif
+@@ -1113,7 +1117,7 @@ static QEMUGLContext qemu_spice_gl_create_context(DisplayGLCtx *dgc,
+ #if defined(CONFIG_GBM)
+     eglMakeCurrent(qemu_egl_display, EGL_NO_SURFACE, EGL_NO_SURFACE,
+                    qemu_egl_rn_ctx);
+-#elif defined(CONFIG_ANGLE)
++#elif defined(CONFIG_EGL)
+     eglMakeCurrent(qemu_egl_display, EGL_NO_SURFACE, EGL_NO_SURFACE,
+                    spice_gl_ctx);
+ #endif
+@@ -1132,7 +1136,7 @@ static void qemu_spice_gl_scanout_disable(DisplayChangeListener *dcl)
+ #if defined(CONFIG_IOSURFACE)
+     spice_iosurface_destroy(ssd);
+ #endif
+-#if defined(CONFIG_ANGLE)
++#if defined(CONFIG_EGL)
+     ssd->tex_id = -1;
+ #endif
+ }
+@@ -1154,7 +1158,7 @@ static void qemu_spice_gl_scanout_texture(DisplayChangeListener *dcl,
+     fd = egl_get_fd_for_texture(tex_id, &stride, &fourcc, NULL);
+ #elif defined(CONFIG_IOSURFACE)
+     if (spice_iosurface_resize(ssd, backing_width, backing_height)) {
+-#if defined(CONFIG_ANGLE)
++#if defined(CONFIG_EGL)
+         ssd->tex_id = tex_id;
+         ssd->y_0_top = y_0_top;
+ #endif
+@@ -1324,7 +1328,7 @@ static void qemu_spice_gl_update(DisplayChangeListener *dcl,
+                           !y_0_top, false, ptr_x, ptr_y, 1.0, 1.0);
+         glFlush();
+     }
+-#elif defined(CONFIG_ANGLE) && defined(CONFIG_IOSURFACE)
++#elif defined(CONFIG_EGL) && defined(CONFIG_IOSURFACE)
+     GLuint tex_id = ssd->tex_id;
+     y_0_top = ssd->y_0_top;
+     spice_iosurface_blit(ssd, tex_id, !y_0_top);
+@@ -1395,7 +1399,7 @@ static void qemu_spice_display_init_one(QemuConsole *con)
+         ssd->iosurface = NULL;
+         ssd->surface_send_fd = -1;
+ #endif
+-#if defined(CONFIG_ANGLE)
++#if defined(CONFIG_EGL)
+         ssd->esurface = EGL_NO_SURFACE;
+         ssd->tex_id = -1;
+ #endif
+@@ -1444,8 +1448,8 @@ void qemu_spice_display_early_init(void)
+         }
+ #if defined(CONFIG_GBM)
+         egl_init(qemu_opt_get(opts, "rendernode"), DISPLAY_GL_MODE_ON, &error_fatal);
+-#elif defined(CONFIG_ANGLE)
+-        if (qemu_egl_init_dpy_angle(DISPLAY_GL_MODE_ES)) {
++#elif defined(CONFIG_EGL)
++        if (qemu_egl_init_dpy_cocoa(DISPLAY_GL_MODE_ES)) {
+             error_report("SPICE GL failed to initialize ANGLE display");
+             exit(1);
+         }
+-- 
+2.41.0
+
+From 6d6bc66ecf1e8e409b780aaab4988ac8ebcd1baf Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Sun, 4 Jan 2026 17:03:42 -0800
+Subject: [PATCH 8/9] ui/spice-display: refactor IOSurface code for EGL
+
+---
+ ui/spice-display.c | 102 ++++++++++++++++++++++++++++-----------------
+ 1 file changed, 63 insertions(+), 39 deletions(-)
+
+diff --git a/ui/spice-display.c b/ui/spice-display.c
+index 67aaf9ae89..931258ef96 100644
+--- a/ui/spice-display.c
++++ b/ui/spice-display.c
+@@ -817,26 +817,9 @@ static void AddIntegerValue(CFMutableDictionaryRef dictionary, const CFStringRef
+     CFRelease(number);
+ }
+ 
+-static int spice_iosurface_create(SimpleSpiceDisplay *ssd, int width, int height)
++static bool spice_iosurface_create_egl(SimpleSpiceDisplay *ssd, int width, int height,
++                                       IOSurfaceRef surface)
+ {
+-    CFMutableDictionaryRef dict = CFDictionaryCreateMutable(
+-        kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+-    AddIntegerValue(dict, kIOSurfaceWidth, width);
+-    AddIntegerValue(dict, kIOSurfaceHeight, height);
+-    AddIntegerValue(dict, kIOSurfacePixelFormat, 'BGRA');
+-    AddIntegerValue(dict, kIOSurfaceBytesPerElement, 4);
+-#if TARGET_OS_OSX
+-    CFDictionaryAddValue(dict, kIOSurfaceIsGlobal, kCFBooleanTrue);
+-#endif
+-
+-    ssd->iosurface = IOSurfaceCreate(dict);
+-    CFRelease(dict);
+-
+-    if (!ssd->iosurface) {
+-        error_report("spice_iosurface_create: IOSurfaceCreate failed");
+-        return 0;
+-    }
+-
+ #if defined(CONFIG_EGL)
+     EGLint target = 0;
+     GLenum tex_target = 0;
+@@ -845,7 +828,7 @@ static int spice_iosurface_create(SimpleSpiceDisplay *ssd, int width, int height
+                            EGL_BIND_TO_TEXTURE_TARGET_ANGLE,
+                            &target) != EGL_TRUE) {
+         error_report("spice_iosurface_create: eglGetConfigAttrib failed");
+-        goto gl_error;
++        return false;
+     }
+     if (target == EGL_TEXTURE_2D) {
+         tex_target = GL_TEXTURE_2D;
+@@ -853,7 +836,7 @@ static int spice_iosurface_create(SimpleSpiceDisplay *ssd, int width, int height
+         tex_target = GL_TEXTURE_RECTANGLE_ANGLE;
+     } else {
+         error_report("spice_iosurface_create: unsupported texture target");
+-        goto gl_error;
++        return false;
+     }
+ 
+     const EGLint attribs[] = {
+@@ -869,33 +852,57 @@ static int spice_iosurface_create(SimpleSpiceDisplay *ssd, int width, int height
+     };
+     ssd->esurface = qemu_egl_init_buffer_surface(spice_gl_ctx,
+                                                  EGL_IOSURFACE_ANGLE,
+-                                                 ssd->iosurface,
++                                                 surface,
+                                                  attribs);
+ 
+     if (ssd->esurface == NULL) {
+-        goto gl_error;
++        return false;
+     }
+ 
+     egl_fb_setup_new_tex_target(&ssd->iosurface_fb, width, height, tex_target);
+ 
+     eglBindTexImage(qemu_egl_display, ssd->esurface, EGL_BACK_BUFFER);
+ 
+-    return 1;
+-gl_error:
+-    CFRelease(ssd->iosurface);
+-    ssd->iosurface = NULL;
+-    return 0;
++    return true;
+ #else
+     error_report("spice_iosurface_create: ANGLE not found");
+-    return 0;
++    return false;
+ #endif
+ }
+ 
+-static void spice_iosurface_destroy(SimpleSpiceDisplay *ssd)
++static bool spice_iosurface_create(SimpleSpiceDisplay *ssd, int width, int height)
+ {
+-    if (!ssd->iosurface) {
+-        return;
++    IOSurfaceRef surface;
++    CFMutableDictionaryRef dict = CFDictionaryCreateMutable(
++        kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
++    AddIntegerValue(dict, kIOSurfaceWidth, width);
++    AddIntegerValue(dict, kIOSurfaceHeight, height);
++    AddIntegerValue(dict, kIOSurfacePixelFormat, 'BGRA');
++    AddIntegerValue(dict, kIOSurfaceBytesPerElement, 4);
++#if TARGET_OS_OSX
++    CFDictionaryAddValue(dict, kIOSurfaceIsGlobal, kCFBooleanTrue);
++#endif
++
++    surface = IOSurfaceCreate(dict);
++    CFRelease(dict);
++
++    if (!surface) {
++        error_report("spice_iosurface_create: IOSurfaceCreate failed");
++        return false;
++    }
++
++    if (!spice_iosurface_create_egl(ssd, width, height, surface)) {
++        CFRelease(surface);
++        return false;
+     }
++
++    ssd->iosurface = surface;
++
++    return true;
++}
++
++static void spice_iosurface_destroy_egl(SimpleSpiceDisplay *ssd)
++{
+ #if defined(CONFIG_EGL)
+     eglMakeCurrent(qemu_egl_display, ssd->esurface, ssd->esurface, spice_gl_ctx);
+     eglReleaseTexImage(qemu_egl_display, ssd->esurface, EGL_BACK_BUFFER);
+@@ -903,6 +910,16 @@ static void spice_iosurface_destroy(SimpleSpiceDisplay *ssd)
+     qemu_egl_destroy_surface(ssd->esurface);
+     ssd->esurface = EGL_NO_SURFACE;
+ #endif
++}
++
++static void spice_iosurface_destroy(SimpleSpiceDisplay *ssd)
++{
++    if (!ssd->iosurface) {
++        return;
++    }
++
++    spice_iosurface_destroy_egl(ssd);
++
+     if (ssd->surface_send_fd > -1) {
+         // this sends POLLHUP and indicates that any unread data is stale
+         // and should not be used
+@@ -914,7 +931,7 @@ static void spice_iosurface_destroy(SimpleSpiceDisplay *ssd)
+     ssd->iosurface = NULL;
+ }
+ 
+-static int spice_iosurface_resize(SimpleSpiceDisplay *ssd, int width, int height)
++static bool spice_iosurface_resize(SimpleSpiceDisplay *ssd, int width, int height)
+ {
+     if (ssd->iosurface) {
+         if (IOSurfaceGetHeight(ssd->iosurface) != height ||
+@@ -922,7 +939,7 @@ static int spice_iosurface_resize(SimpleSpiceDisplay *ssd, int width, int height
+             spice_iosurface_destroy(ssd);
+             return spice_iosurface_create(ssd, width, height);
+         } else {
+-            return 1;
++            return true;
+         }
+     } else {
+         return spice_iosurface_create(ssd, width, height);
+@@ -955,19 +972,26 @@ static int spice_iosurface_create_fd(SimpleSpiceDisplay *ssd, int *fourcc)
+     return fds[0];
+ }
+ 
+-static void spice_iosurface_blit(SimpleSpiceDisplay *ssd, GLuint src_texture, bool flip)
++static void spice_iosurface_blit_egl(SimpleSpiceDisplay *ssd, GLuint src_texture,
++                                     bool flip)
+ {
++#if defined(CONFIG_EGL)
+     egl_fb tmp_fb = { .texture = src_texture, .texture_target = GL_TEXTURE_2D };
+-    if (!ssd->iosurface) {
+-        return;
+-    }
+ 
+-#if defined(CONFIG_EGL)
+     eglMakeCurrent(qemu_egl_display, ssd->esurface, ssd->esurface, spice_gl_ctx);
+     egl_texture_blit(ssd->gls, &ssd->iosurface_fb, &tmp_fb, flip);
+ #endif
+ }
+ 
++static void spice_iosurface_blit(SimpleSpiceDisplay *ssd, GLuint src_texture, bool flip)
++{
++    if (!ssd->iosurface) {
++        return;
++    }
++
++    spice_iosurface_blit_egl(ssd, src_texture, flip);
++}
++
+ #endif
+ 
+ static void qemu_spice_gl_monitor_config(SimpleSpiceDisplay *ssd,
+-- 
+2.41.0
+
+From 8df157705036e9cc2b3bb0d3eb7eebdf6d75eb5e Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Sun, 4 Jan 2026 20:22:19 -0800
+Subject: [PATCH 9/9] ui/spice-display: support rendering with CGL
+
+---
+ include/ui/spice-display.h |   4 +-
+ meson.build                |   2 +
+ ui/meson.build             |   3 +
+ ui/spice-core.c            |   2 +-
+ ui/spice-display.c         | 231 ++++++++++++++++++++++++++++++-------
+ 5 files changed, 199 insertions(+), 43 deletions(-)
+
+diff --git a/include/ui/spice-display.h b/include/ui/spice-display.h
+index 5a0b5a0c8f..ec55194139 100644
+--- a/include/ui/spice-display.h
++++ b/include/ui/spice-display.h
+@@ -141,9 +141,9 @@ struct SimpleSpiceDisplay {
+ #if defined(CONFIG_EGL)
+     EGLSurface esurface;
+     egl_fb iosurface_fb;
++#endif
+     GLuint tex_id;
+     bool y_0_top;
+-#endif
+     bool render_cursor;
+ 
+     egl_fb guest_fb;
+@@ -167,8 +167,6 @@ struct SimpleSpiceCursor {
+     QXLCursor cursor;
+ };
+ 
+-extern bool spice_opengl;
+-
+ int qemu_spice_rect_is_empty(const QXLRect* r);
+ void qemu_spice_rect_union(QXLRect *dest, const QXLRect *r);
+ 
+diff --git a/meson.build b/meson.build
+index fff146e5c2..af9284fb29 100644
+--- a/meson.build
++++ b/meson.build
+@@ -836,6 +836,7 @@ coref = []
+ iokit = []
+ iosurface = not_found
+ pvg = not_found
++quartzcore = not_found
+ emulator_link_args = []
+ midl = not_found
+ widl = not_found
+@@ -860,6 +861,7 @@ elif host_os == 'darwin'
+   host_dsosuf = '.dylib'
+   pvg = dependency('appleframeworks', modules: ['ParavirtualizedGraphics', 'Metal'],
+                    required: get_option('pvg'))
++  quartzcore = dependency('appleframeworks', modules: ['OpenGL', 'QuartzCore'], required: false)
+ elif host_os == 'sunos'
+   socket = [cc.find_library('socket'),
+             cc.find_library('nsl'),
+diff --git a/ui/meson.build b/ui/meson.build
+index a731a60f3a..8acb9c0ef0 100644
+--- a/ui/meson.build
++++ b/ui/meson.build
+@@ -141,6 +141,9 @@ if spice.found()
+   if iosurface.found()
+     spice_core_ss.add(iosurface)
+   endif
++  if quartzcore.found()
++    spice_core_ss.add(quartzcore)
++  endif
+   ui_modules += {'spice-core' : spice_core_ss}
+ 
+   if gio.found()
+diff --git a/ui/spice-core.c b/ui/spice-core.c
+index 5b0fa38ecf..91817b1239 100644
+--- a/ui/spice-core.c
++++ b/ui/spice-core.c
+@@ -510,7 +510,7 @@ static QemuOptsList qemu_spice_opts = {
+ #ifdef HAVE_SPICE_GL
+         },{
+             .name = "gl",
+-            .type = QEMU_OPT_BOOL,
++            .type = QEMU_OPT_STRING,
+         },{
+             .name = "rendernode",
+             .type = QEMU_OPT_STRING,
+diff --git a/ui/spice-display.c b/ui/spice-display.c
+index 931258ef96..824e645d72 100644
+--- a/ui/spice-display.c
++++ b/ui/spice-display.c
+@@ -28,6 +28,10 @@
+ #include "trace.h"
+ #ifdef CONFIG_IOSURFACE
+ #include <TargetConditionals.h>
++#if TARGET_OS_OSX
++#import <QuartzCore/QuartzCore.h>
++#define HAVE_SPICE_MAC_CGL
++#endif
+ #endif
+ #ifdef CONFIG_EGL
+ #include <GLES2/gl2.h>
+@@ -36,11 +40,8 @@
+ 
+ #include "ui/spice-display.h"
+ 
+-bool spice_opengl;
+-
+-#ifdef CONFIG_EGL
+-EGLContext spice_gl_ctx;
+-#endif
++static DisplayGLMode spice_opengl;
++QEMUGLContext spice_gl_ctx;
+ 
+ int qemu_spice_rect_is_empty(const QXLRect* r)
+ {
+@@ -870,6 +871,39 @@ static bool spice_iosurface_create_egl(SimpleSpiceDisplay *ssd, int width, int h
+ #endif
+ }
+ 
++static bool spice_iosurface_create_cgl(SimpleSpiceDisplay *ssd, int width, int height,
++                                       IOSurfaceRef surface)
++{
++#if defined(HAVE_SPICE_MAC_CGL)
++    GLuint tex;
++
++    CGLSetCurrentContext(spice_gl_ctx);
++    glGenTextures(1, &tex);
++    glBindTexture(GL_TEXTURE_RECTANGLE, tex);
++    if (CGLTexImageIOSurface2D(spice_gl_ctx,
++        GL_TEXTURE_RECTANGLE,
++        GL_RGBA,
++        width,
++        height,
++        GL_BGRA,
++        GL_UNSIGNED_INT_8_8_8_8_REV,
++        surface,
++        0) != kCGLNoError) {
++        glDeleteTextures(1, &tex);
++        error_report("spice_iosurface_create: failed to create CGL texture");
++        return false;
++    }
++
++    egl_fb_setup_for_tex_target(&ssd->iosurface_fb, width, height,
++                                tex, GL_TEXTURE_RECTANGLE, true);
++
++    return true;
++#else
++    error_report("spice_iosurface_create: CGL not found");
++    return false;
++#endif
++}
++
+ static bool spice_iosurface_create(SimpleSpiceDisplay *ssd, int width, int height)
+ {
+     IOSurfaceRef surface;
+@@ -891,9 +925,16 @@ static bool spice_iosurface_create(SimpleSpiceDisplay *ssd, int width, int heigh
+         return false;
+     }
+ 
+-    if (!spice_iosurface_create_egl(ssd, width, height, surface)) {
+-        CFRelease(surface);
+-        return false;
++    if (spice_opengl == DISPLAY_GL_MODE_CORE) {
++        if (!spice_iosurface_create_cgl(ssd, width, height, surface)) {
++            CFRelease(surface);
++            return false;
++        }
++    } else {
++        if (!spice_iosurface_create_egl(ssd, width, height, surface)) {
++            CFRelease(surface);
++            return false;
++        }
+     }
+ 
+     ssd->iosurface = surface;
+@@ -912,13 +953,25 @@ static void spice_iosurface_destroy_egl(SimpleSpiceDisplay *ssd)
+ #endif
+ }
+ 
++static void spice_iosurface_destroy_cgl(SimpleSpiceDisplay *ssd)
++{
++#if defined(HAVE_SPICE_MAC_CGL)
++    CGLSetCurrentContext(spice_gl_ctx);
++    egl_fb_destroy(&ssd->iosurface_fb);
++#endif
++}
++
+ static void spice_iosurface_destroy(SimpleSpiceDisplay *ssd)
+ {
+     if (!ssd->iosurface) {
+         return;
+     }
+ 
+-    spice_iosurface_destroy_egl(ssd);
++    if (spice_opengl == DISPLAY_GL_MODE_CORE) {
++        spice_iosurface_destroy_cgl(ssd);
++    } else {
++        spice_iosurface_destroy_egl(ssd);
++    }
+ 
+     if (ssd->surface_send_fd > -1) {
+         // this sends POLLHUP and indicates that any unread data is stale
+@@ -983,15 +1036,67 @@ static void spice_iosurface_blit_egl(SimpleSpiceDisplay *ssd, GLuint src_texture
+ #endif
+ }
+ 
++static void spice_iosurface_blit_cgl(SimpleSpiceDisplay *ssd, GLuint src_texture,
++                                     bool flip)
++{
++#if defined(HAVE_SPICE_MAC_CGL)
++    egl_fb tmp_fb = { .texture = src_texture, .texture_target = GL_TEXTURE_2D };
++
++    CGLSetCurrentContext(spice_gl_ctx);
++    egl_texture_blit(ssd->gls, &ssd->iosurface_fb, &tmp_fb, flip);
++#endif
++}
++
+ static void spice_iosurface_blit(SimpleSpiceDisplay *ssd, GLuint src_texture, bool flip)
+ {
+     if (!ssd->iosurface) {
+         return;
+     }
+ 
+-    spice_iosurface_blit_egl(ssd, src_texture, flip);
++    if (spice_opengl == DISPLAY_GL_MODE_CORE) {
++        spice_iosurface_blit_cgl(ssd, src_texture, flip);
++    } else {
++        spice_iosurface_blit_egl(ssd, src_texture, flip);
++    }
++}
++
++#endif
++
++#ifdef HAVE_SPICE_MAC_CGL
++static CGLContextObj spice_cgl_create_context(CGLContextObj share)
++{
++    CGLPixelFormatAttribute attrs[] = {
++        kCGLPFAOpenGLProfile,
++        /* Request 3.2 core; macOS delivers 4.1 for this selector. */
++        (CGLPixelFormatAttribute)kCGLOGLPVersion_3_2_Core,
++        kCGLPFAColorSize, 32,
++        kCGLPFADoubleBuffer,
++        0
++    };
++
++    CGLPixelFormatObj pix;
++    GLint npix;
++    CGLChoosePixelFormat(attrs, &pix, &npix);
++
++    CGLContextObj ctx;
++    CGLCreateContext(pix, share, &ctx);
++    CGLReleasePixelFormat(pix);
++
++    return ctx;
+ }
+ 
++static void spice_cgl_destroy_context(CGLContextObj ctx)
++{
++    if (CGLGetCurrentContext() == ctx) {
++        CGLSetCurrentContext(NULL);
++    }
++    CGLReleaseContext(ctx);
++}
++
++static int spice_cgl_make_context_current(CGLContextObj ctx)
++{
++    return CGLSetCurrentContext(ctx);
++}
+ #endif
+ 
+ static void qemu_spice_gl_monitor_config(SimpleSpiceDisplay *ssd,
+@@ -1043,6 +1148,9 @@ static void qemu_spice_gl_block_timer(void *opaque)
+     warn_report("spice: no gl-draw-done within one second");
+ }
+ 
++static int qemu_spice_gl_make_context_current(DisplayGLCtx *dgc,
++                                              QEMUGLContext ctx);
++
+ static void spice_gl_refresh(DisplayChangeListener *dcl)
+ {
+     SimpleSpiceDisplay *ssd = container_of(dcl, SimpleSpiceDisplay, dcl);
+@@ -1052,6 +1160,7 @@ static void spice_gl_refresh(DisplayChangeListener *dcl)
+         return;
+     }
+ 
++    qemu_spice_gl_make_context_current(NULL, spice_gl_ctx);
+     graphic_hw_update(dcl->con);
+     if (ssd->gl_updates && ssd->have_surface) {
+         qemu_spice_gl_block(ssd, true);
+@@ -1070,6 +1179,7 @@ static void spice_gl_update(DisplayChangeListener *dcl,
+ {
+     SimpleSpiceDisplay *ssd = container_of(dcl, SimpleSpiceDisplay, dcl);
+ 
++    qemu_spice_gl_make_context_current(NULL, spice_gl_ctx);
+     surface_gl_update_texture(ssd->gls, ssd->ds, x, y, w, h);
+ #if defined(CONFIG_IOSURFACE)
+     if (!qemu_console_is_gl_blocked(ssd->dcl.con)) {
+@@ -1087,6 +1197,7 @@ static void spice_gl_switch(DisplayChangeListener *dcl,
+     int fd = -1;
+     int width = 0, height = 0;
+ 
++    qemu_spice_gl_make_context_current(NULL, spice_gl_ctx);
+     if (ssd->ds) {
+         surface_gl_destroy_texture(ssd->gls, ssd->ds);
+     }
+@@ -1138,14 +1249,43 @@ static void spice_gl_switch(DisplayChangeListener *dcl,
+ static QEMUGLContext qemu_spice_gl_create_context(DisplayGLCtx *dgc,
+                                                   QEMUGLParams *params)
+ {
++    if (spice_opengl == DISPLAY_GL_MODE_CORE) {
++#if defined(HAVE_SPICE_MAC_CGL)
++        return spice_cgl_create_context(spice_gl_ctx);
++#endif
++    } else {
+ #if defined(CONFIG_GBM)
+-    eglMakeCurrent(qemu_egl_display, EGL_NO_SURFACE, EGL_NO_SURFACE,
+-                   qemu_egl_rn_ctx);
++        eglMakeCurrent(qemu_egl_display, EGL_NO_SURFACE, EGL_NO_SURFACE,
++                       qemu_egl_rn_ctx);
+ #elif defined(CONFIG_EGL)
+-    eglMakeCurrent(qemu_egl_display, EGL_NO_SURFACE, EGL_NO_SURFACE,
+-                   spice_gl_ctx);
++        eglMakeCurrent(qemu_egl_display, EGL_NO_SURFACE, EGL_NO_SURFACE,
++                       spice_gl_ctx);
++#endif
++        return qemu_egl_create_context(dgc, params);
++    }
++}
++
++static void qemu_spice_gl_destroy_context(DisplayGLCtx *dgc, QEMUGLContext ctx)
++{
++    if (spice_opengl == DISPLAY_GL_MODE_CORE) {
++#if defined(HAVE_SPICE_MAC_CGL)
++        spice_cgl_destroy_context(ctx);
++#endif
++    } else {
++        qemu_egl_destroy_context(dgc, ctx);
++    }
++}
++
++static int qemu_spice_gl_make_context_current(DisplayGLCtx *dgc,
++                                              QEMUGLContext ctx)
++{
++    if (spice_opengl == DISPLAY_GL_MODE_CORE) {
++#if defined(HAVE_SPICE_MAC_CGL)
++        return spice_cgl_make_context_current(ctx);
+ #endif
+-    return qemu_egl_create_context(dgc, params);
++    } else {
++        return qemu_egl_make_context_current(dgc, ctx);
++    }
+ }
+ 
+ static void qemu_spice_gl_scanout_disable(DisplayChangeListener *dcl)
+@@ -1160,9 +1300,7 @@ static void qemu_spice_gl_scanout_disable(DisplayChangeListener *dcl)
+ #if defined(CONFIG_IOSURFACE)
+     spice_iosurface_destroy(ssd);
+ #endif
+-#if defined(CONFIG_EGL)
+     ssd->tex_id = -1;
+-#endif
+ }
+ 
+ static void qemu_spice_gl_scanout_texture(DisplayChangeListener *dcl,
+@@ -1182,10 +1320,8 @@ static void qemu_spice_gl_scanout_texture(DisplayChangeListener *dcl,
+     fd = egl_get_fd_for_texture(tex_id, &stride, &fourcc, NULL);
+ #elif defined(CONFIG_IOSURFACE)
+     if (spice_iosurface_resize(ssd, backing_width, backing_height)) {
+-#if defined(CONFIG_EGL)
+         ssd->tex_id = tex_id;
+         ssd->y_0_top = y_0_top;
+-#endif
+         fd = spice_iosurface_create_fd(ssd, &fourcc);
+     } else {
+         fd = -1;
+@@ -1352,7 +1488,7 @@ static void qemu_spice_gl_update(DisplayChangeListener *dcl,
+                           !y_0_top, false, ptr_x, ptr_y, 1.0, 1.0);
+         glFlush();
+     }
+-#elif defined(CONFIG_EGL) && defined(CONFIG_IOSURFACE)
++#elif defined(CONFIG_IOSURFACE)
+     GLuint tex_id = ssd->tex_id;
+     y_0_top = ssd->y_0_top;
+     spice_iosurface_blit(ssd, tex_id, !y_0_top);
+@@ -1396,8 +1532,8 @@ qemu_spice_is_compatible_dcl(DisplayGLCtx *dgc,
+ static const DisplayGLCtxOps gl_ctx_ops = {
+     .dpy_gl_ctx_is_compatible_dcl = qemu_spice_is_compatible_dcl,
+     .dpy_gl_ctx_create       = qemu_spice_gl_create_context,
+-    .dpy_gl_ctx_destroy      = qemu_egl_destroy_context,
+-    .dpy_gl_ctx_make_current = qemu_egl_make_context_current,
++    .dpy_gl_ctx_destroy      = qemu_spice_gl_destroy_context,
++    .dpy_gl_ctx_make_current = qemu_spice_gl_make_context_current,
+ };
+ 
+ #endif /* HAVE_SPICE_GL */
+@@ -1410,7 +1546,7 @@ static void qemu_spice_display_init_one(QemuConsole *con)
+ 
+     ssd->dcl.ops = &display_listener_ops;
+ #ifdef HAVE_SPICE_GL
+-    if (spice_opengl) {
++    if (spice_opengl != DISPLAY_GL_MODE_OFF) {
+         ssd->dcl.ops = &display_listener_gl_ops;
+         ssd->dgc.ops = &gl_ctx_ops;
+         ssd->gl_unblock_bh = qemu_bh_new(qemu_spice_gl_unblock_bh, ssd);
+@@ -1425,8 +1561,8 @@ static void qemu_spice_display_init_one(QemuConsole *con)
+ #endif
+ #if defined(CONFIG_EGL)
+         ssd->esurface = EGL_NO_SURFACE;
+-        ssd->tex_id = -1;
+ #endif
++        ssd->tex_id = -1;
+     }
+ #endif
+     ssd->dcl.con = con;
+@@ -1449,7 +1585,7 @@ static void qemu_spice_display_init_one(QemuConsole *con)
+ 
+     qemu_spice_create_host_memslot(ssd);
+ 
+-    if (spice_opengl) {
++    if (spice_opengl != DISPLAY_GL_MODE_OFF) {
+         qemu_console_set_display_gl_ctx(con, &ssd->dgc);
+     }
+     register_displaychangelistener(&ssd->dcl);
+@@ -1461,34 +1597,51 @@ void qemu_spice_display_early_init(void)
+     QemuOptsList *olist = qemu_find_opts("spice");
+     QemuOpts *opts = QTAILQ_FIRST(&olist->head);
+     int port, tls_port;
++    const char *gl_str;
++    bool gl_on = false, gl_core = false;
+ 
+     port = qemu_opt_get_number(opts, "port", 0);
+     tls_port = qemu_opt_get_number(opts, "tls-port", 0);
+-    if (qemu_opt_get_bool(opts, "gl", 0)) {
++    gl_str = qemu_opt_get(opts, "gl");
++    qapi_bool_parse("", gl_str, &gl_on, NULL);
++    gl_core = g_str_equal(gl_str, "core");
++    gl_on = gl_core || g_str_equal(gl_str, "es");
++    if (gl_on) {
+         if ((port != 0) || (tls_port != 0)) {
+             error_report("SPICE GL support is local-only for now and "
+                          "incompatible with -spice port/tls-port");
+             exit(1);
+         }
++        if (gl_core) {
++#ifdef HAVE_SPICE_MAC_CGL
++            spice_gl_ctx = spice_cgl_create_context(NULL);
++            spice_cgl_make_context_current(spice_gl_ctx);
++            spice_opengl = DISPLAY_GL_MODE_CORE;
++#else
++            error_report("No backend to support SPICE Core GL");
++            exit(1);
++#endif
++        } else {
+ #if defined(CONFIG_GBM)
+-        egl_init(qemu_opt_get(opts, "rendernode"), DISPLAY_GL_MODE_ON, &error_fatal);
++            egl_init(qemu_opt_get(opts, "rendernode"), DISPLAY_GL_MODE_ON, &error_fatal);
+ #elif defined(CONFIG_EGL)
+-        if (qemu_egl_init_dpy_cocoa(DISPLAY_GL_MODE_ES)) {
+-            error_report("SPICE GL failed to initialize ANGLE display");
+-            exit(1);
+-        }
++            if (qemu_egl_init_dpy_cocoa(DISPLAY_GL_MODE_ES)) {
++                error_report("SPICE GL failed to initialize ANGLE display");
++                exit(1);
++            }
+ 
+-        spice_gl_ctx = qemu_egl_init_ctx();
+-        if (!spice_gl_ctx) {
+-            error_report("egl: egl_init_ctx failed");
+-            exit(1);
+-        }
++            spice_gl_ctx = qemu_egl_init_ctx();
++            if (!spice_gl_ctx) {
++                error_report("egl: egl_init_ctx failed");
++                exit(1);
++            }
++            spice_opengl = DISPLAY_GL_MODE_ES;
+ #else
+-        error_report("No backend to support SPICE GL");
+-        exit(1);
++            error_report("No backend to support SPICE GL");
++            exit(1);
+ #endif
++        }
+         display_opengl = 1;
+-        spice_opengl = 1;
+     }
+ #endif
+ }
+-- 
+2.41.0
+

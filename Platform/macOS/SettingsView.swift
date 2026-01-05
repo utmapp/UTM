@@ -232,6 +232,7 @@ struct DisplaySettingsView: View {
                     Text("Default").tag(UTMQEMURendererBackend.qemuRendererBackendDefault)
                     Text("ANGLE (OpenGL)").tag(UTMQEMURendererBackend.qemuRendererBackendAngleGL)
                     Text("ANGLE (Metal)").tag(UTMQEMURendererBackend.qemuRendererBackendAngleMetal)
+                    Text("Apple Core OpenGL").tag(UTMQEMURendererBackend.qemuRendererBackendCGL)
                 }.help("By default, the best renderer for this device will be used. You can override this with to always use a specific renderer. This only applies to QEMU VMs with GPU accelerated graphics.")
                 HStack {
                     Stepper("FPS Limit", value: $qemuRendererFpsLimit, in: 0...240, step: 15)
