@@ -43,6 +43,8 @@ WEBKIT_COMMIT="e9f29559b009011a1ee420d67e1994d3d5295f1a"
 WEBKIT_SUBDIRS="Source/ThirdParty/ANGLE Configurations Tools/ccache"
 EPOXY_REPO="https://github.com/utmapp/libepoxy.git"
 EPOXY_COMMIT="5014658f79e4d6872a1ad6754da9098ccd9d4fc5"
+VULKAN_LOADER_REPO="https://github.com/osy/Vulkan-Loader.git"
+VULKAN_LOADER_COMMIT="6df86907be582927507637f3f6003ea58bc34517"
 VIRGLRENDERER_REPO="https://github.com/utmapp/virglrenderer.git"
 VIRGLRENDERER_COMMIT="31d91c3860749534aed7bd26af8f47f7de412681"
 

@@ -69,6 +69,7 @@ check_env () {
     python_module_test distutils >/dev/null 2>&1 || { echo >&2 "${RED}'setuptools' not found in your Python 3 installation.${NC}"; exit 1; }
     python_module_test yaml >/dev/null 2>&1 || { echo >&2 "${RED}'pyyaml' not found in your Python 3 installation.${NC}"; exit 1; }
     command -v meson >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'meson' on your host machine.${NC}"; exit 1; }
+    command -v cmake >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'cmake' on your host machine.${NC}"; exit 1; }
     command -v msgfmt >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'gettext' on your host machine.\n\t'msgfmt' needs to be in your \$PATH as well.${NC}"; exit 1; }
     command -v glib-mkenums >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'glib-utils' on your host machine.\n\t'glib-mkenums' needs to be in your \$PATH as well.${NC}"; exit 1; }
     command -v glib-compile-resources >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'glib-utils' on your host machine.\n\t'glib-compile-resources' needs to be in your \$PATH as well.${NC}"; exit 1; }
@@ -165,6 +166,7 @@ download_all () {
     fi
     clone $WEBKIT_REPO $WEBKIT_COMMIT "$WEBKIT_SUBDIRS"
     clone $EPOXY_REPO $EPOXY_COMMIT
+    clone $VULKAN_LOADER_REPO $VULKAN_LOADER_COMMIT
     clone $VIRGLRENDERER_REPO $VIRGLRENDERER_COMMIT
     clone $HYPERVISOR_REPO $HYPERVISOR_COMMIT
     clone $LIBUCONTEXT_REPO $LIBUCONTEXT_COMMIT
@@ -253,6 +255,128 @@ generate_meson_cross() {
     esac
     echo "cpu = '$ARCH'" >> $cross
     echo "endian = 'little'" >> $cross
+}
+
+generate_cmake_toolchain() {
+    toolchain="$1"
+
+    # Extract compiler executables
+    CC_BIN="${CC%% *}"
+    CXX_BIN="${CXX%% *}"
+    OBJC_BIN="${OBJCC%% *}"
+
+    echo "# Automatically generated - do not modify" > "$toolchain"
+    echo "" >> "$toolchain"
+    echo "cmake_minimum_required(VERSION 3.28)" >> "$toolchain"
+    echo "" >> "$toolchain"
+
+    #
+    # Target platform
+    #
+    case $PLATFORM in
+    ios_simulator* )
+        echo "set(CMAKE_SYSTEM_NAME iOS)" >> "$toolchain"
+        echo "set(CMAKE_OSX_SYSROOT iphonesimulator)" >> "$toolchain"
+        ;;
+    ios* )
+        echo "set(CMAKE_SYSTEM_NAME iOS)" >> "$toolchain"
+        echo "set(CMAKE_OSX_SYSROOT iphoneos)" >> "$toolchain"
+        ;;
+    visionos_simulator* )
+        echo "set(CMAKE_SYSTEM_NAME visionOS)" >> "$toolchain"
+        echo "set(CMAKE_OSX_SYSROOT xrsimulator)" >> "$toolchain"
+        ;;
+    visionos* )
+        echo "set(CMAKE_SYSTEM_NAME visionOS)" >> "$toolchain"
+        echo "set(CMAKE_OSX_SYSROOT xros)" >> "$toolchain"
+        ;;
+    macos )
+        echo "set(CMAKE_SYSTEM_NAME Darwin)" >> "$toolchain"
+        ;;
+    esac
+    echo "" >> "$toolchain"
+
+    #
+    # Architecture
+    #
+    echo "set(CMAKE_SYSTEM_PROCESSOR \"$ARCH\")" >> "$toolchain"
+    echo "set(CMAKE_OSX_ARCHITECTURES \"$ARCH\")" >> "$toolchain"
+    echo "" >> "$toolchain"
+
+    #
+    # Deployment target (derive from -m* flags if present, otherwise leave unset)
+    #
+    case "$PLATFORM" in
+    ios* )
+        echo "set(CMAKE_OSX_DEPLOYMENT_TARGET \"$IOS_SDKMINVER\")" >> "$toolchain"
+        ;;
+    visionos* )
+        echo "set(CMAKE_OSX_DEPLOYMENT_TARGET \"$VISIONOS_SDKMINVER\")" >> "$toolchain"
+        ;;
+    macos )
+        echo "set(CMAKE_OSX_DEPLOYMENT_TARGET \"$MAC_SDKMINVER\")" >> "$toolchain"
+        ;;
+    esac
+    echo "" >> "$toolchain"
+
+    #
+    # Compilers
+    #
+    echo "set(CMAKE_C_COMPILER \"$CC_BIN\")" >> "$toolchain"
+    echo "set(CMAKE_CXX_COMPILER \"$CXX_BIN\")" >> "$toolchain"
+    echo "set(CMAKE_OBJC_COMPILER \"$OBJC_BIN\")" >> "$toolchain"
+    echo "" >> "$toolchain"
+
+    #
+    # Binutils
+    #
+    echo "set(CMAKE_AR \"$AR\")" >> "$toolchain"
+    echo "set(CMAKE_NM \"$NM\")" >> "$toolchain"
+    echo "set(CMAKE_RANLIB \"$RANLIB\")" >> "$toolchain"
+    echo "set(CMAKE_STRIP \"$STRIP\")" >> "$toolchain"
+    echo "" >> "$toolchain"
+
+    #
+    # Flags
+    #
+    if [ -n "$CFLAGS" ]; then
+        echo "set(CMAKE_C_FLAGS \"$CFLAGS\" CACHE STRING \"\" FORCE)" >> "$toolchain"
+        echo "set(CMAKE_OBJC_FLAGS \"$CFLAGS\" CACHE STRING \"\" FORCE)" >> "$toolchain"
+    fi
+
+    if [ -n "$CXXFLAGS" ]; then
+        echo "set(CMAKE_CXX_FLAGS \"$CXXFLAGS\" CACHE STRING \"\" FORCE)" >> "$toolchain"
+    fi
+
+    if [ -n "$LDFLAGS" ]; then
+        echo "set(CMAKE_EXE_LINKER_FLAGS \"$LDFLAGS\" CACHE STRING \"\" FORCE)" >> "$toolchain"
+        echo "set(CMAKE_SHARED_LINKER_FLAGS \"$LDFLAGS\" CACHE STRING \"\" FORCE)" >> "$toolchain"
+        echo "set(CMAKE_MODULE_LINKER_FLAGS \"$LDFLAGS\" CACHE STRING \"\" FORCE)" >> "$toolchain"
+    fi
+    echo "" >> "$toolchain"
+
+    #
+    # pkg-config (critical for Apple cross builds)
+    #
+    echo "set(ENV{PKG_CONFIG} \"$PREFIX/host/bin/pkg-config\")" >> "$toolchain"
+    echo "set(ENV{PKG_CONFIG_SYSROOT_DIR} \"$PREFIX\")" >> "$toolchain"
+    echo "set(ENV{PKG_CONFIG_PATH} \"$PREFIX/host/lib/pkgconfig:$PREFIX/host/share/pkgconfig\")" >> "$toolchain"
+    echo "" >> "$toolchain"
+
+    #
+    # Python (for find_package(Python3))
+    #
+    echo "set(Python3_EXECUTABLE \"$(which python3)\")" >> "$toolchain"
+    echo "" >> "$toolchain"
+
+    #
+    # Cross-compile search behavior
+    #
+    echo "set(CMAKE_FIND_ROOT_PATH \"$PREFIX\")" >> "$toolchain"
+    echo "set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)" >> "$toolchain"
+    echo "set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)" >> "$toolchain"
+    echo "set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)" >> "$toolchain"
+    echo "set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)" >> "$toolchain"
 }
 
 # Prevent contamination from host pkg-config files by building our own
@@ -411,6 +535,47 @@ meson_build () {
     cd "$pwd"
 }
 
+cmake_build () {
+    SRCDIR="$1"
+    shift 1
+    FILE="$(basename $SRCDIR)"
+    NAME="${FILE%.tar.*}"
+    BUILDDIR="utm_build"
+
+    case $SRCDIR in
+    http* | ftp* )
+        SRCDIR="$BUILD_DIR/$NAME"
+        ;;
+    esac
+    CMAKE_TOOLCHAIN="$(realpath "$BUILD_DIR")/cross.cmake"
+    if [ ! -f "$CMAKE_TOOLCHAIN" ]; then
+        generate_cmake_toolchain "$CMAKE_TOOLCHAIN"
+    fi
+    pwd="$(pwd)"
+
+    cd "$SRCDIR"
+
+    if [ -z "$REBUILD" ]; then
+        rm -rf "$BUILDDIR"
+        mkdir -p "$BUILDDIR"
+
+        echo "${GREEN}Configuring ${NAME}...${NC}"
+        cmake -S . -B "$BUILDDIR" \
+            -DCMAKE_INSTALL_PREFIX="$PREFIX" \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_TOOLCHAIN_FILE="$CMAKE_TOOLCHAIN" \
+            "$@"
+    fi
+
+    echo "${GREEN}Building ${NAME}...${NC}"
+    cmake --build "$BUILDDIR" --parallel "$NCPU"
+
+    echo "${GREEN}Installing ${NAME}...${NC}"
+    cmake --install "$BUILDDIR"
+
+    cd "$pwd"
+}
+
 build_angle () {
     OLD_PATH=$PATH
     export PATH="$(realpath "$BUILD_DIR/depot_tools.git"):$OLD_PATH"
@@ -490,7 +655,8 @@ build_qemu_dependencies () {
     # GPU support
     build_angle
     meson_build $EPOXY_REPO -Dtests=false -Dglx=no -Degl=yes
-    meson_build $VIRGLRENDERER_REPO -Dtests=false -Dcheck-gl-errors=false -Dvenus=true -Drender-server-worker=thread
+    cmake_build $VULKAN_LOADER_REPO -D UPDATE_DEPS=On
+    meson_build $VIRGLRENDERER_REPO -Dtests=false -Dcheck-gl-errors=false -Dvenus=true -Dvulkan-dload=false -Drender-server-worker=thread
     # Hypervisor for iOS
     if [ "$PLATFORM" == "ios" ] || [ "$PLATFORM" == "ios_simulator" ]; then
         build_hypervisor
