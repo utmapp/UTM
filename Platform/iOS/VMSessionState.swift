@@ -505,7 +505,7 @@ extension VMSessionState {
     }
     
     func pauseResume() {
-        let shouldSaveState = !vm.isRunningAsDisposible
+        let shouldSaveState = !vm.isRunningAsDisposable
         if vm.state == .started {
             vm.requestVmPause(save: shouldSaveState)
         } else if vm.state == .paused {
