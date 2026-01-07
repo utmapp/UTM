@@ -678,6 +678,9 @@ build_qemu_dependencies () {
     build_angle
     meson_build $EPOXY_REPO -Dtests=false -Dglx=no -Degl=yes
     cmake_build $VULKAN_LOADER_REPO -D UPDATE_DEPS=On
+    # strip the minor versions
+    VULKAN_DYLIB="$PREFIX/lib/libvulkan.1.dylib"
+    mv "$(dirname $VULKAN_DYLIB)/$(readlink $VULKAN_DYLIB)" "$VULKAN_DYLIB"
     meson_darwin_build $VIRGLRENDERER_REPO -Dtests=false -Dcheck-gl-errors=false -Dvenus=true -Dvulkan-dload=false -Drender-server-worker=thread
     # Hypervisor for iOS
     if [ "$PLATFORM" == "ios" ] || [ "$PLATFORM" == "ios_simulator" ]; then
@@ -700,11 +703,11 @@ patch_vulkan_icd() {
 
     if [ "$PLATFORM" == "macos" ]; then
         sed -i '' -E '
-            s|("library_path"[[:space:]]*:[[:space:]]*")[^"]*/lib([^"/]+)\.dylib(")|\1\2.framework/Versions/Current/\2\3|
+            s|("library_path"[[:space:]]*:[[:space:]]*")[^"]*/lib([^"/]+)\.dylib(")|\1../../../Frameworks/\2.framework/Versions/Current/\2\3|
         ' "$icd_file"
     else
         sed -i '' -E '
-            s|("library_path"[[:space:]]*:[[:space:]]*")[^"]*/lib([^"/]+)\.dylib(")|\1\2.framework/\2\3|
+            s|("library_path"[[:space:]]*:[[:space:]]*")[^"]*/lib([^"/]+)\.dylib(")|\1../../../Frameworks/\2.framework/\2\3|
         ' "$icd_file"
     fi
 }
@@ -794,7 +797,7 @@ fixup () {
         basefilename=${base%.*}
         libname=${basefilename#lib*}
         dir=$(dirname "$g")
-        if [ "$dir" == "$PREFIX/lib" ]; then
+        if [ "$dir" == "$PREFIX/lib" ] || [ "$dir" == "@rpath" ]; then
             if [ "$PLATFORM" == "macos" ]; then
                 newname="@rpath/$libname.framework/Versions/A/$libname"
             else
