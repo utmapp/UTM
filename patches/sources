@@ -49,6 +49,8 @@ VIRGLRENDERER_REPO="https://github.com/utmapp/virglrenderer.git"
 VIRGLRENDERER_COMMIT="31d91c3860749534aed7bd26af8f47f7de412681"
 MESA_REPO="https://gitlab.freedesktop.org/osy/mesa.git"
 MESA_COMMIT="79bc850d884a1307356ff61c017e58901b90c7e2"
+MOLTENVK_REPO="https://github.com/KhronosGroup/MoltenVK.git"
+MOLTENVK_COMMIT="bf60f60d0805e9b3ab989cfc1b69f780f96fd123"
 
 # Decompiled Hypervisor for iOS
 HYPERVISOR_REPO="https://github.com/utmapp/Hypervisor.git"

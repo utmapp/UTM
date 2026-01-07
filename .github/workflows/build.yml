@@ -87,7 +87,8 @@ jobs:
         run: |
           brew uninstall cmake
           brew install bison pkg-config gettext glib-utils libgpg-error nasm make meson cmake
-          pip3 install --user six pyparsing pyyaml setuptools distlib mako
+          pip3 install --break-system-packages --user six pyparsing pyyaml setuptools distlib mako
+          gem install --user-install xcpretty
           rm -f /usr/local/lib/pkgconfig/*.pc
       - name: Build Sysroot
         if: steps.cache-sysroot.outputs.cache-matched-key == '' || github.event.inputs.rebuild_sysroot == 'true'

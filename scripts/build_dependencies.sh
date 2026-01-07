@@ -176,6 +176,7 @@ download_all () {
     clone $HYPERVISOR_REPO $HYPERVISOR_COMMIT
     clone $LIBUCONTEXT_REPO $LIBUCONTEXT_COMMIT
     clone $MESA_REPO $MESA_COMMIT
+    clone $MOLTENVK_REPO $MOLTENVK_COMMIT
 }
 
 copy_private_headers() {
@@ -708,10 +709,48 @@ patch_vulkan_icd() {
     fi
 }
 
+build_moltenvk() {
+    pushd "$BUILD_DIR/MoltenVK.git"
+    # for xcpretty if installed
+    if which ruby >/dev/null && which gem >/dev/null; then
+        PATH="$(ruby -r rubygems -e 'puts Gem.user_dir')/bin:$PATH"
+    fi
+    case $PLATFORM in
+    ios_simulator* )
+        MVK_PLATFORM="iossim"
+        ;;
+    ios* )
+        MVK_PLATFORM="ios"
+        ;;
+    visionos_simulator* )
+        MVK_PLATFORM="visionossim"
+        ;;
+    visionos* )
+        MVK_PLATFORM="visionos"
+        ;;
+    macos )
+        MVK_PLATFORM="macos"
+        ;;
+    esac
+    env -i PATH=$PATH HOME=$HOME LANG=en_US.UTF-8 ./fetchDependencies --$MVK_PLATFORM -v
+    env -i PATH=$PATH HOME=$HOME LANG=en_US.UTF-8 make $MVK_PLATFORM
+    if [ "$PLATFORM" == "macos" ]; then
+        $(xcrun --sdk $SDK --find lipo) "Package/Release/MoltenVK/dylib/macOS/libMoltenVK.dylib" -extract $ARCH -output "$PREFIX/lib/libMoltenVK.dylib"
+    else
+        find "Package/Release/MoltenVK/dynamic/MoltenVK.xcframework" -name "MoltenVK.framework" -exec cp -a \{\} "$PREFIX/Frameworks/" \;
+    fi
+    cp -a "MoltenVK/icd/MoltenVK_icd.json" "$PREFIX/share/vulkan/icd.d/"
+    popd
+}
+
 build_vulkan_drivers () {
     export PATH="$(brew --prefix mesa)/bin:$PATH"
+    mkdir -p "$PREFIX/share/vulkan/icd.d"
     meson_darwin_build $MESA_REPO -Dmesa-clc=system -Dgallium-drivers= -Dvulkan-drivers=kosmickrisp -Dplatforms=macos
     patch_vulkan_icd "$PREFIX/share/vulkan/icd.d/kosmickrisp_mesa_icd.$ARCH.json"
+    mv "$PREFIX/share/vulkan/icd.d/kosmickrisp_mesa_icd.$ARCH.json" "$PREFIX/share/vulkan/icd.d/kosmickrisp_mesa_icd.json"
+    build_moltenvk
+    patch_vulkan_icd "$PREFIX/share/vulkan/icd.d/MoltenVK_icd.json"
 }
 
 fixup () {
