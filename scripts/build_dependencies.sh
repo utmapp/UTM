@@ -63,6 +63,9 @@ python_module_test () {
 }
 
 check_env () {
+    command -v brew >/dev/null 2>&1 || { echo >&2 "${RED}Homebrew is required to be installed.${NC}"; exit 1; }
+    brew --prefix mesa >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'mesa' from Homebrew.${NC}"; exit 1; }
+    [ -x $(brew --prefix mesa)/bin/mesa_clc ] || { echo >&2 "${RED}'mesa_clc' not found in host Mesa installation.${NC}"; exit 1; }
     command -v python3 >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'python3' on your host machine.${NC}"; exit 1; }
     python_module_test six >/dev/null 2>&1 || { echo >&2 "${RED}'six' not found in your Python 3 installation.${NC}"; exit 1; }
     python_module_test pyparsing >/dev/null 2>&1 || { echo >&2 "${RED}'pyparsing' not found in your Python 3 installation.${NC}"; exit 1; }
@@ -170,6 +173,7 @@ download_all () {
     clone $VIRGLRENDERER_REPO $VIRGLRENDERER_COMMIT
     clone $HYPERVISOR_REPO $HYPERVISOR_COMMIT
     clone $LIBUCONTEXT_REPO $LIBUCONTEXT_COMMIT
+    clone $MESA_REPO $MESA_COMMIT
 }
 
 copy_private_headers() {
@@ -205,6 +209,7 @@ meson_quote() {
 
 generate_meson_cross() {
     cross="$1"
+    system="$2"
     echo "# Automatically generated - do not modify" > $cross
     echo "[properties]" >> $cross
     echo "needs_exe_wrapper = true" >> $cross
@@ -228,14 +233,18 @@ generate_meson_cross() {
     echo "glib-mkenums = ['$(which glib-mkenums)']" >> $cross
     echo "glib-compile-resources = ['$(which glib-compile-resources)']" >> $cross
     echo "[host_machine]" >> $cross
-    case $PLATFORM in
-    ios* | visionos* )
-        echo "system = 'ios'" >> $cross
-        ;;
-    macos )
-        echo "system = 'darwin'" >> $cross
-        ;;
-    esac
+    if [ "$system" == "auto" ]; then
+        case $PLATFORM in
+        ios* | visionos* )
+            echo "system = 'ios'" >> $cross
+            ;;
+        macos )
+            echo "system = 'darwin'" >> $cross
+            ;;
+        esac
+    else
+        echo "system = '$system'" >> $cross
+    fi
     case "$ARCH" in
     armv7 | armv7s )
         echo "cpu_family = 'arm'" >> $cross
@@ -301,6 +310,7 @@ generate_cmake_toolchain() {
     #
     echo "set(CMAKE_SYSTEM_PROCESSOR \"$ARCH\")" >> "$toolchain"
     echo "set(CMAKE_OSX_ARCHITECTURES \"$ARCH\")" >> "$toolchain"
+    echo "set(CMAKE_MACOSX_BUNDLE OFF CACHE BOOL \"\")" >> "$toolchain"
     echo "" >> "$toolchain"
 
     #
@@ -506,9 +516,10 @@ build () {
     cd "$pwd"
 }
 
-meson_build () {
-    SRCDIR="$1"
-    shift 1
+meson_cross_build () {
+    CROSS="$1"
+    SRCDIR="$2"
+    shift 2
     FILE="$(basename $SRCDIR)"
     NAME="${FILE%.tar.*}"
     case $SRCDIR in
@@ -516,9 +527,9 @@ meson_build () {
         SRCDIR="$BUILD_DIR/$NAME"
         ;;
     esac
-    MESON_CROSS="$(realpath "$BUILD_DIR")/meson.cross"
+    MESON_CROSS="$(realpath "$BUILD_DIR")/meson-$CROSS.cross"
     if [ ! -f "$MESON_CROSS" ]; then
-        generate_meson_cross "$MESON_CROSS"
+        generate_meson_cross "$MESON_CROSS" "$CROSS"
     fi
     pwd="$(pwd)"
 
@@ -533,6 +544,14 @@ meson_build () {
     echo "${GREEN}Installing ${NAME}...${NC}"
     meson install -C utm_build
     cd "$pwd"
+}
+
+meson_build () {
+    meson_cross_build auto $@
+}
+
+meson_darwin_build () {
+    meson_cross_build darwin $@
 }
 
 cmake_build () {
@@ -646,7 +665,7 @@ build_qemu_dependencies () {
     meson_build $GST_GOOD_SRC -Dtests=disabled -Ddefault_library=both
     meson_build $SPICE_PROTOCOL_SRC
     meson_build $SPICE_SERVER_SRC -Dlz4=false -Dsasl=false
-    meson_build $SLIRP_SRC
+    meson_darwin_build $SLIRP_SRC
     # USB support
     if [ -z "$SKIP_USB_BUILD" ]; then
         build $USB_SRC
@@ -656,7 +675,7 @@ build_qemu_dependencies () {
     build_angle
     meson_build $EPOXY_REPO -Dtests=false -Dglx=no -Degl=yes
     cmake_build $VULKAN_LOADER_REPO -D UPDATE_DEPS=On
-    meson_build $VIRGLRENDERER_REPO -Dtests=false -Dcheck-gl-errors=false -Dvenus=true -Dvulkan-dload=false -Drender-server-worker=thread
+    meson_darwin_build $VIRGLRENDERER_REPO -Dtests=false -Dcheck-gl-errors=false -Dvenus=true -Dvulkan-dload=false -Drender-server-worker=thread
     # Hypervisor for iOS
     if [ "$PLATFORM" == "ios" ] || [ "$PLATFORM" == "ios_simulator" ]; then
         build_hypervisor
@@ -670,6 +689,27 @@ build_spice_client () {
     meson_build $SOUP_SRC -Dsysprof=disabled -Dtls_check=false -Dintrospection=disabled
     meson_build $PHODAV_SRC
     meson_build $SPICE_CLIENT_SRC -Dcoroutine=libucontext
+}
+
+patch_vulkan_icd() {
+    local icd_file="$1"
+
+
+    if [ "$PLATFORM" == "macos" ]; then
+        sed -i '' -E '
+            s|("library_path"[[:space:]]*:[[:space:]]*")[^"]*/lib([^"/]+)\.dylib(")|\1\2.framework/Versions/Current/\2\3|
+        ' "$icd_file"
+    else
+        sed -i '' -E '
+            s|("library_path"[[:space:]]*:[[:space:]]*")[^"]*/lib([^"/]+)\.dylib(")|\1\2.framework/\2\3|
+        ' "$icd_file"
+    fi
+}
+
+build_vulkan_drivers () {
+    export PATH="$(brew --prefix mesa)/bin:$PATH"
+    meson_darwin_build $MESA_REPO -Dmesa-clc=system -Dgallium-drivers= -Dvulkan-drivers=kosmickrisp -Dplatforms=macos
+    patch_vulkan_icd "$PREFIX/share/vulkan/icd.d/kosmickrisp_mesa_icd.$ARCH.json"
 }
 
 fixup () {
@@ -960,13 +1000,15 @@ fi
 echo "${GREEN}Deleting old sysroot!${NC}"
 rm -rf "$PREFIX/"*
 rm -f "$BUILD_DIR/BUILD_SUCCESS"
-rm -f "$BUILD_DIR/meson.cross"
+rm -f "$BUILD_DIR/meson*.cross"
+rm -f "$BUILD_DIR/cross.cmake"
 mkdir -p "$PREFIX/Frameworks"
 copy_private_headers
 build_pkg_config
 build_qemu_dependencies
 build $QEMU_DIR --cross-prefix="" $QEMU_PLATFORM_BUILD_FLAGS
 build_spice_client
+build_vulkan_drivers
 fixup_all
 remove_shared_gst_plugins # another hack...
 echo "${GREEN}All done!${NC}"

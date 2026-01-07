@@ -47,6 +47,8 @@ VULKAN_LOADER_REPO="https://github.com/osy/Vulkan-Loader.git"
 VULKAN_LOADER_COMMIT="6df86907be582927507637f3f6003ea58bc34517"
 VIRGLRENDERER_REPO="https://github.com/utmapp/virglrenderer.git"
 VIRGLRENDERER_COMMIT="31d91c3860749534aed7bd26af8f47f7de412681"
+MESA_REPO="https://gitlab.freedesktop.org/osy/mesa.git"
+MESA_COMMIT="79bc850d884a1307356ff61c017e58901b90c7e2"
 
 # Decompiled Hypervisor for iOS
 HYPERVISOR_REPO="https://github.com/utmapp/Hypervisor.git"
