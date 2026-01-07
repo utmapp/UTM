@@ -648,6 +648,18 @@
 		CE611BEC29F50D3E001817BC /* VMReleaseNotesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE611BEA29F50D3E001817BC /* VMReleaseNotesView.swift */; };
 		CE611BED29F50D3E001817BC /* VMReleaseNotesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE611BEA29F50D3E001817BC /* VMReleaseNotesView.swift */; };
 		CE612AC624D3B50700FA6300 /* VMDisplayWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE612AC524D3B50700FA6300 /* VMDisplayWindowController.swift */; };
+		CE63B0DB2F0ED4FF00C59D13 /* vulkan_kosmickrisp.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE63B0D72F0ED4FE00C59D13 /* vulkan_kosmickrisp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CE63B0DD2F0ED4FF00C59D13 /* vulkan.1.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE63B0D82F0ED4FE00C59D13 /* vulkan.1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CE63B0DF2F0ED4FF00C59D13 /* MoltenVK.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE63B0D92F0ED4FF00C59D13 /* MoltenVK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CE63B0F12F0ED67700C59D13 /* vulkan in Resources */ = {isa = PBXBuildFile; fileRef = CE63B0F02F0ED67700C59D13 /* vulkan */; };
+		CE63B0F22F0ED67700C59D13 /* vulkan in Resources */ = {isa = PBXBuildFile; fileRef = CE63B0F02F0ED67700C59D13 /* vulkan */; };
+		CE63B0F32F0ED67700C59D13 /* vulkan in Resources */ = {isa = PBXBuildFile; fileRef = CE63B0F02F0ED67700C59D13 /* vulkan */; };
+		CE63B0F52F0EFAF600C59D13 /* vulkan_kosmickrisp.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE63B0D72F0ED4FE00C59D13 /* vulkan_kosmickrisp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CE63B0F72F0EFAF800C59D13 /* vulkan.1.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE63B0D82F0ED4FE00C59D13 /* vulkan.1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CE63B0F92F0EFB0000C59D13 /* MoltenVK.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE63B0D92F0ED4FF00C59D13 /* MoltenVK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CE63B0FB2F0EFB0600C59D13 /* vulkan.1.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE63B0D82F0ED4FE00C59D13 /* vulkan.1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CE63B0FD2F0EFB0700C59D13 /* vulkan_kosmickrisp.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE63B0D72F0ED4FE00C59D13 /* vulkan_kosmickrisp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CE63B0FF2F0EFB0900C59D13 /* MoltenVK.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE63B0D92F0ED4FF00C59D13 /* MoltenVK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CE65BABF26A4D8DD0001BD6B /* VMConfigDisplayConsoleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8401FDA5269D44E400265F0D /* VMConfigDisplayConsoleView.swift */; };
 		CE65BAC026A4D8DE0001BD6B /* VMConfigDisplayConsoleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8401FDA5269D44E400265F0D /* VMConfigDisplayConsoleView.swift */; };
 		CE6804802E493D71001671E9 /* UTMUSBManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE68047D2E493D71001671E9 /* UTMUSBManager.swift */; };
@@ -1347,6 +1359,7 @@
 				CE0B6F2224AD67A200FE012D /* gstnet-1.0.0.framework in Embed Libraries */,
 				CE03D09124D9124900F76B84 /* jpeg.62.framework in Embed Libraries */,
 				CEA9059525FC6A3A00801E7C /* usbredirhost.1.framework in Embed Libraries */,
+				CE63B0DD2F0ED4FF00C59D13 /* vulkan.1.framework in Embed Libraries */,
 				CEF83F8C250094E300557D15 /* png16.16.framework in Embed Libraries */,
 				CEF83F8F250094EE00557D15 /* gcrypt.20.framework in Embed Libraries */,
 				CE0B6F5424AD67FA00FE012D /* spice-client-glib-2.0.8.framework in Embed Libraries */,
@@ -1359,6 +1372,7 @@
 				CE0B6F2424AD67A600FE012D /* gstreamer-1.0.0.framework in Embed Libraries */,
 				CE0B6F2A24AD67AF00FE012D /* gstvideo-1.0.0.framework in Embed Libraries */,
 				CE0B6F2F24AD67BE00FE012D /* json-glib-1.0.0.framework in Embed Libraries */,
+				CE63B0DF2F0ED4FF00C59D13 /* MoltenVK.framework in Embed Libraries */,
 				CE03D0C724D913E600F76B84 /* opus.0.framework in Embed Libraries */,
 				CE03D08C24D9123E00F76B84 /* gio-2.0.0.framework in Embed Libraries */,
 				CE0B6F2824AD67AC00FE012D /* gstsdp-1.0.0.framework in Embed Libraries */,
@@ -1373,6 +1387,7 @@
 				CE03D08E24D9124100F76B84 /* gmodule-2.0.0.framework in Embed Libraries */,
 				CE03D0C524D913AF00F76B84 /* ffi.8.framework in Embed Libraries */,
 				CEF83F8D250094E700557D15 /* gthread-2.0.0.framework in Embed Libraries */,
+				CE63B0DB2F0ED4FF00C59D13 /* vulkan_kosmickrisp.framework in Embed Libraries */,
 				CE064C662A563F4B003C833D /* swtpm.0.framework in Embed Libraries */,
 				CE03D09024D9124800F76B84 /* intl.8.framework in Embed Libraries */,
 				CE03D0C924D9140A00F76B84 /* pixman-1.0.framework in Embed Libraries */,
@@ -1438,6 +1453,7 @@
 				CE2D938124AD46670059923A /* crypto.1.1.framework in Embed Libraries */,
 				CE2D938224AD46670059923A /* qemu-riscv64-softmmu.framework in Embed Libraries */,
 				CE2D938324AD46670059923A /* gstapp-1.0.0.framework in Embed Libraries */,
+				CE63B0F52F0EFAF600C59D13 /* vulkan_kosmickrisp.framework in Embed Libraries */,
 				CE9A353526533A52005077CF /* JailbreakInterposer.framework in Embed Libraries */,
 				CE2D938524AD46670059923A /* qemu-microblaze-softmmu.framework in Embed Libraries */,
 				CE2D938624AD46670059923A /* qemu-sh4-softmmu.framework in Embed Libraries */,
@@ -1454,11 +1470,13 @@
 				CE2D939024AD46670059923A /* qemu-mips-softmmu.framework in Embed Libraries */,
 				CE2D939124AD46670059923A /* qemu-s390x-softmmu.framework in Embed Libraries */,
 				CE2D939224AD46670059923A /* gobject-2.0.0.framework in Embed Libraries */,
+				CE63B0F72F0EFAF800C59D13 /* vulkan.1.framework in Embed Libraries */,
 				CE2D939324AD46670059923A /* gmodule-2.0.0.framework in Embed Libraries */,
 				CE2D939424AD46670059923A /* qemu-tricore-softmmu.framework in Embed Libraries */,
 				CE2D939524AD46670059923A /* qemu-sparc64-softmmu.framework in Embed Libraries */,
 				CE2D939624AD46670059923A /* qemu-riscv32-softmmu.framework in Embed Libraries */,
 				CE2D939724AD46670059923A /* qemu-mips64-softmmu.framework in Embed Libraries */,
+				CE63B0F92F0EFB0000C59D13 /* MoltenVK.framework in Embed Libraries */,
 				CE2D939824AD46670059923A /* qemu-m68k-softmmu.framework in Embed Libraries */,
 				CE2D939924AD46670059923A /* qemu-sparc-softmmu.framework in Embed Libraries */,
 				CE2D939A24AD46670059923A /* qemu-ppc64-softmmu.framework in Embed Libraries */,
@@ -1521,11 +1539,13 @@
 			dstSubfolderSpec = 10;
 			files = (
 				CEA45F72263519B5002FA97D /* gpg-error.0.framework in Embed Libraries */,
+				CE63B0FD2F0EFB0700C59D13 /* vulkan_kosmickrisp.framework in Embed Libraries */,
 				CEA45F74263519B5002FA97D /* gstcontroller-1.0.0.framework in Embed Libraries */,
 				CEA45F75263519B5002FA97D /* gstallocators-1.0.0.framework in Embed Libraries */,
 				CEA45F76263519B5002FA97D /* gstbase-1.0.0.framework in Embed Libraries */,
 				CEA45F77263519B5002FA97D /* ffi.8.framework in Embed Libraries */,
 				CEA45F78263519B5002FA97D /* ssl.1.1.framework in Embed Libraries */,
+				CE63B0FB2F0EFB0600C59D13 /* vulkan.1.framework in Embed Libraries */,
 				CEA45F7A263519B5002FA97D /* gio-2.0.0.framework in Embed Libraries */,
 				CEA45F7B263519B5002FA97D /* png16.16.framework in Embed Libraries */,
 				CEA45F7C263519B5002FA97D /* gstnet-1.0.0.framework in Embed Libraries */,
@@ -1564,6 +1584,7 @@
 				CEA45FAF263519B5002FA97D /* iconv.2.framework in Embed Libraries */,
 				CEA45FB1263519B5002FA97D /* gstrtsp-1.0.0.framework in Embed Libraries */,
 				CEA45FB2263519B5002FA97D /* spice-server.1.framework in Embed Libraries */,
+				CE63B0FF2F0EFB0900C59D13 /* MoltenVK.framework in Embed Libraries */,
 				CEA45FB3263519B5002FA97D /* gcrypt.20.framework in Embed Libraries */,
 				CEA45FB4263519B5002FA97D /* gstfft-1.0.0.framework in Embed Libraries */,
 				CEA45FB5263519B5002FA97D /* gstpbutils-1.0.0.framework in Embed Libraries */,
@@ -1983,6 +2004,10 @@
 		CE611BE629F50CAD001817BC /* UTMReleaseHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMReleaseHelper.swift; sourceTree = "<group>"; };
 		CE611BEA29F50D3E001817BC /* VMReleaseNotesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMReleaseNotesView.swift; sourceTree = "<group>"; };
 		CE612AC524D3B50700FA6300 /* VMDisplayWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayWindowController.swift; sourceTree = "<group>"; };
+		CE63B0D72F0ED4FE00C59D13 /* vulkan_kosmickrisp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = vulkan_kosmickrisp.framework; path = "$(SYSROOT_DIR)/Frameworks/vulkan_kosmickrisp.framework"; sourceTree = "<group>"; };
+		CE63B0D82F0ED4FE00C59D13 /* vulkan.1.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = vulkan.1.framework; path = "$(SYSROOT_DIR)/Frameworks/vulkan.1.framework"; sourceTree = "<group>"; };
+		CE63B0D92F0ED4FF00C59D13 /* MoltenVK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MoltenVK.framework; path = "$(SYSROOT_DIR)/Frameworks/MoltenVK.framework"; sourceTree = "<group>"; };
+		CE63B0F02F0ED67700C59D13 /* vulkan */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = vulkan; path = "$(SYSROOT_DIR)/share/vulkan"; sourceTree = "<group>"; };
 		CE66450C2269313200B0849A /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
 		CE68047D2E493D71001671E9 /* UTMUSBManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMUSBManager.swift; sourceTree = "<group>"; };
 		CE6804842E4E5D84001671E9 /* UTMScriptingInputImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMScriptingInputImpl.swift; sourceTree = "<group>"; };
@@ -2599,6 +2624,9 @@
 		CE2D63D622653C7300FC7E63 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CE63B0D92F0ED4FF00C59D13 /* MoltenVK.framework */,
+				CE63B0D72F0ED4FE00C59D13 /* vulkan_kosmickrisp.framework */,
+				CE63B0D82F0ED4FE00C59D13 /* vulkan.1.framework */,
 				CED297132CE425CA00F1E3EB /* soup-3.0.0.framework */,
 				CE064C642A563F4A003C833D /* swtpm.0.framework */,
 				CE02C8A8294EE4EA006DFE48 /* qemu-loongarch64-softmmu.framework */,
@@ -2864,6 +2892,7 @@
 				CE2D953624AD4F980059923A /* Platform */,
 				CEBDA1DB24D8BDDA0010B5EC /* QEMUHelper */,
 				CE9D18F72265410E00355E14 /* qemu */,
+				CE63B0F02F0ED67700C59D13 /* vulkan */,
 				CE6B240925F1F3CE0020D43E /* QEMULauncher */,
 				CE9A352E26533A51005077CF /* JailbreakInterposer */,
 				CE9B153D2B11A4ED003A32DD /* Remote */,
@@ -3451,6 +3480,7 @@
 				CE4698F924C8FBD9008C1BD6 /* Icons in Resources */,
 				FFB02A8C266CB09C006CD71A /* InfoPlist.strings in Resources */,
 				CE2D936B24AD46670059923A /* Localizable.strings in Resources */,
+				CE63B0F22F0ED67700C59D13 /* vulkan in Resources */,
 				CEC1B00B2BBB211C0088119D /* PrivacyInfo.xcprivacy in Resources */,
 				CE2D936C24AD46670059923A /* qemu in Resources */,
 				CE061CE6289EB6250000351C /* VMDisplayMetalViewInputAccessory.xib in Resources */,
@@ -3465,6 +3495,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE63B0F12F0ED67700C59D13 /* vulkan in Resources */,
 				CE0B6CEC24AD532500FE012D /* Assets.xcassets in Resources */,
 				CEF83F262500901300557D15 /* qemu in Resources */,
 				846F8D692E4075F00037162B /* AppIcon.icon in Resources */,
@@ -3491,6 +3522,7 @@
 				CEA45F64263519B5002FA97D /* Icons in Resources */,
 				FFB02A8D266CB09C006CD71A /* InfoPlist.strings in Resources */,
 				CEA45F67263519B5002FA97D /* Localizable.strings in Resources */,
+				CE63B0F32F0ED67700C59D13 /* vulkan in Resources */,
 				CEC1B00C2BBB211C0088119D /* PrivacyInfo.xcprivacy in Resources */,
 				CEA45F69263519B5002FA97D /* qemu in Resources */,
 				CE061CE7289EB6250000351C /* VMDisplayMetalViewInputAccessory.xib in Resources */,

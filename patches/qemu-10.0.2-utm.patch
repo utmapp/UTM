@@ -3277,3 +3277,1491 @@ index 931258ef96..824e645d72 100644
 -- 
 2.41.0
 
+From 5ab253b54bf6a4081752253751d0f8958e8bb53f Mon Sep 17 00:00:00 2001
+From: Joelle van Dyne <j@getutm.app>
+Date: Sun, 30 Nov 2025 00:07:02 -0800
+Subject: [PATCH 1/9] virtio-gpu-virgl: update virglrenderer defines
+
+In order to support additional native texture types, we need to update the
+defines in virglrenderer. The changes are backwards compatible and so
+builds should work with either the new version or the old version.
+
+https://gitlab.freedesktop.org/virgl/virglrenderer/-/merge_requests/1583
+
+Signed-off-by: Joelle van Dyne <j@getutm.app>
+---
+ hw/display/virtio-gpu-virgl.c | 26 +++++++++++++++++++++++---
+ 1 file changed, 23 insertions(+), 3 deletions(-)
+
+diff --git a/hw/display/virtio-gpu-virgl.c b/hw/display/virtio-gpu-virgl.c
+index eac49fbae8..d55c2c1625 100644
+--- a/hw/display/virtio-gpu-virgl.c
++++ b/hw/display/virtio-gpu-virgl.c
+@@ -24,6 +24,8 @@
+ 
+ #include <virglrenderer.h>
+ 
++#define NATIVE_HANDLE_SUPPORT_VERSION (1)
++
+ struct virtio_gpu_virgl_resource {
+     struct virtio_gpu_simple_resource base;
+     MemoryRegion *mr;
+@@ -423,12 +425,28 @@ static void virgl_cmd_set_scanout(VirtIOGPU *g,
+         memset(&ext, 0, sizeof(ext));
+         ret = virgl_renderer_resource_get_info_ext(ss.resource_id, &ext);
+         info = ext.base;
++        /* fallback to older version */
+         native = (ScanoutTextureNative){
+             .type = ext.d3d_tex2d ? SCANOUT_TEXTURE_NATIVE_TYPE_D3D :
+                                     SCANOUT_TEXTURE_NATIVE_TYPE_NONE,
+             .handle = ext.d3d_tex2d,
+         };
+-#else
++#if VIRGL_RENDERER_RESOURCE_INFO_EXT_VERSION >= NATIVE_HANDLE_SUPPORT_VERSION
++        if (ext.version >= VIRGL_RENDERER_RESOURCE_INFO_EXT_VERSION) {
++            switch (ext.native_type) {
++            case VIRGL_NATIVE_HANDLE_NONE:
++            case VIRGL_NATIVE_HANDLE_D3D_TEX2D: {
++                /* already handled above */
++                break;
++            }
++            default: {
++                /* ignore unsupported hint texture type */
++                break;
++            }
++            }
++        }
++#endif
++#else /* VIRGL_VERSION_MAJOR < 1 */
+         memset(&info, 0, sizeof(info));
+         ret = virgl_renderer_resource_get_info(ss.resource_id, &info);
+ #endif
+@@ -1107,11 +1125,13 @@ int virtio_gpu_virgl_init(VirtIOGPU *g)
+         virtio_gpu_3d_cbs.get_egl_display = virgl_get_egl_display;
+     }
+ #endif
+-#ifdef VIRGL_RENDERER_D3D11_SHARE_TEXTURE
+     if (qemu_egl_angle_native_device) {
++#if defined(VIRGL_RENDERER_NATIVE_SHARE_TEXTURE)
++        flags |= VIRGL_RENDERER_NATIVE_SHARE_TEXTURE;
++#elif defined(VIRGL_RENDERER_D3D11_SHARE_TEXTURE) && defined(WIN32)
+         flags |= VIRGL_RENDERER_D3D11_SHARE_TEXTURE;
+-    }
+ #endif
++    }
+ #if VIRGL_VERSION_MAJOR >= 1
+     if (virtio_gpu_venus_enabled(g->parent_obj.conf)) {
+         flags |= VIRGL_RENDERER_VENUS | VIRGL_RENDERER_RENDER_SERVER;
+-- 
+2.41.0
+
+From 5245d2d926c8fcef6bbae0a95b286ed81c42b1b3 Mon Sep 17 00:00:00 2001
+From: Joelle van Dyne <j@getutm.app>
+Date: Sun, 30 Nov 2025 00:11:27 -0800
+Subject: [PATCH 2/9] virtio-gpu-virgl: support scanout of Metal textures
+
+When supported, virglrenderer will return a MTLTexture handle that can be
+directly used for scanout.
+
+Signed-off-by: Joelle van Dyne <j@getutm.app>
+---
+ hw/display/virtio-gpu-virgl.c | 12 +++++++++++-
+ hw/display/virtio-gpu.c       | 10 ++++++++--
+ include/ui/console.h          |  1 +
+ meson.build                   |  3 +++
+ 4 files changed, 23 insertions(+), 3 deletions(-)
+
+diff --git a/hw/display/virtio-gpu-virgl.c b/hw/display/virtio-gpu-virgl.c
+index d55c2c1625..98c9bc4d89 100644
+--- a/hw/display/virtio-gpu-virgl.c
++++ b/hw/display/virtio-gpu-virgl.c
+@@ -434,6 +434,13 @@ static void virgl_cmd_set_scanout(VirtIOGPU *g,
+ #if VIRGL_RENDERER_RESOURCE_INFO_EXT_VERSION >= NATIVE_HANDLE_SUPPORT_VERSION
+         if (ext.version >= VIRGL_RENDERER_RESOURCE_INFO_EXT_VERSION) {
+             switch (ext.native_type) {
++#ifdef CONFIG_METAL
++            case VIRGL_NATIVE_HANDLE_METAL_TEXTURE: {
++                native.type = SCANOUT_TEXTURE_NATIVE_TYPE_METAL;
++                native.handle = ext.native_handle;
++                break;
++            }
++#endif
+             case VIRGL_NATIVE_HANDLE_NONE:
+             case VIRGL_NATIVE_HANDLE_D3D_TEX2D: {
+                 /* already handled above */
+@@ -1134,7 +1141,10 @@ int virtio_gpu_virgl_init(VirtIOGPU *g)
+     }
+ #if VIRGL_VERSION_MAJOR >= 1
+     if (virtio_gpu_venus_enabled(g->parent_obj.conf)) {
+-        flags |= VIRGL_RENDERER_VENUS | VIRGL_RENDERER_RENDER_SERVER;
++        flags |= VIRGL_RENDERER_VENUS;
++#ifndef CONFIG_METAL /* Metal does not support render server */
++        flags |= VIRGL_RENDERER_RENDER_SERVER;
++#endif
+     }
+ #endif
+ 
+diff --git a/hw/display/virtio-gpu.c b/hw/display/virtio-gpu.c
+index 11a7a85750..1b1e0c4459 100644
+--- a/hw/display/virtio-gpu.c
++++ b/hw/display/virtio-gpu.c
+@@ -1471,12 +1471,18 @@ void virtio_gpu_device_realize(DeviceState *qdev, Error **errp)
+ {
+     VirtIODevice *vdev = VIRTIO_DEVICE(qdev);
+     VirtIOGPU *g = VIRTIO_GPU(qdev);
++    bool have_ext_memory;
+ 
+     if (virtio_gpu_blob_enabled(g->parent_obj.conf)) {
++#ifdef CONFIG_METAL
++        have_ext_memory = virtio_gpu_venus_enabled(g->parent_obj.conf);
++#else
++        have_ext_memory = virtio_gpu_have_udmabuf();
++#endif
+         if (!virtio_gpu_rutabaga_enabled(g->parent_obj.conf) &&
+             !virtio_gpu_virgl_enabled(g->parent_obj.conf) &&
+-            !virtio_gpu_have_udmabuf()) {
+-            error_setg(errp, "need rutabaga or udmabuf for blob resources");
++            !have_ext_memory) {
++            error_setg(errp, "need rutabaga or ext memory for blob resources");
+             return;
+         }
+ 
+diff --git a/include/ui/console.h b/include/ui/console.h
+index 445e563150..f96565d109 100644
+--- a/include/ui/console.h
++++ b/include/ui/console.h
+@@ -134,6 +134,7 @@ struct QemuConsoleClass {
+ typedef enum ScanoutTextureNativeType {
+     SCANOUT_TEXTURE_NATIVE_TYPE_NONE,
+     SCANOUT_TEXTURE_NATIVE_TYPE_D3D,
++    SCANOUT_TEXTURE_NATIVE_TYPE_METAL,
+ } ScanoutTextureNativeType;
+ 
+ typedef struct ScanoutTextureNative {
+diff --git a/meson.build b/meson.build
+index af9284fb29..3ecd4d5b3a 100644
+--- a/meson.build
++++ b/meson.build
+@@ -836,6 +836,7 @@ coref = []
+ iokit = []
+ iosurface = not_found
+ pvg = not_found
++metal = not_found
+ quartzcore = not_found
+ emulator_link_args = []
+ midl = not_found
+@@ -861,6 +862,7 @@ elif host_os == 'darwin'
+   host_dsosuf = '.dylib'
+   pvg = dependency('appleframeworks', modules: ['ParavirtualizedGraphics', 'Metal'],
+                    required: get_option('pvg'))
++  metal = dependency('appleframeworks', modules: 'Metal', required: false)
+   quartzcore = dependency('appleframeworks', modules: ['OpenGL', 'QuartzCore'], required: false)
+ elif host_os == 'sunos'
+   socket = [cc.find_library('socket'),
+@@ -2627,6 +2629,7 @@ if xen.found()
+     ('0' + xen_version[2]).substring(-2)
+   config_host_data.set('CONFIG_XEN_CTRL_INTERFACE_VERSION', xen_ctrl_version)
+ endif
++config_host_data.set('CONFIG_METAL', metal.found())
+ config_host_data.set('QEMU_VERSION', '"@0@"'.format(meson.project_version()))
+ config_host_data.set('QEMU_VERSION_MAJOR', meson.project_version().split('.')[0])
+ config_host_data.set('QEMU_VERSION_MINOR', meson.project_version().split('.')[1])
+-- 
+2.41.0
+
+From b2f9af64f986aa44a6f1171e97fc665cc55ee0ff Mon Sep 17 00:00:00 2001
+From: Joelle van Dyne <j@getutm.app>
+Date: Sun, 30 Nov 2025 15:27:49 -0800
+Subject: [PATCH 3/9] console: add cleanup callback for ScanoutTexture
+
+Before we introduce changes that allow for QemuConsole to take ownership
+of a texture handle, we need scaffolding that will allow us to callback
+into a cleanup function any time the ScanoutTexture becomes invalid, which
+is whenever the `scanout.kind` or `scanout.texture` gets updated.
+
+The ordering is important: we need to first update the DisplayScanout,
+then we need to notify all the listeners, and once all the listeners have
+had the chance to finish using the previous native texture, we are safe to
+call the cleanup function. This means we need to hold on to the previous
+scanout native handle locally until all listeners are notified.
+
+Signed-off-by: Joelle van Dyne <j@getutm.app>
+---
+ hw/display/virtio-gpu-virgl.c |  2 +-
+ include/ui/console.h          |  9 +++++-
+ ui/console.c                  | 56 +++++++++++++++++++++++++++++++----
+ 3 files changed, 59 insertions(+), 8 deletions(-)
+
+diff --git a/hw/display/virtio-gpu-virgl.c b/hw/display/virtio-gpu-virgl.c
+index 98c9bc4d89..8d511ed562 100644
+--- a/hw/display/virtio-gpu-virgl.c
++++ b/hw/display/virtio-gpu-virgl.c
+@@ -472,7 +472,7 @@ static void virgl_cmd_set_scanout(VirtIOGPU *g,
+             info.flags & VIRTIO_GPU_RESOURCE_FLAG_Y_0_TOP,
+             info.width, info.height,
+             ss.r.x, ss.r.y, ss.r.width, ss.r.height,
+-            native);
++            native, NULL);
+     } else {
+         dpy_gfx_replace_surface(
+             g->parent_obj.scanout[ss.scanout_id].con, NULL);
+diff --git a/include/ui/console.h b/include/ui/console.h
+index f96565d109..8e7364cfde 100644
+--- a/include/ui/console.h
++++ b/include/ui/console.h
+@@ -146,6 +146,11 @@ typedef struct ScanoutTextureNative {
+     .type = SCANOUT_TEXTURE_NATIVE_TYPE_NONE \
+ })
+ 
++/**
++ * Cleanup callback function when ScanoutTexture is about to be destroyed
++ */
++typedef void (*ScanoutTextureCleanup)(ScanoutTextureNative *native);
++
+ typedef struct ScanoutTexture {
+     uint32_t backing_id;
+     bool backing_y_0_top;
+@@ -156,6 +161,7 @@ typedef struct ScanoutTexture {
+     uint32_t width;
+     uint32_t height;
+     ScanoutTextureNative native;
++    ScanoutTextureCleanup cb_cleanup;
+ } ScanoutTexture;
+ 
+ typedef struct QemuUIInfo {
+@@ -344,7 +350,8 @@ void dpy_gl_scanout_texture(QemuConsole *con,
+                             uint32_t backing_id, bool backing_y_0_top,
+                             uint32_t backing_width, uint32_t backing_height,
+                             uint32_t x, uint32_t y, uint32_t w, uint32_t h,
+-                            ScanoutTextureNative native);
++                            ScanoutTextureNative native,
++                            ScanoutTextureCleanup cb_cleanup);
+ void dpy_gl_scanout_dmabuf(QemuConsole *con,
+                            QemuDmaBuf *dmabuf);
+ void dpy_gl_cursor_dmabuf(QemuConsole *con, QemuDmaBuf *dmabuf,
+diff --git a/ui/console.c b/ui/console.c
+index d8d58fc14a..f6d7879eff 100644
+--- a/ui/console.c
++++ b/ui/console.c
+@@ -808,6 +808,41 @@ void dpy_gfx_update_full(QemuConsole *con)
+     dpy_gfx_update(con, 0, 0, w, h);
+ }
+ 
++typedef struct ScanoutChange {
++    ScanoutTextureNative native;
++    ScanoutTextureCleanup cb_cleanup;
++} ScanoutChange;
++
++#define SCANOUT_CHANGE_NONE ((ScanoutChange){ NO_NATIVE_TEXTURE })
++
++static ScanoutChange dpy_change_scanout_kind(DisplayScanout *scanout,
++                                                     enum display_scanout kind)
++{
++    ScanoutChange change = SCANOUT_CHANGE_NONE;
++
++    /**
++     * We cannot cleanup until the resource is no longer in use, so we record it
++     * You MUST call dpy_complete_scanout_change after all listeners are updated
++     */
++    if (scanout->kind == SCANOUT_TEXTURE && scanout->texture.cb_cleanup) {
++        change.native = scanout->texture.native;
++        change.cb_cleanup = scanout->texture.cb_cleanup;
++    }
++    scanout->kind = kind;
++
++    return change;
++}
++
++static void dpy_complete_scanout_change(ScanoutChange *change)
++{
++    /**
++     * If we previously have a texture and cleanup is required, we call it now
++     */
++    if (change->native.type != SCANOUT_TEXTURE_NATIVE_TYPE_NONE && change->cb_cleanup) {
++        change->cb_cleanup(&change->native);
++    }
++}
++
+ void dpy_gfx_replace_surface(QemuConsole *con,
+                              DisplaySurface *surface)
+ {
+@@ -818,6 +853,7 @@ void dpy_gfx_replace_surface(QemuConsole *con,
+     DisplayChangeListener *dcl;
+     int width;
+     int height;
++    ScanoutChange change = SCANOUT_CHANGE_NONE;
+ 
+     if (!surface) {
+         if (old_surface) {
+@@ -833,7 +869,7 @@ void dpy_gfx_replace_surface(QemuConsole *con,
+ 
+     assert(old_surface != new_surface);
+ 
+-    con->scanout.kind = SCANOUT_SURFACE;
++    change = dpy_change_scanout_kind(&con->scanout, SCANOUT_SURFACE);
+     con->surface = new_surface;
+     dpy_gfx_create_texture(con, new_surface);
+     QLIST_FOREACH(dcl, &s->listeners, next) {
+@@ -844,6 +880,7 @@ void dpy_gfx_replace_surface(QemuConsole *con,
+     }
+     dpy_gfx_destroy_texture(con, old_surface);
+     qemu_free_displaysurface(old_surface);
++    dpy_complete_scanout_change(&change);
+ }
+ 
+ bool dpy_gfx_check_format(QemuConsole *con,
+@@ -1002,9 +1039,10 @@ void dpy_gl_scanout_disable(QemuConsole *con)
+ {
+     DisplayState *s = con->ds;
+     DisplayChangeListener *dcl;
++    ScanoutChange change = SCANOUT_CHANGE_NONE;
+ 
+     if (con->scanout.kind != SCANOUT_SURFACE) {
+-        con->scanout.kind = SCANOUT_NONE;
++        change = dpy_change_scanout_kind(&con->scanout, SCANOUT_NONE);
+     }
+     QLIST_FOREACH(dcl, &s->listeners, next) {
+         if (con != dcl->con) {
+@@ -1014,6 +1052,7 @@ void dpy_gl_scanout_disable(QemuConsole *con)
+             dcl->ops->dpy_gl_scanout_disable(dcl);
+         }
+     }
++    dpy_complete_scanout_change(&change);
+ }
+ 
+ void dpy_gl_scanout_texture(QemuConsole *con,
+@@ -1023,15 +1062,17 @@ void dpy_gl_scanout_texture(QemuConsole *con,
+                             uint32_t backing_height,
+                             uint32_t x, uint32_t y,
+                             uint32_t width, uint32_t height,
+-                            ScanoutTextureNative native)
++                            ScanoutTextureNative native,
++                            ScanoutTextureCleanup cb_cleanup)
+ {
+     DisplayState *s = con->ds;
+     DisplayChangeListener *dcl;
++    ScanoutChange change = SCANOUT_CHANGE_NONE;
+ 
+-    con->scanout.kind = SCANOUT_TEXTURE;
++    change = dpy_change_scanout_kind(&con->scanout, SCANOUT_TEXTURE);
+     con->scanout.texture = (ScanoutTexture) {
+         backing_id, backing_y_0_top, backing_width, backing_height,
+-        x, y, width, height, native,
++        x, y, width, height, native, cb_cleanup
+     };
+     QLIST_FOREACH(dcl, &s->listeners, next) {
+         if (con != dcl->con) {
+@@ -1045,6 +1086,7 @@ void dpy_gl_scanout_texture(QemuConsole *con,
+                                              native);
+         }
+     }
++    dpy_complete_scanout_change(&change);
+ }
+ 
+ void dpy_gl_scanout_dmabuf(QemuConsole *con,
+@@ -1052,8 +1094,9 @@ void dpy_gl_scanout_dmabuf(QemuConsole *con,
+ {
+     DisplayState *s = con->ds;
+     DisplayChangeListener *dcl;
++    ScanoutChange change = SCANOUT_CHANGE_NONE;
+ 
+-    con->scanout.kind = SCANOUT_DMABUF;
++    change = dpy_change_scanout_kind(&con->scanout, SCANOUT_DMABUF);
+     con->scanout.dmabuf = dmabuf;
+     QLIST_FOREACH(dcl, &s->listeners, next) {
+         if (con != dcl->con) {
+@@ -1063,6 +1106,7 @@ void dpy_gl_scanout_dmabuf(QemuConsole *con,
+             dcl->ops->dpy_gl_scanout_dmabuf(dcl, dmabuf);
+         }
+     }
++    dpy_complete_scanout_change(&change);
+ }
+ 
+ void dpy_gl_cursor_dmabuf(QemuConsole *con, QemuDmaBuf *dmabuf,
+-- 
+2.41.0
+
+From 4206bd1f7083ad5d1bacae48f37ecdcba123ee2c Mon Sep 17 00:00:00 2001
+From: Joelle van Dyne <j@getutm.app>
+Date: Sun, 30 Nov 2025 15:50:56 -0800
+Subject: [PATCH 4/9] virtio-gpu-virgl: add support for native blob scanout
+
+On macOS we do not have dmabuf and so we use MTLTexture as our scanout
+source. For blob scanout, the buffer is untyped and so we cannot get a
+MTLTexture until we pass more information to virglrenderer (surface size,
+pixel format, etc). The new API to do this is currently unstable so we
+need to define `VIRGL_RENDERER_UNSTABLE_APIS`. This should be removed after
+the ABI becomes stable.
+
+Signed-off-by: Joelle van Dyne <j@getutm.app>
+---
+ hw/display/virtio-gpu-virgl.c | 60 +++++++++++++++++++++++++++++++++++
+ meson.build                   |  5 +++
+ 2 files changed, 65 insertions(+)
+
+diff --git a/hw/display/virtio-gpu-virgl.c b/hw/display/virtio-gpu-virgl.c
+index 8d511ed562..f515165335 100644
+--- a/hw/display/virtio-gpu-virgl.c
++++ b/hw/display/virtio-gpu-virgl.c
+@@ -22,6 +22,7 @@
+ 
+ #include "ui/egl-helpers.h"
+ 
++#define VIRGL_RENDERER_UNSTABLE_APIS
+ #include <virglrenderer.h>
+ 
+ #define NATIVE_HANDLE_SUPPORT_VERSION (1)
+@@ -828,6 +829,59 @@ static void virgl_cmd_resource_unmap_blob(VirtIOGPU *g,
+     }
+ }
+ 
++#if defined(HAVE_VIRGL_RENDERER_NATIVE_SCANOUT)
++static void virgl_scanout_native_blob_cleanup(ScanoutTextureNative *native)
++{
++    assert(native->type == SCANOUT_TEXTURE_NATIVE_TYPE_METAL);
++    virgl_renderer_release_handle_for_scanout(VIRGL_NATIVE_HANDLE_METAL_TEXTURE,
++                                              native->handle);
++}
++
++static bool virgl_scanout_native_blob(VirtIOGPU *g,
++                                      struct virtio_gpu_set_scanout_blob *ss)
++{
++    struct virtio_gpu_scanout *scanout = &g->parent_obj.scanout[ss->scanout_id];
++    enum virgl_renderer_native_handle_type type;
++    virgl_renderer_native_handle handle;
++    ScanoutTextureNative native;
++
++    type = virgl_renderer_create_handle_for_scanout(ss->resource_id,
++                                                    ss->width,
++                                                    ss->height,
++                                                    ss->format,
++                                                    ss->padding,
++                                                    ss->strides[0],
++                                                    ss->offsets[0],
++                                                    &handle);
++#ifdef CONFIG_METAL
++    if (type == VIRGL_NATIVE_HANDLE_METAL_TEXTURE) {
++        native = (ScanoutTextureNative){
++            .type = SCANOUT_TEXTURE_NATIVE_TYPE_METAL,
++            .handle = handle,
++        };
++        qemu_console_resize(scanout->con,
++                            ss->r.width, ss->r.height);
++        dpy_gl_scanout_texture(
++            scanout->con, 0,
++            false,
++            ss->width, ss->height,
++            ss->r.x, ss->r.y, ss->r.width, ss->r.height,
++            native, virgl_scanout_native_blob_cleanup);
++        scanout->resource_id = ss->resource_id;
++
++        return true;
++    }
++#endif
++
++    /* don't leak memory if handle type is unknown */
++    if (type != VIRGL_NATIVE_HANDLE_NONE) {
++        virgl_renderer_release_handle_for_scanout(type, handle);
++    }
++
++    return false;
++}
++#endif
++
+ static void virgl_cmd_set_scanout_blob(VirtIOGPU *g,
+                                        struct virtio_gpu_ctrl_command *cmd)
+ {
+@@ -866,6 +920,12 @@ static void virgl_cmd_set_scanout_blob(VirtIOGPU *g,
+         return;
+     }
+ 
++#if defined(HAVE_VIRGL_RENDERER_NATIVE_SCANOUT)
++    if (virgl_scanout_native_blob(g, &ss)) {
++        return;
++    }
++#endif
++
+     res = virtio_gpu_virgl_find_resource(g, ss.resource_id);
+     if (!res) {
+         qemu_log_mask(LOG_GUEST_ERROR, "%s: resource does not exist %d\n",
+diff --git a/meson.build b/meson.build
+index 3ecd4d5b3a..84ee2f179d 100644
+--- a/meson.build
++++ b/meson.build
+@@ -2584,6 +2584,11 @@ config_host_data.set('CONFIG_VNC', vnc.found())
+ config_host_data.set('CONFIG_VNC_JPEG', jpeg.found())
+ config_host_data.set('CONFIG_VNC_SASL', sasl.found())
+ if virgl.found()
++  config_host_data.set('HAVE_VIRGL_RENDERER_NATIVE_SCANOUT',
++                        cc.has_function('virgl_renderer_create_handle_for_scanout',
++                                        args: '-DVIRGL_RENDERER_UNSTABLE_APIS',
++                                        prefix: '#include <virglrenderer.h>',
++                                        dependencies: virgl))
+   config_host_data.set('VIRGL_VERSION_MAJOR', virgl.version().split('.')[0])
+ endif
+ config_host_data.set('CONFIG_VIRTFS', have_virtfs)
+-- 
+2.41.0
+
+From 068267f42709a93f9fabc57b05225e18026f5a97 Mon Sep 17 00:00:00 2001
+From: Joelle van Dyne <j@getutm.app>
+Date: Sun, 30 Nov 2025 15:56:50 -0800
+Subject: [PATCH 5/9] hvf: warn when attempting to add unaligned page size
+
+Instead of silently failing, we should print a warning so it is clear why
+a future guest access to that location might cause an exception.
+---
+ accel/hvf/hvf-accel-ops.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/accel/hvf/hvf-accel-ops.c b/accel/hvf/hvf-accel-ops.c
+index da719d85b7..dae9600f4b 100644
+--- a/accel/hvf/hvf-accel-ops.c
++++ b/accel/hvf/hvf-accel-ops.c
+@@ -139,6 +139,14 @@ static void hvf_set_phys_mem(MemoryRegionSection *section, bool add)
+ 
+     if (!QEMU_IS_ALIGNED(int128_get64(section->size), page_size) ||
+         !QEMU_IS_ALIGNED(section->offset_within_address_space, page_size)) {
++        if (add) {
++            warn_report("Cannot add 0x%016llX:0x%016llX because it is not "
++                        "aligned to page size (0x%X)",
++                        section->offset_within_address_space,
++                        section->offset_within_address_space +
++                        int128_get64(section->size),
++                        (uint32_t)page_size);
++        }
+         /* Not page aligned, so we can not map as RAM */
+         add = false;
+     }
+-- 
+2.41.0
+
+From 09ce55779cd608595ea6b5bebf1b426136f45fa0 Mon Sep 17 00:00:00 2001
+From: Joelle van Dyne <j@getutm.app>
+Date: Sun, 30 Nov 2025 15:59:10 -0800
+Subject: [PATCH 6/9] hvf: allow slot size to increase
+
+Instead of having a fixed limit of 32 slots, we allow the number of slots
+to expand. Currently there does not seem to be a need to add a limit, but
+if the allocation fails, we will abort. The KVM backend was used for
+inspiration here.
+---
+ accel/hvf/hvf-accel-ops.c | 79 ++++++++++++++++++++++++++++++---------
+ include/system/hvf_int.h  | 12 +++++-
+ 2 files changed, 72 insertions(+), 19 deletions(-)
+
+diff --git a/accel/hvf/hvf-accel-ops.c b/accel/hvf/hvf-accel-ops.c
+index dae9600f4b..13cc72baaf 100644
+--- a/accel/hvf/hvf-accel-ops.c
++++ b/accel/hvf/hvf-accel-ops.c
+@@ -67,6 +67,57 @@ bool hvf_tso_mode = 0;
+ 
+ /* Memory slots */
+ 
++/* Default num of memslots to be allocated when VM starts */
++#define  HVF_MEMSLOTS_NUM_ALLOC_DEFAULT                      32
++
++static bool hvf_slots_grow(HVFState *state, unsigned int num_slots_new)
++{
++    unsigned int i, cur = state->num_slots;
++    hvf_slot *slots;
++    hvf_mac_slot *mac_slots;
++
++    assert(num_slots_new > cur);
++    if (cur == 0) {
++        slots = g_new0(hvf_slot, num_slots_new);
++        if (!slots) {
++            return false;
++        }
++        mac_slots = g_new0(hvf_mac_slot, num_slots_new);
++        if (!mac_slots) {
++            g_free(slots);
++            return false;
++        }
++    } else {
++        slots = g_renew(hvf_slot, state->slots, num_slots_new);
++        if (!slots) {
++            return false;
++        }
++        mac_slots = g_renew(hvf_mac_slot, state->mac_slots, num_slots_new);
++        if (!mac_slots) {
++            /* save allocated slots but not new size */
++            state->slots = slots;
++            return false;
++        }
++        /*
++         * g_renew() doesn't initialize extended buffers, however hvf
++         * memslots require fields to be zero-initialized. E.g. pointers,
++         * memory_size field, etc.
++         */
++        memset(&slots[cur], 0x0, sizeof(slots[0]) * (num_slots_new - cur));
++        memset(&mac_slots[cur], 0x0, sizeof(mac_slots[0]) * (num_slots_new - cur));
++    }
++
++    for (i = cur; i < num_slots_new; i++) {
++        slots[i].slot_id = i;
++    }
++
++    state->slots = slots;
++    state->mac_slots = mac_slots;
++    state->num_slots = num_slots_new;
++
++    return true;
++}
++
+ hvf_slot *hvf_find_overlap_slot(uint64_t start, uint64_t size)
+ {
+     hvf_slot *slot;
+@@ -81,21 +132,12 @@ hvf_slot *hvf_find_overlap_slot(uint64_t start, uint64_t size)
+     return NULL;
+ }
+ 
+-struct mac_slot {
+-    int present;
+-    uint64_t size;
+-    uint64_t gpa_start;
+-    uint64_t gva;
+-};
+-
+-struct mac_slot mac_slots[32];
+-
+ static int do_hvf_set_memory(hvf_slot *slot, hv_memory_flags_t flags)
+ {
+-    struct mac_slot *macslot;
++    hvf_mac_slot *macslot;
+     hv_return_t ret;
+ 
+-    macslot = &mac_slots[slot->slot_id];
++    macslot = &hvf_state->mac_slots[slot->slot_id];
+ 
+     if (macslot->present) {
+         if (macslot->size != slot->size) {
+@@ -195,8 +237,11 @@ static void hvf_set_phys_mem(MemoryRegionSection *section, bool add)
+     }
+ 
+     if (x == hvf_state->num_slots) {
+-        error_report("No free slots");
+-        abort();
++        if (!hvf_slots_grow(hvf_state, hvf_state->num_slots * 2)) {
++            error_report("Cannot allocate any more slots");
++            abort();
++        }
++        mem = &hvf_state->slots[x];
+     }
+ 
+     mem->size = int128_get64(section->size);
+@@ -333,6 +378,7 @@ static int hvf_accel_init(MachineState *ms)
+     HVFState *s;
+     int pa_range = 36;
+     MachineClass *mc = MACHINE_GET_CLASS(ms);
++    bool success;
+ 
+     if (mc->hvf_get_physical_address_range) {
+         pa_range = mc->hvf_get_physical_address_range(ms);
+@@ -346,11 +392,8 @@ static int hvf_accel_init(MachineState *ms)
+ 
+     s = g_new0(HVFState, 1);
+ 
+-    s->num_slots = ARRAY_SIZE(s->slots);
+-    for (x = 0; x < s->num_slots; ++x) {
+-        s->slots[x].size = 0;
+-        s->slots[x].slot_id = x;
+-    }
++    success = hvf_slots_grow(s, HVF_MEMSLOTS_NUM_ALLOC_DEFAULT);
++    assert(success);
+ 
+     QTAILQ_INIT(&s->hvf_sw_breakpoints);
+ 
+diff --git a/include/system/hvf_int.h b/include/system/hvf_int.h
+index 763201dd71..52c69ed9d5 100644
+--- a/include/system/hvf_int.h
++++ b/include/system/hvf_int.h
+@@ -37,6 +37,7 @@ extern hv_return_t _hv_vcpu_set_actlr(hv_vcpu_t vcpu, uint64_t value);
+ /* hvf_slot flags */
+ #define HVF_SLOT_LOG (1 << 0)
+ 
++/* Represent memory logically mapped by QEMU */
+ typedef struct hvf_slot {
+     uint64_t start;
+     uint64_t size;
+@@ -46,6 +47,14 @@ typedef struct hvf_slot {
+     MemoryRegion *region;
+ } hvf_slot;
+ 
++/* Represent memory currently mapped in HVF */
++typedef struct hvf_mac_slot {
++    int present;
++    uint64_t size;
++    uint64_t gpa_start;
++    uint64_t gva;
++} hvf_mac_slot;
++
+ typedef struct hvf_vcpu_caps {
+     uint64_t vmx_cap_pinbased;
+     uint64_t vmx_cap_procbased;
+@@ -57,7 +66,8 @@ typedef struct hvf_vcpu_caps {
+ 
+ struct HVFState {
+     AccelState parent;
+-    hvf_slot slots[32];
++    hvf_slot *slots;
++    hvf_mac_slot *mac_slots;
+     int num_slots;
+ 
+     hvf_vcpu_caps *hvf_caps;
+-- 
+2.41.0
+
+From cd66cbfb718d6d7790c1a2e7ad8533f51e27cf88 Mon Sep 17 00:00:00 2001
+From: Joelle van Dyne <j@getutm.app>
+Date: Fri, 19 Dec 2025 07:07:12 -0800
+Subject: [PATCH 7/9] hvf: support changing IPA granule size
+
+The IPA granule is the smallest page size hv_vm_map() support. For Venus, we
+need to support 4KiB pages. macOS 26 introduces a public API for setting
+the granule size. We can only use this when compiled with macOS 26 SDK and
+run on macOS 26+. Otherwise, we fall back to an older, private, API which
+achieves the same purpose.
+
+Signed-off-by: Joelle van Dyne <j@getutm.app>
+---
+ accel/hvf/hvf-accel-ops.c | 43 ++++++++++++++++++++++++++++++++-
+ include/system/hvf_int.h  |  4 +++-
+ target/arm/hvf/hvf.c      | 50 ++++++++++++++++++++++++++++++++++++++-
+ target/i386/hvf/hvf.c     | 10 +++++++-
+ 4 files changed, 103 insertions(+), 4 deletions(-)
+
+diff --git a/accel/hvf/hvf-accel-ops.c b/accel/hvf/hvf-accel-ops.c
+index 13cc72baaf..036c121adb 100644
+--- a/accel/hvf/hvf-accel-ops.c
++++ b/accel/hvf/hvf-accel-ops.c
+@@ -54,6 +54,8 @@
+ #include "exec/exec-all.h"
+ #include "gdbstub/enums.h"
+ #include "hw/boards.h"
++#include "qapi/error.h"
++#include "qapi/visitor.h"
+ #include "system/accel-ops.h"
+ #include "system/cpus.h"
+ #include "system/hvf.h"
+@@ -64,6 +66,7 @@
+ 
+ HVFState *hvf_state;
+ bool hvf_tso_mode = 0;
++uint32_t hvf_ipa_granule_size = 0;
+ 
+ /* Memory slots */
+ 
+@@ -179,6 +182,10 @@ static void hvf_set_phys_mem(MemoryRegionSection *section, bool add)
+         }
+     }
+ 
++    if (hvf_ipa_granule_size) {
++        page_size = hvf_ipa_granule_size;
++    }
++
+     if (!QEMU_IS_ALIGNED(int128_get64(section->size), page_size) ||
+         !QEMU_IS_ALIGNED(section->offset_within_address_space, page_size)) {
+         if (add) {
+@@ -387,7 +394,7 @@ static int hvf_accel_init(MachineState *ms)
+         }
+     }
+ 
+-    ret = hvf_arch_vm_create(ms, (uint32_t)pa_range);
++    ret = hvf_arch_vm_create(ms, (uint32_t)pa_range, hvf_ipa_granule_size);
+     assert_hvf_ok(ret);
+ 
+     s = g_new0(HVFState, 1);
+@@ -422,6 +429,34 @@ static inline int hvf_gdbstub_sstep_flags(void)
+     return SSTEP_ENABLE | SSTEP_NOIRQ;
+ }
+ 
++static void hvf_get_ipa_granule_size(Object *obj, Visitor *v,
++                                    const char *name, void *opaque,
++                                    Error **errp)
++{
++    HVFState *s = HVF_STATE(obj);
++    uint32_t value = hvf_ipa_granule_size;
++
++    visit_type_uint32(v, name, &value, errp);
++}
++
++static void hvf_set_ipa_granule_size(Object *obj, Visitor *v,
++                                     const char *name, void *opaque,
++                                     Error **errp)
++{
++    HVFState *s = HVF_STATE(obj);
++    uint32_t value;
++
++    if (!visit_type_uint32(v, name, &value, errp)) {
++        return;
++    }
++    if (value & (value - 1)) {
++        error_setg(errp, "ipa-granule-size must be a power of two.");
++        return;
++    }
++
++    hvf_ipa_granule_size = value;
++}
++
+ static void hvf_accel_class_init(ObjectClass *oc, void *data)
+ {
+     AccelClass *ac = ACCEL_CLASS(oc);
+@@ -436,6 +471,12 @@ static void hvf_accel_class_init(ObjectClass *oc, void *data)
+     object_class_property_set_description(oc, "tso",
+         "Set on/off to enable/disable total store ordering mode");
+ #endif
++
++    object_class_property_add(oc, "ipa-granule-size", "uint32",
++        hvf_get_ipa_granule_size, hvf_set_ipa_granule_size,
++        NULL, NULL);
++    object_class_property_set_description(oc, "ipa-granule-size",
++        "Size of a single guest page");
+ }
+ 
+ static const TypeInfo hvf_accel_type = {
+diff --git a/include/system/hvf_int.h b/include/system/hvf_int.h
+index 52c69ed9d5..93e1b23e1a 100644
+--- a/include/system/hvf_int.h
++++ b/include/system/hvf_int.h
+@@ -76,6 +76,7 @@ struct HVFState {
+ };
+ extern HVFState *hvf_state;
+ extern bool hvf_tso_mode;
++extern uint32_t hvf_ipa_granule_size;
+ 
+ struct AccelCPUState {
+     hvf_vcpuid fd;
+@@ -91,7 +92,8 @@ void assert_hvf_ok_impl(hv_return_t ret, const char *file, unsigned int line,
+ #define assert_hvf_ok(EX) assert_hvf_ok_impl((EX), __FILE__, __LINE__, #EX)
+ const char *hvf_return_string(hv_return_t ret);
+ int hvf_arch_init(void);
+-hv_return_t hvf_arch_vm_create(MachineState *ms, uint32_t pa_range);
++hv_return_t hvf_arch_vm_create(MachineState *ms, uint32_t pa_range,
++                               uint32_t ipa_granule_size);
+ int hvf_arch_init_vcpu(CPUState *cpu);
+ void hvf_arch_vcpu_destroy(CPUState *cpu);
+ int hvf_vcpu_exec(CPUState *);
+diff --git a/target/arm/hvf/hvf.c b/target/arm/hvf/hvf.c
+index aa63f30fcf..1a0f69b496 100644
+--- a/target/arm/hvf/hvf.c
++++ b/target/arm/hvf/hvf.c
+@@ -12,6 +12,9 @@
+ #include "qemu/osdep.h"
+ #include "qemu/error-report.h"
+ #include "qemu/log.h"
++#include <dlfcn.h>
++#include <AvailabilityMacros.h>
++#include <TargetConditionals.h>
+ 
+ #include "system/runstate.h"
+ #include "system/hvf.h"
+@@ -1035,7 +1038,45 @@ void hvf_arch_vcpu_destroy(CPUState *cpu)
+ {
+ }
+ 
+-hv_return_t hvf_arch_vm_create(MachineState *ms, uint32_t pa_range)
++static hv_return_t hvf_set_ipa_granule(hv_vm_config_t config,
++                                uint32_t ipa_granule_size)
++{
++    static hv_return_t (*set_ipa_granule)(hv_vm_config_t, uint32_t);
++    uint64_t page_size = qemu_real_host_page_size();
++
++    /* macOS 26 introduces a public API for setting granule size */
++#if defined(MAC_OS_X_VERSION_MAX_ALLOWED) && defined(MAC_OS_VERSION_26_0) && \
++    MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_VERSION_26_0
++    if (__builtin_available(macOS 26, *)) {
++        hv_ipa_granule_t granule = HV_IPA_GRANULE_16KB;
++
++        if (ipa_granule_size == 4096) {
++            granule = HV_IPA_GRANULE_4KB;
++        } else if (ipa_granule_size != 16384) {
++            error_report("Unsupported granule size: 0x%x", ipa_granule_size);
++            return HV_UNSUPPORTED;
++        }
++
++        return hv_vm_config_set_ipa_granule(config, granule);
++    }
++#endif
++
++    /* older macOS need to use a private API */
++    if (!set_ipa_granule) {
++        set_ipa_granule = dlsym(RTLD_NEXT, "_hv_vm_config_set_ipa_granule");
++    }
++    if (set_ipa_granule) {
++        return set_ipa_granule(config, ipa_granule_size);
++    } else if (ipa_granule_size != page_size) {
++        error_report("Failed to find _hv_vm_config_set_ipa_granule");
++        return HV_UNSUPPORTED;
++    }
++
++    return HV_SUCCESS;
++}
++
++hv_return_t hvf_arch_vm_create(MachineState *ms, uint32_t pa_range,
++                               uint32_t ipa_granule_size)
+ {
+     hv_return_t ret;
+     hv_vm_config_t config = NULL;
+@@ -1056,6 +1097,13 @@ hv_return_t hvf_arch_vm_create(MachineState *ms, uint32_t pa_range)
+     }
+ #endif
+ 
++    if (ipa_granule_size) {
++        ret = hvf_set_ipa_granule(config, ipa_granule_size);
++        if (ret != HV_SUCCESS) {
++            goto cleanup;
++        }
++    }
++
+     ret = hv_vm_create(config);
+ 
+ cleanup:
+diff --git a/target/i386/hvf/hvf.c b/target/i386/hvf/hvf.c
+index 9ba0e04ac7..3cfe84313c 100644
+--- a/target/i386/hvf/hvf.c
++++ b/target/i386/hvf/hvf.c
+@@ -224,8 +224,16 @@ int hvf_arch_init(void)
+     return 0;
+ }
+ 
+-hv_return_t hvf_arch_vm_create(MachineState *ms, uint32_t pa_range)
++hv_return_t hvf_arch_vm_create(MachineState *ms, uint32_t pa_range,
++                               uint32_t ipa_granule_size)
+ {
++    uint64_t page_size = qemu_real_host_page_size();
++
++    if (ipa_granule_size != 0 && ipa_granule_size != page_size) {
++        error_report("Only supported IPA granule size: 0x%llx", page_size);
++        return HV_UNSUPPORTED;
++    }
++
+     return hv_vm_create(HV_VM_DEFAULT);
+ }
+ 
+-- 
+2.41.0
+
+From 1cafc035c4f10591d6064d76568c41249ab819ff Mon Sep 17 00:00:00 2001
+From: Joelle van Dyne <j@getutm.app>
+Date: Mon, 22 Dec 2025 06:04:46 -0800
+Subject: [PATCH 8/9] virtio-gpu-virgl: correct parent for blob memory region
+
+When `owner` == `mr`, `object_unparent` will crash:
+
+object_unparent(mr) ->
+object_property_del_child(mr, mr) ->
+object_finalize_child_property(mr, name, mr) ->
+object_unref(mr) ->
+object_finalize(mr) ->
+object_property_del_all(mr) ->
+object_finalize_child_property(mr, name, mr) ->
+object_unref(mr) ->
+fail on g_assert(obj->ref > 0)
+
+However, passing a different `owner` to `memory_region_init` does not
+work. `memory_region_ref` has an optimization where it takes a ref
+only on the owner. That means when flatviews are created, it does not
+take a ref on the region and you can get a UAF from `flatview_destroy`
+called from RCU.
+
+The correct fix therefore is to use `NULL` as the name which will set
+the `owner` but not the `parent` (which is still NULL). This allows us
+to use `memory_region_ref` on itself while not having to rely on unparent
+for cleanup.
+
+Signed-off-by: Joelle van Dyne <j@getutm.app>
+---
+ hw/display/virtio-gpu-virgl.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/hw/display/virtio-gpu-virgl.c b/hw/display/virtio-gpu-virgl.c
+index f515165335..6a97bdc67a 100644
+--- a/hw/display/virtio-gpu-virgl.c
++++ b/hw/display/virtio-gpu-virgl.c
+@@ -123,7 +123,7 @@ virtio_gpu_virgl_map_resource_blob(VirtIOGPU *g,
+     vmr->g = g;
+ 
+     mr = &vmr->mr;
+-    memory_region_init_ram_ptr(mr, OBJECT(mr), "blob", size, data);
++    memory_region_init_ram_ptr(mr, OBJECT(mr), NULL, size, data);
+     memory_region_add_subregion(&b->hostmem, offset, mr);
+     memory_region_set_enabled(mr, true);
+ 
+@@ -185,7 +185,7 @@ virtio_gpu_virgl_unmap_resource_blob(VirtIOGPU *g,
+         /* memory region owns self res->mr object and frees it by itself */
+         memory_region_set_enabled(mr, false);
+         memory_region_del_subregion(&b->hostmem, mr);
+-        object_unparent(OBJECT(mr));
++        object_unref(OBJECT(mr));
+     }
+ 
+     return 0;
+-- 
+2.41.0
+
+From fceee68a7783f78b1f55cd2075155ee1e69385cc Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Wed, 7 Jan 2026 12:18:14 -0800
+Subject: [PATCH 9/9] ui/spice-display: support MTLTexture scanout to IOSurface
+
+---
+ include/ui/spice-display.h |  30 +++++++
+ ui/egl-helpers.c           |  29 ++++++-
+ ui/meson.build             |   4 +
+ ui/spice-display-metal.m   | 166 +++++++++++++++++++++++++++++++++++++
+ ui/spice-display.c         |  86 ++++++++++++++++++-
+ 5 files changed, 312 insertions(+), 3 deletions(-)
+ create mode 100644 ui/spice-display-metal.m
+
+diff --git a/include/ui/spice-display.h b/include/ui/spice-display.h
+index ec55194139..8e752f67da 100644
+--- a/include/ui/spice-display.h
++++ b/include/ui/spice-display.h
+@@ -77,6 +77,13 @@ typedef struct QXLCookie {
+             QXLRect area;
+             int redraw;
+         } render;
++        struct {
++            QXLInstance *qxl;
++            uint32_t x;
++            uint32_t y;
++            uint32_t w;
++            uint32_t h;
++        } gl_draw;
+         void *data;
+     } u;
+ } QXLCookie;
+@@ -86,6 +93,7 @@ QXLCookie *qxl_cookie_new(int type, uint64_t io);
+ typedef struct SimpleSpiceDisplay SimpleSpiceDisplay;
+ typedef struct SimpleSpiceUpdate SimpleSpiceUpdate;
+ typedef struct SimpleSpiceCursor SimpleSpiceCursor;
++typedef void *SpiceDisplayMetalContext;
+ 
+ struct SimpleSpiceDisplay {
+     DisplaySurface *ds;
+@@ -137,6 +145,9 @@ struct SimpleSpiceDisplay {
+ #if defined(CONFIG_IOSURFACE)
+     IOSurfaceRef iosurface;
+     int surface_send_fd;
++#if defined(CONFIG_METAL)
++    SpiceDisplayMetalContext metal_context;
++#endif
+ #endif
+ #if defined(CONFIG_EGL)
+     EGLSurface esurface;
+@@ -197,4 +208,23 @@ void qemu_spice_display_start(void);
+ void qemu_spice_display_stop(void);
+ int qemu_spice_display_is_running(SimpleSpiceDisplay *ssd);
+ 
++#if defined(CONFIG_METAL) && defined(CONFIG_IOSURFACE)
++typedef void *MTLTexture_id;
++typedef void (*SpiceDisplayMetalCompletion)(void *data);
++
++SpiceDisplayMetalContext qemu_spice_display_metal_create_context(IOSurfaceRef surface,
++                                                                 uint32_t width,
++                                                                 uint32_t height);
++void qemu_spice_display_metal_destroy_context(SpiceDisplayMetalContext ctx);
++void qemu_spice_display_metal_scanout_texture(SpiceDisplayMetalContext ctx,
++                                              MTLTexture_id tex, uint32_t x, uint32_t y,
++                                              uint32_t w, uint32_t h);
++void qemu_spice_display_metal_scanout_disable(SpiceDisplayMetalContext ctx);
++bool qemu_spice_display_metal_has_scanout(SpiceDisplayMetalContext ctx);
++void qemu_spice_display_metal_draw_frame(SpiceDisplayMetalContext ctx,
++                                         uint32_t x, uint32_t y, uint32_t w, uint32_t h,
++                                         SpiceDisplayMetalCompletion completion,
++                                         void *data);
++#endif
++
+ #endif
+diff --git a/ui/egl-helpers.c b/ui/egl-helpers.c
+index f35223592e..1efac2c994 100644
+--- a/ui/egl-helpers.c
++++ b/ui/egl-helpers.c
+@@ -533,7 +533,32 @@ int qemu_egl_init_dpy_cocoa(DisplayGLMode mode)
+         return -1;
+     }
+ 
+-    return qemu_egl_init_dpy(dpy, mode);
++    if (qemu_egl_init_dpy(dpy, mode) < 0) {
++        return -1;
++    }
++
++#ifdef EGL_METAL_DEVICE_ANGLE
++    if (epoxy_has_egl_extension(qemu_egl_display, "EGL_EXT_device_query")) {
++        EGLDeviceEXT device;
++        void *metal_device;
++
++        if (!eglQueryDisplayAttribEXT(qemu_egl_display,
++                                      EGL_DEVICE_EXT,
++                                      (EGLAttrib *)&device)) {
++            return 0;
++        }
++
++        if (!eglQueryDeviceAttribEXT(device,
++                                     EGL_METAL_DEVICE_ANGLE,
++                                     (EGLAttrib *)&metal_device)) {
++            return 0;
++        }
++
++        qemu_egl_angle_native_device = metal_device;
++    }
++#endif
++
++    return 0;
+ }
+ 
+ /* ---------------------------------------------------------------------- */
+@@ -625,7 +650,7 @@ int qemu_egl_init_dpy_win32(EGLNativeDisplayType dpy, DisplayGLMode mode)
+         mode = DISPLAY_GL_MODE_ES;
+     }
+ 
+-    if (qemu_egl_init_dpy(dpy, 0, mode) < 0) {
++    if (qemu_egl_init_dpy(dpy, mode) < 0) {
+         return -1;
+     }
+ 
+diff --git a/ui/meson.build b/ui/meson.build
+index 8acb9c0ef0..fffa0da90a 100644
+--- a/ui/meson.build
++++ b/ui/meson.build
+@@ -144,6 +144,10 @@ if spice.found()
+   if quartzcore.found()
+     spice_core_ss.add(quartzcore)
+   endif
++  if metal.found()
++    spice_core_ss.add(metal)
++    spice_core_ss.add(files('spice-display-metal.m'))
++  endif
+   ui_modules += {'spice-core' : spice_core_ss}
+ 
+   if gio.found()
+diff --git a/ui/spice-display-metal.m b/ui/spice-display-metal.m
+new file mode 100644
+index 0000000000..978dfeb98e
+--- /dev/null
++++ b/ui/spice-display-metal.m
+@@ -0,0 +1,166 @@
++/*
++ * SPDX-License-Identifier: GPL-2.0-or-later
++ *
++ * This work is licensed under the terms of the GNU GPL, version 2 or later.
++ * See the COPYING file in the top-level directory.
++ */
++
++#include "qemu/osdep.h"
++#include "ui/egl-helpers.h"
++#include "ui/spice-display.h"
++#include <CoreGraphics/CoreGraphics.h>
++#include <IOSurface/IOSurfaceRef.h>
++#include <Metal/Metal.h>
++
++@interface SpiceDisplayMetal : NSObject
++
++@property (nonatomic, readonly) id<MTLTexture> renderTarget;
++@property (nonatomic, readonly) id<MTLCommandQueue> commandQueue;
++@property (nonatomic, nullable, retain) id<MTLTexture> scanoutTexture;
++@property (nonatomic, assign) CGRect scanoutRect;
++
++- (instancetype)initWithDevice:(id<MTLDevice>)device
++                       surface:(IOSurfaceRef)surface
++                         width:(NSInteger)width
++                        height:(NSInteger)height;
++- (void)scanoutTexture:(id<MTLTexture>)texture rect:(CGRect)rect;
++- (void)scanoutDisable;
++- (void)drawFrameAtRect:(CGRect)rect completion:(void (^)(void))completion;
++
++@end
++
++@implementation SpiceDisplayMetal
++
++- (instancetype)initWithDevice:(id<MTLDevice>)device
++                       surface:(IOSurfaceRef)surface
++                         width:(NSInteger)width
++                        height:(NSInteger)height
++{
++    if (self = [super init]) {
++        MTLTextureDescriptor *textureDescriptor = [[MTLTextureDescriptor alloc] init];
++        textureDescriptor.pixelFormat = MTLPixelFormatBGRA8Unorm;
++        textureDescriptor.width = width;
++        textureDescriptor.height = height;
++        textureDescriptor.usage = MTLTextureUsageRenderTarget;
++        _renderTarget = [device newTextureWithDescriptor:textureDescriptor iosurface:surface plane:0];
++        [textureDescriptor release];
++        if (!_renderTarget) {
++            return nil;
++        }
++        _commandQueue = [device newCommandQueue];
++        if (!_commandQueue) {
++            [_renderTarget release];
++            return nil;
++        }
++    }
++    return self;
++}
++
++- (void)dealloc
++{
++    [_scanoutTexture release];
++    [_commandQueue release];
++    [_renderTarget release];
++    [super dealloc];
++}
++
++- (void)scanoutTexture:(id<MTLTexture>)texture rect:(CGRect)rect
++{
++    self.scanoutTexture = texture;
++    self.scanoutRect = rect;
++}
++
++- (void)scanoutDisable
++{
++    self.scanoutTexture = nil;
++    self.scanoutRect = CGRectMake(0, 0, 0, 0);
++}
++
++- (void)drawFrameAtRect:(CGRect)rect completion:(void (^)(void))completion
++{
++    @autoreleasepool {
++        if (!self.scanoutTexture) {
++            return;
++        }
++
++        id<MTLCommandBuffer> commandBuffer = [self.commandQueue commandBuffer];
++        id<MTLBlitCommandEncoder> blit = [commandBuffer blitCommandEncoder];
++        MTLOrigin origin = MTLOriginMake(self.scanoutRect.origin.x + rect.origin.x,
++                                         self.scanoutRect.origin.y + rect.origin.y,
++                                         0);
++        MTLSize size = MTLSizeMake(rect.size.width, rect.size.height, 0);
++
++        [blit copyFromTexture:self.scanoutTexture
++                  sourceSlice:0
++                  sourceLevel:0
++                 sourceOrigin:origin
++                   sourceSize:size
++                    toTexture:self.renderTarget
++             destinationSlice:0
++             destinationLevel:0
++            destinationOrigin:(MTLOrigin){rect.origin.x,rect.origin.y,0}];
++
++        [blit endEncoding];
++
++        [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> cb) {
++            completion();
++        }];
++
++        [commandBuffer commit];
++    }
++}
++
++@end
++
++SpiceDisplayMetalContext qemu_spice_display_metal_create_context(IOSurfaceRef surface,
++                                                                 uint32_t width,
++                                                                 uint32_t height)
++{
++    id<MTLDevice> device = (id<MTLDevice>)qemu_egl_angle_native_device;
++
++    if (!device) {
++        return NULL;
++    }
++
++    return [[SpiceDisplayMetal alloc] initWithDevice:device
++                                             surface:surface
++                                               width:width
++                                              height:height];
++}
++
++void qemu_spice_display_metal_destroy_context(SpiceDisplayMetalContext ctx)
++{
++    [(SpiceDisplayMetal *)ctx release];
++}
++
++void qemu_spice_display_metal_scanout_texture(SpiceDisplayMetalContext ctx,
++                                              MTLTexture_id tex, uint32_t x, uint32_t y,
++                                              uint32_t w, uint32_t h)
++{
++    CGRect rect = CGRectMake(x, y, w, h);
++
++    [(SpiceDisplayMetal *)ctx scanoutTexture:(id<MTLTexture>)tex
++                                        rect:rect];
++}
++
++void qemu_spice_display_metal_scanout_disable(SpiceDisplayMetalContext ctx)
++{
++    [(SpiceDisplayMetal *)ctx scanoutDisable];
++}
++
++bool qemu_spice_display_metal_has_scanout(SpiceDisplayMetalContext ctx)
++{
++    return [(SpiceDisplayMetal *)ctx scanoutTexture] != nil;
++}
++
++void qemu_spice_display_metal_draw_frame(SpiceDisplayMetalContext ctx,
++                                         uint32_t x, uint32_t y, uint32_t w, uint32_t h,
++                                         SpiceDisplayMetalCompletion completion,
++                                         void *data)
++{
++    CGRect rect = CGRectMake(x, y, w, h);
++
++    [(SpiceDisplayMetal *)ctx drawFrameAtRect:rect completion:^{
++        completion(data);
++    }];
++}
+diff --git a/ui/spice-display.c b/ui/spice-display.c
+index 824e645d72..6ccc007ef0 100644
+--- a/ui/spice-display.c
++++ b/ui/spice-display.c
+@@ -939,6 +939,10 @@ static bool spice_iosurface_create(SimpleSpiceDisplay *ssd, int width, int heigh
+ 
+     ssd->iosurface = surface;
+ 
++#if defined(CONFIG_METAL)
++    ssd->metal_context = qemu_spice_display_metal_create_context(surface, width, height);
++#endif
++
+     return true;
+ }
+ 
+@@ -967,6 +971,13 @@ static void spice_iosurface_destroy(SimpleSpiceDisplay *ssd)
+         return;
+     }
+ 
++#if defined(CONFIG_METAL)
++    if (ssd->metal_context) {
++        qemu_spice_display_metal_destroy_context(ssd->metal_context);
++        ssd->metal_context = NULL;
++    }
++#endif
++
+     if (spice_opengl == DISPLAY_GL_MODE_CORE) {
+         spice_iosurface_destroy_cgl(ssd);
+     } else {
+@@ -1060,6 +1071,52 @@ static void spice_iosurface_blit(SimpleSpiceDisplay *ssd, GLuint src_texture, bo
+     }
+ }
+ 
++#if defined(CONFIG_METAL)
++static void qemu_spice_gl_block(SimpleSpiceDisplay *ssd, bool block);
++
++static void spice_iosurface_blit_completion(void *data)
++{
++    QXLCookie *cookie = (QXLCookie *)data;
++
++    spice_qxl_gl_draw_async(cookie->u.gl_draw.qxl,
++                            cookie->u.gl_draw.x,
++                            cookie->u.gl_draw.y,
++                            cookie->u.gl_draw.w,
++                            cookie->u.gl_draw.h,
++                            (uintptr_t)cookie);
++}
++
++static bool spice_iosurface_blit_metal(SimpleSpiceDisplay *ssd,
++                                       uint32_t x, uint32_t y, uint32_t w, uint32_t h)
++{
++    SpiceDisplayMetalContext context = ssd->metal_context;
++    QXLCookie *cookie;
++
++    if (!ssd->iosurface || !context) {
++        return false;
++    }
++
++    if (!qemu_spice_display_metal_has_scanout(context)) {
++        return false;
++    }
++
++    cookie = qxl_cookie_new(QXL_COOKIE_TYPE_GL_DRAW_DONE, 0);
++    cookie->u.gl_draw.qxl = &ssd->qxl;
++    cookie->u.gl_draw.x = x;
++    cookie->u.gl_draw.y = y;
++    cookie->u.gl_draw.w = w;
++    cookie->u.gl_draw.h = h;
++
++    qemu_spice_gl_block(ssd, true);
++    qemu_spice_display_metal_draw_frame(context,
++                                        x, y, w, h,
++                                        spice_iosurface_blit_completion,
++                                        cookie);
++
++    return true;
++}
++#endif
++
+ #endif
+ 
+ #ifdef HAVE_SPICE_MAC_CGL
+@@ -1215,6 +1272,11 @@ static void spice_gl_switch(DisplayChangeListener *dcl,
+             return;
+         }
+ #elif defined(CONFIG_IOSURFACE)
++#if defined(CONFIG_METAL)
++        if (ssd->metal_context) {
++            qemu_spice_display_metal_scanout_disable(ssd->metal_context);
++        }
++#endif
+         if (spice_iosurface_resize(ssd, width, height)) {
+             fd = spice_iosurface_create_fd(ssd, &fourcc);
+             if (fd < 0) {
+@@ -1252,6 +1314,8 @@ static QEMUGLContext qemu_spice_gl_create_context(DisplayGLCtx *dgc,
+     if (spice_opengl == DISPLAY_GL_MODE_CORE) {
+ #if defined(HAVE_SPICE_MAC_CGL)
+         return spice_cgl_create_context(spice_gl_ctx);
++#else
++        return NULL;
+ #endif
+     } else {
+ #if defined(CONFIG_GBM)
+@@ -1282,6 +1346,8 @@ static int qemu_spice_gl_make_context_current(DisplayGLCtx *dgc,
+     if (spice_opengl == DISPLAY_GL_MODE_CORE) {
+ #if defined(HAVE_SPICE_MAC_CGL)
+         return spice_cgl_make_context_current(ctx);
++#else
++        return -1;
+ #endif
+     } else {
+         return qemu_egl_make_context_current(dgc, ctx);
+@@ -1298,6 +1364,11 @@ static void qemu_spice_gl_scanout_disable(DisplayChangeListener *dcl)
+     ssd->have_surface = false;
+     ssd->have_scanout = false;
+ #if defined(CONFIG_IOSURFACE)
++#if defined(CONFIG_METAL)
++    if (ssd->metal_context) {
++        qemu_spice_display_metal_scanout_disable(ssd->metal_context);
++    }
++#endif
+     spice_iosurface_destroy(ssd);
+ #endif
+     ssd->tex_id = -1;
+@@ -1326,6 +1397,15 @@ static void qemu_spice_gl_scanout_texture(DisplayChangeListener *dcl,
+     } else {
+         fd = -1;
+     }
++#if defined(CONFIG_METAL)
++    if (ssd->metal_context && native.type == SCANOUT_TEXTURE_NATIVE_TYPE_METAL) {
++        qemu_spice_display_metal_scanout_texture(ssd->metal_context,
++                                                 native.handle,
++                                                 x, y, w, h);
++    } else if (ssd->metal_context) {
++        qemu_spice_display_metal_scanout_disable(ssd->metal_context);
++    }
++#endif
+ #endif
+     if (fd < 0) {
+         fprintf(stderr, "%s: failed to get fd for texture\n", __func__);
+@@ -1491,8 +1571,12 @@ static void qemu_spice_gl_update(DisplayChangeListener *dcl,
+ #elif defined(CONFIG_IOSURFACE)
+     GLuint tex_id = ssd->tex_id;
+     y_0_top = ssd->y_0_top;
++#if defined(CONFIG_METAL)
++    if (spice_iosurface_blit_metal(ssd, x, y, w, h)) {
++        return;
++    }
++#endif
+     spice_iosurface_blit(ssd, tex_id, !y_0_top);
+-    //TODO: cursor stuff
+ #endif
+ 
+     trace_qemu_spice_gl_update(ssd->qxl.id, w, h, x, y);
+-- 
+2.50.1 (Apple Git-155)
+

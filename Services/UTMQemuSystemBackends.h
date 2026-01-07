@@ -34,4 +34,12 @@ typedef NS_ENUM(NSInteger, UTMQEMUSoundBackend) {
     kQEMUSoundBackendMax = 3,
 };
 
+/// Specify the Vulkan driver for this VM
+typedef NS_ENUM(NSInteger, UTMQEMUVulkanDriver) {
+    kQEMUVulkanDriverDefault = 0,
+    kQEMUVulkanDriverDisabled = 1,
+    kQEMUVulkanDriverMoltenVK = 2,
+    kQEMUVulkanDriverKosmicKrisp = 3,
+};
+
 #endif /* UTMQemuSystemBackends_h */

@@ -233,7 +233,11 @@ extension UTMQemuVirtualMachine {
         let rawValue = UserDefaults.standard.integer(forKey: "QEMURendererBackend")
         return UTMQEMURendererBackend(rawValue: rawValue) ?? .qemuRendererBackendDefault
     }
-    
+    private var vulkanDriver: UTMQEMUVulkanDriver {
+        let rawValue = UserDefaults.standard.integer(forKey: "QEMUVulkanDriver")
+        return UTMQEMUVulkanDriver(rawValue: rawValue) ?? .qemuVulkanDriverDefault
+    }
+
     @MainActor private func qemuEnsureEfiVarsAvailable() async throws {
         guard let efiVarsURL = config.qemu.efiVarsURL else {
             return
@@ -325,6 +329,8 @@ extension UTMQemuVirtualMachine {
         system.currentDirectoryUrl = await config.socketURL
         system.remoteBookmarks = remoteBookmarks
         system.rendererBackend = rendererBackend
+        system.vulkanDriver = vulkanDriver
+        system.shmemDirectoryURL = await config.shmemDirectoryURL
         #if os(macOS) // FIXME: verbose logging is broken on iOS
         system.hasDebugLog = hasDebugLog
         #endif

@@ -81,6 +81,11 @@ import Virtualization // for getting network interfaces
         socketURL.appendingPathComponent(information.uuid.uuidString).appendingPathExtension("crt")
     }
 
+    /// Used by virglrenderer to allocate shmem
+    var shmemDirectoryURL: URL {
+        socketURL
+    }
+
     /// Used for placeholder images
     var placeholderUrl: URL {
         #if os(macOS)
@@ -270,15 +275,24 @@ import Virtualization // for getting network interfaces
                     if display.hardware.rawValue.lowercased().contains("vga") && isClassicMacNewWorld {
                         "edid=on"
                     }
+                    if isDisplayGLSupported(display) && isVulkanSupported {
+                        "hostmem=8G"
+                        "blob=true"
+                        "venus=true"
+                    }
                     f()
                 }
             }
         }
     }
-    
+
+    private func isDisplayGLSupported(_ display: UTMQemuConfigurationDisplay) -> Bool {
+        display.hardware.rawValue.contains("-gl-") || display.hardware.rawValue.hasSuffix("-gl")
+    }
+
     private var isGLSupported: Bool {
         displays.contains { display in
-            display.hardware.rawValue.contains("-gl-") || display.hardware.rawValue.hasSuffix("-gl")
+            isDisplayGLSupported(display)
         }
     }
 
@@ -301,6 +315,17 @@ import Virtualization // for getting network interfaces
         } else {
             return "off"
         }
+    }
+
+    private var vulkanDriver: UTMQEMUVulkanDriver {
+        let rawValue = UserDefaults.standard.integer(forKey: "QEMUVulkanDriver")
+        return UTMQEMUVulkanDriver(rawValue: rawValue) ?? .qemuVulkanDriverDefault
+    }
+
+    private var isVulkanSupported: Bool {
+        isGLSupported &&
+        (rendererBackend == .qemuRendererBackendAngleMetal || rendererBackend == .qemuRendererBackendDefault) &&
+        vulkanDriver != .qemuVulkanDriverDisabled
     }
 
     private var isSparc: Bool {
@@ -473,6 +498,9 @@ import Virtualization // for getting network interfaces
             "hvf"
             if isTSOUsed {
                 "tso=on"
+            }
+            if isVulkanSupported {
+                "ipa-granule-size=0x1000"
             }
             f()
         } else {
