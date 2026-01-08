@@ -233,9 +233,25 @@ extension UTMQemuVirtualMachine {
         let rawValue = UserDefaults.standard.integer(forKey: "QEMURendererBackend")
         return UTMQEMURendererBackend(rawValue: rawValue) ?? .qemuRendererBackendDefault
     }
+
     private var vulkanDriver: UTMQEMUVulkanDriver {
-        let rawValue = UserDefaults.standard.integer(forKey: "QEMUVulkanDriver")
-        return UTMQEMUVulkanDriver(rawValue: rawValue) ?? .qemuVulkanDriverDefault
+        get throws {
+            let rawValue = UserDefaults.standard.integer(forKey: "QEMUVulkanDriver")
+            let driver = UTMQEMUVulkanDriver(rawValue: rawValue) ?? .qemuVulkanDriverDefault
+            if driver == .qemuVulkanDriverKosmicKrisp {
+                if #unavailable(iOS 18, macOS 15, tvOS 18, visionOS 2) {
+                    throw UTMQemuVirtualMachineError.vulkanVersionNotSupported
+                }
+            }
+            if ![.qemuRendererBackendDefault, .qemuRendererBackendAngleMetal].contains(rendererBackend) {
+                if driver == .qemuVulkanDriverDefault || driver == .qemuVulkanDriverDisabled {
+                    return .qemuVulkanDriverDisabled
+                } else {
+                    throw UTMQemuVirtualMachineError.vulkanNotCompatible
+                }
+            }
+            return driver
+        }
     }
 
     @MainActor private func qemuEnsureEfiVarsAvailable() async throws {
@@ -329,7 +345,7 @@ extension UTMQemuVirtualMachine {
         system.currentDirectoryUrl = await config.socketURL
         system.remoteBookmarks = remoteBookmarks
         system.rendererBackend = rendererBackend
-        system.vulkanDriver = vulkanDriver
+        system.vulkanDriver = try vulkanDriver
         system.shmemDirectoryURL = await config.shmemDirectoryURL
         #if os(macOS) // FIXME: verbose logging is broken on iOS
         system.hasDebugLog = hasDebugLog
@@ -997,6 +1013,8 @@ enum UTMQemuVirtualMachineError: Error {
     case invalidVmState
     case saveSnapshotFailed(Error)
     case keyGenerationFailed
+    case vulkanNotCompatible
+    case vulkanVersionNotSupported
 }
 
 extension UTMQemuVirtualMachineError: LocalizedError {
@@ -1015,6 +1033,10 @@ extension UTMQemuVirtualMachineError: LocalizedError {
             return String.localizedStringWithFormat(NSLocalizedString("Failed to save VM snapshot. Usually this means at least one device does not support snapshots. %@", comment: "UTMQemuVirtualMachine"), error.localizedDescription)
         case .keyGenerationFailed:
             return NSLocalizedString("Failed to generate TLS key for server.", comment: "UTMQemuVirtualMachine")
+        case .vulkanNotCompatible:
+            return NSLocalizedString("The selected Vulkan driver is not compatible with the selected renderer backend.", comment: "UTMQemuVirtualMachine")
+        case .vulkanVersionNotSupported:
+            return NSLocalizedString("Host OS version is too old to support the selected Vulkan driver.", comment: "UTMQemuVirtualMachine")
         }
     }
 }

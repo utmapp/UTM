@@ -243,7 +243,9 @@ struct DisplaySettingsView: View {
                     Text("Default").tag(UTMQEMUVulkanDriver.qemuVulkanDriverDefault)
                     Text("Disabled").tag(UTMQEMUVulkanDriver.qemuVulkanDriverDisabled)
                     Text("MoltenVK").tag(UTMQEMUVulkanDriver.qemuVulkanDriverMoltenVK)
-                    Text("KosmicKrisp").tag(UTMQEMUVulkanDriver.qemuVulkanDriverKosmicKrisp)
+                    if #available(macOS 15, *) {
+                        Text("KosmicKrisp").tag(UTMQEMUVulkanDriver.qemuVulkanDriverKosmicKrisp)
+                    }
                 }.help("Select the Vulkan driver to use for host passthrough rendering. Vulkan requires guest drivers to be installed.")
                 .disabled(!isVulkanSupported)
                 .onChange(of: qemuRendererBackend) { _ in
