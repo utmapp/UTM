@@ -30,6 +30,7 @@ PLATFORM=
 CHOST=
 SDK=
 SDKMINVER=
+CLEAN_PATH="$PATH"
 
 command -v realpath >/dev/null 2>&1 || realpath() {
     [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
@@ -64,8 +65,7 @@ python_module_test () {
 
 check_env () {
     command -v brew >/dev/null 2>&1 || { echo >&2 "${RED}Homebrew is required to be installed.${NC}"; exit 1; }
-    brew --prefix mesa >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'mesa' from Homebrew.${NC}"; exit 1; }
-    [ -x $(brew --prefix mesa)/bin/mesa_clc ] || { echo >&2 "${RED}'mesa_clc' not found in host Mesa installation.${NC}"; exit 1; }
+    brew --prefix llvm >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'llvm' from Homebrew.${NC}"; exit 1; }
     command -v python3 >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'python3' on your host machine.${NC}"; exit 1; }
     python_module_test six >/dev/null 2>&1 || { echo >&2 "${RED}'six' not found in your Python 3 installation.${NC}"; exit 1; }
     python_module_test pyparsing >/dev/null 2>&1 || { echo >&2 "${RED}'pyparsing' not found in your Python 3 installation.${NC}"; exit 1; }
@@ -746,9 +746,21 @@ build_moltenvk() {
     popd
 }
 
+build_mesa_host () {
+    pushd "$BUILD_DIR/mesa.git"
+
+    HOST_PATH="$(brew --prefix llvm)/bin:$CLEAN_PATH"
+    env -i PATH="$HOST_PATH" meson host_build --prefix="$PREFIX/host" --buildtype=release \
+        -Dllvm=enabled -Dstrip=true -Dopengl=false -Dgallium-drivers= -Dvulkan-drivers= -Dmesa-clc=enabled -Dinstall-mesa-clc=true
+    env -i PATH="$HOST_PATH" meson compile -C host_build -j $NCPU
+    env -i PATH="$HOST_PATH" meson install -C host_build
+
+    popd
+}
+
 build_vulkan_drivers () {
-    export PATH="$(brew --prefix mesa)/bin:$PATH"
     mkdir -p "$PREFIX/share/vulkan/icd.d"
+    build_mesa_host
     meson_darwin_build $MESA_REPO -Dmesa-clc=system -Dgallium-drivers= -Dvulkan-drivers=kosmickrisp -Dplatforms=macos
     patch_vulkan_icd "$PREFIX/share/vulkan/icd.d/kosmickrisp_mesa_icd.$ARCH.json"
     mv "$PREFIX/share/vulkan/icd.d/kosmickrisp_mesa_icd.$ARCH.json" "$PREFIX/share/vulkan/icd.d/kosmickrisp_mesa_icd.json"
