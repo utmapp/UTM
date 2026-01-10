@@ -27,22 +27,10 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
         appleView
     }
 
-    var supportsReconfiguration: Bool {
-        guard #available(macOS 14, *) else {
-            return false
-        }
-        guard let display = appleVM.apple?.graphicsDevices.first?.displays.first else {
-            return false
-        }
-        return display.value(forKey: "_supportsReconfiguration") as? Bool ?? false
-    }
-
     var isDynamicResolution: Bool {
         appleConfig.displays.first!.isDynamicResolution
     }
 
-    private let checkSupportsReconfigurationTimeoutPeriod: Double = 1
-    private var checkSupportsReconfigurationTimeoutAttempts: Int = 60
     private var aspectRatioLocked: Bool = false
     private var screenChangedToken: Any?
     private var isFullscreen: Bool = false
@@ -55,11 +43,15 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
         mainView = VZVirtualMachineView()
         captureMouseToolbarButton.image = captureMouseToolbarButton.alternateImage // show capture keyboard image
         screenChangedToken = NotificationCenter.default.addObserver(forName: NSWindow.didChangeScreenNotification, object: nil, queue: .main) { [weak self] _ in
-            // update minSize when we change screens
-            if let self = self,
-               let window = window,
-               let primaryDisplay = appleConfig.displays.first,
-               !supportsReconfiguration || !isDynamicResolution {
+            // update minSize when we change screens (not needed for dynamic resolution on macOS 14+)
+            guard let self = self,
+                  let window = window,
+                  let primaryDisplay = appleConfig.displays.first else {
+                return
+            }
+            if #available(macOS 14, *), isDynamicResolution {
+                // Dynamic resolution handles this automatically
+            } else {
                 window.contentMinSize = contentMinSize(in: window, for: windowSize(for: primaryDisplay))
             }
         }
@@ -118,7 +110,10 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
         let frame = window.frameRect(forContentRect: CGRect(origin: window.frame.origin, size: size))
         window.contentAspectRatio = size
         aspectRatioLocked = true
-        let dynamicResolution = supportsReconfiguration && isDynamicResolution
+        var dynamicResolution = false
+        if #available(macOS 14, *) {
+            dynamicResolution = isDynamicResolution
+        }
         if dynamicResolution {
             window.minSize = NSSize(width: 400, height: 400)
         } else {
@@ -157,7 +152,7 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
     }
     
     func windowDidResize(_ notification: Notification) {
-        if supportsReconfiguration && isDynamicResolution {
+        if #available(macOS 14, *), isDynamicResolution {
             if aspectRatioLocked {
                 window!.resizeIncrements = NSSize(width: 1.0, height: 1.0)
                 window!.minSize = NSSize(width: 400, height: 400)
@@ -184,7 +179,7 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
 @available(macOS 12, *)
 @MainActor extension VMDisplayAppleDisplayWindowController {
     func saveDynamicResolution() {
-        guard supportsReconfiguration && isDynamicResolution && isReadyToSaveResolution else {
+        guard #available(macOS 14, *), isDynamicResolution, isReadyToSaveResolution else {
             return
         }
         var resolution = UTMRegistryEntry.Resolution()
@@ -209,23 +204,19 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
     }
 
     func startPollingForSupportsReconfiguration() {
+        guard #available(macOS 14, *), isDynamicResolution else {
+            return
+        }
         cancelCheckSupportsReconfiguration?.cancel()
         cancelCheckSupportsReconfiguration = DispatchWorkItem { [weak self] in
-            guard let self = self else {
+            guard let self = self, let window = window else {
                 return
             }
-            if supportsReconfiguration, let window = window {
-                restoreDynamicResolution(for: window)
-                checkSupportsReconfigurationTimeoutAttempts = 0
-                cancelCheckSupportsReconfiguration = nil
-            } else if checkSupportsReconfigurationTimeoutAttempts > 0 {
-                checkSupportsReconfigurationTimeoutAttempts -= 1
-                DispatchQueue.main.asyncAfter(deadline: .now() + checkSupportsReconfigurationTimeoutPeriod, execute: cancelCheckSupportsReconfiguration!)
-            } else {
-                cancelCheckSupportsReconfiguration = nil
-            }
+            restoreDynamicResolution(for: window)
+            cancelCheckSupportsReconfiguration = nil
         }
-        DispatchQueue.main.asyncAfter(deadline: .now() + checkSupportsReconfigurationTimeoutPeriod, execute: cancelCheckSupportsReconfiguration!)
+        // Delay to allow display initialization before restoring resolution
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0, execute: cancelCheckSupportsReconfiguration!)
     }
 
     func stopPollingForSupportsReconfiguration() {
