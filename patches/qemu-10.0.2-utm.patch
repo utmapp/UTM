@@ -2787,7 +2787,7 @@ index 67aaf9ae89..931258ef96 100644
 -- 
 2.41.0
 
-From 8df157705036e9cc2b3bb0d3eb7eebdf6d75eb5e Mon Sep 17 00:00:00 2001
+From 47f3d4eb42d9fa8d035fb67965840a16fcdc018d Mon Sep 17 00:00:00 2001
 From: osy <osy@turing.llc>
 Date: Sun, 4 Jan 2026 20:22:19 -0800
 Subject: [PATCH 9/9] ui/spice-display: support rendering with CGL
@@ -2872,7 +2872,7 @@ index 5b0fa38ecf..91817b1239 100644
              .name = "rendernode",
              .type = QEMU_OPT_STRING,
 diff --git a/ui/spice-display.c b/ui/spice-display.c
-index 931258ef96..824e645d72 100644
+index 931258ef96..97a915a7ee 100644
 --- a/ui/spice-display.c
 +++ b/ui/spice-display.c
 @@ -28,6 +28,10 @@
@@ -3221,7 +3221,7 @@ index 931258ef96..824e645d72 100644
 +    gl_str = qemu_opt_get(opts, "gl");
 +    qapi_bool_parse("", gl_str, &gl_on, NULL);
 +    gl_core = g_str_equal(gl_str, "core");
-+    gl_on = gl_core || g_str_equal(gl_str, "es");
++    gl_on = gl_on || gl_core || g_str_equal(gl_str, "es");
 +    if (gl_on) {
          if ((port != 0) || (tls_port != 0)) {
              error_report("SPICE GL support is local-only for now and "
@@ -4764,4 +4764,204 @@ index 824e645d72..6ccc007ef0 100644
      trace_qemu_spice_gl_update(ssd->qxl.id, w, h, x, y);
 -- 
 2.50.1 (Apple Git-155)
+
+From 27e45bc5d22b61a0b1f7094595c8eeb02d1258ec Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Sat, 10 Jan 2026 10:16:41 -0800
+Subject: [PATCH] hvf: use private APIs to set IPA size when needed
+
+---
+ hw/arm/virt.c        |  2 -
+ target/arm/hvf/hvf.c | 98 ++++++++++++++++++++++++++++++--------------
+ target/arm/hvf_arm.h |  2 +-
+ 3 files changed, 69 insertions(+), 33 deletions(-)
+
+diff --git a/hw/arm/virt.c b/hw/arm/virt.c
+index e2538ae978..3549a91aba 100644
+--- a/hw/arm/virt.c
++++ b/hw/arm/virt.c
+@@ -3201,9 +3201,7 @@ static void virt_machine_class_init(ObjectClass *oc, void *data)
+     mc->valid_cpu_types = valid_cpu_types;
+     mc->get_default_cpu_node_id = virt_get_default_cpu_node_id;
+     mc->kvm_type = virt_kvm_type;
+-#if !defined(CONFIG_HVF_PRIVATE)
+     mc->hvf_get_physical_address_range = virt_hvf_get_physical_address_range;
+-#endif
+     assert(!mc->get_hotplug_handler);
+     mc->get_hotplug_handler = virt_machine_get_hotplug_handler;
+     hc->pre_plug = virt_machine_device_pre_plug_cb;
+diff --git a/target/arm/hvf/hvf.c b/target/arm/hvf/hvf.c
+index 1a0f69b496..230240fec7 100644
+--- a/target/arm/hvf/hvf.c
++++ b/target/arm/hvf/hvf.c
+@@ -24,6 +24,7 @@
+ #include "cpregs.h"
+ 
+ #include <mach/mach_time.h>
++#include <sys/sysctl.h>
+ 
+ #include "exec/address-spaces.h"
+ #include "hw/boards.h"
+@@ -977,41 +978,53 @@ static hv_return_t hvf_vcpu_set_actlr(hv_vcpu_t vcpu, uint64_t value)
+ #endif
+ }
+ 
+-#if !defined(CONFIG_HVF_PRIVATE)
+-
+ uint32_t hvf_arm_get_default_ipa_bit_size(void)
+ {
++#if TARGET_OS_OSX
+     if (__builtin_available(macOS 13.0, *)) {
+         uint32_t default_ipa_size;
+         hv_return_t ret = hv_vm_config_get_default_ipa_size(&default_ipa_size);
+         assert_hvf_ok(ret);
+ 
+         return default_ipa_size;
+-    } else {
+-        return 0;
+     }
++#endif
++    return 0;
+ }
+ 
+ uint32_t hvf_arm_get_max_ipa_bit_size(void)
+ {
++    uint64_t ipa_size_4k, ipa_size_16k;
++    size_t length;
++    uint32_t max_ipa_size = 0;
++
++#if TARGET_OS_OSX
+     if (__builtin_available(macOS 13.0, *)) {
+-        uint32_t max_ipa_size;
+         hv_return_t ret = hv_vm_config_get_max_ipa_size(&max_ipa_size);
+         assert_hvf_ok(ret);
++    }
++#endif
+ 
+-        /*
+-         * We clamp any IPA size we want to back the VM with to a valid PARange
+-         * value so the guest doesn't try and map memory outside of the valid
+-         * range. This logic just clamps the passed in IPA bit size to the first
+-         * valid PARange value <= to it.
+-         */
+-        return round_down_to_parange_bit_size(max_ipa_size);
+-    } else {
+-        return 0;
++    if (!max_ipa_size) {
++        length = sizeof(uint64_t);
++        if (sysctlbyname("kern.hv.ipa_size_16k", &ipa_size_16k, &length, NULL, 0)) {
++            ipa_size_16k = 0;
++        }
++        length = sizeof(uint64_t);
++        if (sysctlbyname("kern.hv.ipa_size_4k", &ipa_size_4k, &length, NULL, 0)) {
++            ipa_size_4k = 0;
++        }
++        max_ipa_size = MIN(ctz64(ipa_size_16k), ctz64(ipa_size_4k));
+     }
+-}
+ 
+-#endif
++    /*
++     * We clamp any IPA size we want to back the VM with to a valid PARange
++     * value so the guest doesn't try and map memory outside of the valid
++     * range. This logic just clamps the passed in IPA bit size to the first
++     * valid PARange value <= to it.
++     */
++    return round_down_to_parange_bit_size(max_ipa_size);
++}
+ 
+ void hvf_arm_set_cpu_features_from_host(ARMCPU *cpu)
+ {
+@@ -1075,27 +1088,54 @@ static hv_return_t hvf_set_ipa_granule(hv_vm_config_t config,
+     return HV_SUCCESS;
+ }
+ 
++static hv_return_t hvf_set_ipa_size(hv_vm_config_t config, uint32_t pa_range)
++{
++    static hv_return_t (*set_ipa_size)(hv_vm_config_t, uint64_t);
++    hv_return_t ret;
++
++#if TARGET_OS_OSX
++    if (__builtin_available(macOS 13.0, *)) {
++        ret = hv_vm_config_set_ipa_size(config, pa_range);
++        if (ret == HV_SUCCESS) {
++            chosen_ipa_bit_size = pa_range;
++        }
++        return ret;
++    }
++#endif
++
++    /* older macOS need to use a private API */
++    if (!set_ipa_size) {
++        set_ipa_size = dlsym(RTLD_NEXT, "_hv_vm_config_set_ipa_size");
++    }
++    if (set_ipa_size) {
++        ret = set_ipa_size(config, 1ULL << pa_range);
++        if (ret == HV_SUCCESS) {
++            chosen_ipa_bit_size = pa_range;
++        }
++        return ret;
++    } else if (!pa_range) {
++        return HV_SUCCESS;
++    }
++
++    return HV_UNSUPPORTED;
++}
++
+ hv_return_t hvf_arch_vm_create(MachineState *ms, uint32_t pa_range,
+                                uint32_t ipa_granule_size)
+ {
+     hv_return_t ret;
+-    hv_vm_config_t config = NULL;
++    hv_vm_config_t config = hv_vm_config_create();
+ 
+ #if defined(CONFIG_HVF_PRIVATE)
+     if (hvf_tso_mode) {
+-        config = hv_vm_config_create();
+         _hv_vm_config_set_isa(config, HV_VM_CONFIG_ISA_PRIVATE);
+     }
+-#else
+-    if (__builtin_available(macOS 13.0, *)) {
+-        config = hv_vm_config_create();
+-        ret = hv_vm_config_set_ipa_size(config, pa_range);
+-        if (ret != HV_SUCCESS) {
+-            goto cleanup;
+-        }
+-        chosen_ipa_bit_size = pa_range;
+-    }
+ #endif
++    
++    ret = hvf_set_ipa_size(config, pa_range);
++    if (ret != HV_SUCCESS) {
++        goto cleanup;
++    }
+ 
+     if (ipa_granule_size) {
+         ret = hvf_set_ipa_granule(config, ipa_granule_size);
+@@ -1107,9 +1147,7 @@ hv_return_t hvf_arch_vm_create(MachineState *ms, uint32_t pa_range,
+     ret = hv_vm_create(config);
+ 
+ cleanup:
+-    if (config) {
+-        os_release(config);
+-    }
++    os_release(config);
+ 
+     return ret;
+ }
+diff --git a/target/arm/hvf_arm.h b/target/arm/hvf_arm.h
+index 482768baa6..13bc8921b3 100644
+--- a/target/arm/hvf_arm.h
++++ b/target/arm/hvf_arm.h
+@@ -22,7 +22,7 @@ void hvf_arm_init_debug(void);
+ 
+ void hvf_arm_set_cpu_features_from_host(ARMCPU *cpu);
+ 
+-#if defined(CONFIG_HVF) && !defined(CONFIG_HVF_PRIVATE)
++#if defined(CONFIG_HVF)
+ 
+ uint32_t hvf_arm_get_default_ipa_bit_size(void);
+ uint32_t hvf_arm_get_max_ipa_bit_size(void);
+-- 
+2.41.0
 
