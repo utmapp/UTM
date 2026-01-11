@@ -707,7 +707,7 @@ patch_vulkan_icd() {
         ' "$icd_file"
     else
         sed -i '' -E '
-            s|("library_path"[[:space:]]*:[[:space:]]*")[^"]*/lib([^"/]+)\.dylib(")|\1../../../Frameworks/\2.framework/\2\3|
+            s|("library_path"[[:space:]]*:[[:space:]]*")[^"]*/lib([^"/]+)\.dylib(")|\1../../Frameworks/\2.framework/\2\3|
         ' "$icd_file"
     fi
 }
