@@ -54,4 +54,4 @@ MOLTENVK_COMMIT="bf60f60d0805e9b3ab989cfc1b69f780f96fd123"
 
 # Decompiled Hypervisor for iOS
 HYPERVISOR_REPO="https://github.com/utmapp/Hypervisor.git"
-HYPERVISOR_COMMIT="f8fc8d8f50c23d348ece1152b378ed020da1eb86"
+HYPERVISOR_COMMIT="b2c910fb9f687929a50e5a7d62e59e43a006d47d"
