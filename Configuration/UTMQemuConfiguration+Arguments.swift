@@ -276,7 +276,7 @@ import Virtualization // for getting network interfaces
                         "edid=on"
                     }
                     if isDisplayGLSupported(display) && isVulkanSupported {
-                        "hostmem=8G"
+                        "hostmem=256M"
                         "blob=true"
                         "venus=true"
                     }
