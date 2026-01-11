@@ -31,6 +31,7 @@ CHOST=
 SDK=
 SDKMINVER=
 CLEAN_PATH="$PATH"
+DEBUG=
 
 command -v realpath >/dev/null 2>&1 || realpath() {
     [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
@@ -41,13 +42,14 @@ version_check() {
 }
 
 usage () {
-    echo "Usage: [VARIABLE...] $(basename $0) [-p platform] [-a architecture] [-q qemu_path] [-d] [-r]"
+    echo "Usage: [VARIABLE...] $(basename $0) [-p platform] [-a architecture] [-q qemu_path] [-d] [-r] [-x]"
     echo ""
     echo "  -p platform      Target platform. Default ios. [ios|ios_simulator|ios-tci|ios_simulator-tci|macos|visionos|visionos_simulator]"
     echo "  -a architecture  Target architecture. Default arm64. [armv7|armv7s|arm64|i386|x86_64]"
     echo "  -q qemu_path     Do not download QEMU, use qemu_path instead."
     echo "  -d, --download   Force re-download of source even if already downloaded."
     echo "  -r, --rebuild    Avoid cleaning build directory."
+    echo "  -x, --debug      Build for debug."
     echo ""
     echo "  VARIABLEs are:"
     echo "    NCPU           Number of CPUs to use in 'make', 0 to use all cores."
@@ -482,10 +484,14 @@ build_openssl() {
         exit 1
     fi
 
+    if [ ! -z "$DEBUG" ]; then
+        DEBUG_FLAGS="--debug"
+    fi
+
     cd "$DIR"
     if [ -z "$REBUILD" ]; then
         echo "${GREEN}Configuring ${NAME}...${NC}"
-        ./Configure $OPENSSL_CROSS no-dso no-hw no-engine --prefix="$PREFIX" $@
+        ./Configure $OPENSSL_CROSS no-dso no-hw no-engine --prefix="$PREFIX" $DEBUG_FLAGS $@
     fi
     echo "${GREEN}Building ${NAME}...${NC}"
     make -j$NCPU
@@ -536,11 +542,17 @@ meson_cross_build () {
     fi
     pwd="$(pwd)"
 
+    if [ -z "$DEBUG" ]; then
+        buildtype="release"
+    else
+        buildtype="debug"
+    fi
+
     cd "$SRCDIR"
     if [ -z "$REBUILD" ]; then
         rm -rf utm_build
         echo "${GREEN}Configuring ${NAME}...${NC}"
-        meson utm_build --prefix="$PREFIX" --buildtype=plain --cross-file "$MESON_CROSS" "$@"
+        meson utm_build --prefix="$PREFIX" --buildtype="$buildtype" --cross-file "$MESON_CROSS" "$@"
     fi
     echo "${GREEN}Building ${NAME}...${NC}"
     meson compile -C utm_build -j $NCPU
@@ -584,7 +596,7 @@ cmake_build () {
         echo "${GREEN}Configuring ${NAME}...${NC}"
         cmake -S . -B "$BUILDDIR" \
             -DCMAKE_INSTALL_PREFIX="$PREFIX" \
-            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_BUILD_TYPE="$BUILD_CONFIGURATION" \
             -DCMAKE_TOOLCHAIN_FILE="$CMAKE_TOOLCHAIN" \
             "$@"
     fi
@@ -607,7 +619,7 @@ build_angle () {
                                          -scheme "ANGLE" \
                                          -sdk $SDK \
                                          -arch $ARCH \
-                                         -configuration Release \
+                                         -configuration "$BUILD_CONFIGURATION" \
                                          WEBCORE_LIBRARY_DIR="/usr/local/lib" \
                                          NORMAL_UMBRELLA_FRAMEWORKS_DIR="" \
                                          CODE_SIGNING_ALLOWED=NO \
@@ -640,7 +652,7 @@ build_hypervisor () {
     esac
 
     echo "${GREEN}Building Hypervisor...${NC}"
-    env -i PATH=$PATH xcodebuild archive -archivePath "Hypervisor" -scheme "$scheme" -sdk $SDK -configuration Release
+    env -i PATH=$PATH xcodebuild archive -archivePath "Hypervisor" -scheme "$scheme" -sdk $SDK -configuration "$BUILD_CONFIGURATION"
 
     rsync -a "Hypervisor.xcarchive/Products/Library/Frameworks/" "$PREFIX/Frameworks"
     cd "$pwd"
@@ -718,6 +730,9 @@ build_moltenvk() {
     if which ruby >/dev/null && which gem >/dev/null; then
         PATH="$(ruby -r rubygems -e 'puts Gem.user_dir')/bin:$PATH"
     fi
+    if [ ! -z "$DEBUG" ]; then
+        DEBUG_FLAGS="-debug"
+    fi
     case $PLATFORM in
     ios_simulator* )
         MVK_PLATFORM="iossim"
@@ -736,11 +751,11 @@ build_moltenvk() {
         ;;
     esac
     env -i PATH=$PATH HOME=$HOME LANG=en_US.UTF-8 ./fetchDependencies --$MVK_PLATFORM -v
-    env -i PATH=$PATH HOME=$HOME LANG=en_US.UTF-8 make $MVK_PLATFORM
+    env -i PATH=$PATH HOME=$HOME LANG=en_US.UTF-8 make $MVK_PLATFORM$DEBUG_FLAGS
     if [ "$PLATFORM" == "macos" ]; then
-        $(xcrun --sdk $SDK --find lipo) "Package/Release/MoltenVK/dylib/macOS/libMoltenVK.dylib" -extract $ARCH -output "$PREFIX/lib/libMoltenVK.dylib"
+        $(xcrun --sdk $SDK --find lipo) "Package/$BUILD_CONFIGURATION/MoltenVK/dylib/macOS/libMoltenVK.dylib" -extract $ARCH -output "$PREFIX/lib/libMoltenVK.dylib"
     else
-        find "Package/Release/MoltenVK/dynamic/MoltenVK.xcframework" -name "MoltenVK.framework" -exec cp -a \{\} "$PREFIX/Frameworks/" \;
+        find "Package/$BUILD_CONFIGURATION/MoltenVK/dynamic/MoltenVK.xcframework" -name "MoltenVK.framework" -exec cp -a \{\} "$PREFIX/Frameworks/" \;
     fi
     cp -a "MoltenVK/icd/MoltenVK_icd.json" "$PREFIX/share/vulkan/icd.d/"
     popd
@@ -862,6 +877,9 @@ while [ "x$1" != "x" ]; do
         PLATFORM=$(echo "$2" | tr '[:upper:]' '[:lower:]')
         shift
         ;;
+    -x | --debug )
+        DEBUG=1
+        ;;
     * )
         usage
         ;;
@@ -948,7 +966,7 @@ ios* | visionos* )
         PLATFORM_FAMILY_NAME="$PLATFORM_FAMILY_PREFIX"
         ;;
     esac
-    QEMU_PLATFORM_BUILD_FLAGS="--disable-debug-info --enable-shared-lib --disable-cocoa --disable-coreaudio --disable-slirp-smbd --enable-ucontext --with-coroutine=libucontext $HVF_FLAGS $TCI_BUILD_FLAGS"
+    QEMU_PLATFORM_BUILD_FLAGS="--enable-shared-lib --disable-cocoa --disable-coreaudio --disable-slirp-smbd --enable-ucontext --with-coroutine=libucontext $HVF_FLAGS $TCI_BUILD_FLAGS"
     ;;
 macos )
     if [ -z "$SDKMINVER" ]; then
@@ -957,12 +975,17 @@ macos )
     SDK=macosx
     CFLAGS_TARGET="-target $ARCH-apple-macos$SDKMINVER"
     PLATFORM_FAMILY_NAME="macOS"
-    QEMU_PLATFORM_BUILD_FLAGS="--disable-debug-info --enable-shared-lib --disable-cocoa --cpu=$CPU"
+    QEMU_PLATFORM_BUILD_FLAGS="--enable-shared-lib --disable-cocoa --cpu=$CPU"
     ;;
 * )
     usage
     ;;
 esac
+
+if [ -z "$DEBUG" ]; then
+    QEMU_DEBUG_FLAGS="--disable-debug-info"
+fi
+
 export SDK
 export SDKMINVER
 
@@ -1028,12 +1051,20 @@ export RANLIB
 export STRIP
 export PREFIX
 
+if [ -z "$DEBUG" ]; then
+    DEBUG_FLAGS=
+    BUILD_CONFIGURATION="Release"
+else
+    DEBUG_FLAGS="-g -O0"
+    BUILD_CONFIGURATION="Debug"
+fi
+
 # Flags
-CFLAGS="$CFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks"
-CPPFLAGS="$CPPFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks $CFLAGS_TARGET"
-CXXFLAGS="$CXXFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks $CFLAGS_TARGET"
-OBJCFLAGS="$OBJCFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks $CFLAGS_TARGET"
-LDFLAGS="$LDFLAGS -arch $ARCH -isysroot $SDKROOT -L$PREFIX/lib -F$PREFIX/Frameworks $CFLAGS_TARGET"
+CFLAGS="$CFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks $DEBUG_FLAGS"
+CPPFLAGS="$CPPFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks $CFLAGS_TARGET $DEBUG_FLAGS"
+CXXFLAGS="$CXXFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks $CFLAGS_TARGET $DEBUG_FLAGS"
+OBJCFLAGS="$OBJCFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks $CFLAGS_TARGET $DEBUG_FLAGS"
+LDFLAGS="$LDFLAGS -arch $ARCH -isysroot $SDKROOT -L$PREFIX/lib -F$PREFIX/Frameworks $CFLAGS_TARGET $DEBUG_FLAGS"
 export CFLAGS
 export CPPFLAGS
 export CXXFLAGS
@@ -1062,7 +1093,7 @@ mkdir -p "$PREFIX/Frameworks"
 copy_private_headers
 build_pkg_config
 build_qemu_dependencies
-build $QEMU_DIR --cross-prefix="" $QEMU_PLATFORM_BUILD_FLAGS
+build $QEMU_DIR --cross-prefix="" $QEMU_PLATFORM_BUILD_FLAGS $QEMU_DEBUG_FLAGS
 build_spice_client
 build_vulkan_drivers
 fixup_all
