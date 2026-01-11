@@ -22,7 +22,8 @@ typedef NS_ENUM(NSInteger, UTMQEMURendererBackend) {
     kQEMURendererBackendDefault = 0,
     kQEMURendererBackendAngleGL = 1,
     kQEMURendererBackendAngleMetal = 2,
-    kQEMURendererBackendMax = 3,
+    kQEMURendererBackendCGL = 3,
+    kQEMURendererBackendMax = 4,
 };
 
 /// Specify the sound backend for this VM
@@ -31,6 +32,14 @@ typedef NS_ENUM(NSInteger, UTMQEMUSoundBackend) {
     kQEMUSoundBackendSPICE = 1,
     kQEMUSoundBackendCoreAudio = 2,
     kQEMUSoundBackendMax = 3,
+};
+
+/// Specify the Vulkan driver for this VM
+typedef NS_ENUM(NSInteger, UTMQEMUVulkanDriver) {
+    kQEMUVulkanDriverDefault = 0,
+    kQEMUVulkanDriverDisabled = 1,
+    kQEMUVulkanDriverMoltenVK = 2,
+    kQEMUVulkanDriverKosmicKrisp = 3,
 };
 
 #endif /* UTMQemuSystemBackends_h */

@@ -147,6 +147,34 @@
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
+			<string>Vulkan Driver</string>
+			<key>Key</key>
+			<string>QEMUVulkanDriver</string>
+			<key>DefaultValue</key>
+			<integer>0</integer>
+			<key>Titles</key>
+			<array>
+				<string>Default</string>
+				<string>Disabled</string>
+				<string>MoltenVK</string>
+				<string>KosmicKrisp</string>
+			</array>
+			<key>Values</key>
+			<array>
+				<integer>0</integer>
+				<integer>1</integer>
+				<integer>2</integer>
+				<string>3</string>
+			</array>
+			<key>ExcludeTargets</key>
+			<array>
+				<string>iOS-Remote</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
 			<string>FPS Limit</string>
 			<key>Key</key>
 			<string>QEMURendererFPSLimit</string>

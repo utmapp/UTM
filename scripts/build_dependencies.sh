@@ -30,6 +30,8 @@ PLATFORM=
 CHOST=
 SDK=
 SDKMINVER=
+CLEAN_PATH="$PATH"
+DEBUG=
 
 command -v realpath >/dev/null 2>&1 || realpath() {
     [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
@@ -40,13 +42,14 @@ version_check() {
 }
 
 usage () {
-    echo "Usage: [VARIABLE...] $(basename $0) [-p platform] [-a architecture] [-q qemu_path] [-d] [-r]"
+    echo "Usage: [VARIABLE...] $(basename $0) [-p platform] [-a architecture] [-q qemu_path] [-d] [-r] [-x]"
     echo ""
     echo "  -p platform      Target platform. Default ios. [ios|ios_simulator|ios-tci|ios_simulator-tci|macos|visionos|visionos_simulator]"
     echo "  -a architecture  Target architecture. Default arm64. [armv7|armv7s|arm64|i386|x86_64]"
     echo "  -q qemu_path     Do not download QEMU, use qemu_path instead."
     echo "  -d, --download   Force re-download of source even if already downloaded."
     echo "  -r, --rebuild    Avoid cleaning build directory."
+    echo "  -x, --debug      Build for debug."
     echo ""
     echo "  VARIABLEs are:"
     echo "    NCPU           Number of CPUs to use in 'make', 0 to use all cores."
@@ -63,11 +66,17 @@ python_module_test () {
 }
 
 check_env () {
+    command -v brew >/dev/null 2>&1 || { echo >&2 "${RED}Homebrew is required to be installed.${NC}"; exit 1; }
+    brew --prefix llvm >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'llvm' from Homebrew.${NC}"; exit 1; }
     command -v python3 >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'python3' on your host machine.${NC}"; exit 1; }
     python_module_test six >/dev/null 2>&1 || { echo >&2 "${RED}'six' not found in your Python 3 installation.${NC}"; exit 1; }
     python_module_test pyparsing >/dev/null 2>&1 || { echo >&2 "${RED}'pyparsing' not found in your Python 3 installation.${NC}"; exit 1; }
-    python_module_test distutils >/dev/null 2>&1 || { echo >&2 "${RED}'distutils' not found in your Python 3 installation.${NC}"; exit 1; }
+    python_module_test distutils >/dev/null 2>&1 || { echo >&2 "${RED}'setuptools' not found in your Python 3 installation.${NC}"; exit 1; }
+    python_module_test yaml >/dev/null 2>&1 || { echo >&2 "${RED}'pyyaml' not found in your Python 3 installation.${NC}"; exit 1; }
+    python_module_test distlib >/dev/null 2>&1 || { echo >&2 "${RED}'distlib' not found in your Python 3 installation.${NC}"; exit 1; }
+    python_module_test mako >/dev/null 2>&1 || { echo >&2 "${RED}'mako' not found in your Python 3 installation.${NC}"; exit 1; }
     command -v meson >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'meson' on your host machine.${NC}"; exit 1; }
+    command -v cmake >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'cmake' on your host machine.${NC}"; exit 1; }
     command -v msgfmt >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'gettext' on your host machine.\n\t'msgfmt' needs to be in your \$PATH as well.${NC}"; exit 1; }
     command -v glib-mkenums >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'glib-utils' on your host machine.\n\t'glib-mkenums' needs to be in your \$PATH as well.${NC}"; exit 1; }
     command -v glib-compile-resources >/dev/null 2>&1 || { echo >&2 "${RED}You must install 'glib-utils' on your host machine.\n\t'glib-compile-resources' needs to be in your \$PATH as well.${NC}"; exit 1; }
@@ -164,9 +173,12 @@ download_all () {
     fi
     clone $WEBKIT_REPO $WEBKIT_COMMIT "$WEBKIT_SUBDIRS"
     clone $EPOXY_REPO $EPOXY_COMMIT
+    clone $VULKAN_LOADER_REPO $VULKAN_LOADER_COMMIT
     clone $VIRGLRENDERER_REPO $VIRGLRENDERER_COMMIT
     clone $HYPERVISOR_REPO $HYPERVISOR_COMMIT
     clone $LIBUCONTEXT_REPO $LIBUCONTEXT_COMMIT
+    clone $MESA_REPO $MESA_COMMIT
+    clone $MOLTENVK_REPO $MOLTENVK_COMMIT
 }
 
 copy_private_headers() {
@@ -202,6 +214,7 @@ meson_quote() {
 
 generate_meson_cross() {
     cross="$1"
+    system="$2"
     echo "# Automatically generated - do not modify" > $cross
     echo "[properties]" >> $cross
     echo "needs_exe_wrapper = true" >> $cross
@@ -225,14 +238,18 @@ generate_meson_cross() {
     echo "glib-mkenums = ['$(which glib-mkenums)']" >> $cross
     echo "glib-compile-resources = ['$(which glib-compile-resources)']" >> $cross
     echo "[host_machine]" >> $cross
-    case $PLATFORM in
-    ios* | visionos* )
-        echo "system = 'ios'" >> $cross
-        ;;
-    macos )
-        echo "system = 'darwin'" >> $cross
-        ;;
-    esac
+    if [ "$system" == "auto" ]; then
+        case $PLATFORM in
+        ios* | visionos* )
+            echo "system = 'ios'" >> $cross
+            ;;
+        macos )
+            echo "system = 'darwin'" >> $cross
+            ;;
+        esac
+    else
+        echo "system = '$system'" >> $cross
+    fi
     case "$ARCH" in
     armv7 | armv7s )
         echo "cpu_family = 'arm'" >> $cross
@@ -252,6 +269,129 @@ generate_meson_cross() {
     esac
     echo "cpu = '$ARCH'" >> $cross
     echo "endian = 'little'" >> $cross
+}
+
+generate_cmake_toolchain() {
+    toolchain="$1"
+
+    # Extract compiler executables
+    CC_BIN="${CC%% *}"
+    CXX_BIN="${CXX%% *}"
+    OBJC_BIN="${OBJCC%% *}"
+
+    echo "# Automatically generated - do not modify" > "$toolchain"
+    echo "" >> "$toolchain"
+    echo "cmake_minimum_required(VERSION 3.28)" >> "$toolchain"
+    echo "" >> "$toolchain"
+
+    #
+    # Target platform
+    #
+    case $PLATFORM in
+    ios_simulator* )
+        echo "set(CMAKE_SYSTEM_NAME iOS)" >> "$toolchain"
+        echo "set(CMAKE_OSX_SYSROOT iphonesimulator)" >> "$toolchain"
+        ;;
+    ios* )
+        echo "set(CMAKE_SYSTEM_NAME iOS)" >> "$toolchain"
+        echo "set(CMAKE_OSX_SYSROOT iphoneos)" >> "$toolchain"
+        ;;
+    visionos_simulator* )
+        echo "set(CMAKE_SYSTEM_NAME visionOS)" >> "$toolchain"
+        echo "set(CMAKE_OSX_SYSROOT xrsimulator)" >> "$toolchain"
+        ;;
+    visionos* )
+        echo "set(CMAKE_SYSTEM_NAME visionOS)" >> "$toolchain"
+        echo "set(CMAKE_OSX_SYSROOT xros)" >> "$toolchain"
+        ;;
+    macos )
+        echo "set(CMAKE_SYSTEM_NAME Darwin)" >> "$toolchain"
+        ;;
+    esac
+    echo "" >> "$toolchain"
+
+    #
+    # Architecture
+    #
+    echo "set(CMAKE_SYSTEM_PROCESSOR \"$ARCH\")" >> "$toolchain"
+    echo "set(CMAKE_OSX_ARCHITECTURES \"$ARCH\")" >> "$toolchain"
+    echo "set(CMAKE_MACOSX_BUNDLE OFF CACHE BOOL \"\")" >> "$toolchain"
+    echo "" >> "$toolchain"
+
+    #
+    # Deployment target (derive from -m* flags if present, otherwise leave unset)
+    #
+    case "$PLATFORM" in
+    ios* )
+        echo "set(CMAKE_OSX_DEPLOYMENT_TARGET \"$IOS_SDKMINVER\")" >> "$toolchain"
+        ;;
+    visionos* )
+        echo "set(CMAKE_OSX_DEPLOYMENT_TARGET \"$VISIONOS_SDKMINVER\")" >> "$toolchain"
+        ;;
+    macos )
+        echo "set(CMAKE_OSX_DEPLOYMENT_TARGET \"$MAC_SDKMINVER\")" >> "$toolchain"
+        ;;
+    esac
+    echo "" >> "$toolchain"
+
+    #
+    # Compilers
+    #
+    echo "set(CMAKE_C_COMPILER \"$CC_BIN\")" >> "$toolchain"
+    echo "set(CMAKE_CXX_COMPILER \"$CXX_BIN\")" >> "$toolchain"
+    echo "set(CMAKE_OBJC_COMPILER \"$OBJC_BIN\")" >> "$toolchain"
+    echo "" >> "$toolchain"
+
+    #
+    # Binutils
+    #
+    echo "set(CMAKE_AR \"$AR\")" >> "$toolchain"
+    echo "set(CMAKE_NM \"$NM\")" >> "$toolchain"
+    echo "set(CMAKE_RANLIB \"$RANLIB\")" >> "$toolchain"
+    echo "set(CMAKE_STRIP \"$STRIP\")" >> "$toolchain"
+    echo "" >> "$toolchain"
+
+    #
+    # Flags
+    #
+    if [ -n "$CFLAGS" ]; then
+        echo "set(CMAKE_C_FLAGS \"$CFLAGS\" CACHE STRING \"\" FORCE)" >> "$toolchain"
+        echo "set(CMAKE_OBJC_FLAGS \"$CFLAGS\" CACHE STRING \"\" FORCE)" >> "$toolchain"
+    fi
+
+    if [ -n "$CXXFLAGS" ]; then
+        echo "set(CMAKE_CXX_FLAGS \"$CXXFLAGS\" CACHE STRING \"\" FORCE)" >> "$toolchain"
+    fi
+
+    if [ -n "$LDFLAGS" ]; then
+        echo "set(CMAKE_EXE_LINKER_FLAGS \"$LDFLAGS\" CACHE STRING \"\" FORCE)" >> "$toolchain"
+        echo "set(CMAKE_SHARED_LINKER_FLAGS \"$LDFLAGS\" CACHE STRING \"\" FORCE)" >> "$toolchain"
+        echo "set(CMAKE_MODULE_LINKER_FLAGS \"$LDFLAGS\" CACHE STRING \"\" FORCE)" >> "$toolchain"
+    fi
+    echo "" >> "$toolchain"
+
+    #
+    # pkg-config (critical for Apple cross builds)
+    #
+    echo "set(ENV{PKG_CONFIG} \"$PREFIX/host/bin/pkg-config\")" >> "$toolchain"
+    echo "set(ENV{PKG_CONFIG_SYSROOT_DIR} \"$PREFIX\")" >> "$toolchain"
+    echo "set(ENV{PKG_CONFIG_PATH} \"$PREFIX/host/lib/pkgconfig:$PREFIX/host/share/pkgconfig\")" >> "$toolchain"
+    echo "" >> "$toolchain"
+
+    #
+    # Python (for find_package(Python3))
+    #
+    echo "set(Python3_EXECUTABLE \"$(which python3)\")" >> "$toolchain"
+    echo "" >> "$toolchain"
+
+    #
+    # Cross-compile search behavior
+    #
+    echo "set(CMAKE_FIND_ROOT_PATH \"$PREFIX\")" >> "$toolchain"
+    echo "set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)" >> "$toolchain"
+    echo "set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)" >> "$toolchain"
+    echo "set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)" >> "$toolchain"
+    echo "set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)" >> "$toolchain"
 }
 
 # Prevent contamination from host pkg-config files by building our own
@@ -344,10 +484,14 @@ build_openssl() {
         exit 1
     fi
 
+    if [ ! -z "$DEBUG" ]; then
+        DEBUG_FLAGS="--debug"
+    fi
+
     cd "$DIR"
     if [ -z "$REBUILD" ]; then
         echo "${GREEN}Configuring ${NAME}...${NC}"
-        ./Configure $OPENSSL_CROSS no-dso no-hw no-engine --prefix="$PREFIX" $@
+        ./Configure $OPENSSL_CROSS no-dso no-hw no-engine --prefix="$PREFIX" $DEBUG_FLAGS $@
     fi
     echo "${GREEN}Building ${NAME}...${NC}"
     make -j$NCPU
@@ -381,9 +525,10 @@ build () {
     cd "$pwd"
 }
 
-meson_build () {
-    SRCDIR="$1"
-    shift 1
+meson_cross_build () {
+    CROSS="$1"
+    SRCDIR="$2"
+    shift 2
     FILE="$(basename $SRCDIR)"
     NAME="${FILE%.tar.*}"
     case $SRCDIR in
@@ -391,22 +536,77 @@ meson_build () {
         SRCDIR="$BUILD_DIR/$NAME"
         ;;
     esac
-    MESON_CROSS="$(realpath "$BUILD_DIR")/meson.cross"
+    MESON_CROSS="$(realpath "$BUILD_DIR")/meson-$CROSS.cross"
     if [ ! -f "$MESON_CROSS" ]; then
-        generate_meson_cross "$MESON_CROSS"
+        generate_meson_cross "$MESON_CROSS" "$CROSS"
     fi
     pwd="$(pwd)"
+
+    if [ -z "$DEBUG" ]; then
+        buildtype="release"
+    else
+        buildtype="debug"
+    fi
 
     cd "$SRCDIR"
     if [ -z "$REBUILD" ]; then
         rm -rf utm_build
         echo "${GREEN}Configuring ${NAME}...${NC}"
-        meson utm_build --prefix="$PREFIX" --buildtype=plain --cross-file "$MESON_CROSS" "$@"
+        meson utm_build --prefix="$PREFIX" --buildtype="$buildtype" --cross-file "$MESON_CROSS" "$@"
     fi
     echo "${GREEN}Building ${NAME}...${NC}"
     meson compile -C utm_build -j $NCPU
     echo "${GREEN}Installing ${NAME}...${NC}"
     meson install -C utm_build
+    cd "$pwd"
+}
+
+meson_build () {
+    meson_cross_build auto $@
+}
+
+meson_darwin_build () {
+    meson_cross_build darwin $@
+}
+
+cmake_build () {
+    SRCDIR="$1"
+    shift 1
+    FILE="$(basename $SRCDIR)"
+    NAME="${FILE%.tar.*}"
+    BUILDDIR="utm_build"
+
+    case $SRCDIR in
+    http* | ftp* )
+        SRCDIR="$BUILD_DIR/$NAME"
+        ;;
+    esac
+    CMAKE_TOOLCHAIN="$(realpath "$BUILD_DIR")/cross.cmake"
+    if [ ! -f "$CMAKE_TOOLCHAIN" ]; then
+        generate_cmake_toolchain "$CMAKE_TOOLCHAIN"
+    fi
+    pwd="$(pwd)"
+
+    cd "$SRCDIR"
+
+    if [ -z "$REBUILD" ]; then
+        rm -rf "$BUILDDIR"
+        mkdir -p "$BUILDDIR"
+
+        echo "${GREEN}Configuring ${NAME}...${NC}"
+        cmake -S . -B "$BUILDDIR" \
+            -DCMAKE_INSTALL_PREFIX="$PREFIX" \
+            -DCMAKE_BUILD_TYPE="$BUILD_CONFIGURATION" \
+            -DCMAKE_TOOLCHAIN_FILE="$CMAKE_TOOLCHAIN" \
+            "$@"
+    fi
+
+    echo "${GREEN}Building ${NAME}...${NC}"
+    cmake --build "$BUILDDIR" --parallel "$NCPU"
+
+    echo "${GREEN}Installing ${NAME}...${NC}"
+    cmake --install "$BUILDDIR"
+
     cd "$pwd"
 }
 
@@ -419,7 +619,7 @@ build_angle () {
                                          -scheme "ANGLE" \
                                          -sdk $SDK \
                                          -arch $ARCH \
-                                         -configuration Release \
+                                         -configuration "$BUILD_CONFIGURATION" \
                                          WEBCORE_LIBRARY_DIR="/usr/local/lib" \
                                          NORMAL_UMBRELLA_FRAMEWORKS_DIR="" \
                                          CODE_SIGNING_ALLOWED=NO \
@@ -452,7 +652,7 @@ build_hypervisor () {
     esac
 
     echo "${GREEN}Building Hypervisor...${NC}"
-    env -i PATH=$PATH xcodebuild archive -archivePath "Hypervisor" -scheme "$scheme" -sdk $SDK -configuration Release
+    env -i PATH=$PATH xcodebuild archive -archivePath "Hypervisor" -scheme "$scheme" -sdk $SDK -configuration "$BUILD_CONFIGURATION"
 
     rsync -a "Hypervisor.xcarchive/Products/Library/Frameworks/" "$PREFIX/Frameworks"
     cd "$pwd"
@@ -480,7 +680,7 @@ build_qemu_dependencies () {
     meson_build $GST_GOOD_SRC -Dtests=disabled -Ddefault_library=both
     meson_build $SPICE_PROTOCOL_SRC
     meson_build $SPICE_SERVER_SRC -Dlz4=false -Dsasl=false
-    meson_build $SLIRP_SRC
+    meson_darwin_build $SLIRP_SRC
     # USB support
     if [ -z "$SKIP_USB_BUILD" ]; then
         build $USB_SRC
@@ -489,7 +689,11 @@ build_qemu_dependencies () {
     # GPU support
     build_angle
     meson_build $EPOXY_REPO -Dtests=false -Dglx=no -Degl=yes
-    meson_build $VIRGLRENDERER_REPO -Dtests=false -Dcheck-gl-errors=false
+    cmake_build $VULKAN_LOADER_REPO -D UPDATE_DEPS=On
+    # strip the minor versions
+    VULKAN_DYLIB="$PREFIX/lib/libvulkan.1.dylib"
+    mv "$(dirname $VULKAN_DYLIB)/$(readlink $VULKAN_DYLIB)" "$VULKAN_DYLIB"
+    meson_darwin_build $VIRGLRENDERER_REPO -Dtests=false -Dcheck-gl-errors=false -Dvenus=true -Dvulkan-dload=false -Drender-server-worker=thread
     # Hypervisor for iOS
     if [ "$PLATFORM" == "ios" ] || [ "$PLATFORM" == "ios_simulator" ]; then
         build_hypervisor
@@ -503,6 +707,80 @@ build_spice_client () {
     meson_build $SOUP_SRC -Dsysprof=disabled -Dtls_check=false -Dintrospection=disabled
     meson_build $PHODAV_SRC
     meson_build $SPICE_CLIENT_SRC -Dcoroutine=libucontext
+}
+
+patch_vulkan_icd() {
+    local icd_file="$1"
+
+
+    if [ "$PLATFORM" == "macos" ]; then
+        sed -i '' -E '
+            s|("library_path"[[:space:]]*:[[:space:]]*")[^"]*/lib([^"/]+)\.dylib(")|\1../../../Frameworks/\2.framework/Versions/Current/\2\3|
+        ' "$icd_file"
+    else
+        sed -i '' -E '
+            s|("library_path"[[:space:]]*:[[:space:]]*")[^"]*/lib([^"/]+)\.dylib(")|\1../../Frameworks/\2.framework/\2\3|
+        ' "$icd_file"
+    fi
+}
+
+build_moltenvk() {
+    pushd "$BUILD_DIR/MoltenVK.git"
+    # for xcpretty if installed
+    if which ruby >/dev/null && which gem >/dev/null; then
+        PATH="$(ruby -r rubygems -e 'puts Gem.user_dir')/bin:$PATH"
+    fi
+    if [ ! -z "$DEBUG" ]; then
+        DEBUG_FLAGS="-debug"
+    fi
+    case $PLATFORM in
+    ios_simulator* )
+        MVK_PLATFORM="iossim"
+        ;;
+    ios* )
+        MVK_PLATFORM="ios"
+        ;;
+    visionos_simulator* )
+        MVK_PLATFORM="visionossim"
+        ;;
+    visionos* )
+        MVK_PLATFORM="visionos"
+        ;;
+    macos )
+        MVK_PLATFORM="macos"
+        ;;
+    esac
+    env -i PATH=$PATH HOME=$HOME LANG=en_US.UTF-8 ./fetchDependencies --$MVK_PLATFORM -v
+    env -i PATH=$PATH HOME=$HOME LANG=en_US.UTF-8 make $MVK_PLATFORM$DEBUG_FLAGS
+    if [ "$PLATFORM" == "macos" ]; then
+        $(xcrun --sdk $SDK --find lipo) "Package/$BUILD_CONFIGURATION/MoltenVK/dylib/macOS/libMoltenVK.dylib" -extract $ARCH -output "$PREFIX/lib/libMoltenVK.dylib"
+    else
+        find "Package/$BUILD_CONFIGURATION/MoltenVK/dynamic/MoltenVK.xcframework" -name "MoltenVK.framework" -exec cp -a \{\} "$PREFIX/Frameworks/" \;
+    fi
+    cp -a "MoltenVK/icd/MoltenVK_icd.json" "$PREFIX/share/vulkan/icd.d/"
+    popd
+}
+
+build_mesa_host () {
+    pushd "$BUILD_DIR/mesa.git"
+
+    HOST_PATH="$(brew --prefix llvm)/bin:$CLEAN_PATH"
+    env -i PATH="$HOST_PATH" meson host_build --prefix="$PREFIX/host" --buildtype=release \
+        -Dllvm=enabled -Dstrip=true -Dopengl=false -Dgallium-drivers= -Dvulkan-drivers= -Dmesa-clc=enabled -Dinstall-mesa-clc=true
+    env -i PATH="$HOST_PATH" meson compile -C host_build -j $NCPU
+    env -i PATH="$HOST_PATH" meson install -C host_build
+
+    popd
+}
+
+build_vulkan_drivers () {
+    mkdir -p "$PREFIX/share/vulkan/icd.d"
+    build_mesa_host
+    meson_darwin_build $MESA_REPO -Dmesa-clc=system -Dgallium-drivers= -Dvulkan-drivers=kosmickrisp -Dplatforms=macos
+    patch_vulkan_icd "$PREFIX/share/vulkan/icd.d/kosmickrisp_mesa_icd.$ARCH.json"
+    mv "$PREFIX/share/vulkan/icd.d/kosmickrisp_mesa_icd.$ARCH.json" "$PREFIX/share/vulkan/icd.d/kosmickrisp_mesa_icd.json"
+    build_moltenvk
+    patch_vulkan_icd "$PREFIX/share/vulkan/icd.d/MoltenVK_icd.json"
 }
 
 fixup () {
@@ -546,7 +824,7 @@ fixup () {
         basefilename=${base%.*}
         libname=${basefilename#lib*}
         dir=$(dirname "$g")
-        if [ "$dir" == "$PREFIX/lib" ]; then
+        if [ "$dir" == "$PREFIX/lib" ] || [ "$dir" == "@rpath" ]; then
             if [ "$PLATFORM" == "macos" ]; then
                 newname="@rpath/$libname.framework/Versions/A/$libname"
             else
@@ -598,6 +876,9 @@ while [ "x$1" != "x" ]; do
     -p )
         PLATFORM=$(echo "$2" | tr '[:upper:]' '[:lower:]')
         shift
+        ;;
+    -x | --debug )
+        DEBUG=1
         ;;
     * )
         usage
@@ -685,7 +966,7 @@ ios* | visionos* )
         PLATFORM_FAMILY_NAME="$PLATFORM_FAMILY_PREFIX"
         ;;
     esac
-    QEMU_PLATFORM_BUILD_FLAGS="--disable-debug-info --enable-shared-lib --disable-cocoa --disable-coreaudio --disable-slirp-smbd --enable-ucontext --with-coroutine=libucontext $HVF_FLAGS $TCI_BUILD_FLAGS"
+    QEMU_PLATFORM_BUILD_FLAGS="--enable-shared-lib --disable-cocoa --disable-coreaudio --disable-slirp-smbd --enable-ucontext --with-coroutine=libucontext $HVF_FLAGS $TCI_BUILD_FLAGS"
     ;;
 macos )
     if [ -z "$SDKMINVER" ]; then
@@ -694,12 +975,17 @@ macos )
     SDK=macosx
     CFLAGS_TARGET="-target $ARCH-apple-macos$SDKMINVER"
     PLATFORM_FAMILY_NAME="macOS"
-    QEMU_PLATFORM_BUILD_FLAGS="--disable-debug-info --enable-shared-lib --disable-cocoa --cpu=$CPU"
+    QEMU_PLATFORM_BUILD_FLAGS="--enable-shared-lib --disable-cocoa --cpu=$CPU"
     ;;
 * )
     usage
     ;;
 esac
+
+if [ -z "$DEBUG" ]; then
+    QEMU_DEBUG_FLAGS="--disable-debug-info"
+fi
+
 export SDK
 export SDKMINVER
 
@@ -765,12 +1051,20 @@ export RANLIB
 export STRIP
 export PREFIX
 
+if [ -z "$DEBUG" ]; then
+    DEBUG_FLAGS=
+    BUILD_CONFIGURATION="Release"
+else
+    DEBUG_FLAGS="-g -O0"
+    BUILD_CONFIGURATION="Debug"
+fi
+
 # Flags
-CFLAGS="$CFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks"
-CPPFLAGS="$CPPFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks $CFLAGS_TARGET"
-CXXFLAGS="$CXXFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks $CFLAGS_TARGET"
-OBJCFLAGS="$OBJCFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks $CFLAGS_TARGET"
-LDFLAGS="$LDFLAGS -arch $ARCH -isysroot $SDKROOT -L$PREFIX/lib -F$PREFIX/Frameworks $CFLAGS_TARGET"
+CFLAGS="$CFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks $DEBUG_FLAGS"
+CPPFLAGS="$CPPFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks $CFLAGS_TARGET $DEBUG_FLAGS"
+CXXFLAGS="$CXXFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks $CFLAGS_TARGET $DEBUG_FLAGS"
+OBJCFLAGS="$OBJCFLAGS -arch $ARCH -isysroot $SDKROOT -I$PREFIX/include -F$PREFIX/Frameworks $CFLAGS_TARGET $DEBUG_FLAGS"
+LDFLAGS="$LDFLAGS -arch $ARCH -isysroot $SDKROOT -L$PREFIX/lib -F$PREFIX/Frameworks $CFLAGS_TARGET $DEBUG_FLAGS"
 export CFLAGS
 export CPPFLAGS
 export CXXFLAGS
@@ -793,13 +1087,15 @@ fi
 echo "${GREEN}Deleting old sysroot!${NC}"
 rm -rf "$PREFIX/"*
 rm -f "$BUILD_DIR/BUILD_SUCCESS"
-rm -f "$BUILD_DIR/meson.cross"
+rm -f "$BUILD_DIR/meson*.cross"
+rm -f "$BUILD_DIR/cross.cmake"
 mkdir -p "$PREFIX/Frameworks"
 copy_private_headers
 build_pkg_config
 build_qemu_dependencies
-build $QEMU_DIR --cross-prefix="" $QEMU_PLATFORM_BUILD_FLAGS
+build $QEMU_DIR --cross-prefix="" $QEMU_PLATFORM_BUILD_FLAGS $QEMU_DEBUG_FLAGS
 build_spice_client
+build_vulkan_drivers
 fixup_all
 remove_shared_gst_plugins # another hack...
 echo "${GREEN}All done!${NC}"

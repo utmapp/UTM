@@ -81,6 +81,11 @@ import Virtualization // for getting network interfaces
         socketURL.appendingPathComponent(information.uuid.uuidString).appendingPathExtension("crt")
     }
 
+    /// Used by virglrenderer to allocate shmem
+    var shmemDirectoryURL: URL {
+        socketURL
+    }
+
     /// Used for placeholder images
     var placeholderUrl: URL {
         #if os(macOS)
@@ -201,7 +206,7 @@ import Virtualization // for getting network interfaces
         } else {
             "streaming-video=filter"
         }
-        "gl=\(isGLSupported && !isRemoteSpice ? "on" : "off")"
+        "gl=\(glBackend)"
         f()
         f("-chardev")
         if isRemoteSpice {
@@ -270,18 +275,59 @@ import Virtualization // for getting network interfaces
                     if display.hardware.rawValue.lowercased().contains("vga") && isClassicMacNewWorld {
                         "edid=on"
                     }
+                    if isDisplayGLSupported(display) && isVulkanSupported {
+                        "hostmem=256M"
+                        "blob=true"
+                        "venus=true"
+                    }
                     f()
                 }
             }
         }
     }
-    
+
+    private func isDisplayGLSupported(_ display: UTMQemuConfigurationDisplay) -> Bool {
+        display.hardware.rawValue.contains("-gl-") || display.hardware.rawValue.hasSuffix("-gl")
+    }
+
     private var isGLSupported: Bool {
         displays.contains { display in
-            display.hardware.rawValue.contains("-gl-") || display.hardware.rawValue.hasSuffix("-gl")
+            isDisplayGLSupported(display)
         }
     }
-    
+
+    private var rendererBackend: UTMQEMURendererBackend {
+        let rawValue = UserDefaults.standard.integer(forKey: "QEMURendererBackend")
+        return UTMQEMURendererBackend(rawValue: rawValue) ?? .qemuRendererBackendDefault
+    }
+
+    private var glBackend: String {
+        if isGLSupported && !isRemoteSpice {
+            #if os(macOS)
+            if rendererBackend == .qemuRendererBackendCGL {
+                return "core"
+            } else {
+                return "es"
+            }
+            #else
+            return "on"
+            #endif
+        } else {
+            return "off"
+        }
+    }
+
+    private var vulkanDriver: UTMQEMUVulkanDriver {
+        let rawValue = UserDefaults.standard.integer(forKey: "QEMUVulkanDriver")
+        return UTMQEMUVulkanDriver(rawValue: rawValue) ?? .qemuVulkanDriverDefault
+    }
+
+    private var isVulkanSupported: Bool {
+        isGLSupported &&
+        (rendererBackend == .qemuRendererBackendAngleMetal || rendererBackend == .qemuRendererBackendDefault) &&
+        vulkanDriver != .qemuVulkanDriverDisabled
+    }
+
     private var isSparc: Bool {
         system.architecture == .sparc || system.architecture == .sparc64
     }
@@ -452,6 +498,9 @@ import Virtualization // for getting network interfaces
             "hvf"
             if isTSOUsed {
                 "tso=on"
+            }
+            if isVulkanSupported {
+                "ipa-granule-size=0x1000"
             }
             f()
         } else {

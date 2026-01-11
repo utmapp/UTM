@@ -45,15 +45,43 @@ static int startQemu(UTMProcess *process, int argc, const char *argv[], const ch
 - (void)setRendererBackend:(UTMQEMURendererBackend)rendererBackend {
     _rendererBackend = rendererBackend;
     switch (rendererBackend) {
+        case kQEMURendererBackendDefault:
         case kQEMURendererBackendAngleMetal:
             self.mutableEnvironment[@"ANGLE_DEFAULT_PLATFORM"] = @"metal";
             break;
-        case kQEMURendererBackendDefault:
         case kQEMURendererBackendAngleGL:
         default:
             [self.mutableEnvironment removeObjectForKey:@"ANGLE_DEFAULT_PLATFORM"];
             break;
     }
+}
+
+- (void)setVulkanDriver:(UTMQEMUVulkanDriver)vulkanDriver {
+    _vulkanDriver = vulkanDriver;
+    NSURL *vulkanIcds = [[NSBundle.mainBundle URLForResource:@"vulkan" withExtension:nil] URLByAppendingPathComponent:@"icd.d" isDirectory:YES];
+    NSURL *driver;
+    switch (vulkanDriver) {
+        case kQEMUVulkanDriverDefault:
+        case kQEMUVulkanDriverMoltenVK:
+            driver = [vulkanIcds URLByAppendingPathComponent:@"MoltenVK_icd.json"];
+            break;
+        case kQEMUVulkanDriverKosmicKrisp:
+            driver = [vulkanIcds URLByAppendingPathComponent:@"kosmickrisp_mesa_icd.json"];
+            break;
+        case kQEMUVulkanDriverDisabled:
+        default:
+            driver = nil;
+            break;
+    }
+    if (driver) {
+        self.mutableEnvironment[@"VK_DRIVER_FILES"] = driver.path;
+        self.resources = [self.resources arrayByAddingObject:driver];
+    }
+}
+
+- (void)setShmemDirectoryURL:(NSURL *)shmemDirectoryURL {
+    _shmemDirectoryURL = shmemDirectoryURL;
+    self.mutableEnvironment[@"XDG_RUNTIME_DIR"] = shmemDirectoryURL.path;
 }
 
 - (NSPipe *)standardOutput {
@@ -81,8 +109,16 @@ static int startQemu(UTMProcess *process, int argc, const char *argv[], const ch
     _hasDebugLog = hasDebugLog;
     if (hasDebugLog) {
         self.mutableEnvironment[@"G_MESSAGES_DEBUG"] = @"all";
+        self.mutableEnvironment[@"VK_LOADER_DEBUG"] = @"all";
+        self.mutableEnvironment[@"VIRGL_LOG_LEVEL"] = @"debug";
+        self.mutableEnvironment[@"MESA_DEBUG"] = @"1";
+        self.mutableEnvironment[@"MVK_CONFIG_LOG_LEVEL"] = @"4";
     } else {
         [self.mutableEnvironment removeObjectForKey:@"G_MESSAGES_DEBUG"];
+        [self.mutableEnvironment removeObjectForKey:@"VK_LOADER_DEBUG"];
+        [self.mutableEnvironment removeObjectForKey:@"VIRGL_LOG_LEVEL"];
+        [self.mutableEnvironment removeObjectForKey:@"MESA_DEBUG"];
+        [self.mutableEnvironment removeObjectForKey:@"MVK_CONFIG_LOG_LEVEL"];
     }
 }
 

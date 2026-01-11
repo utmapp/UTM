@@ -210,8 +210,13 @@ struct DisplaySettingsView: View {
     @AppStorage("NoScreenshot") var isNoScreenshot = false
     @AppStorage("NoSaveScreenshot") var isNoSaveScreenshot = false
     @AppStorage("QEMURendererBackend") var qemuRendererBackend: UTMQEMURendererBackend = .qemuRendererBackendDefault
+    @AppStorage("QEMUVulkanDriver") var qemuVulkanDriver: UTMQEMUVulkanDriver = .qemuVulkanDriverDefault
     @AppStorage("QEMURendererFPSLimit") var qemuRendererFpsLimit: Int = 0
-    
+
+    private var isVulkanSupported: Bool {
+        qemuRendererBackend == .qemuRendererBackendDefault || qemuRendererBackend == .qemuRendererBackendAngleMetal
+    }
+
     var body: some View {
         Form {
             Section(header: Text("Display")) {
@@ -232,7 +237,25 @@ struct DisplaySettingsView: View {
                     Text("Default").tag(UTMQEMURendererBackend.qemuRendererBackendDefault)
                     Text("ANGLE (OpenGL)").tag(UTMQEMURendererBackend.qemuRendererBackendAngleGL)
                     Text("ANGLE (Metal)").tag(UTMQEMURendererBackend.qemuRendererBackendAngleMetal)
+                    Text("Apple Core OpenGL").tag(UTMQEMURendererBackend.qemuRendererBackendCGL)
                 }.help("By default, the best renderer for this device will be used. You can override this with to always use a specific renderer. This only applies to QEMU VMs with GPU accelerated graphics.")
+                Picker("Vulkan Driver", selection: $qemuVulkanDriver) {
+                    Text("Default").tag(UTMQEMUVulkanDriver.qemuVulkanDriverDefault)
+                    Text("Disabled").tag(UTMQEMUVulkanDriver.qemuVulkanDriverDisabled)
+                    Text("MoltenVK").tag(UTMQEMUVulkanDriver.qemuVulkanDriverMoltenVK)
+                    if #available(macOS 15, *) {
+                        Text("KosmicKrisp").tag(UTMQEMUVulkanDriver.qemuVulkanDriverKosmicKrisp)
+                    }
+                }.help("Select the Vulkan driver to use for host passthrough rendering. Vulkan requires guest drivers to be installed.")
+                .disabled(!isVulkanSupported)
+                .onChange(of: qemuRendererBackend) { _ in
+                    if !isVulkanSupported {
+                        qemuVulkanDriver = .qemuVulkanDriverDefault
+                    }
+                }
+                if !isVulkanSupported {
+                    Text("The selected renderer backend does not support Vulkan.")
+                }
                 HStack {
                     Stepper("FPS Limit", value: $qemuRendererFpsLimit, in: 0...240, step: 15)
                     NumberTextField("", number: $qemuRendererFpsLimit, prompt: "None")
