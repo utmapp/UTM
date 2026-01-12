@@ -46,7 +46,7 @@ struct UTMStartActionIntent: AppIntent, UTMIntent {
     static var parameterSummary: some ParameterSummary {
         Summary("Start \(\.$vmEntity)") {
             \.$isRecovery
-            \.$isDisposible
+            \.$isDisposable
         }
     }
 
@@ -59,8 +59,8 @@ struct UTMStartActionIntent: AppIntent, UTMIntent {
     @Parameter(title: "Recovery", description: "Boot into recovery mode. Only supported on Apple Virtualization backend.", default: false)
     var isRecovery: Bool
 
-    @Parameter(title: "Disposible", description: "Do not save any changes to disk. Only supported on QEMU backend.", default: false)
-    var isDisposible: Bool
+    @Parameter(title: "Disposable", description: "Do not save any changes to disk. Only supported on QEMU backend.", default: false)
+    var isDisposable: Bool
 
     @MainActor
     func perform(with vm: any UTMVirtualMachine, boxed: VMData) async throws -> some IntentResult {
@@ -75,11 +75,11 @@ struct UTMStartActionIntent: AppIntent, UTMIntent {
             throw UTMIntentError.unsupportedBackend
             #endif
         }
-        if isDisposible {
+        if isDisposable {
             guard vm is UTMQemuVirtualMachine else {
                 throw UTMIntentError.unsupportedBackend
             }
-            options.insert(.bootDisposibleMode)
+            options.insert(.bootDisposableMode)
         }
         #if os(macOS)
         // Ensure the app comes to the foreground before presenting VM UI
