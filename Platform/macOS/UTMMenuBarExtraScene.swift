@@ -20,33 +20,69 @@ import SwiftUI
 @available(macOS 13, *)
 struct UTMMenuBarExtraScene: Scene {
     @ObservedObject var data: UTMData
+    @StateObject private var updateManager = UTMUpdateManager.shared
     @AppStorage("ShowMenuIcon") private var isMenuIconShown: Bool = false
     @AppStorage("HideDockIcon") private var isDockIconHidden: Bool = false
     @Environment(\.openWindow) private var openWindow
     
     var body: some Scene {
         MenuBarExtra(isInserted: $isMenuIconShown) {
-            Button("Show UTM") {
+            
+            Button(NSLocalizedString("Show UTM", comment: "UTMMenuBarExtraScene")) {
                 openWindow(id: "home")
             }.keyboardShortcut("0")
-            .help("Show the main window.")
-            Toggle("Hide dock icon on next launch", isOn: $isDockIconHidden)
-            .help("Requires restarting UTM to take affect.")
+            
+            .help(NSLocalizedString("Show the main window.", comment: "UTMMenuBarExtraScene"))
+            
+            if updateManager.isUpdateAvailable {
+                
+                Button(String.localizedStringWithFormat(NSLocalizedString("Update Available: %@", comment: "UTMMenuBarExtraScene"), updateManager.latestVersion)) {
+                    openWindow(id: "settings")
+                }
+                .foregroundColor(.accentColor)
+                Divider()
+            }
+            
+            
+            Button(NSLocalizedString("Check for Updates", comment: "UTMMenuBarExtraScene")) {
+                Task {
+                    await updateManager.checkForUpdates(force: true)
+                }
+            }
+            .disabled(updateManager.isCheckingForUpdates)
+            
+            
+            Toggle(NSLocalizedString("Hide dock icon on next launch", comment: "UTMMenuBarExtraScene"), isOn: $isDockIconHidden)
+            
+            .help(NSLocalizedString("Requires restarting UTM to take affect.", comment: "UTMMenuBarExtraScene"))
             Divider()
             if data.virtualMachines.isEmpty {
-                Text("No virtual machines found.")
+                
+                Text(NSLocalizedString("No virtual machines found.", comment: "UTMMenuBarExtraScene"))
             } else {
                 ForEach(data.virtualMachines) { vm in
                     VMMenuItem(vm: vm).environmentObject(data)
                 }
             }
             Divider()
-            Button("Quit") {
+            
+            Button(NSLocalizedString("Quit", comment: "UTMMenuBarExtraScene")) {
                 NSApp.terminate(self)
             }.keyboardShortcut("Q")
-            .help("Terminate UTM and stop all running VMs.")
+            
+            .help(NSLocalizedString("Terminate UTM and stop all running VMs.", comment: "UTMMenuBarExtraScene"))
         } label: {
-            Image("MenuBarExtra")
+            ZStack {
+                Image("MenuBarExtra")
+                
+                // Update indicator
+                if updateManager.isUpdateAvailable {
+                    Circle()
+                        .fill(Color.red)
+                        .frame(width: 8, height: 8)
+                        .offset(x: 8, y: -8)
+                }
+            }
         }
     }
 }
@@ -58,22 +94,27 @@ private struct VMMenuItem: View {
     var body: some View {
         Menu(vm.detailsTitleLabel) {
             if vm.isStopped {
-                Button("Start") {
+                
+                Button(NSLocalizedString("Start", comment: "UTMMenuBarExtraScene")) {
                     data.run(vm: vm)
                 }
             } else if !vm.isBusy {
-                Button("Stop") {
+                
+                Button(NSLocalizedString("Stop", comment: "UTMMenuBarExtraScene")) {
                     data.stop(vm: vm)
                 }
-                Button("Suspend") {
+                
+                Button(NSLocalizedString("Suspend", comment: "UTMMenuBarExtraScene")) {
                     let isSnapshot = (vm.wrapped as? UTMQemuVirtualMachine)?.isRunningAsDisposible ?? false
                     vm.wrapped!.requestVmPause(save: !isSnapshot)
                 }
-                Button("Reset") {
+                
+                Button(NSLocalizedString("Reset", comment: "UTMMenuBarExtraScene")) {
                     vm.wrapped!.requestVmReset()
                 }
             } else {
-                Text("Busy…")
+                
+                Text(NSLocalizedString("Busy…", comment: "UTMMenuBarExtraScene"))
             }
         }
     }
