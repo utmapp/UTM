@@ -4012,10 +4012,10 @@ index 763201dd71..52c69ed9d5 100644
 -- 
 2.41.0
 
-From cd66cbfb718d6d7790c1a2e7ad8533f51e27cf88 Mon Sep 17 00:00:00 2001
+From 3f775e8c8540bf6193e5f97202602fe54433fc61 Mon Sep 17 00:00:00 2001
 From: Joelle van Dyne <j@getutm.app>
 Date: Fri, 19 Dec 2025 07:07:12 -0800
-Subject: [PATCH 7/9] hvf: support changing IPA granule size
+Subject: [PATCH] hvf: support changing IPA granule size
 
 The IPA granule is the smallest page size hv_vm_map() support. For Venus, we
 need to support 4KiB pages. macOS 26 introduces a public API for setting
@@ -4143,7 +4143,7 @@ index 52c69ed9d5..93e1b23e1a 100644
  void hvf_arch_vcpu_destroy(CPUState *cpu);
  int hvf_vcpu_exec(CPUState *);
 diff --git a/target/arm/hvf/hvf.c b/target/arm/hvf/hvf.c
-index aa63f30fcf..1a0f69b496 100644
+index aa63f30fcf..51da8009cb 100644
 --- a/target/arm/hvf/hvf.c
 +++ b/target/arm/hvf/hvf.c
 @@ -12,6 +12,9 @@
@@ -4168,8 +4168,8 @@ index aa63f30fcf..1a0f69b496 100644
 +    uint64_t page_size = qemu_real_host_page_size();
 +
 +    /* macOS 26 introduces a public API for setting granule size */
-+#if defined(MAC_OS_X_VERSION_MAX_ALLOWED) && defined(MAC_OS_VERSION_26_0) && \
-+    MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_VERSION_26_0
++#if defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && defined(__MAC_26_0) && \
++    __MAC_OS_X_VERSION_MAX_ALLOWED >= __MAC_26_0
 +    if (__builtin_available(macOS 26, *)) {
 +        hv_ipa_granule_t granule = HV_IPA_GRANULE_16KB;
 +
