@@ -482,6 +482,7 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
         } else {
             scaling = self.delegate.displayScale * sender.scale;
         }
+        self.delegate.displayIsZoomLocked = false;
         self.delegate.displayScale = scaling;
         sender.scale = 1.0;
     }

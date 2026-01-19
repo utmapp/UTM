@@ -99,7 +99,17 @@ struct VMDisplayHostedView: UIViewControllerRepresentable {
                 state.displayViewSize = newValue
             }
         }
-        
+
+        var displayIsZoomLocked: Bool {
+            get {
+                state.isDisplayZoomLocked
+            }
+
+            set {
+                state.isDisplayZoomLocked = newValue
+            }
+        }
+
         init(with vm: any UTMSpiceVirtualMachine, device: VMWindowState.Device, state: Binding<VMWindowState>) {
             self.vm = vm
             self.device = device

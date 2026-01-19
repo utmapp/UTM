@@ -26,7 +26,8 @@ import Foundation
     var displayOrigin: CGPoint { get set }
     var displayScale: CGFloat { get set }
     var displayViewSize: CGSize { get set }
-    
+    var displayIsZoomLocked: Bool { get set }
+
     func displayDidAssertUserInteraction()
     func displayDidAppear()
     func display(_ display: CSDisplay, didResizeTo size: CGSize)
