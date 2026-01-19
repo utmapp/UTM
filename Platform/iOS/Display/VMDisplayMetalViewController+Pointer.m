@@ -167,8 +167,8 @@ NS_AVAILABLE_IOS(13.4)
         // Then we need to find out if the pointer is in the actual display area or outside
         CGPoint location = [self.mtkView convertPoint:[request location] fromView:nil];
         CGPoint translated = location;
-        translated.x = CGPointToPixel(translated.x);
-        translated.y = CGPointToPixel(translated.y);
+        translated.x = CGPointToPixel(self.view, translated.x);
+        translated.y = CGPointToPixel(self.view, translated.y);
         
         if ([self isPointOnVMDisplay:translated]) {
             // move vm cursor, hide iOS cursor

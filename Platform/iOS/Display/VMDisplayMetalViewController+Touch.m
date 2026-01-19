@@ -315,8 +315,8 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
     if (sender.state != UIGestureRecognizerStateCancelled) {
         CGPoint translation = [sender translationInView:sender.view];
         CGPoint viewport = self.renderer.viewportOrigin;
-        viewport.x = CGPointToPixel(translation.x) + self.lastTwoPanOrigin.x;
-        viewport.y = CGPointToPixel(translation.y) + self.lastTwoPanOrigin.y;
+        viewport.x = CGPointToPixel(self.view, translation.x) + self.lastTwoPanOrigin.x;
+        viewport.y = CGPointToPixel(self.view, translation.y) + self.lastTwoPanOrigin.y;
         self.renderer.viewportOrigin = [self clipDisplayToView:viewport];
         // persist this change in viewState
         self.delegate.displayOrigin = self.renderer.viewportOrigin;
@@ -362,8 +362,8 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
 
 - (CGPoint)moveMouseAbsolute:(CGPoint)location {
     CGPoint translated = location;
-    translated.x = CGPointToPixel(translated.x);
-    translated.y = CGPointToPixel(translated.y);
+    translated.x = CGPointToPixel(self.view, translated.x);
+    translated.y = CGPointToPixel(self.view, translated.y);
     translated = [self clipCursorToDisplay:translated];
     if (!self.vmInput.serverModeCursor) {
         [self.vmInput sendMousePosition:self.mouseButtonDown absolutePoint:translated];
@@ -375,8 +375,8 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
 }
 
 - (CGPoint)moveMouseRelative:(CGPoint)translation {
-    translation.x = CGPointToPixel(translation.x) / self.renderer.viewportScale;
-    translation.y = CGPointToPixel(translation.y) / self.renderer.viewportScale;
+    translation.x = CGPointToPixel(self.view, translation.x) / self.renderer.viewportScale;
+    translation.y = CGPointToPixel(self.view, translation.y) / self.renderer.viewportScale;
     if (self.vmInput.serverModeCursor) {
         [self.vmInput sendMouseMotion:self.mouseButtonDown relativePoint:translation];
     } else {
@@ -386,7 +386,7 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
 }
 
 - (CGPoint)moveMouseScroll:(CGPoint)translation {
-    translation.y = CGPointToPixel(translation.y) / kScrollSpeedReduction;
+    translation.y = CGPointToPixel(self.view, translation.y) / kScrollSpeedReduction;
     if (self.isInvertScroll) {
         translation.y = -translation.y;
     }
@@ -478,7 +478,7 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
         CGFloat scaling;
         if (!self.delegate.qemuDisplayIsNativeResolution) {
             // will be undo in `-setDisplayScaling:origin:`
-            scaling = CGPixelToPoint(CGPointToPixel(self.delegate.displayScale) * sender.scale);
+            scaling = CGPixelToPoint(self.view, CGPointToPixel(self.view, self.delegate.displayScale) * sender.scale);
         } else {
             scaling = self.delegate.displayScale * sender.scale;
         }

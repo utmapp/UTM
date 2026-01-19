@@ -205,8 +205,8 @@ static const NSInteger kResizeTimeoutSecs = 5;
 
 - (CGSize)convertSizeToNative:(CGSize)size {
     if (self.delegate.qemuDisplayIsNativeResolution) {
-        size.width = CGPointToPixel(size.width);
-        size.height = CGPointToPixel(size.height);
+        size.width = CGPointToPixel(self.view, size.width);
+        size.height = CGPointToPixel(self.view, size.height);
     }
     return size;
 }
@@ -239,7 +239,7 @@ static const NSInteger kResizeTimeoutSecs = 5;
 - (void)setDisplayScaling:(CGFloat)scaling origin:(CGPoint)origin {
     self.renderer.viewportOrigin = origin;
     if (!self.delegate.qemuDisplayIsNativeResolution) {
-        scaling = CGPointToPixel(scaling);
+        scaling = CGPointToPixel(self.view, scaling);
     }
     if (scaling) { // cannot be zero
         self.renderer.viewportScale = scaling;
@@ -279,8 +279,8 @@ static const NSInteger kResizeTimeoutSecs = 5;
 #if defined(TARGET_OS_VISION) && TARGET_OS_VISION
     CGSize minSize = displaySize;
     if (self.delegate.qemuDisplayIsNativeResolution) {
-        minSize.width = CGPixelToPoint(minSize.width);
-        minSize.height = CGPixelToPoint(minSize.height);
+        minSize.width = CGPixelToPoint(self.view, minSize.width);
+        minSize.height = CGPixelToPoint(self.view, minSize.height);
     }
     CGSize maxSize = CGSizeMake(UIProposedSceneSizeNoPreference, UIProposedSceneSizeNoPreference);
     UIWindowSceneGeometryPreferencesVision *geoPref = [[UIWindowSceneGeometryPreferencesVision alloc] initWithSize:minSize];

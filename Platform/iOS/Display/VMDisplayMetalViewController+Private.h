@@ -69,18 +69,26 @@ NS_ASSUME_NONNULL_BEGIN
 
 NS_ASSUME_NONNULL_END
 
-static inline CGFloat CGPointToPixel(CGFloat point) {
+static inline CGFloat CGPointToPixel(UIView * _Nonnull view, CGFloat point) {
 #if defined(TARGET_OS_VISION) && TARGET_OS_VISION
     return point * 2.0;
 #else
-    return point * [UIScreen mainScreen].nativeScale; // FIXME: multiple screens?
+    UIScreen *screen = view.window.screen;
+    if (!screen) {
+        screen = [UIScreen mainScreen];
+    }
+    return point * screen.nativeScale;
 #endif
 }
 
-static inline CGFloat CGPixelToPoint(CGFloat pixel) {
+static inline CGFloat CGPixelToPoint(UIView * _Nonnull view, CGFloat pixel) {
 #if defined(TARGET_OS_VISION) && TARGET_OS_VISION
     return pixel / 2.0;
 #else
-    return pixel / [UIScreen mainScreen].nativeScale; // FIXME: multiple screens?
+    UIScreen *screen = view.window.screen;
+    if (!screen) {
+        screen = [UIScreen mainScreen];
+    }
+    return pixel / screen.nativeScale;
 #endif
 }
