@@ -93,11 +93,6 @@ static const NSInteger kResizeTimeoutSecs = 5;
         return;
     }
     
-    // Initialize our renderer with the view size
-    if ([self integerForSetting:@"QEMURendererFPSLimit"] > 0) {
-        self.mtkView.preferredFramesPerSecond = [self integerForSetting:@"QEMURendererFPSLimit"];
-    }
-    
     [self.renderer changeUpscaler:self.delegate.qemuDisplayUpscaler
                        downscaler:self.delegate.qemuDisplayDownscaler];
     
@@ -142,6 +137,19 @@ static const NSInteger kResizeTimeoutSecs = 5;
     [super viewDidAppear:animated];
     self.delegate.displayViewSize = [self convertSizeToNative:self.view.bounds.size];
     [self addObserver:self forKeyPath:@"vmDisplay.displaySize" options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionInitial) context:nil];
+    if ([self integerForSetting:@"QEMURendererFPSLimit"] > 0) {
+        self.mtkView.preferredFramesPerSecond = [self integerForSetting:@"QEMURendererFPSLimit"];
+    }
+#if !TARGET_OS_VISION
+    else if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+        // only apply ProMotion by default on iPad which has a larger battery
+        // on iPhone, we depend on the user manually setting the FPS limit to 120
+        NSInteger maxFps = self.view.window.screen.maximumFramesPerSecond;
+        if (maxFps > 0) {
+           self.mtkView.preferredFramesPerSecond = maxFps;
+        }
+   }
+#endif
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {

@@ -98,6 +98,8 @@ class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
         }
         if rendererFpsLimit > 0 {
             metalView.preferredFramesPerSecond = rendererFpsLimit
+        } else if #available(macOS 12, *), let maxFps = self.window?.screen?.maximumFramesPerSecond {
+            metalView.preferredFramesPerSecond = maxFps
         }
         renderer.changeUpscaler(displayConfig?.upscalingFilter.metalSamplerMinMagFilter ?? .linear, downscaler: displayConfig?.downscalingFilter.metalSamplerMinMagFilter ?? .linear)
         vmDisplay?.addRenderer(renderer) // can be nil if primary
