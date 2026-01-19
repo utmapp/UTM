@@ -139,12 +139,12 @@ NS_AVAILABLE_IOS(13.4)
 - (bool)isPointOnVMDisplay:(CGPoint)pos {
     CGSize screenSize = self.mtkView.drawableSize;
     CGSize scaledSize = {
-        self.vmDisplay.displaySize.width * self.vmDisplay.viewportScale,
-        self.vmDisplay.displaySize.height * self.vmDisplay.viewportScale
+        self.vmDisplay.displaySize.width * self.renderer.viewportScale,
+        self.vmDisplay.displaySize.height * self.renderer.viewportScale
     };
     CGRect drawRect = CGRectMake(
-        self.vmDisplay.viewportOrigin.x + screenSize.width/2 - scaledSize.width/2,
-        self.vmDisplay.viewportOrigin.y + screenSize.height/2 - scaledSize.height/2,
+        self.renderer.viewportOrigin.x + screenSize.width/2 - scaledSize.width/2,
+        self.renderer.viewportOrigin.y + screenSize.height/2 - scaledSize.height/2,
         scaledSize.width,
         scaledSize.height
     );

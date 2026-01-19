@@ -16,6 +16,11 @@
 
 #import "VMDisplayMetalViewController.h"
 #import <TargetConditionals.h>
+#if !defined(WITH_USB)
+@import CocoaSpiceNoUsb;
+#else
+@import CocoaSpice;
+#endif
 
 @class VMCursor;
 @class VMScroll;
@@ -24,6 +29,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface VMDisplayMetalViewController ()
+
+@property (nonatomic, nullable) CSMetalRenderer *renderer;
 
 // cursor handling
 @property (nonatomic) CGPoint lastTwoPanOrigin;

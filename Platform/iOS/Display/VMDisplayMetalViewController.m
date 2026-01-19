@@ -34,7 +34,6 @@ static const NSInteger kResizeTimeoutSecs = 5;
 
 @interface VMDisplayMetalViewController ()
 
-@property (nonatomic, nullable) CSMetalRenderer *renderer;
 @property (nonatomic, nullable) id debounceResize;
 @property (nonatomic, nullable) id cancelResize;
 @property (nonatomic) BOOL ignoreNextResize;
@@ -42,6 +41,8 @@ static const NSInteger kResizeTimeoutSecs = 5;
 @end
 
 @implementation VMDisplayMetalViewController
+
+@synthesize renderer;
 
 - (instancetype)initWithDisplay:(CSDisplay *)display input:(CSInput *)input {
     if (self = [super initWithNibName:nil bundle:nil]) {
@@ -235,12 +236,12 @@ static const NSInteger kResizeTimeoutSecs = 5;
 }
 
 - (void)setDisplayScaling:(CGFloat)scaling origin:(CGPoint)origin {
-    self.vmDisplay.viewportOrigin = origin;
+    self.renderer.viewportOrigin = origin;
     if (!self.delegate.qemuDisplayIsNativeResolution) {
         scaling = CGPointToPixel(scaling);
     }
     if (scaling) { // cannot be zero
-        self.vmDisplay.viewportScale = scaling;
+        self.renderer.viewportScale = scaling;
     }
 }
 

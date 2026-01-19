@@ -20,8 +20,8 @@ import SwiftUI
 
 class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
     var metalView: VMMetalView!
-    var renderer: CSMetalRenderer?
-    
+    var renderer: CSMetalRenderer!
+
     private var vmDisplay: CSDisplay? {
         didSet {
             if let renderer = renderer {
@@ -321,11 +321,11 @@ extension VMDisplayQemuMetalWindowController {
         let currentScreenScale = window.screen?.backingScaleFactor ?? 1.0
         let nativeScale = displayConfig!.isNativeResolution ? 1.0 : currentScreenScale
         // change optional scale if needed
-        if isDisplaySizeDynamic || (!displayConfig!.isNativeResolution && vmDisplay.viewportScale < currentScreenScale) {
-            vmDisplay.viewportScale = nativeScale
+        if isDisplaySizeDynamic || (!displayConfig!.isNativeResolution && renderer.viewportScale < currentScreenScale) {
+            renderer.viewportScale = nativeScale
         }
-        let fullContentWidth = size.width * vmDisplay.viewportScale / currentScreenScale
-        let fullContentHeight = size.height * vmDisplay.viewportScale / currentScreenScale
+        let fullContentWidth = size.width * renderer.viewportScale / currentScreenScale
+        let fullContentHeight = size.height * renderer.viewportScale / currentScreenScale
         let contentRect = CGRect(x: window.frame.origin.x,
                                  y: 0,
                                  width: ceil(fullContentWidth),
@@ -353,7 +353,7 @@ extension VMDisplayQemuMetalWindowController {
         let targetScale = min(targetScaleX, targetScaleY)
         let scaledSize = CGSize(width: displaySize.width * targetScale / currentScreenScale, height: displaySize.height * targetScale / currentScreenScale)
         let targetFrameSize = window.frameRect(forContentRect: CGRect(origin: .zero, size: scaledSize)).size
-        vmDisplay.viewportScale = targetScale
+        renderer.viewportScale = targetScale
         logger.debug("changed scale \(targetScale)")
         return targetFrameSize
     }
@@ -545,7 +545,7 @@ extension VMDisplayQemuMetalWindowController: VMMetalViewInputDelegate {
             return
         }
         let currentScreenScale = window.screen?.backingScaleFactor ?? 1.0
-        let viewportScale = vmDisplay?.viewportScale ?? 1.0
+        let viewportScale = renderer?.viewportScale ?? 1.0
         let frameSize = metalView.frame.size
         let newX = absolutePoint.x * currentScreenScale / viewportScale
         let newY = (frameSize.height - absolutePoint.y) * currentScreenScale / viewportScale
