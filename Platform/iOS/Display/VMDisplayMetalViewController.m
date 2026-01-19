@@ -80,6 +80,7 @@ static const NSInteger kResizeTimeoutSecs = 5;
     
     // Set the view to use the default device
     self.mtkView.frame = self.view.bounds;
+    self.mtkView.drawableSize = self.view.bounds.size;
     self.mtkView.device = MTLCreateSystemDefaultDevice();
     if (!self.mtkView.device) {
         UTMLog(@"Metal is not supported on this device");
