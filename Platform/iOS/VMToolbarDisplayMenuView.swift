@@ -19,6 +19,7 @@ import SwiftUI
 struct VMToolbarDisplayMenuView: View {
     @Binding var state: VMWindowState
     @EnvironmentObject private var session: VMSessionState
+    @State private var externalDevice: VMWindowState.Device?
     #if os(visionOS)
     @Environment(\.supportsMultipleWindows) private var supportsMultipleWindows
     @Environment(\.openWindow) private var openWindow
@@ -52,7 +53,7 @@ struct VMToolbarDisplayMenuView: View {
                     } label: {
                         MenuLabel("Zoom/Reset", systemImage: externalWindowBinding.isViewportChanged.wrappedValue ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
                     }
-                    Picker("", selection: externalWindowBinding.device) {
+                    Picker("", selection: $externalDevice) {
                         MenuLabel("None", systemImage: "rectangle.dashed").tag(nil as VMWindowState.Device?)
                         ForEach(session.devices) { device in
                             switch device {
@@ -83,6 +84,9 @@ struct VMToolbarDisplayMenuView: View {
         } label: {
             Label("Display", systemImage: "rectangle.on.rectangle")
         }.overlay(Badge(count: session.devices.count), alignment: .topTrailing)
+        .onChange(of: externalDevice) { newValue in
+            session.externalWindowBinding?.device.wrappedValue = newValue
+        }
     }
 }
 
