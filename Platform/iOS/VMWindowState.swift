@@ -174,7 +174,7 @@ extension VMWindowState {
     }
     
     mutating func restoreWindow(from registryEntry: UTMRegistryEntry, device: Device?) {
-        guard case let .display(_, id) = device else {
+        guard case let .display(display, id) = device else {
             return
         }
         let window = registryEntry.windowSettings[id] ?? UTMRegistryEntry.Window()
@@ -186,5 +186,8 @@ extension VMWindowState {
         isDisplayZoomLocked = window.isDisplayZoomLocked
         isKeyboardRequested = window.isKeyboardVisible
         #endif
+        if isDisplayZoomLocked {
+            resizeDisplayToFit(display)
+        }
     }
 }
