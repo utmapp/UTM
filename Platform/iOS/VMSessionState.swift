@@ -488,7 +488,7 @@ extension VMSessionState {
         Thread.sleep(forTimeInterval: 2)
         
         // exit app when app is in background
-        exit(0)
+        _Exit(0)
         #endif
     }
 
