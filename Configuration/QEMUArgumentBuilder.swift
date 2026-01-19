@@ -60,10 +60,7 @@ struct QEMUArgumentBuilder {
     }
     
     static func buildExpression(_ url: URL) -> [QEMUArgumentFragment] {
-        var arg = QEMUArgumentFragment(url.path.replacingOccurrences(of: ",", with: ",,"))
-        arg.fileUrls = [url]
-        arg.seperator = ""
-        return [arg]
+        return [QEMUArgumentFragment(urlFragment: url)]
     }
     
     static func buildExpression<I: FixedWidthInteger>(_ int: I) -> [QEMUArgumentFragment] {

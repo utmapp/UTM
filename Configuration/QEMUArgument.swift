@@ -55,16 +55,27 @@ struct QEMUArgumentFragment: Hashable {
     var fileUrls: [URL]?
     
     /// If false, this fragment will be merged with the preceding one
-    var isFinal: Bool
-    
+    private(set) var isFinal: Bool
+
+    /// If true, we already escaped the commas
+    private var isUrlFragment: Bool = false
+
     /// Separate the previous fragment if non-empty
-    var seperator: String = ","
-    
+    private var seperator: String = ","
+
     init(_ fragment: String = "") {
         string = fragment
         isFinal = false
     }
-    
+
+    init(urlFragment: URL) {
+        string = urlFragment.path
+        isFinal = false
+        isUrlFragment = true
+        fileUrls = [urlFragment]
+        seperator = ""
+    }
+
     init(final fragment: String) {
         string = fragment
         isFinal = true
@@ -83,10 +94,18 @@ struct QEMUArgumentFragment: Hashable {
     }
     
     mutating func merge(_ other: QEMUArgumentFragment) {
-        if self.string.count > 0 && other.string.count > 0 {
-            self.string += other.seperator
+        if self.string.count == 0 {
+            self.isUrlFragment = other.isUrlFragment
         }
-        self.string += other.string
+        if self.string.count > 0 && other.string.count > 0 {
+            var otherString = other.string
+            if other.isUrlFragment {
+                otherString = otherString.replacingOccurrences(of: ",", with: ",,")
+            }
+            self.string += other.seperator + otherString
+        } else {
+            self.string += other.string
+        }
         self.isFinal = self.isFinal || other.isFinal
         if let fileUrls = other.fileUrls {
             if self.fileUrls == nil {
