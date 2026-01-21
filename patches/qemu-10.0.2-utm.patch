@@ -4300,7 +4300,7 @@ index f515165335..6a97bdc67a 100644
 -- 
 2.41.0
 
-From fceee68a7783f78b1f55cd2075155ee1e69385cc Mon Sep 17 00:00:00 2001
+From fb99e056ac794d77e2c7c00afc50d53205099fc1 Mon Sep 17 00:00:00 2001
 From: osy <osy@turing.llc>
 Date: Wed, 7 Jan 2026 12:18:14 -0800
 Subject: [PATCH 9/9] ui/spice-display: support MTLTexture scanout to IOSurface
@@ -4438,7 +4438,7 @@ index 8acb9c0ef0..fffa0da90a 100644
    if gio.found()
 diff --git a/ui/spice-display-metal.m b/ui/spice-display-metal.m
 new file mode 100644
-index 0000000000..978dfeb98e
+index 0000000000..29e58d9461
 --- /dev/null
 +++ b/ui/spice-display-metal.m
 @@ -0,0 +1,166 @@
@@ -4532,7 +4532,7 @@ index 0000000000..978dfeb98e
 +        MTLOrigin origin = MTLOriginMake(self.scanoutRect.origin.x + rect.origin.x,
 +                                         self.scanoutRect.origin.y + rect.origin.y,
 +                                         0);
-+        MTLSize size = MTLSizeMake(rect.size.width, rect.size.height, 0);
++        MTLSize size = MTLSizeMake(rect.size.width, rect.size.height, 1);
 +
 +        [blit copyFromTexture:self.scanoutTexture
 +                  sourceSlice:0
@@ -4609,7 +4609,7 @@ index 0000000000..978dfeb98e
 +    }];
 +}
 diff --git a/ui/spice-display.c b/ui/spice-display.c
-index 824e645d72..6ccc007ef0 100644
+index 97a915a7ee..976f68710a 100644
 --- a/ui/spice-display.c
 +++ b/ui/spice-display.c
 @@ -939,6 +939,10 @@ static bool spice_iosurface_create(SimpleSpiceDisplay *ssd, int width, int heigh
@@ -4763,7 +4763,7 @@ index 824e645d72..6ccc007ef0 100644
  
      trace_qemu_spice_gl_update(ssd->qxl.id, w, h, x, y);
 -- 
-2.50.1 (Apple Git-155)
+2.41.0
 
 From 27e45bc5d22b61a0b1f7094595c8eeb02d1258ec Mon Sep 17 00:00:00 2001
 From: osy <osy@turing.llc>
