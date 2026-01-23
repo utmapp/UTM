@@ -221,7 +221,7 @@ generate_meson_cross() {
     echo "[built-in options]" >> $cross
     echo "c_args = [${CFLAGS:+$(meson_quote $CFLAGS)}]" >> $cross
     echo "cpp_args = [${CXXFLAGS:+$(meson_quote $CXXFLAGS)}]" >> $cross
-    echo "objc_args = [${CFLAGS:+$(meson_quote $CFLAGS)}]" >> $cross
+    echo "objc_args = [${OBJCFLAGS:+$(meson_quote $OBJCFLAGS)}]" >> $cross
     echo "c_link_args = [${LDFLAGS:+$(meson_quote $LDFLAGS)}]" >> $cross
     echo "cpp_link_args = [${LDFLAGS:+$(meson_quote $LDFLAGS)}]" >> $cross
     echo "objc_link_args = [${LDFLAGS:+$(meson_quote $LDFLAGS)}]" >> $cross
@@ -356,7 +356,10 @@ generate_cmake_toolchain() {
     #
     if [ -n "$CFLAGS" ]; then
         echo "set(CMAKE_C_FLAGS \"$CFLAGS\" CACHE STRING \"\" FORCE)" >> "$toolchain"
-        echo "set(CMAKE_OBJC_FLAGS \"$CFLAGS\" CACHE STRING \"\" FORCE)" >> "$toolchain"
+    fi
+
+    if [ -n "$OBJCFLAGS" ]; then
+        echo "set(CMAKE_OBJC_FLAGS \"$OBJCFLAGS\" CACHE STRING \"\" FORCE)" >> "$toolchain"
     fi
 
     if [ -n "$CXXFLAGS" ]; then
