@@ -1,0 +1,41 @@
+diff --git a/accel/tcg/tb-jmp-cache.h b/accel/tcg/tb-jmp-cache.h
+index c3a505e..01969e2 100644
+--- a/accel/tcg/tb-jmp-cache.h
++++ b/accel/tcg/tb-jmp-cache.h
+@@ -12,7 +12,7 @@
+ #include "qemu/rcu.h"
+ #include "exec/cpu-common.h"
+ 
+-#define TB_JMP_CACHE_BITS 12
++#define TB_JMP_CACHE_BITS 13
+ #define TB_JMP_CACHE_SIZE (1 << TB_JMP_CACHE_BITS)
+ 
+ /*
+diff --git a/include/hw/core/cpu.h b/include/hw/core/cpu.h
+index e136b06..591f38c 100644
+--- a/include/hw/core/cpu.h
++++ b/include/hw/core/cpu.h
+@@ -199,8 +199,8 @@ struct CPUClass {
+  */
+ #define NB_MMU_MODES 16
+ 
+-/* Use a fully associative victim tlb of 8 entries. */
+-#define CPU_VTLB_SIZE 8
++/* Use a fully associative victim tlb of 16 entries for better hit rate. */
++#define CPU_VTLB_SIZE 16
+ 
+ /*
+  * The full TLB entry, which is not accessed by generated TCG code,
+diff --git a/util/qemu-coroutine.c b/util/qemu-coroutine.c
+index 64d6264..a6e254d 100644
+--- a/util/qemu-coroutine.c
++++ b/util/qemu-coroutine.c
+@@ -22,7 +22,7 @@
+ #include "block/aio.h"
+ 
+ enum {
+-    COROUTINE_POOL_BATCH_MAX_SIZE = 128,
++    COROUTINE_POOL_BATCH_MAX_SIZE = 256,
+ };
+ 
+ /*

@@ -1,0 +1,631 @@
+/* A removable drive that has no image file inserted. */
+"(empty)" = "(boş)";
+
+/* VMConfigAppleDriveDetailsView */
+"(New Drive)" = "(Yeni Sürücü)";
+
+/* No comment provided by engineer. */
+"(new)" = "(yeni)";
+
+/* UTMWrappedVirtualMachine */
+"(Unavailable)" = "(Kullanılamıyor)";
+
+/* QEMUConstant */
+"%@ (%@)" = "%1$@ (%2$@)";
+
+/* VMToolbarDriveMenuView */
+"%@ (%@): %@" = "%1$@ (%2$@): %3$@";
+
+/* VMDisplayMetalWindowController */
+"%@ (Display %lld)" = "%1$@ (Ekran %2$lld)";
+
+/* VMDisplayAppleTerminalWindowController
+   VMDisplayQemuTerminalWindowController */
+"%@ (Terminal %lld)" = "%1$@ (Terminal %2$lld)";
+
+/* No comment provided by engineer. */
+"%@ ➡️ %@" = "%1$@ ➡️ %2$@";
+
+/* VMDrivesSettingsView */
+"%@ Drive" = "%@ Sürücü";
+
+/* VMDrivesSettingsView */
+"%@ Image" = "%@ İmaj";
+
+/* Format string for remaining time until a download finishes */
+"%@ remaining" = "%@ kaldı";
+
+/* Format string for the 'per second' part of a download speed. */
+"%@/s" = "%@/s";
+
+/* Format string for download progress and speed, e. g. 5 MB of 6 GB (200 kbit/s) */
+"%1$@ of %2$@ (%3$@)" = "%1$@ / %2$@ (%3$@)";
+
+/* UTMAppleConfiguration */
+"A valid kernel image must be specified." = "Geçerli bir çekirdek (kernel) imajı belirtilmelidir.";
+
+/* VMDisplayAppleController */
+"Add…" = "Ekle…";
+
+/* No comment provided by engineer. */
+"Additional Options" = "Ek Seçenekler";
+
+/* No comment provided by engineer. */
+"Additional Settings" = "Ek Ayarlar";
+
+/* No comment provided by engineer. */
+"Advanced" = "Gelişmiş";
+
+/* VMConfigSystemView */
+"Allocating too much memory will crash the VM." = "Çok fazla bellek ayırmak sanal makineyi çökertir.";
+
+/* UTMData */
+"AltJIT error: %@" = "AltJIT hatası: %@";
+
+/* UTMData */
+"An existing virtual machine already exists with this name." = "Bu isimde bir sanal makine zaten mevcut.";
+
+/* VMDrivesSettingsView */
+"An image already exists with that name." = "Bu isimde bir imaj zaten mevcut.";
+
+/* UTMConfiguration
+   UTMVirtualMachine */
+"An internal error has occurred." = "Dahili bir hata oluştu.";
+
+/* UTMConfiguration */
+"An invalid value of '%@' is used in the configuration file." = "Yapılandırma dosyasında '%@' için geçersiz bir değer kullanılıyor.";
+
+/* VMConfigSystemView */
+"Any unsaved changes will be lost." = "Kaydedilmemiş tüm değişiklikler kaybolacak.";
+
+/* No comment provided by engineer. */
+"Application" = "Uygulama";
+
+/* No comment provided by engineer. */
+"Architecture" = "Mimari";
+
+/* No comment provided by engineer. */
+"Are you sure you want to exit UTM?" = "UTM'den çıkmak istediğinizden emin misiniz?";
+
+/* No comment provided by engineer. */
+"Are you sure you want to permanently delete this disk image?" = "Bu disk imajını kalıcı olarak silmek istediğinizden emin misiniz?";
+
+/* No comment provided by engineer. */
+"Are you sure you want to reset this VM? Any unsaved changes will be lost." = "Bu sanal makineyi sıfırlamak istediğinizden emin misiniz? Kaydedilmemiş tüm değişiklikler kaybolacak.";
+
+/* No comment provided by engineer. */
+"Are you sure you want to stop this VM and exit? Any unsaved changes will be lost." = "Bu sanal makineyi durdurup çıkmak istediğinizden emin misiniz? Kaydedilmemiş tüm değişiklikler kaybolacak.";
+
+/* UTMQemuConstants */
+"Automatic Serial Device (max 4)" = "Otomatik Seri Aygıt (maks. 4)";
+
+/* UTMLegacyQemuConfiguration
+   UTMQemuConstants */
+"BIOS" = "BIOS";
+
+/* UTMQemuConstants */
+"Bold" = "Kalın";
+
+/* No comment provided by engineer. */
+"Boot" = "Önyükleme";
+
+/* No comment provided by engineer. */
+"Boot Arguments" = "Önyükleme Argümanları";
+
+/* No comment provided by engineer. */
+"Boot Image Type" = "Önyükleme İmaj Türü";
+
+/* No comment provided by engineer. */
+"Boot ISO Image" = "ISO İmajından Önyükle";
+
+/* No comment provided by engineer. */
+"Boot ISO Image (optional)" = "ISO İmajı (isteğe bağlı)";
+
+/* No comment provided by engineer. */
+"Boot VHDX Image" = "VHDX İmajından Önyükle";
+
+/* UTMQemuConstants */
+"Bridged (Advanced)" = "Köprülü (Gelişmiş)";
+
+/* No comment provided by engineer. */
+"Bridged Settings" = "Köprü Ayarları";
+
+/* Welcome view */
+"Browse UTM Gallery" = "UTM Galerisine Göz At";
+
+/* No comment provided by engineer. */
+"Browse…" = "Gözat…";
+
+/* UTMQemuConstants */
+"Built-in Terminal" = "Dahili Terminal";
+
+/* VMDisplayWindowController
+   VMQemuDisplayMetalWindowController */
+"Cancel" = "İptal";
+
+/* UTMAppleVirtualMachine */
+"Cannot access resource: %@" = "Kaynağa erişilemiyor: %@";
+
+/* UTMAppleVirtualMachine */
+"Cannot create virtual terminal." = "Sanal terminal oluşturulamıyor.";
+
+/* UTMData */
+"Cannot find AltServer for JIT enable. You cannot run VMs until JIT is enabled." = "JIT etkinleştirmek için AltServer bulunamadı. JIT etkinleştirilene kadar sanal makineleri çalıştıramazsınız.";
+
+/* UTMData */
+"Cannot import this VM. Either the configuration is invalid, created in a newer version of UTM, or on a platform that is incompatible with this version of UTM." = "Bu sanal makine içe aktarılamıyor. Yapılandırma geçersiz, daha yeni bir UTM sürümünde oluşturulmuş veya bu UTM sürümüyle uyumsuz bir platformda.";
+
+/* No comment provided by engineer. */
+"Caps Lock (⇪) is treated as a key" = "Caps Lock (⇪) bir tuş olarak değerlendirilir";
+
+/* VMMetalView */
+"Capture Input" = "Girişi Yakala";
+
+/* VMDisplayQemuMetalWindowController */
+"Captured mouse" = "Fare yakalandı";
+
+/* Configuration boot device */
+"CD/DVD" = "CD/DVD";
+
+/* UTMLegacyQemuConfiguration
+   UTMQemuConstants */
+"CD/DVD (ISO) Image" = "CD/DVD (ISO) İmajı";
+
+/* VMDisplayWindowController */
+"Change" = "Değiştir";
+
+/* VMDisplayAppleController */
+"Change…" = "Değiştir…";
+
+/* No comment provided by engineer. */
+"Clear" = "Temizle";
+
+/* VMQemuDisplayMetalWindowController */
+"Closing this window will kill the VM." = "Bu pencereyi kapatmak sanal makineyi sonlandıracak.";
+
+/* VMQemuDisplayMetalWindowController */
+"Confirm" = "Onayla";
+
+/* No comment provided by engineer. */
+"Confirm Delete" = "Silmeyi Onayla";
+
+/* VMDisplayWindowController */
+"Confirmation" = "Onay";
+
+/* No comment provided by engineer. */
+"Connection" = "Bağlantı";
+
+/* No comment provided by engineer. */
+"Cores" = "Çekirdek Sayısı";
+
+/* No comment provided by engineer. */
+"CPU" = "İşlemci";
+
+/* No comment provided by engineer. */
+"CPU Cores" = "İşlemci Çekirdekleri";
+
+/* No comment provided by engineer. */
+"Create" = "Oluştur";
+
+/* Welcome view */
+"Create a New Virtual Machine" = "Yeni Sanal Makine Oluştur";
+
+/* No comment provided by engineer. */
+"Custom" = "Özel";
+
+/* No comment provided by engineer. */
+"Debug Logging" = "Hata Ayıklama Günlüğü";
+
+/* QEMUConstantGenerated
+   UTMQemuConstants */
+"Default" = "Varsayılan";
+
+/* VMWizardSummaryView */
+"Default Cores" = "Varsayılan Çekirdekler";
+
+/* No comment provided by engineer. */
+"Delete" = "Sil";
+
+/* No comment provided by engineer. */
+"Devices" = "Aygıtlar";
+
+/* VMDisplayAppleWindowController */
+"Directory sharing" = "Dizin paylaşımı";
+
+/* UTMQemuConstants */
+"Disabled" = "Devre Dışı";
+
+/* UTMLegacyQemuConfiguration
+   UTMQemuConstants */
+"Disk Image" = "Disk İmajı";
+
+/* VMDisplayAppleWindowController */
+"Display" = "Ekran";
+
+/* VMDisplayQemuDisplayController */
+"Display %lld: %@" = "Ekran %1$lld: %2$@";
+
+/* VMDisplayQemuDisplayController */
+"Disposable Mode" = "Tek Kullanımlık Mod";
+
+/* No comment provided by engineer. */
+"Do not save VM screenshot to disk" = "Sanal makine ekran görüntüsünü diske kaydetme";
+
+/* No comment provided by engineer. */
+"Do not show prompt when USB device is plugged in" = "USB aygıtı takıldığında sorma";
+
+/* No comment provided by engineer. */
+"Do you want to delete this VM and all its data?" = "Bu sanal makineyi ve tüm verilerini silmek istiyor musunuz?";
+
+/* No comment provided by engineer. */
+"Do you want to duplicate this VM and all its data?" = "Bu sanal makineyi ve tüm verilerini kopyalamak istiyor musunuz?";
+
+/* No comment provided by engineer. */
+"Do you want to force stop this VM and lose all unsaved data?" = "Bu sanal makineyi zorla durdurup tüm kaydedilmemiş verileri kaybetmek istiyor musunuz?";
+
+/* No comment provided by engineer. */
+"Download prebuilt from UTM Gallery…" = "UTM Galerisinden hazır indir…";
+
+/* No comment provided by engineer. */
+"Drag and drop IPSW file here" = "IPSW dosyasını buraya sürükleyip bırakın";
+
+/* No comment provided by engineer. */
+"Drives" = "Sürücüler";
+
+/* VMDrivesSettingsView */
+"EFI Variables" = "EFI Değişkenleri";
+
+/* VMDisplayWindowController */
+"Eject" = "Çıkar";
+
+/* No comment provided by engineer. */
+"Emulate" = "Emüle Et";
+
+/* UTMQemuConstants */
+"Emulated VLAN" = "Emüle Edilmiş VLAN";
+
+/* No comment provided by engineer. */
+"Enable Clipboard Sharing" = "Pano Paylaşımını Etkinleştir";
+
+/* VMDisplayWindowController */
+"Error" = "Hata";
+
+/* UTMJSONStream */
+"Error parsing JSON." = "JSON ayrıştırma hatası.";
+
+/* No comment provided by engineer. */
+"Existing" = "Mevcut";
+
+/* Word for decompressing a compressed folder */
+"Extracting…" = "Çıkarılıyor…";
+
+/* No comment provided by engineer. */
+"GiB" = "GiB";
+
+/* UTMQemuConstants */
+"GDB Debug Stub" = "GDB Hata Ayıklama Stub'ı";
+
+/* No comment provided by engineer. */
+"Generic" = "Genel";
+
+/* No comment provided by engineer. */
+"Gesture and Cursor Settings" = "Hareket ve İmleç Ayarları";
+
+/* UTMQemuManager */
+"Guest panic" = "Misafir panik";
+
+/* Configuration boot device */
+"Hard Disk" = "Sabit Disk";
+
+/* No comment provided by engineer. */
+"Hardware" = "Donanım";
+
+/* No comment provided by engineer. */
+"Hardware OpenGL Acceleration" = "Donanım OpenGL Hızlandırması";
+
+/* No comment provided by engineer. */
+"Hello" = "Merhaba";
+
+/* No comment provided by engineer. */
+"Icon" = "Simge";
+
+/* UTMQemuConstants */
+"IDE" = "IDE";
+
+/* No comment provided by engineer. */
+"Image File Type" = "İmaj Dosya Türü";
+
+/* No comment provided by engineer. */
+"Import IPSW" = "IPSW İçe Aktar";
+
+/* No comment provided by engineer. */
+"Import…" = "İçe Aktar…";
+
+/* VMDetailsView */
+"Inactive" = "Pasif";
+
+/* No comment provided by engineer. */
+"Information" = "Bilgi";
+
+/* No comment provided by engineer. */
+"Input" = "Giriş";
+
+/* VMDisplayWindowController */
+"Install Windows Guest Tools…" = "Windows Misafir Araçlarını Yükle…";
+
+/* UTMAppleConfigurationBoot */
+"Linux" = "Linux";
+
+/* UTMLegacyQemuConfiguration
+   UTMQemuConstants */
+"Linux Device Tree Binary" = "Linux Aygıt Ağacı Binary";
+
+/* No comment provided by engineer. */
+"Linux initial ramdisk (optional)" = "Linux başlangıç ramdisk (isteğe bağlı)";
+
+/* UTMLegacyQemuConfiguration
+   UTMQemuConstants */
+"Linux Kernel" = "Linux Çekirdeği";
+
+/* No comment provided by engineer. */
+"Linux kernel (required)" = "Linux çekirdeği (gerekli)";
+
+/* UTMLegacyQemuConfiguration
+   UTMQemuConstants */
+"Linux RAM Disk" = "Linux RAM Disk";
+
+/* No comment provided by engineer. */
+"Linux Settings" = "Linux Ayarları";
+
+/* No comment provided by engineer. */
+"Logging" = "Günlükleme";
+
+/* UTMAppleConfigurationBoot */
+"macOS" = "macOS";
+
+/* No comment provided by engineer. */
+"macOS Settings" = "macOS Ayarları";
+
+/* No comment provided by engineer. */
+"Memory" = "Bellek";
+
+/* No comment provided by engineer. */
+"MiB" = "MiB";
+
+/* UTMAppleConfigurationDevices */
+"Mouse" = "Fare";
+
+/* No comment provided by engineer. */
+"Name" = "Ad";
+
+/* UTMQemuConstants */
+"Nearest Neighbor" = "En Yakın Komşu";
+
+/* No comment provided by engineer. */
+"New" = "Yeni";
+
+/* No comment provided by engineer. */
+"New…" = "Yeni…";
+
+/* No comment provided by engineer. */
+"No" = "Hayır";
+
+/* VMDisplayWindowController */
+"No drives connected." = "Bağlı sürücü yok.";
+
+/* UTMDownloadSupportToolsTaskError */
+"No empty removable drive found. Make sure you have at least one removable drive that is not in use." = "Boş çıkarılabilir sürücü bulunamadı. Kullanılmayan en az bir çıkarılabilir sürücünüz olduğundan emin olun.";
+
+/* VMQemuDisplayMetalWindowController */
+"No USB devices detected." = "USB aygıtı algılanmadı.";
+
+/* VMToolbarDriveMenuView */
+"none" = "yok";
+
+/* UTMLegacyQemuConfiguration
+   UTMQemuConstants */
+"None" = "Yok";
+
+/* No comment provided by engineer. */
+"Notes" = "Notlar";
+
+/* UTMQemuConstants */
+"NVMe" = "NVMe";
+
+/* VMDisplayWindowController */
+"OK" = "Tamam";
+
+/* No comment provided by engineer. */
+"Open…" = "Aç…";
+
+/* No comment provided by engineer. */
+"Operating System" = "İşletim Sistemi";
+
+/* No comment provided by engineer. */
+"Other" = "Diğer";
+
+/* VMDisplayWindowController */
+"Pause" = "Duraklat";
+
+/* UTMVirtualMachine */
+"Paused" = "Duraklatıldı";
+
+/* UTMVirtualMachine */
+"Pausing" = "Duraklatılıyor";
+
+/* No comment provided by engineer. */
+"Pending" = "Beklemede";
+
+/* VMDisplayWindowController */
+"Play" = "Başlat";
+
+/* No comment provided by engineer. */
+"Port Forward" = "Port Yönlendirme";
+
+/* No comment provided by engineer. */
+"Preconfigured" = "Önceden Yapılandırılmış";
+
+/* A download process is about to begin. */
+"Preparing…" = "Hazırlanıyor…";
+
+/* No comment provided by engineer. */
+"QEMU Arguments" = "QEMU Argümanları";
+
+/* UTMQemuVirtualMachine */
+"QEMU exited from an error: %@" = "QEMU bir hatayla çıkış yaptı: %@";
+
+/* UTMQemuConstants */
+"QEMU Monitor (HMP)" = "QEMU Monitor (HMP)";
+
+/* No comment provided by engineer. */
+"Raw Image" = "Ham İmaj";
+
+/* VMDisplayAppleController */
+"Read Only" = "Salt Okunur";
+
+/* No comment provided by engineer. */
+"Reclaim" = "Geri Al";
+
+/* UTMQemuConstants */
+"Regular" = "Normal";
+
+/* No comment provided by engineer. */
+"Removable" = "Çıkarılabilir";
+
+/* No comment provided by engineer. */
+"Removable Drive" = "Çıkarılabilir Sürücü";
+
+/* No comment provided by engineer. */
+"Remove" = "Kaldır";
+
+/* VMDisplayAppleController */
+"Remove…" = "Kaldır…";
+
+/* No comment provided by engineer. */
+"Reset" = "Sıfırla";
+
+/* No comment provided by engineer. */
+"Resize" = "Yeniden Boyutlandır";
+
+/* UTMVirtualMachine */
+"Resuming" = "Devam Ediliyor";
+
+/* No comment provided by engineer. */
+"Retina Mode" = "Retina Modu";
+
+/* No comment provided by engineer. */
+"Save" = "Kaydet";
+
+/* No comment provided by engineer. */
+"Scaling" = "Ölçeklendirme";
+
+/* UTMQemuConstants */
+"SCSI" = "SCSI";
+
+/* UTMQemuConstants */
+"SD Card" = "SD Kart";
+
+/* No comment provided by engineer. */
+"Select a file." = "Bir dosya seçin.";
+
+/* VMDisplayWindowController */
+"Select Drive Image" = "Sürücü İmajı Seç";
+
+/* VMDisplayAppleWindowController
+   VMDisplayWindowController */
+"Select Shared Folder" = "Paylaşılan Klasör Seç";
+
+/* No comment provided by engineer. */
+"Selected:" = "Seçili:";
+
+/* VMDisplayAppleWindowController
+   VMDisplayQemuDisplayController */
+"Serial %lld" = "Seri %lld";
+
+/* No comment provided by engineer. */
+"Share USB devices from host" = "Ana bilgisayardan USB aygıtlarını paylaş";
+
+/* No comment provided by engineer. */
+"Shared Directory" = "Paylaşılan Dizin";
+
+/* UTMQemuConstants */
+"Shared Network" = "Paylaşılan Ağ";
+
+/* No comment provided by engineer. */
+"Sharing" = "Paylaşım";
+
+/* No comment provided by engineer. */
+"Show Advanced Settings" = "Gelişmiş Ayarları Göster";
+
+/* No comment provided by engineer. */
+"Show All…" = "Tümünü Göster…";
+
+/* No comment provided by engineer. */
+"Size" = "Boyut";
+
+/* No comment provided by engineer. */
+"Slower, but can run other CPU architectures." = "Daha yavaş, ancak diğer CPU mimarilerini çalıştırabilir.";
+
+/* UTMQemuConstants */
+"SPICE WebDAV" = "SPICE WebDAV";
+
+/* No comment provided by engineer. */
+"Start" = "Başlat";
+
+/* UTMVirtualMachine */
+"Started" = "Başlatıldı";
+
+/* UTMVirtualMachine */
+"Starting" = "Başlatılıyor";
+
+/* No comment provided by engineer. */
+"Stop" = "Durdur";
+
+/* UTMVirtualMachine */
+"Stopped" = "Durduruldu";
+
+/* UTMVirtualMachine */
+"Stopping" = "Durduruluyor";
+
+/* No comment provided by engineer. */
+"Storage" = "Depolama";
+
+/* No comment provided by engineer. */
+"Style" = "Stil";
+
+/* No comment provided by engineer. */
+"Summary" = "Özet";
+
+/* No comment provided by engineer. */
+"System" = "Sistem";
+
+/* No comment provided by engineer. */
+"Terminal" = "Terminal";
+
+/* UTMQemuConstants */
+"USB" = "USB";
+
+/* No comment provided by engineer. */
+"Use Apple Virtualization" = "Apple Sanallaştırma Kullan";
+
+/* No comment provided by engineer. */
+"Version" = "Sürüm";
+
+/* No comment provided by engineer. */
+"Virtualization" = "Sanallaştırma";
+
+/* No comment provided by engineer. */
+"Virtualize" = "Sanallaştır";
+
+/* UTMQemuConstants */
+"VirtIO" = "VirtIO";
+
+/* Welcome view */
+"Welcome to UTM" = "UTM'e Hoş Geldiniz";
+
+/* No comment provided by engineer. */
+"Windows" = "Windows";
+
+/* No comment provided by engineer. */
+"Yes" = "Evet";
+
