@@ -347,9 +347,7 @@ extension UTMQemuVirtualMachine {
         system.rendererBackend = rendererBackend
         system.vulkanDriver = try vulkanDriver
         system.shmemDirectoryURL = await config.shmemDirectoryURL
-        #if os(macOS) // FIXME: verbose logging is broken on iOS
         system.hasDebugLog = hasDebugLog
-        #endif
         try Task.checkCancellation()
 
         if isShortcut {
