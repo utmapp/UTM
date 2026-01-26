@@ -104,6 +104,10 @@ static int startQemu(UTMProcess *process, int argc, const char *argv[], const ch
 - (void)setLogging:(QEMULogging *)logging {
     _logging = logging;
     [logging writeLine:[NSString stringWithFormat:@"Launching: qemu-system-%@%@\n", self.architecture, self.arguments]];
+    [logging writeLine:@"Environment variables:\n"];
+    [self.environment enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
+        [logging writeLine:[NSString stringWithFormat:@"    %@=%@\n", key, value]];
+    }];
 }
 
 - (void)setHasDebugLog:(BOOL)hasDebugLog {
