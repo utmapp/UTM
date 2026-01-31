@@ -103,7 +103,7 @@ struct VMContextMenuModifier: ViewModifier {
                 
                 if let _ = vm.config as? UTMQemuConfiguration {
                     Button {
-                        data.run(vm: vm, options: .bootDisposibleMode)
+                        data.run(vm: vm, options: .bootDisposableMode)
                     } label: {
                         Label("Run without saving changes", systemImage: "memories")
                     }.help("Run the VM in the foreground, without saving data changes to disk.")
