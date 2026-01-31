@@ -28,7 +28,7 @@ struct MenuLabel: View {
     }
     
     var body: some View {
-        if #available(iOS 14.5, *) {
+        if #available(iOS 14.5, macOS 11.3, *) {
             label.labelStyle(.titleAndIcon)
         } else {
             // prior to iOS 14.5, menu with title and icon doesn't show up
