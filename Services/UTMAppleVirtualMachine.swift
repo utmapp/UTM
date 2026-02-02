@@ -33,7 +33,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             true
         }
         
-        var supportsDisposibleMode: Bool {
+        var supportsDisposableMode: Bool {
             false
         }
         
@@ -59,7 +59,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
     
     private(set) var isShortcut: Bool = false
     
-    let isRunningAsDisposible: Bool = false
+    let isRunningAsDisposable: Bool = false
     
     weak var delegate: (any UTMVirtualMachineDelegate)?
     

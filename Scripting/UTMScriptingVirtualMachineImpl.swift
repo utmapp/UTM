@@ -117,10 +117,10 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
             var options: UTMVirtualMachineStartOptions = []
 
             if !shouldSaveState {
-                guard type(of: vm).capabilities.supportsDisposibleMode else {
+                guard type(of: vm).capabilities.supportsDisposableMode else {
                     throw ScriptingError.operationNotSupported
                 }
-                options.insert(.bootDisposibleMode)
+                options.insert(.bootDisposableMode)
             }
             if bootRecoveryMode {
                 guard type(of: vm).capabilities.supportsRecoveryMode else {

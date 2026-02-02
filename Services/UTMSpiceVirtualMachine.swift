@@ -19,7 +19,7 @@ import Foundation
 /// Common methods for all SPICE virtual machines
 protocol UTMSpiceVirtualMachine: UTMVirtualMachine where Configuration == UTMQemuConfiguration {
     /// Set when VM is running with saving changes
-    var isRunningAsDisposible: Bool { get }
+    var isRunningAsDisposable: Bool { get }
     
     /// Get and set screenshot
     var screenshot: UTMVirtualMachineScreenshot? { get set }

@@ -39,7 +39,7 @@ final class UTMQemuVirtualMachine: UTMSpiceVirtualMachine {
             true
         }
         
-        var supportsDisposibleMode: Bool {
+        var supportsDisposableMode: Bool {
             true
         }
         
@@ -65,7 +65,7 @@ final class UTMQemuVirtualMachine: UTMSpiceVirtualMachine {
     
     private(set) var isShortcut: Bool = false
     
-    private(set) var isRunningAsDisposible: Bool = false
+    private(set) var isRunningAsDisposable: Bool = false
     
     weak var delegate: (any UTMVirtualMachineDelegate)?
     
@@ -267,7 +267,7 @@ extension UTMQemuVirtualMachine {
     
     private func determineSnapshotSupport() async -> Error? {
         // predetermined reasons
-        if isRunningAsDisposible {
+        if isRunningAsDisposable {
             return UTMQemuVirtualMachineError.qemuError(NSLocalizedString("Suspend state cannot be saved when running in disposible mode.", comment: "UTMQemuVirtualMachine"))
         }
         #if arch(x86_64)
@@ -306,7 +306,7 @@ extension UTMQemuVirtualMachine {
         } else {
             await qemuVM.setRedirectLog(url: nil)
         }
-        let isRunningAsDisposible = options.contains(.bootDisposibleMode)
+        let isRunningAsDisposable = options.contains(.bootDisposableMode)
         let isRemoteSession = options.contains(.remoteSession)
         #if WITH_SERVER
         let spicePassword = isRemoteSession ? String.random(length: 32) : nil
@@ -317,7 +317,7 @@ extension UTMQemuVirtualMachine {
         }
         #endif
         await MainActor.run {
-            config.qemu.isDisposable = isRunningAsDisposible
+            config.qemu.isDisposable = isRunningAsDisposable
             #if WITH_SERVER
             config.qemu.spiceServerPort = spicePort?.internalPort
             config.qemu.spiceServerPassword = spicePassword
@@ -420,7 +420,7 @@ extension UTMQemuVirtualMachine {
         
         // load saved state if requested
         let isSuspended = await registryEntry.isSuspended
-        if !isRunningAsDisposible && isSuspended {
+        if !isRunningAsDisposable && isSuspended {
             try await monitor.qemuRestoreSnapshot(kSuspendSnapshotName)
             try Task.checkCancellation()
         }
@@ -445,7 +445,7 @@ extension UTMQemuVirtualMachine {
         // save ioService and let it set the delegate
         self.ioService = interface as? UTMSpiceIO
         self.pipeInterface = interface as? UTMPipeInterface
-        self.isRunningAsDisposible = isRunningAsDisposible
+        self.isRunningAsDisposable = isRunningAsDisposable
         
         // test out snapshots
         self.snapshotUnsupportedError = await determineSnapshotSupport()
@@ -463,7 +463,7 @@ extension UTMQemuVirtualMachine {
         #endif
 
         // update timestamp
-        if !isRunningAsDisposible {
+        if !isRunningAsDisposable {
             try? updateLastModified()
         }
     }
@@ -521,7 +521,7 @@ extension UTMQemuVirtualMachine {
         } else {
             try await qemuVM.stop()
         }
-        isRunningAsDisposible = false
+        isRunningAsDisposable = false
     }
     
     private func _restart() async throws {
