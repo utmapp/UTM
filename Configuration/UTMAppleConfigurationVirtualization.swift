@@ -164,8 +164,12 @@ extension UTMAppleConfigurationVirtualization {
                 vzconfig.pointingDevices = [VZUSBScreenCoordinatePointingDeviceConfiguration()]
                 #if arch(arm64)
                 if #available(macOS 13, *), isMacOSGuest && pointer == .trackpad {
-                    // replace with trackpad device
-                    vzconfig.pointingDevices = [VZMacTrackpadConfiguration()]
+                    // Use both devices as Apple recommends for macOS 13+ trackpad support
+                    // Trackpad first (primary for macOS 13+), USB mouse second (fallback)
+                    vzconfig.pointingDevices = [
+                        VZMacTrackpadConfiguration(),
+                        VZUSBScreenCoordinatePointingDeviceConfiguration()
+                    ]
                 }
                 #endif
             }
