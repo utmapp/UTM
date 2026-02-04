@@ -34,7 +34,7 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
     }
     
     var defaultSubtitle: String {
-        if qemuVM.isRunningAsDisposible {
+        if qemuVM.isRunningAsDisposable {
             return NSLocalizedString("Disposable Mode", comment: "VMDisplayQemuDisplayController")
         } else {
             return ""

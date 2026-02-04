@@ -30,7 +30,7 @@ final class UTMRemoteSpiceVirtualMachine: UTMSpiceVirtualMachine {
             true
         }
 
-        var supportsDisposibleMode: Bool {
+        var supportsDisposableMode: Bool {
             true
         }
 
@@ -63,7 +63,7 @@ final class UTMRemoteSpiceVirtualMachine: UTMSpiceVirtualMachine {
 
     private(set) var isShortcut: Bool = false
 
-    private(set) var isRunningAsDisposible: Bool = false
+    private(set) var isRunningAsDisposable: Bool = false
 
     weak var delegate: (UTMVirtualMachineDelegate)?
 

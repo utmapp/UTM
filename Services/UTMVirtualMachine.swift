@@ -43,7 +43,7 @@ protocol UTMVirtualMachine: AnyObject, Identifiable {
     /// The VM is running in disposible mode
     ///
     /// This indicates that changes should not be saved.
-    var isRunningAsDisposible: Bool { get }
+    var isRunningAsDisposable: Bool { get }
     
     /// Set by caller to handle VM events
     var delegate: (any UTMVirtualMachineDelegate)? { get set }
@@ -169,7 +169,7 @@ protocol UTMVirtualMachineCapabilities {
     var supportsScreenshots: Bool { get }
     
     /// The backend supports running without persisting changes.
-    var supportsDisposibleMode: Bool { get }
+    var supportsDisposableMode: Bool { get }
     
     /// The backend supports booting into recoveryOS.
     var supportsRecoveryMode: Bool { get }
@@ -227,7 +227,7 @@ struct UTMVirtualMachineStartOptions: OptionSet, Codable {
     let rawValue: UInt
     
     /// Boot without persisting any changes.
-    static let bootDisposibleMode = Self(rawValue: 1 << 0)
+    static let bootDisposableMode = Self(rawValue: 1 << 0)
     /// Boot into recoveryOS (when supported).
     static let bootRecovery = Self(rawValue: 1 << 1)
     /// Start VDI session where a remote client will connect to.
@@ -345,7 +345,7 @@ extension UTMVirtualMachine {
     
     func startScreenshotTimer() -> Timer {
         // delete existing screenshot if required
-        if !isScreenshotSaveEnabled && !isRunningAsDisposible {
+        if !isScreenshotSaveEnabled && !isRunningAsDisposable {
             try? deleteScreenshot()
         }
         let timer = Timer(timeInterval: kScreenshotPeriodSeconds, repeats: true) { [weak self] timer in
@@ -371,7 +371,7 @@ extension UTMVirtualMachine {
     }
     
     func saveScreenshot() throws {
-        guard isScreenshotSaveEnabled && !isRunningAsDisposible else {
+        guard isScreenshotSaveEnabled && !isRunningAsDisposable else {
             return
         }
         guard let screenshot = screenshot else {
