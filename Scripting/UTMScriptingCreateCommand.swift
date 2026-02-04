@@ -15,6 +15,7 @@
 //
 
 import Foundation
+import Virtualization
 
 @MainActor
 @objc(UTMScriptingCreateCommand)
@@ -102,8 +103,29 @@ class UTMScriptingCreateCommand: NSCreateCommand, UTMScriptable {
         guard record["name"] as? String != nil else {
             throw ScriptingError.nameNotSpecified
         }
+        guard let osString = record["operatingSystem"] as? String  else {
+            throw ScriptingError.osNotSpecified
+        }
         let config = UTMAppleConfiguration()
-        config.system.boot = try UTMAppleConfigurationBoot(for: .linux)
+        // validate os
+        switch osString {
+        case "macos":
+            // need ipsw for macos
+            guard let ipswURL = record["ipsw"] as? URL else {
+                throw ScriptingError.ipswNotSpecified
+            }
+            let image = try await VZMacOSRestoreImage.image(from: ipswURL)
+            guard let model = image.mostFeaturefulSupportedConfiguration?.hardwareModel else {
+                throw ScriptingError.ipswNotSupported
+            }
+            config.system.macPlatform = UTMAppleConfigurationMacPlatform(newHardware: model)
+            config.system.boot = try UTMAppleConfigurationBoot(for: .macOS)
+            config.system.boot.macRecoveryIpswURL = ipswURL
+        case "linux":
+            config.system.boot = try UTMAppleConfigurationBoot(for: .linux)
+        default:
+            throw ScriptingError.osNotSupported
+        }
         config.virtualization.hasBalloon = true
         config.virtualization.hasEntropy = true
         config.networks = [UTMAppleConfigurationNetwork()]
@@ -131,6 +153,10 @@ class UTMScriptingCreateCommand: NSCreateCommand, UTMScriptable {
         case configurationNotFound
         case nameNotSpecified
         case architectureNotSpecified
+        case osNotSpecified
+        case osNotSupported
+        case ipswNotSpecified
+        case ipswNotSupported
         
         var errorDescription: String? {
             switch self {
@@ -140,6 +166,10 @@ class UTMScriptingCreateCommand: NSCreateCommand, UTMScriptable {
             case .configurationNotFound: return NSLocalizedString("A valid configuration must be specified.", comment: "UTMScriptingAppDelegate")
             case .nameNotSpecified: return NSLocalizedString("No name specified in the configuration.", comment: "UTMScriptingAppDelegate")
             case .architectureNotSpecified: return NSLocalizedString("No architecture specified in the configuration.", comment: "UTMScriptingAppDelegate")
+            case .osNotSpecified: return NSLocalizedString("No operating system specified in the configuration.", comment: "UTMScriptingAppDelegate")
+            case .osNotSupported: return NSLocalizedString("This operating system is not supported on your machine", comment: "UTMScriptingAppDelegate")
+            case .ipswNotSpecified: return NSLocalizedString("No ipsw file specified in the configuration for macos vm", comment: "UTMScriptingAppDelegate")
+            case .ipswNotSupported: return NSLocalizedString("Your machine does not support running this IPSW.", comment: "UTMScriptingAppDelegate")
             }
         }
     }
