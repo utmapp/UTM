@@ -57,6 +57,8 @@ extension UTMQemuConfigurationSound {
             hardware = QEMUSoundDevice_ppc.screamer
         } else if architecture == .m68k && rawTarget == QEMUTarget_m68k.q800.rawValue {
             hardware = QEMUSoundDevice_m68k.asc
+        } else if rawTarget.hasPrefix("raspi") {
+            return nil
         } else {
             let cards = architecture.soundDeviceType.allRawValues
             if let first = cards.first {

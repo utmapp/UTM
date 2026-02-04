@@ -34,6 +34,7 @@ struct VMConfigSystemView: View {
             Form {
                 HardwareOptions(config: $config, architecture: $architecture, target: $target, warningMessage: $warningMessage)
                 RAMSlider(systemMemory: $config.memorySize, onValidate: validateMemorySize)
+                    .disabled(target.fixedMemorySize != nil)
                 Section(header: Text("CPU")) {
                     VMConfigConstantPicker(selection: $config.cpu, type: config.architecture.cpuType)
                 }
@@ -201,6 +202,9 @@ private struct HardwareOptions: View {
                 .onChange(of: config.target.rawValue) { newValue in
                     if newValue != target.rawValue {
                         target = AnyQEMUConstant(rawValue: newValue)!
+                        if let fixedMemorySize = target.fixedMemorySize {
+                            config.memorySize = fixedMemorySize
+                        }
                     }
                 }
         }
