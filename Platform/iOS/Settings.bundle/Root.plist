@@ -2912,6 +2912,14 @@
 			<key>File</key>
 			<string>License</string>
 		</dict>
+		<dict>
+			<key>Type</key>
+			<string>IASKButtonSpecifier</string>
+			<key>Title</key>
+			<string>Check for Updates</string>
+			<key>Key</key>
+			<string>CheckForUpdatesButton</string>
+		</dict>
 	</array>
 </dict>
 </plist>
