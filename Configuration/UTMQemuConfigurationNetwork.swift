@@ -180,6 +180,8 @@ extension UTMQemuConfigurationNetwork {
             hardware = QEMUNetworkDevice_ppc.sungem
         } else if architecture == .m68k && rawTarget == QEMUTarget_m68k.q800.rawValue {
             hardware = QEMUNetworkDevice_m68k.dp8393x
+        } else if rawTarget.hasPrefix("raspi") {
+            return nil
         } else {
             let cards = architecture.networkDeviceType.allRawValues
             if let first = cards.first {
