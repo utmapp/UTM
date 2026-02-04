@@ -264,6 +264,8 @@ import Virtualization // for getting network interfaces
                 "vgamem_mb=\(vgaRamSize)"
             }
             f()
+        } else if system.target.hasBuiltinFramebuffer {
+            // Use the board's built-in framebuffer (no arguments)
         } else {
             for display in displays {
                 if !shouldSkipDisplay(display) {
@@ -951,35 +953,37 @@ import Virtualization // for getting network interfaces
             f("usb-kbd,bus=usb-bus.0")
         }
         #if WITH_USB
-        let maxDevices = input.maximumUsbShare
-        let buses = (maxDevices + 2) / 3
-        if input.usbBusSupport == .usb3_0 {
-            var controller = "qemu-xhci"
-            if isPcCompatible {
-                controller = "nec-usb-xhci"
+        if system.target.hasUsbSharingSupport {
+            let maxDevices = input.maximumUsbShare
+            let buses = (maxDevices + 2) / 3
+            if input.usbBusSupport == .usb3_0 {
+                var controller = "qemu-xhci"
+                if isPcCompatible {
+                    controller = "nec-usb-xhci"
+                }
+                for i in 0..<buses {
+                    f("-device")
+                    f("\(controller),id=usb-controller-\(i)")
+                }
+            } else {
+                for i in 0..<buses {
+                    f("-device")
+                    f("ich9-usb-ehci1,id=usb-controller-\(i)")
+                    f("-device")
+                    f("ich9-usb-uhci1,masterbus=usb-controller-\(i).0,firstport=0,multifunction=on")
+                    f("-device")
+                    f("ich9-usb-uhci2,masterbus=usb-controller-\(i).0,firstport=2,multifunction=on")
+                    f("-device")
+                    f("ich9-usb-uhci3,masterbus=usb-controller-\(i).0,firstport=4,multifunction=on")
+                }
             }
-            for i in 0..<buses {
+            // set up usb forwarding
+            for i in 0..<maxDevices {
+                f("-chardev")
+                f("spicevmc,name=usbredir,id=usbredirchardev\(i)")
                 f("-device")
-                f("\(controller),id=usb-controller-\(i)")
+                f("usb-redir,chardev=usbredirchardev\(i),id=usbredirdev\(i),bus=usb-controller-\(i/3).0")
             }
-        } else {
-            for i in 0..<buses {
-                f("-device")
-                f("ich9-usb-ehci1,id=usb-controller-\(i)")
-                f("-device")
-                f("ich9-usb-uhci1,masterbus=usb-controller-\(i).0,firstport=0,multifunction=on")
-                f("-device")
-                f("ich9-usb-uhci2,masterbus=usb-controller-\(i).0,firstport=2,multifunction=on")
-                f("-device")
-                f("ich9-usb-uhci3,masterbus=usb-controller-\(i).0,firstport=4,multifunction=on")
-            }
-        }
-        // set up usb forwarding
-        for i in 0..<maxDevices {
-            f("-chardev")
-            f("spicevmc,name=usbredir,id=usbredirchardev\(i)")
-            f("-device")
-            f("usb-redir,chardev=usbredirchardev\(i),id=usbredirdev\(i),bus=usb-controller-\(i/3).0")
         }
         #endif
     }

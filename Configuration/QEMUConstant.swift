@@ -478,9 +478,24 @@ extension QEMUTarget {
         }
     }
     
+    var hasUsbSharingSupport: Bool {
+        switch self.rawValue {
+        case let x where x.hasPrefix("raspi"): return false
+        default: return true
+        }
+    }
+    
     var hasAgentSupport: Bool {
         switch self.rawValue {
         case "isapc": return false
+        case let x where x.hasPrefix("raspi"): return false
+        default: return true
+        }
+    }
+    
+    var hasUefiSupport: Bool {
+        switch self.rawValue {
+        case let x where x.hasPrefix("raspi"): return false
         default: return true
         }
     }
@@ -489,6 +504,29 @@ extension QEMUTarget {
         switch self.rawValue {
         case "microvm": return false
         default: return true
+        }
+    }
+    
+    var hasHypervisorSupport: Bool {
+        switch self.rawValue {
+        case let x where x.hasPrefix("raspi"): return false
+        default: return true
+        }
+    }
+    
+    var hasBuiltinFramebuffer: Bool {
+        switch self.rawValue {
+        case let x where x.hasPrefix("raspi"): return true
+        default: return false
+        }
+    }
+    
+    var fixedMemorySize: Int? {
+        switch self.rawValue {
+        case "raspi0", "raspi1ap", "raspi3ap": return 512
+        case "raspi2b", "raspi3b": return 1024
+        case "raspi4b": return 2048
+        default: return nil
         }
     }
 }

@@ -200,6 +200,10 @@ UTMQemuConstants */
 /* No comment provided by engineer. */
 "Build" = "构建版本";
 
+/* VMConfigDisplayView
+VMToolbarDisplayMenuView */
+"Built-in Framebuffer" = "内置帧缓冲区";
+
 /* UTMAppleConfigurationTerminal
 UTMQemuConstants */
 "Built-in Terminal" = "内置终端";
