@@ -1323,6 +1323,10 @@
 /* Left pane. */
 "Devices" = "Laitteet";
 
+/* VMConfigDisplayView
+VMToolbarDisplayMenuView */
+"Built-in Framebuffer" = "Sisäänrakennettu kuvapuskuri";
+
 /* Serial pane. */
 "Built-in Terminal" = "Sisäänrakennettu terminaali";
 

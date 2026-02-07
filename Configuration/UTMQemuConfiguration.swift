@@ -260,6 +260,9 @@ extension UTMQemuConfiguration {
         input = .init(forArchitecture: architecture, target: target)
         sharing = .init(forArchitecture: architecture, target: target)
         system.cpu = architecture.cpuType.default
+        if let fixedMemorySize = target.fixedMemorySize {
+            system.memorySize = fixedMemorySize
+        }
         if let display = UTMQemuConfigurationDisplay(forArchitecture: architecture, target: target) {
             displays = [display]
         } else {

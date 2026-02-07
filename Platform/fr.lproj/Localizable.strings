@@ -492,6 +492,7 @@
 "Upscaling" = "Augmentation de la définition (Upscaling)";
 "Downscaling" = "Réduction de définition";
 "Retina Mode" = "Mode Retina";
+"Built-in Framebuffer" = "Tampon d’image intégré";
 
 // VMConfigDisplayConsoleView.swift
 "Style" = "Style";

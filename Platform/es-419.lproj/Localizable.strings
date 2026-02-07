@@ -196,6 +196,10 @@
 /* No comment provided by engineer. */
 "Browse…" = "Buscar...";
 
+/* VMConfigDisplayView
+VMToolbarDisplayMenuView */
+"Built-in Framebuffer" = "Búfer de imagen integrado";
+
 /* UTMQemuConstants */
 "Built-in Terminal" = "Terminal incorporado";
 

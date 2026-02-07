@@ -195,6 +195,10 @@ extension VMSessionState: UTMSpiceIODelegate {
     
     nonisolated func spiceDidCreateDisplay(_ display: CSDisplay) {
         Task { @MainActor in
+            guard !self.qemuConfig.system.target.hasBuiltinFramebuffer || !qemuConfig.displays.isEmpty else {
+                // A `CSDisplay` instance is created if the machine has a built-in framebuffer even if `qemuConfig.displays` is empty.
+                return
+            }
             assert(display.monitorID < qemuConfig.displays.count)
             let device = VMWindowState.Device.display(display, display.monitorID)
             devices.append(device)

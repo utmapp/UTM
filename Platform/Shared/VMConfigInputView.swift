@@ -19,6 +19,7 @@ import SwiftUI
 struct VMConfigInputView: View {
     @Binding var config: UTMQemuConfigurationInput
     let hasUsbSupport: Bool
+    let hasUsbSharingSupport: Bool
 
     var body: some View {
         VStack {
@@ -29,7 +30,7 @@ struct VMConfigInputView: View {
                 }
                 
                 #if WITH_USB
-                if config.usbBusSupport != .disabled {
+                if config.usbBusSupport != .disabled && hasUsbSharingSupport {
                     Section(header: Text("USB Sharing")) {
                         if !jb_has_usb_entitlement() {
                             Text("USB sharing not supported in this build of UTM.")
@@ -101,7 +102,7 @@ struct VMConfigInputView_Previews: PreviewProvider {
     @State static private var config = UTMQemuConfigurationInput()
     
     static var previews: some View {
-        VMConfigInputView(config: $config, hasUsbSupport: true)
+        VMConfigInputView(config: $config, hasUsbSupport: true, hasUsbSharingSupport: true)
             #if os(macOS)
             .scrollable()
             #endif
