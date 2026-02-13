@@ -120,16 +120,15 @@ static int startQemu(UTMProcess *process, int argc, const char *argv[], const ch
         self.mutableEnvironment[@"VIRGL_LOG_LEVEL"] = @"debug";
         self.mutableEnvironment[@"MESA_DEBUG"] = @"1";
         self.mutableEnvironment[@"MVK_CONFIG_LOG_LEVEL"] = @"4";
-        self.mutableEnvironment[@"MVK_DEBUG"] = @"1";
-        self.mutableEnvironment[@"MTL_DEBUG_LAYER"] = @"1";
+        // NOTE: MTL_DEBUG_LAYER and MVK_DEBUG are removed because they can break
+        // system frameworks (Safari, altool, XCreds) via XPC on macOS 26.x
+        // See: https://github.com/utmapp/UTM/issues/7229
     } else {
         [self.mutableEnvironment removeObjectForKey:@"G_MESSAGES_DEBUG"];
         [self.mutableEnvironment removeObjectForKey:@"VK_LOADER_DEBUG"];
         [self.mutableEnvironment removeObjectForKey:@"VIRGL_LOG_LEVEL"];
         [self.mutableEnvironment removeObjectForKey:@"MESA_DEBUG"];
         [self.mutableEnvironment removeObjectForKey:@"MVK_CONFIG_LOG_LEVEL"];
-        [self.mutableEnvironment removeObjectForKey:@"MVK_DEBUG"];
-        [self.mutableEnvironment removeObjectForKey:@"MTL_DEBUG_LAYER"];
     }
 }
 
