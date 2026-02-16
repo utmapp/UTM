@@ -384,5 +384,6 @@ private let ICON_TITLE_MAP: [String: LocalizedStringKey] = [
     "xbox": "Xbox",
     "xubuntu": "Xubuntu",
     "yunos": "YunOS",
-    "pardus": "Pardus"
+    "pardus": "Pardus",
+    "pisi": "Pisi Linux",
 ]
