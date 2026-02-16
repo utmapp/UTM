@@ -695,6 +695,24 @@ extension UTMRemoteServer {
             throw UTMRemoteServer.ServerError.notFound(id)
         }
 
+        private func resolvedPackageFileURL(for packageUrl: URL, relativePathComponents: [String]) throws -> URL {
+            guard !relativePathComponents.isEmpty else {
+                throw ServerError.invalidPath
+            }
+            for component in relativePathComponents {
+                guard !component.isEmpty && component != ".." && component != "." && !component.contains("/") && !component.contains("\0") else {
+                    throw ServerError.invalidPath
+                }
+            }
+            let fileUrl = relativePathComponents.reduce(packageUrl, { $0.appendingPathComponent($1) })
+            let resolvedFile = fileUrl.standardizedFileURL.path
+            let resolvedPackage = packageUrl.standardizedFileURL.path
+            guard resolvedFile.hasPrefix(resolvedPackage + "/") else {
+                throw ServerError.invalidPath
+            }
+            return fileUrl
+        }
+
         @MainActor
         private func packageFileHasChanged(for vm: VMData, relativePathComponents: [String]) throws {
             if relativePathComponents.count == 1 && relativePathComponents[0] == kUTMBundleScreenshotFilename {
@@ -774,7 +792,7 @@ extension UTMRemoteServer {
             let vm = try await findVM(withId: parameters.id)
             let fm = FileManager.default
             let pathUrl = await vm.pathUrl
-            let fileUrl = parameters.relativePathComponents.reduce(pathUrl, { $0.appendingPathComponent($1) })
+            let fileUrl = try resolvedPackageFileURL(for: pathUrl, relativePathComponents: parameters.relativePathComponents)
             guard let lastModified = try fm.attributesOfItem(atPath: fileUrl.path)[.modificationDate] as? Date else {
                 throw ServerError.failedToAccessFile
             }
@@ -793,7 +811,7 @@ extension UTMRemoteServer {
             let vm = try await findVM(withId: parameters.id)
             let fm = FileManager.default
             let pathUrl = await vm.pathUrl
-            let fileUrl = parameters.relativePathComponents.reduce(pathUrl, { $0.appendingPathComponent($1) })
+            let fileUrl = try resolvedPackageFileURL(for: pathUrl, relativePathComponents: parameters.relativePathComponents)
             try? fm.removeItem(at: fileUrl)
             guard fm.createFile(atPath: fileUrl.path, contents: parameters.data, attributes: [.modificationDate: parameters.lastModified]) else {
                 throw ServerError.failedToAccessFile
@@ -806,7 +824,7 @@ extension UTMRemoteServer {
             let vm = try await findVM(withId: parameters.id)
             let fm = FileManager.default
             let pathUrl = await vm.pathUrl
-            let fileUrl = parameters.relativePathComponents.reduce(pathUrl, { $0.appendingPathComponent($1) })
+            let fileUrl = try resolvedPackageFileURL(for: pathUrl, relativePathComponents: parameters.relativePathComponents)
             try fm.removeItem(at: fileUrl)
             try await packageFileHasChanged(for: vm, relativePathComponents: parameters.relativePathComponents)
             return .init()
@@ -828,43 +846,64 @@ extension UTMRemoteServer {
 
         private func _stopVirtualMachine(parameters: M.StopVirtualMachine.Request) async throws -> M.StopVirtualMachine.Reply {
             let vm = try await findVM(withId: parameters.id)
-            try await vm.wrapped!.stop(usingMethod: parameters.method)
+            guard let wrapped = await vm.wrapped else {
+                throw ServerError.notRunning(parameters.id)
+            }
+            try await wrapped.stop(usingMethod: parameters.method)
             return .init()
         }
 
         private func _restartVirtualMachine(parameters: M.RestartVirtualMachine.Request) async throws -> M.RestartVirtualMachine.Reply {
             let vm = try await findVM(withId: parameters.id)
-            try await vm.wrapped!.restart()
+            guard let wrapped = await vm.wrapped else {
+                throw ServerError.notRunning(parameters.id)
+            }
+            try await wrapped.restart()
             return .init()
         }
 
         private func _pauseVirtualMachine(parameters: M.PauseVirtualMachine.Request) async throws -> M.PauseVirtualMachine.Reply {
             let vm = try await findVM(withId: parameters.id)
-            try await vm.wrapped!.pause()
+            guard let wrapped = await vm.wrapped else {
+                throw ServerError.notRunning(parameters.id)
+            }
+            try await wrapped.pause()
             return .init()
         }
 
         private func _resumeVirtualMachine(parameters: M.ResumeVirtualMachine.Request) async throws -> M.ResumeVirtualMachine.Reply {
             let vm = try await findVM(withId: parameters.id)
-            try await vm.wrapped!.resume()
+            guard let wrapped = await vm.wrapped else {
+                throw ServerError.notRunning(parameters.id)
+            }
+            try await wrapped.resume()
             return .init()
         }
 
         private func _saveSnapshotVirtualMachine(parameters: M.SaveSnapshotVirtualMachine.Request) async throws -> M.SaveSnapshotVirtualMachine.Reply {
             let vm = try await findVM(withId: parameters.id)
-            try await vm.wrapped!.saveSnapshot(name: parameters.name)
+            guard let wrapped = await vm.wrapped else {
+                throw ServerError.notRunning(parameters.id)
+            }
+            try await wrapped.saveSnapshot(name: parameters.name)
             return .init()
         }
 
         private func _deleteSnapshotVirtualMachine(parameters: M.DeleteSnapshotVirtualMachine.Request) async throws -> M.DeleteSnapshotVirtualMachine.Reply {
             let vm = try await findVM(withId: parameters.id)
-            try await vm.wrapped!.deleteSnapshot(name: parameters.name)
+            guard let wrapped = await vm.wrapped else {
+                throw ServerError.notRunning(parameters.id)
+            }
+            try await wrapped.deleteSnapshot(name: parameters.name)
             return .init()
         }
 
         private func _restoreSnapshotVirtualMachine(parameters: M.RestoreSnapshotVirtualMachine.Request) async throws -> M.RestoreSnapshotVirtualMachine.Reply {
             let vm = try await findVM(withId: parameters.id)
-            try await vm.wrapped!.restoreSnapshot(name: parameters.name)
+            guard let wrapped = await vm.wrapped else {
+                throw ServerError.notRunning(parameters.id)
+            }
+            try await wrapped.restoreSnapshot(name: parameters.name)
             return .init()
         }
 
@@ -955,6 +994,8 @@ extension UTMRemoteServer {
         case notFound(UUID)
         case invalidBackend
         case failedToAccessFile
+        case notRunning(UUID)
+        case invalidPath
 
         var errorDescription: String? {
             switch self {
@@ -972,6 +1013,10 @@ extension UTMRemoteServer {
                 return NSLocalizedString("Invalid backend.", comment: "UTMRemoteServer")
             case .failedToAccessFile:
                 return NSLocalizedString("Failed to access file.", comment: "UTMRemoteServer")
+            case .notRunning(let id):
+                return String.localizedStringWithFormat(NSLocalizedString("VM with ID %@ is not running.", comment: "UTMRemoteServer"), id.uuidString)
+            case .invalidPath:
+                return NSLocalizedString("Invalid file path.", comment: "UTMRemoteServer")
             }
         }
     }
