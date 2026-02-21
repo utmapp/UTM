@@ -57,91 +57,21 @@ struct VMConfigQEMUArgumentsView: View {
     
     var body: some View {
         VStack {
-            Table(of: QEMUArgument.self, selection: $selected) {
-                TableColumn("Arguments") { arg in
-                    let customSelected = selected.intersection(customUuids)
-                    if fixedUuids.contains(arg.id) || customSelected.count > 1 || !customSelected.contains(arg.id) {
-                        Text(arg.string)
-                            .foregroundColor(fixedUuids.contains(arg.id) ? .secondary : .primary)
-                            .textSelection(.enabled)
-                    } else {
-                        TextField("", text: $selectedArgument.string)
-                            .focused($focused, equals: arg.id)
-                            .onSubmit(of: .text) {
-                                if let index = config.additionalArguments.firstIndex(of: arg) {
-                                    config.additionalArguments[index] = selectedArgument
-                                }
-                            }
-                    }
-                }
-            } rows: {
-                ForEach(fixedArguments) { arg in
-                    TableRow(arg)
-                }
-                ForEach(config.additionalArguments) { arg in
-                    TableRow(arg)
-                }
-            }.onChange(of: selected) { newValue in
-                // save changes to last selected argument
-                if let index = config.additionalArguments.firstIndex(where: { $0.id == selectedArgument.id }) {
-                    config.additionalArguments[index] = selectedArgument
-                    selectedArgument = .init("")
-                }
-                // get new selected argument
-                if let selectedId = selected.intersection(customUuids).first {
-                    if let arg = config.additionalArguments.first(where: { $0.id == selectedId }) {
-                        selectedArgument = arg
-                    }
+            Spacer()
+            Form {
+                Section(header: Text("Debug")) {
+                    Button {
+                        showExportArgs.toggle()
+                    } label: {
+                        Text("Export QEMU Command…")
+                    }.help("Export all arguments as a text file. This is only for debugging purposes as UTM's built-in QEMU differs from upstream QEMU in supported arguments.")
+                    Spacer()
                 }
             }
+            .frame(maxHeight: 200) // constrain the Form's height
             Spacer()
-            HStack {
-                Button {
-                    showExportArgs.toggle()
-                } label: {
-                    Text("Export QEMU Command…")
-                }.help("Export all arguments as a text file. This is only for debugging purposes as UTM's built-in QEMU differs from upstream QEMU in supported arguments.")
-                Spacer()
-                let customSelected = selected.intersection(customUuids)
-                if !customSelected.isEmpty {
-                    if customSelected.count > 1 || customSelected.first != config.additionalArguments.first?.id {
-                        Button {
-                            for i in 1..<config.additionalArguments.count {
-                                if customSelected.contains(config.additionalArguments[i].id) {
-                                    config.additionalArguments.move(fromOffsets: .init(integer: i), toOffset: i - 1)
-                                }
-                            }
-                        } label: {
-                            Text("Move Up")
-                        }
-                    }
-                    if customSelected.count > 1 || customSelected.first != config.additionalArguments.last?.id {
-                        Button {
-                            for i in (0..<config.additionalArguments.count-1).reversed() {
-                                if customSelected.contains(config.additionalArguments[i].id) {
-                                    config.additionalArguments.move(fromOffsets: .init(integer: i), toOffset: i + 2)
-                                }
-                            }
-                        } label: {
-                            Text("Move Down")
-                        }
-                    }
-                    Button(role: .destructive) {
-                        config.additionalArguments.removeAll(where: { customSelected.contains($0.id) })
-                    } label: {
-                        Text("Delete")
-                    }
-                }
-                Button {
-                    let new = QEMUArgument("")
-                    config.additionalArguments.append(new)
-                    selected.removeAll()
-                    selected.insert(new.id)
-                    focused = new.id
-                } label: {
-                    Text("New…")
-                }
-            }.padding([.bottom, .leading, .trailing])
-        }.modifier(VMShareItemModifier(isPresented: $showExportArgs, shareItem: exportShareItem))
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .modifier(VMShareItemModifier(isPresented: $showExportArgs, shareItem: exportShareItem))
     }
 }
