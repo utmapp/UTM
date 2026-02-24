@@ -632,10 +632,6 @@ build_angle () {
                                          IPHONEOS_DEPLOYMENT_TARGET="14.0" \
                                          MACOSX_DEPLOYMENT_TARGET="11.0" \
                                          XROS_DEPLOYMENT_TARGET="1.0"
-    # FIXME: update minver and remove this hack
-    if [ "$SDK" == "iphoneos" ]; then
-        find "ANGLE.xcarchive/Products/usr/local/lib/" -name '*.dylib' -exec xcrun vtool -set-version-min ios $SDKMINVER 17.2 -replace -output \{\} \{\} \;
-    fi
     rsync -a "ANGLE.xcarchive/Products/usr/local/lib/" "$PREFIX/lib"
     rsync -a "include/" "$PREFIX/include"
     cd "$pwd"
