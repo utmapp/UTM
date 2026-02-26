@@ -18,6 +18,7 @@
 		4B224B9E279D4D8100B63CFF /* InListButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B224B9C279D4D8100B63CFF /* InListButtonStyle.swift */; };
 		4B224B9F279D4D8100B63CFF /* InListButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B224B9C279D4D8100B63CFF /* InListButtonStyle.swift */; };
 		53A0BDD726D79FE40010EDC5 /* SavePanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53A0BDD426D79FE40010EDC5 /* SavePanel.swift */; };
+		5FAD12C52F4F7BCA00733342 /* VMWizardViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FAD12C12F4F7BCA00733342 /* VMWizardViewTest.swift */; };
 		83034C0726AB630F006B4BAF /* UTMPendingVMView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83034C0626AB630F006B4BAF /* UTMPendingVMView.swift */; };
 		83034C0826AB630F006B4BAF /* UTMPendingVMView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83034C0626AB630F006B4BAF /* UTMPendingVMView.swift */; };
 		83034C0926AB630F006B4BAF /* UTMPendingVMView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83034C0626AB630F006B4BAF /* UTMPendingVMView.swift */; };
@@ -1320,6 +1321,13 @@
 			remoteGlobalIDString = CEBDA1D924D8BDDA0010B5EC;
 			remoteInfo = QEMUHelper;
 		};
+		5FAD12B72F4F7B0E00733342 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CE550BC1225947990063E575 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CE2D951B24AD48BE0059923A;
+			remoteInfo = macOS;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -1687,6 +1695,8 @@
 		5A1746A228BA9C4300278241 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/Localizable.strings; sourceTree = "<group>"; };
 		5A1746A528BA9C4300278241 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/Localizable.strings; sourceTree = "<group>"; };
 		5A1746A628BA9C4300278241 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		5FAD12B12F4F7B0E00733342 /* UTMUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UTMUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		5FAD12C12F4F7BCA00733342 /* VMWizardViewTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMWizardViewTest.swift; sourceTree = "<group>"; };
 		61EBDE9F2AACA83100B959A2 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/VMDisplayWindow.strings; sourceTree = "<group>"; };
 		61EBDEA02AACA83100B959A2 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		61EBDEA12AACA83100B959A2 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -2206,6 +2216,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		5FAD12AE2F4F7B0E00733342 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		8401FD5F269BE9C500265F0D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -2555,6 +2572,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5FAD12C22F4F7BCA00733342 /* UTMUITests */ = {
+			isa = PBXGroup;
+			children = (
+				5FAD12C12F4F7BCA00733342 /* VMWizardViewTest.swift */,
+			);
+			path = UTMUITests;
+			sourceTree = "<group>";
+		};
 		841619A42843150E000034B2 /* Legacy */ = {
 			isa = PBXGroup;
 			children = (
@@ -2900,6 +2925,7 @@
 				CEFE98DD2948518D007CB7A8 /* Scripting */,
 				84E3A8F1293DB37E0024A740 /* utmctl */,
 				CE88A0A12E23201100EAA28E /* Intents */,
+				5FAD12C22F4F7BCA00733342 /* UTMUITests */,
 				CE550BCA225947990063E575 /* Products */,
 				CE2D63D622653C7300FC7E63 /* Frameworks */,
 			);
@@ -2917,6 +2943,7 @@
 				8401FD62269BE9C500265F0D /* QEMULauncher.app */,
 				84E3A8F0293DB37E0024A740 /* utmctl */,
 				CEF7F6D32AEEDCC400E34952 /* UTM Remote.app */,
+				5FAD12B12F4F7B0E00733342 /* UTMUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -3376,6 +3403,26 @@
 			productReference = CEF7F6D32AEEDCC400E34952 /* UTM Remote.app */;
 			productType = "com.apple.product-type.application";
 		};
+		5FAD12B02F4F7B0E00733342 /* UTMUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5FAD12B92F4F7B0E00733342 /* Build configuration list for PBXNativeTarget "UTMUITests" */;
+			buildPhases = (
+				5FAD12AD2F4F7B0E00733342 /* Sources */,
+				5FAD12AE2F4F7B0E00733342 /* Frameworks */,
+				5FAD12AF2F4F7B0E00733342 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				5FAD12B82F4F7B0E00733342 /* PBXTargetDependency */,
+			);
+			name = UTMUITests;
+			packageProductDependencies = (
+			);
+			productName = UTMUITests;
+			productReference = 5FAD12B12F4F7B0E00733342 /* UTMUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -3387,6 +3434,10 @@
 				LastUpgradeCheck = 1500;
 				ORGANIZATIONNAME = "Turing Software, LLC";
 				TargetAttributes = {
+					5FAD12B02F4F7B0E00733342 = {
+						CreatedOnToolsVersion = 26.2;
+						TestTargetID = CE2D951B24AD48BE0059923A;
+					};
 					8401FD61269BE9C500265F0D = {
 						CreatedOnToolsVersion = 12.4;
 					};
@@ -3459,6 +3510,7 @@
 				8401FD61269BE9C500265F0D /* QEMULauncher */,
 				CE9A352C26533A51005077CF /* JailbreakInterposer */,
 				84E3A8EF293DB37E0024A740 /* utmctl */,
+				5FAD12B02F4F7B0E00733342 /* UTMUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -3556,6 +3608,13 @@
 				CEF7F67F2AEEDCC400E34952 /* Settings.bundle in Resources */,
 				CEC1B00D2BBB211C0088119D /* PrivacyInfo.xcprivacy in Resources */,
 				CEF7F6802AEEDCC400E34952 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5FAD12AF2F4F7B0E00733342 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4399,6 +4458,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		5FAD12AD2F4F7B0E00733342 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5FAD12C52F4F7BCA00733342 /* VMWizardViewTest.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -4430,6 +4497,11 @@
 			isa = PBXTargetDependency;
 			target = CEBDA1D924D8BDDA0010B5EC /* QEMUHelper */;
 			targetProxy = CEBDA1E324D8BDDB0010B5EC /* PBXContainerItemProxy */;
+		};
+		5FAD12B82F4F7B0E00733342 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CE2D951B24AD48BE0059923A /* macOS */;
+			targetProxy = 5FAD12B72F4F7B0E00733342 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -5270,6 +5342,38 @@
 			};
 			name = Release;
 		};
+		5FAD12BA2F4F7B0E00733342 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 11.3;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = macOS;
+			};
+			name = Debug;
+		};
+		5FAD12BB2F4F7B0E00733342 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 11.3;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = macOS;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -5350,6 +5454,15 @@
 			buildConfigurations = (
 				CEF7F6D12AEEDCC400E34952 /* Debug */,
 				CEF7F6D22AEEDCC400E34952 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5FAD12B92F4F7B0E00733342 /* Build configuration list for PBXNativeTarget "UTMUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5FAD12BA2F4F7B0E00733342 /* Debug */,
+				5FAD12BB2F4F7B0E00733342 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
