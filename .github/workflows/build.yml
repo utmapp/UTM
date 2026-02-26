@@ -204,6 +204,31 @@ jobs:
         with:
           name: UTM-${{ matrix.configuration.scheme }}-${{ matrix.configuration.platform }}-${{ matrix.configuration.arch }}
           path: UTM.xcarchive.tgz
+  test-utm:
+    name: Test UTM (macOS)
+    runs-on: ${{ fromJSON(needs.configuration.outputs.runner) }}
+    needs: [configuration, build-sysroot]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: Cache Sysroot
+        uses: actions/cache/restore@v4
+        with:
+          path: ./sysroot-macos-arm64
+          key: macos-arm64-${{ hashFiles('scripts/build_dependencies.sh') }}-${{ hashFiles('patches/**') }}
+          fail-on-cache-miss: true
+      - name: Setup Xcode
+        shell: bash
+        run: |
+          [[ "$(xcode-select -p)" == "${{ env.BUILD_XCODE_PATH }}"* ]] || sudo xcode-select -s "${{ env.BUILD_XCODE_PATH }}"
+      - name: Run Tests
+        run: |
+          xcodebuild test \
+            -scheme macOS \
+            -destination 'platform=macOS' \
+            CODE_SIGNING_ALLOWED=NO
   build-universal:
     name: Build UTM (Universal Mac)
     runs-on: ${{ fromJSON(needs.configuration.outputs.runner) }}
