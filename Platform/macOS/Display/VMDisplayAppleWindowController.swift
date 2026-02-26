@@ -46,6 +46,9 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
     // MARK: - User preferences
     
     @Setting("SharePathAlertShown") private var isSharePathAlertShownPersistent: Bool = false
+    @Setting("NoUsbPrompt") private var isNoUsbPrompt: Bool = false
+    
+    private var allUsbDevices: [Any] = []
     
     override func windowDidLoad() {
         mainView!.translatesAutoresizingMaskIntoConstraints = false
@@ -94,11 +97,22 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
             setControl([.restart, .sharedFolder], isEnabled: false)
         }
         if #available(macOS 15, *) {
-            setControl(.drives, isEnabled: true)
+            setControl([.drives, .usb], isEnabled: true)
+        }
+        if #available(macOS 15, *), !isSecondary, let usbManager = appleVM.usbManager {
+            usbManager.delegate = self
         }
     }
     
     override func enterSuspended(isBusy busy: Bool) {
+        if #available(macOS 15, *), let usbManager = appleVM.usbManager {
+            usbManager.delegate = nil
+        }
+        if vm.state == .stopped {
+            if #available(macOS 15, *) {
+                allUsbDevices.removeAll()
+            }
+        }
         super.enterSuspended(isBusy: busy)
     }
     
@@ -492,5 +506,149 @@ fileprivate extension NSView {
         let imageRepresentation = bitmapImageRepForCachingDisplay(in: bounds)!
         cacheDisplay(in: bounds, to: imageRepresentation)
         return NSImage(cgImage: imageRepresentation.cgImage!, size: bounds.size)
+    }
+}
+
+// MARK: - USB capture
+
+@available(macOS 15, *)
+extension VMDisplayAppleWindowController: UTMIOUSBHostManagerDelegate {
+    func ioUsbHostManager(_ ioUsbHostManager: UTMIOUSBHostManager, deviceAttached device: UTMIOUSBHostDevice) {
+        logger.debug("USB device attached: \(device.name ?? "")")
+        if !isNoUsbPrompt {
+            Task { @MainActor in
+                if self.window?.isKeyWindow == true && self.vm.state == .started {
+                    self.showConnectPrompt(for: device)
+                }
+            }
+        }
+    }
+    
+    func ioUsbHostManager(_ ioUsbHostManager: UTMIOUSBHostManager, deviceRemoved device: UTMIOUSBHostDevice) {
+        logger.debug("USB device removed: \(device.name ?? "")")
+    }
+    
+    func showConnectPrompt(for usbDevice: UTMIOUSBHostDevice) {
+        let alert = NSAlert()
+        alert.alertStyle = .informational
+        alert.messageText = NSLocalizedString("USB Device", comment: "VMDisplayAppleWindowController")
+        alert.informativeText = String.localizedStringWithFormat(NSLocalizedString("Would you like to connect '%@' to this virtual machine?", comment: "VMDisplayAppleWindowController"), usbDevice.name ?? "")
+        alert.showsSuppressionButton = true
+        alert.addButton(withTitle: NSLocalizedString("Confirm", comment: "VMDisplayAppleWindowController"))
+        alert.addButton(withTitle: NSLocalizedString("Cancel", comment: "VMDisplayAppleWindowController"))
+        alert.beginSheetModal(for: window!) { response in
+            if let suppressionButton = alert.suppressionButton,
+               suppressionButton.state == .on {
+                self.isNoUsbPrompt = true
+            }
+            guard response == .alertFirstButtonReturn else {
+                return
+            }
+            guard let apple = self.appleVM.apple else { return }
+            guard let usbManager = self.appleVM.usbManager else { return }
+            usbManager.connectUsbDevice(usbDevice, to: apple) { error in
+                if let error = error {
+                    Task { @MainActor in
+                        self.showErrorAlert(error.localizedDescription)
+                    }
+                }
+            }
+        }
+    }
+}
+
+extension VMDisplayAppleWindowController {
+    override func updateUsbMenu(_ menu: NSMenu) {
+        guard #available(macOS 15, *), let usbManager = appleVM.usbManager else {
+            return
+        }
+        menu.autoenablesItems = false
+        let item = NSMenuItem()
+        item.title = NSLocalizedString("Querying USB devices...", comment: "VMDisplayAppleWindowController")
+        item.isEnabled = false
+        menu.addItem(item)
+        usbManager.usbDevices { devices, error in
+            if let error = error {
+                logger.error("Failed to query USB devices: \(error)")
+                return
+            }
+            self.updateUsbDevicesMenu(menu, devices: devices)
+        }
+    }
+    
+    @available(macOS 15, *)
+    func updateUsbDevicesMenu(_ menu: NSMenu, devices: [UTMIOUSBHostDevice]) {
+        allUsbDevices = devices
+        menu.removeAllItems()
+        if devices.count == 0 {
+            let item = NSMenuItem()
+            item.title = NSLocalizedString("No USB devices detected.", comment: "VMDisplayAppleWindowController")
+            item.isEnabled = false
+            menu.addItem(item)
+        }
+        guard let usbManager = appleVM.usbManager else {
+            return
+        }
+        let connectedDevices = usbManager.connectedDevices
+        for (i, device) in devices.enumerated() {
+            let item = NSMenuItem()
+            let isConnected = device.isCaptured
+            let isConnectedToSelf = connectedDevices.contains(device)
+            item.title = device.name ?? ""
+            item.isEnabled = (isConnectedToSelf || !isConnected)
+            item.state = isConnectedToSelf ? .on : .off
+            item.tag = i
+
+            let submenu = NSMenu()
+            let connectItem = NSMenuItem()
+            connectItem.title = isConnectedToSelf ? NSLocalizedString("Disconnect…", comment: "VMDisplayAppleWindowController") : NSLocalizedString("Connect…", comment: "VMDisplayAppleWindowController")
+            connectItem.isEnabled = (isConnectedToSelf || !isConnected)
+            connectItem.tag = i
+            connectItem.target = self
+            connectItem.action = isConnectedToSelf ? #selector(disconnectUsbDevice) : #selector(connectUsbDevice)
+            submenu.addItem(connectItem)
+
+            item.submenu = submenu
+            menu.addItem(item)
+        }
+        menu.update()
+    }
+    
+    @available(macOS 15, *)
+    @objc func connectUsbDevice(sender: AnyObject) {
+        guard let menu = sender as? NSMenuItem else {
+            logger.error("wrong sender for connectUsbDevice")
+            return
+        }
+        guard let usbManager = appleVM.usbManager else {
+            return
+        }
+        let device = allUsbDevices[menu.tag] as! UTMIOUSBHostDevice
+        usbManager.connectUsbDevice(device, to: appleVM.apple!) { error in
+            if let error = error {
+                Task { @MainActor in
+                    self.showErrorAlert(error.localizedDescription)
+                }
+            }
+        }
+    }
+    
+    @available(macOS 15, *)
+    @objc func disconnectUsbDevice(sender: AnyObject) {
+        guard let menu = sender as? NSMenuItem else {
+            logger.error("wrong sender for disconnectUsbDevice")
+            return
+        }
+        guard let usbManager = appleVM.usbManager else {
+            return
+        }
+        let device = allUsbDevices[menu.tag] as! UTMIOUSBHostDevice
+        usbManager.disconnectUsbDevice(device, to: appleVM.apple!) { error in
+            if let error = error {
+                Task { @MainActor in
+                    self.showErrorAlert(error.localizedDescription)
+                }
+            }
+        }
     }
 }
