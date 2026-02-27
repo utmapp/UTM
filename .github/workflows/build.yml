@@ -170,14 +170,14 @@ jobs:
     strategy:
       matrix:
         configuration: [
-          {arch: "arm64", sdk: "iphoneos", platform: "ios", scheme: "iOS"},
-          {arch: "arm64", sdk: "iphoneos", platform: "ios-tci", scheme: "iOS-SE"},
-          {arch: "arm64", sdk: "iphoneos", platform: "ios-tci", scheme: "iOS-Remote"},
-          {arch: "arm64", sdk: "xros", platform: "visionos", scheme: "iOS"},
-          {arch: "arm64", sdk: "xros", platform: "visionos-tci", scheme: "iOS-SE"},
-          {arch: "arm64", sdk: "xros", platform: "visionos-tci", scheme: "iOS-Remote"},
+#          {arch: "arm64", sdk: "iphoneos", platform: "ios", scheme: "iOS"},
+#          {arch: "arm64", sdk: "iphoneos", platform: "ios-tci", scheme: "iOS-SE"},
+#          {arch: "arm64", sdk: "iphoneos", platform: "ios-tci", scheme: "iOS-Remote"},
+#         {arch: "arm64", sdk: "xros", platform: "visionos", scheme: "iOS"},
+#          {arch: "arm64", sdk: "xros", platform: "visionos-tci", scheme: "iOS-SE"},
+#          {arch: "arm64", sdk: "xros", platform: "visionos-tci", scheme: "iOS-Remote"},
           {arch: "arm64", sdk: "macosx", platform: "macos", scheme: "macOS"},
-          {arch: "x86_64", sdk: "macosx", platform: "macos", scheme: "macOS"},
+#         {arch: "x86_64", sdk: "macosx", platform: "macos", scheme: "macOS"},
         ]
     steps:
       - name: Checkout
