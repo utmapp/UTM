@@ -54,7 +54,8 @@ jobs:
     strategy:
       matrix:
         arch: [arm64]
-        platform: [ios, ios_simulator, ios-tci, ios_simulator-tci, macos, visionos, visionos_simulator, visionos-tci, visionos_simulator-tci]
+       # platform: [ios, ios_simulator, ios-tci, ios_simulator-tci, macos, visionos, visionos_simulator, visionos-tci, visionos_simulator-tci]
+        platform: [macos]
         include:
           # x86_64 supported only for macOS and simulators
           - arch: x86_64
@@ -170,14 +171,14 @@ jobs:
     strategy:
       matrix:
         configuration: [
-#          {arch: "arm64", sdk: "iphoneos", platform: "ios", scheme: "iOS"},
-#          {arch: "arm64", sdk: "iphoneos", platform: "ios-tci", scheme: "iOS-SE"},
-#          {arch: "arm64", sdk: "iphoneos", platform: "ios-tci", scheme: "iOS-Remote"},
-#         {arch: "arm64", sdk: "xros", platform: "visionos", scheme: "iOS"},
-#          {arch: "arm64", sdk: "xros", platform: "visionos-tci", scheme: "iOS-SE"},
-#          {arch: "arm64", sdk: "xros", platform: "visionos-tci", scheme: "iOS-Remote"},
+          {arch: "arm64", sdk: "iphoneos", platform: "ios", scheme: "iOS"},
+          {arch: "arm64", sdk: "iphoneos", platform: "ios-tci", scheme: "iOS-SE"},
+          {arch: "arm64", sdk: "iphoneos", platform: "ios-tci", scheme: "iOS-Remote"},
+          {arch: "arm64", sdk: "xros", platform: "visionos", scheme: "iOS"},
+          {arch: "arm64", sdk: "xros", platform: "visionos-tci", scheme: "iOS-SE"},
+          {arch: "arm64", sdk: "xros", platform: "visionos-tci", scheme: "iOS-Remote"},
           {arch: "arm64", sdk: "macosx", platform: "macos", scheme: "macOS"},
-#         {arch: "x86_64", sdk: "macosx", platform: "macos", scheme: "macOS"},
+          {arch: "x86_64", sdk: "macosx", platform: "macos", scheme: "macOS"},
         ]
     steps:
       - name: Checkout
