@@ -235,7 +235,7 @@ jobs:
             ENABLE_HARDENED_RUNTIME=YES
       - name: Run Tests
         run: |
-          xattr -dr com.apple.quarantine "$GITHUB_WORKSPACE/DerivedData" || true
+          xattr -dr com.apple.quarantine "$GITHUB_WORKSPACE/DerivedData/Build" || true
           xcodebuild test-without-building \
             -scheme macOS \
             -destination 'platform=macOS' \
