@@ -229,7 +229,9 @@ jobs:
           xcodebuild test \
             -scheme macOS \
             -destination 'platform=macOS' \
-            CODE_SIGNING_ALLOWED=NO
+            CODE_SIGN_IDENTITY="-" \
+            CODE_SIGNING_REQUIRED=NO \
+            ENABLE_HARDENED_RUNTIME=YES
   build-universal:
     name: Build UTM (Universal Mac)
     runs-on: ${{ fromJSON(needs.configuration.outputs.runner) }}
