@@ -224,15 +224,22 @@ jobs:
         shell: bash
         run: |
           [[ "$(xcode-select -p)" == "${{ env.BUILD_XCODE_PATH }}"* ]] || sudo xcode-select -s "${{ env.BUILD_XCODE_PATH }}"
-      - name: Run Tests
+      - name: Build for Testing
         run: |
-          xattr -dr com.apple.quarantine "$GITHUB_WORKSPACE" || true
-          xcodebuild test \
+          xcodebuild build-for-testing \
             -scheme macOS \
             -destination 'platform=macOS' \
+            -derivedDataPath "$GITHUB_WORKSPACE/DerivedData" \
             CODE_SIGN_IDENTITY="-" \
             CODE_SIGNING_REQUIRED=NO \
             ENABLE_HARDENED_RUNTIME=YES
+      - name: Run Tests
+        run: |
+          xattr -dr com.apple.quarantine "$GITHUB_WORKSPACE/DerivedData" || true
+          xcodebuild test-without-building \
+            -scheme macOS \
+            -destination 'platform=macOS' \
+            -derivedDataPath "$GITHUB_WORKSPACE/DerivedData"
   build-universal:
     name: Build UTM (Universal Mac)
     runs-on: ${{ fromJSON(needs.configuration.outputs.runner) }}
