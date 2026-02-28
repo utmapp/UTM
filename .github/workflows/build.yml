@@ -226,13 +226,9 @@ jobs:
           [[ "$(xcode-select -p)" == "${{ env.BUILD_XCODE_PATH }}"* ]] || sudo xcode-select -s "${{ env.BUILD_XCODE_PATH }}"
       - name: Run Tests
         run: |
-          xattr -dr com.apple.quarantine "$GITHUB_WORKSPACE" || true
           xcodebuild test \
             -scheme macOS \
             -destination 'platform=macOS' \
-            CODE_SIGN_IDENTITY="-" \
-            CODE_SIGNING_REQUIRED=NO \
-            ENABLE_HARDENED_RUNTIME=YES
   build-universal:
     name: Build UTM (Universal Mac)
     runs-on: ${{ fromJSON(needs.configuration.outputs.runner) }}
