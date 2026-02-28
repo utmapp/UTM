@@ -232,10 +232,10 @@ jobs:
             -derivedDataPath "$GITHUB_WORKSPACE/DerivedData" \
             CODE_SIGN_IDENTITY="-" \
             CODE_SIGNING_REQUIRED=NO \
-            ENABLE_HARDENED_RUNTIME=YES
+            ENABLE_HARDENED_RUNTIME=YES \
+            ENABLE_APP_SANDBOX=NO
       - name: Run Tests
         run: |
-          xattr -dr com.apple.quarantine "$GITHUB_WORKSPACE/DerivedData/Build" || true
           xcodebuild test-without-building \
             -scheme macOS \
             -destination 'platform=macOS' \
