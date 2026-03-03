@@ -23,7 +23,7 @@ on:
         default: 'false'
 
 env:
-  BUILD_XCODE_PATH: /Applications/Xcode_26.0.app
+  BUILD_XCODE_PATH: ${{ vars.HOST_XCODE_PATH || '/Applications/Xcode_26.0.app' }}
   RUNNER_IMAGE: macos-15
   SEGMENT_DOWNLOAD_TIMEOUT_MINS: 60
 
