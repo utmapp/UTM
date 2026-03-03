@@ -118,7 +118,10 @@ VMDisplayQemuTerminalWindowController */
 "Any unsaved changes will be lost." = "所有未儲存的變更都將遺失。";
 
 /* No comment provided by engineer. */
-"Approve" = "認可";
+"Apple Core OpenGL" = "Apple 核心 OpenGL";
+
+/* No comment provided by engineer. */
+"Approve" = "批准";
 
 /* No comment provided by engineer. */
 "Architecture" = "架構";
@@ -350,7 +353,7 @@ UTMQemuConstants */
 "Default" = "預設";
 
 /* No comment provided by engineer. */
-"Default (private)" = "預設（私人）";
+"Default (private)" = "預設 (私人)";
 
 /* VMWizardSummaryView */
 "Default Cores" = "預設核心";
@@ -645,6 +648,9 @@ UTMQemuConstants */
 /* UTMQemuConstants */
 "Host Only" = "僅主機";
 
+/* UTMQemuVirtualMachine */
+"Host OS version is too old to support the selected Vulkan driver." = "主機的 OS 版本太舊，無法支援選擇的 Vulkan 驅動程式。";
+
 /* No comment provided by engineer. */
 "Hostname or IP address" = "主機或 IP 位址";
 
@@ -739,6 +745,9 @@ UTMQemuConstants */
 "Keep UTM running after last window is closed and all VMs are shut down" = "在最後一個視窗關閉並且所有虛擬機關機時繼續執行 UTM";
 
 /* No comment provided by engineer. */
+"KosmicKrisp" = "KosmicKrisp";
+
+/* No comment provided by engineer. */
 "License" = "許可協議";
 
 /* UTMQemuConstants */
@@ -811,13 +820,16 @@ UTMQemuConstants */
 "Memory" = "記憶體";
 
 /* VMDisplayMetalWindowController */
-"Metal is not supported on this device. Cannot render display." = "此裝置不支援 Metal，無法運算顯示。";
+"Metal is not supported on this device. Cannot render display." = "此裝置不支援 Metal，無法算圖顯示。";
 
 /* No comment provided by engineer. */
 "MiB" = "MiB";
 
 /* No comment provided by engineer. */
 "Minimum size: %@" = "最低大小：%@";
+
+/* No comment provided by engineer. */
+"MoltenVK" = "MoltenVK";
 
 /* UTMDonateView */
 "month" = "月";
@@ -1359,6 +1371,12 @@ UTMQemuConstants */
 
 /* VMWizardState */
 "The selected boot image contains the word '%@' but the guest architecture is '%@'. Please ensure you have selected an image that is compatible with '%@'." = "選擇的啟動映像檔包含單字「%1$@」，但客户端架構為「%2$@」。請確定你選擇了與「%3$@」相容的映像檔。";
+
+/* No comment provided by engineer. */
+"The selected renderer backend does not support Vulkan." = "選擇的算圖器後端不支援 Vulkan。";
+
+/* UTMQemuVirtualMachine */
+"The selected Vulkan driver is not compatible with the selected renderer backend." = "選擇的 Vulkan 驅動程式與選擇的算圖器後端不相容。";
 
 /* UTMRemoteClient */
 "The server interface version does not match the client." = "伺服器介面版本與客户端不相符。";
@@ -2586,6 +2604,9 @@ VMWizardOSMacView */
 
 /* No comment provided by engineer. */
 "VM display size is fixed" = "固定虛擬機顯示大小";
+
+/* No comment provided by engineer. */
+"Vulkan Driver" = "Vulkan 驅動程式";
 
 /* No comment provided by engineer. */
 "Wait for Connection" = "等待連線";
