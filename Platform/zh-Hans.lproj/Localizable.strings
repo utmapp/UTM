@@ -118,6 +118,9 @@ VMDisplayQemuTerminalWindowController */
 "Any unsaved changes will be lost." = "所有未存储的更改都将丢失。";
 
 /* No comment provided by engineer. */
+"Apple Core OpenGL" = "Apple 核心 OpenGL";
+
+/* No comment provided by engineer. */
 "Approve" = "批准";
 
 /* No comment provided by engineer. */
@@ -645,6 +648,9 @@ UTMQemuConstants */
 /* UTMQemuConstants */
 "Host Only" = "仅主机";
 
+/* UTMQemuVirtualMachine */
+"Host OS version is too old to support the selected Vulkan driver." = "主机的操作系统版本太旧，无法支持所选的 Vulkan 驱动程序。";
+
 /* No comment provided by engineer. */
 "Hostname or IP address" = "主机名或 IP 地址";
 
@@ -655,7 +661,7 @@ UTMQemuConstants */
 "IDE" = "IDE";
 
 /* UTMScriptingConfigImpl */
-"Identifier '%@' cannot be found." = "找不到标识符 '%@'。";
+"Identifier '%@' cannot be found." = "找不到标识符“%@”。";
 
 /* No comment provided by engineer. */
 "Image File Type" = "映像文件类型";
@@ -739,6 +745,9 @@ UTMQemuConstants */
 "Keep UTM running after last window is closed and all VMs are shut down" = "在关闭最后一个窗口和所有虚拟机关机后继续运行 UTM";
 
 /* No comment provided by engineer. */
+"KosmicKrisp" = "KosmicKrisp";
+
+/* No comment provided by engineer. */
 "License" = "许可";
 
 /* UTMQemuConstants */
@@ -818,6 +827,9 @@ UTMQemuConstants */
 
 /* No comment provided by engineer. */
 "Minimum size: %@" = "最小文件大小：%@";
+
+/* No comment provided by engineer. */
+"MoltenVK" = "MoltenVK";
 
 /* UTMDonateView */
 "month" = "月";
@@ -1340,7 +1352,7 @@ UTMQemuConstants */
 "The host operating system needs to be updated to support one or more features requested by the guest." = "需要更新主机操作系统以支持客户机请求的一个或多个功能。";
 
 /* UTMScriptingConfigImpl */
-"The icon named '%@' cannot be found in the built-in icons." = "在内置图标中找不到名为 '%@' 的图标。";
+"The icon named '%@' cannot be found in the built-in icons." = "在内置图标中找不到名为“%@”的图标。";
 
 /* UTMAppleVirtualMachine */
 "The operating system cannot be installed on this machine." = "操作系统无法安装在此机器上。";
@@ -1358,7 +1370,13 @@ UTMQemuConstants */
 "The selected architecture is unsupported in this version of UTM." = "此版本的 UTM 不支持所选架构。";
 
 /* VMWizardState */
-"The selected boot image contains the word '%@' but the guest architecture is '%@'. Please ensure you have selected an image that is compatible with '%@'." = "所选的启动映像名称包含“%@”，但客户机的架构为“%@”。请确保你选择了与“%@”兼容的映像。";
+"The selected boot image contains the word '%@' but the guest architecture is '%@'. Please ensure you have selected an image that is compatible with '%@'." = "所选的启动映像名称包含“%@”，但客户机的架构是“%@”。请确保你选择了与“%@”兼容的映像。";
+
+/* No comment provided by engineer. */
+"The selected renderer backend does not support Vulkan." = "选定的渲染器后端不支持 Vulkan。";
+
+/* UTMQemuVirtualMachine */
+"The selected Vulkan driver is not compatible with the selected renderer backend." = "选定的 Vulkan 驱动程序与选定的渲染器后端不兼容。";
 
 /* UTMRemoteClient */
 "The server interface version does not match the client." = "服务器接口版本与客户端不匹配。";
@@ -1584,7 +1602,7 @@ VMMetalView */
 "Windows Guest Support Tools" = "Windows 客户机支持工具";
 
 /* VMQemuDisplayMetalWindowController */
-"Would you like to connect '%@' to this virtual machine?" = "你要将 '%@' 连接到此虚拟机吗？";
+"Would you like to connect '%@' to this virtual machine?" = "你要将“%@”连接到此虚拟机吗？";
 
 /* VMDisplayAppleWindowController */
 "Would you like to install macOS? If an existing operating system is already installed on the primary drive of this VM, then it will be erased." = "你要安装 macOS 吗？若现有的操作系统已安装在该虚拟机的主驱动器上，则它将被抹掉。";
@@ -2586,6 +2604,9 @@ VMWizardOSMacView */
 
 /* No comment provided by engineer. */
 "VM display size is fixed" = "固定虚拟机显示大小";
+
+/* No comment provided by engineer. */
+"Vulkan Driver" = "Vulkan 驱动程序";
 
 /* No comment provided by engineer. */
 "Wait for Connection" = "等待连接";
