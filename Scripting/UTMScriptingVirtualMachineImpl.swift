@@ -278,9 +278,25 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
         }
     }
     
+    
     @objc func queryIp(_ command: NSScriptCommand) {
         withScriptCommand(command) { [self] in
-            try await withGuestAgent { guestAgent in
+            // Apple Virtualization backend: no guest agent available,
+            // so mirror Tart's host-side DHCP lease resolver instead.
+            if let appleVM = vm as? UTMAppleVirtualMachine {
+                guard appleVM.state == .started else {
+                    throw ScriptingError.notRunning
+                }
+
+                guard let network = appleVM.config.networks.first else {
+                    return []
+                }
+                let macAddress = network.macAddress.lowercased()
+                return Self.ipFromARP(macAddress: macAddress)
+            }
+
+            // Non-Apple backend (QEMU): use guest agent (existing code).
+            return try await withGuestAgent { guestAgent in
                 let interfaces = try await guestAgent.guestNetworkGetInterfaces()
                 var ipv4: [String] = []
                 var ipv6: [String] = []
@@ -302,6 +318,75 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
         }
     }
 }
+
+extension UTMScriptingVirtualMachineImpl {
+
+    /// Normalizes a colon-separated MAC address by stripping leading zeros from each
+    /// octet so that `%x`-formatted bytes compare equal to stored representations.
+    ///
+    /// Example: `"ce:09:f1:ce:7f:f2"` → `"ce:9:f1:ce:7f:f2"`
+    private static func normalizeMac(_ mac: String) -> String {
+        mac.split(separator: ":").map { octet in
+            let stripped = octet.drop(while: { $0 == "0" })
+            return stripped.isEmpty ? "0" : String(stripped)
+        }.joined(separator: ":")
+    }
+
+    /// Find the IP address for the given MAC by querying the kernel ARP cache via
+    /// `sysctl(CTL_NET, PF_ROUTE, …, NET_RT_FLAGS, RTF_LLINFO)`.
+    ///
+    /// This avoids reading `/var/db/dhcpd_leases`, which macOS 15+ blocks from
+    /// sandboxed apps even when the relevant entitlements are present.
+    ///
+    /// - Parameter macAddress: Lowercase colon-separated MAC, e.g. `"ce:09:f1:ce:7f:f2"`.
+    /// - Returns: A single-element array with the IP, or empty if not found.
+    static func ipFromARP(macAddress: String) -> [String] {
+        var mib: [Int32] = [CTL_NET, PF_ROUTE, 0, AF_INET, NET_RT_FLAGS, RTF_LLINFO]
+        var needed = 0
+        guard sysctl(&mib, 6, nil, &needed, nil, 0) == 0, needed > 0 else { return [] }
+
+        var buf = [UInt8](repeating: 0, count: needed)
+        guard sysctl(&mib, 6, &buf, &needed, nil, 0) == 0 else { return [] }
+
+        let normalizedTarget = normalizeMac(macAddress)
+        var offset = 0
+
+        while offset + MemoryLayout<rt_msghdr>.stride <= needed {
+            let msglen = Int(buf.withUnsafeBytes {
+                $0.load(fromByteOffset: offset, as: rt_msghdr.self).rtm_msglen
+            })
+            guard msglen > 0, offset + msglen <= needed else { break }
+            defer { offset += msglen }
+
+            // Sockaddrs start immediately after rt_msghdr.
+            // First: sockaddr_in (destination IP). Layout: len(1) family(1) port(2) addr(4) …
+            let sinStart = offset + MemoryLayout<rt_msghdr>.stride
+            guard sinStart + 8 <= needed else { continue }
+            let sinLen    = Int(buf[sinStart])
+            let sinFamily = buf[sinStart + 1]
+            guard sinFamily == UInt8(AF_INET), sinLen >= 8 else { continue }
+            let ipStr = buf[(sinStart + 4)..<(sinStart + 8)].map { String($0) }.joined(separator: ".")
+
+            // Second: sockaddr_dl (link-layer MAC). Padded to sizeof(long) = 8.
+            // Layout: len(1) family(1) index(2) type(1) nlen(1) alen(1) slen(1) data[nlen+alen…]
+            let sdlStart = sinStart + ((sinLen + 7) & ~7)
+            guard sdlStart + 8 <= needed else { continue }
+            let sdlFamily = buf[sdlStart + 1]
+            let sdlNlen   = Int(buf[sdlStart + 5])
+            let sdlAlen   = Int(buf[sdlStart + 6])
+            guard sdlFamily == UInt8(AF_LINK), sdlAlen == 6 else { continue }
+
+            let macStart = sdlStart + 8 + sdlNlen
+            guard macStart + 6 <= needed else { continue }
+            let mac = buf[macStart..<(macStart + 6)].map { String(format: "%x", $0) }.joined(separator: ":")
+            if normalizeMac(mac) == normalizedTarget {
+                return [ipStr]
+            }
+        }
+        return []
+    }
+}
+
 
 // MARK: - Errors
 extension UTMScriptingVirtualMachineImpl {
@@ -325,3 +410,4 @@ extension UTMScriptingVirtualMachineImpl {
         }
     }
 }
+    
