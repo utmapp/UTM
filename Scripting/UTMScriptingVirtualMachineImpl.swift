@@ -278,11 +278,9 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
         }
     }
     
-    
     @objc func queryIp(_ command: NSScriptCommand) {
         withScriptCommand(command) { [self] in
-            // Apple Virtualization backend: no guest agent available,
-            // so mirror Tart's host-side DHCP lease resolver instead.
+            // Apple Virtualization backend: no guest agent available
             if let appleVM = vm as? UTMAppleVirtualMachine {
                 guard appleVM.state == .started else {
                     throw ScriptingError.notRunning
@@ -295,7 +293,7 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
                 return Self.ipFromARP(macAddress: macAddress)
             }
 
-            // Non-Apple backend (QEMU): use guest agent (existing code).
+            // Non-Apple backend (QEMU): use guest agent
             return try await withGuestAgent { guestAgent in
                 let interfaces = try await guestAgent.guestNetworkGetInterfaces()
                 var ipv4: [String] = []
@@ -334,9 +332,6 @@ extension UTMScriptingVirtualMachineImpl {
 
     /// Find the IP address for the given MAC by querying the kernel ARP cache via
     /// `sysctl(CTL_NET, PF_ROUTE, …, NET_RT_FLAGS, RTF_LLINFO)`.
-    ///
-    /// This avoids reading `/var/db/dhcpd_leases`, which macOS 15+ blocks from
-    /// sandboxed apps even when the relevant entitlements are present.
     ///
     /// - Parameter macAddress: Lowercase colon-separated MAC, e.g. `"ce:09:f1:ce:7f:f2"`.
     /// - Returns: A single-element array with the IP, or empty if not found.
@@ -410,4 +405,3 @@ extension UTMScriptingVirtualMachineImpl {
         }
     }
 }
-    
