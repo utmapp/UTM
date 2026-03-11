@@ -1,11 +1,11 @@
-#  UTM
+#  UTM (Universal Turing Machine)
 [![Build](https://github.com/utmapp/UTM/workflows/Build/badge.svg?branch=main&event=push)][1]
 
 > It is possible to invent a single machine which can be used to compute any computable sequence.
 
 -- <cite>Alan Turing, 1936</cite>
 
-UTM is a full featured system emulator and virtual machine host for iOS and macOS. It is based off of QEMU. In short, it allows you to run Windows, Linux, and more on your Mac, iPhone, and iPad. More information at https://getutm.app/ and https://mac.getutm.app/
+UTM (Universal Turing Machine) is a full featured system emulator and virtual machine host for iOS and macOS. It is based off of QEMU. In short, it allows you to run Windows, Linux, and more on your Mac, iPhone, and iPad. More information at https://getutm.app/ and https://mac.getutm.app/
 
 <p align="center">
   <img width="450px" alt="UTM running on an iPhone" src="screen.png">
