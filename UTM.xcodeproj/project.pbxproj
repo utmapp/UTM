@@ -2572,12 +2572,12 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		5FAD12C22F4F7BCA00733342 /* UTMUITests */ = {
+		5FAD12D12F4F7BCA00733342 /* Test */ = {
 			isa = PBXGroup;
 			children = (
 				5FAD12C12F4F7BCA00733342 /* VMWizardViewTest.swift */,
 			);
-			path = UTMUITests;
+			path = Test;
 			sourceTree = "<group>";
 		};
 		841619A42843150E000034B2 /* Legacy */ = {
@@ -2925,7 +2925,7 @@
 				CEFE98DD2948518D007CB7A8 /* Scripting */,
 				84E3A8F1293DB37E0024A740 /* utmctl */,
 				CE88A0A12E23201100EAA28E /* Intents */,
-				5FAD12C22F4F7BCA00733342 /* UTMUITests */,
+				5FAD12D12F4F7BCA00733342 /* Test */,
 				CE550BCA225947990063E575 /* Products */,
 				CE2D63D622653C7300FC7E63 /* Frameworks */,
 			);
