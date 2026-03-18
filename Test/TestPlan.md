@@ -102,8 +102,24 @@ func test_userGuideLink_navigatesToDocumentation() {
 ### Support link navigates to UTM Home website
 - **Issue:** NOT CREATED YET
 - **Steps:**
-  1. open UTM 
+  1. open UTM
   2. click on Support
 - **Expected:** Clicking on Support buttom UTM home page is reached
 - **Status:** NOT IMPLEMENTED
 
+### Gallery link navigate to VM Download Gallery
+- **Issue:** NOT CREATED YET
+- **Steps:**
+  1. open UTM
+  2. click on Gallery button
+- **Expected:** Clicking on Gallery buttom UTM gallery page is reached
+- **Status:** NOT IMPLEMENTED
+
+### Download VM from gallery and start it
+- **Issue:** NOT CREATED YET
+- **Steps:**
+  1. open UTM
+  2. click on Download VM from UTM
+  3. start it
+- **Expected:** starting the VM login page is reached
+- **Status:** NOT IMPLEMENTED
