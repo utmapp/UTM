@@ -47,7 +47,7 @@ struct VMConfigNetworkView: View {
                         }
                     }
                     if config.mode == .host {
-                        Picker("Host Network", selection: $config.hostNetUuid) {
+                        Picker(NSLocalizedString("Host Network", comment: "VMConfigNetworkView"), selection: $config.hostNetUuid) {
                             Text("Default (private)")
                                 .tag(nil as String?)
                             ForEach(hostNetworks) { interface in

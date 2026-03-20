@@ -30,8 +30,8 @@ struct UTMTipDonate: Tip {
     }
 
     var actions: [Action] {
-        Action(id: "donate", title: "Donate")
-        Action(id: "no-thanks", title: "No Thanks")
+        Action(id: "donate", title: NSLocalizedString("Donate", comment: "UTMTips"))
+        Action(id: "no-thanks", title: NSLocalizedString("No Thanks", comment: "UTMTips"))
     }
 
     var rules: [Rule] {

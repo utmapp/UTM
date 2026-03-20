@@ -375,14 +375,14 @@ struct Details: View {
                     }
                     ForEach(network.currentIpAddresses) { guestIP in
                         HStack {
-                            plainLabel("Guest IP", systemImage: "network.badge.shield.half.filled")
+                            plainLabel(LocalizedStringKey(NSLocalizedString("Guest IP", comment: "VMDetailsView")), systemImage: "network.badge.shield.half.filled")
                             Spacer()
                             OptionalSelectableText(guestIP)
                         }
                     }
                     if network.mode == .bridged, let interface = network.bridgeInterface {
                         HStack {
-                            plainLabel("Bridge Interface", systemImage: "arrow.triangle.branch")
+                            plainLabel(LocalizedStringKey(NSLocalizedString("Bridge Interface", comment: "VMDetailsView")), systemImage: "arrow.triangle.branch")
                             Spacer()
                             Text(interface)
                                 .foregroundColor(.secondary)
@@ -405,7 +405,7 @@ struct Details: View {
                 ForEach(appleConfig.serials) { serial in
                     if serial.mode == .ptty {
                         HStack {
-                            plainLabel("Serial (TTY)", systemImage: "phone.connection")
+                            plainLabel(LocalizedStringKey(NSLocalizedString("Serial (TTY)", comment: "VMDetailsView")), systemImage: "phone.connection")
                             Spacer()
                             OptionalSelectableText(serial.interface?.name)
                         }
@@ -417,14 +417,14 @@ struct Details: View {
                 ForEach(qemuConfig.serials) { serial in
                     if serial.mode == .tcpClient {
                         HStack {
-                            plainLabel("Serial (Client)", systemImage: "network")
+                            plainLabel(LocalizedStringKey(NSLocalizedString("Serial (Client)", comment: "VMDetailsView")), systemImage: "network")
                             Spacer()
                             let address = "\(serial.tcpHostAddress ?? "example.com"):\(serial.tcpPort ?? 1234)"
                             OptionalSelectableText(vm.state == .started ? address : nil)
                         }
                     } else if serial.mode == .tcpServer {
                         HStack {
-                            plainLabel("Serial (Server)", systemImage: "network")
+                            plainLabel(LocalizedStringKey(NSLocalizedString("Serial (Server)", comment: "VMDetailsView")), systemImage: "network")
                             Spacer()
                             let address = "\(serial.tcpPort ?? 1234)"
                             OptionalSelectableText(vm.state == .started ? address : nil)
@@ -433,7 +433,7 @@ struct Details: View {
                     #if os(macOS)
                     if serial.mode == .ptty {
                         HStack {
-                            plainLabel("Serial (TTY)", systemImage: "phone.connection")
+                            plainLabel(LocalizedStringKey(NSLocalizedString("Serial (TTY)", comment: "VMDetailsView")), systemImage: "phone.connection")
                             Spacer()
                             OptionalSelectableText(serial.pttyDevice?.path)
                         }

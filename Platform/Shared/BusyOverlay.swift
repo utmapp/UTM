@@ -30,7 +30,7 @@ struct BusyOverlay: View {
         .alert(item: $data.alertItem) { item in
             switch item {
             case .downloadUrl(let url):
-                return Alert(title: Text("Download VM"), message: Text("Do you want to download '\(url)'?"), primaryButton: .cancel(), secondaryButton: .default(Text("Download")) {
+                return Alert(title: Text(NSLocalizedString("Download VM", comment: "BusyOverlay")), message: Text(String.localizedStringWithFormat(NSLocalizedString("Do you want to download '%@'?", comment: "BusyOverlay"), url.absoluteString)), primaryButton: .cancel(), secondaryButton: .default(Text(NSLocalizedString("Download", comment: "BusyOverlay"))) {
                     data.downloadUTMZip(from: url)
                 })
             case .message(let message):
