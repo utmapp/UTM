@@ -54,8 +54,7 @@ jobs:
     strategy:
       matrix:
         arch: [arm64]
-       # platform: [ios, ios_simulator, ios-tci, ios_simulator-tci, macos, visionos, visionos_simulator, visionos-tci, visionos_simulator-tci]
-        platform: [macos]
+        platform: [ios, ios_simulator, ios-tci, ios_simulator-tci, macos, visionos, visionos_simulator, visionos-tci, visionos_simulator-tci]
         include:
           # x86_64 supported only for macOS and simulators
           - arch: x86_64
