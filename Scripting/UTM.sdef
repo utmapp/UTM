@@ -4,10 +4,10 @@
 <dictionary title="UTM Terminology" xmlns:xi="http://www.w3.org/2003/XInclude">
 
     <xi:include href="file:///System/Library/ScriptingDefinitions/CocoaStandard.sdef" xpointer="xpointer(/dictionary/suite)"/>
-    
+
     <suite name="UTM Suite" code="UTMs" description="UTM virtual machines scripting suite.">
         <access-group identifier="com.utmapp.UTM.vm-access" />
-        
+
         <command name="make" code="corecrel" description="Create a new virtual machine.">
             <cocoa class="UTMScriptingCreateCommand"/>
             <parameter name="new" code="kocl" type="type" description="Specify 'virtual machine' here.">
@@ -18,7 +18,7 @@
             </parameter>
             <result type="specifier" description="The new virtual machine (as a specifier)."/>
         </command>
-        
+
         <class-extension extends="application" description="An application's top level scripting object.">
           <element type="virtual machine" access="r">
             <cocoa key="scriptingVirtualMachines"/>
@@ -30,13 +30,13 @@
               <cocoa key="version"/>
           </property>
         </class-extension>
-        
+
         <enumeration name="backend" code="VmEb" description="Backend type.">
             <enumerator name="apple" code="ApPl" description="Apple Virtualization.framework backend."/>
             <enumerator name="qemu" code="QeMu" description="QEMU backend."/>
             <enumerator name="unavailable" code="UnAv" description="The virtual machine is not currently available."/>
         </enumeration>
-        
+
         <enumeration name="status" code="VmEs" description="Status type.">
             <enumerator name="stopped" code="StSa" description="VM is not running."/>
             <enumerator name="starting" code="StSb" description="VM is starting up."/>
@@ -46,19 +46,19 @@
             <enumerator name="resuming" code="StSf" description="VM is resuming from pause."/>
             <enumerator name="stopping" code="StSg" description="VM is stopping."/>
         </enumeration>
-        
+
         <enumeration name="stop method" code="VmEs" description="Stop by method.">
             <enumerator name="force" code="FoRc" description="Force stop VM by sending stop request to the backend."/>
             <enumerator name="kill" code="KiLl" description="Force kill VM by terminating the backend."/>
             <enumerator name="request" code="ReQu" description="Send a power down request to the guest OS which may be ignored."/>
         </enumeration>
-        
+
         <enumeration name="serial interface" code="VmEr" description="Serial port interface.">
             <enumerator name="ptty" code="PtTy" description="Pseudo TTY port."/>
             <enumerator name="tcp" code="TcP " description="TCP port."/>
             <enumerator name="unavailable" code="IUnA" description="Serial interface is currently unavailable or is in use by the GUI."/>
         </enumeration>
-        
+
         <command name="start" code="UTMvstar" description="Start a virtual machine or resume a suspended virtual machine.">
           <direct-parameter description="Virtual machine to start." type="virtual machine"/>
           <parameter name="saving" code="SaVe" description="When false, do not save the VM changes to disk. Default value is true." type="boolean" optional="yes">
@@ -68,27 +68,27 @@
             <cocoa key="bootRecoveryFlag"/>
           </parameter>
         </command>
-        
+
         <command name="suspend" code="UTMvsusp" description="Suspend a running virtual machine to memory.">
           <direct-parameter description="Virtual machine to suspend." type="virtual machine"/>
           <parameter name="saving" code="SaVe" description="Save VM state to disk after suspend. Default value is false." type="boolean" optional="yes">
             <cocoa key="saveFlag"/>
           </parameter>
         </command>
-        
+
         <command name="stop" code="UTMvstop" description="Shuts down a running virtual machine.">
           <direct-parameter description="Virtual machine to stop." type="virtual machine"/>
           <parameter name="by" code="StBy" description="Method to stop the VM." type="stop method" optional="yes">
             <cocoa key="stopBy"/>
           </parameter>
         </command>
-        
+
         <command name="delete" code="coredelo" description="Delete a virtual machine. All data will be deleted, there is no confirmation!">
             <cocoa class="UTMScriptingDeleteCommand"/>
             <access-group identifier="*"/>
             <direct-parameter type="virtual machine" description="The virtual machine to delete."/>
         </command>
-        
+
         <command name="duplicate" code="coreclon" description="Copy an virtual machine and all its data.">
             <cocoa class="UTMScriptingCloneCommand"/>
             <access-group identifier="*"/>
@@ -97,7 +97,7 @@
                 <cocoa key="WithProperties"/>
             </parameter>
         </command>
-        
+
         <command name="import" code="coreimpo" description="Import a new virtual machine from a file.">
             <cocoa class="UTMScriptingImportCommand"/>
             <parameter name="new" code="imcl" type="type" description="Specify 'virtual machine' here.">
@@ -108,7 +108,7 @@
             </parameter>
             <result type="specifier" description="The new virtual machine (as a specifier)."/>
         </command>
-        
+
         <command name="export" code="coreexpo" description="Export a virtual machine to a specified location.">
             <cocoa class="UTMScriptingExportCommand"/>
             <direct-parameter type="virtual machine" requires-access="r" description="The virtual machine to export."/>
@@ -116,7 +116,7 @@
                 <cocoa key="file"/>
             </parameter>
         </command>
-        
+
         <class name="virtual machine" code="UTMv" description="A virtual machine registered in UTM." plural="virtual machines">
           <cocoa class="UTMScriptingVirtualMachineImpl"/>
 
@@ -125,10 +125,10 @@
 
           <property name="name" code="pnam" type="text" access="r"
             description="The name of the VM."/>
-            
+
           <property name="backend" code="BaKe" type="backend" access="r"
             description="Emulation/virtualization engine used."/>
-            
+
           <property name="status" code="StUs" type="status" access="r"
             description="Current running status."/>
 
@@ -136,55 +136,55 @@
             description="Serial ports exposed by the guest to the host to access.">
             <cocoa key="serialPorts"/>
           </element>
-          
+
           <responds-to command="start">
             <cocoa method="start:"/>
           </responds-to>
-          
+
           <responds-to command="suspend">
             <cocoa method="suspend:"/>
           </responds-to>
-          
+
           <responds-to command="stop">
             <cocoa method="stop:"/>
           </responds-to>
-          
+
           <responds-to command="delete">
             <cocoa method="delete:"/>
           </responds-to>
-          
+
         </class>
-        
+
         <class name="serial port" code="SeRi" description="A serial port in the guest that can be connected to from the host." plural="serial ports">
           <cocoa class="UTMScriptingSerialPortImpl"/>
           <property name="id" code="ID  " type="integer" access="r"
             description="The unique identifier of the tag."/>
-          
+
           <property name="interface" code="InTf" type="serial interface" access="r"
             description="The type of serial interface on the host."/>
-            
+
           <property name="address" code="AdDr" type="text" access="r"
             description="Host address of the serial port (determined by the interface type)."/>
-            
+
           <property name="port" code="PoRt" type="integer" access="r"
             description="Port number of the serial port (not used in some interface types)."/>
         </class>
     </suite>
-    
+
     <suite name="UTM Guest Suite" code="UTMg" description="UTM virtual machine guest scripting suite. In order to use these commands, QEMU guest agent must be running.">
         <access-group identifier="com.utmapp.UTM.vm-access" />
-        
+
         <class-extension extends="virtual machine" description="Guest agent access.">
             <element type="guest file" access="r"
               description="Open files for this virtual machine from the guest agent.">
               <cocoa key="openFiles"/>
             </element>
-            
+
             <element type="guest process" access="r"
               description="Processe executed on this virtual machine from the guest agent.">
               <cocoa key="processes"/>
             </element>
-            
+
             <responds-to command="open file">
               <cocoa method="openFile:"/>
             </responds-to>
@@ -195,13 +195,13 @@
               <cocoa method="queryIp:"/>
             </responds-to>
         </class-extension>
-        
+
         <enumeration name="open mode" code="OpMo" description="File open mode.">
             <enumerator name="reading" code="OpRo" description="Open the file as read only. The file must exist."/>
             <enumerator name="writing" code="OpWo" description="Open the file for writing. If the file does not exist, it will be created. If the file exists, it will be overwritten."/>
             <enumerator name="appending" code="OpAp" description="Open the file for writing at the end. Offsets are ignored for writes. If the file does not exist, it will be created."/>
         </enumeration>
-        
+
         <command name="open file" code="UTMgOpEn" description="Open a file on the guest. You must close the file when you are done to prevent leaking guest resources.">
           <direct-parameter description="Virtual machine of the guest." type="virtual machine"/>
           <parameter name="at" code="OpPt" description="The guest path of the file to open." type="text">
@@ -210,12 +210,12 @@
           <parameter name="for" code="OpMd" description="Open mode." type="open mode" optional="yes">
             <cocoa key="mode"/>
           </parameter>
-          <parameter name="updating" code="OpAp" description="If true, will open for both reading and writing. The file existance requirement and creation is still governed by the open mode. Default is false." type="boolean" optional="yes">
+          <parameter name="updating" code="OpAp" description="If true, will open for both reading and writing. The file existence requirement and creation is still governed by the open mode. Default is false." type="boolean" optional="yes">
             <cocoa key="isUpdate"/>
           </parameter>
           <result type="guest file" description="Guest file to operate on."/>
         </command>
-        
+
         <command name="execute" code="UTMgExEc" description="Execute a command or script on the guest.">
           <direct-parameter description="Virtual machine of the guest." type="virtual machine"/>
           <parameter name="at" code="ExPt" description="Either the full path of the executable to run or an executable found in the guest's PATH environment." type="text">
@@ -240,46 +240,46 @@
           </parameter>
           <result type="guest process" description="Guest process that can be used to fetch the return value and outputs (if captured)."/>
         </command>
-        
+
         <command name="query ip" code="UTMgIpAd" description="Query the guest for all IP addresses on its network interfaces (excluding loopback).">
           <direct-parameter description="Virtual machine of the guest." type="virtual machine"/>
           <result description="List of IP addresses on all network interfaces (excluding loopback). Both IPv4 and IPv6 addresses can be returned. IPv4 addresses will show up before IPv6 addresses if any are available.">
             <type type="text" list="yes"/>
           </result>
         </command>
-        
+
         <class name="guest file" code="GuFi" description="A file that resides on the guest." plural="guest files">
           <cocoa class="UTMScriptingGuestFileImpl"/>
           <property name="id" code="ID  " type="integer" access="r"
             description="The handle for the file."/>
-            
+
           <responds-to command="read">
             <cocoa method="read:"/>
           </responds-to>
-          
+
           <responds-to command="pull">
             <cocoa method="pull:"/>
           </responds-to>
-          
+
           <responds-to command="write">
             <cocoa method="write:"/>
           </responds-to>
-          
+
           <responds-to command="push">
             <cocoa method="push:"/>
           </responds-to>
-          
+
           <responds-to command="close">
             <cocoa method="close:"/>
           </responds-to>
         </class>
-        
+
         <enumeration name="whence" code="WeCe" description="Where to offset from.">
             <enumerator name="start position" code="StRt" description="The start of the file (only positive offsets)."/>
             <enumerator name="current position" code="CuRr" description="The current pointer (both positive and negative offsets)."/>
             <enumerator name="end position" code="UnAv" description="The end of the file (only negative offsets for reads, both for writes)."/>
         </enumeration>
-        
+
         <command name="read" code="GuFiReAd" description="Reads text data from a guest file.">
           <direct-parameter description="Guest file to read." type="guest file"/>
           <parameter name="at offset" code="RdOf" description="Specify the offset to start reading from. Default value is zero." type="integer" optional="yes">
@@ -299,7 +299,7 @@
           </parameter>
           <result type="text" description="Data read from the guest file."/>
         </command>
-        
+
         <command name="pull" code="GuFiPuLl" description="Pulls a file from the guest to the host.">
           <direct-parameter description="Guest file to pull." type="guest file"/>
           <parameter name="to" code="kfil" description="The host file in which to save the guest file." type="file">
@@ -309,7 +309,7 @@
             <cocoa key="isClosing"/>
           </parameter>
         </command>
-        
+
         <command name="write" code="GuFiWrIt" description="Writes text data to a guest file.">
           <direct-parameter description="Guest file to write." type="guest file"/>
           <parameter name="with data" code="WrDt" description="Data to write to the guest file. If base64 encoding is specified, this should be a valid base64 string which will be decoded before writing." type="text">
@@ -328,7 +328,7 @@
             <cocoa key="isClosing"/>
           </parameter>
         </command>
-        
+
         <command name="push" code="GuFiPuSh" description="Pushes a file from the host to the guest and closes it.">
           <direct-parameter description="Guest file to push." type="guest file"/>
           <parameter name="from" code="kfil" description="The host file in which to send to the guest." type="file">
@@ -338,67 +338,67 @@
             <cocoa key="isClosing"/>
           </parameter>
         </command>
-        
+
         <command name="close" code="GuFiClOs" description="Closes the file and prevent further operations.">
           <direct-parameter description="Guest file to close." type="guest file"/>
         </command>
-        
+
         <class name="guest process" code="GuPr" description="A process on the guest." plural="guest processes">
           <cocoa class="UTMScriptingGuestProcessImpl"/>
           <property name="id" code="ID  " type="integer" access="r"
             description="The PID of the process."/>
-          
+
           <responds-to command="get result">
             <cocoa method="getResult:"/>
           </responds-to>
         </class>
-        
+
         <record-type name="execute result" code="ExRs" description="Process results after execution.">
           <property name="exited" code="ExTd" type="boolean" access="r"
             description="If true, the process has terminated.">
             <cocoa key="hasExited" />
           </property>
-            
+
           <property name="exit code" code="ExCd" type="integer" access="r"
             description="Exit code if it was normally terminated."/>
-            
+
           <property name="signal code" code="SiCd" type="integer" access="r"
             description="Signal number (Linux) or unhandled exception code (Windows) if the process was abnormally terminated."/>
-            
+
           <property name="output text" code="OuTx" type="text" access="r"
             description="If capture is enabled, the stdout of the process as text."/>
-            
+
           <property name="error text" code="ErTx" type="text" access="r"
             description="If capture is enabled, the stderr of the process as text."/>
-            
+
           <property name="output data" code="OuDa" type="text" access="r"
             description="If capture is enabled, the stdout of the process as base64 encoded data."/>
-            
+
           <property name="error data" code="ErDa" type="text" access="r"
             description="If capture is enabled, the stderr of the process as base64 encoded data."/>
         </record-type>
-        
+
         <command name="get result" code="GuPrGeRs" description="Fetch execution result from the guest.">
           <direct-parameter description="Guest process to fetch result from." type="guest process"/>
           <result type="execute result" description="Result from the guest."/>
         </command>
     </suite>
 
-    <suite name="UTM Configuration Suite" code="UTMc" description="UTM virtual machine configuration suite. Use this to create and configurate virtual machines.">
+    <suite name="UTM Configuration Suite" code="UTMc" description="UTM virtual machine configuration suite. Use this to create and configure virtual machines.">
         <access-group identifier="com.utmapp.UTM.vm-access" />
-        
+
         <class-extension extends="virtual machine" description="Virtual machine configuration.">
             <property name="configuration" code="CoFg" access="r"
               description="The configuration of the virtual machine.">
               <type type="qemu configuration"/>
               <type type="apple configuration"/>
             </property>
-            
+
             <responds-to command="update configuration">
               <cocoa method="updateConfiguration:"/>
             </responds-to>
         </class-extension>
-        
+
         <command name="update configuration" code="UTMcUpDt" description="Update the configuration of the virtual machine. The VM must be in the stopped state.">
           <direct-parameter description="Virtual machine to configure." type="virtual machine"/>
           <parameter name="with" code="UpCf" description="The configuration to update the virtual machine. You cannot change the backend with this!">
@@ -411,89 +411,89 @@
         <record-type name="qemu configuration" code="QeCf" description="QEMU virtual machine configuration.">
           <property name="name" code="pnam" type="text"
             description="Virtual machine name."/>
-        
+
           <property name="icon" code="IcOn" type="text"
             description="Virtual machine icon."/>
-            
+
           <property name="notes" code="NoTe" type="text"
             description="User-specified notes."/>
-            
+
           <property name="architecture" code="ArCh" type="text"
             description="QEMU system architecture."/>
-            
+
           <property name="machine" code="MaCh" type="text"
             description="QEMU target machine (if empty, the default will be used)."/>
-            
+
           <property name="memory" code="MeMy" type="integer"
             description="RAM size (in mebibytes)."/>
-            
+
           <property name="cpu cores" code="CpUc" type="integer"
             description="Number of CPU cores (0 is the default for this host)."/>
-            
+
           <property name="hypervisor" code="HyPr" type="boolean"
             description="Use the hypervisor (if supported)?"/>
-            
+
           <property name="uefi" code="UeFi" type="boolean"
             description="Use UEFI boot?"/>
-            
+
           <property name="directory share mode" code="DrSm" type="qemu directory share mode"
             description="Mode for directory sharing."/>
-            
+
           <property name="drives" code="DrVs"
             description="List of drive configuration.">
             <type type="qemu drive configuration" list="yes"/>
           </property>
-          
+
           <property name="network interfaces" code="NtIf"
             description="List of network configuration.">
             <type type="qemu network configuration" list="yes"/>
           </property>
-          
+
           <property name="serial ports" code="SrPt"
             description="List of serial configuration.">
             <type type="qemu serial configuration" list="yes"/>
           </property>
-          
+
           <property name="displays" code="DiPs"
             description="List of display configuration.">
             <type type="qemu display configuration" list="yes"/>
           </property>
-          
+
           <property name="qemu additional arguments" code="QeAd"
             description="List of qemu arguments.">
             <type type="qemu argument" list="yes"/>
           </property>
         </record-type>
-        
+
         <enumeration name="qemu directory share mode" code="QeSm" description="Method for sharing directory in QEMU.">
             <enumerator name="none" code="SmOf" description="Do not enable directory sharing."/>
             <enumerator name="WebDAV" code="SmWv" description="Use SPICE WebDav (SPICE guest tools required)."/>
             <enumerator name="VirtFS" code="SmVs" description="Use VirtFS mount tagged 'share' (VirtFS guest drivers required)."/>
         </enumeration>
-        
+
         <record-type name="qemu drive configuration" code="QdEc" description="QEMU virtual existing drive configuration.">
           <property name="id" code="ID  " type="text" access="r"
             description="The unique identifier for this drive (if empty, a new drive will be created)."/>
-            
+
           <property name="removable" code="ReMv" type="boolean" access="r"
             description="Is this drive removable (cannot be changed after creation)?"/>
-            
+
           <property name="interface" code="InTf" type="qemu drive interface"
             description="The hardware interface this drive is attached to (if empty, the default will be used)."/>
-            
+
           <property name="host size" code="HoSz" type="integer" access="r"
             description="The size of this drive as seen by the host (in MiB)."/>
-            
+
           <property name="guest size" code="GuSz" type="integer"
             description="The size of this drive as seen by the guest (in MiB)."/>
-            
+
           <property name="raw" code="RaAw" type="boolean"
             description="Is this disk image raw format (only for newly created drives)?"/>
-            
+
           <property name="source" code="SrCe" type="file"
             description="An existing file to use as the source image."/>
         </record-type>
-        
+
         <enumeration name="qemu drive interface" code="QeDi" description="QEMU drive interfaces.">
             <enumerator name="none" code="QdIN"/>
             <enumerator name="IDE" code="QdIi"/>
@@ -506,255 +506,255 @@
             <enumerator name="NVMe" code="QdIn"/>
             <enumerator name="USB" code="QdIu"/>
         </enumeration>
-        
+
         <record-type name="qemu network configuration" code="QeCn" description="QEMU virtual network configuration.">
           <property name="index" code="pidx" type="integer"
             description="The position of the configuration to update. It can be empty to create a new device. Index is invalid after updating the configuration and must be reset to the current position."/>
-            
+
           <property name="hardware" code="HaWe" type="text"
             description="Name of the emulated network card (if empty, the default will be used)."/>
-            
+
           <property name="mode" code="MoDe" type="qemu network mode"
             description="This determines how the network device is attached to the host."/>
-            
+
           <property name="address" code="AdDr" type="text"
             description="MAC address (formatted as XX:XX:XX:XX:XX:XX, if empty a random address will be genertaed)"/>
-            
+
           <property name="host interface" code="HoIf" type="text"
             description="Only used in bridged mode. Specify the interface name to bridge to."/>
-            
+
           <property name="port forwards" code="PtFw"
             description="Only used in emulated mode. Allows port forwarding from guest to host.">
             <type type="qemu port forward" list="yes"/>
           </property>
         </record-type>
-        
+
         <enumeration name="qemu network mode" code="QeNm" description="Mode for networking device.">
             <enumerator name="emulated" code="EmUd" description="Emulate a VLAN."/>
             <enumerator name="shared" code="ShRd" description="NAT based sharing with the host."/>
             <enumerator name="host" code="HoSt" description="NAT based sharing with no WAN routing."/>
             <enumerator name="bridged" code="BrGd" description="Bridged to a host interface."/>
         </enumeration>
-        
+
         <record-type name="qemu port forward" code="QePf" description="QEMU port forward configuration.">
           <property name="protocol" code="PrTl" type="network protocol"
             description="Protocol of the port that will be forwarded."/>
-            
+
           <property name="host address" code="HoAd" type="text"
             description="The host interface IP address to forward to (if empty, it will forward to any interface)."/>
-            
+
           <property name="host port" code="HoPo" type="integer"
             description="Port number on the host."/>
-            
+
           <property name="guest address" code="GuAd" type="text"
             description="The IP address on the guest subnet to forward from (if empty, any guest IP will be accepted)."/>
-            
+
           <property name="guest port" code="GuPo" type="integer"
             description="Port number on the guest."/>
         </record-type>
-        
+
         <enumeration name="network protocol" code="NtPr" description="Supported network protocols.">
             <enumerator name="TCP" code="TcPp"/>
             <enumerator name="UDP" code="UdPp"/>
         </enumeration>
-        
+
         <record-type name="qemu serial configuration" code="QeSn" description="QEMU virtual serial configuration.">
             <property name="index" code="pidx" type="integer"
               description="The position of the configuration to update. It can be empty to create a new device. Index is invalid after updating the configuration and must be reset to the current position."/>
-              
+
             <property name="hardware" code="HaWe" type="text"
               description="Name of the emulated serial device (if empty, the default will be used)."/>
-              
+
             <property name="interface" code="InTf" type="serial interface"
               description="The type of serial interface on the host."/>
-              
+
             <property name="port" code="PoRt" type="integer"
               description="The port number to listen on when the interface is a TCP server."/>
         </record-type>
-        
+
         <record-type name="qemu display configuration" code="QdYc" description="QEMU virtual display configuration.">
           <property name="index" code="pidx" type="integer"
             description="The position of the configuration to update. It can be empty to create a new device. Index is invalid after updating the configuration and must be reset to the current position."/>
 
           <property name="hardware" code="HaWe" type="text"
             description="Name of the emulated display card (required. if given hardware not found, the default will be used)."/>
-            
+
           <property name="dynamic resolution" code="DyRe" type="boolean"
             description="If true, attempt to use SPICE guest agent to change the display resolution automatically."/>
-            
+
           <property name="native resolution" code="NaRe" type="boolean"
             description="If true, use the true (retina) resolution of the display. Otherwise, use the percieved resolution."/>
 
           <property name="upscaling filter" code="UpFi" type="qemu scaler"
             description="Filter to use when upscaling."/>
-            
+
           <property name="downscaling filter" code="DoFi" type="qemu scaler"
             description="Filter to use when downscaling."/>
         </record-type>
-        
+
         <enumeration name="qemu scaler" code="QeSc" description="QEMU Scaler.">
             <enumerator name="linear" code="QsLi"/>
             <enumerator name="nearest" code="QsNe"/>
         </enumeration>
-        
+
         <record-type name="qemu argument" code="QeAr" description="QEMU argument configuration.">
           <property name="argument string" code="ArSt" type="text"
             description="The QEMU argument as a string."/>
-          <property name="file urls" code="FlUr" 
+          <property name="file urls" code="FlUr"
             description="Optional URLs associated with this argument.">
             <type type="file" list="yes"/>
           </property>
         </record-type>
-        
+
         <record-type name="apple configuration" code="ApCf" description="Apple virtual machine configuration.">
           <property name="name" code="pnam" type="text"
             description="Virtual machine name."/>
-            
+
           <property name="icon" code="IcOn" type="text"
             description="Virtual machine icon."/>
-            
+
           <property name="notes" code="NoTe" type="text"
             description="User-specified notes."/>
-            
+
           <property name="memory" code="MeMy" type="integer"
             description="RAM size (in mebibytes)."/>
-            
+
           <property name="cpu cores" code="CpUc" type="integer"
             description="Number of CPU cores (0 is the default for this host)."/>
-            
+
           <property name="directory shares" code="DiRs"
             description="List of directory share configuration.">
             <type type="apple directory share configuration" list="yes"/>
           </property>
-            
+
           <property name="drives" code="DrVs"
             description="List of drive configuration.">
             <type type="apple drive configuration" list="yes"/>
           </property>
-          
+
           <property name="network interfaces" code="NtIf"
             description="List of network configuration.">
             <type type="apple network configuration" list="yes"/>
           </property>
-          
+
           <property name="serial ports" code="SrPt"
             description="List of serial configuration.">
             <type type="apple serial configuration" list="yes"/>
           </property>
-          
+
           <property name="displays" code="DiPs"
             description="List of display configuration.">
             <type type="apple display configuration" list="yes"/>
           </property>
         </record-type>
-        
+
         <record-type name="apple directory share configuration" code="ApDs" description="Apple directory share configuration.">
           <property name="index" code="pidx" type="integer"
             description="The position of the configuration to update. It can be empty to create a new device. Index is invalid after updating the configuration and must be reset to the current position."/>
-            
+
           <property name="read only" code="RdOy" type="boolean" access="r"
             description="Is this directory read-only?"/>
         </record-type>
-        
+
         <record-type name="apple drive configuration" code="ApEc" description="Apple virtual existing drive configuration.">
           <property name="id" code="ID  " type="text" access="r"
             description="The unique identifier for this drive (if empty, a new drive will be created)."/>
-            
+
           <property name="removable" code="ReMv" type="boolean" access="r"
             description="Is this drive removable (cannot be changed after creation)?"/>
-            
+
           <property name="host size" code="HoSz" type="integer" access="r"
             description="The size of this drive as seen by the host (in MiB)."/>
-            
+
           <property name="guest size" code="GuSz" type="integer"
             description="The size of this drive as seen by the guest (in MiB)."/>
-            
+
           <property name="source" code="SrCe" type="file"
             description="An existing file to use as the source image."/>
         </record-type>
-        
+
         <record-type name="apple network configuration" code="ApCn" description="Apple virtual network configuration.">
           <property name="index" code="pidx" type="integer"
             description="The position of the configuration to update. It can be empty to create a new device. Index is invalid after updating the configuration and must be reset to the current position."/>
-            
+
           <property name="mode" code="MoDe" type="apple network mode"
             description="This determines how the network device is attached to the host."/>
-            
+
           <property name="address" code="AdDr" type="text"
             description="MAC address (formatted as XX:XX:XX:XX:XX:XX, if empty a random address will be genertaed)"/>
-            
+
           <property name="host interface" code="HoIf" type="text"
             description="Only used in bridged mode. Specify the interface name to bridge to."/>
         </record-type>
-        
+
         <enumeration name="apple network mode" code="ApNm" description="Mode for networking device.">
             <enumerator name="shared" code="ShRd" description="NAT based sharing with the host."/>
             <enumerator name="bridged" code="BrGd" description="Bridged to a host interface."/>
         </enumeration>
-        
+
         <record-type name="apple serial configuration" code="ApSn" description="Apple virtual serial configuration.">
             <property name="index" code="pidx" type="integer"
               description="The position of the configuration to update. It can be empty to create a new device. Index is invalid after updating the configuration and must be reset to the current position."/>
-              
+
             <property name="interface" code="InTf" type="serial interface"
               description="The type of serial interface on the host (only PTTY is supported)."/>
         </record-type>
-        
+
         <record-type name="apple display configuration" code="AdYc" description="Apple virtual display configuration.">
           <property name="id" code="ID  " type="text" access="r"
             description="The unique identifier for this display (if empty, a new display will be created)."/>
-            
+
           <property name="dynamic resolution" code="DyRe" type="boolean"
             description="Dynamic Resolution."/>
         </record-type>
     </suite>
-    
+
     <suite name="UTM USB Devices Suite" code="UTMu" description="UTM virtual machine USB devices suite. Use this to connect USB devices from the host to the guest.">
         <access-group identifier="com.utmapp.UTM.vm-access" />
-        
+
         <class-extension extends="application" description="An application's top level scripting object.">
           <element type="usb device" access="r"
             description="List of all USB devices currently connected to the host. If there is no running VM with USB sharing supported and enabled, then this will always return an empty list.">
             <cocoa key="scriptingUsbDevices"/>
           </element>
         </class-extension>
-        
+
         <class name="usb device" code="UsBd" description="A host USB device that is shared with the guest." plural="usb devices">
           <cocoa class="UTMScriptingUSBDeviceImpl"/>
           <property name="id" code="ID  " type="integer" access="r"
-            description="A unique identifier corrosponding to the USB bus and port number."/>
-            
+            description="A unique identifier corresponding to the USB bus and port number."/>
+
           <property name="name" code="pnam" type="text" access="r"
             description="The name of the USB device."/>
-            
+
           <property name="manufacturer name" code="UsBM" type="text" access="r"
             description="The product name described by the iManufacturer descriptor."/>
-            
+
           <property name="product name" code="UsBP" type="text" access="r"
             description="The product name described by the iProduct descriptor."/>
-            
+
           <property name="vendor id" code="UsBv" type="integer" access="r"
             description="The vendor ID described by the idVendor descriptor."/>
-            
+
           <property name="product id" code="UsBp" type="integer" access="r"
             description="The product ID described by the idProduct descriptor."/>
-            
+
           <responds-to command="connect">
             <cocoa method="connect:"/>
           </responds-to>
-          
+
           <responds-to command="disconnect">
             <cocoa method="disconnect:"/>
           </responds-to>
         </class>
-        
+
         <class-extension extends="virtual machine" description="Virtual machine USB devices.">
           <element type="usb device" access="r"
             description="List of connected USB devices.">
             <cocoa key="connectedUsbDevices"/>
           </element>
         </class-extension>
-        
+
         <command name="connect" code="UTMuCoNt" description="Connect a USB device to a running VM and remove it from the host.">
           <direct-parameter description="The USB device to connect to the VM." type="usb device"/>
           <parameter name="to" code="UsBn" description="The virtual machine to connect. The virtual machine must be running. Not all backends support USB sharing.">
@@ -762,26 +762,26 @@
             <type type="virtual machine"/>
           </parameter>
         </command>
-        
+
         <command name="disconnect" code="UTMuDiSc" description="Disconnect a USB device from the guest and re-assign it to the host.">
           <direct-parameter description="The USB device to disconnect." type="usb device"/>
         </command>
     </suite>
-    
+
     <suite name="UTM Registry Suite" code="UTMr" description="UTM virtual machine registry suite. Use this to update virtual machine registry.">
            <access-group identifier="com.utmapp.UTM.vm-access" />
-           
+
            <class-extension extends="virtual machine" description="Virtual machine registry.">
                <property name="registry" code="ReGs" access="r"
                    description="The registry of the virtual machine.">
                    <type type="file" list="yes"/>
                </property>
-               
+
                <responds-to command="update registry">
                    <cocoa method="updateRegistry:"/>
                </responds-to>
            </class-extension>
-           
+
            <command name="update registry" code="UTMrUpDt" description="Update the registry of the virtual machine.">
                <direct-parameter description="Virtual machine to update." type="virtual machine"/>
                <parameter name="with" code="UpRg" description="The registry to update the virtual machine. Currently you can only change the shared directory with this!">
