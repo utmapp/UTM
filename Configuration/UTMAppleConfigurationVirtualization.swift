@@ -142,15 +142,13 @@ extension UTMAppleConfigurationVirtualization {
         }
         if #available(macOS 12, *) {
             if hasAudio {
-                let audioInputConfiguration = VZVirtioSoundDeviceConfiguration()
+                let audioConfiguration = VZVirtioSoundDeviceConfiguration()
                 let audioInput = VZVirtioSoundDeviceInputStreamConfiguration()
                 audioInput.source = VZHostAudioInputStreamSource()
-                audioInputConfiguration.streams = [audioInput]
-                let audioOutputConfiguration = VZVirtioSoundDeviceConfiguration()
                 let audioOutput = VZVirtioSoundDeviceOutputStreamConfiguration()
                 audioOutput.sink = VZHostAudioOutputStreamSink()
-                audioOutputConfiguration.streams = [audioOutput]
-                vzconfig.audioDevices = [audioInputConfiguration, audioOutputConfiguration]
+                audioConfiguration.streams = [audioInput, audioOutput]
+                vzconfig.audioDevices = [audioConfiguration]
             }
             if keyboard != .disabled {
                 vzconfig.keyboards = [VZUSBKeyboardConfiguration()]
