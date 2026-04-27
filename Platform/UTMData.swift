@@ -158,10 +158,10 @@ enum AlertItem: Identifiable {
         }
         // now look for and add new VMs in default storage
         do {
-            let files = try fileManager.contentsOfDirectory(at: UTMData.defaultStorageUrl, includingPropertiesForKeys: [.isDirectoryKey], options: .skipsHiddenFiles)
+            let files = try fileManager.contentsOfDirectory(at: UTMData.defaultStorageUrl, includingPropertiesForKeys: [.isDirectoryKey, .fileResourceIdentifierKey], options: .skipsHiddenFiles)
             let newFiles = files.filter { newFile in
                 !list.contains { existingVM in
-                    existingVM.pathUrl.standardizedFileURL == newFile.standardizedFileURL
+                    Self.isSameFile(existingVM.pathUrl, as: newFile)
                 }
             }
             for file in newFiles {
@@ -498,12 +498,20 @@ enum AlertItem: Identifiable {
     /// - Returns: Index of item removed in VM list or nil if not in list
     @discardableResult func delete(vm: VMData, alsoRegistry: Bool = true) async throws -> Int? {
         if vm.isLoaded {
-            try fileManager.removeItem(at: vm.pathUrl)
+            let pathToDelete = vm.pathUrl
+            let otherReferencesExist = virtualMachines.contains { other in
+                other !== vm && Self.isSameFile(other.pathUrl, as: pathToDelete)
+            }
+            if otherReferencesExist {
+                logger.warning("Skipping file deletion: another VM entry references the same path")
+            } else {
+                try fileManager.removeItem(at: pathToDelete)
+            }
         }
-        
+
         // close any open window
         close(vm: vm)
-        
+
         if alsoRegistry, let registryEntry = vm.registryEntry {
             UTMRegistry.shared.remove(entry: registryEntry)
         }
@@ -660,7 +668,7 @@ enum AlertItem: Identifiable {
         let fileName = url.lastPathComponent
         let dest = documentsURL.appendingPathComponent(fileName, isDirectory: true)
         if let vm = virtualMachines.first(where: { vm -> Bool in
-            return vm.pathUrl.standardizedFileURL == url.standardizedFileURL
+            return Self.isSameFile(vm.pathUrl, as: url)
         }) {
             logger.info("found existing vm!")
             if !vm.isLoaded {
@@ -976,6 +984,18 @@ enum AlertItem: Identifiable {
             return
         }
         vm.changeUuid(to: UUID(), name: nil, copyingEntry: vm.registryEntry)
+    }
+
+    // MARK: - File identity
+
+    /// Compare two file URLs by filesystem identity (inode/device), falling back to canonical path comparison.
+    /// This avoids false negatives from bookmark-resolved URLs differing from filesystem-enumerated URLs.
+    nonisolated static func isSameFile(_ url1: URL, as url2: URL) -> Bool {
+        if let id1 = try? url1.resourceValues(forKeys: [.fileResourceIdentifierKey]).fileResourceIdentifier,
+           let id2 = try? url2.resourceValues(forKeys: [.fileResourceIdentifierKey]).fileResourceIdentifier {
+            return id1.isEqual(id2)
+        }
+        return url1.resolvingSymlinksInPath().path == url2.resolvingSymlinksInPath().path
     }
 
     // MARK: - Change listener

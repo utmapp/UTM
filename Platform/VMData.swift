@@ -276,10 +276,16 @@ extension VMData: Identifiable {
 extension VMData: Equatable {
     static func == (lhs: VMData, rhs: VMData) -> Bool {
         if lhs.isLoaded && rhs.isLoaded {
-            return lhs.wrapped === rhs.wrapped
+            if lhs.wrapped === rhs.wrapped {
+                return true
+            }
+            return UTMData.isSameFile(lhs.pathUrl, as: rhs.pathUrl)
         }
         if let lhsEntry = lhs.registryEntryWrapped, let rhsEntry = rhs.registryEntryWrapped {
             return lhsEntry == rhsEntry
+        }
+        if lhs.isLoaded || rhs.isLoaded {
+            return UTMData.isSameFile(lhs.pathUrl, as: rhs.pathUrl)
         }
         return false
     }
@@ -287,9 +293,7 @@ extension VMData: Equatable {
 
 extension VMData: Hashable {
     func hash(into hasher: inout Hasher) {
-        hasher.combine(pathUrl)
-        hasher.combine(registryEntryWrapped)
-        hasher.combine(isDeleted)
+        hasher.combine(pathUrl.resolvingSymlinksInPath().path)
     }
 }
 
