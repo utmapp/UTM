@@ -53,6 +53,73 @@ enum AlertItem: Identifiable {
     }
 }
 
+struct VMGroup: Codable, Identifiable, Hashable {
+    var id: UUID
+    var title: String
+    var vmIDs: [UUID]
+    var isExpanded: Bool
+}
+
+enum VMSidebarItem: Hashable, Codable {
+    case vm(UUID)
+    case group(UUID)
+    
+    private enum ItemType: String, Codable {
+        case vm
+        case group
+    }
+    
+    private enum CodingKeys: String, CodingKey {
+        case type
+        case id
+    }
+    
+    var id: String {
+        switch self {
+        case .vm(let uuid):
+            return "vm:\(uuid.uuidString)"
+        case .group(let uuid):
+            return "group:\(uuid.uuidString)"
+        }
+    }
+    
+    var uuid: UUID {
+        switch self {
+        case .vm(let uuid), .group(let uuid):
+            return uuid
+        }
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let type = try container.decode(ItemType.self, forKey: .type)
+        let id = try container.decode(UUID.self, forKey: .id)
+        switch type {
+        case .vm:
+            self = .vm(id)
+        case .group:
+            self = .group(id)
+        }
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        switch self {
+        case .vm(let id):
+            try container.encode(ItemType.vm, forKey: .type)
+            try container.encode(id, forKey: .id)
+        case .group(let id):
+            try container.encode(ItemType.group, forKey: .type)
+            try container.encode(id, forKey: .id)
+        }
+    }
+}
+
+enum VMSidebarSelection: Hashable {
+    case vm(UUID)
+    case group(UUID)
+}
+
 @MainActor class UTMData: ObservableObject {
     
     /// Sandbox location for storing .utm bundles
@@ -76,7 +143,18 @@ enum AlertItem: Identifiable {
     @Published var busyProgress: Float?
 
     /// View: currently selected VM
-    @Published var selectedVM: VMData?
+    @Published var selectedVM: VMData? {
+        didSet {
+            syncSidebarSelectionFromSelectedVM()
+        }
+    }
+    
+    /// View: currently selected sidebar item
+    @Published var selectedSidebarItem: VMSidebarSelection? {
+        didSet {
+            syncSelectedVMFromSidebarSelection()
+        }
+    }
     
     /// View: all VMs listed, we save a bookmark to each when array is modified
     @Published private(set) var virtualMachines: [VMData] {
@@ -87,6 +165,20 @@ enum AlertItem: Identifiable {
     
     /// View: all pending VMs listed (ZIP and IPSW downloads)
     @Published private(set) var pendingVMs: [UTMPendingVirtualMachine]
+    
+    /// View: all VM groups listed
+    @Published private(set) var vmGroups: [UUID: VMGroup] {
+        didSet {
+            sidebarSaveToDefaults()
+        }
+    }
+    
+    /// View: top-level sidebar order, mixing groups and ungrouped VMs
+    @Published private(set) var sidebarItems: [VMSidebarItem] {
+        didSet {
+            sidebarSaveToDefaults()
+        }
+    }
     
     #if os(macOS)
     /// View controller for every VM currently active
@@ -123,14 +215,32 @@ enum AlertItem: Identifiable {
     /// Queue to run `busyWork` tasks
     private var busyQueue: DispatchQueue
     
+    @Published var showGroupEditorSheet: Bool
+    @Published var groupEditorTitle: String
+    @Published private(set) var editingGroupID: UUID?
+    private(set) var pendingGroupAssignmentVMID: UUID?
+    
+    private var isLoadingSidebar = false
+    private var isSyncingSidebarSelection = false
+    private var isUpdatingGroupExpansion = false
+    
+    private let groupExpansionStateDefaultsPrefix = "VMGroupExpansionState."
+    
     init() {
         self.busyQueue = DispatchQueue(label: "UTM Busy Queue", qos: .userInitiated)
         self.showSettingsModal = false
         self.showNewVMSheet = false
+        self.showGroupEditorSheet = false
+        self.groupEditorTitle = ""
+        self.editingGroupID = nil
+        self.pendingGroupAssignmentVMID = nil
         self.busy = false
         self.virtualMachines = []
         self.pendingVMs = []
+        self.vmGroups = [:]
+        self.sidebarItems = []
         self.selectedVM = nil
+        self.selectedSidebarItem = nil
         #if WITH_SERVER
         self.remoteServer = UTMRemoteServer(data: self)
         beginObservingChanges()
@@ -204,6 +314,10 @@ enum AlertItem: Identifiable {
     
     /// Load VM list (and order) from persistent storage
     fileprivate func listLoadFromDefaults() {
+        isLoadingSidebar = true
+        defer {
+            isLoadingSidebar = false
+        }
         let defaults = UserDefaults.standard
         guard defaults.object(forKey: "VMList") == nil else {
             listLegacyLoadFromDefaults()
@@ -215,10 +329,14 @@ enum AlertItem: Identifiable {
             }
             // delete legacy
             defaults.removeObject(forKey: "VMList")
+            sidebarLoadFromDefaults()
+            sidebarReconcileWithVMs()
             return
         }
         // registry entry list
         guard let list = defaults.stringArray(forKey: "VMEntryList") else {
+            sidebarLoadFromDefaults()
+            sidebarReconcileWithVMs()
             return
         }
         let virtualMachines: [VMData] = list.uniqued().compactMap { uuidString in
@@ -234,6 +352,8 @@ enum AlertItem: Identifiable {
             return vm
         }
         listReplace(with: virtualMachines)
+        sidebarLoadFromDefaults()
+        sidebarReconcileWithVMs()
     }
     
     /// Load VM list (and order) from persistent storage (legacy)
@@ -276,12 +396,55 @@ enum AlertItem: Identifiable {
         defaults.set(wrappedVMs, forKey: "VMEntryList")
     }
     
+    private func sidebarLoadFromDefaults() {
+        let defaults = UserDefaults.standard
+        var groupsByID: [UUID: VMGroup] = [:]
+        var loadedSidebarItems: [VMSidebarItem] = []
+        if let groupsData = defaults.data(forKey: "VMGroups"),
+           let groups = try? JSONDecoder().decode([VMGroup].self, from: groupsData) {
+            groupsByID = Dictionary(uniqueKeysWithValues: groups.map { ($0.id, $0) })
+        }
+        if let sidebarData = defaults.data(forKey: "VMSidebarItems"),
+           let sidebarItems = try? JSONDecoder().decode([VMSidebarItem].self, from: sidebarData) {
+            loadedSidebarItems = sidebarItems
+        }
+        groupsByID = groupsByID.mapValues { group in
+            var mutable = group
+            let expansionKey = groupExpansionStateDefaultsPrefix + group.id.uuidString
+            if defaults.object(forKey: expansionKey) != nil {
+                let isExpanded = defaults.bool(forKey: expansionKey)
+                mutable.isExpanded = isExpanded
+            }
+            return mutable
+        }
+        vmGroups = groupsByID
+        sidebarItems = loadedSidebarItems
+    }
+    
+    private func sidebarSaveToDefaults() {
+        guard !isLoadingSidebar && !isUpdatingGroupExpansion else {
+            return
+        }
+        let defaults = UserDefaults.standard
+        let groups = Array(vmGroups.values)
+        let encoder = JSONEncoder()
+        defaults.set(try? encoder.encode(groups), forKey: "VMGroups")
+        defaults.set(try? encoder.encode(sidebarItems), forKey: "VMSidebarItems")
+    }
+    
+    private func saveGroupExpansionState(id: UUID, isExpanded: Bool) {
+        let defaults = UserDefaults.standard
+        let key = groupExpansionStateDefaultsPrefix + id.uuidString
+        defaults.set(isExpanded, forKey: key)
+    }
+    
     /// Replace current VM list with a new list
     /// - Parameter vms: List to replace with
     fileprivate func listReplace(with vms: [VMData]) {
         virtualMachines.forEach({ endObservingChanges(for: $0) })
         virtualMachines = vms
         vms.forEach({ beginObservingChanges(for: $0) })
+        sidebarReconcileWithVMs()
         if let vm = selectedVM, !vms.contains(where: { $0 == vm }) {
             selectedVM = nil
         }
@@ -299,7 +462,11 @@ enum AlertItem: Identifiable {
         } else {
             virtualMachines.append(vm)
         }
+        if !sidebarItems.contains(.vm(vm.id)) && groupContaining(vmID: vm.id) == nil {
+            sidebarItems.append(.vm(vm.id))
+        }
         beginObservingChanges(for: vm)
+        syncVirtualMachineOrderFromSidebar()
     }
     
     /// Select VM in list
@@ -316,6 +483,11 @@ enum AlertItem: Identifiable {
         endObservingChanges(for: vm)
         if let index = index {
             virtualMachines.remove(at: index)
+        }
+        sidebarItems.removeAll(where: { $0 == .vm(vm.id) })
+        if let group = groupContaining(vmID: vm.id), var updatedGroup = vmGroups[group.id] {
+            updatedGroup.vmIDs.removeAll(where: { $0 == vm.id })
+            vmGroups[group.id] = updatedGroup
         }
         if vm == selectedVM {
             selectedVM = nil
@@ -352,6 +524,288 @@ enum AlertItem: Identifiable {
     ///   - toOffset: Offsets to move to
     func listMove(fromOffsets: IndexSet, toOffset: Int) {
         virtualMachines.move(fromOffsets: fromOffsets, toOffset: toOffset)
+    }
+    
+    var sortedGroups: [VMGroup] {
+        vmGroups.values.sorted { $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending }
+    }
+    
+    func vm(for id: UUID) -> VMData? {
+        virtualMachines.first(where: { $0.id == id })
+    }
+    
+    func group(for id: UUID) -> VMGroup? {
+        vmGroups[id]
+    }
+    
+    func groupContaining(vmID: UUID) -> VMGroup? {
+        vmGroups.values.first(where: { $0.vmIDs.contains(vmID) })
+    }
+    
+    func virtualMachines(inGroup groupID: UUID) -> [VMData] {
+        guard let group = vmGroups[groupID] else {
+            return []
+        }
+        let vmMap = Dictionary(uniqueKeysWithValues: virtualMachines.map { ($0.id, $0) })
+        return group.vmIDs.compactMap { vmID in
+            vmMap[vmID]
+        }
+    }
+    
+    func createGroup(named rawName: String, assigning vmID: UUID? = nil) {
+        guard let name = normalizedGroupName(rawName) else {
+            return
+        }
+        let groupID = UUID()
+        vmGroups[groupID] = VMGroup(id: groupID, title: name, vmIDs: [], isExpanded: true)
+        sidebarItems.append(.group(groupID))
+        if let vmID {
+            addVM(vmID: vmID, toGroupID: groupID)
+        }
+    }
+    
+    func renameGroup(id: UUID, to rawName: String) {
+        guard let name = normalizedGroupName(rawName), var group = vmGroups[id] else {
+            return
+        }
+        group.title = name
+        vmGroups[id] = group
+    }
+    
+    func deleteGroup(id: UUID) {
+        guard let group = vmGroups[id] else {
+            return
+        }
+        let groupIndex = sidebarItems.firstIndex(of: .group(id))
+        if let groupIndex {
+            sidebarItems.remove(at: groupIndex)
+            var insertIndex = groupIndex
+            for vmID in group.vmIDs {
+                let vmItem = VMSidebarItem.vm(vmID)
+                if !sidebarItems.contains(vmItem) {
+                    sidebarItems.insert(vmItem, at: insertIndex)
+                    insertIndex += 1
+                }
+            }
+        }
+        vmGroups.removeValue(forKey: id)
+        UserDefaults.standard.removeObject(forKey: groupExpansionStateDefaultsPrefix + id.uuidString)
+        syncVirtualMachineOrderFromSidebar()
+    }
+    
+    func toggleGroupExpanded(id: UUID) {
+        guard let group = vmGroups[id] else {
+            return
+        }
+        setGroupExpanded(id: id, isExpanded: !group.isExpanded)
+    }
+    
+    func collapseGroup(id: UUID) {
+        guard let group = vmGroups[id], group.isExpanded else {
+            return
+        }
+        setGroupExpanded(id: id, isExpanded: false)
+    }
+    
+    func expandGroup(id: UUID) {
+        guard let group = vmGroups[id], !group.isExpanded else {
+            return
+        }
+        setGroupExpanded(id: id, isExpanded: true)
+    }
+    
+    func addVM(vmID: UUID, toGroupID groupID: UUID) {
+        guard var group = vmGroups[groupID] else {
+            return
+        }
+        removeVMFromGroup(vmID)
+        sidebarItems.removeAll(where: { $0 == .vm(vmID) })
+        if !group.vmIDs.contains(vmID) {
+            group.vmIDs.append(vmID)
+        }
+        vmGroups[groupID] = group
+        syncVirtualMachineOrderFromSidebar()
+    }
+    
+    func removeVMFromGroup(_ vmID: UUID) {
+        guard let existingGroup = groupContaining(vmID: vmID),
+              var group = vmGroups[existingGroup.id] else {
+            return
+        }
+        group.vmIDs.removeAll(where: { $0 == vmID })
+        vmGroups[group.id] = group
+        if !sidebarItems.contains(.vm(vmID)) {
+            if let groupIndex = sidebarItems.firstIndex(of: .group(group.id)) {
+                sidebarItems.insert(.vm(vmID), at: groupIndex + 1)
+            } else {
+                sidebarItems.append(.vm(vmID))
+            }
+        }
+        syncVirtualMachineOrderFromSidebar()
+    }
+    
+    func moveSidebarItems(fromOffsets: IndexSet, toOffset: Int) {
+        sidebarItems.move(fromOffsets: fromOffsets, toOffset: toOffset)
+        syncVirtualMachineOrderFromSidebar()
+    }
+    
+    func moveVMs(inGroup groupID: UUID, fromOffsets: IndexSet, toOffset: Int) {
+        guard var group = vmGroups[groupID] else {
+            return
+        }
+        group.vmIDs.move(fromOffsets: fromOffsets, toOffset: toOffset)
+        vmGroups[groupID] = group
+        syncVirtualMachineOrderFromSidebar()
+    }
+    
+    func requestCreateGroup(assigning vmID: UUID? = nil) {
+        editingGroupID = nil
+        groupEditorTitle = ""
+        pendingGroupAssignmentVMID = vmID
+        showGroupEditorSheet = true
+    }
+    
+    func requestRenameGroup(id: UUID) {
+        guard let group = vmGroups[id] else {
+            return
+        }
+        editingGroupID = id
+        groupEditorTitle = group.title
+        pendingGroupAssignmentVMID = nil
+        showGroupEditorSheet = true
+    }
+    
+    func commitGroupEditorChanges() {
+        if let editingGroupID {
+            renameGroup(id: editingGroupID, to: groupEditorTitle)
+        } else {
+            createGroup(named: groupEditorTitle, assigning: pendingGroupAssignmentVMID)
+        }
+        resetGroupEditorState()
+    }
+    
+    func cancelGroupEditorChanges() {
+        resetGroupEditorState()
+    }
+    
+    private func normalizedGroupName(_ rawName: String) -> String? {
+        let trimmed = rawName.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.isEmpty ? nil : trimmed
+    }
+    
+    private func setGroupExpanded(id: UUID, isExpanded: Bool) {
+        guard var group = vmGroups[id] else {
+            return
+        }
+        isUpdatingGroupExpansion = true
+        defer {
+            isUpdatingGroupExpansion = false
+        }
+        group.isExpanded = isExpanded
+        vmGroups[id] = group
+        saveGroupExpansionState(id: id, isExpanded: isExpanded)
+    }
+    
+    private func resetGroupEditorState() {
+        showGroupEditorSheet = false
+        editingGroupID = nil
+        pendingGroupAssignmentVMID = nil
+        groupEditorTitle = ""
+    }
+    
+    private func sidebarReconcileWithVMs() {
+        let vmIDs = Set(virtualMachines.map(\.id))
+        let groupIDs = Set(vmGroups.keys)
+        
+        // Remove stale VM references from groups.
+        for key in vmGroups.keys {
+            guard var group = vmGroups[key] else {
+                continue
+            }
+            let filtered = group.vmIDs.filter { vmIDs.contains($0) }
+            if filtered != group.vmIDs {
+                group.vmIDs = filtered
+                vmGroups[key] = group
+            }
+        }
+        
+        // Remove stale top-level items.
+        sidebarItems.removeAll { item in
+            switch item {
+            case .vm(let id):
+                return !vmIDs.contains(id)
+            case .group(let id):
+                return !groupIDs.contains(id)
+            }
+        }
+        
+        // Ensure every VM appears exactly once in the sidebar model.
+        let groupedVMIDs = Set(vmGroups.values.flatMap(\.vmIDs))
+        for vm in virtualMachines where !groupedVMIDs.contains(vm.id) {
+            let vmItem = VMSidebarItem.vm(vm.id)
+            if !sidebarItems.contains(vmItem) {
+                sidebarItems.append(vmItem)
+            }
+        }
+        
+        syncVirtualMachineOrderFromSidebar()
+    }
+    
+    private func syncVirtualMachineOrderFromSidebar() {
+        let flattenIDs = sidebarItems.flatMap { item -> [UUID] in
+            switch item {
+            case .vm(let id):
+                return [id]
+            case .group(let id):
+                return vmGroups[id]?.vmIDs ?? []
+            }
+        }
+        let remainingIDs = virtualMachines.map(\.id).filter { !flattenIDs.contains($0) }
+        let orderedIDs = flattenIDs + remainingIDs
+        let vmMap = Dictionary(uniqueKeysWithValues: virtualMachines.map { ($0.id, $0) })
+        let orderedVMs = orderedIDs.compactMap { vmMap[$0] }
+        if orderedVMs.count == virtualMachines.count {
+            virtualMachines = orderedVMs
+        }
+    }
+    
+    private func syncSelectedVMFromSidebarSelection() {
+        guard !isSyncingSidebarSelection else {
+            return
+        }
+        isSyncingSidebarSelection = true
+        defer {
+            isSyncingSidebarSelection = false
+        }
+        switch selectedSidebarItem {
+        case .vm(let vmID):
+            if selectedVM?.id != vmID {
+                selectedVM = vm(for: vmID)
+            }
+        case .group:
+            selectedVM = nil
+        case .none:
+            if selectedVM != nil {
+                selectedVM = nil
+            }
+        }
+    }
+    
+    private func syncSidebarSelectionFromSelectedVM() {
+        guard !isSyncingSidebarSelection else {
+            return
+        }
+        isSyncingSidebarSelection = true
+        defer {
+            isSyncingSidebarSelection = false
+        }
+        if let vm = selectedVM {
+            selectedSidebarItem = .vm(vm.id)
+        } else if case .group = selectedSidebarItem {
+            // Keep explicit group selection when details pane has no selected VM.
+        } else {
+            selectedSidebarItem = nil
+        }
     }
     
     // MARK: - New name

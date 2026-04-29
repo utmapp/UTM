@@ -151,6 +151,36 @@ struct VMContextMenuModifier: ViewModifier {
                 Label("New from template…", systemImage: "doc.on.clipboard")
             }.help("Create a new VM with the same configuration as this one but without any data.")
             Divider()
+            Menu {
+                let groups = data.sortedGroups
+                let activeGroupID = data.groupContaining(vmID: vm.id)?.id
+                Button("New Group…") {
+                    data.requestCreateGroup(assigning: vm.id)
+                }
+                if !groups.isEmpty {
+                    Divider()
+                }
+                ForEach(groups) { group in
+                    Button {
+                        data.addVM(vmID: vm.id, toGroupID: group.id)
+                    } label: {
+                        if activeGroupID == group.id {
+                            Label(group.title, systemImage: "checkmark")
+                        } else {
+                            Text(group.title)
+                        }
+                    }
+                }
+                if activeGroupID != nil {
+                    Divider()
+                    Button("Remove from Group") {
+                        data.removeVMFromGroup(vm.id)
+                    }
+                }
+            } label: {
+                Label("Group", systemImage: "folder")
+            }
+            Divider()
             if vm.isShortcut {
                 DestructiveButton {
                     confirmAction = .confirmDeleteShortcut
