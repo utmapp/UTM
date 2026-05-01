@@ -227,7 +227,7 @@
 			<key>Platform</key>
 			<string>iOS</string>
 			<key>DefaultValue</key>
-			<integer>1</integer>
+			<integer>2</integer>
 			<key>Titles</key>
 			<array>
 				<string>Disabled</string>
@@ -239,6 +239,32 @@
 				<integer>0</integer>
 				<integer>1</integer>
 				<integer>2</integer>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Long Press + Drag</string>
+			<key>Key</key>
+			<string>GestureLongPressDrag</string>
+			<key>Platform</key>
+			<string>iOS</string>
+			<key>DefaultValue</key>
+			<integer>1</integer>
+			<key>Titles</key>
+			<array>
+				<string>Disabled</string>
+				<string>Left Mouse Drag</string>
+				<string>Right Mouse Drag</string>
+				<string>Middle Mouse Drag</string>
+			</array>
+			<key>Values</key>
+			<array>
+				<integer>0</integer>
+				<integer>1</integer>
+				<integer>6</integer>
+				<integer>7</integer>
 			</array>
 		</dict>
 		<dict>
@@ -256,11 +282,13 @@
 			<array>
 				<string>Disabled</string>
 				<string>Right Click</string>
+				<string>Middle Click</string>
 			</array>
 			<key>Values</key>
 			<array>
 				<integer>0</integer>
 				<integer>2</integer>
+				<integer>5</integer>
 			</array>
 		</dict>
 		<dict>
@@ -273,13 +301,15 @@
 			<key>Platform</key>
 			<string>iOS</string>
 			<key>DefaultValue</key>
-			<integer>3</integer>
+			<integer>6</integer>
 			<key>Titles</key>
 			<array>
 				<string>Disabled</string>
 				<string>Move Screen</string>
-				<string>Click &amp; Hold</string>
+				<string>Left Mouse Drag</string>
 				<string>Mouse Wheel</string>
+				<string>Right Mouse Drag</string>
+				<string>Middle Mouse Drag</string>
 			</array>
 			<key>Values</key>
 			<array>
@@ -287,6 +317,8 @@
 				<integer>3</integer>
 				<integer>1</integer>
 				<integer>4</integer>
+				<integer>6</integer>
+				<integer>7</integer>
 			</array>
 		</dict>
 		<dict>
@@ -315,9 +347,9 @@
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
-			<string>Three Finger Pan</string>
+			<string>Two Finger Pinch</string>
 			<key>Key</key>
-			<string>GestureThreePan</string>
+			<string>GestureTwoPinch</string>
 			<key>Platform</key>
 			<string>iOS</string>
 			<key>DefaultValue</key>
@@ -325,9 +357,57 @@
 			<key>Titles</key>
 			<array>
 				<string>Disabled</string>
+				<string>Scale Display</string>
+			</array>
+			<key>Values</key>
+			<array>
+				<integer>0</integer>
+				<integer>8</integer>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Three Finger Tap</string>
+			<key>Key</key>
+			<string>GestureThreeTap</string>
+			<key>Platform</key>
+			<string>iOS</string>
+			<key>DefaultValue</key>
+			<integer>5</integer>
+			<key>Titles</key>
+			<array>
+				<string>Disabled</string>
+				<string>Right Click</string>
+				<string>Middle Click</string>
+			</array>
+			<key>Values</key>
+			<array>
+				<integer>0</integer>
+				<integer>2</integer>
+				<integer>5</integer>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Three Finger Pan</string>
+			<key>Key</key>
+			<string>GestureThreePan</string>
+			<key>Platform</key>
+			<string>iOS</string>
+			<key>DefaultValue</key>
+			<integer>7</integer>
+			<key>Titles</key>
+			<array>
+				<string>Disabled</string>
 				<string>Move Screen</string>
-				<string>Click &amp; Hold</string>
+				<string>Left Mouse Drag</string>
 				<string>Mouse Wheel</string>
+				<string>Right Mouse Drag</string>
+				<string>Middle Mouse Drag</string>
 			</array>
 			<key>Values</key>
 			<array>
@@ -335,6 +415,30 @@
 				<integer>3</integer>
 				<integer>1</integer>
 				<integer>4</integer>
+				<integer>6</integer>
+				<integer>7</integer>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Three Finger Swipe</string>
+			<key>Key</key>
+			<string>GestureThreeSwipe</string>
+			<key>Platform</key>
+			<string>iOS</string>
+			<key>DefaultValue</key>
+			<integer>0</integer>
+			<key>Titles</key>
+			<array>
+				<string>Disabled</string>
+				<string>Keyboard Reveal</string>
+			</array>
+			<key>Values</key>
+			<array>
+				<integer>0</integer>
+				<integer>1</integer>
 			</array>
 		</dict>
 		<dict>
@@ -359,12 +463,14 @@
 				<string>Drag cursor</string>
 				<string>Touch mode (always show cursor)</string>
 				<string>Touch mode (try hiding cursor)</string>
+				<string>Multitouch mode</string>
 			</array>
 			<key>Values</key>
 			<array>
 				<integer>0</integer>
 				<integer>1</integer>
 				<integer>2</integer>
+				<integer>3</integer>
 			</array>
 		</dict>
 		<dict>

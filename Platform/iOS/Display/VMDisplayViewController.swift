@@ -43,6 +43,9 @@ public extension VMDisplayViewController {
         super.viewWillDisappear(animated)
         if let parent = parent {
             parent.setChildForHomeIndicatorAutoHidden(nil)
+            #if !os(visionOS)
+            parent.setChildForScreenEdgesDeferringSystemGestures(nil)
+            #endif
             parent.setChildViewControllerForPointerLock(nil)
             UIPress.pressResponderOverride = nil
         }
@@ -52,6 +55,9 @@ public extension VMDisplayViewController {
         super.viewDidAppear(animated)
         if let parent = parent {
             parent.setChildForHomeIndicatorAutoHidden(self)
+            #if !os(visionOS)
+            parent.setChildForScreenEdgesDeferringSystemGestures(self)
+            #endif
             parent.setChildViewControllerForPointerLock(self)
             UIPress.pressResponderOverride = self
         }
