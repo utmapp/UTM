@@ -70,10 +70,19 @@ class UTMScriptingUSBDeviceImpl: NSObject, UTMScriptable {
     ///   - usbManager: USB manager
     /// - Returns: USB device in same context as the manager
     private func same(usbDevice: CSUSBDevice, for usbManager: CSUSBManager) -> CSUSBDevice? {
-        for other in usbManager.usbDevices {
-            if other.isEqual(to: usbDevice) {
-                return other
-            }
+        let devices = usbManager.usbDevices
+        if let device = devices.first(where: { $0.isEqual(to: usbDevice) }) {
+            return device
+        }
+        if let device = devices.first(where: { $0.matchesLocation(of: usbDevice) }) {
+            return device
+        }
+        if let device = devices.first(where: { $0.matchesSerial(of: usbDevice) }) {
+            return device
+        }
+        let matchingDevices = devices.filter({ $0.matchesVidPid(of: usbDevice) })
+        if matchingDevices.count == 1 {
+            return matchingDevices[0]
         }
         return nil
     }
@@ -136,6 +145,23 @@ extension UTMScriptingUSBDeviceImpl {
             case .deviceNotConnected: return NSLocalizedString("The device is not currently connected.", comment: "UTMScriptingUSBDeviceImpl")
             }
         }
+    }
+}
+
+private extension CSUSBDevice {
+    func matchesVidPid(of other: CSUSBDevice) -> Bool {
+        usbVendorId == other.usbVendorId && usbProductId == other.usbProductId
+    }
+
+    func matchesLocation(of other: CSUSBDevice) -> Bool {
+        matchesVidPid(of: other) && usbBusNumber == other.usbBusNumber && usbPortNumber == other.usbPortNumber
+    }
+
+    func matchesSerial(of other: CSUSBDevice) -> Bool {
+        guard let serial = usbSerial, let otherSerial = other.usbSerial, !serial.isEmpty else {
+            return false
+        }
+        return matchesVidPid(of: other) && serial == otherSerial
     }
 }
 
