@@ -210,7 +210,7 @@
           <parameter name="for" code="OpMd" description="Open mode." type="open mode" optional="yes">
             <cocoa key="mode"/>
           </parameter>
-          <parameter name="updating" code="OpAp" description="If true, will open for both reading and writing. The file existance requirement and creation is still governed by the open mode. Default is false." type="boolean" optional="yes">
+          <parameter name="updating" code="OpAp" description="If true, will open for both reading and writing. The file existence requirement and creation is still governed by the open mode. Default is false." type="boolean" optional="yes">
             <cocoa key="isUpdate"/>
           </parameter>
           <result type="guest file" description="Guest file to operate on."/>
@@ -384,7 +384,7 @@
         </command>
     </suite>
 
-    <suite name="UTM Configuration Suite" code="UTMc" description="UTM virtual machine configuration suite. Use this to create and configurate virtual machines.">
+    <suite name="UTM Configuration Suite" code="UTMc" description="UTM virtual machine configuration suite. Use this to create and configure virtual machines.">
         <access-group identifier="com.utmapp.UTM.vm-access" />
         
         <class-extension extends="virtual machine" description="Virtual machine configuration.">
@@ -722,7 +722,7 @@
         <class name="usb device" code="UsBd" description="A host USB device that is shared with the guest." plural="usb devices">
           <cocoa class="UTMScriptingUSBDeviceImpl"/>
           <property name="id" code="ID  " type="integer" access="r"
-            description="A unique identifier corrosponding to the USB bus and port number."/>
+            description="A unique identifier corresponding to the USB bus and port number."/>
             
           <property name="name" code="pnam" type="text" access="r"
             description="The name of the USB device."/>
