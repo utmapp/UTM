@@ -410,7 +410,7 @@ extension UTMRegistryEntry {
         
         init(dummyFromPath path: String, remoteBookmark: Data = Data()) {
             self.path = path
-            self.bookmark = Data()
+            self.bookmark = remoteBookmark
             self.isReadOnly = false
             self.url = URL(fileURLWithPath: path)
             self.remoteBookmark = remoteBookmark
