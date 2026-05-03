@@ -72,7 +72,7 @@ struct VMContextMenuModifier: ViewModifier {
             #endif
             if vm.hasSuspendState || !vm.isStopped {
                 Button {
-                    confirmAction = .confirmStopVM
+                    confirmAction = .confirmStopVM(vm: vm)
                 } label: {
                     Label("Stop", systemImage: "stop")
                 }.help("Stop the running VM.")
@@ -131,7 +131,7 @@ struct VMContextMenuModifier: ViewModifier {
             #if os(macOS)
             if !vm.isShortcut {
                 Button {
-                    confirmAction = .confirmMoveVM
+                    confirmAction = .confirmMoveVM(vm: vm)
                 } label: {
                     Label("Move…", systemImage: "arrow.down.doc")
                 }.disabled(!vm.isModifyAllowed)
@@ -139,7 +139,7 @@ struct VMContextMenuModifier: ViewModifier {
             }
             #endif
             Button {
-                confirmAction = .confirmCloneVM
+                confirmAction = .confirmCloneVM(vm: vm)
             } label: {
                 Label("Clone…", systemImage: "doc.on.doc")
             }.help("Duplicate this VM along with all its data.")
@@ -153,14 +153,14 @@ struct VMContextMenuModifier: ViewModifier {
             Divider()
             if vm.isShortcut {
                 DestructiveButton {
-                    confirmAction = .confirmDeleteShortcut
+                    confirmAction = .confirmDeleteVM(vm: vm)
                 } label: {
                     Label("Remove", systemImage: "trash")
                 }.disabled(!vm.isModifyAllowed)
                 .help("Delete this shortcut. The underlying data will not be deleted.")
             } else {
                 DestructiveButton {
-                    confirmAction = .confirmDeleteVM
+                    confirmAction = .confirmDeleteVM(vm: vm)
                 } label: {
                     Label("Delete", systemImage: "trash")
                 }.disabled(!vm.isModifyAllowed)
@@ -169,8 +169,8 @@ struct VMContextMenuModifier: ViewModifier {
             #endif
         }
         .modifier(VMShareItemModifier(isPresented: $showSharePopup, shareItem: shareItem))
-        .modifier(VMConfirmActionModifier(vm: vm, confirmAction: $confirmAction) {
-            if confirmAction == .confirmMoveVM {
+        .modifier(VMConfirmActionModifier(confirmAction: $confirmAction) { action in
+            if case .confirmMoveVM(let vm) = action {
                 shareItem = .utmMove(vm)
                 showSharePopup.toggle()
             }

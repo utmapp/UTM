@@ -54,7 +54,7 @@ struct VMToolbarModifier: ViewModifier {
                 #if !WITH_REMOTE // FIXME: implement remote feature
                 if vm.isShortcut {
                     DestructiveButton {
-                        confirmAction = .confirmDeleteShortcut
+                        confirmAction = .confirmDeleteVM(vm: vm)
                     } label: {
                         Label("Remove", systemImage: "trash")
                             .labelStyle(.iconOnly)
@@ -63,7 +63,7 @@ struct VMToolbarModifier: ViewModifier {
                     .padding(.leading, padding)
                 } else {
                     DestructiveButton {
-                        confirmAction = .confirmDeleteVM
+                        confirmAction = .confirmDeleteVM(vm: vm)
                     } label: {
                         Label("Delete", systemImage: "trash")
                             .labelStyle(.iconOnly)
@@ -77,7 +77,7 @@ struct VMToolbarModifier: ViewModifier {
                 }
                 #endif
                 Button {
-                    confirmAction = .confirmCloneVM
+                    confirmAction = .confirmCloneVM(vm: vm)
                 } label: {
                     Label("Clone", systemImage: "doc.on.doc")
                         .labelStyle(.iconOnly)
@@ -91,7 +91,7 @@ struct VMToolbarModifier: ViewModifier {
                 #if os(macOS)
                 if !vm.isShortcut {
                     Button {
-                        confirmAction = .confirmMoveVM
+                        confirmAction = .confirmMoveVM(vm: vm)
                     } label: {
                         Label("Move", systemImage: "arrow.down.doc")
                             .labelStyle(.iconOnly)
@@ -116,7 +116,7 @@ struct VMToolbarModifier: ViewModifier {
                 #endif
                 if vm.hasSuspendState || !vm.isStopped {
                     Button {
-                        confirmAction = .confirmStopVM
+                        confirmAction = .confirmStopVM(vm: vm)
                     } label: {
                         Label("Stop", systemImage: "stop")
                             .labelStyle(.iconOnly)
@@ -150,8 +150,8 @@ struct VMToolbarModifier: ViewModifier {
             }
         }
         .modifier(VMShareItemModifier(isPresented: $showSharePopup, shareItem: shareItem))
-        .modifier(VMConfirmActionModifier(vm: vm, confirmAction: $confirmAction) {
-            if confirmAction == .confirmMoveVM {
+        .modifier(VMConfirmActionModifier(confirmAction: $confirmAction) { action in
+            if case .confirmMoveVM(let vm) = action {
                 shareItem = .utmMove(vm)
                 showSharePopup.toggle()
             }
