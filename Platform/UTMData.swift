@@ -158,10 +158,10 @@ enum AlertItem: Identifiable {
         }
         // now look for and add new VMs in default storage
         do {
-            let files = try fileManager.contentsOfDirectory(at: UTMData.defaultStorageUrl, includingPropertiesForKeys: [.isDirectoryKey], options: .skipsHiddenFiles)
+            let files = try fileManager.contentsOfDirectory(at: UTMData.defaultStorageUrl, includingPropertiesForKeys: [.isDirectoryKey, .fileResourceIdentifierKey], options: .skipsHiddenFiles)
             let newFiles = files.filter { newFile in
                 !list.contains { existingVM in
-                    existingVM.pathUrl.standardizedFileURL == newFile.standardizedFileURL
+                    isSameFile(existingVM.pathUrl, as: newFile)
                 }
             }
             for file in newFiles {
@@ -635,6 +635,19 @@ enum AlertItem: Identifiable {
         }
     }
     
+    /// Compare two files and sees if they are the same
+    /// - Parameters:
+    ///   - url1: first file
+    ///   - url2: second file
+    /// - Returns: If they are the same file
+    func isSameFile(_ url1: URL, as url2: URL) -> Bool {
+        if let id1 = try? url1.resourceValues(forKeys: [.fileResourceIdentifierKey]).fileResourceIdentifier,
+           let id2 = try? url2.resourceValues(forKeys: [.fileResourceIdentifierKey]).fileResourceIdentifier {
+            return id1.isEqual(id2)
+        }
+        return url1.standardizedFileURL == url2.standardizedFileURL
+    }
+
     /// Handles UTM file URLs
     ///
     /// If .utm is already in the list, select it
@@ -660,7 +673,7 @@ enum AlertItem: Identifiable {
         let fileName = url.lastPathComponent
         let dest = documentsURL.appendingPathComponent(fileName, isDirectory: true)
         if let vm = virtualMachines.first(where: { vm -> Bool in
-            return vm.pathUrl.standardizedFileURL == url.standardizedFileURL
+            return isSameFile(vm.pathUrl, as: url)
         }) {
             logger.info("found existing vm!")
             if !vm.isLoaded {
