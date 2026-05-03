@@ -49,12 +49,14 @@ enum ConfirmAction: Identifiable, Equatable {
 
 struct VMConfirmActionModifier: ViewModifier {
     @Binding var confirmAction: ConfirmAction?
+    var workaroundSwipeBug: Bool = false
     let onConfirm: (ConfirmAction) -> Void
     @EnvironmentObject private var data: UTMData
     @State private var isPresented: Bool = false
 
     @ViewBuilder func body(content: Content) -> some View {
-        if #available(iOS 15, macOS 12, *) {
+        // SwiftUI bug: swipe + confirmationDialog is broken
+        if !workaroundSwipeBug, #available(iOS 15, macOS 12, *) {
             newBody(content: content)
         } else {
             oldBody(content: content)
