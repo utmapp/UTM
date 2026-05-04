@@ -50,6 +50,9 @@
 #include "VMKeyboardButton.h"
 #include "VMKeyboardView.h"
 #elif TARGET_OS_OSX
+#include "UTMIOUSBHostDevice.h"
+#include "UTMIOUSBHostManager.h"
+#include "UTMIOUSBHostManagerDelegate.h"
 typedef uint32_t CGSConnectionID;
 typedef CF_ENUM(uint32_t, CGSGlobalHotKeyOperatingMode) {
     kCGSGlobalHotKeyOperatingModeEnable = 0,

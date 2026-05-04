@@ -118,6 +118,8 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
 
     private var removableDrives: [String: Any] = [:]
 
+    private(set) var usbManager: UTMIOUSBHostManager?
+
     @MainActor var isHeadless: Bool {
         config.displays.isEmpty && config.serials.filter({ $0.mode == .builtin }).isEmpty
     }
@@ -131,6 +133,9 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         self.registryEntry = UTMRegistryEntry.empty
         self.registryEntry = loadRegistry()
         self.screenshot = loadScreenshot()
+        if #available(macOS 15, *) {
+            usbManager = UTMIOUSBHostManager(virtualMachineQueue: vmQueue)
+        }
     }
     
     deinit {
@@ -187,14 +192,15 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         do {
             let isSuspended = await registryEntry.isSuspended
             try await beginAccessingResources()
-            try await createAppleVM()
+            try await createAppleVM(ignoringUsbErrors: !isSuspended)
             if isSuspended && !options.contains(.bootRecovery) {
                 try await restoreSnapshot()
             } else {
                 try await _start(options: options)
             }
-            if #available(macOS 15, *) {
+            if #available(macOS 15, *), let usbManager = usbManager {
                 try await attachExternalDrives()
+                usbManager.synchronize(with: apple!)
             }
             if #available(macOS 12, *) {
                 Task { @MainActor in
@@ -397,6 +403,9 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             state = .paused
         }
         try await _saveSnapshot(url: vmSavedStateURL)
+        if #available(macOS 15, *) {
+            await saveUsbDevices()
+        }
         await registryEntry.setIsSuspended(true)
         #endif
     }
@@ -498,7 +507,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         screenshot = loadScreenshot()
     }
 
-    @MainActor private func createAppleVM() throws {
+    @MainActor private func createAppleVM(ignoringUsbErrors: Bool = true) async throws {
         for i in config.serials.indices {
             let (fd, sfd, name) = try createPty()
             let terminalTtyHandle = FileHandle(fileDescriptor: fd, closeOnDealloc: false)
@@ -509,6 +518,15 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             config.serials[i].interface = serialPort
         }
         let vzConfig = try config.appleVZConfiguration()
+        if #available(macOS 15, *) {
+            do {
+                try await restoreUsbDevices(to: vzConfig)
+            } catch {
+                if !ignoringUsbErrors {
+                    throw error
+                }
+            }
+        }
         vmQueue.async { [self] in
             apple = VZVirtualMachine(configuration: vzConfig, queue: vmQueue)
             apple!.delegate = self
@@ -667,6 +685,12 @@ extension UTMAppleVirtualMachine: VZVirtualMachineDelegate {
         vmQueue.async { [self] in
             apple = nil
             snapshotUnsupportedError = nil
+            Task { @MainActor in
+                if #available(macOS 15, *), let usbManager = usbManager {
+                    saveUsbDevices()
+                    usbManager.synchronize()
+                }
+            }
         }
         removableDrives.removeAll()
         sharedDirectoriesChanged = nil
@@ -1017,3 +1041,45 @@ extension UTMAppleVirtualMachine {
         }
     }
 }
+
+// MARK: - USB device passthrough
+
+@available(macOS 15, *)
+extension UTMAppleVirtualMachine {
+    @MainActor func saveUsbDevices() {
+        guard let usbManager = usbManager else {
+            return
+        }
+        let connectedDevices = usbManager.connectedDevices
+        if connectedDevices.isEmpty {
+            registryEntry.connectedUsbDevices = nil
+        } else {
+            do {
+                registryEntry.connectedUsbDevices = try NSKeyedArchiver.archivedData(withRootObject: connectedDevices, requiringSecureCoding: true)
+            } catch {
+                logger.error("Failed to archive USB devices: \(error)")
+            }
+        }
+    }
+    
+    @MainActor func restoreUsbDevices(to config: VZVirtualMachineConfiguration) async throws {
+        guard let usbManager = usbManager else {
+            return
+        }
+        guard let data = registryEntry.connectedUsbDevices else {
+            return
+        }
+        // delete the list from registryEntry to prevent reuse
+        registryEntry.connectedUsbDevices = nil
+        let classes = [NSArray.self, NSUUID.self, UTMIOUSBHostDevice.self]
+        if let connectedDevices = try? NSKeyedUnarchiver.unarchivedObject(ofClasses: classes, from: data) as? [UTMIOUSBHostDevice] {
+            for device in connectedDevices {
+                guard let uuid = device.uuid else {
+                    continue
+                }
+                try await usbManager.restoreUsbDevice(device, to: config)
+            }
+        }
+    }
+}
+
