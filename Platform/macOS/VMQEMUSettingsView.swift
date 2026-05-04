@@ -59,9 +59,13 @@ struct VMQEMUSettingsView: View {
             }
         }
         NavigationLink {
-            VMConfigInputView(config: $config.input, hasUsbSupport: config.system.architecture.hasUsbSupport)
-                .scrollable()
-                .settingsToolbar()
+            VMConfigInputView(
+                config: $config.input,
+                hasUsbSupport: config.system.architecture.hasUsbSupport,
+                hasUsbSharingSupport: config.system.target.hasUsbSharingSupport
+            )
+            .scrollable()
+            .settingsToolbar()
         } label: {
             Label("Input", systemImage: "keyboard")
         }

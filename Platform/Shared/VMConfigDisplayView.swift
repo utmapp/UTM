@@ -28,7 +28,16 @@ struct VMConfigDisplayView: View {
         VStack {
             Form {
                 Section(header: Text("Hardware")) {
-                    VMConfigConstantPicker("Emulated Display Card", selection: $config.hardware, type: system.architecture.displayDeviceType)
+                    if system.target.hasBuiltinFramebuffer {
+                        HStack {
+                            Text("Emulated Display Card")
+                            Spacer()
+                            Text("Built-in Framebuffer")
+                                .foregroundColor(.secondary)
+                        }
+                    } else {
+                        VMConfigConstantPicker("Emulated Display Card", selection: $config.hardware, type: system.architecture.displayDeviceType)
+                    }
                     
                     Toggle("GPU Acceleration Supported", isOn: .constant(isGLSupported)).disabled(true)
                     if isGLSupported {

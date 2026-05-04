@@ -38,6 +38,7 @@ struct VMConfigQEMUView: View {
     
     private var supportsUefi: Bool {
         UTMQemuConfigurationQEMU.uefiImagePrefix(forArchitecture: system.architecture) != nil
+            && system.target.hasUefiSupport
     }
     
     private var supportsPs2: Bool {
@@ -80,7 +81,7 @@ struct VMConfigQEMUView: View {
                         }
                     Toggle("Use Hypervisor", isOn: $config.hasHypervisor)
                         .help("Only available if host architecture matches the target. Otherwise, TCG emulation is used.")
-                        .disabled(!system.architecture.hasHypervisorSupport)
+                        .disabled(!system.architecture.hasHypervisorSupport || !system.target.hasHypervisorSupport)
                     if config.hasHypervisor {
                         Toggle("Use TSO", isOn: $config.hasTSO)
                             .help("Only available when Hypervisor is used on supported hardware. TSO speeds up Intel emulation in the guest at the cost of decreased performance in general.")

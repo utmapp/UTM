@@ -157,7 +157,7 @@ extension UTMQemuConfigurationQEMU {
             hasUefiBoot = true
             hasRNGDevice = true
         }
-        hasHypervisor = architecture.hasHypervisorSupport
+        hasHypervisor = architecture.hasHypervisorSupport && target.hasHypervisorSupport
     }
 }
 

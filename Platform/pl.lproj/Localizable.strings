@@ -584,6 +584,7 @@
 "Upscaling" = "Skalowanie do wyższej rozdzielczości (Upscaling)";
 "Downscaling" = "Skalowanie do niższej rozdzielczości (Downscaling)";
 "Retina Mode" = "Tryb Retina";
+"Built-in Framebuffer" = "Wbudowany bufor ramki";
 
 /* VMConfigDisplayConsoleView.swift */
 "Style" = "Styl";
