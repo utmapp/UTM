@@ -37,8 +37,9 @@ class UTMRegistry: NSObject {
     @Published private var entries: [String: UTMRegistryEntry] {
         didSet {
             let toAdd = entries.keys.filter({ !changeListeners.keys.contains($0) })
-            for key in toAdd {
-                let entry = entries[key]!
+                .compactMap { entries[$0] }
+            for entry in toAdd {
+                let key = entry.uuid.uuidString
                 changeListeners[key] = entry.objectWillChange
                     .debounce(for: .seconds(1), scheduler: DispatchQueue.global(qos: .utility))
                     .sink { [weak self, weak entry] in
@@ -122,8 +123,7 @@ class UTMRegistry: NSObject {
     /// - Parameter entries: All entries to commit
     private func commitAll(entries: [String: UTMRegistryEntry]) {
         var newSerializedEntries: [String: Any] = [:]
-        for key in entries.keys {
-            let entry = entries[key]!
+        for entry in entries.values {
             commit(entry: entry, to: &newSerializedEntries)
         }
         serializedEntries = newSerializedEntries

@@ -582,6 +582,8 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             throw UTMAppleVirtualMachineError.operatingSystemInstallNotSupported
             #endif
         } catch {
+            progressObserver = nil
+            installProgress = nil
             await stopAccesingResources()
             delegate?.virtualMachine(self, didCompleteInstallation: false)
             state = .stopped
