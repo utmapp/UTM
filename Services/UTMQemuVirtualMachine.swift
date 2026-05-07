@@ -270,13 +270,6 @@ extension UTMQemuVirtualMachine {
         if isRunningAsDisposible {
             return UTMQemuVirtualMachineError.qemuError(NSLocalizedString("Suspend state cannot be saved when running in disposible mode.", comment: "UTMQemuVirtualMachine"))
         }
-        #if arch(x86_64)
-        let hasHypervisor = await config.qemu.hasHypervisor
-        let architecture = await config.system.architecture
-        if hasHypervisor && architecture == .x86_64 {
-            return UTMQemuVirtualMachineError.qemuError(NSLocalizedString("Suspend is not supported for virtualization.", comment: "UTMQemuVirtualMachine"))
-        }
-        #endif
         for display in await config.displays {
             if display.hardware.rawValue.contains("-gl-") || display.hardware.rawValue.hasSuffix("-gl") {
                 return UTMQemuVirtualMachineError.qemuError(NSLocalizedString("Suspend is not supported when GPU acceleration is enabled.", comment: "UTMQemuVirtualMachine"))
