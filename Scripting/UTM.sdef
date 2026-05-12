@@ -527,6 +527,21 @@
             description="Only used in emulated mode. Allows port forwarding from guest to host.">
             <type type="qemu port forward" list="yes"/>
           </property>
+
+          <property name="vlan guest address" code="VgAd" type="text"
+            description="IPv4 subnet of the emulated VLAN in CIDR notation (e.g. 192.168.222.0/24). Only used in shared or host mode. If empty, the existing value is preserved."/>
+
+          <property name="vlan guest address ipv6" code="Vga6" type="text"
+            description="IPv6 prefix of the emulated VLAN (e.g. fec0::/64). Only used in shared or host mode. If empty, the existing value is preserved."/>
+
+          <property name="vlan dhcp start address" code="VdSt" type="text"
+            description="First IPv4 address of the DHCP pool handed to the guest. Only used in shared or host mode. If empty, the existing value is preserved."/>
+
+          <property name="vlan dhcp end address" code="VdEn" type="text"
+            description="Last IPv4 address of the DHCP pool handed to the guest. Only used in shared or host mode. If empty, the existing value is preserved."/>
+
+          <property name="isolate from host" code="IsFh" type="boolean"
+            description="When true, the guest is isolated from the host on the shared network."/>
         </record-type>
         
         <enumeration name="qemu network mode" code="QeNm" description="Mode for networking device.">
