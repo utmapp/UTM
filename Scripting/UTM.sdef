@@ -397,8 +397,12 @@
             <responds-to command="update configuration">
               <cocoa method="updateConfiguration:"/>
             </responds-to>
+
+            <responds-to command="reload configuration">
+              <cocoa method="reloadConfiguration:"/>
+            </responds-to>
         </class-extension>
-        
+
         <command name="update configuration" code="UTMcUpDt" description="Update the configuration of the virtual machine. The VM must be in the stopped state.">
           <direct-parameter description="Virtual machine to configure." type="virtual machine"/>
           <parameter name="with" code="UpCf" description="The configuration to update the virtual machine. You cannot change the backend with this!">
@@ -406,6 +410,10 @@
             <type type="qemu configuration"/>
             <type type="apple configuration"/>
           </parameter>
+        </command>
+
+        <command name="reload configuration" code="UTMcReLd" description="Reload the configuration of the virtual machine from disk, discarding any unsaved in-memory changes. Useful when the .utm bundle has been modified externally (e.g. by an automation tool) and UTM's cached configuration needs to be refreshed. The VM must be in the stopped state.">
+          <direct-parameter description="Virtual machine to reload." type="virtual machine"/>
         </command>
 
         <record-type name="qemu configuration" code="QeCf" description="QEMU virtual machine configuration.">
