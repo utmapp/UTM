@@ -183,6 +183,15 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
             try await data.delete(vm: box, alsoRegistry: true)
         }
     }
+
+    @objc func reloadConfiguration(_ command: NSScriptCommand) {
+        withScriptCommand(command) { [self] in
+            guard vm.state == .stopped else {
+                throw ScriptingError.notStopped
+            }
+            try data.discardChanges(for: box)
+        }
+    }
     
     @objc func clone(_ command: NSCloneCommand) {
         let properties = command.evaluatedArguments?["WithProperties"] as? [AnyHashable : Any]
