@@ -220,14 +220,26 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
         window!.recalculateKeyViewLoop()
         setupStopButtonMenu()
         setupMainMenu()
+        setupToolbarIcons()
 
         if vm.state == .stopped {
             enterSuspended(isBusy: false)
         } else {
             enterLive()
         }
-        
+
         super.windowDidLoad()
+    }
+
+    private func setupToolbarIcons() {
+        // cable.connector ships in SF Symbols 3 (macOS 12+); use it so the
+        // USB toolbar item visually matches the surrounding system symbols.
+        // Older systems fall back to the bundled "Toolbar USB" template
+        // image from the nib.
+        if #available(macOS 12, *) {
+            usbToolbarItem.image = NSImage(systemSymbolName: "cable.connector",
+                                           accessibilityDescription: usbToolbarItem.label)
+        }
     }
     
     public func requestAutoStart(options: UTMVirtualMachineStartOptions = []) {
