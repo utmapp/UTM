@@ -101,6 +101,7 @@ enum UTMAppleConfigurationError: Error {
     case hardwareModelInvalid
     case rosettaNotSupported
     case featureNotSupported
+    case networkConfigurationFailed
 }
 
 extension UTMAppleConfigurationError: LocalizedError {
@@ -118,6 +119,8 @@ extension UTMAppleConfigurationError: LocalizedError {
             return NSLocalizedString("Rosetta is not supported on the current host machine.", comment: "UTMAppleConfiguration")
         case .featureNotSupported:
             return NSLocalizedString("The host operating system needs to be updated to support one or more features requested by the guest.", comment: "UTMAppleConfiguration")
+        case .networkConfigurationFailed:
+            return NSLocalizedString("The requested network mode could not be configured on this host.", comment: "UTMAppleConfiguration")
         }
     }
 }
@@ -279,7 +282,7 @@ extension UTMAppleConfiguration {
                 }
             }
         }
-        vzconfig.networkDevices.append(contentsOf: networks.compactMap({ $0.vzNetworking() }))
+        vzconfig.networkDevices.append(contentsOf: try networks.compactMap({ try $0.vzNetworking() }))
         vzconfig.serialPorts.append(contentsOf: serials.compactMap({ $0.vzSerial() }))
         // add remaining devices
         try virtualization.fillVZConfiguration(vzconfig, isMacOSGuest: system.boot.operatingSystem == .macOS)

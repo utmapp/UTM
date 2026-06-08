@@ -254,6 +254,7 @@ extension UTMScriptingConfigImpl {
     private func appleNetworkMode(from mode: UTMAppleConfigurationNetwork.NetworkMode) -> UTMScriptingAppleNetworkMode {
         switch mode {
         case .shared: return .shared
+        case .host: return .host
         case .bridged: return .bridged
         }
     }
@@ -697,11 +698,12 @@ extension UTMScriptingConfigImpl {
     }
     
     private func parseAppleNetworkMode(_ value: AEKeyword?) -> UTMAppleConfigurationNetwork.NetworkMode? {
-        guard let value = value, let parsed = UTMScriptingQemuNetworkMode(rawValue: value) else {
+        guard let value = value, let parsed = UTMScriptingAppleNetworkMode(rawValue: value) else {
             return Optional.none
         }
         switch parsed {
         case .shared: return .shared
+        case .host: return .host
         case .bridged: return .bridged
         default: return Optional.none
         }
