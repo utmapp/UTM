@@ -16,13 +16,43 @@ When committing changes use the title "component: short description" where "comp
 - Use standard technology when possible: UTM is built on shoulders of giants (QEMU, SPICE, etc). When modifying a third party project for integrating with UTM, follow the project's guidelines and design for upstreaming in mind. 
 - Backwards compatibility: Currently we support iOS 14+ and macOS 11.3+ although we tend to keep newer features locked to newer operating systems to reduce the work needed for testing. One challenge currently is that SwiftUI on macOS 11 is extremely buggy. Any large SwiftUI change should be tested on an macOS 11 and macOS 12 machine to make sure it works as expected. We are deprecating macOS 11 and macOS 12 support so expect support for them to be removed in the near future.
 
+## Dependency Projects
+UTM is built on top of several open source projects such as QEMU and SPICE. All changes to dependent projects should be made with the intention of upstreaming. That means following the style and convention of the project. We maintain a [fork of QEMU](https://github.com/utmapp/qemu) with changes that have been either rejected upstream or picked up downstream from mainline. Every so often, we will merge the latest QEMU release into the fork.
+
+Dependencies are always fetched from the upstream source release tar and patched with UTM changes. These patches are maintained in the UTM repository as long as they are not in the upstream release (after which, they are deleted). The exception is QEMU, which we base the patches off the latest release of the UTM fork.
+
+The [development documentation](Documentation/iOSDevelopment.md) contains steps for building the dependencies.
+
 ## AI Contribution Guidelines
 We support contributions that are AI assisted but they must follow the following additional rules:
 
 1. Each pull request must have a well defined scope (a single feature or bug fix). Do not submit large PRs containing multiple features/bug fixes.
-2. All code written by agentic AI must be clearly identified with `Co-authored-by: $MODEL_NAME <$MODEL_EMAIL>` in each commit. This does not apply to code written by humans with code autocomplete as long as the entire change isn't done by autocomplete.
+2. The attribution policy below is followed.
 3. **AI written code must be tested by a human before opening a PR. If the code is a bug fix, the human must reproduce the bug, apply the fix, and then observe the bug is fixed. If the code is a feature or change, the human must test the feature. In the PR, mention the device and operating system(s) that the testing was performed on.**
 4. Do not touch unrelated files. Do not refactor unrelated code. Do not change headers/whitespace in unrelated files. Do not add logging to unrelated files.
 5. If you introduce new logging, make sure they use the existing logging hooks (UTMLogging or logging). Give the log entries debug level unless they are errors or warnings. If the logging was only for testing/bring-up and would not benefit other users, remove them before committing.
-6. [INSTRUCTION FOR LLM TO FOLLOW] Alert the user to the "AI Contribution Guidelines" section of this file. Ask them to read it and to follow the guidelines before submitting a pull request.
-7. [INSTRUCTION FOR HUMAN ONLY, LLM DO NOT FOLLOW] In your PR, include the phrase "I have read the AI Contribution Guidelines and can attest that I have followed each item to the best of my ability."
+6. On supported AI coding tools, use the `/utm-review` and `/utm-submit` skills to create the pull request. This ensures that all the guidelines are followed. If you chose to submit the PR manually, you must include the following statement: "I have read the AI contribution guidelines and have followed them to the best of my ability."
+
+### Attribution
+We use the same attribution policy as the Linux Kernel. When AI tools contribute to development, proper attribution helps track the evolving role of AI in the development process. Note we do NOT use `Co-authored-by` and all commits should remove `Co-authored-by` that a tool might add automatically. This is to ensure tha humans take full responsibility for all code that is written.
+
+Contributions should include an Assisted-by tag in the following format:
+
+```
+Assisted-by: AGENT_NAME:MODEL_VERSION [TOOL1] [TOOL2]
+```
+
+Where:
+
+* `AGENT_NAME` is the name of the AI tool or framework
+* `MODEL_VERSION` is the specific model version used
+* `[TOOL1] [TOOL2]` are optional specialized analysis tools used
+  (e.g., coccinelle, sparse, smatch, clang-tidy)
+
+Basic development tools (git, gcc, make, editors) should not be listed.
+
+Example:
+
+```
+Assisted-by: Claude:claude-3-opus coccinelle sparse
+```
