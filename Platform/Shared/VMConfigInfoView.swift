@@ -352,6 +352,7 @@ private let ICON_TITLE_MAP: [String: LocalizedStringKey] = [
     "mandriva": "Mandriva",
     "meego": "MeeGo",
     "mint": "Linux Mint",
+    "msdos": "MS-DOS",
     "netbsd": "NetBSD",
     "nintendo": "Nintendo",
     "nixos": "NixOS",
