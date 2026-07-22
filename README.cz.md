@@ -60,7 +60,7 @@ UTM je k dispozici také pro macOS: https://mac.getutm.app/
 
 UTM je šířen pod licencí Apache 2.0. Používá však několik komponent (L)GPL. Mnohé z nich jsou dynamicky linkované, s výjimkou zásuvných modulů gstreameru, které jsou staticky linkované, a částí kódu, které jsou převzaty z qemu. Pokud máte v úmyslu tuto aplikaci dále šířit, vezměte to prosím v úvahu.
 
-Některé ikony byly vytvořeny [Freepik](https://www.freepik.com) de [www.flaticon.com](https://www.flaticon.com/).
+Některé ikony byly vytvořeny [Freepik](http://web.archive.org/web/20260428085553/https://www.freepik.com/) de [www.flaticon.com](http://web.archive.org/web/20260722025827/https://www.flaticon.com/).
 
 Frontend UTM navíc využívá následující komponenty pod licencí MIT/BSD:
 
