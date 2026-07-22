@@ -58,7 +58,7 @@ UTM також доступний для macOS: https://mac.getutm.app/
 
 UTM розповсюджується на умовах ліцензії Apache 2.0, однак він використовує декілька компонентів (L)GPL. Більшість з них являються динамічно зв'язаними, але плагіни gstreamer являються статично зв'язаними, а частина коду взята з qemu. Будь ласка, пам'ятайте про це, якщо ви маєте намір розповсюджувати цю програму.
 
-Деякі іконки створені [Freepik](https://www.freepik.com) з [www.flaticon.com](https://www.flaticon.com/).
+Деякі іконки створені [Freepik](http://web.archive.org/web/20260428085553/https://www.freepik.com/) з [www.flaticon.com](http://web.archive.org/web/20260722025827/https://www.flaticon.com/).
 
 Крім того, фронтенд UTM залежить від наступних компонентів з ліцензією MIT/BSD:
 
