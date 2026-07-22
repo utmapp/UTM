@@ -714,6 +714,7 @@
 		CE89CB102B8B1B6A006B2CC2 /* VisionKeyboardKit in Frameworks */ = {isa = PBXBuildFile; platformFilters = (xros, ); productRef = CE89CB0F2B8B1B6A006B2CC2 /* VisionKeyboardKit */; };
 		CE89CB122B8B1B7A006B2CC2 /* VisionKeyboardKit in Frameworks */ = {isa = PBXBuildFile; platformFilters = (xros, ); productRef = CE89CB112B8B1B7A006B2CC2 /* VisionKeyboardKit */; };
 		CE928C2A26ABE6690099F293 /* UTMAppleVirtualMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE928C2926ABE6690099F293 /* UTMAppleVirtualMachine.swift */; };
+		019F89159BEC7E21BF68C565 /* UTMAppleUSBManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 019F89169BEC7E21BF68C565 /* UTMAppleUSBManager.swift */; };
 		CE928C3126ACCDEA0099F293 /* VMAppleRemovableDrivesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE928C3026ACCDEA0099F293 /* VMAppleRemovableDrivesView.swift */; };
 		CE93758924B930270074066F /* BusyOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7D972B24B2B17D0080CB69 /* BusyOverlay.swift */; };
 		CE93759924BB821F0074066F /* IQKeyboardManagerSwift in Frameworks */ = {isa = PBXBuildFile; platformFilter = ios; productRef = CE93759824BB821F0074066F /* IQKeyboardManagerSwift */; };
@@ -2041,6 +2042,7 @@
 		CE88A1632E24E4C000EAA28E /* VMKeyboardMap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VMKeyboardMap.h; sourceTree = "<group>"; };
 		CE88A1642E24E4C000EAA28E /* VMKeyboardMap.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VMKeyboardMap.m; sourceTree = "<group>"; };
 		CE928C2926ABE6690099F293 /* UTMAppleVirtualMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMAppleVirtualMachine.swift; sourceTree = "<group>"; };
+		019F89169BEC7E21BF68C565 /* UTMAppleUSBManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMAppleUSBManager.swift; sourceTree = "<group>"; };
 		CE928C3026ACCDEA0099F293 /* VMAppleRemovableDrivesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMAppleRemovableDrivesView.swift; sourceTree = "<group>"; };
 		CE9375A024BBDDD10074066F /* VMConfigDriveDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigDriveDetailsView.swift; sourceTree = "<group>"; };
 		CE95877426D74C2A0086BDE8 /* iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iOS.entitlements; sourceTree = "<group>"; };
@@ -2956,6 +2958,7 @@
 				CE68047D2E493D71001671E9 /* UTMUSBManager.swift */,
 				CE020BB524B14F8400B44AB6 /* UTMVirtualMachine.swift */,
 				CE928C2926ABE6690099F293 /* UTMAppleVirtualMachine.swift */,
+				019F89169BEC7E21BF68C565 /* UTMAppleUSBManager.swift */,
 				841E999728AC817D003C6CB6 /* UTMQemuVirtualMachine.swift */,
 				CEF01DB12B6724A300725A0F /* UTMSpiceVirtualMachine.swift */,
 			);
@@ -3959,6 +3962,7 @@
 				CEF0300826A25A6900667B63 /* VMWizardView.swift in Sources */,
 				CE88A15A2E247D0100EAA28E /* UTMActionIntent.swift in Sources */,
 				CE928C2A26ABE6690099F293 /* UTMAppleVirtualMachine.swift in Sources */,
+				019F89159BEC7E21BF68C565 /* UTMAppleUSBManager.swift in Sources */,
 				CE0B6CF524AD568400FE012D /* UTMLegacyQemuConfiguration+Miscellaneous.m in Sources */,
 				CE25125129C806AF000790AB /* UTMScriptingDeleteCommand.swift in Sources */,
 				CE0B6CFB24AD568400FE012D /* UTMLegacyQemuConfiguration+Networking.m in Sources */,
