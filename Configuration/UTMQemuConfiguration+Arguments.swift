@@ -27,13 +27,21 @@ import Virtualization // for getting network interfaces
     private func f(_ string: String = "") -> QEMUArgumentFragment {
         QEMUArgumentFragment(final: string)
     }
-    
+
+    /// Shared group ID for main process and helper
+    var appGroupIdentifier: String? {
+        let appGroup = Bundle.main.infoDictionary?["AppGroupIdentifier"] as? String
+        if let appGroup, !appGroup.hasPrefix("invalid.") {
+            return appGroup
+        }
+        return nil
+    }
+
     /// Shared between helper and main process to store Unix sockets
     var socketURL: URL {
         #if os(iOS) || os(visionOS)
         return FileManager.default.temporaryDirectory
         #else
-        let appGroup = Bundle.main.infoDictionary?["AppGroupIdentifier"] as? String
         let helper = Bundle.main.infoDictionary?["HelperIdentifier"] as? String
         // default to unsigned sandbox path
         var parentURL: URL = FileManager.default.homeDirectoryForCurrentUser
@@ -42,7 +50,7 @@ import Virtualization // for getting network interfaces
         parentURL.appendPathComponent(helper ?? "com.utmapp.QEMUHelper")
         parentURL.appendPathComponent("Data")
         parentURL.appendPathComponent("tmp")
-        if let appGroup = appGroup, !appGroup.hasPrefix("invalid.") {
+        if let appGroup = appGroupIdentifier {
             if let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup) {
                 return containerURL
             }
@@ -276,9 +284,24 @@ import Virtualization // for getting network interfaces
                         "edid=on"
                     }
                     if isDisplayGLSupported(display) && isVulkanSupported {
+                        #if os(macOS)
+                        "hostmem=8G"
+                        #else
                         "hostmem=256M"
+                        #endif
                         "blob=true"
                         "venus=true"
+                    }
+                    if isDisplayGLSupported(display) && isNeptuneSupported {
+                        if !isVulkanSupported {
+                            #if os(macOS)
+                            "hostmem=8G"
+                            #else
+                            "hostmem=256M"
+                            #endif
+                            "blob=true"
+                        }
+                        "neptune=true"
                     }
                     f()
                 }
@@ -322,10 +345,25 @@ import Virtualization // for getting network interfaces
         return UTMQEMUVulkanDriver(rawValue: rawValue) ?? .qemuVulkanDriverDefault
     }
 
+    private var directXDriver: UTMQEMUDirectXDriver {
+        let rawValue = UserDefaults.standard.integer(forKey: "QEMUDirectXDriver")
+        return UTMQEMUDirectXDriver(rawValue: rawValue) ?? .qemuDirectXDriverDefault
+    }
+
     private var isVulkanSupported: Bool {
         isGLSupported &&
         (rendererBackend == .qemuRendererBackendAngleMetal || rendererBackend == .qemuRendererBackendDefault) &&
         vulkanDriver != .qemuVulkanDriverDisabled
+    }
+
+    private var isNeptuneSupported: Bool {
+        #if os(macOS)
+        isGLSupported &&
+        (rendererBackend == .qemuRendererBackendAngleMetal || rendererBackend == .qemuRendererBackendDefault) &&
+        directXDriver != .qemuDirectXDriverDisabled
+        #else
+        false
+        #endif
     }
 
     private var isSparc: Bool {

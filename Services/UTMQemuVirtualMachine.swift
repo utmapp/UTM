@@ -254,6 +254,13 @@ extension UTMQemuVirtualMachine {
         }
     }
 
+    private var directXDriver: UTMQEMUDirectXDriver {
+        get {
+            let rawValue = UserDefaults.standard.integer(forKey: "QEMUDirectXDriver")
+            return UTMQEMUDirectXDriver(rawValue: rawValue) ?? .qemuDirectXDriverDefault
+        }
+    }
+
     @MainActor private func qemuEnsureEfiVarsAvailable() async throws {
         guard let efiVarsURL = config.qemu.efiVarsURL else {
             return
@@ -346,7 +353,9 @@ extension UTMQemuVirtualMachine {
         system.remoteBookmarks = remoteBookmarks
         system.rendererBackend = rendererBackend
         system.vulkanDriver = try vulkanDriver
+        system.directXDriver = directXDriver
         system.shmemDirectoryURL = await config.shmemDirectoryURL
+        system.appSandboxGroupId = await config.appGroupIdentifier
         system.hasDebugLog = hasDebugLog
         try Task.checkCancellation()
 

@@ -42,4 +42,12 @@ typedef NS_ENUM(NSInteger, UTMQEMUVulkanDriver) {
     kQEMUVulkanDriverKosmicKrisp = 3,
 };
 
+/// Specify the DirectX driver for this VM
+typedef NS_ENUM(NSInteger, UTMQEMUDirectXDriver) {
+    kQEMUDirectXDriverDefault = 0,
+    kQEMUDirectXDriverDisabled = 1,
+    kQEMUDirectXDriverDXMT = 2,
+    kQEMUDirectXDriverD3DMetal = 3,
+};
+
 #endif /* UTMQemuSystemBackends_h */

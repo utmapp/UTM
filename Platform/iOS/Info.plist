@@ -144,5 +144,7 @@
 	</dict>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<key>AppGroupIdentifier</key>
+	<string>group.$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).UTM</string>
 </dict>
 </plist>

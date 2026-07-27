@@ -128,7 +128,9 @@ static const int64_t kProcessTerminateTimeoutSeconds = 1;
     task.standardOutput = standardOutput;
     task.standardError = standardError;
     NSMutableDictionary<NSString *, NSString *> *environment = [NSMutableDictionary dictionary];
+    NSURL *renderServerURL = [[[NSBundle mainBundle] URLForAuxiliaryExecutable:@"QEMURenderServer.app"] URLByAppendingPathComponent:@"Contents/MacOS/QEMURenderServer"];
     environment[@"TMPDIR"] = NSFileManager.defaultManager.temporaryDirectory.path;
+    environment[@"RENDER_SERVER_EXEC_PATH"] = renderServerURL.path;
     if (self.environment) {
         [environment addEntriesFromDictionary:self.environment];
     }

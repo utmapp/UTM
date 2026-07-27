@@ -58,7 +58,6 @@ static int startQemu(UTMProcess *process, int argc, const char *argv[], const ch
 }
 
 - (void)setVulkanDriver:(UTMQEMUVulkanDriver)vulkanDriver {
-    _vulkanDriver = vulkanDriver;
     NSURL *vulkanIcds = [[NSBundle.mainBundle URLForResource:@"vulkan" withExtension:nil] URLByAppendingPathComponent:@"icd.d" isDirectory:YES];
     NSURL *driver;
     switch (vulkanDriver) {
@@ -77,12 +76,86 @@ static int startQemu(UTMProcess *process, int argc, const char *argv[], const ch
     if (driver) {
         self.mutableEnvironment[@"VK_DRIVER_FILES"] = driver.path;
         self.resources = [self.resources arrayByAddingObject:driver];
+        _vulkanDriver = vulkanDriver;
+    } else {
+        [self.mutableEnvironment removeObjectForKey:@"VK_DRIVER_FILES"];
+        _vulkanDriver = kQEMUVulkanDriverDisabled;
+    }
+}
+
+- (void)setDirectXDriver:(UTMQEMUDirectXDriver)directXDriver {
+    NSString *backend;
+    NSString *frameworkName;
+    NSURL *library;
+    switch (directXDriver) {
+        case kQEMUDirectXDriverDefault:
+        case kQEMUDirectXDriverDXMT:
+            backend = @"dxmt";
+            frameworkName = @"dxmt-native";
+            break;
+        case kQEMUDirectXDriverD3DMetal:
+            backend = @"d3dmetal";
+            frameworkName = @"d3dmetal-native";
+            break;
+        case kQEMUDirectXDriverDisabled:
+        default:
+            break;
+    }
+    if (frameworkName) {
+        NSURL *bundleURL = NSBundle.mainBundle.bundleURL;
+#if TARGET_OS_OSX
+        NSURL *contentsURL = [bundleURL URLByAppendingPathComponent:@"Contents" isDirectory:YES];
+        NSString *versionPath = @"Versions/A/";
+#else
+        NSURL *contentsURL = bundleURL;
+        NSString *versionPath = @"";
+#endif
+        NSURL *frameworksURL = [contentsURL URLByAppendingPathComponent:@"Frameworks" isDirectory:YES];
+        library = [frameworksURL URLByAppendingPathComponent:[NSString stringWithFormat:@"%@.framework/%@%@", frameworkName, versionPath, frameworkName] isDirectory:NO];
+        if (![NSFileManager.defaultManager fileExistsAtPath:library.path]) {
+            UTMLog(@"DirectX driver '%@' is not available in this build", backend);
+            backend = nil;
+            library = nil;
+        } else if (directXDriver == kQEMUDirectXDriverD3DMetal) {
+            NSString *d3dMetal = @"D3DMetal";
+            NSURL *d3dMetalURL = [frameworksURL URLByAppendingPathComponent:[NSString stringWithFormat:@"%@.framework/%@%@", d3dMetal, versionPath, d3dMetal] isDirectory:NO];
+            self.mutableEnvironment[@"D3DMETAL_FRAMEWORK_PATH"] = d3dMetalURL.path;
+            self.resources = [self.resources arrayByAddingObject:d3dMetalURL];
+        }
+    }
+    if (backend && library) {
+        self.mutableEnvironment[@"NPT_D3D11_LIBRARY_PATH"] = library.path;
+        self.mutableEnvironment[@"NPT_D3D12_LIBRARY_PATH"] = library.path;
+        self.mutableEnvironment[@"NPT_DXGI_LIBRARY_PATH"] = library.path;
+        self.mutableEnvironment[@"NPT_BACKEND"] = backend;
+        self.resources = [self.resources arrayByAddingObject:library];
+        _directXDriver = directXDriver;
+    } else {
+        [self.mutableEnvironment removeObjectForKey:@"NPT_D3D11_LIBRARY_PATH"];
+        [self.mutableEnvironment removeObjectForKey:@"NPT_D3D12_LIBRARY_PATH"];
+        [self.mutableEnvironment removeObjectForKey:@"NPT_DXGI_LIBRARY_PATH"];
+        [self.mutableEnvironment removeObjectForKey:@"NPT_BACKEND"];
+        [self.mutableEnvironment removeObjectForKey:@"D3DMETAL_FRAMEWORK_PATH"];
+        _directXDriver = kQEMUDirectXDriverDisabled;
     }
 }
 
 - (void)setShmemDirectoryURL:(NSURL *)shmemDirectoryURL {
     _shmemDirectoryURL = shmemDirectoryURL;
-    self.mutableEnvironment[@"XDG_RUNTIME_DIR"] = shmemDirectoryURL.path;
+    if (shmemDirectoryURL) {
+        self.mutableEnvironment[@"XDG_RUNTIME_DIR"] = shmemDirectoryURL.path;
+    } else {
+        [self.mutableEnvironment removeObjectForKey:@"XDG_RUNTIME_DIR"];
+    }
+}
+
+- (void)setAppSandboxGroupId:(NSString *)appSandboxGroupId {
+    _appSandboxGroupId = appSandboxGroupId;
+    if (appSandboxGroupId) {
+        self.mutableEnvironment[@"APP_SANDBOX_GROUP_ID"] = appSandboxGroupId;
+    } else {
+        [self.mutableEnvironment removeObjectForKey:@"APP_SANDBOX_GROUP_ID"];
+    }
 }
 
 - (NSPipe *)standardOutput {

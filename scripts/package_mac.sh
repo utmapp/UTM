@@ -31,6 +31,7 @@ OPTIONS="/tmp/options.$$.plist"
 SIGNED="/tmp/signed.$$"
 UTM_ENTITLEMENTS="/tmp/utm.$$.entitlements"
 LAUNCHER_ENTITLEMENTS="/tmp/launcher.$$.entitlements"
+RENDERER_ENTITLEMENTS="/tmp/renderer.$$.entitlements"
 HELPER_ENTITLEMENTS="/tmp/helper.$$.entitlements"
 CLI_ENTITLEMENTS="/tmp/cli.$$.entitlements"
 INPUT_COPY="/tmp/UTM.$$.xcarchive"
@@ -71,11 +72,13 @@ EOL
 if [ "$MODE" == "unsigned" ]; then
 	cp "$BASEDIR/../Platform/macOS/macOS-unsigned.entitlements" "$UTM_ENTITLEMENTS"
 	cp "$BASEDIR/../QEMULauncher/QEMULauncher-unsigned.entitlements" "$LAUNCHER_ENTITLEMENTS"
+	cp "$BASEDIR/../QEMURenderServer/QEMURenderServer-unsigned.entitlements" "$RENDERER_ENTITLEMENTS"
 	cp "$BASEDIR/../QEMUHelper/QEMUHelper-unsigned.entitlements" "$HELPER_ENTITLEMENTS"
 	cp "$BASEDIR/../utmctl/utmctl-unsigned.entitlements" "$CLI_ENTITLEMENTS"
 else
 	cp "$BASEDIR/../Platform/macOS/macOS.entitlements" "$UTM_ENTITLEMENTS"
 	cp "$BASEDIR/../QEMULauncher/QEMULauncher.entitlements" "$LAUNCHER_ENTITLEMENTS"
+	cp "$BASEDIR/../QEMURenderServer/QEMURenderServer.entitlements" "$RENDERER_ENTITLEMENTS"
 	cp "$BASEDIR/../QEMUHelper/QEMUHelper.entitlements" "$HELPER_ENTITLEMENTS"
 	cp "$BASEDIR/../utmctl/utmctl.entitlements" "$CLI_ENTITLEMENTS"
 
@@ -92,7 +95,9 @@ fi
 rm -rf "$INPUT_COPY"
 cp -a "$INPUT" "$INPUT_COPY"
 find "$INPUT_COPY/Products/Applications/UTM.app" -type d -path '*/Frameworks/*.framework' -exec codesign --force --sign - --timestamp=none \{\} \;
+# nested bundles must be signed before the XPC service that contains them
 codesign --force --sign - --entitlements "$LAUNCHER_ENTITLEMENTS" --timestamp=none --options runtime "$INPUT_COPY/Products/Applications/UTM.app/Contents/XPCServices/QEMUHelper.xpc/Contents/MacOS/QEMULauncher.app/Contents/MacOS/QEMULauncher"
+codesign --force --sign - --entitlements "$RENDERER_ENTITLEMENTS" --timestamp=none --options runtime "$INPUT_COPY/Products/Applications/UTM.app/Contents/XPCServices/QEMUHelper.xpc/Contents/MacOS/QEMURenderServer.app/Contents/MacOS/QEMURenderServer"
 codesign --force --sign - --entitlements "$HELPER_ENTITLEMENTS" --timestamp=none --options runtime "$INPUT_COPY/Products/Applications/UTM.app/Contents/XPCServices/QEMUHelper.xpc/Contents/MacOS/QEMUHelper"
 codesign --force --sign - --entitlements "$CLI_ENTITLEMENTS" --timestamp=none --options runtime "$INPUT_COPY/Products/Applications/UTM.app/Contents/MacOS/utmctl"
 codesign --force --sign - --entitlements "$UTM_ENTITLEMENTS" --timestamp=none --options runtime "$INPUT_COPY/Products/Applications/UTM.app/Contents/MacOS/UTM"
@@ -107,6 +112,7 @@ fi
 rm "$OPTIONS"
 rm "$UTM_ENTITLEMENTS"
 rm "$LAUNCHER_ENTITLEMENTS"
+rm "$RENDERER_ENTITLEMENTS"
 rm "$HELPER_ENTITLEMENTS"
 rm "$CLI_ENTITLEMENTS"
 rm -rf "$INPUT_COPY"
