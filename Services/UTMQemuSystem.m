@@ -195,6 +195,9 @@ static int startQemu(UTMProcess *process, int argc, const char *argv[], const ch
         self.mutableEnvironment[@"MVK_CONFIG_LOG_LEVEL"] = @"4";
         self.mutableEnvironment[@"MVK_DEBUG"] = @"1";
         self.mutableEnvironment[@"MTL_DEBUG_LAYER"] = @"1";
+        self.mutableEnvironment[@"MTL_DEBUG_LAYER_ERROR_MODE"] = @"nslog";
+        self.mutableEnvironment[@"ANGLE_ENABLE_DEBUG_TRACE"] = @"1";
+        self.mutableEnvironment[@"ANGLE_METAL_DEBUG_BINDINGS"] = @"1";
     } else {
         [self.mutableEnvironment removeObjectForKey:@"G_MESSAGES_DEBUG"];
         [self.mutableEnvironment removeObjectForKey:@"VK_LOADER_DEBUG"];
@@ -203,6 +206,9 @@ static int startQemu(UTMProcess *process, int argc, const char *argv[], const ch
         [self.mutableEnvironment removeObjectForKey:@"MVK_CONFIG_LOG_LEVEL"];
         [self.mutableEnvironment removeObjectForKey:@"MVK_DEBUG"];
         [self.mutableEnvironment removeObjectForKey:@"MTL_DEBUG_LAYER"];
+        [self.mutableEnvironment removeObjectForKey:@"MTL_DEBUG_LAYER_ERROR_MODE"];
+        [self.mutableEnvironment removeObjectForKey:@"ANGLE_ENABLE_DEBUG_TRACE"];
+        [self.mutableEnvironment removeObjectForKey:@"ANGLE_METAL_DEBUG_BINDINGS"];
     }
 }
 
