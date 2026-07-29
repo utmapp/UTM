@@ -1,0 +1,548 @@
+From 263d9536fa0f652024b90103b1c9fffd57cc2542 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Tue, 28 Jul 2026 10:04:14 -0700
+Subject: [PATCH 1/4] spice-display: avoid sending duplicate scanout
+
+If the same surface + size is sent, ignore sending scanout to the client.
+
+Guests using flip-model presentation issue a set_scanout for every frame
+with a different backing buffer of the same dimensions. The IOSurface and
+its ID are unchanged in that case, so re-announcing it also closes the
+previous pipe and trips the client's stale-POLLHUP protection. Frame
+content is delivered by gl_draw regardless.
+
+Assisted-by: Claude:claude-fable-5
+---
+ include/ui/spice-display.h |  4 ++++
+ ui/spice-display.c         | 42 ++++++++++++++++++++++++++++----------
+ 2 files changed, 35 insertions(+), 11 deletions(-)
+
+diff --git a/include/ui/spice-display.h b/include/ui/spice-display.h
+index 8e752f67da..cc052f0a08 100644
+--- a/include/ui/spice-display.h
++++ b/include/ui/spice-display.h
+@@ -145,6 +145,10 @@ struct SimpleSpiceDisplay {
+ #if defined(CONFIG_IOSURFACE)
+     IOSurfaceRef iosurface;
+     int surface_send_fd;
++    /* last geometry sent via spice_qxl_gl_scanout/monitor_config so we can
++     * skip re-sending the scanout for pure back-buffer flips */
++    uint32_t scanout_last_x, scanout_last_y, scanout_last_w, scanout_last_h;
++    bool scanout_last_y0top;
+ #if defined(CONFIG_METAL)
+     SpiceDisplayMetalContext metal_context;
+ #endif
+diff --git a/ui/spice-display.c b/ui/spice-display.c
+index 976f68710a..82d758ae08 100644
+--- a/ui/spice-display.c
++++ b/ui/spice-display.c
+@@ -995,18 +995,19 @@ static void spice_iosurface_destroy(SimpleSpiceDisplay *ssd)
+     ssd->iosurface = NULL;
+ }
+ 
+-static bool spice_iosurface_resize(SimpleSpiceDisplay *ssd, int width, int height)
++/* returns -1 on error, 0 if the surface is unchanged, 1 if (re)created */
++static int spice_iosurface_resize(SimpleSpiceDisplay *ssd, int width, int height)
+ {
+     if (ssd->iosurface) {
+         if (IOSurfaceGetHeight(ssd->iosurface) != height ||
+             IOSurfaceGetWidth(ssd->iosurface) != width) {
+             spice_iosurface_destroy(ssd);
+-            return spice_iosurface_create(ssd, width, height);
++            return spice_iosurface_create(ssd, width, height) ? 1 : -1;
+         } else {
+-            return true;
++            return 0;
+         }
+     } else {
+-        return spice_iosurface_create(ssd, width, height);
++        return spice_iosurface_create(ssd, width, height) ? 1 : -1;
+     }
+ }
+ 
+@@ -1277,7 +1278,7 @@ static void spice_gl_switch(DisplayChangeListener *dcl,
+             qemu_spice_display_metal_scanout_disable(ssd->metal_context);
+         }
+ #endif
+-        if (spice_iosurface_resize(ssd, width, height)) {
++        if (spice_iosurface_resize(ssd, width, height) >= 0) {
+             fd = spice_iosurface_create_fd(ssd, &fourcc);
+             if (fd < 0) {
+                 error_report("spice_gl_switch: failed to create fd");
+@@ -1390,13 +1391,12 @@ static void qemu_spice_gl_scanout_texture(DisplayChangeListener *dcl,
+ #if defined(CONFIG_GBM)
+     fd = egl_get_fd_for_texture(tex_id, &stride, &fourcc, NULL);
+ #elif defined(CONFIG_IOSURFACE)
+-    if (spice_iosurface_resize(ssd, backing_width, backing_height)) {
+-        ssd->tex_id = tex_id;
+-        ssd->y_0_top = y_0_top;
+-        fd = spice_iosurface_create_fd(ssd, &fourcc);
+-    } else {
+-        fd = -1;
++    int res = spice_iosurface_resize(ssd, backing_width, backing_height);
++    if (res < 0) {
++        fprintf(stderr, "%s: failed to create IOSurface\n", __func__);
++        return;
+     }
++    ssd->tex_id = tex_id;
+ #if defined(CONFIG_METAL)
+     if (ssd->metal_context && native.type == SCANOUT_TEXTURE_NATIVE_TYPE_METAL) {
+         qemu_spice_display_metal_scanout_texture(ssd->metal_context,
+@@ -1406,6 +1406,26 @@ static void qemu_spice_gl_scanout_texture(DisplayChangeListener *dcl,
+         qemu_spice_display_metal_scanout_disable(ssd->metal_context);
+     }
+ #endif
++    /*
++     * Guests using flip-model presentation issue a set_scanout for every
++     * frame with a different backing buffer of the same dimensions. The
++     * IOSurface (and its ID) is unchanged in that case, so avoid spamming
++     * the SPICE client with gl_scanout/monitors_config messages (which
++     * would also close the previous pipe and trigger the client's
++     * stale-POLLHUP protection). Frame content is delivered by gl_draw.
++     */
++    if (res == 0 && ssd->have_scanout &&
++        ssd->y_0_top == y_0_top &&
++        ssd->scanout_last_x == x && ssd->scanout_last_y == y &&
++        ssd->scanout_last_w == w && ssd->scanout_last_h == h) {
++        return;
++    }
++    ssd->y_0_top = y_0_top;
++    ssd->scanout_last_x = x;
++    ssd->scanout_last_y = y;
++    ssd->scanout_last_w = w;
++    ssd->scanout_last_h = h;
++    fd = spice_iosurface_create_fd(ssd, &fourcc);
+ #endif
+     if (fd < 0) {
+         fprintf(stderr, "%s: failed to get fd for texture\n", __func__);
+-- 
+2.41.0
+
+From 7e67e276de77359eeccd7eeacdc644e735919280 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Tue, 28 Jul 2026 10:04:32 -0700
+Subject: [PATCH 2/4] hvf: fix lost interrupt delivery during WFI
+
+cpus_kick_thread() can race hvf_wait_for_ipi() and deadlock the VM: its
+thread_kicked dedup can swallow a kick that was issued right after
+hvf_wait_for_ipi() cleared the flag but before it entered pselect(). The
+vCPU then sleeps in WFI with the interrupt or stop request still pending,
+which stalls guest interrupts indefinitely and hangs pause_all_vcpus() on
+guest reset.
+
+Always send the signal instead of relying on the dedup, and bound the
+otherwise open-ended pselect() so that a kick lost for any other reason
+degrades to a short delay rather than an unbounded sleep.
+
+Assisted-by: Claude:claude-fable-5
+---
+ target/arm/hvf/hvf.c | 33 +++++++++++++++++++++++++++++++--
+ 1 file changed, 31 insertions(+), 2 deletions(-)
+
+diff --git a/target/arm/hvf/hvf.c b/target/arm/hvf/hvf.c
+index 1f35d9f4d4..b20d70458f 100644
+--- a/target/arm/hvf/hvf.c
++++ b/target/arm/hvf/hvf.c
+@@ -1242,7 +1242,21 @@ int hvf_arch_init_vcpu(CPUState *cpu)
+ 
+ void hvf_kick_vcpu_thread(CPUState *cpu)
+ {
+-    cpus_kick_thread(cpu);
++    /*
++     * Do not use cpus_kick_thread(): its thread_kicked dedup races with
++     * hvf_wait_for_ipi() clearing thread_kicked right before an unbounded
++     * pselect(). A kick that is skipped because thread_kicked was still set
++     * from an already-consumed kick is lost forever: the vCPU sleeps in WFI
++     * with the interrupt (or stop request) pending, which delays guest
++     * interrupts indefinitely and deadlocks pause_all_vcpus() on guest
++     * reset (zombie VM). Always send the signal.
++     */
++    qatomic_set(&cpu->thread_kicked, true);
++    int err = pthread_kill(cpu->thread->thread, SIG_IPI);
++    if (err && err != ESRCH) {
++        fprintf(stderr, "qemu:%s: %s", __func__, strerror(err));
++        exit(1);
++    }
+     hv_vcpus_exit(&cpu->accel->fd, 1);
+ }
+ 
+@@ -1967,13 +1981,28 @@ static uint64_t hvf_vtimer_val(void)
+ 
+ static void hvf_wait_for_ipi(CPUState *cpu, struct timespec *ts)
+ {
++    /*
++     * Cap open-ended waits so that a lost kick degrades to a short delay
++     * instead of an unbounded sleep (defense in depth on top of the
++     * unconditional signal in hvf_kick_vcpu_thread()).
++     */
++    struct timespec bounded = { .tv_sec = 0, .tv_nsec = 10 * SCALE_MS };
++
+     /*
+      * Use pselect to sleep so that other threads can IPI us while we're
+      * sleeping.
+      */
+     qatomic_set_mb(&cpu->thread_kicked, false);
++    /*
++     * A kick sent before thread_kicked was cleared may have been deduped;
++     * re-check the conditions it would have signalled before sleeping.
++     */
++    if (qatomic_read(&cpu->stop) ||
++        (cpu->interrupt_request & (CPU_INTERRUPT_HARD | CPU_INTERRUPT_FIQ))) {
++        return;
++    }
+     bql_unlock();
+-    pselect(0, 0, 0, 0, ts, &cpu->accel->unblock_ipi_mask);
++    pselect(0, 0, 0, 0, ts ? ts : &bounded, &cpu->accel->unblock_ipi_mask);
+     bql_lock();
+ }
+ 
+-- 
+2.41.0
+
+From 6c0ee265362b5cd22786f38f21806465c064b502 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Wed, 29 Jul 2026 01:02:20 -0700
+Subject: [PATCH 3/4] ui/spice: carry the guest scanout's pixel format to the
+ IOSurface
+
+The shared IOSurface was created with a hardcoded 'BGRA' pixel format,
+and that format was hardcoded again at every consumer, including the
+fourcc reported to the client through spice_qxl_gl_scanout().
+
+A scanout is in whatever format the guest allocated. That is normally
+BGRA, but a fullscreen D3D swapchain becomes the scanout directly and may
+be R8G8B8A8, so its bytes ended up in a surface every consumer read as
+BGRA and red and blue came out transposed. Windowed output was unaffected
+because the scanout is then the desktop primary, which is BGRA.
+
+Take the format from the scanout MTLTexture, recreate the surface when it
+changes just as for a size change, and report the real fourcc.
+SpiceGlScanout.format is documented as the drm fourcc format; it was
+being filled with a constant.
+
+The EGL path takes the format too. The CGL path cannot: for 8-bit colour
+CGLTexImageIOSurface2D only accepts GL_BGRA with
+GL_UNSIGNED_INT_8_8_8_8_REV, and that combination reads the surface as
+BGRA no matter what its fourcc says, so a non-BGRA surface there is
+refused rather than silently transposed. Only the Metal path is ever
+asked for a different order.
+
+Assisted-by: Claude:claude-opus-5
+---
+ include/ui/spice-display.h |  5 +++
+ ui/spice-display-metal.m   | 23 +++++++++++++-
+ ui/spice-display.c         | 65 +++++++++++++++++++++++++++++---------
+ 3 files changed, 77 insertions(+), 16 deletions(-)
+
+diff --git a/include/ui/spice-display.h b/include/ui/spice-display.h
+index cc052f0a08..965e248511 100644
+--- a/include/ui/spice-display.h
++++ b/include/ui/spice-display.h
+@@ -144,6 +144,9 @@ struct SimpleSpiceDisplay {
+ #endif
+ #if defined(CONFIG_IOSURFACE)
+     IOSurfaceRef iosurface;
++    /* IOSurface pixel format ('BGRA'/'RGBA') the surface was created with;
++     * a guest scanout in a different channel order forces a recreate. */
++    uint32_t iosurface_fourcc;
+     int surface_send_fd;
+     /* last geometry sent via spice_qxl_gl_scanout/monitor_config so we can
+      * skip re-sending the scanout for pure back-buffer flips */
+@@ -220,6 +223,8 @@ SpiceDisplayMetalContext qemu_spice_display_metal_create_context(IOSurfaceRef su
+                                                                  uint32_t width,
+                                                                  uint32_t height);
+ void qemu_spice_display_metal_destroy_context(SpiceDisplayMetalContext ctx);
++/* IOSurface pixel format matching a scanout MTLTexture, 0 if unsupported. */
++uint32_t qemu_spice_display_metal_texture_fourcc(void *texture);
+ void qemu_spice_display_metal_scanout_texture(SpiceDisplayMetalContext ctx,
+                                               MTLTexture_id tex, uint32_t x, uint32_t y,
+                                               uint32_t w, uint32_t h);
+diff --git a/ui/spice-display-metal.m b/ui/spice-display-metal.m
+index 29e58d9461..23d8408068 100644
+--- a/ui/spice-display-metal.m
++++ b/ui/spice-display-metal.m
+@@ -38,7 +38,10 @@ - (instancetype)initWithDevice:(id<MTLDevice>)device
+ {
+     if (self = [super init]) {
+         MTLTextureDescriptor *textureDescriptor = [[MTLTextureDescriptor alloc] init];
+-        textureDescriptor.pixelFormat = MTLPixelFormatBGRA8Unorm;
++        /* must match the surface, which follows the guest scanout's order */
++        textureDescriptor.pixelFormat =
++            IOSurfaceGetPixelFormat(surface) == 'RGBA' ? MTLPixelFormatRGBA8Unorm
++                                                       : MTLPixelFormatBGRA8Unorm;
+         textureDescriptor.width = width;
+         textureDescriptor.height = height;
+         textureDescriptor.usage = MTLTextureUsageRenderTarget;
+@@ -112,6 +115,24 @@ - (void)drawFrameAtRect:(CGRect)rect completion:(void (^)(void))completion
+ 
+ @end
+ 
++uint32_t qemu_spice_display_metal_texture_fourcc(void *texture)
++{
++    id<MTLTexture> tex = (id<MTLTexture>)texture;
++
++    if (!tex) {
++        return 0;
++    }
++    switch (tex.pixelFormat) {
++    case MTLPixelFormatBGRA8Unorm:
++        return 'BGRA';
++    case MTLPixelFormatRGBA8Unorm:
++        return 'RGBA';
++    default:
++        /* no IOSurface equivalent wired up; caller keeps its default */
++        return 0;
++    }
++}
++
+ SpiceDisplayMetalContext qemu_spice_display_metal_create_context(IOSurfaceRef surface,
+                                                                  uint32_t width,
+                                                                  uint32_t height)
+diff --git a/ui/spice-display.c b/ui/spice-display.c
+index 82d758ae08..d73fbf5271 100644
+--- a/ui/spice-display.c
++++ b/ui/spice-display.c
+@@ -818,9 +818,10 @@ static void AddIntegerValue(CFMutableDictionaryRef dictionary, const CFStringRef
+     CFRelease(number);
+ }
+ 
+-static bool spice_iosurface_create_egl(SimpleSpiceDisplay *ssd, int width, int height,
+-                                       IOSurfaceRef surface)
++static bool spice_iosurface_create_egl_fmt(SimpleSpiceDisplay *ssd, int width, int height,
++                                           IOSurfaceRef surface, uint32_t fourcc)
+ {
++    const GLenum egl_internal_format = (fourcc == 'RGBA') ? GL_RGBA : GL_BGRA_EXT;
+ #if defined(CONFIG_EGL)
+     EGLint target = 0;
+     GLenum tex_target = 0;
+@@ -845,7 +846,7 @@ static bool spice_iosurface_create_egl(SimpleSpiceDisplay *ssd, int width, int h
+         EGL_HEIGHT,                        height,
+         EGL_IOSURFACE_PLANE_ANGLE,         0,
+         EGL_TEXTURE_TARGET,                target,
+-        EGL_TEXTURE_INTERNAL_FORMAT_ANGLE, GL_BGRA_EXT,
++        EGL_TEXTURE_INTERNAL_FORMAT_ANGLE, egl_internal_format,
+         EGL_TEXTURE_FORMAT,                EGL_TEXTURE_RGBA,
+         EGL_TEXTURE_TYPE_ANGLE,            GL_UNSIGNED_BYTE,
+         EGL_IOSURFACE_USAGE_HINT_ANGLE,    EGL_IOSURFACE_WRITE_HINT_ANGLE,
+@@ -872,11 +873,23 @@ static bool spice_iosurface_create_egl(SimpleSpiceDisplay *ssd, int width, int h
+ }
+ 
+ static bool spice_iosurface_create_cgl(SimpleSpiceDisplay *ssd, int width, int height,
+-                                       IOSurfaceRef surface)
++                                       IOSurfaceRef surface, uint32_t fourcc)
+ {
+ #if defined(HAVE_SPICE_MAC_CGL)
+     GLuint tex;
+ 
++    /*
++     * CGLTexImageIOSurface2D accepts only GL_BGRA/GL_UNSIGNED_INT_8_8_8_8_REV
++     * for 8-bit colour (see the table in <OpenGL/CGLIOSurface.h>; anything else
++     * returns kCGLBadValue), and that combination reads the surface as BGRA
++     * whatever its fourcc says. So this path cannot carry a differently-ordered
++     * scanout at all, and must refuse rather than silently transpose.
++     */
++    if (fourcc != 'BGRA') {
++        error_report("spice_iosurface_create: CGL supports BGRA surfaces only");
++        return false;
++    }
++
+     CGLSetCurrentContext(spice_gl_ctx);
+     glGenTextures(1, &tex);
+     glBindTexture(GL_TEXTURE_RECTANGLE, tex);
+@@ -904,14 +917,15 @@ static bool spice_iosurface_create_cgl(SimpleSpiceDisplay *ssd, int width, int h
+ #endif
+ }
+ 
+-static bool spice_iosurface_create(SimpleSpiceDisplay *ssd, int width, int height)
++static bool spice_iosurface_create(SimpleSpiceDisplay *ssd, int width, int height,
++                                   uint32_t fourcc)
+ {
+     IOSurfaceRef surface;
+     CFMutableDictionaryRef dict = CFDictionaryCreateMutable(
+         kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+     AddIntegerValue(dict, kIOSurfaceWidth, width);
+     AddIntegerValue(dict, kIOSurfaceHeight, height);
+-    AddIntegerValue(dict, kIOSurfacePixelFormat, 'BGRA');
++    AddIntegerValue(dict, kIOSurfacePixelFormat, (int)fourcc);
+     AddIntegerValue(dict, kIOSurfaceBytesPerElement, 4);
+ #if TARGET_OS_OSX
+     CFDictionaryAddValue(dict, kIOSurfaceIsGlobal, kCFBooleanTrue);
+@@ -926,18 +940,19 @@ static bool spice_iosurface_create(SimpleSpiceDisplay *ssd, int width, int heigh
+     }
+ 
+     if (spice_opengl == DISPLAY_GL_MODE_CORE) {
+-        if (!spice_iosurface_create_cgl(ssd, width, height, surface)) {
++        if (!spice_iosurface_create_cgl(ssd, width, height, surface, fourcc)) {
+             CFRelease(surface);
+             return false;
+         }
+     } else {
+-        if (!spice_iosurface_create_egl(ssd, width, height, surface)) {
++        if (!spice_iosurface_create_egl_fmt(ssd, width, height, surface, fourcc)) {
+             CFRelease(surface);
+             return false;
+         }
+     }
+ 
+     ssd->iosurface = surface;
++    ssd->iosurface_fourcc = fourcc;
+ 
+ #if defined(CONFIG_METAL)
+     ssd->metal_context = qemu_spice_display_metal_create_context(surface, width, height);
+@@ -996,18 +1011,20 @@ static void spice_iosurface_destroy(SimpleSpiceDisplay *ssd)
+ }
+ 
+ /* returns -1 on error, 0 if the surface is unchanged, 1 if (re)created */
+-static int spice_iosurface_resize(SimpleSpiceDisplay *ssd, int width, int height)
++static int spice_iosurface_resize(SimpleSpiceDisplay *ssd, int width, int height,
++                                  uint32_t fourcc)
+ {
+     if (ssd->iosurface) {
+         if (IOSurfaceGetHeight(ssd->iosurface) != height ||
+-            IOSurfaceGetWidth(ssd->iosurface) != width) {
++            IOSurfaceGetWidth(ssd->iosurface) != width ||
++            ssd->iosurface_fourcc != fourcc) {
+             spice_iosurface_destroy(ssd);
+-            return spice_iosurface_create(ssd, width, height) ? 1 : -1;
++            return spice_iosurface_create(ssd, width, height, fourcc) ? 1 : -1;
+         } else {
+             return 0;
+         }
+     } else {
+-        return spice_iosurface_create(ssd, width, height) ? 1 : -1;
++        return spice_iosurface_create(ssd, width, height, fourcc) ? 1 : -1;
+     }
+ }
+ 
+@@ -1031,7 +1048,7 @@ static int spice_iosurface_create_fd(SimpleSpiceDisplay *ssd, int *fourcc)
+     // when we close it, POLLHUP will be seen by the other side and know that
+     // the surface ID is stale and should not be used
+     ssd->surface_send_fd = fds[1];
+-    *fourcc = 'BGRA';
++    *fourcc = (int)ssd->iosurface_fourcc;
+     surfaceid = IOSurfaceGetID(ssd->iosurface);
+     write(ssd->surface_send_fd, &surfaceid, sizeof(surfaceid));
+     return fds[0];
+@@ -1278,7 +1295,7 @@ static void spice_gl_switch(DisplayChangeListener *dcl,
+             qemu_spice_display_metal_scanout_disable(ssd->metal_context);
+         }
+ #endif
+-        if (spice_iosurface_resize(ssd, width, height) >= 0) {
++        if (spice_iosurface_resize(ssd, width, height, 'BGRA') >= 0) {
+             fd = spice_iosurface_create_fd(ssd, &fourcc);
+             if (fd < 0) {
+                 error_report("spice_gl_switch: failed to create fd");
+@@ -1391,7 +1408,25 @@ static void qemu_spice_gl_scanout_texture(DisplayChangeListener *dcl,
+ #if defined(CONFIG_GBM)
+     fd = egl_get_fd_for_texture(tex_id, &stride, &fourcc, NULL);
+ #elif defined(CONFIG_IOSURFACE)
+-    int res = spice_iosurface_resize(ssd, backing_width, backing_height);
++    /*
++     * The surface is shared with the client verbatim, so it has to be in the
++     * guest scanout's channel order: a fullscreen D3D swapchain can be
++     * R8G8B8A8 while the desktop is B8G8R8A8. Only the Metal path can honour
++     * a non-BGRA order end to end, so everything else stays BGRA.
++     */
++    uint32_t want_fourcc = 'BGRA';
++#if defined(CONFIG_METAL)
++    if (native.type == SCANOUT_TEXTURE_NATIVE_TYPE_METAL &&
++        spice_opengl != DISPLAY_GL_MODE_CORE) {
++        uint32_t native_fourcc =
++            qemu_spice_display_metal_texture_fourcc(native.handle);
++        if (native_fourcc) {
++            want_fourcc = native_fourcc;
++        }
++    }
++#endif
++    int res = spice_iosurface_resize(ssd, backing_width, backing_height,
++                                     want_fourcc);
+     if (res < 0) {
+         fprintf(stderr, "%s: failed to create IOSurface\n", __func__);
+         return;
+-- 
+2.41.0
+
+From 27d8515de35937969dec6144dc6a0b63362d5ecc Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Wed, 29 Jul 2026 16:20:12 -0700
+Subject: [PATCH 4/4] Revert "ui/console: force gl-unblock from the watchdog
+ timer"
+
+This reverts commit 5cb1434ba33797b08f94c0f2168cd5ee7f70d8e6.
+---
+ ui/console.c | 45 ++-------------------------------------------
+ 1 file changed, 2 insertions(+), 43 deletions(-)
+
+diff --git a/ui/console.c b/ui/console.c
+index a2dddbd37a..f6d7879eff 100644
+--- a/ui/console.c
++++ b/ui/console.c
+@@ -166,32 +166,7 @@ void qemu_console_co_wait_update(QemuConsole *con)
+ 
+ static void graphic_hw_gl_unblock_timer(void *opaque)
+ {
+-    QemuConsole *con = opaque;
+-
+-    /*
+-     * The display's GL render did not release the block within the timeout
+-     * (e.g. the gtk window is occluded, the host compositor throttled the
+-     * frame callback, or the host GPU stalled). The device's command queue is
+-     * gated on this block (virtio-gpu: renderer_blocked), so a stuck display
+-     * stalls the guest GPU scheduler into a TDR (dxgmms1 0x7E) ~2 s later.
+-     * Force the unblock so guest command/fence processing resumes well before
+-     * the guest's TdrDelay; the worst case is one stale/torn displayed frame,
+-     * never a guest crash. A late real release is absorbed in
+-     * graphic_hw_gl_block() (con->gl_block already 0 -> no-op).
+-     */
+-    /* Rate-limited: this can fire repeatedly when the display fence is
+-     * persistently slow; an occasional line is enough to know it's active. */
+-    static unsigned _ub;
+-    if ((_ub++ % 60u) == 0u) {
+-        warn_report("console: gl-unblock fallback firing (display GL fence slow); "
+-                    "forcing unblock to keep the guest cmdq moving");
+-    }
+-    if (con->gl_block > 0) {
+-        con->gl_block = 0;
+-        if (con->hw_ops->gl_block) {
+-            con->hw_ops->gl_block(con->hw, false);
+-        }
+-    }
++    warn_report("console: no gl-unblock within one second");
+ }
+ 
+ void graphic_hw_gl_block(QemuConsole *con, bool block)
+@@ -202,13 +177,6 @@ void graphic_hw_gl_block(QemuConsole *con, bool block)
+     if (block) {
+         con->gl_block++;
+     } else {
+-        /*
+-         * A late release after graphic_hw_gl_unblock_timer() force-cleared the
+-         * block (con->gl_block already 0) must be a safe no-op, not underflow.
+-         */
+-        if (con->gl_block == 0) {
+-            return;
+-        }
+         con->gl_block--;
+     }
+     assert(con->gl_block >= 0);
+@@ -222,16 +190,7 @@ void graphic_hw_gl_block(QemuConsole *con, bool block)
+ 
+     if (block) {
+         timeout = qemu_clock_get_ms(QEMU_CLOCK_REALTIME);
+-        /* Safety net only.  The display samples (blits + fences) the guest
+-         * buffer directly at flush time, so the block lifetime is the GPU
+-         * fence latency -- not the host compositor's frame clock -- and
+-         * releasing the guest early TEARS: it re-renders into the buffer
+-         * while the queued blit still reads it (scaled/shifted frame
+-         * artifacts under present storms).  500ms is correct backpressure
+-         * for a slow (shared, possibly saturated) GPU while still
+-         * recovering a genuinely stuck fence well inside the guest's ~2s
+-         * TDR budget. */
+-        timeout += 500;
++        timeout += 1000; /* one sec */
+         timer_mod(con->gl_unblock_timer, timeout);
+     } else {
+         timer_del(con->gl_unblock_timer);
+-- 
+2.41.0
+
