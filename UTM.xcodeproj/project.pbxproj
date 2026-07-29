@@ -3284,6 +3284,7 @@
 				CE2D951924AD48BE0059923A /* Frameworks */,
 				CE2D951A24AD48BE0059923A /* Resources */,
 				CE0B6E6D24AD66CE00FE012D /* Embed Libraries */,
+				CEA3EE0F301A5A4900AAA8E4 /* Embed D3DMetal */,
 				CEBDA1E924D8BDDB0010B5EC /* Embed XPC Services */,
 				84E3A8FA293DB70A0024A740 /* Embed CLI Tool */,
 			);
@@ -3696,6 +3697,26 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nSRC=\"${PROJECT_DIR}/${SYSROOT_DIR}/libexec/virgl_render_server\"\nDST=\"${TARGET_BUILD_DIR}/${EXECUTABLE_PATH}\"\nTMP=\"${TARGET_TEMP_DIR}/${EXECUTABLE_NAME}\"\n\nif [ ! -f \"${SRC}\" ]; then\n    echo \"error: prebuilt binary not found at ${SRC}\" >&2\n    exit 1\nfi\n\n# install_name_tool writes a temporary file next to the binary it patches,\n# which the script sandbox disallows inside the product, so patch it here.\nrm -f \"${TMP}\"\ncp -X \"${SRC}\" \"${TMP}\"\nxattr -c \"${TMP}\"\nchmod +x \"${TMP}\"\n\n# The prebuilt binary has no LC_RPATH but links against\n# @rpath/vulkan.1.framework, so add the load paths this target declares.\nfor RPATH in ${LD_RUNPATH_SEARCH_PATHS}; do\n    install_name_tool -add_rpath \"${RPATH}\" \"${TMP}\"\ndone\n\nmkdir -p \"$(dirname \"${DST}\")\"\nrm -f \"${DST}\"\ncp -X \"${TMP}\" \"${DST}\"\n";
+		};
+		CEA3EE0F301A5A4900AAA8E4 /* Embed D3DMetal */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(PROJECT_DIR)/$(SYSROOT_DIR)/Frameworks/D3DMetal.framework",
+			);
+			name = "Embed D3DMetal";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/D3DMetal.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e\n\nSRC=\"${PROJECT_DIR}/${SYSROOT_DIR}/Frameworks/D3DMetal.framework\"\nDST=\"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/D3DMetal.framework\"\n\nif [ ! -d \"${SRC}\" ]; then\n    echo \"note: D3DMetal.framework not found in ${SYSROOT_DIR}, skipping\"\n    rm -rf \"${DST}\"\n    exit 0\nfi\n\n# Extended attributes on the input would make codesign refuse the bundle.\nmkdir -p \"$(dirname \"${DST}\")\"\nrm -rf \"${DST}\"\nditto --norsrc --noextattr --noqtn \"${SRC}\" \"${DST}\"\n\nif [ \"${CODE_SIGNING_ALLOWED}\" != \"NO\" ] && [ -n \"${EXPANDED_CODE_SIGN_IDENTITY}\" ]; then\n    if [ \"${ENABLE_HARDENED_RUNTIME}\" = \"YES\" ]; then\n        RUNTIME_FLAGS=\"--options runtime\"\n    fi\n    codesign --force --sign \"${EXPANDED_CODE_SIGN_IDENTITY}\" ${RUNTIME_FLAGS} ${OTHER_CODE_SIGN_FLAGS} \"${DST}\"\nfi\n";
 		};
 		CEF7F6812AEEDCC400E34952 /* Patch Settings bundle */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -4873,6 +4894,7 @@
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"WITH_JIT=1",
 					"WITH_SERVER=1",
@@ -4907,6 +4929,7 @@
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"WITH_JIT=1",
 					"WITH_SERVER=1",

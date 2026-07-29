@@ -211,10 +211,24 @@ struct DisplaySettingsView: View {
     @AppStorage("NoSaveScreenshot") var isNoSaveScreenshot = false
     @AppStorage("QEMURendererBackend") var qemuRendererBackend: UTMQEMURendererBackend = .qemuRendererBackendDefault
     @AppStorage("QEMUVulkanDriver") var qemuVulkanDriver: UTMQEMUVulkanDriver = .qemuVulkanDriverDefault
+    @AppStorage("QEMUDirectXDriver") var qemuDirectXDriver: UTMQEMUDirectXDriver = .qemuDirectXDriverDefault
     @AppStorage("QEMURendererFPSLimit") var qemuRendererFpsLimit: Int = 0
 
     private var isVulkanSupported: Bool {
         qemuRendererBackend == .qemuRendererBackendDefault || qemuRendererBackend == .qemuRendererBackendAngleMetal
+    }
+
+    private static var hasD3DMetal: Bool = {
+        let d3dMetalFramework = Bundle.main.bundleURL.appendingPathComponent("Contents/Frameworks/D3DMetal.framework")
+        return FileManager.default.fileExists(atPath: d3dMetalFramework.path)
+    }()
+
+    private var isD3DMetalAvailable: Bool {
+        if qemuDirectXDriver == .qemuDirectXDriverD3DMetal {
+            return true // always show option if already selected
+        } else {
+            return Self.hasD3DMetal
+        }
     }
 
     var body: some View {
@@ -251,6 +265,20 @@ struct DisplaySettingsView: View {
                 .onChange(of: qemuRendererBackend) { _ in
                     if !isVulkanSupported {
                         qemuVulkanDriver = .qemuVulkanDriverDefault
+                    }
+                }
+                Picker("DirectX Driver", selection: $qemuDirectXDriver) {
+                    Text("Default").tag(UTMQEMUDirectXDriver.qemuDirectXDriverDefault)
+                    Text("Disabled").tag(UTMQEMUDirectXDriver.qemuDirectXDriverDisabled)
+                    Text("DXMT").tag(UTMQEMUDirectXDriver.qemuDirectXDriverDXMT)
+                    if isD3DMetalAvailable {
+                        Text("D3DMetal").tag(UTMQEMUDirectXDriver.qemuDirectXDriverD3DMetal)
+                    }
+                }.help("Select the DirectX driver to use for host passthrough rendering. DirectX requires guest drivers to be installed.")
+                .disabled(!isVulkanSupported)
+                .onChange(of: qemuRendererBackend) { _ in
+                    if !isVulkanSupported {
+                        qemuDirectXDriver = .qemuDirectXDriverDefault
                     }
                 }
                 if !isVulkanSupported {
