@@ -20,8 +20,8 @@ import Foundation
 class UTMDownloadSupportToolsTask: UTMDownloadTask {
     private let vm: any UTMSpiceVirtualMachine
 
-    private static let supportToolsDownloadUrl = URL(string: "https://getutm.app/downloads/utm-guest-tools-latest.iso")!
-    
+    private static let supportToolsDownloadUrl = URL(string: "https://getutm.app/downloads/utm-guest-tools-3d-latest.iso")!
+
     private var toolsUrl: URL {
         fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!.appendingPathComponent("GuestSupportTools")
     }
