@@ -24,6 +24,10 @@ NC='\033[0m'
 IOS_SDKMINVER="16.0"
 MAC_SDKMINVER="13.0"
 VISIONOS_SDKMINVER="1.0"
+# Network operations are retried because concurrent builds on the same CI runner
+# get rate limited by GitHub and fail to clone/fetch.
+RETRY_ATTEMPTS="${RETRY_ATTEMPTS:-5}"
+RETRY_DELAY="${RETRY_DELAY:-15}"
 
 # Build environment
 PLATFORM=
@@ -90,6 +94,26 @@ check_env () {
     version_check "2.4" "$(bison -V | head -1 | awk '{ print $NF }')" || { echo >&2 "${RED}'bison' >= 2.4 is required. Did you install from Homebrew and updated your \$PATH variable?"; exit 1; }
 }
 
+# Run a command, retrying with exponential backoff if it fails. Jitter is derived
+# from the PID so that concurrent builds do not retry in lockstep.
+retry () {
+    ATTEMPT=1
+    DELAY="$RETRY_DELAY"
+    while true; do
+        "$@" && return 0
+        STATUS=$?
+        if [ $ATTEMPT -ge $RETRY_ATTEMPTS ]; then
+            echo >&2 "${RED}'$*' failed after $ATTEMPT attempts.${NC}"
+            return $STATUS
+        fi
+        SLEEP=$(( DELAY + ($$ + ATTEMPT) % 10 ))
+        echo >&2 "${RED}'$*' failed (attempt $ATTEMPT of $RETRY_ATTEMPTS), retrying in ${SLEEP}s...${NC}"
+        sleep $SLEEP
+        ATTEMPT=$(( ATTEMPT + 1 ))
+        DELAY=$(( DELAY * 2 ))
+    done
+}
+
 download () {
     URL=$1
     FILE="$(basename $URL)"
@@ -102,7 +126,7 @@ download () {
         echo "${GREEN}$TARGET already downloaded! Run with -d to force re-download.${NC}"
     else
         echo "${GREEN}Downloading ${URL}${NC}"
-        curl -L -O "$URL"
+        retry curl -f -L -O "$URL"
         mv "$FILE" "$TARGET"
     fi
     if [ -d "$DIR" ]; then
@@ -121,6 +145,12 @@ download () {
     fi
 }
 
+# Discard any partial clone from a previous attempt so that a retry starts clean.
+clone_fresh () {
+    rm -rf "$2"
+    git clone --filter=tree:0 --no-checkout "$1" "$2"
+}
+
 clone () {
     REPO="$1"
     COMMIT="$2"
@@ -130,16 +160,26 @@ clone () {
     if [ -d "$DIR" -a -z "$REDOWNLOAD" ]; then
         echo "${GREEN}$DIR already downloaded! Run with -d to force re-download.${NC}"
     else
-        rm -rf "$DIR"
         echo "${GREEN}Cloning ${REPO}...${NC}"
-        git clone --filter=tree:0 --no-checkout "$REPO" "$DIR"
+        retry clone_fresh "$REPO" "$DIR"
         if [ ! -z "$SUBDIRS" ]; then
             git -C "$DIR" sparse-checkout init
             git -C "$DIR" sparse-checkout set $SUBDIRS
         fi
     fi
-    git -C "$DIR" checkout "$COMMIT"
-    git -C "$DIR" submodule update --init --recursive --filter=tree:0
+    # tree:0 filtered clones fetch missing objects here, so these hit the network too
+    retry git -C "$DIR" checkout "$COMMIT"
+    retry git -C "$DIR" submodule update --init --recursive --filter=tree:0
+}
+
+clone_moltenvk_dependences () {
+    REPO="$1"
+    NAME="$(basename $REPO)"
+    DIR="$BUILD_DIR/$NAME"
+    pwd="$(pwd)"
+    cd "$DIR"
+    retry "./fetchDependencies" --none -v
+    cd "$pwd"
 }
 
 download_all () {
@@ -183,6 +223,7 @@ download_all () {
     clone $LIBUCONTEXT_REPO $LIBUCONTEXT_COMMIT
     clone $MESA_REPO $MESA_COMMIT
     clone $MOLTENVK_REPO $MOLTENVK_COMMIT
+    clone_moltenvk_dependences $MOLTENVK_REPO
     download $LLVM15_SRC
     clone $DXMT_REPO $DXMT_COMMIT
     clone $D3DMETAL_REPO $D3DMETAL_COMMIT
