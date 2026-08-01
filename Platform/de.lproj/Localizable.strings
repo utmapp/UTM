@@ -57,7 +57,7 @@
 "Advanced" = "Erweitert";
 
 /* VMConfigSystemView */
-"Allocating too much memory will crash the VM." = "Zu viel zugewiesener Speicher führt zum Absturz der VM.";
+"Allocating too much memory will crash the VM." = "Zu viel zugewiesener Arbeitsspeicher führt zum Absturz der VM.";
 
 /* UTMData */
 "AltJIT error: %@" = "AltJIT Fehler: %@";
@@ -91,7 +91,7 @@
 "Are you sure you want to permanently delete this disk image?" = "Möchten Sie dieses Abbild wirklich dauerhaft löschen?";
 
 /* No comment provided by engineer. */
-"Are you sure you want to reset this VM? Any unsaved changes will be lost." = "Möchten Sie wirklich einen Reset der VM ausführen? Alle ungespeicherten Änderungen gehen dabei verloren.";
+"Are you sure you want to reset this VM? Any unsaved changes will be lost." = "Möchten Sie wirklich einen Neustart der VM ausführen? Alle ungespeicherten Änderungen gehen dabei verloren.";
 
 /* No comment provided by engineer. */
 "Are you sure you want to stop this VM and exit? Any unsaved changes will be lost." = "Möchten Sie die VM wirklich ausschalten? Alle ungespeicherten Änderungen gehen dabei verloren.";
@@ -147,7 +147,7 @@
 "Cannot access resource: %@" = "Ressource nicht verfügbar: %@";
 
 /* UTMAppleVirtualMachine */
-"Cannot create virtual terminal." = "Virtuelles Terminal kann nicht erzeugt werden.";
+"Cannot create virtual terminal." = "Virtuelles Terminal kann nicht erstellt werden.";
 
 /* UTMData */
 "Cannot find AltServer for JIT enable. You cannot run VMs until JIT is enabled." = "Der AltServer für JIT wurde nicht gefunden. Die VMs können nicht starten, bis JIT aktiviert wurde.";
@@ -159,10 +159,10 @@
 "Caps Lock (⇪) is treated as a key" = "Die Feststelltaste (⇪) wird als einzelner Tastendruck behandelt";
 
 /* VMMetalView */
-"Capture Input" = "Eingabe fangen";
+"Capture Input" = "Eingabe erfassen";
 
 /* VMDisplayQemuMetalWindowController */
-"Captured mouse" = "Maus gefangen";
+"Captured mouse" = "Maus erfasst";
 
 /* Configuration boot device */
 "CD/DVD" = "CD/DVD";
@@ -175,7 +175,7 @@
 "Change" = "Wechseln";
 
 /* VMDisplayAppleController */
-"Change…" = "Abbild Wechseln…";
+"Change…" = "Abbild wechseln…";
 
 /* No comment provided by engineer. */
 "Clear" = "Entfernen";
@@ -246,7 +246,7 @@
 "Display %lld: %@" = "Display %1$lld: %2$@";
 
 /* VMDisplayQemuDisplayController */
-"Disposable Mode" = "Wegwerf-Modus";
+"Disposable Mode" = "Temporärer Modus";
 
 /* No comment provided by engineer. */
 "Do not save VM screenshot to disk" = "VM Screenshots nicht speichern";
@@ -351,7 +351,7 @@
 "Failed to start SPICE client." = "Fehler beim Start des SPICE-Client.";
 
 /* No comment provided by engineer. */
-"Faster, but can only run the native CPU architecture." = "Schneller, unterstützt jedoch nur die Host CPU-Architektur.";
+"Faster, but can only run the native CPU architecture." = "Schneller, unterstützt jedoch nur die CPU-Architektur des Hosts.";
 
 /* Configuration boot device
    UTMQemuConstants */
@@ -562,7 +562,7 @@
 "No output device is selected for this window." = "Für dieses Fenster wurde kein Ausgabegerät ausgewählt.";
 
 /* VMQemuDisplayMetalWindowController */
-"No USB devices detected." = "Keine USB-Geräte verfügbar.";
+"No USB devices detected." = "Keine USB-Geräte gefunden.";
 
 /* VMToolbarDriveMenuView */
 "none" = "keine";
@@ -581,7 +581,7 @@
 "NVMe" = "NVMe";
 
 /* VMDisplayWindowController */
-"OK" = "Ok";
+"OK" = "OK";
 
 /* No comment provided by engineer. */
 "Open…" = "Öffnen…";
@@ -732,13 +732,13 @@
 "Select Shared Folder" = "Order auswählen";
 
 /* SavePanel */
-"Select where to export QEMU command:" = "Ort zum Exportieren des QEMU-Kommandos auswählen";
+"Select where to export QEMU command:" = "Ort zum Exportieren des QEMU-Kommandos auswählen:";
 
 /* SavePanel */
-"Select where to save debug log:" = "Ort zum Exportieren des Debug Log auswählen";
+"Select where to save debug log:" = "Ort zum Exportieren des Debug Log auswählen:";
 
 /* SavePanel */
-"Select where to save UTM Virtual Machine:" = "Speicherort der VM auswählen";
+"Select where to save UTM Virtual Machine:" = "Speicherort der VM auswählen:";
 
 /* No comment provided by engineer. */
 "Selected:" = "Ausgewählt:";
@@ -995,7 +995,7 @@
 "Would you like to connect '%@' to this virtual machine?" = "Möchten Sie %@ an die VM anschließen?";
 
 /* VMDisplayAppleWindowController */
-"Would you like to install macOS? If an existing operating system is already installed on the primary drive of this VM, then it will be erased." = "Möchten Sie macOS jetzt installieren? Alle bestehenden Daten auf der ersten Festplatte dieser VM werden gelöscht.";
+"Would you like to install macOS? If an existing operating system is already installed on the primary drive of this VM, then it will be erased." = "Möchten Sie macOS jetzt installieren? Alle bestehenden Daten auf der primären Festplatte dieser VM werden gelöscht.";
 
 /* No comment provided by engineer. */
 "Would you like to re-convert this disk image to reclaim unused space and apply compression? Note this will require enough temporary space to perform the conversion. Compression only applies to existing data and new data will still be written uncompressed. You are strongly encouraged to back-up this VM before proceeding." = "Möchten Sie das Festplatten-Abbild durch erneute Konvertierung komprimieren? Dies erfordert ausreichend verfügbaren Speicherplatz für eine Kopie der Daten. Nur vorhandene Daten werden komprimiert, neue Daten werden weiterhin unkomprimiert gespeichert. Machen Sie unbedingt ein Backup bevor Sie die Konvertierung starten.";
