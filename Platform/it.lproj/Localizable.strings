@@ -953,7 +953,7 @@
 "Keyboard" = "Tastiera";
 
 /* No comment provided by engineer. */
-"Keep UTM running after last window is closed and all VMs are shut down" = "Esegui UTM anche quando tutte le fineste sono chiuse e nessuna VM è in esecuzione";
+"Keep UTM running after last window is closed and all VMs are shut down" = "Esegui UTM anche quando tutte le finestre sono chiuse e nessuna VM è in esecuzione";
 
 /* No comment provided by engineer. */
 "Show dock icon" = "Mostra icona nel dock";
