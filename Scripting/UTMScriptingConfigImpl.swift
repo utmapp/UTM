@@ -154,6 +154,11 @@ extension UTMScriptingConfigImpl {
             "address": config.macAddress,
             "hostInterface": config.bridgeInterface ?? "",
             "portForwards": config.portForward.map({ serializeQemuPortForward($0) }),
+            "vlanGuestAddress": config.vlanGuestAddress ?? "",
+            "vlanGuestAddressIpv6": config.vlanGuestAddressIPv6 ?? "",
+            "vlanDhcpStartAddress": config.vlanDhcpStartAddress ?? "",
+            "vlanDhcpEndAddress": config.vlanDhcpEndAddress ?? "",
+            "isolateFromHost": config.isIsolateFromHost,
         ]
     }
     
@@ -486,6 +491,21 @@ extension UTMScriptingConfigImpl {
         }
         if let portForwards = record["portForwards"] as? [[AnyHashable : Any]] {
             network.portForward = portForwards.map({ unserializeQemuPortForward(from: $0) })
+        }
+        if let value = record["vlanGuestAddress"] as? String, !value.isEmpty {
+            network.vlanGuestAddress = value
+        }
+        if let value = record["vlanGuestAddressIpv6"] as? String, !value.isEmpty {
+            network.vlanGuestAddressIPv6 = value
+        }
+        if let value = record["vlanDhcpStartAddress"] as? String, !value.isEmpty {
+            network.vlanDhcpStartAddress = value
+        }
+        if let value = record["vlanDhcpEndAddress"] as? String, !value.isEmpty {
+            network.vlanDhcpEndAddress = value
+        }
+        if let value = record["isolateFromHost"] as? Bool {
+            network.isIsolateFromHost = value
         }
     }
     
