@@ -52,7 +52,7 @@
 		84018699288B71BF0050AC51 /* BusyIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84018696288B71BF0050AC51 /* BusyIndicator.swift */; };
 		8401FD71269BEB2B00265F0D /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = CE6B240A25F1F3CE0020D43E /* main.c */; };
 		8401FD72269BEB3000265F0D /* Bootstrap.c in Sources */ = {isa = PBXBuildFile; fileRef = CE0DF17125A80B6300A51894 /* Bootstrap.c */; };
-		8401FD7A269BECE200265F0D /* QEMULauncher.app in Embed Launcher */ = {isa = PBXBuildFile; fileRef = 8401FD62269BE9C500265F0D /* QEMULauncher.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		8401FD7A269BECE200265F0D /* QEMULauncher.app in Embed Executables */ = {isa = PBXBuildFile; fileRef = 8401FD62269BE9C500265F0D /* QEMULauncher.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		8401FDA0269D266E00265F0D /* VMConfigAppleBootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8401FD9F269D266E00265F0D /* VMConfigAppleBootView.swift */; };
 		8401FDA2269D3E2500265F0D /* VMConfigAppleNetworkingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8401FDA1269D3E2500265F0D /* VMConfigAppleNetworkingView.swift */; };
 		8401FDA4269D43CF00265F0D /* VMConfigAppleDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8401FDA3269D43CF00265F0D /* VMConfigAppleDisplayView.swift */; };
@@ -735,6 +735,11 @@
 		CE9B15482B12A87E003A32DD /* GenerateKey.c in Sources */ = {isa = PBXBuildFile; fileRef = CE9B15462B12A87E003A32DD /* GenerateKey.c */; };
 		CE9B15492B12A87E003A32DD /* GenerateKey.c in Sources */ = {isa = PBXBuildFile; fileRef = CE9B15462B12A87E003A32DD /* GenerateKey.c */; };
 		CE9B154A2B12A87E003A32DD /* GenerateKey.c in Sources */ = {isa = PBXBuildFile; fileRef = CE9B15462B12A87E003A32DD /* GenerateKey.c */; };
+		CEA3EDEB3016810500AAA8E4 /* dxmt-native.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEA3EDE93016810500AAA8E4 /* dxmt-native.framework */; };
+		CEA3EDEC3016810500AAA8E4 /* dxmt-native.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CEA3EDE93016810500AAA8E4 /* dxmt-native.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CEA3EDED3016810500AAA8E4 /* d3dmetal-native.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEA3EDEA3016810500AAA8E4 /* d3dmetal-native.framework */; };
+		CEA3EDEE3016810500AAA8E4 /* d3dmetal-native.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CEA3EDEA3016810500AAA8E4 /* d3dmetal-native.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CEA3EE05301691C500AAA8E4 /* QEMURenderServer.app in Embed Executables */ = {isa = PBXBuildFile; fileRef = CEA3EDFA30168B9000AAA8E4 /* QEMURenderServer.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		CEA45E25263519B5002FA97D /* VMDisplayMetalViewController+Pointer.h in Sources */ = {isa = PBXBuildFile; fileRef = 83FBDD53242FA71900D2C5D7 /* VMDisplayMetalViewController+Pointer.h */; };
 		CEA45E27263519B5002FA97D /* VMRemovableDrivesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D954524AD4F980059923A /* VMRemovableDrivesView.swift */; };
 		CEA45E37263519B5002FA97D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE772AAB25C8B0F600E4E379 /* ContentView.swift */; };
@@ -1313,6 +1318,13 @@
 			remoteGlobalIDString = CE9A352C26533A51005077CF;
 			remoteInfo = JailbreakInterposer;
 		};
+		CEA3EE03301691C500AAA8E4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CE550BC1225947990063E575 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CEA3EDEF30168B9000AAA8E4;
+			remoteInfo = QEMURenderServer;
+		};
 		CEBDA1E324D8BDDB0010B5EC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = CE550BC1225947990063E575 /* Project object */;
@@ -1364,6 +1376,7 @@
 				CEF83F8F250094EE00557D15 /* gcrypt.20.framework in Embed Libraries */,
 				CE0B6F5424AD67FA00FE012D /* spice-client-glib-2.0.8.framework in Embed Libraries */,
 				CEF83F8B250094D700557D15 /* spice-server.1.framework in Embed Libraries */,
+				CEA3EDEC3016810500AAA8E4 /* dxmt-native.framework in Embed Libraries */,
 				CE0B6F1B24AD679700FE012D /* gstapp-1.0.0.framework in Embed Libraries */,
 				CE0B6F2924AD67AD00FE012D /* gsttag-1.0.0.framework in Embed Libraries */,
 				CE0B6F3124AD67C100FE012D /* phodav-3.0.0.framework in Embed Libraries */,
@@ -1388,6 +1401,7 @@
 				CE03D0C524D913AF00F76B84 /* ffi.8.framework in Embed Libraries */,
 				CEF83F8D250094E700557D15 /* gthread-2.0.0.framework in Embed Libraries */,
 				CE63B0DB2F0ED4FF00C59D13 /* vulkan_kosmickrisp.framework in Embed Libraries */,
+				CEA3EDEE3016810500AAA8E4 /* d3dmetal-native.framework in Embed Libraries */,
 				CE064C662A563F4B003C833D /* swtpm.0.framework in Embed Libraries */,
 				CE03D09024D9124800F76B84 /* intl.8.framework in Embed Libraries */,
 				CE03D0C924D9140A00F76B84 /* pixman-1.0.framework in Embed Libraries */,
@@ -1521,15 +1535,16 @@
 			name = "Embed Libraries";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		CE6B241425F1F5630020D43E /* Embed Launcher */ = {
+		CE6B241425F1F5630020D43E /* Embed Executables */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 6;
 			files = (
-				8401FD7A269BECE200265F0D /* QEMULauncher.app in Embed Launcher */,
+				8401FD7A269BECE200265F0D /* QEMULauncher.app in Embed Executables */,
+				CEA3EE05301691C500AAA8E4 /* QEMURenderServer.app in Embed Executables */,
 			);
-			name = "Embed Launcher";
+			name = "Embed Executables";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		CEA45F71263519B5002FA97D /* Embed Libraries */ = {
@@ -2075,6 +2090,11 @@
 		CE9D197B226542FE00355E14 /* UTMProcess.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UTMProcess.m; sourceTree = "<group>"; };
 		CEA02A972436C7A30087E45F /* UTMLegacyQemuConfiguration+Networking.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UTMLegacyQemuConfiguration+Networking.h"; sourceTree = "<group>"; };
 		CEA02A982436C7A30087E45F /* UTMLegacyQemuConfiguration+Networking.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UTMLegacyQemuConfiguration+Networking.m"; sourceTree = "<group>"; };
+		CEA3EDE93016810500AAA8E4 /* dxmt-native.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "dxmt-native.framework"; path = "$(SYSROOT_DIR)/Frameworks/dxmt-native.framework"; sourceTree = "<group>"; };
+		CEA3EDEA3016810500AAA8E4 /* d3dmetal-native.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "d3dmetal-native.framework"; path = "$(SYSROOT_DIR)/Frameworks/d3dmetal-native.framework"; sourceTree = "<group>"; };
+		CEA3EDFA30168B9000AAA8E4 /* QEMURenderServer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QEMURenderServer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CEA3EDFD30168C9900AAA8E4 /* QEMURenderServer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = QEMURenderServer.entitlements; sourceTree = "<group>"; };
+		CEA3EE13301C15DD00AAA8E4 /* QEMURenderServer-unsigned.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "QEMURenderServer-unsigned.entitlements"; sourceTree = "<group>"; };
 		CEA45FB9263519B5002FA97D /* UTM SE.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "UTM SE.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CEA51F862A81EAB700DDD7FA /* VMToolbarOrnamentModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMToolbarOrnamentModifier.swift; sourceTree = "<group>"; };
 		CEA9053725F981E900801E7C /* usb-1.0.0.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "usb-1.0.0.framework"; path = "$(SYSROOT_DIR)/Frameworks/usb-1.0.0.framework"; sourceTree = "<group>"; };
@@ -2349,6 +2369,7 @@
 				CEF83F882500949D00557D15 /* gthread-2.0.0.framework in Frameworks */,
 				CE03D08724D90F0700F76B84 /* gobject-2.0.0.framework in Frameworks */,
 				CE9B15362B11A491003A32DD /* SwiftConnect in Frameworks */,
+				CEA3EDED3016810500AAA8E4 /* d3dmetal-native.framework in Frameworks */,
 				CE0B6F0A24AD677200FE012D /* spice-client-glib-2.0.8.framework in Frameworks */,
 				CE0B6ECF24AD677200FE012D /* gstrtp-1.0.0.framework in Frameworks */,
 				CE0B6ECC24AD677200FE012D /* gstriff-1.0.0.framework in Frameworks */,
@@ -2364,6 +2385,7 @@
 				CE0B6EBB24AD677200FE012D /* libgstgio.a in Frameworks */,
 				84937EFF28960789003148F4 /* zstd.1.framework in Frameworks */,
 				CE0B6EE224AD677200FE012D /* gstnet-1.0.0.framework in Frameworks */,
+				CEA3EDEB3016810500AAA8E4 /* dxmt-native.framework in Frameworks */,
 				CE03D08624D90F0700F76B84 /* gmodule-2.0.0.framework in Frameworks */,
 				CED297142CE425CB00F1E3EB /* soup-3.0.0.framework in Frameworks */,
 				CE03D0CA24D9142000F76B84 /* ssl.1.1.framework in Frameworks */,
@@ -2624,6 +2646,8 @@
 		CE2D63D622653C7300FC7E63 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CEA3EDEA3016810500AAA8E4 /* d3dmetal-native.framework */,
+				CEA3EDE93016810500AAA8E4 /* dxmt-native.framework */,
 				CE63B0D92F0ED4FF00C59D13 /* MoltenVK.framework */,
 				CE63B0D72F0ED4FE00C59D13 /* vulkan_kosmickrisp.framework */,
 				CE63B0D82F0ED4FE00C59D13 /* vulkan.1.framework */,
@@ -2894,6 +2918,7 @@
 				CE9D18F72265410E00355E14 /* qemu */,
 				CE63B0F02F0ED67700C59D13 /* vulkan */,
 				CE6B240925F1F3CE0020D43E /* QEMULauncher */,
+				CEA3EDFB30168C6300AAA8E4 /* QEMURenderServer */,
 				CE9A352E26533A51005077CF /* JailbreakInterposer */,
 				CE9B153D2B11A4ED003A32DD /* Remote */,
 				CE4698F824C8FBD9008C1BD6 /* Icons */,
@@ -2917,6 +2942,7 @@
 				8401FD62269BE9C500265F0D /* QEMULauncher.app */,
 				84E3A8F0293DB37E0024A740 /* utmctl */,
 				CEF7F6D32AEEDCC400E34952 /* UTM Remote.app */,
+				CEA3EDFA30168B9000AAA8E4 /* QEMURenderServer.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -3045,6 +3071,15 @@
 				CECF02562B706ADD00409FC0 /* UTMRemoteConnectInterface.h */,
 			);
 			path = Remote;
+			sourceTree = "<group>";
+		};
+		CEA3EDFB30168C6300AAA8E4 /* QEMURenderServer */ = {
+			isa = PBXGroup;
+			children = (
+				CEA3EDFD30168C9900AAA8E4 /* QEMURenderServer.entitlements */,
+				CEA3EE13301C15DD00AAA8E4 /* QEMURenderServer-unsigned.entitlements */,
+			);
+			path = QEMURenderServer;
 			sourceTree = "<group>";
 		};
 		CEB63A9624F47C1200CAF323 /* Shared */ = {
@@ -3249,6 +3284,7 @@
 				CE2D951924AD48BE0059923A /* Frameworks */,
 				CE2D951A24AD48BE0059923A /* Resources */,
 				CE0B6E6D24AD66CE00FE012D /* Embed Libraries */,
+				CEA3EE0F301A5A4900AAA8E4 /* Embed D3DMetal */,
 				CEBDA1E924D8BDDB0010B5EC /* Embed XPC Services */,
 				84E3A8FA293DB70A0024A740 /* Embed CLI Tool */,
 			);
@@ -3293,6 +3329,21 @@
 			productReference = CE9A352D26533A51005077CF /* JailbreakInterposer.framework */;
 			productType = "com.apple.product-type.framework";
 		};
+		CEA3EDEF30168B9000AAA8E4 /* QEMURenderServer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CEA3EDF730168B9000AAA8E4 /* Build configuration list for PBXNativeTarget "QEMURenderServer" */;
+			buildPhases = (
+				CEA3EE0130168DF000AAA8E4 /* Copy prebuilt binary */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = QEMURenderServer;
+			productName = QEMULauncher;
+			productReference = CEA3EDFA30168B9000AAA8E4 /* QEMURenderServer.app */;
+			productType = "com.apple.product-type.application";
+		};
 		CEA45E1F263519B5002FA97D /* iOS-SE */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = CEA45FB6263519B5002FA97D /* Build configuration list for PBXNativeTarget "iOS-SE" */;
@@ -3333,12 +3384,13 @@
 				CEBDA1D624D8BDDA0010B5EC /* Sources */,
 				CEBDA1D724D8BDDA0010B5EC /* Frameworks */,
 				CEBDA1D824D8BDDA0010B5EC /* Resources */,
-				CE6B241425F1F5630020D43E /* Embed Launcher */,
+				CE6B241425F1F5630020D43E /* Embed Executables */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				8401FD7C269BECF200265F0D /* PBXTargetDependency */,
+				CEA3EE04301691C500AAA8E4 /* PBXTargetDependency */,
 			);
 			name = QEMUHelper;
 			productName = QEMUHelper;
@@ -3457,6 +3509,7 @@
 				CE2D951B24AD48BE0059923A /* macOS */,
 				CEBDA1D924D8BDDA0010B5EC /* QEMUHelper */,
 				8401FD61269BE9C500265F0D /* QEMULauncher */,
+				CEA3EDEF30168B9000AAA8E4 /* QEMURenderServer */,
 				CE9A352C26533A51005077CF /* JailbreakInterposer */,
 				84E3A8EF293DB37E0024A740 /* utmctl */,
 			);
@@ -3624,6 +3677,46 @@
 			shellPath = /bin/sh;
 			shellScript = "#!/bin/sh\n\nPLISTBUDDY=/usr/libexec/PlistBuddy\nROOT_PLIST=\"$SCRIPT_OUTPUT_FILE_0\"\n\nCOUNT=$($PLISTBUDDY -c \"Print :PreferenceSpecifiers\" \"$ROOT_PLIST\" | grep -c '^    }$')\n\nfor ((i = 0; i < COUNT; i++)); do\n    remove=0\n    platform=$($PLISTBUDDY -c \"Print :PreferenceSpecifiers:$i:Platform\" \"$ROOT_PLIST\" 2> /dev/null)\n    if [ ! -z \"$platform\" ]; then\n        if [ \"$platform\" == \"$PLATFORM_FAMILY_NAME\" ]; then\n            echo \"Found entry $i for $platform\"\n            $PLISTBUDDY -c \"Delete :PreferenceSpecifiers:$i:Platform\" \"$ROOT_PLIST\"\n        else\n            echo \"Exclude $i due to Platform\"\n            remove=1\n        fi\n    fi\n    excludetargets=$($PLISTBUDDY -c \"Print :PreferenceSpecifiers:$i:ExcludeTargets\" \"$ROOT_PLIST\" 2> /dev/null | sed '1d;$d' | xargs)\n    if [ ! -z \"$excludetargets\" ]; then\n        found=0\n        for target in $excludetargets; do\n            if [ \"$target\" == \"$TARGET_NAME\" ]; then\n                found=1\n            fi\n        done\n        if [ $found -eq 1 ]; then\n            echo \"Exclude $i due to ExcludeTargets\"\n            remove=1\n        else\n            echo \"Found entry $i for ExcludeTargets\"\n            $PLISTBUDDY -c \"Delete :PreferenceSpecifiers:$i:ExcludeTargets\" \"$ROOT_PLIST\"\n        fi\n    fi\n    if [ $remove -eq 1 ]; then\n        echo \"Removing entry $i\"\n        $PLISTBUDDY -c \"Delete :PreferenceSpecifiers:$i\" \"$ROOT_PLIST\"\n        ((COUNT--))\n        ((i--))\n    fi\ndone\n";
 			showEnvVarsInLog = 0;
+		};
+		CEA3EE0130168DF000AAA8E4 /* Copy prebuilt binary */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(PROJECT_DIR)/$(SYSROOT_DIR)/libexec/virgl_render_server",
+			);
+			name = "Copy prebuilt binary";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e\n\nSRC=\"${PROJECT_DIR}/${SYSROOT_DIR}/libexec/virgl_render_server\"\nDST=\"${TARGET_BUILD_DIR}/${EXECUTABLE_PATH}\"\nTMP=\"${TARGET_TEMP_DIR}/${EXECUTABLE_NAME}\"\n\nif [ ! -f \"${SRC}\" ]; then\n    echo \"error: prebuilt binary not found at ${SRC}\" >&2\n    exit 1\nfi\n\n# install_name_tool writes a temporary file next to the binary it patches,\n# which the script sandbox disallows inside the product, so patch it here.\nrm -f \"${TMP}\"\ncp -X \"${SRC}\" \"${TMP}\"\nxattr -c \"${TMP}\"\nchmod +x \"${TMP}\"\n\n# The prebuilt binary has no LC_RPATH but links against\n# @rpath/vulkan.1.framework, so add the load paths this target declares.\nfor RPATH in ${LD_RUNPATH_SEARCH_PATHS}; do\n    install_name_tool -add_rpath \"${RPATH}\" \"${TMP}\"\ndone\n\nmkdir -p \"$(dirname \"${DST}\")\"\nrm -f \"${DST}\"\ncp -X \"${TMP}\" \"${DST}\"\n";
+		};
+		CEA3EE0F301A5A4900AAA8E4 /* Embed D3DMetal */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(PROJECT_DIR)/$(SYSROOT_DIR)/Frameworks/D3DMetal.framework",
+			);
+			name = "Embed D3DMetal";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/D3DMetal.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e\n\nSRC=\"${PROJECT_DIR}/${SYSROOT_DIR}/Frameworks/D3DMetal.framework\"\nDST=\"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/D3DMetal.framework\"\n\nif [ ! -d \"${SRC}\" ]; then\n    echo \"note: D3DMetal.framework not found in ${SYSROOT_DIR}, skipping\"\n    rm -rf \"${DST}\"\n    exit 0\nfi\n\n# Extended attributes on the input would make codesign refuse the bundle.\nmkdir -p \"$(dirname \"${DST}\")\"\nrm -rf \"${DST}\"\nditto --norsrc --noextattr --noqtn \"${SRC}\" \"${DST}\"\n\nif [ \"${CODE_SIGNING_ALLOWED}\" != \"NO\" ] && [ -n \"${EXPANDED_CODE_SIGN_IDENTITY}\" ]; then\n    if [ \"${ENABLE_HARDENED_RUNTIME}\" = \"YES\" ]; then\n        RUNTIME_FLAGS=\"--options runtime\"\n    fi\n    codesign --force --sign \"${EXPANDED_CODE_SIGN_IDENTITY}\" ${RUNTIME_FLAGS} ${OTHER_CODE_SIGN_FLAGS} \"${DST}\"\nfi\n";
 		};
 		CEF7F6812AEEDCC400E34952 /* Patch Settings bundle */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -4426,6 +4519,11 @@
 			target = CE9A352C26533A51005077CF /* JailbreakInterposer */;
 			targetProxy = CE9A353226533A52005077CF /* PBXContainerItemProxy */;
 		};
+		CEA3EE04301691C500AAA8E4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CEA3EDEF30168B9000AAA8E4 /* QEMURenderServer */;
+			targetProxy = CEA3EE03301691C500AAA8E4 /* PBXContainerItemProxy */;
+		};
 		CEBDA1E424D8BDDB0010B5EC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = CEBDA1D924D8BDDA0010B5EC /* QEMUHelper */;
@@ -4633,7 +4731,6 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "$(LAUNCHER_CODE_SIGN_ENTITLEMENTS)";
 				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_MAC:default=-)";
-				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -4655,7 +4752,6 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "$(LAUNCHER_CODE_SIGN_ENTITLEMENTS)";
 				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_MAC:default=-)";
-				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -4798,6 +4894,7 @@
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"WITH_JIT=1",
 					"WITH_SERVER=1",
@@ -4832,6 +4929,7 @@
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"WITH_JIT=1",
 					"WITH_SERVER=1",
@@ -4925,13 +5023,13 @@
 					"$(PROJECT_DIR)/$(QUOTED_SYSROOT_DIR)/include/spice-1",
 					"$(PROJECT_DIR)/$(QUOTED_SYSROOT_DIR)/include/libusb-1.0",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/$(QUOTED_SYSROOT_DIR)/lib",
 					"$(PROJECT_DIR)/$(QUOTED_SYSROOT_DIR)/lib/gstreamer-1.0",
 					"$(PROJECT_DIR)/$(QUOTED_SYSROOT_DIR)/lib",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 11.3;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -5008,13 +5106,13 @@
 					"$(PROJECT_DIR)/$(QUOTED_SYSROOT_DIR)/include/spice-1",
 					"$(PROJECT_DIR)/$(QUOTED_SYSROOT_DIR)/include/libusb-1.0",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/$(QUOTED_SYSROOT_DIR)/lib",
 					"$(PROJECT_DIR)/$(QUOTED_SYSROOT_DIR)/lib/gstreamer-1.0",
 					"$(PROJECT_DIR)/$(QUOTED_SYSROOT_DIR)/lib",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 11.3;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				QUOTED_SYSROOT_DIR = "\"$(SYSROOT_DIR)\"";
@@ -5077,6 +5175,46 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+			};
+			name = Release;
+		};
+		CEA3EDF830168B9000AAA8E4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "$(RENDERER_CODE_SIGN_ENTITLEMENTS)";
+				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_MAC:default=-)";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../../../../../../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).QEMURenderServer";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+			};
+			name = Debug;
+		};
+		CEA3EDF930168B9000AAA8E4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "$(RENDERER_CODE_SIGN_ENTITLEMENTS)";
+				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_MAC:default=-)";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../../../../../../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).QEMURenderServer";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 			};
 			name = Release;
 		};
@@ -5323,6 +5461,15 @@
 			buildConfigurations = (
 				CE9A353626533A52005077CF /* Debug */,
 				CE9A353726533A52005077CF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CEA3EDF730168B9000AAA8E4 /* Build configuration list for PBXNativeTarget "QEMURenderServer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CEA3EDF830168B9000AAA8E4 /* Debug */,
+				CEA3EDF930168B9000AAA8E4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

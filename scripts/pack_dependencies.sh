@@ -72,6 +72,7 @@ pack_dir() {
     cp -a "$SRC/$DIR" "$TGT/$DIR"
 }
 
+pack_all_objs "$BASEDIR" "*/libexec/virgl_render_server"
 pack_all_objs "$BASEDIR" "*/bin/qemu-*"
 pack_all_objs "$BASEDIR" "*/lib/*.dylib"
 pack_all_objs "$BASEDIR" "*/lib/*.a"

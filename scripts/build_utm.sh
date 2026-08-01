@@ -92,10 +92,12 @@ if [ "$SDK" == "macosx" ]; then
     # this way we can import into Xcode and re-sign from there
     UTM_ENTITLEMENTS="/tmp/utm.$$.entitlements"
     LAUNCHER_ENTITLEMENTS="/tmp/launcher.$$.entitlements"
+    RENDERER_ENTITLEMENTS="/tmp/renderer.$$.entitlements"
     HELPER_ENTITLEMENTS="/tmp/helper.$$.entitlements"
     CLI_ENTITLEMENTS="/tmp/cli.$$.entitlements"
     cp "$BASEDIR/../Platform/macOS/macOS.entitlements" "$UTM_ENTITLEMENTS"
     cp "$BASEDIR/../QEMULauncher/QEMULauncher.entitlements" "$LAUNCHER_ENTITLEMENTS"
+    cp "$BASEDIR/../QEMURenderServer/QEMURenderServer.entitlements" "$RENDERER_ENTITLEMENTS"
     cp "$BASEDIR/../QEMUHelper/QEMUHelper.entitlements" "$HELPER_ENTITLEMENTS"
     cp "$BASEDIR/../utmctl/utmctl.entitlements" "$CLI_ENTITLEMENTS"
     if [ ! -z "$TEAM_IDENTIFIER" ]; then
@@ -105,12 +107,15 @@ if [ "$SDK" == "macosx" ]; then
     /usr/libexec/PlistBuddy -c "Set :com.apple.security.application-groups:0 ${TEAM_ID_PREFIX}${PRODUCT_BUNDLE_PREFIX}.UTM" "$UTM_ENTITLEMENTS"
     /usr/libexec/PlistBuddy -c "Set :com.apple.security.application-groups:0 ${TEAM_ID_PREFIX}${PRODUCT_BUNDLE_PREFIX}.UTM" "$HELPER_ENTITLEMENTS"
     /usr/libexec/PlistBuddy -c "Set :com.apple.security.application-groups:0 ${TEAM_ID_PREFIX}${PRODUCT_BUNDLE_PREFIX}.UTM" "$CLI_ENTITLEMENTS"
+    # nested bundles must be signed before the XPC service that contains them
     codesign --force --sign - --entitlements "$LAUNCHER_ENTITLEMENTS" --timestamp=none --options runtime "$BUILT_PATH/Contents/XPCServices/QEMUHelper.xpc/Contents/MacOS/QEMULauncher.app/Contents/MacOS/QEMULauncher"
+    codesign --force --sign - --entitlements "$RENDERER_ENTITLEMENTS" --timestamp=none --options runtime "$BUILT_PATH/Contents/XPCServices/QEMUHelper.xpc/Contents/MacOS/QEMURenderServer.app/Contents/MacOS/QEMURenderServer"
     codesign --force --sign - --entitlements "$HELPER_ENTITLEMENTS" --timestamp=none --options runtime "$BUILT_PATH/Contents/XPCServices/QEMUHelper.xpc/Contents/MacOS/QEMUHelper"
     codesign --force --sign - --entitlements "$CLI_ENTITLEMENTS" --timestamp=none --options runtime "$BUILT_PATH/Contents/MacOS/utmctl"
     codesign --force --sign - --entitlements "$UTM_ENTITLEMENTS" --timestamp=none --options runtime "$BUILT_PATH/Contents/MacOS/UTM"
     rm "$UTM_ENTITLEMENTS"
     rm "$LAUNCHER_ENTITLEMENTS"
+    rm "$RENDERER_ENTITLEMENTS"
     rm "$HELPER_ENTITLEMENTS"
     rm "$CLI_ENTITLEMENTS"
 fi

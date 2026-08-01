@@ -21,9 +21,13 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 # Knobs
-IOS_SDKMINVER="14.0"
-MAC_SDKMINVER="11.0"
+IOS_SDKMINVER="16.0"
+MAC_SDKMINVER="13.0"
 VISIONOS_SDKMINVER="1.0"
+# Network operations are retried because concurrent builds on the same CI runner
+# get rate limited by GitHub and fail to clone/fetch.
+RETRY_ATTEMPTS="${RETRY_ATTEMPTS:-5}"
+RETRY_DELAY="${RETRY_DELAY:-15}"
 
 # Build environment
 PLATFORM=
@@ -90,6 +94,26 @@ check_env () {
     version_check "2.4" "$(bison -V | head -1 | awk '{ print $NF }')" || { echo >&2 "${RED}'bison' >= 2.4 is required. Did you install from Homebrew and updated your \$PATH variable?"; exit 1; }
 }
 
+# Run a command, retrying with exponential backoff if it fails. Jitter is derived
+# from the PID so that concurrent builds do not retry in lockstep.
+retry () {
+    ATTEMPT=1
+    DELAY="$RETRY_DELAY"
+    while true; do
+        "$@" && return 0
+        STATUS=$?
+        if [ $ATTEMPT -ge $RETRY_ATTEMPTS ]; then
+            echo >&2 "${RED}'$*' failed after $ATTEMPT attempts.${NC}"
+            return $STATUS
+        fi
+        SLEEP=$(( DELAY + ($$ + ATTEMPT) % 10 ))
+        echo >&2 "${RED}'$*' failed (attempt $ATTEMPT of $RETRY_ATTEMPTS), retrying in ${SLEEP}s...${NC}"
+        sleep $SLEEP
+        ATTEMPT=$(( ATTEMPT + 1 ))
+        DELAY=$(( DELAY * 2 ))
+    done
+}
+
 download () {
     URL=$1
     FILE="$(basename $URL)"
@@ -102,7 +126,7 @@ download () {
         echo "${GREEN}$TARGET already downloaded! Run with -d to force re-download.${NC}"
     else
         echo "${GREEN}Downloading ${URL}${NC}"
-        curl -L -O "$URL"
+        retry curl -f -L -O "$URL"
         mv "$FILE" "$TARGET"
     fi
     if [ -d "$DIR" ]; then
@@ -121,6 +145,12 @@ download () {
     fi
 }
 
+# Discard any partial clone from a previous attempt so that a retry starts clean.
+clone_fresh () {
+    rm -rf "$2"
+    git clone --filter=tree:0 --no-checkout "$1" "$2"
+}
+
 clone () {
     REPO="$1"
     COMMIT="$2"
@@ -130,15 +160,26 @@ clone () {
     if [ -d "$DIR" -a -z "$REDOWNLOAD" ]; then
         echo "${GREEN}$DIR already downloaded! Run with -d to force re-download.${NC}"
     else
-        rm -rf "$DIR"
         echo "${GREEN}Cloning ${REPO}...${NC}"
-        git clone --filter=tree:0 --no-checkout "$REPO" "$DIR"
+        retry clone_fresh "$REPO" "$DIR"
         if [ ! -z "$SUBDIRS" ]; then
             git -C "$DIR" sparse-checkout init
             git -C "$DIR" sparse-checkout set $SUBDIRS
         fi
     fi
-    git -C "$DIR" checkout "$COMMIT"
+    # tree:0 filtered clones fetch missing objects here, so these hit the network too
+    retry git -C "$DIR" checkout "$COMMIT"
+    retry git -C "$DIR" submodule update --init --recursive --filter=tree:0
+}
+
+clone_moltenvk_dependences () {
+    REPO="$1"
+    NAME="$(basename $REPO)"
+    DIR="$BUILD_DIR/$NAME"
+    pwd="$(pwd)"
+    cd "$DIR"
+    retry "./fetchDependencies" --none -v
+    cd "$pwd"
 }
 
 download_all () {
@@ -182,6 +223,10 @@ download_all () {
     clone $LIBUCONTEXT_REPO $LIBUCONTEXT_COMMIT
     clone $MESA_REPO $MESA_COMMIT
     clone $MOLTENVK_REPO $MOLTENVK_COMMIT
+    clone_moltenvk_dependences $MOLTENVK_REPO
+    download $LLVM15_SRC
+    clone $DXMT_REPO $DXMT_COMMIT
+    clone $D3DMETAL_REPO $D3DMETAL_COMMIT
 }
 
 copy_private_headers() {
@@ -225,13 +270,16 @@ generate_meson_cross() {
     echo "c_args = [${CFLAGS:+$(meson_quote $CFLAGS)}]" >> $cross
     echo "cpp_args = [${CXXFLAGS:+$(meson_quote $CXXFLAGS)}]" >> $cross
     echo "objc_args = [${OBJCFLAGS:+$(meson_quote $OBJCFLAGS)}]" >> $cross
+    echo "objcpp_args = [${OBJCFLAGS:+$(meson_quote $OBJCFLAGS)}]" >> $cross
     echo "c_link_args = [${LDFLAGS:+$(meson_quote $LDFLAGS)}]" >> $cross
     echo "cpp_link_args = [${LDFLAGS:+$(meson_quote $LDFLAGS)}]" >> $cross
     echo "objc_link_args = [${LDFLAGS:+$(meson_quote $LDFLAGS)}]" >> $cross
+    echo "objcpp_link_args = [${LDFLAGS:+$(meson_quote $LDFLAGS)}]" >> $cross
     echo "[binaries]" >> $cross
     echo "c = [$(meson_quote $CC)]" >> $cross
     echo "cpp = [$(meson_quote $CXX)]" >> $cross
     echo "objc = [$(meson_quote $OBJCC)]" >> $cross
+    echo "objcpp = [$(meson_quote $OBJCC)]" >> $cross
     echo "ar = [$(meson_quote $AR)]" >> $cross
     echo "nm = [$(meson_quote $NM)]" >> $cross
     echo "pkgconfig = ['$PREFIX/host/bin/pkg-config']" >> $cross
@@ -293,19 +341,19 @@ generate_cmake_toolchain() {
     case $PLATFORM in
     ios_simulator* )
         echo "set(CMAKE_SYSTEM_NAME iOS)" >> "$toolchain"
-        echo "set(CMAKE_OSX_SYSROOT iphonesimulator)" >> "$toolchain"
+        echo "set(CMAKE_OSX_SYSROOT iphonesimulator CACHE STRING \"\" FORCE)" >> "$toolchain"
         ;;
     ios* )
         echo "set(CMAKE_SYSTEM_NAME iOS)" >> "$toolchain"
-        echo "set(CMAKE_OSX_SYSROOT iphoneos)" >> "$toolchain"
+        echo "set(CMAKE_OSX_SYSROOT iphoneos CACHE STRING \"\" FORCE)" >> "$toolchain"
         ;;
     visionos_simulator* )
         echo "set(CMAKE_SYSTEM_NAME visionOS)" >> "$toolchain"
-        echo "set(CMAKE_OSX_SYSROOT xrsimulator)" >> "$toolchain"
+        echo "set(CMAKE_OSX_SYSROOT xrsimulator CACHE STRING \"\" FORCE)" >> "$toolchain"
         ;;
     visionos* )
         echo "set(CMAKE_SYSTEM_NAME visionOS)" >> "$toolchain"
-        echo "set(CMAKE_OSX_SYSROOT xros)" >> "$toolchain"
+        echo "set(CMAKE_OSX_SYSROOT xros CACHE STRING \"\" FORCE)" >> "$toolchain"
         ;;
     macos )
         echo "set(CMAKE_SYSTEM_NAME Darwin)" >> "$toolchain"
@@ -317,7 +365,7 @@ generate_cmake_toolchain() {
     # Architecture
     #
     echo "set(CMAKE_SYSTEM_PROCESSOR \"$ARCH\")" >> "$toolchain"
-    echo "set(CMAKE_OSX_ARCHITECTURES \"$ARCH\")" >> "$toolchain"
+    echo "set(CMAKE_OSX_ARCHITECTURES \"$ARCH\" CACHE STRING \"\" FORCE)" >> "$toolchain"
     echo "set(CMAKE_MACOSX_BUNDLE OFF CACHE BOOL \"\")" >> "$toolchain"
     echo "" >> "$toolchain"
 
@@ -343,6 +391,7 @@ generate_cmake_toolchain() {
     echo "set(CMAKE_C_COMPILER \"$CC_BIN\")" >> "$toolchain"
     echo "set(CMAKE_CXX_COMPILER \"$CXX_BIN\")" >> "$toolchain"
     echo "set(CMAKE_OBJC_COMPILER \"$OBJC_BIN\")" >> "$toolchain"
+    echo "set(CMAKE_ASM_COMPILER \"$CC_BIN\")" >> "$toolchain"
     echo "" >> "$toolchain"
 
     #
@@ -359,6 +408,7 @@ generate_cmake_toolchain() {
     #
     if [ -n "$CFLAGS" ]; then
         echo "set(CMAKE_C_FLAGS \"$CFLAGS\" CACHE STRING \"\" FORCE)" >> "$toolchain"
+        echo "set(CMAKE_ASM_FLAGS \"$CFLAGS\" CACHE STRING \"\" FORCE)" >> "$toolchain"
     fi
 
     if [ -n "$OBJCFLAGS" ]; then
@@ -695,7 +745,12 @@ build_qemu_dependencies () {
     # strip the minor versions
     VULKAN_DYLIB="$PREFIX/lib/libvulkan.1.dylib"
     mv "$(dirname $VULKAN_DYLIB)/$(readlink $VULKAN_DYLIB)" "$VULKAN_DYLIB"
-    meson_darwin_build $VIRGLRENDERER_REPO -Dtests=false -Dcheck-gl-errors=false -Dvenus=true -Dvulkan-dload=false -Drender-server-worker=thread
+    if [ "$PLATFORM" == "macos" ]; then
+        VIRGL_RENDER_SERVER_MODE="process"
+    else
+        VIRGL_RENDER_SERVER_MODE="thread"
+    fi
+    meson_darwin_build $VIRGLRENDERER_REPO -Dtests=false -Dcheck-gl-errors=false -Dvenus=true -Dneptune=true -Dvulkan-dload=false -Drender-server-mode="$VIRGL_RENDER_SERVER_MODE"
     # Hypervisor for iOS
     if [ "$PLATFORM" == "ios" ] || [ "$PLATFORM" == "ios_simulator" ]; then
         build_hypervisor
@@ -785,7 +840,39 @@ build_vulkan_drivers () {
     patch_vulkan_icd "$PREFIX/share/vulkan/icd.d/MoltenVK_icd.json"
 }
 
-fixup () {
+build_d3d_drivers () {
+    LLVM15_NAME=$(basename "${LLVM15_SRC%.tar.*}")
+    cmake_build "$BUILD_DIR/$LLVM15_NAME/llvm" -DLLVM_ENABLE_ZSTD=Off -DLLVM_TARGETS_TO_BUILD="" -DLLVM_BUILD_TOOLS=Off -DLLVM_VERSION_PRINTER_SHOW_HOST_TARGET_INFO=Off
+    meson_build $DXMT_REPO -Dnative_llvm_path="$PREFIX"
+    if [ "$ARCH" == "x86_64" ]; then
+        meson_build $D3DMETAL_REPO -Dtests=disabled
+    else
+        # empty placeholder file
+        $CC -dynamiclib -x c /dev/null -o "$PREFIX/lib/libd3dmetal-native.dylib"
+    fi
+}
+
+fixup_imports() {
+    _file=$1
+    _list=$(otool -L "$_file" | tail -n +2 | cut -d ' ' -f 1 | awk '{$1=$1};1')
+    for g in $_list
+    do
+        base=$(basename "$g")
+        basefilename=${base%.*}
+        libname=${basefilename#lib*}
+        dir=$(dirname "$g")
+        if [ "$dir" == "$PREFIX/lib" ] || [ "$dir" == "@rpath" ]; then
+            if [ "$PLATFORM" == "macos" ]; then
+                newname="@rpath/$libname.framework/Versions/A/$libname"
+            else
+                newname="@rpath/$libname.framework/$libname"
+            fi
+            install_name_tool -change "$g" "$newname" "$_file"
+        fi
+    done
+}
+
+fixup_dylib () {
     FILE=$1
     BASE=$(basename "$FILE")
     BASEFILENAME=${BASE%.*}
@@ -801,18 +888,16 @@ fixup () {
         INFOPATH="$FRAMEWORKPATH"
     fi
     NEWFILE="$FRAMEWORKPATH/$LIBNAME"
-    LIST=$(otool -L "$FILE" | tail -n +2 | cut -d ' ' -f 1 | awk '{$1=$1};1')
     OLDIFS=$IFS
     IFS=$'\n'
-    echo "${GREEN}Fixing up $FILE...${NC}"
     mkdir -p "$FRAMEWORKPATH"
     mkdir -p "$INFOPATH"
     cp -a "$FILE" "$NEWFILE"
-    /usr/libexec/PlistBuddy -c "Add :CFBundleExecutable string $LIBNAME" "$INFOPATH/Info.plist"
-    /usr/libexec/PlistBuddy -c "Add :CFBundleIdentifier string $BUNDLE_ID" "$INFOPATH/Info.plist"
-    /usr/libexec/PlistBuddy -c "Add :MinimumOSVersion string $SDKMINVER" "$INFOPATH/Info.plist"
-    /usr/libexec/PlistBuddy -c "Add :CFBundleVersion string 1" "$INFOPATH/Info.plist"
-    /usr/libexec/PlistBuddy -c "Add :CFBundleShortVersionString string 1.0" "$INFOPATH/Info.plist"
+    /usr/libexec/PlistBuddy -c "Add :CFBundleExecutable string $LIBNAME" "$INFOPATH/Info.plist" || true
+    /usr/libexec/PlistBuddy -c "Add :CFBundleIdentifier string $BUNDLE_ID" "$INFOPATH/Info.plist" || true
+    /usr/libexec/PlistBuddy -c "Add :MinimumOSVersion string $SDKMINVER" "$INFOPATH/Info.plist" || true
+    /usr/libexec/PlistBuddy -c "Add :CFBundleVersion string 1" "$INFOPATH/Info.plist" || true
+    /usr/libexec/PlistBuddy -c "Add :CFBundleShortVersionString string 1.0" "$INFOPATH/Info.plist" || true
     if [ "$PLATFORM" == "macos" ]; then
         ln -sf "A" "$BASEFRAMEWORKPATH/Versions/Current"
         ln -sf "Versions/Current/Resources" "$BASEFRAMEWORKPATH/Resources"
@@ -820,21 +905,7 @@ fixup () {
     fi
     newname="@rpath/$FRAMEWORKNAME/$LIBNAME"
     install_name_tool -id "$newname" "$NEWFILE"
-    for g in $LIST
-    do
-        base=$(basename "$g")
-        basefilename=${base%.*}
-        libname=${basefilename#lib*}
-        dir=$(dirname "$g")
-        if [ "$dir" == "$PREFIX/lib" ] || [ "$dir" == "@rpath" ]; then
-            if [ "$PLATFORM" == "macos" ]; then
-                newname="@rpath/$libname.framework/Versions/A/$libname"
-            else
-                newname="@rpath/$libname.framework/$libname"
-            fi
-            install_name_tool -change "$g" "$newname" "$NEWFILE"
-        fi
-    done
+    fixup_imports "$NEWFILE"
     IFS=$OLDIFS
 }
 
@@ -844,7 +915,14 @@ fixup_all () {
     FILES=$(find "$SYSROOT_DIR/lib" -type f -maxdepth 1 -name "*.dylib")
     for f in $FILES
     do
-        fixup $f
+        echo "${GREEN}Fixing up $f...${NC}"
+        fixup_dylib $f
+    done
+    FILES=$(find "$SYSROOT_DIR/libexec" -type f -maxdepth 1 -perm +111)
+    for f in $FILES
+    do
+        echo "${GREEN}Fixing up $f...${NC}"
+        fixup_imports $f
     done
     IFS=$OLDIFS
 }
@@ -1089,7 +1167,7 @@ fi
 echo "${GREEN}Deleting old sysroot!${NC}"
 rm -rf "$PREFIX/"*
 rm -f "$BUILD_DIR/BUILD_SUCCESS"
-rm -f "$BUILD_DIR/meson*.cross"
+rm -f "$BUILD_DIR"/meson*.cross
 rm -f "$BUILD_DIR/cross.cmake"
 mkdir -p "$PREFIX/Frameworks"
 copy_private_headers
@@ -1098,6 +1176,9 @@ build_qemu_dependencies
 build $QEMU_DIR --cross-prefix="" $QEMU_PLATFORM_BUILD_FLAGS $QEMU_DEBUG_FLAGS
 build_spice_client
 build_vulkan_drivers
+if [ "$PLATFORM" == "macos" ]; then
+    build_d3d_drivers
+fi
 fixup_all
 remove_shared_gst_plugins # another hack...
 echo "${GREEN}All done!${NC}"

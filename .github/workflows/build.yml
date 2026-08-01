@@ -147,6 +147,9 @@ jobs:
         if: steps.cache-sysroot-universal.outputs.cache-matched-key == ''
         run: |
           ./scripts/pack_dependencies.sh . macos arm64 x86_64
+      - name: Install D3DMetal
+        if: steps.cache-sysroot-universal.outputs.cache-matched-key == '' || github.event_name == 'release' || github.event.inputs.test_release == 'true' || github.event.inputs.rebuild_sysroot == 'true'
+        run: ./scripts/install_d3dmetal.sh sysroot-macOS-arm64_x86_64 "${{ secrets.D3DM_DIST_DMG_URL || vars.D3DM_DIST_DMG_URL }}"
       - name: Compress Sysroot
         if: steps.cache-sysroot-universal.outputs.cache-matched-key == '' || github.event_name == 'release' || github.event.inputs.test_release == 'true' || github.event.inputs.rebuild_sysroot == 'true'
         run: tar -acf sysroot.tgz sysroot-macOS-arm64_x86_64

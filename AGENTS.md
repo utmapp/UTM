@@ -43,7 +43,7 @@ must apply unprompted — they override default behavior and are easy to violate
   `Assisted-by: AGENT:MODEL` trailer (e.g. `Assisted-by: Claude:claude-opus-4-8`) —
   add it explicitly **even if your agent doesn't normally inject attribution
   trailers**; the absence of a default trailer is not an excuse to omit it. Never
-  add `Co-authored-by` (strip any a tool adds). Commit titles are
+  add `Co-authored-by` or session links (strip any a tool adds). Commit titles are
   `component: short description` explaining *why*.
 - **Scope:** one feature/fix per PR; don't touch, refactor, or reformat unrelated
   files; route new logging through `UTMLogging`/`logging` at `debug` level.

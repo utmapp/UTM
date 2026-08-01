@@ -26,7 +26,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) NSDictionary<NSURL *, NSData *> *remoteBookmarks;
 @property (nonatomic) UTMQEMURendererBackend rendererBackend;
 @property (nonatomic) UTMQEMUVulkanDriver vulkanDriver;
+@property (nonatomic) UTMQEMUDirectXDriver directXDriver;
 @property (nonatomic) NSURL *shmemDirectoryURL;
+@property (nonatomic, nullable) NSString *appSandboxGroupId;
 @property (nonatomic, weak) id<QEMULauncherDelegate> launcherDelegate;
 @property (nonatomic, nullable) QEMULogging *logging;
 @property (nonatomic) BOOL hasDebugLog;
