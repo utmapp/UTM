@@ -22,7 +22,7 @@ UTM 是适用于 iOS 和 macOS 的全功能系统模拟器和虚拟机主机。�
 * USB 设备
 * 使用 QEMU TCG 的基于 JIT 的加速
 * 采用最新最好的 API，为 macOS 11+ 和 iOS 11+ 从头开始设计前端
-* 直接从你的设备创建、管理、运行虚拟机
+* 直接从你的设备创建、管理与运行虚拟机
 
 ## 其他 macOS 功能
 
@@ -33,15 +33,15 @@ UTM 是适用于 iOS 和 macOS 的全功能系统模拟器和虚拟机主机。�
 
 UTM/QEMU 需要动态代码生成（JIT）才能获得最佳性能。iOS 设备上的 JIT 需要越狱设备，或为特定版本的 iOS 找到的各种变通方法之一（有关更多详细信息，请参阅“安装”）。
 
-UTM SE（“较慢版”）使用[线程解释器][3]，其性能优于传统解释器，但仍然比 JIT 慢。这种技术与 [iSH][4] 用于动态执行的技术相似。因此，UTM SE 不需要越狱或任何 JIT 变通办法，且可以作为常规应用程序侧载。
+UTM SE（“较慢版”）使用[线程解释器][3]，其性能优于传统解释器，但仍然比 JIT 慢。此种技术与 [iSH][4] 用于动态执行的技术相似。因此，UTM SE 不需要越狱或任何 JIT 变通办法，且可以作为常规应用程序侧载。
 
-为了优化大小和构建时间，UTM SE 中仅包含以下架构：ARM、PPC、RISC-V 和 x86（均有 32 位和 64 位变体）。
+为了优化大小和构建时间，UTM SE 中仅包含以下架构：ARM、PPC、RISC-V 和 x86（均有 32 位与 64 位变体）。
 
 ## 安装
 
-适用于 iOS 的 UTM (SE)：https://getutm.app/install/
+iOS 版 UTM (SE)：https://getutm.app/install/
 
-UTM 也适用于 macOS：https://mac.getutm.app/
+UTM 也可以在 macOS 上使用：https://mac.getutm.app/
 
 ## 开发
 
@@ -56,7 +56,7 @@ UTM 也适用于 macOS：https://mac.getutm.app/
 
 ## 许可
 
-UTM是在宽容的Apache 2.0许可证下分发的。然而，它使用了若干个 (L)GPL 组件。大多数是动态链接的，但 gstreamer 插件是静态链接的，部分代码取自 QEMU。若要打算重新分发此应用程序，请注意这一点。
+UTM 在宽容的 Apache 2.0 许可证分发。然而，它使用了若干 (L)GPL 组件。大多数组件为动态链接，但 gstreamer 插件是静态链接的，部分代码取自 QEMU。若要打算重新分发此应用程序，请注意这一点。
 
 某些图标由 [Freepik](https://www.freepik.com) 从 [www.flaticon.com](https://www.flaticon.com/) 制作。
 
