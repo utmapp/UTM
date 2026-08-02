@@ -67,7 +67,7 @@ UTM은 Permissive 형태인 Apache 2.0 라이선스 하에 배포됩니다. (L)G
 * [ZIP Foundation](https://github.com/weichsel/ZIPFoundation)
 * [InAppSettingsKit](https://github.com/futuretap/InAppSettingsKit)
 
-지속적 통합(CI) 호스팅은 [MacStadium](https://www.macstadium.com/opensource)에서 제공하고 있습니다.
+지속적 통합(CI) 호스팅은 [MacStadium](https://macstadium.com/company/opensource)에서 제공하고 있습니다.
 
 [<img src="https://uploads-ssl.webflow.com/5ac3c046c82724970fc60918/5c019d917bba312af7553b49_MacStadium-developerlogo.png" alt="MacStadium logo" width="250">](https://www.macstadium.com)
 

@@ -67,7 +67,7 @@ UTMは、寛容なApache 2.0ライセンスで配布されています。しか�
 * [ZIP Foundation](https://github.com/weichsel/ZIPFoundation)
 * [InAppSettingsKit](https://github.com/futuretap/InAppSettingsKit)
 
-[MacStadium](https://www.macstadium.com/opensource)によって継続的インテグレーションのホスティングが提供されています
+[MacStadium](https://macstadium.com/company/opensource)によって継続的インテグレーションのホスティングが提供されています
 
 [<img src="https://uploads-ssl.webflow.com/5ac3c046c82724970fc60918/5c019d917bba312af7553b49_MacStadium-developerlogo.png" alt="MacStadium logo" width="250">](https://www.macstadium.com)
 

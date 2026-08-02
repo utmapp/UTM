@@ -64,6 +64,6 @@ UTM распространяется по лицензии Apache 2.0.
 
 Некоторые значки взяты с [Flaticon](https://www.flaticon.com/) и сгенерированы с помощью [Freepik](https://www.freepik.com/).
 
-Хостинг для CI предоставлен [MacStadium](https://www.macstadium.com/opensource).
+Хостинг для CI предоставлен [MacStadium](https://macstadium.com/company/opensource).
 
 [<img src="https://uploads-ssl.webflow.com/5ac3c046c82724970fc60918/5c019d917bba312af7553b49_MacStadium-developerlogo.png" alt="MacStadium logo" width="250">](https://www.macstadium.com)

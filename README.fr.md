@@ -62,7 +62,7 @@ De plus, le frontend d'UTM dépend de ces composants qui sont sous licence MIT :
 * [SwiftTerm](https://github.com/migueldeicaza/SwiftTerm)
 * [ZIP Foundation](https://github.com/weichsel/ZIPFoundation)
 
-L'hébergement en intégration continue est fourni par [MacStadium](https://www.macstadium.com/opensource)
+L'hébergement en intégration continue est fourni par [MacStadium](https://macstadium.com/company/opensource)
 
 [<img src="https://uploads-ssl.webflow.com/5ac3c046c82724970fc60918/5c019d917bba312af7553b49_MacStadium-developerlogo.png" alt="MacStadium logo" width="250">](https://www.macstadium.com)
   
