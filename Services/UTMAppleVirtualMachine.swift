@@ -591,9 +591,51 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             if error.domain == "VZErrorDomain" && error.code == 10006 {
                 throw UTMAppleVirtualMachineError.deviceSupportOutdated
             }
+            #if os(macOS) && arch(arm64)
+            if error.domain == "VZErrorDomain" && error.code == 10007,
+               let versions = await Self.restoreImageVersionIfNewerThanHost(at: ipswUrl) {
+                throw UTMAppleVirtualMachineError.installMacOSVersionTooNew(guestVersion: versions.guest, hostVersion: versions.host)
+            }
+            #endif
             throw error
         }
     }
+
+    #if os(macOS) && arch(arm64)
+    /// Returns the macOS version of a restore image when it is newer than the version running on this Mac.
+    ///
+    /// Installing a guest newer than the host is not supported by `VZMacOSInstaller`, but the restore only
+    /// fails partway through with a generic error. We check the versions after a failure so the user can be
+    /// told what to do about it. Returns nil if the versions cannot be compared or the guest is not newer.
+    @available(macOS 12, *)
+    private static func restoreImageVersionIfNewerThanHost(at ipswUrl: URL) async -> (guest: String, host: String)? {
+        let scopedAccess = ipswUrl.startAccessingSecurityScopedResource()
+        defer {
+            if scopedAccess {
+                ipswUrl.stopAccessingSecurityScopedResource()
+            }
+        }
+        guard let image = try? await VZMacOSRestoreImage.image(from: ipswUrl) else {
+            return nil
+        }
+        let guest = image.operatingSystemVersion
+        let host = ProcessInfo.processInfo.operatingSystemVersion
+        let guestComponents = [guest.majorVersion, guest.minorVersion, guest.patchVersion]
+        let hostComponents = [host.majorVersion, host.minorVersion, host.patchVersion]
+        guard hostComponents.lexicographicallyPrecedes(guestComponents) else {
+            return nil
+        }
+        return (guest: Self.versionString(guest), host: Self.versionString(host))
+    }
+
+    private static func versionString(_ version: OperatingSystemVersion) -> String {
+        if version.patchVersion == 0 {
+            return "\(version.majorVersion).\(version.minorVersion)"
+        } else {
+            return "\(version.majorVersion).\(version.minorVersion).\(version.patchVersion)"
+        }
+    }
+    #endif
     
     // taken from https://github.com/evansm7/vftool/blob/main/vftool/main.m
     private func createPty() throws -> (Int32, Int32, String) {
@@ -916,6 +958,7 @@ enum UTMAppleVirtualMachineError: Error {
     case operationNotAvailable
     case ipswNotReadable
     case deviceSupportOutdated
+    case installMacOSVersionTooNew(guestVersion: String, hostVersion: String)
 }
 
 extension UTMAppleVirtualMachineError: LocalizedError {
@@ -931,6 +974,8 @@ extension UTMAppleVirtualMachineError: LocalizedError {
             return NSLocalizedString("The recovery IPSW cannot be read. Please select a new IPSW in Boot settings.", comment: "UTMAppleVirtualMachine")
         case .deviceSupportOutdated:
             return NSLocalizedString("You need to update macOS to run this virtual machine. A separate pop-up should prompt you to install this update. If you are trying to install a new beta version of macOS, you must manually download the Device Support package from the Apple Developer website.", comment: "UTMAppleVirtualMachine")
+        case .installMacOSVersionTooNew(let guestVersion, let hostVersion):
+            return String.localizedStringWithFormat(NSLocalizedString("Installation failed because macOS %1$@ is newer than macOS %2$@ running on this Mac. Update this Mac to macOS %1$@ or later and try again, or install an older version of macOS.", comment: "UTMAppleVirtualMachine"), guestVersion, hostVersion)
         }
     }
 }
