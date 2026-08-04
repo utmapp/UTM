@@ -284,21 +284,13 @@ import Virtualization // for getting network interfaces
                         "edid=on"
                     }
                     if isDisplayGLSupported(display) && isVulkanSupported {
-                        #if os(macOS)
                         "hostmem=8G"
-                        #else
-                        "hostmem=256M"
-                        #endif
                         "blob=true"
                         "venus=true"
                     }
                     if isDisplayGLSupported(display) && isNeptuneSupported {
                         if !isVulkanSupported {
-                            #if os(macOS)
                             "hostmem=8G"
-                            #else
-                            "hostmem=256M"
-                            #endif
                             "blob=true"
                         }
                         "neptune=true"
