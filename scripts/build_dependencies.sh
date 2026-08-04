@@ -301,6 +301,26 @@ generate_meson_cross() {
     else
         echo "system = '$system'" >> $cross
     fi
+    if [ "$system" == "darwin" ]; then
+        echo "kernel = 'xnu'" >> $cross
+        case $PLATFORM in
+        ios_simulator* )
+            echo "subsystem = 'ios-simulator'" >> $cross
+            ;;
+        ios* )
+            echo "subsystem = 'ios'" >> $cross
+            ;;
+        visionos_simulator* )
+            echo "subsystem = 'visionos-simulator'" >> $cross
+            ;;
+        visionos* )
+            echo "subsystem = 'visionos'" >> $cross
+            ;;
+        macos )
+            echo "subsystem = 'macos'" >> $cross
+            ;;
+        esac
+    fi
     case "$ARCH" in
     armv7 | armv7s )
         echo "cpu_family = 'arm'" >> $cross
@@ -625,6 +645,19 @@ meson_darwin_build () {
     meson_cross_build darwin $@
 }
 
+# The generated toolchain file is the single source of truth for CMake builds:
+# it sets every compiler, binutil, and flag variable with CACHE FORCE. The
+# exported CC/CFLAGS/... are needed by the autotools and meson builds, but for
+# CMake they are redundant *and* harmful: a nested host configure that does not
+# get the toolchain file (such as LLVM's NATIVE sub-build for llvm-tblgen)
+# inherits them from the environment and ends up compiling for the target while
+# discovering and linking host libraries. Drop them for every cmake invocation.
+cmake_clean_env () {
+    env -u CC -u CPP -u CXX -u OBJCC -u LD -u AR -u NM -u RANLIB -u STRIP \
+        -u CFLAGS -u CPPFLAGS -u CXXFLAGS -u OBJCFLAGS -u LDFLAGS \
+        cmake "$@"
+}
+
 cmake_build () {
     SRCDIR="$1"
     shift 1
@@ -650,7 +683,7 @@ cmake_build () {
         mkdir -p "$BUILDDIR"
 
         echo "${GREEN}Configuring ${NAME}...${NC}"
-        cmake -S . -B "$BUILDDIR" \
+        cmake_clean_env -S . -B "$BUILDDIR" \
             -DCMAKE_INSTALL_PREFIX="$PREFIX" \
             -DCMAKE_BUILD_TYPE="$BUILD_CONFIGURATION" \
             -DCMAKE_TOOLCHAIN_FILE="$CMAKE_TOOLCHAIN" \
@@ -658,10 +691,10 @@ cmake_build () {
     fi
 
     echo "${GREEN}Building ${NAME}...${NC}"
-    cmake --build "$BUILDDIR" --parallel "$NCPU"
+    cmake_clean_env --build "$BUILDDIR" --parallel "$NCPU"
 
     echo "${GREEN}Installing ${NAME}...${NC}"
-    cmake --install "$BUILDDIR"
+    cmake_clean_env --install "$BUILDDIR"
 
     cd "$pwd"
 }
@@ -843,8 +876,8 @@ build_vulkan_drivers () {
 build_d3d_drivers () {
     LLVM15_NAME=$(basename "${LLVM15_SRC%.tar.*}")
     cmake_build "$BUILD_DIR/$LLVM15_NAME/llvm" -DLLVM_ENABLE_ZSTD=Off -DLLVM_TARGETS_TO_BUILD="" -DLLVM_BUILD_TOOLS=Off -DLLVM_VERSION_PRINTER_SHOW_HOST_TARGET_INFO=Off
-    meson_build $DXMT_REPO -Dnative_llvm_path="$PREFIX"
-    if [ "$ARCH" == "x86_64" ]; then
+    meson_darwin_build $DXMT_REPO -Dnative_llvm_path="$PREFIX"
+    if [ "$ARCH" == "x86_64" -a "$PLATFORM" == "macos" ]; then
         meson_build $D3DMETAL_REPO -Dtests=disabled
     else
         # empty placeholder file
@@ -1046,7 +1079,7 @@ ios* | visionos* )
         PLATFORM_FAMILY_NAME="$PLATFORM_FAMILY_PREFIX"
         ;;
     esac
-    QEMU_PLATFORM_BUILD_FLAGS="--enable-shared-lib --disable-cocoa --disable-coreaudio --disable-slirp-smbd --enable-ucontext --with-coroutine=libucontext $HVF_FLAGS $TCI_BUILD_FLAGS"
+    QEMU_PLATFORM_BUILD_FLAGS="--enable-shared-lib --disable-cocoa --disable-sdl --disable-coreaudio --disable-slirp-smbd --enable-ucontext --with-coroutine=libucontext $HVF_FLAGS $TCI_BUILD_FLAGS"
     ;;
 macos )
     if [ -z "$SDKMINVER" ]; then
@@ -1055,7 +1088,7 @@ macos )
     SDK=macosx
     CFLAGS_TARGET="-target $ARCH-apple-macos$SDKMINVER"
     PLATFORM_FAMILY_NAME="macOS"
-    QEMU_PLATFORM_BUILD_FLAGS="--enable-shared-lib --disable-cocoa --cpu=$CPU"
+    QEMU_PLATFORM_BUILD_FLAGS="--enable-shared-lib --disable-cocoa --disable-sdl --cpu=$CPU"
     ;;
 * )
     usage
@@ -1176,9 +1209,7 @@ build_qemu_dependencies
 build $QEMU_DIR --cross-prefix="" $QEMU_PLATFORM_BUILD_FLAGS $QEMU_DEBUG_FLAGS
 build_spice_client
 build_vulkan_drivers
-if [ "$PLATFORM" == "macos" ]; then
-    build_d3d_drivers
-fi
+build_d3d_drivers
 fixup_all
 remove_shared_gst_plugins # another hack...
 echo "${GREEN}All done!${NC}"

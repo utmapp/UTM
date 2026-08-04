@@ -349,13 +349,9 @@ import Virtualization // for getting network interfaces
     }
 
     private var isNeptuneSupported: Bool {
-        #if os(macOS)
         isGLSupported &&
         (rendererBackend == .qemuRendererBackendAngleMetal || rendererBackend == .qemuRendererBackendDefault) &&
         directXDriver != .qemuDirectXDriverDisabled
-        #else
-        false
-        #endif
     }
 
     private var isSparc: Bool {

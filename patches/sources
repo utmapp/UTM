@@ -53,7 +53,7 @@ MOLTENVK_REPO="https://github.com/utmapp/MoltenVK.git"
 MOLTENVK_COMMIT="ef1c5461774f5fbd224ddcfd91fd2c0ea23f0384"
 LLVM15_SRC="https://github.com/llvm/llvm-project/releases/download/llvmorg-15.0.7/llvm-project-15.0.7.src.tar.xz"
 DXMT_REPO="https://github.com/utmapp/dxmt.git"
-DXMT_COMMIT="be80e14c07613cd558036a576b82dc6d78acdfce"
+DXMT_COMMIT="822ae637a39512ddbd8e0bbd7744af514670c9d3"
 D3DMETAL_REPO="https://github.com/utmapp/d3dmetal-native.git"
 D3DMETAL_COMMIT="edd2e386c25a2039eca0f6ce8f794b3b165841eb"
 
