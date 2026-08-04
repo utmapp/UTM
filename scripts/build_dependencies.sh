@@ -21,8 +21,8 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 # Knobs
-IOS_SDKMINVER="16.0"
-MAC_SDKMINVER="13.0"
+IOS_SDKMINVER="14.0"
+MAC_SDKMINVER="11.0"
 VISIONOS_SDKMINVER="1.0"
 # Network operations are retried because concurrent builds on the same CI runner
 # get rate limited by GitHub and fail to clone/fetch.
@@ -612,7 +612,7 @@ meson_cross_build () {
         SRCDIR="$BUILD_DIR/$NAME"
         ;;
     esac
-    MESON_CROSS="$(realpath "$BUILD_DIR")/meson-$CROSS.cross"
+    MESON_CROSS="$(realpath "$BUILD_DIR")/meson-$CROSS$MESON_CROSS_SUFFIX.cross"
     if [ ! -f "$MESON_CROSS" ]; then
         generate_meson_cross "$MESON_CROSS" "$CROSS"
     fi
@@ -712,9 +712,9 @@ build_angle () {
                                          WEBCORE_LIBRARY_DIR="/usr/local/lib" \
                                          NORMAL_UMBRELLA_FRAMEWORKS_DIR="" \
                                          CODE_SIGNING_ALLOWED=NO \
-                                         IPHONEOS_DEPLOYMENT_TARGET="14.0" \
-                                         MACOSX_DEPLOYMENT_TARGET="11.0" \
-                                         XROS_DEPLOYMENT_TARGET="1.0"
+                                         IPHONEOS_DEPLOYMENT_TARGET="$IOS_SDKMINVER" \
+                                         MACOSX_DEPLOYMENT_TARGET="$MAC_SDKMINVER" \
+                                         XROS_DEPLOYMENT_TARGET="$VISIONOS_SDKMINVER"
     rsync -a "ANGLE.xcarchive/Products/usr/local/lib/" "$PREFIX/lib"
     rsync -a "include/" "$PREFIX/include"
     cd "$pwd"
@@ -876,7 +876,27 @@ build_vulkan_drivers () {
 build_d3d_drivers () {
     LLVM15_NAME=$(basename "${LLVM15_SRC%.tar.*}")
     cmake_build "$BUILD_DIR/$LLVM15_NAME/llvm" -DLLVM_ENABLE_ZSTD=Off -DLLVM_TARGETS_TO_BUILD="" -DLLVM_BUILD_TOOLS=Off -DLLVM_VERSION_PRINTER_SHOW_HOST_TARGET_INFO=Off
-    meson_darwin_build $DXMT_REPO -Dnative_llvm_path="$PREFIX"
+    (
+        case $PLATFORM in
+        ios* )
+            DXMT_SDKMINVER="16.0"
+            ;;
+        macos )
+            DXMT_SDKMINVER="13.0"
+            ;;
+        * )
+            DXMT_SDKMINVER="$SDKMINVER"
+            ;;
+        esac
+        DXMT_CFLAGS_TARGET="${CFLAGS_TARGET/$SDKMINVER/$DXMT_SDKMINVER}"
+        CC="${CC/$CFLAGS_TARGET/$DXMT_CFLAGS_TARGET}"
+        CPPFLAGS="${CPPFLAGS/$CFLAGS_TARGET/$DXMT_CFLAGS_TARGET}"
+        CXXFLAGS="${CXXFLAGS/$CFLAGS_TARGET/$DXMT_CFLAGS_TARGET}"
+        OBJCFLAGS="${OBJCFLAGS/$CFLAGS_TARGET/$DXMT_CFLAGS_TARGET}"
+        LDFLAGS="${LDFLAGS/$CFLAGS_TARGET/$DXMT_CFLAGS_TARGET}"
+        MESON_CROSS_SUFFIX="-dxmt"
+        meson_darwin_build $DXMT_REPO -Dnative_llvm_path="$PREFIX"
+    )
     if [ "$ARCH" == "x86_64" -a "$PLATFORM" == "macos" ]; then
         meson_build $D3DMETAL_REPO -Dtests=disabled
     else
@@ -926,9 +946,11 @@ fixup_dylib () {
     mkdir -p "$FRAMEWORKPATH"
     mkdir -p "$INFOPATH"
     cp -a "$FILE" "$NEWFILE"
+    MINOSVER=$(vtool -show-build-version "$FILE" 2>/dev/null | awk '/minos/ {print $2; exit}')
+    [ -n "$MINOSVER" ] || MINOSVER="$SDKMINVER"
     /usr/libexec/PlistBuddy -c "Add :CFBundleExecutable string $LIBNAME" "$INFOPATH/Info.plist" || true
     /usr/libexec/PlistBuddy -c "Add :CFBundleIdentifier string $BUNDLE_ID" "$INFOPATH/Info.plist" || true
-    /usr/libexec/PlistBuddy -c "Add :MinimumOSVersion string $SDKMINVER" "$INFOPATH/Info.plist" || true
+    /usr/libexec/PlistBuddy -c "Add :MinimumOSVersion string $MINOSVER" "$INFOPATH/Info.plist" || true
     /usr/libexec/PlistBuddy -c "Add :CFBundleVersion string 1" "$INFOPATH/Info.plist" || true
     /usr/libexec/PlistBuddy -c "Add :CFBundleShortVersionString string 1.0" "$INFOPATH/Info.plist" || true
     if [ "$PLATFORM" == "macos" ]; then

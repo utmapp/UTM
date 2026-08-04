@@ -227,7 +227,11 @@ struct DisplaySettingsView: View {
         if qemuDirectXDriver == .qemuDirectXDriverD3DMetal {
             return true // always show option if already selected
         } else {
-            return Self.hasD3DMetal
+            if #available(macOS 14, *) {
+                return Self.hasD3DMetal
+            } else {
+                return false
+            }
         }
     }
 

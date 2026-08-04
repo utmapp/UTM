@@ -87,6 +87,10 @@ static int startQemu(UTMProcess *process, int argc, const char *argv[], const ch
     NSString *backend;
     NSString *frameworkName;
     NSURL *library;
+    if (@available(macOS 13, iOS 16, *)) {
+    } else {
+        return;
+    }
     switch (directXDriver) {
         case kQEMUDirectXDriverDefault:
         case kQEMUDirectXDriverDXMT:
