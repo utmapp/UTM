@@ -97,7 +97,7 @@ struct VMConfigSystemView: View {
         #if os(iOS) || os(visionOS)
         let availableMemory = UInt64(os_proc_available_memory())
         if availableMemory > 0 {
-            totalDeviceMemory = availableMemory
+            totalDeviceMemory = min(availableMemory, totalDeviceMemory)
         }
         #endif
         let actualJitSizeMib = jitSizeMib == 0 ? memorySizeMib / 4 : jitSizeMib
