@@ -284,21 +284,13 @@ import Virtualization // for getting network interfaces
                         "edid=on"
                     }
                     if isDisplayGLSupported(display) && isVulkanSupported {
-                        #if os(macOS)
                         "hostmem=8G"
-                        #else
-                        "hostmem=256M"
-                        #endif
                         "blob=true"
                         "venus=true"
                     }
                     if isDisplayGLSupported(display) && isNeptuneSupported {
                         if !isVulkanSupported {
-                            #if os(macOS)
                             "hostmem=8G"
-                            #else
-                            "hostmem=256M"
-                            #endif
                             "blob=true"
                         }
                         "neptune=true"
@@ -357,13 +349,13 @@ import Virtualization // for getting network interfaces
     }
 
     private var isNeptuneSupported: Bool {
-        #if os(macOS)
-        isGLSupported &&
-        (rendererBackend == .qemuRendererBackendAngleMetal || rendererBackend == .qemuRendererBackendDefault) &&
-        directXDriver != .qemuDirectXDriverDisabled
-        #else
-        false
-        #endif
+        if #available(macOS 13, iOS 16, *) {
+            return isGLSupported &&
+            (rendererBackend == .qemuRendererBackendAngleMetal || rendererBackend == .qemuRendererBackendDefault) &&
+            directXDriver != .qemuDirectXDriverDisabled
+        } else {
+            return false
+        }
     }
 
     private var isSparc: Bool {

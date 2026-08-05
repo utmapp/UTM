@@ -1,0 +1,49 @@
+LLVM 15 gates its Mach-O linker behaviour on `CMAKE_SYSTEM_NAME MATCHES "Darwin"`,
+which is false when cross-compiling for iOS/visionOS (CMAKE_SYSTEM_NAME is "iOS" /
+"visionOS"). The build then falls through to the ELF/COFF paths and passes flags
+Apple's ld rejects. Use `APPLE`, which is true for every Apple platform.
+
+Fixed upstream after 15.x; drop this patch when moving to a newer LLVM.
+
+  1. add_llvm_symbol_exports() fell through to the Windows branch and handed a
+     .def file to ld:
+       ld: unknown file type in '.../LLVMHello.def'
+
+  2. -Wl,-z,defs is ELF-only and was not excluded for iOS:
+       ld: unknown options: -z
+
+  3. add_link_opts() skipped -Wl,-dead_strip, so non-Debug builds silently lost
+     dead stripping that the macOS build of the same sources already gets.
+     Not a build failure, just larger output.
+
+--- a/llvm/cmake/modules/AddLLVM.cmake
++++ b/llvm/cmake/modules/AddLLVM.cmake
+@@ -82,7 +82,7 @@
+ endfunction()
+
+ function(add_llvm_symbol_exports target_name export_file)
+-  if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
++  if(APPLE)
+     set(native_export_file "${target_name}.exports")
+     add_custom_command(OUTPUT ${native_export_file}
+       COMMAND sed -e "s/^/_/" < ${export_file} > ${native_export_file}
+@@ -263,7 +263,7 @@
+   # linker in a context where the optimizations are not important.
+   if (NOT uppercase_CMAKE_BUILD_TYPE STREQUAL "DEBUG")
+     if(NOT LLVM_NO_DEAD_STRIP)
+-      if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
++      if(APPLE)
+         # ld64's implementation of -dead_strip breaks tools that use plugins.
+         set_property(TARGET ${target_name} APPEND_STRING PROPERTY
+                      LINK_FLAGS " -Wl,-dead_strip")
+--- a/llvm/cmake/modules/HandleLLVMOptions.cmake
++++ b/llvm/cmake/modules/HandleLLVMOptions.cmake
+@@ -229,7 +229,7 @@
+ # Pass -Wl,-z,defs. This makes sure all symbols are defined. Otherwise a DSO
+ # build might work on ELF but fail on MachO/COFF.
+ if(NOT (CMAKE_SYSTEM_NAME MATCHES "Darwin|FreeBSD|OpenBSD|DragonFly|AIX|SunOS|OS390" OR
+-        WIN32 OR CYGWIN) AND
++        APPLE OR WIN32 OR CYGWIN) AND
+    NOT LLVM_USE_SANITIZER)
+   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,defs")
+ endif()

@@ -632,6 +632,8 @@
 		CE2D958E24AD4F990059923A /* UTMApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D955524AD4F980059923A /* UTMApp.swift */; };
 		CE2D958F24AD4FF00059923A /* VMCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D954324AD4F980059923A /* VMCardView.swift */; };
 		CE2D959024AD50D50059923A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 521F3EFB2414F73800130500 /* Localizable.strings */; };
+		CE30F93630200C2000024DB2 /* dxmt-native.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CEA3EDE93016810500AAA8E4 /* dxmt-native.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CE30F93730200C3300024DB2 /* dxmt-native.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CEA3EDE93016810500AAA8E4 /* dxmt-native.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CE38EC692B5DB3AE008B324B /* UTMRemoteClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE38EC682B5DB3AE008B324B /* UTMRemoteClient.swift */; };
 		CE4698F924C8FBD9008C1BD6 /* Icons in Resources */ = {isa = PBXBuildFile; fileRef = CE4698F824C8FBD9008C1BD6 /* Icons */; };
 		CE4698FA24C8FBD9008C1BD6 /* Icons in Resources */ = {isa = PBXBuildFile; fileRef = CE4698F824C8FBD9008C1BD6 /* Icons */; };
@@ -735,9 +737,7 @@
 		CE9B15482B12A87E003A32DD /* GenerateKey.c in Sources */ = {isa = PBXBuildFile; fileRef = CE9B15462B12A87E003A32DD /* GenerateKey.c */; };
 		CE9B15492B12A87E003A32DD /* GenerateKey.c in Sources */ = {isa = PBXBuildFile; fileRef = CE9B15462B12A87E003A32DD /* GenerateKey.c */; };
 		CE9B154A2B12A87E003A32DD /* GenerateKey.c in Sources */ = {isa = PBXBuildFile; fileRef = CE9B15462B12A87E003A32DD /* GenerateKey.c */; };
-		CEA3EDEB3016810500AAA8E4 /* dxmt-native.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEA3EDE93016810500AAA8E4 /* dxmt-native.framework */; };
 		CEA3EDEC3016810500AAA8E4 /* dxmt-native.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CEA3EDE93016810500AAA8E4 /* dxmt-native.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		CEA3EDED3016810500AAA8E4 /* d3dmetal-native.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEA3EDEA3016810500AAA8E4 /* d3dmetal-native.framework */; };
 		CEA3EDEE3016810500AAA8E4 /* d3dmetal-native.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CEA3EDEA3016810500AAA8E4 /* d3dmetal-native.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CEA3EE05301691C500AAA8E4 /* QEMURenderServer.app in Embed Executables */ = {isa = PBXBuildFile; fileRef = CEA3EDFA30168B9000AAA8E4 /* QEMURenderServer.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		CEA45E25263519B5002FA97D /* VMDisplayMetalViewController+Pointer.h in Sources */ = {isa = PBXBuildFile; fileRef = 83FBDD53242FA71900D2C5D7 /* VMDisplayMetalViewController+Pointer.h */; };
@@ -1452,6 +1452,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				CE30F93730200C3300024DB2 /* dxmt-native.framework in Embed Libraries */,
 				CE2D937624AD46670059923A /* gpg-error.0.framework in Embed Libraries */,
 				CE2D937724AD46670059923A /* qemu-mips64el-softmmu.framework in Embed Libraries */,
 				CE2D937824AD46670059923A /* gstcontroller-1.0.0.framework in Embed Libraries */,
@@ -1553,6 +1554,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				CE30F93630200C2000024DB2 /* dxmt-native.framework in Embed Libraries */,
 				CEA45F72263519B5002FA97D /* gpg-error.0.framework in Embed Libraries */,
 				CE63B0FD2F0EFB0700C59D13 /* vulkan_kosmickrisp.framework in Embed Libraries */,
 				CEA45F74263519B5002FA97D /* gstcontroller-1.0.0.framework in Embed Libraries */,
@@ -2369,7 +2371,6 @@
 				CEF83F882500949D00557D15 /* gthread-2.0.0.framework in Frameworks */,
 				CE03D08724D90F0700F76B84 /* gobject-2.0.0.framework in Frameworks */,
 				CE9B15362B11A491003A32DD /* SwiftConnect in Frameworks */,
-				CEA3EDED3016810500AAA8E4 /* d3dmetal-native.framework in Frameworks */,
 				CE0B6F0A24AD677200FE012D /* spice-client-glib-2.0.8.framework in Frameworks */,
 				CE0B6ECF24AD677200FE012D /* gstrtp-1.0.0.framework in Frameworks */,
 				CE0B6ECC24AD677200FE012D /* gstriff-1.0.0.framework in Frameworks */,
@@ -2385,7 +2386,6 @@
 				CE0B6EBB24AD677200FE012D /* libgstgio.a in Frameworks */,
 				84937EFF28960789003148F4 /* zstd.1.framework in Frameworks */,
 				CE0B6EE224AD677200FE012D /* gstnet-1.0.0.framework in Frameworks */,
-				CEA3EDEB3016810500AAA8E4 /* dxmt-native.framework in Frameworks */,
 				CE03D08624D90F0700F76B84 /* gmodule-2.0.0.framework in Frameworks */,
 				CED297142CE425CB00F1E3EB /* soup-3.0.0.framework in Frameworks */,
 				CE03D0CA24D9142000F76B84 /* ssl.1.1.framework in Frameworks */,
@@ -5023,13 +5023,13 @@
 					"$(PROJECT_DIR)/$(QUOTED_SYSROOT_DIR)/include/spice-1",
 					"$(PROJECT_DIR)/$(QUOTED_SYSROOT_DIR)/include/libusb-1.0",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/$(QUOTED_SYSROOT_DIR)/lib",
 					"$(PROJECT_DIR)/$(QUOTED_SYSROOT_DIR)/lib/gstreamer-1.0",
 					"$(PROJECT_DIR)/$(QUOTED_SYSROOT_DIR)/lib",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MACOSX_DEPLOYMENT_TARGET = 11.3;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -5106,13 +5106,13 @@
 					"$(PROJECT_DIR)/$(QUOTED_SYSROOT_DIR)/include/spice-1",
 					"$(PROJECT_DIR)/$(QUOTED_SYSROOT_DIR)/include/libusb-1.0",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/$(QUOTED_SYSROOT_DIR)/lib",
 					"$(PROJECT_DIR)/$(QUOTED_SYSROOT_DIR)/lib/gstreamer-1.0",
 					"$(PROJECT_DIR)/$(QUOTED_SYSROOT_DIR)/lib",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MACOSX_DEPLOYMENT_TARGET = 11.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				QUOTED_SYSROOT_DIR = "\"$(SYSROOT_DIR)\"";

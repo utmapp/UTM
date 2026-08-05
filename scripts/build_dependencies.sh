@@ -21,8 +21,8 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 # Knobs
-IOS_SDKMINVER="16.0"
-MAC_SDKMINVER="13.0"
+IOS_SDKMINVER="14.0"
+MAC_SDKMINVER="11.0"
 VISIONOS_SDKMINVER="1.0"
 # Network operations are retried because concurrent builds on the same CI runner
 # get rate limited by GitHub and fail to clone/fetch.
@@ -300,6 +300,26 @@ generate_meson_cross() {
         esac
     else
         echo "system = '$system'" >> $cross
+    fi
+    if [ "$system" == "darwin" ]; then
+        echo "kernel = 'xnu'" >> $cross
+        case $PLATFORM in
+        ios_simulator* )
+            echo "subsystem = 'ios-simulator'" >> $cross
+            ;;
+        ios* )
+            echo "subsystem = 'ios'" >> $cross
+            ;;
+        visionos_simulator* )
+            echo "subsystem = 'visionos-simulator'" >> $cross
+            ;;
+        visionos* )
+            echo "subsystem = 'visionos'" >> $cross
+            ;;
+        macos )
+            echo "subsystem = 'macos'" >> $cross
+            ;;
+        esac
     fi
     case "$ARCH" in
     armv7 | armv7s )
@@ -592,7 +612,7 @@ meson_cross_build () {
         SRCDIR="$BUILD_DIR/$NAME"
         ;;
     esac
-    MESON_CROSS="$(realpath "$BUILD_DIR")/meson-$CROSS.cross"
+    MESON_CROSS="$(realpath "$BUILD_DIR")/meson-$CROSS$MESON_CROSS_SUFFIX.cross"
     if [ ! -f "$MESON_CROSS" ]; then
         generate_meson_cross "$MESON_CROSS" "$CROSS"
     fi
@@ -625,6 +645,19 @@ meson_darwin_build () {
     meson_cross_build darwin $@
 }
 
+# The generated toolchain file is the single source of truth for CMake builds:
+# it sets every compiler, binutil, and flag variable with CACHE FORCE. The
+# exported CC/CFLAGS/... are needed by the autotools and meson builds, but for
+# CMake they are redundant *and* harmful: a nested host configure that does not
+# get the toolchain file (such as LLVM's NATIVE sub-build for llvm-tblgen)
+# inherits them from the environment and ends up compiling for the target while
+# discovering and linking host libraries. Drop them for every cmake invocation.
+cmake_clean_env () {
+    env -u CC -u CPP -u CXX -u OBJCC -u LD -u AR -u NM -u RANLIB -u STRIP \
+        -u CFLAGS -u CPPFLAGS -u CXXFLAGS -u OBJCFLAGS -u LDFLAGS \
+        cmake "$@"
+}
+
 cmake_build () {
     SRCDIR="$1"
     shift 1
@@ -650,7 +683,7 @@ cmake_build () {
         mkdir -p "$BUILDDIR"
 
         echo "${GREEN}Configuring ${NAME}...${NC}"
-        cmake -S . -B "$BUILDDIR" \
+        cmake_clean_env -S . -B "$BUILDDIR" \
             -DCMAKE_INSTALL_PREFIX="$PREFIX" \
             -DCMAKE_BUILD_TYPE="$BUILD_CONFIGURATION" \
             -DCMAKE_TOOLCHAIN_FILE="$CMAKE_TOOLCHAIN" \
@@ -658,10 +691,10 @@ cmake_build () {
     fi
 
     echo "${GREEN}Building ${NAME}...${NC}"
-    cmake --build "$BUILDDIR" --parallel "$NCPU"
+    cmake_clean_env --build "$BUILDDIR" --parallel "$NCPU"
 
     echo "${GREEN}Installing ${NAME}...${NC}"
-    cmake --install "$BUILDDIR"
+    cmake_clean_env --install "$BUILDDIR"
 
     cd "$pwd"
 }
@@ -679,9 +712,9 @@ build_angle () {
                                          WEBCORE_LIBRARY_DIR="/usr/local/lib" \
                                          NORMAL_UMBRELLA_FRAMEWORKS_DIR="" \
                                          CODE_SIGNING_ALLOWED=NO \
-                                         IPHONEOS_DEPLOYMENT_TARGET="14.0" \
-                                         MACOSX_DEPLOYMENT_TARGET="11.0" \
-                                         XROS_DEPLOYMENT_TARGET="1.0"
+                                         IPHONEOS_DEPLOYMENT_TARGET="$IOS_SDKMINVER" \
+                                         MACOSX_DEPLOYMENT_TARGET="$MAC_SDKMINVER" \
+                                         XROS_DEPLOYMENT_TARGET="$VISIONOS_SDKMINVER"
     rsync -a "ANGLE.xcarchive/Products/usr/local/lib/" "$PREFIX/lib"
     rsync -a "include/" "$PREFIX/include"
     cd "$pwd"
@@ -843,8 +876,28 @@ build_vulkan_drivers () {
 build_d3d_drivers () {
     LLVM15_NAME=$(basename "${LLVM15_SRC%.tar.*}")
     cmake_build "$BUILD_DIR/$LLVM15_NAME/llvm" -DLLVM_ENABLE_ZSTD=Off -DLLVM_TARGETS_TO_BUILD="" -DLLVM_BUILD_TOOLS=Off -DLLVM_VERSION_PRINTER_SHOW_HOST_TARGET_INFO=Off
-    meson_build $DXMT_REPO -Dnative_llvm_path="$PREFIX"
-    if [ "$ARCH" == "x86_64" ]; then
+    (
+        case $PLATFORM in
+        ios* )
+            DXMT_SDKMINVER="16.0"
+            ;;
+        macos )
+            DXMT_SDKMINVER="13.0"
+            ;;
+        * )
+            DXMT_SDKMINVER="$SDKMINVER"
+            ;;
+        esac
+        DXMT_CFLAGS_TARGET="${CFLAGS_TARGET/$SDKMINVER/$DXMT_SDKMINVER}"
+        CC="${CC/$CFLAGS_TARGET/$DXMT_CFLAGS_TARGET}"
+        CPPFLAGS="${CPPFLAGS/$CFLAGS_TARGET/$DXMT_CFLAGS_TARGET}"
+        CXXFLAGS="${CXXFLAGS/$CFLAGS_TARGET/$DXMT_CFLAGS_TARGET}"
+        OBJCFLAGS="${OBJCFLAGS/$CFLAGS_TARGET/$DXMT_CFLAGS_TARGET}"
+        LDFLAGS="${LDFLAGS/$CFLAGS_TARGET/$DXMT_CFLAGS_TARGET}"
+        MESON_CROSS_SUFFIX="-dxmt"
+        meson_darwin_build $DXMT_REPO -Dnative_llvm_path="$PREFIX"
+    )
+    if [ "$ARCH" == "x86_64" -a "$PLATFORM" == "macos" ]; then
         meson_build $D3DMETAL_REPO -Dtests=disabled
     else
         # empty placeholder file
@@ -893,9 +946,11 @@ fixup_dylib () {
     mkdir -p "$FRAMEWORKPATH"
     mkdir -p "$INFOPATH"
     cp -a "$FILE" "$NEWFILE"
+    MINOSVER=$(vtool -show-build-version "$FILE" 2>/dev/null | awk '/minos/ {print $2; exit}')
+    [ -n "$MINOSVER" ] || MINOSVER="$SDKMINVER"
     /usr/libexec/PlistBuddy -c "Add :CFBundleExecutable string $LIBNAME" "$INFOPATH/Info.plist" || true
     /usr/libexec/PlistBuddy -c "Add :CFBundleIdentifier string $BUNDLE_ID" "$INFOPATH/Info.plist" || true
-    /usr/libexec/PlistBuddy -c "Add :MinimumOSVersion string $SDKMINVER" "$INFOPATH/Info.plist" || true
+    /usr/libexec/PlistBuddy -c "Add :MinimumOSVersion string $MINOSVER" "$INFOPATH/Info.plist" || true
     /usr/libexec/PlistBuddy -c "Add :CFBundleVersion string 1" "$INFOPATH/Info.plist" || true
     /usr/libexec/PlistBuddy -c "Add :CFBundleShortVersionString string 1.0" "$INFOPATH/Info.plist" || true
     if [ "$PLATFORM" == "macos" ]; then
@@ -1046,7 +1101,7 @@ ios* | visionos* )
         PLATFORM_FAMILY_NAME="$PLATFORM_FAMILY_PREFIX"
         ;;
     esac
-    QEMU_PLATFORM_BUILD_FLAGS="--enable-shared-lib --disable-cocoa --disable-coreaudio --disable-slirp-smbd --enable-ucontext --with-coroutine=libucontext $HVF_FLAGS $TCI_BUILD_FLAGS"
+    QEMU_PLATFORM_BUILD_FLAGS="--enable-shared-lib --disable-cocoa --disable-sdl --disable-coreaudio --disable-slirp-smbd --enable-ucontext --with-coroutine=libucontext $HVF_FLAGS $TCI_BUILD_FLAGS"
     ;;
 macos )
     if [ -z "$SDKMINVER" ]; then
@@ -1055,7 +1110,7 @@ macos )
     SDK=macosx
     CFLAGS_TARGET="-target $ARCH-apple-macos$SDKMINVER"
     PLATFORM_FAMILY_NAME="macOS"
-    QEMU_PLATFORM_BUILD_FLAGS="--enable-shared-lib --disable-cocoa --cpu=$CPU"
+    QEMU_PLATFORM_BUILD_FLAGS="--enable-shared-lib --disable-cocoa --disable-sdl --cpu=$CPU"
     ;;
 * )
     usage
@@ -1176,9 +1231,7 @@ build_qemu_dependencies
 build $QEMU_DIR --cross-prefix="" $QEMU_PLATFORM_BUILD_FLAGS $QEMU_DEBUG_FLAGS
 build_spice_client
 build_vulkan_drivers
-if [ "$PLATFORM" == "macos" ]; then
-    build_d3d_drivers
-fi
+build_d3d_drivers
 fixup_all
 remove_shared_gst_plugins # another hack...
 echo "${GREEN}All done!${NC}"
