@@ -546,3 +546,204 @@ index a2dddbd37a..f6d7879eff 100644
 -- 
 2.41.0
 
+From 7311c3651c3a2cbc3d32e6eae262c60339f28d79 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Sun, 2 Aug 2026 21:04:16 -0700
+Subject: [PATCH] hw/arm/virt: shrink the high PCIe MMIO window to fit small PA
+ spaces
+
+Previously, if the high PCIe MMIO window did not fit in the guest
+physical address space, it was silently disabled, leaving no room to
+place any 64-bit BAR too large for the 32-bit window. On hosts with a
+small IPA space (e.g. a 36-bit IPA), this made devices like virtio-gpu
+with a large hostmem BAR unusable.
+
+Instead, shrink the window to the largest power of two that fits (no
+smaller than 1GiB) and warn about it. Only if even the minimum does not
+fit is the window disabled, and each high region now warns when it is
+disabled for not fitting rather than vanishing silently.
+
+To make room at all on such hosts, skip the legacy 256GiB floor for the
+high IO region when the high regions cannot fit there, placing them
+right above RAM instead. !highmem keeps the floor since disabling the
+regions is the point of that option.
+
+Accordingly, highmem-mmio-size now accepts any power of 2 down to 1GiB
+instead of rejecting values below the 512GiB default.
+
+Assisted-by: Claude:claude-fable-5
+---
+ docs/system/arm/virt.rst |  7 ++-
+ hw/arm/virt.c            | 95 +++++++++++++++++++++++++++++++++++++---
+ 2 files changed, 94 insertions(+), 8 deletions(-)
+
+diff --git a/docs/system/arm/virt.rst b/docs/system/arm/virt.rst
+index 6a719b9586..ad054d4fed 100644
+--- a/docs/system/arm/virt.rst
++++ b/docs/system/arm/virt.rst
+@@ -145,8 +145,11 @@ highmem-mmio
+   The default is ``on``.
+ 
+ highmem-mmio-size
+-  Set the high memory region size for PCI MMIO. Must be a power of 2 and
+-  greater than or equal to the default size (512G).
++  Set the high memory region size for PCI MMIO. Must be a power of 2 and at
++  least 1G. The default is 512G. If the requested window does not fit in the
++  guest physical address space, it is shrunk to the largest power of 2 that
++  does (but no smaller than 1G) and a warning is emitted; if even that does
++  not fit, the window is disabled.
+ 
+ gic-version
+   Specify the version of the Generic Interrupt Controller (GIC) to provide.
+diff --git a/hw/arm/virt.c b/hw/arm/virt.c
+index 22ff33a33f..3314fcc791 100644
+--- a/hw/arm/virt.c
++++ b/hw/arm/virt.c
+@@ -197,6 +197,8 @@ static const MemMapEntry base_memmap[] = {
+ /* Update the docs for highmem-mmio-size when changing this default */
+ #define DEFAULT_HIGH_PCIE_MMIO_SIZE_GB 512
+ #define DEFAULT_HIGH_PCIE_MMIO_SIZE (DEFAULT_HIGH_PCIE_MMIO_SIZE_GB * GiB)
++/* Smallest window we will auto-shrink to, or accept from the user */
++#define VIRT_HIGH_PCIE_MMIO_MIN_SIZE (1 * GiB)
+ 
+ /*
+  * Highmem IO Regions: This memory map is floating, located after the RAM.
+@@ -1812,6 +1814,40 @@ static inline bool *virt_get_high_memmap_enabled(VirtMachineState *vms,
+     return enabled_array[index - VIRT_LOWMEMMAP_LAST];
+ }
+ 
++static inline const char *virt_high_memmap_name(int index)
++{
++    static const char * const names[] = {
++        "GIC redistributor",
++        "PCIe ECAM",
++        "PCIe MMIO",
++    };
++
++    assert(ARRAY_SIZE(extended_memmap) - VIRT_LOWMEMMAP_LAST ==
++           ARRAY_SIZE(names));
++    assert(index - VIRT_LOWMEMMAP_LAST < ARRAY_SIZE(names));
++
++    return names[index - VIRT_LOWMEMMAP_LAST];
++}
++
++/*
++ * Return the first address above the high memmap if it were laid out
++ * starting at @base, assuming every region fits at full size. Mirrors the
++ * placement rules of virt_set_high_memmap().
++ */
++static hwaddr virt_high_memmap_end(VirtMachineState *vms, hwaddr base)
++{
++    int i;
++
++    for (i = VIRT_LOWMEMMAP_LAST; i < ARRAY_SIZE(extended_memmap); i++) {
++        if (vms->highmem_compact && !*virt_get_high_memmap_enabled(vms, i)) {
++            continue;
++        }
++        base = ROUND_UP(base, extended_memmap[i].size) + extended_memmap[i].size;
++    }
++
++    return base;
++}
++
+ static void virt_set_high_memmap(VirtMachineState *vms,
+                                  hwaddr base, int pa_bits)
+ {
+@@ -1824,6 +1860,33 @@ static void virt_set_high_memmap(VirtMachineState *vms,
+         region_base = ROUND_UP(base, extended_memmap[i].size);
+         region_size = extended_memmap[i].size;
+ 
++        /*
++         * The high PCIe MMIO window is the only configurable high region
++         * and by far the largest. If it doesn't fit (e.g. in a 36-bit PA
++         * space), shrink it to the largest power of two that does rather
++         * than dropping it: without it, no 64-bit BAR too large for the
++         * 32-bit window can ever be placed.
++         */
++        if (i == VIRT_HIGH_PCIE_MMIO && *region_enabled && vms->highmem) {
++            while (region_size > VIRT_HIGH_PCIE_MMIO_MIN_SIZE &&
++                   region_base + region_size > BIT_ULL(pa_bits)) {
++                region_size /= 2;
++                region_base = ROUND_UP(base, region_size);
++            }
++            if (region_base + region_size > BIT_ULL(pa_bits)) {
++                /* Not even the minimum fits; restore and disable below */
++                region_size = extended_memmap[i].size;
++                region_base = ROUND_UP(base, region_size);
++            } else if (region_size != extended_memmap[i].size) {
++                g_autofree char *from = size_to_str(extended_memmap[i].size);
++                g_autofree char *to = size_to_str(region_size);
++
++                warn_report("high PCIe MMIO window shrunk from %s to %s to fit "
++                            "in a %d-bit physical address space", from, to,
++                            pa_bits);
++            }
++        }
++
+         vms->memmap[i].base = region_base;
+         vms->memmap[i].size = region_size;
+ 
+@@ -1836,6 +1899,12 @@ static void virt_set_high_memmap(VirtMachineState *vms,
+          * For each device that doesn't fit, disable it.
+          */
+         fits = (region_base + region_size) <= BIT_ULL(pa_bits);
++        /* !highmem disables these on purpose, so keep quiet about it */
++        if (*region_enabled && !fits && vms->highmem) {
++            warn_report("high %s region does not fit in a %d-bit physical "
++                        "address space and has been disabled",
++                        virt_high_memmap_name(i), pa_bits);
++        }
+         *region_enabled &= fits;
+         if (vms->highmem_compact && !*region_enabled) {
+             continue;
+@@ -1851,7 +1920,7 @@ static void virt_set_high_memmap(VirtMachineState *vms,
+ static void virt_set_memmap(VirtMachineState *vms, int pa_bits)
+ {
+     MachineState *ms = MACHINE(vms);
+-    hwaddr base, device_memory_base, device_memory_size, memtop;
++    hwaddr base, device_memory_base, device_memory_size, memtop, legacy_base;
+     int i;
+ 
+     vms->memmap = extended_memmap;
+@@ -1900,8 +1969,18 @@ static void virt_set_memmap(VirtMachineState *vms, int pa_bits)
+         error_report("maxmem/slots too huge");
+         exit(EXIT_FAILURE);
+     }
+-    if (base < vms->memmap[VIRT_MEM].base + LEGACY_RAMLIMIT_BYTES) {
+-        base = vms->memmap[VIRT_MEM].base + LEGACY_RAMLIMIT_BYTES;
++    /*
++     * Pin the high IO region at 256GiB so a VM with less than 255GiB of
++     * RAM keeps the legacy memory map. Skip that floor when the high
++     * regions cannot fit there in the PA space, as they would all be
++     * disabled and the guest left with no 64-bit MMIO window. !highmem
++     * keeps the floor: disabling them is the point of that option.
++     */
++    legacy_base = vms->memmap[VIRT_MEM].base + LEGACY_RAMLIMIT_BYTES;
++    if (base < legacy_base &&
++        (!vms->highmem ||
++         virt_high_memmap_end(vms, legacy_base) <= BIT_ULL(pa_bits))) {
++        base = legacy_base;
+     }
+ 
+     /* We know for sure that at least the memory fits in the PA space */
+@@ -2594,10 +2673,14 @@ static void virt_set_highmem_mmio_size(Object *obj, Visitor *v,
+         return;
+     }
+ 
+-    if (size < DEFAULT_HIGH_PCIE_MMIO_SIZE) {
+-        char *sz = size_to_str(DEFAULT_HIGH_PCIE_MMIO_SIZE);
++    /*
++     * Windows smaller than the default are allowed: a host with a small
++     * PA space cannot fit the default anywhere.
++     */
++    if (size < VIRT_HIGH_PCIE_MMIO_MIN_SIZE) {
++        char *sz = size_to_str(VIRT_HIGH_PCIE_MMIO_MIN_SIZE);
+         error_setg(errp, "highmem-mmio-size cannot be set to a lower value "
+-                         "than the default (%s)", sz);
++                         "than %s", sz);
+         g_free(sz);
+         return;
+     }
+-- 
+2.41.0
+
