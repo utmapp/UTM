@@ -161,6 +161,7 @@ struct ApplicationSettingsView: View {
     @AppStorage("PreventIdleSleep") var isPreventIdleSleep = false
     @AppStorage("NoQuitConfirmation") var isNoQuitConfirmation = false
     @AppStorage("NoUsbPrompt") var isNoUsbPrompt = false
+    @AppStorage("QuitRunningVirtualMachinesPolicy") var quitPolicy = UTMQuitPolicy.saveState.rawValue
 
     @State private var isConfirmResetAutoConnect = false
 
@@ -185,6 +186,12 @@ struct ApplicationSettingsView: View {
             Toggle(isOn: $isPreventIdleSleep, label: {
                 Text("Prevent system from sleeping when any VM is running")
             })
+            Picker("Running VMs on quit", selection: $quitPolicy) {
+                Text("Save State (Default)").tag(UTMQuitPolicy.saveState.rawValue)
+                Text("Request Power Down").tag(UTMQuitPolicy.requestPowerDown.rawValue)
+            }
+            .fixedSize(horizontal: true, vertical: false)
+            .help("Choose whether UTM saves the state of running virtual machines or requests that their guest operating systems shut down when UTM quits.")
             Toggle(isOn: $isNoQuitConfirmation, label: {
                 Text("Do not show confirmation when closing a running VM")
             }).help("Closing a VM without properly shutting it down could result in data loss.")
@@ -552,6 +559,7 @@ extension UserDefaults {
     @objc dynamic var HideDockIcon: Bool { false }
     @objc dynamic var PreventIdleSleep: Bool { false }
     @objc dynamic var NoQuitConfirmation: Bool { false }
+    @objc dynamic var QuitRunningVirtualMachinesPolicy: Int { UTMQuitPolicy.saveState.rawValue }
     @objc dynamic var NoCursorCaptureAlert: Bool { false }
     @objc dynamic var FullScreenAutoCapture: Bool { false }
     @objc dynamic var OptionAsMetaKey: Bool { false }
