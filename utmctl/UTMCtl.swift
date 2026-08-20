@@ -37,7 +37,8 @@ struct UTMCtl: ParsableCommand {
             IPAddress.self,
             Clone.self,
             Delete.self,
-            USB.self
+            USB.self,
+            Snapshot.self
         ]
     )
 }
@@ -649,6 +650,99 @@ extension UTMCtl {
         func run(with application: UTMScriptingApplication) throws {
             let device = try USB.usbDevice(forIdentifier: device, in: application)
             device.disconnect!()
+        }
+    }
+}
+
+extension UTMCtl {
+    struct Snapshot: ParsableCommand {
+        static var configuration = CommandConfiguration(
+            abstract: "Create, list, restore, and delete named full-VM snapshots for QEMU virtual machines.",
+            subcommands: [SnapshotCreate.self, SnapshotList.self, SnapshotRestore.self, SnapshotDelete.self]
+        )
+    }
+
+    struct SnapshotCreate: UTMAPICommand {
+        static var configuration = CommandConfiguration(
+            commandName: "create",
+            abstract: "Create or replace a named snapshot of a running or paused QEMU virtual machine."
+        )
+
+        @OptionGroup var environment: EnvironmentOptions
+
+        @OptionGroup var identifer: VMIdentifier
+
+        @Option(help: "Name of the snapshot to create.")
+        var name: String
+
+        func run(with application: UTMScriptingApplication) throws {
+            let vm = try virtualMachine(forIdentifier: identifer, in: application)
+            vm.createSnapshotNamed!(name)
+        }
+    }
+
+    struct SnapshotList: UTMAPICommand {
+        static var configuration = CommandConfiguration(
+            commandName: "list",
+            abstract: "List the names of all snapshots for a stopped QEMU virtual machine."
+        )
+
+        @OptionGroup var environment: EnvironmentOptions
+
+        @OptionGroup var identifer: VMIdentifier
+
+        @Flag(help: "Output the list as a JSON array.")
+        var json: Bool = false
+
+        func run(with application: UTMScriptingApplication) throws {
+            let vm = try virtualMachine(forIdentifier: identifer, in: application)
+            let names = (vm.listSnapshots!() as? [String]) ?? []
+            if json {
+                let data = try JSONSerialization.data(withJSONObject: names, options: [.prettyPrinted])
+                print(String(data: data, encoding: .utf8) ?? "[]")
+            } else {
+                for name in names {
+                    print(name)
+                }
+            }
+        }
+    }
+
+    struct SnapshotRestore: UTMAPICommand {
+        static var configuration = CommandConfiguration(
+            commandName: "restore",
+            abstract: "Restore a stopped QEMU virtual machine to a named snapshot."
+        )
+
+        @OptionGroup var environment: EnvironmentOptions
+
+        @OptionGroup var identifer: VMIdentifier
+
+        @Option(help: "Name of the snapshot to restore.")
+        var name: String
+
+        func run(with application: UTMScriptingApplication) throws {
+            let vm = try virtualMachine(forIdentifier: identifer, in: application)
+            vm.restoreSnapshotNamed!(name)
+        }
+    }
+
+    struct SnapshotDelete: UTMAPICommand {
+        static var configuration = CommandConfiguration(
+            commandName: "delete",
+            abstract: "Delete a named snapshot from a QEMU virtual machine."
+        )
+
+        @OptionGroup var environment: EnvironmentOptions
+
+        @OptionGroup var identifer: VMIdentifier
+
+        @Option(help: "Name of the snapshot to delete.")
+        var name: String
+
+        func run(with application: UTMScriptingApplication) throws {
+            let vm = try virtualMachine(forIdentifier: identifer, in: application)
+            vm.deleteSnapshotNamed!(name)
         }
     }
 }

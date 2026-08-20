@@ -230,6 +230,10 @@ extension SBObject: UTMScriptingWindow {}
     @objc optional func startSaving(_ saving: Bool, recovery: Bool) // Start a virtual machine or resume a suspended virtual machine.
     @objc optional func suspendSaving(_ saving: Bool) // Suspend a running virtual machine to memory.
     @objc optional func stopBy(_ by: UTMScriptingStopMethod) // Shuts down a running virtual machine.
+    @objc optional func createSnapshotNamed(_ named: String!) // Create or replace a named full-VM snapshot (RAM, devices, and disk) for a QEMU virtual machine. The VM must be running or paused.
+    @objc optional func listSnapshots() -> [Any] // List the names of all named snapshots for a stopped QEMU virtual machine, newest first.
+    @objc optional func restoreSnapshotNamed(_ named: String!) // Restore a stopped QEMU virtual machine to a named snapshot.
+    @objc optional func deleteSnapshotNamed(_ named: String!) // Delete a named snapshot from a QEMU virtual machine.
     @objc optional func delete() // Delete a virtual machine. All data will be deleted, there is no confirmation!
     @objc optional func duplicateWithProperties(_ withProperties: [AnyHashable : Any]!) // Copy an virtual machine and all its data.
     @objc optional func exportTo(_ to: URL!) // Export a virtual machine to a specified location.

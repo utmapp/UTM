@@ -376,6 +376,9 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
     #endif
     
     func saveSnapshot(name: String? = nil) async throws {
+        guard name == nil else {
+            throw UTMSnapshotError.notSupported
+        }
         guard #available(macOS 14, *) else {
             return
         }
@@ -402,6 +405,9 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
     }
     
     func deleteSnapshot(name: String? = nil) async throws {
+        guard name == nil else {
+            throw UTMSnapshotError.notSupported
+        }
         guard let vmSavedStateURL = await config.system.boot.vmSavedStateURL else {
             return
         }
@@ -432,6 +438,9 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
     #endif
     
     func restoreSnapshot(name: String? = nil) async throws {
+        guard name == nil else {
+            throw UTMSnapshotError.notSupported
+        }
         guard #available(macOS 14, *) else {
             throw UTMAppleVirtualMachineError.operationNotAvailable
         }

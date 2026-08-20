@@ -175,6 +175,43 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
         }
     }
     
+    @objc func createSnapshot(_ command: NSScriptCommand) {
+        let name = command.evaluatedArguments?["snapshotName"] as? String
+        withScriptCommand(command) { [self] in
+            guard let name = name else {
+                throw ScriptingError.invalidParameter
+            }
+            try await UTMSnapshotService.createSnapshot(name: name, on: vm)
+        }
+    }
+
+    @objc func listSnapshots(_ command: NSScriptCommand) {
+        withScriptCommand(command) { [self] in
+            let entries = try await UTMSnapshotService.listSnapshots(on: vm)
+            return entries.map { $0.name }
+        }
+    }
+
+    @objc func restoreSnapshot(_ command: NSScriptCommand) {
+        let name = command.evaluatedArguments?["snapshotName"] as? String
+        withScriptCommand(command) { [self] in
+            guard let name = name else {
+                throw ScriptingError.invalidParameter
+            }
+            try await UTMSnapshotService.restoreSnapshot(name: name, on: vm)
+        }
+    }
+
+    @objc func deleteSnapshot(_ command: NSScriptCommand) {
+        let name = command.evaluatedArguments?["snapshotName"] as? String
+        withScriptCommand(command) { [self] in
+            guard let name = name else {
+                throw ScriptingError.invalidParameter
+            }
+            try await UTMSnapshotService.deleteSnapshot(name: name, on: vm)
+        }
+    }
+
     @objc func delete(_ command: NSDeleteCommand) {
         withScriptCommand(command) { [self] in
             guard vm.state == .stopped else {
