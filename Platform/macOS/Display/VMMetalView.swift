@@ -26,7 +26,24 @@ class VMMetalView: MTKView {
     private(set) var isMouseInWindow = false
     @Setting("HandleInitialClick") private var isHandleInitialClick: Bool = false
     @Setting("IsCtrlCmdSwapped") private var isCtrlCmdSwapped = false
+    @Setting("IsCmdOptSwapped") private var isCmdOptSwapped = false
     @Setting("IsISOKeySwapped") private var isISOKeySwapped = false
+
+    private enum ModifierKeySwap {
+        case none
+        case ctrlCmd
+        case cmdOpt
+    }
+
+    private var modifierKeySwap: ModifierKeySwap {
+        if isCtrlCmdSwapped {
+            return .ctrlCmd
+        } else if isCmdOptSwapped {
+            return .cmdOpt
+        } else {
+            return .none
+        }
+    }
 
     /// On ISO keyboards we have to switch `kVK_ISO_Section` and `kVK_ANSI_Grave`
     /// from: https://chromium.googlesource.com/chromium/src/+/lkgr/ui/events/keycodes/keyboard_code_conversion_mac.mm
@@ -199,8 +216,16 @@ class VMMetalView: MTKView {
         }
         if !modifier.isDisjoint(with: [.command, .leftCommand, .rightCommand]) {
             let vk = modifier.contains(.rightCommand) ? kVK_RightCommand : kVK_Command
-            let vkSwapped = modifier.contains(.rightCommand) ? kVK_RightControl : kVK_Control
-            let sc = Int(KeyCodeMap.keyCodeToScanCodes[isCtrlCmdSwapped ? vkSwapped : vk]!.down)
+            let vkSwapped: Int
+            switch modifierKeySwap {
+            case .ctrlCmd:
+                vkSwapped = modifier.contains(.rightCommand) ? kVK_RightControl : kVK_Control
+            case .cmdOpt:
+                vkSwapped = modifier.contains(.rightCommand) ? kVK_RightOption : kVK_Option
+            case .none:
+                vkSwapped = vk
+            }
+            let sc = Int(KeyCodeMap.keyCodeToScanCodes[vkSwapped]!.down)
             if press {
                 inputDelegate?.keyDown(scanCode: sc)
             } else {
@@ -227,7 +252,13 @@ class VMMetalView: MTKView {
         }
         if !modifier.isDisjoint(with: [.option, .leftOption, .rightOption]) {
             let vk = modifier.contains(.rightOption) ? kVK_RightOption : kVK_Option
-            let sc = Int(KeyCodeMap.keyCodeToScanCodes[vk]!.down)
+            let vkSwapped: Int
+            if modifierKeySwap == .cmdOpt {
+                vkSwapped = modifier.contains(.rightOption) ? kVK_RightCommand : kVK_Command
+            } else {
+                vkSwapped = vk
+            }
+            let sc = Int(KeyCodeMap.keyCodeToScanCodes[vkSwapped]!.down)
             if press {
                 inputDelegate?.keyDown(scanCode: sc)
             } else {

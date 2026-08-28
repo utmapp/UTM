@@ -317,6 +317,12 @@ struct SoundSettingsView: View {
 }
 
 struct InputSettingsView: View {
+    private enum ModifierKeyMapping: Hashable {
+        case none
+        case ctrlCmd
+        case cmdOpt
+    }
+
     @AppStorage("FullScreenAutoCapture") var isFullScreenAutoCapture = false
     @AppStorage("WindowFocusAutoCapture") var isWindowFocusAutoCapture = false
     @AppStorage("OptionAsMetaKey") var isOptionAsMetaKey = false
@@ -325,11 +331,27 @@ struct InputSettingsView: View {
     @AppStorage("IsCapsLockKey") var isCapsLockKey = false
     @AppStorage("IsNumLockForced") var isNumLockForced = false
     @AppStorage("IsCtrlCmdSwapped") var isCtrlCmdSwapped = false
+    @AppStorage("IsCmdOptSwapped") var isCmdOptSwapped = false
     @AppStorage("InvertScroll") var isInvertScroll = false
     @AppStorage("HandleInitialClick") var isHandleInitialClick = false
     @AppStorage("IsISOKeySwapped") var isISOKeySwapped = false
 
     @State private var isKeyboardShortcutsShown = false
+
+    private var modifierKeyMappingBinding: Binding<ModifierKeyMapping> {
+        Binding(get: {
+            if isCtrlCmdSwapped {
+                return .ctrlCmd
+            } else if isCmdOptSwapped {
+                return .cmdOpt
+            } else {
+                return .none
+            }
+        }, set: { mapping in
+            isCtrlCmdSwapped = mapping == .ctrlCmd
+            isCmdOptSwapped = mapping == .cmdOpt
+        })
+    }
     
     var body: some View {
         Form {
@@ -373,9 +395,11 @@ struct InputSettingsView: View {
                 Toggle(isOn: $isNumLockForced, label: {
                     Text("Num Lock is forced on")
                 }).help("If enabled, num lock will always be on to the guest. Note this may make your keyboard's num lock indicator out of sync.")
-                Toggle(isOn: $isCtrlCmdSwapped, label: {
-                    Text("Swap Control (⌃) and Command (⌘) keys")
-                }).help("This does not apply to key binding outside the guest.")
+                Picker("Control, Option, and Command keys", selection: modifierKeyMappingBinding) {
+                    Text("Default").tag(ModifierKeyMapping.none)
+                    Text("Swap Control (⌃) and Command (⌘)").tag(ModifierKeyMapping.ctrlCmd)
+                    Text("Swap Command (⌘) and Option (⌥)").tag(ModifierKeyMapping.cmdOpt)
+                }.help("This does not apply to key binding outside the guest.")
                 Toggle(isOn: $isISOKeySwapped) {
                     Text("Swap the leftmost key on the number row and the key next to left shift on ISO keyboards")
                 }.help("This only applies to ISO layout keyboards.")
