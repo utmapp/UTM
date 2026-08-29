@@ -32,6 +32,7 @@
 		83A004BA26A8CC95001AC09E /* UTMDownloadTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83A004B826A8CC95001AC09E /* UTMDownloadTask.swift */; };
 		83A004BB26A8CC95001AC09E /* UTMDownloadTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83A004B826A8CC95001AC09E /* UTMDownloadTask.swift */; };
 		83C15C5F26CC441500ADFD45 /* KeyCodeMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83C15C5E26CC441000ADFD45 /* KeyCodeMap.swift */; };
+		A1C4F00230C1200000CA9501 /* CapsLockRemapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C4F00130C1200000CA9501 /* CapsLockRemapper.swift */; };
 		8401865A2887AFD50050AC51 /* SwiftTerm in Frameworks */ = {isa = PBXBuildFile; productRef = 840186592887AFD50050AC51 /* SwiftTerm */; };
 		8401865C2887AFDC0050AC51 /* SwiftTerm in Frameworks */ = {isa = PBXBuildFile; productRef = 8401865B2887AFDC0050AC51 /* SwiftTerm */; };
 		8401865E2887B1620050AC51 /* VMDisplayTerminalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8401865D2887B1620050AC51 /* VMDisplayTerminalViewController.swift */; };
@@ -1716,6 +1717,7 @@
 		836CA97E28FCC39700EB9EF0 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		83A004B826A8CC95001AC09E /* UTMDownloadTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMDownloadTask.swift; sourceTree = "<group>"; };
 		83C15C5E26CC441000ADFD45 /* KeyCodeMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyCodeMap.swift; sourceTree = "<group>"; };
+		A1C4F00130C1200000CA9501 /* CapsLockRemapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapsLockRemapper.swift; sourceTree = "<group>"; };
 		83FBDD53242FA71900D2C5D7 /* VMDisplayMetalViewController+Pointer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VMDisplayMetalViewController+Pointer.h"; sourceTree = "<group>"; };
 		83FBDD55242FA7BC00D2C5D7 /* VMDisplayMetalViewController+Pointer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "VMDisplayMetalViewController+Pointer.m"; sourceTree = "<group>"; };
 		83FE63B628F617CD0047FFEF /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/VMDisplayMetalViewInputAccessory.strings; sourceTree = "<group>"; };
@@ -2628,6 +2630,7 @@
 		CE1BD9FA24F4825C0022A468 /* Display */ = {
 			isa = PBXGroup;
 			children = (
+				A1C4F00130C1200000CA9501 /* CapsLockRemapper.swift */,
 				CE061CDD289E6DC30000351C /* VMDisplayWindow.xib */,
 				CE612AC524D3B50700FA6300 /* VMDisplayWindowController.swift */,
 				84F746B8276FF40900A20C87 /* VMDisplayAppleWindowController.swift */,
@@ -3939,6 +3942,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1C4F00230C1200000CA9501 /* CapsLockRemapper.swift in Sources */,
 				CEE06B272B2FC89400A811AE /* UTMServerView.swift in Sources */,
 				CEB63A7724F4654400CAF323 /* Main.swift in Sources */,
 				84E3A91B2946D2590024A740 /* UTMMenuBarExtraScene.swift in Sources */,
