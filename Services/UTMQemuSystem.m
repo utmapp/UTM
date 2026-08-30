@@ -91,6 +91,24 @@ static int startQemu(UTMProcess *process, int argc, const char *argv[], const ch
     } else {
         return;
     }
+    NSURL *bundleURL = NSBundle.mainBundle.bundleURL;
+#if TARGET_OS_OSX
+    NSURL *contentsURL = [bundleURL URLByAppendingPathComponent:@"Contents" isDirectory:YES];
+    NSString *versionPath = @"Versions/A/";
+#else
+    NSURL *contentsURL = bundleURL;
+    NSString *versionPath = @"";
+#endif
+    NSURL *frameworksURL = [contentsURL URLByAppendingPathComponent:@"Frameworks" isDirectory:YES];
+    NSString *d3dMetal = @"D3DMetal";
+    NSURL *d3dMetalURL = [frameworksURL URLByAppendingPathComponent:[NSString stringWithFormat:@"%@.framework/%@%@", d3dMetal, versionPath, d3dMetal] isDirectory:NO];
+    if (directXDriver == kQEMUDirectXDriverDefault) {
+        if (@available(macOS 14, *)) {
+            if ([NSFileManager.defaultManager fileExistsAtPath:d3dMetalURL.path]) {
+                directXDriver = kQEMUDirectXDriverD3DMetal;
+            }
+        }
+    }
     switch (directXDriver) {
         case kQEMUDirectXDriverDefault:
         case kQEMUDirectXDriverDXMT:
@@ -106,23 +124,12 @@ static int startQemu(UTMProcess *process, int argc, const char *argv[], const ch
             break;
     }
     if (frameworkName) {
-        NSURL *bundleURL = NSBundle.mainBundle.bundleURL;
-#if TARGET_OS_OSX
-        NSURL *contentsURL = [bundleURL URLByAppendingPathComponent:@"Contents" isDirectory:YES];
-        NSString *versionPath = @"Versions/A/";
-#else
-        NSURL *contentsURL = bundleURL;
-        NSString *versionPath = @"";
-#endif
-        NSURL *frameworksURL = [contentsURL URLByAppendingPathComponent:@"Frameworks" isDirectory:YES];
         library = [frameworksURL URLByAppendingPathComponent:[NSString stringWithFormat:@"%@.framework/%@%@", frameworkName, versionPath, frameworkName] isDirectory:NO];
         if (![NSFileManager.defaultManager fileExistsAtPath:library.path]) {
             UTMLog(@"DirectX driver '%@' is not available in this build", backend);
             backend = nil;
             library = nil;
         } else if (directXDriver == kQEMUDirectXDriverD3DMetal) {
-            NSString *d3dMetal = @"D3DMetal";
-            NSURL *d3dMetalURL = [frameworksURL URLByAppendingPathComponent:[NSString stringWithFormat:@"%@.framework/%@%@", d3dMetal, versionPath, d3dMetal] isDirectory:NO];
             self.mutableEnvironment[@"D3DMETAL_FRAMEWORK_PATH"] = d3dMetalURL.path;
             self.resources = [self.resources arrayByAddingObject:d3dMetalURL];
         }
