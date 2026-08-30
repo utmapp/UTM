@@ -747,3 +747,2021 @@ index 22ff33a33f..3314fcc791 100644
 -- 
 2.41.0
 
+From 2870e745b902e83ef413ebde08e4c77c7dfead7f Mon Sep 17 00:00:00 2001
+From: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+Date: Wed, 4 Mar 2026 16:50:33 +0000
+Subject: [PATCH 1/6] virtio-gpu: Support asynchronous fencing
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Support asynchronous fencing feature of virglrenderer. It allows Qemu to
+handle fence as soon as it's signalled instead of periodically polling
+the fence status. This feature is required for enabling DRM context
+support in Qemu because legacy fencing mode isn't supported for DRM
+contexts in virglrenderer.
+
+Reviewed-by: Akihiko Odaki <akihiko.odaki@daynix.com>
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+Tested-by: Alex Bennée <alex.bennee@linaro.org>
+Reviewed-by: Alex Bennée <alex.bennee@linaro.org>
+Acked-by: Pierre-Eric Pelloux-Prayer <pierre-eric.pelloux-prayer@amd.com>
+Reviewed-by: Yiwei Zhang <zzyiwei@gmail.com>
+Tested-by: Yiwei Zhang <zzyiwei@gmail.com>
+Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+Message-ID: <20260303151422.977399-10-dmitry.osipenko@collabora.com>
+Message-ID: <20260304165043.1437519-12-alex.bennee@linaro.org>
+Signed-off-by: Alex Bennée <alex.bennee@linaro.org>
+---
+ hw/display/virtio-gpu-gl.c     |   5 ++
+ hw/display/virtio-gpu-virgl.c  | 127 +++++++++++++++++++++++++++++++++
+ include/hw/virtio/virtio-gpu.h |  11 +++
+ meson.build                    |   2 +
+ 4 files changed, 145 insertions(+)
+
+diff --git a/hw/display/virtio-gpu-gl.c b/hw/display/virtio-gpu-gl.c
+index 4353592b22..9f104afa64 100644
+--- a/hw/display/virtio-gpu-gl.c
++++ b/hw/display/virtio-gpu-gl.c
+@@ -172,6 +172,11 @@ static void virtio_gpu_gl_device_unrealize(DeviceState *qdev)
+     if (gl->renderer_state >= RS_INITED) {
+ #if VIRGL_VERSION_MAJOR >= 1
+         qemu_bh_delete(gl->cmdq_resume_bh);
++
++        if (gl->async_fence_bh) {
++            virtio_gpu_virgl_reset_async_fences(g);
++            qemu_bh_delete(gl->async_fence_bh);
++        }
+ #endif
+         if (virtio_gpu_stats_enabled(g->parent_obj.conf)) {
+             timer_free(gl->print_stats);
+diff --git a/hw/display/virtio-gpu-virgl.c b/hw/display/virtio-gpu-virgl.c
+index 8d9d5e5277..4019a7346f 100644
+--- a/hw/display/virtio-gpu-virgl.c
++++ b/hw/display/virtio-gpu-virgl.c
+@@ -27,6 +27,23 @@
+ 
+ #define NATIVE_HANDLE_SUPPORT_VERSION (1)
+ 
++/*
++ * VIRGL_CHECK_VERSION available since libvirglrenderer 1.0.1 and was fixed
++ * in 1.1.0. Undefine bugged version of the macro and provide our own.
++ */
++#if defined(VIRGL_CHECK_VERSION) && \
++    VIRGL_VERSION_MAJOR == 1 && VIRGL_VERSION_MINOR < 1
++#undef VIRGL_CHECK_VERSION
++#endif
++
++#ifndef VIRGL_CHECK_VERSION
++#define VIRGL_CHECK_VERSION(major, minor, micro) \
++    (VIRGL_VERSION_MAJOR > (major) || \
++     VIRGL_VERSION_MAJOR == (major) && VIRGL_VERSION_MINOR > (minor) || \
++     VIRGL_VERSION_MAJOR == (major) && VIRGL_VERSION_MINOR == (minor) && \
++     VIRGL_VERSION_MICRO >= (micro))
++#endif
++
+ struct virtio_gpu_virgl_resource {
+     struct virtio_gpu_simple_resource base;
+     MemoryRegion *mr;
+@@ -1248,6 +1265,103 @@ static void virgl_write_context_fence(void *opaque, uint32_t ctx_id,
+ }
+ #endif
+ 
++void virtio_gpu_virgl_reset_async_fences(VirtIOGPU *g)
++{
++    struct virtio_gpu_virgl_context_fence *f;
++    VirtIOGPUGL *gl = VIRTIO_GPU_GL(g);
++
++    while (!QSLIST_EMPTY(&gl->async_fenceq)) {
++        f = QSLIST_FIRST(&gl->async_fenceq);
++
++        QSLIST_REMOVE_HEAD(&gl->async_fenceq, next);
++
++        g_free(f);
++    }
++}
++
++#if VIRGL_CHECK_VERSION(1, 1, 2)
++static void virtio_gpu_virgl_async_fence_bh(void *opaque)
++{
++    QSLIST_HEAD(, virtio_gpu_virgl_context_fence) async_fenceq;
++    struct virtio_gpu_ctrl_command *cmd, *tmp;
++    struct virtio_gpu_virgl_context_fence *f;
++    VirtIOGPU *g = opaque;
++    VirtIOGPUGL *gl = VIRTIO_GPU_GL(g);
++
++    if (gl->renderer_state != RS_INITED) {
++        return;
++    }
++
++    QSLIST_MOVE_ATOMIC(&async_fenceq, &gl->async_fenceq);
++
++    while (!QSLIST_EMPTY(&async_fenceq)) {
++        f = QSLIST_FIRST(&async_fenceq);
++
++        QSLIST_REMOVE_HEAD(&async_fenceq, next);
++
++        QTAILQ_FOREACH_SAFE(cmd, &g->fenceq, next, tmp) {
++            /*
++             * the guest can end up emitting fences out of order
++             * so we should check all fenced cmds not just the first one.
++             */
++            if (cmd->cmd_hdr.fence_id > f->fence_id) {
++                continue;
++            }
++            if (cmd->cmd_hdr.flags & VIRTIO_GPU_FLAG_INFO_RING_IDX) {
++                if (cmd->cmd_hdr.ring_idx != f->ring_idx) {
++                    continue;
++                }
++                if (cmd->cmd_hdr.ctx_id != f->ctx_id) {
++                    continue;
++                }
++            }
++            virtio_gpu_ctrl_response_nodata(g, cmd, VIRTIO_GPU_RESP_OK_NODATA);
++            QTAILQ_REMOVE(&g->fenceq, cmd, next);
++            g_free(cmd);
++        }
++
++        trace_virtio_gpu_fence_resp(f->fence_id);
++        g_free(f);
++        g->inflight--;
++        if (virtio_gpu_stats_enabled(g->parent_obj.conf)) {
++            trace_virtio_gpu_dec_inflight_fences(g->inflight);
++        }
++    }
++}
++
++static void
++virtio_gpu_virgl_push_async_fence(VirtIOGPU *g, uint32_t ctx_id,
++                                  uint32_t ring_idx, uint64_t fence_id)
++{
++    struct virtio_gpu_virgl_context_fence *f;
++    VirtIOGPUGL *gl = VIRTIO_GPU_GL(g);
++
++    f = g_new(struct virtio_gpu_virgl_context_fence, 1);
++    f->ctx_id = ctx_id;
++    f->ring_idx = ring_idx;
++    f->fence_id = fence_id;
++
++    QSLIST_INSERT_HEAD_ATOMIC(&gl->async_fenceq, f, next);
++
++    qemu_bh_schedule(gl->async_fence_bh);
++}
++
++static void virgl_write_async_fence(void *opaque, uint32_t fence)
++{
++    VirtIOGPU *g = opaque;
++
++    virtio_gpu_virgl_push_async_fence(g, 0, UINT32_MAX, fence);
++}
++
++static void virgl_write_async_context_fence(void *opaque, uint32_t ctx_id,
++                                            uint32_t ring_idx, uint64_t fence)
++{
++    VirtIOGPU *g = opaque;
++
++    virtio_gpu_virgl_push_async_fence(g, ctx_id, ring_idx, fence);
++}
++#endif
++
+ static virgl_renderer_gl_context
+ virgl_create_context(void *opaque, int scanout_idx,
+                      struct virgl_renderer_gl_ctx_param *params)
+@@ -1357,6 +1471,8 @@ void virtio_gpu_virgl_reset_scanout(VirtIOGPU *g)
+ void virtio_gpu_virgl_reset(VirtIOGPU *g)
+ {
+     virgl_renderer_reset();
++
++    virtio_gpu_virgl_reset_async_fences(g);
+ }
+ 
+ int virtio_gpu_virgl_init(VirtIOGPU *g)
+@@ -1369,6 +1485,12 @@ int virtio_gpu_virgl_init(VirtIOGPU *g)
+     if (qemu_egl_display) {
+         virtio_gpu_3d_cbs.version = 4;
+         virtio_gpu_3d_cbs.get_egl_display = virgl_get_egl_display;
++#if VIRGL_CHECK_VERSION(1, 1, 2)
++        virtio_gpu_3d_cbs.write_fence         = virgl_write_async_fence;
++        virtio_gpu_3d_cbs.write_context_fence = virgl_write_async_context_fence;
++        flags |= VIRGL_RENDERER_ASYNC_FENCE_CB;
++        flags |= VIRGL_RENDERER_THREAD_SYNC;
++#endif
+     }
+ #endif
+     if (qemu_egl_angle_native_device) {
+@@ -1411,6 +1533,11 @@ int virtio_gpu_virgl_init(VirtIOGPU *g)
+     gl->cmdq_resume_bh = virtio_bh_io_new_guarded(DEVICE(g),
+                                                   virtio_gpu_virgl_resume_cmdq_bh,
+                                                   g);
++#if VIRGL_CHECK_VERSION(1, 1, 2)
++    gl->async_fence_bh = virtio_bh_io_new_guarded(DEVICE(g),
++                                                  virtio_gpu_virgl_async_fence_bh,
++                                                  g);
++#endif
+ #endif
+ 
+     return 0;
+diff --git a/include/hw/virtio/virtio-gpu.h b/include/hw/virtio/virtio-gpu.h
+index c26bc2c13b..b74c28d325 100644
+--- a/include/hw/virtio/virtio-gpu.h
++++ b/include/hw/virtio/virtio-gpu.h
+@@ -245,6 +245,13 @@ struct VirtIOGPUClass {
+                              Error **errp);
+ };
+ 
++struct virtio_gpu_virgl_context_fence {
++    uint32_t ctx_id;
++    uint32_t ring_idx;
++    uint64_t fence_id;
++    QSLIST_ENTRY(virtio_gpu_virgl_context_fence) next;
++};
++
+ /* VirtIOGPUGL renderer states */
+ typedef enum {
+     RS_START,       /* starting state */
+@@ -262,6 +269,9 @@ struct VirtIOGPUGL {
+     QEMUTimer *print_stats;
+ 
+     QEMUBH *cmdq_resume_bh;
++
++    QEMUBH *async_fence_bh;
++    QSLIST_HEAD(, virtio_gpu_virgl_context_fence) async_fenceq;
+ };
+ 
+ struct VhostUserGPU {
+@@ -405,5 +415,6 @@ void virtio_gpu_virgl_resource_destroy(VirtIOGPU *g,
+                                        Error **errp);
+ int virtio_gpu_virgl_init(VirtIOGPU *g);
+ GArray *virtio_gpu_virgl_get_capsets(VirtIOGPU *g);
++void virtio_gpu_virgl_reset_async_fences(VirtIOGPU *g);
+ 
+ #endif
+diff --git a/meson.build b/meson.build
+index 5c68000deb..988baecc43 100644
+--- a/meson.build
++++ b/meson.build
+@@ -2600,6 +2600,8 @@ if virgl.found()
+                         cc.has_header_symbol('virglrenderer.h',
+                                             'VIRGL_RENDERER_NEPTUNE',
+                                             dependencies: virgl))
++  config_host_data.set('VIRGL_VERSION_MINOR', virgl.version().split('.')[1])
++  config_host_data.set('VIRGL_VERSION_MICRO', virgl.version().split('.')[2])
+ endif
+ config_host_data.set('CONFIG_VIRTFS', have_virtfs)
+ config_host_data.set('CONFIG_VTE', vte.found())
+-- 
+2.41.0
+
+From 3824e0d9968ae9cc4f7809f385615541ed176120 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Thu, 13 Aug 2026 22:01:26 -0700
+Subject: [PATCH 2/6] virtio-gpu: enable async fencing on the render-server
+ path without EGL
+
+Upstream gates async fencing behind qemu_egl_display because vrend's
+async path needs EGL.  The render-server proxy does not: it retires
+fences on its own sync thread, fed by an eventfd/pipe the render worker
+writes per retire.  On a macOS Cocoa/Metal build qemu_egl_display is
+NULL, so the feature was inert and the only retire discovery for
+venus/neptune fences was the 1 ms fence_poll timer.  Install the async
+callbacks and pass ASYNC_FENCE_CB | THREAD_SYNC whenever the render
+server is in use (virglrenderer scopes the flags away from vrend where
+it lacks eventfd support).
+
+The async BH now delegates to virgl_write_fence() /
+virgl_write_context_fence() instead of carrying its own matching loop:
+upstream's loop let a context fence complete a global fenced cmd with a
+numerically smaller id, but global and per-context fence ids are
+separate counters here, and the strict handlers also keep per-cmd
+inflight accounting.
+
+fence_poll stays as a watchdog: while any global (non-ring) fence is
+pending it keeps the 1 ms rate -- vrend fences still retire only from
+virgl_renderer_poll() -- and relaxes to 100 ms when only ring fences
+(async-delivered) remain.
+
+Assisted-by: Claude:claude-fable-5
+---
+ hw/display/virtio-gpu-virgl.c  | 100 ++++++++++++++++++++++-----------
+ include/hw/virtio/virtio-gpu.h |   2 +
+ 2 files changed, 68 insertions(+), 34 deletions(-)
+
+diff --git a/hw/display/virtio-gpu-virgl.c b/hw/display/virtio-gpu-virgl.c
+index 4019a7346f..ea3c2a1245 100644
+--- a/hw/display/virtio-gpu-virgl.c
++++ b/hw/display/virtio-gpu-virgl.c
+@@ -1283,7 +1283,6 @@ void virtio_gpu_virgl_reset_async_fences(VirtIOGPU *g)
+ static void virtio_gpu_virgl_async_fence_bh(void *opaque)
+ {
+     QSLIST_HEAD(, virtio_gpu_virgl_context_fence) async_fenceq;
+-    struct virtio_gpu_ctrl_command *cmd, *tmp;
+     struct virtio_gpu_virgl_context_fence *f;
+     VirtIOGPU *g = opaque;
+     VirtIOGPUGL *gl = VIRTIO_GPU_GL(g);
+@@ -1299,33 +1298,23 @@ static void virtio_gpu_virgl_async_fence_bh(void *opaque)
+ 
+         QSLIST_REMOVE_HEAD(&async_fenceq, next);
+ 
+-        QTAILQ_FOREACH_SAFE(cmd, &g->fenceq, next, tmp) {
+-            /*
+-             * the guest can end up emitting fences out of order
+-             * so we should check all fenced cmds not just the first one.
+-             */
+-            if (cmd->cmd_hdr.fence_id > f->fence_id) {
+-                continue;
+-            }
+-            if (cmd->cmd_hdr.flags & VIRTIO_GPU_FLAG_INFO_RING_IDX) {
+-                if (cmd->cmd_hdr.ring_idx != f->ring_idx) {
+-                    continue;
+-                }
+-                if (cmd->cmd_hdr.ctx_id != f->ctx_id) {
+-                    continue;
+-                }
+-            }
+-            virtio_gpu_ctrl_response_nodata(g, cmd, VIRTIO_GPU_RESP_OK_NODATA);
+-            QTAILQ_REMOVE(&g->fenceq, cmd, next);
+-            g_free(cmd);
++        /*
++         * Delegate to the same completion logic the synchronous callbacks
++         * use: virgl_write_fence() completes only global (non-ring) fenced
++         * cmds and virgl_write_context_fence() only ring fences matching
++         * ctx/ring, each with per-cmd inflight accounting.  Upstream's BH
++         * matched more loosely (a context fence could complete a global
++         * fenced cmd with a numerically smaller id from an unrelated id
++         * space); global and per-context fence ids are separate counters
++         * here, so keep the strict matching.
++         */
++        if (f->ring_idx == UINT32_MAX) {
++            virgl_write_fence(g, (uint32_t)f->fence_id);
++        } else {
++            virgl_write_context_fence(g, f->ctx_id, f->ring_idx, f->fence_id);
+         }
+ 
+-        trace_virtio_gpu_fence_resp(f->fence_id);
+         g_free(f);
+-        g->inflight--;
+-        if (virtio_gpu_stats_enabled(g->parent_obj.conf)) {
+-            trace_virtio_gpu_dec_inflight_fences(g->inflight);
+-        }
+     }
+ }
+ 
+@@ -1440,16 +1429,38 @@ static void virtio_gpu_fence_poll(void *opaque)
+     virtio_gpu_process_cmdq(g);
+     if (!QTAILQ_EMPTY(&g->cmdq) || !QTAILQ_EMPTY(&g->fenceq)) {
+         /*
+-         * On the render-server path virgl_renderer_poll() is the only place a
+-         * retired renderer fence is discovered: virgl_renderer_get_poll_fd()
+-         * is vrend-only and VIRGL_RENDERER_ASYNC_FENCE_CB is not enabled, so
+-         * nothing wakes QEMU when a fence signals.  This period is therefore a
+-         * hard floor under every guest operation that blocks on a fence, so
+-         * keep it at the millisecond-timer granularity.  The timer only
+-         * re-arms while cmdq/fenceq are non-empty, so it costs nothing at
+-         * idle.
++         * Without async fencing, virgl_renderer_poll() is the only place a
++         * retired renderer fence is discovered, so this period is a hard
++         * floor under every guest operation that blocks on a fence -- keep
++         * it at the millisecond-timer granularity.
++         *
++         * With async fencing, ring (venus/neptune context) fences retire
++         * through the proxy sync thread and async_fence_bh; the poll's job
++         * shrinks to discovering vrend/global fences, which still retire
++         * only from virgl_renderer_poll() (vrend's async path is EGL-only
++         * and disabled here).  While only ring fences are pending, relax to
++         * a slow tick -- it still runs process_cmdq and catches any global
++         * fence that appears; virgl_renderer_poll() skips proxy contexts
++         * under ASYNC_FENCE_CB, so it cannot rescue a missed ring-fence
++         * wake (the sync thread's poll on the worker socket covers worker
++         * death instead).  Any pending global fence keeps the 1 ms rate.
+          */
+-        timer_mod(gl->fence_poll, qemu_clock_get_ms(QEMU_CLOCK_VIRTUAL) + 1);
++        uint64_t period_ms = 1;
++        if (gl->async_fence_enabled) {
++            struct virtio_gpu_ctrl_command *cmd;
++            bool poll_needed = !QTAILQ_EMPTY(&g->cmdq);
++            QTAILQ_FOREACH(cmd, &g->fenceq, next) {
++                if (!(cmd->cmd_hdr.flags & VIRTIO_GPU_FLAG_INFO_RING_IDX)) {
++                    poll_needed = true;
++                    break;
++                }
++            }
++            if (!poll_needed) {
++                period_ms = 100;
++            }
++        }
++        timer_mod(gl->fence_poll,
++                  qemu_clock_get_ms(QEMU_CLOCK_VIRTUAL) + period_ms);
+     }
+ }
+ 
+@@ -1513,6 +1524,27 @@ int virtio_gpu_virgl_init(VirtIOGPU *g)
+     }
+ #endif
+ 
++#if VIRGL_CHECK_VERSION(1, 1, 2)
++    if (flags & VIRGL_RENDERER_RENDER_SERVER) {
++        /*
++         * Async fencing needs no EGL on the render-server path: the proxy
++         * retires fences on its own sync thread, fed by an eventfd/pipe the
++         * render worker writes per retire.  Upstream's qemu_egl_display gate
++         * above exists for vrend, whose async path does need EGL.  Without
++         * this, the only retire discovery for venus/neptune fences is the
++         * fence_poll timer below -- a 1 ms floor under every guest fence
++         * wait.
++         */
++        virtio_gpu_3d_cbs.write_fence         = virgl_write_async_fence;
++        virtio_gpu_3d_cbs.write_context_fence = virgl_write_async_context_fence;
++        flags |= VIRGL_RENDERER_ASYNC_FENCE_CB;
++        flags |= VIRGL_RENDERER_THREAD_SYNC;
++        gl->async_fence_enabled = true;
++        fprintf(stderr, "virtio-gpu: async fence delivery enabled "
++                "(render-server proxy)\n");
++    }
++#endif
++
+     ret = virgl_renderer_init(g, flags, &virtio_gpu_3d_cbs);
+     if (ret != 0) {
+         error_report("virgl could not be initialized: %d", ret);
+diff --git a/include/hw/virtio/virtio-gpu.h b/include/hw/virtio/virtio-gpu.h
+index b74c28d325..9b026067a9 100644
+--- a/include/hw/virtio/virtio-gpu.h
++++ b/include/hw/virtio/virtio-gpu.h
+@@ -272,6 +272,8 @@ struct VirtIOGPUGL {
+ 
+     QEMUBH *async_fence_bh;
+     QSLIST_HEAD(, virtio_gpu_virgl_context_fence) async_fenceq;
++    /* fences retire via async_fence_bh; fence_poll is only a watchdog */
++    bool async_fence_enabled;
+ };
+ 
+ struct VhostUserGPU {
+-- 
+2.41.0
+
+From 3bdba2ae2ed1158b9fc9822562d86b8e287d8490 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Sun, 16 Aug 2026 00:48:04 -0700
+Subject: [PATCH 3/6] virtio-gpu: don't stall the control queue behind a blob
+ unmap
+
+Unmapping a hostmem blob detaches its MemoryRegion, and the virgl mapping
+has to survive until that MR is fully unreferenced (a flat view may still
+be under an RCU reader), which takes ~100 ms.  Blocking all command
+processing for that grace period, as before, serialized a burst of unmaps
+into multi-second round trips for every other command: a D3D12 guest
+tearing down hundreds of staging heaps pushed unrelated packets past
+dxgkrnl's timeout, and the app died with DXGI_ERROR_DEVICE_RESET.
+
+Keep the queue flowing instead.  UNMAP_BLOB is answered as soon as the
+subregion is gone -- the guest cannot reach the pages any more -- and the
+virgl unmap runs from the resume BH once the region finalizes.  Only work
+that needs that unmap to have happened waits for it, and per resource
+rather than per queue: an UNREF of a still-mapped resource is completed
+(virgl unref + response) from the same BH, leaving the queue meanwhile
+(cmd->deferred), and a re-MAP of a resource whose previous mapping is
+still going away is the one case that still suspends the queue.
+
+Assisted-by: Claude:claude-fable-5
+---
+ hw/display/virtio-gpu-virgl.c  | 243 +++++++++++++++++++++++++--------
+ hw/display/virtio-gpu.c        |  11 ++
+ include/hw/virtio/virtio-gpu.h |  11 ++
+ 3 files changed, 210 insertions(+), 55 deletions(-)
+
+diff --git a/hw/display/virtio-gpu-virgl.c b/hw/display/virtio-gpu-virgl.c
+index ea3c2a1245..2592fb4e77 100644
+--- a/hw/display/virtio-gpu-virgl.c
++++ b/hw/display/virtio-gpu-virgl.c
+@@ -47,6 +47,12 @@
+ struct virtio_gpu_virgl_resource {
+     struct virtio_gpu_simple_resource base;
+     MemoryRegion *mr;
++    /* RESOURCE_UNREF that arrived while the blob mapping was still being
++     * torn down; completed (virgl unref + response) once the MR finalizes. */
++    struct virtio_gpu_ctrl_command *unref_cmd;
++    /* A MAP_BLOB is suspended at the cmdq head (renderer_blocked held)
++     * until the in-flight unmap of this resource finalizes. */
++    bool map_blocked;
+ };
+ 
+ static struct virtio_gpu_virgl_resource *
+@@ -75,7 +81,11 @@ struct virtio_gpu_virgl_hostmem_region {
+     Object parent_obj;
+     MemoryRegion mr;
+     struct VirtIOGPU *g;
++    struct virtio_gpu_virgl_resource *res;
++    /* Subregion detached; the MR is being finalized asynchronously. */
++    bool unmapping;
+     bool finish_unmapping;
++    QTAILQ_ENTRY(virtio_gpu_virgl_hostmem_region) done_next;
+ };
+ 
+ #define TYPE_VIRTIO_GPU_VIRGL_HOSTMEM_REGION "virtio-gpu-virgl-hostmem-region"
+@@ -89,23 +99,86 @@ to_hostmem_region(MemoryRegion *mr)
+     return container_of(mr, struct virtio_gpu_virgl_hostmem_region, mr);
+ }
+ 
++/*
++ * Finish the unmap of a hostmem region whose MemoryRegion has finalized:
++ * drop the virgl mapping, and complete a RESOURCE_UNREF that was deferred
++ * behind it.  Main-loop only (virglrenderer runs on the GL thread).
++ */
++static void
++virtio_gpu_virgl_finish_unmap(VirtIOGPU *g,
++                              struct virtio_gpu_virgl_hostmem_region *vmr)
++{
++    struct virtio_gpu_virgl_resource *res = vmr->res;
++    VirtIOGPUBase *b = VIRTIO_GPU_BASE(g);
++    VirtIOGPUGL *gl = VIRTIO_GPU_GL(g);
++    struct virtio_gpu_ctrl_command *cmd;
++    struct iovec *res_iovs = NULL;
++    int num_iovs = 0;
++    int ret;
++
++    QTAILQ_REMOVE(&gl->unmap_done_list, vmr, done_next);
++    res->mr = NULL;
++    g_free(vmr);
++
++    ret = virgl_renderer_resource_unmap(res->base.resource_id);
++    if (ret) {
++        qemu_log_mask(LOG_GUEST_ERROR,
++                      "%s: failed to unmap virgl resource: %s\n",
++                      __func__, strerror(-ret));
++    }
++
++    if (res->map_blocked) {
++        res->map_blocked = false;
++        b->renderer_blocked--;
++    }
++
++    cmd = res->unref_cmd;
++    if (!cmd) {
++        return;
++    }
++    res->unref_cmd = NULL;
++
++    virgl_renderer_resource_detach_iov(res->base.resource_id,
++                                       &res_iovs, &num_iovs);
++    if (res_iovs != NULL && num_iovs != 0) {
++        virtio_gpu_cleanup_mapping_iov(g, res_iovs, num_iovs);
++    }
++    virgl_renderer_resource_unref(res->base.resource_id);
++    QTAILQ_REMOVE(&g->reslist, &res->base, next);
++    g_free(res);
++
++    virtio_gpu_ctrl_response_nodata(g, cmd, VIRTIO_GPU_RESP_OK_NODATA);
++    g_free(cmd);
++}
++
+ static void virtio_gpu_virgl_resume_cmdq_bh(void *opaque)
+ {
+     VirtIOGPU *g = opaque;
++    VirtIOGPUGL *gl = VIRTIO_GPU_GL(g);
++    struct virtio_gpu_virgl_hostmem_region *vmr;
++
++    while ((vmr = QTAILQ_FIRST(&gl->unmap_done_list)) != NULL) {
++        virtio_gpu_virgl_finish_unmap(g, vmr);
++    }
+ 
+     virtio_gpu_process_cmdq(g);
+ }
+ 
+ /*
+  * MR could outlive the resource if MR's reference is held outside of
+- * virtio-gpu. In order to prevent unmapping resource while MR is alive,
+- * and thus, making the data pointer invalid, we will block virtio-gpu
+- * command processing until MR is fully unreferenced and freed.
++ * virtio-gpu (a flat view still under an RCU reader), so the virgl mapping
++ * stays alive until the MR is fully unreferenced and freed; only then is
++ * the resource unmapped.  That grace period is on the order of 100 ms, and
++ * blocking the whole control queue for it (as upstream does) turns a burst
++ * of unmaps into multi-second round trips for every other command -- past
++ * a WDDM guest's GPU-scheduler timeout.  The queue therefore keeps flowing:
++ * UNMAP_BLOB is answered once the subregion is gone (the guest cannot reach
++ * the pages any more), and only work that needs the virgl unmap to have
++ * happened -- an UNREF of the resource, a re-MAP -- waits for it.
+  */
+ static void virtio_gpu_virgl_hostmem_region_finalize(Object *obj)
+ {
+     struct virtio_gpu_virgl_hostmem_region *vmr = VIRTIO_GPU_VIRGL_HOSTMEM_REGION(obj);
+-    VirtIOGPUBase *b;
+     VirtIOGPUGL *gl;
+ 
+     if (!vmr->g) {
+@@ -114,15 +187,13 @@ static void virtio_gpu_virgl_hostmem_region_finalize(Object *obj)
+ 
+     vmr->finish_unmapping = true;
+ 
+-    b = VIRTIO_GPU_BASE(vmr->g);
+-    b->renderer_blocked--;
+-
+     /*
+      * memory_region_unref() is executed from RCU thread context, while
+      * virglrenderer works only on the main-loop thread that's holding GL
+      * context.
+      */
+     gl = VIRTIO_GPU_GL(vmr->g);
++    QTAILQ_INSERT_TAIL(&gl->unmap_done_list, vmr, done_next);
+     qemu_bh_schedule(gl->cmdq_resume_bh);
+ }
+ 
+@@ -170,6 +241,7 @@ virtio_gpu_virgl_map_resource_blob(VirtIOGPU *g,
+     object_initialize_child(OBJECT(g), name, vmr,
+                             TYPE_VIRTIO_GPU_VIRGL_HOSTMEM_REGION);
+     vmr->g = g;
++    vmr->res = res;
+ 
+     mr = &vmr->mr;
+     memory_region_init_ram_ptr(mr, OBJECT(vmr), "mr", size, data);
+@@ -181,55 +253,47 @@ virtio_gpu_virgl_map_resource_blob(VirtIOGPU *g,
+     return 0;
+ }
+ 
+-static int
++/*
++ * Begin (or, once the MR has finalized, finish) unmapping a blob:
++ *
++ * 1. Detach the subregion: the guest loses access immediately, and the
++ *    MR goes away asynchronously once its last (RCU) reference drops.
++ * 2. virtio_gpu_virgl_hostmem_region_finalize() queues the region for the
++ *    main loop, which drops the virgl mapping and completes any UNREF
++ *    deferred behind it (virtio_gpu_virgl_finish_unmap).
++ *
++ * Returns true while the unmap is still in flight (res->mr stays set until
++ * it completes), false when the resource is unmapped on return.
++ */
++static bool
+ virtio_gpu_virgl_unmap_resource_blob(VirtIOGPU *g,
+-                                     struct virtio_gpu_virgl_resource *res,
+-                                     bool *cmd_suspended)
++                                     struct virtio_gpu_virgl_resource *res)
+ {
+     struct virtio_gpu_virgl_hostmem_region *vmr;
+     VirtIOGPUBase *b = VIRTIO_GPU_BASE(g);
+     MemoryRegion *mr = res->mr;
+-    int ret;
+ 
+     if (!mr) {
+-        return 0;
++        return false;
+     }
+ 
+     vmr = to_hostmem_region(res->mr);
+ 
+-    /*
+-     * Perform async unmapping in 3 steps:
+-     *
+-     * 1. Begin async unmapping with memory_region_del_subregion()
+-     *    and suspend/block cmd processing.
+-     * 2. Wait for res->mr to be freed and cmd processing resumed
+-     *    asynchronously by virtio_gpu_virgl_hostmem_region_finalize().
+-     * 3. Finish the unmapping with final virgl_renderer_resource_unmap().
+-     */
+     if (vmr->finish_unmapping) {
+-        res->mr = NULL;
+-        g_free(vmr);
+-
+-        ret = virgl_renderer_resource_unmap(res->base.resource_id);
+-        if (ret) {
+-            qemu_log_mask(LOG_GUEST_ERROR,
+-                          "%s: failed to unmap virgl resource: %s\n",
+-                          __func__, strerror(-ret));
+-            return ret;
+-        }
+-    } else {
+-        *cmd_suspended = true;
+-
+-        /* render will be unblocked once MR is freed */
+-        b->renderer_blocked++;
++        /* Finalized, but the completion BH has not run yet: finish here. */
++        virtio_gpu_virgl_finish_unmap(g, vmr);
++        return false;
++    }
+ 
++    if (!vmr->unmapping) {
++        vmr->unmapping = true;
+         /* memory region owns self res->mr object and frees it by itself */
+         memory_region_set_enabled(mr, false);
+         memory_region_del_subregion(&b->hostmem, mr);
+         object_unparent(OBJECT(vmr));
+     }
+ 
+-    return 0;
++    return true;
+ }
+ 
+ static void
+@@ -238,24 +302,42 @@ virtio_gpu_virgl_destroy_hostmem_region(VirtIOGPU *g,
+ {
+     struct virtio_gpu_virgl_hostmem_region *vmr = to_hostmem_region(res->mr);
+     VirtIOGPUBase *b = VIRTIO_GPU_BASE(g);
++    VirtIOGPUGL *gl = VIRTIO_GPU_GL(g);
++
++    /*
++     * Reset drops queued commands without a response (see the cmdq flush in
++     * virtio_gpu_reset); a deferred UNREF is no different.  The resource is
++     * being destroyed by the caller either way.
++     */
++    if (res->unref_cmd) {
++        g_free(res->unref_cmd);
++        res->unref_cmd = NULL;
++    }
++    if (res->map_blocked) {
++        res->map_blocked = false;
++        b->renderer_blocked--;
++    }
+ 
+     /*
+      * vmr is not QOM-owned, so object_finalize() does not free it; the unmap
+-     * step 3 normally does. Reset can run here at any stage of an in-flight
+-     * unmap, where step 3 may not run. This and the finalizer both hold the
+-     * BQL, so free vmr or hand it to object_finalize() per the stage.
++     * completion normally does. Reset can run here at any stage of an
++     * in-flight unmap, where the completion may not run. This and the
++     * finalizer both hold the BQL, so free vmr or hand it to
++     * object_finalize() per the stage.
+      */
+     if (vmr->finish_unmapping) {
+-        /* Finalizer ran and balanced renderer_blocked; just free vmr. */
++        /* Finalizer ran; the completion BH has not: just free vmr. */
++        QTAILQ_REMOVE(&gl->unmap_done_list, vmr, done_next);
+         res->mr = NULL;
+         g_free(vmr);
+         virgl_renderer_resource_unmap(res->base.resource_id);
+         return;
+     }
+ 
+-    if (res->mr->container != &b->hostmem) {
++    if (vmr->unmapping) {
+         /* Async unmap detached the subregion; let the finalizer free vmr. */
+         OBJECT(vmr)->free = g_free;
++        vmr->g = NULL;
+         res->mr = NULL;
+         return;
+     }
+@@ -418,11 +500,21 @@ static void virgl_cmd_resource_unref(VirtIOGPU *g,
+     }
+ 
+ #if VIRGL_VERSION_MAJOR >= 1
+-    if (virtio_gpu_virgl_unmap_resource_blob(g, res, cmd_suspended)) {
+-        cmd->error = VIRTIO_GPU_RESP_ERR_UNSPEC;
++    if (res->unref_cmd) {
++        qemu_log_mask(LOG_GUEST_ERROR, "%s: resource %d already being unref'd\n",
++                      __func__, unref.resource_id);
++        cmd->error = VIRTIO_GPU_RESP_ERR_INVALID_RESOURCE_ID;
+         return;
+     }
+-    if (*cmd_suspended) {
++    if (virtio_gpu_virgl_unmap_resource_blob(g, res)) {
++        /*
++         * The mapping is still being torn down: the virgl unref must wait
++         * for it, and so must this command's completion -- but not the
++         * commands behind it.  virtio_gpu_virgl_finish_unmap() completes
++         * the unref and answers the command.
++         */
++        res->unref_cmd = cmd;
++        cmd->deferred = true;
+         return;
+     }
+ #endif
+@@ -890,7 +982,8 @@ static void virgl_cmd_resource_create_blob(VirtIOGPU *g,
+ }
+ 
+ static void virgl_cmd_resource_map_blob(VirtIOGPU *g,
+-                                        struct virtio_gpu_ctrl_command *cmd)
++                                        struct virtio_gpu_ctrl_command *cmd,
++                                        bool *cmd_suspended)
+ {
+     struct virtio_gpu_resource_map_blob mblob;
+     struct virtio_gpu_virgl_resource *res;
+@@ -908,6 +1001,38 @@ static void virgl_cmd_resource_map_blob(VirtIOGPU *g,
+         return;
+     }
+ 
++    if (res->unref_cmd) {
++        qemu_log_mask(LOG_GUEST_ERROR, "%s: resource %d is being unref'd\n",
++                      __func__, mblob.resource_id);
++        cmd->error = VIRTIO_GPU_RESP_ERR_INVALID_RESOURCE_ID;
++        return;
++    }
++
++    if (res->mr) {
++        struct virtio_gpu_virgl_hostmem_region *vmr = to_hostmem_region(res->mr);
++
++        if (!vmr->unmapping) {
++            qemu_log_mask(LOG_GUEST_ERROR, "%s: resource %d already mapped\n",
++                          __func__, mblob.resource_id);
++            cmd->error = VIRTIO_GPU_RESP_ERR_INVALID_PARAMETER;
++            return;
++        }
++        if (virtio_gpu_virgl_unmap_resource_blob(g, res)) {
++            /*
++             * Re-mapping a blob whose previous mapping is still being torn
++             * down: the virgl map must follow the virgl unmap, so wait it
++             * out at the cmdq head (rare; the guest normally has the UNREF
++             * or a fresh resource by now).
++             */
++            if (!res->map_blocked) {
++                res->map_blocked = true;
++                VIRTIO_GPU_BASE(g)->renderer_blocked++;
++            }
++            *cmd_suspended = true;
++            return;
++        }
++    }
++
+     ret = virtio_gpu_virgl_map_resource_blob(g, res, mblob.offset);
+     if (ret) {
+         cmd->error = VIRTIO_GPU_RESP_ERR_UNSPEC;
+@@ -921,12 +1046,10 @@ static void virgl_cmd_resource_map_blob(VirtIOGPU *g,
+ }
+ 
+ static void virgl_cmd_resource_unmap_blob(VirtIOGPU *g,
+-                                          struct virtio_gpu_ctrl_command *cmd,
+-                                          bool *cmd_suspended)
++                                          struct virtio_gpu_ctrl_command *cmd)
+ {
+     struct virtio_gpu_resource_unmap_blob ublob;
+     struct virtio_gpu_virgl_resource *res;
+-    int ret;
+ 
+     VIRTIO_GPU_FILL_CMD(ublob);
+     virtio_gpu_unmap_blob_bswap(&ublob);
+@@ -939,11 +1062,20 @@ static void virgl_cmd_resource_unmap_blob(VirtIOGPU *g,
+         return;
+     }
+ 
+-    ret = virtio_gpu_virgl_unmap_resource_blob(g, res, cmd_suspended);
+-    if (ret) {
+-        cmd->error = VIRTIO_GPU_RESP_ERR_UNSPEC;
++    if (res->unref_cmd) {
++        qemu_log_mask(LOG_GUEST_ERROR, "%s: resource %d is being unref'd\n",
++                      __func__, ublob.resource_id);
++        cmd->error = VIRTIO_GPU_RESP_ERR_INVALID_RESOURCE_ID;
+         return;
+     }
++
++    /*
++     * The subregion is gone before this returns, so the guest cannot reach
++     * the pages any more: answer now.  Dropping the virgl mapping waits for
++     * the MR to finalize but nothing the guest can do depends on it, except
++     * an UNREF or a re-MAP of this resource, which each wait on their own.
++     */
++    virtio_gpu_virgl_unmap_resource_blob(g, res);
+ }
+ 
+ #if defined(HAVE_VIRGL_RENDERER_NATIVE_SCANOUT)
+@@ -1153,10 +1285,10 @@ void virtio_gpu_virgl_process_cmd(VirtIOGPU *g,
+         virgl_cmd_resource_create_blob(g, cmd);
+         break;
+     case VIRTIO_GPU_CMD_RESOURCE_MAP_BLOB:
+-        virgl_cmd_resource_map_blob(g, cmd);
++        virgl_cmd_resource_map_blob(g, cmd, &cmd_suspended);
+         break;
+     case VIRTIO_GPU_CMD_RESOURCE_UNMAP_BLOB:
+-        virgl_cmd_resource_unmap_blob(g, cmd, &cmd_suspended);
++        virgl_cmd_resource_unmap_blob(g, cmd);
+         break;
+     case VIRTIO_GPU_CMD_SET_SCANOUT_BLOB:
+         virgl_cmd_set_scanout_blob(g, cmd);
+@@ -1169,7 +1301,7 @@ void virtio_gpu_virgl_process_cmd(VirtIOGPU *g,
+ 
+     cmd->suspended = cmd_suspended;
+ 
+-    if (cmd_suspended || cmd->finished) {
++    if (cmd_suspended || cmd->finished || cmd->deferred) {
+         return;
+     }
+     if (cmd->error) {
+@@ -1562,6 +1694,7 @@ int virtio_gpu_virgl_init(VirtIOGPU *g)
+     }
+ 
+ #if VIRGL_VERSION_MAJOR >= 1
++    QTAILQ_INIT(&gl->unmap_done_list);
+     gl->cmdq_resume_bh = virtio_bh_io_new_guarded(DEVICE(g),
+                                                   virtio_gpu_virgl_resume_cmdq_bh,
+                                                   g);
+diff --git a/hw/display/virtio-gpu.c b/hw/display/virtio-gpu.c
+index 73c5882d03..52ca772864 100644
+--- a/hw/display/virtio-gpu.c
++++ b/hw/display/virtio-gpu.c
+@@ -1061,6 +1061,16 @@ void virtio_gpu_process_cmdq(VirtIOGPU *g)
+         /* process command */
+         vgc->process_cmd(g, cmd);
+ 
++        /*
++         * A deferred command is owned by whoever deferred it, which responds
++         * and frees it once its host-side work lands.  Unlike a suspended
++         * command it must not hold up the queue behind it.
++         */
++        if (cmd->deferred) {
++            QTAILQ_REMOVE(&g->cmdq, cmd, next);
++            continue;
++        }
++
+         /*
+          * A suspended command has not registered its fence (if any) yet
+          * and must be re-processed at the cmdq head after resume, so it
+@@ -1132,6 +1142,7 @@ static void virtio_gpu_handle_ctrl(VirtIODevice *vdev, VirtQueue *vq)
+         cmd->error = 0;
+         cmd->finished = false;
+         cmd->suspended = false;
++        cmd->deferred = false;
+         QTAILQ_INSERT_TAIL(&g->cmdq, cmd, next);
+         cmd = virtqueue_pop(vq, sizeof(struct virtio_gpu_ctrl_command));
+     }
+diff --git a/include/hw/virtio/virtio-gpu.h b/include/hw/virtio/virtio-gpu.h
+index 9b026067a9..b103a5682d 100644
+--- a/include/hw/virtio/virtio-gpu.h
++++ b/include/hw/virtio/virtio-gpu.h
+@@ -142,6 +142,12 @@ struct virtio_gpu_ctrl_command {
+     bool finished;
+     /* Set if process_cmd deferred completion; keep at cmdq head for resume. */
+     bool suspended;
++    /*
++     * Set if process_cmd took ownership of the command to complete it later
++     * (a mapped blob's teardown waits for the memory region to finalize):
++     * it leaves cmdq without a response and without blocking the queue.
++     */
++    bool deferred;
+     QTAILQ_ENTRY(virtio_gpu_ctrl_command) next;
+ };
+ 
+@@ -260,6 +266,8 @@ typedef enum {
+     RS_RESET,       /* inited and reset pending, moves to start after reset */
+ } RenderState;
+ 
++struct virtio_gpu_virgl_hostmem_region;
++
+ struct VirtIOGPUGL {
+     struct VirtIOGPU parent_obj;
+ 
+@@ -269,6 +277,9 @@ struct VirtIOGPUGL {
+     QEMUTimer *print_stats;
+ 
+     QEMUBH *cmdq_resume_bh;
++    /* Hostmem regions whose MemoryRegion finalized; cmdq_resume_bh finishes
++     * their unmap (and any deferred unref) on the main loop. */
++    QTAILQ_HEAD(, virtio_gpu_virgl_hostmem_region) unmap_done_list;
+ 
+     QEMUBH *async_fence_bh;
+     QSLIST_HEAD(, virtio_gpu_virgl_context_fence) async_fenceq;
+-- 
+2.41.0
+
+From e8f144d846ca1e2c84d7784db244e600d802f5a1 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Wed, 19 Aug 2026 01:24:30 -0700
+Subject: [PATCH 4/6] ui/cocoa: access gl_dirty atomically
+
+drawFrame re-arms gl_dirty from the Cocoa main thread when nextDrawable
+returns nil, but the scanout and update callbacks set it and
+cocoa_gl_refresh consumes it on the QEMU IO thread.  As a plain bool the
+consume can swallow that re-arm, so the dropped present is never retried
+and the Metal layer keeps no fresh frame -- the display goes black until
+the guest happens to flush again.  A sustained fullscreen guest drops
+presents often enough for this to read as a steady flicker.
+
+Consume with qatomic_xchg and set with qatomic_set so a re-arm is never
+lost.
+
+Assisted-by: Claude:claude-opus-5
+---
+ ui/cocoa.m | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/ui/cocoa.m b/ui/cocoa.m
+index 33b549c26e..72e7165f1c 100644
+--- a/ui/cocoa.m
++++ b/ui/cocoa.m
+@@ -111,6 +111,8 @@
+ @interface QemuCGLLayer : CAOpenGLLayer
+ @end
+ 
++/* Consumed on the QEMU IO thread, re-armed from the Cocoa main thread by
++ * drawFrame: every access must be atomic. */
+ static bool gl_dirty;
+ static uint32_t gl_scanout_id;
+ static bool gl_scanout_y0_top;
+@@ -1378,7 +1380,7 @@ - (void)drawFrame
+              * dropped and the display keeps the stale image until the guest
+              * flushes again.
+              */
+-            gl_dirty = true;
++            qatomic_set(&gl_dirty, true);
+             return;
+         }
+ 
+@@ -2357,7 +2359,7 @@ static void cocoa_gl_update(DisplayChangeListener *dcl,
+ {
+     with_gl_view_ctx(^{
+         surface_gl_update_texture(dgc.gls, surface, x, y, w, h);
+-        gl_dirty = true;
++        qatomic_set(&gl_dirty, true);
+     });
+ }
+ 
+@@ -2370,7 +2372,7 @@ static void cocoa_gl_switch(DisplayChangeListener *dcl,
+     });
+ 
+     cocoa_switch(dcl, new_surface);
+-    gl_dirty = true;
++    qatomic_set(&gl_dirty, true);
+ }
+ 
+ static void cocoa_gl_render(void)
+@@ -2396,9 +2398,7 @@ static void cocoa_gl_refresh(DisplayChangeListener *dcl)
+ {
+     cocoa_refresh(dcl);
+ 
+-    if (gl_dirty) {
+-        gl_dirty = false;
+-
++    if (qatomic_xchg(&gl_dirty, false)) {
+ #ifdef CONFIG_EGL
+ #ifdef USE_METAL
+         if (cocoaView.scanout == QemuCocoaViewScanoutMetal) {
+@@ -2427,7 +2427,7 @@ static void cocoa_gl_refresh(DisplayChangeListener *dcl)
+ static void cocoa_gl_scanout_disable(DisplayChangeListener *dcl)
+ {
+     gl_scanout_id = 0;
+-    gl_dirty = true;
++    qatomic_set(&gl_dirty, true);
+     dispatch_async(dispatch_get_main_queue(), ^{
+         cocoaView.scanout = QemuCocoaViewScanoutNone;
+     });
+@@ -2444,7 +2444,7 @@ static void cocoa_gl_scanout_texture(DisplayChangeListener *dcl,
+ {
+     gl_scanout_id = backing_id;
+     gl_scanout_y0_top = backing_y_0_top;
+-    gl_dirty = true;
++    qatomic_set(&gl_dirty, true);
+ #ifdef USE_METAL
+     if (native.type == SCANOUT_TEXTURE_NATIVE_TYPE_METAL) {
+         id<MTLTexture> mtlTexture = [(id<MTLTexture>)native.handle retain];
+@@ -2470,7 +2470,7 @@ static void cocoa_gl_scanout_flush(DisplayChangeListener *dcl,
+                                    uint32_t x, uint32_t y,
+                                    uint32_t w, uint32_t h)
+ {
+-    gl_dirty = true;
++    qatomic_set(&gl_dirty, true);
+ }
+ 
+ static const DisplayChangeListenerOps dcl_gl_ops = {
+-- 
+2.41.0
+
+From 161407f4c52bffab32d4aed03d39488f835e8973 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Fri, 28 Aug 2026 13:33:39 -0700
+Subject: [PATCH 5/6] arm/hvf: emulate a full PMUv3 so guests get a sampling
+ profiler
+
+Apple silicon has no architected PMUv3 (ID_AA64DFR0_EL1.PMUVer == 0), so
+guests had no CPU sampling source: Windows on Arm refuses ETW
+sampled-profile sessions with ERROR_NOT_SUPPORTED and Linux perf finds
+no PMU.
+
+Advertise base PMUv3 (PMUVer = 1) with six event counters
+(reset_pmcr_el0 = 6 << PMCRN_SHIFT; IMP/IDCODE left 0 like the TCG CPUs
+that don't model a specific implementation) and emulate the whole unit:
+
+ - Replace hvf.c's partial hand-rolled PMU register emulation (which had
+   drifted from helper.c: PMINTENCLR_EL1 set instead of clearing,
+   PMINTENSET_EL1/PMOVSSET_EL0 UNDEFed, PMCEID read as zero, no event
+   counters) with hvf_sysreg_access_pmu(), which routes every PMU
+   register through the cpreg handlers helper.c registers.  This shares
+   TCG's implementation of PMUSERENR_EL0 access control (EL0 denial
+   raises the architectural trap, mirroring access_check_cp_reg()),
+   per-counter op_start/finish bracketing, the pre-FEAT_PMUv3p5 RES0
+   masking of event counter reads, the c14_pmevcntr_delta re-baseline on
+   event type changes, and PMCEID0/1 derived from pm_events.
+ - Refresh env->pstate from HV_REG_CPSR on EC_SYSTEMREGISTERTRAP
+   (hvf_sync_pstate()) so arm_current_el() is accurate for the cpreg
+   access checks instead of stuck at its reset value.
+ - Under HVF the vCPU runs unobserved between traps, so PMEVTYPER.P/U
+   cannot be honoured per-EL, and evaluating them at trap-time EL would
+   permanently disable e.g. perf's cycles:u (the registers are only
+   touched from EL1): pmu_counter_enabled() now counts unless the filter
+   excludes every EL, leaving sample attribution to the interrupted PC.
+ - pmcr_write() re-evaluates the interrupt line when PMCR_EL0.E changes
+   (per CheckForPMUOverflow(); TCG had the same latent gap), and a
+   per-CPU reset deasserts the level-triggered PPI, which nothing
+   lowered across a CPU_OFF/CPU_ON cycle since a single-CPU reset does
+   not reset the GICv3.
+ - Add a cpu/pmu-sysregs vmstate subsection carrying the raw PMU fields
+   (with the pmevtyper_rawwrite()-style delta re-baseline on load): HVF
+   rebuilds the cpreg list from the registers the hypervisor can sync,
+   which excludes the emulated PMU, so its state silently reset across
+   savevm/loadvm.
+ - ID_AA64DFR0_EL1 needs no manual sync: it is in hvf_sreg_match[], so
+   hvf_put_registers() pushes the model's value before the first run,
+   and pmu=off keeps reporting PMUVer == 0 since realize zeroes the isar
+   field (Windows reads PMCCNTR_EL0 even then, so it cannot boot with
+   the PMU off; noted at the site).
+
+The helper.c machinery (virtual-clock cycle counts, pmu_timer overflow,
+PPI 23 already wired on the virt board and advertised in the MADT) does
+the rest.
+
+Verified: Ubuntu boots, registers armv8_pmuv3 with 6 counters, perf stat
+counts cycles at the virtual clock rate, perf record -e cycles and
+cycles:u both deliver samples with overflow IRQs matching sample counts,
+an EL0 PMCCNTR_EL0 read with PMUSERENR_EL0 == 0 takes SIGILL, and Venus
+comes up.  Windows 11 arm64 boots and wpr -start CPU records real
+SampledProfile events with stacks (previously 0x80070032).
+
+Assisted-by: Claude:claude-fable-5
+Assisted-by: Claude:claude-opus-5
+---
+ target/arm/cpu.c     |  12 ++
+ target/arm/cpu.h     |  12 ++
+ target/arm/helper.c  |  45 ++++++
+ target/arm/hvf/hvf.c | 352 +++++++++++++++++++++----------------------
+ target/arm/machine.c |  51 +++++++
+ 5 files changed, 296 insertions(+), 176 deletions(-)
+
+diff --git a/target/arm/cpu.c b/target/arm/cpu.c
+index 01786ac787..3082ee4ada 100644
+--- a/target/arm/cpu.c
++++ b/target/arm/cpu.c
+@@ -38,6 +38,7 @@
+ #if !defined(CONFIG_USER_ONLY)
+ #include "hw/loader.h"
+ #include "hw/boards.h"
++#include "hw/irq.h"
+ #ifdef CONFIG_TCG
+ #include "hw/intc/armv7m_nvic.h"
+ #endif /* CONFIG_TCG */
+@@ -239,6 +240,17 @@ static void arm_cpu_reset_hold(Object *obj, ResetType type)
+     g_hash_table_foreach(cpu->cp_regs, cp_reg_reset, cpu);
+     g_hash_table_foreach(cpu->cp_regs, cp_reg_check_reset, cpu);
+ 
++#ifndef CONFIG_USER_ONLY
++    /*
++     * The PMU overflow PPI is level-triggered and a per-CPU reset (a
++     * CPU_OFF/CPU_ON cycle) does not reset the GIC, so a latched assert
++     * must be dropped here now that the PMU state that raised it is gone,
++     * or the re-onlined CPU takes a spurious overflow interrupt with
++     * PMOVSCLR_EL0 == 0.
++     */
++    qemu_set_irq(cpu->pmu_interrupt, 0);
++#endif
++
+     env->vfp.xregs[ARM_VFP_FPSID] = cpu->reset_fpsid;
+     env->vfp.xregs[ARM_VFP_MVFR0] = cpu->isar.mvfr0;
+     env->vfp.xregs[ARM_VFP_MVFR1] = cpu->isar.mvfr1;
+diff --git a/target/arm/cpu.h b/target/arm/cpu.h
+index 28342d6efc..52a5b33b92 100644
+--- a/target/arm/cpu.h
++++ b/target/arm/cpu.h
+@@ -1314,6 +1314,18 @@ static inline bool is_a64(CPUARMState *env)
+ void pmu_op_start(CPUARMState *env);
+ void pmu_op_finish(CPUARMState *env);
+ 
++/**
++ * pmu_evcntr_delta_rebaseline
++ * @env: CPUARMState
++ *
++ * Recompute the event-counter delta baselines from the current contents of
++ * c14_pmevtyper[].  Required after event types have been loaded raw behind
++ * the back of an enclosing pmu_op_start(), whose baselines were computed
++ * with the pre-load event types, so that the closing pmu_op_finish()
++ * converts the loaded counter values using the right events.
++ */
++void pmu_evcntr_delta_rebaseline(CPUARMState *env);
++
+ /*
+  * Called when a PMU counter is due to overflow
+  */
+diff --git a/target/arm/helper.c b/target/arm/helper.c
+index e607f4a458..dafba3fe6c 100644
+--- a/target/arm/helper.c
++++ b/target/arm/helper.c
+@@ -23,6 +23,7 @@
+ #include "exec/translation-block.h"
+ #include "hw/irq.h"
+ #include "system/cpu-timers.h"
++#include "system/hvf.h"
+ #include "system/kvm.h"
+ #include "system/tcg.h"
+ #include "qapi/error.h"
+@@ -1063,6 +1064,26 @@ static bool pmu_counter_enabled(CPUARMState *env, uint8_t counter)
+         filtered = m != p;
+     }
+ 
++    if (hvf_enabled()) {
++        /*
++         * Under HVF the vCPU runs unobserved between traps: EL changes are
++         * invisible, so per-EL filtering cannot be honoured, and evaluating
++         * the filter at trap-time EL is biased -- counters are programmed
++         * from EL1, so an EL0-only filter (perf's cycles:u) would read as
++         * permanently disabled here and a sampling session would silently
++         * record nothing.  Count unless the filter excludes every EL the
++         * guest can run at, and leave attributing samples to the guest's
++         * view of the interrupted PC.
++         */
++        bool el0_filtered = secure ? u : u != nsu;
++        bool el1_filtered = secure ? p : p != nsk;
++
++        filtered = el0_filtered && el1_filtered;
++        if (arm_feature(env, ARM_FEATURE_EL2)) {
++            filtered = filtered && !nsh;
++        }
++    }
++
+     if (counter != 31) {
+         /*
+          * If not checking PMCCNTR, ensure the counter is setup to an event we
+@@ -1258,6 +1279,23 @@ void pmu_op_finish(CPUARMState *env)
+     }
+ }
+ 
++void pmu_evcntr_delta_rebaseline(CPUARMState *env)
++{
++    unsigned int i;
++
++    /* Mirrors what pmevtyper_rawwrite() does for a single counter */
++    for (i = 0; i < pmu_num_counters(env); i++) {
++        uint16_t event = env->cp15.c14_pmevtyper[i] & PMXEVTYPER_EVTCOUNT;
++
++        if (event_supported(event)) {
++            uint16_t event_idx = supported_event_map[event];
++
++            env->cp15.c14_pmevcntr_delta[i] =
++                pm_events[event_idx].get_count(env);
++        }
++    }
++}
++
+ void pmu_pre_el_change(ARMCPU *cpu, void *ignored)
+ {
+     pmu_op_start(&cpu->env);
+@@ -1303,6 +1341,13 @@ static void pmcr_write(CPUARMState *env, const ARMCPRegInfo *ri,
+     env->cp15.c9_pmcr |= (value & PMCR_WRITABLE_MASK);
+ 
+     pmu_op_finish(env);
++
++    /*
++     * PMCR_EL0.E gates the overflow interrupt line (see the ARM ARM's
++     * CheckForPMUOverflow() pseudocode): re-evaluate it, or toggling E with
++     * PMOVSR and PMINTEN already set leaves the level-triggered PPI stale.
++     */
++    pmu_update_irq(env);
+ }
+ 
+ static uint64_t pmcr_read(CPUARMState *env, const ARMCPRegInfo *ri)
+diff --git a/target/arm/hvf/hvf.c b/target/arm/hvf/hvf.c
+index b20d70458f..d9fa97d0a7 100644
+--- a/target/arm/hvf/hvf.c
++++ b/target/arm/hvf/hvf.c
+@@ -199,15 +199,66 @@ void hvf_arm_init_debug(void)
+ #define SYSREG_PMUSERENR_EL0  SYSREG(3, 3, 9, 14, 0)
+ #define SYSREG_PMCNTENSET_EL0 SYSREG(3, 3, 9, 12, 1)
+ #define SYSREG_PMCNTENCLR_EL0 SYSREG(3, 3, 9, 12, 2)
++#define SYSREG_PMINTENSET_EL1 SYSREG(3, 0, 9, 14, 1)
+ #define SYSREG_PMINTENCLR_EL1 SYSREG(3, 0, 9, 14, 2)
+ #define SYSREG_PMOVSCLR_EL0   SYSREG(3, 3, 9, 12, 3)
++#define SYSREG_PMOVSSET_EL0   SYSREG(3, 3, 9, 14, 3)
+ #define SYSREG_PMSWINC_EL0    SYSREG(3, 3, 9, 12, 4)
+ #define SYSREG_PMSELR_EL0     SYSREG(3, 3, 9, 12, 5)
+ #define SYSREG_PMCEID0_EL0    SYSREG(3, 3, 9, 12, 6)
+ #define SYSREG_PMCEID1_EL0    SYSREG(3, 3, 9, 12, 7)
+ #define SYSREG_PMCCNTR_EL0    SYSREG(3, 3, 9, 13, 0)
++#define SYSREG_PMXEVTYPER_EL0 SYSREG(3, 3, 9, 13, 1)
++#define SYSREG_PMXEVCNTR_EL0  SYSREG(3, 3, 9, 13, 2)
+ #define SYSREG_PMCCFILTR_EL0  SYSREG(3, 3, 14, 15, 7)
+ 
++/*
++ * PMEVCNTR<n>_EL0:  op0=3 op1=3 crn=14 crm=0b10:n<4:3> op2=n<2:0>
++ * PMEVTYPER<n>_EL0: op0=3 op1=3 crn=14 crm=0b11:n<4:3> op2=n<2:0>
++ * for n = 0..30 (the would-be n = 31 typer encoding is PMCCFILTR_EL0,
++ * which has its own case; the n = 31 counter encoding is unallocated).
++ */
++static bool sysreg_is_pmev(uint32_t reg)
++{
++    unsigned n;
++
++    if (SYSREG_OP0(reg) != 3 || SYSREG_OP1(reg) != 3 ||
++        SYSREG_CRN(reg) != 14 || SYSREG_CRM(reg) < 8) {
++        return false;
++    }
++    n = (SYSREG_CRM(reg) & 3) * 8 + SYSREG_OP2(reg);
++    return n <= 30;
++}
++
++/*
++ * The PMUv3 registers this file routes to the QEMU PMU model's cpreg
++ * handlers (helper.c define_pmu_regs() and friends).
++ */
++static bool sysreg_is_pmu(uint32_t reg)
++{
++    switch (reg) {
++    case SYSREG_PMCR_EL0:
++    case SYSREG_PMUSERENR_EL0:
++    case SYSREG_PMCNTENSET_EL0:
++    case SYSREG_PMCNTENCLR_EL0:
++    case SYSREG_PMINTENSET_EL1:
++    case SYSREG_PMINTENCLR_EL1:
++    case SYSREG_PMOVSCLR_EL0:
++    case SYSREG_PMOVSSET_EL0:
++    case SYSREG_PMSWINC_EL0:
++    case SYSREG_PMSELR_EL0:
++    case SYSREG_PMCEID0_EL0:
++    case SYSREG_PMCEID1_EL0:
++    case SYSREG_PMCCNTR_EL0:
++    case SYSREG_PMXEVTYPER_EL0:
++    case SYSREG_PMXEVCNTR_EL0:
++    case SYSREG_PMCCFILTR_EL0:
++        return true;
++    default:
++        return sysreg_is_pmev(reg);
++    }
++}
++
+ #define SYSREG_ICC_AP0R0_EL1     SYSREG(3, 0, 12, 8, 4)
+ #define SYSREG_ICC_AP0R1_EL1     SYSREG(3, 0, 12, 8, 5)
+ #define SYSREG_ICC_AP0R2_EL1     SYSREG(3, 0, 12, 8, 6)
+@@ -930,6 +981,26 @@ static bool hvf_arm_get_host_cpu_features(ARMHostCPUFeatures *ahcf)
+      */
+     host_isar.id_aa64pfr1 &= ~R_ID_AA64PFR1_SME_MASK;
+ 
++    /*
++     * Apple silicon has no architected PMUv3 (the host's
++     * ID_AA64DFR0_EL1.PMUVer is 0); every PMU register access from the
++     * guest traps and QEMU emulates the whole unit, counting cycles on the
++     * virtual clock (helper.c pm_events) and raising the overflow PPI from
++     * the pmu_timer.  Advertise base PMUv3 with six event counters so
++     * guests get a real sampling source (Windows' ETW profiler refuses to
++     * sample with PMUVer == 0; note Windows reads PMCCNTR_EL0 even with
++     * PMUVer == 0, so -cpu host,pmu=off cannot boot it).  PMUVER lands in
++     * the vCPU's ID_AA64DFR0_EL1 via the cpreg resetvalue that
++     * hvf_put_registers() pushes before the first run (realize zeroes it
++     * again for pmu=off); PMCR_EL0.N comes from reset_pmcr_el0 via the
++     * PMCR cpreg resetvalue and pmu_num_counters().  PMCR_EL0.{IMP,IDCODE}
++     * are left 0 like the TCG CPUs that don't model a specific
++     * implementation's PMU.
++     */
++    host_isar.id_aa64dfr0 = FIELD_DP64(host_isar.id_aa64dfr0, ID_AA64DFR0,
++                                       PMUVER, 1);
++    host_isar.reset_pmcr_el0 = 6 << PMCRN_SHIFT;    /* six event counters */
++
+     ahcf->isar = host_isar;
+ 
+     /*
+@@ -1213,6 +1284,13 @@ int hvf_arch_init_vcpu(CPUState *cpu)
+     ret = hv_vcpu_set_sys_reg(cpu->accel->fd, HV_SYS_REG_ID_AA64PFR0_EL1, pfr);
+     assert_hvf_ok(ret);
+ 
++    /*
++     * ID_AA64DFR0_EL1 (which carries the emulated PMU's PMUVer, including
++     * the 0 of -cpu host,pmu=off) needs no manual sync: it is in
++     * hvf_sreg_match[], so hvf_put_registers() pushes the model's value
++     * from the cpreg resetvalue before the first run.
++     */
++
+     /* We're limited to underlying hardware caps, override internal versions */
+     ret = hv_vcpu_get_sys_reg(cpu->accel->fd, HV_SYS_REG_ID_AA64MMFR0_EL1,
+                               &arm_cpu->isar.id_aa64mmfr0);
+@@ -1455,48 +1533,80 @@ static bool hvf_sysreg_read_cp(CPUState *cpu, uint32_t reg, uint64_t *val)
+     return false;
+ }
+ 
+-static int hvf_sysreg_read(CPUState *cpu, uint32_t reg, uint64_t *val)
++/*
++ * Route a PMUv3 register access to the QEMU PMU model's cpreg handlers.
++ *
++ * Unlike most cpregs (see the GICv3 note at the hvf_sysreg_read_cp() call
++ * sites), the PMU handlers are safe to call from here: they only touch the
++ * cp15 state, the pmu_timer and the overflow interrupt line, and never
++ * need a TCG context.  Routing through them keeps HVF on the same
++ * implementation TCG uses -- per-EL access checks (PMUSERENR_EL0),
++ * per-counter start/finish bracketing, the pre-FEAT_PMUv3p5 RES0 masking
++ * of event counters, and the delta re-baselining when an event type
++ * changes.
++ *
++ * The caller has refreshed env->pstate (hvf_sync_pstate()), so
++ * arm_current_el() is accurate for the access checks.
++ */
++static int hvf_sysreg_access_pmu(CPUState *cpu, uint32_t reg, uint64_t *val,
++                                 bool isread, uint64_t syndrome)
+ {
+     ARMCPU *arm_cpu = ARM_CPU(cpu);
+     CPUARMState *env = &arm_cpu->env;
++    const ARMCPRegInfo *ri;
++    CPAccessResult res;
+ 
+-    if (arm_feature(env, ARM_FEATURE_PMU)) {
+-        switch (reg) {
+-        case SYSREG_PMCR_EL0:
+-            *val = env->cp15.c9_pmcr;
+-            return 0;
+-        case SYSREG_PMCCNTR_EL0:
+-            pmu_op_start(env);
+-            *val = env->cp15.c15_ccnt;
+-            pmu_op_finish(env);
+-            return 0;
+-        case SYSREG_PMCNTENCLR_EL0:
+-            *val = env->cp15.c9_pmcnten;
+-            return 0;
+-        case SYSREG_PMOVSCLR_EL0:
+-            *val = env->cp15.c9_pmovsr;
+-            return 0;
+-        case SYSREG_PMSELR_EL0:
+-            *val = env->cp15.c9_pmselr;
+-            return 0;
+-        case SYSREG_PMINTENCLR_EL1:
+-            *val = env->cp15.c9_pminten;
+-            return 0;
+-        case SYSREG_PMCCFILTR_EL0:
+-            *val = env->cp15.pmccfiltr_el0;
+-            return 0;
+-        case SYSREG_PMCNTENSET_EL0:
+-            *val = env->cp15.c9_pmcnten;
+-            return 0;
+-        case SYSREG_PMUSERENR_EL0:
+-            *val = env->cp15.c9_pmuserenr;
+-            return 0;
+-        case SYSREG_PMCEID0_EL0:
+-        case SYSREG_PMCEID1_EL0:
+-            /* We can't really count anything yet, declare all events invalid */
+-            *val = 0;
+-            return 0;
++    ri = get_arm_cp_reginfo(arm_cpu->cp_regs, hvf_reg2cp_reg(reg));
++    if (!ri || !cp_access_ok(arm_current_el(env), ri, isread)) {
++        /*
++         * No cpreg (an unimplemented counter index: PMEVCNTR<n>_EL0 with
++         * n >= PMCR_EL0.N) or a wrong-EL/wrong-direction access: UNDEF,
++         * as under TCG.
++         */
++        cpu_synchronize_state(cpu);
++        hvf_raise_exception(cpu, EXCP_UDEF, syn_uncategorized());
++        return 1;
++    }
++
++    res = ri->accessfn ? ri->accessfn(env, ri, isread) : CP_ACCESS_OK;
++    if (res != CP_ACCESS_OK) {
++        /*
++         * Mirror TCG's access_check_cp_reg(): a configurable trap (EL0
++         * denied by PMUSERENR_EL0) presents the sysreg-trap syndrome and
++         * CP_ACCESS_UNDEFINED is uncategorized.  Without EL2/EL3 the only
++         * reachable target is EL1, which hvf_raise_exception() assumes.
++         */
++        cpu_synchronize_state(cpu);
++        hvf_raise_exception(cpu, EXCP_UDEF,
++                            res == CP_ACCESS_UNDEFINED ? syn_uncategorized() :
++                                                         (uint32_t)syndrome);
++        return 1;
++    }
++
++    if (isread) {
++        if (ri->type & ARM_CP_CONST) {
++            *val = ri->resetvalue;
++        } else if (ri->readfn) {
++            *val = ri->readfn(env, ri);
++        } else {
++            *val = CPREG_FIELD64(env, ri);
+         }
++    } else if (ri->writefn) {
++        ri->writefn(env, ri, *val);
++    } else {
++        CPREG_FIELD64(env, ri) = *val;
++    }
++    return 0;
++}
++
++static int hvf_sysreg_read(CPUState *cpu, uint32_t reg, uint64_t syndrome,
++                           uint64_t *val)
++{
++    ARMCPU *arm_cpu = ARM_CPU(cpu);
++    CPUARMState *env = &arm_cpu->env;
++
++    if (arm_feature(env, ARM_FEATURE_PMU) && sysreg_is_pmu(reg)) {
++        return hvf_sysreg_access_pmu(cpu, reg, val, true, syndrome);
+     }
+ 
+     switch (reg) {
+@@ -1632,82 +1742,6 @@ static int hvf_sysreg_read(CPUState *cpu, uint32_t reg, uint64_t *val)
+     return 1;
+ }
+ 
+-static void pmu_update_irq(CPUARMState *env)
+-{
+-    ARMCPU *cpu = env_archcpu(env);
+-    qemu_set_irq(cpu->pmu_interrupt, (env->cp15.c9_pmcr & PMCRE) &&
+-            (env->cp15.c9_pminten & env->cp15.c9_pmovsr));
+-}
+-
+-static bool pmu_event_supported(uint16_t number)
+-{
+-    return false;
+-}
+-
+-/* Returns true if the counter (pass 31 for PMCCNTR) should count events using
+- * the current EL, security state, and register configuration.
+- */
+-static bool pmu_counter_enabled(CPUARMState *env, uint8_t counter)
+-{
+-    uint64_t filter;
+-    bool enabled, filtered = true;
+-    int el = arm_current_el(env);
+-
+-    enabled = (env->cp15.c9_pmcr & PMCRE) &&
+-              (env->cp15.c9_pmcnten & (1 << counter));
+-
+-    if (counter == 31) {
+-        filter = env->cp15.pmccfiltr_el0;
+-    } else {
+-        filter = env->cp15.c14_pmevtyper[counter];
+-    }
+-
+-    if (el == 0) {
+-        filtered = filter & PMXEVTYPER_U;
+-    } else if (el == 1) {
+-        filtered = filter & PMXEVTYPER_P;
+-    }
+-
+-    if (counter != 31) {
+-        /*
+-         * If not checking PMCCNTR, ensure the counter is setup to an event we
+-         * support
+-         */
+-        uint16_t event = filter & PMXEVTYPER_EVTCOUNT;
+-        if (!pmu_event_supported(event)) {
+-            return false;
+-        }
+-    }
+-
+-    return enabled && !filtered;
+-}
+-
+-static void pmswinc_write(CPUARMState *env, uint64_t value)
+-{
+-    unsigned int i;
+-    for (i = 0; i < pmu_num_counters(env); i++) {
+-        /* Increment a counter's count iff: */
+-        if ((value & (1 << i)) && /* counter's bit is set */
+-                /* counter is enabled and not filtered */
+-                pmu_counter_enabled(env, i) &&
+-                /* counter is SW_INCR */
+-                (env->cp15.c14_pmevtyper[i] & PMXEVTYPER_EVTCOUNT) == 0x0) {
+-            /*
+-             * Detect if this write causes an overflow since we can't predict
+-             * PMSWINC overflows like we can for other events
+-             */
+-            uint32_t new_pmswinc = env->cp15.c14_pmevcntr[i] + 1;
+-
+-            if (env->cp15.c14_pmevcntr[i] & ~new_pmswinc & INT32_MIN) {
+-                env->cp15.c9_pmovsr |= (1 << i);
+-                pmu_update_irq(env);
+-            }
+-
+-            env->cp15.c14_pmevcntr[i] = new_pmswinc;
+-        }
+-    }
+-}
+-
+ static bool hvf_sysreg_write_cp(CPUState *cpu, uint32_t reg, uint64_t val)
+ {
+     ARMCPU *arm_cpu = ARM_CPU(cpu);
+@@ -1735,7 +1769,8 @@ static bool hvf_sysreg_write_cp(CPUState *cpu, uint32_t reg, uint64_t val)
+     return false;
+ }
+ 
+-static int hvf_sysreg_write(CPUState *cpu, uint32_t reg, uint64_t val)
++static int hvf_sysreg_write(CPUState *cpu, uint32_t reg, uint64_t syndrome,
++                            uint64_t val)
+ {
+     ARMCPU *arm_cpu = ARM_CPU(cpu);
+     CPUARMState *env = &arm_cpu->env;
+@@ -1748,66 +1783,8 @@ static int hvf_sysreg_write(CPUState *cpu, uint32_t reg, uint64_t val)
+                            SYSREG_OP2(reg),
+                            val);
+ 
+-    if (arm_feature(env, ARM_FEATURE_PMU)) {
+-        switch (reg) {
+-        case SYSREG_PMCCNTR_EL0:
+-            pmu_op_start(env);
+-            env->cp15.c15_ccnt = val;
+-            pmu_op_finish(env);
+-            return 0;
+-        case SYSREG_PMCR_EL0:
+-            pmu_op_start(env);
+-
+-            if (val & PMCRC) {
+-                /* The counter has been reset */
+-                env->cp15.c15_ccnt = 0;
+-            }
+-
+-            if (val & PMCRP) {
+-                unsigned int i;
+-                for (i = 0; i < pmu_num_counters(env); i++) {
+-                    env->cp15.c14_pmevcntr[i] = 0;
+-                }
+-            }
+-
+-            env->cp15.c9_pmcr &= ~PMCR_WRITABLE_MASK;
+-            env->cp15.c9_pmcr |= (val & PMCR_WRITABLE_MASK);
+-
+-            pmu_op_finish(env);
+-            return 0;
+-        case SYSREG_PMUSERENR_EL0:
+-            env->cp15.c9_pmuserenr = val & 0xf;
+-            return 0;
+-        case SYSREG_PMCNTENSET_EL0:
+-            env->cp15.c9_pmcnten |= (val & pmu_counter_mask(env));
+-            return 0;
+-        case SYSREG_PMCNTENCLR_EL0:
+-            env->cp15.c9_pmcnten &= ~(val & pmu_counter_mask(env));
+-            return 0;
+-        case SYSREG_PMINTENCLR_EL1:
+-            pmu_op_start(env);
+-            env->cp15.c9_pminten |= val;
+-            pmu_op_finish(env);
+-            return 0;
+-        case SYSREG_PMOVSCLR_EL0:
+-            pmu_op_start(env);
+-            env->cp15.c9_pmovsr &= ~val;
+-            pmu_op_finish(env);
+-            return 0;
+-        case SYSREG_PMSWINC_EL0:
+-            pmu_op_start(env);
+-            pmswinc_write(env, val);
+-            pmu_op_finish(env);
+-            return 0;
+-        case SYSREG_PMSELR_EL0:
+-            env->cp15.c9_pmselr = val & 0x1f;
+-            return 0;
+-        case SYSREG_PMCCFILTR_EL0:
+-            pmu_op_start(env);
+-            env->cp15.pmccfiltr_el0 = val & PMCCFILTR_EL0;
+-            pmu_op_finish(env);
+-            return 0;
+-        }
++    if (arm_feature(env, ARM_FEATURE_PMU) && sysreg_is_pmu(reg)) {
++        return hvf_sysreg_access_pmu(cpu, reg, &val, false, syndrome);
+     }
+ 
+     switch (reg) {
+@@ -2084,6 +2061,27 @@ static void hvf_sync_vtimer(CPUState *cpu)
+     }
+ }
+ 
++/*
++ * Refresh env->pstate from the vCPU.  The sysreg trap handlers run without
++ * a full cpu_synchronize_state(), but the cpreg access checks and the PMU
++ * model depend on arm_current_el(env), which would otherwise be stuck at
++ * whatever the last full sync (or reset) left behind.
++ */
++static void hvf_sync_pstate(CPUState *cpu)
++{
++    uint64_t cpsr;
++    hv_return_t r;
++
++    if (cpu->accel->dirty) {
++        /* env is authoritative and about to be pushed; don't clobber it */
++        return;
++    }
++
++    r = hv_vcpu_get_reg(cpu->accel->fd, HV_REG_CPSR, &cpsr);
++    assert_hvf_ok(r);
++    pstate_write(&ARM_CPU(cpu)->env, cpsr);
++}
++
+ int hvf_vcpu_exec(CPUState *cpu)
+ {
+     ARMCPU *arm_cpu = ARM_CPU(cpu);
+@@ -2223,8 +2221,10 @@ int hvf_vcpu_exec(CPUState *cpu)
+         uint64_t val;
+         int sysreg_ret = 0;
+ 
++        hvf_sync_pstate(cpu);
++
+         if (isread) {
+-            sysreg_ret = hvf_sysreg_read(cpu, reg, &val);
++            sysreg_ret = hvf_sysreg_read(cpu, reg, syndrome, &val);
+             if (!sysreg_ret) {
+                 trace_hvf_sysreg_read(reg,
+                                       SYSREG_OP0(reg),
+@@ -2237,7 +2237,7 @@ int hvf_vcpu_exec(CPUState *cpu)
+             }
+         } else {
+             val = hvf_get_reg(cpu, rt);
+-            sysreg_ret = hvf_sysreg_write(cpu, reg, val);
++            sysreg_ret = hvf_sysreg_write(cpu, reg, syndrome, val);
+         }
+ 
+         advance_pc = !sysreg_ret;
+diff --git a/target/arm/machine.c b/target/arm/machine.c
+index 978249fb71..eaac0ab075 100644
+--- a/target/arm/machine.c
++++ b/target/arm/machine.c
+@@ -1,6 +1,7 @@
+ #include "qemu/osdep.h"
+ #include "cpu.h"
+ #include "qemu/error-report.h"
++#include "system/hvf.h"
+ #include "system/kvm.h"
+ #include "system/tcg.h"
+ #include "kvm_arm.h"
+@@ -343,6 +344,55 @@ static const VMStateDescription vmstate_serror = {
+     }
+ };
+ 
++static bool pmu_sysregs_needed(void *opaque)
++{
++    ARMCPU *cpu = opaque;
++
++    /*
++     * Under HVF the cpreg list is rebuilt to hold only the sysregs the
++     * hypervisor can get/set directly (hvf_arch_init_vcpu()), which
++     * excludes the fully-emulated PMU: the cpreg_vmstate arrays that
++     * normally carry the PMU registers omit them, so send the raw fields.
++     * Other accelerators keep migrating them via the cpreg list.
++     */
++    return hvf_enabled() && arm_feature(&cpu->env, ARM_FEATURE_PMU);
++}
++
++static int pmu_sysregs_post_load(void *opaque, int version_id)
++{
++    ARMCPU *cpu = opaque;
++
++    /*
++     * cpu_pre_load() ran pmu_op_start() before the event types above were
++     * loaded, so the delta baselines may be for the wrong events; redo
++     * them so the pmu_op_finish() in cpu_post_load() converts the loaded
++     * counter values with the right baselines.
++     */
++    pmu_evcntr_delta_rebaseline(&cpu->env);
++    return 0;
++}
++
++static const VMStateDescription vmstate_pmu_sysregs = {
++    .name = "cpu/pmu-sysregs",
++    .version_id = 1,
++    .minimum_version_id = 1,
++    .needed = pmu_sysregs_needed,
++    .post_load = pmu_sysregs_post_load,
++    .fields = (const VMStateField[]) {
++        VMSTATE_UINT64(env.cp15.c15_ccnt, ARMCPU),
++        VMSTATE_UINT64(env.cp15.pmccfiltr_el0, ARMCPU),
++        VMSTATE_UINT64(env.cp15.c9_pmcr, ARMCPU),
++        VMSTATE_UINT64(env.cp15.c9_pmcnten, ARMCPU),
++        VMSTATE_UINT64(env.cp15.c9_pmovsr, ARMCPU),
++        VMSTATE_UINT64(env.cp15.c9_pminten, ARMCPU),
++        VMSTATE_UINT64(env.cp15.c9_pmselr, ARMCPU),
++        VMSTATE_UINT64(env.cp15.c9_pmuserenr, ARMCPU),
++        VMSTATE_UINT64_ARRAY(env.cp15.c14_pmevcntr, ARMCPU, 31),
++        VMSTATE_UINT64_ARRAY(env.cp15.c14_pmevtyper, ARMCPU, 31),
++        VMSTATE_END_OF_LIST()
++    }
++};
++
+ static bool irq_line_state_needed(void *opaque)
+ {
+     return true;
+@@ -1106,6 +1156,7 @@ const VMStateDescription vmstate_arm_cpu = {
+         &vmstate_za,
+ #endif
+         &vmstate_serror,
++        &vmstate_pmu_sysregs,
+         &vmstate_irq_line_state,
+         &vmstate_wfxt_timer,
+         NULL
+-- 
+2.41.0
+
+From 227f8b678b0f7783cdaff1a57f8338398b2100ff Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Sun, 30 Aug 2026 02:15:31 -0700
+Subject: [PATCH 6/6] arm/hvf: serve PMCCNTR_EL0 reads without the BQL
+
+Windows on Arm reads the PMU cycle counter constantly -- its x64
+emulator implements RDTSC on it -- and HVF cannot virtualize the PMU, so
+under an emulated game the guest takes several hundred thousand
+PMCCNTR_EL0 traps per second (measured 640k/s at load, ~300k/s in play).
+Each went through the general exit path: BQL, vtimer sync, and a return
+to the vCPU thread loop.  Serve the common case -- counter enabled,
+unfiltered, 64-bit -- from the exit handler with no lock and no state
+sync, and go straight back into the guest unless something is pending; a
+kick that races is sticky in HVF and surfaces as a CANCELED exit on the
+next run.
+
+The counter state the fast path reads is not entirely private to the
+vCPU thread: event counters arm cpu->pmu_timer, and arm_pmu_timer_cb()
+on the main-loop thread transiently parks the raw cycle count in
+c15_ccnt_delta inside its pmu_op_start()/pmu_op_finish() span.
+pmu_op_start/finish therefore flag their span via a per-CPU seqlock
+(pmu_op_lock), and the fast path validates it before committing, falling
+back to the locked path on a race.  It also bails to the slow path for
+EL0 reads that PMUSERENR_EL0 denies, so the access trap is still raised
+architecturally.
+
+Assisted-by: Claude:claude-fable-5
+Assisted-by: Claude:claude-opus-5
+---
+ target/arm/cpu.c     |   2 +
+ target/arm/cpu.h     |   9 ++++
+ target/arm/helper.c  |  12 +++++
+ target/arm/hvf/hvf.c | 104 +++++++++++++++++++++++++++++++++++++++++--
+ 4 files changed, 124 insertions(+), 3 deletions(-)
+
+diff --git a/target/arm/cpu.c b/target/arm/cpu.c
+index 3082ee4ada..8834666628 100644
+--- a/target/arm/cpu.c
++++ b/target/arm/cpu.c
+@@ -1502,6 +1502,8 @@ static void arm_cpu_initfn(Object *obj)
+     QLIST_INIT(&cpu->pre_el_change_hooks);
+     QLIST_INIT(&cpu->el_change_hooks);
+ 
++    seqlock_init(&cpu->pmu_op_lock);
++
+ #ifdef CONFIG_USER_ONLY
+ # ifdef TARGET_AARCH64
+     /*
+diff --git a/target/arm/cpu.h b/target/arm/cpu.h
+index 52a5b33b92..611469f63b 100644
+--- a/target/arm/cpu.h
++++ b/target/arm/cpu.h
+@@ -22,6 +22,7 @@
+ 
+ #include "kvm-consts.h"
+ #include "qemu/cpu-float.h"
++#include "qemu/seqlock.h"
+ #include "hw/registerfields.h"
+ #include "cpu-qom.h"
+ #include "exec/cpu-defs.h"
+@@ -900,6 +901,14 @@ struct ArchCPU {
+      * pmu_op_finish() - it does not need other handling during migration
+      */
+     QEMUTimer *pmu_timer;
++    /*
++     * Write side is taken (by pmu_op_start/finish) around every span that
++     * transiently holds the PMU counter state in a mixed form, so BQL-free
++     * readers of that state (the HVF PMCCNTR_EL0 read fast path) can
++     * detect a concurrent update by arm_pmu_timer_cb() on the main-loop
++     * thread and fall back to the locked path.  All writers hold the BQL.
++     */
++    QemuSeqLock pmu_op_lock;
+     /* Timer used for WFxT timeouts */
+     QEMUTimer *wfxt_timer;
+ 
+diff --git a/target/arm/helper.c b/target/arm/helper.c
+index dafba3fe6c..6ba46d5845 100644
+--- a/target/arm/helper.c
++++ b/target/arm/helper.c
+@@ -1264,6 +1264,17 @@ static void pmevcntr_op_finish(CPUARMState *env, uint8_t counter)
+ void pmu_op_start(CPUARMState *env)
+ {
+     unsigned int i;
++
++    /*
++     * The HVF PMCCNTR_EL0 read fast path reads the counter state from the
++     * vCPU thread without the BQL, while pmccntr_op_start() transiently
++     * stores the raw cycle count in c15_ccnt_delta and arm_pmu_timer_cb()
++     * runs this on the main-loop thread.  Flag the whole span -- including
++     * whatever the caller mutates before pmu_op_finish() -- as a write in
++     * progress so the reader can detect it and retry.  Every caller holds
++     * the BQL, which serializes the write side.
++     */
++    seqlock_write_begin(&env_archcpu(env)->pmu_op_lock);
+     pmccntr_op_start(env);
+     for (i = 0; i < pmu_num_counters(env); i++) {
+         pmevcntr_op_start(env, i);
+@@ -1277,6 +1288,7 @@ void pmu_op_finish(CPUARMState *env)
+     for (i = 0; i < pmu_num_counters(env); i++) {
+         pmevcntr_op_finish(env, i);
+     }
++    seqlock_write_end(&env_archcpu(env)->pmu_op_lock);
+ }
+ 
+ void pmu_evcntr_delta_rebaseline(CPUARMState *env)
+diff --git a/target/arm/hvf/hvf.c b/target/arm/hvf/hvf.c
+index d9fa97d0a7..f187968787 100644
+--- a/target/arm/hvf/hvf.c
++++ b/target/arm/hvf/hvf.c
+@@ -2082,6 +2082,86 @@ static void hvf_sync_pstate(CPUState *cpu)
+     pstate_write(&ARM_CPU(cpu)->env, cpsr);
+ }
+ 
++/*
++ * PMCCNTR_EL0 read fast path.
++ *
++ * HVF cannot virtualize the PMU, so every guest read of the cycle counter
++ * is a full VM exit.  Windows on Arm reads it constantly -- its x64
++ * emulator implements RDTSC on it -- at hundreds of thousands of reads per
++ * second under an emulated game.  The general exit path takes the BQL,
++ * syncs the vtimer and returns to the vCPU thread loop for every one of
++ * them.  Serve the common case without any of that: the counter is
++ * enabled, unfiltered and 64-bit (no overflow interrupt to raise), so its
++ * value is a pure function of the virtual clock and this vCPU's own cp15
++ * state.  The only other writer of that state is arm_pmu_timer_cb() on the
++ * main-loop thread; pmu_op_start/finish flag its update spans via
++ * pmu_op_lock, which is checked before committing.  Returns false to take
++ * the general path.
++ */
++static bool hvf_pmccntr_read_fast(CPUState *cpu, uint64_t syndrome)
++{
++    ARMCPU *arm_cpu = ARM_CPU(cpu);
++    CPUARMState *env = &arm_cpu->env;
++    hv_return_t r;
++    unsigned seq;
++
++    if (!(syndrome & 1) || (syndrome & SYSREG_MASK) != SYSREG_PMCCNTR_EL0) {
++        return false;
++    }
++    if (cpu->singlestep_enabled || cpu->accel->dirty ||
++        cpu->accel->vtimer_masked) {
++        return false;
++    }
++
++    seq = seqlock_read_begin(&arm_cpu->pmu_op_lock);
++
++    if (!arm_feature(env, ARM_FEATURE_PMU) ||
++        (env->cp15.c9_pmcr & (PMCRE | PMCRLC)) != (PMCRE | PMCRLC) ||
++        !(env->cp15.c9_pmcnten & (1u << 31)) ||
++        (env->cp15.pmccfiltr_el0 & (PMXEVTYPER_P | PMXEVTYPER_U))) {
++        return false;
++    }
++
++    /*
++     * EL0 reads need PMUSERENR_EL0.{EN,CR}; when neither is set, bail if
++     * we are at EL0 so the general path can raise the access trap.
++     */
++    if (!(env->cp15.c9_pmuserenr & 0x5)) {
++        uint64_t cpsr;
++
++        r = hv_vcpu_get_reg(cpu->accel->fd, HV_REG_CPSR, &cpsr);
++        assert_hvf_ok(r);
++        if (((cpsr >> 2) & 3) == 0) {
++            return false;
++        }
++    }
++
++    /*
++     * Same value pmccntr_op_start would compute for the enabled counter
++     * (helper.c's cycles_get_count: 1 GHz on the virtual clock).
++     */
++    const uint64_t cycles = muldiv64(qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL),
++                                     1000000000, NANOSECONDS_PER_SECOND);
++    const uint64_t val = cycles - env->cp15.c15_ccnt_delta;
++    const uint32_t rt = (syndrome >> 5) & 0x1f;
++    uint64_t pc;
++
++    if (seqlock_read_retry(&arm_cpu->pmu_op_lock, seq)) {
++        /* Raced an update; the general path will read a settled value */
++        return false;
++    }
++
++    if (rt < 31) {
++        r = hv_vcpu_set_reg(cpu->accel->fd, HV_REG_X0 + rt, val);
++        assert_hvf_ok(r);
++    }
++    r = hv_vcpu_get_reg(cpu->accel->fd, HV_REG_PC, &pc);
++    assert_hvf_ok(r);
++    r = hv_vcpu_set_reg(cpu->accel->fd, HV_REG_PC, pc + 4);
++    assert_hvf_ok(r);
++    return true;
++}
++
+ int hvf_vcpu_exec(CPUState *cpu)
+ {
+     ARMCPU *arm_cpu = ARM_CPU(cpu);
+@@ -2102,13 +2182,31 @@ int hvf_vcpu_exec(CPUState *cpu)
+ 
+     flush_cpu_state(cpu);
+ 
++    uint64_t exit_reason, syndrome;
++    uint32_t ec;
+     bql_unlock();
++run_again:
+     assert_hvf_ok(hv_vcpu_run(cpu->accel->fd));
+ 
+     /* handle VMEXIT */
+-    uint64_t exit_reason = hvf_exit->reason;
+-    uint64_t syndrome = hvf_exit->exception.syndrome;
+-    uint32_t ec = syn_get_ec(syndrome);
++    exit_reason = hvf_exit->reason;
++    syndrome = hvf_exit->exception.syndrome;
++    ec = syn_get_ec(syndrome);
++
++    if (exit_reason == HV_EXIT_REASON_EXCEPTION &&
++        ec == EC_SYSTEMREGISTERTRAP && hvf_pmccntr_read_fast(cpu, syndrome)) {
++        /*
++         * Served without the BQL.  Go straight back into the guest unless
++         * something is pending for the general path; a kick that raced us
++         * is sticky in HVF and surfaces as a CANCELED exit on the next run.
++         */
++        if (!qatomic_read(&cpu->interrupt_request) &&
++            !qatomic_read(&cpu->exit_request) && !cpu->halted) {
++            goto run_again;
++        }
++        bql_lock();
++        return 0;
++    }
+ 
+     ret = 0;
+     bql_lock();
+-- 
+2.41.0
+
