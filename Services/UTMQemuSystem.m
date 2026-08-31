@@ -139,6 +139,9 @@ static int startQemu(UTMProcess *process, int argc, const char *argv[], const ch
         self.mutableEnvironment[@"NPT_D3D12_LIBRARY_PATH"] = library.path;
         self.mutableEnvironment[@"NPT_DXGI_LIBRARY_PATH"] = library.path;
         self.mutableEnvironment[@"NPT_BACKEND"] = backend;
+        if (directXDriver == kQEMUDirectXDriverD3DMetal) {
+            self.mutableEnvironment[@"NPT_CAPSET_D3D12"] = @"1";
+        }
         self.resources = [self.resources arrayByAddingObject:library];
         _directXDriver = directXDriver;
     } else {
@@ -146,6 +149,7 @@ static int startQemu(UTMProcess *process, int argc, const char *argv[], const ch
         [self.mutableEnvironment removeObjectForKey:@"NPT_D3D12_LIBRARY_PATH"];
         [self.mutableEnvironment removeObjectForKey:@"NPT_DXGI_LIBRARY_PATH"];
         [self.mutableEnvironment removeObjectForKey:@"NPT_BACKEND"];
+        [self.mutableEnvironment removeObjectForKey:@"NPT_CAPSET_D3D12"];
         [self.mutableEnvironment removeObjectForKey:@"D3DMETAL_FRAMEWORK_PATH"];
         _directXDriver = kQEMUDirectXDriverDisabled;
     }
