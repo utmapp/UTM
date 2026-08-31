@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleIdentifier</key>
+	<string>com.utmapp.UTMUSBHelper</string>
+	<key>CFBundleName</key>
+	<string>UTMUSBHelper</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0</string>
+	<key>CFBundleDisplayName</key>
+	<string>UTM — Redirezione USB</string>
+	<!-- Testo mostrato dal sistema nella finestra di richiesta di accesso.
+	     Serve perché la claim di un'interfaccia USB di un dispositivo di
+	     ARCHIVIAZIONE passa dal servizio TCC "Volumi rimovibili": senza
+	     questa stringa il prompt non ha nulla da mostrare all'utente.
+	     § usbredir_bridge.c per la catena completa del controllo. -->
+	<key>NSRemovableVolumesUsageDescription</key>
+	<string>UTM deve prendere possesso del dispositivo USB per collegarlo direttamente alla macchina virtuale. Il dispositivo viene smontato da macOS per la durata del collegamento e restituito al distacco.</string>
+	<!-- Chi può parlare con questo demone. Il requisito di firma va
+	     compilato DENTRO il binario (CREATE_INFOPLIST_SECTION_IN_BINARY),
+	     non lasciato in un file accanto: è ciò che impedisce a un
+	     eseguibile qualunque di farsi passare per UTM e chiedere
+	     al demone di reclamare i tuoi dischi.
+
+	     Solo `identifier`, senza `anchor apple generic`: la build è
+	     firmata con un certificato di sviluppo personale, non
+	     distribuita, quindi non esiste un Team ID stabile su cui
+	     ancorarsi. Se un giorno la si distribuisse, qui andrebbe
+	     aggiunto l'anchor col Team ID reale. -->
+	<key>SMAuthorizedClients</key>
+	<array>
+		<string>identifier "com.utmapp.UTM"</string>
+	</array>
+</dict>
+</plist>
