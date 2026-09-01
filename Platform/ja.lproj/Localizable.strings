@@ -605,6 +605,7 @@
 "Upscaling" = "拡大";
 "Downscaling" = "縮小";
 "Retina Mode" = "Retinaモード";
+"Built-in Framebuffer" = "内蔵フレームバッファ";
 
 // VMConfigDisplayConsoleView.swift
 "Style" = "スタイル";

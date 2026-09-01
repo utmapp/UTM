@@ -168,6 +168,10 @@
 /* No comment provided by engineer. */
 "Build" = "بناء";
 
+/* VMConfigDisplayView
+VMToolbarDisplayMenuView */
+"Built-in Framebuffer" = "مخزن الإطار المدمج";
+
 /* UTMQemuConstants */
 "Built-in Terminal" = "وحدة طرفية مدمجة";
 

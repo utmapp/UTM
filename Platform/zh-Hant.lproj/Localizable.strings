@@ -255,6 +255,10 @@
 /* No comment provided by engineer. */
 "Build" = "建置";
 
+/* VMConfigDisplayView
+VMToolbarDisplayMenuView */
+"Built-in Framebuffer" = "內建幀緩衝區";
+
 /* UTMQemuConstants */
 "Built-in Terminal" = "內建終端機";
 

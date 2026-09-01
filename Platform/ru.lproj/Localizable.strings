@@ -199,6 +199,10 @@
 /* No comment provided by engineer. */
 "Browse…" = "Обзор…";
 
+/* VMConfigDisplayView
+VMToolbarDisplayMenuView */
+"Built-in Framebuffer" = "Встроенный буфер кадра";
+
 /* UTMQemuConstants */
 "Built-in Terminal" = "Встроенный терминал";
 
