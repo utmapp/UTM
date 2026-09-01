@@ -475,6 +475,17 @@ struct AlertMessage: Identifiable {
                 config.displays[0].hardware = AnyQEMUConstant(rawValue: newCard)!
             }
         }
+        // Low-resolution guests upscale better with nearest neighbour: linear washes out
+        // their already-chunky text (#3371). Legacy hardware is checked on its own rather
+        // than folded into the Windows case so that picking a legacy machine opts in under
+        // any OS, and because the summary page can enable it after the Windows page has
+        // latched isWindows10OrHigher. Modern guests keep the linear default, where the
+        // upscale is a non-integer ratio and nearest looks blocky instead of sharp.
+        if operatingSystem == .ClassicMacOS || legacyHardware || (operatingSystem == .Windows && !isWindows10OrHigher) {
+            for i in config.displays.indices {
+                config.displays[i].upscalingFilter = .nearest
+            }
+        }
         if operatingSystem == .Linux && !isDisplayEnabled {
             config.displays = []
             let newSerial = UTMQemuConfigurationSerial(forArchitecture: systemArchitecture, target: systemTarget)!

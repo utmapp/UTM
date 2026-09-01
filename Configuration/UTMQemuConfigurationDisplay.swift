@@ -28,7 +28,12 @@ struct UTMQemuConfigurationDisplay: Codable, Identifiable {
     var isDynamicResolution: Bool = true
     
     /// Filter to use when upscaling.
-    var upscalingFilter: QEMUScaler = .nearest
+    ///
+    /// Nearest neighbour is only a good fit for low-resolution guests, where it keeps the image
+    /// sharp instead of washing it out (#3371); the wizard selects it for those. For a modern
+    /// guest the upscale is rarely an integer ratio, so nearest duplicates source pixels
+    /// unevenly and looks blocky rather than sharp.
+    var upscalingFilter: QEMUScaler = .linear
     
     /// Filter to use when downscaling.
     var downscalingFilter: QEMUScaler = .linear
