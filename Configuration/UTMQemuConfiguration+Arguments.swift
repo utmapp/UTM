@@ -580,8 +580,8 @@ import Virtualization // for getting network interfaces
             if system.architecture == .aarch64 && !isHypervisorUsed {
                 properties = properties.appendingDefaultPropertyName("virtualization", value: "on")
             }
-            // required for > 8 CPUs
-            if system.architecture == .aarch64 && emulatedCpuCount.0 > 8 {
+            // required for > 8 CPUs, improves performance regardless
+            if system.architecture == .aarch64 {
                 properties = properties.appendingDefaultPropertyName("gic-version", value: "3")
             }
         }
