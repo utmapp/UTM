@@ -22,9 +22,27 @@ struct VMConfigAppleNetworkingView: View {
     @EnvironmentObject private var data: UTMData
     @State private var newMacAddress: String?
     
+    private var isHostOnlySupported: Bool {
+        #if compiler(>=6.3)
+        if #available(macOS 26, *) {
+            return true
+        } else {
+            return false
+        }
+        #else
+        return false
+        #endif
+    }
+
     var body: some View {
         Form {
-            VMConfigConstantPicker("Network Mode", selection: $config.mode)
+            Picker("Network Mode", selection: $config.mode) {
+                ForEach(UTMAppleConfigurationNetwork.NetworkMode.allCases, id: \.rawValue) { mode in
+                    Text(mode.prettyValue)
+                        .tag(mode)
+                        .disabled(mode == .host && !isHostOnlySupported)
+                }
+            }
             HStack {
                 TextField("MAC Address", text: $newMacAddress.bound, onCommit: {
                     commitMacAddress()
@@ -36,6 +54,17 @@ struct VMConfigAppleNetworkingView: View {
                     let random = VZMACAddress.randomLocallyAdministered().string
                     newMacAddress = random
                     commitMacAddress()
+                }
+            }
+            if config.mode == .host {
+                Section(header: Text("Host Only Settings")) {
+                    if isHostOnlySupported {
+                        Text("The guest can communicate with this Mac, but not the internet.")
+                            .foregroundColor(.secondary)
+                    } else {
+                        Text("Host Only requires macOS 26 or later.")
+                            .foregroundColor(.secondary)
+                    }
                 }
             }
             if config.mode == .bridged {

@@ -712,6 +712,7 @@
         
         <enumeration name="apple network mode" code="ApNm" description="Mode for networking device.">
             <enumerator name="shared" code="ShRd" description="NAT based sharing with the host."/>
+            <enumerator name="host" code="HoSt" description="Host-only network with no internet routing."/>
             <enumerator name="bridged" code="BrGd" description="Bridged to a host interface."/>
         </enumeration>
         

@@ -141,6 +141,7 @@ import ScriptingBridge
 // MARK: UTMScriptingAppleNetworkMode
 @objc public enum UTMScriptingAppleNetworkMode : AEKeyword {
     case shared = 0x53685264 /* 'ShRd' */
+    case host = 0x486f5374 /* 'HoSt' */
     case bridged = 0x42724764 /* 'BrGd' */
 }
 
@@ -288,4 +289,3 @@ extension SBObject: UTMScriptingGuestProcess {}
     @objc optional func disconnect() // Disconnect a USB device from the guest and re-assign it to the host.
 }
 extension SBObject: UTMScriptingUsbDevice {}
-
