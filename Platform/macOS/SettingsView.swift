@@ -189,10 +189,13 @@ struct ApplicationSettingsView: View {
                 Text("Do not show confirmation when closing a running VM")
             }).help("Closing a VM without properly shutting it down could result in data loss.")
 
-            Section(header: Text("QEMU USB")) {
+            Section(header: Text("USB")) {
                 Toggle(isOn: $isNoUsbPrompt, label: {
                     Text("Do not show prompt when USB device is plugged in")
                 })
+            }
+
+            Section(header: Text("QEMU USB")) {
                 Button("Reset auto connect devices…") {
                     isConfirmResetAutoConnect.toggle()
                 }.help("Clears all saved USB devices.")

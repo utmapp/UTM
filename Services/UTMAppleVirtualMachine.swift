@@ -118,6 +118,10 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
 
     private var removableDrives: [String: Any] = [:]
 
+    private(set) var usbManager: UTMAppleUSBManager?
+
+    private var snapshotUsbDevices: [UTMRegistryEntry.AppleUSBDevice]?
+
     @MainActor var isHeadless: Bool {
         config.displays.isEmpty && config.serials.filter({ $0.mode == .builtin }).isEmpty
     }
@@ -131,6 +135,18 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         self.registryEntry = UTMRegistryEntry.empty
         self.registryEntry = loadRegistry()
         self.screenshot = loadScreenshot()
+        #if arch(arm64)
+        if configuration.system.boot.operatingSystem == .macOS {
+            let usbManager = UTMAppleUSBManager(virtualMachineQueue: vmQueue)
+            self.usbManager = usbManager
+            usbManager.onConnectedDevicesChange = { [weak self] devices in
+                self?.registryEntry.connectedAppleUsbDevices = devices.isEmpty ? nil : devices
+                if self?.snapshotUsbDevices != nil {
+                    self?.snapshotUsbDevices = devices
+                }
+            }
+        }
+        #endif
     }
     
     deinit {
@@ -188,6 +204,9 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             let isSuspended = await registryEntry.isSuspended
             try await beginAccessingResources()
             try await createAppleVM()
+            guard let virtualMachine = await currentVirtualMachine() else {
+                return
+            }
             if isSuspended && !options.contains(.bootRecovery) {
                 try await restoreSnapshot()
             } else {
@@ -196,6 +215,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             if #available(macOS 15, *) {
                 try await attachExternalDrives()
             }
+            await startUsbPassthrough(with: virtualMachine)
             if #available(macOS 12, *) {
                 Task { @MainActor in
                     let tag = config.shareDirectoryTag
@@ -209,7 +229,9 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
                     }
                 }
             }
-            state = .started
+            guard await transitionToStarted(ifRunning: virtualMachine) else {
+                return
+            }
             if screenshotTimer == nil {
                 screenshotTimer = startScreenshotTimer()
             }
@@ -222,18 +244,17 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
     }
     
     @available(macOS 12, *)
-    private func _forceStop() async throws {
+    private func _forceStop(_ virtualMachine: VZVirtualMachine) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             vmQueue.async {
-                guard let apple = self.apple else {
-                    continuation.resume() // already stopped
+                guard self.apple === virtualMachine else {
+                    continuation.resume(throwing: UTMAppleVirtualMachineError.operationNotAvailable)
                     return
                 }
-                apple.stop { error in
+                virtualMachine.stop { error in
                     if let error = error {
                         continuation.resume(throwing: error)
                     } else {
-                        self.guestDidStop(apple)
                         continuation.resume()
                     }
                 }
@@ -272,31 +293,42 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         guard #available(macOS 12, *) else {
             throw UTMAppleVirtualMachineError.operationNotAvailable
         }
+        let initialState = state
+        guard let virtualMachine = await currentVirtualMachine(), state == initialState else {
+            return
+        }
         state = .stopping
         do {
-            try await _forceStop()
-            state = .stopped
+            try await _forceStop(virtualMachine)
+            _ = await transitionToStopped(ifCurrent: virtualMachine)
         } catch {
-            state = .stopped
+            if await transitionToStarted(ifRunning: virtualMachine) {
+                // The stop failed while the VM was still running.
+            } else if await transitionToPaused(ifPaused: virtualMachine) {
+                // The stop failed while the VM was still paused.
+            } else {
+                _ = await transitionToStopped(ifCurrent: virtualMachine)
+            }
             throw error
         }
     }
     
-    private func _restart() async throws {
+    private func _restart(_ virtualMachine: VZVirtualMachine) async throws {
         guard #available(macOS 12, *) else {
             return
         }
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             vmQueue.async {
-                guard let apple = self.apple else {
+                guard self.apple === virtualMachine,
+                      virtualMachine.state == .running || virtualMachine.state == .paused else {
                     continuation.resume(throwing: UTMAppleVirtualMachineError.operationNotAvailable)
                     return
                 }
-                apple.stop { error in
+                virtualMachine.stop { error in
                     if let error = error {
                         continuation.resume(throwing: error)
                     } else {
-                        apple.start { result in
+                        virtualMachine.start { result in
                             continuation.resume(with: result)
                         }
                     }
@@ -309,20 +341,68 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         guard state == .started || state == .paused else {
             return
         }
-        state = .stopping
+        let initialState = state
+        guard let virtualMachine = await currentVirtualMachine(), state == initialState else {
+            return
+        }
+        guard await prepareForRestart(virtualMachine, from: initialState) else {
+            return
+        }
+        let connectedUsbDevices: [UTMRegistryEntry.AppleUSBDevice]
         do {
-            try await _restart()
-            state = .started
+            if initialState == .paused {
+                connectedUsbDevices = snapshotUsbDevices ?? []
+            } else {
+                snapshotUsbDevices = []
+                let usbPassthroughIsAvailable = await isUsbPassthroughAvailable
+                if let usbManager = usbManager, usbPassthroughIsAvailable {
+                    connectedUsbDevices = try await usbManager.detachAllForSnapshot(with: virtualMachine)
+                } else {
+                    connectedUsbDevices = []
+                }
+            }
         } catch {
-            state = .stopped
+            if initialState != .paused {
+                snapshotUsbDevices = nil
+            }
+            if initialState == .paused {
+                _ = await transitionToPaused(ifPaused: virtualMachine)
+            } else {
+                _ = await transitionToStarted(ifRunning: virtualMachine)
+            }
+            throw error
+        }
+        do {
+            try await _restart(virtualMachine)
+            let usbDevicesToRestore = snapshotUsbDevices ?? connectedUsbDevices
+            if await restoreUsbConnections(from: usbDevicesToRestore, with: virtualMachine) {
+                snapshotUsbDevices = nil
+            }
+            guard await transitionToStarted(ifRunning: virtualMachine) else {
+                return
+            }
+        } catch {
+            if await transitionToPaused(ifPaused: virtualMachine) {
+                // The stop failed before the paused VM changed state.
+            } else if await isCurrentVirtualMachineRunning(virtualMachine) {
+                let usbDevicesToRestore = snapshotUsbDevices ?? connectedUsbDevices
+                if await restoreUsbConnections(from: usbDevicesToRestore, with: virtualMachine) {
+                    snapshotUsbDevices = nil
+                }
+                _ = await transitionToStarted(ifRunning: virtualMachine)
+            } else if await isCurrentVirtualMachine(virtualMachine) {
+                await usbManager?.releaseSnapshotReservations(for: virtualMachine)
+                _ = await transitionToStopped(ifCurrent: virtualMachine)
+            }
             throw error
         }
     }
     
-    private func _pause() async throws {
+    private func _pause(_ virtualMachine: VZVirtualMachine) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             vmQueue.async {
-                guard let apple = self.apple else {
+                guard self.apple === virtualMachine,
+                      virtualMachine.state == .running else {
                     continuation.resume(throwing: UTMAppleVirtualMachineError.operationNotAvailable)
                     return
                 }
@@ -332,7 +412,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
                         try? self.saveScreenshot()
                     }
                 }
-                apple.pause { result in
+                virtualMachine.pause { result in
                     continuation.resume(with: result)
                 }
             }
@@ -344,25 +424,52 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             return
         }
         state = .pausing
+        guard let virtualMachine = await currentVirtualMachine() else {
+            return
+        }
+        snapshotUsbDevices = []
+        let connectedUsbDevices: [UTMRegistryEntry.AppleUSBDevice]
+        let usbPassthroughIsAvailable = await isUsbPassthroughAvailable
         do {
-            try await _pause()
-            state = .paused
+            if let usbManager = usbManager, usbPassthroughIsAvailable {
+                connectedUsbDevices = try await usbManager.detachAllForSnapshot(with: virtualMachine)
+            } else {
+                connectedUsbDevices = []
+            }
         } catch {
-            state = .stopped
+            snapshotUsbDevices = nil
+            _ = await transitionToStarted(ifRunning: virtualMachine)
+            throw error
+        }
+        do {
+            try await _pause(virtualMachine)
+            guard await transitionToPaused(ifPaused: virtualMachine) else {
+                return
+            }
+        } catch {
+            if !(await transitionToPaused(ifPaused: virtualMachine)) {
+                let usbDevicesToRestore = snapshotUsbDevices ?? connectedUsbDevices
+                snapshotUsbDevices = nil
+                _ = await restoreUsbConnections(from: usbDevicesToRestore, with: virtualMachine)
+                if !(await transitionToStarted(ifRunning: virtualMachine)) {
+                    _ = await transitionToStopped(ifCurrent: virtualMachine)
+                }
+            }
             throw error
         }
     }
     
     #if arch(arm64)
     @available(macOS 14, *)
-    private func _saveSnapshot(url: URL) async throws {
+    private func _saveSnapshot(url: URL, virtualMachine: VZVirtualMachine) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             vmQueue.async {
-                guard let apple = self.apple else {
+                guard self.apple === virtualMachine,
+                      virtualMachine.state == .paused else {
                     continuation.resume(throwing: UTMAppleVirtualMachineError.operationNotAvailable)
                     return
                 }
-                apple.saveMachineStateTo(url: url) { error in
+                virtualMachine.saveMachineStateTo(url: url) { error in
                     if let error = error {
                         continuation.resume(throwing: error)
                     } else {
@@ -392,12 +499,19 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         guard state == .paused else {
             return
         }
-        state = .saving
-        defer {
-            state = .paused
+        guard let virtualMachine = await currentVirtualMachine(), state == .paused else {
+            return
         }
-        try await _saveSnapshot(url: vmSavedStateURL)
-        await registryEntry.setIsSuspended(true)
+        state = .saving
+        do {
+            try await _saveSnapshot(url: vmSavedStateURL, virtualMachine: virtualMachine)
+            await registryEntry.setIsSuspended(true)
+            await usbManager?.releaseSnapshotReservations(for: virtualMachine)
+            _ = await transitionToPaused(ifPaused: virtualMachine)
+        } catch {
+            _ = await transitionToPaused(ifPaused: virtualMachine)
+            throw error
+        }
         #endif
     }
     
@@ -412,14 +526,14 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
     
     #if arch(arm64)
     @available(macOS 14, *)
-    private func _restoreSnapshot(url: URL) async throws {
+    private func _restoreSnapshot(url: URL, virtualMachine: VZVirtualMachine) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             vmQueue.async {
-                guard let apple = self.apple else {
+                guard self.apple === virtualMachine, virtualMachine.state == .stopped else {
                     continuation.resume(throwing: UTMAppleVirtualMachineError.operationNotAvailable)
                     return
                 }
-                apple.restoreMachineStateFrom(url: url) { error in
+                virtualMachine.restoreMachineStateFrom(url: url) { error in
                     if let error = error {
                         continuation.resume(throwing: error)
                     } else {
@@ -445,29 +559,37 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         guard state == .stopped || state == .starting else {
             throw UTMAppleVirtualMachineError.operationNotAvailable
         }
+        guard let virtualMachine = await currentVirtualMachine() else {
+            throw UTMAppleVirtualMachineError.operationNotAvailable
+        }
         state = .restoring
         do {
-            try await _restoreSnapshot(url: vmSavedStateURL)
-            try await _resume()
+            try await _restoreSnapshot(url: vmSavedStateURL, virtualMachine: virtualMachine)
+            try await _resume(virtualMachine)
         } catch {
-            state = .stopped
+            if !(await transitionToPaused(ifPaused: virtualMachine)) {
+                _ = await transitionToStopped(ifCurrent: virtualMachine)
+            }
             throw error
         }
-        state = .started
+        guard await transitionToStarted(ifRunning: virtualMachine) else {
+            return
+        }
         try await deleteSnapshot(name: name)
         #else
         throw UTMAppleVirtualMachineError.operationNotAvailable
         #endif
     }
     
-    private func _resume() async throws {
+    private func _resume(_ virtualMachine: VZVirtualMachine) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             vmQueue.async {
-                guard let apple = self.apple else {
+                guard self.apple === virtualMachine,
+                      virtualMachine.state == .paused else {
                     continuation.resume(throwing: UTMAppleVirtualMachineError.operationNotAvailable)
                     return
                 }
-                apple.resume { result in
+                virtualMachine.resume { result in
                     continuation.resume(with: result)
                 }
             }
@@ -479,11 +601,23 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             return
         }
         state = .resuming
+        guard let virtualMachine = await currentVirtualMachine() else {
+            return
+        }
         do {
-            try await _resume()
-            state = .started
+            try await _resume(virtualMachine)
+            if let snapshotUsbDevices = snapshotUsbDevices {
+                if await restoreUsbConnections(from: snapshotUsbDevices, with: virtualMachine) {
+                    self.snapshotUsbDevices = nil
+                }
+            }
+            guard await transitionToStarted(ifRunning: virtualMachine) else {
+                return
+            }
         } catch {
-            state = .stopped
+            if !(await transitionToPaused(ifPaused: virtualMachine)) {
+                _ = await transitionToStopped(ifCurrent: virtualMachine)
+            }
             throw error
         }
     }
@@ -524,6 +658,179 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
                 }
             }
             #endif
+        }
+    }
+
+    private func currentVirtualMachine() async -> VZVirtualMachine? {
+        await withCheckedContinuation { continuation in
+            vmQueue.async {
+                continuation.resume(returning: self.apple)
+            }
+        }
+    }
+
+    private func prepareForRestart(_ virtualMachine: VZVirtualMachine,
+                                   from initialState: UTMVirtualMachineState) async -> Bool {
+        await withCheckedContinuation { continuation in
+            vmQueue.async {
+                guard self.apple === virtualMachine,
+                      virtualMachine.state == .running || virtualMachine.state == .paused else {
+                    continuation.resume(returning: false)
+                    return
+                }
+                DispatchQueue.main.async {
+                    let isCurrent = self.vmQueue.sync {
+                        self.apple === virtualMachine &&
+                            (virtualMachine.state == .running || virtualMachine.state == .paused)
+                    }
+                    guard isCurrent, self.state == initialState else {
+                        continuation.resume(returning: false)
+                        return
+                    }
+                    self.state = .stopping
+                    continuation.resume(returning: true)
+                }
+            }
+        }
+    }
+
+    private func transitionToStarted(ifRunning virtualMachine: VZVirtualMachine) async -> Bool {
+        await withCheckedContinuation { continuation in
+            vmQueue.async {
+                guard self.apple === virtualMachine, virtualMachine.state == .running else {
+                    continuation.resume(returning: false)
+                    return
+                }
+                DispatchQueue.main.async {
+                    guard self.vmQueue.sync(execute: {
+                        self.apple === virtualMachine && virtualMachine.state == .running
+                    }) else {
+                        continuation.resume(returning: false)
+                        return
+                    }
+                    self.state = .started
+                    continuation.resume(returning: true)
+                }
+            }
+        }
+    }
+
+    private func transitionToPaused(ifPaused virtualMachine: VZVirtualMachine) async -> Bool {
+        await withCheckedContinuation { continuation in
+            vmQueue.async {
+                guard self.apple === virtualMachine, virtualMachine.state == .paused else {
+                    continuation.resume(returning: false)
+                    return
+                }
+                DispatchQueue.main.async {
+                    guard self.vmQueue.sync(execute: {
+                        self.apple === virtualMachine && virtualMachine.state == .paused
+                    }) else {
+                        continuation.resume(returning: false)
+                        return
+                    }
+                    self.state = .paused
+                    continuation.resume(returning: true)
+                }
+            }
+        }
+    }
+
+    private func transitionToStopped(ifCurrent virtualMachine: VZVirtualMachine,
+                                     error: Error? = nil) async -> Bool {
+        await withCheckedContinuation { continuation in
+            vmQueue.async {
+                guard self.apple === virtualMachine,
+                      virtualMachine.state == .stopped || virtualMachine.state == .error else {
+                    DispatchQueue.main.async {
+                        continuation.resume(returning: false)
+                    }
+                    return
+                }
+                self.apple = nil
+                self.snapshotUnsupportedError = nil
+                self.usbManager?.stop(with: virtualMachine)
+                DispatchQueue.main.async {
+                    self.removableDrives.removeAll()
+                    self.sharedDirectoriesChanged = nil
+                    self.stopAccesingResources()
+                    for i in self.config.serials.indices {
+                        if let serialPort = self.config.serials[i].interface {
+                            serialPort.close()
+                            self.config.serials[i].interface = nil
+                            self.config.serials[i].fileHandleForReading = nil
+                            self.config.serials[i].fileHandleForWriting = nil
+                        }
+                    }
+                    try? self.saveScreenshot()
+                    self.state = .stopped
+                    if let error = error {
+                        self.delegate?.virtualMachine(self, didErrorWithMessage: error.localizedDescription)
+                    }
+                    continuation.resume(returning: true)
+                }
+            }
+        }
+    }
+
+    private func isCurrentVirtualMachine(_ virtualMachine: VZVirtualMachine) async -> Bool {
+        await withCheckedContinuation { continuation in
+            vmQueue.async {
+                continuation.resume(returning: self.apple === virtualMachine)
+            }
+        }
+    }
+
+    private func isCurrentVirtualMachineRunning(_ virtualMachine: VZVirtualMachine) async -> Bool {
+        await withCheckedContinuation { continuation in
+            vmQueue.async {
+                continuation.resume(returning: self.apple === virtualMachine && virtualMachine.state == .running)
+            }
+        }
+    }
+
+    private func startUsbPassthrough(with virtualMachine: VZVirtualMachine) async {
+        let usbPassthroughIsAvailable = await isUsbPassthroughAvailable
+        guard let usbManager = usbManager, usbPassthroughIsAvailable else {
+            return
+        }
+        do {
+            let connectedUsbDevices = await usbDevicesForRestore()
+            try await usbManager.start(with: virtualMachine, restoring: connectedUsbDevices)
+            snapshotUsbDevices = nil
+        } catch {
+            logger.debug("Failed to initialize USB passthrough: \(error.localizedDescription)")
+        }
+    }
+
+    private func restoreUsbConnections(from devices: [UTMRegistryEntry.AppleUSBDevice],
+                                       with virtualMachine: VZVirtualMachine) async -> Bool {
+        let usbPassthroughIsAvailable = await isUsbPassthroughAvailable
+        guard let usbManager = usbManager, usbPassthroughIsAvailable else {
+            return devices.isEmpty
+        }
+        do {
+            try await usbManager.restoreConnections(from: devices, with: virtualMachine)
+            return true
+        } catch {
+            logger.debug("Failed to restore USB passthrough devices: \(error.localizedDescription)")
+            return false
+        }
+    }
+
+    private func usbDevicesForRestore() async -> [UTMRegistryEntry.AppleUSBDevice] {
+        if let snapshotUsbDevices = snapshotUsbDevices {
+            return snapshotUsbDevices
+        }
+        return await registryEntry.connectedAppleUsbDevices ?? []
+    }
+
+    private var isUsbPassthroughAvailable: Bool {
+        get async {
+            guard let usbManager = usbManager else {
+                return false
+            }
+            return await usbManager.isAvailable
         }
     }
     
@@ -666,30 +973,15 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
 @available(macOS 11, *)
 extension UTMAppleVirtualMachine: VZVirtualMachineDelegate {
     func guestDidStop(_ virtualMachine: VZVirtualMachine) {
-        vmQueue.async { [self] in
-            apple = nil
-            snapshotUnsupportedError = nil
+        Task { [weak self] in
+            _ = await self?.transitionToStopped(ifCurrent: virtualMachine)
         }
-        removableDrives.removeAll()
-        sharedDirectoriesChanged = nil
-        Task { @MainActor in
-            stopAccesingResources()
-            for i in config.serials.indices {
-                if let serialPort = config.serials[i].interface {
-                    serialPort.close()
-                    config.serials[i].interface = nil
-                    config.serials[i].fileHandleForReading = nil
-                    config.serials[i].fileHandleForWriting = nil
-                }
-            }
-        }
-        try? saveScreenshot()
-        state = .stopped
     }
-    
+
     func virtualMachine(_ virtualMachine: VZVirtualMachine, didStopWithError error: Error) {
-        guestDidStop(virtualMachine)
-        delegate?.virtualMachine(self, didErrorWithMessage: error.localizedDescription)
+        Task { [weak self] in
+            _ = await self?.transitionToStopped(ifCurrent: virtualMachine, error: error)
+        }
     }
     
     // fake methods to adhere to NSObjectProtocol

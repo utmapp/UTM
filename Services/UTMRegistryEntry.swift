@@ -42,6 +42,8 @@ import Combine
     @Published private var _hasMigratedConfig: Bool
     
     @Published private var _macRecoveryIpsw: File?
+
+    @Published private var _connectedAppleUsbDevices: [AppleUSBDevice]?
     
     private enum CodingKeys: String, CodingKey {
         case name = "Name"
@@ -55,6 +57,7 @@ import Combine
         case resolutionSettings = "ResolutionSettings"
         case hasMigratedConfig = "MigratedConfig"
         case macRecoveryIpsw = "MacRecoveryIpsw"
+        case connectedAppleUsbDevices = "ConnectedAppleUsbDevices"
     }
     
     init(uuid: UUID, name: String, path: String, bookmark: Data? = nil) {
@@ -74,6 +77,7 @@ import Combine
         _terminalSettings = [:]
         _resolutionSettings = [:]
         _hasMigratedConfig = false
+        _connectedAppleUsbDevices = nil
     }
     
     convenience init(newFrom vm: any UTMVirtualMachine) {
@@ -96,6 +100,7 @@ import Combine
         _resolutionSettings = try container.decodeIfPresent([Int: Resolution].self, forKey: .resolutionSettings) ?? [:]
         _hasMigratedConfig = try container.decodeIfPresent(Bool.self, forKey: .hasMigratedConfig) ?? false
         _macRecoveryIpsw = try container.decodeIfPresent(File.self, forKey: .macRecoveryIpsw)
+        _connectedAppleUsbDevices = try container.decodeIfPresent([AppleUSBDevice].self, forKey: .connectedAppleUsbDevices)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -113,6 +118,7 @@ import Combine
             try container.encode(_hasMigratedConfig, forKey: .hasMigratedConfig)
         }
         try container.encodeIfPresent(_macRecoveryIpsw, forKey: .macRecoveryIpsw)
+        try container.encodeIfPresent(_connectedAppleUsbDevices, forKey: .connectedAppleUsbDevices)
     }
     
     func asDictionary() throws -> [String: Any] {
@@ -237,6 +243,16 @@ extension UTMRegistryEntry: UTMRegistryEntryDecodable {}
             _macRecoveryIpsw = newValue
         }
     }
+
+    var connectedAppleUsbDevices: [AppleUSBDevice]? {
+        get {
+            _connectedAppleUsbDevices
+        }
+
+        set {
+            _connectedAppleUsbDevices = newValue
+        }
+    }
     
     func setExternalDrive(_ file: File, forId id: String) {
         externalDrives[id] = file
@@ -276,6 +292,7 @@ extension UTMRegistryEntry: UTMRegistryEntryDecodable {}
         terminalSettings = other.terminalSettings
         resolutionSettings = other.resolutionSettings
         hasMigratedConfig = other.hasMigratedConfig
+        connectedAppleUsbDevices = other.connectedAppleUsbDevices
     }
     
     func setIsSuspended(_ isSuspended: Bool) {
@@ -370,6 +387,24 @@ extension UTMRegistryEntry {
 }
 
 extension UTMRegistryEntry {
+    struct AppleUSBDevice: Codable, Hashable, Sendable {
+        let vendorID: UInt16
+
+        let productID: UInt16
+
+        let deviceClass: UInt8
+
+        let deviceSubclass: UInt8
+
+        let deviceProtocol: UInt8
+
+        let deviceDescriptorData: Data
+
+        let registryID: UInt64?
+
+        let hostBootSessionID: UUID?
+    }
+
     struct File: Codable, Identifiable {
         var url: URL
         
