@@ -43,6 +43,8 @@ import Combine
     
     @Published private var _macRecoveryIpsw: File?
     
+    @Published private var _connectedUsbDevices: Data?
+    
     private enum CodingKeys: String, CodingKey {
         case name = "Name"
         case package = "Package"
@@ -55,6 +57,7 @@ import Combine
         case resolutionSettings = "ResolutionSettings"
         case hasMigratedConfig = "MigratedConfig"
         case macRecoveryIpsw = "MacRecoveryIpsw"
+        case connectedUsbDevices = "ConnectedUsbDevices"
     }
     
     init(uuid: UUID, name: String, path: String, bookmark: Data? = nil) {
@@ -74,6 +77,7 @@ import Combine
         _terminalSettings = [:]
         _resolutionSettings = [:]
         _hasMigratedConfig = false
+        _connectedUsbDevices = nil
     }
     
     convenience init(newFrom vm: any UTMVirtualMachine) {
@@ -96,6 +100,7 @@ import Combine
         _resolutionSettings = try container.decodeIfPresent([Int: Resolution].self, forKey: .resolutionSettings) ?? [:]
         _hasMigratedConfig = try container.decodeIfPresent(Bool.self, forKey: .hasMigratedConfig) ?? false
         _macRecoveryIpsw = try container.decodeIfPresent(File.self, forKey: .macRecoveryIpsw)
+        _connectedUsbDevices = try container.decodeIfPresent(Data.self, forKey: .connectedUsbDevices)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -113,6 +118,7 @@ import Combine
             try container.encode(_hasMigratedConfig, forKey: .hasMigratedConfig)
         }
         try container.encodeIfPresent(_macRecoveryIpsw, forKey: .macRecoveryIpsw)
+        try container.encodeIfPresent(_connectedUsbDevices, forKey: .connectedUsbDevices)
     }
     
     func asDictionary() throws -> [String: Any] {
@@ -238,6 +244,16 @@ extension UTMRegistryEntry: UTMRegistryEntryDecodable {}
         }
     }
     
+    var connectedUsbDevices: Data? {
+        get {
+            _connectedUsbDevices
+        }
+        
+        set {
+            _connectedUsbDevices = newValue
+        }
+    }
+    
     func setExternalDrive(_ file: File, forId id: String) {
         externalDrives[id] = file
     }
@@ -276,6 +292,7 @@ extension UTMRegistryEntry: UTMRegistryEntryDecodable {}
         terminalSettings = other.terminalSettings
         resolutionSettings = other.resolutionSettings
         hasMigratedConfig = other.hasMigratedConfig
+        connectedUsbDevices = other.connectedUsbDevices
     }
     
     func setIsSuspended(_ isSuspended: Bool) {
