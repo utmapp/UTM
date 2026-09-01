@@ -86,15 +86,42 @@ class UTMDownloadVMTask: UTMDownloadTask {
             /// create the .utm directory
             try fileManager.createDirectory(at: destinationURL, withIntermediateDirectories: false)
             /// get and extract all files contained in the UTM directory, except the `__MACOSX` folder
-            let containedFiles = archive.filter({ $0.path.contains(utmDirectoryEnding) && !$0.path.hasSuffix(utmDirectoryEnding) && !$0.path.contains("__MACOSX") })
+            let containedFiles = archive.filter({ $0.path.hasPrefix(utmFolderInZip.path) && !$0.path.hasSuffix(utmDirectoryEnding) && !$0.path.contains("__MACOSX") })
             for file in containedFiles {
-                let relativePath = file.path.replacingOccurrences(of: utmFolderInZip.path, with: "")
+                let relativePath = String(file.path.dropFirst(utmFolderInZip.path.count))
                 let isDirectory = file.path.hasSuffix("/")
-                _ = try archive.extract(file, to: destinationURL.appendingPathComponent(relativePath, isDirectory: isDirectory), skipCRC32: true)
+                let fileURL = try containedDestination(for: relativePath, in: destinationURL, isDirectory: isDirectory)
+                _ = try archive.extract(file, to: fileURL, skipCRC32: true)
             }
             return destinationURL
         } else {
             throw UnzipNoUTMFileError()
+        }
+    }
+    
+    /// Resolve an archive entry's relative path inside `destinationFolder` and reject any escape.
+    ///
+    /// A crafted archive can name an entry `some.utm/../../elsewhere`. `appendingPathComponent()` does not
+    /// resolve `..`, so the traversal would only be resolved by the filesystem at write time.
+    private func containedDestination(for relativePath: String, in destinationFolder: URL, isDirectory: Bool) throws -> URL {
+        let candidate = destinationFolder.appendingPathComponent(relativePath, isDirectory: isDirectory)
+        /// POSIX `fopen()` collapses repeated separators before resolving `..`, so an entry named `/../elsewhere`
+        /// would otherwise standardize to a contained path here but escape once written. Collapse them first.
+        var path = candidate.path
+        while path.contains("//") {
+            path = path.replacingOccurrences(of: "//", with: "/")
+        }
+        let resolved = URL(fileURLWithPath: path, isDirectory: isDirectory).standardized
+        let root = URL(fileURLWithPath: destinationFolder.path, isDirectory: true).standardized
+        guard resolved.path.hasPrefix(root.path + "/") else {
+            throw UnzipUnsafePathError()
+        }
+        return resolved
+    }
+    
+    private class UnzipUnsafePathError: Error {
+        var errorDescription: String? {
+            NSLocalizedString("The downloaded ZIP archive contains an invalid path.", comment: "Error shown when importing a ZIP file from web that contains an entry pointing outside of the virtual machine directory.")
         }
     }
     
