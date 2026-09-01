@@ -119,19 +119,19 @@ class UTMDownloadVMTask: UTMDownloadTask {
         return resolved
     }
     
-    private class UnzipUnsafePathError: Error {
+    private class UnzipUnsafePathError: LocalizedError {
         var errorDescription: String? {
             NSLocalizedString("The downloaded ZIP archive contains an invalid path.", comment: "Error shown when importing a ZIP file from web that contains an entry pointing outside of the virtual machine directory.")
         }
     }
     
-    private class UnzipNoUTMFileError: Error {
+    private class UnzipNoUTMFileError: LocalizedError {
         var errorDescription: String? {
             NSLocalizedString("There is no UTM file in the downloaded ZIP archive.", comment: "Error shown when importing a ZIP file from web that doesn't contain a UTM Virtual Machine.")
         }
     }
     
-    private class CreateUTMFailed: Error {
+    private class CreateUTMFailed: LocalizedError {
         var errorDescription: String? {
             NSLocalizedString("Failed to parse the downloaded VM.", comment: "UTMDownloadVMTask")
         }
