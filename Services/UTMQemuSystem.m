@@ -200,6 +200,24 @@ static int startQemu(UTMProcess *process, int argc, const char *argv[], const ch
 
 - (void)setHasDebugLog:(BOOL)hasDebugLog {
     _hasDebugLog = hasDebugLog;
+    /* The graphics API validation layers are not loggers: they wrap every
+     * Metal object and validate every call, which costs far more than the
+     * drivers they wrap (measured: a 3D benchmark loses ~20% of its frame
+     * rate with them on). Verbose logging must stay usable for performance
+     * bug reports, so validation is a separate opt-in:
+     *   defaults write com.utmapp.UTM GraphicsValidation -bool YES
+     */
+    BOOL hasGraphicsValidation = hasDebugLog &&
+        [NSUserDefaults.standardUserDefaults boolForKey:@"GraphicsValidation"];
+    if (hasGraphicsValidation) {
+        self.mutableEnvironment[@"MTL_DEBUG_LAYER"] = @"1";
+        self.mutableEnvironment[@"MTL_DEBUG_LAYER_ERROR_MODE"] = @"nslog";
+        self.mutableEnvironment[@"ANGLE_METAL_DEBUG_BINDINGS"] = @"1";
+    } else {
+        [self.mutableEnvironment removeObjectForKey:@"MTL_DEBUG_LAYER"];
+        [self.mutableEnvironment removeObjectForKey:@"MTL_DEBUG_LAYER_ERROR_MODE"];
+        [self.mutableEnvironment removeObjectForKey:@"ANGLE_METAL_DEBUG_BINDINGS"];
+    }
     if (hasDebugLog) {
 #if TARGET_OS_OSX // FIXME: verbose logging is broken on iOS
         self.mutableEnvironment[@"G_MESSAGES_DEBUG"] = @"all";
@@ -209,10 +227,7 @@ static int startQemu(UTMProcess *process, int argc, const char *argv[], const ch
         self.mutableEnvironment[@"MESA_DEBUG"] = @"1";
         self.mutableEnvironment[@"MVK_CONFIG_LOG_LEVEL"] = @"4";
         self.mutableEnvironment[@"MVK_DEBUG"] = @"1";
-        self.mutableEnvironment[@"MTL_DEBUG_LAYER"] = @"1";
-        self.mutableEnvironment[@"MTL_DEBUG_LAYER_ERROR_MODE"] = @"nslog";
         self.mutableEnvironment[@"ANGLE_ENABLE_DEBUG_TRACE"] = @"1";
-        self.mutableEnvironment[@"ANGLE_METAL_DEBUG_BINDINGS"] = @"1";
     } else {
         [self.mutableEnvironment removeObjectForKey:@"G_MESSAGES_DEBUG"];
         [self.mutableEnvironment removeObjectForKey:@"VK_LOADER_DEBUG"];
@@ -220,10 +235,7 @@ static int startQemu(UTMProcess *process, int argc, const char *argv[], const ch
         [self.mutableEnvironment removeObjectForKey:@"MESA_DEBUG"];
         [self.mutableEnvironment removeObjectForKey:@"MVK_CONFIG_LOG_LEVEL"];
         [self.mutableEnvironment removeObjectForKey:@"MVK_DEBUG"];
-        [self.mutableEnvironment removeObjectForKey:@"MTL_DEBUG_LAYER"];
-        [self.mutableEnvironment removeObjectForKey:@"MTL_DEBUG_LAYER_ERROR_MODE"];
         [self.mutableEnvironment removeObjectForKey:@"ANGLE_ENABLE_DEBUG_TRACE"];
-        [self.mutableEnvironment removeObjectForKey:@"ANGLE_METAL_DEBUG_BINDINGS"];
     }
 }
 
