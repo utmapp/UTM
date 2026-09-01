@@ -5509,7 +5509,7 @@
 			repositoryURL = "https://github.com/weichsel/ZIPFoundation.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.9.17;
+				minimumVersion = 0.9.20;
 			};
 		};
 		84018693288B66370050AC51 /* XCRemoteSwiftPackageReference "swiftui-visual-effects" */ = {
@@ -5653,7 +5653,7 @@
 			repositoryURL = "https://github.com/weichsel/ZIPFoundation.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.9.17;
+				minimumVersion = 0.9.20;
 			};
 		};
 		CEF7F58F2AEEDCC400E34952 /* XCRemoteSwiftPackageReference "SwiftTerm" */ = {
