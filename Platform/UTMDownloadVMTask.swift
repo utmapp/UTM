@@ -85,13 +85,24 @@ class UTMDownloadVMTask: UTMDownloadTask {
             let destinationURL = destinationFolder.appendingPathComponent(destinationUtmDirectory, isDirectory: true)
             /// create the .utm directory
             try fileManager.createDirectory(at: destinationURL, withIntermediateDirectories: false)
-            /// get and extract all files contained in the UTM directory, except the `__MACOSX` folder
-            let containedFiles = archive.filter({ $0.path.hasPrefix(utmFolderInZip.path) && !$0.path.hasSuffix(utmDirectoryEnding) && !$0.path.contains("__MACOSX") })
-            for file in containedFiles {
-                let relativePath = String(file.path.dropFirst(utmFolderInZip.path.count))
-                let isDirectory = file.path.hasSuffix("/")
-                let fileURL = try containedDestination(for: relativePath, in: destinationURL, isDirectory: isDirectory)
-                _ = try archive.extract(file, to: fileURL, skipCRC32: true)
+            do {
+                /// get and extract all files contained in the UTM directory, except the `__MACOSX` folder
+                let containedFiles = archive.filter({ $0.path.hasPrefix(utmFolderInZip.path) && !$0.path.hasSuffix(utmDirectoryEnding) && !$0.path.contains("__MACOSX") })
+                for file in containedFiles {
+                    /// we never store a symlink in a package, and a link target that survives a containment
+                    /// check can still be resolved outside of the package when it is written through later
+                    guard file.type != .symlink else {
+                        throw UnzipUnsafePathError()
+                    }
+                    let relativePath = String(file.path.dropFirst(utmFolderInZip.path.count))
+                    let isDirectory = file.path.hasSuffix("/")
+                    let fileURL = try containedDestination(for: relativePath, in: destinationURL, isDirectory: isDirectory)
+                    _ = try archive.extract(file, to: fileURL, skipCRC32: true)
+                }
+            } catch {
+                /// a partially extracted package would still be picked up as a VM by the library
+                try? fileManager.removeItem(at: destinationURL)
+                throw error
             }
             return destinationURL
         } else {
