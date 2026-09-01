@@ -68,6 +68,23 @@ extension UIViewController {
         }
         setNeedsUpdateOfPrefersPointerLocked()
     }
+
+    #if !os(visionOS)
+    private static var _utm__childForScreenEdgesDeferringSystemGesturesStorage: [UIViewController: UIViewController] = [:]
+
+    @objc private dynamic var _utm__childForScreenEdgesDeferringSystemGestures: UIViewController? {
+        Self._utm__childForScreenEdgesDeferringSystemGesturesStorage[self]
+    }
+
+    @objc dynamic func setChildForScreenEdgesDeferringSystemGestures(_ value: UIViewController?) {
+        if let value = value {
+            Self._utm__childForScreenEdgesDeferringSystemGesturesStorage[self] = value
+        } else {
+            Self._utm__childForScreenEdgesDeferringSystemGesturesStorage.removeValue(forKey: self)
+        }
+        setNeedsUpdateOfScreenEdgesDeferringSystemGestures()
+    }
+    #endif
     
     /// SwiftUI currently does not provide a way to set the View Conrtoller's home indicator or pointer lock
     fileprivate static func patchViewController() {
@@ -77,6 +94,11 @@ extension UIViewController {
         patch(#selector(getter: Self.childViewControllerForPointerLock),
               with: #selector(getter: Self._utm__childViewControllerForPointerLock),
               class: Self.self)
+        #if !os(visionOS)
+        patch(#selector(getter: Self.childForScreenEdgesDeferringSystemGestures),
+              with: #selector(getter: Self._utm__childForScreenEdgesDeferringSystemGestures),
+              class: Self.self)
+        #endif
     }
 }
 

@@ -119,10 +119,17 @@ static const NSInteger kResizeTimeoutSecs = 5;
     [super viewWillAppear:animated];
     self.prefersHomeIndicatorAutoHidden = YES;
 #if !TARGET_OS_VISION
+    [self setNeedsUpdateOfScreenEdgesDeferringSystemGestures];
     [self startGCMouse];
 #endif
     [self.vmDisplay addRenderer:self.renderer];
 }
+
+#if !TARGET_OS_VISION
+- (UIRectEdge)preferredScreenEdgesDeferringSystemGestures {
+    return UIRectEdgeAll;
+}
+#endif
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];

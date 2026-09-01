@@ -44,18 +44,45 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) VMScroll *scroll;
 
 // Gestures
-@property (nonatomic, nullable) UISwipeGestureRecognizer *swipeUp;
-@property (nonatomic, nullable) UISwipeGestureRecognizer *swipeDown;
 @property (nonatomic, nullable) UISwipeGestureRecognizer *swipeScrollUp;
 @property (nonatomic, nullable) UISwipeGestureRecognizer *swipeScrollDown;
 @property (nonatomic, nullable) UIPanGestureRecognizer *pan;
 @property (nonatomic, nullable) UIPanGestureRecognizer *twoPan;
 @property (nonatomic, nullable) UIPanGestureRecognizer *threePan;
+@property (nonatomic, nullable) UIPinchGestureRecognizer *pinch;
 @property (nonatomic, nullable) UITapGestureRecognizer *tap;
 @property (nonatomic, nullable) UITapGestureRecognizer *tapPencil;
 @property (nonatomic, nullable) UITapGestureRecognizer *twoTap;
+@property (nonatomic, nullable) UITapGestureRecognizer *threeTap;
 @property (nonatomic, nullable) UILongPressGestureRecognizer *longPress;
-@property (nonatomic, nullable) UIPinchGestureRecognizer *pinch;
+@property (nonatomic, nullable) UITouch *multitouchPrimaryTouch;
+@property (nonatomic) BOOL multitouchTwoPanConsumed;
+@property (nonatomic) BOOL multitouchThreePanConsumed;
+@property (nonatomic) BOOL multitouchTwoPanActionStarted;
+@property (nonatomic) BOOL multitouchThreePanActionStarted;
+@property (nonatomic) BOOL multitouchTwoSwipeDecided;
+@property (nonatomic) BOOL multitouchThreeSwipeDecided;
+@property (nonatomic) BOOL multitouchTwoSwipeCandidate;
+@property (nonatomic) BOOL multitouchThreeSwipeCandidate;
+@property (nonatomic) CGPoint multitouchTwoPanLastVelocity;
+@property (nonatomic) CGPoint multitouchThreePanLastVelocity;
+@property (nonatomic) NSTimeInterval multitouchTwoPanLastTime;
+@property (nonatomic) NSTimeInterval multitouchThreePanLastTime;
+@property (nonatomic) NSTimeInterval multitouchTwoPanBeginTime;
+@property (nonatomic) NSTimeInterval multitouchThreePanBeginTime;
+@property (nonatomic) BOOL multitouchPinchActive;
+@property (nonatomic) CGFloat multitouchPinchInitialDistance;
+@property (nonatomic) NSUInteger multitouchActiveDirectTouchCount;
+@property (nonatomic) BOOL multitouchLongPressRecognized;
+@property (nonatomic) BOOL multitouchLongPressPending;
+@property (nonatomic) BOOL multitouchLongPressDragging;
+@property (nonatomic) BOOL multitouchLongPressTouchActive;
+@property (nonatomic) BOOL multitouchLongPressCancelledByMovement;
+@property (nonatomic) CGPoint multitouchLongPressOrigin;
+@property (nonatomic) CGPoint multitouchPrimaryTouchLocation;
+@property (nonatomic) CGPoint multitouchScrollLastLocation;
+@property (nonatomic) CGPoint multitouchScrollVelocity;
+@property (nonatomic) NSTimeInterval multitouchScrollLastTime;
 
 //Gamepad
 @property (nonatomic, nullable) GCController *controller;
