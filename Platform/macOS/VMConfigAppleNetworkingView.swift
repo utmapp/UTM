@@ -18,9 +18,15 @@ import SwiftUI
 import Virtualization
 
 struct VMConfigAppleNetworkingView: View {
+    @AppStorage("HostNetworks") var hostNetworksData: Data = Data()
     @Binding var config: UTMAppleConfigurationNetwork
     @EnvironmentObject private var data: UTMData
     @State private var newMacAddress: String?
+    @State private var hostNetworks: [UTMConfigurationHostNetwork] = []
+    
+    private func loadData() {
+        hostNetworks = (try? PropertyListDecoder().decode([UTMConfigurationHostNetwork].self, from: hostNetworksData)) ?? []
+    }
     
     var body: some View {
         Form {
@@ -47,6 +53,21 @@ struct VMConfigAppleNetworkingView: View {
                             Text(interface.localizedDisplayName.map { "\($0) (\(interface.identifier))" } ?? interface.identifier)
                                 .tag(interface.identifier as String?)
                         }
+                    }
+                }
+            }
+            if #available(macOS 26.0, *) {
+                if config.mode == .host {
+                    Picker("Host Network", selection: $config.hostNetUuid) {
+                        Text("Default (private)")
+                            .tag(nil as String?)
+                        ForEach(hostNetworks) { interface in
+                            Text(interface.name)
+                                .tag(interface.uuid as String?)
+                        }
+                    }.help("You can configure additional host networks in UTM Settings.")
+                    if config.hostNetUuid != nil {
+                        Text("Note: No DHCP will be provided by UTM")
                     }
                 }
             }

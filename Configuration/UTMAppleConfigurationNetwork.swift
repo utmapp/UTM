@@ -23,11 +23,13 @@ struct UTMAppleConfigurationNetwork: Codable, Identifiable {
     enum NetworkMode: String, CaseIterable, QEMUConstant {
         case shared = "Shared"
         case bridged = "Bridged"
+        case host = "Host"
         
         var prettyValue: String {
             switch self {
             case .shared: return NSLocalizedString("Shared Network", comment: "UTMAppleConfigurationNetwork")
             case .bridged: return NSLocalizedString("Bridged (Advanced)", comment: "UTMAppleConfigurationNetwork")
+            case .host: return NSLocalizedString("Host (Advanced)", comment: "UTMAppleConfigurationNetwork")
             }
         }
     }
@@ -40,12 +42,16 @@ struct UTMAppleConfigurationNetwork: Codable, Identifiable {
     /// In bridged mode this is the physical interface to bridge.
     var bridgeInterface: String?
     
+    /// Network UUID to attach to in host mode
+    var hostNetUuid: String?
+    
     let id = UUID()
     
     enum CodingKeys: String, CodingKey {
         case mode = "Mode"
         case macAddress = "MacAddress"
         case bridgeInterface = "BridgeInterface"
+        case hostNetUuid = "HostNetUuid"
     }
     
     init() {
@@ -56,6 +62,7 @@ struct UTMAppleConfigurationNetwork: Codable, Identifiable {
         mode = try values.decode(NetworkMode.self, forKey: .mode)
         macAddress = try values.decode(String.self, forKey: .macAddress)
         bridgeInterface = try values.decodeIfPresent(String.self, forKey: .bridgeInterface)
+        hostNetUuid = try values.decodeIfPresent(UUID.self, forKey: .hostNetUuid)?.uuidString
     }
     
     func encode(to encoder: Encoder) throws {
@@ -64,6 +71,9 @@ struct UTMAppleConfigurationNetwork: Codable, Identifiable {
         try container.encode(macAddress, forKey: .macAddress)
         if mode == .bridged {
             try container.encodeIfPresent(bridgeInterface, forKey: .bridgeInterface)
+        }
+        if mode == .host {
+            try container.encodeIfPresent(hostNetUuid, forKey: .hostNetUuid)
         }
     }
     
@@ -77,9 +87,26 @@ struct UTMAppleConfigurationNetwork: Codable, Identifiable {
             bridgeInterface = attachment.interface.identifier
         } else if let _ = virtioConfig.attachment as? VZNATNetworkDeviceAttachment {
             mode = .shared
-        } else {
-            return nil
+        } else if #available(macOS 26.0, *) {
+            if let attachment = virtioConfig.attachment as? VZVmnetNetworkDeviceAttachment {
+                mode = .host
+                var status: vmnet_return_t = .VMNET_SUCCESS
+                guard let vmnetConfig = vmnet_network_copy_serialization(attachment.network, &status), status == .VMNET_SUCCESS else {
+                    return nil
+                }
+                if let uuidPtr = xpc_dictionary_get_uuid(vmnetConfig, vmnet.vmnet_network_identifier_key) {
+                    let uuidBytes = UnsafeRawPointer(uuidPtr).assumingMemoryBound(to: UInt8.self)
+                    let uuid = UUID(uuid: (
+                        uuidBytes[0], uuidBytes[1], uuidBytes[2], uuidBytes[3],
+                        uuidBytes[4], uuidBytes[5], uuidBytes[6], uuidBytes[7],
+                        uuidBytes[8], uuidBytes[9], uuidBytes[10], uuidBytes[11],
+                        uuidBytes[12], uuidBytes[13], uuidBytes[14], uuidBytes[15]
+                    ))
+                    hostNetUuid = uuid.uuidString
+                }
+            }
         }
+        return nil
     }
     
     func vzNetworking() -> VZNetworkDeviceConfiguration? {
@@ -109,7 +136,24 @@ struct UTMAppleConfigurationNetwork: Codable, Identifiable {
                 let attachment = VZBridgedNetworkDeviceAttachment(interface: found)
                 config.attachment = attachment
             }
+        case .host:
+            if #available(macOS 26.0, *) {
+                if let netUuid = hostNetUuid {
+                    let vmnetConfig = xpc_dictionary_create_empty()
+                    xpc_dictionary_set_uint64(vmnetConfig, vmnet.vmnet_operation_mode_key, UInt64(vmnet.vmnet_mode_t.VMNET_HOST_MODE.rawValue))
+                    xpc_dictionary_set_uuid(vmnetConfig, vmnet.vmnet_network_identifier_key, netUuid)
+
+                    var status: vmnet_return_t = .VMNET_SUCCESS
+                    guard let vmnetNetwork = vmnet_network_create_with_serialization(vmnetConfig, &status), status == .VMNET_SUCCESS else {
+                        return nil
+                    }
+
+                    let attachment = VZVmnetNetworkDeviceAttachment(network: vmnetNetwork)
+                    config.attachment = attachment
+                }
+            }
         }
+
         return config
     }
 }
