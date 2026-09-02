@@ -1,5 +1,5 @@
 #  UTM
-[![Build](https://github.com/utmapp/UTM/workflows/Build/badge.svg?branch=main&event=push)][1]
+[![Build](https://github.com/utmapp/UTM/actions/workflows/build.yml/badge.svg?branch=main&event=push)][1]
 
 > 发明一台可用于计算任何可计算序列的机器是可行的。
 
