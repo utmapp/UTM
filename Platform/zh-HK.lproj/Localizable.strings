@@ -313,6 +313,9 @@ VMDisplayWindowController */
 "Continue" = "繼續";
 
 /* No comment provided by engineer. */
+"Copy" = "複製";
+
+/* No comment provided by engineer. */
 "CoreAudio (Output Only)" = "CoreAudio (只輸出)";
 
 /* No comment provided by engineer. */
@@ -338,6 +341,9 @@ VMDisplayWindowController */
 
 /* VMConfigAppleDisplayView */
 "Custom" = "自訂";
+
+/* No comment provided by engineer. */
+"D3DMetal" = "D3DMetal";
 
 /* UTMSWTPM */
 "Data not specified." = "未指定資料。";
@@ -461,6 +467,9 @@ UTMQemuConstants */
 
 /* VMDisplayWindowController */
 "Drives" = "磁碟";
+
+/* No comment provided by engineer. */
+"DXMT" = "DXMT";
 
 /* No comment provided by engineer. */
 "Edit" = "編輯";
