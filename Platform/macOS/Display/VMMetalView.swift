@@ -28,6 +28,7 @@ class VMMetalView: MTKView {
     @Setting("IsCtrlCmdSwapped") private var isCtrlCmdSwapped = false
     @Setting("IsCmdOptSwapped") private var isCmdOptSwapped = false
     @Setting("IsISOKeySwapped") private var isISOKeySwapped = false
+    @Setting("IsCapsLockKey") private var isCapsLockKey: Bool = false
 
     private enum ModifierKeySwap {
         case none
@@ -65,6 +66,9 @@ class VMMetalView: MTKView {
     private func getScanCodeForEvent(_ event: NSEvent) -> Int {
         if event.type == .keyDown || event.type == .keyUp {
             let keycode = convertToCurrentLayout(for: Int(event.keyCode))
+            if keycode == CapsLockRemapper.hostKeyCode && CapsLockRemapper.shared.isActive {
+                return Int(KeyCodeMap.keyCodeToScanCodes[kVK_CapsLock]!.down)
+            }
             /// see KeyCodeMap file for explaination why the .down scan code is used for both key down and up
             return Int(KeyCodeMap.keyCodeToScanCodes[keycode]?.down ?? 0)
         } else {
@@ -341,6 +345,9 @@ extension VMMetalView {
         isMouseCaptured = true
         NSCursor.tryHide()
         CGSSetGlobalHotKeyOperatingMode(CGSMainConnectionID(), .disable)
+        if isCapsLockKey {
+            CapsLockRemapper.shared.apply()
+        }
     }
     
     func releaseMouse() {
@@ -351,6 +358,11 @@ extension VMMetalView {
             NSCursor.tryUnhide()
         }
         CGSSetGlobalHotKeyOperatingMode(CGSMainConnectionID(), .enable)
+        if CapsLockRemapper.shared.isActive {
+            // the physical release can arrive after the remap is gone, so never leave the guest holding Caps Lock
+            inputDelegate?.keyUp(scanCode: Int(KeyCodeMap.keyCodeToScanCodes[kVK_CapsLock]!.down))
+            CapsLockRemapper.shared.restore()
+        }
     }
 }
 

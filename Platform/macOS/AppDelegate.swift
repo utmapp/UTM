@@ -297,6 +297,8 @@ enum UTMQuitPolicy: Int {
     func applicationWillTerminate(_ notification: Notification) {
         /// Synchronize registry
         UTMRegistry.shared.sync()
+        /// Give the host its Caps Lock back if a VM still has input captured
+        CapsLockRemapper.shared.restore()
         /// Clean up caches
         let fileManager = FileManager.default
         guard let cacheUrl = fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first else {
@@ -314,6 +316,7 @@ enum UTMQuitPolicy: Int {
     }
     
     func applicationDidFinishLaunching(_ notification: Notification) {
+        CapsLockRemapper.shared.recoverAtLaunch()
         if isDockIconHidden {
             NSApp.setActivationPolicy(.accessory)
         }
