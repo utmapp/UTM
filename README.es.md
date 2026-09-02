@@ -68,7 +68,7 @@ Adicionalmente, el frontend de UTM depende en los siguientes componentes bajo la
 * [ZIP Foundation](https://github.com/weichsel/ZIPFoundation)
 * [InAppSettingsKit](https://github.com/futuretap/InAppSettingsKit)
 
-El alojamiento de la integración continua es proporcionado por [MacStadium](https://www.macstadium.com/opensource).
+El alojamiento de la integración continua es proporcionado por [MacStadium](https://macstadium.com/company/opensource).
 
 [<img src="https://uploads-ssl.webflow.com/5ac3c046c82724970fc60918/5c019d917bba312af7553b49_MacStadium-developerlogo.png" alt="Logo de MacStadium" width="250">](https://www.macstadium.com)
 

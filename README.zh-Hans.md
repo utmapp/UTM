@@ -67,7 +67,7 @@ UTM是在宽容的Apache 2.0许可证下分发的。然而，它使用了若干�
 * [ZIP Foundation](https://github.com/weichsel/ZIPFoundation)
 * [InAppSettingsKit](https://github.com/futuretap/InAppSettingsKit)
 
-持续集成托管由 [MacStadium](https://www.macstadium.com/opensource) 提供。
+持续集成托管由 [MacStadium](https://macstadium.com/company/opensource) 提供。
 
 [<img src="https://uploads-ssl.webflow.com/5ac3c046c82724970fc60918/5c019d917bba312af7553b49_MacStadium-developerlogo.png" alt="MacStadium logo" width="250">](https://www.macstadium.com)
 

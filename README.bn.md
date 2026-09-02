@@ -71,7 +71,7 @@ Some icons made by [Freepik](https://www.freepik.com)  [www.flaticon.com](https:
 * [ZIP Foundation](https://github.com/weichsel/ZIPFoundation)
 * [InAppSettingsKit](https://github.com/futuretap/InAppSettingsKit)
 
-কন্টিনিউয়াস ইন্টিগ্রেশন হোস্টিং টি [MacStadium](https://www.macstadium.com/opensource) প্রোভাইড করছে 
+কন্টিনিউয়াস ইন্টিগ্রেশন হোস্টিং টি [MacStadium](https://macstadium.com/company/opensource) প্রোভাইড করছে 
 
 
 [<img src="https://uploads-ssl.webflow.com/5ac3c046c82724970fc60918/5c019d917bba312af7553b49_MacStadium-developerlogo.png" alt="MacStadium logo" width="250">](https://www.macstadium.com)
