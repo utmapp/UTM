@@ -34,6 +34,7 @@ struct ContentView: View {
     @State private var editMode = false
     @EnvironmentObject private var data: UTMData
     @StateObject private var releaseHelper = UTMReleaseHelper()
+    @StateObject private var updateManager = UTMUpdateManager.shared
     @State private var openSheetPresented = false
     @Environment(\.openURL) var openURL
     @AppStorage("ServerAutostart") private var isServerAutostart: Bool = false
@@ -53,10 +54,32 @@ struct ContentView: View {
         }, content: {
             VMReleaseNotesView(helper: releaseHelper).padding()
         })
+        #if os(macOS)
+        .sheet(isPresented: Binding<Bool>(
+            get: { updateManager.isUpdateAvailable && updateManager.showUpdateDialog },
+            set: { _ in updateManager.showUpdateDialog = false }
+        )) {
+            if let updateInfo = updateManager.updateInfo {
+                UpdateAvailableView(updateInfo: updateInfo, updateManager: updateManager)
+            }
+        }
+        #endif
         .onReceive(NSNotification.ShowReleaseNotes) { _ in
             Task {
                 await releaseHelper.fetchReleaseNotes(force: true)
             }
+        }
+        .onReceive(NSNotification.CheckForUpdates) { _ in
+            Task {
+                #if os(macOS)
+                    await updateManager.checkForUpdates(force: true)
+                #endif
+            }
+        }
+        .onReceive(NSNotification.Name("UpdateAvailable")) { _ in
+            #if os(macOS)
+            updateManager.showUpdateDialog = true
+            #endif
         }
         .onOpenURL(perform: handleURL)
         .handlesExternalEvents(preferring: ["*"], allowing: ["*"])
