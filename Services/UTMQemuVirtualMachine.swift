@@ -103,6 +103,9 @@ final class UTMQemuVirtualMachine: UTMSpiceVirtualMachine {
     
     private(set) var snapshotUnsupportedError: Error?
     
+    /// When set, the next `_start` will load this snapshot tag instead of a fresh/suspended boot.
+    private var pendingRestoreSnapshotName: String?
+
     private var isScopedAccess: Bool = false
     
     private weak var screenshotTimer: Timer?
@@ -428,14 +431,28 @@ extension UTMQemuVirtualMachine {
         try Task.checkCancellation()
         
         // load saved state if requested
+        //
+        // A user snapshot restore on a stopped VM (`pendingRestoreSnapshotName`) reuses this
+        // startup path: boot paused, loadvm the requested tag, then continue. Once the VM is
+        // running, any previous internal suspend state is obsolete and is removed below.
         let isSuspended = await registryEntry.isSuspended
-        if !isRunningAsDisposible && isSuspended {
-            try await monitor.qemuRestoreSnapshot(kSuspendSnapshotName)
+        let userRestoreSnapshotName = pendingRestoreSnapshotName
+        pendingRestoreSnapshotName = nil
+        let withMounting: Bool
+        if let userRestoreSnapshotName = userRestoreSnapshotName {
+            try await _restoreSnapshot(name: userRestoreSnapshotName)
             try Task.checkCancellation()
+            withMounting = false
+        } else {
+            if !isRunningAsDisposible && isSuspended {
+                try await monitor.qemuRestoreSnapshot(kSuspendSnapshotName)
+                try Task.checkCancellation()
+            }
+            withMounting = !isSuspended
         }
         
         // set up SPICE sharing and removable drives
-        try await self.restoreExternalDrives(withMounting: !isSuspended)
+        try await self.restoreExternalDrives(withMounting: withMounting)
         if let ioService = interface as? UTMSpiceIO {
             try await self.restoreSharedDirectory(for: ioService)
         } else {
@@ -446,7 +463,7 @@ extension UTMQemuVirtualMachine {
         // continue VM boot
         try await monitor.continueBoot()
         
-        // delete saved state
+        // delete saved suspend state (user snapshots are preserved)
         if isSuspended {
             try? await deleteSnapshot()
         }
@@ -667,6 +684,18 @@ extension UTMQemuVirtualMachine {
     }
     
     func restoreSnapshot(name: String? = nil) async throws {
+        // A stopped VM is restored by booting it directly into the requested snapshot tag,
+        // reusing the suspend startup path via `pendingRestoreSnapshotName`.
+        if state == .stopped, let name {
+            pendingRestoreSnapshotName = name
+            do {
+                try await start()
+            } catch {
+                pendingRestoreSnapshotName = nil
+                throw error
+            }
+            return
+        }
         guard state == .paused || state == .started else {
             throw UTMQemuVirtualMachineError.invalidVmState
         }
@@ -676,7 +705,16 @@ extension UTMQemuVirtualMachine {
             try await _restoreSnapshot(name: name ?? kSuspendSnapshotName)
             state = prev
         } catch {
-            state = .stopped
+            if prev == .started, let monitor = await monitor {
+                do {
+                    try await monitor.qemuResume()
+                    state = .started
+                } catch {
+                    state = .paused
+                }
+            } else {
+                state = .paused
+            }
             throw error
         }
     }

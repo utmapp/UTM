@@ -83,6 +83,34 @@
           </parameter>
         </command>
         
+        <command name="create snapshot" code="UTMvcrsn" description="Create or replace a named full-VM snapshot (RAM, devices, and disk) for a QEMU virtual machine. The VM must be running or paused.">
+          <direct-parameter description="Virtual machine to snapshot." type="virtual machine"/>
+          <parameter name="named" code="SnNm" description="The name of the snapshot." type="text">
+            <cocoa key="snapshotName"/>
+          </parameter>
+        </command>
+
+        <command name="list snapshots" code="UTMvlssn" description="List the names of all named snapshots for a stopped QEMU virtual machine, newest first.">
+          <direct-parameter description="Virtual machine to list snapshots for." type="virtual machine"/>
+          <result description="List of snapshot names.">
+            <type type="text" list="yes"/>
+          </result>
+        </command>
+
+        <command name="restore snapshot" code="UTMvrssn" description="Restore a stopped QEMU virtual machine to a named snapshot.">
+          <direct-parameter description="Virtual machine to restore." type="virtual machine"/>
+          <parameter name="named" code="SnNm" description="The name of the snapshot to restore." type="text">
+            <cocoa key="snapshotName"/>
+          </parameter>
+        </command>
+
+        <command name="delete snapshot" code="UTMvdlsn" description="Delete a named snapshot from a QEMU virtual machine.">
+          <direct-parameter description="Virtual machine owning the snapshot." type="virtual machine"/>
+          <parameter name="named" code="SnNm" description="The name of the snapshot to delete." type="text">
+            <cocoa key="snapshotName"/>
+          </parameter>
+        </command>
+
         <command name="delete" code="coredelo" description="Delete a virtual machine. All data will be deleted, there is no confirmation!">
             <cocoa class="UTMScriptingDeleteCommand"/>
             <access-group identifier="*"/>
@@ -147,6 +175,22 @@
           
           <responds-to command="stop">
             <cocoa method="stop:"/>
+          </responds-to>
+
+          <responds-to command="create snapshot">
+            <cocoa method="createSnapshot:"/>
+          </responds-to>
+
+          <responds-to command="list snapshots">
+            <cocoa method="listSnapshots:"/>
+          </responds-to>
+
+          <responds-to command="restore snapshot">
+            <cocoa method="restoreSnapshot:"/>
+          </responds-to>
+
+          <responds-to command="delete snapshot">
+            <cocoa method="deleteSnapshot:"/>
           </responds-to>
           
           <responds-to command="delete">

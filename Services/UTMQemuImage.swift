@@ -107,13 +107,38 @@ import QEMUKitInternal
      }
      */
 
-    struct QemuImageInfo : Codable {
+    struct QemuSnapshotInfo: Codable, Sendable, Equatable {
+        let id: String
+        let name: String
+        let vmStateSize: Int64
+        let dateSec: Int64
+        let dateNsec: Int64
+        let vmClockSec: Int64
+        let vmClockNsec: Int64
+
+        var date: Date {
+            Date(timeIntervalSince1970: TimeInterval(dateSec) + TimeInterval(dateNsec) / 1_000_000_000)
+        }
+
+        private enum CodingKeys: String, CodingKey {
+            case id
+            case name
+            case vmStateSize = "vm-state-size"
+            case dateSec = "date-sec"
+            case dateNsec = "date-nsec"
+            case vmClockSec = "vm-clock-sec"
+            case vmClockNsec = "vm-clock-nsec"
+        }
+    }
+
+    struct QemuImageInfo: Codable {
         let virtualSize : Int64
         let filename : String
-        let clusterSize : Int32
+        let clusterSize : Int32?
         let format : String
         let actualSize : Int64
-        let dirtyFlag : Bool
+        let dirtyFlag : Bool?
+        let snapshots: [QemuSnapshotInfo]?
 
         private enum CodingKeys: String, CodingKey {
             case virtualSize = "virtual-size"
@@ -122,10 +147,11 @@ import QEMUKitInternal
             case format
             case actualSize = "actual-size"
             case dirtyFlag = "dirty-flag"
+            case snapshots
         }
     }
 
-    static func size(image url: URL) async throws -> Int64 {
+    static func info(image url: URL) async throws -> QemuImageInfo {
         let qemuImg = UTMQemuImage()
         let srcBookmark = try url.bookmarkData()
         qemuImg.pushArgv("info")
@@ -144,7 +170,11 @@ import QEMUKitInternal
         let data = qemuImg.logOutput.data(using: .utf8) ?? Data()
         let image_info: QemuImageInfo = try decoder.decode(QemuImageInfo.self, from: data)
 
-        return image_info.virtualSize
+        return image_info
+    }
+
+    static func size(image url: URL) async throws -> Int64 {
+        try await info(image: url).virtualSize
     }
 
     static func resize(image url: URL, size : UInt64) async throws {

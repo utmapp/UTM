@@ -138,8 +138,11 @@
 		844EC0FB2773EE49003C104A /* UTMDownloadIPSWTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844EC0FA2773EE49003C104A /* UTMDownloadIPSWTask.swift */; };
 		8453DCB2278CE3D10037A0DA /* qemu-img.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 8453DCB0278CE33E0037A0DA /* qemu-img.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8453DCB4278CE5410037A0DA /* UTMQemuImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8453DCB3278CE5410037A0DA /* UTMQemuImage.swift */; };
+		393A92DAE84A47029BA5F829 /* UTMSnapshotService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFC4D9A586DD424D85B2FA1C /* UTMSnapshotService.swift */; };
 		8453DCB5278CE5410037A0DA /* UTMQemuImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8453DCB3278CE5410037A0DA /* UTMQemuImage.swift */; };
+		41FCD5A63CB34D7F8E20F687 /* UTMSnapshotService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFC4D9A586DD424D85B2FA1C /* UTMSnapshotService.swift */; };
 		8453DCB6278CE5410037A0DA /* UTMQemuImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8453DCB3278CE5410037A0DA /* UTMQemuImage.swift */; };
+		FA897DF5FDA34A4F8F6782AD /* UTMSnapshotService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFC4D9A586DD424D85B2FA1C /* UTMSnapshotService.swift */; };
 		845F1705289B1EEB00944904 /* UTMAppleConfigurationGenericPlatform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845F1704289B1EEB00944904 /* UTMAppleConfigurationGenericPlatform.swift */; };
 		845F1707289B5E2600944904 /* VMAppleSettingsAddDeviceMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845F1706289B5E2600944904 /* VMAppleSettingsAddDeviceMenuView.swift */; };
 		845F1709289CA15C00944904 /* VMDisplayAppleTerminalWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845F1708289CA15C00944904 /* VMDisplayAppleTerminalWindowController.swift */; };
@@ -1772,6 +1775,7 @@
 		844EC0FA2773EE49003C104A /* UTMDownloadIPSWTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMDownloadIPSWTask.swift; sourceTree = "<group>"; };
 		8453DCB0278CE33E0037A0DA /* qemu-img.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "qemu-img.framework"; path = "$(SYSROOT_DIR)/Frameworks/qemu-img.framework"; sourceTree = "<group>"; };
 		8453DCB3278CE5410037A0DA /* UTMQemuImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMQemuImage.swift; sourceTree = "<group>"; };
+		EFC4D9A586DD424D85B2FA1C /* UTMSnapshotService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMSnapshotService.swift; sourceTree = "<group>"; };
 		845F1704289B1EEB00944904 /* UTMAppleConfigurationGenericPlatform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMAppleConfigurationGenericPlatform.swift; sourceTree = "<group>"; };
 		845F1706289B5E2600944904 /* VMAppleSettingsAddDeviceMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMAppleSettingsAddDeviceMenuView.swift; sourceTree = "<group>"; };
 		845F1708289CA15C00944904 /* VMDisplayAppleTerminalWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayAppleTerminalWindowController.swift; sourceTree = "<group>"; };
@@ -2967,6 +2971,7 @@
 				CE9D197A226542FE00355E14 /* UTMProcess.h */,
 				CE9D197B226542FE00355E14 /* UTMProcess.m */,
 				8453DCB3278CE5410037A0DA /* UTMQemuImage.swift */,
+				EFC4D9A586DD424D85B2FA1C /* UTMSnapshotService.swift */,
 				84A0A8822A47D52E0038F329 /* UTMQemuPort.swift */,
 				CE03D05424D90BE000F76B84 /* UTMQemuSystem.h */,
 				CE03D05024D90B4E00F76B84 /* UTMQemuSystem.m */,
@@ -3859,6 +3864,7 @@
 				CE2D92D724AD46670059923A /* UTMLogging.m in Sources */,
 				848D99A8285DB5550055C215 /* VMConfigConstantPicker.swift in Sources */,
 				8453DCB4278CE5410037A0DA /* UTMQemuImage.swift in Sources */,
+				393A92DAE84A47029BA5F829 /* UTMSnapshotService.swift in Sources */,
 				CE2D955924AD4F980059923A /* VMToolbarModifier.swift in Sources */,
 				CE2D92DA24AD46670059923A /* VMCursor.m in Sources */,
 				CE9375A124BBDDD10074066F /* VMConfigDriveDetailsView.swift in Sources */,
@@ -4101,6 +4107,7 @@
 				848A98B6286A142C006F0550 /* UTMAppleConfigurationSerial.swift in Sources */,
 				CE2D956224AD4F990059923A /* VMSettingsView.swift in Sources */,
 				8453DCB6278CE5410037A0DA /* UTMQemuImage.swift in Sources */,
+				FA897DF5FDA34A4F8F6782AD /* UTMSnapshotService.swift in Sources */,
 				CEDF83FA258AE24E0030E4AC /* UTMPasteboard.swift in Sources */,
 				848F71EE277A2F47006A0240 /* UTMSerialPortDelegate.swift in Sources */,
 				848A98BA286A17A8006F0550 /* UTMAppleConfigurationNetwork.swift in Sources */,
@@ -4238,6 +4245,7 @@
 				CEA45E94263519B5002FA97D /* UTMLegacyQemuConfiguration+Drives.m in Sources */,
 				848A98C5286F332D006F0550 /* UTMConfiguration.swift in Sources */,
 				8453DCB5278CE5410037A0DA /* UTMQemuImage.swift in Sources */,
+				41FCD5A63CB34D7F8E20F687 /* UTMSnapshotService.swift in Sources */,
 				84C60FBB268269D700B58C00 /* VMDisplayViewController.swift in Sources */,
 				8443EFFB28456F3B00B2E6E2 /* UTMQemuConfigurationSharing.swift in Sources */,
 				848D99BD28636AC90055C215 /* UTMConfigurationDrive.swift in Sources */,
