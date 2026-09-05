@@ -47,6 +47,8 @@ struct FileBrowseField: View {
                 isFileImporterPresented.toggle()
             }
         }
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel(titleKey)
         #else
         if let path = url?.path {
             Text(path)
