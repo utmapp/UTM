@@ -39,6 +39,7 @@ enum UTMQuitPolicy: Int {
     private var powerDownAttemptID: UUID?
     private var isPowerDownRequestComplete = false
     private var arePowerDownCandidatesStopped = false
+    private var controlServer: UTMControlServer?
     
     private var runningVirtualMachines: [VMData] {
         guard let vmList = data?.vmWindows.keys else {
@@ -319,6 +320,13 @@ enum UTMQuitPolicy: Int {
         CapsLockRemapper.shared.recoverAtLaunch()
         if isDockIconHidden {
             NSApp.setActivationPolicy(.accessory)
+        }
+        guard let data else { return }
+        let readinessTask = Task { await data.listRefresh() }
+        do {
+            controlServer = try UTMControlServer(data: data, readinessTask: readinessTask)
+        } catch {
+            logger.error("Failed to start native control server: \(error.localizedDescription)")
         }
     }
     

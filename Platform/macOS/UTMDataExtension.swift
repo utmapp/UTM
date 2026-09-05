@@ -19,6 +19,28 @@ import Carbon.HIToolbox
 
 @available(macOS 11, *)
 extension UTMData {
+    func startHeadlessForControl(vm: VMData, options: UTMVirtualMachineStartOptions = []) async throws {
+        guard let wrapped = vm.wrapped, vmWindows[vm] == nil else {
+            throw UTMDataError.virtualMachineUnavailable
+        }
+        let session = VMHeadlessSessionState(for: wrapped) {
+            self.vmWindows.removeValue(forKey: vm)
+        }
+        vmWindows[vm] = session
+        do {
+            guard wrapped.state == .stopped else {
+                throw UTMDataError.virtualMachineUnavailable
+            }
+            try await wrapped.start(options: options)
+            vm.state = wrapped.state
+        } catch {
+            if (vmWindows[vm] as? VMHeadlessSessionState) === session {
+                vmWindows.removeValue(forKey: vm)
+            }
+            throw error
+        }
+    }
+
     func run(vm: VMData, options: UTMVirtualMachineStartOptions = [], startImmediately: Bool = true) {
         var window: Any? = vmWindows[vm]
         if window == nil {

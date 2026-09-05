@@ -30,7 +30,9 @@ struct UTMCtl: ParsableCommand {
             Status.self,
             Start.self,
             Suspend.self,
+            Resume.self,
             Stop.self,
+            ForceStop.self,
             Attach.self,
             File.self,
             Exec.self,
@@ -48,6 +50,15 @@ protocol UTMAPICommand: ParsableCommand {
     var environment: UTMCtl.EnvironmentOptions { get }
     
     func run(with application: UTMScriptingApplication) throws
+}
+
+protocol NativeUTMAPICommand: ParsableCommand {
+    var json: Bool { get }
+    func runNative() throws
+}
+
+extension NativeUTMAPICommand {
+    func run() throws { try runNative() }
 }
 
 extension UTMAPICommand {
@@ -140,6 +151,7 @@ extension UTMCtl {
         case virtualMachineNotFound
         case invalidIdentifier(String)
         case deviceNotFound
+        case native(code: String, message: String)
         
         var errorDescription: String? {
             switch self {
@@ -147,6 +159,7 @@ extension UTMCtl {
             case .virtualMachineNotFound: return "Virtual machine not found."
             case .invalidIdentifier(let identifier): return "Identifier '\(identifier)' is invalid."
             case .deviceNotFound: return "Device not found."
+            case .native(let code, let message): return "\(code): \(message)"
             }
         }
     }
@@ -182,17 +195,21 @@ extension UTMCtl {
 }
 
 extension UTMCtl {
-    struct List: UTMAPICommand {
+    struct List: NativeUTMAPICommand {
         static var configuration = CommandConfiguration(
             abstract: "Enumerate all registered virtual machines."
         )
         
         @OptionGroup var environment: EnvironmentOptions
-        
-        func run(with application: UTMScriptingApplication) throws {
-            if let list = application.virtualMachines!() as? [UTMScriptingVirtualMachine] {
-                printResponse(list)
-            }
+        @Flag(name: .long, help: "Output JSON.") var json = false
+
+        func runNative() throws {
+            let response = try nativeRequest(.list)
+            if json { try printJSON(response) }
+            else if let vms = response.vms {
+                print("UUID                                 Status   Name")
+                for vm in vms { print("\(vm.uuid) \(vm.state.padding(toLength: 8, withPad: " ", startingAt: 0)) \(vm.name)") }
+            } else { try throwResponseError(response) }
         }
         
         func printResponse(_ response: [UTMScriptingVirtualMachine]) {
@@ -206,19 +223,21 @@ extension UTMCtl {
 }
 
 extension UTMCtl {
-    struct Status: UTMAPICommand {
+    struct Status: NativeUTMAPICommand {
         static var configuration = CommandConfiguration(
             abstract: "Query the status of a virtual machine."
         )
         
         @OptionGroup var environment: EnvironmentOptions
+        @Flag(name: .long, help: "Output JSON.") var json = false
         
         @OptionGroup var identifer: VMIdentifier
         
-        func run(with application: UTMScriptingApplication) throws {
-            let vm = try virtualMachine(forIdentifier: identifer, in: application)
-            printResponse(vm)
-            
+        func runNative() throws {
+            let response = try nativeRequest(.status(identifier: identifer.identifier))
+            if json { try printJSON(response) }
+            else if let vm = response.vm { print(vm.state) }
+            else { try throwResponseError(response) }
         }
         
         func printResponse(_ vm: UTMScriptingVirtualMachine) {
@@ -227,105 +246,206 @@ extension UTMCtl {
     }
 }
 
+private func printJSON(_ response: UTMControlResponse) throws {
+    try FileHandle.standardOutput.write(contentsOf: JSONEncoder().encode(response) + Data([10]))
+}
+
+private func printNativeOperation(_ response: UTMControlResponse, json: Bool) throws {
+    if json { try printJSON(response) }
+    else if let vm = response.vm { print(vm.state) }
+    else { try throwResponseError(response) }
+}
+
+private func nativeRequest(_ request: UTMControlRequest) throws -> UTMControlResponse {
+    let responseTimeout: TimeInterval
+    switch request {
+    case .start, .suspend, .resume:
+        responseTimeout = 30
+    case .list, .status:
+        responseTimeout = UTMControlTransport.timeout
+    case .stop, .forceStop:
+        responseTimeout = 55
+    }
+    do {
+        return try requestNativeControl(request, responseTimeout: responseTimeout)
+    } catch UTMControlClient.ClientError.unavailable {
+        do {
+            try NativeControlStartup.ensureAvailable()
+            return try requestNativeControl(request, responseTimeout: responseTimeout)
+        } catch let error as NativeControlStartup.Error {
+            exitNativeUnavailable(error.message)
+        } catch UTMControlClient.ClientError.unavailable {
+            exitNativeUnavailable("UTM is not running or its control socket is unavailable.")
+        } catch UTMControlClient.ClientError.protocolError {
+            exitNativeProtocolError()
+        }
+    } catch UTMControlClient.ClientError.protocolError {
+        exitNativeProtocolError()
+    }
+}
+
+private func requestNativeControl(_ request: UTMControlRequest, responseTimeout: TimeInterval) throws -> UTMControlResponse {
+    let response = try UTMControlClient().request(request, responseTimeout: responseTimeout)
+    if let error = response.error {
+        if CommandLine.arguments.contains("--json") { try printJSON(response) }
+        else { FileHandle.standardError.write(Data("\(error.code): \(error.message)\n".utf8)) }
+        Darwin.exit(nativeExitCode(for: error.code))
+    }
+    return response
+}
+
+private func exitNativeUnavailable(_ message: String) -> Never {
+    let response = UTMControlResponse.failure(UTMControlError(code: UTMControlErrorCode.unavailable,
+                                                              message: message, identifier: nil, retryable: true))
+    if CommandLine.arguments.contains("--json") { try? printJSON(response) }
+    else { FileHandle.standardError.write(Data("\(UTMControlErrorCode.unavailable): \(message)\n".utf8)) }
+    Darwin.exit(8)
+}
+
+private func exitNativeProtocolError() -> Never {
+    let message = "UTM returned an invalid control response."
+    let response = UTMControlResponse.failure(UTMControlError(code: UTMControlErrorCode.protocolError,
+                                                              message: message, identifier: nil, retryable: true))
+    if CommandLine.arguments.contains("--json") { try? printJSON(response) }
+    else { FileHandle.standardError.write(Data("\(UTMControlErrorCode.protocolError): \(message)\n".utf8)) }
+    Darwin.exit(nativeExitCode(for: UTMControlErrorCode.protocolError))
+}
+
+private func nativeExitCode(for code: String) -> Int32 {
+    switch code {
+    case UTMControlErrorCode.notFound: return 3
+    case UTMControlErrorCode.ambiguous: return 4
+    case UTMControlErrorCode.unavailable: return 8
+    case UTMControlErrorCode.powerDownTimeout: return 11
+    case UTMControlErrorCode.operationTimeout: return 12
+    default: return 10
+    }
+}
+
+private func throwResponseError(_ response: UTMControlResponse) throws {
+    if let error = response.error { throw UTMCtl.APIError.native(code: error.code, message: error.message) }
+    throw UTMCtl.APIError.native(code: UTMControlErrorCode.protocolError, message: "Invalid response.")
+}
+
+private enum NativeControlStartup {
+    enum Error: Swift.Error {
+        case unavailable(String)
+
+        var message: String {
+            switch self {
+            case .unavailable(let message): return message
+            }
+        }
+    }
+    private static let timeout: TimeInterval = 10
+
+    static func ensureAvailable() throws {
+        let url = utmAppURL
+        guard FileManager.default.fileExists(atPath: url.path) else { throw Error.unavailable("UTM application bundle not found.") }
+        if NSRunningApplication.runningApplications(withBundleIdentifier: Bundle(url: url)?.bundleIdentifier ?? "").isEmpty {
+            let configuration = NSWorkspace.OpenConfiguration()
+            configuration.activates = false
+            configuration.hides = true
+            let semaphore = DispatchSemaphore(value: 0)
+            var launchError: Swift.Error?
+            NSWorkspace.shared.openApplication(at: url, configuration: configuration) { _, error in launchError = error; semaphore.signal() }
+            guard semaphore.wait(timeout: .now() + 2) == .success, launchError == nil else { throw Error.unavailable("Unable to launch UTM.") }
+        }
+        let deadline = Date().addingTimeInterval(timeout)
+        while Date() < deadline {
+            if let socket = UTMControlSocket.url, FileManager.default.fileExists(atPath: socket.path) {
+                do { _ = try UTMControlClient().request(.list); return } catch UTMControlClient.ClientError.unavailable { }
+            }
+            Thread.sleep(forTimeInterval: 0.1)
+        }
+        throw Error.unavailable("UTM control socket did not become available.")
+    }
+}
+
+private var utmAppURL: URL {
+    if let executable = Bundle.main.executableURL?.resolvingSymlinksInPath() {
+        let app = executable.deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+        if app.pathExtension == "app" { return app }
+    }
+    return URL(fileURLWithPath: "/Applications/UTM.app")
+}
+
 extension UTMCtl {
-    struct Start: UTMAPICommand {
+    struct Start: NativeUTMAPICommand {
         static var configuration = CommandConfiguration(
             abstract: "Start a virtual machine or resume a suspended virtual machine."
         )
         
         @OptionGroup var environment: EnvironmentOptions
-        
+        @Flag(name: .long, help: "Output JSON.") var json = false
         @OptionGroup var identifer: VMIdentifier
-        
-        @Flag(name: .shortAndLong, help: "Attach to the first serial port after start.")
-        var attach: Bool = false
-        
-        @Flag(help: "Run VM as a snapshot and do not save changes to disk.")
-        var disposable: Bool = false
 
-        @Flag(help: "Boot a VM in recovery mode.")
-        var recovery: Bool = false
-
-        func run(with application: UTMScriptingApplication) throws {
-            let vm = try virtualMachine(forIdentifier: identifer, in: application)
-            vm.startSaving!(!disposable, recovery: recovery)
-            if attach {
-                print("WARNING: attach command is not implemented yet!")
-            }
+        func runNative() throws {
+            try printNativeOperation(nativeRequest(.start(identifier: identifer.identifier)), json: json)
         }
     }
 }
 
 extension UTMCtl {
-    struct Suspend: UTMAPICommand {
+    struct Suspend: NativeUTMAPICommand {
         static var configuration = CommandConfiguration(
             abstract: "Suspend running a virtual machine to memory."
         )
         
         @OptionGroup var environment: EnvironmentOptions
-        
+        @Flag(name: .long, help: "Output JSON.") var json = false
         @OptionGroup var identifer: VMIdentifier
-        
-        @Flag(name: .shortAndLong, help: "Save the VM state to disk after suspending.")
-        var saveState: Bool = false
-        
-        func run(with application: UTMScriptingApplication) throws {
-            let vm = try virtualMachine(forIdentifier: identifer, in: application)
-            vm.suspendSaving!(saveState)
+
+        func runNative() throws {
+            try printNativeOperation(nativeRequest(.suspend(identifier: identifer.identifier)), json: json)
         }
     }
 }
 
 extension UTMCtl {
-    struct Stop: UTMAPICommand {
+    struct Stop: NativeUTMAPICommand {
         static var configuration = CommandConfiguration(
             abstract: "Shuts down a running virtual machine."
         )
         
-        struct Style: ParsableArguments {
-            @Flag(name: .long, help: "Force stop by sending a power off event (default)")
-            var force: Bool = false
-            
-            @Flag(name: .long, help: "Force kill the VM process")
-            var kill: Bool = false
-            
-            @Flag(name: .long, help: "Request power down from guest operating system")
-            var request: Bool = false
-            
-            struct InvalidStyleError: LocalizedError {
-                var errorDescription: String? {
-                    "You can only specify one of: --force, --kill, or --request"
-                }
-            }
-            
-            mutating func validate() throws {
-                let count = [force, kill, request].filter({ $0 }).count
-                guard count <= 1 else {
-                    throw InvalidStyleError()
-                }
-                if count == 0 {
-                    force = true
-                }
-            }
-        }
-        
         @OptionGroup var environment: EnvironmentOptions
-        
+        @Flag(name: .long, help: "Output JSON.") var json = false
         @OptionGroup var identifer: VMIdentifier
-        
-        @OptionGroup var style: Style
-        
-        func run(with application: UTMScriptingApplication) throws {
-            let vm = try virtualMachine(forIdentifier: identifer, in: application)
-            var stopMethod: UTMScriptingStopMethod = .force
-            if style.request {
-                stopMethod = .request
-            } else if style.force {
-                stopMethod = .force
-            } else if style.kill {
-                stopMethod = .kill
-            }
-            vm.stopBy!(stopMethod)
+
+        func runNative() throws {
+            try printNativeOperation(nativeRequest(.stop(identifier: identifer.identifier)), json: json)
+        }
+    }
+}
+
+extension UTMCtl {
+    struct Resume: NativeUTMAPICommand {
+        static var configuration = CommandConfiguration(
+            abstract: "Resume a paused virtual machine."
+        )
+
+        @OptionGroup var environment: EnvironmentOptions
+        @Flag(name: .long, help: "Output JSON.") var json = false
+        @OptionGroup var identifer: VMIdentifier
+
+        func runNative() throws {
+            try printNativeOperation(nativeRequest(.resume(identifier: identifer.identifier)), json: json)
+        }
+    }
+}
+
+extension UTMCtl {
+    struct ForceStop: NativeUTMAPICommand {
+        static var configuration = CommandConfiguration(
+            abstract: "Force power off a virtual machine."
+        )
+
+        @OptionGroup var environment: EnvironmentOptions
+        @Flag(name: .long, help: "Output JSON.") var json = false
+        @OptionGroup var identifer: VMIdentifier
+
+        func runNative() throws {
+            try printNativeOperation(nativeRequest(.forceStop(identifier: identifer.identifier)), json: json)
         }
     }
 }

@@ -24,6 +24,7 @@ struct UTMApp: App {
     init() {
         let data = UTMData()
         self.data = data
+        appDelegate.data = data
         if #available(macOS 13, *) {
             AppDependencyManager.shared.add(dependency: data)
         }
