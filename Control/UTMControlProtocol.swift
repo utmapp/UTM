@@ -43,8 +43,9 @@ enum UTMControlRequest: Codable {
     case usbList
     case usbConnect(identifier: String, device: String)
     case usbDisconnect(device: String)
+    case exec(identifier: String, path: String, argv: [String], environment: [String], input: Data)
 
-    private enum CodingKeys: String, CodingKey { case command, identifier, name }
+    private enum CodingKeys: String, CodingKey { case command, identifier, name, path, argv, environment, input }
     private enum Command: String, Codable {
         case list, status, start, stop, forceStop = "force-stop", suspend, resume, clone, delete
         case ipAddress = "ip-address"
@@ -55,6 +56,7 @@ enum UTMControlRequest: Codable {
         case usbList = "usb-list"
         case usbConnect = "usb-connect"
         case usbDisconnect = "usb-disconnect"
+        case exec
     }
 
     init(from decoder: Decoder) throws {
@@ -79,6 +81,12 @@ enum UTMControlRequest: Codable {
         case .usbList: self = .usbList
         case .usbConnect: self = .usbConnect(identifier: try container.decode(String.self, forKey: .identifier), device: try container.decode(String.self, forKey: .name))
         case .usbDisconnect: self = .usbDisconnect(device: try container.decode(String.self, forKey: .name))
+        case .exec:
+            self = .exec(identifier: try container.decode(String.self, forKey: .identifier),
+                        path: try container.decode(String.self, forKey: .path),
+                        argv: try container.decode([String].self, forKey: .argv),
+                        environment: try container.decode([String].self, forKey: .environment),
+                        input: try container.decode(Data.self, forKey: .input))
         }
     }
 
@@ -138,8 +146,21 @@ enum UTMControlRequest: Codable {
         case .usbDisconnect(let device):
             try container.encode(Command.usbDisconnect, forKey: .command)
             try container.encode(device, forKey: .name)
+        case .exec(let identifier, let path, let argv, let environment, let input):
+            try container.encode(Command.exec, forKey: .command)
+            try container.encode(identifier, forKey: .identifier)
+            try container.encode(path, forKey: .path)
+            try container.encode(argv, forKey: .argv)
+            try container.encode(environment, forKey: .environment)
+            try container.encode(input, forKey: .input)
         }
     }
+}
+
+enum UTMControlExecLimits {
+    static let maximumInputBytes = 256 * 1024
+    static let maximumOutputBytes = 256 * 1024
+    static let timeout: TimeInterval = 30
 }
 
 struct UTMControlVM: Codable {
@@ -158,39 +179,52 @@ struct UTMControlResponse: Codable {
     let ipAddresses: [String]?
     let snapshotNames: [String]?
     let usbDevices: [UTMControlUSBDevice]?
+    let execResult: UTMControlExecResult?
     let error: UTMControlError?
 
     static func list(_ vms: [UTMControlVM]) -> Self {
-        Self(schema: 1, command: "list", vms: vms, vm: nil, ipAddresses: nil, snapshotNames: nil, usbDevices: nil, error: nil)
+        Self(schema: 1, command: "list", vms: vms, vm: nil, ipAddresses: nil, snapshotNames: nil, usbDevices: nil, execResult: nil, error: nil)
     }
 
     static func status(_ vm: UTMControlVM) -> Self {
-        Self(schema: 1, command: "status", vms: nil, vm: vm, ipAddresses: nil, snapshotNames: nil, usbDevices: nil, error: nil)
+        Self(schema: 1, command: "status", vms: nil, vm: vm, ipAddresses: nil, snapshotNames: nil, usbDevices: nil, execResult: nil, error: nil)
     }
 
     static func operation(_ command: String, _ vm: UTMControlVM) -> Self {
-        Self(schema: 1, command: command, vms: nil, vm: vm, ipAddresses: nil, snapshotNames: nil, usbDevices: nil, error: nil)
+        Self(schema: 1, command: command, vms: nil, vm: vm, ipAddresses: nil, snapshotNames: nil, usbDevices: nil, execResult: nil, error: nil)
     }
 
     static func ipAddress(_ vm: UTMControlVM, addresses: [String]) -> Self {
-        Self(schema: 1, command: "ip-address", vms: nil, vm: vm, ipAddresses: addresses, snapshotNames: nil, usbDevices: nil, error: nil)
+        Self(schema: 1, command: "ip-address", vms: nil, vm: vm, ipAddresses: addresses, snapshotNames: nil, usbDevices: nil, execResult: nil, error: nil)
     }
 
     static func snapshots(_ vm: UTMControlVM, names: [String]) -> Self {
-        Self(schema: 1, command: "snapshot-list", vms: nil, vm: vm, ipAddresses: nil, snapshotNames: names, usbDevices: nil, error: nil)
+        Self(schema: 1, command: "snapshot-list", vms: nil, vm: vm, ipAddresses: nil, snapshotNames: names, usbDevices: nil, execResult: nil, error: nil)
     }
 
     static func usbList(_ devices: [UTMControlUSBDevice]) -> Self {
-        Self(schema: 1, command: "usb-list", vms: nil, vm: nil, ipAddresses: nil, snapshotNames: nil, usbDevices: devices, error: nil)
+        Self(schema: 1, command: "usb-list", vms: nil, vm: nil, ipAddresses: nil, snapshotNames: nil, usbDevices: devices, execResult: nil, error: nil)
     }
 
     static func success(_ command: String) -> Self {
-        Self(schema: 1, command: command, vms: nil, vm: nil, ipAddresses: nil, snapshotNames: nil, usbDevices: nil, error: nil)
+        Self(schema: 1, command: command, vms: nil, vm: nil, ipAddresses: nil, snapshotNames: nil, usbDevices: nil, execResult: nil, error: nil)
     }
 
     static func failure(_ error: UTMControlError) -> Self {
-        Self(schema: 1, command: nil, vms: nil, vm: nil, ipAddresses: nil, snapshotNames: nil, usbDevices: nil, error: error)
+        Self(schema: 1, command: nil, vms: nil, vm: nil, ipAddresses: nil, snapshotNames: nil, usbDevices: nil, execResult: nil, error: error)
     }
+
+    static func exec(_ result: UTMControlExecResult) -> Self {
+        Self(schema: 1, command: "exec", vms: nil, vm: nil, ipAddresses: nil, snapshotNames: nil, usbDevices: nil, execResult: result, error: nil)
+    }
+}
+
+struct UTMControlExecResult: Codable {
+    let exitCode: Int
+    let stdout: Data
+    let stderr: Data
+    let stdoutTruncated: Bool
+    let stderrTruncated: Bool
 }
 
 struct UTMControlUSBDevice: Codable {
@@ -222,6 +256,10 @@ enum UTMControlErrorCode {
     static let snapshotFailure = "SNAPSHOT_FAILURE"
     static let operationTimeout = "OPERATION_TIMEOUT"
     static let powerDownTimeout = "POWER_DOWN_TIMEOUT"
+    static let guestAgentUnavailable = "GUEST_AGENT_UNAVAILABLE"
+    static let execFailure = "EXEC_FAILURE"
+    static let execTimeout = "EXEC_TIMEOUT"
+    static let execInputTooLarge = "EXEC_INPUT_TOO_LARGE"
 }
 
 enum UTMControlSocket {

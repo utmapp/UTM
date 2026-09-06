@@ -201,6 +201,8 @@ final class UTMControlServer {
             case .owned(let vm):
                 return await perform(.usbDisconnect(device: device), identifier: vm.id.uuidString)
             }
+        case .exec(let identifier, let path, let argv, let environment, let input):
+            return await perform(.exec(path: path, argv: argv, environment: environment, input: input), identifier: identifier)
         }
     }
 
@@ -209,6 +211,7 @@ final class UTMControlServer {
         case clone(name: String?), delete, ipAddress
         case snapshotCreate(name: String), snapshotList, snapshotRestore(name: String), snapshotDelete(name: String)
         case usbConnect(device: String), usbDisconnect(device: String)
+        case exec(path: String, argv: [String], environment: [String], input: Data)
 
         var rawValue: String {
             switch self {
@@ -226,6 +229,7 @@ final class UTMControlServer {
         case .snapshotDelete: return "snapshot-delete"
             case .usbConnect: return "usb-connect"
             case .usbDisconnect: return "usb-disconnect"
+            case .exec: return "exec"
             }
         }
 
@@ -396,6 +400,48 @@ final class UTMControlServer {
                 case .ambiguous:
                     throw ControlOperationError.ambiguousDevice
                 }
+            case .exec(let path, let argv, let environment, let input):
+                guard vm.state == .started else { throw ControlOperationError.invalidState }
+                guard input.count <= UTMControlExecLimits.maximumInputBytes else {
+                    throw ControlOperationError.execInputTooLarge
+                }
+                guard let qemu = wrapped as? UTMQemuVirtualMachine else {
+                    throw ControlOperationError.unsupportedBackend
+                }
+                guard let guestAgent = await qemu.guestAgent else {
+                    throw ControlOperationError.execGuestAgentUnavailable
+                }
+                let pid: Int
+                do {
+                    pid = try await guestAgent.guestExec(path, argv: argv, envp: environment,
+                                                         input: input, captureOutput: true)
+                } catch {
+                    throw ControlOperationError.execFailure(String(error.localizedDescription.prefix(512)))
+                }
+                let deadline = Date().addingTimeInterval(UTMControlExecLimits.timeout)
+                let result: QEMUGuestAgentExecStatus
+                while true {
+                    guard Date() < deadline else { throw ControlOperationError.execTimeout }
+                    do {
+                        let status = try await guestAgent.guestExecStatus(pid)
+                        if status.hasExited {
+                            result = status
+                            break
+                        }
+                    } catch let error as ControlOperationError {
+                        throw error
+                    } catch {
+                        throw ControlOperationError.execFailure(String(error.localizedDescription.prefix(512)))
+                    }
+                    try? await Task.sleep(nanoseconds: 100 * NSEC_PER_MSEC)
+                }
+                let stdout = Self.boundedExecData(result.outData)
+                let stderr = Self.boundedExecData(result.errData)
+                return .exec(UTMControlExecResult(exitCode: Int(result.exitCode),
+                                                  stdout: stdout.data,
+                                                  stderr: stderr.data,
+                                                  stdoutTruncated: result.isOutDataTruncated || stdout.truncated,
+                                                  stderrTruncated: result.isErrDataTruncated || stderr.truncated))
             }
             return .operation(operation.rawValue, try record(vm))
         } catch let error as ControlOperationError {
@@ -485,6 +531,14 @@ final class UTMControlServer {
             return .notFound
         }
         return .found(device)
+    }
+
+    private static func boundedExecData(_ data: Data?) -> (data: Data, truncated: Bool) {
+        let data = data ?? Data()
+        guard data.count > UTMControlExecLimits.maximumOutputBytes else {
+            return (data, false)
+        }
+        return (Data(data.prefix(UTMControlExecLimits.maximumOutputBytes)), true)
     }
 
     private func waitForStopped(_ vm: VMData) async throws {
@@ -598,10 +652,11 @@ final class UTMControlServer {
     }
 
     private enum ControlOperationError: Error {
-        case invalidState, vmUnavailable, guestAgentUnavailable, unsupportedBackend, deviceNotFound, ambiguousDevice
+        case invalidState, vmUnavailable, guestAgentUnavailable, execGuestAgentUnavailable, unsupportedBackend, deviceNotFound, ambiguousDevice
         case snapshot(UTMSnapshotError)
         case snapshotFailure(String)
         case usbFailure(String)
+        case execFailure(String), execTimeout, execInputTooLarge
         case powerDownTimeout, operationTimeout
 
         func controlError(identifier: String?) -> UTMControlError {
@@ -614,6 +669,9 @@ final class UTMControlServer {
                                        message: "The virtual machine is not loaded.", identifier: identifier, retryable: false)
             case .guestAgentUnavailable:
                 return UTMControlError(code: UTMControlErrorCode.vmUnavailable,
+                                       message: "The QEMU guest agent is not running or not installed on the guest.", identifier: identifier, retryable: false)
+            case .execGuestAgentUnavailable:
+                return UTMControlError(code: UTMControlErrorCode.guestAgentUnavailable,
                                        message: "The QEMU guest agent is not running or not installed on the guest.", identifier: identifier, retryable: false)
             case .unsupportedBackend:
                 return UTMControlError(code: UTMControlErrorCode.backendUnavailable,
@@ -641,6 +699,16 @@ final class UTMControlServer {
                 let suffix = detail.isEmpty ? "The USB backend did not provide additional details." : detail
                 return UTMControlError(code: UTMControlErrorCode.usbFailure,
                                        message: "Failed to connect or disconnect USB device. \(suffix)", identifier: identifier, retryable: false)
+            case .execFailure(let detail):
+                let suffix = detail.isEmpty ? "The guest agent did not provide additional details." : detail
+                return UTMControlError(code: UTMControlErrorCode.execFailure,
+                                       message: "Guest process execution failed. \(suffix)", identifier: identifier, retryable: false)
+            case .execTimeout:
+                return UTMControlError(code: UTMControlErrorCode.execTimeout,
+                                       message: "Timed out waiting for the guest process to exit.", identifier: identifier, retryable: true)
+            case .execInputTooLarge:
+                return UTMControlError(code: UTMControlErrorCode.execInputTooLarge,
+                                       message: "Guest process input exceeds the maximum supported size.", identifier: identifier, retryable: false)
             case .powerDownTimeout:
                 return UTMControlError(code: UTMControlErrorCode.powerDownTimeout,
                                        message: "Timed out waiting for the virtual machine to reach the stopped state after a graceful power-down request.", identifier: identifier, retryable: true)

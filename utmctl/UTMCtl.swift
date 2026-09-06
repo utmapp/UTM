@@ -274,7 +274,7 @@ private func nativeRequest(_ request: UTMControlRequest, requirement: ControlReq
         responseTimeout = 30
     case .list, .status, .ipAddress, .snapshotList, .usbList, .usbDisconnect:
         responseTimeout = UTMControlTransport.timeout
-    case .stop, .forceStop, .clone, .delete, .snapshotCreate, .snapshotRestore, .snapshotDelete, .usbConnect:
+    case .stop, .forceStop, .clone, .delete, .snapshotCreate, .snapshotRestore, .snapshotDelete, .usbConnect, .exec:
         responseTimeout = 55
     }
     do {
@@ -318,6 +318,7 @@ private extension UTMControlRequest {
         case .usbList: return "usb-list"
         case .usbConnect: return "usb-connect"
         case .usbDisconnect: return "usb-disconnect"
+        case .exec: return "exec"
         }
     }
 }
@@ -330,6 +331,20 @@ private func requestNativeControl(_ request: UTMControlRequest, responseTimeout:
         Darwin.exit(nativeExitCode(for: error.code))
     }
     return response
+}
+
+private func readExecInput() throws -> Data {
+    var data = Data()
+    while true {
+        let remaining = UTMControlExecLimits.maximumInputBytes + 1 - data.count
+        guard remaining > 0 else {
+            throw UTMCtl.APIError.native(code: UTMControlErrorCode.execInputTooLarge,
+                                         message: "Guest process input exceeds the maximum supported size.")
+        }
+        let chunk = try FileHandle.standardInput.read(upToCount: min(4096, remaining)) ?? Data()
+        if chunk.isEmpty { return data }
+        data.append(chunk)
+    }
 }
 
 private func exitNativeUnavailable(_ message: String) -> Never {
@@ -623,7 +638,7 @@ extension UTMCtl {
 }
 
 extension UTMCtl {
-    struct Exec: UTMAPICommand {
+    struct Exec: NativeUTMAPICommand {
         static var configuration = CommandConfiguration(
             abstract: "Execute an application on the guest.",
             discussion: "The return value of the command will be returned from this tool."
@@ -642,28 +657,39 @@ extension UTMCtl {
         @Option(parsing: .remaining, help: "Command line to execute on the guest.")
         var cmd: [String]
         
-        func run(with application: UTMScriptingApplication) throws {
-            let vm = try virtualMachine(forIdentifier: identifer, in: application)
-            let path = cmd.first!
-            let args = Array(cmd.dropFirst())
-            let data: Data
-            if input {
-                data = try FileHandle.standardInput.readToEnd() ?? Data()
-            } else {
-                data = Data()
+        let json = false
+        static let controlRequirement: ControlRequirement = .requireRunning
+
+        func runNative() throws {
+            guard let path = cmd.first else {
+                throw ValidationError("Command line to execute on the guest is required.")
             }
-            let process = vm.executeAt!(path, withArguments: args, withEnvironment: env, usingInput: data.base64EncodedString(), base64Encoding: true, outputCapturing: true)
-            var result: [AnyHashable: Any]
-            repeat {
-                result = process.getResult!()
-            } while result["hasExited"] as? Bool == false
-            let exitCode = result["exitCode"] as? Int ?? 0
-            let outputData = result["outputData"] as? String ?? ""
-            let errorData = result["errorData"] as? String ?? ""
-            try FileHandle.standardOutput.write(contentsOf: Data(base64Encoded: outputData) ?? Data())
-            try FileHandle.standardError.write(contentsOf: Data(base64Encoded: errorData) ?? Data())
-            if exitCode != 0 {
-                Darwin.exit(Int32(exitCode))
+            let inputData: Data
+            if input {
+                inputData = try readExecInput()
+            } else {
+                inputData = Data()
+            }
+            let response = try nativeRequest(.exec(identifier: identifer.identifier,
+                                                   path: path,
+                                                   argv: Array(cmd.dropFirst()),
+                                                   environment: env,
+                                                   input: inputData),
+                                             requirement: Self.controlRequirement)
+            guard let result = response.execResult else {
+                try throwResponseError(response)
+                return
+            }
+            try FileHandle.standardOutput.write(contentsOf: result.stdout)
+            try FileHandle.standardError.write(contentsOf: result.stderr)
+            if result.stdoutTruncated {
+                FileHandle.standardError.write(Data("warning: guest stdout was truncated.\n".utf8))
+            }
+            if result.stderrTruncated {
+                FileHandle.standardError.write(Data("warning: guest stderr was truncated.\n".utf8))
+            }
+            if result.exitCode != 0 {
+                Darwin.exit(Int32(result.exitCode))
             }
         }
     }
