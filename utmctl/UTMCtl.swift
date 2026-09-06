@@ -52,8 +52,15 @@ protocol UTMAPICommand: ParsableCommand {
     func run(with application: UTMScriptingApplication) throws
 }
 
+enum ControlRequirement {
+    case local
+    case wakeAllowed
+    case requireRunning
+}
+
 protocol NativeUTMAPICommand: ParsableCommand {
     var json: Bool { get }
+    static var controlRequirement: ControlRequirement { get }
     func runNative() throws
 }
 
@@ -203,8 +210,10 @@ extension UTMCtl {
         @OptionGroup var environment: EnvironmentOptions
         @Flag(name: .long, help: "Output JSON.") var json = false
 
+        static let controlRequirement: ControlRequirement = .wakeAllowed
+
         func runNative() throws {
-            let response = try nativeRequest(.list)
+            let response = try nativeRequest(.list, requirement: Self.controlRequirement)
             if json { try printJSON(response) }
             else if let vms = response.vms {
                 print("UUID                                 Status   Name")
@@ -232,9 +241,11 @@ extension UTMCtl {
         @Flag(name: .long, help: "Output JSON.") var json = false
         
         @OptionGroup var identifer: VMIdentifier
+
+        static let controlRequirement: ControlRequirement = .requireRunning
         
         func runNative() throws {
-            let response = try nativeRequest(.status(identifier: identifer.identifier))
+            let response = try nativeRequest(.status(identifier: identifer.identifier), requirement: Self.controlRequirement)
             if json { try printJSON(response) }
             else if let vm = response.vm { print(vm.state) }
             else { try throwResponseError(response) }
@@ -256,7 +267,7 @@ private func printNativeOperation(_ response: UTMControlResponse, json: Bool) th
     else { try throwResponseError(response) }
 }
 
-private func nativeRequest(_ request: UTMControlRequest) throws -> UTMControlResponse {
+private func nativeRequest(_ request: UTMControlRequest, requirement: ControlRequirement) throws -> UTMControlResponse {
     let responseTimeout: TimeInterval
     switch request {
     case .start, .suspend, .resume:
@@ -269,10 +280,13 @@ private func nativeRequest(_ request: UTMControlRequest) throws -> UTMControlRes
     do {
         return try requestNativeControl(request, responseTimeout: responseTimeout)
     } catch UTMControlClient.ClientError.unavailable {
+        guard requirement == .wakeAllowed else {
+            exitNativeUnavailable("UTM must be running to use `\(request.commandName)`.")
+        }
         do {
-            try NativeControlStartup.ensureAvailable()
+            try ControlAuthority.bootstrap()
             return try requestNativeControl(request, responseTimeout: responseTimeout)
-        } catch let error as NativeControlStartup.Error {
+        } catch let error as ControlAuthority.Error {
             exitNativeUnavailable(error.message)
         } catch UTMControlClient.ClientError.unavailable {
             exitNativeUnavailable("UTM is not running or its control socket is unavailable.")
@@ -281,6 +295,20 @@ private func nativeRequest(_ request: UTMControlRequest) throws -> UTMControlRes
         }
     } catch UTMControlClient.ClientError.protocolError {
         exitNativeProtocolError()
+    }
+}
+
+private extension UTMControlRequest {
+    var commandName: String {
+        switch self {
+        case .list: return "list"
+        case .status: return "status"
+        case .start: return "start"
+        case .stop: return "stop"
+        case .forceStop: return "force-stop"
+        case .suspend: return "suspend"
+        case .resume: return "resume"
+        }
     }
 }
 
@@ -327,7 +355,7 @@ private func throwResponseError(_ response: UTMControlResponse) throws {
     throw UTMCtl.APIError.native(code: UTMControlErrorCode.protocolError, message: "Invalid response.")
 }
 
-private enum NativeControlStartup {
+private enum ControlAuthority {
     enum Error: Swift.Error {
         case unavailable(String)
 
@@ -339,10 +367,11 @@ private enum NativeControlStartup {
     }
     private static let timeout: TimeInterval = 10
 
-    static func ensureAvailable() throws {
+    static func bootstrap() throws {
         let url = utmAppURL
         guard FileManager.default.fileExists(atPath: url.path) else { throw Error.unavailable("UTM application bundle not found.") }
         if NSRunningApplication.runningApplications(withBundleIdentifier: Bundle(url: url)?.bundleIdentifier ?? "").isEmpty {
+            try writeLaunchIntent()
             let configuration = NSWorkspace.OpenConfiguration()
             configuration.activates = false
             configuration.hides = true
@@ -359,6 +388,26 @@ private enum NativeControlStartup {
             Thread.sleep(forTimeInterval: 0.1)
         }
         throw Error.unavailable("UTM control socket did not become available.")
+    }
+
+    private static func writeLaunchIntent() throws {
+        guard let intentURL = UTMControlSocket.launchIntentURL else {
+            throw Error.unavailable("Unable to prepare UTM native control launch.")
+        }
+        let intent = UTMControlLaunchIntent(processIdentifier: ProcessInfo.processInfo.processIdentifier,
+                                            timestamp: Date().timeIntervalSince1970)
+        let intentData = try JSONEncoder().encode(intent)
+        let intentDirectory = intentURL.deletingLastPathComponent()
+        try FileManager.default.createDirectory(at: intentDirectory, withIntermediateDirectories: true)
+        try FileManager.default.setAttributes([.posixPermissions: 0o700], ofItemAtPath: intentDirectory.path)
+        if let existingData = try? Data(contentsOf: intentURL),
+           let existingIntent = try? JSONDecoder().decode(UTMControlLaunchIntent.self, from: existingData),
+           existingIntent.isValid() {
+            return
+        }
+        try? FileManager.default.removeItem(at: intentURL)
+        try intentData.write(to: intentURL, options: .atomic)
+        try FileManager.default.setAttributes([.posixPermissions: 0o600], ofItemAtPath: intentURL.path)
     }
 }
 
@@ -380,8 +429,10 @@ extension UTMCtl {
         @Flag(name: .long, help: "Output JSON.") var json = false
         @OptionGroup var identifer: VMIdentifier
 
+        static let controlRequirement: ControlRequirement = .wakeAllowed
+
         func runNative() throws {
-            try printNativeOperation(nativeRequest(.start(identifier: identifer.identifier)), json: json)
+            try printNativeOperation(nativeRequest(.start(identifier: identifer.identifier), requirement: Self.controlRequirement), json: json)
         }
     }
 }
@@ -396,8 +447,10 @@ extension UTMCtl {
         @Flag(name: .long, help: "Output JSON.") var json = false
         @OptionGroup var identifer: VMIdentifier
 
+        static let controlRequirement: ControlRequirement = .requireRunning
+
         func runNative() throws {
-            try printNativeOperation(nativeRequest(.suspend(identifier: identifer.identifier)), json: json)
+            try printNativeOperation(nativeRequest(.suspend(identifier: identifer.identifier), requirement: Self.controlRequirement), json: json)
         }
     }
 }
@@ -412,8 +465,10 @@ extension UTMCtl {
         @Flag(name: .long, help: "Output JSON.") var json = false
         @OptionGroup var identifer: VMIdentifier
 
+        static let controlRequirement: ControlRequirement = .requireRunning
+
         func runNative() throws {
-            try printNativeOperation(nativeRequest(.stop(identifier: identifer.identifier)), json: json)
+            try printNativeOperation(nativeRequest(.stop(identifier: identifer.identifier), requirement: Self.controlRequirement), json: json)
         }
     }
 }
@@ -428,8 +483,10 @@ extension UTMCtl {
         @Flag(name: .long, help: "Output JSON.") var json = false
         @OptionGroup var identifer: VMIdentifier
 
+        static let controlRequirement: ControlRequirement = .requireRunning
+
         func runNative() throws {
-            try printNativeOperation(nativeRequest(.resume(identifier: identifer.identifier)), json: json)
+            try printNativeOperation(nativeRequest(.resume(identifier: identifer.identifier), requirement: Self.controlRequirement), json: json)
         }
     }
 }
@@ -444,8 +501,10 @@ extension UTMCtl {
         @Flag(name: .long, help: "Output JSON.") var json = false
         @OptionGroup var identifer: VMIdentifier
 
+        static let controlRequirement: ControlRequirement = .requireRunning
+
         func runNative() throws {
-            try printNativeOperation(nativeRequest(.forceStop(identifier: identifer.identifier)), json: json)
+            try printNativeOperation(nativeRequest(.forceStop(identifier: identifer.identifier), requirement: Self.controlRequirement), json: json)
         }
     }
 }

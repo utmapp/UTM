@@ -6,6 +6,25 @@ import Foundation
 import Darwin
 import Security
 
+enum UTMControlLaunchOptions {
+    static let autoStartIntentFileName = "utmctl-autostart-intent"
+    static let intentValidityInterval: TimeInterval = 60
+}
+
+struct UTMControlLaunchIntent: Codable {
+    let processIdentifier: Int32
+    let timestamp: TimeInterval
+
+    func isValid(at date: Date = Date()) -> Bool {
+        let age = date.timeIntervalSince1970 - timestamp
+        guard age >= 0, age <= UTMControlLaunchOptions.intentValidityInterval else {
+            return false
+        }
+        let result = kill(processIdentifier, 0)
+        return result == 0 || errno == EPERM
+    }
+}
+
 enum UTMControlRequest: Codable {
     case list
     case status(identifier: String)
@@ -111,6 +130,10 @@ enum UTMControlErrorCode {
 
 enum UTMControlSocket {
     static let socketName = "control/utmctl.sock"
+
+    static var launchIntentURL: URL? {
+        url?.deletingLastPathComponent().appendingPathComponent(UTMControlLaunchOptions.autoStartIntentFileName)
+    }
 
     static var applicationGroupIdentifier: String? {
         guard let task = SecTaskCreateFromSelf(nil),

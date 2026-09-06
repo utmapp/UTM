@@ -15,6 +15,7 @@
 //
 
 import Combine
+import Darwin
 
 enum UTMQuitPolicy: Int {
     case saveState = 0
@@ -40,6 +41,22 @@ enum UTMQuitPolicy: Int {
     private var isPowerDownRequestComplete = false
     private var arePowerDownCandidatesStopped = false
     private var controlServer: UTMControlServer?
+    /// Set when this process was bootstrapped by a native CLI command.
+    /// AutoStart evaluation must consult this before performing its initial pass.
+    private(set) var shouldSuppressAutoStart = false
+
+    override init() {
+        super.init()
+        guard let intentURL = UTMControlSocket.launchIntentURL else {
+            return
+        }
+        defer { try? FileManager.default.removeItem(at: intentURL) }
+        guard let intentData = try? Data(contentsOf: intentURL),
+              let intent = try? JSONDecoder().decode(UTMControlLaunchIntent.self, from: intentData) else {
+            return
+        }
+        shouldSuppressAutoStart = intent.isValid()
+    }
     
     private var runningVirtualMachines: [VMData] {
         guard let vmList = data?.vmWindows.keys else {
