@@ -272,9 +272,9 @@ private func nativeRequest(_ request: UTMControlRequest, requirement: ControlReq
     switch request {
     case .start, .suspend, .resume:
         responseTimeout = 30
-    case .list, .status:
+    case .list, .status, .ipAddress, .snapshotList, .usbList, .usbDisconnect:
         responseTimeout = UTMControlTransport.timeout
-    case .stop, .forceStop, .clone, .delete:
+    case .stop, .forceStop, .clone, .delete, .snapshotCreate, .snapshotRestore, .snapshotDelete, .usbConnect:
         responseTimeout = 55
     }
     do {
@@ -310,6 +310,14 @@ private extension UTMControlRequest {
         case .resume: return "resume"
         case .clone: return "clone"
         case .delete: return "delete"
+        case .ipAddress: return "ip-address"
+        case .snapshotCreate: return "snapshot-create"
+        case .snapshotList: return "snapshot-list"
+        case .snapshotRestore: return "snapshot-restore"
+        case .snapshotDelete: return "snapshot-delete"
+        case .usbList: return "usb-list"
+        case .usbConnect: return "usb-connect"
+        case .usbDisconnect: return "usb-disconnect"
         }
     }
 }
@@ -662,7 +670,7 @@ extension UTMCtl {
 }
 
 extension UTMCtl {
-    struct IPAddress: UTMAPICommand {
+    struct IPAddress: NativeUTMAPICommand {
         static var configuration = CommandConfiguration(
             abstract: "List all IP addresses associated with network interfaces on the guest.",
             discussion: "IPv4 addresses (if available) will be listed before any IPv6 address."
@@ -671,13 +679,15 @@ extension UTMCtl {
         @OptionGroup var environment: EnvironmentOptions
         
         @OptionGroup var identifer: VMIdentifier
-        
-        func run(with application: UTMScriptingApplication) throws {
-            let vm = try virtualMachine(forIdentifier: identifer, in: application)
-            let addresses = vm.queryIp!()
-            for address in addresses {
-                print(address)
-            }
+
+        @Flag(name: .long, help: "Output JSON.") var json = false
+
+        static let controlRequirement: ControlRequirement = .requireRunning
+
+        func runNative() throws {
+            let response = try nativeRequest(.ipAddress(identifier: identifer.identifier), requirement: Self.controlRequirement)
+            if json { try printJSON(response) }
+            else { for address in response.ipAddresses ?? [] { print(address) } }
         }
     }
 }
@@ -736,76 +746,39 @@ extension UTMCtl {
             abstract: "USB device handling.",
             subcommands: [USBList.self, USBConnect.self, USBDisconnect.self]
         )
-        
-        /// Find a USB device using an identifier
-        /// - Parameters:
-        ///   - identifier: Either VID:PID or a location
-        ///   - application: Scripting application
-        /// - Returns: USB device
-        static func usbDevice(forIdentifier identifier: String, in application: UTMScriptingApplication) throws -> UTMScriptingUsbDevice {
-            let parts = identifier.split(separator: ":")
-            if parts.count == 2 {
-                let vid = Int(parts[0], radix: 16)
-                let pid = Int(parts[1], radix: 16)
-                if let vid = vid, let pid = pid {
-                    return try usbDevice(forVid: vid, pid: pid, in: application)
-                }
-            }
-            if let location = Int(identifier, radix: 10) {
-                return try usbDevice(forLocation: location, in: application)
-            }
-            throw APIError.invalidIdentifier(identifier)
-        }
-        
-        static private func usbDevice(forVid vid: Int, pid: Int, in application: UTMScriptingApplication) throws -> UTMScriptingUsbDevice {
-            if let list = application.usbDevices!() as? [UTMScriptingUsbDevice] {
-                if let device = list.first(where: { $0.vendorId == vid && $0.productId == pid }) {
-                    return device
-                }
-            }
-            throw APIError.deviceNotFound
-        }
-        
-        static private func usbDevice(forLocation location: Int, in application: UTMScriptingApplication) throws -> UTMScriptingUsbDevice {
-            if let list = application.usbDevices!() as? [UTMScriptingUsbDevice] {
-                if let device = list.first(where: { $0.id!() == location }) {
-                    return device
-                }
-            }
-            throw APIError.deviceNotFound
-        }
     }
     
-    struct USBList: UTMAPICommand {
+    struct USBList: NativeUTMAPICommand {
         static var configuration = CommandConfiguration(
             commandName: "list",
             abstract: "List connected devices."
         )
         
         @OptionGroup var environment: EnvironmentOptions
-        
-        func run(with application: UTMScriptingApplication) throws {
-            if let list = application.usbDevices!() as? [UTMScriptingUsbDevice] {
-                printResponse(list)
-            }
+        let json = false
+        static let controlRequirement: ControlRequirement = .requireRunning
+
+        func runNative() throws {
+            let response = try nativeRequest(.usbList, requirement: Self.controlRequirement)
+            printResponse(response.usbDevices ?? [])
         }
         
-        func printResponse(_ response: [UTMScriptingUsbDevice]) {
+        func printResponse(_ response: [UTMControlUSBDevice]) {
             guard !response.isEmpty else {
                 print("No devices found. Make sure a USB sharing enabled VM is running.")
                 return
             }
             print("Name                             VID :PID  Location")
             for entry in response {
-                let name = entry.name!.padding(toLength: 32, withPad: " ", startingAt: 0)
-                let vid = String(format: "%04X", entry.vendorId!)
-                let pid = String(format: "%04X", entry.productId!)
-                print("\(name) \(vid):\(pid) \(entry.id!())")
+                let name = entry.name.padding(toLength: 32, withPad: " ", startingAt: 0)
+                let vid = String(format: "%04X", entry.vendorId)
+                let pid = String(format: "%04X", entry.productId)
+                print("\(name) \(vid):\(pid) \(entry.location)")
             }
         }
     }
     
-    struct USBConnect: UTMAPICommand {
+    struct USBConnect: NativeUTMAPICommand {
         static var configuration = CommandConfiguration(
             commandName: "connect",
             abstract: "Connect a USB device to a virtual machine."
@@ -818,14 +791,15 @@ extension UTMCtl {
         @Argument(help: "Device identifier either as a VID:PID pair (e.g. DEAD:BEEF) or a location (e.g. 4).")
         var device: String
         
-        func run(with application: UTMScriptingApplication) throws {
-            let vm = try virtualMachine(forIdentifier: identifer, in: application)
-            let device = try USB.usbDevice(forIdentifier: device, in: application)
-            device.connectTo!(vm)
+        let json = false
+        static let controlRequirement: ControlRequirement = .requireRunning
+
+        func runNative() throws {
+            _ = try nativeRequest(.usbConnect(identifier: identifer.identifier, device: device), requirement: Self.controlRequirement)
         }
     }
     
-    struct USBDisconnect: UTMAPICommand {
+    struct USBDisconnect: NativeUTMAPICommand {
         static var configuration = CommandConfiguration(
             commandName: "disconnect",
             abstract: "Disconnect a USB device from a virtual machine."
@@ -836,9 +810,11 @@ extension UTMCtl {
         @Argument(help: "Device identifier either as a VID:PID pair (e.g. DEAD:BEEF) or a location (e.g. 4).")
         var device: String
         
-        func run(with application: UTMScriptingApplication) throws {
-            let device = try USB.usbDevice(forIdentifier: device, in: application)
-            device.disconnect!()
+        let json = false
+        static let controlRequirement: ControlRequirement = .requireRunning
+
+        func runNative() throws {
+            _ = try nativeRequest(.usbDisconnect(device: device), requirement: Self.controlRequirement)
         }
     }
 }
@@ -851,7 +827,7 @@ extension UTMCtl {
         )
     }
 
-    struct SnapshotCreate: UTMAPICommand {
+    struct SnapshotCreate: NativeUTMAPICommand {
         static var configuration = CommandConfiguration(
             commandName: "create",
             abstract: "Create or replace a named snapshot of a running or paused QEMU virtual machine."
@@ -864,13 +840,15 @@ extension UTMCtl {
         @Option(help: "Name of the snapshot to create.")
         var name: String
 
-        func run(with application: UTMScriptingApplication) throws {
-            let vm = try virtualMachine(forIdentifier: identifer, in: application)
-            vm.createSnapshotNamed!(name)
+        let json = false
+        static let controlRequirement: ControlRequirement = .requireRunning
+
+        func runNative() throws {
+            _ = try nativeRequest(.snapshotCreate(identifier: identifer.identifier, name: name), requirement: Self.controlRequirement)
         }
     }
 
-    struct SnapshotList: UTMAPICommand {
+    struct SnapshotList: NativeUTMAPICommand {
         static var configuration = CommandConfiguration(
             commandName: "list",
             abstract: "List the names of all snapshots for a stopped QEMU virtual machine."
@@ -883,9 +861,11 @@ extension UTMCtl {
         @Flag(help: "Output the list as a JSON array.")
         var json: Bool = false
 
-        func run(with application: UTMScriptingApplication) throws {
-            let vm = try virtualMachine(forIdentifier: identifer, in: application)
-            let names = (vm.listSnapshots!() as? [String]) ?? []
+        static let controlRequirement: ControlRequirement = .requireRunning
+
+        func runNative() throws {
+            let response = try nativeRequest(.snapshotList(identifier: identifer.identifier), requirement: Self.controlRequirement)
+            let names = response.snapshotNames ?? []
             if json {
                 let data = try JSONSerialization.data(withJSONObject: names, options: [.prettyPrinted])
                 print(String(data: data, encoding: .utf8) ?? "[]")
@@ -897,7 +877,7 @@ extension UTMCtl {
         }
     }
 
-    struct SnapshotRestore: UTMAPICommand {
+    struct SnapshotRestore: NativeUTMAPICommand {
         static var configuration = CommandConfiguration(
             commandName: "restore",
             abstract: "Restore a stopped QEMU virtual machine to a named snapshot."
@@ -910,13 +890,15 @@ extension UTMCtl {
         @Option(help: "Name of the snapshot to restore.")
         var name: String
 
-        func run(with application: UTMScriptingApplication) throws {
-            let vm = try virtualMachine(forIdentifier: identifer, in: application)
-            vm.restoreSnapshotNamed!(name)
+        let json = false
+        static let controlRequirement: ControlRequirement = .requireRunning
+
+        func runNative() throws {
+            _ = try nativeRequest(.snapshotRestore(identifier: identifer.identifier, name: name), requirement: Self.controlRequirement)
         }
     }
 
-    struct SnapshotDelete: UTMAPICommand {
+    struct SnapshotDelete: NativeUTMAPICommand {
         static var configuration = CommandConfiguration(
             commandName: "delete",
             abstract: "Delete a named snapshot from a QEMU virtual machine."
@@ -929,9 +911,11 @@ extension UTMCtl {
         @Option(help: "Name of the snapshot to delete.")
         var name: String
 
-        func run(with application: UTMScriptingApplication) throws {
-            let vm = try virtualMachine(forIdentifier: identifer, in: application)
-            vm.deleteSnapshotNamed!(name)
+        let json = false
+        static let controlRequirement: ControlRequirement = .requireRunning
+
+        func runNative() throws {
+            _ = try nativeRequest(.snapshotDelete(identifier: identifer.identifier, name: name), requirement: Self.controlRequirement)
         }
     }
 }

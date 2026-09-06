@@ -16,6 +16,93 @@
 
 import Foundation
 import Carbon.HIToolbox
+import Darwin
+
+enum UTMDataIPError: Error {
+    case notRunning
+    case guestAgentUnavailable
+    case unsupportedBackend
+}
+
+@available(macOS 11, *)
+extension UTMData {
+    func queryIp(for box: VMData) async throws -> [String] {
+        guard let vm = box.wrapped else {
+            throw UTMDataIPError.unsupportedBackend
+        }
+        guard vm.state == .started else {
+            throw UTMDataIPError.notRunning
+        }
+        if let appleVM = vm as? UTMAppleVirtualMachine {
+            guard let network = appleVM.config.networks.first else {
+                return []
+            }
+            return Self.ipFromARP(macAddress: network.macAddress.lowercased())
+        }
+        guard let qemuVM = vm as? UTMQemuVirtualMachine else {
+            throw UTMDataIPError.unsupportedBackend
+        }
+        guard let guestAgent = await qemuVM.guestAgent else {
+            throw UTMDataIPError.guestAgentUnavailable
+        }
+        let interfaces = try await guestAgent.guestNetworkGetInterfaces()
+        var ipv4: [String] = []
+        var ipv6: [String] = []
+        for interface in interfaces {
+            for ip in interface.ipAddresses {
+                if ip.isIpV6Address {
+                    if ip.ipAddress != "::1" && ip.ipAddress != "0:0:0:0:0:0:0:1" {
+                        ipv6.append(ip.ipAddress)
+                    }
+                } else if ip.ipAddress != "127.0.0.1" {
+                    ipv4.append(ip.ipAddress)
+                }
+            }
+        }
+        return ipv4 + ipv6
+    }
+
+    private static func normalizeMac(_ mac: String) -> String {
+        mac.split(separator: ":").map { octet in
+            let stripped = octet.drop(while: { $0 == "0" })
+            return stripped.isEmpty ? "0" : String(stripped)
+        }.joined(separator: ":")
+    }
+
+    private static func ipFromARP(macAddress: String) -> [String] {
+        var mib: [Int32] = [CTL_NET, PF_ROUTE, 0, AF_INET, NET_RT_FLAGS, RTF_LLINFO]
+        var needed = 0
+        guard sysctl(&mib, 6, nil, &needed, nil, 0) == 0, needed > 0 else { return [] }
+        var buf = [UInt8](repeating: 0, count: needed)
+        guard sysctl(&mib, 6, &buf, &needed, nil, 0) == 0 else { return [] }
+        let normalizedTarget = normalizeMac(macAddress)
+        var offset = 0
+        while offset + MemoryLayout<rt_msghdr>.stride <= needed {
+            let msglen = Int(buf.withUnsafeBytes {
+                $0.load(fromByteOffset: offset, as: rt_msghdr.self).rtm_msglen
+            })
+            guard msglen > 0, offset + msglen <= needed else { break }
+            defer { offset += msglen }
+            let sinStart = offset + MemoryLayout<rt_msghdr>.stride
+            guard sinStart + 8 <= needed else { continue }
+            let sinLen = Int(buf[sinStart])
+            let sinFamily = buf[sinStart + 1]
+            guard sinFamily == UInt8(AF_INET), sinLen >= 8 else { continue }
+            let ipStr = buf[(sinStart + 4)..<(sinStart + 8)].map { String($0) }.joined(separator: ".")
+            let sdlStart = sinStart + ((sinLen + 7) & ~7)
+            guard sdlStart + 8 <= needed else { continue }
+            let sdlFamily = buf[sdlStart + 1]
+            let sdlNlen = Int(buf[sdlStart + 5])
+            let sdlAlen = Int(buf[sdlStart + 6])
+            guard sdlFamily == UInt8(AF_LINK), sdlAlen == 6 else { continue }
+            let macStart = sdlStart + 8 + sdlNlen
+            guard macStart + 6 <= needed else { continue }
+            let mac = buf[macStart..<(macStart + 6)].map { String(format: "%x", $0) }.joined(separator: ":")
+            if normalizeMac(mac) == normalizedTarget { return [ipStr] }
+        }
+        return []
+    }
+}
 
 @available(macOS 11, *)
 extension UTMData {

@@ -1,5 +1,6 @@
 import Foundation
 import Darwin
+import CocoaSpice
 
 @MainActor
 final class UTMControlServer {
@@ -175,12 +176,39 @@ final class UTMControlServer {
             return await perform(.clone(name: name), identifier: identifier)
         case .delete(let identifier):
             return await perform(.delete, identifier: identifier)
+        case .ipAddress(let identifier):
+            return await perform(.ipAddress, identifier: identifier)
+        case .snapshotCreate(let identifier, let name):
+            return await perform(.snapshotCreate(name: name), identifier: identifier)
+        case .snapshotList(let identifier):
+            return await perform(.snapshotList, identifier: identifier)
+        case .snapshotRestore(let identifier, let name):
+            return await perform(.snapshotRestore(name: name), identifier: identifier)
+        case .snapshotDelete(let identifier, let name):
+            return await perform(.snapshotDelete(name: name), identifier: identifier)
+        case .usbList:
+            return usbListResponse()
+        case .usbConnect(let identifier, let device):
+            return await perform(.usbConnect(device: device), identifier: identifier)
+        case .usbDisconnect(let device):
+            switch usbOwner(for: device) {
+            case .none:
+                return .failure(UTMControlError(code: UTMControlErrorCode.usbDeviceNotFound,
+                                                message: "The USB device is not currently attached to a virtual machine.", identifier: nil, retryable: false))
+            case .ambiguous:
+                return .failure(UTMControlError(code: UTMControlErrorCode.ambiguousUSBDevice,
+                                                message: "The USB device identifier matches more than one attached device.", identifier: device, retryable: false))
+            case .owned(let vm):
+                return await perform(.usbDisconnect(device: device), identifier: vm.id.uuidString)
+            }
         }
     }
 
     private enum Operation {
         case start, stop, forceStop, suspend, resume
-        case clone(name: String?), delete
+        case clone(name: String?), delete, ipAddress
+        case snapshotCreate(name: String), snapshotList, snapshotRestore(name: String), snapshotDelete(name: String)
+        case usbConnect(device: String), usbDisconnect(device: String)
 
         var rawValue: String {
             switch self {
@@ -191,6 +219,31 @@ final class UTMControlServer {
             case .resume: return "resume"
             case .clone: return "clone"
             case .delete: return "delete"
+            case .ipAddress: return "ip-address"
+            case .snapshotCreate: return "snapshot-create"
+            case .snapshotList: return "snapshot-list"
+            case .snapshotRestore: return "snapshot-restore"
+        case .snapshotDelete: return "snapshot-delete"
+            case .usbConnect: return "usb-connect"
+            case .usbDisconnect: return "usb-disconnect"
+            }
+        }
+
+        var isSnapshot: Bool {
+            switch self {
+            case .snapshotCreate, .snapshotList, .snapshotRestore, .snapshotDelete:
+                return true
+            default:
+                return false
+            }
+        }
+
+        var isUSB: Bool {
+            switch self {
+            case .usbConnect, .usbDisconnect:
+                return true
+            default:
+                return false
             }
         }
     }
@@ -293,16 +346,145 @@ final class UTMControlServer {
                                                                     state: "deleted",
                                                                     backend: "unknown",
                                                                     loaded: false))
+            case .ipAddress:
+                guard vm.state == .started else { throw ControlOperationError.invalidState }
+                do {
+                    let addresses = try await data.queryIp(for: vm)
+                    return .ipAddress(try record(vm), addresses: addresses)
+                } catch UTMDataIPError.guestAgentUnavailable {
+                    throw ControlOperationError.guestAgentUnavailable
+                } catch UTMDataIPError.unsupportedBackend {
+                    throw ControlOperationError.unsupportedBackend
+                }
+            case .snapshotCreate(let name):
+                try await UTMSnapshotService.createSnapshot(name: name, on: wrapped)
+            case .snapshotList:
+                let snapshots = try await UTMSnapshotService.listSnapshots(on: wrapped)
+                return .snapshots(try record(vm), names: snapshots.map(\.name))
+            case .snapshotRestore(let name):
+                try await UTMSnapshotService.restoreSnapshot(name: name, on: wrapped)
+            case .snapshotDelete(let name):
+                try await UTMSnapshotService.deleteSnapshot(name: name, on: wrapped)
+            case .usbConnect(let identifier):
+                guard vm.state == .started || vm.state == .paused,
+                      let qemu = wrapped as? UTMQemuVirtualMachine,
+                      let manager = qemu.ioService?.primaryUsbManager else {
+                    throw ControlOperationError.unsupportedBackend
+                }
+                switch Self.usbDevice(identifier: identifier, in: manager) {
+                case .found(let device):
+                    try await manager.connectUsbDevice(device)
+                case .notFound:
+                    throw ControlOperationError.deviceNotFound
+                case .ambiguous:
+                    throw ControlOperationError.ambiguousDevice
+                }
+            case .usbDisconnect(let identifier):
+                guard vm.state == .started || vm.state == .paused,
+                      let qemu = wrapped as? UTMQemuVirtualMachine,
+                      let manager = qemu.ioService?.primaryUsbManager else {
+                    throw ControlOperationError.unsupportedBackend
+                }
+                switch Self.usbDevice(identifier: identifier, in: manager) {
+                case .found(let device):
+                    guard manager.isUsbDeviceConnected(device) else {
+                        throw ControlOperationError.deviceNotFound
+                    }
+                    try await manager.disconnectUsbDevice(device)
+                case .notFound:
+                    throw ControlOperationError.deviceNotFound
+                case .ambiguous:
+                    throw ControlOperationError.ambiguousDevice
+                }
             }
             return .operation(operation.rawValue, try record(vm))
         } catch let error as ControlOperationError {
             return .failure(error.controlError(identifier: identifier))
         } catch let error as ControlRecordError {
             return .failure(error.controlError(identifier: identifier))
+        } catch let error as UTMSnapshotError {
+            return .failure(ControlOperationError.snapshot(error).controlError(identifier: identifier))
+        } catch let error as UTMQemuVirtualMachineError {
+            if operation.isSnapshot {
+                let detail: String?
+                switch error {
+                case .saveSnapshotFailed(let underlying):
+                    detail = String(underlying.localizedDescription.prefix(512))
+                case .qemuError(let message):
+                    detail = String(message.prefix(512))
+                default:
+                    detail = nil
+                }
+                if let detail {
+                    return .failure(ControlOperationError.snapshotFailure(detail).controlError(identifier: identifier))
+                }
+            }
+            if operation.isUSB {
+                let detail = String(error.localizedDescription.prefix(512))
+                return .failure(ControlOperationError.usbFailure(detail).controlError(identifier: identifier))
+            }
+            return .failure(UTMControlError(code: UTMControlErrorCode.backendFailure,
+                                            message: "The virtual machine operation failed.", identifier: identifier, retryable: false))
         } catch {
+            if operation.isUSB {
+                let detail = String(error.localizedDescription.prefix(512))
+                return .failure(ControlOperationError.usbFailure(detail).controlError(identifier: identifier))
+            }
             return .failure(UTMControlError(code: UTMControlErrorCode.backendFailure,
                                             message: "The virtual machine operation failed.", identifier: identifier, retryable: false))
         }
+    }
+
+    private func usbListResponse() -> UTMControlResponse {
+        guard let manager = data.virtualMachines.compactMap({ ($0.wrapped as? UTMQemuVirtualMachine)?.ioService?.primaryUsbManager }).first else {
+            return .failure(ControlOperationError.unsupportedBackend.controlError(identifier: nil))
+        }
+        let devices = manager.usbDevices.map {
+            UTMControlUSBDevice(name: $0.name ?? String(format: "%04X:%04X", $0.usbVendorId, $0.usbProductId),
+                                vendorId: $0.usbVendorId,
+                                productId: $0.usbProductId,
+                                location: $0.usbBusNumber << 16 | $0.usbPortNumber)
+        }
+        return .usbList(devices)
+    }
+
+    private enum USBOwner {
+        case none, ambiguous, owned(VMData)
+    }
+
+    private func usbOwner(for identifier: String) -> USBOwner {
+        var owners: [VMData] = []
+        for vm in data.virtualMachines {
+            guard let manager = (vm.wrapped as? UTMQemuVirtualMachine)?.ioService?.primaryUsbManager else { continue }
+            switch Self.usbDevice(identifier: identifier, in: manager) {
+            case .found(let device) where manager.isUsbDeviceConnected(device): owners.append(vm)
+            case .ambiguous: return .ambiguous
+            default: continue
+            }
+        }
+        guard let first = owners.first else { return .none }
+        return owners.count == 1 ? .owned(first) : .ambiguous
+    }
+
+    private enum USBDeviceLookup {
+        case found(CSUSBDevice), notFound, ambiguous
+    }
+
+    private static func usbDevice(identifier: String, in manager: CSUSBManager) -> USBDeviceLookup {
+        let parts = identifier.split(separator: ":")
+        if parts.count == 2, let vid = Int(parts[0], radix: 16), let pid = Int(parts[1], radix: 16) {
+            let matches = manager.usbDevices.filter { $0.usbVendorId == vid && $0.usbProductId == pid }
+            switch matches.count {
+            case 0: return .notFound
+            case 1: return .found(matches[0])
+            default: return .ambiguous
+            }
+        }
+        guard let location = Int(identifier) else { return .notFound }
+        guard let device = manager.usbDevices.first(where: { $0.usbBusNumber << 16 | $0.usbPortNumber == location }) else {
+            return .notFound
+        }
+        return .found(device)
     }
 
     private func waitForStopped(_ vm: VMData) async throws {
@@ -416,9 +598,13 @@ final class UTMControlServer {
     }
 
     private enum ControlOperationError: Error {
-        case invalidState, vmUnavailable, powerDownTimeout, operationTimeout
+        case invalidState, vmUnavailable, guestAgentUnavailable, unsupportedBackend, deviceNotFound, ambiguousDevice
+        case snapshot(UTMSnapshotError)
+        case snapshotFailure(String)
+        case usbFailure(String)
+        case powerDownTimeout, operationTimeout
 
-        func controlError(identifier: String) -> UTMControlError {
+        func controlError(identifier: String?) -> UTMControlError {
             switch self {
             case .invalidState:
                 return UTMControlError(code: UTMControlErrorCode.invalidState,
@@ -426,6 +612,35 @@ final class UTMControlServer {
             case .vmUnavailable:
                 return UTMControlError(code: UTMControlErrorCode.vmUnavailable,
                                        message: "The virtual machine is not loaded.", identifier: identifier, retryable: false)
+            case .guestAgentUnavailable:
+                return UTMControlError(code: UTMControlErrorCode.vmUnavailable,
+                                       message: "The QEMU guest agent is not running or not installed on the guest.", identifier: identifier, retryable: false)
+            case .unsupportedBackend:
+                return UTMControlError(code: UTMControlErrorCode.backendUnavailable,
+                                       message: "The requested operation is not supported by the virtual machine backend.", identifier: identifier, retryable: false)
+            case .deviceNotFound:
+                return UTMControlError(code: UTMControlErrorCode.usbDeviceNotFound,
+                                       message: "The USB device cannot be found or is not connected.", identifier: identifier, retryable: false)
+            case .ambiguousDevice:
+                return UTMControlError(code: UTMControlErrorCode.ambiguousUSBDevice,
+                                       message: "The USB device identifier matches more than one device.", identifier: identifier, retryable: false)
+            case .snapshot(let error):
+                let code: String
+                switch error {
+                case .notSupported: code = UTMControlErrorCode.backendUnavailable
+                case .listRequiresStoppedVm, .restoreRequiresStoppedVm, .invalidVmState: code = UTMControlErrorCode.invalidState
+                case .notFound: code = UTMControlErrorCode.backendFailure
+                case .reservedName, .invalidName: code = UTMControlErrorCode.backendFailure
+                }
+                return UTMControlError(code: code, message: error.localizedDescription, identifier: identifier, retryable: false)
+            case .snapshotFailure(let detail):
+                let suffix = detail.isEmpty ? "The QEMU backend did not provide additional details." : detail
+                return UTMControlError(code: UTMControlErrorCode.snapshotFailure,
+                                       message: "Failed to save VM snapshot. \(suffix)", identifier: identifier, retryable: false)
+            case .usbFailure(let detail):
+                let suffix = detail.isEmpty ? "The USB backend did not provide additional details." : detail
+                return UTMControlError(code: UTMControlErrorCode.usbFailure,
+                                       message: "Failed to connect or disconnect USB device. \(suffix)", identifier: identifier, retryable: false)
             case .powerDownTimeout:
                 return UTMControlError(code: UTMControlErrorCode.powerDownTimeout,
                                        message: "Timed out waiting for the virtual machine to reach the stopped state after a graceful power-down request.", identifier: identifier, retryable: true)
