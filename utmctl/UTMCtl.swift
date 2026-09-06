@@ -188,15 +188,15 @@ fileprivate extension UTMScriptingStatus {
 }
 
 extension UTMCtl {
-    struct Version: UTMAPICommand {
+    struct Version: ParsableCommand {
         static var configuration = CommandConfiguration(
             abstract: "Display the version number of the application."
         )
 
         @OptionGroup var environment: EnvironmentOptions
 
-        func run(with application: UTMScriptingApplication) throws {
-            print("\(application.UTMVersion ?? "")")
+        func run() throws {
+            print(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "")
         }
     }
 }
@@ -274,7 +274,7 @@ private func nativeRequest(_ request: UTMControlRequest, requirement: ControlReq
         responseTimeout = 30
     case .list, .status:
         responseTimeout = UTMControlTransport.timeout
-    case .stop, .forceStop:
+    case .stop, .forceStop, .clone, .delete:
         responseTimeout = 55
     }
     do {
@@ -308,6 +308,8 @@ private extension UTMControlRequest {
         case .forceStop: return "force-stop"
         case .suspend: return "suspend"
         case .resume: return "resume"
+        case .clone: return "clone"
+        case .delete: return "delete"
         }
     }
 }
@@ -681,7 +683,7 @@ extension UTMCtl {
 }
 
 extension UTMCtl {
-    struct Clone: UTMAPICommand {
+    struct Clone: NativeUTMAPICommand {
         static var configuration = CommandConfiguration(
             abstract: "Clone an existing virtual machine."
         )
@@ -691,20 +693,22 @@ extension UTMCtl {
         @OptionGroup var identifer: VMIdentifier
         
         @Option var name: String?
-        
-        func run(with application: UTMScriptingApplication) throws {
-            let vm = try virtualMachine(forIdentifier: identifer, in: application)
-            var properties = ["configuration": [:]]
-            if let name = name {
-                properties["configuration"] = ["name": name]
-            }
-            vm.duplicateTo!(nil, withProperties: properties)
+
+        @Flag(name: .long, help: "Output JSON.") var json = false
+
+        static let controlRequirement: ControlRequirement = .wakeAllowed
+
+        func runNative() throws {
+            let response = try nativeRequest(.clone(identifier: identifer.identifier, name: name), requirement: Self.controlRequirement)
+            if json { try printJSON(response) }
+            else if let vm = response.vm { print(vm.uuid) }
+            else { try throwResponseError(response) }
         }
     }
 }
 
 extension UTMCtl {
-    struct Delete: UTMAPICommand {
+    struct Delete: NativeUTMAPICommand {
         static var configuration = CommandConfiguration(
             abstract: "Delete a virtual machine (there is no confirmation)."
         )
@@ -712,10 +716,16 @@ extension UTMCtl {
         @OptionGroup var environment: EnvironmentOptions
         
         @OptionGroup var identifer: VMIdentifier
-        
-        func run(with application: UTMScriptingApplication) throws {
-            let vm = try virtualMachine(forIdentifier: identifer, in: application)
-            vm.delete!()
+
+        @Flag(name: .long, help: "Output JSON.") var json = false
+
+        static let controlRequirement: ControlRequirement = .wakeAllowed
+
+        func runNative() throws {
+            let response = try nativeRequest(.delete(identifier: identifer.identifier), requirement: Self.controlRequirement)
+            if json { try printJSON(response) }
+            else if let vm = response.vm { print(vm.uuid) }
+            else { try throwResponseError(response) }
         }
     }
 }

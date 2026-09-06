@@ -33,9 +33,11 @@ enum UTMControlRequest: Codable {
     case forceStop(identifier: String)
     case suspend(identifier: String)
     case resume(identifier: String)
+    case clone(identifier: String, name: String?)
+    case delete(identifier: String)
 
-    private enum CodingKeys: String, CodingKey { case command, identifier }
-    private enum Command: String, Codable { case list, status, start, stop, forceStop = "force-stop", suspend, resume }
+    private enum CodingKeys: String, CodingKey { case command, identifier, name }
+    private enum Command: String, Codable { case list, status, start, stop, forceStop = "force-stop", suspend, resume, clone, delete }
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -47,6 +49,10 @@ enum UTMControlRequest: Codable {
         case .forceStop: self = .forceStop(identifier: try container.decode(String.self, forKey: .identifier))
         case .suspend: self = .suspend(identifier: try container.decode(String.self, forKey: .identifier))
         case .resume: self = .resume(identifier: try container.decode(String.self, forKey: .identifier))
+        case .clone:
+            self = .clone(identifier: try container.decode(String.self, forKey: .identifier),
+                          name: try container.decodeIfPresent(String.self, forKey: .name))
+        case .delete: self = .delete(identifier: try container.decode(String.self, forKey: .identifier))
         }
     }
 
@@ -71,6 +77,13 @@ enum UTMControlRequest: Codable {
             try container.encode(identifier, forKey: .identifier)
         case .resume(let identifier):
             try container.encode(Command.resume, forKey: .command)
+            try container.encode(identifier, forKey: .identifier)
+        case .clone(let identifier, let name):
+            try container.encode(Command.clone, forKey: .command)
+            try container.encode(identifier, forKey: .identifier)
+            try container.encodeIfPresent(name, forKey: .name)
+        case .delete(let identifier):
+            try container.encode(Command.delete, forKey: .command)
             try container.encode(identifier, forKey: .identifier)
         }
     }

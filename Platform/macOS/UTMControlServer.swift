@@ -171,10 +171,29 @@ final class UTMControlServer {
             return await perform(.suspend, identifier: identifier)
         case .resume(let identifier):
             return await perform(.resume, identifier: identifier)
+        case .clone(let identifier, let name):
+            return await perform(.clone(name: name), identifier: identifier)
+        case .delete(let identifier):
+            return await perform(.delete, identifier: identifier)
         }
     }
 
-    private enum Operation: String { case start, stop, forceStop = "force-stop", suspend, resume }
+    private enum Operation {
+        case start, stop, forceStop, suspend, resume
+        case clone(name: String?), delete
+
+        var rawValue: String {
+            switch self {
+            case .start: return "start"
+            case .stop: return "stop"
+            case .forceStop: return "force-stop"
+            case .suspend: return "suspend"
+            case .resume: return "resume"
+            case .clone: return "clone"
+            case .delete: return "delete"
+            }
+        }
+    }
 
     private func perform(_ operation: Operation, identifier: String) async -> UTMControlResponse {
         do {
@@ -244,6 +263,36 @@ final class UTMControlServer {
                 try await wrapped.resume()
                 vm.state = wrapped.state
                 try await waitForState(vm, expected: .started, timeout: 15)
+            case .clone(let name):
+                guard let wrapped = vm.wrapped else { throw ControlOperationError.vmUnavailable }
+                guard vm.state == .stopped else { throw ControlOperationError.invalidState }
+                let cloned = try await data.clone(vm: vm)
+                if let name {
+                    if let config = cloned.wrapped?.config as? UTMQemuConfiguration {
+                        config.information.name = name
+                    } else if #available(macOS 11, *), let config = cloned.wrapped?.config as? UTMAppleConfiguration {
+                        config.information.name = name
+                    } else {
+                        throw ControlOperationError.vmUnavailable
+                    }
+                    try await data.save(vm: cloned)
+                }
+                guard cloned.id != vm.id,
+                      data.virtualMachines.contains(where: { $0 === cloned }) else {
+                    throw ControlOperationError.vmUnavailable
+                }
+                return .operation(operation.rawValue, try record(cloned))
+            case .delete:
+                guard vm.state == .stopped else { throw ControlOperationError.invalidState }
+                try await data.delete(vm: vm, alsoRegistry: true)
+                guard !data.virtualMachines.contains(where: { $0 === vm }) else {
+                    throw ControlOperationError.vmUnavailable
+                }
+                return .operation(operation.rawValue, UTMControlVM(uuid: vm.id.uuidString,
+                                                                    name: vm.detailsTitleLabel,
+                                                                    state: "deleted",
+                                                                    backend: "unknown",
+                                                                    loaded: false))
             }
             return .operation(operation.rawValue, try record(vm))
         } catch let error as ControlOperationError {
