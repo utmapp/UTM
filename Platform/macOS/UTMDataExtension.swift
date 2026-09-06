@@ -19,23 +19,79 @@ import Carbon.HIToolbox
 
 @available(macOS 11, *)
 extension UTMData {
-    func startHeadlessForControl(vm: VMData, options: UTMVirtualMachineStartOptions = []) async throws {
-        guard let wrapped = vm.wrapped, vmWindows[vm] == nil else {
+    private func makeSession(for vm: VMData) -> NSObject? {
+        let close: () -> Void = {
+            _ = self.vmWindows.removeValue(forKey: vm)
+        }
+        var session: NSObject?
+        if let avm = vm.wrapped as? UTMAppleVirtualMachine {
+            if avm.config.system.architecture == UTMAppleConfigurationSystem.currentArchitecture {
+                let primarySerialIndex = avm.config.serials.firstIndex { $0.mode == .builtin }
+                if let primarySerialIndex = primarySerialIndex {
+                    session = VMDisplayAppleTerminalWindowController(primaryForIndex: primarySerialIndex, vm: avm, onClose: close)
+                }
+                if #available(macOS 12, *), !avm.config.displays.isEmpty {
+                    session = VMDisplayAppleDisplayWindowController(vm: avm, onClose: close)
+                } else if avm.config.displays.isEmpty && session == nil {
+                    session = VMHeadlessSessionState(for: avm, onStop: close)
+                }
+            }
+        }
+        if let qvm = vm.wrapped as? UTMQemuVirtualMachine {
+            if !qvm.config.displays.isEmpty {
+                session = VMDisplayQemuMetalWindowController(vm: qvm, onClose: close)
+            } else if !qvm.config.serials.filter({ $0.mode == .builtin }).isEmpty {
+                session = VMDisplayQemuTerminalWindowController(vm: qvm, onClose: close)
+            } else {
+                session = VMHeadlessSessionState(for: qvm, onStop: close)
+            }
+        }
+        return session
+    }
+
+    func startForControl(vm: VMData, options: UTMVirtualMachineStartOptions = []) async throws {
+        guard let wrapped = vm.wrapped else {
             throw UTMDataError.virtualMachineUnavailable
         }
-        let session = VMHeadlessSessionState(for: wrapped) {
-            self.vmWindows.removeValue(forKey: vm)
+        guard wrapped.state == .stopped else {
+            throw UTMDataError.virtualMachineUnavailable
         }
-        vmWindows[vm] = session
-        do {
-            guard wrapped.state == .stopped else {
+        let session: NSObject?
+        let didCreate: Bool
+        if let existing = vmWindows[vm] {
+            // A stopped VM may still have its canonical window controller open
+            // (for example after a graceful stop left the window visible).
+            // Reuse it instead of creating a duplicate controller; any other
+            // pre-existing session blocks a fresh start.
+            guard let existingSession = existing as? VMDisplayWindowController else {
                 throw UTMDataError.virtualMachineUnavailable
             }
+            session = existingSession
+            didCreate = false
+        } else {
+            guard let made = makeSession(for: vm) else {
+                throw UTMDataError.virtualMachineUnavailable
+            }
+            vmWindows[vm] = made
+            session = made
+            didCreate = true
+        }
+        if let controller = session as? VMDisplayWindowController {
+            wrapped.delegate = controller
+            controller.showWindow(nil)
+            controller.window!.makeMain()
+        }
+        do {
             try await wrapped.start(options: options)
             vm.state = wrapped.state
         } catch {
-            if (vmWindows[vm] as? VMHeadlessSessionState) === session {
-                vmWindows.removeValue(forKey: vm)
+            if didCreate {
+                if let controller = session as? VMDisplayWindowController {
+                    controller.close()
+                }
+                if let currentSession = vmWindows[vm] as? NSObject, currentSession === session {
+                    vmWindows.removeValue(forKey: vm)
+                }
             }
             throw error
         }
@@ -44,32 +100,7 @@ extension UTMData {
     func run(vm: VMData, options: UTMVirtualMachineStartOptions = [], startImmediately: Bool = true) {
         var window: Any? = vmWindows[vm]
         if window == nil {
-            let close = {
-                self.vmWindows.removeValue(forKey: vm)
-                window = nil
-            }
-            if let avm = vm.wrapped as? UTMAppleVirtualMachine {
-                if avm.config.system.architecture == UTMAppleConfigurationSystem.currentArchitecture {
-                    let primarySerialIndex = avm.config.serials.firstIndex { $0.mode == .builtin }
-                    if let primarySerialIndex = primarySerialIndex {
-                        window = VMDisplayAppleTerminalWindowController(primaryForIndex: primarySerialIndex, vm: avm, onClose: close)
-                    }
-                    if #available(macOS 12, *), !avm.config.displays.isEmpty {
-                        window = VMDisplayAppleDisplayWindowController(vm: avm, onClose: close)
-                    } else if avm.config.displays.isEmpty && window == nil {
-                        window = VMHeadlessSessionState(for: avm, onStop: close)
-                    }
-                }
-            }
-            if let qvm = vm.wrapped as? UTMQemuVirtualMachine {
-                if !qvm.config.displays.isEmpty {
-                    window = VMDisplayQemuMetalWindowController(vm: qvm, onClose: close)
-                } else if !qvm.config.serials.filter({ $0.mode == .builtin }).isEmpty {
-                    window = VMDisplayQemuTerminalWindowController(vm: qvm, onClose: close)
-                } else {
-                    window = VMHeadlessSessionState(for: qvm, onStop: close)
-                }
-            }
+            window = makeSession(for: vm)
             if window == nil {
                 DispatchQueue.main.async {
                     self.alertItem = .message(NSLocalizedString("This virtual machine cannot be run on this machine.", comment: "UTMDataExtension"))

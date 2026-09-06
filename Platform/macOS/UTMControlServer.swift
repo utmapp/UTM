@@ -207,7 +207,7 @@ final class UTMControlServer {
             switch operation {
             case .start:
                 guard vm.state == .stopped else { throw ControlOperationError.invalidState }
-                try await data.startHeadlessForControl(vm: vm)
+                try await data.startForControl(vm: vm)
                 try await waitForState(vm, expected: .started, timeout: 15)
             case .stop:
                 if vm.state == .stopping {
