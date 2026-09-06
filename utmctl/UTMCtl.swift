@@ -274,7 +274,7 @@ private func nativeRequest(_ request: UTMControlRequest, requirement: ControlReq
         responseTimeout = 30
     case .list, .status, .ipAddress, .snapshotList, .usbList, .usbDisconnect:
         responseTimeout = UTMControlTransport.timeout
-    case .stop, .forceStop, .clone, .delete, .snapshotCreate, .snapshotRestore, .snapshotDelete, .usbConnect, .exec:
+    case .stop, .forceStop, .clone, .delete, .snapshotCreate, .snapshotRestore, .snapshotDelete, .usbConnect, .exec, .filePull, .filePush:
         responseTimeout = 55
     }
     do {
@@ -319,6 +319,8 @@ private extension UTMControlRequest {
         case .usbConnect: return "usb-connect"
         case .usbDisconnect: return "usb-disconnect"
         case .exec: return "exec"
+        case .filePull: return "file-pull"
+        case .filePush: return "file-push"
         }
     }
 }
@@ -585,7 +587,7 @@ extension UTMCtl {
         )
     }
     
-    struct FilePull: UTMAPICommand {
+    struct FilePull: NativeUTMAPICommand {
         static var configuration = CommandConfiguration(
             commandName: "pull",
             abstract: "Fetches a file from the guest and output it to stdout."
@@ -597,21 +599,30 @@ extension UTMCtl {
         
         @Argument(help: "Path of the file to pull on the guest.")
         var path: String
-        
-        func run(with application: UTMScriptingApplication) throws {
-            let vm = try virtualMachine(forIdentifier: identifer, in: application)
-            let file = vm.openFileAt!(path, for: .reading, updating: false)
-            var data: Data
-            repeat {
-                let text = file.readAtOffset!(0, from: .currentPosition, forLength: 4096, base64Encoding: true, closing: false)
-                data = Data(base64Encoded: text) ?? Data()
+
+        let json = false
+        static let controlRequirement: ControlRequirement = .requireRunning
+
+        func runNative() throws {
+            var offset = 0
+            while true {
+                let response = try nativeRequest(.filePull(identifier: identifer.identifier,
+                                                           path: path,
+                                                           offset: offset,
+                                                           length: UTMControlFileLimits.maximumChunkBytes),
+                                                 requirement: Self.controlRequirement)
+                guard let result = response.fileResult, let data = result.data else {
+                    try throwResponseError(response)
+                    return
+                }
                 try FileHandle.standardOutput.write(contentsOf: data)
-            } while !data.isEmpty
-            file.close!()
+                offset += data.count
+                if result.eof { return }
+            }
         }
     }
     
-    struct FilePush: UTMAPICommand {
+    struct FilePush: NativeUTMAPICommand {
         static var configuration = CommandConfiguration(
             commandName: "push",
             abstract: "Uploads the contents of stdin to the guest."
@@ -623,16 +634,25 @@ extension UTMCtl {
         
         @Argument(help: "Destination path on the guest.")
         var path: String
-        
-        func run(with application: UTMScriptingApplication) throws {
-            let vm = try virtualMachine(forIdentifier: identifer, in: application)
-            let file = vm.openFileAt!(path, for: .writing, updating: false)
-            var data: Data
-            repeat {
-                data = try FileHandle.standardInput.read(upToCount: 4096) ?? Data()
-                file.writeWithData!(data.base64EncodedString(), atOffset: 0, from: .currentPosition, base64Encoding: true, closing: false)
-            } while !data.isEmpty
-            file.close!()
+
+        let json = false
+        static let controlRequirement: ControlRequirement = .requireRunning
+
+        func runNative() throws {
+            var offset = 0
+            var truncate = true
+            while true {
+                let data = try FileHandle.standardInput.read(upToCount: UTMControlFileLimits.maximumChunkBytes) ?? Data()
+                _ = try nativeRequest(.filePush(identifier: identifer.identifier,
+                                                 path: path,
+                                                 offset: offset,
+                                                 data: data,
+                                                 truncate: truncate),
+                                       requirement: Self.controlRequirement)
+                offset += data.count
+                truncate = false
+                if data.count < UTMControlFileLimits.maximumChunkBytes { return }
+            }
         }
     }
 }

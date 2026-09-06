@@ -203,6 +203,10 @@ final class UTMControlServer {
             }
         case .exec(let identifier, let path, let argv, let environment, let input):
             return await perform(.exec(path: path, argv: argv, environment: environment, input: input), identifier: identifier)
+        case .filePull(let identifier, let path, let offset, let length):
+            return await perform(.filePull(path: path, offset: offset, length: length), identifier: identifier)
+        case .filePush(let identifier, let path, let offset, let data, let truncate):
+            return await perform(.filePush(path: path, offset: offset, data: data, truncate: truncate), identifier: identifier)
         }
     }
 
@@ -212,6 +216,8 @@ final class UTMControlServer {
         case snapshotCreate(name: String), snapshotList, snapshotRestore(name: String), snapshotDelete(name: String)
         case usbConnect(device: String), usbDisconnect(device: String)
         case exec(path: String, argv: [String], environment: [String], input: Data)
+        case filePull(path: String, offset: Int, length: Int)
+        case filePush(path: String, offset: Int, data: Data, truncate: Bool)
 
         var rawValue: String {
             switch self {
@@ -230,6 +236,8 @@ final class UTMControlServer {
             case .usbConnect: return "usb-connect"
             case .usbDisconnect: return "usb-disconnect"
             case .exec: return "exec"
+            case .filePull: return "file-pull"
+            case .filePush: return "file-push"
             }
         }
 
@@ -442,6 +450,47 @@ final class UTMControlServer {
                                                   stderr: stderr.data,
                                                   stdoutTruncated: result.isOutDataTruncated || stdout.truncated,
                                                   stderrTruncated: result.isErrDataTruncated || stderr.truncated))
+            case .filePull(let path, let offset, let length):
+                guard vm.state == .started else { throw ControlOperationError.invalidState }
+                guard offset >= 0, length > 0, length <= UTMControlFileLimits.maximumChunkBytes else {
+                    throw ControlOperationError.fileTransferTooLarge
+                }
+                guard let qemu = wrapped as? UTMQemuVirtualMachine else {
+                    throw ControlOperationError.unsupportedBackend
+                }
+                guard let guestAgent = await qemu.guestAgent else {
+                    throw ControlOperationError.fileGuestAgentUnavailable
+                }
+                do {
+                    let handle = try await guestAgent.guestFileOpen(path, mode: "r")
+                    defer { guestAgent.guestFileClose(handle) }
+                    try await guestAgent.guestFileSeek(handle, offset: offset, whence: .set)
+                    let data = try await guestAgent.guestFileRead(handle, count: length)
+                    return .filePull(UTMControlFileResult(data: data, eof: data.count < length))
+                } catch {
+                    throw ControlOperationError.fileFailure(String(error.localizedDescription.prefix(512)))
+                }
+            case .filePush(let path, let offset, let data, let truncate):
+                guard vm.state == .started else { throw ControlOperationError.invalidState }
+                guard offset >= 0, data.count <= UTMControlFileLimits.maximumChunkBytes else {
+                    throw ControlOperationError.fileTransferTooLarge
+                }
+                guard let qemu = wrapped as? UTMQemuVirtualMachine else {
+                    throw ControlOperationError.unsupportedBackend
+                }
+                guard let guestAgent = await qemu.guestAgent else {
+                    throw ControlOperationError.fileGuestAgentUnavailable
+                }
+                do {
+                    let mode = truncate ? "w" : "r+"
+                    let handle = try await guestAgent.guestFileOpen(path, mode: mode)
+                    defer { guestAgent.guestFileClose(handle) }
+                    try await guestAgent.guestFileSeek(handle, offset: offset, whence: .set)
+                    try await guestAgent.guestFileWrite(handle, data: data)
+                    try await guestAgent.guestFileFlush(handle)
+                } catch {
+                    throw ControlOperationError.fileFailure(String(error.localizedDescription.prefix(512)))
+                }
             }
             return .operation(operation.rawValue, try record(vm))
         } catch let error as ControlOperationError {
@@ -657,6 +706,7 @@ final class UTMControlServer {
         case snapshotFailure(String)
         case usbFailure(String)
         case execFailure(String), execTimeout, execInputTooLarge
+        case fileFailure(String), fileGuestAgentUnavailable, fileTransferTooLarge
         case powerDownTimeout, operationTimeout
 
         func controlError(identifier: String?) -> UTMControlError {
@@ -709,6 +759,16 @@ final class UTMControlServer {
             case .execInputTooLarge:
                 return UTMControlError(code: UTMControlErrorCode.execInputTooLarge,
                                        message: "Guest process input exceeds the maximum supported size.", identifier: identifier, retryable: false)
+            case .fileFailure(let detail):
+                let suffix = detail.isEmpty ? "The guest agent did not provide additional details." : detail
+                return UTMControlError(code: UTMControlErrorCode.fileFailure,
+                                       message: "Guest file operation failed. \(suffix)", identifier: identifier, retryable: false)
+            case .fileGuestAgentUnavailable:
+                return UTMControlError(code: UTMControlErrorCode.guestAgentUnavailable,
+                                       message: "The QEMU guest agent is not running or not installed on the guest.", identifier: identifier, retryable: false)
+            case .fileTransferTooLarge:
+                return UTMControlError(code: UTMControlErrorCode.fileTransferTooLarge,
+                                       message: "Guest file transfer chunk exceeds the maximum supported size.", identifier: identifier, retryable: false)
             case .powerDownTimeout:
                 return UTMControlError(code: UTMControlErrorCode.powerDownTimeout,
                                        message: "Timed out waiting for the virtual machine to reach the stopped state after a graceful power-down request.", identifier: identifier, retryable: true)
