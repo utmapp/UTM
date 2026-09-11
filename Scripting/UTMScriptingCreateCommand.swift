@@ -15,6 +15,7 @@
 //
 
 import Foundation
+import Virtualization
 
 @MainActor
 @objc(UTMScriptingCreateCommand)
@@ -103,12 +104,49 @@ class UTMScriptingCreateCommand: NSCreateCommand, UTMScriptable {
             throw ScriptingError.nameNotSpecified
         }
         let config = UTMAppleConfiguration()
-        config.system.boot = try UTMAppleConfigurationBoot(for: .linux)
+        // enumerations arrive as an AEKeyword and not a string
+        var bootOS = UTMAppleConfigurationBoot.OperatingSystem.linux
+        if let osKeyword = record["os"] as? AEKeyword {
+            guard let scriptingOS = UTMScriptingOperatingSystem(rawValue: osKeyword) else {
+                throw ScriptingError.operatingSystemNotSupported
+            }
+            switch scriptingOS {
+            case .linux: bootOS = .linux
+            case .macOS: bootOS = .macOS
+            }
+        }
+        config.system.boot = try UTMAppleConfigurationBoot(for: bootOS)
+        var macGuestMajorVersion = 0
+        if bootOS == .macOS {
+            guard let ipsw = record["macRecoveryIpsw"] as? URL else {
+                throw ScriptingError.macRecoveryIpswNotSpecified
+            }
+            config.system.boot.macRecoveryIpswURL = ipsw
+            #if arch(arm64)
+            // the hardware model must match the IPSW the caller chose
+            let image = try await VZMacOSRestoreImage.image(from: ipsw)
+            guard let model = image.mostFeaturefulSupportedConfiguration?.hardwareModel else {
+                throw ScriptingError.ipswNotSupported
+            }
+            config.system.macPlatform = UTMAppleConfigurationMacPlatform(newHardware: model)
+            macGuestMajorVersion = image.operatingSystemVersion.majorVersion
+            #else
+            throw ScriptingError.operatingSystemNotSupported
+            #endif
+        }
         config.virtualization.hasBalloon = true
         config.virtualization.hasEntropy = true
         config.networks = [UTMAppleConfigurationNetwork()]
-        // remove any display devices
-        config.displays = []
+        if bootOS == .macOS {
+            // macOS is not usable headless so it gets the same devices as the wizard
+            config.displays = [UTMAppleConfigurationDisplay(width: 1920, height: 1200)]
+            config.virtualization.hasAudio = true
+            config.virtualization.keyboard = .generic
+            config.virtualization.pointer = macGuestMajorVersion >= 13 ? .trackpad : .mouse
+        } else {
+            // remove any display devices
+            config.displays = []
+        }
         // add a default serial device
         var serial = UTMAppleConfigurationSerial()
         serial.mode = .ptty
@@ -131,6 +169,9 @@ class UTMScriptingCreateCommand: NSCreateCommand, UTMScriptable {
         case configurationNotFound
         case nameNotSpecified
         case architectureNotSpecified
+        case operatingSystemNotSupported
+        case macRecoveryIpswNotSpecified
+        case ipswNotSupported
         
         var errorDescription: String? {
             switch self {
@@ -140,6 +181,9 @@ class UTMScriptingCreateCommand: NSCreateCommand, UTMScriptable {
             case .configurationNotFound: return NSLocalizedString("A valid configuration must be specified.", comment: "UTMScriptingAppDelegate")
             case .nameNotSpecified: return NSLocalizedString("No name specified in the configuration.", comment: "UTMScriptingAppDelegate")
             case .architectureNotSpecified: return NSLocalizedString("No architecture specified in the configuration.", comment: "UTMScriptingAppDelegate")
+            case .operatingSystemNotSupported: return NSLocalizedString("The specified operating system is not supported on your machine.", comment: "UTMScriptingAppDelegate")
+            case .macRecoveryIpswNotSpecified: return NSLocalizedString("An IPSW recovery image must be specified to create a macOS virtual machine.", comment: "UTMScriptingAppDelegate")
+            case .ipswNotSupported: return NSLocalizedString("Your machine does not support running this IPSW.", comment: "UTMScriptingAppDelegate")
             }
         }
     }

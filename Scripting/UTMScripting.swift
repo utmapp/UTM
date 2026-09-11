@@ -51,6 +51,12 @@ import ScriptingBridge
     case detailed = 0x6c776474 /* 'lwdt' */
 }
 
+// MARK: UTMScriptingOperatingSystem
+@objc public enum UTMScriptingOperatingSystem : AEKeyword {
+    case linux = 0x41704f6c /* 'ApOl' */
+    case macOS = 0x41704f6d /* 'ApOm' */
+}
+
 // MARK: UTMScriptingBackend
 @objc public enum UTMScriptingBackend : AEKeyword {
     case apple = 0x4170506c /* 'ApPl' */
