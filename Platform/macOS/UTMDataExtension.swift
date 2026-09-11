@@ -57,6 +57,7 @@ extension UTMData {
             vmWindows[vm] = unwrappedWindow
             vm.wrapped!.delegate = unwrappedWindow
             unwrappedWindow.showWindow(nil)
+            attachToLibraryWindowAsTab(unwrappedWindow.window!)
             // a hidden app's window is not visible and making it main throws
             if unwrappedWindow.window!.canBecomeMain {
                 unwrappedWindow.window!.makeMain()
@@ -134,5 +135,24 @@ extension UTMData {
                 window.close()
             }
         }
+    }
+
+    /// Open a VM window as a tab of the library window when "Open VM windows as tabs" is enabled.
+    /// The library window is the SwiftUI `Window` scene with id "home".
+    private func attachToLibraryWindowAsTab(_ window: NSWindow) {
+        guard UserDefaults.standard.bool(forKey: "OpenVMWindowsAsTabs") else {
+            return
+        }
+        guard let library = NSApp.windows.first(where: { $0 !== window && $0.isVisible && $0.identifier?.rawValue.hasPrefix("home") == true }) else {
+            logger.info("OpenVMWindowsAsTabs: no visible library window among \(NSApp.windows.map { $0.identifier?.rawValue ?? "nil" })")
+            return
+        }
+        library.tabbingMode = .preferred
+        window.tabbingMode = .preferred
+        window.tabbingIdentifier = library.tabbingIdentifier
+        if library.tabbedWindows?.contains(window) != true {
+            library.addTabbedWindow(window, ordered: .above)
+        }
+        window.makeKeyAndOrderFront(nil)
     }
 }
