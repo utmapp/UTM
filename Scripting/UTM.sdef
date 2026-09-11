@@ -69,6 +69,10 @@
           </parameter>
         </command>
         
+        <command name="install" code="UTMvinst" description="Install macOS onto an Apple virtual machine from its configured IPSW recovery image. DESTRUCTIVE: any existing operating system on the primary drive is erased. The VM must be stopped, and must have been configured with a macRecoveryIpsw. Unlike starting the VM from the GUI, this does not ask for confirmation — the caller has already asked for it.">
+          <direct-parameter description="Virtual machine to install macOS onto." type="virtual machine"/>
+        </command>
+
         <command name="suspend" code="UTMvsusp" description="Suspend a running virtual machine to memory.">
           <direct-parameter description="Virtual machine to suspend." type="virtual machine"/>
           <parameter name="saving" code="SaVe" description="Save VM state to disk after suspend. Default value is false." type="boolean" optional="yes">
@@ -169,6 +173,10 @@
             <cocoa method="start:"/>
           </responds-to>
           
+          <responds-to command="install">
+            <cocoa method="install:"/>
+          </responds-to>
+
           <responds-to command="suspend">
             <cocoa method="suspend:"/>
           </responds-to>

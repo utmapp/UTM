@@ -140,6 +140,31 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
         }
     }
     
+    /// Install macOS from the configured IPSW
+    ///
+    /// Unlike the GUI, this does not ask for confirmation because the caller already requested it.
+    @objc func install(_ command: NSScriptCommand) {
+        withScriptCommand(command) { [self] in
+            guard #available(macOS 12, *) else {
+                throw ScriptingError.operationNotSupported
+            }
+            guard let appleVM = vm as? UTMAppleVirtualMachine else {
+                throw ScriptingError.operationNotSupported
+            }
+            // installVM() silently does nothing if the VM is not stopped
+            guard appleVM.state == .stopped else {
+                throw ScriptingError.notStopped
+            }
+            guard let ipsw = appleVM.config.system.boot.macRecoveryIpswURL else {
+                throw ScriptingError.macRecoveryIpswNotConfigured
+            }
+            try await appleVM.installVM(with: ipsw)
+            // there is no window to do this in didCompleteInstallation
+            appleVM.config.system.boot.macRecoveryIpswURL = nil
+            appleVM.registryEntry.macRecoveryIpsw = nil
+        }
+    }
+    
     @objc func suspend(_ command: NSScriptCommand) {
         let shouldSaveState = command.evaluatedArguments?["saveFlag"] as? Bool ?? false
         withScriptCommand(command) { [self] in
@@ -438,6 +463,7 @@ extension UTMScriptingVirtualMachineImpl {
         case notStopped
         case guestAgentNotRunning
         case invalidParameter
+        case macRecoveryIpswNotConfigured
         
         var errorDescription: String? {
             switch self {
@@ -447,6 +473,7 @@ extension UTMScriptingVirtualMachineImpl {
             case .notStopped: return NSLocalizedString("The virtual machine must be stopped before this operation can be performed.", comment: "UTMScriptingVirtualMachineImpl")
             case .guestAgentNotRunning: return NSLocalizedString("The QEMU guest agent is not running or not installed on the guest.", comment: "UTMScriptingVirtualMachineImpl")
             case .invalidParameter: return NSLocalizedString("One or more required parameters are missing or invalid.", comment: "UTMScriptingVirtualMachineImpl")
+            case .macRecoveryIpswNotConfigured: return NSLocalizedString("This virtual machine has no IPSW recovery image configured, so there is nothing to install from.", comment: "UTMScriptingVirtualMachineImpl")
             }
         }
     }

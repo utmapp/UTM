@@ -230,6 +230,7 @@ extension SBObject: UTMScriptingWindow {}
     @objc optional var backend: UTMScriptingBackend { get } // Emulation/virtualization engine used.
     @objc optional var status: UTMScriptingStatus { get } // Current running status.
     @objc optional func startSaving(_ saving: Bool, recovery: Bool) // Start a virtual machine or resume a suspended virtual machine.
+    @objc optional func install() // Install macOS onto an Apple virtual machine from its configured IPSW recovery image. DESTRUCTIVE: any existing operating system on the primary drive is erased. The VM must be stopped, and must have been configured with a macRecoveryIpsw. Unlike starting the VM from the GUI, this does not ask for confirmation — the caller has already asked for it.
     @objc optional func suspendSaving(_ saving: Bool) // Suspend a running virtual machine to memory.
     @objc optional func stopBy(_ by: UTMScriptingStopMethod) // Shuts down a running virtual machine.
     @objc optional func createSnapshotNamed(_ named: String!) // Create or replace a named full-VM snapshot (RAM, devices, and disk) for a QEMU virtual machine. The VM must be running or paused.
