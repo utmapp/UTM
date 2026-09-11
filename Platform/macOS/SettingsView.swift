@@ -162,6 +162,7 @@ struct ApplicationSettingsView: View {
     @AppStorage("NoQuitConfirmation") var isNoQuitConfirmation = false
     @AppStorage("NoUsbPrompt") var isNoUsbPrompt = false
     @AppStorage("QuitRunningVirtualMachinesPolicy") var quitPolicy = UTMQuitPolicy.saveState.rawValue
+    @AppStorage("OpenVMWindowsAsTabs") var isOpenVMWindowsAsTabs = false
 
     @State private var isConfirmResetAutoConnect = false
 
@@ -183,6 +184,9 @@ struct ApplicationSettingsView: View {
                     Text("Show menu bar icon")
                 }).disabled(isDockIconHidden)
             }
+            Toggle(isOn: $isOpenVMWindowsAsTabs, label: {
+                Text("Open virtual machine windows as tabs of the main window")
+            }).help("Takes effect for windows opened after the change. Relaunch UTM to also enable the Window menu tab commands.")
             Toggle(isOn: $isPreventIdleSleep, label: {
                 Text("Prevent system from sleeping when any VM is running")
             })
