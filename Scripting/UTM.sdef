@@ -756,6 +756,8 @@
         
         <enumeration name="apple network mode" code="ApNm" description="Mode for networking device.">
             <enumerator name="shared" code="ShRd" description="NAT based sharing with the host."/>
+            <enumerator name="shared vmnet" code="ShVm" description="NAT based sharing with the host on a network shared with other virtual machines (macOS 26+)."/>
+            <enumerator name="host" code="HoSt" description="Network shared with the host and other virtual machines with no WAN routing (macOS 26+)."/>
             <enumerator name="bridged" code="BrGd" description="Bridged to a host interface."/>
         </enumeration>
         

@@ -241,7 +241,7 @@ extension UTMAppleConfiguration {
 
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
 @MainActor extension UTMAppleConfiguration {
-    func appleVZConfiguration(ignoringDrives: Bool = false) throws -> VZVirtualMachineConfiguration {
+    func appleVZConfiguration(forValidation: Bool, ignoringDrives: Bool = false) throws -> VZVirtualMachineConfiguration {
         let vzconfig = VZVirtualMachineConfiguration()
         try system.fillVZConfiguration(vzconfig)
         if !sharedDirectories.isEmpty {
@@ -271,7 +271,7 @@ extension UTMAppleConfiguration {
                 }
             }
         }
-        vzconfig.networkDevices.append(contentsOf: networks.compactMap({ $0.vzNetworking() }))
+        vzconfig.networkDevices.append(contentsOf: try networks.compactMap({ try $0.vzNetworking(forValidation: forValidation) }))
         vzconfig.serialPorts.append(contentsOf: serials.compactMap({ $0.vzSerial() }))
         // add remaining devices
         try virtualization.fillVZConfiguration(vzconfig, isMacOSGuest: system.boot.operatingSystem == .macOS)
@@ -350,7 +350,7 @@ private extension String {
         #endif
 
         // validate before we copy and create drive images
-        try appleVZConfiguration(ignoringDrives: true).validate()
+        try appleVZConfiguration(forValidation: true, ignoringDrives: true).validate()
 
         for i in 0..<drives.count {
             existingDataURLs += try await _drives[i].saveData(to: dataURL)

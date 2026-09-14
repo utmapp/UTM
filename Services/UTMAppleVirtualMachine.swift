@@ -537,7 +537,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             let serialPort = UTMSerialPort(portNamed: name, readFileHandle: slaveTtyHandle, writeFileHandle: slaveTtyHandle, terminalFileHandle: terminalTtyHandle)
             config.serials[i].interface = serialPort
         }
-        let vzConfig = try config.appleVZConfiguration()
+        let vzConfig = try config.appleVZConfiguration(forValidation: false)
         var usbControllerDelegate: AnyObject?
         if #available(macOS 27, *), hasUsbRedirection {
             if isRestoring {

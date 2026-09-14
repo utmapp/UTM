@@ -21,12 +21,39 @@ import Virtualization
 struct UTMAppleConfigurationNetwork: Codable, Identifiable {
     enum NetworkMode: String, CaseIterable, QEMUConstant {
         case shared = "Shared"
+        case sharedVmnet = "SharedVmnet"
+        case host = "Host"
         case bridged = "Bridged"
         
         var prettyValue: String {
             switch self {
             case .shared: return NSLocalizedString("Shared Network", comment: "UTMAppleConfigurationNetwork")
+            case .sharedVmnet: return NSLocalizedString("Shared Network (VM to VM)", comment: "UTMAppleConfigurationNetwork")
+            case .host: return NSLocalizedString("Host Only", comment: "UTMAppleConfigurationNetwork")
             case .bridged: return NSLocalizedString("Bridged (Advanced)", comment: "UTMAppleConfigurationNetwork")
+            }
+        }
+
+        var isHidden: Bool {
+            switch self {
+            case .sharedVmnet, .host:
+                if #available(macOS 26, *) {
+                    return false
+                } else {
+                    return true
+                }
+            default:
+                return false
+            }
+        }
+
+        /// The vmnet network backing this mode, or nil when Virtualization.framework provides the network itself.
+        @available(macOS 26, *)
+        var vmnetMode: UTMAppleVmnetNetworkManager.Mode? {
+            switch self {
+            case .sharedVmnet: return .shared
+            case .host: return .host
+            default: return nil
             }
         }
     }
@@ -76,12 +103,14 @@ struct UTMAppleConfigurationNetwork: Codable, Identifiable {
             bridgeInterface = attachment.interface.identifier
         } else if let _ = virtioConfig.attachment as? VZNATNetworkDeviceAttachment {
             mode = .shared
+        } else if #available(macOS 26, *), let attachment = virtioConfig.attachment as? VZVmnetNetworkDeviceAttachment, let vmnetMode = UTMAppleVmnetNetworkManager.shared.mode(of: attachment.network) {
+            mode = vmnetMode == .host ? .host : .sharedVmnet
         } else {
             return nil
         }
     }
     
-    func vzNetworking() -> VZNetworkDeviceConfiguration? {
+    func vzNetworking(forValidation: Bool) throws -> VZNetworkDeviceConfiguration? {
         let config = VZVirtioNetworkDeviceConfiguration()
         guard let macAddress = VZMACAddress(string: macAddress) else {
             return nil
@@ -107,6 +136,17 @@ struct UTMAppleConfigurationNetwork: Codable, Identifiable {
             if let found = found {
                 let attachment = VZBridgedNetworkDeviceAttachment(interface: found)
                 config.attachment = attachment
+            }
+        case .sharedVmnet, .host:
+            guard #available(macOS 26, *), let vmnetMode = mode.vmnetMode else {
+                throw UTMAppleConfigurationError.featureNotSupported
+            }
+            if forValidation {
+                // Validate the device configuration without creating or borrowing a live network.
+                // Network creation and its entitlement checks happen only when starting a VM.
+                config.attachment = VZNATNetworkDeviceAttachment()
+            } else {
+                config.attachment = try UTMAppleVmnetNetworkManager.shared.attachment(for: vmnetMode)
             }
         }
         return config

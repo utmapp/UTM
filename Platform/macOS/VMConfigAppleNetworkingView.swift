@@ -38,6 +38,11 @@ struct VMConfigAppleNetworkingView: View {
                     commitMacAddress()
                 }
             }
+            if config.mode == .sharedVmnet {
+                Text("Virtual machines using this mode in the same UTM app can connect to each other and access the internet through your Mac.")
+            } else if config.mode == .host {
+                Text("Virtual machines using this mode in the same UTM app can connect to each other and your Mac. This network does not provide internet access.")
+            }
             if config.mode == .bridged {
                 Section(header: Text("Bridged Settings")) {
                     Picker("Interface", selection: $config.bridgeInterface) {
