@@ -16,51 +16,12 @@
 
 import SwiftUI
 
-struct NumberTextFieldOld: View {
-    private var titleKey: LocalizedStringKey
-    @Binding private var number: NSNumber?
-    private var promptKey: LocalizedStringKey
-    private var onEditingChanged: (Bool) -> Void
-    private let formatter: NumberFormatter
-    
-    init(_ titleKey: LocalizedStringKey, number: Binding<NSNumber?>, prompt: LocalizedStringKey, onEditingChanged: @escaping (Bool) -> Void = { _ in }) {
-        self.titleKey = titleKey
-        self._number = number
-        self.onEditingChanged = onEditingChanged
-        self.formatter = NumberFormatter()
-        self.formatter.usesGroupingSeparator = false
-        self.formatter.usesSignificantDigits = false
-        self.promptKey = prompt
-    }
-    
-    var body: some View {
-        HStack {
-            Text(titleKey)
-            Spacer()
-            TextField(promptKey, text: Binding<String>(get: { () -> String in
-                guard let number = number, let string = formatter.string(from: number) else {
-                    return ""
-                }
-                return number.intValue == 0 ? "" : string
-            }, set: {
-                // make sure we never set nil
-                self.number = self.formatter.number(from: $0) ?? 0
-            }), onEditingChanged: onEditingChanged)
-                .keyboardType(.numberPad)
-                .multilineTextAlignment(.trailing)
-        }
-    }
-}
-
-@available(iOS 15, macOS 12, *)
 struct NumberTextFieldNew: View {
     private var titleKey: LocalizedStringKey
     @Binding private var number: NSNumber?
     private var promptKey: LocalizedStringKey
     private var onEditingChanged: (Bool) -> Void
     
-    // Due to FB9581726 we cannot make `focused` available only on newer APIs.
-    // Therefore we have to mark the availability on the entire struct.
     @FocusState private var focused: Bool
     
     init(_ titleKey: LocalizedStringKey, number: Binding<NSNumber?>, prompt: LocalizedStringKey, onEditingChanged: @escaping (Bool) -> Void = { _ in }) {
@@ -127,15 +88,10 @@ struct NumberTextField: View {
     }
     
     var body: some View {
-        if #available(iOS 15, macOS 12, *) {
-            NumberTextFieldNew(titleKey, number: $number, prompt: promptKey, onEditingChanged: onEditingChanged)
-        } else {
-            NumberTextFieldOld(titleKey, number: $number, prompt: promptKey, onEditingChanged: onEditingChanged)
-        }
+        NumberTextFieldNew(titleKey, number: $number, prompt: promptKey, onEditingChanged: onEditingChanged)
     }
 }
 
-@available(iOS 15, macOS 12, *)
 extension NSNumber {
     struct StringFormatStyle: ParseableFormatStyle {
         var parseStrategy: StringParseStrategy {

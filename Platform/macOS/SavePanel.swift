@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(macOS 11, *)
 struct SavePanel: NSViewRepresentable {
     @EnvironmentObject private var data: UTMData
     @Binding var isPresented: Bool

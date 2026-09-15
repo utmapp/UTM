@@ -174,10 +174,8 @@ struct AlertMessage: Identifiable {
     /// SwiftUI BUG: on macOS 12, when VoiceOver is enabled and isBusy changes the disable state of a button being clicked, 
     var isNeverDisabledWorkaround: Bool {
         #if os(macOS)
-        if #available(macOS 12, *) {
-            if #unavailable(macOS 13) {
-                return false
-            }
+        if #unavailable(macOS 13) {
+            return false
         }
         return true
         #else
@@ -200,7 +198,7 @@ struct AlertMessage: Identifiable {
     
     #if os(macOS) && arch(arm64)
     var isPendingIPSWDownload: Bool {
-        guard #available(macOS 12, *), useAppleVirtualization && operatingSystem == .macOS else {
+        guard useAppleVirtualization && operatingSystem == .macOS else {
             return false
         }
         guard let url = macRecoveryIpswURL else {
@@ -251,10 +249,8 @@ struct AlertMessage: Identifiable {
             }
             if currentPage == .macOSBoot {
                 #if os(macOS) && arch(arm64)
-                if #available(macOS 12, *) {
-                    if macPlatform == nil || macRecoveryIpswURL == nil {
-                        fetchLatestPlatform()
-                    }
+                if macPlatform == nil || macRecoveryIpswURL == nil {
+                    fetchLatestPlatform()
                 }
                 #endif
             }
@@ -277,12 +273,6 @@ struct AlertMessage: Identifiable {
             }
             if operatingSystem == .Linux && linuxRootImageURL != nil {
                 nextPage = .sharing
-                if useAppleVirtualization {
-                    if #available(macOS 12, *) {
-                    } else {
-                        nextPage = .summary
-                    }
-                }
             }
         case .drives:
             guard storageSizeGib > 0 else {
@@ -291,12 +281,8 @@ struct AlertMessage: Identifiable {
             }
             nextPage = .sharing
             if useAppleVirtualization {
-                if #available(macOS 12, *) {
-                    if operatingSystem != .Linux {
-                        nextPage = .summary // only support linux currently
-                    }
-                } else {
-                    nextPage = .summary
+                if operatingSystem != .Linux {
+                    nextPage = .summary // only support linux currently
                 }
             }
         case .sharing:
@@ -337,11 +323,9 @@ struct AlertMessage: Identifiable {
             break
         case .macOS:
             #if os(macOS) && arch(arm64)
-            if #available(macOS 12, *) {
-                config.system.boot = try! UTMAppleConfigurationBoot(for: .macOS)
-                config.system.boot.macRecoveryIpswURL = macRecoveryIpswURL
-                config.system.macPlatform = macPlatform
-            }
+            config.system.boot = try! UTMAppleConfigurationBoot(for: .macOS)
+            config.system.boot.macRecoveryIpswURL = macRecoveryIpswURL
+            config.system.macPlatform = macPlatform
             #endif
         case .Linux:
             #if os(macOS)
@@ -371,31 +355,29 @@ struct AlertMessage: Identifiable {
             }
             config.drives.append(newDisk)
         }
-        if #available(macOS 12, *), let sharingDirectoryURL = sharingDirectoryURL {
+        if let sharingDirectoryURL = sharingDirectoryURL {
             config.sharedDirectories = [UTMAppleConfigurationSharedDirectory(directoryURL: sharingDirectoryURL, isReadOnly: sharingReadOnly)]
         }
         // some meaningful defaults
-        if #available(macOS 12, *) {
-            let isMac = operatingSystem == .macOS
-            var hasDisplay = isMac
-            if #available(macOS 13, *) {
-                hasDisplay = hasDisplay || (operatingSystem == .Linux)
-            }
-            if hasDisplay {
-                config.displays = [UTMAppleConfigurationDisplay(width: 1920, height: 1200)]
-                config.virtualization.hasAudio = true
-                config.virtualization.keyboard = .generic
-                config.virtualization.pointer = .mouse
-            }
-            #if arch(arm64)
-            if isMac && macIsLeastVentura {
-                config.virtualization.pointer = .trackpad
-            }
-            if isMac && macIsLeastSonoma {
-                config.virtualization.keyboard = .mac
-            }
-            #endif
+        let isMac = operatingSystem == .macOS
+        var hasDisplay = isMac
+        if #available(macOS 13, *) {
+            hasDisplay = hasDisplay || (operatingSystem == .Linux)
         }
+        if hasDisplay {
+            config.displays = [UTMAppleConfigurationDisplay(width: 1920, height: 1200)]
+            config.virtualization.hasAudio = true
+            config.virtualization.keyboard = .generic
+            config.virtualization.pointer = .mouse
+        }
+        #if arch(arm64)
+        if isMac && macIsLeastVentura {
+            config.virtualization.pointer = .trackpad
+        }
+        if isMac && macIsLeastSonoma {
+            config.virtualization.keyboard = .mac
+        }
+        #endif
         config.virtualization.hasBalloon = true
         config.virtualization.hasEntropy = true
         config.networks = [UTMAppleConfigurationNetwork()]
@@ -409,7 +391,6 @@ struct AlertMessage: Identifiable {
     }
     
     #if arch(arm64)
-    @available(macOS 12, *)
     private func fetchLatestPlatform() {
         VZMacOSRestoreImage.fetchLatestSupported { result in
             switch result {

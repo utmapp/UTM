@@ -22,7 +22,7 @@ struct VMAppleSettingsAddDeviceMenuView: View {
     private var isAddDisplayEnabled: Bool {
         if #available(macOS 13, *), config.displays.isEmpty && config.system.boot.operatingSystem != .none {
             return true
-        } else if #available(macOS 12, *), config.displays.isEmpty && config.system.boot.operatingSystem == .macOS {
+        } else if config.displays.isEmpty && config.system.boot.operatingSystem == .macOS {
             return true
         } else {
             return false

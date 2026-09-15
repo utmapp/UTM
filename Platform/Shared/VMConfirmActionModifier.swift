@@ -56,7 +56,7 @@ struct VMConfirmActionModifier: ViewModifier {
 
     @ViewBuilder func body(content: Content) -> some View {
         // SwiftUI bug: swipe + confirmationDialog is broken
-        if !workaroundSwipeBug, #available(iOS 15, macOS 12, *) {
+        if !workaroundSwipeBug {
             newBody(content: content)
         } else {
             oldBody(content: content)
@@ -111,7 +111,6 @@ struct VMConfirmActionModifier: ViewModifier {
         }
     }
 
-    @available(iOS 15, macOS 12, *)
     @ViewBuilder func newBody(content: Content) -> some View {
         content.confirmationDialog("Confirm", isPresented: $isPresented, presenting: confirmAction) { action in
             Button("Cancel", role: .cancel) {}

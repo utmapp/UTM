@@ -30,7 +30,6 @@ import SwiftUI
     }
     
     private var style: UTMConfigurationTerminal?
-    private var keyboardDelta: CGFloat = 0
     
     required init(port: CSPort, style: UTMConfigurationTerminal? = nil) {
         self.vmSerialPort = port
@@ -45,7 +44,7 @@ import SwiftUI
     
     override func loadView() {
         super.loadView()
-        terminalView = TerminalView(frame: makeFrame (keyboardDelta: 0))
+        terminalView = TerminalView(frame: .zero)
         terminalView.terminalDelegate = self
         view.insertSubview(terminalView, at: 0)
         styleTerminal()
@@ -54,11 +53,6 @@ import SwiftUI
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setupKeyboardMonitor()
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        cleanupKeyboardMonitor()
     }
     
     override func enterLive() {
@@ -82,10 +76,6 @@ import SwiftUI
 
 // MARK: - Layout terminal
 extension VMDisplayTerminalViewController {
-    var useAutoLayout: Bool {
-        get { true }
-    }
-
     // This prevents curved edge from cutting off the content
     var additionalTopPadding: CGFloat {
         if UIDevice.current.userInterfaceIdiom == .pad {
@@ -98,65 +88,18 @@ extension VMDisplayTerminalViewController {
         }
     }
 
-    func makeFrame (keyboardDelta: CGFloat, _ fn: String = #function, _ ln: Int = #line) -> CGRect
-    {
-        if useAutoLayout {
-            return CGRect.zero
-        } else {
-            return CGRect (x: view.safeAreaInsets.left,
-                           y: view.safeAreaInsets.top + additionalTopPadding,
-                           width: view.frame.width - view.safeAreaInsets.left - view.safeAreaInsets.right,
-                           height: view.frame.height - view.safeAreaInsets.top - keyboardDelta)
-        }
-    }
-    
     func setupKeyboardMonitor ()
     {
-        if #available(iOS 15.0, *), useAutoLayout {
-            #if os(visionOS)
-            let inputAccessoryHeight: CGFloat = 0
-            #else
-            let inputAccessoryHeight = terminalView.inputAccessoryView?.frame.height ?? 0
-            #endif
-            terminalView.translatesAutoresizingMaskIntoConstraints = false
-            terminalView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: additionalTopPadding).isActive = true
-            terminalView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor).isActive = true
-            terminalView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor).isActive = true
-            terminalView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: -inputAccessoryHeight).isActive = true
-        } else {
-            NotificationCenter.default.addObserver(
-                self,
-                selector: #selector(keyboardWillShow),
-                name: UIWindow.keyboardWillShowNotification,
-                object: nil)
-            NotificationCenter.default.addObserver(
-                self,
-                selector: #selector(keyboardWillHide),
-                name: UIWindow.keyboardWillHideNotification,
-                object: nil)
-        }
-    }
-    
-    func cleanupKeyboardMonitor() {
-        if #unavailable(iOS 15) {
-            NotificationCenter.default.removeObserver(self, name: UIWindow.keyboardWillShowNotification, object: nil)
-            NotificationCenter.default.removeObserver(self, name: UIWindow.keyboardWillHideNotification, object: nil)
-        }
-    }
-    
-    @objc private func keyboardWillShow(_ notification: NSNotification) {
-        guard let keyboardValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
-        
-        let keyboardScreenEndFrame = keyboardValue.cgRectValue
-        let keyboardViewEndFrame = view.convert(keyboardScreenEndFrame, from: view.window)
-        keyboardDelta = keyboardViewEndFrame.height
-        terminalView.frame = makeFrame(keyboardDelta: keyboardViewEndFrame.height)
-    }
-    
-    @objc private func keyboardWillHide(_ notification: NSNotification) {
-        //let key = UIResponder.keyboardFrameBeginUserInfoKey
-        keyboardDelta = 0
-        terminalView.frame = makeFrame(keyboardDelta: 0)
+        #if os(visionOS)
+        let inputAccessoryHeight: CGFloat = 0
+        #else
+        let inputAccessoryHeight = terminalView.inputAccessoryView?.frame.height ?? 0
+        #endif
+        terminalView.translatesAutoresizingMaskIntoConstraints = false
+        terminalView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: additionalTopPadding).isActive = true
+        terminalView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor).isActive = true
+        terminalView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor).isActive = true
+        terminalView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: -inputAccessoryHeight).isActive = true
     }
 }
 

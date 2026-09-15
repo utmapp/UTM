@@ -143,7 +143,7 @@ Package: com.utmapp.UTM
 Version: ${VERSION}
 Section: Productivity
 Architecture: all
-Depends: firmware (>=14.0), net.angelxwind.appsyncunified
+Depends: firmware (>=15.0), net.angelxwind.appsyncunified
 Installed-Size: ${SIZE_KIB}
 Maintainer: osy <dev@getutm.app>
 Description: Virtual machines for iOS
@@ -154,12 +154,12 @@ Depiction: https://cydia.getutm.app/depiction/web/com.utmapp.UTM.html
 Icon: https://cydia.getutm.app/assets/com.utmapp.UTM/icon.png
 Moderndepiction: https://cydia.getutm.app/depiction/native/com.utmapp.UTM.json
 Sileodepiction: https://cydia.getutm.app/depiction/native/com.utmapp.UTM.json
-Tags: compatible_min::ios14.0
+Tags: compatible_min::ios15.0
 EOL
-	xcrun -sdk iphoneos clang -arch arm64 -fobjc-arc -miphoneos-version-min=11.0 "$BASEDIR/deb/postinst.m" "$BASEDIR/deb/MobileCoreServices.tbd" -o "$DEB_TMP/DEBIAN/postinst"
+	xcrun -sdk iphoneos clang -arch arm64 -fobjc-arc -miphoneos-version-min=15.0 "$BASEDIR/deb/postinst.m" "$BASEDIR/deb/MobileCoreServices.tbd" -o "$DEB_TMP/DEBIAN/postinst"
 	strip "$DEB_TMP/DEBIAN/postinst"
 	ldid -S"$BASEDIR/deb/postinst.xml" "$DEB_TMP/DEBIAN/postinst"
-	xcrun -sdk iphoneos clang -arch arm64 -fobjc-arc -miphoneos-version-min=11.0 "$BASEDIR/deb/prerm.m" "$BASEDIR/deb/MobileCoreServices.tbd" -o "$DEB_TMP/DEBIAN/prerm"
+	xcrun -sdk iphoneos clang -arch arm64 -fobjc-arc -miphoneos-version-min=15.0 "$BASEDIR/deb/prerm.m" "$BASEDIR/deb/MobileCoreServices.tbd" -o "$DEB_TMP/DEBIAN/prerm"
 	strip "$DEB_TMP/DEBIAN/prerm"
 	ldid -S"$BASEDIR/deb/prerm.xml" "$DEB_TMP/DEBIAN/prerm"
 	mkdir -p "$IPA_PATH"

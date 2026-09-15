@@ -18,7 +18,6 @@ import Foundation
 import Virtualization
 
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
-@available(macOS 11, *)
 struct UTMAppleConfigurationDisplay: Codable, Identifiable {
     
     var widthInPixels: Int = 1920
@@ -64,14 +63,12 @@ struct UTMAppleConfigurationDisplay: Codable, Identifiable {
     }
     
     #if arch(arm64)
-    @available(macOS 12, *)
     init(from config: VZMacGraphicsDisplayConfiguration) {
         widthInPixels = config.widthInPixels
         heightInPixels = config.heightInPixels
         pixelsPerInch = config.pixelsPerInch
     }
     
-    @available(macOS 12, *)
     func vzMacDisplay() -> VZMacGraphicsDisplayConfiguration {
         VZMacGraphicsDisplayConfiguration(widthInPixels: widthInPixels,
                                           heightInPixels: heightInPixels,
@@ -90,7 +87,6 @@ struct UTMAppleConfigurationDisplay: Codable, Identifiable {
 
 #if arch(arm64)
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
-@available(macOS 12, *)
 extension UTMAppleConfigurationDisplay {
     init(migrating oldDisplay: Display) {
         widthInPixels = oldDisplay.widthInPixels

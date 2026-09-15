@@ -18,7 +18,6 @@ import Foundation
 import Virtualization
 
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
-@available(macOS 11, *)
 struct UTMAppleConfigurationMacPlatform: Codable {
     var hardwareModel: Data
     var machineIdentifier: Data
@@ -50,20 +49,17 @@ struct UTMAppleConfigurationMacPlatform: Codable {
     }
     
     #if arch(arm64)
-    @available(macOS 12, *)
     init(newHardware: VZMacHardwareModel) {
         hardwareModel = newHardware.dataRepresentation
         machineIdentifier = VZMacMachineIdentifier().dataRepresentation
     }
     
-    @available(macOS 12, *)
     init(from config: VZMacPlatformConfiguration) {
         hardwareModel = config.hardwareModel.dataRepresentation
         machineIdentifier = config.machineIdentifier.dataRepresentation
         auxiliaryStorageURL = config.auxiliaryStorage?.url
     }
     
-    @available(macOS 12, *)
     func vzMacPlatform() -> VZMacPlatformConfiguration? {
         guard let vzHardwareModel = VZMacHardwareModel(dataRepresentation: hardwareModel) else {
             return nil
@@ -88,7 +84,6 @@ struct UTMAppleConfigurationMacPlatform: Codable {
 
 #if arch(arm64)
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
-@available(macOS 12, *)
 extension UTMAppleConfigurationMacPlatform {
     init(migrating oldBoot: MacPlatform) {
         hardwareModel = oldBoot.hardwareModel
@@ -102,7 +97,6 @@ extension UTMAppleConfigurationMacPlatform {
 
 #if arch(arm64)
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
-@available(macOS 12, *)
 extension UTMAppleConfigurationMacPlatform {
     @MainActor mutating func saveData(to dataURL: URL) async throws -> [URL] {
         let fileManager = FileManager.default

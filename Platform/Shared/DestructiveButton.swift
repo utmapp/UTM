@@ -31,23 +31,13 @@ struct DestructiveButton<Label>: View where Label : View {
     }
     
     var body: some View {
-        if #available(iOS 15, macOS 12, *) {
-            #if os(iOS) || os(visionOS)
-            Button(role: .destructive, action: action, label: {
-                label.foregroundColor(.red)
-            })
-            #else
-            Button(role: .destructive, action: action, label: { label })
-            #endif
-        } else {
-            #if os(iOS) || os(visionOS)
-            Button(action: action, label: {
-                label.foregroundColor(.red)
-            })
-            #else
-            Button(action: action, label: { label })
-            #endif
-        }
+        #if os(iOS) || os(visionOS)
+        Button(role: .destructive, action: action, label: {
+            label.foregroundColor(.red)
+        })
+        #else
+        Button(role: .destructive, action: action, label: { label })
+        #endif
     }
 }
 

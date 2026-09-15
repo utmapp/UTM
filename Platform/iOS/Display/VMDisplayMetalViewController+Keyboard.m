@@ -158,7 +158,7 @@ static const uint8_t hid_to_ps2_extended_table[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
-static int API_AVAILABLE(ios(13.4)) hidToPs2(UIKeyboardHIDUsage hidCode) {
+static int hidToPs2(UIKeyboardHIDUsage hidCode) {
     int ps2Code = 0;
     if (hidCode < 0x100) {
         ps2Code = hid_to_ps2_table[hidCode & 0xFF];

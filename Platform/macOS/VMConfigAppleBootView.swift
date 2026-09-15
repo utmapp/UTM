@@ -17,7 +17,6 @@
 import Virtualization
 import SwiftUI
 
-@available(macOS 11, *)
 struct VMConfigAppleBootView: View {
     private enum BootloaderSelection: Int, Identifiable {
         var id: Int {
@@ -26,7 +25,6 @@ struct VMConfigAppleBootView: View {
         case kernel
         case ramdisk
         case ipsw
-        case unsupported
     }
     
     @Binding var config: UTMAppleConfigurationSystem
@@ -64,11 +62,7 @@ struct VMConfigAppleBootView: View {
                         alertBootloaderSelection = .kernel
                     }
                 } else if newValue == .macOS {
-                    if #available(macOS 12, *) {
-                        alertBootloaderSelection = .ipsw
-                    } else {
-                        alertBootloaderSelection = .unsupported
-                    }
+                    alertBootloaderSelection = .ipsw
                 } else {
                     config.boot.operatingSystem = .none
                 }
@@ -92,8 +86,6 @@ struct VMConfigAppleBootView: View {
                     return Alert(title: Text("Please select an uncompressed Linux kernel image."), dismissButton: okay)
                 case .ipsw:
                     return Alert(title: Text("Please select a macOS recovery IPSW."), primaryButton: okay, secondaryButton: .cancel())
-                case .unsupported:
-                    return Alert(title: Text("This operating system is unsupported on your machine."))
                 default:
                     return Alert(title: Text("Select a file."), dismissButton: okay)
                 }
@@ -111,7 +103,7 @@ struct VMConfigAppleBootView: View {
                     }
                     TextField("Boot arguments", text: $config.boot.linuxCommandLine.bound)
                 }
-            } else if #available(macOS 12, *), operatingSystem == .macOS {
+            } else if operatingSystem == .macOS {
                 #if arch(arm64)
                 Section(header: Text("macOS Settings")) {
                     FileBrowseField("IPSW Install Image", url: $config.boot.macRecoveryIpswURL, isFileImporterPresented: $importFileShown) {
@@ -134,25 +126,25 @@ struct VMConfigAppleBootView: View {
             let url = try result.get()
             switch selection {
             case .ipsw:
-                if #available(macOS 12, *) {
-                    #if arch(arm64)
-                    let scopedAccess = url.startAccessingSecurityScopedResource()
-                    defer {
-                        if scopedAccess {
-                            url.stopAccessingSecurityScopedResource()
-                        }
+                #if arch(arm64)
+                let scopedAccess = url.startAccessingSecurityScopedResource()
+                defer {
+                    if scopedAccess {
+                        url.stopAccessingSecurityScopedResource()
                     }
-                    let image = try await VZMacOSRestoreImage.image(from: url)
-                    guard let model = image.mostFeaturefulSupportedConfiguration?.hardwareModel else {
-                        throw NSLocalizedString("Your machine does not support running this IPSW.", comment: "VMConfigAppleBootView")
-                    }
-                    await MainActor.run {
-                        config.macPlatform = UTMAppleConfigurationMacPlatform(newHardware: model)
-                        config.boot.operatingSystem = .macOS
-                        config.boot.macRecoveryIpswURL = url
-                    }
-                    #endif
                 }
+                let image = try await VZMacOSRestoreImage.image(from: url)
+                guard let model = image.mostFeaturefulSupportedConfiguration?.hardwareModel else {
+                    throw NSLocalizedString("Your machine does not support running this IPSW.", comment: "VMConfigAppleBootView")
+                }
+                await MainActor.run {
+                    config.macPlatform = UTMAppleConfigurationMacPlatform(newHardware: model)
+                    config.boot.operatingSystem = .macOS
+                    config.boot.macRecoveryIpswURL = url
+                }
+                #else
+                break
+                #endif
             case .kernel:
                 await MainActor.run {
                     config.genericPlatform = UTMAppleConfigurationGenericPlatform()
@@ -164,8 +156,6 @@ struct VMConfigAppleBootView: View {
                 await MainActor.run {
                     config.boot.linuxInitialRamdiskURL = url
                 }
-            case .unsupported:
-                break
             }
             await MainActor.run {
                 operatingSystem = currentOperatingSystem
@@ -174,7 +164,6 @@ struct VMConfigAppleBootView: View {
     }
 }
 
-@available(macOS 12, *)
 struct VMConfigAppleBootView_Previews: PreviewProvider {
     @State static private var config = UTMAppleConfigurationSystem()
     

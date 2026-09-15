@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(macOS 12, *)
 struct VMConfigQEMUArgumentsView: View {
     @Binding var config: UTMQemuConfigurationQEMU
     let architecture: QEMUArchitecture

@@ -18,7 +18,6 @@ import Foundation
 import Virtualization
 
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
-@available(macOS 11, *)
 struct UTMAppleConfigurationNetwork: Codable, Identifiable {
     enum NetworkMode: String, CaseIterable, QEMUConstant {
         case shared = "Shared"
@@ -117,7 +116,6 @@ struct UTMAppleConfigurationNetwork: Codable, Identifiable {
 // MARK: - Conversion of old config format
 
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
-@available(macOS 11, *)
 extension UTMAppleConfigurationNetwork {
     init(migrating oldNetwork: Network) {
         switch oldNetwork.networkMode {

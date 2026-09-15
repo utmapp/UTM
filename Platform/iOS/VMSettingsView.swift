@@ -70,22 +70,7 @@ struct VMSettingsView: View {
                             Label("Sharing", systemImage: "person.crop.circle")
                                 .labelStyle(.roundRectIcon)
                         })
-                    if #available(iOS 15, *) {
-                        Devices(config: config, state: devicesState)
-                    } else {
-                        Section {
-                            NavigationLink {
-                                Form {
-                                    List {
-                                        Devices(config: config, state: devicesState)
-                                    }
-                                }
-                            } label: {
-                                Label("Show all devices…", systemImage: "ellipsis")
-                                    .labelStyle(RoundRectIconLabelStyle(color: .green))
-                            }
-                        }
-                    }
+                    Devices(config: config, state: devicesState)
                 }
             }
             #if !os(visionOS)
@@ -93,13 +78,9 @@ struct VMSettingsView: View {
             #endif
             .navigationViewStyle(.stack)
             .settingsNavigation(addDeviceContent: {
-                if #available(iOS 15, *) {
-                    VMSettingsAddDeviceMenuView(config: config, isCreateDriveShown: $devicesState.isCreateDriveShown, isImportDriveShown: $devicesState.isImportDriveShown)
-                }
+                VMSettingsAddDeviceMenuView(config: config, isCreateDriveShown: $devicesState.isCreateDriveShown, isImportDriveShown: $devicesState.isImportDriveShown)
             }, editContent: {
-                if #available(iOS 15, *) {
-                    EditButton()
-                }
+                EditButton()
             }, cancelContent: {
                 Button(action: cancel) {
                     Text("Cancel")
@@ -185,23 +166,6 @@ private struct Devices: View {
             VMDrivesSettingsView(config: config, isCreateDriveShown: $state.isCreateDriveShown, isImportDriveShown: $state.isImportDriveShown)
                 .labelStyle(RoundRectIconLabelStyle(color: .yellow))
         }
-        if #unavailable(iOS 15) {
-            // SwiftUI: !! WARNING DO NOT REMOVE !! The follow is LOAD BEARING code disguised as an innocent version display.
-            // On iOS 14, if you attach any attribute like .navigationBarItems() to something inside a List, it will mess up the layout.
-            // As a result, we cannot put it on any of the items above and instead we put in the sacrificial Section below.
-            Section {
-                HStack {
-                    Text("Version")
-                    Spacer()
-                    Text(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "")
-                }
-                HStack {
-                    Text("Build")
-                    Spacer()
-                    Text(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "")
-                }
-            }.navigationBarItems(trailing: VMSettingsAddDeviceMenuView(config: config, isCreateDriveShown: $state.isCreateDriveShown, isImportDriveShown: $state.isImportDriveShown))
-        }
     }
 }
 
@@ -230,20 +194,6 @@ extension LabelStyle where Self == RoundRectIconLabelStyle {
 }
 
 private extension View {
-    /// Force an view to be unique in each update.
-    ///
-    /// On iOS 14 and under and macOS 11 and under, there is a SwiftUI bug
-    /// which causes a crash when a table is updated with multiple sections.
-    /// This workaround will (inefficently) force a redraw every refresh.
-    /// - Returns: some View
-    @ViewBuilder func uniqued() -> some View {
-        if #available(iOS 15, macOS 12, *) {
-            self
-        } else {
-            self.id(UUID())
-        }
-    }
-    
     @ViewBuilder func settingsNavigation(@ViewBuilder addDeviceContent: () -> some View, @ViewBuilder editContent: () -> some View, @ViewBuilder cancelContent: () -> some View, @ViewBuilder saveContent: () -> some View) -> some View {
         if #available(iOS 26, visionOS 26, *) {
             self.toolbar {

@@ -30,20 +30,17 @@
 
 @end
 
-NS_AVAILABLE_IOS(13.4)
 @implementation VMDisplayMetalViewController (Pointer)
 
 #pragma mark - GCMouse
 
 - (void)startGCMouse {
-    if (@available(iOS 14.0, *)) {  //if ios 14.0 above, use CGMouse instead
-        [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(mouseDidBecomeCurrent:) name:GCMouseDidBecomeCurrentNotification object:nil];
-        [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(mouseDidStopBeingCurrent:) name:GCMouseDidStopBeingCurrentNotification object:nil];
-        GCMouse *current = GCMouse.current;
-        if (current) {
-            // send the current mouse if already connected
-            [NSNotificationCenter.defaultCenter postNotificationName:GCMouseDidBecomeCurrentNotification object:current];
-        }
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(mouseDidBecomeCurrent:) name:GCMouseDidBecomeCurrentNotification object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(mouseDidStopBeingCurrent:) name:GCMouseDidStopBeingCurrentNotification object:nil];
+    GCMouse *current = GCMouse.current;
+    if (current) {
+        // send the current mouse if already connected
+        [NSNotificationCenter.defaultCenter postNotificationName:GCMouseDidBecomeCurrentNotification object:current];
     }
 }
 
@@ -57,7 +54,7 @@ NS_AVAILABLE_IOS(13.4)
     [NSNotificationCenter.defaultCenter removeObserver:self name:GCMouseDidStopBeingCurrentNotification object:nil];
 }
 
-- (void)mouseDidBecomeCurrent:(NSNotification *)notification API_AVAILABLE(ios(14)) {
+- (void)mouseDidBecomeCurrent:(NSNotification *)notification {
     GCMouse *mouse = notification.object;
     UTMLog(@"mouseDidBecomeCurrent: %p", mouse);
     if (!mouse) {
@@ -93,7 +90,7 @@ NS_AVAILABLE_IOS(13.4)
     // no handler to the gcmouse scroll event, gestureScroll works fine.
 }
 
-- (void)mouseDidStopBeingCurrent:(NSNotification *)notification API_AVAILABLE(ios(14)) {
+- (void)mouseDidStopBeingCurrent:(NSNotification *)notification {
     GCMouse *mouse = notification.object;
     UTMLog(@"mouseDidStopBeingCurrent: %p", mouse);
     mouse.mouseInput.mouseMovedHandler = nil;
@@ -111,13 +108,11 @@ NS_AVAILABLE_IOS(13.4)
 -(void)initPointerInteraction {
     [self.mtkView addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
     
-    if (@available(iOS 13.4, *)) {
-        UIPanGestureRecognizer *scroll = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(gestureScroll:)];
-        scroll.allowedScrollTypesMask = UIScrollTypeMaskAll;
-        scroll.minimumNumberOfTouches = 0;
-        scroll.maximumNumberOfTouches = 0;
-        [self.mtkView addGestureRecognizer:scroll];
-    }
+    UIPanGestureRecognizer *scroll = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(gestureScroll:)];
+    scroll.allowedScrollTypesMask = UIScrollTypeMaskAll;
+    scroll.minimumNumberOfTouches = 0;
+    scroll.maximumNumberOfTouches = 0;
+    [self.mtkView addGestureRecognizer:scroll];
 }
 
 - (BOOL)hasTouchpadPointer {
@@ -156,10 +151,8 @@ NS_AVAILABLE_IOS(13.4)
 
 - (UIPointerRegion *)pointerInteraction:(UIPointerInteraction *)interaction regionForRequest:(UIPointerRegionRequest *)request defaultRegion:(UIPointerRegion *)defaultRegion {
 #if !TARGET_OS_VISION
-    if (@available(iOS 14.0, *)) {
-        if (self.prefersPointerLocked) {
-            return nil;
-        }
+    if (self.prefersPointerLocked) {
+        return nil;
     }
 #endif
     // Requesting region for the VM display?
@@ -185,7 +178,7 @@ NS_AVAILABLE_IOS(13.4)
 
 #pragma mark - Scroll Gesture
 
-- (IBAction)gestureScroll:(UIPanGestureRecognizer *)sender API_AVAILABLE(ios(13.4)) {
+- (IBAction)gestureScroll:(UIPanGestureRecognizer *)sender {
     [self scrollWithInertia:sender];
 }
 

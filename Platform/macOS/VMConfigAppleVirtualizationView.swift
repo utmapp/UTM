@@ -26,11 +26,9 @@ struct VMConfigAppleVirtualizationView: View {
                 Toggle("Enable Balloon Device", isOn: $config.hasBalloon)
             }
             Toggle("Enable Entropy Device", isOn: $config.hasEntropy)
-            if #available(macOS 12, *) {
-                Toggle("Enable Sound", isOn: $config.hasAudio)
-                VMConfigConstantPicker("Keyboard", selection: $config.keyboard)
-                VMConfigConstantPicker("Pointer", selection: $config.pointer)
-            }
+            Toggle("Enable Sound", isOn: $config.hasAudio)
+            VMConfigConstantPicker("Keyboard", selection: $config.keyboard)
+            VMConfigConstantPicker("Pointer", selection: $config.pointer)
             if #available(macOS 13, *), operatingSystem == .linux {
                 #if arch(arm64)
                 Toggle("Enable Rosetta on Linux (x86_64 Emulation)", isOn: $config.hasRosetta.bound)

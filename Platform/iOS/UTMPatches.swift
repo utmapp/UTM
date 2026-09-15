@@ -88,14 +88,12 @@ extension UIPress {
     }
     
     /// On iOS 15.0, there is a bug where SwiftUI does not propogate the presses event down
-    /// to a child view controller. This is not seen in iOS 14.5 or iOS 15.1.
+    /// to a child view controller. This is fixed in iOS 15.1.
     fileprivate static func patchPress() {
-        if #available(iOS 15.0, *) {
-            if #unavailable(iOS 15.1) {
-                patch(#selector(getter: Self.responder),
-                      with: #selector(getter: Self._utm__responder),
-                      class: Self.self)
-            }
+        if #unavailable(iOS 15.1) {
+            patch(#selector(getter: Self.responder),
+                  with: #selector(getter: Self._utm__responder),
+                  class: Self.self)
         }
     }
 }

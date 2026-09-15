@@ -18,7 +18,6 @@ import Foundation
 import Virtualization
 
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
-@available(macOS 11, *)
 /// Represent a shared directory. This is no longer saved to config.plist in latest versions.
 struct UTMAppleConfigurationSharedDirectory: Codable, Hashable, Identifiable {
     var directoryURL: URL?
@@ -36,7 +35,6 @@ struct UTMAppleConfigurationSharedDirectory: Codable, Hashable, Identifiable {
         self.isReadOnly = isReadOnly
     }
     
-    @available(macOS 12, *)
     init(from config: VZSharedDirectory) {
         self.isReadOnly = config.isReadOnly
         self.directoryURL = config.url
@@ -65,7 +63,6 @@ struct UTMAppleConfigurationSharedDirectory: Codable, Hashable, Identifiable {
         try container.encodeIfPresent(bookmark, forKey: .bookmark)
     }
     
-    @available(macOS 12, *)
     func vzSharedDirectory() -> VZSharedDirectory? {
         if let directoryURL = directoryURL {
             return VZSharedDirectory(url: directoryURL, readOnly: isReadOnly)
@@ -74,7 +71,6 @@ struct UTMAppleConfigurationSharedDirectory: Codable, Hashable, Identifiable {
         }
     }
     
-    @available(macOS 12, *)
     static func makeDirectoryShare(from sharedDirectories: [UTMAppleConfigurationSharedDirectory]) -> VZDirectoryShare {
         let vzSharedDirectories = sharedDirectories.compactMap { sharedDirectory in
             sharedDirectory.vzSharedDirectory()
@@ -96,7 +92,6 @@ struct UTMAppleConfigurationSharedDirectory: Codable, Hashable, Identifiable {
 // MARK: - Conversion of old config format
 
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
-@available(macOS 11, *)
 extension UTMAppleConfigurationSharedDirectory {
     init(migrating oldShare: SharedDirectory) {
         directoryURL = oldShare.directoryURL

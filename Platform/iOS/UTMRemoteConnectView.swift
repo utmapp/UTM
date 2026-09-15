@@ -110,12 +110,7 @@ struct UTMRemoteConnectView: View {
             })
         }
         .sheet(item: $selectedServer) { server in
-            if #available(iOS 15, *) {
-                ServerConnectView(remoteClientState: remoteClientState, server: server, isAutoConnect: $isAutoConnect)
-            } else {
-                ServerConnectView(remoteClientState: remoteClientState, server: server, isAutoConnect: $isAutoConnect)
-                    .environmentObject(data)
-            }
+            ServerConnectView(remoteClientState: remoteClientState, server: server, isAutoConnect: $isAutoConnect)
         }
         .onAppear {
             Task {
@@ -167,11 +162,7 @@ private struct ServerConnectView: View {
         NavigationView {
             Form {
                 Section {
-                    if #available(iOS 15, *) {
-                        TextField("", text: $server.name, prompt: Text("Name (optional)"))
-                    } else {
-                        DefaultTextField("", text: $server.name, prompt: "Name (optional)")
-                    }
+                    TextField("", text: $server.name, prompt: Text("Name (optional)"))
                 } header: {
                     Text("Name")
                 }
@@ -179,19 +170,12 @@ private struct ServerConnectView: View {
                     if server.endpoint != nil {
                         Text(server.hostname)
                     } else {
-                        if #available(iOS 15, *) {
-                            TextField("", text: $server.hostname, prompt: Text("Hostname or IP address"))
-                                .keyboardType(.asciiCapable)
-                                .autocorrectionDisabled()
-                                .textInputAutocapitalization(.never)
-                            TextField("", value: $server.port, format: .number.grouping(.never), prompt: Text("Port"))
-                                .keyboardType(.decimalPad)
-                        } else {
-                            DefaultTextField("", text: $server.hostname, prompt: "Hostname or IP address")
-                                .keyboardType(.asciiCapable)
-                                .autocorrectionDisabled()
-                            NumberTextField("", number: $server.port, prompt: "Port")
-                        }
+                        TextField("", text: $server.hostname, prompt: Text("Hostname or IP address"))
+                            .keyboardType(.asciiCapable)
+                            .autocorrectionDisabled()
+                            .textInputAutocapitalization(.never)
+                        TextField("", value: $server.port, format: .number.grouping(.never), prompt: Text("Port"))
+                            .keyboardType(.decimalPad)
                     }
                 } header: {
                     Text("Host")
@@ -210,11 +194,7 @@ private struct ServerConnectView: View {
                 }
                 if isPasswordRequired {
                     Section {
-                        if #available(iOS 15, *) {
-                            FocusedPasswordView(password: $server.password.bound)
-                        } else {
-                            SecureField("Password", text: $server.password.bound)
-                        }
+                        FocusedPasswordView(password: $server.password.bound)
                         Toggle("Save Password", isOn: $server.shouldSavePassword)
                     } header: {
                         Text("Password")
@@ -277,13 +257,7 @@ private struct ServerConnectView: View {
                 connectionTask?.cancel()
                 remoteClientState.showErrorAlert(NSLocalizedString("Timed out trying to connect.", comment: "UTMRemoteConnectView"))
             }
-            if #available(iOS 15, *) {
-                await _connect()
-            } else {
-                Task(priority: .userInteractive) {
-                    await _connect()
-                }
-            }
+            await _connect()
             timeoutTask.cancel()
             connectionTask = nil
         }
@@ -313,7 +287,6 @@ private struct ServerConnectView: View {
     }
 }
 
-@available(iOS 15, *)
 private struct FocusedPasswordView: View {
     @Binding var password: String
 

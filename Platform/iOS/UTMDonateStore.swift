@@ -17,7 +17,6 @@
 import Foundation
 import StoreKit
 
-@available(iOS 15, *)
 class UTMDonateStore: ObservableObject {
     typealias RenewalState = StoreKit.Product.SubscriptionInfo.RenewalState
 

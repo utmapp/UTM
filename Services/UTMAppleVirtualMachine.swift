@@ -18,7 +18,6 @@ import Combine
 import Virtualization
 
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
-@available(macOS 11, *)
 final class UTMAppleVirtualMachine: UTMVirtualMachine {
     struct Capabilities: UTMVirtualMachineCapabilities {
         var supportsProcessKill: Bool {
@@ -196,16 +195,14 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             if #available(macOS 15, *) {
                 try await attachExternalDrives()
             }
-            if #available(macOS 12, *) {
-                Task { @MainActor in
-                    let tag = config.shareDirectoryTag
-                    sharedDirectoriesChanged = config.sharedDirectoriesPublisher.sink { [weak self] newShares in
-                        guard let self = self else {
-                            return
-                        }
-                        self.vmQueue.async {
-                            self.updateSharedDirectories(with: newShares, tag: tag)
-                        }
+            Task { @MainActor in
+                let tag = config.shareDirectoryTag
+                sharedDirectoriesChanged = config.sharedDirectoriesPublisher.sink { [weak self] newShares in
+                    guard let self = self else {
+                        return
+                    }
+                    self.vmQueue.async {
+                        self.updateSharedDirectories(with: newShares, tag: tag)
                     }
                 }
             }
@@ -221,7 +218,6 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         }
     }
     
-    @available(macOS 12, *)
     private func _forceStop() async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             vmQueue.async {
@@ -269,9 +265,6 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         guard method != .request else {
             return try await _requestStop()
         }
-        guard #available(macOS 12, *) else {
-            throw UTMAppleVirtualMachineError.operationNotAvailable
-        }
         state = .stopping
         do {
             try await _forceStop()
@@ -283,9 +276,6 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
     }
     
     private func _restart() async throws {
-        guard #available(macOS 12, *) else {
-            return
-        }
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             vmQueue.async {
                 guard let apple = self.apple else {
@@ -536,7 +526,6 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         }
     }
     
-    @available(macOS 12, *)
     private func updateSharedDirectories(with newShares: [UTMAppleConfigurationSharedDirectory], tag: String) {
         guard let fsConfig = apple?.directorySharingDevices.first(where: { device in
             if let device = device as? VZVirtioFileSystemDevice {
@@ -550,7 +539,6 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         fsConfig.share = UTMAppleConfigurationSharedDirectory.makeDirectoryShare(from: newShares)
     }
     
-    @available(macOS 12, *)
     func installVM(with ipswUrl: URL) async throws {
         guard state == .stopped else {
             return
@@ -616,7 +604,6 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
     /// Installing a guest newer than the host is not supported by `VZMacOSInstaller`, but the restore only
     /// fails partway through with a generic error. We check the versions after a failure so the user can be
     /// told what to do about it. Returns nil if the versions cannot be compared or the guest is not newer.
-    @available(macOS 12, *)
     private static func restoreImageVersionIfNewerThanHost(at ipswUrl: URL) async -> (guest: String, host: String)? {
         let scopedAccess = ipswUrl.startAccessingSecurityScopedResource()
         defer {
@@ -714,7 +701,6 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
     }
 }
 
-@available(macOS 11, *)
 extension UTMAppleVirtualMachine: VZVirtualMachineDelegate {
     func guestDidStop(_ virtualMachine: VZVirtualMachine) {
         vmQueue.async { [self] in
@@ -1062,7 +1048,6 @@ extension UTMAppleVirtualMachine {
 // MARK: - Non-asynchronous version (to be removed)
 
 extension UTMAppleVirtualMachine {
-    @available(macOS 12, *)
     func requestInstallVM(with url: URL) {
         Task {
             do {

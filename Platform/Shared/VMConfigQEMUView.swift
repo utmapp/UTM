@@ -27,7 +27,6 @@ struct VMConfigQEMUView: View {
     let fetchFixedArguments: () -> [QEMUArgument]
     @State private var showExportLog: Bool = false
     @State private var showExportArgs: Bool = false
-    @EnvironmentObject private var data: UTMData
     
     private var logExists: Bool {
         guard let debugLogURL = config.debugLogURL else {
@@ -108,12 +107,8 @@ struct VMConfigQEMUView: View {
                 DetailedSection("QEMU Machine Properties", description: "This is appended to the -machine argument.") {
                     DefaultTextField("", text: $config.machinePropertyOverride.bound, prompt: "Default")
                 }
-                #if os(macOS)
-                // macOS 12+ uses the new VMConfigQEMUArgumentsView
-                if #unavailable(macOS 12) {
-                    additionalArguments
-                }
-                #else
+                // macOS uses the new VMConfigQEMUArgumentsView
+                #if !os(macOS)
                 additionalArguments
                 #endif
             }.navigationBarItems(trailing: EditButton())
@@ -128,18 +123,6 @@ struct VMConfigQEMUView: View {
             Button("Export QEMU Command…") {
                 showExportArgs.toggle()
             }.modifier(VMShareItemModifier(isPresented: $showExportArgs, shareItem: exportArgs(fixedArgs)))
-            #if os(macOS)
-            // SwiftUI bug: on macOS 11, the ForEach crashes during save
-            if !data.busy {
-                VStack {
-                    ForEach(fixedArgs) { arg in
-                        TextField("", text: .constant(arg.string))
-                    }.disabled(true)
-                    CustomArguments(config: $config)
-                    NewArgumentTextField(config: $config)
-                }
-            }
-            #else
             List {
                 ForEach(fixedArgs) { arg in
                     Text(arg.string)
@@ -147,7 +130,6 @@ struct VMConfigQEMUView: View {
                 CustomArguments(config: $config)
                 NewArgumentTextField(config: $config)
             }
-            #endif
         }
     }
     

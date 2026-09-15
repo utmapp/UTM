@@ -18,7 +18,6 @@ import Foundation
 import Virtualization
 
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
-@available(macOS 11, *)
 struct UTMAppleConfigurationSerial: Codable, Identifiable {
     enum SerialMode: String, CaseIterable, QEMUConstant {
         case builtin = "Terminal"

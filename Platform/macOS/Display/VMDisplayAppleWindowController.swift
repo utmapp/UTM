@@ -53,11 +53,9 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         NSLayoutConstraint.activate(mainView!.constraintsForAnchoringTo(boundsOf: displayView))
         appleVM.screenshotDelegate = self
         window!.recalculateKeyViewLoop()
-        if #available(macOS 12, *) {
-            shouldAutoStartVM = appleConfig.system.boot.macRecoveryIpswURL == nil
-        }
+        shouldAutoStartVM = appleConfig.system.boot.macRecoveryIpswURL == nil
         super.windowDidLoad()
-        if #available(macOS 12, *), let ipswUrl = appleConfig.system.boot.macRecoveryIpswURL {
+        if let ipswUrl = appleConfig.system.boot.macRecoveryIpswURL {
             showConfirmAlert(NSLocalizedString("Would you like to install macOS? If an existing operating system is already installed on the primary drive of this VM, then it will be erased.", comment: "VMDisplayAppleWindowController")) {
                 self.isInstallSuccessful = false
                 self.appleVM.requestInstallVM(with: ipswUrl)
@@ -87,11 +85,8 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         setControl([.drives, .usb, .resize, .keyboardShortcut], isEnabled: false)
         if #available(macOS 13, *) {
             setControl(.sharedFolder, isEnabled: true)
-        } else if #available(macOS 12, *) {
-            setControl(.sharedFolder, isEnabled: appleConfig.system.boot.operatingSystem == .linux)
         } else {
-            // stop() not available on macOS 11 for some reason
-            setControl([.restart, .sharedFolder], isEnabled: false)
+            setControl(.sharedFolder, isEnabled: appleConfig.system.boot.operatingSystem == .linux)
         }
         if #available(macOS 15, *) {
             setControl(.drives, isEnabled: true)
@@ -119,9 +114,6 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
     }
     
     @IBAction override func sharedFolderButtonPressed(_ sender: Any) {
-        guard #available(macOS 12, *) else {
-            return
-        }
         guard appleConfig.system.boot.operatingSystem == .linux else {
             super.sharedFolderButtonPressed(sender)
             return
@@ -402,7 +394,7 @@ extension VMDisplayAppleWindowController: UTMScreenshotProvider {
 extension VMDisplayAppleWindowController {
     override func updateWindowsMenu(_ menu: NSMenu) {
         menu.autoenablesItems = false
-        if #available(macOS 12, *), !appleConfig.displays.isEmpty {
+        if !appleConfig.displays.isEmpty {
             let item = NSMenuItem()
             let title = NSLocalizedString("Display", comment: "VMDisplayAppleWindowController")
             let isCurrent = self is VMDisplayAppleDisplayWindowController
@@ -431,7 +423,6 @@ extension VMDisplayAppleWindowController {
         }
     }
     
-    @available(macOS 12, *)
     @objc private func showWindowFromDisplay(sender: AnyObject) {
         if self is VMDisplayAppleDisplayWindowController {
             return
