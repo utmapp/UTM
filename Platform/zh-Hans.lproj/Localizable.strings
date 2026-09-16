@@ -61,7 +61,7 @@ VMDisplayQemuTerminalWindowController */
 "• " = "• ";
 
 /* AppDelegate */
-"A running VM became unavailable before requesting power down." = "在请求断电之前，正在运行的虚拟机将不可用。";
+"A running VM became unavailable before requesting power down." = "在请求关闭电源之前，正在运行的虚拟机将变为不可用状态。";
 
 /* UTMScriptingAppDelegate */
 "A valid backend must be specified." = "必须指定有效的后端。";
