@@ -166,7 +166,7 @@ struct VMToolbarView: View {
                 Label("Hide", systemImage: isCollapsed ? nameOfHideIcon : nameOfShowIcon)
             }.toolbarButtonStyle(horizontalSizeClass: horizontalSizeClass, verticalSizeClass: verticalSizeClass)
             .animationUniqueID("hide", in: namespace)
-            .modifier(HideToolbarTipModifier(isCollapsed: $isCollapsed))
+            .modifier(HideToolbarTipModifier(isCollapsed: $isCollapsed, location: location))
             .opacity(toolbarToggleOpacity)
             .modifier(Shake(shake: shake))
             .offset(dragOffset)
@@ -477,15 +477,28 @@ extension MenuStyle where Self == ToolbarMenuStyle {
 
 private struct HideToolbarTipModifier: ViewModifier {
     @Binding var isCollapsed: Bool
+    let location: ToolbarLocation
     private let _hideToolbarTip: Any?
+
+    /// Keeps the tip on the side of the toolbar facing the middle of the screen.
+    ///
+    /// From iOS 26 a single arrow edge is only a preference, and when the toolbar spans most of
+    /// the width the system attaches the tip beside the button instead, covering the toolbar.
+    private var arrowEdges: Edge.Set {
+        switch location {
+        case .topLeft, .topRight: return .top
+        case .bottomLeft, .bottomRight: return .bottom
+        }
+    }
 
     @available(iOS 17, *)
     private var hideToolbarTip: UTMTipHideToolbar {
         _hideToolbarTip as! UTMTipHideToolbar
     }
 
-    init(isCollapsed: Binding<Bool>) {
+    init(isCollapsed: Binding<Bool>, location: ToolbarLocation) {
         _isCollapsed = isCollapsed
+        self.location = location
         if #available(iOS 17, *) {
             _hideToolbarTip = UTMTipHideToolbar()
         } else {
@@ -495,7 +508,13 @@ private struct HideToolbarTipModifier: ViewModifier {
 
     @ViewBuilder
     func body(content: Content) -> some View {
-        if #available(iOS 17, *) {
+        if #available(iOS 26, *) {
+            content
+                .popoverTip(hideToolbarTip, arrowEdges: arrowEdges)
+                .onAppear {
+                    UTMTipHideToolbar.didHideToolbar = isCollapsed
+                }
+        } else if #available(iOS 17, *) {
             content
                 .popoverTip(hideToolbarTip, arrowEdge: .top)
                 .onAppear {
