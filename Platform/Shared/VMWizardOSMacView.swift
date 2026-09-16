@@ -17,7 +17,6 @@
 import SwiftUI
 import Virtualization
 
-@available(macOS 12, *)
 struct VMWizardOSMacView: View {
     @ObservedObject var wizardState: VMWizardState
     @State private var isFileImporterPresented = false
@@ -81,7 +80,6 @@ struct VMWizardOSMacView: View {
     }
 }
 
-@available(macOS 12, *)
 extension VMWizardOSMacView: DropDelegate {
 
     func validateDrop(info: DropInfo) -> Bool {
@@ -119,7 +117,6 @@ extension VMWizardOSMacView: DropDelegate {
     }
 }
 
-@available(macOS 12, *)
 struct VMWizardOSMacView_Previews: PreviewProvider {
     @StateObject static var wizardState = VMWizardState()
     

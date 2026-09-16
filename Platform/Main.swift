@@ -43,8 +43,6 @@ class Main {
             logger.info("JIT: found entitlement")
         } else if jb_has_cs_disabled() {
             logger.info("JIT: CS_KILL disabled")
-        } else if jb_has_cs_execseg_allow_unsigned() {
-            logger.info("JIT: CS_EXECSEG_ALLOW_UNSIGNED set")
         } else if jb_enable_ptrace_hack() {
             logger.info("JIT: ptrace() hack supported")
         } else {

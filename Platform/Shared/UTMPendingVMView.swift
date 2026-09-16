@@ -50,22 +50,13 @@ fileprivate struct PendingVMDetailsView: View {
                 .lineLimit(1)
                 .padding(.top)
             
-            if #available(iOS 15, macOS 12.0, *) {
-                Button(role: .cancel, action: vm.cancel) {
-                    Label("Cancel Download", systemImage: "xmark.circle")
-                }
-                .buttonStyle(.borderedProminent)
-                .tint(.red)
-                .disabled(vm.estimatedDownloadSpeed == nil)
-                .padding([.bottom, .leading, .trailing])
-            } else {
-                Button(action: vm.cancel) {
-                    Label("Cancel Download", systemImage: "xmark.circle")
-                }
-                .foregroundColor(.red)
-                .disabled(vm.estimatedDownloadSpeed == nil)
-                .padding([.bottom, .leading, .trailing])
+            Button(role: .cancel, action: vm.cancel) {
+                Label("Cancel Download", systemImage: "xmark.circle")
             }
+            .buttonStyle(.borderedProminent)
+            .tint(.red)
+            .disabled(vm.estimatedDownloadSpeed == nil)
+            .padding([.bottom, .leading, .trailing])
         }
         .frame(minWidth: 230, maxWidth: .infinity)
     }

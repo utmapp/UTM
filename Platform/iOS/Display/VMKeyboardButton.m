@@ -30,12 +30,8 @@ extern UIAccessibilityTraits UIAccessibilityTraitToggle;
     self.layer.shadowOpacity = 0.4;
     self.layer.shadowRadius = 0;
     self.backgroundColor = self.defaultColor;
-    if (@available(iOS 13.0, *)) {
-        if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
-            self.keyAppearance = UIKeyboardAppearanceDark;
-        } else {
-            self.keyAppearance = UIKeyboardAppearanceLight;
-        }
+    if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
+        self.keyAppearance = UIKeyboardAppearanceDark;
     } else {
         self.keyAppearance = UIKeyboardAppearanceLight;
     }
@@ -52,12 +48,10 @@ extern UIAccessibilityTraits UIAccessibilityTraitToggle;
 
 - (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
     [super traitCollectionDidChange:previousTraitCollection];
-    if (@available(iOS 13.0, *)) {
-        if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
-            self.keyAppearance = UIKeyboardAppearanceDark;
-        } else {
-            self.keyAppearance = UIKeyboardAppearanceLight;
-        }
+    if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
+        self.keyAppearance = UIKeyboardAppearanceDark;
+    } else {
+        self.keyAppearance = UIKeyboardAppearanceLight;
     }
 }
 

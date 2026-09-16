@@ -56,20 +56,12 @@ fileprivate struct WrappedVMDetailsView: View {
                 .lineLimit(nil)
                 .padding()
             
-            if #available(iOS 15, macOS 12.0, *) {
-                Button(role: .cancel, action: onRemove) {
-                    Label("Remove", systemImage: "xmark.circle")
-                }
-                .buttonStyle(.borderedProminent)
-                .tint(.red)
-                .padding([.bottom, .leading, .trailing])
-            } else {
-                Button(action: onRemove) {
-                    Label("Remove", systemImage: "xmark.circle")
-                }
-                .foregroundColor(.red)
-                .padding([.bottom, .leading, .trailing])
+            Button(role: .cancel, action: onRemove) {
+                Label("Remove", systemImage: "xmark.circle")
             }
+            .buttonStyle(.borderedProminent)
+            .tint(.red)
+            .padding([.bottom, .leading, .trailing])
         }
         #if os(macOS)
         .frame(width: 230)

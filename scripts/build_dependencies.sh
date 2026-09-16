@@ -21,8 +21,8 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 # Knobs
-IOS_SDKMINVER="14.0"
-MAC_SDKMINVER="11.0"
+IOS_SDKMINVER="15.0"
+MAC_SDKMINVER="12.0"
 VISIONOS_SDKMINVER="1.0"
 # Network operations are retried because concurrent builds on the same CI runner
 # get rate limited by GitHub and fail to clone/fetch.
@@ -230,6 +230,10 @@ download_all () {
 }
 
 copy_private_headers() {
+    if [ "$PLATFORM" == "macos" ]; then
+        # already in the SDK and a second copy conflicts with the IOKit module
+        return
+    fi
     MACOS_SDK_PATH="$(xcrun --sdk macosx --show-sdk-path)"
     IOKIT_HEADERS_PATH="$MACOS_SDK_PATH/System/Library/Frameworks/IOKit.framework/Headers"
     OSTYPES_HEADERS_PATH="$MACOS_SDK_PATH/usr/include/libkern"
@@ -712,6 +716,7 @@ build_angle () {
                                          WEBCORE_LIBRARY_DIR="/usr/local/lib" \
                                          NORMAL_UMBRELLA_FRAMEWORKS_DIR="" \
                                          CODE_SIGNING_ALLOWED=NO \
+                                         GCC_TREAT_WARNINGS_AS_ERRORS=NO \
                                          IPHONEOS_DEPLOYMENT_TARGET="$IOS_SDKMINVER" \
                                          MACOSX_DEPLOYMENT_TARGET="$MAC_SDKMINVER" \
                                          XROS_DEPLOYMENT_TARGET="$VISIONOS_SDKMINVER"
@@ -737,7 +742,10 @@ build_hypervisor () {
     esac
 
     echo "${GREEN}Building Hypervisor...${NC}"
-    env -i PATH=$PATH xcodebuild archive -archivePath "Hypervisor" -scheme "$scheme" -sdk $SDK -configuration "$BUILD_CONFIGURATION"
+    env -i PATH=$PATH xcodebuild archive -archivePath "Hypervisor" -scheme "$scheme" -sdk $SDK -configuration "$BUILD_CONFIGURATION" \
+                                         IPHONEOS_DEPLOYMENT_TARGET="$IOS_SDKMINVER" \
+                                         MACOSX_DEPLOYMENT_TARGET="$MAC_SDKMINVER" \
+                                         XROS_DEPLOYMENT_TARGET="$VISIONOS_SDKMINVER"
 
     rsync -a "Hypervisor.xcarchive/Products/Library/Frameworks/" "$PREFIX/Frameworks"
     cd "$pwd"
@@ -1109,6 +1117,8 @@ macos )
     fi
     SDK=macosx
     CFLAGS_TARGET="-target $ARCH-apple-macos$SDKMINVER"
+    # libtool drops -target when linking C++ libraries so set the default as well
+    export MACOSX_DEPLOYMENT_TARGET="$SDKMINVER"
     PLATFORM_FAMILY_NAME="macOS"
     QEMU_PLATFORM_BUILD_FLAGS="--enable-shared-lib --disable-cocoa --disable-sdl --cpu=$CPU"
     ;;

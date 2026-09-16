@@ -103,9 +103,8 @@ struct VMWizardOSWindowsView: View {
                 }
             }
             
-            // Disabled on iOS 14 due to a SwiftUI layout bug
             // Disabled for non-Windows 10 installs due to autounattend version
-            if #available(iOS 15, *), wizardState.isWindows10OrHigher {
+            if wizardState.isWindows10OrHigher {
                 DetailedSection("", description: "Download and mount the guest support package for Windows. This is required for some features including dynamic resolution and clipboard sharing.") {
                     Toggle("Install drivers and SPICE tools", isOn: $wizardState.isGuestToolsInstallRequested)
                 }

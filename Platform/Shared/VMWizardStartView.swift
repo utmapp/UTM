@@ -60,16 +60,7 @@ struct VMWizardStartView: View {
                 }
                 .buttonStyle(.inList)
                 .disabled(!isVirtualizationSupported)
-                #if os(iOS) || os(visionOS)
-                if #available(iOS 15, *) {
-                    virtButton
-                } else {
-                    virtButton
-                        .opacity(isVirtualizationSupported ? 1 : 0.5)
-                }
-                #else
                 virtButton
-                #endif
 
                 Button {
                     wizardState.useVirtualization = false

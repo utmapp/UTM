@@ -806,7 +806,6 @@ enum AlertItem: Identifiable {
     #if os(macOS) && arch(arm64)
     /// Create a new VM using configuration and downloaded IPSW
     /// - Parameter config: Apple VM configuration
-    @available(macOS 12, *)
     func downloadIPSW(using config: UTMAppleConfiguration) async {
         let task = UTMDownloadIPSWTask(for: config)
         guard !virtualMachines.contains(where: { !$0.isShortcut && $0.config?.information.name == config.information.name }) else {
@@ -1153,7 +1152,6 @@ enum AlertItem: Identifiable {
     // MARK - JitStreamer
 
 #if os(iOS) || os(visionOS)
-    @available(iOS 15, *)
     func jitStreamerAttach() async throws {
         let urlString = String(
             format: "http://%@/attach/%ld/",

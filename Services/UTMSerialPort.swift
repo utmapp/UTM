@@ -46,22 +46,12 @@ import Foundation
     }
     
     public func write(data: Data) {
-        if #available(iOS 13.4, macOS 10.15, *) {
-            try! writeFileHandle.write(contentsOf: data)
-        } else {
-            writeFileHandle.write(data)
-        }
+        try! writeFileHandle.write(contentsOf: data)
     }
     
     public func close() {
-        if #available(iOS 13, macOS 10.15, *) {
-            try? readFileHandle.close()
-            try? writeFileHandle.close()
-            try? terminalFileHandle?.close()
-        } else {
-            readFileHandle.closeFile()
-            writeFileHandle.closeFile()
-            terminalFileHandle?.closeFile()
-        }
+        try? readFileHandle.close()
+        try? writeFileHandle.close()
+        try? terminalFileHandle?.close()
     }
 }

@@ -2765,3 +2765,71 @@ index d9fa97d0a7..f187968787 100644
 -- 
 2.41.0
 
+From b795d6de88fc52cb6ff061e0e034be51d8e9c474 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Tue, 15 Sep 2026 03:41:04 +0200
+Subject: [PATCH] hw/display/apple-gfx: build against the macOS 27 SDK
+
+PGNewDeviceWithDescriptor is obsoleted in the macOS 27 SDK and is no
+longer exported from the ParavirtualizedGraphics stub, so linking fails.
+Use PGCreateDeviceWithDescriptor on macOS 15.2+ and look up the old
+symbol at runtime on older hosts.
+
+Assisted-by: Claude:claude-opus-5
+---
+ hw/display/apple-gfx.m | 25 ++++++++++++++++++++++++-
+ 1 file changed, 24 insertions(+), 1 deletion(-)
+
+diff --git a/hw/display/apple-gfx.m b/hw/display/apple-gfx.m
+index c4323574e1..fba1a56ceb 100644
+--- a/hw/display/apple-gfx.m
++++ b/hw/display/apple-gfx.m
+@@ -28,6 +28,7 @@
+ #include <mach/mach.h>
+ #include <mach/mach_vm.h>
+ #include <dispatch/dispatch.h>
++#include <dlfcn.h>
+ 
+ #import <ParavirtualizedGraphics/ParavirtualizedGraphics.h>
+ 
+@@ -740,6 +741,24 @@ static void new_frame_handler_bh(void *opaque)
+     return dev;
+ }
+ 
++/*
++ * PGNewDeviceWithDescriptor is obsoleted in the macOS 27 SDK and no longer
++ * exported for linking. Use the replacement where available and look up the
++ * old symbol at runtime on older hosts. Both return a retained object.
++ */
++static id<PGDevice> apple_gfx_new_device(PGDeviceDescriptor *desc)
++{
++    id<PGDevice> (*new_device)(PGDeviceDescriptor *);
++
++#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 150200
++    if (@available(macOS 15.2, *)) {
++        return PGCreateDeviceWithDescriptor(desc);
++    }
++#endif
++    new_device = dlsym(RTLD_DEFAULT, "PGNewDeviceWithDescriptor");
++    return new_device ? new_device(desc) : nil;
++}
++
+ bool apple_gfx_common_realize(AppleGFXState *s, DeviceState *dev,
+                               PGDeviceDescriptor *desc, Error **errp)
+ {
+@@ -767,7 +786,11 @@ bool apple_gfx_common_realize(AppleGFXState *s, DeviceState *dev,
+ 
+     s->cursor_show = true;
+ 
+-    s->pgdev = PGNewDeviceWithDescriptor(desc);
++    s->pgdev = apple_gfx_new_device(desc);
++    if (!s->pgdev) {
++        error_setg(errp, "Failed to create ParavirtualizedGraphics device");
++        return false;
++    }
+ 
+     disp_desc = apple_gfx_prepare_display_descriptor(s);
+     /*
+-- 
+2.54.0 (Apple Git-157)
+

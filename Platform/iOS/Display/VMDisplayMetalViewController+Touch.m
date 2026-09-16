@@ -190,11 +190,7 @@ const CGFloat kScrollResistance = 10.0f;
 #if TARGET_OS_VISION
     return VMMouseTypeAbsolute;
 #else
-    if (@available(iOS 14.0, *)) {
-        return VMMouseTypeRelative;
-    } else {
-        return VMMouseTypeAbsolute; // legacy iOS 13.4 mouse handling requires absolute
-    }
+    return VMMouseTypeRelative;
 #endif
 }
 
@@ -594,7 +590,7 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
     }
 }
 
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveEvent:(UIEvent *)event API_AVAILABLE(ios(13.4)) {
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveEvent:(UIEvent *)event {
     if (event.type == UIEventTypeTransform) {
         UTMLog(@"ignoring UIEventTypeTransform");
         return NO;
@@ -617,10 +613,8 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
             return self.indirectMouseType;
         }
         default: {
-            if (@available(iOS 13.4, *)) {
-                if (type == UITouchTypeIndirectPointer) {
-                    return self.indirectMouseType;
-                }
+            if (type == UITouchTypeIndirectPointer) {
+                return self.indirectMouseType;
             }
             return self.touchMouseType; // compatibility with future values
         }
@@ -671,21 +665,16 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
                 BOOL secondary = NO;
                 BOOL middle = NO;
                 CGPoint pos = [touch locationInView:self.mtkView];
-                // iOS 13.4+ Pointing device support
-                if (@available(iOS 13.4, *)) {
-                    if (touch.type == UITouchTypeIndirectPointer) {
-                        primary = (event.buttonMask & UIEventButtonMaskPrimary) != 0;
-                        secondary = (event.buttonMask & UIEventButtonMaskSecondary) != 0;
-                        middle = (event.buttonMask & 0x4) != 0; // undocumented mask
-                    }
+                if (touch.type == UITouchTypeIndirectPointer) {
+                    primary = (event.buttonMask & UIEventButtonMaskPrimary) != 0;
+                    secondary = (event.buttonMask & UIEventButtonMaskSecondary) != 0;
+                    middle = (event.buttonMask & 0x4) != 0; // undocumented mask
                 }
 #if !defined(TARGET_OS_VISION) || !TARGET_OS_VISION
                 // Apple Pencil 2 right click mode
-                if (@available(iOS 12.1, *)) {
-                    if ([self pencilRightClickForTouch:touch]) {
-                        primary = NO;
-                        secondary = YES;
-                    }
+                if ([self pencilRightClickForTouch:touch]) {
+                    primary = NO;
+                    secondary = YES;
                 }
 #endif
                 [self.cursor startMovement:pos];

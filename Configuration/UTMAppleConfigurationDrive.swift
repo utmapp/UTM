@@ -18,7 +18,6 @@ import Foundation
 import Virtualization
 
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
-@available(macOS 11, *)
 struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
     private let bytesInMib = 1048576
     
@@ -105,7 +104,7 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
     func vzDiskImage(useFsWorkAround: Bool = false) throws -> VZDiskImageStorageDeviceAttachment? {
         if let imageURL = imageURL {
             // Use cached caching mode for virtio drive to prevent fs corruption on linux when possible
-            if #available(macOS 12.0, *), !isNvme, useFsWorkAround {
+            if !isNvme, useFsWorkAround {
                 return try VZDiskImageStorageDeviceAttachment(url: imageURL, readOnly: isReadOnly, cachingMode: .cached, synchronizationMode: .full)
             } else {
                 return try VZDiskImageStorageDeviceAttachment(url: imageURL, readOnly: isReadOnly)
@@ -135,7 +134,6 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
 // MARK: - Conversion of old config format
 
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
-@available(macOS 11, *)
 extension UTMAppleConfigurationDrive {
     init(migrating oldDrive: DiskImage) {
         sizeMib = oldDrive.sizeMib

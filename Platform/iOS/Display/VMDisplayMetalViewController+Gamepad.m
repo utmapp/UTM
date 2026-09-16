@@ -124,11 +124,9 @@ const CGFloat kThumbstickSpeedMultiplier = 1000; // in points per second
         [s.cursor endMovementWithVelocity:velocity resistance:0];
     };
     
-    if (@available(iOS 13.0, *)) {
-        gamepad.buttonMenu.pressedChangedHandler = ^(GCControllerButtonInput * _Nonnull button, float value, BOOL pressed) {
-            [_self gamepadButton:@"GCButtonMenu" pressed:pressed];
-        };
-    }
+    gamepad.buttonMenu.pressedChangedHandler = ^(GCControllerButtonInput * _Nonnull button, float value, BOOL pressed) {
+        [_self gamepadButton:@"GCButtonMenu" pressed:pressed];
+    };
 }
 
 - (void)gamepadButton:(NSString *)identifier pressed:(BOOL)isPressed {

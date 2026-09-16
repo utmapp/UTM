@@ -19,7 +19,6 @@ import Virtualization
 
 /// Basic hardware settings.
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
-@available(macOS 11, *)
 struct UTMAppleConfigurationSystem: Codable {
     private let bytesInMib = UInt64(1048576)
     
@@ -90,7 +89,6 @@ struct UTMAppleConfigurationSystem: Codable {
 // MARK: - Conversion of old config format
 
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
-@available(macOS 11, *)
 extension UTMAppleConfigurationSystem {
     init(migrating oldConfig: UTMLegacyAppleConfiguration) {
         self.init()
@@ -100,12 +98,10 @@ extension UTMAppleConfigurationSystem {
             boot = UTMAppleConfigurationBoot(migrating: oldBoot)
         }
         #if arch(arm64)
-        if #available(macOS 12, *) {
-            if let oldPlatform = oldConfig.macPlatform {
-                macPlatform = UTMAppleConfigurationMacPlatform(migrating: oldPlatform)
-            }
-            boot.macRecoveryIpswURL = oldConfig.macRecoveryIpswURL
+        if let oldPlatform = oldConfig.macPlatform {
+            macPlatform = UTMAppleConfigurationMacPlatform(migrating: oldPlatform)
         }
+        boot.macRecoveryIpswURL = oldConfig.macRecoveryIpswURL
         #endif
         if boot.operatingSystem == .linux {
             genericPlatform = UTMAppleConfigurationGenericPlatform()
@@ -116,7 +112,6 @@ extension UTMAppleConfigurationSystem {
 // MARK: - Creating Apple config
 
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
-@available(macOS 11, *)
 extension UTMAppleConfigurationSystem {
     func fillVZConfiguration(_ vzconfig: VZVirtualMachineConfiguration) throws {
         if cpuCount > 0 {
@@ -130,8 +125,7 @@ extension UTMAppleConfigurationSystem {
         vzconfig.bootLoader = boot.vzBootloader()
         if boot.operatingSystem == .macOS {
             #if arch(arm64)
-            if #available(macOS 12, *),
-               let macPlatform = macPlatform,
+            if let macPlatform = macPlatform,
                let platform = macPlatform.vzMacPlatform() {
                 vzconfig.platform = platform
             } else {
@@ -141,8 +135,7 @@ extension UTMAppleConfigurationSystem {
             throw UTMAppleConfigurationError.platformUnsupported
             #endif
         }
-        if #available(macOS 12, *),
-           let genericPlatform = genericPlatform,
+        if let genericPlatform = genericPlatform,
            let platform = genericPlatform.vzGenericPlatform() {
             vzconfig.platform = platform
         }

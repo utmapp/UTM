@@ -30,26 +30,20 @@ struct DefaultTextField: View {
     }
     
     var body: some View {
-        let stack = HStack {
+        #if os(macOS)
+        DefaultTextFieldNew(titleKey, text: text, prompt: prompt, onEditingChanged: onEditingChanged)
+        #else
+        HStack {
             Text(titleKey)
             if titleKey.localizedString.count > 0 {
                 Spacer()
             }
             TextField(prompt, text: text, onEditingChanged: onEditingChanged)
         }
-        #if os(macOS)
-        if #available(iOS 15, macOS 12, *) {
-            DefaultTextFieldNew(titleKey, text: text, prompt: prompt, onEditingChanged: onEditingChanged)
-        } else {
-            stack
-        }
-        #else
-        stack
         #endif
     }
 }
 
-@available(iOS 15, macOS 12, *)
 struct DefaultTextFieldNew: View {
     private let titleKey: LocalizedStringKey
     @Binding var text: String

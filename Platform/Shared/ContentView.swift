@@ -109,7 +109,7 @@ struct ContentView: View {
             if !Main.jitAvailable {
                 data.busyWorkAsync {
                     let jitStreamerAttach = UserDefaults.standard.bool(forKey: "JitStreamerAttach")
-                    if #available(iOS 15, *), jitStreamerAttach {
+                    if jitStreamerAttach {
                         try await data.jitStreamerAttach()
                         return
                     }

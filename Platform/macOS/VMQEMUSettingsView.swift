@@ -49,14 +49,12 @@ struct VMQEMUSettingsView: View {
         } label: {
             Label("QEMU", systemImage: "shippingbox")
         }
-        if #available(macOS 12, *) {
-            NavigationLink {
-                VMConfigQEMUArgumentsView(config: $config.qemu, architecture: config.system.architecture, fixedArguments: config.generatedArguments)
-                    .settingsToolbar()
-            } label: {
-                Label("Arguments", systemImage: "character.textbox")
-                    .padding(.leading)
-            }
+        NavigationLink {
+            VMConfigQEMUArgumentsView(config: $config.qemu, architecture: config.system.architecture, fixedArguments: config.generatedArguments)
+                .settingsToolbar()
+        } label: {
+            Label("Arguments", systemImage: "character.textbox")
+                .padding(.leading)
         }
         NavigationLink {
             VMConfigInputView(config: $config.input, hasUsbSupport: config.system.architecture.hasUsbSupport)
@@ -135,7 +133,7 @@ struct VMQEMUSettingsView: View {
                         refresh()
                     }
                 }
-                if #available(macOS 12, *), network.mode == .emulated {
+                if network.mode == .emulated {
                     NavigationLink {
                         VMConfigNetworkPortForwardView(config: $network)
                             .settingsToolbar()

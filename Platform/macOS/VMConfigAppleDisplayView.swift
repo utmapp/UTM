@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(macOS 12, *)
 struct VMConfigAppleDisplayView: View {
     typealias Resolution = UTMAppleConfigurationDisplay
     private struct NamedResolution: Identifiable, Hashable {
@@ -175,7 +174,6 @@ struct VMConfigAppleDisplayView: View {
     }
 }
 
-@available(macOS 12, *)
 struct VMConfigAppleDisplayView_Previews: PreviewProvider {
     @State static private var config = UTMAppleConfigurationDisplay()
     

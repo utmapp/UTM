@@ -31,7 +31,6 @@ struct VMConfigAppleDriveDetailsView: View {
     }
 
     @Binding var config: UTMAppleConfigurationDrive
-    @Binding var requestDriveDelete: UTMAppleConfigurationDrive?
 
     @EnvironmentObject private var data: UTMData
     
@@ -55,15 +54,6 @@ struct VMConfigAppleDriveDetailsView: View {
             }
             DefaultTextField("Size", text: .constant(config.sizeString)).disabled(true)
             HStack {
-                if #unavailable(macOS 12) {
-                    Button {
-                        requestDriveDelete = config
-                    } label: {
-                        Label("Delete Drive", systemImage: "externaldrive.badge.minus")
-                            .foregroundColor(.red)
-                    }.help("Delete this drive.")
-                }
-
                 if #available(macOS 14, *), let imageUrl = config.imageURL, FileManager.default.fileExists(atPath: imageUrl.path) {
                     Button {
                         isResizePopoverShown.toggle()
@@ -151,6 +141,6 @@ private struct ResizePopoverView: View {
 
 struct VMConfigAppleDriveDetailsView_Previews: PreviewProvider {
     static var previews: some View {
-        VMConfigAppleDriveDetailsView(config: .constant(UTMAppleConfigurationDrive(newSize: 100)), requestDriveDelete: .constant(nil))
+        VMConfigAppleDriveDetailsView(config: .constant(UTMAppleConfigurationDrive(newSize: 100)))
     }
 }

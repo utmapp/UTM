@@ -17,7 +17,6 @@
 import SwiftUI
 
 #if os(macOS)
-@available(macOS 11, *)
 struct Spinner: NSViewRepresentable {
     enum Size: RawRepresentable {
         case regular

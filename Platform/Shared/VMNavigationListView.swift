@@ -185,6 +185,11 @@ private struct VMListModifier: ViewModifier {
             }
             #endif
             #if !WITH_REMOTE
+            #if os(iOS) // ToolbarSpacer is unavailable on visionOS
+            if #available(iOS 26, *) {
+                ToolbarSpacer(.fixed, placement: .navigationBarLeading)
+            }
+            #endif
             ToolbarItem(placement: .navigationBarLeading) {
                 if #available(iOS 17, visionOS 99, *) {
                     Button {
