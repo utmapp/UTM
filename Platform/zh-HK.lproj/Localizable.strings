@@ -60,6 +60,9 @@ VMDisplayQemuTerminalWindowController */
 /* No comment provided by engineer. */
 "• " = "• ";
 
+/* AppDelegate */
+"A running VM became unavailable before requesting power down." = "在要求關閉電源之前，正在執行的虛擬機將變成無效狀態。";
+
 /* UTMScriptingAppDelegate */
 "A valid backend must be specified." = "必須指定有效的後端。";
 
@@ -106,7 +109,7 @@ VMDisplayQemuTerminalWindowController */
 "An unknown QEMU error has occurred." = "發生未知的 QEMU 錯誤。";
 
 /* VMDisplayAppleDisplayController */
-"An USB device containing the installer will be mounted in the virtual machine. Only macOS Sequoia (15.0) and newer guests are supported." = "包含安裝程式的 USB 裝置將裝載至虛擬機。只支援 macOS Sequoia (15.0) 和較新版本的客户端。";
+"An USB device containing the installer will be mounted in the virtual machine. Only macOS Sequoia (15.0) and newer guests are supported." = "包含安裝程式的 USB 裝置將裝載至虛擬機。只支援 macOS Sequoia (15.0) 與較新版本的客户端。";
 
 /* No comment provided by engineer. */
 "ANGLE (Metal)" = "ANGLE (Metal)";
@@ -199,9 +202,6 @@ UTMQemuConstants */
 
 /* VMDisplayQemuWindowController */
 "Browse…" = "瀏覽⋯";
-
-/* No comment provided by engineer. */
-"Build" = "構建";
 
 /* UTMAppleConfigurationTerminal
 UTMQemuConstants */
@@ -574,6 +574,9 @@ UTMRemoteServer */
 /* UTMData */
 "Failed to reconnect to the server." = "無法重新連接至伺服器。";
 
+/* AppDelegate */
+"Failed to request power down for %@: %@" = "無法為「%1$@」要求關閉電源：%2$@";
+
 /* AppDelegate
 VMDisplayWindowController */
 "Failed to save suspend state" = "無法儲存暫停狀態。";
@@ -629,6 +632,9 @@ UTMQemuConstants */
 
 /* No comment provided by engineer. */
 "GiB" = "GiB";
+
+/* AppDelegate */
+"Graceful quit cancelled: %@" = "完全結束已取消：%@";
 
 /* No comment provided by engineer. */
 "Guest drivers are required for 3D acceleration." = "需要客户端驅動程式才能使用 3D 加速。";
@@ -707,6 +713,9 @@ UTMQemuConstants */
 
 /* VMDisplayWindowController */
 "Install Windows Guest Tools…" = "安裝 Windows 客户端工具⋯";
+
+/* UTMAppleVirtualMachine */
+"Installation failed because macOS %1$@ is newer than macOS %2$@ running on this Mac. Update this Mac to macOS %1$@ or later and try again, or install an older version of macOS." = "安裝失敗，因為 macOS %1$@ 比這台 Mac 上執行的 macOS %2$@ 更新。將這台 Mac 更新至 macOS %1$@ 或以上版本再試，或者安裝舊版的 macOS。";
 
 /* VMDisplayAppleWindowController */
 "Installation: %@" = "安裝：%@";
@@ -1106,6 +1115,9 @@ UTMQemuConstants */
 "Request power down" = "要求關閉電源";
 
 /* No comment provided by engineer. */
+"Request Power Down" = "要求關閉電源";
+
+/* No comment provided by engineer. */
 "Reset" = "重設";
 
 /* No comment provided by engineer. */
@@ -1149,6 +1161,9 @@ UTMQemuConstants */
 
 /* No comment provided by engineer. */
 "Save" = "儲存";
+
+/* No comment provided by engineer. */
+"Save State (Default)" = "儲存狀態（預設）";
 
 /* No comment provided by engineer. */
 "Saved" = "已儲存";
@@ -1243,6 +1258,9 @@ UTMQemuConstants */
 /* No comment provided by engineer. */
 "Slower, but can run other CPU architectures." = "較慢，但可以執行其他 CPU 架構。";
 
+/* UTMSnapshotService */
+"Snapshots are not supported for this virtual machine." = "此虛擬機不支援快照。";
+
 /* UTMSWTPM */
 "Socket not specified." = "未指定 Socket。";
 
@@ -1310,7 +1328,10 @@ UTMQemuConstants */
 "SW TPM failed to start. %@" = "SW TPM 無法啟動。%@";
 
 /* No comment provided by engineer. */
-"Swap Control (⌃) and Command (⌘) keys" = "交換 Control (⌃) 與 Command (⌘) 鍵";
+"Swap Command (⌘) and Option (⌥)" = "交換 Command (⌘) 與 Option (⌥)";
+
+/* No comment provided by engineer. */
+"Swap Control (⌃) and Command (⌘)" = "交換 Control (⌃) 與 Command (⌘)";
 
 /* No comment provided by engineer. */
 "Swap the leftmost key on the number row and the key next to left shift on ISO keyboards" = "在 ISO 鍵盤上交換數字行最左邊與左 Shift 旁邊的按鍵";
@@ -1348,6 +1369,9 @@ UTMQemuConstants */
 /* UTMScriptingUSBDeviceImpl */
 "The device is not currently connected." = "此裝置現時尚未連接。";
 
+/* Error shown when importing a ZIP file from web that contains an entry pointing outside of the virtual machine directory. */
+"The downloaded ZIP archive contains an invalid path." = "下載的 ZIP 封存檔中包含無效路徑。";
+
 /* UTMConfiguration */
 "The drive '%@' already exists and cannot be created." = "磁碟「%@」已存在，無法製作。";
 
@@ -1362,6 +1386,12 @@ UTMQemuConstants */
 
 /* UTMScriptingConfigImpl */
 "The icon named '%@' cannot be found in the built-in icons." = "在內建圖示中找不到名為「%@」的圖示。";
+
+/* UTMSnapshotService */
+"The name '%@' is not a valid snapshot name. Use letters, numbers, and the characters _.- (up to 64 characters)." = "名稱「%@」不是一個有效的快照名稱。請使用字母、数字與底線 (_)、西式句點 (.) 及减號 (-)（最多 64 個字元）。";
+
+/* UTMSnapshotService */
+"The name '%@' is reserved and cannot be used for a snapshot." = "名稱「%@」已被保留，不能用於快照。";
 
 /* UTMAppleVirtualMachine */
 "The operating system cannot be installed on this machine." = "無法在此電腦上安裝作業系統。";
@@ -1390,14 +1420,26 @@ UTMQemuConstants */
 /* UTMRemoteClient */
 "The server interface version does not match the client." = "伺服器介面版本與客户端不相符。";
 
+/* UTMSnapshotService */
+"The snapshot '%@' does not exist." = "快照「%@」不存在。";
+
 /* No comment provided by engineer. */
 "The target does not support hardware emulated serial connections." = "目標平台不支援硬件模擬序列連線。";
+
+/* UTMSnapshotService */
+"The virtual machine is in an invalid state for this snapshot operation." = "對於此快照操作，虛擬機處於無效狀態。";
 
 /* UTMQemuVirtualMachine */
 "The virtual machine is in an invalid state." = "虛擬機的狀態無效。";
 
 /* UTMScriptingVirtualMachineImpl */
 "The virtual machine is not running." = "虛擬機未執行。";
+
+/* UTMSnapshotService */
+"The virtual machine must be stopped before listing snapshots." = "在取得快照列表之前，必須停止虛擬機。";
+
+/* UTMSnapshotService */
+"The virtual machine must be stopped before restoring a snapshot." = "在回復快照之前，必須停止虛擬機。";
 
 /* UTMScriptingVirtualMachineImpl */
 "The virtual machine must be stopped before this operation can be performed." = "必須停止虛擬機才能執行此操作。";
@@ -1424,7 +1466,7 @@ UTMQemuConstants */
 "This configuration is saved with a newer version of UTM and is not compatible with this version." = "此設定使用較新版本的 UTM 儲存，與此版本不相容。";
 
 /* UTMConfiguration */
-"This configuration is too old and is not supported." = "此設定太舊，且不支援。";
+"This configuration is too old and is not supported." = "此設定太舊，且不受支援。";
 
 /* UTMScriptingConfigImpl */
 "This device is not supported by the target." = "目標不支援此裝置。";
@@ -1446,9 +1488,6 @@ UTMQemuConstants */
 
 /* VMDisplayWindowController */
 "This may corrupt the VM and any unsaved changes will be lost. To quit safely, shut down from the guest." = "這可能會損毀虛擬機，所有未儲存的變更都將遺失。如要安全退出，請從客户端關機。";
-
-/* No comment provided by engineer. */
-"This operating system is unsupported on your machine." = "你的電腦不支援此作業系統。";
 
 /* UTMDataExtension */
 "This virtual machine cannot be run on this machine." = "此虛擬機無法在電腦上執行。";
@@ -1476,6 +1515,9 @@ UTMQemuConstants */
 
 /* VMDisplayWindowController */
 "This will reset the VM and any unsaved state will be lost." = "這會重設虛擬機，任何未儲存的狀態都將遺失。";
+
+/* AppDelegate */
+"Timed out after 45 seconds waiting for running VMs to stop." = "在等待執行的虛擬機停止時，已於 45 秒之後逾時。";
 
 /* UTMRemoteConnectView */
 "Timed out trying to connect." = "嘗試連接超時。";
@@ -1564,9 +1606,6 @@ UTMQemuConstants */
 /* UTMScriptingAppDelegate
 UTMScriptingUSBDeviceImpl */
 "UTM is not ready to accept commands." = "UTM 尚未準備好接受指令。";
-
-/* No comment provided by engineer. */
-"Version" = "版本";
 
 /* UTMQemuConstants */
 "VirtFS" = "VirtFS";
@@ -1752,6 +1791,9 @@ VMWizardOSMacView */
 "Bridged Settings" = "橋連設定";
 
 /* No comment provided by engineer. */
+"Build" = "構建";
+
+/* No comment provided by engineer. */
 "By default, the best backend for the target will be used. If the selected backend is not available for any reason, an alternative will automatically be selected." = "根據預設，將會使用目標的最佳後端。如選擇的後端因故無法使用，將會自動選擇替用後端。";
 
 /* No comment provided by engineer. */
@@ -1800,6 +1842,9 @@ VMWizardOSMacView */
 "Compress by re-converting the disk image and compressing the data." = "透過重新轉換磁碟映像檔與壓縮資料以壓縮。";
 
 /* No comment provided by engineer. */
+"Control, Option, and Command keys" = "Control、Option 與 Command 鍵";
+
+/* No comment provided by engineer. */
 "Create a new VM" = "製作新虛擬機";
 
 /* No comment provided by engineer. */
@@ -1843,6 +1888,9 @@ VMWizardOSMacView */
 
 /* No comment provided by engineer. */
 "Directory Share Mode" = "目錄分享模式";
+
+/* No comment provided by engineer. */
+"DirectX Driver" = "DirectX 驅動程式";
 
 /* No comment provided by engineer. */
 "Disk" = "磁碟";
@@ -2380,6 +2428,9 @@ VMWizardOSMacView */
 "Run without saving changes" = "執行且不儲存變更";
 
 /* No comment provided by engineer. */
+"Running VMs on quit" = "執行虛擬機時結束應用程式";
+
+/* No comment provided by engineer. */
 "Section" = "區域";
 
 /* No comment provided by engineer. */
@@ -2491,6 +2542,9 @@ VMWizardOSMacView */
 "Suspend" = "暫停";
 
 /* No comment provided by engineer. */
+"Swap Control (⌃) and Command (⌘) keys" = "交換 Control (⌃) 與 Command (⌘) 鍵";
+
+/* No comment provided by engineer. */
 "Target" = "目標";
 
 /* No comment provided by engineer. */
@@ -2531,6 +2585,9 @@ VMWizardOSMacView */
 
 /* No comment provided by engineer. */
 "This only applies to ISO layout keyboards." = "此設定只套用至 ISO 佈局的鍵盤。";
+
+/* No comment provided by engineer. */
+"This operating system is unsupported on your machine." = "你的電腦不支援此作業系統。";
 
 /* No comment provided by engineer. */
 "This virtual machine cannot be found at: %@" = "無法在此位置找到這個虛擬機：%@";
@@ -2601,6 +2658,9 @@ VMWizardOSMacView */
 
 /* No comment provided by engineer. */
 "UTM Server" = "UTM 伺服器";
+
+/* No comment provided by engineer. */
+"Version" = "版本";
 
 /* No comment provided by engineer. */
 "VGA Device RAM (MB)" = "VGA 裝置記憶體 (MB)";
