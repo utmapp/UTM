@@ -23,7 +23,7 @@ class UTMExternalSceneDelegate: NSObject, UIWindowSceneDelegate, ObservableObjec
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
-        if session.role == .windowExternalDisplay {
+        if session.role.isExternalDisplay {
             let window = UIWindow(windowScene: windowScene)
             let viewController = UIHostingController(rootView: UTMSingleWindowView())
             window.rootViewController = viewController
@@ -44,6 +44,38 @@ class UTMExternalSceneDelegate: NSObject, UIWindowSceneDelegate, ObservableObjec
         if currentScreen != linkedScreen {
             // Set up display link
             self.linkedScreen = currentScreen
+        }
+    }
+}
+
+private extension UISceneSession.Role {
+    /// The external display role was renamed in iOS 16 and sessions report the new name.
+    var isExternalDisplay: Bool {
+        if #available(iOS 16, *) {
+            return self == .windowExternalDisplayNonInteractive
+        } else {
+            return self == .windowExternalDisplay
+        }
+    }
+}
+
+extension View {
+    /// Offers `UTMSingleWindowView` as the content of a connected external display.
+    ///
+    /// Apps built with the iOS 27 SDK are no longer offered `windowExternalDisplayNonInteractive`
+    /// scenes from the Info.plist scene manifest; the content must be registered as a scene
+    /// accessory instead. Older systems keep using the Info.plist configuration and
+    /// `UTMExternalSceneDelegate`.
+    @ViewBuilder
+    func externalDisplayAccessory() -> some View {
+        if #available(iOS 27, *) {
+            sceneAccessory {
+                ExternalNonInteractiveAccessory {
+                    UTMSingleWindowView()
+                }
+            }
+        } else {
+            self
         }
     }
 }
