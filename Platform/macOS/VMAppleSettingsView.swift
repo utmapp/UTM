@@ -54,39 +54,35 @@ struct VMAppleSettingsView: View {
         } label: {
             Label("Virtualization", systemImage: "wrench.and.screwdriver")
         }
-        if #available(macOS 12, *) {
-            if hasVenturaFeatures || config.system.boot.operatingSystem == .linux {
-                NavigationLink {
-                    VMConfigAppleSharingView(config: config)
-                        .padding()
-                        .settingsToolbar()
-                } label: {
-                    Label("Sharing", systemImage: "person.crop.circle")
-                }
+        if hasVenturaFeatures || config.system.boot.operatingSystem == .linux {
+            NavigationLink {
+                VMConfigAppleSharingView(config: config)
+                    .padding()
+                    .settingsToolbar()
+            } label: {
+                Label("Sharing", systemImage: "person.crop.circle")
             }
         }
         Section(header: Text("Devices")) {
-            if #available(macOS 12, *) {
-                if hasVenturaFeatures || config.system.boot.operatingSystem == .macOS {
-                    ForEach($config.displays) { $display in
-                        NavigationLink {
-                            VMConfigAppleDisplayView(config: $display)
-                                .scrollable()
-                                .settingsToolbar {
-                                    ToolbarItem(placement: .destructiveAction) {
-                                        Button("Remove") {
-                                            config.displays.removeAll(where: { $0.id == display.id })
-                                            refresh()
-                                        }
+            if hasVenturaFeatures || config.system.boot.operatingSystem == .macOS {
+                ForEach($config.displays) { $display in
+                    NavigationLink {
+                        VMConfigAppleDisplayView(config: $display)
+                            .scrollable()
+                            .settingsToolbar {
+                                ToolbarItem(placement: .destructiveAction) {
+                                    Button("Remove") {
+                                        config.displays.removeAll(where: { $0.id == display.id })
+                                        refresh()
                                     }
                                 }
-                        } label: {
-                            Label("Display", systemImage: "rectangle.on.rectangle")
-                        }.contextMenu {
-                            DestructiveButton("Remove") {
-                                config.displays.removeAll(where: { $0.id == display.id })
-                                refresh()
                             }
+                    } label: {
+                        Label("Display", systemImage: "rectangle.on.rectangle")
+                    }.contextMenu {
+                        DestructiveButton("Remove") {
+                            config.displays.removeAll(where: { $0.id == display.id })
+                            refresh()
                         }
                     }
                 }

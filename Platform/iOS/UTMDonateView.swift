@@ -42,13 +42,7 @@ struct UTMDonateView: View {
                 }
                 Text("Your support is the driving force that helps UTM stay independent. Your contribution, no matter the size, makes a significant difference. It enables us to develop new features and maintain existing ones. Thank you for considering a donation to support us.")
                     .padding()
-                if #available(iOS 15, *) {
-                    StoreView()
-                } else {
-                    List {
-                        Link("GitHub Sponsors", destination: URL(string: "https://github.com/sponsors/utmapp")!)
-                    }
-                }
+                StoreView()
             }.navigationTitle("Support UTM")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -62,7 +56,6 @@ struct UTMDonateView: View {
     }
 }
 
-@available(iOS 15, *)
 private struct StoreView: View {
     @StateObject private var store = UTMDonateStore()
 
@@ -103,7 +96,6 @@ private struct StoreView: View {
     }
 }
 
-@available(iOS 15, *)
 private struct ListCellView: View {
     @ObservedObject var store: UTMDonateStore
     @State var isPurchased: Bool = false

@@ -19,7 +19,6 @@ import Virtualization
 
 /// Device settings.
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
-@available(macOS 11, *)
 struct UTMAppleConfigurationVirtualization: Codable {
     enum PointerDevice: String, CaseIterable, QEMUConstant {
         case disabled = "Disabled"
@@ -114,24 +113,20 @@ struct UTMAppleConfigurationVirtualization: Codable {
 // MARK: - Conversion of old config format
 
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
-@available(macOS 11, *)
 extension UTMAppleConfigurationVirtualization {
     init(migrating oldConfig: UTMLegacyAppleConfiguration) {
         self.init()
         hasBalloon = oldConfig.isBalloonEnabled
         hasEntropy = oldConfig.isEntropyEnabled
-        if #available(macOS 12, *) {
-            hasAudio = oldConfig.isAudioEnabled
-            keyboard = oldConfig.isKeyboardEnabled ? .generic : .disabled
-            pointer = oldConfig.isPointingEnabled ? .mouse : .disabled
-        }
+        hasAudio = oldConfig.isAudioEnabled
+        keyboard = oldConfig.isKeyboardEnabled ? .generic : .disabled
+        pointer = oldConfig.isPointingEnabled ? .mouse : .disabled
     }
 }
 
 // MARK: - Creating Apple config
 
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
-@available(macOS 11, *)
 extension UTMAppleConfigurationVirtualization {
     func fillVZConfiguration(_ vzconfig: VZVirtualMachineConfiguration, isMacOSGuest: Bool = false) throws {
         if hasBalloon && !isMacOSGuest {
@@ -140,37 +135,31 @@ extension UTMAppleConfigurationVirtualization {
         if hasEntropy {
             vzconfig.entropyDevices = [VZVirtioEntropyDeviceConfiguration()]
         }
-        if #available(macOS 12, *) {
-            if hasAudio {
-                let audioConfiguration = VZVirtioSoundDeviceConfiguration()
-                let audioInput = VZVirtioSoundDeviceInputStreamConfiguration()
-                audioInput.source = VZHostAudioInputStreamSource()
-                let audioOutput = VZVirtioSoundDeviceOutputStreamConfiguration()
-                audioOutput.sink = VZHostAudioOutputStreamSink()
-                audioConfiguration.streams = [audioInput, audioOutput]
-                vzconfig.audioDevices = [audioConfiguration]
+        if hasAudio {
+            let audioConfiguration = VZVirtioSoundDeviceConfiguration()
+            let audioInput = VZVirtioSoundDeviceInputStreamConfiguration()
+            audioInput.source = VZHostAudioInputStreamSource()
+            let audioOutput = VZVirtioSoundDeviceOutputStreamConfiguration()
+            audioOutput.sink = VZHostAudioOutputStreamSink()
+            audioConfiguration.streams = [audioInput, audioOutput]
+            vzconfig.audioDevices = [audioConfiguration]
+        }
+        if keyboard != .disabled {
+            vzconfig.keyboards = [VZUSBKeyboardConfiguration()]
+            #if arch(arm64)
+            if #available(macOS 14, *), isMacOSGuest && keyboard == .mac {
+                vzconfig.keyboards = [VZMacKeyboardConfiguration()]
             }
-            if keyboard != .disabled {
-                vzconfig.keyboards = [VZUSBKeyboardConfiguration()]
-                #if arch(arm64)
-                if #available(macOS 14, *), isMacOSGuest && keyboard == .mac {
-                    vzconfig.keyboards = [VZMacKeyboardConfiguration()]
-                }
-                #endif
+            #endif
+        }
+        if pointer != .disabled {
+            vzconfig.pointingDevices = [VZUSBScreenCoordinatePointingDeviceConfiguration()]
+            #if arch(arm64)
+            if #available(macOS 13, *), isMacOSGuest && pointer == .trackpad {
+                // replace with trackpad device
+                vzconfig.pointingDevices = [VZMacTrackpadConfiguration()]
             }
-            if pointer != .disabled {
-                vzconfig.pointingDevices = [VZUSBScreenCoordinatePointingDeviceConfiguration()]
-                #if arch(arm64)
-                if #available(macOS 13, *), isMacOSGuest && pointer == .trackpad {
-                    // replace with trackpad device
-                    vzconfig.pointingDevices = [VZMacTrackpadConfiguration()]
-                }
-                #endif
-            }
-        } else {
-            if hasAudio || keyboard != .disabled || pointer != .disabled {
-                throw UTMAppleConfigurationError.featureNotSupported
-            }
+            #endif
         }
         if #available(macOS 13, *) {
             #if arch(arm64)

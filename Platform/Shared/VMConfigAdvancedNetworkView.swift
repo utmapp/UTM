@@ -16,8 +16,7 @@
 
 import SwiftUI
 
-@available(macOS 11, *)
-@available(iOS, introduced: 14, unavailable)
+@available(iOS, unavailable)
 struct VMConfigAdvancedNetworkView: View {
     @Binding var config: UTMQemuConfigurationNetwork
 

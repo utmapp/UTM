@@ -22,7 +22,7 @@ struct VMWizardOSView: View {
         VMWizardContent("Operating System") {
             Section {
                 #if os(macOS) && arch(arm64)
-                if #available(macOS 12, *), wizardState.useVirtualization {
+                if wizardState.useVirtualization {
                     Button {
                         wizardState.operatingSystem = .macOS
                         wizardState.useAppleVirtualization = true

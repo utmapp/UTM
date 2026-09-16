@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(macOS 11, *)
 struct VMWizardView: View {
     @StateObject var wizardState = VMWizardState()
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
@@ -26,10 +25,8 @@ struct VMWizardView: View {
     /// the disable state of a button being clicked, the app crashes
     private var isNeverDisabledWorkaround: Bool {
         #if os(macOS)
-        if #available(macOS 12, *) {
-            if #unavailable(macOS 13) {
-                return false
-            }
+        if #unavailable(macOS 13) {
+            return false
         }
         return true
         #else
@@ -50,10 +47,8 @@ struct VMWizardView: View {
                 VMWizardOSOtherView(wizardState: wizardState)
                     .transition(wizardState.slide)
             case .macOSBoot:
-                if #available(macOS 12, *) {
-                    VMWizardOSMacView(wizardState: wizardState)
-                        .transition(wizardState.slide)
-                }
+                VMWizardOSMacView(wizardState: wizardState)
+                    .transition(wizardState.slide)
             case .linuxBoot:
                 VMWizardOSLinuxView(wizardState: wizardState)
                     .transition(wizardState.slide)
@@ -109,7 +104,7 @@ struct VMWizardView: View {
                         data.busyWorkAsync {
                             let config = try await wizardState.generateConfig()
                             #if arch(arm64)
-                            if #available(macOS 12, *), await wizardState.isPendingIPSWDownload, let appleConfig = config as? UTMAppleConfiguration {
+                            if await wizardState.isPendingIPSWDownload, let appleConfig = config as? UTMAppleConfiguration {
                                 await data.downloadIPSW(using: appleConfig)
                                 return
                             }
@@ -138,7 +133,6 @@ struct VMWizardView: View {
     }
 }
 
-@available(macOS 11, *)
 struct VMWizardView_Previews: PreviewProvider {
     static var previews: some View {
         VMWizardView()

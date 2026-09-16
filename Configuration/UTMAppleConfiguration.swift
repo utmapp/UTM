@@ -18,7 +18,6 @@ import Foundation
 import Virtualization
 
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
-@available(macOS 11, *)
 final class UTMAppleConfiguration: UTMConfiguration {
     /// Basic information and icon
     @Published var _information: UTMConfigurationInfo = .init()
@@ -220,13 +219,9 @@ extension UTMAppleConfiguration {
         _information = .init(migrating: oldConfig, dataURL: dataURL)
         _system = .init(migrating: oldConfig)
         _virtualization = .init(migrating: oldConfig)
-        if #available(macOS 12, *) {
-            _sharedDirectories = oldConfig.sharedDirectories.map { .init(migrating: $0) }
-        }
+        _sharedDirectories = oldConfig.sharedDirectories.map { .init(migrating: $0) }
         #if arch(arm64)
-        if #available(macOS 12, *) {
-            _displays = oldConfig.displays.map { .init(migrating: $0) }
-        }
+        _displays = oldConfig.displays.map { .init(migrating: $0) }
         #endif
         _drives = oldConfig.diskImages.map { .init(migrating: $0) }
         _networks = oldConfig.networkDevices.map { .init(migrating: $0) }
@@ -245,17 +240,14 @@ extension UTMAppleConfiguration {
 // MARK: - Creating Apple config
 
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
-@available(macOS 11, *)
 @MainActor extension UTMAppleConfiguration {
     func appleVZConfiguration(ignoringDrives: Bool = false) throws -> VZVirtualMachineConfiguration {
         let vzconfig = VZVirtualMachineConfiguration()
         try system.fillVZConfiguration(vzconfig)
-        if #available(macOS 12, *), !sharedDirectories.isEmpty {
+        if !sharedDirectories.isEmpty {
             let fsConfig = VZVirtioFileSystemDeviceConfiguration(tag: shareDirectoryTag)
             fsConfig.share = UTMAppleConfigurationSharedDirectory.makeDirectoryShare(from: sharedDirectories)
             vzconfig.directorySharingDevices.append(fsConfig)
-        } else if !sharedDirectories.isEmpty {
-            throw UTMAppleConfigurationError.featureNotSupported
         }
         if !ignoringDrives {
             vzconfig.storageDevices = try drives.compactMap { drive in
@@ -284,7 +276,7 @@ extension UTMAppleConfiguration {
         // add remaining devices
         try virtualization.fillVZConfiguration(vzconfig, isMacOSGuest: system.boot.operatingSystem == .macOS)
         #if arch(arm64)
-        if #available(macOS 12, *), system.boot.operatingSystem == .macOS {
+        if system.boot.operatingSystem == .macOS {
             let graphics = VZMacGraphicsDeviceConfiguration()
             graphics.displays = displays.map({ display in
                 display.vzMacDisplay()
@@ -323,7 +315,6 @@ extension UTMAppleConfiguration {
 // MARK: - Saving data
 
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
-@available(macOS 11, *)
 @MainActor extension UTMAppleConfiguration {
     func prepareSave(for packageURL: URL) async throws {
         try await virtualization.prepareSave(for: packageURL)
@@ -335,7 +326,7 @@ extension UTMAppleConfiguration {
         existingDataURLs += try await _system.boot.saveData(to: dataURL)
         
         #if arch(arm64)
-        if #available(macOS 12, *), system.macPlatform != nil {
+        if system.macPlatform != nil {
             existingDataURLs += try await _system.macPlatform!.saveData(to: dataURL)
         }
         #endif

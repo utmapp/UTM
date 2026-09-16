@@ -35,7 +35,7 @@ struct VMDrivesSettingsView<Drive: UTMConfigurationDrive>: View {
         ForEach($drives) { $drive in
             let driveIndex = drives.firstIndex(of: drive)!
             NavigationLink {
-                DriveDetailsView(config: $drive, requestDriveDelete: $requestDriveDelete)
+                DriveDetailsView(config: $drive)
                     .scrollable()
                     .settingsToolbar {
                         ToolbarItem(placement: .destructiveAction) {
@@ -155,13 +155,12 @@ struct VMDrivesSettingsView<Drive: UTMConfigurationDrive>: View {
 
 private struct DriveDetailsView<Drive: UTMConfigurationDrive>: View {
     @Binding var config: Drive
-    @Binding var requestDriveDelete: Drive?
     
     var body: some View {
         if config is UTMQemuConfigurationDrive {
-            VMConfigDriveDetailsView(config: $config as Any as! Binding<UTMQemuConfigurationDrive>, requestDriveDelete: $requestDriveDelete as Any as! Binding<UTMQemuConfigurationDrive?>)
+            VMConfigDriveDetailsView(config: $config as Any as! Binding<UTMQemuConfigurationDrive>)
         } else if config is UTMAppleConfigurationDrive {
-            VMConfigAppleDriveDetailsView(config: $config as Any as! Binding<UTMAppleConfigurationDrive>, requestDriveDelete: $requestDriveDelete as Any as! Binding<UTMAppleConfigurationDrive?>)
+            VMConfigAppleDriveDetailsView(config: $config as Any as! Binding<UTMAppleConfigurationDrive>)
         } else {
             fatalError("Unsupported drive type.")
         }

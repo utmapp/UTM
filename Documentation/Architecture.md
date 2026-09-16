@@ -97,7 +97,7 @@ This subclass manages Apple Virtualization.framework backend VMs.
 
 ### SwiftUI
 
-The frontend for UTM is designed mostly in SwiftUI 2.0. That means the minimum supported operating system is iOS 14 and macOS 11 and is the main reason there are no plans to back-port UTM to earlier versions. Most views are designed to work on both macOS and iOS.
+The frontend for UTM is designed mostly in SwiftUI 3.0. That means the minimum supported operating system is iOS 15 and macOS 12 and is the main reason there are no plans to back-port UTM to earlier versions. Most views are designed to work on both macOS and iOS.
 
 #### UTMData
 

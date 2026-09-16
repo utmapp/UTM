@@ -69,10 +69,8 @@ static const NSString *const kUTMConfigForcePs2ControllerKey = @"ForcePS2Control
     if ([self.rootDict[kUTMConfigSystemKey][kUTMConfigCPUKey] length] == 0) {
         self.rootDict[kUTMConfigSystemKey][kUTMConfigCPUKey] = @"default";
     }
-    // iOS 14 uses bootindex and systemBootDevice is deprecated
-    if (@available(iOS 14, *)) {
-        self.systemBootDevice = @"";
-    }
+    // we use bootindex and systemBootDevice is deprecated
+    self.systemBootDevice = @"";
     // migrate global use hypervisor to per-vm
     if (![self.rootDict[kUTMConfigSystemKey] objectForKey:kUTMConfigUseHypervisorKey]) {
         self.useHypervisor = self.defaultUseHypervisor;

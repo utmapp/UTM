@@ -394,7 +394,6 @@ private extension View {
         }
     }
     
-    @available(iOS 15, *)
     @ViewBuilder
     func controlSize(forHorizontalSizeClass horizontalSizeClass: UserInterfaceSizeClass?) -> some View {
         if horizontalSizeClass == .regular {

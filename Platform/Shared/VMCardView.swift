@@ -73,7 +73,6 @@ struct VMCardView: View {
 }
 
 #if os(macOS)
-@available(macOS 11, *)
 struct Logo: View {
     let logo: NSImage?
     

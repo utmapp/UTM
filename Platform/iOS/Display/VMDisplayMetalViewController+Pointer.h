@@ -19,7 +19,6 @@
 @import GameController;
 NS_ASSUME_NONNULL_BEGIN
 
-NS_AVAILABLE_IOS(13.4)
 @interface VMDisplayMetalViewController (Pointer) <UIPointerInteractionDelegate>
 
 @property (nonatomic, readonly) BOOL hasTouchpadPointer;

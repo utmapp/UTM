@@ -20,7 +20,6 @@
 #import "VMDisplayMetalViewController+Pencil.h"
 #import "VMDisplayMetalViewController+Touch.h"
 
-NS_AVAILABLE_IOS(12.1)
 @implementation VMDisplayMetalViewController (Pencil)
 
 - (void)initPencilInteraction {
@@ -49,11 +48,9 @@ NS_AVAILABLE_IOS(12.1)
         
         CSInputButton button = kCSInputButtonLeft;
         
-        if (@available(iOS 12.1, *)) {
-            if (self.pencilForceRightClickOnce) {
-                button = kCSInputButtonRight;
-                self.pencilForceRightClickOnce = false;
-            }
+        if (self.pencilForceRightClickOnce) {
+            button = kCSInputButtonRight;
+            self.pencilForceRightClickOnce = false;
         }
         
         [self mouseClick:button location:[sender locationInView:sender.view]];

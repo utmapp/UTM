@@ -80,12 +80,7 @@ struct VMConfigNetworkView: View {
                     }
                 }
 
-                #if os(macOS)
-                /// Bridged and shared networking doesn't support port forwarding
-                if #unavailable(macOS 12), config.mode == .emulated {
-                    VMConfigNetworkPortForwardLegacyView(config: $config)
-                }
-                #else
+                #if !os(macOS)
                 VMConfigNetworkPortForwardView(config: $config)
                 #endif
             }

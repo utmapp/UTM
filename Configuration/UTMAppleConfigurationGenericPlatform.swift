@@ -18,7 +18,6 @@ import Foundation
 import Virtualization
 
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
-@available(macOS 11, *)
 struct UTMAppleConfigurationGenericPlatform: Codable {
     var machineIdentifier: Data?
     
@@ -42,7 +41,6 @@ struct UTMAppleConfigurationGenericPlatform: Codable {
         }
     }
     
-    @available(macOS 12, *)
     func vzGenericPlatform() -> VZGenericPlatformConfiguration? {
         let config = VZGenericPlatformConfiguration()
         if #available(macOS 13, *) {

@@ -100,18 +100,9 @@ static const NSInteger kResizeTimeoutSecs = 5;
     
     [self initTouch];
     [self initGamepad];
-    // Pointing device support on iPadOS 13.4 GM or later
-    if (@available(iOS 13.4, *)) {
-        // Betas of iPadOS 13.4 did not include this API, that's why I check if the class exists
-        if (NSClassFromString(@"UIPointerInteraction") != nil) {
-            [self initPointerInteraction];
-        }
-    }
+    [self initPointerInteraction];
 #if !defined(TARGET_OS_VISION) || !TARGET_OS_VISION
-    // Apple Pencil 2 double tap support on iOS 12.1+
-    if (@available(iOS 12.1, *)) {
-        [self initPencilInteraction];
-    }
+    [self initPencilInteraction];
 #endif
 }
 

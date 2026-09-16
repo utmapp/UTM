@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(macOS 11, *)
 struct SettingsView: View {
     private enum Selection: CaseIterable, Identifiable {
         case application
@@ -29,15 +28,6 @@ struct SettingsView: View {
 
         var id: Self {
             return self
-        }
-
-        var isAvailable: Bool {
-            if self == .network {
-                if #unavailable(macOS 12) {
-                    return false
-                }
-            }
-            return true
         }
 
         var title: LocalizedStringKey {
@@ -90,11 +80,7 @@ struct SettingsView: View {
             case .input:
                 InputSettingsView()
             case .network:
-                if #available(macOS 12, *) {
-                    NetworkSettingsView()
-                } else {
-                    EmptyView()
-                }
+                NetworkSettingsView()
             case .file:
                 FileSettingsView()
             case .server:
@@ -118,9 +104,7 @@ struct SettingsView: View {
     var newBody: some View {
         NavigationSplitView {
             List(Selection.allCases, selection: $selection) { category in
-                if category.isAvailable {
-                    Label(category.title, systemImage: category.systemImage)
-                }
+                Label(category.title, systemImage: category.systemImage)
             }.toolbar(removing: .sidebarToggle)
         } detail: {
             VStack(alignment: .leading) {
@@ -137,17 +121,15 @@ struct SettingsView: View {
     var oldBody: some View {
         TabView {
             ForEach(Selection.allCases) { category in
-                if category.isAvailable {
-                    VStack(alignment: .leading) {
-                        HStack(alignment: .top) {
-                            category.view.padding()
-                            Spacer()
-                        }
+                VStack(alignment: .leading) {
+                    HStack(alignment: .top) {
+                        category.view.padding()
                         Spacer()
                     }
-                    .tabItem {
-                        Label(category.title, systemImage: category.systemImage)
-                    }
+                    Spacer()
+                }
+                .tabItem {
+                    Label(category.title, systemImage: category.systemImage)
                 }
             }
         }
@@ -419,7 +401,6 @@ struct InputSettingsView: View {
     }
 }
 
-@available(macOS 12, *)
 struct NetworkSettingsView: View {
     @AppStorage("IsRegenerateMACOnClone") var isRegenerateMACOnClone = false
     @AppStorage("HostNetworks") var hostNetworksData: Data = Data()
@@ -598,7 +579,6 @@ extension UserDefaults {
     @objc dynamic var QEMURendererFPSLimit: Int { 0 }
 }
 
-@available(macOS 11, *)
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
         SettingsView()

@@ -17,7 +17,6 @@
 import Foundation
 import Carbon.HIToolbox
 
-@available(macOS 11, *)
 extension UTMData {
     func run(vm: VMData, options: UTMVirtualMachineStartOptions = [], startImmediately: Bool = true) {
         var window: Any? = vmWindows[vm]
@@ -32,7 +31,7 @@ extension UTMData {
                     if let primarySerialIndex = primarySerialIndex {
                         window = VMDisplayAppleTerminalWindowController(primaryForIndex: primarySerialIndex, vm: avm, onClose: close)
                     }
-                    if #available(macOS 12, *), !avm.config.displays.isEmpty {
+                    if !avm.config.displays.isEmpty {
                         window = VMDisplayAppleDisplayWindowController(vm: avm, onClose: close)
                     } else if avm.config.displays.isEmpty && window == nil {
                         window = VMHeadlessSessionState(for: avm, onStop: close)

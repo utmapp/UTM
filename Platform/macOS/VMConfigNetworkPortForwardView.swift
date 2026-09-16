@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(macOS 12, *)
 struct VMConfigNetworkPortForwardView: View {
     @Binding var config: UTMQemuConfigurationNetwork
     @State private var isEditingNewPort = false
@@ -70,51 +69,6 @@ struct VMConfigNetworkPortForwardView: View {
     }
 }
 
-@available(macOS 11, *)
-struct VMConfigNetworkPortForwardLegacyView: View {
-    @Binding var config: UTMQemuConfigurationNetwork
-    @State private var editingNewPort = false
-    @State private var selectedPortForward: UTMQemuConfigurationPortForward?
-    
-    var body: some View {
-        Section(header: HStack {
-                Text("Port Forward")
-                Spacer()
-                Button(action: { editingNewPort = true }, label: {
-                    Text("New…")
-                }).popover(isPresented: $editingNewPort, arrowEdge: .bottom) {
-                    PortForwardEdit(config: $config, forward: .init()).padding()
-                        .frame(width: 250)
-                }
-            }) {
-            VStack {
-                ForEach(config.portForward) { forward in
-                    let isPopoverShown = Binding<Bool> {
-                        selectedPortForward == forward
-                    } set: { value in
-                        if value {
-                            selectedPortForward = forward
-                        } else {
-                            selectedPortForward = nil
-                        }
-                    }
-
-                    Button(action: { isPopoverShown.wrappedValue = true }, label: {
-                        let guest = "\(forward.guestAddress ?? ""):\(forward.guestPort)"
-                        let host = "\(forward.hostAddress ?? ""):\(forward.hostPort)"
-                        Text("\(guest) ➡️ \(host)")
-                    }).buttonStyle(.bordered)
-                    .popover(isPresented: isPopoverShown, arrowEdge: .bottom) {
-                        PortForwardEdit(config: $config, forward: forward).padding()
-                            .frame(width: 250)
-                    }
-                }
-            }
-        }
-    }
-}
-
-@available(macOS 11, *)
 struct PortForwardEdit: View {
     @Binding var config: UTMQemuConfigurationNetwork
     @State var forward: UTMQemuConfigurationPortForward
@@ -153,18 +107,13 @@ struct PortForwardEdit: View {
     }
 }
 
-@available(macOS 11, *)
 struct VMConfigNetworkPortForwardView_Previews: PreviewProvider {
     @State static private var config = UTMQemuConfigurationNetwork()
     
     static var previews: some View {
         Group {
             Form {
-                if #available(macOS 12, *) {
-                    VMConfigNetworkPortForwardView(config: $config)
-                } else {
-                    VMConfigNetworkPortForwardLegacyView(config: $config)
-                }
+                VMConfigNetworkPortForwardView(config: $config)
             }.onAppear {
                 if config.portForward.count == 0 {
                     var newConfigPort = UTMQemuConfigurationPortForward()

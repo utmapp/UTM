@@ -17,7 +17,6 @@
 import Foundation
 
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
-@available(macOS 11, *)
 final class UTMLegacyAppleConfiguration: Codable {
     private let currentVersion = 3
     
@@ -183,15 +182,13 @@ final class UTMLegacyAppleConfiguration: Codable {
         try container.encode(memorySize, forKey: .memorySize)
         try container.encodeIfPresent(bootLoader, forKey: .bootLoader)
         try container.encode(networkDevices, forKey: .networkDevices)
-        if #available(macOS 12, *) {
-            #if arch(arm64)
-            try container.encodeIfPresent(macPlatform, forKey: .macPlatform)
-            #endif
-            try container.encode(displays, forKey: .displays)
-            try container.encode(isAudioEnabled, forKey: .isAudioEnabled)
-            try container.encode(isKeyboardEnabled, forKey: .isKeyboardEnabled)
-            try container.encode(isPointingEnabled, forKey: .isPointingEnabled)
-        }
+        #if arch(arm64)
+        try container.encodeIfPresent(macPlatform, forKey: .macPlatform)
+        #endif
+        try container.encode(displays, forKey: .displays)
+        try container.encode(isAudioEnabled, forKey: .isAudioEnabled)
+        try container.encode(isKeyboardEnabled, forKey: .isKeyboardEnabled)
+        try container.encode(isPointingEnabled, forKey: .isPointingEnabled)
         try container.encode(diskImages.filter({ !$0.isExternal }), forKey: .diskImages)
         try container.encode(isBalloonEnabled, forKey: .isBalloonEnabled)
         try container.encode(isEntropyEnabled, forKey: .isEntropyEnabled)

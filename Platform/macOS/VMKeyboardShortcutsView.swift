@@ -57,7 +57,7 @@ struct VMKeyboardShortcutsView: View {
                 }.onMove { indexSet, offset in
                     keyboardShortcuts.move(fromOffsets: indexSet, toOffset: offset)
                 }
-            }.borderedList()
+            }.listStyle(.bordered)
             .frame(height: 200)
             HStack {
                 Spacer()
@@ -141,7 +141,7 @@ private struct EditKeyboardShortcutView: View {
                 }.onMove { indexSet, offset in
                     keyboardShortcut.move(fromOffsets: indexSet, toOffset: offset)
                 }
-            }.borderedList()
+            }.listStyle(.bordered)
             .frame(height: 100)
             Spacer()
             HStack {
@@ -185,17 +185,6 @@ private struct SelectedIndex: Identifiable, Hashable {
     var id: Int
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
-    }
-}
-
-private extension View {
-    @ViewBuilder
-    func borderedList() -> some View {
-        if #available(macOS 12, *) {
-            self.listStyle(.bordered)
-        } else {
-            self.border(.gray)
-        }
     }
 }
 

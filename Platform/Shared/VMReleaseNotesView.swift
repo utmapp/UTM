@@ -109,7 +109,7 @@ private struct Notes: View {
                 if hasBullet {
                     Text("\u{2022} ")
                 }
-                if #available(iOS 15, macOS 12, *), let attributed = try? AttributedString(markdown: description) {
+                if let attributed = try? AttributedString(markdown: description) {
                     Text(attributed)
                 } else {
                     Text(description)
@@ -134,12 +134,8 @@ private struct Buttons<Content>: View where Content: View {
         }
         #else
         VStack {
-            if #available(iOS 15, *) {
-                content()
-                    .buttonStyle(.bordered)
-            } else {
-                content()
-            }
+            content()
+                .buttonStyle(.bordered)
         }
         #endif
     }
@@ -147,35 +143,19 @@ private struct Buttons<Content>: View where Content: View {
 
 private struct ReleaseButtonStyle: PrimitiveButtonStyle {
     private let isProminent: Bool
-    private let backgroundColor: Color
-    private let foregroundColor: Color
     
     init(isProminent: Bool = false) {
         self.isProminent = isProminent
-        self.backgroundColor = isProminent ? .accentColor : .gray
-        self.foregroundColor = isProminent ? .white : .white
     }
     
     func makeBody(configuration: Self.Configuration) -> some View {
         #if os(macOS) || os(visionOS)
         DefaultButtonStyle().makeBody(configuration: configuration)
         #else
-        if #available(iOS 15, *) {
-            if isProminent {
-                BorderedProminentButtonStyle().makeBody(configuration: configuration)
-            } else {
-                BorderedButtonStyle().makeBody(configuration: configuration)
-            }
+        if isProminent {
+            BorderedProminentButtonStyle().makeBody(configuration: configuration)
         } else {
-            DefaultButtonStyle().makeBody(configuration: configuration)
-                .padding()
-                .foregroundColor(foregroundColor)
-                .background(backgroundColor)
-                .cornerRadius(6)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 6)
-                        .stroke(foregroundColor, lineWidth: 1)
-                )
+            BorderedButtonStyle().makeBody(configuration: configuration)
         }
         #endif
     }

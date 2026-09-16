@@ -177,11 +177,7 @@ private extension View {
         #if os(visionOS) // FIXME: visionOS crashes with task()
         self.cancellableTask(priority: priority, action).id(value)
         #else
-        if #available(macOS 12, iOS 15, *) {
-            self.task(id: value, priority: priority, action)
-        } else {
-            self.cancellableTask(priority: priority, action).id(value)
-        }
+        self.task(id: value, priority: priority, action)
         #endif
     }
 
@@ -479,14 +475,9 @@ private struct OptionalSelectableText: View {
     }
     
     var body: some View {
-        if #available(iOS 15, macOS 12, *) {
-            (content.map { Text($0) } ?? Text("Inactive", comment: "VMDetailsView"))
-                .foregroundColor(.secondary)
-                .textSelection(.enabled)
-        } else {
-            (content.map { Text($0) } ?? Text("Inactive", comment: "VMDetailsView"))
-                .foregroundColor(.secondary)
-        }
+        (content.map { Text($0) } ?? Text("Inactive", comment: "VMDetailsView"))
+            .foregroundColor(.secondary)
+            .textSelection(.enabled)
     }
 }
 

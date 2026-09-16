@@ -40,7 +40,7 @@ struct VMAppleRemovableDrivesView: View {
     private var hasSharingFeatures: Bool {
         if #available(macOS 13, *) {
             return true
-        } else if #available(macOS 12, *), config.system.boot.operatingSystem == .linux {
+        } else if config.system.boot.operatingSystem == .linux {
             return true
         } else {
             return false

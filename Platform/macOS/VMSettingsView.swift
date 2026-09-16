@@ -16,7 +16,6 @@
 
 import SwiftUI
 
-@available(macOS 11, *)
 struct VMSettingsView<Config: UTMConfiguration>: View {
     let vm: VMData
     @ObservedObject var config: Config
@@ -37,18 +36,6 @@ struct VMSettingsView<Config: UTMConfiguration>: View {
                 .settingsToolbar()
         }
         .frame(minWidth: 800, minHeight: 400, alignment: .leading)
-        .legacySettingsToolbar {
-            ToolbarItemGroup(placement: .cancellationAction) {
-                Button(action: cancel) {
-                    Text("Cancel")
-                }
-            }
-            ToolbarItemGroup(placement: .confirmationAction) {
-                Button(action: save) {
-                    Text("Save")
-                }
-            }
-        }
         .environmentObject(vm)
         .disabled(data.busy)
         .overlay(BusyOverlay())
@@ -71,7 +58,6 @@ struct VMSettingsView<Config: UTMConfiguration>: View {
     }
 }
 
-@available(macOS 11, *)
 struct ScrollableViewModifier: ViewModifier {
     @State private var scrollViewContentSize: CGSize = .zero
     
@@ -101,7 +87,6 @@ fileprivate struct EmptyToolbarContent: ToolbarContent {
     }
 }
 
-@available(macOS 12, *)
 struct SettingsToolbarViewModifier<AdditionalContent>: ViewModifier where AdditionalContent: ToolbarContent {
     @EnvironmentObject private var vm: VMData
     @EnvironmentObject private var data: UTMData
@@ -159,41 +144,20 @@ struct SettingsToolbarViewModifier<AdditionalContent>: ViewModifier where Additi
     }
 }
 
-@available(macOS 11, *)
 extension View {
     func scrollable() -> some View {
         self.modifier(ScrollableViewModifier())
     }
     
-    @ViewBuilder
-    fileprivate func legacySettingsToolbar<Content>(@ToolbarContentBuilder content: () -> Content) -> some View where Content: ToolbarContent {
-        if #available(macOS 12, *) {
-            self
-        } else {
-            self.toolbar(content: content)
-        }
-    }
-    
-    @ViewBuilder
     func settingsToolbar() -> some View {
-        if #available(macOS 12, *) {
-            self.modifier(SettingsToolbarViewModifier())
-        } else {
-            self
-        }
+        self.modifier(SettingsToolbarViewModifier())
     }
     
-    @ViewBuilder
     func settingsToolbar<Content>(@ToolbarContentBuilder additionalContent: () -> Content) -> some View where Content: ToolbarContent {
-        if #available(macOS 12, *) {
-            self.modifier(SettingsToolbarViewModifier(additionalContent: additionalContent))
-        } else {
-            self
-        }
+        self.modifier(SettingsToolbarViewModifier(additionalContent: additionalContent))
     }
 }
 
-@available(macOS 11, *)
 struct VMSettingsView_Previews: PreviewProvider {
     @State static private var qemuConfig = UTMQemuConfiguration()
     @State static private var appleConfig = UTMAppleConfiguration()

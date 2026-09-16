@@ -18,7 +18,6 @@ import Foundation
 import Virtualization
 
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
-@available(macOS 11, *)
 struct UTMAppleConfigurationBoot: Codable {
     enum OperatingSystem: String, CaseIterable, QEMUConstant {
         case none = "None"
@@ -61,14 +60,6 @@ struct UTMAppleConfigurationBoot: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         operatingSystem = try container.decode(OperatingSystem.self, forKey: .operatingSystem)
         hasUefiBoot = try container.decodeIfPresent(Bool.self, forKey: .hasUefiBoot) ?? false
-        #if !arch(arm64)
-        if #available(macOS 12, *) {
-        } else {
-            guard operatingSystem != .macOS else {
-                throw UTMAppleConfigurationError.platformUnsupported
-            }
-        }
-        #endif
         if let linuxKernelPath = try container.decodeIfPresent(String.self, forKey: .linuxKernelPath) {
             linuxKernelURL = dataURL.appendingPathComponent(linuxKernelPath)
         }
@@ -130,11 +121,10 @@ struct UTMAppleConfigurationBoot: Codable {
             return linux
         case .macOS:
             #if arch(arm64)
-            if #available(macOS 12, *) {
-                return VZMacOSBootLoader()
-            }
-            #endif
+            return VZMacOSBootLoader()
+            #else
             return nil
+            #endif
         }
     }
 }
@@ -142,7 +132,6 @@ struct UTMAppleConfigurationBoot: Codable {
 // MARK: - Conversion of old config format
 
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
-@available(macOS 11, *)
 extension UTMAppleConfigurationBoot {
     init(migrating oldBoot: Bootloader) {
         switch oldBoot.operatingSystem {
@@ -158,7 +147,6 @@ extension UTMAppleConfigurationBoot {
 // MARK: - Saving data
 
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
-@available(macOS 11, *)
 extension UTMAppleConfigurationBoot {
     @MainActor mutating func saveData(to dataURL: URL) async throws -> [URL] {
         var urls = [URL]()

@@ -19,7 +19,6 @@ import Virtualization
 
 /// Downloads an IPSW from the web and adds it to the VM.
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
-@available(macOS 12, *)
 class UTMDownloadIPSWTask: UTMDownloadTask {
     let config: UTMAppleConfiguration
     
