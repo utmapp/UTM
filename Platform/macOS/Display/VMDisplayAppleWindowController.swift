@@ -46,6 +46,14 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
     // MARK: - User preferences
     
     @Setting("SharePathAlertShown") private var isSharePathAlertShownPersistent: Bool = false
+    /// USB devices are managed by the primary window on behalf of any secondary window
+    private var primaryAppleController: VMDisplayAppleWindowController {
+        if let primaryWindow = primaryWindow as? VMDisplayAppleWindowController {
+            return primaryWindow
+        } else {
+            return self
+        }
+    }
     
     override func windowDidLoad() {
         mainView!.translatesAutoresizingMaskIntoConstraints = false
@@ -90,6 +98,12 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
         }
         if #available(macOS 15, *) {
             setControl(.drives, isEnabled: true)
+        }
+        if #available(macOS 27, *), appleVM.hasUsbRedirection {
+            setControl(.usb, isEnabled: true)
+            if !isSecondary {
+                appleVM.usbPassthroughDelegate = self
+            }
         }
     }
     
@@ -261,6 +275,58 @@ extension VMDisplayAppleWindowController {
 }
 
 @objc extension VMDisplayAppleWindowController {
+    override func updateUsbMenu(_ menu: NSMenu) {
+        guard #available(macOS 27, *) else {
+            return
+        }
+        menu.autoenablesItems = false
+        let item = NSMenuItem()
+        item.title = NSLocalizedString("Querying USB devices...", comment: "VMDisplayAppleWindowController")
+        item.isEnabled = false
+        menu.addItem(item)
+        Task { @MainActor in
+            do {
+                let devices = try await UTMAppleUSBManager.shared.allDevices()
+                updateUsbDevicesMenu(menu, devices: devices)
+            } catch {
+                updateUsbDevicesMenu(menu, error: error)
+            }
+        }
+    }
+
+    @available(macOS 27, *)
+    func connectUsbDevice(sender: AnyObject) {
+        guard let device = (sender as? NSMenuItem)?.representedObject as? UTMAppleUSBDevice else {
+            logger.error("wrong sender for connectUsbDevice")
+            return
+        }
+        let vm = primaryAppleController.appleVM!
+        if let owner = vm.usbDeviceOwner(device), owner !== vm {
+            let message = String.localizedStringWithFormat(NSLocalizedString("'%@' is connected to '%@'. Do you want to disconnect it and connect it to this virtual machine instead?", comment: "VMDisplayAppleWindowController"), device.name, owner.config.information.name)
+            showConfirmAlert(message) {
+                self.withErrorAlert {
+                    try await vm.connectUsbDevice(device, takingOver: true)
+                }
+            }
+        } else {
+            withErrorAlert {
+                try await vm.connectUsbDevice(device)
+            }
+        }
+    }
+
+    @available(macOS 27, *)
+    func disconnectUsbDevice(sender: AnyObject) {
+        guard let device = (sender as? NSMenuItem)?.representedObject as? UTMAppleUSBDevice else {
+            logger.error("wrong sender for disconnectUsbDevice")
+            return
+        }
+        let vm = primaryAppleController.appleVM!
+        withErrorAlert {
+            try await vm.disconnectUsbDevice(device)
+        }
+    }
+
     override func updateDrivesMenu(_ menu: NSMenu) {
         menu.autoenablesItems = false
         let item = NSMenuItem()
@@ -455,6 +521,83 @@ extension VMDisplayAppleWindowController {
         let vc = VMDisplayAppleTerminalWindowController(secondaryForIndex: id, vm: appleVM)
         registerSecondaryWindow(vc)
         vc.showWindow(self)
+    }
+}
+
+// MARK: - USB passthrough
+
+@available(macOS 27, *)
+extension VMDisplayAppleWindowController {
+    func updateUsbDevicesMenu(_ menu: NSMenu, devices: [UTMAppleUSBDevice]) {
+        menu.removeAllItems()
+        if devices.isEmpty {
+            // devices must be assigned to UTM by the user before they are visible
+            let item = NSMenuItem()
+            item.title = NSLocalizedString("No USB devices assigned to UTM.", comment: "VMDisplayAppleWindowController")
+            item.isEnabled = false
+            menu.addItem(item)
+            let hint = NSMenuItem()
+            hint.title = NSLocalizedString("Assign a device from the Virtual Machine Accessories menu bar item.", comment: "VMDisplayAppleWindowController")
+            hint.isEnabled = false
+            menu.addItem(hint)
+        }
+        let vm = primaryAppleController.appleVM!
+        let connectedDevices = vm.connectedUsbDevices
+        for device in devices {
+            let item = NSMenuItem()
+            let isConnectedToSelf = connectedDevices.contains(device)
+            item.title = device.name
+            item.isEnabled = true
+            item.state = isConnectedToSelf ? .on : .off
+            item.representedObject = device
+
+            let submenu = NSMenu()
+            submenu.autoenablesItems = false
+            let connectItem = NSMenuItem()
+            connectItem.title = isConnectedToSelf ? NSLocalizedString("Disconnect…", comment: "VMDisplayAppleWindowController") : NSLocalizedString("Connect…", comment: "VMDisplayAppleWindowController")
+            connectItem.isEnabled = true
+            connectItem.representedObject = device
+            connectItem.target = self
+            connectItem.action = isConnectedToSelf ? #selector(disconnectUsbDevice) : #selector(connectUsbDevice)
+            submenu.addItem(connectItem)
+            if !isConnectedToSelf, let owner = vm.usbDeviceOwner(device) {
+                let ownerItem = NSMenuItem()
+                ownerItem.title = String.localizedStringWithFormat(NSLocalizedString("Connected to '%@'", comment: "VMDisplayAppleWindowController"), owner.config.information.name)
+                ownerItem.isEnabled = false
+                submenu.addItem(ownerItem)
+            }
+
+            item.submenu = submenu
+            menu.addItem(item)
+        }
+        menu.update()
+    }
+
+    func updateUsbDevicesMenu(_ menu: NSMenu, error: any Error) {
+        menu.removeAllItems()
+        let item = NSMenuItem()
+        item.title = error.localizedDescription
+        item.isEnabled = false
+        menu.addItem(item)
+        menu.update()
+    }
+}
+
+@available(macOS 27, *)
+extension VMDisplayAppleWindowController: UTMAppleUSBPassthroughDelegate {
+    func usbPassthroughIsFrontmost(_ vm: UTMAppleVirtualMachine) -> Bool {
+        if window?.isMainWindow == true {
+            return true
+        }
+        return secondaryWindows.contains { $0.window?.isMainWindow == true }
+    }
+
+    func usbPassthrough(_ vm: UTMAppleVirtualMachine, deviceDidDisconnect device: UTMAppleUSBDevice) {
+        logger.debug("USB device disconnected: \(device.name)")
+    }
+
+    func usbPassthrough(_ vm: UTMAppleVirtualMachine, device: UTMAppleUSBDevice, didFailWithError error: any Error) {
+        showErrorAlert(error.localizedDescription)
     }
 }
 

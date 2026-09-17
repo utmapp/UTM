@@ -669,6 +669,9 @@
 		CE65BABF26A4D8DD0001BD6B /* VMConfigDisplayConsoleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8401FDA5269D44E400265F0D /* VMConfigDisplayConsoleView.swift */; };
 		CE65BAC026A4D8DE0001BD6B /* VMConfigDisplayConsoleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8401FDA5269D44E400265F0D /* VMConfigDisplayConsoleView.swift */; };
 		CE6804802E493D71001671E9 /* UTMUSBManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE68047D2E493D71001671E9 /* UTMUSBManager.swift */; };
+		CE7A1C022EFA0A01001671E9 /* UTMAppleUSBDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7A1C012EFA0A01001671E9 /* UTMAppleUSBDevice.swift */; };
+		CE7A1C042EFA0A01001671E9 /* UTMAppleUSBManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7A1C032EFA0A01001671E9 /* UTMAppleUSBManager.swift */; };
+		CE7A1C062EFA0A01001671E9 /* AccessoryAccess.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE7A1C052EFA0A01001671E9 /* AccessoryAccess.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		CE6804852E4E5D84001671E9 /* UTMScriptingInputImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6804842E4E5D84001671E9 /* UTMScriptingInputImpl.swift */; };
 		CE68E5442E3912E0006B3645 /* VMKeyboardShortcutsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE68E5422E3912E0006B3645 /* VMKeyboardShortcutsView.swift */; };
 		CE68E5452E3912E0006B3645 /* VMKeyboardShortcutsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE68E5422E3912E0006B3645 /* VMKeyboardShortcutsView.swift */; };
@@ -2033,6 +2036,9 @@
 		CE63B0F02F0ED67700C59D13 /* vulkan */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = vulkan; path = "$(SYSROOT_DIR)/share/vulkan"; sourceTree = "<group>"; };
 		CE66450C2269313200B0849A /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
 		CE68047D2E493D71001671E9 /* UTMUSBManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMUSBManager.swift; sourceTree = "<group>"; };
+		CE7A1C012EFA0A01001671E9 /* UTMAppleUSBDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMAppleUSBDevice.swift; sourceTree = "<group>"; };
+		CE7A1C032EFA0A01001671E9 /* UTMAppleUSBManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMAppleUSBManager.swift; sourceTree = "<group>"; };
+		CE7A1C052EFA0A01001671E9 /* AccessoryAccess.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AccessoryAccess.framework; path = System/Library/Frameworks/AccessoryAccess.framework; sourceTree = SDKROOT; };
 		CE6804842E4E5D84001671E9 /* UTMScriptingInputImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMScriptingInputImpl.swift; sourceTree = "<group>"; };
 		CE68E5422E3912E0006B3645 /* VMKeyboardShortcutsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMKeyboardShortcutsView.swift; sourceTree = "<group>"; };
 		CE68E5472E3C3E0A006B3645 /* VMWizardOSClassicMacView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMWizardOSClassicMacView.swift; sourceTree = "<group>"; };
@@ -2353,6 +2359,7 @@
 				CE0B6ED324AD677200FE012D /* libgstvideoconvert.a in Frameworks */,
 				CE0B6F0124AD677200FE012D /* libgsttypefindfunctions.a in Frameworks */,
 				848308D5278A1F2200E3E474 /* Virtualization.framework in Frameworks */,
+				CE7A1C062EFA0A01001671E9 /* AccessoryAccess.framework in Frameworks */,
 				CE0B6EE124AD677200FE012D /* gstrtsp-1.0.0.framework in Frameworks */,
 				848F71E6277A2466006A0240 /* SwiftTerm in Frameworks */,
 				CE03D08824D90F0700F76B84 /* gio-2.0.0.framework in Frameworks */,
@@ -2666,6 +2673,7 @@
 				84818C0B2898A07A009EDB67 /* AVFAudio.framework */,
 				84937EFE28960789003148F4 /* zstd.1.framework */,
 				848308D4278A1F2200E3E474 /* Virtualization.framework */,
+				CE7A1C052EFA0A01001671E9 /* AccessoryAccess.framework */,
 				8453DCB0278CE33E0037A0DA /* qemu-img.framework */,
 				CE5451A426AF5F0F008594E5 /* EGL.framework */,
 				CE5451A226AF5F0F008594E5 /* epoxy.0.framework */,
@@ -2988,6 +2996,8 @@
 				E2D64BE0241EAEBE0034E0C6 /* UTMSpiceIODelegate.h */,
 				845F95E22A57628400A016D7 /* UTMSWTPM.swift */,
 				CE68047D2E493D71001671E9 /* UTMUSBManager.swift */,
+				CE7A1C012EFA0A01001671E9 /* UTMAppleUSBDevice.swift */,
+				CE7A1C032EFA0A01001671E9 /* UTMAppleUSBManager.swift */,
 				CE020BB524B14F8400B44AB6 /* UTMVirtualMachine.swift */,
 				CE928C2926ABE6690099F293 /* UTMAppleVirtualMachine.swift */,
 				841E999728AC817D003C6CB6 /* UTMQemuVirtualMachine.swift */,
@@ -4159,6 +4169,8 @@
 				848A98B4286A1215006F0550 /* UTMAppleConfigurationVirtualization.swift in Sources */,
 				843BF842284555E70029D60D /* UTMQemuConfigurationPortForward.swift in Sources */,
 				CE6804802E493D71001671E9 /* UTMUSBManager.swift in Sources */,
+				CE7A1C022EFA0A01001671E9 /* UTMAppleUSBDevice.swift in Sources */,
+				CE7A1C042EFA0A01001671E9 /* UTMAppleUSBManager.swift in Sources */,
 				CEF0306F26A2AFDF00667B63 /* VMWizardOSView.swift in Sources */,
 				83034C0926AB630F006B4BAF /* UTMPendingVMView.swift in Sources */,
 				84909A8F27CACD5C005605F1 /* UTMPlaceholderVMView.swift in Sources */,
