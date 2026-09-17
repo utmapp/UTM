@@ -17,10 +17,35 @@
 import Foundation
 import CocoaSpice
 
+/// Properties of a host USB device shared by every backend
+protocol UTMScriptableUSBDevice: AnyObject {
+    var usbName: String? { get }
+    var usbManufacturerName: String? { get }
+    var usbProductName: String? { get }
+    var usbSerial: String? { get }
+    var usbVendorId: Int { get }
+    var usbProductId: Int { get }
+    var usbBusNumber: Int { get }
+    var usbPortNumber: Int { get }
+}
+
+extension CSUSBDevice: UTMScriptableUSBDevice {
+    var usbName: String? {
+        name
+    }
+}
+
+@available(macOS 27, *)
+extension UTMAppleUSBDevice: UTMScriptableUSBDevice {
+    var usbName: String? {
+        name
+    }
+}
+
 @MainActor
 @objc(UTMScriptingUSBDeviceImpl)
 class UTMScriptingUSBDeviceImpl: NSObject, UTMScriptable {
-    @nonobjc var box: CSUSBDevice
+    @nonobjc var box: any UTMScriptableUSBDevice
     
     private var data: UTMData? {
         (NSApp.scriptingDelegate as? AppDelegate)?.data
@@ -31,7 +56,7 @@ class UTMScriptingUSBDeviceImpl: NSObject, UTMScriptable {
     }
     
     @objc var name: String {
-        box.name ?? String(format: "%04X:%04X", box.usbVendorId, box.usbProductId)
+        box.usbName ?? String(format: "%04X:%04X", box.usbVendorId, box.usbProductId)
     }
     
     @objc var manufacturerName: String {
@@ -58,20 +83,19 @@ class UTMScriptingUSBDeviceImpl: NSObject, UTMScriptable {
                                    uniqueID: id)
     }
     
-    init(for usbDevice: CSUSBDevice) {
+    init(for usbDevice: any UTMScriptableUSBDevice) {
         self.box = usbDevice
     }
     
-    /// Return the same USB device in context of a USB manager
+    /// Return the same USB device from a list of devices
     ///
-    /// This is required because we may be using `CSUSBDevice` objects returned from a different `CSUSBManager`
+    /// This is required because we may be using device objects returned from a different manager (or backend).
     /// - Parameters:
     ///   - usbDevice: USB device
-    ///   - usbManager: USB manager
-    /// - Returns: USB device in same context as the manager
-    private func same(usbDevice: CSUSBDevice, for usbManager: CSUSBManager) -> CSUSBDevice? {
-        let devices = usbManager.usbDevices
-        if let device = devices.first(where: { $0.isEqual(to: usbDevice) }) {
+    ///   - devices: Devices to search
+    /// - Returns: USB device in the list
+    private func same<Device: UTMScriptableUSBDevice>(usbDevice: any UTMScriptableUSBDevice, in devices: [Device]) -> Device? {
+        if let usbDevice = usbDevice as? Device, let device = devices.first(where: { $0 === usbDevice }) {
             return device
         }
         if let device = devices.first(where: { $0.matchesLocation(of: usbDevice) }) {
@@ -87,19 +111,44 @@ class UTMScriptingUSBDeviceImpl: NSObject, UTMScriptable {
         return nil
     }
     
+    /// Return the same USB device in context of a USB manager
+    ///
+    /// This is required because we may be using `CSUSBDevice` objects returned from a different `CSUSBManager`
+    /// - Parameters:
+    ///   - usbDevice: USB device
+    ///   - usbManager: USB manager
+    /// - Returns: USB device in same context as the manager
+    private func same(usbDevice: any UTMScriptableUSBDevice, for usbManager: CSUSBManager) -> CSUSBDevice? {
+        let devices = usbManager.usbDevices
+        if let usbDevice = usbDevice as? CSUSBDevice, let device = devices.first(where: { $0.isEqual(to: usbDevice) }) {
+            return device
+        }
+        return same(usbDevice: usbDevice, in: devices)
+    }
+    
     @objc func connect(_ command: NSScriptCommand) {
         let scriptingVM = command.evaluatedArguments?["vm"] as? UTMScriptingVirtualMachineImpl
         withScriptCommand(command) { [self] in
-            guard let vm = scriptingVM?.vm as? UTMQemuVirtualMachine else {
+            if let vm = scriptingVM?.vm as? UTMQemuVirtualMachine {
+                guard let usbManager = vm.ioService?.primaryUsbManager else {
+                    throw UTMScriptingVirtualMachineImpl.ScriptingError.operationNotAvailable
+                }
+                guard let usbDevice = same(usbDevice: box, for: usbManager) else {
+                    throw ScriptingError.deviceNotFound
+                }
+                try await usbManager.connectUsbDevice(usbDevice)
+            } else if #available(macOS 27, *), let vm = scriptingVM?.vm as? UTMAppleVirtualMachine {
+                guard vm.hasUsbRedirection else {
+                    throw UTMScriptingVirtualMachineImpl.ScriptingError.operationNotAvailable
+                }
+                let devices = try await UTMAppleUSBManager.shared.allDevices()
+                guard let usbDevice = same(usbDevice: box, in: devices) else {
+                    throw ScriptingError.deviceNotFound
+                }
+                try await vm.connectUsbDevice(usbDevice, takingOver: true)
+            } else {
                 throw UTMScriptingVirtualMachineImpl.ScriptingError.operationNotSupported
             }
-            guard let usbManager = vm.ioService?.primaryUsbManager else {
-                throw UTMScriptingVirtualMachineImpl.ScriptingError.operationNotAvailable
-            }
-            guard let usbDevice = same(usbDevice: box, for: usbManager) else {
-                throw ScriptingError.deviceNotFound
-            }
-            try await usbManager.connectUsbDevice(usbDevice)
         }
     }
     
@@ -114,7 +163,16 @@ class UTMScriptingUSBDeviceImpl: NSObject, UTMScriptable {
                 }
                 return vm.ioService?.primaryUsbManager
             })
-            guard managers.count > 0 else {
+            var appleVMs: [UTMAppleVirtualMachine] = []
+            if #available(macOS 27, *) {
+                appleVMs = data.virtualMachines.compactMap({ vmdata in
+                    guard let vm = vmdata.wrapped as? UTMAppleVirtualMachine, vm.state == .started, vm.hasUsbRedirection else {
+                        return nil
+                    }
+                    return vm
+                })
+            }
+            guard managers.count > 0 || appleVMs.count > 0 else {
                 throw UTMScriptingVirtualMachineImpl.ScriptingError.notRunning
             }
             var found = false
@@ -122,6 +180,14 @@ class UTMScriptingUSBDeviceImpl: NSObject, UTMScriptable {
                 if let device = same(usbDevice: box, for: manager), manager.isUsbDeviceConnected(device) {
                     found = true
                     try await manager.disconnectUsbDevice(device)
+                }
+            }
+            if #available(macOS 27, *) {
+                for vm in appleVMs {
+                    if let device = same(usbDevice: box, in: vm.connectedUsbDevices) {
+                        found = true
+                        try await vm.disconnectUsbDevice(device)
+                    }
                 }
             }
             if !found {
@@ -148,16 +214,16 @@ extension UTMScriptingUSBDeviceImpl {
     }
 }
 
-private extension CSUSBDevice {
-    func matchesVidPid(of other: CSUSBDevice) -> Bool {
+private extension UTMScriptableUSBDevice {
+    func matchesVidPid(of other: any UTMScriptableUSBDevice) -> Bool {
         usbVendorId == other.usbVendorId && usbProductId == other.usbProductId
     }
 
-    func matchesLocation(of other: CSUSBDevice) -> Bool {
+    func matchesLocation(of other: any UTMScriptableUSBDevice) -> Bool {
         matchesVidPid(of: other) && usbBusNumber == other.usbBusNumber && usbPortNumber == other.usbPortNumber
     }
 
-    func matchesSerial(of other: CSUSBDevice) -> Bool {
+    func matchesSerial(of other: any UTMScriptableUSBDevice) -> Bool {
         guard let serial = usbSerial, let otherSerial = other.usbSerial, !serial.isEmpty else {
             return false
         }
@@ -172,14 +238,25 @@ extension AppDelegate {
         guard let data = data else {
             return []
         }
-        guard let anyManager = data.virtualMachines.compactMap({ vmData in
+        if let anyManager = data.virtualMachines.compactMap({ vmData in
             guard let vm = vmData.wrapped as? UTMQemuVirtualMachine else {
                 return nil as CSUSBManager?
             }
             return vm.ioService?.primaryUsbManager
-        }).first else {
-            return []
+        }).first {
+            return anyManager.usbDevices.map({ UTMScriptingUSBDeviceImpl(for: $0) })
         }
-        return anyManager.usbDevices.map({ UTMScriptingUSBDeviceImpl(for: $0) })
+        if #available(macOS 27, *) {
+            let hasAppleVM = data.virtualMachines.contains { vmData in
+                guard let vm = vmData.wrapped as? UTMAppleVirtualMachine else {
+                    return false
+                }
+                return vm.state == .started && vm.hasUsbRedirection
+            }
+            if hasAppleVM {
+                return UTMAppleUSBManager.shared.devices.map({ UTMScriptingUSBDeviceImpl(for: $0) })
+            }
+        }
+        return []
     }
 }
