@@ -37,16 +37,10 @@ struct VMToolbarView: View {
     @Namespace private var namespace
     
     private var spacing: CGFloat {
-        let add: CGFloat
-        if #available(iOS 26, *) {
-            add = 0
-        } else {
-            add = 8
-        }
         if horizontalSizeClass == .compact || verticalSizeClass == .compact {
-            return add + 0
+            return 8
         } else {
-            return add + 8
+            return 16
         }
     }
     
@@ -172,7 +166,7 @@ struct VMToolbarView: View {
                 Label("Hide", systemImage: isCollapsed ? nameOfHideIcon : nameOfShowIcon)
             }.toolbarButtonStyle(horizontalSizeClass: horizontalSizeClass, verticalSizeClass: verticalSizeClass)
             .animationUniqueID("hide", in: namespace)
-            .modifier(HideToolbarTipModifier(isCollapsed: $isCollapsed))
+            .modifier(HideToolbarTipModifier(isCollapsed: $isCollapsed, location: location))
             .opacity(toolbarToggleOpacity)
             .modifier(Shake(shake: shake))
             .offset(dragOffset)
@@ -304,7 +298,7 @@ protocol ToolbarButtonBaseStyle<Label, Content> {
 }
 
 extension ToolbarButtonBaseStyle {
-    private var size: CGFloat {
+    var size: CGFloat {
         (horizontalSizeClass == .compact || verticalSizeClass == .compact) ? 32 : 48
     }
     
@@ -353,6 +347,34 @@ struct ToolbarButtonStyle: ButtonStyle, ToolbarButtonBaseStyle {
     }
 }
 
+/// Liquid Glass variant of `ToolbarButtonStyle`.
+///
+/// Sizes the button explicitly instead of relying on `.buttonStyle(.glass)`:
+/// the system style sizes each circle from its label on iOS 27, which makes
+/// the buttons uneven and removes the gap between them. The neutral tint keeps
+/// the buttons readable over both dark and light guest content, since glass
+/// otherwise adapts to whatever the VM is displaying underneath.
+@available(iOS 26, *)
+struct ToolbarGlassButtonStyle: ButtonStyle, ToolbarButtonBaseStyle {
+    typealias Label = Configuration.Label
+
+    @Environment(\.isEnabled) private var isEnabled
+
+    var horizontalSizeClass: UserInterfaceSizeClass?
+    var verticalSizeClass: UserInterfaceSizeClass?
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .labelStyle(.iconOnly)
+            .foregroundStyle(.white)
+            .frame(width: size, height: size)
+            .contentShape(Circle())
+            .glassEffect(.regular.tint(.gray.opacity(0.5)).interactive(), in: .circle)
+            .opacity(isEnabled ? 1 : 0.5)
+            .hoverEffect(.lift)
+    }
+}
+
 struct ToolbarMenuStyle: MenuStyle, ToolbarButtonBaseStyle {
     typealias Label = Menu<Configuration.Label, Configuration.Content>
     
@@ -370,11 +392,7 @@ private extension View {
         if #available(iOS 26, *) {
             self
                 .menuStyle(.button)
-                .buttonStyle(.glass)
-                .buttonBorderShape(.circle)
-                .labelStyle(.iconOnly)
-                .foregroundStyle(.primary)
-                .controlSize(forHorizontalSizeClass: horizontalSizeClass)
+                .buttonStyle(ToolbarGlassButtonStyle(horizontalSizeClass: horizontalSizeClass, verticalSizeClass: verticalSizeClass))
         } else {
             self
                 .buttonStyle(.toolbar(horizontalSizeClass: horizontalSizeClass, verticalSizeClass: verticalSizeClass))
@@ -391,15 +409,6 @@ private extension View {
         } else {
             self
                 .matchedGeometryEffect(id: id, in: namespace)
-        }
-    }
-    
-    @ViewBuilder
-    func controlSize(forHorizontalSizeClass horizontalSizeClass: UserInterfaceSizeClass?) -> some View {
-        if horizontalSizeClass == .regular {
-            self.controlSize(.large)
-        } else {
-            self
         }
     }
 }
@@ -468,15 +477,28 @@ extension MenuStyle where Self == ToolbarMenuStyle {
 
 private struct HideToolbarTipModifier: ViewModifier {
     @Binding var isCollapsed: Bool
+    let location: ToolbarLocation
     private let _hideToolbarTip: Any?
+
+    /// Keeps the tip on the side of the toolbar facing the middle of the screen.
+    ///
+    /// From iOS 26 a single arrow edge is only a preference, and when the toolbar spans most of
+    /// the width the system attaches the tip beside the button instead, covering the toolbar.
+    private var arrowEdges: Edge.Set {
+        switch location {
+        case .topLeft, .topRight: return .top
+        case .bottomLeft, .bottomRight: return .bottom
+        }
+    }
 
     @available(iOS 17, *)
     private var hideToolbarTip: UTMTipHideToolbar {
         _hideToolbarTip as! UTMTipHideToolbar
     }
 
-    init(isCollapsed: Binding<Bool>) {
+    init(isCollapsed: Binding<Bool>, location: ToolbarLocation) {
         _isCollapsed = isCollapsed
+        self.location = location
         if #available(iOS 17, *) {
             _hideToolbarTip = UTMTipHideToolbar()
         } else {
@@ -486,7 +508,13 @@ private struct HideToolbarTipModifier: ViewModifier {
 
     @ViewBuilder
     func body(content: Content) -> some View {
-        if #available(iOS 17, *) {
+        if #available(iOS 26, *) {
+            content
+                .popoverTip(hideToolbarTip, arrowEdges: arrowEdges)
+                .onAppear {
+                    UTMTipHideToolbar.didHideToolbar = isCollapsed
+                }
+        } else if #available(iOS 17, *) {
             content
                 .popoverTip(hideToolbarTip, arrowEdge: .top)
                 .onAppear {

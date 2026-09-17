@@ -39,6 +39,7 @@ struct UTMApp: App {
     var body: some Scene {
         WindowGroup {
             UTMSingleWindowView(data: data)
+                .externalDisplayAccessory()
         }.commands {
             VMCommands()
         }
