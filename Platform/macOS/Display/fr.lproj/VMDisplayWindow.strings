@@ -8,15 +8,6 @@
 /* Class = "NSToolbarItem"; toolTip = "Shared folder"; ObjectID = "7EC-GE-fIl"; */
 "7EC-GE-fIl.toolTip" = "Dossier partagé";
 
-/* Class = "NSToolbarItem"; label = "Stop"; ObjectID = "Bkx-Ph-j0D"; */
-"Bkx-Ph-j0D.label" = "Arrêter";
-
-/* Class = "NSToolbarItem"; paletteLabel = "Stop"; ObjectID = "Bkx-Ph-j0D"; */
-"Bkx-Ph-j0D.paletteLabel" = "Arrêter";
-
-/* Class = "NSToolbarItem"; toolTip = "Shuts down and stops the VM"; ObjectID = "Bkx-Ph-j0D"; */
-"Bkx-Ph-j0D.toolTip" = "Arrête et stoppe la VM";
-
 /* Class = "NSToolbarItem"; label = "Capture Mouse"; ObjectID = "FN7-zs-mWC"; */
 "FN7-zs-mWC.label" = "Capturer la souris";
 
@@ -26,14 +17,14 @@
 /* Class = "NSToolbarItem"; toolTip = "Capture mouse cursor"; ObjectID = "FN7-zs-mWC"; */
 "FN7-zs-mWC.toolTip" = "Capturer le curseur de la souris";
 
-/* Class = "NSToolbarItem"; label = "Restart"; ObjectID = "G7P-HJ-bcy"; */
-"G7P-HJ-bcy.label" = "Redémarrer";
+/* Class = "NSSegmentedCell"; Pwr-Ct-cel.ibShadowedToolTips[0] = "Shuts down and stops the VM"; ObjectID = "Pwr-Ct-cel"; */
+"Pwr-Ct-cel.ibShadowedToolTips[0]" = "Arrête et stoppe la VM";
 
-/* Class = "NSToolbarItem"; paletteLabel = "Restart"; ObjectID = "G7P-HJ-bcy"; */
-"G7P-HJ-bcy.paletteLabel" = "Redémarrer";
+/* Class = "NSSegmentedCell"; Pwr-Ct-cel.ibShadowedToolTips[1] = "Start/pause the VM"; ObjectID = "Pwr-Ct-cel"; */
+"Pwr-Ct-cel.ibShadowedToolTips[1]" = "Démarre/met en pause la VM";
 
-/* Class = "NSToolbarItem"; toolTip = "Restarts the VM"; ObjectID = "G7P-HJ-bcy"; */
-"G7P-HJ-bcy.toolTip" = "Redémarre la VM";
+/* Class = "NSSegmentedCell"; Pwr-Ct-cel.ibShadowedToolTips[2] = "Restarts the VM"; ObjectID = "Pwr-Ct-cel"; */
+"Pwr-Ct-cel.ibShadowedToolTips[2]" = "Redémarre la VM";
 
 /* Class = "NSWindow"; title = "UTM"; ObjectID = "QvC-M9-y7g"; */
 "QvC-M9-y7g.title" = "UTM";
@@ -58,15 +49,6 @@
 
 /* Class = "NSToolbarItem"; toolTip = "Drive image options"; ObjectID = "bKL-Th-FFw"; */
 "bKL-Th-FFw.toolTip" = "Options d'images de lecteurs";
-
-/* Class = "NSToolbarItem"; label = "Start/Pause"; ObjectID = "kT2-2U-cYm"; */
-"kT2-2U-cYm.label" = "Démarrer/Pause";
-
-/* Class = "NSToolbarItem"; paletteLabel = "Start/Pause"; ObjectID = "kT2-2U-cYm"; */
-"kT2-2U-cYm.paletteLabel" = "Démarrer/Pause";
-
-/* Class = "NSToolbarItem"; toolTip = "Start/pause the VM"; ObjectID = "kT2-2U-cYm"; */
-"kT2-2U-cYm.toolTip" = "Démarre/met en pause la VM";
 
 /* Class = "NSToolbarItem"; label = "USB"; ObjectID = "tlw-Fb-ne3"; */
 "tlw-Fb-ne3.label" = "USB";

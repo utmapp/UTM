@@ -16,15 +16,6 @@
 /* Class = "NSToolbarItem"; toolTip = "Drive image options"; ObjectID = "bKL-Th-FFw"; */
 "bKL-Th-FFw.toolTip" = "Optionen zu Laufwerk-Abbildern";
 
-/* Class = "NSToolbarItem"; label = "Stop"; ObjectID = "Bkx-Ph-j0D"; */
-"Bkx-Ph-j0D.label" = "Stop";
-
-/* Class = "NSToolbarItem"; paletteLabel = "Stop"; ObjectID = "Bkx-Ph-j0D"; */
-"Bkx-Ph-j0D.paletteLabel" = "Stop";
-
-/* Class = "NSToolbarItem"; toolTip = "Shuts down and stops the VM"; ObjectID = "Bkx-Ph-j0D"; */
-"Bkx-Ph-j0D.toolTip" = "Beendet die VM abrupt";
-
 /* Class = "NSToolbarItem"; label = "Toolbar Item"; ObjectID = "C8Y-BQ-Y6m"; */
 "C8Y-BQ-Y6m.label" = "Menüleisten-Objekt";
 
@@ -40,24 +31,6 @@
 /* Class = "NSToolbarItem"; toolTip = "Capture mouse cursor"; ObjectID = "FN7-zs-mWC"; */
 "FN7-zs-mWC.toolTip" = "Mauszeiger fangen";
 
-/* Class = "NSToolbarItem"; label = "Restart"; ObjectID = "G7P-HJ-bcy"; */
-"G7P-HJ-bcy.label" = "Neustarten";
-
-/* Class = "NSToolbarItem"; paletteLabel = "Restart"; ObjectID = "G7P-HJ-bcy"; */
-"G7P-HJ-bcy.paletteLabel" = "Neustarten";
-
-/* Class = "NSToolbarItem"; toolTip = "Restarts the VM"; ObjectID = "G7P-HJ-bcy"; */
-"G7P-HJ-bcy.toolTip" = "Startet die VM sofort neu";
-
-/* Class = "NSToolbarItem"; label = "Start/Pause"; ObjectID = "kT2-2U-cYm"; */
-"kT2-2U-cYm.label" = "Start/Pause";
-
-/* Class = "NSToolbarItem"; paletteLabel = "Start/Pause"; ObjectID = "kT2-2U-cYm"; */
-"kT2-2U-cYm.paletteLabel" = "Start/Pause";
-
-/* Class = "NSToolbarItem"; toolTip = "Start/pause the VM"; ObjectID = "kT2-2U-cYm"; */
-"kT2-2U-cYm.toolTip" = "Startet bzw. Pausiert die VM";
-
 /* Class = "NSToolbarItem"; label = "Windows"; ObjectID = "MQ2-L1-yl7"; */
 "MQ2-L1-yl7.label" = "Windows";
 
@@ -66,6 +39,15 @@
 
 /* Class = "NSToolbarItem"; toolTip = "Windows"; ObjectID = "MQ2-L1-yl7"; */
 "MQ2-L1-yl7.toolTip" = "Windows";
+
+/* Class = "NSSegmentedCell"; Pwr-Ct-cel.ibShadowedToolTips[0] = "Shuts down and stops the VM"; ObjectID = "Pwr-Ct-cel"; */
+"Pwr-Ct-cel.ibShadowedToolTips[0]" = "Beendet die VM abrupt";
+
+/* Class = "NSSegmentedCell"; Pwr-Ct-cel.ibShadowedToolTips[1] = "Start/pause the VM"; ObjectID = "Pwr-Ct-cel"; */
+"Pwr-Ct-cel.ibShadowedToolTips[1]" = "Startet bzw. Pausiert die VM";
+
+/* Class = "NSSegmentedCell"; Pwr-Ct-cel.ibShadowedToolTips[2] = "Restarts the VM"; ObjectID = "Pwr-Ct-cel"; */
+"Pwr-Ct-cel.ibShadowedToolTips[2]" = "Startet die VM sofort neu";
 
 /* Class = "NSWindow"; title = "UTM"; ObjectID = "QvC-M9-y7g"; */
 "QvC-M9-y7g.title" = "UTM";

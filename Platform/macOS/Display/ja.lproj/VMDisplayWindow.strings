@@ -16,15 +16,6 @@
 /* Class = "NSToolbarItem"; toolTip = "Drive image options"; ObjectID = "bKL-Th-FFw"; */
 "bKL-Th-FFw.toolTip" = "ドライブイメージのオプション";
 
-/* Class = "NSToolbarItem"; label = "Stop"; ObjectID = "Bkx-Ph-j0D"; */
-"Bkx-Ph-j0D.label" = "停止";
-
-/* Class = "NSToolbarItem"; paletteLabel = "Stop"; ObjectID = "Bkx-Ph-j0D"; */
-"Bkx-Ph-j0D.paletteLabel" = "停止";
-
-/* Class = "NSToolbarItem"; toolTip = "Shuts down and stops the VM"; ObjectID = "Bkx-Ph-j0D"; */
-"Bkx-Ph-j0D.toolTip" = "仮想マシンをシステム終了し、停止します";
-
 /* Class = "NSToolbarItem"; label = "Toolbar Item"; ObjectID = "C8Y-BQ-Y6m"; */
 "C8Y-BQ-Y6m.label" = "ツールバー項目";
 
@@ -40,24 +31,6 @@
 /* Class = "NSToolbarItem"; toolTip = "Capture mouse cursor"; ObjectID = "FN7-zs-mWC"; */
 "FN7-zs-mWC.toolTip" = "マウスカーソルをキャプチャします";
 
-/* Class = "NSToolbarItem"; label = "Restart"; ObjectID = "G7P-HJ-bcy"; */
-"G7P-HJ-bcy.label" = "再起動";
-
-/* Class = "NSToolbarItem"; paletteLabel = "Restart"; ObjectID = "G7P-HJ-bcy"; */
-"G7P-HJ-bcy.paletteLabel" = "再起動";
-
-/* Class = "NSToolbarItem"; toolTip = "Restarts the VM"; ObjectID = "G7P-HJ-bcy"; */
-"G7P-HJ-bcy.toolTip" = "仮想マシンを再起動します";
-
-/* Class = "NSToolbarItem"; label = "Start/Pause"; ObjectID = "kT2-2U-cYm"; */
-"kT2-2U-cYm.label" = "開始/一時停止";
-
-/* Class = "NSToolbarItem"; paletteLabel = "Start/Pause"; ObjectID = "kT2-2U-cYm"; */
-"kT2-2U-cYm.paletteLabel" = "開始/一時停止";
-
-/* Class = "NSToolbarItem"; toolTip = "Start/pause the VM"; ObjectID = "kT2-2U-cYm"; */
-"kT2-2U-cYm.toolTip" = "仮想マシンを開始/一時停止します";
-
 /* Class = "NSToolbarItem"; label = "Windows"; ObjectID = "MQ2-L1-yl7"; */
 "MQ2-L1-yl7.label" = "ウインドウ";
 
@@ -66,6 +39,15 @@
 
 /* Class = "NSToolbarItem"; toolTip = "Windows"; ObjectID = "MQ2-L1-yl7"; */
 "MQ2-L1-yl7.toolTip" = "ウインドウ";
+
+/* Class = "NSSegmentedCell"; Pwr-Ct-cel.ibShadowedToolTips[0] = "Shuts down and stops the VM"; ObjectID = "Pwr-Ct-cel"; */
+"Pwr-Ct-cel.ibShadowedToolTips[0]" = "仮想マシンをシステム終了し、停止します";
+
+/* Class = "NSSegmentedCell"; Pwr-Ct-cel.ibShadowedToolTips[1] = "Start/pause the VM"; ObjectID = "Pwr-Ct-cel"; */
+"Pwr-Ct-cel.ibShadowedToolTips[1]" = "仮想マシンを開始/一時停止します";
+
+/* Class = "NSSegmentedCell"; Pwr-Ct-cel.ibShadowedToolTips[2] = "Restarts the VM"; ObjectID = "Pwr-Ct-cel"; */
+"Pwr-Ct-cel.ibShadowedToolTips[2]" = "仮想マシンを再起動します";
 
 /* Class = "NSWindow"; title = "UTM"; ObjectID = "QvC-M9-y7g"; */
 "QvC-M9-y7g.title" = "UTM";

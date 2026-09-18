@@ -17,13 +17,11 @@
                 <outlet property="drivesToolbarItem" destination="bKL-Th-FFw" id="3SQ-Qt-5jn"/>
                 <outlet property="keyboardShortcutsItem" destination="0aR-4a-Su7" id="hUV-ll-S6s"/>
                 <outlet property="overlayView" destination="nKs-QY-EOf" id="sD4-fu-HIL"/>
+                <outlet property="powerSegmentedControl" destination="Pwr-Ct-seg" id="AwM-e3-ge3"/>
                 <outlet property="resizeConsoleToolbarItem" destination="Ulf-oT-4cP" id="gIb-1X-LHA"/>
-                <outlet property="restartToolbarItem" destination="G7P-HJ-bcy" id="R8T-hV-Gr6"/>
                 <outlet property="screenshotView" destination="UUd-qY-POz" id="nMM-Nr-mQo"/>
                 <outlet property="sharedFolderToolbarItem" destination="7EC-GE-fIl" id="fz7-Lc-ch7"/>
                 <outlet property="startButton" destination="ZTi-Hs-ge6" id="FLE-Yi-azI"/>
-                <outlet property="startPauseToolbarItem" destination="kT2-2U-cYm" id="AwM-e3-ge3"/>
-                <outlet property="stopToolbarItem" destination="Bkx-Ph-j0D" id="yqL-pR-3gr"/>
                 <outlet property="toolbar" destination="qD6-Hj-nyo" id="0iO-Gs-sGk"/>
                 <outlet property="touchBar" destination="MdV-I1-RxZ" id="rFp-7N-UJC"/>
                 <outlet property="usbToolbarItem" destination="tlw-Fb-ne3" id="LDL-Ug-hcY"/>
@@ -107,44 +105,22 @@
             </view>
             <toolbar key="toolbar" implicitIdentifier="204ED9EE-2DF0-4A0C-99E3-CD0CC398420A" showsBaselineSeparator="NO" displayMode="iconOnly" sizeMode="regular" id="qD6-Hj-nyo">
                 <allowedToolbarItems>
-                    <toolbarItem implicitItemIdentifier="9683821E-BFE9-43BA-9AB9-54F930376FD0" label="Stop" paletteLabel="Stop" toolTip="Shuts down and stops the VM" image="power" catalog="system" sizingBehavior="auto" navigational="YES" id="Bkx-Ph-j0D" customClass="NSMenuToolbarItem">
-                        <button key="view" verticalHuggingPriority="750" id="FNq-Q0-aIF">
-                            <rect key="frame" x="3" y="14" width="27" height="23"/>
+                    <toolbarItem implicitItemIdentifier="B1F7A0C2-0E49-4F3E-9F2C-3D5A6B7C8D90" label="Power" paletteLabel="Power" sizingBehavior="auto" navigational="YES" id="Pwr-Ct-ite">
+                        <segmentedControl key="view" verticalHuggingPriority="750" id="Pwr-Ct-seg">
+                            <rect key="frame" x="0.0" y="0.0" width="112" height="24"/>
                             <autoresizingMask key="autoresizingMask"/>
-                            <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="power" catalog="system" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="CFB-He-ag2">
-                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                            <segmentedCell key="cell" borderStyle="border" alignment="left" style="automatic" trackingMode="momentary" id="Pwr-Ct-cel">
                                 <font key="font" metaFont="system"/>
-                            </buttonCell>
-                        </button>
-                        <connections>
-                            <action selector="stopButtonPressed:" target="-2" id="fmn-4O-3B3"/>
-                        </connections>
-                    </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="49A5F942-A936-49D2-B6AA-AAA5F726396B" label="Start/Pause" paletteLabel="Start/Pause" toolTip="Start/pause the VM" image="play.fill" catalog="system" sizingBehavior="auto" navigational="YES" id="kT2-2U-cYm">
-                        <button key="view" verticalHuggingPriority="750" id="0gP-t0-ORQ">
-                            <rect key="frame" x="22" y="14" width="24" height="23"/>
-                            <autoresizingMask key="autoresizingMask"/>
-                            <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="play.fill" catalog="system" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="sRx-SF-jCQ">
-                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                <font key="font" metaFont="system"/>
-                            </buttonCell>
+                                <segments>
+                                    <segment image="power" catalog="system" toolTip="Shuts down and stops the VM" width="36"/>
+                                    <segment image="play.fill" catalog="system" toolTip="Start/pause the VM" width="36"/>
+                                    <segment image="restart" catalog="system" toolTip="Restarts the VM" width="36"/>
+                                </segments>
+                            </segmentedCell>
                             <connections>
-                                <action selector="startPauseButtonPressed:" target="-2" id="geF-sv-ch1"/>
+                                <action selector="powerSegmentPressed:" target="-2" id="Pwr-Ct-act"/>
                             </connections>
-                        </button>
-                    </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="FAFCA770-EA16-4713-BAB0-6FAC76767F48" label="Restart" paletteLabel="Restart" toolTip="Restarts the VM" image="restart" catalog="system" sizingBehavior="auto" navigational="YES" id="G7P-HJ-bcy">
-                        <button key="view" verticalHuggingPriority="750" id="ES2-tt-K1A">
-                            <rect key="frame" x="11" y="14" width="24" height="23"/>
-                            <autoresizingMask key="autoresizingMask"/>
-                            <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="restart" catalog="system" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="LA8-B0-6E9">
-                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                <font key="font" metaFont="system"/>
-                            </buttonCell>
-                            <connections>
-                                <action selector="restartButtonPressed:" target="-2" id="FF2-ag-6zC"/>
-                            </connections>
-                        </button>
+                        </segmentedControl>
                     </toolbarItem>
                     <toolbarItem implicitItemIdentifier="8B5CDC68-CEC0-4C3D-8E0A-AFA4A3BE8BA5" label="Send Key" paletteLabel="Send Key" toolTip="Keyboard shortcuts" image="keyboard" catalog="system" bordered="YES" sizingBehavior="auto" id="0aR-4a-Su7">
                         <button key="view" verticalHuggingPriority="750" id="Ut7-KA-ER4">
@@ -239,9 +215,7 @@
                     </toolbarItem>
                 </allowedToolbarItems>
                 <defaultToolbarItems>
-                    <toolbarItem reference="Bkx-Ph-j0D"/>
-                    <toolbarItem reference="kT2-2U-cYm"/>
-                    <toolbarItem reference="G7P-HJ-bcy"/>
+                    <toolbarItem reference="Pwr-Ct-ite"/>
                     <toolbarItem reference="FN7-zs-mWC"/>
                     <toolbarItem reference="Ulf-oT-4cP"/>
                     <toolbarItem reference="tlw-Fb-ne3"/>

@@ -16,15 +16,6 @@
 /* Class = "NSToolbarItem"; toolTip = "Drive image options"; ObjectID = "bKL-Th-FFw"; */
 "bKL-Th-FFw.toolTip" = "磁碟機映像檔選項";
 
-/* Class = "NSToolbarItem"; label = "Stop"; ObjectID = "Bkx-Ph-j0D"; */
-"Bkx-Ph-j0D.label" = "停止";
-
-/* Class = "NSToolbarItem"; paletteLabel = "Stop"; ObjectID = "Bkx-Ph-j0D"; */
-"Bkx-Ph-j0D.paletteLabel" = "停止";
-
-/* Class = "NSToolbarItem"; toolTip = "Shuts down and stops the VM"; ObjectID = "Bkx-Ph-j0D"; */
-"Bkx-Ph-j0D.toolTip" = "關機並停止虛擬機";
-
 /* Class = "NSToolbarItem"; label = "Toolbar Item"; ObjectID = "C8Y-BQ-Y6m"; */
 "C8Y-BQ-Y6m.label" = "工具列項目";
 
@@ -40,24 +31,6 @@
 /* Class = "NSToolbarItem"; toolTip = "Capture input devices"; ObjectID = "FN7-zs-mWC"; */
 "FN7-zs-mWC.toolTip" = "擷取輸入裝置";
 
-/* Class = "NSToolbarItem"; label = "Restart"; ObjectID = "G7P-HJ-bcy"; */
-"G7P-HJ-bcy.label" = "重新啟動";
-
-/* Class = "NSToolbarItem"; paletteLabel = "Restart"; ObjectID = "G7P-HJ-bcy"; */
-"G7P-HJ-bcy.paletteLabel" = "重新啟動";
-
-/* Class = "NSToolbarItem"; toolTip = "Restarts the VM"; ObjectID = "G7P-HJ-bcy"; */
-"G7P-HJ-bcy.toolTip" = "重新啟動虛擬機";
-
-/* Class = "NSToolbarItem"; label = "Start/Pause"; ObjectID = "kT2-2U-cYm"; */
-"kT2-2U-cYm.label" = "啟動／暫停";
-
-/* Class = "NSToolbarItem"; paletteLabel = "Start/Pause"; ObjectID = "kT2-2U-cYm"; */
-"kT2-2U-cYm.paletteLabel" = "啟動／暫停";
-
-/* Class = "NSToolbarItem"; toolTip = "Start/pause the VM"; ObjectID = "kT2-2U-cYm"; */
-"kT2-2U-cYm.toolTip" = "啟動或暫停虛擬機";
-
 /* Class = "NSToolbarItem"; label = "Windows"; ObjectID = "MQ2-L1-yl7"; */
 "MQ2-L1-yl7.label" = "視窗";
 
@@ -66,6 +39,15 @@
 
 /* Class = "NSToolbarItem"; toolTip = "Windows"; ObjectID = "MQ2-L1-yl7"; */
 "MQ2-L1-yl7.toolTip" = "視窗";
+
+/* Class = "NSSegmentedCell"; Pwr-Ct-cel.ibShadowedToolTips[0] = "Shuts down and stops the VM"; ObjectID = "Pwr-Ct-cel"; */
+"Pwr-Ct-cel.ibShadowedToolTips[0]" = "關機並停止虛擬機";
+
+/* Class = "NSSegmentedCell"; Pwr-Ct-cel.ibShadowedToolTips[1] = "Start/pause the VM"; ObjectID = "Pwr-Ct-cel"; */
+"Pwr-Ct-cel.ibShadowedToolTips[1]" = "啟動或暫停虛擬機";
+
+/* Class = "NSSegmentedCell"; Pwr-Ct-cel.ibShadowedToolTips[2] = "Restarts the VM"; ObjectID = "Pwr-Ct-cel"; */
+"Pwr-Ct-cel.ibShadowedToolTips[2]" = "重新啟動虛擬機";
 
 /* Class = "NSWindow"; title = "UTM"; ObjectID = "QvC-M9-y7g"; */
 "QvC-M9-y7g.title" = "UTM";

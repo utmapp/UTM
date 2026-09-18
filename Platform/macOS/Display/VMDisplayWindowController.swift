@@ -37,9 +37,7 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
     @IBOutlet private weak var startButton: NSButton!
 
     @IBOutlet private weak var toolbar: NSToolbar!
-    @IBOutlet private weak var stopToolbarItem: NSMenuToolbarItem!
-    @IBOutlet private weak var startPauseToolbarItem: NSToolbarItem!
-    @IBOutlet private weak var restartToolbarItem: NSToolbarItem!
+    @IBOutlet private weak var powerSegmentedControl: NSSegmentedControl!
     @IBOutlet private weak var captureMouseToolbarItem: NSToolbarItem!
     @IBOutlet weak var captureMouseToolbarButton: NSButton!
     @IBOutlet private weak var usbToolbarItem: NSToolbarItem!
@@ -48,6 +46,13 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
     @IBOutlet private weak var resizeConsoleToolbarItem: NSToolbarItem!
     @IBOutlet private weak var windowsToolbarItem: NSToolbarItem!
     @IBOutlet private weak var keyboardShortcutsItem: NSToolbarItem!
+
+    /// Segments of the power control, in the order the toolbar draws them.
+    private enum PowerSegment: Int {
+        case stop
+        case startPause
+        case restart
+    }
 
     private var mainMenu: NSMenu!
     private var mainMenuItem: NSMenuItem!
@@ -138,6 +143,19 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
         }
     }
     
+    @IBAction private func powerSegmentPressed(_ sender: NSSegmentedControl) {
+        switch PowerSegment(rawValue: sender.selectedSegment) {
+        case .stop:
+            stopButtonPressed(sender)
+        case .startPause:
+            startPauseButtonPressed(sender)
+        case .restart:
+            restartButtonPressed(sender)
+        case nil:
+            break
+        }
+    }
+
     @IBAction dynamic func captureMouseButtonPressed(_ sender: Any) {
     }
     
@@ -179,13 +197,13 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
         for control in controls {
             switch control {
             case .power:
-                stopToolbarItem.isEnabled = isEnabled
+                powerSegmentedControl.setEnabled(isEnabled, forSegment: PowerSegment.stop.rawValue)
                 stopMenuItem.isEnabled = isEnabled
             case .startPause:
-                startPauseToolbarItem.isEnabled = isEnabled
+                powerSegmentedControl.setEnabled(isEnabled, forSegment: PowerSegment.startPause.rawValue)
                 startPauseMenuItem.isEnabled = isEnabled
             case .restart:
-                restartToolbarItem.isEnabled = isEnabled
+                powerSegmentedControl.setEnabled(isEnabled, forSegment: PowerSegment.restart.rawValue)
                 restartMenuItem.isEnabled = isEnabled
             case .captureInput:
                 captureMouseToolbarItem.isEnabled = isEnabled
@@ -236,6 +254,13 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
         // visually matches the surrounding system symbols.
         usbToolbarItem.image = NSImage(systemSymbolName: "cable.connector",
                                        accessibilityDescription: usbToolbarItem.label)
+        // segments have no label for VoiceOver to read, only their image
+        let stopDescription = NSLocalizedString("Stop", comment: "VMDisplayWindowController")
+        powerSegmentedControl.setImage(NSImage(systemSymbolName: "power", accessibilityDescription: stopDescription),
+                                       forSegment: PowerSegment.stop.rawValue)
+        let restartDescription = NSLocalizedString("Restart", comment: "VMDisplayWindowController")
+        powerSegmentedControl.setImage(NSImage(systemSymbolName: "restart", accessibilityDescription: restartDescription),
+                                       forSegment: PowerSegment.restart.rawValue)
     }
     
     public func requestAutoStart(options: UTMVirtualMachineStartOptions = []) {
@@ -255,8 +280,8 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
         overlayView.isHidden = true
         activityIndicator.stopAnimation(self)
         let pauseDescription = NSLocalizedString("Pause", comment: "VMDisplayWindowController")
-        startPauseToolbarItem.image = NSImage(systemSymbolName: "pause", accessibilityDescription: pauseDescription)
-        startPauseToolbarItem.label = pauseDescription
+        powerSegmentedControl.setImage(NSImage(systemSymbolName: "pause", accessibilityDescription: pauseDescription),
+                                       forSegment: PowerSegment.startPause.rawValue)
         startPauseMenuItem.title = pauseDescription
         setControl([.startPause, .power, .restart, .captureInput, .resize, .windows, .keyboardShortcut], isEnabled: true)
         window!.makeFirstResponder(displayView.subviews.first)
@@ -276,8 +301,8 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
         overlayView.isHidden = false
         let playDescription = NSLocalizedString("Start", comment: "VMDisplayWindowController")
         let stopped = vm.state == .stopped
-        startPauseToolbarItem.image = NSImage(systemSymbolName: "play.fill", accessibilityDescription: playDescription)
-        startPauseToolbarItem.label = playDescription
+        powerSegmentedControl.setImage(NSImage(systemSymbolName: "play.fill", accessibilityDescription: playDescription),
+                                       forSegment: PowerSegment.startPause.rawValue)
         startPauseMenuItem.title = playDescription
         if busy {
             activityIndicator.startAnimation(self)
@@ -285,7 +310,6 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
             startButton.isHidden = true
         } else {
             activityIndicator.stopAnimation(self)
-            startPauseToolbarItem.isEnabled = true
             setControl(.startPause, isEnabled: true)
             startButton.isHidden = false
             setControl([.power, .restart], isEnabled: !stopped)
@@ -526,7 +550,8 @@ extension VMDisplayWindowController {
     private func setupStopButtonMenu() {
         let menu = NSMenu()
         updateStopButtonMenu(menu)
-        stopToolbarItem.menu = menu
+        // shown when the segment is clicked and held
+        powerSegmentedControl.setMenu(menu, forSegment: PowerSegment.stop.rawValue)
     }
     
     @MainActor @objc private func requestPowerDown(sender: AnyObject) {
