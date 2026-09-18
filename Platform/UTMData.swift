@@ -942,27 +942,15 @@ enum AlertItem: Identifiable {
 
     @available(macOS 14, *)
     func appleDriveInfo(for driveUrl: URL) -> (format: String?, size: Int64?) {
-        var format: String? = nil
-        var size: Int64? = nil
-        guard let info = try? UTMASIFImage.sharedInstance()?.retrieveInfo(driveUrl) else {
-            return (format, size)
+        guard let info = try? UTMAppleDiskImage.info(for: driveUrl) else {
+            return (nil, nil)
         }
-        if let _format = info["Image Format"] as? String {
-            format = _format
-        }
-        if let _sizeInfo = info["Size Info"] as? [String: Any] {
-            if let _totalBytes = _sizeInfo["Total Bytes"] as? Int64 {
-                size = _totalBytes
-            }
-        }
-        return (format, size)
+        return (info.format.localizedDescription, info.size)
     }
 
     @available(macOS 14, *)
     func resizeAppleDrive(for driveUrl: URL, sizeInMib: Int) throws {
-        let bytesinMib = 1048576
-        let size = Int(sizeInMib * bytesinMib)
-        try UTMASIFImage.sharedInstance()!.resize(with: driveUrl, size: size)
+        try UTMAppleDiskImage.resize(driveUrl, toSizeMib: sizeInMib)
     }
     #endif
     

@@ -350,7 +350,7 @@ struct AlertMessage: Identifiable {
             if #available(macOS 14, *), useNvmeAsDiskInterface {
                 newDisk.isNvme = true
             }
-            if #available(macOS 26, *), UTMASIFImage.sharedInstance() != nil {
+            if UTMAppleDiskImage.isASIFSupported {
                 newDisk.isASIF = true
             }
             config.drives.append(newDisk)
