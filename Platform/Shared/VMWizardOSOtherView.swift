@@ -22,6 +22,7 @@ struct VMWizardOSOtherView: View {
 
     private var supportsUefi: Bool {
         UTMQemuConfigurationQEMU.uefiImagePrefix(forArchitecture: wizardState.systemArchitecture) != nil
+            && wizardState.systemTarget.hasUefiSupport
     }
 
     var body: some View {

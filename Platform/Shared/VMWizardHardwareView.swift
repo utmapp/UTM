@@ -206,6 +206,12 @@ struct VMWizardHardwareView: View {
                 
                 Section {
                     VMConfigConstantPicker(selection: $wizardState.systemTarget, type: wizardState.systemArchitecture.targetType)
+                        .onChange(of: wizardState.systemTarget.rawValue) { newValue in
+                            let target = AnyQEMUConstant(rawValue: newValue)!
+                            if let fixedMemorySize = target.fixedMemorySize {
+                                wizardState.systemMemoryMib = fixedMemorySize
+                            }
+                        }
                 } header: {
                     Text("System")
                 }
@@ -240,6 +246,7 @@ struct VMWizardHardwareView: View {
                         wizardState.systemMemoryMib = validMin
                     }
                 }
+                .disabled(wizardState.systemTarget.fixedMemorySize != nil)
             } header: {
                 Text("Memory")
             }
