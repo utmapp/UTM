@@ -141,7 +141,7 @@ import ScriptingBridge
 // MARK: UTMScriptingAppleNetworkMode
 @objc public enum UTMScriptingAppleNetworkMode : AEKeyword {
     case shared = 0x53685264 /* 'ShRd' */
-    case sharedVmnet = 0x5368566d /* 'ShVm' */
+    case natNetwork = 0x4e614e77 /* 'NaNw' */
     case host = 0x486f5374 /* 'HoSt' */
     case bridged = 0x42724764 /* 'BrGd' */
 }

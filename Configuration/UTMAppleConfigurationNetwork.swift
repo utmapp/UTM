@@ -21,14 +21,14 @@ import Virtualization
 struct UTMAppleConfigurationNetwork: Codable, Identifiable {
     enum NetworkMode: String, CaseIterable, QEMUConstant {
         case shared = "Shared"
-        case sharedVmnet = "SharedVmnet"
+        case natNetwork = "NATNetwork"
         case host = "Host"
         case bridged = "Bridged"
         
         var prettyValue: String {
             switch self {
             case .shared: return NSLocalizedString("Shared Network", comment: "UTMAppleConfigurationNetwork")
-            case .sharedVmnet: return NSLocalizedString("Shared Network (VM to VM)", comment: "UTMAppleConfigurationNetwork")
+            case .natNetwork: return NSLocalizedString("NAT Network", comment: "UTMAppleConfigurationNetwork")
             case .host: return NSLocalizedString("Host Only", comment: "UTMAppleConfigurationNetwork")
             case .bridged: return NSLocalizedString("Bridged (Advanced)", comment: "UTMAppleConfigurationNetwork")
             }
@@ -36,7 +36,7 @@ struct UTMAppleConfigurationNetwork: Codable, Identifiable {
 
         var isHidden: Bool {
             switch self {
-            case .sharedVmnet, .host:
+            case .natNetwork, .host:
                 if #available(macOS 26, *) {
                     return false
                 } else {
@@ -44,16 +44,6 @@ struct UTMAppleConfigurationNetwork: Codable, Identifiable {
                 }
             default:
                 return false
-            }
-        }
-
-        /// The vmnet network backing this mode, or nil when Virtualization.framework provides the network itself.
-        @available(macOS 26, *)
-        var vmnetMode: UTMAppleVmnetNetworkManager.Mode? {
-            switch self {
-            case .sharedVmnet: return .shared
-            case .host: return .host
-            default: return nil
             }
         }
     }
@@ -103,14 +93,12 @@ struct UTMAppleConfigurationNetwork: Codable, Identifiable {
             bridgeInterface = attachment.interface.identifier
         } else if let _ = virtioConfig.attachment as? VZNATNetworkDeviceAttachment {
             mode = .shared
-        } else if #available(macOS 26, *), let attachment = virtioConfig.attachment as? VZVmnetNetworkDeviceAttachment, let vmnetMode = UTMAppleVmnetNetworkManager.shared.mode(of: attachment.network) {
-            mode = vmnetMode == .host ? .host : .sharedVmnet
         } else {
             return nil
         }
     }
     
-    func vzNetworking(forValidation: Bool) throws -> VZNetworkDeviceConfiguration? {
+    @MainActor func vzNetworking(forValidation: Bool) throws -> VZNetworkDeviceConfiguration? {
         let config = VZVirtioNetworkDeviceConfiguration()
         guard let macAddress = VZMACAddress(string: macAddress) else {
             return nil
@@ -137,16 +125,13 @@ struct UTMAppleConfigurationNetwork: Codable, Identifiable {
                 let attachment = VZBridgedNetworkDeviceAttachment(interface: found)
                 config.attachment = attachment
             }
-        case .sharedVmnet, .host:
-            guard #available(macOS 26, *), let vmnetMode = mode.vmnetMode else {
-                throw UTMAppleConfigurationError.featureNotSupported
-            }
-            if forValidation {
-                // Validate the device configuration without creating or borrowing a live network.
-                // Network creation and its entitlement checks happen only when starting a VM.
-                config.attachment = VZNATNetworkDeviceAttachment()
-            } else {
-                config.attachment = try UTMAppleVmnetNetworkManager.shared.attachment(for: vmnetMode)
+        case .natNetwork, .host:
+            // a live network is only created when starting a VM, validation leaves the device unattached
+            if !forValidation {
+                guard #available(macOS 26, *) else {
+                    throw UTMAppleConfigurationError.featureNotSupported
+                }
+                config.attachment = try UTMAppleVmnetNetworkManager.shared.attachment(for: mode == .host ? .VMNET_HOST_MODE : .VMNET_SHARED_MODE)
             }
         }
         return config

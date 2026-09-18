@@ -259,7 +259,7 @@ extension UTMScriptingConfigImpl {
     private func appleNetworkMode(from mode: UTMAppleConfigurationNetwork.NetworkMode) -> UTMScriptingAppleNetworkMode {
         switch mode {
         case .shared: return .shared
-        case .sharedVmnet: return .sharedVmnet
+        case .natNetwork: return .natNetwork
         case .host: return .host
         case .bridged: return .bridged
         }
@@ -724,7 +724,7 @@ extension UTMScriptingConfigImpl {
         }
         switch parsed {
         case .shared: return .shared
-        case .sharedVmnet: return .sharedVmnet
+        case .natNetwork: return .natNetwork
         case .host: return .host
         case .bridged: return .bridged
         }

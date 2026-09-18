@@ -24,7 +24,13 @@ struct VMConfigAppleNetworkingView: View {
     
     var body: some View {
         Form {
-            VMConfigConstantPicker("Network Mode", selection: $config.mode)
+            if let modeDescription = modeDescription {
+                DetailedSection("", description: modeDescription) {
+                    VMConfigConstantPicker("Network Mode", selection: $config.mode)
+                }
+            } else {
+                VMConfigConstantPicker("Network Mode", selection: $config.mode)
+            }
             HStack {
                 TextField("MAC Address", text: $newMacAddress.bound, onCommit: {
                     commitMacAddress()
@@ -38,11 +44,6 @@ struct VMConfigAppleNetworkingView: View {
                     commitMacAddress()
                 }
             }
-            if config.mode == .sharedVmnet {
-                Text("Virtual machines using this mode in the same UTM app can connect to each other and access the internet through your Mac.")
-            } else if config.mode == .host {
-                Text("Virtual machines using this mode in the same UTM app can connect to each other and your Mac. This network does not provide internet access.")
-            }
             if config.mode == .bridged {
                 Section(header: Text("Bridged Settings")) {
                     Picker("Interface", selection: $config.bridgeInterface) {
@@ -55,6 +56,14 @@ struct VMConfigAppleNetworkingView: View {
                     }
                 }
             }
+        }
+    }
+    
+    private var modeDescription: LocalizedStringKey? {
+        switch config.mode {
+        case .natNetwork: return "Virtual machines using this mode in the same UTM app can connect to each other and access the internet through your Mac."
+        case .host: return "Virtual machines using this mode in the same UTM app can connect to each other and your Mac. This network does not provide internet access."
+        default: return nil
         }
     }
     

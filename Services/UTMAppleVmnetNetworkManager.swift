@@ -1,5 +1,5 @@
 //
-// Copyright © 2026 osy. All rights reserved.
+// Copyright © 2026 Turing Software, LLC. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,48 +24,20 @@ import vmnet
 /// Keeping a weak attachment per mode lets guests share a network for its actual lifetime,
 /// including when a failed operation leaves a virtual machine alive after UTM reports it stopped.
 @available(macOS 26, *)
-final class UTMAppleVmnetNetworkManager {
+@MainActor final class UTMAppleVmnetNetworkManager {
     static let shared = UTMAppleVmnetNetworkManager()
-
-    /// Operating mode of a managed network.
-    enum Mode {
-        /// Guests share a network and reach the outside world through the host (NAT).
-        case shared
-        /// Guests share a network that only the host can reach.
-        case host
-
-        fileprivate var operatingMode: vmnet_mode_t {
-            switch self {
-            case .shared: return .VMNET_SHARED_MODE
-            case .host: return .VMNET_HOST_MODE
-            }
-        }
-    }
 
     private struct Entry {
         weak var attachment: VZVmnetNetworkDeviceAttachment?
     }
 
-    private let lock = NSLock()
-    private var entries: [Mode: Entry] = [:]
+    private var entries: [vmnet_mode_t: Entry] = [:]
 
     private init() {
     }
 
-    /// Mode of a network managed here, or nil for any other network.
-    func mode(of network: vmnet_network_ref) -> Mode? {
-        lock.lock()
-        defer { lock.unlock() }
-        return entries.first(where: { $0.value.attachment?.network == network })?.key
-    }
-
     /// Returns an owning attachment, sharing the network with any existing users of `mode`.
-    ///
-    /// The weak reference is promoted while locked, so a concurrent teardown cannot invalidate
-    /// the returned attachment. No explicit release or virtual machine state bookkeeping is needed.
-    func attachment(for mode: Mode) throws -> VZVmnetNetworkDeviceAttachment {
-        lock.lock()
-        defer { lock.unlock() }
+    func attachment(for mode: vmnet_mode_t) throws -> VZVmnetNetworkDeviceAttachment {
         if let attachment = entries[mode]?.attachment {
             return attachment
         }
@@ -78,13 +50,45 @@ final class UTMAppleVmnetNetworkManager {
         return attachment
     }
 
-    private func createNetwork(mode: Mode) throws -> vmnet_network_ref {
+    /// Subnet to request for a mode.
+    ///
+    /// Left alone, vmnet hands out the lowest free subnet from the ranges that NAT attachments and
+    /// QEMU also draw from, so addresses would depend on what else is running when the network is
+    /// (re)created. A subnet outside of those ranges keeps guest addresses stable.
+    private func preferredSubnet(for mode: vmnet_mode_t) -> in_addr? {
+        switch mode {
+        case .VMNET_SHARED_MODE: return in_addr(s_addr: inet_addr("192.168.96.1"))
+        case .VMNET_HOST_MODE: return in_addr(s_addr: inet_addr("192.168.160.1"))
+        default: return nil
+        }
+    }
+
+    private func createNetwork(mode: vmnet_mode_t) throws -> vmnet_network_ref {
+        if let subnet = preferredSubnet(for: mode) {
+            do {
+                return try createNetwork(mode: mode, subnet: subnet)
+            } catch {
+                // the subnet is taken by something else, let vmnet pick a free one
+                logger.debug("vmnet subnet \(String(cString: inet_ntoa(subnet))) unavailable: \(error.localizedDescription)")
+            }
+        }
+        return try createNetwork(mode: mode, subnet: nil)
+    }
+
+    private func createNetwork(mode: vmnet_mode_t, subnet: in_addr?) throws -> vmnet_network_ref {
         var status = vmnet_return_t.VMNET_SUCCESS
-        guard let configuration = vmnet_network_configuration_create(mode.operatingMode, &status) else {
+        guard let configuration = vmnet_network_configuration_create(mode, &status) else {
             throw UTMAppleVmnetNetworkError.creationFailed(status)
         }
         defer {
             Unmanaged<CFTypeRef>.fromOpaque(UnsafeRawPointer(configuration)).release()
+        }
+        if var subnet = subnet {
+            var mask = in_addr(s_addr: inet_addr("255.255.255.0"))
+            status = vmnet_network_configuration_set_ipv4_subnet(configuration, &subnet, &mask)
+            guard status == .VMNET_SUCCESS else {
+                throw UTMAppleVmnetNetworkError.creationFailed(status)
+            }
         }
         guard let network = vmnet_network_create(configuration, &status) else {
             throw UTMAppleVmnetNetworkError.creationFailed(status)
@@ -101,7 +105,7 @@ extension UTMAppleVmnetNetworkError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .creationFailed(let status):
-            return String.localizedStringWithFormat(NSLocalizedString("Failed to create the virtual network (vmnet error %d).", comment: "UTMAppleVmnetNetworkManager"), status.rawValue)
+            return String.localizedStringWithFormat(NSLocalizedString("Failed to create the virtual network (vmnet error %@).", comment: "UTMAppleVmnetNetworkManager"), String(status.rawValue))
         }
     }
 }
