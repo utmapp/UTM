@@ -15,6 +15,7 @@
 //
 
 import SwiftUI
+import Foundation
 
 @MainActor
 class UTMReleaseHelper: ObservableObject {

@@ -19,6 +19,7 @@ import SwiftUI
 struct SettingsView: View {
     private enum Selection: CaseIterable, Identifiable {
         case application
+        case updates
         case display
         case sound
         case input
@@ -34,6 +35,8 @@ struct SettingsView: View {
             switch self {
             case .application:
                 return "Application"
+            case .updates:
+                return "Updates"
             case .display:
                 return "Display"
             case .sound:
@@ -53,6 +56,8 @@ struct SettingsView: View {
             switch self {
             case .application:
                 return "app.badge"
+            case .updates:
+                return "arrow.down.circle"
             case .display:
                 return "rectangle.on.rectangle"
             case .sound:
@@ -73,6 +78,8 @@ struct SettingsView: View {
             switch self {
             case .application:
                 ApplicationSettingsView()
+            case .updates:
+                UpdateSettingsView()
             case .display:
                 DisplaySettingsView()
             case .sound:
