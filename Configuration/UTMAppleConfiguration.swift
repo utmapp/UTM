@@ -241,9 +241,31 @@ extension UTMAppleConfiguration {
 
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
 @MainActor extension UTMAppleConfiguration {
-    func appleVZConfiguration(forValidation: Bool = false) throws -> VZVirtualMachineConfiguration {
+    /// Point the firmware variable stores at copies so a disposable run cannot change the originals
+    @available(macOS 27, *)
+    private func redirectFirmwareStorage(of vzconfig: VZVirtualMachineConfiguration, to directoryURL: URL) throws {
+        let fileManager = FileManager.default
+        if let efi = vzconfig.bootLoader as? VZEFIBootLoader, let variableStore = efi.variableStore {
+            let copyURL = directoryURL.appendingPathComponent(variableStore.url.lastPathComponent)
+            try fileManager.copyItem(at: variableStore.url, to: copyURL)
+            efi.variableStore = VZEFIVariableStore(url: copyURL)
+        }
+        #if arch(arm64)
+        if let platform = vzconfig.platform as? VZMacPlatformConfiguration, let auxiliaryStorage = platform.auxiliaryStorage {
+            let copyURL = directoryURL.appendingPathComponent(auxiliaryStorage.url.lastPathComponent)
+            try fileManager.copyItem(at: auxiliaryStorage.url, to: copyURL)
+            platform.auxiliaryStorage = VZMacAuxiliaryStorage(url: copyURL)
+        }
+        #endif
+    }
+
+    /// - Parameter disposableOverlayDirectoryURL: If set, guest writes go to ephemeral layers in this directory and nothing in the package is modified (macOS 27+)
+    func appleVZConfiguration(forValidation: Bool = false, disposableOverlayDirectoryURL: URL? = nil) throws -> VZVirtualMachineConfiguration {
         let vzconfig = VZVirtualMachineConfiguration()
         try system.fillVZConfiguration(vzconfig)
+        if #available(macOS 27, *), let disposableOverlayDirectoryURL = disposableOverlayDirectoryURL {
+            try redirectFirmwareStorage(of: vzconfig, to: disposableOverlayDirectoryURL)
+        }
         if !sharedDirectories.isEmpty {
             let fsConfig = VZVirtioFileSystemDeviceConfiguration(tag: shareDirectoryTag)
             fsConfig.share = UTMAppleConfigurationSharedDirectory.makeDirectoryShare(from: sharedDirectories)
@@ -251,7 +273,7 @@ extension UTMAppleConfiguration {
         }
         if !forValidation {
             vzconfig.storageDevices = try drives.compactMap { drive in
-                guard let attachment = try drive.vzDiskImage(useFsWorkAround: system.boot.operatingSystem == .linux) else {
+                guard let attachment = try drive.vzDiskImage(useFsWorkAround: system.boot.operatingSystem == .linux, disposableOverlayDirectoryURL: disposableOverlayDirectoryURL) else {
                     return nil
                 }
                 if #available(macOS 13, *), drive.isExternal {

@@ -16,6 +16,7 @@
 
 import Foundation
 import DiskImageKit
+import Virtualization
 
 /// Creates, inspects and resizes disk images for Apple Virtualization drives (ASIF and RAW).
 ///
@@ -106,6 +107,26 @@ enum UTMAppleDiskImage {
         } else {
             try legacyResize(url, toSizeMib: sizeMib)
         }
+    }
+}
+
+// MARK: - Layered images (macOS 27+)
+
+@available(macOS 27, *)
+extension UTMAppleDiskImage {
+    /// Create an attachment whose guest writes land in a new copy-on-write layer
+    ///
+    /// The image at `url` is opened read-only and is never modified. Any existing file at `overlayURL` is replaced.
+    /// - Parameters:
+    ///   - url: Location of the base image
+    ///   - overlayURL: Location of the overlay layer to create
+    ///   - cachingMode: Caching mode of the attachment
+    ///   - synchronizationMode: Synchronization mode of the attachment
+    static func attachment(for url: URL, ephemeralOverlayAt overlayURL: URL, cachingMode: VZDiskImageCachingMode = .automatic, synchronizationMode: VZDiskImageSynchronizationMode = .full) throws -> VZDiskImageStorageDeviceAttachment {
+        try? FileManager.default.removeItem(at: overlayURL)
+        let base = try DiskImageKit.DiskImage(opening: .open(url: url, mode: .readOnly))
+        let stack = try base.appending(ASIFCreationConfiguration.layer(url: overlayURL, type: .overlay))
+        return try VZDiskImageStorageDeviceAttachment(diskImage: stack, cachingMode: cachingMode, synchronizationMode: synchronizationMode)
     }
 }
 
