@@ -16,6 +16,7 @@
 
 import Combine
 import Virtualization
+import AccessoryAccess
 
 @available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
 final class UTMAppleVirtualMachine: UTMVirtualMachine {
@@ -117,6 +118,18 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
 
     private var removableDrives: [String: Any] = [:]
 
+    /// `UTMAppleUSBPassthroughState` on macOS 27, always nil on older versions
+    private var usbPassthroughState: Any?
+
+    /// USB passthrough requires macOS 27
+    var hasUsbRedirection: Bool {
+        if #available(macOS 27, *) {
+            return true
+        } else {
+            return false
+        }
+    }
+
     @MainActor var isHeadless: Bool {
         config.displays.isEmpty && config.serials.filter({ $0.mode == .builtin }).isEmpty
     }
@@ -185,9 +198,10 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         state = .starting
         do {
             let isSuspended = await registryEntry.isSuspended
+            let isRestoring = isSuspended && !options.contains(.bootRecovery)
             try await beginAccessingResources()
-            try await createAppleVM()
-            if isSuspended && !options.contains(.bootRecovery) {
+            try await createAppleVM(isRestoring: isRestoring)
+            if isRestoring {
                 try await restoreSnapshot()
             } else {
                 try await _start(options: options)
@@ -210,8 +224,17 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             if screenshotTimer == nil {
                 screenshotTimer = startScreenshotTimer()
             }
+            if #available(macOS 27, *), hasUsbRedirection {
+                // failures here must not stop the virtual machine
+                Task { @MainActor in
+                    await startUsbPassthrough()
+                }
+            }
         } catch {
             await stopAccesingResources()
+            if #available(macOS 27, *) {
+                await stopUsbPassthrough()
+            }
             state = .stopped
             try? await deleteSnapshot()
             throw error
@@ -303,6 +326,9 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         do {
             try await _restart()
             state = .started
+            if #available(macOS 27, *) {
+                await synchronizeUsbDevices()
+            }
         } catch {
             state = .stopped
             throw error
@@ -389,6 +415,9 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         defer {
             state = .paused
         }
+        if #available(macOS 27, *) {
+            await recordUsbDevicesForSave()
+        }
         try await _saveSnapshot(url: vmSavedStateURL)
         await registryEntry.setIsSuspended(true)
         #endif
@@ -402,6 +431,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             return
         }
         await registryEntry.setIsSuspended(false)
+        await registryEntry.setConnectedUsbDevices([])
         try FileManager.default.removeItem(at: vmSavedStateURL)
         try? updateLastModified()
     }
@@ -497,7 +527,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         screenshot = loadScreenshot()
     }
 
-    @MainActor private func createAppleVM() throws {
+    @MainActor private func createAppleVM(isRestoring: Bool = false) async throws {
         for i in config.serials.indices {
             let (fd, sfd, name) = try createPty()
             let terminalTtyHandle = FileHandle(fileDescriptor: fd, closeOnDealloc: false)
@@ -508,9 +538,19 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             config.serials[i].interface = serialPort
         }
         let vzConfig = try config.appleVZConfiguration()
+        var usbControllerDelegate: AnyObject?
+        if #available(macOS 27, *), hasUsbRedirection {
+            if isRestoring {
+                await restoreUsbDevices(to: vzConfig)
+            }
+            usbControllerDelegate = usbState.controllerDelegate
+        }
         vmQueue.async { [self] in
             apple = VZVirtualMachine(configuration: vzConfig, queue: vmQueue)
             apple!.delegate = self
+            if #available(macOS 27, *), let usbControllerDelegate = usbControllerDelegate as? UTMAppleUSBControllerDelegate {
+                apple!.usbControllers.first?.delegate = usbControllerDelegate
+            }
             snapshotUnsupportedError = UTMAppleVirtualMachineError.operationNotAvailable
             #if arch(arm64)
             if #available(macOS 14, *) {
@@ -711,6 +751,9 @@ extension UTMAppleVirtualMachine: VZVirtualMachineDelegate {
         sharedDirectoriesChanged = nil
         Task { @MainActor in
             stopAccesingResources()
+            if #available(macOS 27, *) {
+                stopUsbPassthrough()
+            }
             for i in config.serials.indices {
                 if let serialPort = config.serials[i].interface {
                     serialPort.close()
@@ -943,6 +986,271 @@ extension UTMAppleVirtualMachine {
     }
 }
 
+// MARK: - USB passthrough
+
+@available(macOS 27, *)
+@MainActor extension UTMAppleVirtualMachine {
+    private var usbState: UTMAppleUSBPassthroughState {
+        if let state = usbPassthroughState as? UTMAppleUSBPassthroughState {
+            return state
+        }
+        let state = UTMAppleUSBPassthroughState(vm: self)
+        usbPassthroughState = state
+        return state
+    }
+
+    /// Receives USB passthrough events (set by the primary window)
+    var usbPassthroughDelegate: (any UTMAppleUSBPassthroughDelegate)? {
+        get {
+            usbState.delegate
+        }
+
+        set {
+            usbState.delegate = newValue
+        }
+    }
+
+    /// Is a window of this virtual machine the main window?
+    var isUsbPassthroughFrontmost: Bool {
+        usbState.delegate?.usbPassthroughIsFrontmost(self) ?? false
+    }
+
+    /// Host USB devices connected to this virtual machine
+    var connectedUsbDevices: [UTMAppleUSBDevice] {
+        usbState.connections.values.map(\.device)
+    }
+
+    /// Virtual machine in this process that holds a device
+    /// - Parameter device: USB device
+    /// - Returns: The virtual machine or nil if the device is not connected to any
+    func usbDeviceOwner(_ device: UTMAppleUSBDevice) -> UTMAppleVirtualMachine? {
+        UTMAppleUSBManager.shared.owner(of: device)
+    }
+
+    /// Connect a host USB device to the guest
+    /// - Parameters:
+    ///   - device: USB device
+    ///   - takingOver: Disconnect the device from another virtual machine first
+    func connectUsbDevice(_ device: UTMAppleUSBDevice, takingOver: Bool = false) async throws {
+        // paused is allowed to reconnect devices after saving the state failed
+        guard state == .started || state == .paused || state == .saving else {
+            throw UTMAppleVirtualMachineError.operationNotAvailable
+        }
+        let manager = UTMAppleUSBManager.shared
+        manager.unrelease(device)
+        var device = device
+        if let owner = manager.owner(of: device) {
+            if owner === self {
+                return // already connected
+            }
+            guard takingOver else {
+                throw UTMAppleVirtualMachineError.usbDeviceInUse(device.name)
+            }
+            // the system reports the device again once it is detached from the other guest
+            let claim = manager.claim(device.registryDevice, for: self, timeout: .seconds(5))
+            do {
+                try await owner.detachUsbDevice(device)
+            } catch {
+                claim.cancel()
+                throw error
+            }
+            device = try await claim.value
+        }
+        try await attachUsbDevice(device)
+    }
+
+    /// Disconnect a host USB device from the guest at the request of the user
+    ///
+    /// The device stays assigned to UTM but is not connected again until the user asks for it.
+    /// - Parameter device: USB device
+    func disconnectUsbDevice(_ device: UTMAppleUSBDevice) async throws {
+        UTMAppleUSBManager.shared.release(device)
+        try await detachUsbDevice(device)
+    }
+
+    /// Called by the USB controller delegate when the system detached a device
+    /// - Parameter uuid: Identifier of the detached `VZUSBPassthroughDevice`
+    func usbPassthroughDeviceDidDisconnect(uuid: UUID) {
+        guard let (registryID, connection) = usbState.connections.first(where: { $0.value.vzDevice.uuid == uuid }) else {
+            return
+        }
+        usbState.connections.removeValue(forKey: registryID)
+        UTMAppleUSBManager.shared.setOwner(nil, of: connection.device)
+        logger.debug("USB device detached from guest: \(connection.device.name)")
+        usbState.delegate?.usbPassthrough(self, deviceDidDisconnect: connection.device)
+    }
+
+    /// Called by the USB manager when a connected device is no longer reported by the system
+    /// - Parameter device: USB device
+    func usbHostDeviceDidDisconnect(_ device: UTMAppleUSBDevice) {
+        // the USB controller delegate normally reports this first
+        if let connection = usbState.connections.removeValue(forKey: device.registryID) {
+            usbState.delegate?.usbPassthrough(self, deviceDidDisconnect: connection.device)
+        }
+    }
+
+    /// Connect a device the system delivered to this virtual machine, reporting failures to the delegate
+    /// - Parameter device: USB device
+    func autoConnectUsbDevice(_ device: UTMAppleUSBDevice) async {
+        do {
+            try await connectUsbDevice(device)
+        } catch {
+            logger.debug("Failed to connect USB device \(device.name): \(error)")
+            usbState.delegate?.usbPassthrough(self, device: device, didFailWithError: error)
+        }
+    }
+
+    private func attachUsbDevice(_ device: UTMAppleUSBDevice) async throws {
+        let manager = UTMAppleUSBManager.shared
+        manager.setOwner(self, of: device)
+        do {
+            let configuration = VZUSBPassthroughDeviceConfiguration(device: device.accessory)
+            let vzDevice = try VZUSBPassthroughDevice(configuration: configuration)
+            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, any Error>) in
+                vmQueue.async {
+                    guard let apple = self.apple, let usbController = apple.usbControllers.first else {
+                        continuation.resume(throwing: UTMAppleVirtualMachineError.operationNotAvailable)
+                        return
+                    }
+                    usbController.attach(device: vzDevice) { error in
+                        if let error = error {
+                            continuation.resume(throwing: error)
+                        } else {
+                            continuation.resume()
+                        }
+                    }
+                }
+            }
+            usbState.connections[device.registryID] = UTMAppleUSBPassthroughState.Connection(device: device, vzDevice: vzDevice)
+            logger.debug("Connected USB device \(device.name)")
+        } catch {
+            manager.setOwner(nil, of: device)
+            throw error
+        }
+    }
+
+    private func detachUsbDevice(_ device: UTMAppleUSBDevice) async throws {
+        guard let connection = usbState.connections[device.registryID] else {
+            throw UTMAppleVirtualMachineError.usbDeviceNotConnected(device.name)
+        }
+        do {
+            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, any Error>) in
+                vmQueue.async {
+                    guard let apple = self.apple, let usbController = apple.usbControllers.first else {
+                        continuation.resume(throwing: UTMAppleVirtualMachineError.operationNotAvailable)
+                        return
+                    }
+                    usbController.detach(device: connection.vzDevice) { error in
+                        if let error = error {
+                            continuation.resume(throwing: error)
+                        } else {
+                            continuation.resume()
+                        }
+                    }
+                }
+            }
+        } catch let error as VZError where error.code == .deviceNotFound {
+            // already detached by the system
+        }
+        usbState.connections.removeValue(forKey: device.registryID)
+        UTMAppleUSBManager.shared.setOwner(nil, of: device)
+    }
+
+    // MARK: Lifecycle
+
+    /// Called after the virtual machine started to pick up restored devices and receive new ones
+    private func startUsbPassthrough() async {
+        let manager = UTMAppleUSBManager.shared
+        manager.addVirtualMachine(self)
+        do {
+            try await manager.ensureRegistered()
+        } catch {
+            logger.debug("USB passthrough unavailable: \(error)")
+            return
+        }
+        await synchronizeUsbDevices()
+    }
+
+    /// Called when the virtual machine stopped or failed to start
+    private func stopUsbPassthrough() {
+        UTMAppleUSBManager.shared.removeVirtualMachine(self)
+        guard let state = usbPassthroughState as? UTMAppleUSBPassthroughState else {
+            return
+        }
+        state.connections.removeAll()
+        state.pendingRestore.removeAll()
+    }
+
+    /// Match the tracked connections with the devices attached to the USB controller
+    ///
+    /// This picks up devices restored from a saved state and drops devices the system detached.
+    private func synchronizeUsbDevices() async {
+        let vzDevices: [any VZUSBDevice] = await withCheckedContinuation { continuation in
+            vmQueue.async {
+                continuation.resume(returning: self.apple?.usbControllers.first?.usbDevices ?? [])
+            }
+        }
+        let attached = vzDevices.compactMap { $0 as? VZUSBPassthroughDevice }
+        let manager = UTMAppleUSBManager.shared
+        for (uuid, device) in usbState.pendingRestore {
+            if let vzDevice = attached.first(where: { $0.uuid == uuid }) {
+                usbState.connections[device.registryID] = UTMAppleUSBPassthroughState.Connection(device: device, vzDevice: vzDevice)
+            } else {
+                manager.setOwner(nil, of: device)
+            }
+        }
+        usbState.pendingRestore.removeAll()
+        for (registryID, connection) in usbState.connections where !attached.contains(where: { $0 === connection.vzDevice }) {
+            usbState.connections.removeValue(forKey: registryID)
+            manager.setOwner(nil, of: connection.device)
+        }
+    }
+
+    // MARK: Saved state
+
+    /// Add saved devices to the configuration with their UUID so they are part of the restored state
+    ///
+    /// The saved state references the devices by UUID. A device that is missing is skipped and the
+    /// guest sees it as unplugged.
+    /// - Parameter vzConfig: Configuration of the virtual machine to restore
+    private func restoreUsbDevices(to vzConfig: VZVirtualMachineConfiguration) async {
+        let saved = registryEntry.connectedUsbDevices.filter { $0.uuid != nil }
+        guard !saved.isEmpty, let controller = vzConfig.usbControllers.first else {
+            return
+        }
+        let manager = UTMAppleUSBManager.shared
+        do {
+            try await manager.ensureRegistered()
+        } catch {
+            logger.debug("USB passthrough unavailable: \(error)")
+            return
+        }
+        var configurations = controller.usbDevices
+        for entry in saved {
+            guard let uuid = entry.uuid, let device = await manager.device(matching: entry, timeout: .seconds(2)) else {
+                logger.debug("Saved USB device \(entry.name) not found")
+                continue
+            }
+            let configuration = VZUSBPassthroughDeviceConfiguration(device: device.accessory)
+            configuration.uuid = uuid
+            configurations.append(configuration)
+            manager.setOwner(self, of: device)
+            usbState.pendingRestore[uuid] = device
+        }
+        controller.usbDevices = configurations
+    }
+
+    /// Record the connected devices with their UUID so they can be part of the restored state
+    private func recordUsbDevicesForSave() async {
+        let saved = usbState.connections.values.map { connection in
+            var entry = connection.device.registryDevice
+            entry.uuid = connection.vzDevice.uuid
+            return entry
+        }
+        registryEntry.setConnectedUsbDevices(saved)
+    }
+}
+
 protocol UTMScreenshotProvider: AnyObject {
     var screenshot: UTMVirtualMachineScreenshot? { get }
 }
@@ -954,6 +1262,9 @@ enum UTMAppleVirtualMachineError: Error {
     case ipswNotReadable
     case deviceSupportOutdated
     case installMacOSVersionTooNew(guestVersion: String, hostVersion: String)
+    case usbDeviceNotFound(String)
+    case usbDeviceInUse(String)
+    case usbDeviceNotConnected(String)
 }
 
 extension UTMAppleVirtualMachineError: LocalizedError {
@@ -971,6 +1282,12 @@ extension UTMAppleVirtualMachineError: LocalizedError {
             return NSLocalizedString("You need to update macOS to run this virtual machine. A separate pop-up should prompt you to install this update. If you are trying to install a new beta version of macOS, you must manually download the Device Support package from the Apple Developer website.", comment: "UTMAppleVirtualMachine")
         case .installMacOSVersionTooNew(let guestVersion, let hostVersion):
             return String.localizedStringWithFormat(NSLocalizedString("Installation failed because macOS %1$@ is newer than macOS %2$@ running on this Mac. Update this Mac to macOS %1$@ or later and try again, or install an older version of macOS.", comment: "UTMAppleVirtualMachine"), guestVersion, hostVersion)
+        case .usbDeviceNotFound(let name):
+            return String.localizedStringWithFormat(NSLocalizedString("The USB device '%@' cannot be found.", comment: "UTMAppleVirtualMachine"), name)
+        case .usbDeviceInUse(let name):
+            return String.localizedStringWithFormat(NSLocalizedString("The USB device '%@' is already connected to another virtual machine.", comment: "UTMAppleVirtualMachine"), name)
+        case .usbDeviceNotConnected(let name):
+            return String.localizedStringWithFormat(NSLocalizedString("The USB device '%@' is not connected to this virtual machine.", comment: "UTMAppleVirtualMachine"), name)
         }
     }
 }

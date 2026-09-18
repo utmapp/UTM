@@ -300,6 +300,10 @@ extension UTMAppleConfiguration {
         if #available(macOS 15, *) {
             vzconfig.usbControllers = [VZXHCIControllerConfiguration()]
         }
+        if #available(macOS 27, *) {
+            // names the virtual machine in system prompts such as USB device access
+            vzconfig.label = information.name.vzLabel
+        }
         return vzconfig
     }
 
@@ -309,6 +313,20 @@ extension UTMAppleConfiguration {
         } else {
             return "share"
         }
+    }
+}
+
+private extension String {
+    /// Label accepted by `VZVirtualMachineConfiguration`: non-empty and at most 64 characters
+    var vzLabel: String? {
+        var label = trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !label.isEmpty else {
+            return nil
+        }
+        while label.utf16.count > 64 {
+            label.removeLast()
+        }
+        return label
     }
 }
 

@@ -43,6 +43,8 @@ import Combine
     
     @Published private var _macRecoveryIpsw: File?
     
+    @Published private var _connectedUsbDevices: [USBDevice]
+    
     private enum CodingKeys: String, CodingKey {
         case name = "Name"
         case package = "Package"
@@ -55,6 +57,7 @@ import Combine
         case resolutionSettings = "ResolutionSettings"
         case hasMigratedConfig = "MigratedConfig"
         case macRecoveryIpsw = "MacRecoveryIpsw"
+        case connectedUsbDevices = "ConnectedUsbDevices"
     }
     
     init(uuid: UUID, name: String, path: String, bookmark: Data? = nil) {
@@ -74,6 +77,7 @@ import Combine
         _terminalSettings = [:]
         _resolutionSettings = [:]
         _hasMigratedConfig = false
+        _connectedUsbDevices = []
     }
     
     convenience init(newFrom vm: any UTMVirtualMachine) {
@@ -96,6 +100,7 @@ import Combine
         _resolutionSettings = try container.decodeIfPresent([Int: Resolution].self, forKey: .resolutionSettings) ?? [:]
         _hasMigratedConfig = try container.decodeIfPresent(Bool.self, forKey: .hasMigratedConfig) ?? false
         _macRecoveryIpsw = try container.decodeIfPresent(File.self, forKey: .macRecoveryIpsw)
+        _connectedUsbDevices = try container.decodeIfPresent([USBDevice].self, forKey: .connectedUsbDevices) ?? []
     }
     
     func encode(to encoder: Encoder) throws {
@@ -113,6 +118,9 @@ import Combine
             try container.encode(_hasMigratedConfig, forKey: .hasMigratedConfig)
         }
         try container.encodeIfPresent(_macRecoveryIpsw, forKey: .macRecoveryIpsw)
+        if !_connectedUsbDevices.isEmpty {
+            try container.encode(_connectedUsbDevices, forKey: .connectedUsbDevices)
+        }
     }
     
     func asDictionary() throws -> [String: Any] {
@@ -238,6 +246,21 @@ extension UTMRegistryEntry: UTMRegistryEntryDecodable {}
         }
     }
     
+    /// USB devices that were connected to the guest when its state was saved
+    var connectedUsbDevices: [USBDevice] {
+        get {
+            _connectedUsbDevices
+        }
+        
+        set {
+            _connectedUsbDevices = newValue
+        }
+    }
+    
+    func setConnectedUsbDevices(_ devices: [USBDevice]) {
+        connectedUsbDevices = devices
+    }
+    
     func setExternalDrive(_ file: File, forId id: String) {
         externalDrives[id] = file
     }
@@ -276,6 +299,7 @@ extension UTMRegistryEntry: UTMRegistryEntryDecodable {}
         terminalSettings = other.terminalSettings
         resolutionSettings = other.resolutionSettings
         hasMigratedConfig = other.hasMigratedConfig
+        connectedUsbDevices = other.connectedUsbDevices
     }
     
     func setIsSuspended(_ isSuspended: Bool) {
@@ -537,6 +561,53 @@ extension UTMRegistryEntry {
             var container = encoder.container(keyedBy: CodingKeys.self)
             try container.encode(size, forKey: .size)
             try container.encode(isFullscreen, forKey: .isFullscreen)
+        }
+    }
+
+    /// Identifies a host USB device that was passed through to the guest
+    struct USBDevice: Codable, Equatable {
+        var vendorId: Int
+
+        var productId: Int
+
+        var serial: String?
+
+        /// Identifier of the device inside the saved virtual machine state, if it was saved while attached
+        var uuid: UUID?
+
+        private enum CodingKeys: String, CodingKey {
+            case vendorId = "VendorID"
+            case productId = "ProductID"
+            case serial = "Serial"
+            case uuid = "UUID"
+        }
+
+        /// Name used in messages about a device that is not plugged in
+        var name: String {
+            String(format: "%04X:%04X", vendorId, productId)
+        }
+
+        init(vendorId: Int, productId: Int, serial: String?, uuid: UUID? = nil) {
+            self.vendorId = vendorId
+            self.productId = productId
+            self.serial = serial
+            self.uuid = uuid
+        }
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            vendorId = try container.decode(Int.self, forKey: .vendorId)
+            productId = try container.decode(Int.self, forKey: .productId)
+            serial = try container.decodeIfPresent(String.self, forKey: .serial)
+            uuid = try container.decodeIfPresent(UUID.self, forKey: .uuid)
+        }
+
+        func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(vendorId, forKey: .vendorId)
+            try container.encode(productId, forKey: .productId)
+            try container.encodeIfPresent(serial, forKey: .serial)
+            try container.encodeIfPresent(uuid, forKey: .uuid)
         }
     }
 }
