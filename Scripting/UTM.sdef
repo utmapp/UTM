@@ -74,6 +74,25 @@
           </parameter>
         </command>
         
+        <command name="install" code="UTMvinst" description="Install macOS on a stopped Apple virtual machine from its IPSW recovery image. All data on the primary drive will be erased, there is no confirmation! Returns once the installation starts, use query install to follow its progress.">
+          <direct-parameter description="Virtual machine to install macOS on." type="virtual machine"/>
+        </command>
+        
+        <record-type name="install progress" code="InPr" description="Progress of a macOS installation.">
+          <property name="installing" code="InIn" type="boolean" access="r"
+            description="If true, the installation has not finished yet.">
+            <cocoa key="isInstalling"/>
+          </property>
+          
+          <property name="progress" code="InPg" type="real" access="r"
+            description="Fraction of the installation that is completed, from 0.0 to 1.0."/>
+        </record-type>
+        
+        <command name="query install" code="UTMvqins" description="Query the progress of the last installation started with install. Raises an error if the installation failed.">
+          <direct-parameter description="Virtual machine to query." type="virtual machine"/>
+          <result type="install progress" description="Progress of the installation."/>
+        </command>
+
         <command name="suspend" code="UTMvsusp" description="Suspend a running virtual machine to memory.">
           <direct-parameter description="Virtual machine to suspend." type="virtual machine"/>
           <parameter name="saving" code="SaVe" description="Save VM state to disk after suspend. Default value is false." type="boolean" optional="yes">
@@ -174,6 +193,14 @@
             <cocoa method="start:"/>
           </responds-to>
           
+          <responds-to command="install">
+            <cocoa method="install:"/>
+          </responds-to>
+          
+          <responds-to command="query install">
+            <cocoa method="queryInstall:"/>
+          </responds-to>
+
           <responds-to command="suspend">
             <cocoa method="suspend:"/>
           </responds-to>

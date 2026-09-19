@@ -28,6 +28,9 @@ import Foundation
             guard let newConfiguration = newConfiguration else {
                 throw ScriptingError.invalidParameter
             }
+            guard !isInstalling else {
+                throw ScriptingError.installInProgress
+            }
             guard vm.state == .stopped else {
                 throw ScriptingError.notStopped
             }
