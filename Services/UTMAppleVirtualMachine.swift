@@ -161,7 +161,8 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         updateConfigFromRegistry()
     }
     
-    private func _start(options: UTMVirtualMachineStartOptions) async throws {
+    /// - Parameter guestProvisioning: `VZMacGuestProvisioningOptions` on macOS 27, always nil on older versions
+    private func _start(options: UTMVirtualMachineStartOptions, guestProvisioning: Any? = nil) async throws {
         let boot = await config.system.boot
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) -> Void in
             vmQueue.async {
@@ -173,6 +174,14 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
                 if #available(macOS 13, *), boot.operatingSystem == .macOS {
                     let vzoptions = VZMacOSVirtualMachineStartOptions()
                     vzoptions.startUpFromMacOSRecovery = options.contains(.bootRecovery)
+                    if #available(macOS 27, *), let guestProvisioning = guestProvisioning as? VZMacGuestProvisioningOptions {
+                        do {
+                            try vzoptions.setGuestProvisioning(guestProvisioning)
+                        } catch {
+                            continuation.resume(throwing: error)
+                            return
+                        }
+                    }
                     apple.start(options: vzoptions) { result in
                         if let result = result {
                             continuation.resume(with: .failure(result))
@@ -192,7 +201,27 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
     }
     
     func start(options: UTMVirtualMachineStartOptions = []) async throws {
+        try await start(options: options, guestProvisioning: nil)
+    }
+    
+    /// Start the VM and optionally set up the macOS guest without user interaction
+    ///
+    /// The guest only reads the provisioning options on the first boot after macOS is installed.
+    /// - Parameters:
+    ///   - options: Options for startup
+    ///   - guestProvisioning: If set, account to create in the guest. This is never saved.
+    func start(options: UTMVirtualMachineStartOptions, guestProvisioning: UTMAppleGuestProvisioningOptions?) async throws {
+        var vzGuestProvisioning: Any?
+        if let guestProvisioning = guestProvisioning {
+            // this must fail before the error handling below which discards any saved state
+            vzGuestProvisioning = try await validateGuestProvisioning(guestProvisioning, options: options)
+        }
+        // do not suspend between checking and changing the state
         guard state == .stopped else {
+            if guestProvisioning != nil {
+                // the first boot cannot be repeated so the caller must know it was not set up
+                throw UTMAppleVirtualMachineError.guestProvisioningNotAvailable
+            }
             return
         }
         state = .starting
@@ -204,7 +233,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             if isRestoring {
                 try await restoreSnapshot()
             } else {
-                try await _start(options: options)
+                try await _start(options: options, guestProvisioning: vzGuestProvisioning)
             }
             if #available(macOS 15, *) {
                 try await attachExternalDrives()
@@ -240,6 +269,44 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             try? await deleteSnapshot()
             throw error
         }
+    }
+    
+    /// Check that the guest can be provisioned on this start
+    /// - Parameters:
+    ///   - guestProvisioning: Account to create in the guest
+    ///   - options: Options for startup
+    /// - Returns: `VZMacGuestProvisioningOptions` to pass to `_start`
+    @discardableResult
+    func validateGuestProvisioning(_ guestProvisioning: UTMAppleGuestProvisioningOptions, options: UTMVirtualMachineStartOptions) async throws -> Any {
+        #if os(macOS) && arch(arm64)
+        let boot = await config.system.boot
+        guard #available(macOS 27, *), boot.operatingSystem == .macOS else {
+            throw UTMAppleVirtualMachineError.guestProvisioningNotSupported
+        }
+        // only the first boot after install sets up the guest: not a pending install, a resumed guest, or recoveryOS
+        let isSuspended = await registryEntry.isSuspended
+        guard boot.macRecoveryIpswURL == nil && !isSuspended && !options.contains(.bootRecovery) else {
+            throw UTMAppleVirtualMachineError.guestProvisioningNotAvailable
+        }
+        let vzGuestProvisioning = VZMacGuestProvisioningOptions()
+        vzGuestProvisioning.fullName = guestProvisioning.fullName
+        vzGuestProvisioning.username = guestProvisioning.username
+        vzGuestProvisioning.password = guestProvisioning.password
+        vzGuestProvisioning.logsInAutomatically = guestProvisioning.logsInAutomatically
+        vzGuestProvisioning.enablesRemoteLogin = guestProvisioning.enablesRemoteLogin
+        do {
+            try vzGuestProvisioning.validate()
+        } catch let error as VZError where error.code == .guestProvisioningInvalidFullName {
+            throw UTMAppleVirtualMachineError.guestProvisioningInvalidFullName
+        } catch let error as VZError where error.code == .guestProvisioningInvalidUsername {
+            throw UTMAppleVirtualMachineError.guestProvisioningInvalidUsername
+        } catch let error as VZError where error.code == .guestProvisioningInvalidPassword {
+            throw UTMAppleVirtualMachineError.guestProvisioningInvalidPassword
+        }
+        return vzGuestProvisioning
+        #else
+        throw UTMAppleVirtualMachineError.guestProvisioningNotSupported
+        #endif
     }
     
     private func _forceStop() async throws {
@@ -1293,6 +1360,22 @@ enum UTMAppleVirtualMachineError: Error {
     case usbDeviceNotFound(String)
     case usbDeviceInUse(String)
     case usbDeviceNotConnected(String)
+    case guestProvisioningNotSupported
+    case guestProvisioningNotAvailable
+    case guestProvisioningInvalidFullName
+    case guestProvisioningInvalidUsername
+    case guestProvisioningInvalidPassword
+}
+
+/// Account to create in a macOS guest on the first boot after install
+///
+/// This holds a password so it is intentionally not `Codable` and must not be saved or logged.
+struct UTMAppleGuestProvisioningOptions {
+    var fullName: String
+    var username: String
+    var password: String
+    var logsInAutomatically: Bool = false
+    var enablesRemoteLogin: Bool = false
 }
 
 extension UTMAppleVirtualMachineError: LocalizedError {
@@ -1316,6 +1399,16 @@ extension UTMAppleVirtualMachineError: LocalizedError {
             return String.localizedStringWithFormat(NSLocalizedString("The USB device '%@' is already connected to another virtual machine.", comment: "UTMAppleVirtualMachine"), name)
         case .usbDeviceNotConnected(let name):
             return String.localizedStringWithFormat(NSLocalizedString("The USB device '%@' is not connected to this virtual machine.", comment: "UTMAppleVirtualMachine"), name)
+        case .guestProvisioningNotSupported:
+            return NSLocalizedString("Setting up the guest automatically requires a macOS virtual machine and macOS 27 or later on Apple Silicon.", comment: "UTMAppleVirtualMachine")
+        case .guestProvisioningNotAvailable:
+            return NSLocalizedString("The guest can only be set up automatically on the first start after macOS is installed. It cannot be set up before macOS is installed, from a saved state, or in recovery mode.", comment: "UTMAppleVirtualMachine")
+        case .guestProvisioningInvalidFullName:
+            return NSLocalizedString("The full name for the guest account is not valid.", comment: "UTMAppleVirtualMachine")
+        case .guestProvisioningInvalidUsername:
+            return NSLocalizedString("The username for the guest account is not valid.", comment: "UTMAppleVirtualMachine")
+        case .guestProvisioningInvalidPassword:
+            return NSLocalizedString("The password for the guest account is not valid.", comment: "UTMAppleVirtualMachine")
         }
     }
 }

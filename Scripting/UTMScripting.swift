@@ -235,7 +235,7 @@ extension SBObject: UTMScriptingWindow {}
     @objc optional var name: String { get } // The name of the VM.
     @objc optional var backend: UTMScriptingBackend { get } // Emulation/virtualization engine used.
     @objc optional var status: UTMScriptingStatus { get } // Current running status.
-    @objc optional func startSaving(_ saving: Bool, recovery: Bool) // Start a virtual machine or resume a suspended virtual machine.
+    @objc optional func startSaving(_ saving: Bool, recovery: Bool, provisioning: [AnyHashable : Any]!) // Start a virtual machine or resume a suspended virtual machine.
     @objc optional func install() // Install macOS on a stopped Apple virtual machine from its IPSW recovery image. All data on the primary drive will be erased, there is no confirmation! Returns once the installation starts, use query install to follow its progress.
     @objc optional func queryInstall() -> [AnyHashable : Any] // Query the progress of the last installation started with install. Raises an error if the installation failed.
     @objc optional func suspendSaving(_ saving: Bool) // Suspend a running virtual machine to memory.

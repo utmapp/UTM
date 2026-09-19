@@ -246,9 +246,93 @@ extension UTMCtl {
         @Flag(help: "Boot a VM in recovery mode.")
         var recovery: Bool = false
 
+        struct Provisioning: ParsableArguments {
+            @Option(name: .customLong("provision-username"), help: "Set up a macOS guest with this account on the first start after macOS is installed. Requires macOS 27 or later on both the host and the guest.")
+            var username: String?
+            
+            @Option(name: .customLong("provision-full-name"), help: "Full name of the guest account. Defaults to the username.")
+            var fullName: String?
+            
+            @Option(name: .customLong("provision-password"), help: "Password of the guest account. Other processes can see this, use --provision-password-stdin to avoid that.")
+            var password: String?
+            
+            @Flag(name: .customLong("provision-password-stdin"), help: "Read the password of the guest account from standard input.")
+            var passwordStdin: Bool = false
+            
+            @Flag(name: .customLong("provision-auto-login"), help: "Log in to the guest account automatically when the guest starts up.")
+            var autoLogin: Bool = false
+            
+            @Flag(name: .customLong("provision-ssh"), help: "Turn on Remote Login (SSH) in the guest.")
+            var ssh: Bool = false
+            
+            struct InvalidProvisioningError: LocalizedError {
+                var errorDescription: String?
+            }
+            
+            func validate() throws {
+                guard username != nil else {
+                    guard fullName == nil && password == nil && !passwordStdin && !autoLogin && !ssh else {
+                        throw InvalidProvisioningError(errorDescription: "You must specify --provision-username to set up the guest")
+                    }
+                    return
+                }
+                guard (password != nil) != passwordStdin else {
+                    throw InvalidProvisioningError(errorDescription: "You must specify one of: --provision-password or --provision-password-stdin")
+                }
+            }
+        }
+        
+        @OptionGroup var provisioning: Provisioning
+        
+        struct ProvisioningRecoveryError: LocalizedError {
+            var errorDescription: String? {
+                "You cannot set up the guest when booting in recovery mode"
+            }
+        }
+        
+        func validate() throws {
+            guard !recovery || provisioning.username == nil else {
+                throw ProvisioningRecoveryError()
+            }
+        }
+        
+        /// Read a password from standard input without showing it when typed at a terminal
+        static func readPassword() throws -> String {
+            if isatty(STDIN_FILENO) != 0 {
+                var buffer = [CChar](repeating: 0, count: 1024)
+                guard readpassphrase("Password: ", &buffer, buffer.count, 0) != nil else {
+                    throw Provisioning.InvalidProvisioningError(errorDescription: "Failed to read the password")
+                }
+                return String(cString: buffer)
+            }
+            let data = try FileHandle.standardInput.readToEnd() ?? Data()
+            // a lossy conversion would create an account with a password nobody knows
+            guard var password = String(data: data, encoding: .utf8) else {
+                throw Provisioning.InvalidProvisioningError(errorDescription: "The password must be valid UTF-8 text")
+            }
+            if password.last?.isNewline == true {
+                password.removeLast()
+            }
+            return password
+        }
+        
         func run(with application: UTMScriptingApplication) throws {
             let vm = try virtualMachine(forIdentifier: identifer, in: application)
-            vm.startSaving!(!disposable, recovery: recovery)
+            var provisioningOptions: [AnyHashable : Any]?
+            if let username = provisioning.username {
+                var password = provisioning.password ?? ""
+                if provisioning.passwordStdin {
+                    password = try Self.readPassword()
+                }
+                provisioningOptions = ["username": username,
+                                       "password": password,
+                                       "automaticLogin": provisioning.autoLogin,
+                                       "remoteLogin": provisioning.ssh]
+                if let fullName = provisioning.fullName {
+                    provisioningOptions!["fullName"] = fullName
+                }
+            }
+            vm.startSaving!(!disposable, recovery: recovery, provisioning: provisioningOptions)
             if attach {
                 print("WARNING: attach command is not implemented yet!")
             }
