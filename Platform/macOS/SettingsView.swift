@@ -198,6 +198,7 @@ struct ApplicationSettingsView: View {
 struct DisplaySettingsView: View {
     @AppStorage("NoScreenshot") var isNoScreenshot = false
     @AppStorage("NoSaveScreenshot") var isNoSaveScreenshot = false
+    @AppStorage("FullScreenUseCameraHousingArea") var isFullScreenUseCameraHousingArea = false
     @AppStorage("QEMURendererBackend") var qemuRendererBackend: UTMQEMURendererBackend = .qemuRendererBackendDefault
     @AppStorage("QEMUVulkanDriver") var qemuVulkanDriver: UTMQEMUVulkanDriver = .qemuVulkanDriverDefault
     @AppStorage("QEMUDirectXDriver") var qemuDirectXDriver: UTMQEMUDirectXDriver = .qemuDirectXDriverDefault
@@ -237,6 +238,11 @@ struct DisplaySettingsView: View {
                     Text("Do not save VM screenshot to disk")
                 }.help("If enabled, any existing screenshot will be deleted the next time the VM is started.")
                 .disabled(isNoScreenshot)
+                if #available(macOS 27, *) {
+                    Toggle(isOn: $isFullScreenUseCameraHousingArea) {
+                        Text("Fill the area beside the camera housing in full screen")
+                    }.help("If enabled, a full screen VM display will use the entire screen including the area beside the built-in camera. The menu bar will cover this area while it is revealed.")
+                }
             }
             
             Section(header: Text("QEMU Graphics Acceleration")) {

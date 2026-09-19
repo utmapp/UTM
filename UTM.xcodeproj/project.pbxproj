@@ -653,6 +653,7 @@
 		CE611BEB29F50D3E001817BC /* VMReleaseNotesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE611BEA29F50D3E001817BC /* VMReleaseNotesView.swift */; };
 		CE611BEC29F50D3E001817BC /* VMReleaseNotesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE611BEA29F50D3E001817BC /* VMReleaseNotesView.swift */; };
 		CE611BED29F50D3E001817BC /* VMReleaseNotesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE611BEA29F50D3E001817BC /* VMReleaseNotesView.swift */; };
+		CE5A7E112E9F4A1100C0FFEE /* VMDisplayWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE5A7E102E9F4A1100C0FFEE /* VMDisplayWindow.swift */; };
 		CE612AC624D3B50700FA6300 /* VMDisplayWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE612AC524D3B50700FA6300 /* VMDisplayWindowController.swift */; };
 		CE63B0DB2F0ED4FF00C59D13 /* vulkan_kosmickrisp.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE63B0D72F0ED4FE00C59D13 /* vulkan_kosmickrisp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CE63B0DD2F0ED4FF00C59D13 /* vulkan.1.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE63B0D82F0ED4FE00C59D13 /* vulkan.1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -2030,6 +2031,7 @@
 		CE59A7AF2AA69AE400E5FFBD /* UTMScriptingUSBDeviceImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMScriptingUSBDeviceImpl.swift; sourceTree = "<group>"; };
 		CE611BE629F50CAD001817BC /* UTMReleaseHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMReleaseHelper.swift; sourceTree = "<group>"; };
 		CE611BEA29F50D3E001817BC /* VMReleaseNotesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMReleaseNotesView.swift; sourceTree = "<group>"; };
+		CE5A7E102E9F4A1100C0FFEE /* VMDisplayWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayWindow.swift; sourceTree = "<group>"; };
 		CE612AC524D3B50700FA6300 /* VMDisplayWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayWindowController.swift; sourceTree = "<group>"; };
 		CE63B0D72F0ED4FE00C59D13 /* vulkan_kosmickrisp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = vulkan_kosmickrisp.framework; path = "$(SYSROOT_DIR)/Frameworks/vulkan_kosmickrisp.framework"; sourceTree = "<group>"; };
 		CE63B0D82F0ED4FE00C59D13 /* vulkan.1.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = vulkan.1.framework; path = "$(SYSROOT_DIR)/Frameworks/vulkan.1.framework"; sourceTree = "<group>"; };
@@ -2645,6 +2647,7 @@
 			children = (
 				A1C4F00130C1200000CA9501 /* CapsLockRemapper.swift */,
 				CE061CDD289E6DC30000351C /* VMDisplayWindow.xib */,
+				CE5A7E102E9F4A1100C0FFEE /* VMDisplayWindow.swift */,
 				CE612AC524D3B50700FA6300 /* VMDisplayWindowController.swift */,
 				84F746B8276FF40900A20C87 /* VMDisplayAppleWindowController.swift */,
 				845F170A289CB07200944904 /* VMDisplayAppleDisplayWindowController.swift */,
@@ -4167,6 +4170,7 @@
 				841E997728AA1191003C6CB6 /* UTMRegistry.swift in Sources */,
 				841E997B28AA119B003C6CB6 /* UTMRegistryEntry.swift in Sources */,
 				CE2D956424AD4F990059923A /* VMConfigNetworkPortForwardView.swift in Sources */,
+				CE5A7E112E9F4A1100C0FFEE /* VMDisplayWindow.swift in Sources */,
 				CE612AC624D3B50700FA6300 /* VMDisplayWindowController.swift in Sources */,
 				53A0BDD726D79FE40010EDC5 /* SavePanel.swift in Sources */,
 				843BF82A28441FAF0029D60D /* QEMUConstantGenerated.swift in Sources */,
