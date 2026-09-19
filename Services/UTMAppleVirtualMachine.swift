@@ -235,6 +235,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             if #available(macOS 27, *) {
                 await stopUsbPassthrough()
             }
+            await releaseFailedAppleVM()
             state = .stopped
             try? await deleteSnapshot()
             throw error
@@ -566,6 +567,39 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         }
     }
     
+    @MainActor private func closeSerialPorts() {
+        for i in config.serials.indices {
+            if let serialPort = config.serials[i].interface {
+                serialPort.close()
+                config.serials[i].interface = nil
+                config.serials[i].fileHandleForReading = nil
+                config.serials[i].fileHandleForWriting = nil
+            }
+        }
+    }
+    
+    /// Release what `createAppleVM` set up when the virtual machine did not come up.
+    ///
+    /// No delegate callback follows a failed start, so without this the virtual machine would hold on
+    /// to its devices (and any network they reserve) and the serial ports would stay open.
+    private func releaseFailedAppleVM() async {
+        let isReleased = await withCheckedContinuation { (continuation: CheckedContinuation<Bool, Never>) in
+            vmQueue.async { [self] in
+                if let apple = apple, apple.state != .stopped && apple.state != .error {
+                    // the guest is alive, everything is released once it stops
+                    continuation.resume(returning: false)
+                    return
+                }
+                apple = nil
+                snapshotUnsupportedError = nil
+                continuation.resume(returning: true)
+            }
+        }
+        if isReleased {
+            await closeSerialPorts()
+        }
+    }
+    
     private func updateSharedDirectories(with newShares: [UTMAppleConfigurationSharedDirectory], tag: String) {
         guard let fsConfig = apple?.directorySharingDevices.first(where: { device in
             if let device = device as? VZVirtioFileSystemDevice {
@@ -622,6 +656,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             progressObserver = nil
             installProgress = nil
             await stopAccesingResources()
+            await releaseFailedAppleVM()
             delegate?.virtualMachine(self, didCompleteInstallation: false)
             state = .stopped
             let error = error as NSError
@@ -754,14 +789,7 @@ extension UTMAppleVirtualMachine: VZVirtualMachineDelegate {
             if #available(macOS 27, *) {
                 stopUsbPassthrough()
             }
-            for i in config.serials.indices {
-                if let serialPort = config.serials[i].interface {
-                    serialPort.close()
-                    config.serials[i].interface = nil
-                    config.serials[i].fileHandleForReading = nil
-                    config.serials[i].fileHandleForWriting = nil
-                }
-            }
+            closeSerialPorts()
         }
         try? saveScreenshot()
         state = .stopped
