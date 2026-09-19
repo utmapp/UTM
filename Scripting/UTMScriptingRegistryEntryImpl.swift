@@ -30,6 +30,10 @@ import Foundation
             }
             let wrapper = UTMScriptingRegistryEntryImpl(vm.registryEntry)
             try await wrapper.updateRegistry(from: newRegistry, qemuProcess)
+            // For Apple Virtualization VMs there is no QEMU process to notify, and the
+            // registry -> config sync otherwise only happens incidentally via VMData's
+            // Combine subscription, so do it explicitly here.
+            await (vm as? UTMAppleVirtualMachine)?.updateConfigFromRegistry()
         }
     }
 }
@@ -60,16 +64,26 @@ class UTMScriptingRegistryEntryImpl {
                 }
             }
             
-            // Get bookmark from UTM process
-            let standardBookmark = try url.bookmarkData()
-            let system = system ?? UTMProcess()
-            let (success, bookmark, path) = await system.accessData(withBookmark: standardBookmark, securityScoped: false)
-            guard let bookmark = bookmark, let _ = path, success else {
-                throw UTMQemuVirtualMachineError.accessDriveImageFailed
+            let file: UTMRegistryEntry.File
+            if let system = system {
+                // QEMU backend: hand the standard bookmark off to the XPC helper so it
+                // mints its own security-scoped bookmark valid within its own sandbox.
+                let standardBookmark = try url.bookmarkData()
+                let (success, bookmark, path) = await system.accessData(withBookmark: standardBookmark, securityScoped: false)
+                guard let bookmark = bookmark, let _ = path, success else {
+                    throw UTMQemuVirtualMachineError.accessDriveImageFailed
+                }
+                file = UTMRegistryEntry.File(dummyFromPath: url.path, remoteBookmark: bookmark)
+            } else {
+                // Apple Virtualization backend: QEMU runs in-process, so create a real
+                // security-scoped bookmark directly (no XPC helper to hand it off to),
+                // then resolve it back into a URL that actually carries the security
+                // scope, the same way the registry does when reloading from disk.
+                let bookmark = try url.persistentBookmarkData(isReadyOnly: false)
+                file = try UTMRegistryEntry.File(path: url.path, bookmark: bookmark)
             }
-            
+
             // Store bookmark in registry
-            let file = UTMRegistryEntry.File(dummyFromPath: url.path, remoteBookmark: bookmark)
             registry.appendSharedDirectory(file)
         }
         
