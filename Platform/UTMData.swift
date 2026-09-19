@@ -144,12 +144,18 @@ enum AlertItem: Identifiable {
     ///
     /// This removes stale entries (deleted/not accessible) and duplicate entries
     func listRefresh() async {
+        // deduplicate VM list
+        var list: [VMData] = [];
+        for vm in virtualMachines {
+            if !list.contains(where: { isSameFile($0.pathUrl, as: vm.pathUrl) }) {
+                list.append(vm)
+            }
+        }
         // create Documents directory if it doesn't exist
         if !fileManager.fileExists(atPath: Self.defaultStorageUrl.path) {
             try? fileManager.createDirectory(at: Self.defaultStorageUrl, withIntermediateDirectories: false)
         }
         // wrap stale VMs
-        var list = virtualMachines
         for i in list.indices.reversed() {
             let vm = list[i]
             if let registryEntry = vm.registryEntry, !fileManager.fileExists(atPath: registryEntry.package.path) {
