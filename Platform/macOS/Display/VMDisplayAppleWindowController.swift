@@ -38,7 +38,11 @@ class VMDisplayAppleWindowController: VMDisplayWindowController {
     }
     
     var defaultSubtitle: String {
-        ""
+        if appleVM.isRunningAsDisposible {
+            return NSLocalizedString("Disposable Mode", comment: "VMDisplayAppleWindowController")
+        } else {
+            return ""
+        }
     }
     
     private var isSharePathAlertShownOnce = false

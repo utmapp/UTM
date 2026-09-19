@@ -111,7 +111,7 @@ extension UTMData {
             return
         }
         Task {
-            if wrapped.registryEntry.isSuspended {
+            if wrapped.registryEntry.isSuspended && !wrapped.isRunningAsDisposible {
                 try? await wrapped.deleteSnapshot(name: nil)
             }
             if vm.state == .started || vm.state == .paused {

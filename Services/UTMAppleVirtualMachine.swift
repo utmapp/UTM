@@ -34,7 +34,11 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         }
         
         var supportsDisposibleMode: Bool {
-            false
+            if #available(macOS 27, *) {
+                return true
+            } else {
+                return false
+            }
         }
         
         var supportsRecoveryMode: Bool {
@@ -59,7 +63,9 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
     
     private(set) var isShortcut: Bool = false
     
-    let isRunningAsDisposible: Bool = false
+    var isRunningAsDisposible: Bool {
+        disposableOverlayDirectoryURL != nil
+    }
     
     weak var delegate: (any UTMVirtualMachineDelegate)?
     
@@ -117,6 +123,9 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
     private var activeResourceUrls: [String: URL] = [:]
 
     private var removableDrives: [String: Any] = [:]
+
+    /// Holds the ephemeral copy-on-write layers while running without saving changes
+    private var disposableOverlayDirectoryURL: URL?
 
     /// `UTMAppleUSBPassthroughState` on macOS 27, always nil on older versions
     private var usbPassthroughState: Any?
@@ -188,7 +197,9 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
                 }
             }
         }
-        try? updateLastModified()
+        if !isRunningAsDisposible {
+            try? updateLastModified()
+        }
     }
     
     func start(options: UTMVirtualMachineStartOptions = []) async throws {
@@ -196,9 +207,16 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             return
         }
         state = .starting
+        let isDisposible = options.contains(.bootDisposibleMode)
         do {
             let isSuspended = await registryEntry.isSuspended
-            let isRestoring = isSuspended && !options.contains(.bootRecovery)
+            // a disposable run boots fresh and leaves any saved state untouched
+            let isRestoring = isSuspended && !isDisposible && !options.contains(.bootRecovery)
+            // discard the overlays of a run that did not stop cleanly
+            removeDisposableOverlayDirectory()
+            if isDisposible {
+                try createDisposableOverlayDirectory()
+            }
             try await beginAccessingResources()
             try await createAppleVM(isRestoring: isRestoring)
             if isRestoring {
@@ -236,9 +254,44 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
                 await stopUsbPassthrough()
             }
             await releaseFailedAppleVM()
+            removeDisposableOverlayDirectory()
             state = .stopped
-            try? await deleteSnapshot()
+            if !isDisposible {
+                try? await deleteSnapshot()
+            }
             throw error
+        }
+    }
+
+    /// Create a directory for the ephemeral copy-on-write layers of a disposable run
+    private func createDisposableOverlayDirectory() throws {
+        guard #available(macOS 27, *) else {
+            throw UTMAppleVirtualMachineError.operationNotAvailable
+        }
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("disposable-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
+        disposableOverlayDirectoryURL = url
+    }
+
+    /// Discard the ephemeral copy-on-write layers of a disposable run
+    private func removeDisposableOverlayDirectory() {
+        if let url = disposableOverlayDirectoryURL {
+            try? FileManager.default.removeItem(at: url)
+        }
+        disposableOverlayDirectoryURL = nil
+    }
+
+    /// Discard the ephemeral copy-on-write layers left behind by a previous process that did not stop cleanly
+    ///
+    /// Call this before any virtual machine is started.
+    static func removeStaleDisposableOverlayDirectories() {
+        let fileManager = FileManager.default
+        let temporaryDirectoryURL = fileManager.temporaryDirectory
+        guard let contents = try? fileManager.contentsOfDirectory(at: temporaryDirectoryURL, includingPropertiesForKeys: nil) else {
+            return
+        }
+        for url in contents where url.lastPathComponent.hasPrefix("disposable-") {
+            try? fileManager.removeItem(at: url)
         }
     }
     
@@ -538,7 +591,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             let serialPort = UTMSerialPort(portNamed: name, readFileHandle: slaveTtyHandle, writeFileHandle: slaveTtyHandle, terminalFileHandle: terminalTtyHandle)
             config.serials[i].interface = serialPort
         }
-        let vzConfig = try config.appleVZConfiguration()
+        let vzConfig = try config.appleVZConfiguration(disposableOverlayDirectoryURL: disposableOverlayDirectoryURL)
         var usbControllerDelegate: AnyObject?
         if #available(macOS 27, *), hasUsbRedirection {
             if isRestoring {
@@ -564,6 +617,9 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
                 }
             }
             #endif
+            if isRunningAsDisposible {
+                snapshotUnsupportedError = UTMAppleVirtualMachineError.cannotSaveInDisposibleMode
+            }
         }
     }
     
@@ -784,6 +840,8 @@ extension UTMAppleVirtualMachine: VZVirtualMachineDelegate {
         }
         removableDrives.removeAll()
         sharedDirectoriesChanged = nil
+        // must happen before the screenshot is saved so a disposable run leaves the package untouched
+        removeDisposableOverlayDirectory()
         Task { @MainActor in
             stopAccesingResources()
             if #available(macOS 27, *) {
@@ -932,10 +990,14 @@ extension UTMAppleVirtualMachine {
                 url.stopAccessingSecurityScopedResource()
             }
         }
-        let attachment = try newDrive.vzDiskImage()!
         if state == .started {
+            // detach first so a disposable run can replace the overlay of the old medium
             try await detachDrive(id: drive.id)
+            let attachment = try newDrive.vzDiskImage(disposableOverlayDirectoryURL: disposableOverlayDirectoryURL)!
             try await attachDrive(attachment, imageURL: url, id: drive.id)
+        } else {
+            // make sure the new medium can be opened before remembering it
+            _ = try newDrive.vzDiskImage()!
         }
         let file = try UTMRegistryEntry.File(url: url)
         await registryEntry.setExternalDrive(file, forId: drive.id)
@@ -972,7 +1034,7 @@ extension UTMAppleVirtualMachine {
             guard drive.isExternal else {
                 return
             }
-            guard let attachment = try drive.vzDiskImage() else {
+            guard let attachment = try drive.vzDiskImage(disposableOverlayDirectoryURL: disposableOverlayDirectoryURL) else {
                 return
             }
             let configuration = VZUSBMassStorageDeviceConfiguration(attachment: attachment)
@@ -1293,6 +1355,7 @@ enum UTMAppleVirtualMachineError: Error {
     case usbDeviceNotFound(String)
     case usbDeviceInUse(String)
     case usbDeviceNotConnected(String)
+    case cannotSaveInDisposibleMode
 }
 
 extension UTMAppleVirtualMachineError: LocalizedError {
@@ -1316,6 +1379,8 @@ extension UTMAppleVirtualMachineError: LocalizedError {
             return String.localizedStringWithFormat(NSLocalizedString("The USB device '%@' is already connected to another virtual machine.", comment: "UTMAppleVirtualMachine"), name)
         case .usbDeviceNotConnected(let name):
             return String.localizedStringWithFormat(NSLocalizedString("The USB device '%@' is not connected to this virtual machine.", comment: "UTMAppleVirtualMachine"), name)
+        case .cannotSaveInDisposibleMode:
+            return NSLocalizedString("Suspend state cannot be saved when running without saving changes.", comment: "UTMAppleVirtualMachine")
         }
     }
 }

@@ -132,12 +132,8 @@ extension UTMConfigurationDrive {
     #if os(macOS)
     @available(macOS 13, *)
     private func createAsifImage(at newURL: URL, size sizeMib: Int) async throws {
-        let numBlocks = sizeMib * Int(bytesInMib) / 512
-        guard let asif = UTMASIFImage.sharedInstance() else {
-            throw UTMConfigurationError.cannotCreateDiskImage
-        }
         try await Task.detached {
-            try asif.createBlank(with: newURL, numBlocks: numBlocks)
+            try UTMAppleDiskImage.createASIF(at: newURL, sizeMib: sizeMib)
         }.value
     }
 
