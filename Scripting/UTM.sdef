@@ -69,8 +69,23 @@
           </parameter>
         </command>
         
-        <command name="install" code="UTMvinst" description="Install macOS onto an Apple virtual machine from its configured IPSW recovery image. DESTRUCTIVE: any existing operating system on the primary drive is erased. The VM must be stopped, and must have been configured with a macRecoveryIpsw. Unlike starting the VM from the GUI, this does not ask for confirmation — the caller has already asked for it.">
-          <direct-parameter description="Virtual machine to install macOS onto." type="virtual machine"/>
+        <command name="install" code="UTMvinst" description="Install macOS on a stopped Apple virtual machine from its IPSW recovery image. All data on the primary drive will be erased, there is no confirmation! Returns once the installation starts, use query install to follow its progress.">
+          <direct-parameter description="Virtual machine to install macOS on." type="virtual machine"/>
+        </command>
+        
+        <record-type name="install progress" code="InPr" description="Progress of a macOS installation.">
+          <property name="installing" code="InIn" type="boolean" access="r"
+            description="If true, the installation has not finished yet.">
+            <cocoa key="isInstalling"/>
+          </property>
+          
+          <property name="progress" code="InPg" type="real" access="r"
+            description="Fraction of the installation that is completed, from 0.0 to 1.0."/>
+        </record-type>
+        
+        <command name="query install" code="UTMvqins" description="Query the progress of the last installation started with install. Raises an error if the installation failed.">
+          <direct-parameter description="Virtual machine to query." type="virtual machine"/>
+          <result type="install progress" description="Progress of the installation."/>
         </command>
 
         <command name="suspend" code="UTMvsusp" description="Suspend a running virtual machine to memory.">
@@ -175,6 +190,10 @@
           
           <responds-to command="install">
             <cocoa method="install:"/>
+          </responds-to>
+          
+          <responds-to command="query install">
+            <cocoa method="queryInstall:"/>
           </responds-to>
 
           <responds-to command="suspend">

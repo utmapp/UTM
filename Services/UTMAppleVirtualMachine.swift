@@ -106,7 +106,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
     /// This variable MUST be synchronized by `vmQueue`
     private(set) var apple: VZVirtualMachine?
     
-    private var installProgress: Progress?
+    private(set) var installProgress: Progress?
     
     private var progressObserver: NSKeyValueObservation?
     
