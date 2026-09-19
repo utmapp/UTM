@@ -91,6 +91,10 @@ else
 	/usr/libexec/PlistBuddy -c "Set :com.apple.security.application-groups:0 ${TEAM_ID_PREFIX}${PRODUCT_BUNDLE_PREFIX}.UTM" "$CLI_ENTITLEMENTS"
 fi
 
+# the scripting target is a dictionary KEY, which Xcode expands only when it signs; codesign takes the file as is,
+# so utmctl would be allowed to script an app called "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).UTM" and no other
+sed -i '' "s/\$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp)/${PRODUCT_BUNDLE_PREFIX}/g" "$CLI_ENTITLEMENTS"
+
 # ad-hoc sign with the right entitlements
 rm -rf "$INPUT_COPY"
 cp -a "$INPUT" "$INPUT_COPY"
