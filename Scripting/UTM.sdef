@@ -31,6 +31,11 @@
           </property>
         </class-extension>
         
+        <enumeration name="operating system" code="ApOe" description="Guest operating system for an Apple virtual machine.">
+            <enumerator name="linux" code="ApOl" description="Linux guest."/>
+            <enumerator name="macOS" code="ApOm" description="macOS guest (Apple silicon only)."/>
+        </enumeration>
+
         <enumeration name="backend" code="VmEb" description="Backend type.">
             <enumerator name="apple" code="ApPl" description="Apple Virtualization.framework backend."/>
             <enumerator name="qemu" code="QeMu" description="QEMU backend."/>
@@ -713,6 +718,12 @@
             description="List of display configuration.">
             <type type="apple display configuration" list="yes"/>
           </property>
+
+          <property name="os" code="ApOs" type="operating system"
+            description="Guest operating system. Only used when creating; defaults to Linux."/>
+
+          <property name="macRecoveryIpsw" code="ApIp" type="file"
+            description="IPSW recovery image used to install macOS. Required when os is macOS."/>
         </record-type>
         
         <record-type name="apple directory share configuration" code="ApDs" description="Apple directory share configuration.">
