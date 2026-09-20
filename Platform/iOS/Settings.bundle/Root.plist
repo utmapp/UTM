@@ -397,12 +397,14 @@
 				<string>Drag cursor</string>
 				<string>Touch mode (always show cursor)</string>
 				<string>Touch mode (try hiding cursor)</string>
+				<string>Touch mode (drag to scroll)</string>
 			</array>
 			<key>Values</key>
 			<array>
 				<integer>0</integer>
 				<integer>1</integer>
 				<integer>2</integer>
+				<integer>3</integer>
 			</array>
 		</dict>
 		<dict>

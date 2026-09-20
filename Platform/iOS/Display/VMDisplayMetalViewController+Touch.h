@@ -33,6 +33,7 @@ typedef NS_ENUM(NSInteger, VMMouseType) {
     VMMouseTypeRelative,
     VMMouseTypeAbsolute,
     VMMouseTypeAbsoluteHideCursor,
+    VMMouseTypeAbsoluteScroll,
     VMMouseTypeMax
 };
 
