@@ -1,3 +1,6 @@
+/* VMDisplayAppleWindowController */
+"'%@' is connected to '%@'. Do you want to disconnect it and connect it to this virtual machine instead?" = "「%1$@」已連接至「%2$@」。你要中斷連線並連接至此虛擬機嗎？";
+
 /* A removable drive that has no image file inserted. */
 "(empty)" = "(空)";
 
@@ -102,6 +105,9 @@ VMDisplayQemuTerminalWindowController */
 /* UTMConfiguration */
 "An invalid value of '%@' is used in the configuration file." = "設定檔內使用了無效值「%@」。";
 
+/* UTMScriptingAppDelegate */
+"An IPSW recovery image must be specified to create a macOS virtual machine." = "必須指定 IPSW 還原映像檔才能製作 macOS 虛擬機。";
+
 /* UTMRemoteSpiceVirtualMachine */
 "An operation is already in progress." = "一項操作已進行中。";
 
@@ -140,6 +146,9 @@ VMDisplayQemuTerminalWindowController */
 
 /* No comment provided by engineer. */
 "Are you sure you want to stop this VM and exit? Any unsaved changes will be lost." = "確定要停止此虛擬機並離開嗎？所有未儲存的變更都將遺失。";
+
+/* VMDisplayAppleWindowController */
+"Assign a device from the Virtual Machine Accessories menu bar item." = "從「虛擬機配件」選單列項目中分配裝置。";
 
 /* No comment provided by engineer. */
 "Authentication" = "認證";
@@ -294,11 +303,15 @@ VMDisplayWindowController */
 /* No comment provided by engineer. */
 "Connect" = "連接";
 
-/* VMDisplayQemuDisplayController */
+/* VMDisplayAppleWindowController
+VMDisplayQemuDisplayController */
 "Connect…" = "連接⋯";
 
 /* No comment provided by engineer. */
 "Connected" = "已連接";
+
+/* VMDisplayAppleWindowController */
+"Connected to '%@'" = "已連接至「%@」";
 
 /* No comment provided by engineer. */
 "Connection" = "連線";
@@ -383,7 +396,8 @@ UTMQemuConstants */
 /* No comment provided by engineer. */
 "Disconnect" = "中斷連接";
 
-/* VMDisplayQemuDisplayController */
+/* VMDisplayAppleWindowController
+VMDisplayQemuDisplayController */
 "Disconnect…" = "中斷連接⋯";
 
 /* No comment provided by engineer. */
@@ -538,6 +552,9 @@ UTMRemoteServer */
 /* UTMPipeInterface */
 "Failed to create pipe for communications." = "無法為通訊製作管道。";
 
+/* UTMAppleVmnetNetworkManager */
+"Failed to create the virtual network (vmnet error %@)." = "無法製作虛擬網絡 (vmnet 錯誤 %@)。";
+
 /* UTMData */
 "Failed to decode JitStreamer response." = "無法解碼 JitStreamer 回應。";
 
@@ -660,7 +677,8 @@ UTMQemuConstants */
 /* No comment provided by engineer. */
 "Host Networks" = "主機網絡";
 
-/* UTMQemuConstants */
+/* UTMAppleConfigurationNetwork
+UTMQemuConstants */
 "Host Only" = "僅主機";
 
 /* UTMQemuVirtualMachine */
@@ -873,6 +891,9 @@ UTMQemuConstants */
 /* VMWizardState */
 "Name cannot be empty." = "名稱不能留空。";
 
+/* UTMAppleConfigurationNetwork */
+"NAT Network" = "NAT 網絡";
+
 /* UTMQemuConstants */
 "Nearest Neighbor" = "近鄰取樣";
 
@@ -906,6 +927,9 @@ UTMQemuConstants */
 /* UTMScriptingAppDelegate */
 "No file specified in the command." = "命令中未指定檔案。";
 
+/* UTMScriptingVirtualMachineImpl */
+"No installation was started for this virtual machine." = "此虛擬機未有開始任何安裝。";
+
 /* UTMScriptingAppDelegate */
 "No name specified in the configuration." = "設定中未指定名稱。";
 
@@ -914,6 +938,9 @@ UTMQemuConstants */
 
 /* No comment provided by engineer. */
 "No release notes found for version %@." = "無法找到版本 %@ 的版本備註。";
+
+/* VMDisplayAppleWindowController */
+"No USB devices assigned to UTM." = "未有分配給 UTM 的 USB 裝置。";
 
 /* VMQemuDisplayMetalWindowController */
 "No USB devices detected." = "未偵測到 USB 裝置。";
@@ -1081,7 +1108,8 @@ UTMQemuConstants */
 /* VMDisplayWindowController */
 "Querying drives status..." = "正在查詢磁碟狀態⋯";
 
-/* VMQemuDisplayMetalWindowController */
+/* VMDisplayAppleWindowController
+VMQemuDisplayMetalWindowController */
 "Querying USB devices..." = "正在查詢 USB 裝置⋯";
 
 /* VMQemuDisplayMetalWindowController */
@@ -1288,7 +1316,7 @@ UTMQemuConstants */
 /* No comment provided by engineer. */
 "Startup" = "啟動";
 
-/* No comment provided by engineer. */
+/* VMDisplayWindowController */
 "Stop" = "停止";
 
 /* VMData */
@@ -1367,7 +1395,7 @@ UTMQemuConstants */
 "The device cannot be found." = "無法找到此裝置。";
 
 /* UTMScriptingUSBDeviceImpl */
-"The device is not currently connected." = "此裝置現時尚未連接。";
+"The device is not currently connected." = "此裝置現時未連接。";
 
 /* Error shown when importing a ZIP file from web that contains an entry pointing outside of the virtual machine directory. */
 "The downloaded ZIP archive contains an invalid path." = "下載的 ZIP 封存檔中包含無效路徑。";
@@ -1423,8 +1451,20 @@ UTMQemuConstants */
 /* UTMSnapshotService */
 "The snapshot '%@' does not exist." = "快照「%@」不存在。";
 
+/* UTMScriptingAppDelegate */
+"The specified operating system is not supported on your machine." = "你的機器不支援指定的作業系統。";
+
 /* No comment provided by engineer. */
 "The target does not support hardware emulated serial connections." = "目標平台不支援硬件模擬序列連線。";
+
+/* UTMAppleVirtualMachine */
+"The USB device '%@' cannot be found." = "無法找到 USB 裝置「%@」。";
+
+/* UTMAppleVirtualMachine */
+"The USB device '%@' is already connected to another virtual machine." = "USB 裝置「%@」已連接至另一個虛擬機。";
+
+/* UTMAppleVirtualMachine */
+"The USB device '%@' is not connected to this virtual machine." = "USB 裝置「%@」未連接至此虛擬機。";
 
 /* UTMSnapshotService */
 "The virtual machine is in an invalid state for this snapshot operation." = "對於此快照操作，虛擬機處於無效狀態。";
@@ -1489,6 +1529,9 @@ UTMQemuConstants */
 /* VMDisplayWindowController */
 "This may corrupt the VM and any unsaved changes will be lost. To quit safely, shut down from the guest." = "這可能會損毀虛擬機，所有未儲存的變更都將遺失。如要安全退出，請從客户端關機。";
 
+/* UTMScriptingVirtualMachineImpl */
+"This operation cannot be performed while macOS is being installed." = "安裝 macOS 時無法執行此操作。";
+
 /* UTMDataExtension */
 "This virtual machine cannot be run on this machine." = "此虛擬機無法在電腦上執行。";
 
@@ -1500,6 +1543,9 @@ UTMQemuConstants */
 
 /* No comment provided by engineer. */
 "This virtual machine has been removed." = "此虛擬機已移除。";
+
+/* UTMScriptingVirtualMachineImpl */
+"This virtual machine has no IPSW recovery image configured, so there is nothing to install from." = "此虛擬機未有配置 IPSW 還原映像檔，因此沒有可供安裝的軟件。";
 
 /* UTMDataExtension */
 "This virtual machine is already running. In order to run it from this device, you must stop it first." = "此虛擬機已在執行。為了從此裝置執行，你必須先停止它。";
@@ -1578,6 +1624,9 @@ UTMQemuConstants */
 
 /* VMQemuDisplayMetalWindowController */
 "USB Device" = "USB 裝置";
+
+/* UTMAppleUSBDevice */
+"USB Device %04X:%04X" = "USB 裝置 %1$04X：%2$04X";
 
 /* VMDisplayWindowController */
 "USB Devices" = "USB 裝置";
@@ -1673,7 +1722,8 @@ VMMetalView */
 /* VMConfigSystemView */
 "Your device has %llu MB of memory and the estimated usage is %llu MB." = "你的裝置有 %1$llu MB 的記憶體，預計使用量為 %2$llu MB。";
 
-/* VMConfigAppleBootView
+/* UTMScriptingAppDelegate
+VMConfigAppleBootView
 VMWizardOSMacView */
 "Your machine does not support running this IPSW." = "你的電腦不支援執行此 IPSW。";
 
