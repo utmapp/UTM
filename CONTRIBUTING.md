@@ -35,9 +35,10 @@ We support contributions that are AI assisted but they must follow the following
 4. Do not touch unrelated files. Do not refactor unrelated code. Do not change headers/whitespace in unrelated files. Do not add logging to unrelated files.
 5. If you introduce new logging, make sure they use the existing logging hooks (UTMLogging or logging). Give the log entries debug level unless they are errors or warnings. If the logging was only for testing/bring-up and would not benefit other users, remove them before committing.
 6. On supported AI coding tools, use the `/utm-review` and `/utm-submit` skills to create the pull request. This ensures that all the guidelines are followed. If you chose to submit the PR manually, you must include the following statement: "I have read the AI contribution guidelines and have followed them to the best of my ability."
+7. Do include any links, advertisement, or attribution to the tool used to generate the PR. See the "attribution" section below for the required attribution rules on commit messages.
 
 ### Attribution
-We use the same attribution policy as the Linux Kernel. When AI tools contribute to development, proper attribution helps track the evolving role of AI in the development process. Note we do NOT use `Co-authored-by` and all commits should remove `Co-authored-by` that a tool might add automatically. This is to ensure tha humans take full responsibility for all code that is written.
+We use the same attribution policy as the Linux Kernel. When AI tools contribute to development, proper attribution helps track the evolving role of AI in the development process. Note we do NOT use `Co-authored-by` and all commits should remove `Co-authored-by` (as well as any links) that a tool might add automatically. This is to ensure tha humans take full responsibility for all code that is written.
 
 Contributions should include an Assisted-by tag in the following format:
 
