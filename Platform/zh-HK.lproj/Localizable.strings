@@ -239,7 +239,7 @@ VMQemuDisplayMetalWindowController */
 "Cannot find AltServer for JIT enable. You cannot run VMs until JIT is enabled." = "無法找到 JIT 啟用的 AltServer。在啟用 JIT 之前，你無法執行虛擬機。";
 
 /* UTMRemoteServer */
-"Cannot find VM with ID: %@" = "無法透過此 ID 找到虛擬機：";
+"Cannot find VM with ID: %@" = "無法透過此 ID 找到虛擬機：%@";
 
 /* UTMData */
 "Cannot import this VM. Either the configuration is invalid, created in a newer version of UTM, or on a platform that is incompatible with this version of UTM." = "無法輸入此虛擬機。可能設定無效，或是在較新版本的 UTM 上製作，或是在與此版本的 UTM 不相容的平台上製作。";
@@ -1794,7 +1794,7 @@ VMWizardOSMacView */
 "Advanced" = "進階";
 
 /* No comment provided by engineer. */
-"Advanced. If checked, a raw disk image is used. Raw disk image does not support snapshots and will not dynamically expand in size." = "進階選項。如選擇，將會使用 raw 磁碟映像。raw 磁碟映像不支援快照，亦不會動態擴充套件大小。";
+"Advanced. If checked, a raw disk image is used. Raw disk image does not support snapshots and will not dynamically expand in size." = "進階選項。如選擇，將會使用 raw 磁碟映像檔。raw 磁碟映像檔不支援快照，亦不會動態擴充套件大小。";
 
 /* No comment provided by engineer. */
 "Allow access from external clients" = "允許外部客户端訪問";
@@ -2139,7 +2139,7 @@ VMWizardOSMacView */
 "Guest Port" = "客户端埠";
 
 /* No comment provided by engineer. */
-"Hardware interface on the guest used to mount this image. Different operating systems support different interfaces. The default will be the most common interface." = "用於裝載此映像的客户端硬件介面。不同的作業系統支援不同的介面。預設值將會設定為最常見的介面。";
+"Hardware interface on the guest used to mount this image. Different operating systems support different interfaces. The default will be the most common interface." = "用於裝載此映像檔的客户端硬件介面。不同的作業系統支援不同的介面。預設值將會設定為最常見的介面。";
 
 /* No comment provided by engineer. */
 "Hardware OpenGL Acceleration" = "硬件 OpenGL 加速";
@@ -2169,7 +2169,7 @@ VMWizardOSMacView */
 "If checked, emulated devices with higher compatibility will be instantiated at the cost of performance." = "如選擇，更高相容性的模擬裝置將會被實例化，但以效能降低為代價。";
 
 /* No comment provided by engineer. */
-"If checked, no drive image will be stored with the VM. Instead you can mount/unmount image while the VM is running." = "如選擇，將不會儲存磁碟映像檔至虛擬機。然而，你可以在執行虛擬機時裝載/卸除安裝映像。";
+"If checked, no drive image will be stored with the VM. Instead you can mount/unmount image while the VM is running." = "如選擇，將不會儲存磁碟映像檔至虛擬機。然而，你可以在執行虛擬機時裝載/卸除安裝映像檔。";
 
 /* No comment provided by engineer. */
 "If checked, the CPU flag will be enabled. Otherwise, the default value will be used." = "如選擇，將會啟用此 CPU 標記。否則將會使用預設值。";
@@ -2521,7 +2521,7 @@ VMWizardOSMacView */
 "Secure Boot with TPM 2.0" = "採用 TPM 2.0 的保安啟動";
 
 /* No comment provided by engineer. */
-"Select an existing disk image." = "選擇一個現有的磁碟映像。";
+"Select an existing disk image." = "選擇一個現有的磁碟映像檔。";
 
 /* No comment provided by engineer. */
 "Selected:" = "已選擇：";
