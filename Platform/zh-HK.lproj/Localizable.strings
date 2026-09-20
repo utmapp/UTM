@@ -147,6 +147,9 @@ VMDisplayQemuTerminalWindowController */
 /* No comment provided by engineer. */
 "Are you sure you want to stop this VM and exit? Any unsaved changes will be lost." = "確定要停止此虛擬機並離開嗎？所有未儲存的變更都將遺失。";
 
+/* UTMAppleDiskImage */
+"ASIF" = "ASIF";
+
 /* VMDisplayAppleWindowController */
 "Assign a device from the Virtual Machine Accessories menu bar item." = "從「虛擬機配件」選單列項目中分配裝置。";
 
@@ -416,7 +419,8 @@ UTMQemuConstants */
 /* VMDisplayWindowController */
 "Displays" = "顯示器";
 
-/* VMDisplayQemuDisplayController */
+/* VMDisplayAppleWindowController
+VMDisplayQemuDisplayController */
 "Disposable Mode" = "即棄式模式";
 
 /* No comment provided by engineer. */
@@ -608,6 +612,9 @@ VMDisplayWindowController */
 "Faster, but can only run the native CPU architecture." = "較快，但只能執行原生 CPU 架構。";
 
 /* No comment provided by engineer. */
+"Fill the area beside the camera housing in full screen" = "將相機外殼邊區域填滿至全螢幕";
+
+/* No comment provided by engineer. */
 "Fingerprint" = "指紋";
 
 /* Configuration boot device
@@ -782,6 +789,9 @@ UTMQemuConstants */
 
 /* No comment provided by engineer. */
 "KosmicKrisp" = "KosmicKrisp";
+
+/* UTMAppleDiskImage */
+"Layered" = "分層";
 
 /* No comment provided by engineer. */
 "License" = "許可協議";
@@ -1115,6 +1125,9 @@ VMQemuDisplayMetalWindowController */
 /* VMQemuDisplayMetalWindowController */
 "Quitting UTM will kill all running VMs." = "結束 UTM 會結束所有執行的虛擬機。";
 
+/* UTMAppleDiskImage */
+"RAW" = "RAW";
+
 /* No comment provided by engineer. */
 "Raw Image" = "raw 映像檔";
 
@@ -1246,6 +1259,9 @@ VMDisplayQemuDisplayController */
 /* No comment provided by engineer. */
 "Server IP: %@, Port: %@" = "伺服器 IP 位址：%1$@，埠：%2$@";
 
+/* UTMAppleVirtualMachine */
+"Setting up the guest automatically requires a macOS virtual machine and macOS 27 or later on Apple Silicon." = "自動設定客户端需要 macOS 虛擬機，以及 Apple 晶片上的 macOS 27 或以上版本。";
+
 /* No comment provided by engineer. */
 "Share USB devices from host" = "從主機分享 USB 裝置";
 
@@ -1349,6 +1365,9 @@ UTMQemuConstants */
 /* UTMQemuVirtualMachine */
 "Suspend state cannot be saved when running in disposible mode." = "「即棄式模式」執行時無法儲存暫停狀態。";
 
+/* UTMAppleVirtualMachine */
+"Suspend state cannot be saved when running without saving changes." = "在不儲存變更的情況下執行時，無法儲存暫停狀態。";
+
 /* VMData */
 "Suspended" = "暫停";
 
@@ -1403,6 +1422,12 @@ UTMQemuConstants */
 /* UTMConfiguration */
 "The drive '%@' already exists and cannot be created." = "磁碟「%@」已存在，無法製作。";
 
+/* UTMAppleVirtualMachine */
+"The full name for the guest account is not valid." = "客户端帳户的全名無效。";
+
+/* UTMAppleVirtualMachine */
+"The guest can only be set up automatically on the first start after macOS is installed. It cannot be set up before macOS is installed, from a saved state, or in recovery mode." = "客户端只可以在安裝 macOS 之後首次啟動時自動設定。在安裝 macOS 之前，或從已儲存的狀態、處於還原模式之前，無法完成設定。";
+
 /* UTMDownloadSupportToolsTaskError */
 "The guest support tools have already been mounted." = "此客户端支援工具已經被裝載了。";
 
@@ -1426,6 +1451,9 @@ UTMQemuConstants */
 
 /* UTMAppleVirtualMachine */
 "The operation is not available." = "此操作無法使用。";
+
+/* UTMAppleVirtualMachine */
+"The password for the guest account is not valid." = "客户端帳户的密碼無效。";
 
 /* UTMScriptingVirtualMachineImpl */
 "The QEMU guest agent is not running or not installed on the guest." = "QEMU 客户端代理程式未執行，或是未在客户端上安裝。";
@@ -1465,6 +1493,9 @@ UTMQemuConstants */
 
 /* UTMAppleVirtualMachine */
 "The USB device '%@' is not connected to this virtual machine." = "USB 裝置「%@」未連接至此虛擬機。";
+
+/* UTMAppleVirtualMachine */
+"The username for the guest account is not valid." = "客户端帳户的用户名稱無效。";
 
 /* UTMSnapshotService */
 "The virtual machine is in an invalid state for this snapshot operation." = "對於此快照操作，虛擬機處於無效狀態。";
@@ -1606,6 +1637,9 @@ UTMQemuConstants */
 
 /* No comment provided by engineer. */
 "Uncompressed Linux kernel (required)" = "未壓縮的 Linux 核心映像檔 (必填)";
+
+/* UTMAppleDiskImage */
+"Unknown" = "未知";
 
 /* No comment provided by engineer. */
 "Update" = "更新";
