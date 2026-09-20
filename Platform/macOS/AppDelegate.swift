@@ -317,6 +317,7 @@ enum UTMQuitPolicy: Int {
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         CapsLockRemapper.shared.recoverAtLaunch()
+        UTMAppleVirtualMachine.removeStaleDisposableOverlayDirectories()
         if isDockIconHidden {
             NSApp.setActivationPolicy(.accessory)
         }

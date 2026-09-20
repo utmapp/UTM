@@ -24,11 +24,7 @@ struct VMConfigAppleDriveCreateView: View {
     @State private var isGiB: Bool = true
     
     private var isASIFSupported: Bool {
-        if #available(macOS 26, *) {
-            return UTMASIFImage.sharedInstance() != nil
-        } else {
-            return false
-        }
+        UTMAppleDiskImage.isASIFSupported
     }
     
     var body: some View {
