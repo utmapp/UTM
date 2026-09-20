@@ -270,6 +270,12 @@ generate_meson_cross() {
     echo "# Automatically generated - do not modify" > $cross
     echo "[properties]" >> $cross
     echo "needs_exe_wrapper = true" >> $cross
+    # pipe2() and dup3() are new in the 27.0 SDKs. Meson's has_function() check declares
+    # its own prototype, so it never sees the availability attribute and reports them
+    # present no matter the deployment target. The real call sites do include the system
+    # header, which leaves a weak import that is NULL when running on an older OS.
+    echo "has_function_pipe2 = false" >> $cross
+    echo "has_function_dup3 = false" >> $cross
     echo "[built-in options]" >> $cross
     echo "c_args = [${CFLAGS:+$(meson_quote $CFLAGS)}]" >> $cross
     echo "cpp_args = [${CXXFLAGS:+$(meson_quote $CXXFLAGS)}]" >> $cross
@@ -1215,6 +1221,11 @@ export CPPFLAGS
 export CXXFLAGS
 export OBJCFLAGS
 export LDFLAGS
+
+# Same reason as the has_function_* properties in the meson cross file: AC_CHECK_FUNCS
+# declares its own prototype and misses the 27.0 SDK availability attribute.
+export ac_cv_func_pipe2=no
+export ac_cv_func_dup3=no
 
 check_env
 echo "${GREEN}Starting build for ${PLATFORM_FAMILY_NAME} ${ARCH} [${NCPU} jobs]${NC}"
