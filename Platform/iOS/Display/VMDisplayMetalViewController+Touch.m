@@ -449,7 +449,7 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
             self.mouseMiddleDown = YES;
         }
         [self.vmInput sendMouseButton:button mask:self.mouseButtonDown pressed:YES];
-    } else if (state == UIGestureRecognizerStateEnded) {
+    } else if (state == UIGestureRecognizerStateEnded || state == UIGestureRecognizerStateCancelled) {
         self.mouseLeftDown = NO;
         self.mouseRightDown = NO;
         self.mouseMiddleDown = NO;
