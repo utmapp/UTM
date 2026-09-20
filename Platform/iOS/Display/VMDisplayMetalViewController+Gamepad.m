@@ -127,6 +127,25 @@ const CGFloat kThumbstickSpeedMultiplier = 1000; // in points per second
     gamepad.buttonMenu.pressedChangedHandler = ^(GCControllerButtonInput * _Nonnull button, float value, BOOL pressed) {
         [_self gamepadButton:@"GCButtonMenu" pressed:pressed];
     };
+    
+    gamepad.buttonOptions.pressedChangedHandler = ^(GCControllerButtonInput * _Nonnull button, float value, BOOL pressed) {
+        [_self gamepadButton:@"GCButtonOptions" pressed:pressed];
+    };
+    
+    gamepad.buttonHome.pressedChangedHandler = ^(GCControllerButtonInput * _Nonnull button, float value, BOOL pressed) {
+        [_self gamepadButton:@"GCButtonHome" pressed:pressed];
+    };
+    
+    [self setSystemGestureButtonsClaimed:YES];
+}
+
+- (void)setSystemGestureButtonsClaimed:(BOOL)isClaimed {
+    // the system uses these buttons for its own gestures, so we only ask for them while they are mapped to the guest
+    GCExtendedGamepad *gamepad = self.controller.extendedGamepad;
+    BOOL isOptionsClaimed = isClaimed && [self integerForSetting:@"GCButtonOptions"] != 0;
+    BOOL isHomeClaimed = isClaimed && [self integerForSetting:@"GCButtonHome"] != 0;
+    gamepad.buttonOptions.preferredSystemGestureState = isOptionsClaimed ? GCSystemGestureStateDisabled : GCSystemGestureStateEnabled;
+    gamepad.buttonHome.preferredSystemGestureState = isHomeClaimed ? GCSystemGestureStateDisabled : GCSystemGestureStateEnabled;
 }
 
 - (void)gamepadButton:(NSString *)identifier pressed:(BOOL)isPressed {
