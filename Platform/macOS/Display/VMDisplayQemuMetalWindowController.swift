@@ -90,6 +90,7 @@ class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
             return
         }
         displayView.addSubview(metalView)
+        (window as? VMDisplayWindow)?.isCameraHousingAreaAllowed = true
         renderer = CSMetalRenderer.init(metalKitView: metalView)
         guard let renderer = self.renderer else {
             showErrorAlert(NSLocalizedString("Internal error.", comment: "VMDisplayMetalWindowController"))
@@ -284,7 +285,8 @@ extension VMDisplayQemuMetalWindowController {
                 return
             }
             self.displaySize = size
-            if self.isFullScreen {
+            // the flag is only set once the transition to full screen is over, until then the window must not be resized
+            if self.isFullScreen || window.styleMask.contains(.fullScreen) {
                 _ = self.updateHostScaling(for: window, frameSize: window.frame.size)
             } else {
                 self.updateHostFrame(forGuestResolution: size)

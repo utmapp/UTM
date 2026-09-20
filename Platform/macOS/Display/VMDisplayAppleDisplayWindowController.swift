@@ -53,6 +53,7 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
     override func windowDidLoad() {
         mainView = VZVirtualMachineView()
         captureMouseToolbarButton.image = captureMouseToolbarButton.alternateImage // show capture keyboard image
+        (window as? VMDisplayWindow)?.isCameraHousingAreaAllowed = true
         screenChangedToken = NotificationCenter.default.addObserver(forName: NSWindow.didChangeScreenNotification, object: nil, queue: .main) { [weak self] _ in
             // update minSize when we change screens
             if let self = self,

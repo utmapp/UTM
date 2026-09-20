@@ -59,7 +59,7 @@ struct UTMStartActionIntent: AppIntent, UTMIntent {
     @Parameter(title: "Recovery", description: "Boot into recovery mode. Only supported on Apple Virtualization backend.", default: false)
     var isRecovery: Bool
 
-    @Parameter(title: "Disposible", description: "Do not save any changes to disk. Only supported on QEMU backend.", default: false)
+    @Parameter(title: "Disposible", description: "Do not save any changes to disk.", default: false)
     var isDisposible: Bool
 
     @MainActor
@@ -76,7 +76,7 @@ struct UTMStartActionIntent: AppIntent, UTMIntent {
             #endif
         }
         if isDisposible {
-            guard vm is UTMQemuVirtualMachine else {
+            guard type(of: vm).capabilities.supportsDisposibleMode else {
                 throw UTMIntentError.unsupportedBackend
             }
             options.insert(.bootDisposibleMode)

@@ -34,7 +34,11 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         }
         
         var supportsDisposibleMode: Bool {
-            false
+            if #available(macOS 27, *) {
+                return true
+            } else {
+                return false
+            }
         }
         
         var supportsRecoveryMode: Bool {
@@ -59,7 +63,9 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
     
     private(set) var isShortcut: Bool = false
     
-    let isRunningAsDisposible: Bool = false
+    var isRunningAsDisposible: Bool {
+        disposableOverlayDirectoryURL != nil
+    }
     
     weak var delegate: (any UTMVirtualMachineDelegate)?
     
@@ -118,6 +124,9 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
 
     private var removableDrives: [String: Any] = [:]
 
+    /// Holds the ephemeral copy-on-write layers while running without saving changes
+    private var disposableOverlayDirectoryURL: URL?
+
     /// `UTMAppleUSBPassthroughState` on macOS 27, always nil on older versions
     private var usbPassthroughState: Any?
 
@@ -161,7 +170,8 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         updateConfigFromRegistry()
     }
     
-    private func _start(options: UTMVirtualMachineStartOptions) async throws {
+    /// - Parameter guestProvisioning: `VZMacGuestProvisioningOptions` on macOS 27, always nil on older versions
+    private func _start(options: UTMVirtualMachineStartOptions, guestProvisioning: Any? = nil) async throws {
         let boot = await config.system.boot
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) -> Void in
             vmQueue.async {
@@ -173,6 +183,14 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
                 if #available(macOS 13, *), boot.operatingSystem == .macOS {
                     let vzoptions = VZMacOSVirtualMachineStartOptions()
                     vzoptions.startUpFromMacOSRecovery = options.contains(.bootRecovery)
+                    if #available(macOS 27, *), let guestProvisioning = guestProvisioning as? VZMacGuestProvisioningOptions {
+                        do {
+                            try vzoptions.setGuestProvisioning(guestProvisioning)
+                        } catch {
+                            continuation.resume(throwing: error)
+                            return
+                        }
+                    }
                     apple.start(options: vzoptions) { result in
                         if let result = result {
                             continuation.resume(with: .failure(result))
@@ -188,23 +206,52 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
                 }
             }
         }
-        try? updateLastModified()
+        if !isRunningAsDisposible {
+            try? updateLastModified()
+        }
     }
     
     func start(options: UTMVirtualMachineStartOptions = []) async throws {
+        try await start(options: options, guestProvisioning: nil)
+    }
+    
+    /// Start the VM and optionally set up the macOS guest without user interaction
+    ///
+    /// The guest only reads the provisioning options on the first boot after macOS is installed.
+    /// - Parameters:
+    ///   - options: Options for startup
+    ///   - guestProvisioning: If set, account to create in the guest. This is never saved.
+    func start(options: UTMVirtualMachineStartOptions, guestProvisioning: UTMAppleGuestProvisioningOptions?) async throws {
+        var vzGuestProvisioning: Any?
+        if let guestProvisioning = guestProvisioning {
+            // this must fail before the error handling below which discards any saved state
+            vzGuestProvisioning = try await validateGuestProvisioning(guestProvisioning, options: options)
+        }
+        // do not suspend between checking and changing the state
         guard state == .stopped else {
+            if guestProvisioning != nil {
+                // the first boot cannot be repeated so the caller must know it was not set up
+                throw UTMAppleVirtualMachineError.guestProvisioningNotAvailable
+            }
             return
         }
         state = .starting
+        let isDisposible = options.contains(.bootDisposibleMode)
         do {
             let isSuspended = await registryEntry.isSuspended
-            let isRestoring = isSuspended && !options.contains(.bootRecovery)
+            // a disposable run boots fresh and leaves any saved state untouched
+            let isRestoring = isSuspended && !isDisposible && !options.contains(.bootRecovery)
+            // discard the overlays of a run that did not stop cleanly
+            removeDisposableOverlayDirectory()
+            if isDisposible {
+                try createDisposableOverlayDirectory()
+            }
             try await beginAccessingResources()
             try await createAppleVM(isRestoring: isRestoring)
             if isRestoring {
                 try await restoreSnapshot()
             } else {
-                try await _start(options: options)
+                try await _start(options: options, guestProvisioning: vzGuestProvisioning)
             }
             if #available(macOS 15, *) {
                 try await attachExternalDrives()
@@ -236,10 +283,83 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
                 await stopUsbPassthrough()
             }
             await releaseFailedAppleVM()
+            removeDisposableOverlayDirectory()
             state = .stopped
-            try? await deleteSnapshot()
+            if !isDisposible {
+                try? await deleteSnapshot()
+            }
             throw error
         }
+    }
+
+    /// Create a directory for the ephemeral copy-on-write layers of a disposable run
+    private func createDisposableOverlayDirectory() throws {
+        guard #available(macOS 27, *) else {
+            throw UTMAppleVirtualMachineError.operationNotAvailable
+        }
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("disposable-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
+        disposableOverlayDirectoryURL = url
+    }
+
+    /// Discard the ephemeral copy-on-write layers of a disposable run
+    private func removeDisposableOverlayDirectory() {
+        if let url = disposableOverlayDirectoryURL {
+            try? FileManager.default.removeItem(at: url)
+        }
+        disposableOverlayDirectoryURL = nil
+    }
+
+    /// Discard the ephemeral copy-on-write layers left behind by a previous process that did not stop cleanly
+    ///
+    /// Call this before any virtual machine is started.
+    static func removeStaleDisposableOverlayDirectories() {
+        let fileManager = FileManager.default
+        let temporaryDirectoryURL = fileManager.temporaryDirectory
+        guard let contents = try? fileManager.contentsOfDirectory(at: temporaryDirectoryURL, includingPropertiesForKeys: nil) else {
+            return
+        }
+        for url in contents where url.lastPathComponent.hasPrefix("disposable-") {
+            try? fileManager.removeItem(at: url)
+        }
+    }
+    
+    /// Check that the guest can be provisioned on this start
+    /// - Parameters:
+    ///   - guestProvisioning: Account to create in the guest
+    ///   - options: Options for startup
+    /// - Returns: `VZMacGuestProvisioningOptions` to pass to `_start`
+    @discardableResult
+    func validateGuestProvisioning(_ guestProvisioning: UTMAppleGuestProvisioningOptions, options: UTMVirtualMachineStartOptions) async throws -> Any {
+        #if os(macOS) && arch(arm64)
+        let boot = await config.system.boot
+        guard #available(macOS 27, *), boot.operatingSystem == .macOS else {
+            throw UTMAppleVirtualMachineError.guestProvisioningNotSupported
+        }
+        // only the first boot after install sets up the guest: not a pending install, a resumed guest, or recoveryOS
+        let isSuspended = await registryEntry.isSuspended
+        guard boot.macRecoveryIpswURL == nil && !isSuspended && !options.contains(.bootRecovery) else {
+            throw UTMAppleVirtualMachineError.guestProvisioningNotAvailable
+        }
+        let vzGuestProvisioning = VZMacGuestProvisioningOptions()
+        vzGuestProvisioning.fullName = guestProvisioning.fullName
+        vzGuestProvisioning.username = guestProvisioning.username
+        vzGuestProvisioning.password = guestProvisioning.password
+        vzGuestProvisioning.logsInAutomatically = guestProvisioning.logsInAutomatically
+        vzGuestProvisioning.enablesRemoteLogin = guestProvisioning.enablesRemoteLogin
+        do {
+            try vzGuestProvisioning.validate()
+        } catch let error as VZError where error.code == .guestProvisioningInvalidFullName {
+            throw UTMAppleVirtualMachineError.guestProvisioningInvalidFullName
+        } catch let error as VZError where error.code == .guestProvisioningInvalidUsername {
+            throw UTMAppleVirtualMachineError.guestProvisioningInvalidUsername
+        } catch let error as VZError where error.code == .guestProvisioningInvalidPassword {
+            throw UTMAppleVirtualMachineError.guestProvisioningInvalidPassword
+        }
+        return vzGuestProvisioning
+        #else
+        throw UTMAppleVirtualMachineError.guestProvisioningNotSupported
+        #endif
     }
     
     private func _forceStop() async throws {
@@ -538,7 +658,7 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             let serialPort = UTMSerialPort(portNamed: name, readFileHandle: slaveTtyHandle, writeFileHandle: slaveTtyHandle, terminalFileHandle: terminalTtyHandle)
             config.serials[i].interface = serialPort
         }
-        let vzConfig = try config.appleVZConfiguration()
+        let vzConfig = try config.appleVZConfiguration(disposableOverlayDirectoryURL: disposableOverlayDirectoryURL)
         var usbControllerDelegate: AnyObject?
         if #available(macOS 27, *), hasUsbRedirection {
             if isRestoring {
@@ -564,6 +684,9 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
                 }
             }
             #endif
+            if isRunningAsDisposible {
+                snapshotUnsupportedError = UTMAppleVirtualMachineError.cannotSaveInDisposibleMode
+            }
         }
     }
     
@@ -784,6 +907,8 @@ extension UTMAppleVirtualMachine: VZVirtualMachineDelegate {
         }
         removableDrives.removeAll()
         sharedDirectoriesChanged = nil
+        // must happen before the screenshot is saved so a disposable run leaves the package untouched
+        removeDisposableOverlayDirectory()
         Task { @MainActor in
             stopAccesingResources()
             if #available(macOS 27, *) {
@@ -932,10 +1057,14 @@ extension UTMAppleVirtualMachine {
                 url.stopAccessingSecurityScopedResource()
             }
         }
-        let attachment = try newDrive.vzDiskImage()!
         if state == .started {
+            // detach first so a disposable run can replace the overlay of the old medium
             try await detachDrive(id: drive.id)
+            let attachment = try newDrive.vzDiskImage(disposableOverlayDirectoryURL: disposableOverlayDirectoryURL)!
             try await attachDrive(attachment, imageURL: url, id: drive.id)
+        } else {
+            // make sure the new medium can be opened before remembering it
+            _ = try newDrive.vzDiskImage()!
         }
         let file = try UTMRegistryEntry.File(url: url)
         await registryEntry.setExternalDrive(file, forId: drive.id)
@@ -972,7 +1101,7 @@ extension UTMAppleVirtualMachine {
             guard drive.isExternal else {
                 return
             }
-            guard let attachment = try drive.vzDiskImage() else {
+            guard let attachment = try drive.vzDiskImage(disposableOverlayDirectoryURL: disposableOverlayDirectoryURL) else {
                 return
             }
             let configuration = VZUSBMassStorageDeviceConfiguration(attachment: attachment)
@@ -1293,6 +1422,23 @@ enum UTMAppleVirtualMachineError: Error {
     case usbDeviceNotFound(String)
     case usbDeviceInUse(String)
     case usbDeviceNotConnected(String)
+    case cannotSaveInDisposibleMode
+    case guestProvisioningNotSupported
+    case guestProvisioningNotAvailable
+    case guestProvisioningInvalidFullName
+    case guestProvisioningInvalidUsername
+    case guestProvisioningInvalidPassword
+}
+
+/// Account to create in a macOS guest on the first boot after install
+///
+/// This holds a password so it is intentionally not `Codable` and must not be saved or logged.
+struct UTMAppleGuestProvisioningOptions {
+    var fullName: String
+    var username: String
+    var password: String
+    var logsInAutomatically: Bool = false
+    var enablesRemoteLogin: Bool = false
 }
 
 extension UTMAppleVirtualMachineError: LocalizedError {
@@ -1316,6 +1462,18 @@ extension UTMAppleVirtualMachineError: LocalizedError {
             return String.localizedStringWithFormat(NSLocalizedString("The USB device '%@' is already connected to another virtual machine.", comment: "UTMAppleVirtualMachine"), name)
         case .usbDeviceNotConnected(let name):
             return String.localizedStringWithFormat(NSLocalizedString("The USB device '%@' is not connected to this virtual machine.", comment: "UTMAppleVirtualMachine"), name)
+        case .cannotSaveInDisposibleMode:
+            return NSLocalizedString("Suspend state cannot be saved when running without saving changes.", comment: "UTMAppleVirtualMachine")
+        case .guestProvisioningNotSupported:
+            return NSLocalizedString("Setting up the guest automatically requires a macOS virtual machine and macOS 27 or later on Apple Silicon.", comment: "UTMAppleVirtualMachine")
+        case .guestProvisioningNotAvailable:
+            return NSLocalizedString("The guest can only be set up automatically on the first start after macOS is installed. It cannot be set up before macOS is installed, from a saved state, or in recovery mode.", comment: "UTMAppleVirtualMachine")
+        case .guestProvisioningInvalidFullName:
+            return NSLocalizedString("The full name for the guest account is not valid.", comment: "UTMAppleVirtualMachine")
+        case .guestProvisioningInvalidUsername:
+            return NSLocalizedString("The username for the guest account is not valid.", comment: "UTMAppleVirtualMachine")
+        case .guestProvisioningInvalidPassword:
+            return NSLocalizedString("The password for the guest account is not valid.", comment: "UTMAppleVirtualMachine")
         }
     }
 }

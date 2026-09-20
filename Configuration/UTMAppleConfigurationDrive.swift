@@ -101,16 +101,23 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
         try container.encode(id, forKey: .identifier)
     }
     
-    func vzDiskImage(useFsWorkAround: Bool = false) throws -> VZDiskImageStorageDeviceAttachment? {
-        if let imageURL = imageURL {
-            // Use cached caching mode for virtio drive to prevent fs corruption on linux when possible
-            if !isNvme, useFsWorkAround {
-                return try VZDiskImageStorageDeviceAttachment(url: imageURL, readOnly: isReadOnly, cachingMode: .cached, synchronizationMode: .full)
-            } else {
-                return try VZDiskImageStorageDeviceAttachment(url: imageURL, readOnly: isReadOnly)
-            }
-        } else {
+    /// Create the storage attachment for this drive
+    /// - Parameters:
+    ///   - useFsWorkAround: Use cached caching mode for virtio drives to prevent fs corruption on Linux
+    ///   - disposableOverlayDirectoryURL: If set, guest writes go to an ephemeral layer in this directory and the image is never modified (macOS 27+)
+    func vzDiskImage(useFsWorkAround: Bool = false, disposableOverlayDirectoryURL: URL? = nil) throws -> VZDiskImageStorageDeviceAttachment? {
+        guard let imageURL = imageURL else {
             return nil
+        }
+        // Use cached caching mode for virtio drive to prevent fs corruption on linux when possible
+        let useCachedMode = !isNvme && useFsWorkAround
+        if #available(macOS 27, *), let overlayDirectoryURL = disposableOverlayDirectoryURL, !isReadOnly {
+            let overlayURL = overlayDirectoryURL.appendingPathComponent("\(id).asif")
+            return try UTMAppleDiskImage.attachment(for: imageURL, ephemeralOverlayAt: overlayURL, cachingMode: useCachedMode ? .cached : .automatic, synchronizationMode: .full)
+        } else if useCachedMode {
+            return try VZDiskImageStorageDeviceAttachment(url: imageURL, readOnly: isReadOnly, cachingMode: .cached, synchronizationMode: .full)
+        } else {
+            return try VZDiskImageStorageDeviceAttachment(url: imageURL, readOnly: isReadOnly)
         }
     }
     

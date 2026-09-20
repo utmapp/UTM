@@ -80,7 +80,7 @@ struct VMContextMenuModifier: ViewModifier {
                 }
                 #endif
                 
-                if let _ = vm.config as? UTMQemuConfiguration {
+                if let wrapped = vm.wrapped, type(of: wrapped).capabilities.supportsDisposibleMode {
                     Button {
                         data.run(vm: vm, options: .bootDisposibleMode)
                     } label: {

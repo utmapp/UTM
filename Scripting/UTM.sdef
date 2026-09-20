@@ -72,7 +72,27 @@
           <parameter name="recovery" code="ReCo" description="When true, start the VM in recovery mode. Default value is false." type="boolean" optional="yes">
             <cocoa key="bootRecoveryFlag"/>
           </parameter>
+          <parameter name="provisioning" code="GpOp" description="Set up a macOS guest without user interaction. Only applies to the first start after macOS is installed and is never saved. Requires the Apple backend, macOS 27 or later, and a guest with macOS 27 or later." type="guest provisioning" optional="yes">
+            <cocoa key="provisioningOptions"/>
+          </parameter>
         </command>
+        
+        <record-type name="guest provisioning" code="GpCf" description="Account to create when setting up a macOS guest.">
+          <property name="full name" code="GpFn" type="text"
+            description="Full name of the account. Defaults to the username."/>
+          
+          <property name="username" code="GpUs" type="text"
+            description="Short name of the account."/>
+          
+          <property name="password" code="GpPw" type="text"
+            description="Password of the account."/>
+          
+          <property name="automatic login" code="GpAl" type="boolean"
+            description="Log in to the account automatically when the guest starts up. Default value is false."/>
+          
+          <property name="remote login" code="GpRl" type="boolean"
+            description="Turn on Remote Login (SSH) in the guest. Default value is false."/>
+        </record-type>
         
         <command name="install" code="UTMvinst" description="Install macOS on a stopped Apple virtual machine from its IPSW recovery image. All data on the primary drive will be erased, there is no confirmation! Returns once the installation starts, use query install to follow its progress.">
           <direct-parameter description="Virtual machine to install macOS on." type="virtual machine"/>
