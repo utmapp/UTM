@@ -76,6 +76,9 @@ struct VMConfigAppleBootView: View {
                 } else if newValue {
                     config.genericPlatform = UTMAppleConfigurationGenericPlatform()
                 }
+                if !newValue {
+                    config.boot.hasSecureBoot = false
+                }
             }.alert(item: $alertBootloaderSelection) { selection in
                 let okay = Alert.Button.default(Text("OK")) {
                     importBootloaderSelection = selection
@@ -92,6 +95,11 @@ struct VMConfigAppleBootView: View {
             }.fileImporter(isPresented: $importFileShown,
                            allowedContentTypes: [importBootloaderSelection == .ipsw ? .ipsw : .data],
                            onCompletion: selectImportedFile)
+
+            if #available(macOS 27, *), operatingSystem == .linux && config.boot.hasUefiBoot {
+                Toggle("Secure Boot", isOn: $config.boot.hasSecureBoot)
+                    .help("Only boot operating systems signed by Microsoft or a trusted vendor. Most major Linux distributions are supported.")
+            }
 
             if operatingSystem == .linux && !config.boot.hasUefiBoot {
                 Section(header: Text("Linux Settings")) {

@@ -100,6 +100,8 @@ enum UTMAppleConfigurationError: Error {
     case hardwareModelInvalid
     case rosettaNotSupported
     case featureNotSupported
+    case secureBootEnrollmentFailed
+    case efiVariablesInaccessible
 }
 
 extension UTMAppleConfigurationError: LocalizedError {
@@ -117,6 +119,10 @@ extension UTMAppleConfigurationError: LocalizedError {
             return NSLocalizedString("Rosetta is not supported on the current host machine.", comment: "UTMAppleConfiguration")
         case .featureNotSupported:
             return NSLocalizedString("The host operating system needs to be updated to support one or more features requested by the guest.", comment: "UTMAppleConfiguration")
+        case .secureBootEnrollmentFailed:
+            return NSLocalizedString("Failed to set up Secure Boot for this virtual machine.", comment: "UTMAppleConfiguration")
+        case .efiVariablesInaccessible:
+            return NSLocalizedString("The UEFI variables of this virtual machine could not be accessed.", comment: "UTMAppleConfiguration")
         }
     }
 }
