@@ -107,6 +107,7 @@ struct VMWindowView: View {
             #endif
         }
         .modifier(VMToolbarOrnamentModifier(state: $state))
+        .modifier(VMWindowCloseConfirmationModifier(isInteractive: isInteractive))
         .statusBarHidden(true)
         .alert(item: $state.alert, content: { type in
             switch type {
@@ -319,3 +320,36 @@ private extension View {
         }
     }
 }
+
+/// Asks before the system closes the last window of a running VM, which would end it without saving.
+private struct VMWindowCloseConfirmationModifier: ViewModifier {
+    let isInteractive: Bool
+
+    @EnvironmentObject private var session: VMSessionState
+
+    private var isLastWindowOfRunningVM: Bool {
+        let externalWindows = session.externalWindowBinding == nil ? 0 : 1
+        // a VM that is still pausing or saving would lose its state as well
+        let isSafeToClose = session.vmState == .stopped || (session.vmState == .paused && session.vm.registryEntry.isSuspended)
+        return isInteractive && !isSafeToClose && session.windows.count - externalWindows <= 1
+    }
+
+    func body(content: Content) -> some View {
+        #if os(visionOS) || WITH_REMOTE
+        content
+        #else
+        if #available(iOS 27, *) {
+            content.dismissalConfirmationDialog("This virtual machine is still running.", shouldPresent: isLastWindowOfRunningVM) {
+                Button("Stop", role: .destructive) {
+                    session.powerDown()
+                }
+            } message: {
+                Text("Closing the window stops the virtual machine. Any unsaved changes will be lost.")
+            }
+        } else {
+            content
+        }
+        #endif
+    }
+}
+
