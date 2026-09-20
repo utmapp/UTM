@@ -527,10 +527,7 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
     if (gestureRecognizer == self.tap && otherGestureRecognizer == self.twoTap) {
         return YES;
     }
-    if (gestureRecognizer == self.longPress && otherGestureRecognizer == self.tap) {
-        return YES;
-    }
-    if (gestureRecognizer == self.longPress && otherGestureRecognizer == self.twoTap) {
+    if (gestureRecognizer == self.tap && otherGestureRecognizer == self.longPress) {
         return YES;
     }
     if (gestureRecognizer == self.pinch && otherGestureRecognizer == self.swipeDown) {
@@ -565,6 +562,14 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
 #else
     return NO;
 #endif
+}
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+    if (gestureRecognizer == self.longPress) {
+        // otherwise a disabled long press would swallow the tap waiting on it
+        return self.longPressType != VMGestureTypeNone;
+    }
+    return YES;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
