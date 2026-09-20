@@ -23,14 +23,13 @@
 #endif
 
 @class VMKeyboardView;
-@class VMKeyboardButton;
+@class VMKeyboardAccessoryView;
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface VMDisplayMetalViewController : VMDisplayViewController
 
-@property (strong, nonatomic) IBOutlet UIInputView *inputAccessoryView;
-@property (strong, nonatomic) IBOutletCollection(VMKeyboardButton) NSArray *customKeyModifierButtons;
+@property (strong, nonatomic, nullable) VMKeyboardAccessoryView *inputAccessoryView;
 
 @property (nonatomic) IBOutlet MTKView *mtkView;
 @property (nonatomic) IBOutlet VMKeyboardView *keyboardView;

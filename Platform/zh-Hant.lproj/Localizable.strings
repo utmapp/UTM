@@ -2007,3 +2007,26 @@
 "Use NVMe Interface" = "使用 NVMe 磁碟介面";
 "If checked, use NVMe instead of virtio as the disk interface, available on macOS 14+ for Linux guests only. This interface is slower but less likely to encounter filesystem errors." = "如果選取，將使用 NVMe 而非 virtio 作為磁碟介面，僅在 macOS 14+ 中適用於 Linux 客戶機器。這個介面速度較慢，但較不容易遇到檔案系統錯誤。";
 
+/* VMKeyboardAccessoryView */
+"Up" = "上方向鍵";
+
+/* VMKeyboardAccessoryView */
+"Down" = "下方向鍵";
+
+/* VMKeyboardAccessoryView */
+"Left" = "左方向鍵";
+
+/* VMKeyboardAccessoryView */
+"Right" = "右方向鍵";
+
+/* VMKeyboardAccessoryView */
+"Caps Lock" = "大寫鎖定鍵";
+
+/* VMKeyboardAccessoryView */
+"Num Lock" = "數字鎖定鍵";
+
+/* VMKeyboardAccessoryView */
+"Paste" = "貼上";
+
+/* VMKeyboardAccessoryView */
+"Hide Keyboard" = "隱藏鍵盤";

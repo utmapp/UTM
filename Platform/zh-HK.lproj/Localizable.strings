@@ -2700,3 +2700,30 @@ VMWizardOSMacView */
 
 /* No comment provided by engineer. */
 "Zoom" = "縮放";
+
+/* VMKeyboardAccessoryView */
+"Up" = "上";
+
+/* VMKeyboardAccessoryView */
+"Down" = "下";
+
+/* VMKeyboardAccessoryView */
+"Left" = "左";
+
+/* VMKeyboardAccessoryView */
+"Right" = "右";
+
+/* VMKeyboardAccessoryView */
+"Num Lock" = "Number Lock";
+
+/* VMKeyboardAccessoryView */
+"Page Up" = "上一頁";
+
+/* VMKeyboardAccessoryView */
+"Page Down" = "下一頁";
+
+/* VMKeyboardAccessoryView */
+"Paste" = "貼上";
+
+/* VMKeyboardAccessoryView */
+"Hide Keyboard" = "隱藏鍵盤";

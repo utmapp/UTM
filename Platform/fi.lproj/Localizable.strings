@@ -1397,3 +1397,48 @@
 
 /* Share and Drive panes. */
 "Path" = "Polku";
+
+/* VMKeyboardAccessoryView */
+"Control" = "Ohjaus";
+
+/* VMKeyboardAccessoryView */
+"Option" = "Vaihtoehto";
+
+/* VMKeyboardAccessoryView */
+"Tab" = "Välilehti";
+
+/* VMKeyboardAccessoryView */
+"Escape" = "Lopeta";
+
+/* VMKeyboardAccessoryView */
+"Down" = "Alas";
+
+/* VMKeyboardAccessoryView */
+"Left" = "Vasen";
+
+/* VMKeyboardAccessoryView */
+"Right" = "Oikea";
+
+/* VMKeyboardAccessoryView */
+"Scroll Lock" = "Vierityslukko";
+
+/* VMKeyboardAccessoryView */
+"Insert" = "Lisää";
+
+/* VMKeyboardAccessoryView */
+"Home" = "Koti";
+
+/* VMKeyboardAccessoryView */
+"End" = "Lopeta";
+
+/* VMKeyboardAccessoryView */
+"Page Up" = "Sivu yläs";
+
+/* VMKeyboardAccessoryView */
+"Page Down" = "Sivu alas";
+
+/* VMKeyboardAccessoryView */
+"Paste" = "Liitä";
+
+/* VMKeyboardAccessoryView */
+"Hide Keyboard" = "Piilota näppäimistö";

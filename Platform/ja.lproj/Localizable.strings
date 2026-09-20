@@ -256,6 +256,29 @@
 // VMWizardView.swift
 "Continue" = "続ける";
 
+// Display/VMKeyboardAccessoryView.swift
+"Control" = "コントロール";
+"Option" = "オプション";
+"Command" = "コマンド";
+"Shift" = "シフト";
+"Tab" = "タブ";
+"Escape" = "エスケープ";
+"Up" = "上";
+"Down" = "下";
+"Left" = "左";
+"Right" = "右";
+"Caps Lock" = "キャプスロック";
+"Scroll Lock" = "スクロールロック";
+"Num Lock" = "ナムロック";
+"Print Screen" = "プリントスクリーン";
+"Insert" = "インサート";
+"Home" = "ホーム";
+"End" = "エンド";
+"Page Up" = "ページアップ";
+"Page Down" = "ページダウン";
+"Paste" = "ペースト";
+"Hide Keyboard" = "キーボードを非表示";
+
 
 /* Platform/macOS */
 

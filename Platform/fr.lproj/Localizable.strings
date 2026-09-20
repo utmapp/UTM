@@ -232,6 +232,25 @@
 "No output device is selected for this window." = "Aucun appareil de sortie n’est sélectionné pour cette fenêtre.";
 "Continue" = "Continuer";
 
+// Display/VMKeyboardAccessoryView.swift
+"Shift" = "Maj";
+"Escape" = "Échap";
+"Up" = "Haut";
+"Down" = "Bas";
+"Left" = "Gauche";
+"Right" = "Droite";
+"Caps Lock" = "Verr. Maj.";
+"Scroll Lock" = "Arrêt défil.";
+"Num Lock" = "Verr. Num.";
+"Print Screen" = "Impression écran";
+"Insert" = "Insérer";
+"Home" = "Début";
+"End" = "Fin";
+"Page Up" = "Page Haut";
+"Page Down" = "Page Bas";
+"Paste" = "Coller";
+"Hide Keyboard" = "Masquer le clavier";
+
 
 /* Platform/macOS */
 

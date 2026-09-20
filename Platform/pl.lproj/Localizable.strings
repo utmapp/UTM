@@ -241,6 +241,16 @@
 /* VMWizardView.swift */
 "Continue" = "Kontynuuj";
 
+/* Display/VMKeyboardAccessoryView.swift */
+"Up" = "Strzałka w górę";
+"Down" = "Strzałka w dół";
+"Left" = "Strzałka w lewo";
+"Right" = "Strzałka w prawo";
+"Scroll Lock" = "Blokada przewijania";
+"Home" = "Główny";
+"Paste" = "Wklej";
+"Hide Keyboard" = "Ukryj klawiaturę";
+
 /* Platform/macOS */
 
 /* Display/VMDisplayWindowController.swift */

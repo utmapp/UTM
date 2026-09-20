@@ -60,12 +60,6 @@ static const NSInteger kResizeTimeoutSecs = 5;
     [self.view insertSubview:self.keyboardView atIndex:0];
     [self.view insertSubview:self.mtkView atIndex:1];
     [self.mtkView bindFrameToSuperviewBounds];
-    [self loadInputAccessory];
-}
-
-- (void)loadInputAccessory {
-    UINib *nib = [UINib nibWithNibName:@"VMDisplayMetalViewInputAccessory" bundle:nil];
-    [nib instantiateWithOwner:self options:nil];
 }
 
 - (BOOL)serverModeCursor {
@@ -75,8 +69,11 @@ static const NSInteger kResizeTimeoutSecs = 5;
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    // set up software keyboard
+#if !TARGET_OS_VISION
+    // set up software keyboard, which visionOS replaces with its own keyboard window
+    self.inputAccessoryView = [[VMKeyboardAccessoryView alloc] initWithTarget:self];
     self.keyboardView.inputAccessoryView = self.inputAccessoryView;
+#endif
     
     // Set the view to use the default device
     self.mtkView.frame = self.view.bounds;
