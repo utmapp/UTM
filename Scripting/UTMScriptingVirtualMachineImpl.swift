@@ -119,6 +119,8 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
     @objc func start(_ command: NSScriptCommand) {
         let shouldSaveState = command.evaluatedArguments?["saveFlag"] as? Bool ?? true
         let bootRecoveryMode = command.evaluatedArguments?["bootRecoveryFlag"] as? Bool ?? false
+        let hasProvisioning = command.evaluatedArguments?["provisioningOptions"] != nil
+        let provisioning = command.evaluatedArguments?["provisioningOptions"] as? [AnyHashable : Any]
 
         withScriptCommand(command) { [self] in
             var options: UTMVirtualMachineStartOptions = []
@@ -126,6 +128,11 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
             guard !isInstalling else {
                 throw ScriptingError.installInProgress
             }
+            // the first boot cannot be repeated so never fall back to a normal start
+            guard provisioning != nil || !hasProvisioning else {
+                throw ScriptingError.invalidParameter
+            }
+            
             if !shouldSaveState {
                 guard type(of: vm).capabilities.supportsDisposibleMode else {
                     throw ScriptingError.operationNotSupported
@@ -139,8 +146,31 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
                 options.insert(.bootRecovery)
             }
 
+            var guestProvisioning: UTMAppleGuestProvisioningOptions?
+            if let provisioning = provisioning {
+                guard let vm = vm as? UTMAppleVirtualMachine else {
+                    throw ScriptingError.operationNotSupported
+                }
+                guard let username = provisioning["username"] as? String, !username.isEmpty, let password = provisioning["password"] as? String else {
+                    throw ScriptingError.invalidParameter
+                }
+                guard vm.state == .stopped else {
+                    throw ScriptingError.operationNotAvailable
+                }
+                let account = UTMAppleGuestProvisioningOptions(fullName: provisioning["fullName"] as? String ?? username,
+                                                               username: username,
+                                                               password: password,
+                                                               logsInAutomatically: provisioning["automaticLogin"] as? Bool ?? false,
+                                                               enablesRemoteLogin: provisioning["remoteLogin"] as? Bool ?? false)
+                // report mistakes before a window is opened
+                try await vm.validateGuestProvisioning(account, options: options)
+                guestProvisioning = account
+            }
+            
             data.run(vm: box, startImmediately: false)
-            if vm.state == .stopped {
+            if let guestProvisioning = guestProvisioning, let vm = vm as? UTMAppleVirtualMachine {
+                try await vm.start(options: options, guestProvisioning: guestProvisioning)
+            } else if vm.state == .stopped {
                 try await vm.start(options: options)
             } else if vm.state == .paused {
                 try await vm.resume()
