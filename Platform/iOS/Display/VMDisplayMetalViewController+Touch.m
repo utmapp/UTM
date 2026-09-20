@@ -165,6 +165,11 @@ const CGFloat kScrollResistance = 10.0f;
     return [self gestureTypeForSetting:@"GestureTwoScroll"];
 }
 
+/// A two finger swipe must be told apart from a two finger pan unless both scroll
+- (BOOL)isTwoFingerSwipeExclusive {
+    return self.twoFingerScrollType != VMGestureTypeNone && self.twoFingerPanType != VMGestureTypeMouseWheel;
+}
+
 - (VMGestureType)threeFingerPanType {
     return [self gestureTypeForSetting:@"GestureThreePan"];
 }
@@ -499,10 +504,13 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
 - (IBAction)gestureSwipeScroll:(UISwipeGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateEnded &&
         self.twoFingerScrollType == VMGestureTypeMouseWheel) {
+        // same direction as the pan that may be scrolling along with the swipe
+        CSInputScroll up = self.isInvertScroll ? kCSInputScrollDown : kCSInputScrollUp;
+        CSInputScroll down = self.isInvertScroll ? kCSInputScrollUp : kCSInputScrollDown;
         if (sender == self.swipeScrollUp) {
-            [self.vmInput sendMouseScroll:kCSInputScrollUp buttonMask:self.mouseButtonDown dy:0];
+            [self.vmInput sendMouseScroll:up buttonMask:self.mouseButtonDown dy:0];
         } else if (sender == self.swipeScrollDown) {
-            [self.vmInput sendMouseScroll:kCSInputScrollDown buttonMask:self.mouseButtonDown dy:0];
+            [self.vmInput sendMouseScroll:down buttonMask:self.mouseButtonDown dy:0];
         } else {
             NSAssert(0, @"Invalid call to gestureSwipeScroll");
         }
@@ -512,12 +520,6 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
 #pragma mark - UIGestureRecognizerDelegate
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
-    if (gestureRecognizer == self.twoPan && otherGestureRecognizer == self.swipeUp) {
-        return YES;
-    }
-    if (gestureRecognizer == self.twoPan && otherGestureRecognizer == self.swipeDown) {
-        return YES;
-    }
     if (gestureRecognizer == self.twoTap && otherGestureRecognizer == self.swipeDown) {
         return YES;
     }
@@ -530,26 +532,14 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
     if (gestureRecognizer == self.tap && otherGestureRecognizer == self.longPress) {
         return YES;
     }
-    if (gestureRecognizer == self.pinch && otherGestureRecognizer == self.swipeDown) {
-        return YES;
-    }
-    if (gestureRecognizer == self.pinch && otherGestureRecognizer == self.swipeUp) {
-        return YES;
-    }
-    if (gestureRecognizer == self.pan && otherGestureRecognizer == self.swipeUp) {
-        return YES;
-    }
-    if (gestureRecognizer == self.pan && otherGestureRecognizer == self.swipeDown) {
-        return YES;
-    }
+    // a swipe can take half a second to fail so a pan only waits for one that matches the same number of touches
     if (gestureRecognizer == self.threePan && otherGestureRecognizer == self.swipeUp) {
         return YES;
     }
     if (gestureRecognizer == self.threePan && otherGestureRecognizer == self.swipeDown) {
         return YES;
     }
-    // only if we do not disable two finger swipe
-    if (self.twoFingerScrollType != VMGestureTypeNone) {
+    if (self.isTwoFingerSwipeExclusive) {
         if (gestureRecognizer == self.twoPan && otherGestureRecognizer == self.swipeScrollUp) {
             return YES;
         }
@@ -565,6 +555,10 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
 }
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+    if (gestureRecognizer == self.pinch) {
+        // before iOS 18 a pinch begins with two of three fingers and takes them from the three finger gestures
+        return self.threePan.numberOfTouches < 3;
+    }
     if (gestureRecognizer == self.longPress) {
         // otherwise a disabled long press would swallow the tap waiting on it
         return self.longPressType != VMGestureTypeNone;
@@ -581,8 +575,7 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
         }
     } else if (gestureRecognizer == self.pan && otherGestureRecognizer == self.longPress) {
         return YES;
-    } else if (self.twoFingerScrollType == VMGestureTypeNone && otherGestureRecognizer == self.twoPan) {
-        // if two finger swipe is disabled, we can also recognize two finger pans
+    } else if (!self.isTwoFingerSwipeExclusive && otherGestureRecognizer == self.twoPan) {
         if (gestureRecognizer == self.swipeScrollUp) {
             return YES;
         } else if (gestureRecognizer == self.swipeScrollDown) {
