@@ -333,7 +333,9 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
             [self moveScreen:sender];
             break;
         case VMGestureTypeDragCursor:
-            [self dragCursor:sender.state primary:YES secondary:NO middle:NO];
+        case VMGestureTypeRightDrag:
+        case VMGestureTypeMiddleDrag:
+            [self dragCursor:sender.state gestureType:self.twoFingerPanType];
             [self moveMouseWithInertia:sender];
             break;
         case VMGestureTypeMouseWheel:
@@ -350,7 +352,9 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
             [self moveScreen:sender];
             break;
         case VMGestureTypeDragCursor:
-            [self dragCursor:sender.state primary:YES secondary:NO middle:NO];
+        case VMGestureTypeRightDrag:
+        case VMGestureTypeMiddleDrag:
+            [self dragCursor:sender.state gestureType:self.threeFingerPanType];
             [self moveMouseWithInertia:sender];
             break;
         case VMGestureTypeMouseWheel:
@@ -444,6 +448,29 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
     }
 }
 
+- (CSInputButton)buttonForGestureType:(VMGestureType)type {
+    switch (type) {
+        case VMGestureTypeDragCursor:
+            return kCSInputButtonLeft;
+        case VMGestureTypeRightClick:
+        case VMGestureTypeRightDrag:
+            return kCSInputButtonRight;
+        case VMGestureTypeMiddleClick:
+        case VMGestureTypeMiddleDrag:
+            return kCSInputButtonMiddle;
+        default:
+            return kCSInputButtonNone;
+    }
+}
+
+- (void)dragCursor:(UIGestureRecognizerState)state gestureType:(VMGestureType)type {
+    CSInputButton button = [self buttonForGestureType:type];
+    [self dragCursor:state
+             primary:button == kCSInputButtonLeft
+           secondary:button == kCSInputButtonRight
+              middle:button == kCSInputButtonMiddle];
+}
+
 - (IBAction)gestureTap:(UITapGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateEnded &&
         self.serverModeCursor) { // otherwise we handle in touchesBegan
@@ -452,18 +479,20 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
 }
 
 - (IBAction)gestureTwoTap:(UITapGestureRecognizer *)sender {
-    if (sender.state == UIGestureRecognizerStateEnded &&
-        self.twoFingerTapType == VMGestureTypeRightClick) {
-        [self mouseClick:kCSInputButtonRight location:[sender locationInView:sender.view]];
+    CSInputButton button = [self buttonForGestureType:self.twoFingerTapType];
+    if (sender.state == UIGestureRecognizerStateEnded && button != kCSInputButtonNone) {
+        [self mouseClick:button location:[sender locationInView:sender.view]];
     }
 }
 
 - (IBAction)gestureLongPress:(UILongPressGestureRecognizer *)sender {
-    if (sender.state == UIGestureRecognizerStateEnded &&
-        self.longPressType == VMGestureTypeRightClick) {
-        [self mouseClick:kCSInputButtonRight location:[sender locationInView:sender.view]];
-    } else if (self.longPressType == VMGestureTypeDragCursor) {
-        [self dragCursor:sender.state primary:YES secondary:NO middle:NO];
+    if (self.longPressType == VMGestureTypeDragCursor) {
+        [self dragCursor:sender.state gestureType:self.longPressType];
+    } else if (sender.state == UIGestureRecognizerStateEnded) {
+        CSInputButton button = [self buttonForGestureType:self.longPressType];
+        if (button != kCSInputButtonNone) {
+            [self mouseClick:button location:[sender locationInView:sender.view]];
+        }
     }
 }
 
