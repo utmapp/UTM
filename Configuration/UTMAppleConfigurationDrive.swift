@@ -111,10 +111,15 @@ struct UTMAppleConfigurationDrive: UTMConfigurationDrive {
         }
         // Use cached caching mode for virtio drive to prevent fs corruption on linux when possible
         let useCachedMode = !isNvme && useFsWorkAround
-        if #available(macOS 27, *), let overlayDirectoryURL = disposableOverlayDirectoryURL, !isReadOnly {
-            let overlayURL = overlayDirectoryURL.appendingPathComponent("\(id).asif")
-            return try UTMAppleDiskImage.attachment(for: imageURL, ephemeralOverlayAt: overlayURL, cachingMode: useCachedMode ? .cached : .automatic, synchronizationMode: .full)
-        } else if useCachedMode {
+        if #available(macOS 27, *) {
+            let overlayURL = isReadOnly ? nil : disposableOverlayDirectoryURL?.appendingPathComponent("\(id).asif")
+            if let attachment = try UTMAppleDiskImage.attachment(for: imageURL, includesLayers: !isExternal, ephemeralOverlayAt: overlayURL, isReadOnly: isReadOnly, cachingMode: useCachedMode ? .cached : .automatic, synchronizationMode: .full) {
+                return attachment
+            }
+        } else if !isExternal && !UTMAppleDiskImage.layerFileURLs(of: imageURL).isEmpty {
+            throw UTMAppleDiskImageError.snapshotsRequireNewerOS
+        }
+        if useCachedMode {
             return try VZDiskImageStorageDeviceAttachment(url: imageURL, readOnly: isReadOnly, cachingMode: .cached, synchronizationMode: .full)
         } else {
             return try VZDiskImageStorageDeviceAttachment(url: imageURL, readOnly: isReadOnly)
