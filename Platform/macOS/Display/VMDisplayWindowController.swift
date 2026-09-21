@@ -419,7 +419,12 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
 
 extension VMDisplayWindowController: NSWindowDelegate {
     func window(_ window: NSWindow, willUseFullScreenPresentationOptions proposedOptions: NSApplication.PresentationOptions = []) -> NSApplication.PresentationOptions {
-        return proposedOptions.union([.autoHideToolbar])
+        var options = proposedOptions.union([.autoHideToolbar])
+        if #available(macOS 27, *) {
+            // the guest owns the whole screen, so its corners should not trigger Hot Corners on the host
+            options.insert(.disableScreenCornerInteractions)
+        }
+        return options
     }
     
     func windowShouldClose(_ sender: NSWindow) -> Bool {

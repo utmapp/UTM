@@ -108,6 +108,7 @@ class VMDisplayWindow: NSWindow {
         center.addObserver(self, selector: #selector(updateMenuBarHidden), name: NSWindow.didResizeNotification, object: self)
         center.addObserver(self, selector: #selector(willLeaveFullScreen), name: NSWindow.willExitFullScreenNotification, object: self)
         center.addObserver(self, selector: #selector(willLeaveFullScreen), name: NSWindow.willCloseNotification, object: self)
+        center.addObserver(self, selector: #selector(didExitFullScreen), name: NSWindow.didExitFullScreenNotification, object: self)
         center.addObserver(self, selector: #selector(menuBarRevealDidChange), name: MenuBarReveal.didChangeNotification, object: nil)
         center.addObserver(self, selector: #selector(otherWindowDidChangeOcclusionState), name: NSWindow.didChangeOcclusionStateNotification, object: nil)
         center.addObserver(self, selector: #selector(updatePresentationOptions), name: NSWindow.didBecomeKeyNotification, object: self)
@@ -171,6 +172,18 @@ class VMDisplayWindow: NSWindow {
         showMenuBar()
     }
 
+    @objc private func didExitFullScreen() {
+        guard #available(macOS 27, *) else {
+            return
+        }
+        // the window server keeps Hot Corners disabled after the full screen space is gone, until the options change
+        guard NSApp.presentationOptions.isEmpty else {
+            return // another full screen window is in front and still wants them disabled
+        }
+        NSApp.presentationOptions = [.autoHideDock]
+        NSApp.presentationOptions = []
+    }
+
     /// Hides the menu bar of our full screen space if and only if we are covered by it.
     @objc private func updateMenuBarHidden() {
         if isInFullScreenSpace, let screen = screen, frame != screen.frame {
@@ -226,7 +239,11 @@ class VMDisplayWindow: NSWindow {
         // the menu bar is only kept hidden for the space we are in, but what we did must be undone in any case
         let options: NSApplication.PresentationOptions?
         if !isMenuBarRevealAllowed && isKeyWindow {
-            options = [.fullScreen, .hideMenuBar, .hideDock]
+            var forcedOptions: NSApplication.PresentationOptions = [.fullScreen, .hideMenuBar, .hideDock]
+            if #available(macOS 27, *) {
+                forcedOptions.formUnion(revealableOptions.intersection(.disableScreenCornerInteractions))
+            }
+            options = forcedOptions
             isPresentationOptionsForced = true
         } else if isPresentationOptionsForced {
             options = revealableOptions
