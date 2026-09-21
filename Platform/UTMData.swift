@@ -911,6 +911,10 @@ enum AlertItem: Identifiable {
     /// - Parameter driveUrl: Original drive to convert
     /// - Parameter isCompressed: Compress existing data
     func reclaimSpace(for driveUrl: URL, withCompression isCompressed: Bool = false) async throws {
+        // converting leaves the snapshots in the image behind, and a suspended state is one of them
+        guard try await UTMQemuImage.snapshots(image: driveUrl).isEmpty else {
+            throw UTMDataError.driveHasSnapshots
+        }
         let baseUrl = driveUrl.deletingLastPathComponent()
         let dstUrl = Self.newImage(from: driveUrl, to: baseUrl, withExtension: "qcow2")
         defer {
@@ -1195,6 +1199,7 @@ enum UTMDataError: Error {
     case jitStreamerUrlInvalid(String)
     case notImplemented
     case reconnectFailed
+    case driveHasSnapshots
 }
 
 extension UTMDataError: LocalizedError {
@@ -1228,6 +1233,8 @@ extension UTMDataError: LocalizedError {
             return NSLocalizedString("This functionality is not yet implemented.", comment: "UTMData")
         case .reconnectFailed:
             return NSLocalizedString("Failed to reconnect to the server.", comment: "UTMData")
+        case .driveHasSnapshots:
+            return NSLocalizedString("Space cannot be reclaimed from a drive while it holds snapshots or a suspended state.", comment: "UTMData")
         }
     }
 }

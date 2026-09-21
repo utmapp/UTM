@@ -652,7 +652,7 @@ import Virtualization // for getting network interfaces
         f()
     }
     
-    private var hasCustomBios: Bool {
+    var hasCustomBios: Bool {
         for drive in drives {
             if drive.imageType == .disk || drive.imageType == .cd {
                 if drive.interface == .pflash {

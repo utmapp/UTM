@@ -299,8 +299,7 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
 
     @objc func listSnapshots(_ command: NSScriptCommand) {
         withScriptCommand(command) { [self] in
-            let entries = try await UTMSnapshotService.listSnapshots(on: vm)
-            return entries.map { $0.name }
+            return try await UTMSnapshotService.listSnapshots(on: vm)
         }
     }
 
