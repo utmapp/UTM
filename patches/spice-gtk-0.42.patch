@@ -1,7 +1,7 @@
 From 07ba2d801b4a03125dee3f9d5f4a13cad8d62008 Mon Sep 17 00:00:00 2001
 From: osy <osy@turing.llc>
 Date: Fri, 4 Mar 2022 16:35:26 -0800
-Subject: [PATCH 1/2] spice-util: support for non-default GMainContext
+Subject: [PATCH 1/5] spice-util: support for non-default GMainContext
 
 When spice-gtk is used in an application with its own GMainContext, the
 wrong context will be used leading to various issues.
@@ -265,7 +265,7 @@ index 421b4b0..e161c83 100644
 From 92ac46d9328afa036e2e3aebf0f7218ba5b2910f Mon Sep 17 00:00:00 2001
 From: osy <osy@turing.llc>
 Date: Fri, 4 Mar 2022 16:44:20 -0800
-Subject: [PATCH 2/2] spice-gtk: user specified GMainContext for events
+Subject: [PATCH 2/5] spice-gtk: user specified GMainContext for events
 
 Following the previous commit, this replaces all GLib calls that
 implicitly uses the default main context with versions that can use the
@@ -903,7 +903,7 @@ index e26b939..6054f3e 100644
 From f648e0730b8ddbb03f2f9e45c121a5bbcc3ba00f Mon Sep 17 00:00:00 2001
 From: osy <osy@turing.llc>
 Date: Sun, 6 Aug 2023 01:11:31 -0700
-Subject: [PATCH] meson: disable version script
+Subject: [PATCH 3/5] meson: disable version script
 
 Fails to build on Xcode 15
 ---
@@ -929,7 +929,7 @@ index daff1aa..61e60fa 100644
 From 00cdb145ca1f34e47a1c8ba0d933595709318f85 Mon Sep 17 00:00:00 2001
 From: osy <osy@turing.llc>
 Date: Sun, 17 Aug 2025 19:32:49 -0700
-Subject: [PATCH] main: only send physical size when used
+Subject: [PATCH 4/5] main: only send physical size when used
 
 Since introducing physical size support four years ago, the
 feature has been broken on Linux. In VDAgent, there is a
@@ -1023,4 +1023,164 @@ index 7830f6f..d4d1a1e 100644
      if (c->disable_display_align == FALSE)
 -- 
 2.41.0
+
+From 954015a8fdb6f3888d4dfd1667389d187c13a95b Mon Sep 17 00:00:00 2001
+From: Evan Champion <306651197+evan314159@users.noreply.github.com>
+Date: Sat, 5 Sep 2026 10:48:43 +0800
+Subject: [PATCH 5/5] spice-gstaudio: serialize GStreamer pipe state changes
+ off the main context
+
+AudioOutputUnitStop() called from GStreamer in the main context thread
+hangs under high memory load (e.g. concurrent LLM usage), causing all SPICE
+services including video and input to hang while the VM is still running.
+
+Short-term fix (this PR): run GStreamer state changes on a separate,
+serialized worker thread per stream so the hang does not block other SPICE
+services.
+
+Long-term fix?: this appears to require either a fix from Apple or for
+audio to run in a separate process. Once the connection to CoreAudio is
+hung, it does not seem to be recoverable by the same process.
+
+Assisted-by: Claude:claude-opus-4-8
+---
+ src/spice-gstaudio.c | 76 ++++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 69 insertions(+), 7 deletions(-)
+
+diff --git a/src/spice-gstaudio.c b/src/spice-gstaudio.c
+index b6fc4eb..2b90774 100644
+--- a/src/spice-gstaudio.c
++++ b/src/spice-gstaudio.c
+@@ -33,6 +33,8 @@ struct stream {
+     guint                   rate;
+     guint                   channels;
+     gboolean                fake; /* fake channel just for getting info about audio (volume) */
++    GThread                 *state_thread;
++    GAsyncQueue             *state_jobs;
+ };
+ 
+ struct _SpiceGstaudioPrivate {
+@@ -59,13 +61,73 @@ static void spice_gstaudio_get_record_volume_info_async(SpiceAudio *audio,
+ static gboolean spice_gstaudio_get_record_volume_info_finish(SpiceAudio *audio,
+         GAsyncResult *res, gboolean *mute, guint8 *nchannels, guint16 **volume, GError **error);
+ 
++/* Run gst_element_set_state() on a dedicated per-stream thread instead of the
++ * main context, since it can block indefinitely in AudioOutputUnitStop() on
++ * macOS. Jobs are serialized through one thread so a start cannot race a
++ * still-running stop on the same pipe. */
++struct state_job {
++    GstElement *pipe; /* NULL is the sentinel to stop the thread */
++    GstState state;
++};
++
++static gpointer state_thread_func(gpointer data)
++{
++    GAsyncQueue *jobs = data;
++    struct state_job *job;
++
++    while ((job = g_async_queue_pop(jobs))->pipe != NULL) {
++        gst_element_set_state(job->pipe, job->state);
++        gst_object_unref(job->pipe);
++        g_free(job);
++    }
++    g_free(job);
++    /* Only this thread knows it was signalled to stop, so it, not
++     * stream_dispose(), must drop the queue's last reference. */
++    g_async_queue_unref(jobs);
++    return NULL;
++}
++
++static void stream_set_state_async(struct stream *s, GstState state)
++{
++    struct state_job *job;
++
++    if (s->state_jobs == NULL) {
++        GAsyncQueue *jobs = g_async_queue_new();
++        GThread *thread = g_thread_try_new("spice-audio-state", state_thread_func, jobs, NULL);
++        if (thread == NULL) {
++            SPICE_DEBUG("failed to spawn audio state thread, calling set_state directly");
++            g_async_queue_unref(jobs);
++            gst_element_set_state(s->pipe, state);
++            return;
++        }
++        s->state_jobs = jobs;
++        s->state_thread = thread;
++    }
++
++    job = g_new(struct state_job, 1);
++    job->pipe = gst_object_ref(s->pipe);
++    job->state = state;
++    g_async_queue_push(s->state_jobs, job);
++}
++
+ static void stream_dispose(struct stream *s)
+ {
+     if (s->pipe) {
+-        gst_element_set_state(s->pipe, GST_STATE_NULL);
+-        g_clear_pointer(&s->pipe, gst_object_unref);
++        stream_set_state_async(s, GST_STATE_NULL);
++    }
++
++    if (s->state_jobs != NULL) {
++        /* Signal worker to stop via the NULL sentinel, and then detach as
++         * the worker may be stuck in AudioOutputUnitStop(). */
++        struct state_job *sentinel = g_new0(struct state_job, 1);
++        g_async_queue_push(s->state_jobs, sentinel);
++        g_thread_unref(s->state_thread);
++        s->state_jobs = NULL;
++        s->state_thread = NULL;
+     }
+ 
++    /* Each queued job keeps s->pipe alive via its own reference. */
++    g_clear_pointer(&s->pipe, gst_object_unref);
+     g_clear_pointer(&s->src, gst_object_unref);
+     g_clear_pointer(&s->sink, gst_object_unref);
+ }
+@@ -135,7 +197,7 @@ static void record_stop(SpiceGstaudio *gstaudio)
+ 
+     SPICE_DEBUG("%s", __FUNCTION__);
+     if (p->record.pipe)
+-        gst_element_set_state(p->record.pipe, GST_STATE_READY);
++        stream_set_state_async(&p->record, GST_STATE_READY);
+ }
+ 
+ static gboolean record_bus_cb(GstBus *bus, GstMessage *msg, gpointer data)
+@@ -195,7 +257,7 @@ static void record_start(SpiceRecordChannel *channel, gint format, gint channels
+     if (p->record.pipe &&
+         (p->record.rate != frequency ||
+          p->record.channels != channels)) {
+-        gst_element_set_state(p->record.pipe, GST_STATE_NULL);
++        stream_set_state_async(&p->record, GST_STATE_NULL);
+         if (p->rbus_watch_id > 0) {
+             g_spice_source_remove(p->rbus_watch_id);
+             p->rbus_watch_id = 0;
+@@ -241,7 +303,7 @@ cleanup:
+     }
+ 
+     if (p->record.pipe)
+-        gst_element_set_state(p->record.pipe, GST_STATE_PLAYING);
++        stream_set_state_async(&p->record, GST_STATE_PLAYING);
+ }
+ 
+ static void playback_stop(SpiceGstaudio *gstaudio)
+@@ -249,7 +311,7 @@ static void playback_stop(SpiceGstaudio *gstaudio)
+     SpiceGstaudioPrivate *p = gstaudio->priv;
+ 
+     if (p->playback.pipe)
+-        gst_element_set_state(p->playback.pipe, GST_STATE_READY);
++        stream_set_state_async(&p->playback, GST_STATE_READY);
+     if (p->mmtime_id != 0) {
+         g_spice_source_remove(p->mmtime_id);
+         p->mmtime_id = 0;
+@@ -324,7 +386,7 @@ cleanup:
+     }
+ 
+     if (p->playback.pipe)
+-        gst_element_set_state(p->playback.pipe, GST_STATE_PLAYING);
++        stream_set_state_async(&p->playback, GST_STATE_PLAYING);
+ 
+     if (!p->playback.fake && p->mmtime_id == 0) {
+         update_mmtime_timeout_cb(gstaudio);
+-- 
+2.54.0 (Apple Git-157)
 
