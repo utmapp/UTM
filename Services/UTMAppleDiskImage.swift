@@ -337,6 +337,33 @@ extension UTMAppleDiskImage {
         try removeUnusedLayers(of: imageURL)
     }
 
+    /// Layers of an image that are still needed, given the snapshots that are still wanted.
+    ///
+    /// A layer is needed when it is the one being written to, when it belongs to one of `names`,
+    /// or when it lies under a layer that is needed. Anything else is left over and may go.
+    /// - Parameters:
+    ///   - imageURL: Location of the image
+    ///   - names: Names of the snapshots to keep
+    static func preservedLayerURLs(of imageURL: URL, for names: Set<String>) throws -> [URL] {
+        let fileURLs = layerFileURLs(of: imageURL)
+        let layers = try layers(of: imageURL)
+        // a layer that could not be read, such as the one a running VM writes to, may be needed
+        // by any of the others and is kept along with all of them
+        guard layers.count == fileURLs.count else {
+            return fileURLs
+        }
+        var preserved = Set<URL>()
+        for top in layers where top.isCurrent || names.contains(top.name) {
+            guard let chain = try? chain(endingAt: top, in: layers) else {
+                return fileURLs
+            }
+            for layer in chain {
+                preserved.insert(layer.url)
+            }
+        }
+        return Array(preserved)
+    }
+
     /// Delete the layers of deleted snapshots that no other layer needs anymore
     private static func removeUnusedLayers(of imageURL: URL) throws {
         var layers = try layers(of: imageURL)

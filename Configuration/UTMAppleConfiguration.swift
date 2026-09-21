@@ -384,6 +384,9 @@ private extension String {
             existingDataURLs += try await _drives[i].saveData(to: dataURL)
         }
         
+        // what the snapshots hold sits beside the files above and is named after them
+        existingDataURLs += UTMAppleSnapshotFiles.preservedDataURLs(for: existingDataURLs, in: dataURL.deletingLastPathComponent())
+
         return existingDataURLs
     }
 }

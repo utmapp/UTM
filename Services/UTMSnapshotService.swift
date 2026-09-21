@@ -43,6 +43,8 @@ enum UTMSnapshotService {
         #if os(macOS)
         if vm is UTMQemuVirtualMachine {
             return true
+        } else if #available(macOS 27, *), vm is UTMAppleVirtualMachine {
+            return true
         }
         #endif
         // qemu-img is needed for a VM that is not running and is only part of the macOS app
@@ -379,6 +381,18 @@ enum UTMSnapshotService {
             default: throw UTMSnapshotError.invalidVmState
             }
         }
+        #if os(macOS)
+        if #available(macOS 27, *), let apple = vm as? UTMAppleVirtualMachine {
+            guard [.started, .paused, .stopped].contains(vm.state) else {
+                throw UTMSnapshotError.invalidVmState
+            }
+            return UTMAppleSnapshotBackend(imageURLs: apple.snapshotImageURLs,
+                                           auxiliaryURLs: apple.snapshotAuxiliaryURLs,
+                                           savedStateURL: apple.config.system.boot.vmSavedStateURL,
+                                           isRunning: vm.state != .stopped,
+                                           vm: apple)
+        }
+        #endif
         throw UTMSnapshotError.notSupported
     }
 
