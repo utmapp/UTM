@@ -69,8 +69,6 @@ struct VMSnapshot: Identifiable, Equatable {
 }
 
 /// Snapshots of a single VM along with the "current" state they are listed under.
-///
-/// FIXME: all operations are placeholders that only modify the in-memory list.
 @MainActor
 final class VMSnapshotList: ObservableObject {
     /// Saved snapshots, newest first
@@ -83,19 +81,24 @@ final class VMSnapshotList: ObservableObject {
     @Published private(set) var isCurrentStateSaved: Bool = false
 
     /// The current state can be saved while the VM is in its current state
-    @Published private(set) var canCreate: Bool = true
+    @Published private(set) var canCreate: Bool = false
 
     /// The snapshot the current state is based on can be replaced while the VM is in its current state
-    var canOverwriteBase: Bool {
-        canCreate && snapshot(for: currentParentID)?.canDelete == true
-    }
+    @Published private(set) var canOverwriteBase: Bool = false
 
-    private let vm: VMData
+    /// Weak so that the cache does not keep a VM alive after it leaves the library
+    private weak var vm: VMData?
+
+    /// Screenshots by file
+    private var screenshots: [URL: PlatformImage] = [:]
 
     private static var cache: [UUID: VMSnapshotList] = [:]
 
-    /// Returns the list for a VM, keeping it alive so placeholder edits survive navigation.
+    private var manifestObserver: (any NSObjectProtocol)?
+
+    /// Returns the list for a VM, keeping it alive so it is not read again every time it is shown.
     static func list(for vm: VMData) -> VMSnapshotList {
+        cache = cache.filter { $0.value.vm != nil }
         if let list = cache[vm.id] {
             return list
         }
@@ -106,6 +109,25 @@ final class VMSnapshotList: ObservableObject {
 
     private init(vm: VMData) {
         self.vm = vm
+        // snapshots also change through scripting while they are shown
+        manifestObserver = NotificationCenter.default.addObserver(forName: UTMSnapshotService.didChangeNotification, object: nil, queue: .main) { [weak self] notification in
+            let bundleURL = notification.object as? URL
+            Task { @MainActor [weak self] in
+                guard let self = self, let bundleURL = bundleURL, bundleURL.standardizedFileURL == self.vm?.wrapped?.pathUrl.standardizedFileURL else {
+                    return
+                }
+                try? await self.refresh()
+            }
+        }
+    }
+
+    private var wrapped: any UTMVirtualMachine {
+        get throws {
+            guard let wrapped = vm?.wrapped else {
+                throw UTMSnapshotError.notSupported
+            }
+            return wrapped
+        }
     }
 
     // MARK: - Lineage
@@ -130,80 +152,87 @@ final class VMSnapshotList: ObservableObject {
 
     // MARK: - Operations
 
-    /// FIXME: read the snapshots from the VM
+    /// Read the snapshots of the VM. The first time this adds those made by other tools.
     func refresh() async throws {
+        let wrapped = try wrapped
+        let timeline = try await UTMSnapshotService.timeline(for: wrapped)
+        snapshots = timeline.snapshots.map { snapshot in
+            VMSnapshot(id: snapshot.id,
+                       title: snapshot.title,
+                       parentID: snapshot.parentID,
+                       dateCreated: snapshot.dateCreated,
+                       dateModified: snapshot.dateModified,
+                       size: snapshot.size,
+                       screenshot: screenshot(at: snapshot.screenshotURL),
+                       hasState: snapshot.hasState,
+                       isOrphaned: snapshot.isOrphaned,
+                       isIncomplete: snapshot.isIncomplete,
+                       canRestore: !snapshot.isOrphaned && !snapshot.isIncomplete && UTMSnapshotService.isSupported(.restore, for: snapshot, on: wrapped),
+                       canDelete: UTMSnapshotService.isSupported(.delete, for: snapshot, on: wrapped))
+        }
+        // pictures of snapshots that are gone are not needed anymore
+        let screenshotURLs = Set(timeline.snapshots.compactMap { $0.screenshotURL })
+        screenshots = screenshots.filter { screenshotURLs.contains($0.key) }
+        currentParentID = timeline.currentParentID
+        isCurrentStateSaved = timeline.isCurrentStateSaved
+        canCreate = UTMSnapshotService.isSupported(.create, on: wrapped)
+        // overwriting saves the current state and deletes what the snapshot held
+        canOverwriteBase = canCreate && snapshot(for: currentParentID)?.canDelete == true
+    }
+
+    private func screenshot(at url: URL?) -> PlatformImage? {
+        guard let url = url else {
+            return nil
+        }
+        if screenshots[url] == nil {
+            screenshots[url] = PlatformImage(contentsOfURL: url)
+        }
+        return screenshots[url]
     }
 
     func rename(_ snapshot: VMSnapshot, to title: String) async throws {
-        let title = title.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !title.isEmpty, let index = snapshots.firstIndex(where: { $0.id == snapshot.id }) else {
-            return
-        }
-        snapshots[index].title = title
-        snapshots[index].dateModified = Date()
+        try UTMSnapshotService.renameSnapshot(snapshot.id, to: title, on: try wrapped)
+        try await refresh()
     }
 
     /// Saves the current state as a new snapshot based on the one the current state was based on.
     /// - Returns: Identifier of the new snapshot
     @discardableResult
     func createSnapshot() async throws -> UUID {
-        logger.debug("FIXME: saving the current state as a snapshot is not implemented")
-        let now = Date()
-        let snapshot = VMSnapshot(id: UUID(),
-                                  title: defaultTitle,
-                                  parentID: currentParentID,
-                                  dateCreated: now,
-                                  dateModified: now,
-                                  size: 0,
-                                  screenshot: vm.screenshotImage,
-                                  hasState: vm.hasSuspendState,
-                                  isOrphaned: false)
-        snapshots.insert(snapshot, at: 0)
-        currentParentID = snapshot.id
+        let snapshot = try await UTMSnapshotService.createSnapshot(on: try wrapped)
+        try await refresh()
         return snapshot.id
     }
 
     /// Replaces what the snapshot the current state is based on holds with the current state.
     func overwriteBase() async throws {
-        logger.debug("FIXME: overwriting a snapshot is not implemented")
-        guard let index = snapshots.firstIndex(where: { $0.id == currentParentID }) else {
+        guard let currentParentID = currentParentID else {
             return
         }
-        snapshots[index].dateModified = Date()
-        snapshots[index].screenshot = vm.screenshotImage
-        snapshots[index].hasState = vm.hasSuspendState
+        try await UTMSnapshotService.overwriteSnapshot(currentParentID, on: try wrapped)
+        try await refresh()
     }
 
-    /// Snapshots based on a deleted snapshot are handed to what it was based on so the remaining lineage stays linked.
     func delete(_ snapshot: VMSnapshot) async throws {
-        logger.debug("FIXME: deleting a snapshot is not implemented")
-        for index in snapshots.indices where snapshots[index].parentID == snapshot.id {
-            snapshots[index].parentID = snapshot.parentID
-        }
-        if currentParentID == snapshot.id {
-            currentParentID = snapshot.parentID
-        }
-        snapshots.removeAll { $0.id == snapshot.id }
+        try await UTMSnapshotService.deleteSnapshot(snapshot.id, on: try wrapped)
+        try await refresh()
     }
 
     /// Replaces the current state with `snapshot`. If the VM is not running, it resumes from it when started.
     func restore(_ snapshot: VMSnapshot) async throws {
-        logger.debug("FIXME: restoring a snapshot is not implemented")
-        currentParentID = snapshot.id
+        do {
+            try await UTMSnapshotService.restoreSnapshot(snapshot.id, on: try wrapped)
+        } catch {
+            // show snapshots found to be orphaned
+            try? await refresh()
+            throw error
+        }
+        try await refresh()
     }
 
     /// Discards the state the VM is suspended to so that it starts up normally.
     func deleteSuspendState() async throws {
-        logger.debug("FIXME: deleting the suspended state is not implemented")
-    }
-
-    private var defaultTitle: String {
-        var number = snapshots.count + 1
-        var title: String
-        repeat {
-            title = String.localizedStringWithFormat(NSLocalizedString("Snapshot %lld", comment: "VMSnapshotData"), number)
-            number += 1
-        } while snapshots.contains { $0.title == title }
-        return title
+        try await wrapped.deleteSnapshot(name: nil)
+        try await refresh()
     }
 }

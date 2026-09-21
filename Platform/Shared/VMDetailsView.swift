@@ -70,7 +70,11 @@ struct VMDetailsView: View {
                     #if WITH_REMOTE // FIXME: implement remote feature
                     detailsPane
                     #else
-                    tabs(scrollProxy: scrollProxy)
+                    if let wrapped = vm.wrapped, UTMSnapshotService.isSupported(for: wrapped) {
+                        tabs(scrollProxy: scrollProxy)
+                    } else {
+                        detailsPane
+                    }
                     #endif
                 }
                 #if !WITH_REMOTE
