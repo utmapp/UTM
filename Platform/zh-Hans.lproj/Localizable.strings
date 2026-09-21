@@ -2784,3 +2784,30 @@ VMWizardOSMacView */
 
 /* No comment provided by engineer. */
 "Zoom" = "缩放";
+
+/* VMKeyboardAccessoryView */
+"Up" = "上";
+
+/* VMKeyboardAccessoryView */
+"Down" = "下";
+
+/* VMKeyboardAccessoryView */
+"Left" = "左";
+
+/* VMKeyboardAccessoryView */
+"Right" = "右";
+
+/* VMKeyboardAccessoryView */
+"Caps Lock" = "大写锁定";
+
+/* VMKeyboardAccessoryView */
+"Page Up" = "上一页";
+
+/* VMKeyboardAccessoryView */
+"Page Down" = "下一页";
+
+/* VMKeyboardAccessoryView */
+"Paste" = "粘贴";
+
+/* VMKeyboardAccessoryView */
+"Hide Keyboard" = "隐藏键盘";

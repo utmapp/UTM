@@ -1841,3 +1841,48 @@
 
 /* No comment provided by engineer. */
 "Zoom" = "Zoom";
+
+/* VMKeyboardAccessoryView */
+"Up" = "Arriba";
+
+/* VMKeyboardAccessoryView */
+"Down" = "Abajo";
+
+/* VMKeyboardAccessoryView */
+"Left" = "Izquierda";
+
+/* VMKeyboardAccessoryView */
+"Right" = "Derecha";
+
+/* VMKeyboardAccessoryView */
+"Caps Lock" = "Bloq Mayús";
+
+/* VMKeyboardAccessoryView */
+"Scroll Lock" = "Bloq Despl";
+
+/* VMKeyboardAccessoryView */
+"Num Lock" = "Bloq Núm";
+
+/* VMKeyboardAccessoryView */
+"Print Screen" = "Imprimir Pantalla";
+
+/* VMKeyboardAccessoryView */
+"Insert" = "Insertar";
+
+/* VMKeyboardAccessoryView */
+"Home" = "Inicio";
+
+/* VMKeyboardAccessoryView */
+"End" = "Fin";
+
+/* VMKeyboardAccessoryView */
+"Page Up" = "Retroceder Página";
+
+/* VMKeyboardAccessoryView */
+"Page Down" = "Avanzar Página";
+
+/* VMKeyboardAccessoryView */
+"Paste" = "Pegar";
+
+/* VMKeyboardAccessoryView */
+"Hide Keyboard" = "Ocultar Teclado";

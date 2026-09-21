@@ -1019,3 +1019,47 @@
 /* ContentView */
 "Your version of iOS does not support running VMs while unmodified. You must either run UTM while jailbroken or with a remote debugger attached. See https://getutm.app/install/ for more details." = "Diese Version von iOS erlaubt es nicht, VMs ohne weiteres auszuführen. Sie müssen JIT aktivieren – entweder mit Jailbreak oder Debugger – weitere Details unter https://getutm.app/install/ .";
 
+/* VMKeyboardAccessoryView */
+"Control" = "Strg";
+
+/* VMKeyboardAccessoryView */
+"Option" = "Alt";
+
+/* VMKeyboardAccessoryView */
+"Command" = "cmd";
+
+/* VMKeyboardAccessoryView */
+"Up" = "Oben";
+
+/* VMKeyboardAccessoryView */
+"Down" = "Unten";
+
+/* VMKeyboardAccessoryView */
+"Left" = "Links";
+
+/* VMKeyboardAccessoryView */
+"Right" = "Rechts";
+
+/* VMKeyboardAccessoryView */
+"Caps Lock" = "Feststelltaste";
+
+/* VMKeyboardAccessoryView */
+"Print Screen" = "Drucken";
+
+/* VMKeyboardAccessoryView */
+"Insert" = "Einfügen";
+
+/* VMKeyboardAccessoryView */
+"End" = "Ende";
+
+/* VMKeyboardAccessoryView */
+"Page Up" = "Seite nach Oben";
+
+/* VMKeyboardAccessoryView */
+"Page Down" = "Seite nach Unten";
+
+/* VMKeyboardAccessoryView */
+"Paste" = "Einfügen";
+
+/* VMKeyboardAccessoryView */
+"Hide Keyboard" = "Tastatur ausblenden";
