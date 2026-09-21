@@ -695,7 +695,7 @@
 "Resize display to window size automatically" = "Anzeige-Größe automatisch an Fenstergröße anpassen";
 
 /* No comment provided by engineer. */
-"Resizing is experimental and could result in data loss. You are strongly encouraged to back-up this VM before proceeding. Would you like to resize to %@ GiB?" = "Das Ändern der Größe ist eine experimentelle Funktion und könnte Datenverlust nach sich ziehen. Machen Sie vorher ein Backup. Möchten Sie die Größe auf $@ GiB ändern?";
+"Resizing is experimental and could result in data loss. You are strongly encouraged to back-up this VM before proceeding. Would you like to resize to %@ GiB?" = "Das Ändern der Größe ist eine experimentelle Funktion und könnte Datenverlust nach sich ziehen. Machen Sie vorher ein Backup. Möchten Sie die Größe auf %@ GiB ändern?";
 
 /* VMDisplayWindowController */
 "Restart" = "Neustarten";
