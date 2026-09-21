@@ -112,6 +112,7 @@ static const NSInteger kResizeTimeoutSecs = 5;
 #if !TARGET_OS_VISION
     [self startGCMouse];
 #endif
+    [self setSystemGestureButtonsClaimed:YES];
     [self.vmDisplay addRenderer:self.renderer];
 }
 
@@ -120,6 +121,7 @@ static const NSInteger kResizeTimeoutSecs = 5;
 #if !TARGET_OS_VISION
     [self stopGCMouse];
 #endif
+    [self setSystemGestureButtonsClaimed:NO];
     [self.vmDisplay removeRenderer:self.renderer];
     [self removeObserver:self forKeyPath:@"vmDisplay.displaySize"];
 }

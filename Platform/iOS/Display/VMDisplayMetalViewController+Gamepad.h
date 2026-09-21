@@ -23,6 +23,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)initGamepad;
 
+/// Takes the buttons mapped to the guest away from the system, or gives them back.
+- (void)setSystemGestureButtonsClaimed:(BOOL)isClaimed;
+
 @end
 
 NS_ASSUME_NONNULL_END
