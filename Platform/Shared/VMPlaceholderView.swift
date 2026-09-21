@@ -78,14 +78,13 @@ fileprivate struct Title: View {
 
 fileprivate struct FirstRow: View {
     @EnvironmentObject private var data: UTMData
-    @Environment(\.openURL) private var openURL
 
     var body: some View {
         TileButton(Label(String.create, systemImage: "plus.circle")) {
             data.newVM()
         }
-        TileButton(Label(String.browse, systemImage: "arrow.down.circle")) {
-            openURL(URL(string: "https://mac.getutm.app/gallery/")!)
+        TileButton(Label(String.open, systemImage: "doc.circle")) {
+            NotificationCenter.default.post(name: NSNotification.OpenVirtualMachine, object: nil)
         }
     }
 }
@@ -105,7 +104,7 @@ fileprivate struct SecondRow: View {
 
 fileprivate extension String {
     static let create = NSLocalizedString("Create a New Virtual Machine", comment: "Welcome view")
-    static let browse = NSLocalizedString("Browse UTM Gallery", comment: "Welcome view")
+    static let open = NSLocalizedString("Open Existing Virtual Machine", comment: "Welcome view")
     static let guide = NSLocalizedString("User Guide", comment: "Welcome view")
     static let support = NSLocalizedString("Support", comment: "Welcome view")
     static let server = NSLocalizedString("Server", comment: "Server view")
