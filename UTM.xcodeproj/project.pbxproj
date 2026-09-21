@@ -974,6 +974,7 @@
 		CEC1B00C2BBB211C0088119D /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = CEC1B00A2BBB211C0088119D /* PrivacyInfo.xcprivacy */; };
 		CEC1B00D2BBB211C0088119D /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = CEC1B00A2BBB211C0088119D /* PrivacyInfo.xcprivacy */; };
 		CEC794BA294924E300121A9F /* UTMScriptingSerialPortImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC794B9294924E300121A9F /* UTMScriptingSerialPortImpl.swift */; };
+		FC6D2EA0328DA5CD033B9518 /* UTMScriptingSnapshotImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E2C5FE357F6FEDAEA675CA /* UTMScriptingSnapshotImpl.swift */; };
 		CEC794BC2949663C00121A9F /* UTMScripting.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC794BB2949663C00121A9F /* UTMScripting.swift */; };
 		CEC794BD2949663C00121A9F /* UTMScripting.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC794BB2949663C00121A9F /* UTMScripting.swift */; };
 		CED234ED254796E500ED0A57 /* NumberTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED234EC254796E500ED0A57 /* NumberTextField.swift */; };
@@ -2167,6 +2168,7 @@
 		CEC0A3092A7490D200980857 /* VMConfigQEMUArgumentsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigQEMUArgumentsView.swift; sourceTree = "<group>"; };
 		CEC1B00A2BBB211C0088119D /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		CEC794B9294924E300121A9F /* UTMScriptingSerialPortImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMScriptingSerialPortImpl.swift; sourceTree = "<group>"; };
+		38E2C5FE357F6FEDAEA675CA /* UTMScriptingSnapshotImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMScriptingSnapshotImpl.swift; sourceTree = "<group>"; };
 		CEC794BB2949663C00121A9F /* UTMScripting.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UTMScripting.swift; sourceTree = "<group>"; };
 		CEC9968328AA516000E7A025 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ja; path = ja.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		CECF02562B706ADD00409FC0 /* UTMRemoteConnectInterface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMRemoteConnectInterface.h; sourceTree = "<group>"; };
@@ -3225,6 +3227,7 @@
 				CE59A7AF2AA69AE400E5FFBD /* UTMScriptingUSBDeviceImpl.swift */,
 				CEFE98E029485776007CB7A8 /* UTMScriptingVirtualMachineImpl.swift */,
 				CEC794B9294924E300121A9F /* UTMScriptingSerialPortImpl.swift */,
+				38E2C5FE357F6FEDAEA675CA /* UTMScriptingSnapshotImpl.swift */,
 				CE25124829BFDBA6000790AB /* UTMScriptingGuestFileImpl.swift */,
 				CE25124629BFDB87000790AB /* UTMScriptingGuestProcessImpl.swift */,
 				CE6804842E4E5D84001671E9 /* UTMScriptingInputImpl.swift */,
@@ -4064,6 +4067,7 @@
 				CE9375A224BBDDD10074066F /* VMConfigDriveDetailsView.swift in Sources */,
 				CE2D955824AD4F980059923A /* VMConfigDisplayView.swift in Sources */,
 				CEC794BA294924E300121A9F /* UTMScriptingSerialPortImpl.swift in Sources */,
+				FC6D2EA0328DA5CD033B9518 /* UTMScriptingSnapshotImpl.swift in Sources */,
 				CE03D05324D90B4E00F76B84 /* UTMQemuSystem.m in Sources */,
 				CE88A1602E24B2B400EAA28E /* UTMInputIntent.swift in Sources */,
 				841619B82843226B000034B2 /* QEMUConstant.swift in Sources */,

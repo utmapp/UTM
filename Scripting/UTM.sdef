@@ -127,32 +127,32 @@
           </parameter>
         </command>
         
-        <command name="create snapshot" code="UTMvcrsn" description="Create or replace a named full-VM snapshot (RAM, devices, and disk) for a QEMU virtual machine. The VM must be running or paused.">
+        <command name="create snapshot" code="UTMvcrsn" description="Save the current state of a virtual machine as a new snapshot. A running QEMU virtual machine is saved along with its running state, otherwise only the disks are.">
           <direct-parameter description="Virtual machine to snapshot." type="virtual machine"/>
-          <parameter name="named" code="SnNm" description="The name of the snapshot." type="text">
+          <parameter name="named" code="SnNm" description="Name for the new snapshot. A name already in use gets a number appended. If omitted, a name is generated." type="text" optional="yes">
             <cocoa key="snapshotName"/>
           </parameter>
+          <result description="The snapshot that was created." type="snapshot"/>
         </command>
 
-        <command name="list snapshots" code="UTMvlssn" description="List the names of all named snapshots for a stopped QEMU virtual machine, newest first.">
-          <direct-parameter description="Virtual machine to list snapshots for." type="virtual machine"/>
-          <result description="List of snapshot names.">
-            <type type="text" list="yes"/>
-          </result>
+        <command name="restore" code="UTMvrssn" description="Replace the current state of a virtual machine with a snapshot. A virtual machine that is not running resumes from it the next time it is started.">
+          <direct-parameter description="Snapshot to restore." type="snapshot"/>
         </command>
 
-        <command name="restore snapshot" code="UTMvrssn" description="Restore a stopped QEMU virtual machine to a named snapshot.">
-          <direct-parameter description="Virtual machine to restore." type="virtual machine"/>
-          <parameter name="named" code="SnNm" description="The name of the snapshot to restore." type="text">
-            <cocoa key="snapshotName"/>
-          </parameter>
+        <command name="delete snapshot" code="UTMvdlsn" description="Delete a snapshot. Its data is deleted with it, there is no confirmation!">
+          <direct-parameter description="Snapshot to delete." type="snapshot"/>
         </command>
 
-        <command name="delete snapshot" code="UTMvdlsn" description="Delete a named snapshot from a QEMU virtual machine.">
-          <direct-parameter description="Virtual machine owning the snapshot." type="virtual machine"/>
-          <parameter name="named" code="SnNm" description="The name of the snapshot to delete." type="text">
-            <cocoa key="snapshotName"/>
-          </parameter>
+        <command name="overwrite" code="UTMvovsn" description="Replace what a snapshot holds with the current state of the virtual machine. The snapshot keeps its name and its place among the others.">
+          <direct-parameter description="Snapshot to overwrite." type="snapshot"/>
+        </command>
+
+        <command name="scan snapshots" code="UTMvscsn" description="Look through the disk images of a virtual machine for snapshots that UTM does not know about yet, and mark the ones whose data has gone missing. Only needed for snapshots made by other tools.">
+          <direct-parameter description="Virtual machine to scan." type="virtual machine"/>
+        </command>
+
+        <command name="discard saved state" code="UTMvdcss" description="Throw away the state a suspended virtual machine would resume from, so that it starts up normally instead. Snapshots are not affected.">
+          <direct-parameter description="Virtual machine to discard the saved state of." type="virtual machine"/>
         </command>
 
         <command name="delete" code="coredelo" description="Delete a virtual machine. All data will be deleted, there is no confirmation!">
@@ -208,6 +208,11 @@
             description="Serial ports exposed by the guest to the host to access.">
             <cocoa key="serialPorts"/>
           </element>
+
+          <element type="snapshot" access="r"
+            description="Saved states of this virtual machine, newest first.">
+            <cocoa key="snapshots"/>
+          </element>
           
           <responds-to command="start">
             <cocoa method="start:"/>
@@ -233,16 +238,12 @@
             <cocoa method="createSnapshot:"/>
           </responds-to>
 
-          <responds-to command="list snapshots">
-            <cocoa method="listSnapshots:"/>
+          <responds-to command="scan snapshots">
+            <cocoa method="scanSnapshots:"/>
           </responds-to>
 
-          <responds-to command="restore snapshot">
-            <cocoa method="restoreSnapshot:"/>
-          </responds-to>
-
-          <responds-to command="delete snapshot">
-            <cocoa method="deleteSnapshot:"/>
+          <responds-to command="discard saved state">
+            <cocoa method="discardSavedState:"/>
           </responds-to>
           
           <responds-to command="delete">
@@ -251,6 +252,45 @@
           
         </class>
         
+        <class name="snapshot" code="SnAp" description="A saved state of a virtual machine that it can be returned to." plural="snapshots">
+          <cocoa class="UTMScriptingSnapshotImpl"/>
+          <property name="id" code="ID  " type="text" access="r"
+            description="The unique identifier of the snapshot."/>
+
+          <property name="name" code="pnam" type="text"
+            description="Name shown for the snapshot. Setting it renames the snapshot; a name already in use gets a number appended."/>
+
+          <property name="creation date" code="ascd" type="date" access="r"
+            description="When the snapshot was first saved."/>
+
+          <property name="modification date" code="asmo" type="date" access="r"
+            description="When the snapshot was last renamed or overwritten."/>
+
+          <property name="size" code="SnSz" type="real" access="r"
+            description="Bytes the snapshot occupies."/>
+
+          <property name="includes running state" code="SnRs" type="boolean" access="r"
+            description="Whether the snapshot holds the running machine as well as the disks. Restoring one that does not means the virtual machine starts up instead of resuming."/>
+
+          <property name="data missing" code="SnDm" type="boolean" access="r"
+            description="Whether the data behind the snapshot has gone missing, in which case it can only be deleted."/>
+
+          <property name="based on" code="SnBo" type="text" access="r"
+            description="Identifier of the snapshot the current state was based on when this one was saved, or empty if it was not based on any."/>
+
+          <responds-to command="restore">
+            <cocoa method="restore:"/>
+          </responds-to>
+
+          <responds-to command="overwrite">
+            <cocoa method="overwrite:"/>
+          </responds-to>
+
+          <responds-to command="delete snapshot">
+            <cocoa method="deleteSnapshot:"/>
+          </responds-to>
+        </class>
+
         <class name="serial port" code="SeRi" description="A serial port in the guest that can be connected to from the host." plural="serial ports">
           <cocoa class="UTMScriptingSerialPortImpl"/>
           <property name="id" code="ID  " type="integer" access="r"

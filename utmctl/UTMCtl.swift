@@ -37,6 +37,7 @@ struct UTMCtl: ParsableCommand {
             IPAddress.self,
             Clone.self,
             Delete.self,
+            DiscardState.self,
             USB.self,
             Snapshot.self
         ]
@@ -91,6 +92,29 @@ extension UTMAPICommand {
         }
     }
     
+    /// Snapshots of a virtual machine, newest first
+    /// - Parameter vm: Virtual machine
+    /// - Returns: Snapshots of the virtual machine
+    func snapshots(of vm: UTMScriptingVirtualMachine) -> [UTMScriptingSnapshot] {
+        (vm.snapshots!() as? [UTMScriptingSnapshot]) ?? []
+    }
+
+    /// Get a snapshot of a virtual machine from an identifier
+    /// - Parameters:
+    ///   - identifier: Name or identifier of the snapshot
+    ///   - vm: Virtual machine the snapshot belongs to
+    /// - Returns: Snapshot for identifier
+    func snapshot(forIdentifier identifier: UTMCtl.SnapshotIdentifier, of vm: UTMScriptingVirtualMachine) throws -> UTMScriptingSnapshot {
+        let snapshots = snapshots(of: vm)
+        if let snapshot = snapshots.first(where: { $0.id!() == identifier.snapshot }) {
+            return snapshot
+        } else if let snapshot = snapshots.first(where: { $0.name! == identifier.snapshot }) {
+            return snapshot
+        } else {
+            throw UTMCtl.APIError.snapshotNotFound
+        }
+    }
+
     /// Find the path to UTM.app
     private var utmAppUrl: URL {
         if let executableURL = Bundle.main.executableURL?.resolvingSymlinksInPath() {
@@ -114,6 +138,9 @@ extension UTMAPICommand {
 extension UTMCtl {
     @objc class EventErrorHandler: NSObject, SBApplicationDelegate {
         static let shared = EventErrorHandler()
+
+        /// An event failed, so what it returned must not be used
+        private(set) var hasFailed = false
         
         /// Error handler for scripting events
         /// - Parameters:
@@ -121,6 +148,7 @@ extension UTMCtl {
         ///   - error: Error
         /// - Returns: nil
         func eventDidFail(_ event: UnsafePointer<AppleEvent>, withError error: Error) -> Any? {
+            hasFailed = true
             let error = error as NSError
             FileHandle.standardError.write("Error from event: \(error.localizedDescription)")
             if let user = error.userInfo["ErrorString"] as? String {
@@ -140,11 +168,13 @@ extension UTMCtl {
         case virtualMachineNotFound
         case invalidIdentifier(String)
         case deviceNotFound
+        case snapshotNotFound
         
         var errorDescription: String? {
             switch self {
             case .applicationNotFound: return "Application not found."
             case .virtualMachineNotFound: return "Virtual machine not found."
+            case .snapshotNotFound: return "Snapshot not found."
             case .invalidIdentifier(let identifier): return "Identifier '\(identifier)' is invalid."
             case .deviceNotFound: return "Device not found."
             }
@@ -741,92 +771,198 @@ extension UTMCtl {
 extension UTMCtl {
     struct Snapshot: ParsableCommand {
         static var configuration = CommandConfiguration(
-            abstract: "Create, list, restore, and delete named full-VM snapshots for QEMU virtual machines.",
-            subcommands: [SnapshotCreate.self, SnapshotList.self, SnapshotRestore.self, SnapshotDelete.self]
+            abstract: "List and manage the saved states of a virtual machine.",
+            subcommands: [SnapshotList.self, SnapshotCreate.self, SnapshotRestore.self, SnapshotOverwrite.self, SnapshotRename.self, SnapshotDelete.self, SnapshotScan.self]
         )
     }
 
-    struct SnapshotCreate: UTMAPICommand {
-        static var configuration = CommandConfiguration(
-            commandName: "create",
-            abstract: "Create or replace a named snapshot of a running or paused QEMU virtual machine."
-        )
-
-        @OptionGroup var environment: EnvironmentOptions
-
-        @OptionGroup var identifer: VMIdentifier
-
-        @Option(help: "Name of the snapshot to create.")
-        var name: String
-
-        func run(with application: UTMScriptingApplication) throws {
-            let vm = try virtualMachine(forIdentifier: identifer, in: application)
-            vm.createSnapshotNamed!(name)
-        }
+    /// Addresses one snapshot of a virtual machine
+    struct SnapshotIdentifier: ParsableArguments {
+        @Option(name: .shortAndLong, help: "Either the name or the identifier of the snapshot.")
+        var snapshot: String
     }
 
     struct SnapshotList: UTMAPICommand {
         static var configuration = CommandConfiguration(
             commandName: "list",
-            abstract: "List the names of all snapshots for a stopped QEMU virtual machine."
+            abstract: "List the snapshots of a virtual machine, newest first."
         )
 
         @OptionGroup var environment: EnvironmentOptions
 
         @OptionGroup var identifer: VMIdentifier
 
-        @Flag(help: "Output the list as a JSON array.")
+        @Flag(help: "Output the list as JSON.")
         var json: Bool = false
+
+        @Flag(help: "Look for snapshots made by other tools before listing.")
+        var scan: Bool = false
 
         func run(with application: UTMScriptingApplication) throws {
             let vm = try virtualMachine(forIdentifier: identifer, in: application)
-            let names = (vm.listSnapshots!() as? [String]) ?? []
+            if scan {
+                vm.scanSnapshots!()
+            }
+            let snapshots = snapshots(of: vm)
             if json {
-                let data = try JSONSerialization.data(withJSONObject: names, options: [.prettyPrinted])
+                let rows = snapshots.map { snapshot -> [String: Any] in
+                    ["id": snapshot.id!(),
+                     "name": snapshot.name!,
+                     "created": ISO8601DateFormatter().string(from: snapshot.creationDate!),
+                     "modified": ISO8601DateFormatter().string(from: snapshot.modificationDate!),
+                     "size": snapshot.size!,
+                     "includesRunningState": snapshot.includesRunningState!,
+                     "dataMissing": snapshot.dataMissing!,
+                     "basedOn": snapshot.basedOn!]
+                }
+                let data = try JSONSerialization.data(withJSONObject: rows, options: [.prettyPrinted, .sortedKeys])
                 print(String(data: data, encoding: .utf8) ?? "[]")
             } else {
-                for name in names {
-                    print(name)
+                let formatter = DateFormatter()
+                formatter.dateStyle = .short
+                formatter.timeStyle = .short
+                for snapshot in snapshots {
+                    var notes = [snapshot.includesRunningState! ? "resumes" : "disks only"]
+                    if snapshot.dataMissing! {
+                        notes.append("data missing")
+                    }
+                    let size = snapshot.size! > 0 ? ByteCountFormatter.string(fromByteCount: Int64(snapshot.size!), countStyle: .binary) : "-"
+                    print("\(snapshot.name!)\t\(formatter.string(from: snapshot.creationDate!))\t\(size)\t\(notes.joined(separator: ", "))")
                 }
             }
+        }
+    }
+
+    struct SnapshotCreate: UTMAPICommand {
+        static var configuration = CommandConfiguration(
+            commandName: "create",
+            abstract: "Save the current state of a virtual machine as a new snapshot."
+        )
+
+        @OptionGroup var environment: EnvironmentOptions
+
+        @OptionGroup var identifer: VMIdentifier
+
+        @Option(help: "Name for the new snapshot. A name already in use gets a number appended.")
+        var name: String?
+
+        func run(with application: UTMScriptingApplication) throws {
+            let vm = try virtualMachine(forIdentifier: identifer, in: application)
+            let snapshot = vm.createSnapshotNamed!(name)
+            // nothing is returned when the event failed, which has been reported already
+            guard !EventErrorHandler.shared.hasFailed else {
+                throw ExitCode.failure
+            }
+            print(snapshot.name!)
         }
     }
 
     struct SnapshotRestore: UTMAPICommand {
         static var configuration = CommandConfiguration(
             commandName: "restore",
-            abstract: "Restore a stopped QEMU virtual machine to a named snapshot."
+            abstract: "Replace the current state of a virtual machine with a snapshot."
         )
 
         @OptionGroup var environment: EnvironmentOptions
 
         @OptionGroup var identifer: VMIdentifier
 
-        @Option(help: "Name of the snapshot to restore.")
-        var name: String
+        @OptionGroup var snapshotIdentifer: SnapshotIdentifier
 
         func run(with application: UTMScriptingApplication) throws {
             let vm = try virtualMachine(forIdentifier: identifer, in: application)
-            vm.restoreSnapshotNamed!(name)
+            try snapshot(forIdentifier: snapshotIdentifer, of: vm).restore!()
+        }
+    }
+
+    struct SnapshotOverwrite: UTMAPICommand {
+        static var configuration = CommandConfiguration(
+            commandName: "overwrite",
+            abstract: "Replace what a snapshot holds with the current state of the virtual machine."
+        )
+
+        @OptionGroup var environment: EnvironmentOptions
+
+        @OptionGroup var identifer: VMIdentifier
+
+        @OptionGroup var snapshotIdentifer: SnapshotIdentifier
+
+        func run(with application: UTMScriptingApplication) throws {
+            let vm = try virtualMachine(forIdentifier: identifer, in: application)
+            try snapshot(forIdentifier: snapshotIdentifer, of: vm).overwrite!()
+        }
+    }
+
+    struct SnapshotRename: UTMAPICommand {
+        static var configuration = CommandConfiguration(
+            commandName: "rename",
+            abstract: "Change the name shown for a snapshot."
+        )
+
+        @OptionGroup var environment: EnvironmentOptions
+
+        @OptionGroup var identifer: VMIdentifier
+
+        @OptionGroup var snapshotIdentifer: SnapshotIdentifier
+
+        @Option(help: "New name for the snapshot.")
+        var to: String
+
+        func run(with application: UTMScriptingApplication) throws {
+            let vm = try virtualMachine(forIdentifier: identifer, in: application)
+            let snapshot = try snapshot(forIdentifier: snapshotIdentifer, of: vm)
+            snapshot.setName!(to)
+            print(snapshot.name!)
         }
     }
 
     struct SnapshotDelete: UTMAPICommand {
         static var configuration = CommandConfiguration(
             commandName: "delete",
-            abstract: "Delete a named snapshot from a QEMU virtual machine."
+            abstract: "Delete a snapshot of a virtual machine."
         )
 
         @OptionGroup var environment: EnvironmentOptions
 
         @OptionGroup var identifer: VMIdentifier
 
-        @Option(help: "Name of the snapshot to delete.")
-        var name: String
+        @OptionGroup var snapshotIdentifer: SnapshotIdentifier
 
         func run(with application: UTMScriptingApplication) throws {
             let vm = try virtualMachine(forIdentifier: identifer, in: application)
-            vm.deleteSnapshotNamed!(name)
+            try snapshot(forIdentifier: snapshotIdentifer, of: vm).deleteSnapshot!()
+        }
+    }
+
+    struct SnapshotScan: UTMAPICommand {
+        static var configuration = CommandConfiguration(
+            commandName: "scan",
+            abstract: "Look through the disk images for snapshots made by other tools and mark any whose data is missing."
+        )
+
+        @OptionGroup var environment: EnvironmentOptions
+
+        @OptionGroup var identifer: VMIdentifier
+
+        func run(with application: UTMScriptingApplication) throws {
+            let vm = try virtualMachine(forIdentifier: identifer, in: application)
+            vm.scanSnapshots!()
+        }
+    }
+
+    struct DiscardState: UTMAPICommand {
+        static var configuration = CommandConfiguration(
+            commandName: "discard-state",
+            abstract: "Discard the saved state a suspended virtual machine would resume from, so that it starts up normally."
+        )
+
+        @OptionGroup var environment: EnvironmentOptions
+
+        @OptionGroup var identifer: VMIdentifier
+
+        func run(with application: UTMScriptingApplication) throws {
+            let vm = try virtualMachine(forIdentifier: identifer, in: application)
+            vm.discardSavedState!()
         }
     }
 }

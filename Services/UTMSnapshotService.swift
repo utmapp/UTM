@@ -63,6 +63,11 @@ enum UTMSnapshotService {
                                    isCurrentStateSaved: isCurrentStateSaved(in: manifest, on: vm))
     }
 
+    /// Snapshots of a VM as they are recorded in the bundle, newest first, without consulting the backend
+    static func snapshots(for vm: any UTMVirtualMachine) -> [UTMSnapshot] {
+        (((try? UTMSnapshotManifest.load(from: vm.pathUrl)) ?? nil)?.snapshots ?? []).map { UTMSnapshot($0, on: vm) }
+    }
+
     /// An operation is possible while the VM is in its current state.
     ///
     /// Snapshots can be managed whether the VM is running or not, but not everything can be done
@@ -125,7 +130,7 @@ enum UTMSnapshotService {
                 // the VM still resumes from the state which is now the one of the snapshot
                 manifest.replaceSuspendState(suspendIdentifier, with: entry.identifier)
             }
-            let snapshot = Entry(title: title ?? manifest.defaultTitle,
+            let snapshot = Entry(title: title.map { manifest.uniqueTitle($0) } ?? manifest.defaultTitle,
                                     parentID: manifest.currentParentID,
                                     date: entry.date,
                                     size: entry.size,
@@ -194,7 +199,8 @@ enum UTMSnapshotService {
             guard !title.isEmpty && snapshot.title != title else {
                 return snapshot
             }
-            snapshot.title = title
+            // a snapshot is addressed by its title outside of the app, so keep them apart
+            snapshot.title = manifest.uniqueTitle(title, excluding: id)
             snapshot.dateModified = Date()
             manifest[id] = snapshot
             return snapshot
@@ -332,36 +338,20 @@ enum UTMSnapshotService {
         }
     }
 
-    // MARK: - Snapshots by name
+    // MARK: - Reconciling with the backend
 
-    /// Create a snapshot or overwrite the one with the same title.
-    static func createSnapshot(name: String, on vm: any UTMVirtualMachine) async throws {
-        if let snapshot = try await timeline(for: vm).snapshots.first(where: { $0.title == name }) {
-            try await overwriteSnapshot(snapshot.id, on: vm)
-        } else {
-            try await createSnapshot(title: name, on: vm)
+    /// Bring the manifest in line with what the backend holds.
+    ///
+    /// Snapshots made by other tools are added and snapshots whose state has disappeared are
+    /// marked. The snapshots tab does this the first time a VM is opened; everywhere else it has
+    /// to be asked for, because it reads every image.
+    static func scanSnapshots(on vm: any UTMVirtualMachine) async throws {
+        let backend = try backend(for: vm)
+        guard backend.isInventoryExact else {
+            throw UTMSnapshotError.requiresStoppedVm
         }
-    }
-
-    /// Titles of all snapshots, newest first
-    static func listSnapshots(on vm: any UTMVirtualMachine) async throws -> [String] {
-        _ = try backend(for: vm)
-        return try await timeline(for: vm).snapshots.map { $0.title }
-    }
-
-    static func restoreSnapshot(name: String, on vm: any UTMVirtualMachine) async throws {
-        try await restoreSnapshot(try await snapshot(named: name, on: vm).id, on: vm)
-    }
-
-    static func deleteSnapshot(name: String, on vm: any UTMVirtualMachine) async throws {
-        try await deleteSnapshot(try await snapshot(named: name, on: vm).id, on: vm)
-    }
-
-    private static func snapshot(named name: String, on vm: any UTMVirtualMachine) async throws -> UTMSnapshot {
-        guard let snapshot = try await timeline(for: vm).snapshots.first(where: { $0.title == name }) else {
-            throw UTMSnapshotError.notFound(name)
-        }
-        return snapshot
+        try await importUnlinkedSnapshots(from: backend, on: vm)
+        try await identifyOrphanedSnapshots(on: vm)
     }
 
     // MARK: - Helpers
@@ -539,10 +529,11 @@ private extension UTMSnapshotManifest {
         return title
     }
 
-    func uniqueTitle(_ base: String) -> String {
+    /// - Parameter id: Snapshot that may keep the title it already has
+    func uniqueTitle(_ base: String, excluding id: UUID? = nil) -> String {
         var title = base
         var number = 2
-        while snapshots.contains(where: { $0.title == title }) {
+        while snapshots.contains(where: { $0.title == title && $0.id != id }) {
             title = "\(base) \(number)"
             number += 1
         }

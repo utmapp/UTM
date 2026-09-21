@@ -20,6 +20,12 @@ import Foundation
 @objc(UTMScriptingDeleteCommand)
 class UTMScriptingDeleteCommand: NSDeleteCommand, UTMScriptable {
     override func performDefaultImplementation() -> Any? {
+        // a specifier for something inside a virtual machine, such as one of its snapshots, can
+        // be coerced into the virtual machine itself, and deleting that would throw away far
+        // more than was asked for
+        guard keySpecifier.key == "scriptingVirtualMachines" else {
+            return super.performDefaultImplementation()
+        }
         if let scriptingVM = keySpecifier.objectsByEvaluatingSpecifier as? UTMScriptingVirtualMachineImpl {
             scriptingVM.delete(self)
             return nil

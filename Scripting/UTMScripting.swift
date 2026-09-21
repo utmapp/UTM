@@ -21,6 +21,7 @@ public enum UTMScripting: String {
     case guestFile = "guest file"
     case guestProcess = "guest process"
     case serialPort = "serial port"
+    case snapshot = "snapshot"
     case usbDevice = "usb device"
     case virtualMachine = "virtual machine"
 }
@@ -231,6 +232,7 @@ extension SBObject: UTMScriptingWindow {}
 // MARK: UTMScriptingVirtualMachine
 @objc public protocol UTMScriptingVirtualMachine: SBObjectProtocol, UTMScriptingGenericMethods {
     @objc optional func serialPorts() -> SBElementArray
+    @objc optional func snapshots() -> SBElementArray
     @objc optional func id() -> String // The unique identifier of the VM.
     @objc optional var name: String { get } // The name of the VM.
     @objc optional var backend: UTMScriptingBackend { get } // Emulation/virtualization engine used.
@@ -240,10 +242,9 @@ extension SBObject: UTMScriptingWindow {}
     @objc optional func queryInstall() -> [AnyHashable : Any] // Query the progress of the last installation started with install. Raises an error if the installation failed.
     @objc optional func suspendSaving(_ saving: Bool) // Suspend a running virtual machine to memory.
     @objc optional func stopBy(_ by: UTMScriptingStopMethod) // Shuts down a running virtual machine.
-    @objc optional func createSnapshotNamed(_ named: String!) // Create or replace a named full-VM snapshot (RAM, devices, and disk) for a QEMU virtual machine. The VM must be running or paused.
-    @objc optional func listSnapshots() -> [Any] // List the names of all named snapshots for a stopped QEMU virtual machine, newest first.
-    @objc optional func restoreSnapshotNamed(_ named: String!) // Restore a stopped QEMU virtual machine to a named snapshot.
-    @objc optional func deleteSnapshotNamed(_ named: String!) // Delete a named snapshot from a QEMU virtual machine.
+    @objc optional func createSnapshotNamed(_ named: String!) -> UTMScriptingSnapshot // Save the current state of a virtual machine as a new snapshot. A running QEMU virtual machine is saved along with its running state, otherwise only the disks are.
+    @objc optional func scanSnapshots() // Look through the disk images of a virtual machine for snapshots that UTM does not know about yet, and mark the ones whose data has gone missing. Only needed for snapshots made by other tools.
+    @objc optional func discardSavedState() // Throw away the state a suspended virtual machine would resume from, so that it starts up normally instead. Snapshots are not affected.
     @objc optional func delete() // Delete a virtual machine. All data will be deleted, there is no confirmation!
     @objc optional func duplicateWithProperties(_ withProperties: [AnyHashable : Any]!) // Copy an virtual machine and all its data.
     @objc optional func exportTo(_ to: URL!) // Export a virtual machine to a specified location.
@@ -262,6 +263,23 @@ extension SBObject: UTMScriptingWindow {}
     @objc optional var registry: [URL] { get } // The registry of the virtual machine.
 }
 extension SBObject: UTMScriptingVirtualMachine {}
+
+// MARK: UTMScriptingSnapshot
+@objc public protocol UTMScriptingSnapshot: SBObjectProtocol, UTMScriptingGenericMethods {
+    @objc optional func id() -> String // The unique identifier of the snapshot.
+    @objc optional var name: String { get } // Name shown for the snapshot. Setting it renames the snapshot; a name already in use gets a number appended.
+    @objc optional var creationDate: Date { get } // When the snapshot was first saved.
+    @objc optional var modificationDate: Date { get } // When the snapshot was last renamed or overwritten.
+    @objc optional var size: Double { get } // Bytes the snapshot occupies.
+    @objc optional var includesRunningState: Bool { get } // Whether the snapshot holds the running machine as well as the disks. Restoring one that does not means the virtual machine starts up instead of resuming.
+    @objc optional var dataMissing: Bool { get } // Whether the data behind the snapshot has gone missing, in which case it can only be deleted.
+    @objc optional var basedOn: String { get } // Identifier of the snapshot the current state was based on when this one was saved, or empty if it was not based on any.
+    @objc optional func restore() // Replace the current state of a virtual machine with a snapshot. A virtual machine that is not running resumes from it the next time it is started.
+    @objc optional func deleteSnapshot() // Delete a snapshot. Its data is deleted with it, there is no confirmation!
+    @objc optional func overwrite() // Replace what a snapshot holds with the current state of the virtual machine. The snapshot keeps its name and its place among the others.
+    @objc optional func setName(_ name: String!) // Name shown for the snapshot. Setting it renames the snapshot; a name already in use gets a number appended.
+}
+extension SBObject: UTMScriptingSnapshot {}
 
 // MARK: UTMScriptingSerialPort
 @objc public protocol UTMScriptingSerialPort: SBObjectProtocol, UTMScriptingGenericMethods {
