@@ -34,6 +34,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 // cursor handling
 @property (nonatomic) CGPoint lastTwoPanOrigin;
+@property (nonatomic) CGPoint lastLongPressOrigin;
+@property (nonatomic) CGPoint lastTapLocation;
+@property (nonatomic) NSTimeInterval lastTapTime;
+@property (nonatomic) BOOL isTouchScrolling;
 @property (nonatomic) BOOL mouseLeftDown;
 @property (nonatomic) BOOL mouseRightDown;
 @property (nonatomic) BOOL mouseMiddleDown;

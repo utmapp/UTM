@@ -259,12 +259,14 @@
 				<string>Disabled</string>
 				<string>Click &amp; Hold</string>
 				<string>Right Click</string>
+				<string>Middle Click</string>
 			</array>
 			<key>Values</key>
 			<array>
 				<integer>0</integer>
 				<integer>1</integer>
 				<integer>2</integer>
+				<integer>5</integer>
 			</array>
 		</dict>
 		<dict>
@@ -282,11 +284,13 @@
 			<array>
 				<string>Disabled</string>
 				<string>Right Click</string>
+				<string>Middle Click</string>
 			</array>
 			<key>Values</key>
 			<array>
 				<integer>0</integer>
 				<integer>2</integer>
+				<integer>5</integer>
 			</array>
 		</dict>
 		<dict>
@@ -306,6 +310,8 @@
 				<string>Move Screen</string>
 				<string>Click &amp; Hold</string>
 				<string>Mouse Wheel</string>
+				<string>Right Click &amp; Hold</string>
+				<string>Middle Click &amp; Hold</string>
 			</array>
 			<key>Values</key>
 			<array>
@@ -313,6 +319,8 @@
 				<integer>3</integer>
 				<integer>1</integer>
 				<integer>4</integer>
+				<integer>6</integer>
+				<integer>7</integer>
 			</array>
 		</dict>
 		<dict>
@@ -354,6 +362,8 @@
 				<string>Move Screen</string>
 				<string>Click &amp; Hold</string>
 				<string>Mouse Wheel</string>
+				<string>Right Click &amp; Hold</string>
+				<string>Middle Click &amp; Hold</string>
 			</array>
 			<key>Values</key>
 			<array>
@@ -361,6 +371,8 @@
 				<integer>3</integer>
 				<integer>1</integer>
 				<integer>4</integer>
+				<integer>6</integer>
+				<integer>7</integer>
 			</array>
 		</dict>
 		<dict>
@@ -385,12 +397,14 @@
 				<string>Drag cursor</string>
 				<string>Touch mode (always show cursor)</string>
 				<string>Touch mode (try hiding cursor)</string>
+				<string>Touch mode (drag to scroll)</string>
 			</array>
 			<key>Values</key>
 			<array>
 				<integer>0</integer>
 				<integer>1</integer>
 				<integer>2</integer>
+				<integer>3</integer>
 			</array>
 		</dict>
 		<dict>

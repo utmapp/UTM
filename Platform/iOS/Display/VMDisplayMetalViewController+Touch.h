@@ -23,6 +23,9 @@ typedef NS_ENUM(NSInteger, VMGestureType) {
     VMGestureTypeRightClick,
     VMGestureTypeMoveScreen,
     VMGestureTypeMouseWheel,
+    VMGestureTypeMiddleClick,
+    VMGestureTypeRightDrag,
+    VMGestureTypeMiddleDrag,
     VMGestureTypeMax
 };
 
@@ -30,6 +33,7 @@ typedef NS_ENUM(NSInteger, VMMouseType) {
     VMMouseTypeRelative,
     VMMouseTypeAbsolute,
     VMMouseTypeAbsoluteHideCursor,
+    VMMouseTypeAbsoluteScroll,
     VMMouseTypeMax
 };
 

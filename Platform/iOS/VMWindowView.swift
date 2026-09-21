@@ -57,6 +57,7 @@ struct VMWindowView: View {
                     case .display(_, _):
                         VMDisplayHostedView(vm: session.vm, device: device, state: $state)
                             .prefersPersistentSystemOverlaysHidden()
+                            .defersSystemGesturesOnAllEdges()
                     case .serial(_, _):
                         VMDisplayHostedView(vm: session.vm, device: device, state: $state)
                             .prefersPersistentSystemOverlaysHidden()
@@ -312,6 +313,19 @@ fileprivate struct VMToolbarOrnamentModifier: ViewModifier {
 #endif
 
 private extension View {
+    /// A touch that starts at a screen edge is otherwise held back for the system and never reaches the guest
+    func defersSystemGesturesOnAllEdges() -> some View {
+        #if os(visionOS)
+        return self
+        #else
+        if #available(iOS 16, *) {
+            return self.defersSystemGestures(on: .all)
+        } else {
+            return self
+        }
+        #endif
+    }
+
     func prefersPersistentSystemOverlaysHidden() -> some View {
         if #available(iOS 16, *) {
             return self.persistentSystemOverlays(.hidden)
