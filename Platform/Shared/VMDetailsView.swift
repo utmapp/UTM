@@ -30,6 +30,18 @@ struct VMDetailsView: View {
     private let regularScreenSizeClass: Bool = true
     #endif
 
+    private enum Tab: Hashable {
+        case details
+        case snapshots
+    }
+
+    /// Scroll targets, the screenshot is scrolled away to make room for the snapshots
+    private enum ScrollAnchor: Hashable {
+        case screenshot
+        case tabs
+    }
+
+    @State private var selectedTab: Tab = .details
     @State private var size: Int64 = 0
     @State private var updateTask: Task<Void, Never>?
     private let updateIpIntervalNs = UInt64(10 * 1_000_000_000)
@@ -51,53 +63,24 @@ struct VMDetailsView: View {
                 Spacer()
             }
         } else {
-            ScrollView {
-                Screenshot(vm: vm, large: regularScreenSizeClass)
-                let notes = vm.detailsNotes ?? ""
-                if regularScreenSizeClass && !notes.isEmpty {
-                    HStack(alignment: .top) {
-                        Details(vm: vm, sizeLabel: sizeLabel)
-                            .frame(maxWidth: .infinity)
-                        Text(notes)
-                            .font(.body)
-                            .frame(maxWidth: .infinity, alignment: .topLeading)
-                            .fixedSize(horizontal: false, vertical: true)
-                            .padding([.leading, .trailing])
-                    }.padding([.leading, .trailing])
-                    #if os(macOS)
-                    if let appleVM = vm.wrapped as? UTMAppleVirtualMachine {
-                        VMAppleRemovableDrivesView(vm: vm, config: appleVM.config, registryEntry: appleVM.registryEntry)
-                            .padding([.leading, .trailing, .bottom])
-                    } else if let qemuVM = vm.wrapped as? UTMQemuVirtualMachine {
-                        VMRemovableDrivesView(vm: vm, config: qemuVM.config)
-                            .padding([.leading, .trailing, .bottom])
-                    }
+            ScrollViewReader { scrollProxy in
+                ScrollView {
+                    Screenshot(vm: vm, large: regularScreenSizeClass)
+                        .id(ScrollAnchor.screenshot)
+                    #if WITH_REMOTE // FIXME: implement remote feature
+                    detailsPane
                     #else
-                    let qemuConfig = vm.config as! UTMQemuConfiguration
-                    VMRemovableDrivesView(vm: vm, config: qemuConfig)
-                        .padding([.leading, .trailing, .bottom])
+                    tabs(scrollProxy: scrollProxy)
                     #endif
-                } else {
-                    VStack {
-                        Details(vm: vm, sizeLabel: sizeLabel)
-                        if !notes.isEmpty {
-                            Text(notes)
-                                .font(.body)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
-                        #if os(macOS)
-                        if let appleVM = vm.wrapped as? UTMAppleVirtualMachine {
-                            VMAppleRemovableDrivesView(vm: vm, config: appleVM.config, registryEntry: appleVM.registryEntry)
-                        } else if let qemuVM = vm.wrapped as? UTMQemuVirtualMachine {
-                            VMRemovableDrivesView(vm: vm, config: qemuVM.config)
-                        }
-                        #else
-                        let qemuConfig = vm.config as! UTMQemuConfiguration
-                        VMRemovableDrivesView(vm: vm, config: qemuConfig)
-                        #endif
-                    }.padding([.leading, .trailing, .bottom])
                 }
-            }.labelStyle(DetailsLabelStyle())
+                #if !WITH_REMOTE
+                .onChange(of: selectedTab) { tab in
+                    withAnimation {
+                        scrollProxy.scrollTo(tab == .snapshots ? ScrollAnchor.tabs : ScrollAnchor.screenshot, anchor: .top)
+                    }
+                }
+                #endif
+            }
             .modifier(VMOptionalNavigationTitleModifier(vm: vm))
             .modifier(VMToolbarModifier(vm: vm, bottom: !regularScreenSizeClass))
             .sheet(isPresented: $data.showSettingsModal) {
@@ -126,6 +109,98 @@ struct VMDetailsView: View {
                 #endif
             }
         }
+    }
+
+    #if !WITH_REMOTE
+    /// Panes below the screenshot that is shared by all of them.
+    @ViewBuilder private func tabs(scrollProxy: ScrollViewProxy) -> some View {
+        let snapshotsPane = VMSnapshotsView(vm: vm) { id in
+            withAnimation {
+                scrollProxy.scrollTo(id)
+            }
+        }
+        #if os(macOS)
+        TabView(selection: $selectedTab) {
+            detailsPane
+                .padding(.top)
+                .tabItem { Text("Details") }
+                .tag(Tab.details)
+            snapshotsPane
+                .padding()
+                .tabItem { Text("Snapshots") }
+                .tag(Tab.snapshots)
+        }.padding([.leading, .trailing, .bottom])
+        .padding(.top, 8)
+        .id(ScrollAnchor.tabs)
+        #else
+        Picker("View", selection: $selectedTab) {
+            Text("Details").tag(Tab.details)
+            Text("Snapshots").tag(Tab.snapshots)
+        }.pickerStyle(.segmented)
+        .labelsHidden()
+        .frame(maxWidth: 400)
+        .padding([.leading, .trailing, .top])
+        .padding(.bottom, 8)
+        .id(ScrollAnchor.tabs)
+        switch selectedTab {
+        case .details:
+            detailsPane
+        case .snapshots:
+            snapshotsPane
+                .padding([.leading, .trailing, .bottom])
+        }
+        #endif
+    }
+    #endif
+
+    /// A single view, because a tab view makes a separate tab of every view it is given
+    @ViewBuilder private var detailsPane: some View {
+        VStack {
+            let notes = vm.detailsNotes ?? ""
+            if regularScreenSizeClass && !notes.isEmpty {
+                HStack(alignment: .top) {
+                    Details(vm: vm, sizeLabel: sizeLabel)
+                        .frame(maxWidth: .infinity)
+                    Text(notes)
+                        .font(.body)
+                        .frame(maxWidth: .infinity, alignment: .topLeading)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding([.leading, .trailing])
+                }.padding([.leading, .trailing])
+                #if os(macOS)
+                if let appleVM = vm.wrapped as? UTMAppleVirtualMachine {
+                    VMAppleRemovableDrivesView(vm: vm, config: appleVM.config, registryEntry: appleVM.registryEntry)
+                        .padding([.leading, .trailing, .bottom])
+                } else if let qemuVM = vm.wrapped as? UTMQemuVirtualMachine {
+                    VMRemovableDrivesView(vm: vm, config: qemuVM.config)
+                        .padding([.leading, .trailing, .bottom])
+                }
+                #else
+                let qemuConfig = vm.config as! UTMQemuConfiguration
+                VMRemovableDrivesView(vm: vm, config: qemuConfig)
+                    .padding([.leading, .trailing, .bottom])
+                #endif
+            } else {
+                VStack {
+                    Details(vm: vm, sizeLabel: sizeLabel)
+                    if !notes.isEmpty {
+                        Text(notes)
+                            .font(.body)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    #if os(macOS)
+                    if let appleVM = vm.wrapped as? UTMAppleVirtualMachine {
+                        VMAppleRemovableDrivesView(vm: vm, config: appleVM.config, registryEntry: appleVM.registryEntry)
+                    } else if let qemuVM = vm.wrapped as? UTMQemuVirtualMachine {
+                        VMRemovableDrivesView(vm: vm, config: qemuVM.config)
+                    }
+                    #else
+                    let qemuConfig = vm.config as! UTMQemuConfiguration
+                    VMRemovableDrivesView(vm: vm, config: qemuConfig)
+                    #endif
+                }.padding([.leading, .trailing, .bottom])
+            }
+        }.labelStyle(DetailsLabelStyle())
     }
 
     #if !WITH_REMOTE
