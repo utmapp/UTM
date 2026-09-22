@@ -29,6 +29,15 @@
       }
     },
     {
+      "identity" : "h",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/rarestype/h",
+      "state" : {
+        "revision" : "aa3626829160917d4378330617971977cbd78f5b",
+        "version" : "1.0.1"
+      }
+    },
+    {
       "identity" : "inappsettingskit",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/futuretap/InAppSettingsKit.git",
@@ -74,6 +83,15 @@
       }
     },
     {
+      "identity" : "swift-png",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/tayloraswift/swift-png",
+      "state" : {
+        "revision" : "8a0bcd4df5e4b307c804937776a56dd6ecdf6396",
+        "version" : "4.5.1"
+      }
+    },
+    {
       "identity" : "swiftconnect",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/utmapp/SwiftConnect",
@@ -103,10 +121,10 @@
     {
       "identity" : "swiftterm",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/migueldeicaza/SwiftTerm.git",
+      "location" : "https://github.com/osy/SwiftTerm.git",
       "state" : {
-        "branch" : "main",
-        "revision" : "ea0f681b25c8385b4a5a48d435e61d11392216e0"
+        "branch" : "fix/visionos-build",
+        "revision" : "f2f5349b2a1c629ec6c87286d814147136e44eca"
       }
     },
     {

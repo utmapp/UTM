@@ -33,6 +33,9 @@ struct VMCommands: Commands {
         #endif
         SidebarCommands()
         ToolbarCommands()
+        #if os(macOS)
+        TextEditingCommands()
+        #endif
         CommandGroup(replacing: .help) {
             Button(action: { NotificationCenter.default.post(name: NSNotification.ShowReleaseNotes, object: nil) }, label: {
                 Text("What's New")

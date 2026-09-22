@@ -218,6 +218,12 @@ struct VMDisplayHostedView: UIViewControllerRepresentable {
         }
     }
     
+    static func dismantleUIViewController(_ uiViewController: VMDisplayViewController, coordinator: Coordinator) {
+        if let vc = uiViewController as? VMDisplayTerminalViewController {
+            vc.closeTerminal()
+        }
+    }
+    
     func makeCoordinator() -> Coordinator {
         Coordinator(with: vm, device: device, state: $state)
     }

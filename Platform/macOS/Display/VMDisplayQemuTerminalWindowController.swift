@@ -46,8 +46,14 @@ class VMDisplayQemuTerminalWindowController: VMDisplayQemuWindowController, VMDi
         terminalView.autoresizingMask = [.width, .height]
         terminalView.allowMouseReporting = false
         displayView.addSubview(terminalView)
+        enableMetalRenderer(for: terminalView)
         vmSerialPort?.delegate = self // can be nil for primary window
         super.windowDidLoad()
+    }
+    
+    override func windowWillClose(_ notification: Notification) {
+        closeTerminal(terminalView)
+        super.windowWillClose(notification)
     }
     
     override func enterLive() {
@@ -113,6 +119,10 @@ extension VMDisplayQemuTerminalWindowController: TerminalViewDelegate {
     func hostCurrentDirectoryUpdate(source: TerminalView, directory: String?) {
     }
     
+    func requestOpenLink(source: TerminalView, link: String, params: [String : String]) {
+        openLink(link)
+    }
+    
     func send(source: TerminalView, data: ArraySlice<UInt8>) {
         if let vmSerialPort = vmSerialPort {
             vmSerialPort.write(Data(data))
@@ -154,10 +164,7 @@ extension VMDisplayQemuTerminalWindowController: CSPortDelegate {
     
     func port(_ port: CSPort, didRecieveData data: Data) {
         if let terminalView = terminalView {
-            let arr = [UInt8](data)[...]
-            DispatchQueue.main.async {
-                terminalView.feed(byteArray: arr)
-            }
+            terminalView.feed(byteArray: [UInt8](data)[...])
         }
     }
 }
