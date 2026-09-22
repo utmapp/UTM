@@ -21,7 +21,6 @@ import SwiftPortmap
 #endif
 
 private var SpiceIoServiceGuestAgentContext = 0
-private let kSuspendSnapshotName = "suspend"
 private let kProbeSuspendDelay = 1*NSEC_PER_SEC
 
 /// QEMU backend virtual machine
@@ -103,8 +102,6 @@ final class UTMQemuVirtualMachine: UTMSpiceVirtualMachine {
     
     private(set) var snapshotUnsupportedError: Error?
     
-    /// When set, the next `_start` will load this snapshot tag instead of a fresh/suspended boot.
-    private var pendingRestoreSnapshotName: String?
 
     private var isScopedAccess: Bool = false
     
@@ -431,28 +428,21 @@ extension UTMQemuVirtualMachine {
         try Task.checkCancellation()
         
         // load saved state if requested
-        //
-        // A user snapshot restore on a stopped VM (`pendingRestoreSnapshotName`) reuses this
-        // startup path: boot paused, loadvm the requested tag, then continue. Once the VM is
-        // running, any previous internal suspend state is obsolete and is removed below.
         let isSuspended = await registryEntry.isSuspended
-        let userRestoreSnapshotName = pendingRestoreSnapshotName
-        pendingRestoreSnapshotName = nil
-        let withMounting: Bool
-        if let userRestoreSnapshotName = userRestoreSnapshotName {
-            try await _restoreSnapshot(name: userRestoreSnapshotName)
-            try Task.checkCancellation()
-            withMounting = false
-        } else {
-            if !isRunningAsDisposible && isSuspended {
-                try await monitor.qemuRestoreSnapshot(kSuspendSnapshotName)
+        var isStateMissing = false
+        if !isRunningAsDisposible && isSuspended {
+            let suspendSnapshotName = suspendSnapshotName
+            if try monitor.snapshots().contains(where: { $0.name == suspendSnapshotName }) {
+                try await _restoreSnapshot(name: suspendSnapshotName)
                 try Task.checkCancellation()
+            } else {
+                // a state that is gone leaves the guest to boot fresh, as nothing of it was loaded
+                isStateMissing = true
             }
-            withMounting = !isSuspended
         }
         
         // set up SPICE sharing and removable drives
-        try await self.restoreExternalDrives(withMounting: withMounting)
+        try await self.restoreExternalDrives(withMounting: !isSuspended || isStateMissing)
         if let ioService = interface as? UTMSpiceIO {
             try await self.restoreSharedDirectory(for: ioService)
         } else {
@@ -463,7 +453,7 @@ extension UTMQemuVirtualMachine {
         // continue VM boot
         try await monitor.continueBoot()
         
-        // delete saved suspend state (user snapshots are preserved)
+        // delete saved suspend state
         if isSuspended {
             try? await deleteSnapshot()
         }
@@ -622,31 +612,94 @@ extension UTMQemuVirtualMachine {
             state = prev
         }
         do {
-            try await _saveSnapshot(name: name ?? kSuspendSnapshotName)
-            if name == nil {
+            if let name = name {
+                try await _saveSnapshot(name: name)
+            } else {
+                // a new name each time lets the previous one be kept as a snapshot
+                let suspendName = UUID().uuidString
+                try await _saveSnapshot(name: suspendName)
+                let staleNames = try UTMSnapshotManifest.replaceSuspendState(in: pathUrl, with: suspendName)
                 await registryEntry.setIsSuspended(true)
                 try saveScreenshot()
+                // a state that cannot go now stays listed and goes the next time
+                try? await deleteStaleSnapshots(staleNames)
             }
         } catch {
             throw UTMQemuVirtualMachineError.saveSnapshotFailed(error)
         }
     }
     
+    /// Keep the VM from starting while qemu-img changes its images, which corrupts any that QEMU
+    /// has open. It may have them open without a monitor, so the VM has to be stopped.
+    func changingImages(as state: UTMVirtualMachineState, _ body: () async throws -> Void) async throws {
+        guard self.state == .stopped else {
+            throw UTMQemuVirtualMachineError.invalidVmState
+        }
+        self.state = state
+        defer {
+            self.state = .stopped
+        }
+        try await body()
+    }
+
+    /// Snapshot with the state to resume from, older versions always used the same one
+    private var suspendSnapshotName: String {
+        UTMSnapshotManifest.suspendState(in: pathUrl) ?? kUTMQemuDefaultSuspendSnapshotName
+    }
+
     private func _deleteSnapshot(name: String) async throws {
         if let monitor = await monitor { // if QEMU is running
+            // QEMU only reports a missing snapshot as a failure, which would leave it listed
+            guard try monitor.snapshots().contains(where: { $0.name == name }) else {
+                throw UTMSnapshotError.notFound(name)
+            }
             let result = try await monitor.qemuDeleteSnapshot(name)
             if result.localizedCaseInsensitiveContains("Error") {
                 throw UTMQemuVirtualMachineError.qemuError(result)
             }
-            try? updateLastModified()
+        } else {
+            try await changingImages(as: .saving) {
+                try await UTMQemuFrozenSnapshotBackend(imageURLs: await snapshotImageURLs).delete(identifier: name)
+            }
         }
+        try? updateLastModified()
     }
     
     func deleteSnapshot(name: String? = nil) async throws {
-        if name == nil {
-            await registryEntry.setIsSuspended(false)
+        if let name = name {
+            try await _deleteSnapshot(name: name)
+            return
         }
-        try await _deleteSnapshot(name: name ?? kSuspendSnapshotName)
+        await registryEntry.setIsSuspended(false)
+        // the state stays if it was kept as a snapshot
+        let staleNames = try UTMSnapshotManifest.releaseSuspendState(in: pathUrl, default: kUTMQemuDefaultSuspendSnapshotName)
+        #if !os(macOS)
+        // without qemu-img a state can only go while QEMU runs, which the next suspend sees to
+        guard await monitor != nil else {
+            return
+        }
+        #endif
+        try await deleteStaleSnapshots(staleNames)
+    }
+
+    /// Delete states that nothing needs anymore. Each stays listed in the manifest until it is
+    /// gone so that one that fails is tried again instead of staying in the images for good.
+    private func deleteStaleSnapshots(_ names: [String]) async throws {
+        var firstError: Error?
+        for name in names {
+            do {
+                try await _deleteSnapshot(name: name)
+            } catch UTMSnapshotError.notFound(_) {
+                // already gone
+            } catch {
+                firstError = firstError ?? error
+                continue
+            }
+            try UTMSnapshotManifest.forgetState(name, in: pathUrl)
+        }
+        if let error = firstError {
+            throw error
+        }
     }
     
     private func _resume() async throws {
@@ -684,25 +737,13 @@ extension UTMQemuVirtualMachine {
     }
     
     func restoreSnapshot(name: String? = nil) async throws {
-        // A stopped VM is restored by booting it directly into the requested snapshot tag,
-        // reusing the suspend startup path via `pendingRestoreSnapshotName`.
-        if state == .stopped, let name {
-            pendingRestoreSnapshotName = name
-            do {
-                try await start()
-            } catch {
-                pendingRestoreSnapshotName = nil
-                throw error
-            }
-            return
-        }
         guard state == .paused || state == .started else {
             throw UTMQemuVirtualMachineError.invalidVmState
         }
         let prev = state
         state = .restoring
         do {
-            try await _restoreSnapshot(name: name ?? kSuspendSnapshotName)
+            try await _restoreSnapshot(name: name ?? suspendSnapshotName)
             state = prev
         } catch {
             if prev == .started, let monitor = await monitor {

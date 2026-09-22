@@ -287,6 +287,8 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
             state = .stopped
             if !isDisposible {
                 try? await deleteSnapshot()
+                // the layers of a snapshot below the disks may be gone
+                try? await UTMSnapshotService.identifyOrphanedSnapshots(on: self)
             }
             throw error
         }
@@ -553,8 +555,47 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
         }
         await registryEntry.setIsSuspended(false)
         await registryEntry.setConnectedUsbDevices([])
-        try FileManager.default.removeItem(at: vmSavedStateURL)
+        // a state that is gone already is still let go of below
+        if FileManager.default.fileExists(atPath: vmSavedStateURL.path) {
+            try FileManager.default.removeItem(at: vmSavedStateURL)
+        }
+        if #available(macOS 27, *) {
+            try? await releaseSuspendSnapshot(savedStateURL: vmSavedStateURL)
+        }
         try? updateLastModified()
+    }
+
+    /// Keep the VM from starting while the files of its snapshots change, which it would otherwise
+    /// attach halfway through
+    @available(macOS 27, *)
+    func changingFiles(as state: UTMVirtualMachineState, _ body: () async throws -> Void) async throws {
+        guard self.state == .stopped else {
+            throw UTMAppleVirtualMachineError.operationNotAvailable
+        }
+        self.state = state
+        defer {
+            self.state = .stopped
+        }
+        try await body()
+    }
+
+    /// The saved state may have been a copy of a snapshot that was only kept to resume from
+    @available(macOS 27, *)
+    private func releaseSuspendSnapshot(savedStateURL: URL) async throws {
+        let staleIdentifiers = try UTMSnapshotManifest.releaseSuspendState(in: pathUrl, default: nil)
+        guard !staleIdentifiers.isEmpty else {
+            return
+        }
+        let backend = UTMAppleSnapshotBackend(imageURLs: await snapshotImageURLs, auxiliaryURLs: await snapshotAuxiliaryURLs, savedStateURL: savedStateURL, isRunning: state != .stopped)
+        // one that cannot go now stays listed and goes the next time
+        for identifier in staleIdentifiers {
+            do {
+                try await backend.delete(identifier: identifier)
+            } catch UTMSnapshotError.notFound(_) {
+                // already gone
+            }
+            try UTMSnapshotManifest.forgetState(identifier, in: pathUrl)
+        }
     }
     
     #if arch(arm64)

@@ -78,7 +78,8 @@ static void __attribute__((noreturn)) runQemu(qemu_main_t *funcs, int argc, cons
     pthread_create(&thread, NULL, WatchForParentTermination, NULL);
     pthread_detach(thread);
     if (funcs->main) {
-        funcs->main(argc, argv);
+        // tools such as qemu-img report most failures by returning
+        exit(funcs->main(argc, argv));
     } else if (funcs->swtpm_main) {
         funcs->swtpm_main(argc, argv, "swtpm", "socket");
     } else {

@@ -173,6 +173,46 @@ import QEMUKitInternal
         return image_info
     }
 
+    /// Internal snapshots stored in an image
+    static func snapshots(image url: URL) async throws -> [QemuSnapshotInfo] {
+        try await info(image: url).snapshots ?? []
+    }
+
+    private enum SnapshotOperation: String {
+        case create = "-c"
+        case apply = "-a"
+        case delete = "-d"
+    }
+
+    private static func snapshot(_ operation: SnapshotOperation, name: String, image url: URL) async throws {
+        let qemuImg = UTMQemuImage()
+        let srcBookmark = try url.bookmarkData()
+        qemuImg.pushArgv("snapshot")
+        qemuImg.pushArgv(operation.rawValue)
+        qemuImg.pushArgv(name)
+        qemuImg.accessData(withBookmark: srcBookmark)
+        qemuImg.pushArgv(url.path)
+        let logging = QEMULogging()
+        logging.delegate = qemuImg
+        qemuImg.standardOutput = logging.standardOutput
+        qemuImg.standardError = logging.standardError
+        try await qemuImg.start()
+    }
+
+    /// Save the contents of the image as an internal snapshot without any VM state
+    static func createSnapshot(image url: URL, name: String) async throws {
+        try await snapshot(.create, name: name, image: url)
+    }
+
+    /// Revert the contents of the image to an internal snapshot
+    static func applySnapshot(image url: URL, name: String) async throws {
+        try await snapshot(.apply, name: name, image: url)
+    }
+
+    static func deleteSnapshot(image url: URL, name: String) async throws {
+        try await snapshot(.delete, name: name, image: url)
+    }
+
     static func size(image url: URL) async throws -> Int64 {
         try await info(image: url).virtualSize
     }

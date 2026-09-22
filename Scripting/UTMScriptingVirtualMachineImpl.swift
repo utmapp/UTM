@@ -91,6 +91,28 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
         }
     }
     
+    @objc var snapshots: [UTMScriptingSnapshotImpl] {
+        UTMSnapshotService.snapshots(for: vm).map { UTMScriptingSnapshotImpl(snapshot: $0, parent: self) }
+    }
+
+    /// Resolve `snapshot id "..." of virtual machine ...`
+    ///
+    /// Without this a specifier for a snapshot cannot be evaluated and falls back to this virtual
+    /// machine, which would aim a command meant for one snapshot at the whole VM.
+    @objc(valueInSnapshotsWithUniqueID:)
+    func valueInSnapshots(withUniqueID id: Any) -> UTMScriptingSnapshotImpl? {
+        guard let id = id as? String else {
+            return nil
+        }
+        return snapshots.first { $0.id == id }
+    }
+
+    /// Resolve `snapshot "..." of virtual machine ...`
+    @objc(valueInSnapshotsWithName:)
+    func valueInSnapshots(withName name: String) -> UTMScriptingSnapshotImpl? {
+        snapshots.first { $0.name == name }
+    }
+
     var guestAgent: QEMUGuestAgent! {
         get async {
             await (vm as? UTMQemuVirtualMachine)?.guestAgent
@@ -290,37 +312,23 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
     @objc func createSnapshot(_ command: NSScriptCommand) {
         let name = command.evaluatedArguments?["snapshotName"] as? String
         withScriptCommand(command) { [self] in
-            guard let name = name else {
-                throw ScriptingError.invalidParameter
-            }
-            try await UTMSnapshotService.createSnapshot(name: name, on: vm)
+            let snapshot = try await UTMSnapshotService.createSnapshot(title: name, on: vm)
+            return UTMScriptingSnapshotImpl(snapshot: snapshot, parent: self)
         }
     }
 
-    @objc func listSnapshots(_ command: NSScriptCommand) {
+    @objc func scanSnapshots(_ command: NSScriptCommand) {
         withScriptCommand(command) { [self] in
-            let entries = try await UTMSnapshotService.listSnapshots(on: vm)
-            return entries.map { $0.name }
+            try await UTMSnapshotService.scanSnapshots(on: vm)
         }
     }
 
-    @objc func restoreSnapshot(_ command: NSScriptCommand) {
-        let name = command.evaluatedArguments?["snapshotName"] as? String
+    @objc func discardSavedState(_ command: NSScriptCommand) {
         withScriptCommand(command) { [self] in
-            guard let name = name else {
-                throw ScriptingError.invalidParameter
+            guard vm.registryEntry.isSuspended else {
+                return
             }
-            try await UTMSnapshotService.restoreSnapshot(name: name, on: vm)
-        }
-    }
-
-    @objc func deleteSnapshot(_ command: NSScriptCommand) {
-        let name = command.evaluatedArguments?["snapshotName"] as? String
-        withScriptCommand(command) { [self] in
-            guard let name = name else {
-                throw ScriptingError.invalidParameter
-            }
-            try await UTMSnapshotService.deleteSnapshot(name: name, on: vm)
+            try await vm.deleteSnapshot(name: nil)
         }
     }
 
