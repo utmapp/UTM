@@ -366,7 +366,7 @@ struct AlertMessage: Identifiable {
         }
         if hasDisplay {
             config.displays = [UTMAppleConfigurationDisplay(width: 1920, height: 1200)]
-            config.virtualization.hasAudio = true
+            config.virtualization.audio = .inputOutput
             config.virtualization.keyboard = .generic
             config.virtualization.pointer = .mouse
         }

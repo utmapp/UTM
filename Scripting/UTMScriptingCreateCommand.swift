@@ -140,7 +140,7 @@ class UTMScriptingCreateCommand: NSCreateCommand, UTMScriptable {
         if bootOS == .macOS {
             // macOS is not usable headless so it gets the same devices as the wizard
             config.displays = [UTMAppleConfigurationDisplay(width: 1920, height: 1200)]
-            config.virtualization.hasAudio = true
+            config.virtualization.audio = .inputOutput
             config.virtualization.keyboard = .generic
             config.virtualization.pointer = macGuestMajorVersion >= 13 ? .trackpad : .mouse
         } else {

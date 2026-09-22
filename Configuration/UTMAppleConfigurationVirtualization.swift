@@ -48,7 +48,26 @@ struct UTMAppleConfigurationVirtualization: Codable {
         }
     }
     
+    enum AudioDevice: String, CaseIterable, QEMUConstant {
+        case disabled = "Disabled"
+        case inputOnly = "InputOnly"
+        case outputOnly = "OutputOnly"
+        case inputOutput = "InputOutput"
+        
+        var prettyValue: String {
+            switch self {
+            case .disabled: return NSLocalizedString("Disabled", comment: "UTMAppleConfigurationDevices")
+            case .inputOnly: return NSLocalizedString("Input Only", comment: "UTMAppleConfigurationDevices")
+            case .outputOnly: return NSLocalizedString("Output Only", comment: "UTMAppleConfigurationDevices")
+            case .inputOutput: return NSLocalizedString("Input and Output", comment: "UTMAppleConfigurationDevices")
+            }
+        }
+    }
+    
+    /// Audio output. Also enables audio input on configs saved before `hasAudioInput` existed.
     var hasAudio: Bool = false
+    
+    var hasAudioInput: Bool = false
     
     var hasBalloon: Bool = true
     
@@ -64,6 +83,7 @@ struct UTMAppleConfigurationVirtualization: Codable {
     
     enum CodingKeys: String, CodingKey {
         case hasAudio = "Audio"
+        case hasAudioInput = "AudioInput"
         case hasBalloon = "Balloon"
         case hasEntropy = "Entropy"
         case keyboard = "Keyboard"
@@ -79,6 +99,7 @@ struct UTMAppleConfigurationVirtualization: Codable {
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         hasAudio = try values.decode(Bool.self, forKey: .hasAudio)
+        hasAudioInput = try values.decodeIfPresent(Bool.self, forKey: .hasAudioInput) ?? hasAudio
         hasBalloon = try values.decode(Bool.self, forKey: .hasBalloon)
         hasEntropy = try values.decode(Bool.self, forKey: .hasEntropy)
         if let hasKeyboard = try? values.decode(Bool.self, forKey: .keyboard) {
@@ -101,12 +122,34 @@ struct UTMAppleConfigurationVirtualization: Codable {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(hasAudio, forKey: .hasAudio)
+        try container.encode(hasAudioInput, forKey: .hasAudioInput)
         try container.encode(hasBalloon, forKey: .hasBalloon)
         try container.encode(hasEntropy, forKey: .hasEntropy)
         try container.encode(keyboard, forKey: .keyboard)
         try container.encode(pointer, forKey: .pointer)
         try container.encodeIfPresent(hasRosetta, forKey: .rosetta)
         try container.encode(hasClipboardSharing, forKey: .hasClipboardSharing)
+    }
+}
+
+// MARK: - Audio device
+
+@available(iOS, unavailable, message: "Apple Virtualization not available on iOS")
+extension UTMAppleConfigurationVirtualization {
+    var audio: AudioDevice {
+        get {
+            switch (hasAudioInput, hasAudio) {
+            case (false, false): return .disabled
+            case (true, false): return .inputOnly
+            case (false, true): return .outputOnly
+            case (true, true): return .inputOutput
+            }
+        }
+        
+        set {
+            hasAudioInput = newValue == .inputOnly || newValue == .inputOutput
+            hasAudio = newValue == .outputOnly || newValue == .inputOutput
+        }
     }
 }
 
@@ -119,6 +162,7 @@ extension UTMAppleConfigurationVirtualization {
         hasBalloon = oldConfig.isBalloonEnabled
         hasEntropy = oldConfig.isEntropyEnabled
         hasAudio = oldConfig.isAudioEnabled
+        hasAudioInput = oldConfig.isAudioEnabled
         keyboard = oldConfig.isKeyboardEnabled ? .generic : .disabled
         pointer = oldConfig.isPointingEnabled ? .mouse : .disabled
     }
@@ -135,13 +179,18 @@ extension UTMAppleConfigurationVirtualization {
         if hasEntropy {
             vzconfig.entropyDevices = [VZVirtioEntropyDeviceConfiguration()]
         }
-        if hasAudio {
+        if hasAudio || hasAudioInput {
             let audioConfiguration = VZVirtioSoundDeviceConfiguration()
-            let audioInput = VZVirtioSoundDeviceInputStreamConfiguration()
-            audioInput.source = VZHostAudioInputStreamSource()
-            let audioOutput = VZVirtioSoundDeviceOutputStreamConfiguration()
-            audioOutput.sink = VZHostAudioOutputStreamSink()
-            audioConfiguration.streams = [audioInput, audioOutput]
+            if hasAudioInput {
+                let audioInput = VZVirtioSoundDeviceInputStreamConfiguration()
+                audioInput.source = VZHostAudioInputStreamSource()
+                audioConfiguration.streams.append(audioInput)
+            }
+            if hasAudio {
+                let audioOutput = VZVirtioSoundDeviceOutputStreamConfiguration()
+                audioOutput.sink = VZHostAudioOutputStreamSink()
+                audioConfiguration.streams.append(audioOutput)
+            }
             vzconfig.audioDevices = [audioConfiguration]
         }
         if keyboard != .disabled {
