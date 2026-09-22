@@ -632,3 +632,42 @@ index f22421f30..80ea8a897 100644
 -- 
 GitLab
 
+From 7bef4a939ac2f9cd5de0abbf7aaee90ccf1a624f Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Volker=20R=C3=BCmelin?= <vr_qemu@t-online.de>
+Date: Sat, 22 Oct 2022 13:51:15 +0200
+Subject: [PATCH] sound: Fix pointer arithmetic in snd_record_handle_write()
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The variable 'now' counts in audio sample frames, but the variable
+'data' is of type uint8_t *. Multiply 'now' by the size of an audio
+sample frame to get the correct source pointer.
+
+This improves the quality of audio recordings in QEMU a little bit.
+
+Fixes: 5d5a7bd181 ("sound: Avoid cast that could cause alignment problems")
+
+Signed-off-by: Volker Rümelin <vr_qemu@t-online.de>
+Acked-by: Frediano Ziglio <freddy77@gmail.com>
+(cherry picked from commit a5d1d957d6c16e3fe213e10d0cab4bfe2504ba91)
+---
+ server/sound.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/server/sound.c b/server/sound.c
+index c952ffc5..6e644c04 100644
+--- a/server/sound.c
++++ b/server/sound.c
+@@ -321,7 +321,7 @@ static bool snd_record_handle_write(RecordChannelClient *record_client, size_t s
+     memcpy(record_client->samples + write_pos, data, now << 2);
+ 
+     if (size) {
+-        memcpy(record_client->samples, data + now, size << 2);
++        memcpy(record_client->samples, data + (now << 2), size << 2);
+     }
+ 
+     if (record_client->write_pos - record_client->read_pos > RECORD_SAMPLES_SIZE) {
+-- 
+2.54.0 (Apple Git-157)
+
