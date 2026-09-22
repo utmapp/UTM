@@ -55,7 +55,7 @@ while [ "x$1" != "x" ]; do
 done
 
 case $SDK in
-macos )
+macosx )
     SCHEME="macOS"
     ;;
 * )
@@ -65,12 +65,33 @@ macos )
     ;;
 esac
 
-ARCH_ARGS=$(echo $ARCH | xargs printf -- "-arch %s ")
+# -sdk would also apply to host tools such as package build plugins, so select
+# the platform with a destination instead
+case $SDK in
+iphoneos )
+    PLATFORM="iOS"
+    ;;
+iphonesimulator )
+    PLATFORM="iOS Simulator"
+    ;;
+xros )
+    PLATFORM="visionOS"
+    ;;
+xrsimulator )
+    PLATFORM="visionOS Simulator"
+    ;;
+macosx )
+    PLATFORM="macOS"
+    ;;
+* )
+    usage
+    ;;
+esac
 if [ ! -z "$TEAM_IDENTIFIER" ]; then
     TEAM_IDENTIFIER_PREFIX="TeamIdentifierPrefix=${TEAM_IDENTIFIER}."
 fi
 
-xcodebuild archive -archivePath "$OUTPUT" -scheme "$SCHEME" -sdk "$SDK" $ARCH_ARGS -configuration Release CODE_SIGNING_ALLOWED=NO $TEAM_IDENTIFIER_PREFIX
+xcodebuild archive -archivePath "$OUTPUT" -scheme "$SCHEME" -destination "generic/platform=$PLATFORM" ARCHS="$ARCH" -configuration Release -skipPackagePluginValidation CODE_SIGNING_ALLOWED=NO $TEAM_IDENTIFIER_PREFIX
 BUILT_PATH=$(find $OUTPUT.xcarchive -name '*.app' -type d | head -1)
 # Only retain the target architecture to address < iOS 15 crash & save disk space
 if [ "$SDK" == "iphoneos" ]; then

@@ -63,6 +63,12 @@ class VMDisplayAppleTerminalWindowController: VMDisplayAppleWindowController, VM
         terminalView!.terminalDelegate = self
         terminalView.allowMouseReporting = false
         super.windowDidLoad()
+        enableMetalRenderer(for: terminalView)
+    }
+    
+    override func windowWillClose(_ notification: Notification) {
+        closeTerminal(terminalView)
+        super.windowWillClose(notification)
     }
     
     override func updateWindowFrame() {
@@ -113,6 +119,10 @@ extension VMDisplayAppleTerminalWindowController: TerminalViewDelegate, UTMSeria
     func hostCurrentDirectoryUpdate(source: TerminalView, directory: String?) {
     }
     
+    func requestOpenLink(source: TerminalView, link: String, params: [String : String]) {
+        openLink(link)
+    }
+    
     func send(source: TerminalView, data: ArraySlice<UInt8>) {
         serialPort.write(data: Data(data))
     }
@@ -122,10 +132,7 @@ extension VMDisplayAppleTerminalWindowController: TerminalViewDelegate, UTMSeria
     
     func serialPort(_ serialPort: UTMSerialPort, didRecieveData data: Data) {
         if let terminalView = terminalView {
-            let arr = [UInt8](data)[...]
-            DispatchQueue.main.async {
-                terminalView.feed(byteArray: arr)
-            }
+            terminalView.feed(byteArray: [UInt8](data)[...])
         }
     }
     

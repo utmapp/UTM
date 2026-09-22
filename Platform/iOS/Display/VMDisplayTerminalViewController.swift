@@ -24,8 +24,8 @@ import SwiftUI
         willSet {
             vmSerialPort.delegate = nil
             newValue.delegate = self
-            terminalView.getTerminal().resetToInitialState()
-            terminalView.getTerminal().softReset()
+            terminalView.resetToInitialState()
+            terminalView.softReset()
         }
     }
     
@@ -55,10 +55,22 @@ import SwiftUI
         setupKeyboardMonitor()
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        #if !os(visionOS) // SwiftTerm's Metal renderer draws at the wrong scale on visionOS
+        do {
+            try terminalView.setUseMetal(true)
+        } catch {
+            logger.debug("Metal terminal renderer unavailable, using CoreGraphics: \(error)")
+        }
+        #endif
+    }
+    
     override func enterLive() {
         super.enterLive()
         DispatchQueue.main.async {
-            let terminalSize = CGSize(width: self.terminalView.getTerminal().cols, height: self.terminalView.getTerminal().rows)
+            let dimensions = self.terminalView.terminalDimensions
+            let terminalSize = CGSize(width: dimensions.cols, height: dimensions.rows)
             self.delegate.displayViewSize = terminalSize
         }
     }
@@ -71,6 +83,22 @@ import SwiftUI
     override func hideKeyboard() {
         super.hideKeyboard()
         _ = terminalView.resignFirstResponder()
+    }
+    
+    func closeTerminal() {
+        if let terminalView = terminalView {
+            Self.closeWhenIdle(terminalView)
+        }
+    }
+    
+    /// Releases the terminal's renderer, retrying while GPU work is still in flight
+    private static func closeWhenIdle(_ terminalView: TerminalView) {
+        guard !terminalView.updateUiClosed() else {
+            return
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            closeWhenIdle(terminalView)
+        }
     }
 }
 
@@ -127,7 +155,7 @@ extension VMDisplayTerminalViewController {
             terminalView.nativeForegroundColor = UIColor(textColor)
             terminalView.nativeBackgroundColor = UIColor(backgroundColor)
         }
-        terminalView.getTerminal().setCursorStyle(style.hasCursorBlink ? .blinkBlock : .steadyBlock)
+        terminalView.setCursorStyle(style.hasCursorBlink ? .blinkBlock : .steadyBlock)
         terminalView.optionAsMetaKey = boolForSetting("OptionAsMetaKey")
     }
 }
@@ -142,6 +170,10 @@ extension VMDisplayTerminalViewController: TerminalViewDelegate {
     }
     
     func requestOpenLink(source: TerminalView, link: String, params: [String : String]) {
+        guard let url = URL(string: link), let scheme = url.scheme?.lowercased(), ["http", "https"].contains(scheme) else {
+            return
+        }
+        UIApplication.shared.open(url)
     }
     
     func hostCurrentDirectoryUpdate(source: TerminalView, directory: String?) {
@@ -154,9 +186,6 @@ extension VMDisplayTerminalViewController: TerminalViewDelegate {
     
     func scrolled(source: TerminalView, position: Double) {
         delegate?.displayDidAssertUserInteraction()
-    }
-    
-    func bell(source: TerminalView) {
     }
     
     func rangeChanged(source: TerminalView, startY: Int, endY: Int) {
@@ -180,10 +209,7 @@ extension VMDisplayTerminalViewController: CSPortDelegate {
     
     func port(_ port: CSPort, didRecieveData data: Data) {
         if let terminalView = terminalView {
-            let arr = [UInt8](data)[...]
-            DispatchQueue.main.async {
-                terminalView.feed(byteArray: arr)
-            }
+            terminalView.feed(byteArray: [UInt8](data)[...])
         }
     }
 }
