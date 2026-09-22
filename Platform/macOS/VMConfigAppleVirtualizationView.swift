@@ -26,7 +26,7 @@ struct VMConfigAppleVirtualizationView: View {
                 Toggle("Enable Balloon Device", isOn: $config.hasBalloon)
             }
             Toggle("Enable Entropy Device", isOn: $config.hasEntropy)
-            Toggle("Enable Sound", isOn: $config.hasAudio)
+            VMConfigConstantPicker("Sound", selection: $config.audio)
             VMConfigConstantPicker("Keyboard", selection: $config.keyboard)
             VMConfigConstantPicker("Pointer", selection: $config.pointer)
             if #available(macOS 13, *), operatingSystem == .linux {
