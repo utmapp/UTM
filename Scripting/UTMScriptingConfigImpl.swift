@@ -34,6 +34,7 @@ import Foundation
             guard vm.state == .stopped else {
                 throw ScriptingError.notStopped
             }
+            data.close(vm: box) // close window
             let wrapper = UTMScriptingConfigImpl(vm.config)
             try wrapper.updateConfiguration(from: newConfiguration)
             try await data.save(vm: box)
