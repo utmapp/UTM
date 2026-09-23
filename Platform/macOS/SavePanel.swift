@@ -50,10 +50,6 @@ struct SavePanel: NSViewRepresentable {
                 savePanel.title = NSLocalizedString("Select where to save UTM Virtual Machine:", comment: "SavePanel")
                 savePanel.nameFieldStringValue = vm.pathUrl.lastPathComponent
                 savePanel.allowedContentTypes = [.UTM]
-            case .qemuCommand:
-                savePanel.title = NSLocalizedString("Select where to export QEMU command:", comment: "SavePanel")
-                savePanel.nameFieldStringValue = "command"
-                savePanel.allowedContentTypes = [.plainText]
             }
             
             // Calling savePanel.begin with the appropriate completion handlers
@@ -90,17 +86,6 @@ struct SavePanel: NSViewRepresentable {
                                     } else {
                                         try await data.export(vm: vm, to: destUrl)
                                     }
-                                }
-                            }
-                        }
-                        isPresented = false
-                    }
-                case .qemuCommand(let command):
-                    savePanel.beginSheetModal(for: window) { result in
-                        if result == .OK {
-                            if let destUrl = savePanel.url {
-                                data.busyWork {
-                                    try command.write(to: destUrl, atomically: true, encoding: .utf8)
                                 }
                             }
                         }

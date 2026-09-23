@@ -17,30 +17,25 @@
 import SwiftUI
 
 struct VMConfigQEMUView: View {
-    private struct Argument: Identifiable {
-        let id: Int
-        let string: String
-    }
-    
-    @Binding var config: UTMQemuConfigurationQEMU
-    @Binding var system: UTMQemuConfigurationSystem
-    let fetchFixedArguments: () -> [QEMUArgument]
+    @ObservedObject var config: UTMQemuConfiguration
+    #if os(macOS)
+    @Binding var isCustomArgumentsEnabled: Bool
+    #endif
     @State private var showExportLog: Bool = false
-    @State private var showExportArgs: Bool = false
     
     private var logExists: Bool {
-        guard let debugLogURL = config.debugLogURL else {
+        guard let debugLogURL = config.qemu.debugLogURL else {
             return false
         }
         return FileManager.default.fileExists(atPath: debugLogURL.path)
     }
     
     private var supportsUefi: Bool {
-        UTMQemuConfigurationQEMU.uefiImagePrefix(forArchitecture: system.architecture) != nil
+        UTMQemuConfigurationQEMU.uefiImagePrefix(forArchitecture: config.system.architecture) != nil
     }
     
     private var supportsPs2: Bool {
-        if system.target.rawValue.starts(with: "pc") || system.target.rawValue.starts(with: "q35") {
+        if config.system.target.rawValue.starts(with: "pc") || config.system.target.rawValue.starts(with: "q35") {
             return true
         } else {
             return false
@@ -51,7 +46,7 @@ struct VMConfigQEMUView: View {
         VStack {
             Form {
                 Section(header: Text("Logging")) {
-                    Toggle(isOn: $config.hasDebugLog, label: {
+                    Toggle(isOn: $config.qemu.hasDebugLog, label: {
                         Text("Debug Logging")
                     })
                     Button("Export Debug Log") {
@@ -60,167 +55,93 @@ struct VMConfigQEMUView: View {
                     .disabled(!logExists)
                 }
                 DetailedSection("Tweaks", description: "These are advanced settings affecting QEMU which should be kept default unless you are running into issues.") {
-                    Toggle("UEFI Boot", isOn: $config.hasUefiBoot)
+                    Toggle("UEFI Boot", isOn: $config.qemu.hasUefiBoot)
                         .disabled(!supportsUefi)
                         .help("Should be off for older operating systems such as Windows 7 or lower.")
-                    Toggle("RNG Device", isOn: $config.hasRNGDevice)
+                    Toggle("RNG Device", isOn: $config.qemu.hasRNGDevice)
                         .help("Should be on always unless the guest cannot boot because of this.")
-                    Toggle("Balloon Device", isOn: $config.hasBalloonDevice)
+                    Toggle("Balloon Device", isOn: $config.qemu.hasBalloonDevice)
                         .help("Should be on always unless the guest cannot boot because of this.")
-                    Toggle("TPM 2.0 Device", isOn: $config.hasTPMDevice)
+                    Toggle("TPM 2.0 Device", isOn: $config.qemu.hasTPMDevice)
                         .help("TPM can be used to protect secrets in the guest operating system. Note that the host will always be able to read these secrets and therefore no expectation of physical security is provided.")
-                        .onChange(of: config.hasTPMDevice) { newValue in
+                        .onChange(of: config.qemu.hasTPMDevice) { newValue in
                             if newValue {
-                                config.isUefiVariableResetRequested = true
-                                config.hasPreloadedSecureBootKeys = true
+                                config.qemu.isUefiVariableResetRequested = true
+                                config.qemu.hasPreloadedSecureBootKeys = true
                             } else {
-                                config.hasPreloadedSecureBootKeys = false
+                                config.qemu.hasPreloadedSecureBootKeys = false
                             }
                         }
-                    Toggle("Use Hypervisor", isOn: $config.hasHypervisor)
+                    Toggle("Use Hypervisor", isOn: $config.qemu.hasHypervisor)
                         .help("Only available if host architecture matches the target. Otherwise, TCG emulation is used.")
-                        .disabled(!system.architecture.hasHypervisorSupport)
-                    if config.hasHypervisor {
-                        Toggle("Use TSO", isOn: $config.hasTSO)
+                        .disabled(!config.system.architecture.hasHypervisorSupport)
+                    if config.qemu.hasHypervisor {
+                        Toggle("Use TSO", isOn: $config.qemu.hasTSO)
                             .help("Only available when Hypervisor is used on supported hardware. TSO speeds up Intel emulation in the guest at the cost of decreased performance in general.")
-                            .disabled(!system.architecture.hasTSOSupport)
+                            .disabled(!config.system.architecture.hasTSOSupport)
                     }
-                    Toggle("Use local time for base clock", isOn: $config.hasRTCLocalTime)
+                    Toggle("Use local time for base clock", isOn: $config.qemu.hasRTCLocalTime)
                         .help("If checked, use local time for RTC which is required for Windows. Otherwise, use UTC clock.")
-                    Toggle("Force PS/2 controller", isOn: $config.hasPS2Controller)
+                    Toggle("Force PS/2 controller", isOn: $config.qemu.hasPS2Controller)
                         .disabled(!supportsPs2)
                         .help("Instantiate PS/2 controller even when USB input is supported. Required for older Windows.")
                 }
                 DetailedSection("Maintenance", description: "Options here only apply on next boot and are not saved.") {
-                    Toggle("Reset UEFI Variables", isOn: $config.isUefiVariableResetRequested)
+                    Toggle("Reset UEFI Variables", isOn: $config.qemu.isUefiVariableResetRequested)
                         .help("You can use this if your boot options are corrupted or if you wish to re-enroll in the default keys for secure boot.")
-                        .disabled(!config.hasUefiBoot)
-                    Toggle("Preload Secure Boot Keys", isOn: $config.hasPreloadedSecureBootKeys)
+                        .disabled(!config.qemu.hasUefiBoot)
+                    Toggle("Preload Secure Boot Keys", isOn: $config.qemu.hasPreloadedSecureBootKeys)
                         .help("Enable Secure Boot with Microsoft UEFI keys. This is required to Secure Boot Windows.")
-                        .disabled(!config.isUefiVariableResetRequested || !config.hasTPMDevice)
-                        .onChange(of: config.isUefiVariableResetRequested) { newValue in
+                        .disabled(!config.qemu.isUefiVariableResetRequested || !config.qemu.hasTPMDevice)
+                        .onChange(of: config.qemu.isUefiVariableResetRequested) { newValue in
                             if !newValue {
-                                config.hasPreloadedSecureBootKeys = false
+                                config.qemu.hasPreloadedSecureBootKeys = false
                             }
                         }
                 }
                 DetailedSection("QEMU Machine Properties", description: "This is appended to the -machine argument.") {
-                    DefaultTextField("", text: $config.machinePropertyOverride.bound, prompt: "Default")
+                    DefaultTextField("", text: $config.qemu.machinePropertyOverride.bound, prompt: "Default")
                 }
-                // macOS uses the new VMConfigQEMUArgumentsView
-                #if !os(macOS)
-                additionalArguments
+                #if os(macOS)
+                DetailedSection("Custom Arguments", description: "Custom arguments are for debugging only. Compatibility with future versions is not guaranteed.") {
+                    Toggle("Use Custom Arguments", isOn: $isCustomArgumentsEnabled)
+                        .onChange(of: isCustomArgumentsEnabled) { newValue in
+                            if !newValue {
+                                config.qemu.additionalArguments.removeAll()
+                            }
+                        }
+                }
+                #else
+                Section(footer: Text("Custom arguments are for debugging only. Compatibility with future versions is not guaranteed.")) {
+                    NavigationLink("Arguments") {
+                        VMConfigQEMUArgumentsView(config: config)
+                            .navigationTitle("Arguments")
+                    }
+                }
                 #endif
-            }.navigationBarItems(trailing: EditButton())
+            }
             .disableAutocorrection(true)
         }
     }
     
-    @ViewBuilder
-    var additionalArguments: some View {
-        Section(header: Text("QEMU Arguments")) {
-            let fixedArgs = fetchFixedArguments()
-            Button("Export QEMU Command…") {
-                showExportArgs.toggle()
-            }.modifier(VMShareItemModifier(isPresented: $showExportArgs, shareItem: exportArgs(fixedArgs)))
-            List {
-                ForEach(fixedArgs) { arg in
-                    Text(arg.string)
-                }.foregroundColor(.secondary)
-                CustomArguments(config: $config)
-                NewArgumentTextField(config: $config)
-            }
-        }
-    }
-    
     private func exportDebugLog() -> VMShareItemModifier.ShareItem? {
-        guard let srcLogPath = config.debugLogURL else {
+        guard let srcLogPath = config.qemu.debugLogURL else {
             return nil
         }
         return .debugLog(srcLogPath)
     }
-    
-    private func exportArgs(_ args: [QEMUArgument]) -> VMShareItemModifier.ShareItem {
-        var argString = "qemu-system-\(system.architecture.rawValue)"
-        for arg in args {
-            if arg.string.contains(" ") {
-                argString += " \"\(arg.string)\""
-            } else {
-                argString += " \(arg.string)"
-            }
-        }
-        for arg in config.additionalArguments {
-            argString += " \(arg.string)"
-        }
-        return .qemuCommand(argString)
-    }
-}
-
-struct CustomArguments: View {
-    @Binding var config: UTMQemuConfigurationQEMU
-    
-    var body: some View {
-        ForEach($config.additionalArguments) { $arg in
-            let i = config.additionalArguments.firstIndex(of: arg) ?? 0
-            HStack {
-                DefaultTextField("", text: $arg.string, prompt: "(Delete)", onEditingChanged: { editing in
-                    if !editing && arg.string == "" {
-                        DispatchQueue.main.async { // SwiftUI doesn't like removing in a ForEach binding
-                            config.additionalArguments.remove(at: i)
-                        }
-                    }
-                })
-                #if os(macOS)
-                Spacer()
-                if i != 0 {
-                    Button(action: {
-                        config.additionalArguments.move(fromOffsets: IndexSet(integer: i), toOffset: i-1)
-                    }, label: {
-                        Label("Move Up", systemImage: "arrow.up").labelStyle(.iconOnly)
-                    })
-                }
-                #endif
-            }
-        }.onDelete { offsets in
-            config.additionalArguments.remove(atOffsets: offsets)
-        }
-        .onMove { offsets, index in
-            config.additionalArguments.move(fromOffsets: offsets, toOffset: index)
-        }
-    }
-}
-
-struct NewArgumentTextField: View {
-    @Binding var config: UTMQemuConfigurationQEMU
-    @State private var newArg: String = ""
-    
-    var body: some View {
-        Group {
-            DefaultTextField("", text: $newArg, prompt: "New…", onEditingChanged: addArg)
-        }.onDisappear {
-            if newArg != "" {
-                addArg(editing: false)
-            }
-        }
-    }
-    
-    private func addArg(editing: Bool) {
-        guard !editing else {
-            return
-        }
-        if newArg != "" {
-            config.additionalArguments.append(QEMUArgument(newArg))
-        }
-        newArg = ""
-    }
 }
 
 struct VMConfigQEMUView_Previews: PreviewProvider {
-    @State static private var config = UTMQemuConfigurationQEMU()
-    @State static private var system = UTMQemuConfigurationSystem()
+    @State static private var config = UTMQemuConfiguration()
     
     static var previews: some View {
-        VMConfigQEMUView(config: $config, system: $system, fetchFixedArguments: { [] })
+        #if os(macOS)
+        VMConfigQEMUView(config: config, isCustomArgumentsEnabled: .constant(false))
             .frame(minHeight: 500)
+        #else
+        VMConfigQEMUView(config: config)
+            .frame(minHeight: 500)
+        #endif
     }
 }
