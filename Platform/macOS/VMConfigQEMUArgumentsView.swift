@@ -17,130 +17,128 @@
 import SwiftUI
 
 struct VMConfigQEMUArgumentsView: View {
+    @ObservedObject var config: UTMQemuConfiguration
+    @State private var selectedId: UUID?
+    @State private var isEditingNewArgument = false
+    @State private var editArgument: QEMUArgument?
+    
+    private var selectedIndex: Int? {
+        config.qemu.additionalArguments.firstIndex(where: { $0.id == selectedId })
+    }
+    
+    var body: some View {
+        // GeometryReader keeps the ideal size small so the sheet does not grow to fit the whole command line
+        GeometryReader { _ in
+            VStack(alignment: .leading) {
+                Table(config.qemu.additionalArguments, selection: $selectedId) {
+                    TableColumn("Custom Arguments") { argument in
+                        Text(argument.string)
+                            .font(.system(.body, design: .monospaced))
+                    }
+                }
+                .frame(height: 150)
+                HStack {
+                    Spacer()
+                    Button("Move Up") {
+                        move(by: -1)
+                    }.disabled(selectedIndex == nil || selectedIndex == 0)
+                    Button("Move Down") {
+                        move(by: 1)
+                    }.disabled(selectedIndex == nil || selectedIndex == config.qemu.additionalArguments.count - 1)
+                    Button("Delete") {
+                        if let index = selectedIndex {
+                            config.qemu.additionalArguments.remove(at: index)
+                            selectedId = nil
+                        }
+                    }.disabled(selectedIndex == nil)
+                    Button("Edit…", action: editSelected)
+                        .disabled(selectedIndex == nil)
+                        .popover(item: $editArgument, arrowEdge: .top) { argument in
+                            QEMUArgumentEdit(config: $config.qemu, argument: argument).padding()
+                                .frame(width: 400)
+                        }
+                    Button("New…") {
+                        isEditingNewArgument.toggle()
+                    }.popover(isPresented: $isEditingNewArgument, arrowEdge: .top) {
+                        QEMUArgumentEdit(config: $config.qemu, argument: QEMUArgument("")).padding()
+                            .frame(width: 400)
+                    }
+                }
+                VMConfigQEMUCommandLineView(config: config)
+            }.padding()
+        }
+    }
+    
+    private func editSelected() {
+        editArgument = config.qemu.additionalArguments.first(where: { $0.id == selectedId })
+    }
+    
+    private func move(by offset: Int) {
+        guard let index = selectedIndex else {
+            return
+        }
+        let destination = offset < 0 ? index - 1 : index + 2
+        config.qemu.additionalArguments.move(fromOffsets: IndexSet(integer: index), toOffset: destination)
+    }
+}
+
+struct QEMUArgumentEdit: View {
     @Binding var config: UTMQemuConfigurationQEMU
-    let architecture: QEMUArchitecture
-    let fixedArguments: [QEMUArgument]
+    @State var argument: QEMUArgument
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     
-    private let fixedUuids: Set<UUID>
-    @State private var selected: Set<UUID>
-    @State private var selectedArgument = QEMUArgument("")
-    @FocusState private var focused: UUID?
-    @State private var showExportArgs: Bool = false
-    
-    private var customUuids: Set<UUID> {
-        Set(config.additionalArguments.map({ $0.id }))
-    }
-    
-    private var exportShareItem: VMShareItemModifier.ShareItem {
-        var argString = "qemu-system-\(architecture.rawValue)"
-        for arg in fixedArguments {
-            if arg.string.contains(" ") {
-                argString += " \"\(arg.string)\""
-            } else {
-                argString += " \(arg.string)"
-            }
-        }
-        for arg in config.additionalArguments {
-            argString += " \(arg.string)"
-        }
-        return .qemuCommand(argString)
-    }
-    
-    init(config: Binding<UTMQemuConfigurationQEMU>, architecture: QEMUArchitecture, fixedArguments: [QEMUArgument]) {
-        self._config = config
-        self.architecture = architecture
-        self.fixedArguments = fixedArguments
-        self.fixedUuids = Set(fixedArguments.map({ $0.id }))
-        self._selected = State<Set<UUID>>(initialValue: .init())
+    private var index: Int? {
+        config.additionalArguments.firstIndex(where: { $0.id == argument.id })
     }
     
     var body: some View {
         VStack {
-            Table(of: QEMUArgument.self, selection: $selected) {
-                TableColumn("Arguments") { arg in
-                    let customSelected = selected.intersection(customUuids)
-                    if fixedUuids.contains(arg.id) || customSelected.count > 1 || !customSelected.contains(arg.id) {
-                        Text(arg.string)
-                            .foregroundColor(fixedUuids.contains(arg.id) ? .secondary : .primary)
-                            .textSelection(.enabled)
-                    } else {
-                        TextField("", text: $selectedArgument.string)
-                            .focused($focused, equals: arg.id)
-                            .onSubmit(of: .text) {
-                                if let index = config.additionalArguments.firstIndex(of: arg) {
-                                    config.additionalArguments[index] = selectedArgument
-                                }
-                            }
+            TextField("Argument", text: $argument.string, prompt: Text("-option value"))
+                .font(.system(.body, design: .monospaced))
+                .disableAutocorrection(true)
+                .onSubmit(save)
+            HStack {
+                Spacer()
+                if let index = index {
+                    Button("Delete") {
+                        config.additionalArguments.remove(at: index)
+                        closePopup()
                     }
                 }
-            } rows: {
-                ForEach(fixedArguments) { arg in
-                    TableRow(arg)
-                }
-                ForEach(config.additionalArguments) { arg in
-                    TableRow(arg)
-                }
-            }.onChange(of: selected) { newValue in
-                // save changes to last selected argument
-                if let index = config.additionalArguments.firstIndex(where: { $0.id == selectedArgument.id }) {
-                    config.additionalArguments[index] = selectedArgument
-                    selectedArgument = .init("")
-                }
-                // get new selected argument
-                if let selectedId = selected.intersection(customUuids).first {
-                    if let arg = config.additionalArguments.first(where: { $0.id == selectedId }) {
-                        selectedArgument = arg
-                    }
+                Button("Save", action: save)
+                    .disabled(argument.string.isEmpty)
+            }
+        }
+    }
+    
+    private func save() {
+        guard !argument.string.isEmpty else {
+            return
+        }
+        if let index = index {
+            config.additionalArguments[index] = argument
+        } else {
+            config.additionalArguments.append(argument)
+        }
+        closePopup()
+    }
+    
+    private func closePopup() {
+        presentationMode.wrappedValue.dismiss()
+    }
+}
+
+struct VMConfigQEMUArgumentsView_Previews: PreviewProvider {
+    @State static private var config = UTMQemuConfiguration()
+    
+    static var previews: some View {
+        VMConfigQEMUArgumentsView(config: config)
+            .frame(width: 600, height: 500)
+            .onAppear {
+                if config.qemu.additionalArguments.isEmpty {
+                    config.qemu.additionalArguments.append(QEMUArgument("-append"))
+                    config.qemu.additionalArguments.append(QEMUArgument("\"root=/dev/vda1 console=ttyS0\""))
                 }
             }
-            Spacer()
-            HStack {
-                Button {
-                    showExportArgs.toggle()
-                } label: {
-                    Text("Export QEMU Command…")
-                }.help("Export all arguments as a text file. This is only for debugging purposes as UTM's built-in QEMU differs from upstream QEMU in supported arguments.")
-                Spacer()
-                let customSelected = selected.intersection(customUuids)
-                if !customSelected.isEmpty {
-                    if customSelected.count > 1 || customSelected.first != config.additionalArguments.first?.id {
-                        Button {
-                            for i in 1..<config.additionalArguments.count {
-                                if customSelected.contains(config.additionalArguments[i].id) {
-                                    config.additionalArguments.move(fromOffsets: .init(integer: i), toOffset: i - 1)
-                                }
-                            }
-                        } label: {
-                            Text("Move Up")
-                        }
-                    }
-                    if customSelected.count > 1 || customSelected.first != config.additionalArguments.last?.id {
-                        Button {
-                            for i in (0..<config.additionalArguments.count-1).reversed() {
-                                if customSelected.contains(config.additionalArguments[i].id) {
-                                    config.additionalArguments.move(fromOffsets: .init(integer: i), toOffset: i + 2)
-                                }
-                            }
-                        } label: {
-                            Text("Move Down")
-                        }
-                    }
-                    Button(role: .destructive) {
-                        config.additionalArguments.removeAll(where: { customSelected.contains($0.id) })
-                    } label: {
-                        Text("Delete")
-                    }
-                }
-                Button {
-                    let new = QEMUArgument("")
-                    config.additionalArguments.append(new)
-                    selected.removeAll()
-                    selected.insert(new.id)
-                    focused = new.id
-                } label: {
-                    Text("New…")
-                }
-            }.padding([.bottom, .leading, .trailing])
-        }.modifier(VMShareItemModifier(isPresented: $showExportArgs, shareItem: exportShareItem))
     }
 }
