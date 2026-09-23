@@ -73,6 +73,27 @@ struct VMWindowState: Identifiable {
     var alert: Alert?
 
     var isDynamicResolutionSupported: Bool = false
+
+    // MARK: Toolbar
+
+    /// Only the show/hide button is visible.
+    ///
+    /// Read from the defaults once so the window keeps its own state while the choice persists.
+    var isToolbarCollapsed: Bool = UserDefaults.standard.bool(forKey: "ToolbarIsCollapsed")
+
+}
+
+// MARK: - Toolbar
+
+extension VMWindowState {
+    mutating func toggleToolbarCollapsed() {
+        setToolbarCollapsed(!isToolbarCollapsed)
+    }
+
+    mutating func setToolbarCollapsed(_ collapsed: Bool) {
+        isToolbarCollapsed = collapsed
+        UserDefaults.standard.set(collapsed, forKey: "ToolbarIsCollapsed")
+    }
 }
 
 // MARK: - VM action alerts
