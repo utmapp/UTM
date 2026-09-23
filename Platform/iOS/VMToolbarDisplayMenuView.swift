@@ -23,18 +23,22 @@ struct VMToolbarDisplayMenuView: View {
     #if os(visionOS)
     @Environment(\.supportsMultipleWindows) private var supportsMultipleWindows
     @Environment(\.openWindow) private var openWindow
-    #else
-    private var supportsMultipleWindows: Bool {
-        UIApplication.shared.supportsMultipleScenes
-    }
     #endif
+
+    /// Two views of one display would both request its resolution, so a window only offers what no
+    /// other window shows, and what it shows itself so that its selection is always in the list.
+    private func availableDevices(for windowID: VMSessionState.WindowID?, current: VMWindowState.Device?) -> [VMWindowState.Device] {
+        session.devices.filter { device in
+            device == current || !session.windowDeviceMap.contains { $0.key != windowID && $0.value == device }
+        }
+    }
 
     var body: some View {
         Menu {
             Menu {
                 Picker("", selection: $state.device) {
                     MenuLabel("None", systemImage: "rectangle.dashed").tag(nil as VMWindowState.Device?)
-                    ForEach(session.devices) { device in
+                    ForEach(availableDevices(for: state.id, current: state.device)) { device in
                         switch device {
                         case .serial(_, let index):
                             MenuLabel("Serial \(index): \(session.qemuConfig.serials[index].target.prettyValue)", systemImage: "rectangle.connected.to.line.below").tag(device as VMWindowState.Device?)
@@ -55,7 +59,7 @@ struct VMToolbarDisplayMenuView: View {
                     }
                     Picker("", selection: $externalDevice) {
                         MenuLabel("None", systemImage: "rectangle.dashed").tag(nil as VMWindowState.Device?)
-                        ForEach(session.devices) { device in
+                        ForEach(availableDevices(for: externalWindowBinding.wrappedValue.id, current: externalWindowBinding.wrappedValue.device)) { device in
                             switch device {
                             case .serial(_, let index):
                                 MenuLabel("Serial \(index): \(session.qemuConfig.serials[index].target.prettyValue)", systemImage: "rectangle.connected.to.line.below").tag(device as VMWindowState.Device?)
@@ -68,19 +72,29 @@ struct VMToolbarDisplayMenuView: View {
                     MenuLabel("External Monitor", systemImage: "rectangle.on.rectangle")
                 }
             }
+            #if os(visionOS)
             if supportsMultipleWindows {
                 Divider()
                 Button {
-                    #if os(visionOS)
                     openWindow(value: session.newWindow())
-                    #else
-                    UIApplication.shared.requestSceneSessionActivation(nil, userActivity: nil, options: nil, errorHandler: nil)
-                    #endif
                 } label: {
-                    MenuLabel("New Window…", systemImage: "plus.rectangle.on.rectangle")
+                    NewWindowLabel()
                 }
             }
-
+            #else
+            if #available(iOS 16, *) {
+                NewWindowMenuItem()
+            } else if UIApplication.shared.supportsMultipleScenes {
+                Divider()
+                Button {
+                    UIApplication.shared.requestSceneSessionActivation(nil, userActivity: nil, options: nil) { error in
+                        state.alert = .nonfatalError(error.localizedDescription)
+                    }
+                } label: {
+                    NewWindowLabel()
+                }
+            }
+            #endif
         } label: {
             Label("Display", systemImage: "rectangle.on.rectangle")
         }.overlay(Badge(count: session.devices.count), alignment: .topTrailing)
@@ -89,6 +103,35 @@ struct VMToolbarDisplayMenuView: View {
         }
     }
 }
+
+private struct NewWindowLabel: View {
+    var body: some View {
+        MenuLabel("New Window…", systemImage: "plus.rectangle.on.rectangle")
+    }
+}
+
+#if !os(visionOS)
+/// Opens another scene through SwiftUI, which also knows when the system will not allow one.
+///
+/// `UIApplication.supportsMultipleScenes` stays true on iPhone Duo even though new scenes can
+/// only be created on the inner display, so the item hides itself from the environment instead.
+@available(iOS 16, *)
+private struct NewWindowMenuItem: View {
+    @Environment(\.supportsMultipleWindows) private var supportsMultipleWindows
+    @Environment(\.openWindow) private var openWindow
+
+    var body: some View {
+        if supportsMultipleWindows {
+            Divider()
+            Button {
+                openWindow(id: UTMApp.windowID)
+            } label: {
+                NewWindowLabel()
+            }
+        }
+    }
+}
+#endif
 
 private struct Badge: View {
     let count: Int
