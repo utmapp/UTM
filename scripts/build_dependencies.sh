@@ -919,80 +919,15 @@ build_d3d_drivers () {
     fi
 }
 
-fixup_imports() {
-    _file=$1
-    _list=$(otool -L "$_file" | tail -n +2 | cut -d ' ' -f 1 | awk '{$1=$1};1')
-    for g in $_list
-    do
-        base=$(basename "$g")
-        basefilename=${base%.*}
-        libname=${basefilename#lib*}
-        dir=$(dirname "$g")
-        if [ "$dir" == "$PREFIX/lib" ] || [ "$dir" == "@rpath" ]; then
-            if [ "$PLATFORM" == "macos" ]; then
-                newname="@rpath/$libname.framework/Versions/A/$libname"
-            else
-                newname="@rpath/$libname.framework/$libname"
-            fi
-            install_name_tool -change "$g" "$newname" "$_file"
-        fi
-    done
-}
-
-fixup_dylib () {
-    FILE=$1
-    BASE=$(basename "$FILE")
-    BASEFILENAME=${BASE%.*}
-    LIBNAME=${BASEFILENAME#lib*}
-    BUNDLE_ID="com.utmapp.${LIBNAME//_/-}"
-    FRAMEWORKNAME="$LIBNAME.framework"
-    BASEFRAMEWORKPATH="$PREFIX/Frameworks/$FRAMEWORKNAME"
-    if [ "$PLATFORM" == "macos" ]; then
-        FRAMEWORKPATH="$BASEFRAMEWORKPATH/Versions/A"
-        INFOPATH="$FRAMEWORKPATH/Resources"
-    else
-        FRAMEWORKPATH="$BASEFRAMEWORKPATH"
-        INFOPATH="$FRAMEWORKPATH"
-    fi
-    NEWFILE="$FRAMEWORKPATH/$LIBNAME"
-    OLDIFS=$IFS
-    IFS=$'\n'
-    mkdir -p "$FRAMEWORKPATH"
-    mkdir -p "$INFOPATH"
-    cp -a "$FILE" "$NEWFILE"
-    MINOSVER=$(vtool -show-build-version "$FILE" 2>/dev/null | awk '/minos/ {print $2; exit}')
-    [ -n "$MINOSVER" ] || MINOSVER="$SDKMINVER"
-    /usr/libexec/PlistBuddy -c "Add :CFBundleExecutable string $LIBNAME" "$INFOPATH/Info.plist" || true
-    /usr/libexec/PlistBuddy -c "Add :CFBundleIdentifier string $BUNDLE_ID" "$INFOPATH/Info.plist" || true
-    /usr/libexec/PlistBuddy -c "Add :MinimumOSVersion string $MINOSVER" "$INFOPATH/Info.plist" || true
-    /usr/libexec/PlistBuddy -c "Add :CFBundleVersion string 1" "$INFOPATH/Info.plist" || true
-    /usr/libexec/PlistBuddy -c "Add :CFBundleShortVersionString string 1.0" "$INFOPATH/Info.plist" || true
-    if [ "$PLATFORM" == "macos" ]; then
-        ln -sf "A" "$BASEFRAMEWORKPATH/Versions/Current"
-        ln -sf "Versions/Current/Resources" "$BASEFRAMEWORKPATH/Resources"
-        ln -sf "Versions/Current/$LIBNAME" "$BASEFRAMEWORKPATH/$LIBNAME"
-    fi
-    newname="@rpath/$FRAMEWORKNAME/$LIBNAME"
-    install_name_tool -id "$newname" "$NEWFILE"
-    fixup_imports "$NEWFILE"
-    IFS=$OLDIFS
-}
-
 fixup_all () {
     OLDIFS=$IFS
     IFS=$'\n'
     FILES=$(find "$SYSROOT_DIR/lib" -type f -maxdepth 1 -name "*.dylib")
-    for f in $FILES
-    do
-        echo "${GREEN}Fixing up $f...${NC}"
-        fixup_dylib $f
-    done
+    "$BASEDIR/fixup.sh" -p "$PLATFORM" -s "$PREFIX" -m "$SDKMINVER" $FILES
     FILES=$(find "$SYSROOT_DIR/libexec" -type f -maxdepth 1 -perm +111)
-    for f in $FILES
-    do
-        echo "${GREEN}Fixing up $f...${NC}"
-        fixup_imports $f
-    done
+    if [ -n "$FILES" ]; then
+        "$BASEDIR/fixup.sh" -p "$PLATFORM" -s "$PREFIX" -i $FILES
+    fi
     IFS=$OLDIFS
 }
 
