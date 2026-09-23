@@ -24,7 +24,7 @@ on:
 
 env:
   BUILD_XCODE_PATH: ${{ vars.HOST_XCODE_PATH || '/Applications/Xcode.app' }}
-  RUNNER_IMAGE: macos-15
+  RUNNER_IMAGE: ${{ vars.RUNNER_IMAGE || 'macos-26' }}
   SEGMENT_DOWNLOAD_TIMEOUT_MINS: 60
 
 jobs:
