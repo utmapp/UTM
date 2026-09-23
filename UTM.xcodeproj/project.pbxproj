@@ -268,6 +268,7 @@
 		84C584E1268E95B3000FCABF /* UTMLegacyAppleConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C584DE268E95B3000FCABF /* UTMLegacyAppleConfiguration.swift */; };
 		84C584E3268F8AE7000FCABF /* VMQEMUSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C584E2268F8AE7000FCABF /* VMQEMUSettingsView.swift */; };
 		84C584E5268F8C65000FCABF /* VMAppleSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C584E4268F8C65000FCABF /* VMAppleSettingsView.swift */; };
+		CE7B3A112EA1B00000C0FFEE /* MultilineTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7B3A102EA1B00000C0FFEE /* MultilineTextField.swift */; };
 		84C584EB268FA6D1000FCABF /* VMConfigAppleSystemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C584EA268FA6D1000FCABF /* VMConfigAppleSystemView.swift */; };
 		84C60FB72681A41B00B58C00 /* VMToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C60FB62681A41B00B58C00 /* VMToolbarView.swift */; platformFilter = ios; };
 		84C60FB82681A41B00B58C00 /* VMToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C60FB62681A41B00B58C00 /* VMToolbarView.swift */; platformFilter = ios; };
@@ -1866,6 +1867,7 @@
 		84C584DE268E95B3000FCABF /* UTMLegacyAppleConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMLegacyAppleConfiguration.swift; sourceTree = "<group>"; };
 		84C584E2268F8AE7000FCABF /* VMQEMUSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMQEMUSettingsView.swift; sourceTree = "<group>"; };
 		84C584E4268F8C65000FCABF /* VMAppleSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMAppleSettingsView.swift; sourceTree = "<group>"; };
+		CE7B3A102EA1B00000C0FFEE /* MultilineTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultilineTextField.swift; sourceTree = "<group>"; };
 		84C584EA268FA6D1000FCABF /* VMConfigAppleSystemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigAppleSystemView.swift; sourceTree = "<group>"; };
 		84C60FB62681A41B00B58C00 /* VMToolbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMToolbarView.swift; sourceTree = "<group>"; };
 		84C60FB9268269D700B58C00 /* VMDisplayViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDisplayViewController.swift; sourceTree = "<group>"; };
@@ -2846,6 +2848,7 @@
 				84A381A9268CB30C0048EE4D /* VMDrivesSettingsView.swift */,
 				CE928C3026ACCDEA0099F293 /* VMAppleRemovableDrivesView.swift */,
 				84C584E4268F8C65000FCABF /* VMAppleSettingsView.swift */,
+				CE7B3A102EA1B00000C0FFEE /* MultilineTextField.swift */,
 				845F1706289B5E2600944904 /* VMAppleSettingsAddDeviceMenuView.swift */,
 				846F8D572E3850620037162B /* VMKeyboardShortcutsView.swift */,
 				84C584E2268F8AE7000FCABF /* VMQEMUSettingsView.swift */,
@@ -4136,6 +4139,7 @@
 				CE25125129C806AF000790AB /* UTMScriptingDeleteCommand.swift in Sources */,
 				CE0B6CFB24AD568400FE012D /* UTMLegacyQemuConfiguration+Networking.m in Sources */,
 				84C584E5268F8C65000FCABF /* VMAppleSettingsView.swift in Sources */,
+				CE7B3A112EA1B00000C0FFEE /* MultilineTextField.swift in Sources */,
 				CE9B15442B11A74E003A32DD /* UTMRemoteKeyManager.swift in Sources */,
 				84F746BB276FF70700A20C87 /* VMDisplayQemuDisplayController.swift in Sources */,
 				CE772AB425C8B7B500E4E379 /* VMCommands.swift in Sources */,
