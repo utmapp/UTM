@@ -131,7 +131,7 @@ static const NSInteger kResizeTimeoutSecs = 5;
         self.mtkView.preferredFramesPerSecond = [self integerForSetting:@"QEMURendererFPSLimit"];
     }
 #if !TARGET_OS_VISION
-    else if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+    else if (self.traitCollection.userInterfaceIdiom == UIUserInterfaceIdiomPad) {
         // only apply ProMotion by default on iPad which has a larger battery
         // on iPhone, we depend on the user manually setting the FPS limit to 120
         NSInteger maxFps = self.view.window.screen.maximumFramesPerSecond;
