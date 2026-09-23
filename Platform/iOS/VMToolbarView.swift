@@ -174,7 +174,11 @@ struct VMToolbarView: View {
                 guard !isKeyShortcutsShown else {
                     return
                 }
-                state.isKeyboardRequested = !state.isKeyboardShown
+                if state.inputDeckFrame != nil {
+                    state.cycleInputDeck()
+                } else {
+                    state.isKeyboardRequested = !state.isKeyboardShown
+                }
             } label: {
                 Label("Keyboard", systemImage: "keyboard")
             }.animationUniqueID("keyboard", in: namespace)
@@ -290,6 +294,7 @@ struct VMToolbarView: View {
                             body(geometry, layout)
                         }.padding(.trailing)
                     }.padding(.bottom)
+                    .padding(.bottom, bottomInset(for: geometry))
                 case .corner(.topLeft):
                     VStack(alignment: .leading) {
                         HStack(alignment: .top, spacing: spacing) {
@@ -306,12 +311,22 @@ struct VMToolbarView: View {
                             Spacer()
                         }.padding(.leading)
                     }.padding(.bottom)
+                    .padding(.bottom, bottomInset(for: geometry))
                 }
             }
             .background(verticalBarRegionReader(for: layout))
         }.coordinateSpace(name: "Window")
     }
     
+    /// Keeps a bottom corner above the input deck.
+    ///
+    /// The padding is applied inside the reader so that it does not become a minimum height of the
+    /// window: SwiftUI measures the window against the part above the keyboard, and a window that
+    /// does not fit there is centred over it.
+    private func bottomInset(for geometry: GeometryProxy) -> CGFloat {
+        state.toolbarBottomInset(toolbarBottom: geometry.frame(in: .global).maxY)
+    }
+
     /// Reads the region from the window, since the strip lies outside the safe area the toolbar is laid out in.
     @ViewBuilder
     private func verticalBarRegionReader(for layout: Layout) -> some View {

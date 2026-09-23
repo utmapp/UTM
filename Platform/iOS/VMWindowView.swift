@@ -101,6 +101,7 @@ struct VMWindowView: View {
                         .clearOfReservedDivisions()
                 }
             }.background(Color.black)
+            .modifier(InputDeckModifier(state: $state))
             .ignoresSafeArea()
             #if !os(visionOS)
             if isInteractive && state.isRunning {
@@ -187,7 +188,12 @@ struct VMWindowView: View {
         .onChange(of: session.isDynamicResolutionSupported) { newValue in
             state.isDynamicResolutionSupported = newValue
         }
-        .onReceive(keyboardDidShowNotification) { _ in
+        .onReceive(keyboardDidShowNotification) { notification in
+            // a keyboard placed off the screen, which the system does while moving it between the
+            // panels of a folding device, is not one the user can type on
+            guard notification.isKeyboardOnScreen else {
+                return
+            }
             state.isKeyboardShown = true
             state.isKeyboardRequested = true
         }
@@ -306,11 +312,120 @@ private struct HeadlessView: View {
 
 // MARK: - Folding devices
 
+/// Gives the bottom half of a device folded like a laptop to the keyboard or touchpad.
+///
+/// The trigger is the fold itself, reported as an active horizontal division, since Apple keeps the
+/// hinge angle for effects and the reserved regions for layout.
+private struct InputDeckModifier: ViewModifier {
+    @Binding var state: VMWindowState
+    @State private var hingeGeneration = 0
+    @State private var hingeSettling = HingeSettling()
+    @State private var keyboardRequest = DeferredWork()
+
+    private func requestDeckKeyboard() {
+        keyboardRequest.schedule(after: [0.8, 2.5]) {
+            if state.wantsDeckKeyboard {
+                state.isKeyboardRequested = true
+            }
+        }
+    }
+
+    func body(content: Content) -> some View {
+        #if !os(visionOS) && canImport(SwiftUI, _version: 8.0.85)
+        if #available(iOS 27.1, *) {
+            content.background(GeometryReader { proxy in
+                let deck = proxy.inputDeck(hingeGeneration: hingeGeneration)
+                Color.clear
+                    .onAppear {
+                        state.setInputDeck(deck)
+                        requestDeckKeyboard()
+                    }
+                    .onChange(of: deck) { oldValue, newValue in
+                        state.setInputDeck(newValue)
+                        // only a fresh fold asks for the keyboard, so that one the user dismissed stays away
+                        if oldValue == nil && newValue != nil {
+                            requestDeckKeyboard()
+                        }
+                    }
+                    .onChange(of: state.isKeyboardShown) { _, isShown in
+                        // once the keyboard has shown, dismissing it is the user's choice
+                        if isShown {
+                            keyboardRequest.cancel()
+                        }
+                    }
+            })
+            .environment(\.hingeGeneration, hingeGeneration)
+            .onHingeChange { _, _ in
+                hingeSettling.refresh($hingeGeneration)
+            }
+        } else {
+            content
+        }
+        #else
+        content
+        #endif
+    }
+}
+
+/// Work scheduled for later that can still be called off.
+private final class DeferredWork {
+    private var pending: [DispatchWorkItem] = []
+
+    func schedule(after delays: [TimeInterval], _ work: @escaping () -> Void) {
+        cancel()
+        pending = delays.map { delay in
+            let item = DispatchWorkItem(block: work)
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: item)
+            return item
+        }
+    }
+
+    func cancel() {
+        pending.forEach { $0.cancel() }
+        pending = []
+    }
+}
+
+/// Re-evaluates the region readers after a hinge change.
+///
+/// A fold becoming active does not change the window's size, and it becomes active a moment
+/// after the last hinge event, so the readers are asked again a few times after the hinge stops.
+/// The window's input deck owns the timers and passes the count down to the other readers.
+private final class HingeSettling {
+    private static let delays: [TimeInterval] = [0, 0.5, 1.5, 3]
+    private var pending: [DispatchWorkItem] = []
+
+    func refresh(_ generation: Binding<Int>) {
+        pending.forEach { $0.cancel() }
+        pending = Self.delays.map { delay in
+            let item = DispatchWorkItem {
+                generation.wrappedValue += 1
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: item)
+            return item
+        }
+    }
+}
+
 #if !os(visionOS) && canImport(SwiftUI, _version: 8.0.85)
 @available(iOS 27.1, *)
 extension GeometryProxy {
+    /// The part below a horizontal fold, where a device folded like a laptop lies flat.
+    ///
+    /// The readers pass a value that changes as the hinge settles so they are evaluated again.
+    func inputDeck(hingeGeneration: Int) -> VMWindowState.InputDeckLayout? {
+        let fold = reservedRegions(kind: .division).first { $0.isActive && $0.frame.width > $0.frame.height }
+        guard let fold = fold else {
+            return nil
+        }
+        // layout passes differ in the last bits, which must not read as a new deck every time
+        let foldFrame = fold.frame.roundedToQuarterPoints
+        let frame = CGRect(x: 0, y: foldFrame.maxY, width: size.width, height: max(0, size.height - foldFrame.maxY)).roundedToQuarterPoints
+        return VMWindowState.InputDeckLayout(frame: frame, fold: foldFrame)
+    }
+
     /// The largest part of the view that no active fold runs through, or all of it.
-    var frameClearOfDivisions: CGRect {
+    func frameClearOfDivisions(hingeGeneration: Int) -> CGRect {
         var frame = CGRect(origin: .zero, size: size)
         for region in reservedRegions(kind: .division) where region.isActive {
             let division = region.frame
@@ -327,6 +442,13 @@ extension GeometryProxy {
 }
 
 private extension CGRect {
+    var roundedToQuarterPoints: CGRect {
+        func round(_ value: CGFloat) -> CGFloat {
+            (value * 4).rounded() / 4
+        }
+        return CGRect(x: round(minX), y: round(minY), width: round(width), height: round(height))
+    }
+
     /// The rectangle cut down to the given edges, empty when nothing is left.
     func part(minX: CGFloat? = nil, minY: CGFloat? = nil, maxX: CGFloat? = nil, maxY: CGFloat? = nil) -> CGRect {
         let left = max(self.minX, minX ?? self.minX)
@@ -338,27 +460,46 @@ private extension CGRect {
 }
 #endif
 
-private extension View {
-    /// Keeps centred interactive content out of the fold of a partially folded device.
-    ///
-    /// Alerts, menus and sheets move out of the fold by themselves; a control centred in the
-    /// window does not.
-    @ViewBuilder
-    func clearOfReservedDivisions() -> some View {
+/// Keeps centred interactive content out of the fold of a partially folded device.
+///
+/// Alerts, menus and sheets move out of the fold by themselves; a control centred in the
+/// window does not.
+private struct ClearOfReservedDivisionsModifier: ViewModifier {
+    @Environment(\.hingeGeneration) private var hingeGeneration
+
+    func body(content: Content) -> some View {
         #if !os(visionOS) && canImport(SwiftUI, _version: 8.0.85)
         if #available(iOS 27.1, *) {
             GeometryReader { proxy in
-                let frame = proxy.frameClearOfDivisions
-                self
+                let frame = proxy.frameClearOfDivisions(hingeGeneration: hingeGeneration)
+                content
                     .frame(width: frame.width, height: frame.height)
                     .offset(x: frame.minX, y: frame.minY)
             }
         } else {
-            self
+            content
         }
         #else
-        self
+        content
         #endif
+    }
+}
+
+private struct HingeGenerationKey: EnvironmentKey {
+    static let defaultValue = 0
+}
+
+private extension EnvironmentValues {
+    /// Changes while the hinge of a folding device settles, so that readers of reserved regions are evaluated again.
+    var hingeGeneration: Int {
+        get { self[HingeGenerationKey.self] }
+        set { self[HingeGenerationKey.self] = newValue }
+    }
+}
+
+private extension View {
+    func clearOfReservedDivisions() -> some View {
+        modifier(ClearOfReservedDivisionsModifier())
     }
 }
 
@@ -368,6 +509,27 @@ fileprivate struct VMToolbarOrnamentModifier: ViewModifier {
     @Binding var state: VMWindowState
     func body(content: Content) -> some View {
         content
+    }
+}
+#endif
+
+#if !os(visionOS)
+private extension Notification {
+    /// Whether the keyboard in a keyboard notification ends up on the screen it was posted for.
+    var isKeyboardOnScreen: Bool {
+        guard let frame = userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else {
+            return true
+        }
+        guard let screen = object as? UIScreen else {
+            return true
+        }
+        return frame.intersection(screen.bounds).height > 0
+    }
+}
+#else
+private extension Notification {
+    var isKeyboardOnScreen: Bool {
+        true
     }
 }
 #endif

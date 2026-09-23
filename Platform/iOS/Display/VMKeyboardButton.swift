@@ -154,7 +154,7 @@ import UIKit
     }
 }
 
-private extension UIColor {
+extension UIColor {
     convenience init(light: UIColor, dark: UIColor) {
         self.init { $0.userInterfaceStyle == .dark ? dark : light }
     }
