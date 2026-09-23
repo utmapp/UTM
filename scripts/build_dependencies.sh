@@ -870,7 +870,7 @@ build_mesa_host () {
 
     HOST_PATH="$(brew --prefix llvm)/bin:$CLEAN_PATH"
     env -i PATH="$HOST_PATH" meson host_build --prefix="$PREFIX/host" --buildtype=release \
-        -Dllvm=enabled -Dstrip=true -Dopengl=false -Dgallium-drivers= -Dvulkan-drivers= -Dmesa-clc=enabled -Dinstall-mesa-clc=true
+        -Dllvm=enabled -Dstrip=true -Dopengl=false -Dgallium-drivers= -Dvulkan-drivers=kosmickrisp -Dplatforms=macos -Dmesa-clc=enabled -Dinstall-mesa-clc=true -Dprecomp-compiler=enabled -Dinstall-precomp-compiler=true
     env -i PATH="$HOST_PATH" meson compile -C host_build -j $NCPU
     env -i PATH="$HOST_PATH" meson install -C host_build
 
@@ -880,7 +880,7 @@ build_mesa_host () {
 build_vulkan_drivers () {
     mkdir -p "$PREFIX/share/vulkan/icd.d"
     build_mesa_host
-    meson_darwin_build $MESA_REPO -Dmesa-clc=system -Dgallium-drivers= -Dvulkan-drivers=kosmickrisp -Dplatforms=macos
+    meson_darwin_build $MESA_REPO -Dmesa-clc=system -Dprecomp-compiler=system -Dgallium-drivers= -Dvulkan-drivers=kosmickrisp -Dplatforms=macos
     patch_vulkan_icd "$PREFIX/share/vulkan/icd.d/kosmickrisp_mesa_icd.$ARCH.json"
     mv "$PREFIX/share/vulkan/icd.d/kosmickrisp_mesa_icd.$ARCH.json" "$PREFIX/share/vulkan/icd.d/kosmickrisp_mesa_icd.json"
     build_moltenvk

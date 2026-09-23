@@ -239,7 +239,7 @@ extension UTMQemuVirtualMachine {
             let rawValue = UserDefaults.standard.integer(forKey: "QEMUVulkanDriver")
             let driver = UTMQEMUVulkanDriver(rawValue: rawValue) ?? .qemuVulkanDriverDefault
             if driver == .qemuVulkanDriverKosmicKrisp {
-                if #unavailable(iOS 18, macOS 15, tvOS 18, visionOS 2) {
+                if #unavailable(iOS 26, macOS 26, tvOS 26, visionOS 26) {
                     throw UTMQemuVirtualMachineError.vulkanVersionNotSupported
                 }
             }
