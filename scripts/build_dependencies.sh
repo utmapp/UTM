@@ -879,10 +879,18 @@ build_mesa_host () {
 
 build_vulkan_drivers () {
     mkdir -p "$PREFIX/share/vulkan/icd.d"
-    build_mesa_host
-    meson_darwin_build $MESA_REPO -Dmesa-clc=system -Dprecomp-compiler=system -Dgallium-drivers= -Dvulkan-drivers=kosmickrisp -Dplatforms=macos
-    patch_vulkan_icd "$PREFIX/share/vulkan/icd.d/kosmickrisp_mesa_icd.$ARCH.json"
-    mv "$PREFIX/share/vulkan/icd.d/kosmickrisp_mesa_icd.$ARCH.json" "$PREFIX/share/vulkan/icd.d/kosmickrisp_mesa_icd.json"
+    case $PLATFORM in
+    *simulator* )
+        # KosmicKrisp requires Metal 4 which the simulator SDKs do not provide
+        $CC -dynamiclib -x c /dev/null -o "$PREFIX/lib/libvulkan_kosmickrisp.dylib"
+        ;;
+    * )
+        build_mesa_host
+        meson_darwin_build $MESA_REPO -Dmesa-clc=system -Dprecomp-compiler=system -Dgallium-drivers= -Dvulkan-drivers=kosmickrisp -Dplatforms=macos
+        patch_vulkan_icd "$PREFIX/share/vulkan/icd.d/kosmickrisp_mesa_icd.$ARCH.json"
+        mv "$PREFIX/share/vulkan/icd.d/kosmickrisp_mesa_icd.$ARCH.json" "$PREFIX/share/vulkan/icd.d/kosmickrisp_mesa_icd.json"
+        ;;
+    esac
     build_moltenvk
     patch_vulkan_icd "$PREFIX/share/vulkan/icd.d/MoltenVK_icd.json"
 }
