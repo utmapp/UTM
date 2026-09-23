@@ -47,6 +47,10 @@ On macOS, spawning new processes is permitted but due to App Sandbox security re
 
 The XPC helper spawns `QEMULauncher` with an inherited sandbox. This means it can access files that are accessible to the helper XPC. The launcher process is what runs QEMU. When a new file is opened (for example a new disk image is mounted), the main application will pass a bookmark to the helper XPC where it will call `-startAccessingSecurityScopedResource` which also applies to the child process (`QEMULauncher`). This way, QEMU does not have to have any knowledge of the App Sandbox.
 
+#### iOS Helper
+
+On iOS 26 and later, tools such as `qemu-img` run out of process in `iOSHelper`, an ExtensionKit extension embedded in the app (`iOSHelper-SE` for UTM SE, as an extension's bundle identifier must start with its host's). It implements the same `QEMUHelperProtocol` as `QEMUHelper`, but loads the tool into its own process like the in-thread QEMU does, so each helper process runs one tool and the app launches a new one for the next. `UTMHelperProcess` launches the helper through `AppExtensionProcess` and hands its connection to `UTMProcess`, which otherwise works as on macOS: the helper has no access to the app's container, so files are passed as bookmarks, whose implicit security scope lets the process that resolves them access the file. QEMU itself still runs in the app process on iOS.
+
 ### UTMConfiguration
 
 VM configuration is stored in a PLIST format. This PLIST maps to either a `UTMQemuConfiguration` or `UTMAppleConfiguration` structure which stores the underlying configuration data in a `Codable` interface for easy serialization.

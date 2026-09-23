@@ -40,14 +40,15 @@ enum UTMSnapshotService {
 
     /// Snapshots can be managed for this VM, whether it is running or not
     static func isSupported(for vm: any UTMVirtualMachine) -> Bool {
-        #if os(macOS)
         if vm is UTMQemuVirtualMachine {
-            return true
-        } else if #available(macOS 27, *), vm is UTMAppleVirtualMachine {
+            // qemu-img is needed for a VM that is not running
+            return UTMQemuImage.isSupported
+        }
+        #if os(macOS)
+        if #available(macOS 27, *), vm is UTMAppleVirtualMachine {
             return true
         }
         #endif
-        // qemu-img is needed for a VM that is not running and is only part of the macOS app
         return false
     }
 

@@ -31,6 +31,7 @@
 #if !defined(WITH_REMOTE)
 #include "UTMProcess.h"
 #include "UTMQemuSystem.h"
+#include "QEMUHelperProtocol.h"
 #include "UTMJailbreak.h"
 #else
 #include "UTMQemuSystemBackends.h"

@@ -23,13 +23,11 @@ struct VMConfigDriveDetailsView: View {
     private enum ConfirmItem: Identifiable {
         case reclaim(URL)
         case compress(URL)
-        case resize(URL)
         
         var id: Int {
             switch self {
             case .reclaim(_): return 1
             case .compress(_): return 2
-            case .resize(_): return 3
             }
         }
     }
@@ -41,7 +39,6 @@ struct VMConfigDriveDetailsView: View {
     
     @State private var confirmAlert: ConfirmItem?
     @State private var isResizePopoverShown: Bool = false
-    @State private var proposedSizeMib: Int = 0
     
     var body: some View {
         Form {
@@ -103,50 +100,58 @@ struct VMConfigDriveDetailsView: View {
                 DefaultTextField("Size", text: .constant(ByteCountFormatter.string(fromByteCount: Int64(config.sizeMib) * bytesInMib, countStyle: .binary))).disabled(true)
             }
             
-            #if os(macOS)
-            HStack {
-                if let imageUrl = config.imageURL, FileManager.default.fileExists(atPath: imageUrl.path) {
-                    Button {
-                        confirmAlert = .reclaim(imageUrl)
-                    } label: {
-                        Label("Reclaim Space", systemImage: "arrow.3.trianglepath")
-                    }.help("Reclaim disk space by re-converting the disk image.")
-                    
-                    Button {
-                        confirmAlert = .compress(imageUrl)
-                    } label: {
-                        Label("Compress", systemImage: "arrowtriangle.right.and.line.vertical.and.arrowtriangle.left")
-                    }.help("Compress by re-converting the disk image and compressing the data.")
-                    
-                    Button {
-                        isResizePopoverShown.toggle()
-                    } label: {
-                        Label("Resize…", systemImage: "arrowtriangle.left.and.line.vertical.and.arrowtriangle.right")
-                    }.help("Increase the size of the disk image.")
-                    .popover(isPresented: $isResizePopoverShown) {
-                        ResizePopoverView(imageURL: imageUrl, proposedSizeMib: $proposedSizeMib) {
-                            confirmAlert = .resize(imageUrl)
-                        }.padding()
-                        .frame(minHeight: 100)
-                    }
+            #if !WITH_REMOTE
+            if UTMQemuImage.isSupported, let imageUrl = config.imageURL, FileManager.default.fileExists(atPath: imageUrl.path) {
+                #if os(macOS)
+                HStack {
+                    imageTools(for: imageUrl)
                 }
-            }.alert(item: $confirmAlert) { item in
-                switch item {
-                case .reclaim(let imageURL):
-                    return Alert(title: Text("Would you like to re-convert this disk image to reclaim unused space? Note this will require enough temporary space to perform the conversion. You are strongly encouraged to back-up this VM before proceeding."), primaryButton: .destructive(Text("Reclaim")) { reclaimSpace(for: imageURL, withCompression: false) }, secondaryButton: .cancel())
-                case .compress(let imageURL):
-                    return Alert(title: Text("Would you like to re-convert this disk image to reclaim unused space and apply compression? Note this will require enough temporary space to perform the conversion. Compression only applies to existing data and new data will still be written uncompressed. You are strongly encouraged to back-up this VM before proceeding."), primaryButton: .destructive(Text("Reclaim")) { reclaimSpace(for: imageURL, withCompression: true) }, secondaryButton: .cancel())
-                case .resize(let imageURL):
-                    return Alert(title: Text("Resizing is experimental and could result in data loss. You are strongly encouraged to back-up this VM before proceeding. Would you like to resize to \(proposedSizeMib / mibInGib) GiB?"), primaryButton: .destructive(Text("Resize")) {
-                        resizeDrive(for: imageURL, sizeInMib: proposedSizeMib)
-                    }, secondaryButton: .cancel())
-                }
+                #else
+                imageTools(for: imageUrl)
+                #endif
             }
             #endif
         }
+        #if !WITH_REMOTE
+        .alert(item: $confirmAlert) { item in
+            switch item {
+            case .reclaim(let imageURL):
+                return Alert(title: Text("Would you like to re-convert this disk image to reclaim unused space? Note this will require enough temporary space to perform the conversion. You are strongly encouraged to back-up this VM before proceeding."), primaryButton: .destructive(Text("Reclaim")) { reclaimSpace(for: imageURL, withCompression: false) }, secondaryButton: .cancel())
+            case .compress(let imageURL):
+                return Alert(title: Text("Would you like to re-convert this disk image to reclaim unused space and apply compression? Note this will require enough temporary space to perform the conversion. Compression only applies to existing data and new data will still be written uncompressed. You are strongly encouraged to back-up this VM before proceeding."), primaryButton: .destructive(Text("Reclaim")) { reclaimSpace(for: imageURL, withCompression: true) }, secondaryButton: .cancel())
+            }
+        }
+        #endif
     }
     
-    #if os(macOS)
+    #if !WITH_REMOTE
+    @ViewBuilder
+    private func imageTools(for imageUrl: URL) -> some View {
+        Button {
+            confirmAlert = .reclaim(imageUrl)
+        } label: {
+            Label("Reclaim Space", systemImage: "arrow.3.trianglepath")
+        }.help("Reclaim disk space by re-converting the disk image.")
+        
+        Button {
+            confirmAlert = .compress(imageUrl)
+        } label: {
+            Label("Compress", systemImage: "arrowtriangle.right.and.line.vertical.and.arrowtriangle.left")
+        }.help("Compress by re-converting the disk image and compressing the data.")
+        
+        Button {
+            isResizePopoverShown.toggle()
+        } label: {
+            Label("Resize…", systemImage: "arrowtriangle.left.and.line.vertical.and.arrowtriangle.right")
+        }.help("Increase the size of the disk image.")
+        .popover(isPresented: $isResizePopoverShown) {
+            ResizePopoverView(imageURL: imageUrl) { sizeInMib in
+                resizeDrive(for: imageUrl, sizeInMib: sizeInMib)
+            }.padding()
+            .frame(minHeight: 100)
+        }
+    }
+
     private func reclaimSpace(for driveUrl: URL, withCompression isCompressed: Bool) {
         data.busyWorkAsync {
             try await data.reclaimSpace(for: driveUrl, withCompression: isCompressed)
@@ -161,14 +166,17 @@ struct VMConfigDriveDetailsView: View {
     #endif
 }
 
-#if os(macOS)
+#if !WITH_REMOTE
+/// Asks for the new size and confirms it here, as an alert on the form under this view
+/// is dropped on iOS when it is set while the sheet closes.
 private struct ResizePopoverView: View {
     let imageURL: URL
-    @Binding var proposedSizeMib: Int
-    let onConfirm: () -> Void
+    let onConfirm: (Int) -> Void
     @EnvironmentObject private var data: UTMData
     
     @State private var currentSize: Int64?
+    @State private var proposedSizeMib: Int = 0
+    @State private var isConfirming: Bool = false
     
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
@@ -192,14 +200,20 @@ private struct ResizePopoverView: View {
                     SizeTextField($proposedSizeMib, minSizeMib: minSizeMib)
                     Button("Resize") {
                         if proposedSizeMib > minSizeMib {
-                            onConfirm()
+                            isConfirming = true
+                        } else {
+                            presentationMode.wrappedValue.dismiss()
                         }
-                        presentationMode.wrappedValue.dismiss()
                     }
                 }
             } else {
                 ProgressView("Calculating current size...")
             }
+        }.alert(isPresented: $isConfirming) {
+            Alert(title: Text("Resizing is experimental and could result in data loss. You are strongly encouraged to back-up this VM before proceeding. Would you like to resize to \(proposedSizeMib / mibInGib) GiB?"), primaryButton: .destructive(Text("Resize")) {
+                onConfirm(proposedSizeMib)
+                presentationMode.wrappedValue.dismiss()
+            }, secondaryButton: .cancel())
         }.onAppear {
             Task { @MainActor in
                 currentSize = await data.qcow2DriveSize(for: imageURL)

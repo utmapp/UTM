@@ -35,9 +35,7 @@ extern NSString *const kUTMErrorDomain;
 @implementation UTMProcess {
     NSMutableArray<NSString *> *_argv;
     NSMutableArray<NSURL *> *_urls;
-#if TARGET_OS_OSX
     NSXPCConnection *_connection;
-#endif
 }
 
 static void *startProcess(void *args) {
@@ -88,17 +86,17 @@ static int defaultEntry(UTMProcess *self, int argc, const char *argv[], const ch
 
 - (NSURL *)libraryURL {
     NSURL *bundleURL = [[NSBundle mainBundle] bundleURL];
+#if TARGET_OS_IPHONE
+    NSURL *contentsURL = bundleURL;
+#else
     NSURL *contentsURL = [bundleURL URLByAppendingPathComponent:@"Contents" isDirectory:YES];
+#endif
     NSURL *frameworksURL = [contentsURL URLByAppendingPathComponent:@"Frameworks" isDirectory:YES];
     return frameworksURL;
 }
 
 - (BOOL)hasRemoteProcess {
-#if TARGET_OS_OSX
     return _connection != nil;
-#else
-    return NO;
-#endif
 }
 
 - (NSString *)arguments {
@@ -121,17 +119,33 @@ static int defaultEntry(UTMProcess *self, int argc, const char *argv[], const ch
 
 - (instancetype)initWithArguments:(NSArray<NSString *> *)arguments {
     if (self = [super init]) {
-        _argv = [arguments mutableCopy];
-        _urls = [NSMutableArray<NSURL *> array];
-        if (![self setupXpc]) {
+        if (![self setupWithArguments:arguments connection:nil]) {
             return nil;
         }
-        dispatch_queue_attr_t attr = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_UTILITY, QOS_MIN_RELATIVE_PRIORITY);
-        self.completionQueue = dispatch_queue_create("QEMU Completion Queue", attr);
-        self.entry = defaultEntry;
-        self.done = dispatch_semaphore_create(0);
     }
     return self;
+}
+
+- (instancetype)initWithArguments:(NSArray<NSString *> *)arguments connection:(nullable NSXPCConnection *)connection {
+    if (self = [super init]) {
+        if (![self setupWithArguments:arguments connection:connection]) {
+            return nil;
+        }
+    }
+    return self;
+}
+
+- (BOOL)setupWithArguments:(NSArray<NSString *> *)arguments connection:(nullable NSXPCConnection *)connection {
+    _argv = [arguments mutableCopy];
+    _urls = [NSMutableArray<NSURL *> array];
+    if (![self setupXpcWithConnection:connection]) {
+        return NO;
+    }
+    dispatch_queue_attr_t attr = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_UTILITY, QOS_MIN_RELATIVE_PRIORITY);
+    self.completionQueue = dispatch_queue_create("QEMU Completion Queue", attr);
+    self.entry = defaultEntry;
+    self.done = dispatch_semaphore_create(0);
+    return YES;
 }
 
 - (void)dealloc {
@@ -140,21 +154,29 @@ static int defaultEntry(UTMProcess *self, int argc, const char *argv[], const ch
 
 #pragma mark - Methods
 
-- (BOOL)setupXpc {
-#if TARGET_OS_IPHONE
-    return YES;
-#else // only supported on macOS
-    NSString *helperIdentifier = NSBundle.mainBundle.infoDictionary[@"HelperIdentifier"];
-    if (!helperIdentifier) {
-        helperIdentifier = @"com.utmapp.QEMUHelper";
+- (BOOL)setupXpcWithConnection:(nullable NSXPCConnection *)connection {
+#if TARGET_OS_OSX
+    if (!connection) {
+        NSString *helperIdentifier = NSBundle.mainBundle.infoDictionary[@"HelperIdentifier"];
+        if (!helperIdentifier) {
+            helperIdentifier = @"com.utmapp.QEMUHelper";
+        }
+        connection = [[NSXPCConnection alloc] initWithServiceName:helperIdentifier];
+        if (!connection) {
+            return NO;
+        }
     }
-    _connection = [[NSXPCConnection alloc] initWithServiceName:helperIdentifier];
+#else // runs in a thread unless a helper is provided
+    if (!connection) {
+        return YES;
+    }
+#endif
+    _connection = connection;
     _connection.remoteObjectInterface = [NSXPCInterface interfaceWithProtocol:@protocol(QEMUHelperProtocol)];
     _connection.exportedInterface = [NSXPCInterface interfaceWithProtocol:@protocol(QEMUHelperDelegate)];
     _connection.exportedObject = self;
     [_connection resume];
-    return _connection != nil;
-#endif
+    return YES;
 }
 
 - (void)pushArgv:(nullable NSString *)arg {
@@ -225,7 +247,6 @@ static int defaultEntry(UTMProcess *self, int argc, const char *argv[], const ch
     completion(nil);
 }
 
-#if TARGET_OS_OSX
 - (void)startQemuRemote:(nonnull NSString *)name completion:(nonnull void (^)(NSError * _Nullable))completion {
     NSError *error;
     NSData *libBookmark = [self.libraryURL bookmarkDataWithOptions:0
@@ -260,7 +281,6 @@ static int defaultEntry(UTMProcess *self, int argc, const char *argv[], const ch
         }
     }];
 }
-#endif
 
 - (void)startProcess:(nonnull NSString *)name completion:(nonnull void (^)(NSError * _Nullable))completion {
 #if TARGET_OS_IPHONE
@@ -270,24 +290,18 @@ static int defaultEntry(UTMProcess *self, int argc, const char *argv[], const ch
 #endif
     NSString *dylib = [NSString stringWithFormat:@"%@.framework/%@%@", name, base, name];
     self.processName = name;
-#if TARGET_OS_OSX
     if (_connection) {
         [self startQemuRemote:dylib completion:completion];
     } else {
-#endif
         [self startDylibThread:dylib completion:completion];
-#if TARGET_OS_OSX
     }
-#endif
 }
 
 - (void)stopProcess {
-#if TARGET_OS_OSX
     if (_connection) {
         [[_connection remoteObjectProxy] terminate];
         [_connection invalidate];
     }
-#endif
     for (NSURL *url in _urls) {
         [url stopAccessingSecurityScopedResource];
     }
@@ -334,15 +348,14 @@ static int defaultEntry(UTMProcess *self, int argc, const char *argv[], const ch
 }
 
 - (void)accessDataWithBookmark:(NSData *)bookmark securityScoped:(BOOL)securityScoped completion:(void(^)(BOOL, NSData * _Nullable, NSString * _Nullable))completion {
-#if TARGET_OS_OSX
     if (_connection) {
-        [[_connection remoteObjectProxy] accessDataWithBookmark:bookmark securityScoped:securityScoped completion:completion];
+        [[_connection remoteObjectProxyWithErrorHandler:^(NSError *error) {
+            UTMLog(@"Failed to pass bookmark to the helper: %@", error);
+            completion(NO, nil, nil);
+        }] accessDataWithBookmark:bookmark securityScoped:securityScoped completion:completion];
     } else {
-#endif
         [self accessDataWithBookmarkThread:bookmark securityScoped:securityScoped completion:completion];
-#if TARGET_OS_OSX
     }
-#endif
 }
 
 - (void)stopAccessingPathThread:(nullable NSString *)path {
@@ -360,15 +373,11 @@ static int defaultEntry(UTMProcess *self, int argc, const char *argv[], const ch
 }
 
 - (void)stopAccessingPath:(nullable NSString *)path {
-#if TARGET_OS_OSX
     if (_connection) {
         [[_connection remoteObjectProxy] stopAccessingPath:path];
     } else {
-#endif
         [self stopAccessingPathThread:path];
-#if TARGET_OS_OSX
     }
-#endif
 }
 
 - (NSError *)errorWithMessage:(nullable NSString *)message {

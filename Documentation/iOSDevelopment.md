@@ -64,10 +64,10 @@ Artifacts built with `build_utm.sh` (includes GitHub Actions artifacts) must be 
 For a user friendly option, you can use [iOS App Signer][3] to re-sign the `.xcarchive`. Advanced users can use the package.sh script:
 
 ```
-./scripts/package.sh signedipa /path/to/UTM.xcarchive /path/to/output TEAM_ID PROFILE_UUID
+./scripts/package.sh ipa-signed /path/to/UTM.xcarchive /path/to/output TEAM_ID PROFILE_UUID development HELPER_PROFILE_UUID
 ```
 
-This builds `UTM.ipa` in `/path/to/output` which can be installed by Xcode, iTunes, or AirDrop. Note that you need a "Development" signing certificate and NOT a "Distribution" certificate. This is because UTM requires a provisioning profile with the `get-task-allow` entitlement which Apple only grants for Development signing.
+This builds `UTM.ipa` in `/path/to/output` which can be installed by Xcode, iTunes, or AirDrop. Note that you need a "Development" signing certificate and NOT a "Distribution" certificate. This is because UTM requires a provisioning profile with the `get-task-allow` entitlement which Apple only grants for Development signing. `HELPER_PROFILE_UUID` is a second profile for the helper extension embedded in the app (`com.utmapp.UTM.iOSHelper`, or `com.utmapp.UTM-SE.iOSHelper` for `ipa-se-signed`), which runs QEMU tools such as `qemu-img` out of process on iOS 26 and later.
 
 #### Unsigned IPA
 
@@ -94,6 +94,10 @@ If you have a paid Apple Developer account, you can find your Team ID at https:/
 If you have a free Apple Developer account, you need to generate a new signing certificate. To do so, follow the steps in [iOS App Signer][3] to create a new Xcode project and generate a provisioning profile. After saving the project, open `project.pbxproj` inside your newly created `.xcproj` and look for `DEVELOPMENT_TEAM`. Copy this value to `CodeSigning.xcconfig` and your unique identifier to `PRODUCT_BUNDLE_PREFIX`.
 
 Set `DEVELOPER_ACCOUNT_PAID = YES` if you used a paid Apple Developer account in order to automatically request the increased memory limit entitlement from Apple.
+
+### Helper extension
+
+On iOS 26 and later, tools such as `qemu-img` (used for disk snapshots, resizing and conversion) run in an ExtensionKit extension embedded in the app. When Address Sanitizer is enabled in the scheme's diagnostics, the extension fails to start on a device and these operations report that the helper quit unexpectedly; turn the sanitizer off to test them.
 
 ### Tethered Launch
 

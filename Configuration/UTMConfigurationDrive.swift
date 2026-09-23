@@ -66,10 +66,11 @@ extension UTMConfigurationDrive {
         }
         let fileManager = FileManager.default
         if let imageURL = imageURL {
-            #if os(macOS)
-            let newURL = try await UTMQemuConfiguration.copyItemIfChanged(from: imageURL, to: dataURL, customCopy: isRawImage ? nil : convertQcow2Image)
-            #else
+            #if WITH_REMOTE
             let newURL = try await UTMQemuConfiguration.copyItemIfChanged(from: imageURL, to: dataURL)
+            #else
+            let customCopy = isRawImage || !UTMQemuImage.isSupported ? nil : convertQcow2Image
+            let newURL = try await UTMQemuConfiguration.copyItemIfChanged(from: imageURL, to: dataURL, customCopy: customCopy)
             #endif
             self.imageName = newURL.lastPathComponent
             self.imageURL = newURL
@@ -136,7 +137,9 @@ extension UTMConfigurationDrive {
             try UTMAppleDiskImage.createASIF(at: newURL, sizeMib: sizeMib)
         }.value
     }
+    #endif
 
+    #if !WITH_REMOTE
     private func convertQcow2Image(at sourceURL: URL, to destFolderURL: URL) async throws -> URL {
         let destQcow2 = UTMData.newImage(from: sourceURL,
                                          to: destFolderURL,

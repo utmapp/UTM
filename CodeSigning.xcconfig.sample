@@ -4,8 +4,10 @@ DEVELOPMENT_TEAM = XYZ0123456
 // Prefix of unique bundle IDs registered to you in Apple Developer Portal.
 // You need to register:
 //   - com.myuniquename.UTM
-//   - com.myuniquename.QEMUHelper
-//   - com.myuniquename.QEMULauncher
+//   - com.myuniquename.UTM.iOSHelper (iOS)
+//   - com.myuniquename.UTM-SE.iOSHelper (iOS)
+//   - com.myuniquename.QEMUHelper (macOS)
+//   - com.myuniquename.QEMULauncher (macOS)
 PRODUCT_BUNDLE_PREFIX = com.myuniquename
 
 // Set to YES if you have a valid paid Apple Developer account
@@ -55,7 +57,10 @@ PROVISIONING_PROFILE_SPECIFIER_LAUNCHER = 00000000-1111-2222-3333-555555555555
 // Otherwise, change it to 'Manual' and fill in the profile specifiers below
 CODE_SIGN_STYLE_IOS = Automatic
 
-// If using manual iOS signing, fill the profile specifiers for each app
+// If using manual iOS signing, fill the profile specifiers for each app and
+// for the helper extension embedded in UTM and UTM SE
 PROVISIONING_PROFILE_SPECIFIER_IOS = 
 PROVISIONING_PROFILE_SPECIFIER_SE = 
 PROVISIONING_PROFILE_SPECIFIER_REMOTE = 
+PROVISIONING_PROFILE_SPECIFIER_IOS_HELPER = 
+PROVISIONING_PROFILE_SPECIFIER_SE_HELPER = 
