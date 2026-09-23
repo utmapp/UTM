@@ -17,10 +17,6 @@
 #import <UIKit/UIKit.h>
 #import "VMKeyboardViewDelegate.h"
 
-extern const int kLargeAccessoryViewHeight;
-extern const int kSmallAccessoryViewHeight;
-extern const int kSafeAreaHeight;
-
 NS_ASSUME_NONNULL_BEGIN
 
 @interface VMKeyboardView : UIView <UITextInputTraits, UIKeyInput>
