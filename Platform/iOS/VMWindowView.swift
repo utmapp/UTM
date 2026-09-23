@@ -98,6 +98,7 @@ struct VMWindowView: View {
                         .font(.system(size: 128))
                         .vibrancyEffect()
                         .vibrancyEffectStyle(.label)
+                        .clearOfReservedDivisions()
                 }
             }.background(Color.black)
             .ignoresSafeArea()
@@ -298,7 +299,66 @@ private struct HeadlessView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 25.0, style: .continuous))
                 .vibrancyEffect()
                 .vibrancyEffectStyle(.label)
+                .clearOfReservedDivisions()
         }
+    }
+}
+
+// MARK: - Folding devices
+
+#if !os(visionOS) && canImport(SwiftUI, _version: 8.0.85)
+@available(iOS 27.1, *)
+extension GeometryProxy {
+    /// The largest part of the view that no active fold runs through, or all of it.
+    var frameClearOfDivisions: CGRect {
+        var frame = CGRect(origin: .zero, size: size)
+        for region in reservedRegions(kind: .division) where region.isActive {
+            let division = region.frame
+            let parts = [
+                frame.part(maxY: division.minY),
+                frame.part(minY: division.maxY),
+                frame.part(maxX: division.minX),
+                frame.part(minX: division.maxX),
+            ]
+            frame = parts.max { $0.width * $0.height < $1.width * $1.height }!
+        }
+        return frame
+    }
+}
+
+private extension CGRect {
+    /// The rectangle cut down to the given edges, empty when nothing is left.
+    func part(minX: CGFloat? = nil, minY: CGFloat? = nil, maxX: CGFloat? = nil, maxY: CGFloat? = nil) -> CGRect {
+        let left = max(self.minX, minX ?? self.minX)
+        let top = max(self.minY, minY ?? self.minY)
+        let right = min(self.maxX, maxX ?? self.maxX)
+        let bottom = min(self.maxY, maxY ?? self.maxY)
+        return CGRect(x: left, y: top, width: max(0, right - left), height: max(0, bottom - top))
+    }
+}
+#endif
+
+private extension View {
+    /// Keeps centred interactive content out of the fold of a partially folded device.
+    ///
+    /// Alerts, menus and sheets move out of the fold by themselves; a control centred in the
+    /// window does not.
+    @ViewBuilder
+    func clearOfReservedDivisions() -> some View {
+        #if !os(visionOS) && canImport(SwiftUI, _version: 8.0.85)
+        if #available(iOS 27.1, *) {
+            GeometryReader { proxy in
+                let frame = proxy.frameClearOfDivisions
+                self
+                    .frame(width: frame.width, height: frame.height)
+                    .offset(x: frame.minX, y: frame.minY)
+            }
+        } else {
+            self
+        }
+        #else
+        self
+        #endif
     }
 }
 
