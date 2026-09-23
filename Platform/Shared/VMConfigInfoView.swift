@@ -89,11 +89,12 @@ struct VMConfigInfoView: View {
     }
 
     private var notesField: some View {
+        #if os(macOS)
+        MultilineTextField(text: $config.notes.bound, minHeight: 200)
+        #else
         TextEditor(text: $config.notes.bound)
-            #if os(macOS)
-            .border(Color.primary, width: 0.5)
-            #endif
             .frame(minHeight: 200)
+        #endif
     }
 
     @ViewBuilder
