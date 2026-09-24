@@ -897,7 +897,7 @@ build_vulkan_drivers () {
 
 build_d3d_drivers () {
     LLVM15_NAME=$(basename "${LLVM15_SRC%.tar.*}")
-    cmake_build "$BUILD_DIR/$LLVM15_NAME/llvm" -DLLVM_ENABLE_ZSTD=Off -DLLVM_TARGETS_TO_BUILD="" -DLLVM_BUILD_TOOLS=Off -DLLVM_VERSION_PRINTER_SHOW_HOST_TARGET_INFO=Off
+    cmake_build "$BUILD_DIR/$LLVM15_NAME/llvm" -DLLVM_ENABLE_ZSTD=Off -DLLVM_TARGETS_TO_BUILD="" -DLLVM_BUILD_TOOLS=Off -DLLVM_VERSION_PRINTER_SHOW_HOST_TARGET_INFO=Off -DLLVM_ENABLE_TERMINFO=Off
     (
         case $PLATFORM in
         ios* )
