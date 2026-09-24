@@ -38,6 +38,8 @@ typedef int (*UTMProcessThreadEntry)(UTMProcess *self, int argc, const char * _N
 
 - (instancetype)init;
 - (instancetype)initWithArguments:(NSArray<NSString *> *)arguments NS_DESIGNATED_INITIALIZER;
+/// Runs the process in the helper behind `connection` instead of in a thread of this process
+- (instancetype)initWithArguments:(NSArray<NSString *> *)arguments connection:(nullable NSXPCConnection *)connection NS_DESIGNATED_INITIALIZER;
 - (void)pushArgv:(nullable NSString *)arg;
 - (void)clearArgv;
 - (void)startProcess:(nonnull NSString *)name completion:(nonnull void (^)(NSError * _Nullable))completion;

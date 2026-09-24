@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)accessDataWithBookmark:(NSData *)bookmark securityScoped:(BOOL)securityScoped completion:(void(^)(BOOL, NSData * _Nullable, NSString * _Nullable))completion;
 - (void)stopAccessingPath:(nullable NSString *)path;
-- (void)startQemu:(NSString *)binName standardOutput:(NSFileHandle *)standardOutput standardError:(NSFileHandle *)standardError libraryBookmark:(NSData *)libBookmark argv:(NSArray<NSString *> *)argv completion:(void(^)(BOOL,NSString *))completion;
+- (void)startQemu:(NSString *)binName standardOutput:(NSFileHandle *)standardOutput standardError:(NSFileHandle *)standardError libraryBookmark:(NSData *)libBookmark argv:(NSArray<NSString *> *)argv completion:(void(^)(BOOL, NSString * _Nullable))completion;
 - (void)terminate;
 
 /// Helper holds on to the token to keep this XPC service active

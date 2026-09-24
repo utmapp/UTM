@@ -160,6 +160,8 @@ Below is a summary of all the variables and secrets used by GitHub Actions in th
 |`IOS_REMOTE_PROFILE_UUID`        |UUID of provisioning profile above                                                 |
 |`IOS_SE_PROFILE_DATA`            |Base64 encoded provisioning profile of iOS SE for App Store submission             |
 |`IOS_SE_PROFILE_UUID`            |UUID of provisioning profile above                                                 |
+|`IOS_SE_HELPER_PROFILE_DATA`     |Base64 encoded provisioning profile of the iOS SE helper extension for App Store   |
+|`IOS_SE_HELPER_PROFILE_UUID`     |UUID of provisioning profile above                                                 |
 |`IS_SELF_HOSTED_RUNNER`          |Set to `true` to use a self hosted macOS runner set up by the owner                |
 
 ### Signing for release
@@ -172,7 +174,7 @@ The following certificates (and associated private keys) must be exported from K
 
 Give a password when prompted and save it to the repository secret `SIGNING_CERTIFICATE_PASSWORD`. Then, in Terminal, convert the PKCS#12 file to Base64 and copy it: `cat Certificates.p12 | base64 | pbcopy` and paste it to `SIGNING_CERTIFICATE_P12_DATA`.
 
-Next you need to get each provisioning profile {3 profiles for macOS} X {1 for Developer ID, 1 for Mac App Store}. Save each UUID of the profile as `*_PROFILE_UUID` and the Base64 encoded data from `cat name.provisionprofile | base64 | pbcopy` as `*_PROFILE_DATA`.
+Next you need to get each provisioning profile {3 profiles for macOS} X {1 for Developer ID, 1 for Mac App Store} plus the App Store profiles for iOS: UTM SE, its helper extension (`com.utmapp.UTM-SE.iOSHelper`) and UTM Remote. Save each UUID of the profile as `*_PROFILE_UUID` and the Base64 encoded data from `cat name.provisionprofile | base64 | pbcopy` as `*_PROFILE_DATA`.
 
 ### AltStore Repository
 

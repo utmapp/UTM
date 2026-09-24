@@ -479,12 +479,15 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           echo $IOS_REMOTE_PROFILE_DATA | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/$IOS_REMOTE_PROFILE_UUID.provisionprofile
           echo $IOS_SE_PROFILE_DATA | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/$IOS_SE_PROFILE_UUID.provisionprofile
+          echo $IOS_SE_HELPER_PROFILE_DATA | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/$IOS_SE_HELPER_PROFILE_UUID.provisionprofile
           echo $LAUNCHER_PROFILE_DATA | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/$LAUNCHER_PROFILE_UUID.provisionprofile
         env:
           IOS_REMOTE_PROFILE_DATA: ${{ vars.IOS_REMOTE_PROFILE_DATA }}
           IOS_REMOTE_PROFILE_UUID: ${{ vars.IOS_REMOTE_PROFILE_UUID }}
           IOS_SE_PROFILE_DATA: ${{ vars.IOS_SE_PROFILE_DATA }}
           IOS_SE_PROFILE_UUID: ${{ vars.IOS_SE_PROFILE_UUID }}
+          IOS_SE_HELPER_PROFILE_DATA: ${{ vars.IOS_SE_HELPER_PROFILE_DATA }}
+          IOS_SE_HELPER_PROFILE_UUID: ${{ vars.IOS_SE_HELPER_PROFILE_UUID }}
       - name: Download Artifact
         uses: actions/download-artifact@v4
         with:
@@ -492,10 +495,11 @@ jobs:
       - name: Package for App Store
         run: |
           tar -xf UTM.xcarchive.tgz
-          ./scripts/package.sh ${{ matrix.configuration.mode }} UTM.xcarchive . "$SIGNING_TEAM_ID" "$PROFILE_UUID" app-store
+          ./scripts/package.sh ${{ matrix.configuration.mode }} UTM.xcarchive . "$SIGNING_TEAM_ID" "$PROFILE_UUID" app-store "$HELPER_PROFILE_UUID"
         env:
           SIGNING_TEAM_ID: ${{ vars.SIGNING_TEAM_ID }}
           PROFILE_UUID: ${{ matrix.configuration.scheme == 'iOS-Remote' && vars.IOS_REMOTE_PROFILE_UUID || vars.IOS_SE_PROFILE_UUID }}
+          HELPER_PROFILE_UUID: ${{ matrix.configuration.scheme == 'iOS-SE' && vars.IOS_SE_HELPER_PROFILE_UUID || '' }}
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:

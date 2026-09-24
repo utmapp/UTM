@@ -15,76 +15,183 @@
 //
 
 import Foundation
-import QEMUKitInternal
 
 @objc class UTMQemuImage: UTMProcess {
     typealias ProgressCallback = (Float) -> Void
 
-    private var logOutput: String = ""
+    private let output = UTMQemuImageOutput()
+    private let errorOutput = UTMQemuImageOutput()
     private var processExitContinuation: CheckedContinuation<Void, any Error>?
-    private var onProgress: ProgressCallback?
+    #if os(iOS) || os(visionOS)
+    private let helper: UTMHelperProcess
+    #endif
 
+    /// qemu-img is available: on iOS it runs in a helper extension
+    static var isSupported: Bool {
+        #if os(iOS) || os(visionOS)
+        return UTMHelperProcess.isSupported
+        #else
+        return true
+        #endif
+    }
+
+    #if os(iOS) || os(visionOS)
+    private init(helper: UTMHelperProcess) {
+        self.helper = helper
+        super.init(arguments: [], connection: helper.connection)
+    }
+
+    deinit {
+        helper.invalidate()
+    }
+    #else
     private init() {
         super.init(arguments: [])
     }
-    
+    #endif
+
+    private static func makeProcess() async throws -> UTMQemuImage {
+        #if os(iOS) || os(visionOS)
+        return UTMQemuImage(helper: try await UTMHelperProcess.launch())
+        #else
+        return UTMQemuImage()
+        #endif
+    }
+
+    /// Runs an operation with a fresh qemu-img, then releases it so that the next one can start
+    private static func withProcess<T>(_ body: (UTMQemuImage) async throws -> T) async throws -> T {
+        let qemuImg = try await makeProcess()
+        let result: T
+        do {
+            result = try await body(qemuImg)
+        } catch {
+            await qemuImg.finish()
+            throw error
+        }
+        await qemuImg.finish()
+        return result
+    }
+
+    private func finish() async {
+        #if os(iOS) || os(visionOS)
+        await helper.terminate()
+        #endif
+        stop()
+    }
+
     override func processHasExited(_ exitCode: Int, message: String?) {
-        if let processExitContinuation = processExitContinuation {
-            self.processExitContinuation = nil
-            if exitCode != 0 {
-                if let message = message {
-                    processExitContinuation.resume(throwing: UTMQemuImageError.qemuError(message))
-                } else {
-                    processExitContinuation.resume(throwing: UTMQemuImageError.unknown)
-                }
+        guard let processExitContinuation = processExitContinuation else {
+            return
+        }
+        self.processExitContinuation = nil
+        var error: Error?
+        if exitCode != 0 {
+            if let message = message {
+                error = UTMQemuImageError.qemuError(message)
+            } else {
+                error = UTMQemuImageError.unknown
+            }
+        }
+        Self.resumeOffXPCQueue {
+            if let error = error {
+                processExitContinuation.resume(throwing: error)
             } else {
                 processExitContinuation.resume()
             }
         }
     }
-    
-    private func start() async throws {
-        try await withCheckedThrowingContinuation { continuation in
-            processExitContinuation = continuation
-            start("qemu-img") { error in
-                if let error = error {
-                    self.processExitContinuation = nil
-                    continuation.resume(throwing: error)
+
+    /// A task resumed on the reply queue of the helper's connection would block on its next call
+    /// to the helper, as NSXPC makes calls from that queue synchronous.
+    private static func resumeOffXPCQueue(_ resume: @escaping () -> Void) {
+        DispatchQueue.global().async(execute: resume)
+    }
+
+    /// Runs qemu-img with the arguments and waits for it to exit and for its output to end
+    private func start(onProgress: ProgressCallback? = nil) async throws {
+        standardOutput = output.pipe
+        standardError = errorOutput.pipe
+        if let onProgress = onProgress {
+            output.onLine = { line in
+                if let progress = Self.parseProgress(line) {
+                    onProgress(progress)
                 }
             }
         }
+        var exitError: Error?
+        do {
+            try await withCheckedThrowingContinuation { continuation in
+                processExitContinuation = continuation
+                start("qemu-img") { error in
+                    // the write ends belong to the tool now, so the output ends when it exits
+                    self.output.closeWriter()
+                    self.errorOutput.closeWriter()
+                    if let error = error {
+                        self.processExitContinuation = nil
+                        Self.resumeOffXPCQueue {
+                            continuation.resume(throwing: error)
+                        }
+                    }
+                }
+            }
+        } catch {
+            exitError = error
+        }
+        await output.waitForEnd()
+        await errorOutput.waitForEnd()
+        if let exitError = exitError {
+            if case UTMQemuImageError.unknown = exitError, let message = errorOutput.lines.last(where: { !$0.isEmpty }) {
+                throw UTMQemuImageError.qemuError(message)
+            }
+            throw exitError
+        }
     }
-    
+
+    /// Grants qemu-img access to a file and adds it to the arguments
+    private func pushArgv(accessing url: URL) async throws {
+        // a file that does not exist yet is reached through its directory
+        let accessURL = FileManager.default.fileExists(atPath: url.path) ? url : url.deletingLastPathComponent()
+        let bookmark = try accessURL.bookmarkData()
+        let success: Bool = await withCheckedContinuation { continuation in
+            accessData(withBookmark: bookmark, securityScoped: false) { success, _, _ in
+                Self.resumeOffXPCQueue {
+                    continuation.resume(returning: success)
+                }
+            }
+        }
+        guard success else {
+            #if os(iOS) || os(visionOS)
+            if helper.isLost {
+                throw UTMHelperProcessError.lost
+            }
+            #endif
+            throw UTMQemuImageError.accessFailed(url)
+        }
+        pushArgv(url.path)
+    }
+
     static func convert(from url: URL, toQcow2 dest: URL, withCompression compressed: Bool = false, onProgress: ProgressCallback? = nil) async throws {
-        let qemuImg = UTMQemuImage()
-        let srcBookmark = try url.bookmarkData()
-        let dstBookmark = try dest.deletingLastPathComponent().bookmarkData()
-        qemuImg.pushArgv("convert")
-        if onProgress != nil {
-            qemuImg.pushArgv("-p")
+        try await withProcess { qemuImg in
+            qemuImg.pushArgv("convert")
+            if onProgress != nil {
+                qemuImg.pushArgv("-p")
+            }
+            if compressed {
+                qemuImg.pushArgv("-c")
+                qemuImg.pushArgv("-o")
+                qemuImg.pushArgv("compression_type=zstd")
+            }
+            qemuImg.pushArgv("-O")
+            qemuImg.pushArgv("qcow2")
+            try await qemuImg.pushArgv(accessing: url)
+            try await qemuImg.pushArgv(accessing: dest)
+            try await qemuImg.start(onProgress: onProgress)
         }
-        if compressed {
-            qemuImg.pushArgv("-c")
-            qemuImg.pushArgv("-o")
-            qemuImg.pushArgv("compression_type=zstd")
-        }
-        qemuImg.pushArgv("-O")
-        qemuImg.pushArgv("qcow2")
-        qemuImg.accessData(withBookmark: srcBookmark)
-        qemuImg.pushArgv(url.path)
-        qemuImg.accessData(withBookmark: dstBookmark)
-        qemuImg.pushArgv(dest.path)
-        let logging = QEMULogging()
-        logging.delegate = qemuImg
-        qemuImg.standardOutput = logging.standardOutput
-        qemuImg.standardError = logging.standardError
-        qemuImg.onProgress = onProgress
-        try await qemuImg.start()
     }
-    
+
     /*
      The info format looks like:
-     
+
      $ qemu-img info foo.img --output=json
      {
          "virtual-size": 20971520,
@@ -152,25 +259,18 @@ import QEMUKitInternal
     }
 
     static func info(image url: URL) async throws -> QemuImageInfo {
-        let qemuImg = UTMQemuImage()
-        let srcBookmark = try url.bookmarkData()
-        qemuImg.pushArgv("info")
-        qemuImg.pushArgv("--output=json")
-        qemuImg.accessData(withBookmark: srcBookmark)
-        qemuImg.pushArgv(url.path)
-        let logging = QEMULogging()
-        logging.delegate = qemuImg
-        qemuImg.standardOutput = logging.standardOutput
-        qemuImg.standardError = logging.standardError
-        try await qemuImg.start()
+        try await withProcess { qemuImg in
+            qemuImg.pushArgv("info")
+            qemuImg.pushArgv("--output=json")
+            try await qemuImg.pushArgv(accessing: url)
+            try await qemuImg.start()
 
-        let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
+            let decoder = JSONDecoder()
+            decoder.keyDecodingStrategy = .convertFromSnakeCase
 
-        let data = qemuImg.logOutput.data(using: .utf8) ?? Data()
-        let image_info: QemuImageInfo = try decoder.decode(QemuImageInfo.self, from: data)
-
-        return image_info
+            let data = qemuImg.output.lines.joined(separator: "\n").data(using: .utf8) ?? Data()
+            return try decoder.decode(QemuImageInfo.self, from: data)
+        }
     }
 
     /// Internal snapshots stored in an image
@@ -185,18 +285,13 @@ import QEMUKitInternal
     }
 
     private static func snapshot(_ operation: SnapshotOperation, name: String, image url: URL) async throws {
-        let qemuImg = UTMQemuImage()
-        let srcBookmark = try url.bookmarkData()
-        qemuImg.pushArgv("snapshot")
-        qemuImg.pushArgv(operation.rawValue)
-        qemuImg.pushArgv(name)
-        qemuImg.accessData(withBookmark: srcBookmark)
-        qemuImg.pushArgv(url.path)
-        let logging = QEMULogging()
-        logging.delegate = qemuImg
-        qemuImg.standardOutput = logging.standardOutput
-        qemuImg.standardError = logging.standardError
-        try await qemuImg.start()
+        try await withProcess { qemuImg in
+            qemuImg.pushArgv("snapshot")
+            qemuImg.pushArgv(operation.rawValue)
+            qemuImg.pushArgv(name)
+            try await qemuImg.pushArgv(accessing: url)
+            try await qemuImg.start()
+        }
     }
 
     /// Save the contents of the image as an internal snapshot without any VM state
@@ -218,24 +313,20 @@ import QEMUKitInternal
     }
 
     static func resize(image url: URL, size : UInt64) async throws {
-        let qemuImg = UTMQemuImage()
-        let srcBookmark = try url.bookmarkData()
-        qemuImg.pushArgv("resize")
-        qemuImg.pushArgv("-f")
-        qemuImg.pushArgv("qcow2")
-        qemuImg.accessData(withBookmark: srcBookmark)
-        qemuImg.pushArgv(url.path)
-        qemuImg.pushArgv(String(size))
-        let logging = QEMULogging()
-        logging.delegate = qemuImg
-        qemuImg.standardOutput = logging.standardOutput
-        qemuImg.standardError = logging.standardError
-        try await qemuImg.start()
+        try await withProcess { qemuImg in
+            qemuImg.pushArgv("resize")
+            qemuImg.pushArgv("-f")
+            qemuImg.pushArgv("qcow2")
+            try await qemuImg.pushArgv(accessing: url)
+            qemuImg.pushArgv(String(size))
+            try await qemuImg.start()
+        }
     }
 }
 
 private enum UTMQemuImageError: Error {
     case qemuError(String)
+    case accessFailed(URL)
     case unknown
 }
 
@@ -243,29 +334,104 @@ extension UTMQemuImageError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .qemuError(let message): return message
+        case .accessFailed(let url): return String.localizedStringWithFormat(NSLocalizedString("Cannot access '%@'.", comment: "UTMQemuImage"), url.lastPathComponent)
         case .unknown: return NSLocalizedString("An unknown QEMU error has occurred.", comment: "UTMQemuImage")
         }
     }
 }
 
-// MARK: - Logging
+// MARK: - Output
 
-extension UTMQemuImage: QEMULoggingDelegate {
-    func logging(_ logging: QEMULogging, didRecieveOutputLine line: String) {
-        logOutput += line
-        if let onProgress = onProgress, line.contains("100%") {
-            if let progress = parseProgress(line) {
-                onProgress(progress)
+/// Collects the lines a tool writes to a pipe until the tool closes it
+private final class UTMQemuImageOutput: @unchecked Sendable {
+    /// Waited for at most this long after the tool exited
+    private static let endTimeout: TimeInterval = 5
+
+    let pipe = Pipe()
+    /// Called for each line as it arrives, such as the progress of a conversion
+    var onLine: ((String) -> Void)?
+
+    private let lock = NSLock()
+    private var buffer = Data()
+    private var isEnded = false
+    private var endContinuation: CheckedContinuation<Void, Never>?
+    private var _lines = [String]()
+
+    /// Complete once the output has ended
+    var lines: [String] {
+        lock.lock()
+        defer {
+            lock.unlock()
+        }
+        return _lines
+    }
+
+    init() {
+        pipe.fileHandleForReading.readabilityHandler = { [weak self] handle in
+            self?.read(from: handle)
+        }
+    }
+
+    /// Give up the write end so the reader sees the end of the output when the tool exits
+    func closeWriter() {
+        try? pipe.fileHandleForWriting.close()
+    }
+
+    func waitForEnd() async {
+        await withCheckedContinuation { continuation in
+            lock.lock()
+            guard !isEnded else {
+                lock.unlock()
+                continuation.resume()
+                return
+            }
+            endContinuation = continuation
+            lock.unlock()
+            DispatchQueue.global().asyncAfter(deadline: .now() + Self.endTimeout) {
+                self.end()
             }
         }
     }
-    
-    func logging(_ logging: QEMULogging, didRecieveErrorLine line: String) {
+
+    private func read(from handle: FileHandle) {
+        let data = handle.availableData
+        guard !data.isEmpty else {
+            handle.readabilityHandler = nil
+            end()
+            return
+        }
+        lock.lock()
+        buffer.append(data)
+        var lines = [String]()
+        while let separator = buffer.firstIndex(where: { $0 == UInt8(ascii: "\n") || $0 == UInt8(ascii: "\r") }) {
+            lines.append(String(decoding: buffer[buffer.startIndex..<separator], as: UTF8.self))
+            buffer.removeSubrange(buffer.startIndex...separator)
+        }
+        _lines.append(contentsOf: lines)
+        lock.unlock()
+        for line in lines {
+            onLine?(line)
+        }
+    }
+
+    private func end() {
+        lock.lock()
+        if !buffer.isEmpty {
+            _lines.append(String(decoding: buffer, as: UTF8.self))
+            buffer.removeAll()
+        }
+        isEnded = true
+        let continuation = endContinuation
+        endContinuation = nil
+        lock.unlock()
+        continuation?.resume()
     }
 }
 
+// MARK: - Progress
+
 extension UTMQemuImage {
-    private func parseProgress(_ line: String) -> Float? {
+    private static func parseProgress(_ line: String) -> Float? {
         let pattern = "\\(([0-9]+\\.[0-9]+)/100\\%\\)"
         do {
             let regex = try NSRegularExpression(pattern: pattern)

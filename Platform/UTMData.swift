@@ -904,7 +904,7 @@ enum AlertItem: Identifiable {
     
     // MARK: - Reclaim space
     
-    #if os(macOS)
+    #if !WITH_REMOTE
     /// Reclaim empty space in a file by (re)-converting it to QCOW2
     ///
     /// This will overwrite driveUrl with the converted file on success!
@@ -943,7 +943,9 @@ enum AlertItem: Identifiable {
         let bytesinMib = 1048576
         try await UTMQemuImage.resize(image: driveUrl, size: UInt64(sizeInMib * bytesinMib))
     }
+    #endif
 
+    #if os(macOS)
     @available(macOS 14, *)
     func appleDriveInfo(for driveUrl: URL) -> (format: String?, size: Int64?) {
         guard let info = try? UTMAppleDiskImage.info(for: driveUrl) else {
