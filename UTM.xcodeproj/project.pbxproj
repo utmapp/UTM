@@ -244,9 +244,9 @@
 		84A0A88A2A47D5D10038F329 /* QEMUKit in Frameworks */ = {isa = PBXBuildFile; productRef = 84A0A8892A47D5D10038F329 /* QEMUKit */; };
 		84A0A88C2A47D5D70038F329 /* QEMUKit in Frameworks */ = {isa = PBXBuildFile; productRef = 84A0A88B2A47D5D70038F329 /* QEMUKit */; };
 		84A381AA268CB30C0048EE4D /* VMDrivesSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A381A9268CB30C0048EE4D /* VMDrivesSettingsView.swift */; };
-		84A57CB830641C6800BA5139 /* iOSHelper.appex in Embed ExtensionKit Extensions */ = {isa = PBXBuildFile; fileRef = 84A57CB130641C6800BA5139 /* iOSHelper.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		84A57CB830641C6800BA5139 /* iOSHelper.appex in Embed ExtensionKit Extensions */ = {isa = PBXBuildFile; fileRef = 84A57CB130641C6800BA5139 /* iOSHelper.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		84A57CC230641C9100BA5139 /* iOSHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A57CBF30641C9100BA5139 /* iOSHelper.swift */; };
-		84A57CC330641CCE00BA5139 /* iOSHelper-SE.appex in Embed ExtensionKit Extensions */ = {isa = PBXBuildFile; fileRef = 84A57D0930641D0000BA5139 /* iOSHelper-SE.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		84A57CC330641CCE00BA5139 /* iOSHelper-SE.appex in Embed ExtensionKit Extensions */ = {isa = PBXBuildFile; fileRef = 84A57D0930641D0000BA5139 /* iOSHelper-SE.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		84A57D0830641D0000BA5139 /* iOSHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A57CBF30641C9100BA5139 /* iOSHelper.swift */; };
 		84A57D0A30641D0000BA5139 /* qemu-img.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 8453DCB0278CE33E0037A0DA /* qemu-img.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		84A57D0B30641D0000BA5139 /* qemu-img.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 8453DCB0278CE33E0037A0DA /* qemu-img.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -4785,11 +4785,13 @@
 		};
 		84A57CB730641C6800BA5139 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
+			platformFilter = ios;
 			target = 84A57CB030641C6800BA5139 /* iOSHelper */;
 			targetProxy = 84A57CB630641C6800BA5139 /* PBXContainerItemProxy */;
 		};
 		84A57CC530641CCE00BA5139 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
+			platformFilter = ios;
 			target = 84A57D0130641D0000BA5139 /* iOSHelper-SE */;
 			targetProxy = 84A57CC430641CCE00BA5139 /* PBXContainerItemProxy */;
 		};

@@ -35,11 +35,16 @@ extension AppExtensionPoint {
 final class UTMHelperProcess {
     /// The helper extension exists in this build and can run on this system
     static var isSupported: Bool {
-        if #available(iOS 26, visionOS 26, *) {
+        #if os(visionOS)
+        // visionOS installs extensions only for Apple's extension points, so the helper is not built
+        return false
+        #else
+        if #available(iOS 26, *) {
             return true
         } else {
             return false
         }
+        #endif
     }
 
     private static let gate = UTMHelperProcessGate()
@@ -66,7 +71,7 @@ final class UTMHelperProcess {
 
     /// Launch a helper and connect to it, waiting for any helper that is still running
     static func launch() async throws -> UTMHelperProcess {
-        guard #available(iOS 26, visionOS 26, *) else {
+        guard isSupported, #available(iOS 26, visionOS 26, *) else {
             throw UTMHelperProcessError.unsupported
         }
         await gate.acquire()
