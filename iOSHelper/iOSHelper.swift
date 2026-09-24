@@ -28,6 +28,12 @@ final class iOSHelper: AppExtension {
     required init() {
     }
 
+    /// Xcode writes this into the generated Info.plist, expanding the build setting for UTM or UTM SE
+    @AppExtensionPoint.Bind
+    var boundExtensionPoint: AppExtensionPoint {
+        AppExtensionPoint.Identifier(host: "$(UTM_HOST_BUNDLE_IDENTIFIER)", name: "qemu-helper")
+    }
+
     var configuration: some AppExtensionConfiguration {
         ConnectionHandler { connection in
             connection.exportedInterface = NSXPCInterface(with: QEMUHelperProtocol.self)

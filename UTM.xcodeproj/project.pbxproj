@@ -1911,7 +1911,6 @@
 		84A0A8822A47D52E0038F329 /* UTMQemuPort.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UTMQemuPort.swift; sourceTree = "<group>"; };
 		84A381A9268CB30C0048EE4D /* VMDrivesSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDrivesSettingsView.swift; sourceTree = "<group>"; };
 		84A57CB130641C6800BA5139 /* iOSHelper.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.extensionkit-extension"; includeInIndex = 0; path = iOSHelper.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		84A57CBE30641C9100BA5139 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		84A57CBF30641C9100BA5139 /* iOSHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSHelper.swift; sourceTree = "<group>"; };
 		84A57D0930641D0000BA5139 /* iOSHelper-SE.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.extensionkit-extension"; includeInIndex = 0; path = "iOSHelper-SE.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		84A57D0C30641D0000BA5139 /* UTMHelperProcess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMHelperProcess.swift; sourceTree = "<group>"; };
@@ -2729,7 +2728,6 @@
 		84A57CC030641C9100BA5139 /* iOSHelper */ = {
 			isa = PBXGroup;
 			children = (
-				84A57CBE30641C9100BA5139 /* Info.plist */,
 				84A57CBF30641C9100BA5139 /* iOSHelper.swift */,
 				84A57D0F30641D0000BA5139 /* iOSHelper-Bridging-Header.h */,
 			);
@@ -5052,9 +5050,9 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_IOS:default=Apple Development)";
 				CODE_SIGN_STYLE = "$(CODE_SIGN_STYLE_IOS:default=)";
+				EX_ENABLE_EXTENSION_POINT_GENERATION = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = iOSHelper/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = iOSHelper;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 Turing Software, LLC. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
@@ -5091,9 +5089,9 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_IOS:default=Apple Development)";
 				CODE_SIGN_STYLE = "$(CODE_SIGN_STYLE_IOS:default=)";
+				EX_ENABLE_EXTENSION_POINT_GENERATION = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = iOSHelper/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = iOSHelper;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 Turing Software, LLC. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
@@ -5128,9 +5126,9 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_IOS:default=Apple Development)";
 				CODE_SIGN_STYLE = "$(CODE_SIGN_STYLE_IOS:default=)";
+				EX_ENABLE_EXTENSION_POINT_GENERATION = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = iOSHelper/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = iOSHelper;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 Turing Software, LLC. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
@@ -5167,9 +5165,9 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_IOS:default=Apple Development)";
 				CODE_SIGN_STYLE = "$(CODE_SIGN_STYLE_IOS:default=)";
+				EX_ENABLE_EXTENSION_POINT_GENERATION = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = iOSHelper/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = iOSHelper;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 Turing Software, LLC. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
