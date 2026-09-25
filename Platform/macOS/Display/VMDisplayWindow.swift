@@ -42,6 +42,9 @@ class VMDisplayWindow: NSWindow {
     /// Presentation options of our full screen space, which let the menu bar be revealed.
     private var menuBarRevealablePresentationOptions: NSApplication.PresentationOptions?
 
+    /// Whether the menu bar and toolbar of our full screen space are currently revealed.
+    private var menuBarReveal = MenuBarReveal.State()
+
     /// Set when the pointer has reached the top edge of the screen, until the menu bar it revealed is hidden again.
     ///
     /// The menu bar is otherwise revealed as soon as the pointer is over the area beside the camera housing, which would
@@ -64,9 +67,6 @@ class VMDisplayWindow: NSWindow {
     @Setting("FullScreenUseCameraHousingArea") private var isCameraHousingAreaEnabled: Bool = false
 
     private var isCameraHousingAreaUsable: Bool {
-        guard #available(macOS 27, *) else {
-            return false
-        }
         guard isCameraHousingAreaAllowed && isCameraHousingAreaEnabled else {
             return false
         }
@@ -109,7 +109,6 @@ class VMDisplayWindow: NSWindow {
         center.addObserver(self, selector: #selector(willLeaveFullScreen), name: NSWindow.willExitFullScreenNotification, object: self)
         center.addObserver(self, selector: #selector(willLeaveFullScreen), name: NSWindow.willCloseNotification, object: self)
         center.addObserver(self, selector: #selector(didExitFullScreen), name: NSWindow.didExitFullScreenNotification, object: self)
-        center.addObserver(self, selector: #selector(menuBarRevealDidChange), name: MenuBarReveal.didChangeNotification, object: nil)
         center.addObserver(self, selector: #selector(otherWindowDidChangeOcclusionState), name: NSWindow.didChangeOcclusionStateNotification, object: nil)
         center.addObserver(self, selector: #selector(updatePresentationOptions), name: NSWindow.didBecomeKeyNotification, object: self)
     }
@@ -169,6 +168,7 @@ class VMDisplayWindow: NSWindow {
         isFullScreenFrameKept = false
         isInFullScreenSpace = false
         isCameraHousingAreaLost = false
+        menuBarReveal = MenuBarReveal.State()
         showMenuBar()
     }
 
@@ -257,13 +257,13 @@ class VMDisplayWindow: NSWindow {
     }
 
     private func pointerDidMove() {
-        guard isKeyWindow, let spaceID = menuBarHiddenSpaceID, let screen = screen else {
+        guard isKeyWindow, menuBarHiddenSpaceID != nil, let screen = screen else {
             return
         }
         let location = NSEvent.mouseLocation
         if !isMenuBarRevealAllowed && location.y >= screen.frame.maxY - 1 {
             isMenuBarRevealAllowed = true
-        } else if isMenuBarRevealAllowed && location.y < screen.frame.maxY - screen.safeAreaInsets.top && !MenuBarReveal.state(inSpace: spaceID).isMenuBarRevealed {
+        } else if isMenuBarRevealAllowed && location.y < screen.frame.maxY - screen.safeAreaInsets.top && !menuBarReveal.isMenuBarRevealed {
             // the pointer left the top without the menu bar being revealed
             isMenuBarRevealAllowed = false
         }
@@ -273,9 +273,8 @@ class VMDisplayWindow: NSWindow {
         guard let spaceID = menuBarHiddenSpaceID else {
             return
         }
-        let reveal = MenuBarReveal.state(inSpace: spaceID)
-        SkyLight.shared?.setMenuBarAlpha(reveal.isMenuBarRevealed ? 1 : 0, inSpace: spaceID)
-        isFullScreenToolbarHidden = !reveal.isToolbarRevealed
+        SkyLight.shared?.setMenuBarAlpha(menuBarReveal.isMenuBarRevealed ? 1 : 0, inSpace: spaceID)
+        isFullScreenToolbarHidden = !menuBarReveal.isToolbarRevealed
     }
 
     /// AppKit shows the full screen toolbar window some time after we have entered full screen.
@@ -285,28 +284,18 @@ class VMDisplayWindow: NSWindow {
         }
     }
 
-    @objc private func menuBarRevealDidChange(_ notification: Notification) {
-        guard let spaceID = menuBarHiddenSpaceID,
-              let userInfo = notification.userInfo,
-              userInfo[MenuBarReveal.spaceIDKey] as? UInt64 == spaceID,
-              let duration = userInfo[MenuBarReveal.durationKey] as? TimeInterval else {
+    /// Called for every step of the reveal animation, the menu bar is shown as soon as it starts and hidden once it is gone.
+    fileprivate func menuBarRevealDidChange(to reveal: MenuBarReveal.State) {
+        guard reveal != menuBarReveal else {
             return
         }
-        let reveal = MenuBarReveal.state(inSpace: spaceID)
-        if reveal.isMenuBarRevealed || reveal.isToolbarRevealed {
-            applyMenuBarReveal()
+        menuBarReveal = reveal
+        guard menuBarHiddenSpaceID != nil else {
+            return
         }
-        if !reveal.isMenuBarRevealed || !reveal.isToolbarRevealed {
-            // they are animated out, do not show our content until they are gone
-            DispatchQueue.main.asyncAfter(deadline: .now() + duration) { [weak self] in
-                guard let self = self, self.menuBarHiddenSpaceID == spaceID else {
-                    return
-                }
-                self.applyMenuBarReveal()
-                if !MenuBarReveal.state(inSpace: spaceID).isMenuBarRevealed {
-                    self.isMenuBarRevealAllowed = false
-                }
-            }
+        applyMenuBarReveal()
+        if !reveal.isMenuBarRevealed {
+            isMenuBarRevealAllowed = false
         }
     }
 }
@@ -435,48 +424,73 @@ private struct SkyLight {
     }
 }
 
-/// Observes AppKit being told to reveal or hide the menu bar in a full screen space.
+/// Observes AppKit revealing or hiding the menu bar of a full screen window.
+///
+/// The window server decides when the menu bar of a full screen space is revealed, and AppKit tells the menu bar
+/// companion of the window in that space about every step of the reveal. That has stayed the same across macOS versions
+/// while the code around it has changed, so the reveal is observed there.
 private enum MenuBarReveal {
-    static let didChangeNotification = Notification.Name("VMDisplayWindowMenuBarRevealDidChange")
-    static let spaceIDKey = "SpaceID"
-    static let durationKey = "Duration"
+    private typealias SetRevealFunction = @convention(c) (NSObject, Selector, Double) -> Void
+    private typealias SetRevealBlock = @convention(block) (NSObject, Double) -> Void
+    private typealias RevealFunction = @convention(c) (NSObject, Selector) -> Double
 
-    private typealias DispatchRevealChangedFunction = @convention(c) (AnyClass, Selector, UInt64, Double, Double, Double) -> Void
-    private typealias DispatchRevealChangedBlock = @convention(block) (AnyClass, UInt64, Double, Double, Double) -> Void
-
-    struct State {
+    struct State: Equatable {
         var isMenuBarRevealed: Bool = false
         var isToolbarRevealed: Bool = false
     }
 
-    private static var states = [UInt64: State]()
-
     static let isObserving: Bool = {
-        let selector = NSSelectorFromString("_dispatchAgentRevealChangedForSpaceID:menuBarRevealTarget:toolbarRevealTarget:duration:")
-        guard let method = class_getClassMethod(NSMenu.self, selector),
-              let types = method_getTypeEncoding(method), String(cString: types) == "v48@0:8q16d24d32d40" else {
+        let companionClass = "_NSFullScreenMenuBarCompanionController"
+        guard let setMenuBarRevealMethod = method("setMenuBarReveal:", of: companionClass, types: "v24@0:8d16"),
+              let setToolbarWindowRevealMethod = method("setToolbarWindowReveal:", of: companionClass, types: "v24@0:8d16"),
+              let menuBarRevealMethod = method("menuBarReveal", of: companionClass, types: "d16@0:8"),
+              let toolbarWindowRevealMethod = method("toolbarWindowReveal", of: companionClass, types: "d16@0:8"),
+              let contentControllerMethod = method("contentController", of: companionClass, types: "@16@0:8"),
+              let windowMethod = method("window", of: "_NSFullScreenContentController", types: "@16@0:8") else {
             logger.debug("cannot observe menu bar reveal")
             return false
         }
-        let original = unsafeBitCast(method_getImplementation(method), to: DispatchRevealChangedFunction.self)
-        let block: DispatchRevealChangedBlock = { cls, spaceID, menuBarRevealTarget, toolbarRevealTarget, duration in
-            original(cls, selector, spaceID, menuBarRevealTarget, toolbarRevealTarget, duration)
-            let update = {
-                let state = State(isMenuBarRevealed: menuBarRevealTarget > 0, isToolbarRevealed: toolbarRevealTarget > 0)
-                states[spaceID] = state.isMenuBarRevealed || state.isToolbarRevealed ? state : nil
-                NotificationCenter.default.post(name: didChangeNotification, object: nil, userInfo: [spaceIDKey: spaceID, durationKey: duration])
+        let menuBarRevealSelector = method_getName(menuBarRevealMethod)
+        let menuBarReveal = unsafeBitCast(method_getImplementation(menuBarRevealMethod), to: RevealFunction.self)
+        let toolbarWindowRevealSelector = method_getName(toolbarWindowRevealMethod)
+        let toolbarWindowReveal = unsafeBitCast(method_getImplementation(toolbarWindowRevealMethod), to: RevealFunction.self)
+        let contentControllerSelector = method_getName(contentControllerMethod)
+        let windowSelector = method_getName(windowMethod)
+        func observe(_ setter: Method) {
+            let selector = method_getName(setter)
+            let original = unsafeBitCast(method_getImplementation(setter), to: SetRevealFunction.self)
+            let block: SetRevealBlock = { companion, reveal in
+                original(companion, selector, reveal)
+                let state = State(isMenuBarRevealed: menuBarReveal(companion, menuBarRevealSelector) > 0,
+                                  isToolbarRevealed: toolbarWindowReveal(companion, toolbarWindowRevealSelector) > 0)
+                let update = {
+                    guard let contentController = companion.perform(contentControllerSelector)?.takeUnretainedValue() as? NSObject,
+                          let window = contentController.perform(windowSelector)?.takeUnretainedValue() as? VMDisplayWindow else {
+                        return
+                    }
+                    window.menuBarRevealDidChange(to: state)
+                }
+                if Thread.isMainThread {
+                    update()
+                } else {
+                    DispatchQueue.main.async(execute: update)
+                }
             }
-            if Thread.isMainThread {
-                update()
-            } else {
-                DispatchQueue.main.async(execute: update)
-            }
+            method_setImplementation(setter, imp_implementationWithBlock(block))
         }
-        method_setImplementation(method, imp_implementationWithBlock(block))
+        // the toolbar is revealed along with the menu bar, on some versions through its own setter
+        observe(setMenuBarRevealMethod)
+        observe(setToolbarWindowRevealMethod)
         return true
     }()
 
-    static func state(inSpace spaceID: UInt64) -> State {
-        states[spaceID] ?? State()
+    /// - Returns: The method if it exists with the type encoding we expect, which is all that can be checked of a private method
+    private static func method(_ name: String, of className: String, types expectedTypes: String) -> Method? {
+        guard let cls = NSClassFromString(className), let method = class_getInstanceMethod(cls, NSSelectorFromString(name)),
+              let types = method_getTypeEncoding(method), String(cString: types) == expectedTypes else {
+            logger.debug("cannot use -[\(className) \(name)]")
+            return nil
+        }
+        return method
     }
 }
