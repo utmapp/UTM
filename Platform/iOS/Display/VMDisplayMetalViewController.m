@@ -37,6 +37,13 @@ static const NSInteger kResizeTimeoutSecs = 5;
 @property (nonatomic, nullable) id debounceResize;
 @property (nonatomic, nullable) id cancelResize;
 @property (nonatomic) BOOL ignoreNextResize;
+@property (nonatomic) NSLayoutConstraint *displayBottomConstraint;
+#if !TARGET_OS_VISION
+@property (nonatomic, nullable) VMTouchpadView *touchpadView API_AVAILABLE(ios(26.0));
+@property (nonatomic, nullable) NSLayoutConstraint *deckAccessoryBottomConstraint;
+@property (nonatomic, nullable) NSLayoutConstraint *touchpadHeightConstraint;
+#endif
+@property (nonatomic) BOOL isDeckLayoutPending;
 
 @end
 
@@ -59,7 +66,14 @@ static const NSInteger kResizeTimeoutSecs = 5;
     self.keyboardView.delegate = self;
     [self.view insertSubview:self.keyboardView atIndex:0];
     [self.view insertSubview:self.mtkView atIndex:1];
-    [self.mtkView bindFrameToSuperviewBounds];
+    self.mtkView.translatesAutoresizingMaskIntoConstraints = NO;
+    self.displayBottomConstraint = [self.mtkView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor];
+    [NSLayoutConstraint activateConstraints:@[
+        [self.mtkView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
+        [self.mtkView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+        [self.mtkView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
+        self.displayBottomConstraint,
+    ]];
 }
 
 - (BOOL)serverModeCursor {
@@ -125,13 +139,13 @@ static const NSInteger kResizeTimeoutSecs = 5;
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    self.delegate.displayViewSize = [self convertSizeToNative:self.view.bounds.size];
+    self.delegate.displayViewSize = [self convertSizeToNative:self.displayAreaSize];
     [self addObserver:self forKeyPath:@"vmDisplay.displaySize" options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionInitial) context:nil];
     if ([self integerForSetting:@"QEMURendererFPSLimit"] > 0) {
         self.mtkView.preferredFramesPerSecond = [self integerForSetting:@"QEMURendererFPSLimit"];
     }
 #if !TARGET_OS_VISION
-    else if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+    else if (self.traitCollection.userInterfaceIdiom == UIUserInterfaceIdiomPad) {
         // only apply ProMotion by default on iPad which has a larger battery
         // on iPhone, we depend on the user manually setting the FPS limit to 120
         NSInteger maxFps = self.view.window.screen.maximumFramesPerSecond;
@@ -145,14 +159,192 @@ static const NSInteger kResizeTimeoutSecs = 5;
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
     [coordinator animateAlongsideTransition:nil completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
-        self.delegate.displayViewSize = [self convertSizeToNative:size];
-        [self.delegate display:self.vmDisplay didResizeTo:self.vmDisplay.displaySize];
-        if (self.delegate.qemuDisplayIsDynamicResolution && self.isDynamicResolutionSupported) {
-            if (!CGSizeEqualToSize(size, self.vmDisplay.displaySize)) {
-                [self requestResolutionChangeToSize:size];
-            }
-        }
+        [self displayAreaDidChangeToSize:[self displayAreaSizeForViewSize:size]];
     }];
+}
+
+#pragma mark - Input deck
+
+/// Whether the accessory row sits between the guest display and the fold.
+///
+/// The keyboard is dismissed and shown again while the row moves, and the row stays for a
+/// keyboard that is on its way back.
+- (BOOL)isDeckAccessoryShown {
+#if !TARGET_OS_VISION
+    return self.inputDeckHeight > 0 && !self.isTouchpadShown && (self.isKeyboardShown || self.keyboardView.isFirstResponder);
+#else
+    return NO;
+#endif
+}
+
+/// Height of the accessory row while it sits between the guest display and the fold.
+- (CGFloat)deckAccessoryHeight {
+#if !TARGET_OS_VISION
+    if (!self.isDeckAccessoryShown) {
+        return 0;
+    }
+    return [self.inputAccessoryView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height;
+#else
+    return 0;
+#endif
+}
+
+/// Height at the bottom of the view kept clear of the guest display: the deck, the fold and the accessory row.
+- (CGFloat)deckReservedHeight {
+    if (self.inputDeckHeight <= 0) {
+        return 0;
+    }
+    return self.inputDeckHeight + self.inputDeckFoldHeight + self.deckAccessoryHeight;
+}
+
+/// The part of the view that shows the guest display, above the input deck when there is one.
+- (CGSize)displayAreaSizeForViewSize:(CGSize)size {
+    size.height = MAX(0, size.height - self.deckReservedHeight);
+    return size;
+}
+
+- (CGSize)displayAreaSize {
+    return [self displayAreaSizeForViewSize:self.view.bounds.size];
+}
+
+- (void)displayAreaDidChangeToSize:(CGSize)size {
+    self.delegate.displayViewSize = [self convertSizeToNative:size];
+    if (!CGSizeEqualToSize(self.vmDisplay.displaySize, CGSizeZero)) {
+        [self.delegate display:self.vmDisplay didResizeTo:self.vmDisplay.displaySize];
+    }
+    if (self.delegate.qemuDisplayIsDynamicResolution && self.isDynamicResolutionSupported) {
+        if (!CGSizeEqualToSize(size, self.vmDisplay.displaySize)) {
+            [self requestResolutionChangeToSize:size];
+        }
+    }
+}
+
+- (void)setInputDeckHeight:(CGFloat)inputDeckHeight {
+    if (fabs(_inputDeckHeight - inputDeckHeight) < 0.5) {
+        return;
+    }
+    [self loadViewIfNeeded];
+    _inputDeckHeight = inputDeckHeight;
+    [self setNeedsDeckLayout];
+}
+
+- (void)setInputDeckFoldHeight:(CGFloat)inputDeckFoldHeight {
+    if (fabs(_inputDeckFoldHeight - inputDeckFoldHeight) < 0.5) {
+        return;
+    }
+    [self loadViewIfNeeded];
+    _inputDeckFoldHeight = inputDeckFoldHeight;
+    [self setNeedsDeckLayout];
+}
+
+- (void)setIsKeyboardShown:(BOOL)isKeyboardShown {
+    if (_isKeyboardShown == isKeyboardShown) {
+        return;
+    }
+    _isKeyboardShown = isKeyboardShown;
+    if (self.inputDeckHeight > 0) {
+        [self setNeedsDeckLayout];
+    }
+}
+
+/// The deck's parts arrive one by one from a view update, which must not change the view state
+/// itself, so they are laid out together on the next turn of the run loop.
+- (void)setNeedsDeckLayout {
+    if (self.isDeckLayoutPending) {
+        return;
+    }
+    self.isDeckLayoutPending = YES;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.isDeckLayoutPending = NO;
+        [self deckLayoutDidChange];
+    });
+}
+
+- (void)deckLayoutDidChange {
+#if !TARGET_OS_VISION
+    self.inputAccessoryView.isTouchpadKeyShown = self.inputDeckHeight > 0;
+    [self updateDeckAccessory];
+    self.touchpadHeightConstraint.constant = self.inputDeckHeight;
+#endif
+    CGFloat accessoryHeight = self.deckAccessoryHeight;
+    self.displayBottomConstraint.constant = -self.deckReservedHeight;
+    [self.view layoutIfNeeded];
+    [self displayAreaDidChangeToSize:self.displayAreaSize];
+    if (self.delegate.deckAccessoryHeight != accessoryHeight) {
+        self.delegate.deckAccessoryHeight = accessoryHeight;
+    }
+}
+
+#if !TARGET_OS_VISION
+/// With the deck the accessory row leaves the keyboard and sits between the guest display and the fold.
+///
+/// The system would put it there itself, but then it belongs to the keyboard, and the guest
+/// display and the toolbar could not lay out around it.
+- (void)updateDeckAccessory {
+    VMKeyboardAccessoryView *accessory = self.inputAccessoryView;
+    BOOL isInDeck = self.inputDeckHeight > 0;
+    BOOL isMoving = isInDeck ? accessory.superview != self.view : accessory.superview == self.view;
+    // reloading the input views while the keyboard is moving between the panels crashes inside
+    // UIKit, so the keyboard is dismissed and shown again around the change instead
+    BOOL wasFirstResponder = isMoving && self.keyboardView.isFirstResponder;
+    if (wasFirstResponder) {
+        [self.keyboardView resignFirstResponder];
+    }
+    if (isInDeck && accessory.superview != self.view) {
+        self.keyboardView.inputAccessoryView = nil;
+        [self.view addSubview:accessory];
+        self.deckAccessoryBottomConstraint = [accessory.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor constant:-(self.inputDeckHeight + self.inputDeckFoldHeight)];
+        [NSLayoutConstraint activateConstraints:@[
+            [accessory.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+            [accessory.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
+            self.deckAccessoryBottomConstraint,
+        ]];
+    } else if (!isInDeck && accessory.superview == self.view) {
+        [accessory removeFromSuperview];
+        self.deckAccessoryBottomConstraint = nil;
+        self.keyboardView.inputAccessoryView = accessory;
+    } else if (isInDeck) {
+        self.deckAccessoryBottomConstraint.constant = -(self.inputDeckHeight + self.inputDeckFoldHeight);
+    }
+    if (wasFirstResponder) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.keyboardView becomeFirstResponder];
+        });
+    }
+    accessory.hidden = isInDeck && !self.isDeckAccessoryShown;
+}
+#endif
+
+- (void)setIsTouchpadShown:(BOOL)isTouchpadShown {
+#if !TARGET_OS_VISION
+    if (_isTouchpadShown == isTouchpadShown) {
+        return;
+    }
+    [self loadViewIfNeeded];
+    _isTouchpadShown = isTouchpadShown;
+    if (@available(iOS 27.1, *)) {
+        if (isTouchpadShown && !self.touchpadView) {
+            VMTouchpadView *touchpad = [[VMTouchpadView alloc] initWithTarget:self];
+            touchpad.translatesAutoresizingMaskIntoConstraints = NO;
+            [self.view addSubview:touchpad];
+            self.touchpadHeightConstraint = [touchpad.heightAnchor constraintEqualToConstant:self.inputDeckHeight];
+            [NSLayoutConstraint activateConstraints:@[
+                self.touchpadHeightConstraint,
+                [touchpad.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+                [touchpad.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
+                [touchpad.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor],
+            ]];
+            self.touchpadView = touchpad;
+        }
+        self.touchpadView.hidden = !isTouchpadShown;
+    }
+    if (isTouchpadShown) {
+        [self prepareForTouchpad];
+    }
+    if (self.inputDeckHeight > 0) {
+        [self setNeedsDeckLayout];
+    }
+#endif
 }
 
 - (void)enterSuspendedWithIsBusy:(BOOL)busy {
@@ -171,7 +363,7 @@ static const NSInteger kResizeTimeoutSecs = 5;
     self.prefersPointerLocked = YES;
     self.view.window.isIndirectPointerTouchIgnored = YES;
     if (self.delegate.qemuDisplayIsDynamicResolution && self.isDynamicResolutionSupported) {
-        [self requestResolutionChangeToSize:self.view.bounds.size];
+        [self requestResolutionChangeToSize:self.displayAreaSize];
     }
     if (self.delegate.qemuHasClipboardSharing) {
         [[UTMPasteboard generalPasteboard] requestPollingModeForObject:self];
@@ -263,7 +455,7 @@ static const NSInteger kResizeTimeoutSecs = 5;
         UTMLog(@"DISPLAY: isDynamicResolutionSupported = %d", isDynamicResolutionSupported);
         if (self.delegate.qemuDisplayIsDynamicResolution) {
             if (isDynamicResolutionSupported) {
-                [self requestResolutionChangeToSize:self.view.bounds.size];
+                [self requestResolutionChangeToSize:self.displayAreaSize];
             } else {
                 [self resizeWindowToDisplaySize];
             }

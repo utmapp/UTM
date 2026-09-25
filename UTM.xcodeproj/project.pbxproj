@@ -502,6 +502,7 @@
 		CE2D92E624AD46670059923A /* UTMLegacyQemuConfiguration+Networking.m in Sources */ = {isa = PBXBuildFile; fileRef = CEA02A982436C7A30087E45F /* UTMLegacyQemuConfiguration+Networking.m */; };
 		CE2D92EB24AD46670059923A /* UTMLocationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CE059DC7243E9E3400338317 /* UTMLocationManager.m */; platformFilter = ios; };
 		CE2D92F224AD46670059923A /* VMKeyboardButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEEB66452284B942002737B2 /* VMKeyboardButton.swift */; };
+		F2C573FB05F34EC584B58E73 /* VMTouchpadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EB9E02516884021BE006A10 /* VMTouchpadView.swift */; };
 		CE2D92FC24AD46670059923A /* VMDisplayMetalViewController+Keyboard.m in Sources */ = {isa = PBXBuildFile; fileRef = CE3ADD66240EFBCA002D6A5F /* VMDisplayMetalViewController+Keyboard.m */; };
 		CE2D930424AD46670059923A /* UTMLegacyQemuConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = CE31C244225E555600A965DD /* UTMLegacyQemuConfiguration.m */; };
 		CE2D930524AD46670059923A /* VMDisplayMetalViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5286EC94243748C3007E6CBC /* VMDisplayMetalViewController.m */; };
@@ -819,6 +820,7 @@
 		CEA45ECF263519B5002FA97D /* VMConfigPortForwardForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D955224AD4F980059923A /* VMConfigPortForwardForm.swift */; };
 		CEA45ED3263519B5002FA97D /* VMSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D954C24AD4F980059923A /* VMSettingsView.swift */; };
 		CEA45ED8263519B5002FA97D /* VMKeyboardButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEEB66452284B942002737B2 /* VMKeyboardButton.swift */; };
+		106D3764B55E45AC93C0EB34 /* VMTouchpadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EB9E02516884021BE006A10 /* VMTouchpadView.swift */; };
 		CEA45EE8263519B5002FA97D /* VMDisplayMetalViewController+Keyboard.m in Sources */ = {isa = PBXBuildFile; fileRef = CE3ADD66240EFBCA002D6A5F /* VMDisplayMetalViewController+Keyboard.m */; };
 		CEA45EEA263519B5002FA97D /* UTMExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2D954624AD4F980059923A /* UTMExtensions.swift */; };
 		CEA45EEC263519B5002FA97D /* UTMData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE020BA224AEDC7C00B44AB6 /* UTMData.swift */; };
@@ -1164,6 +1166,7 @@
 		CEF7F5FC2AEEDCC400E34952 /* VMWizardStartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0305926A2AFDE00667B63 /* VMWizardStartView.swift */; };
 		CEF7F5FD2AEEDCC400E34952 /* QEMUConstantGenerated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843BF82728441FAF0029D60D /* QEMUConstantGenerated.swift */; };
 		CEF7F5FE2AEEDCC400E34952 /* VMKeyboardButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEEB66452284B942002737B2 /* VMKeyboardButton.swift */; };
+		E1376DB5705C4E9389EC6326 /* VMTouchpadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EB9E02516884021BE006A10 /* VMTouchpadView.swift */; };
 		CEF7F5FF2AEEDCC400E34952 /* UTMDownloadVMTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B36D2427B704C200C22685 /* UTMDownloadVMTask.swift */; };
 		CEF7F6002AEEDCC400E34952 /* GlobalFileImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8432329728C3017F00CFBC97 /* GlobalFileImporter.swift */; };
 		CEF7F6022AEEDCC400E34952 /* VMWizardContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C2E8642AA429E800B17308 /* VMWizardContent.swift */; };
@@ -2254,6 +2257,7 @@
 		CEE7ED472A90256100E6B4AB /* VMDisplayMetalViewController+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VMDisplayMetalViewController+Private.h"; sourceTree = "<group>"; };
 		CEE8B4C12B71DF4C0035AE86 /* UTMQemuSystemBackends.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTMQemuSystemBackends.h; sourceTree = "<group>"; };
 		CEEB66452284B942002737B2 /* VMKeyboardButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMKeyboardButton.swift; sourceTree = "<group>"; };
+		6EB9E02516884021BE006A10 /* VMTouchpadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMTouchpadView.swift; sourceTree = "<group>"; };
 		CEEC811A24E48EC600ACB0B3 /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		CEECE13B25E47D9500A2AAB8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CEEF26A62CEDAEEA003F7B8C /* UTMDownloadMacSupportToolsTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMDownloadMacSupportToolsTask.swift; sourceTree = "<group>"; };
@@ -3169,6 +3173,7 @@
 				8401865D2887B1620050AC51 /* VMDisplayTerminalViewController.swift */,
 				DB38A22C8D69DB2D2C64107F /* VMKeyboardAccessoryView.swift */,
 				CEEB66452284B942002737B2 /* VMKeyboardButton.swift */,
+				6EB9E02516884021BE006A10 /* VMTouchpadView.swift */,
 				CE4507D0226A5BE200A28D22 /* VMKeyboardView.h */,
 				CE4507D1226A5BE200A28D22 /* VMKeyboardView.m */,
 				CE4507D3226A5C9900A28D22 /* VMKeyboardViewDelegate.h */,
@@ -4130,6 +4135,7 @@
 				843BF82828441FAF0029D60D /* QEMUConstantGenerated.swift in Sources */,
 				FD2E48FCF9EC5A44E0A35855 /* VMKeyboardAccessoryView.swift in Sources */,
 				CE2D92F224AD46670059923A /* VMKeyboardButton.swift in Sources */,
+				F2C573FB05F34EC584B58E73 /* VMTouchpadView.swift in Sources */,
 				84B36D2527B704C200C22685 /* UTMDownloadVMTask.swift in Sources */,
 				8432329828C3017F00CFBC97 /* GlobalFileImporter.swift in Sources */,
 				CE68E5442E3912E0006B3645 /* VMKeyboardShortcutsView.swift in Sources */,
@@ -4559,6 +4565,7 @@
 				83034C0826AB630F006B4BAF /* UTMPendingVMView.swift in Sources */,
 				9DFF2F0A05DA5A4B5FA35917 /* VMKeyboardAccessoryView.swift in Sources */,
 				CEA45ED8263519B5002FA97D /* VMKeyboardButton.swift in Sources */,
+				106D3764B55E45AC93C0EB34 /* VMTouchpadView.swift in Sources */,
 				CEF0307526A2B40B00667B63 /* VMWizardHardwareView.swift in Sources */,
 				CE8011212AD4E9E8009001C2 /* UTMApp.swift in Sources */,
 				CE611BEC29F50D3E001817BC /* VMReleaseNotesView.swift in Sources */,
@@ -4729,6 +4736,7 @@
 				CEF7F5FD2AEEDCC400E34952 /* QEMUConstantGenerated.swift in Sources */,
 				2A3EFF2D980175F4D531E0E3 /* VMKeyboardAccessoryView.swift in Sources */,
 				CEF7F5FE2AEEDCC400E34952 /* VMKeyboardButton.swift in Sources */,
+				E1376DB5705C4E9389EC6326 /* VMTouchpadView.swift in Sources */,
 				CEF7F5FF2AEEDCC400E34952 /* UTMDownloadVMTask.swift in Sources */,
 				CEF7F6002AEEDCC400E34952 /* GlobalFileImporter.swift in Sources */,
 				CEF7F6022AEEDCC400E34952 /* VMWizardContent.swift in Sources */,

@@ -23,6 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)keyboardDonePressed:(UIButton *)sender;
 - (void)keyboardPastePressed:(UIButton *)sender;
+- (void)keyboardTouchpadPressed:(UIButton *)sender;
+- (void)touchpadKeyboardPressed:(UIButton *)sender;
 - (void)customKeyTouchDown:(VMKeyboardButton *)sender;
 - (void)customKeyTouchUp:(VMKeyboardButton *)sender;
 

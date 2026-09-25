@@ -47,6 +47,7 @@
 //#if !defined(TARGET_OS_VISION) || !TARGET_OS_VISION
 #include "VMDisplayMetalViewController.h"
 #include "VMDisplayMetalViewController+Keyboard.h"
+#include "VMDisplayMetalViewController+Touch.h"
 //#endif
 #include "VMKeyboardView.h"
 #elif TARGET_OS_OSX

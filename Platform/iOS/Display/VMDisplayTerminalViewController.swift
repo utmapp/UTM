@@ -50,9 +50,9 @@ import SwiftUI
         styleTerminal()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        setupKeyboardMonitor()
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        layoutTerminal()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -104,30 +104,43 @@ import SwiftUI
 
 // MARK: - Layout terminal
 extension VMDisplayTerminalViewController {
-    // This prevents curved edge from cutting off the content
-    var additionalTopPadding: CGFloat {
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            let scenes = UIApplication.shared.connectedScenes
-            let windowScene = scenes.first as? UIWindowScene
-            guard let window = windowScene?.windows.first else { return 0 }
-            return window.safeAreaInsets.bottom
+    /// The safe area is not enough to keep the first line of text out of the rounded corners while
+    /// the status bar is hidden, so the system's corner-adapted region is used where it exists.
+    private var contentLayoutGuide: UILayoutGuide {
+        if #available(iOS 26, visionOS 26, *) {
+            return view.layoutGuide(for: .safeArea(cornerAdaptation: .vertical))
         } else {
-            return 0
+            return view.safeAreaLayoutGuide
         }
     }
 
-    func setupKeyboardMonitor ()
-    {
+    private func layoutTerminal() {
         #if os(visionOS)
         let inputAccessoryHeight: CGFloat = 0
         #else
         let inputAccessoryHeight = terminalView.inputAccessoryView?.frame.height ?? 0
         #endif
+        let guide = contentLayoutGuide
         terminalView.translatesAutoresizingMaskIntoConstraints = false
-        terminalView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: additionalTopPadding).isActive = true
-        terminalView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor).isActive = true
-        terminalView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor).isActive = true
-        terminalView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: -inputAccessoryHeight).isActive = true
+        NSLayoutConstraint.activate([
+            terminalView.topAnchor.constraint(equalTo: guide.topAnchor, constant: fallbackTopPadding),
+            terminalView.leftAnchor.constraint(equalTo: guide.leftAnchor),
+            terminalView.rightAnchor.constraint(equalTo: guide.rightAnchor),
+            terminalView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor, constant: -inputAccessoryHeight),
+        ])
+    }
+
+    /// Before the corner-adapted region existed, an iPad kept the first line out of the rounded
+    /// corners with the height of the bottom safe area, which the home indicator rounds alike.
+    private var fallbackTopPadding: CGFloat {
+        if #available(iOS 26, visionOS 26, *) {
+            return 0
+        }
+        guard traitCollection.userInterfaceIdiom == .pad else {
+            return 0
+        }
+        let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
+        return windowScene?.windows.first?.safeAreaInsets.bottom ?? 0
     }
 }
 

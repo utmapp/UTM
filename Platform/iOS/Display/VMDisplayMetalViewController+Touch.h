@@ -55,6 +55,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)scrollWithInertia:(UIPanGestureRecognizer *)sender;
 - (void)mouseClick:(CSInputButton)button location:(CGPoint)location;
 
+/// Puts the guest pointer into the mode the touchpad drives before its first touch, since the switch takes a round trip to the guest.
+- (void)prepareForTouchpad;
+/// Moves the pointer like a connected mouse would, by a distance in points on a touchpad surface.
+- (void)touchpadMoveBy:(CGPoint)delta;
+/// Holds or releases a button of the pointer like a connected mouse would.
+- (void)touchpadPressButton:(CSInputButton)button pressed:(BOOL)pressed;
+
 @end
 
 NS_ASSUME_NONNULL_END
