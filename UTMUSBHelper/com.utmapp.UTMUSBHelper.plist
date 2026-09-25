@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>com.utmapp.UTMUSBHelper</string>
+	<!-- Percorso RELATIVO alla root del bundle dell'app: è la forma che
+	     SMAppService.daemon(plistName:) si aspetta. Il file va copiato in
+	     Contents/Library/LaunchDaemons/ da una build phase dedicata. -->
+	<key>BundleProgram</key>
+	<string>Contents/Library/LaunchDaemons/UTMUSBHelper</string>
+	<key>MachServices</key>
+	<dict>
+		<key>com.utmapp.UTMUSBHelper</key>
+		<true/>
+	</dict>
+	<!-- On-demand: launchd lo avvia alla prima connessione XPC e lo lascia
+	     vivere finché ci sono device rediretti. Non è un servizio che deve
+	     girare sempre. -->
+	<key>ProcessType</key>
+	<string>Standard</string>
+</dict>
+</plist>
