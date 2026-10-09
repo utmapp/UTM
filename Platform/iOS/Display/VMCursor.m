@@ -18,6 +18,12 @@
 #import "VMDisplayMetalViewController+Touch.h"
 #import "CSDisplay.h"
 
+@interface VMCursor ()
+
+@property (nonatomic, readonly) CGFloat cursorSpeedMultiplier;
+
+@end
+
 @implementation VMCursor {
     CGPoint _start;
     CGPoint _lastCenter;

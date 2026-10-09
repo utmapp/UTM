@@ -1323,11 +1323,6 @@ extension UTMAppleVirtualMachine {
             logger.debug("Connected USB device \(device.name)")
         } catch {
             manager.setOwner(nil, of: device)
-            // undocumented code for devices that cannot be captured (such as with isochronous endpoints)
-            let nsError = error as NSError
-            if nsError.domain == "VZErrorDomain" && nsError.code == -6 {
-                throw UTMAppleVirtualMachineError.usbDeviceNotSupported(device.name)
-            }
             throw error
         }
     }
@@ -1468,7 +1463,6 @@ enum UTMAppleVirtualMachineError: Error {
     case usbDeviceNotFound(String)
     case usbDeviceInUse(String)
     case usbDeviceNotConnected(String)
-    case usbDeviceNotSupported(String)
     case cannotSaveInDisposibleMode
     case guestProvisioningNotSupported
     case guestProvisioningNotAvailable
@@ -1509,8 +1503,6 @@ extension UTMAppleVirtualMachineError: LocalizedError {
             return String.localizedStringWithFormat(NSLocalizedString("The USB device '%@' is already connected to another virtual machine.", comment: "UTMAppleVirtualMachine"), name)
         case .usbDeviceNotConnected(let name):
             return String.localizedStringWithFormat(NSLocalizedString("The USB device '%@' is not connected to this virtual machine.", comment: "UTMAppleVirtualMachine"), name)
-        case .usbDeviceNotSupported(let name):
-            return String.localizedStringWithFormat(NSLocalizedString("The USB device '%@' is not supported for capture by virtual machines.", comment: "UTMAppleVirtualMachine"), name)
         case .cannotSaveInDisposibleMode:
             return NSLocalizedString("Suspend state cannot be saved when running without saving changes.", comment: "UTMAppleVirtualMachine")
         case .guestProvisioningNotSupported:

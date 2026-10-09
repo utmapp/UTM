@@ -73,25 +73,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 NS_ASSUME_NONNULL_END
 
-#if !defined(TARGET_OS_VISION) || !TARGET_OS_VISION
-/// The native scale of the screen the view is on, which can differ from the trait's scale on downsampled displays.
-///
-/// A device can have more than one screen so the view's own traits are used until it is in a window.
-static inline CGFloat CGViewNativeScale(UIView * _Nonnull view) {
-    UIScreen *screen = view.window.windowScene.screen;
-    if (screen) {
-        return screen.nativeScale;
-    } else {
-        return view.traitCollection.displayScale;
-    }
-}
-#endif
-
 static inline CGFloat CGPointToPixel(UIView * _Nonnull view, CGFloat point) {
 #if defined(TARGET_OS_VISION) && TARGET_OS_VISION
     return point * 2.0;
 #else
-    return point * CGViewNativeScale(view);
+    UIScreen *screen = view.window.screen;
+    if (!screen) {
+        screen = [UIScreen mainScreen];
+    }
+    return point * screen.nativeScale;
 #endif
 }
 
@@ -99,6 +89,10 @@ static inline CGFloat CGPixelToPoint(UIView * _Nonnull view, CGFloat pixel) {
 #if defined(TARGET_OS_VISION) && TARGET_OS_VISION
     return pixel / 2.0;
 #else
-    return pixel / CGViewNativeScale(view);
+    UIScreen *screen = view.window.screen;
+    if (!screen) {
+        screen = [UIScreen mainScreen];
+    }
+    return pixel / screen.nativeScale;
 #endif
 }

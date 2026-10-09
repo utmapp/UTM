@@ -59,7 +59,6 @@ struct VMWizardSummaryView: View {
                     sharing
                         .disabled(true)
                 }
-                .padding([.top, .trailing])
             }
             Spacer()
             #else
