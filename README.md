@@ -41,7 +41,13 @@ To optimize for size and build times, only the following architectures are inclu
 
 UTM (SE) for iOS: https://getutm.app/install/
 
+UTM SE is also available on the App Store: (https://apps.apple.com/us/app/utm-se-retro-pc-emulator/id1564628856)
+
+TestFlight: (https://testflight.apple.com/join/scqwW9gJ)
+
 UTM is also available for macOS: https://mac.getutm.app/
+
+The macOS edition also comes in the App Store for $12.99:(https://apps.apple.com/ge/app/utm-virtual-machines/id1538878817?mt=12)
 
 ## Development
 
