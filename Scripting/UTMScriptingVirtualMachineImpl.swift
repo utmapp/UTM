@@ -295,7 +295,7 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
                 try await appleVM.stop(usingMethod: .force)
                 return
             }
-            guard vm.state == .started || stopMethod == .kill else {
+            guard vm.state == .started || (vm.state == .paused && stopMethod != .request) || stopMethod == .kill else {
                 throw ScriptingError.notRunning
             }
             switch stopMethod {
