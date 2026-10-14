@@ -110,6 +110,16 @@ struct VMDisplayHostedView: UIViewControllerRepresentable {
             }
         }
 
+        var deckAccessoryHeight: CGFloat {
+            get {
+                state.deckAccessoryHeight
+            }
+
+            set {
+                state.deckAccessoryHeight = newValue
+            }
+        }
+
         init(with vm: any UTMSpiceVirtualMachine, device: VMWindowState.Device, state: Binding<VMWindowState>) {
             self.vm = vm
             self.device = device
@@ -138,6 +148,10 @@ struct VMDisplayHostedView: UIViewControllerRepresentable {
         
         func requestInputTablet(_ tablet: Bool) {
             vm.requestInputTablet(tablet)
+        }
+
+        func displayDidRequestInputDeck(_ deck: VMInputDeck) {
+            state.requestInputDeck(deck)
         }
     }
     
@@ -174,9 +188,22 @@ struct VMDisplayHostedView: UIViewControllerRepresentable {
         return vc
     }
     
+    /// The display takes whatever size it is given and lays its parts out inside.
+    ///
+    /// Without this, SwiftUI sizes the view from its constraints, and the space that the input deck
+    /// reserves below the guest display makes it taller than the window while the keyboard is up.
+    @available(iOS 16.0, *)
+    func sizeThatFits(_ proposal: ProposedViewSize, uiViewController: VMDisplayViewController, context: Context) -> CGSize? {
+        proposal.replacingUnspecifiedDimensions(by: uiViewController.view.bounds.size)
+    }
+
     func updateUIViewController(_ uiViewController: VMDisplayViewController, context: Context) {
         if let vc = uiViewController as? VMDisplayMetalViewController {
             vc.vmInput = session.primaryInput
+            vc.inputDeckHeight = state.inputDeckLayout?.frame.height ?? 0
+            vc.inputDeckFoldHeight = state.inputDeckLayout?.fold.height ?? 0
+            vc.isTouchpadShown = state.showsTouchpadDeck
+            vc.isKeyboardShown = state.isKeyboardShown
         }
         #if os(visionOS)
         let useSystemOsk = !(uiViewController is VMDisplayMetalViewController)

@@ -24,6 +24,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readwrite) CGRect bounds;
 
+/// The drag speed setting as a factor applied to relative motion.
+@property (nonatomic, readonly) CGFloat cursorSpeedMultiplier;
+
 - (id)initWithVMViewController:(VMDisplayMetalViewController *)controller;
 - (void)startMovement:(CGPoint)startPoint;
 - (void)updateMovement:(CGPoint)point;
