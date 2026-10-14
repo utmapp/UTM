@@ -1,12 +1,15 @@
 # UTM
 
 [![Статус](https://github.com/utmapp/UTM/actions/workflows/build.yml/badge.svg?branch=main&event=push)](https://github.com/utmapp/UTM/actions?query=event%3Arelease+workflow%3ABuild)
+[![Mac App Store](https://img.shields.io/badge/Mac_App_Store-UTM-0D96F6?logo=appstore&logoColor=white)](https://apps.apple.com/ru/app/utm-virtual-machines/id1538878817)
+[![App Store](https://img.shields.io/badge/App_Store-UTM_SE-0D96F6?logo=appstore&logoColor=white)](https://apps.apple.com/ru/app/utm-se-retro-pc-emulator/id1564628856)
+[![Download](https://img.shields.io/badge/Download-UTM.dmg-24292F?logo=github&logoColor=white)](https://github.com/utmapp/UTM/releases/latest/download/UTM.dmg)
 
 > Возможно изобрести [такую машину](https://ru.wikipedia.org/wiki/Универсальная_машина_Тьюринга), которая справится с любой вычислимой последовательностью.
 
 — <cite>Алан Тьюринг, «О вычислимых числах применительно к [проблеме разрешения](https://ru.wikipedia.org/wiki/Проблема_разрешения)» ([*On Computable Numbers, with an Application to the Entscheidungsproblem*](https://www.cs.virginia.edu/~robins/Turing_Paper_1936.pdf)) (1936)</cite>
 
-UTM — это полноценный эмулятор системы и хост виртуальных машин для iOS и macOS. В основе UTM лежит [QEMU](https://www.qemu.org/). UTM позволяет запускать Windows, Linux и другие операционные системы на Mac, iPhone и iPad.
+UTM — это полноценный эмулятор системы и хост виртуальных машин для iOS, macOS и visionOS. В основе UTM лежит [QEMU](https://www.qemu.org/). UTM позволяет запускать Windows, Linux и другие операционные системы на Mac, iPhone и iPad.
 
 Дополнительная информация на [getutm.app](https://getutm.app/) и [mac.getutm.app](https://mac.getutm.app/).
 
@@ -24,13 +27,13 @@ UTM — это полноценный эмулятор системы и хос�
 * Режим текстового терминала
 * Поддержка USB-устройств
 * JIT-оптимизация на основе [QEMU TCG](https://www.qemu.org/docs/master/devel/index-tcg.html)
-* UI, разработанный специально для macOS 11+ и iOS 11+ с помощью нативных API
+* UI, разработанный специально для macOS 12+ и iOS 15+ с помощью нативных API
 * Возможность создавать, настраивать и запускать виртуальные машины прямо на устройстве
 
 ## Дополнительные возможности (только на macOS)
 
 * Аппаратное ускорение виртуализации с помощью [фреймворка Hypervisor](https://developer.apple.com/documentation/hypervisor) и QEMU
-* Возможность запускать macOS в виртуальных машинах с помощью [фреймворка Virtualization](https://developer.apple.com/documentation/virtualization) (требуется macOS 12 или новее на хосте)
+* Возможность запускать macOS в виртуальных машинах с помощью [фреймворка Virtualization](https://developer.apple.com/documentation/virtualization)
 
 ## UTM SE
 
@@ -42,8 +45,8 @@ UTM SE (“slow edition”) использует [поточный интерп�
 
 ## Установка
 
-* [UTM для macOS](https://mac.getutm.app/)
-* [UTM (SE) для iOS](https://getutm.app/install/)
+* [UTM для macOS](https://docs.getutm.app/installation/macos/)
+* [UTM (SE) для iOS](https://docs.getutm.app/installation/ios/)
 
 ## Разработка
 
