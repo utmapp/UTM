@@ -2943,6 +2943,13 @@ VMWizardOSMacView */
 "VGA Device RAM (MB)" = "VGA 设备内存 (MB)";
 
 /* No comment provided by engineer. */
+"Virtual machines using this mode in the same UTM app can connect to each other and access the internet through your Mac." = "在同一 UTM App 中使用此模式的虚拟机可以相互连接，并通过你的 Mac 访问互联网。";
+
+/* No comment provided by engineer. */
+"Virtual machines using this mode in the same UTM app can connect to each other and your Mac. This network does not provide internet access." = "在同一 UTM App 中使用此模式的虚拟机可以相互连接，并连接到你的 Mac。此网络不提供互联网访问。";
+
+
+/* No comment provided by engineer. */
 "Virtualization" = "虚拟化";
 
 /* No comment provided by engineer. */
