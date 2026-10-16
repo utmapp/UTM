@@ -73,6 +73,130 @@ struct VMWindowState: Identifiable {
     var alert: Alert?
 
     var isDynamicResolutionSupported: Bool = false
+
+    // MARK: Toolbar
+
+    /// Only the show/hide button is visible.
+    ///
+    /// Read from the defaults once so the window keeps its own state while the choice persists.
+    var isToolbarCollapsed: Bool = UserDefaults.standard.bool(forKey: "ToolbarIsCollapsed")
+
+    // MARK: Input deck
+
+    struct InputDeckLayout: Equatable {
+        /// The part below the fold, in window coordinates.
+        var frame: CGRect
+        /// The fold itself, which neither half uses for controls.
+        var fold: CGRect
+    }
+
+    /// The bottom half of a device folded like a laptop, while it is folded so.
+    var inputDeckLayout: InputDeckLayout?
+
+    var inputDeckFrame: CGRect? {
+        inputDeckLayout?.frame
+    }
+
+    /// What the bottom half shows, remembered for the next time the device is folded.
+    var inputDeck: VMInputDeck = .keyboard
+
+    /// The zoom lock from before the device was folded, restored when it is opened again.
+    var zoomLockBeforeDeck: Bool?
+
+    /// Whether the keyboard was shown before the device was folded, which is what the window remembers.
+    var keyboardVisibleBeforeDeck: Bool?
+
+    /// Height reserved for the accessory row at the bottom of the display half while folded.
+    var deckAccessoryHeight: CGFloat = 0
+
+    /// How far a toolbar ending at the given window position must move up to clear the fold and accessory row.
+    ///
+    /// The keyboard is left to the system, which keeps the toolbar above it.
+    func toolbarBottomInset(toolbarBottom: CGFloat) -> CGFloat {
+        guard let layout = inputDeckLayout else {
+            return 0
+        }
+        return max(0, toolbarBottom - (layout.fold.minY - deckAccessoryHeight))
+    }
+
+    /// Only the guest display has a touchpad, so other devices keep the keyboard in the deck.
+    var showsTouchpadDeck: Bool {
+        guard inputDeckLayout != nil, inputDeck == .touchpad, case .display = device else {
+            return false
+        }
+        return true
+    }
+}
+
+// MARK: - Toolbar
+
+extension VMWindowState {
+    mutating func toggleToolbarCollapsed() {
+        setToolbarCollapsed(!isToolbarCollapsed)
+    }
+
+    mutating func setToolbarCollapsed(_ collapsed: Bool) {
+        isToolbarCollapsed = collapsed
+        UserDefaults.standard.set(collapsed, forKey: "ToolbarIsCollapsed")
+    }
+}
+
+// MARK: - Input deck
+
+extension VMWindowState {
+    /// Called when the device is folded like a laptop or opened up again.
+    mutating func setInputDeck(_ layout: InputDeckLayout?) {
+        guard layout != inputDeckLayout else {
+            return
+        }
+        inputDeckLayout = layout
+        if layout != nil {
+            // the display half is small, so it always shows the whole guest display
+            if zoomLockBeforeDeck == nil {
+                zoomLockBeforeDeck = isDisplayZoomLocked
+            }
+            if keyboardVisibleBeforeDeck == nil {
+                keyboardVisibleBeforeDeck = isKeyboardShown
+            }
+            isDisplayZoomLocked = true
+        } else {
+            if let zoomLock = zoomLockBeforeDeck {
+                isDisplayZoomLocked = zoomLock
+            }
+            if let keyboardVisible = keyboardVisibleBeforeDeck {
+                isKeyboardRequested = keyboardVisible
+            }
+            zoomLockBeforeDeck = nil
+            keyboardVisibleBeforeDeck = nil
+        }
+    }
+
+    /// The keyboard for a freshly folded device is asked for once the pose has settled, since a
+    /// keyboard shown while the hinge is still moving is dismissed again by the system.
+    var wantsDeckKeyboard: Bool {
+        inputDeckLayout != nil && !showsTouchpadDeck && !isKeyboardShown
+    }
+
+    mutating func requestInputDeck(_ deck: VMInputDeck) {
+        inputDeck = deck
+        isKeyboardRequested = deck == .keyboard
+    }
+
+    /// The keyboard button steps from the keyboard to the touchpad and back while the device is folded.
+    mutating func cycleInputDeck() {
+        guard case .display = device else {
+            isKeyboardRequested = !isKeyboardShown
+            return
+        }
+        switch inputDeck {
+        case .keyboard where isKeyboardShown:
+            requestInputDeck(.touchpad)
+        case .keyboard:
+            isKeyboardRequested = true
+        case .touchpad:
+            requestInputDeck(.keyboard)
+        }
+    }
 }
 
 // MARK: - VM action alerts
@@ -167,9 +291,9 @@ extension VMWindowState {
         window.scale = displayScale
         #if !os(visionOS)
         window.origin = displayOrigin
-        window.isDisplayZoomLocked = isDisplayZoomLocked
+        window.isDisplayZoomLocked = zoomLockBeforeDeck ?? isDisplayZoomLocked
         #endif
-        window.isKeyboardVisible = isKeyboardShown
+        window.isKeyboardVisible = keyboardVisibleBeforeDeck ?? isKeyboardShown
         registryEntry.windowSettings[id] = window
     }
     
@@ -183,8 +307,16 @@ extension VMWindowState {
         isDisplayZoomLocked = true
         #else
         displayOrigin = window.origin
-        isDisplayZoomLocked = window.isDisplayZoomLocked
-        isKeyboardRequested = window.isKeyboardVisible
+        if inputDeckLayout != nil {
+            // the forced fit and keyboard stay while folded and the window's own choices apply once opened
+            zoomLockBeforeDeck = window.isDisplayZoomLocked
+            keyboardVisibleBeforeDeck = window.isKeyboardVisible
+            isDisplayZoomLocked = true
+            isKeyboardRequested = !showsTouchpadDeck
+        } else {
+            isDisplayZoomLocked = window.isDisplayZoomLocked
+            isKeyboardRequested = window.isKeyboardVisible
+        }
         #endif
         if isDisplayZoomLocked {
             resizeDisplayToFit(display)

@@ -272,7 +272,7 @@ enum UTMQuitPolicy: Int {
         if let error = error {
             alert.informativeText = error.localizedDescription + "\n" + alert.informativeText
         }
-        alert.addButton(withTitle: NSLocalizedString("OK", comment: "VMDisplayWindowController"))
+        alert.addButton(withTitle: NSLocalizedString("Quit", comment: "AppDelegate"))
         alert.addButton(withTitle: NSLocalizedString("Cancel", comment: "VMDisplayWindowController"))
         alert.showsSuppressionButton = true
         let confirm = { (response: NSApplication.ModalResponse) in

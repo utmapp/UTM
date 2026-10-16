@@ -36,8 +36,11 @@ struct UTMApp: App {
         }
     }
 
+    /// Identifies the window group for `openWindow`.
+    static let windowID = "main"
+
     var body: some Scene {
-        WindowGroup {
+        WindowGroup(id: Self.windowID) {
             UTMSingleWindowView(data: data)
                 .externalDisplayAccessory()
         }.commands {

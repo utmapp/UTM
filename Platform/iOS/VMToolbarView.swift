@@ -18,19 +18,33 @@ import SwiftUI
 import TipKit
 
 struct VMToolbarView: View {
-    @AppStorage("ToolbarIsCollapsed") private var isCollapsed: Bool = false
+    /// Where the toolbar goes when it is laid out along a side of the window.
+    enum Layout: Equatable {
+        /// The corner of the window, which the user can drag the toolbar between.
+        case corner(ToolbarLocation)
+        /// Top-aligned along one side, next to the system's own vertical controls.
+        case vertical(HorizontalEdge)
+
+        var isVertical: Bool {
+            if case .vertical = self {
+                return true
+            } else {
+                return false
+            }
+        }
+    }
+
     @AppStorage("ToolbarLocation") private var location: ToolbarLocation = .topRight
+    @State private var verticalBarRegion: CGRect?
     @State private var shake: Bool = true
     @State private var isMoving: Bool = false
-    @State private var isIdle: Bool = false
     @State private var dragOffset: CGSize = .zero
-    @State private var shortIdleTask: DispatchWorkItem?
     @State private var isKeyShortcutsShown: Bool = false
+    @StateObject private var idle = ToolbarIdleState()
     
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.verticalSizeClass) private var verticalSizeClass
     @EnvironmentObject private var session: VMSessionState
-    @StateObject private var longIdleTimeout = LongIdleTimeout()
     
     @Binding var state: VMWindowState
     
@@ -44,27 +58,22 @@ struct VMToolbarView: View {
         }
     }
     
-    private var nameOfHideIcon: String {
-        if location == .topLeft || location == .bottomLeft {
-            return "chevron.right"
-        } else {
-            return "chevron.left"
-        }
-    }
-    
-    private var nameOfShowIcon: String {
-        if location == .topLeft || location == .bottomLeft {
-            return "chevron.left"
-        } else {
-            return "chevron.right"
+    /// The chevron points where the buttons unfold to or fold away towards.
+    private func showHideIcon(for layout: Layout) -> String {
+        switch layout {
+        case .corner(let location):
+            let isLeft = location == .topLeft || location == .bottomLeft
+            return state.isToolbarCollapsed == isLeft ? "chevron.right" : "chevron.left"
+        case .vertical:
+            return state.isToolbarCollapsed ? "chevron.down" : "chevron.up"
         }
     }
     
     private var toolbarToggleOpacity: Double {
-        if state.device != nil && !state.isBusy && state.isRunning && isCollapsed && !isMoving {
-            if !longIdleTimeout.isUserInteracting {
+        if state.device != nil && !state.isBusy && state.isRunning && state.isToolbarCollapsed && !isMoving {
+            if idle.isHidden {
                 return 0
-            } else if isIdle {
+            } else if idle.isDimmed {
                 return 0.4
             } else {
                 return 1
@@ -86,171 +95,247 @@ struct VMToolbarView: View {
     
     @ViewBuilder
     var toolbarBody: some View {
-        toolbarContainer { geometry in
-            if !isCollapsed {
-                Group {
-                    Button {
-                        if state.isRunning {
-                            state.alert = .powerDown
-                        } else {
-                            state.alert = .terminateApp
-                        }
-                    } label: {
-                        if state.isRunning {
-                            Label("Power Off", systemImage: "power")
-                        } else {
-                            Label("Force Kill", systemImage: "xmark")
-                        }
-                    }.animationUniqueID("power", in: namespace)
-                    Button {
-                        session.pauseResume()
-                    } label: {
-                        Label(state.isRunning ? "Pause" : "Play", systemImage: state.isRunning ? "pause" : "play")
-                    }.animationUniqueID("pause", in: namespace)
-                    Button {
-                        state.alert = .restart
-                    } label: {
-                        Label("Restart", systemImage: "restart")
-                    }.animationUniqueID("restart", in: namespace)
-                    Button {
-                        if case .serial(_, _) = state.device {
-                            let template = session.qemuConfig.serials[state.device!.configIndex].terminal?.resizeCommand
-                            state.toggleDisplayResize(command: template)
-                        } else {
-                            state.toggleDisplayResize()
-                        }
-                    } label: {
-                        Label("Zoom", systemImage: state.isViewportChanged ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
-                    }.animationUniqueID("resize", in: namespace)
-                    #if WITH_USB
-                    if session.vm.hasUsbRedirection {
-                        VMToolbarUSBMenuView()
-                            .animationUniqueID("usb", in: namespace)
-                    }
-                    #endif
-                    VMToolbarDriveMenuView(config: session.qemuConfig)
-                        .animationUniqueID("drive", in: namespace)
-                    VMToolbarDisplayMenuView(state: $state)
-                        .animationUniqueID("display", in: namespace)
-                    Button {
-                        // ignore if we are showing shortcuts
-                        guard !isKeyShortcutsShown else {
-                            return
-                        }
-                        state.isKeyboardRequested = !state.isKeyboardShown
-                    } label: {
-                        Label("Keyboard", systemImage: "keyboard")
-                    }.animationUniqueID("keyboard", in: namespace)
-                    #if !WITH_REMOTE
-                    .simultaneousGesture(
-                        LongPressGesture().onEnded { _ in
-                            isKeyShortcutsShown.toggle()
-                        }
-                    )
-                    .sheet(isPresented: $isKeyShortcutsShown) {
-                        VMKeyboardShortcutsView { keys in
-                            session.sendKeys(keys: keys)
-                        }
-                    }
-                    #endif
-                }.toolbarButtonStyle(horizontalSizeClass: horizontalSizeClass, verticalSizeClass: verticalSizeClass)
-                .disabled(state.isBusy)
-            }
-            Button {
-                resetIdle()
-                longIdleTimeout.assertUserInteraction()
-                withOptionalAnimation {
-                    isCollapsed.toggle()
+        toolbarContainer { geometry, layout in
+            if layout.isVertical {
+                showHideButton(geometry: geometry, layout: layout)
+                if !state.isToolbarCollapsed {
+                    buttons
                 }
-            } label: {
-                Label("Hide", systemImage: isCollapsed ? nameOfHideIcon : nameOfShowIcon)
-            }.toolbarButtonStyle(horizontalSizeClass: horizontalSizeClass, verticalSizeClass: verticalSizeClass)
-            .animationUniqueID("hide", in: namespace)
-            .modifier(HideToolbarTipModifier(isCollapsed: $isCollapsed, location: location))
-            .opacity(toolbarToggleOpacity)
-            .modifier(Shake(shake: shake))
-            .offset(dragOffset)
-            .highPriorityGesture(
-                DragGesture(coordinateSpace: .named("Window"))
-                    .onChanged { value in
-                        withOptionalAnimation {
-                            isCollapsed = true
-                            isMoving = true
-                            dragOffset = value.translation
-                        }
-                    }
-                    .onEnded { value in
-                        withOptionalAnimation {
-                            location = closestLocation(to: value.location, for: geometry)
-                            isMoving = false
-                            dragOffset = .zero
-                        }
-                        resetIdle()
-                        longIdleTimeout.assertUserInteraction()
-                    }
-            )
-            .onAppear {
-                resetIdle()
-                longIdleTimeout.assertUserInteraction()
-                if isCollapsed {
-                    withOptionalAnimation(.easeInOut(duration: 1)) {
-                        shake.toggle()
-                    }
+            } else {
+                if !state.isToolbarCollapsed {
+                    buttons
+                }
+                showHideButton(geometry: geometry, layout: layout)
+            }
+        }
+        .onAppear {
+            resetIdle()
+            assertUserInteraction()
+            if state.isToolbarCollapsed {
+                withOptionalAnimation(.easeInOut(duration: 1)) {
+                    shake.toggle()
                 }
             }
-            .onChange(of: state.isUserInteracting) { newValue in
-                longIdleTimeout.assertUserInteraction()
-                session.activeWindow = state.id
-            }
+        }
+        .onChange(of: state.isUserInteracting) { newValue in
+            assertUserInteraction()
+            session.activeWindow = state.id
         }
     }
     
     @ViewBuilder
-    private func toolbarContainer<Content: View>(@ViewBuilder body: @escaping (GeometryProxy) -> Content) -> some View {
-        GeometryReader { geometry in
-            switch location {
-            case .topRight:
-                VStack(alignment: .trailing) {
-                    HStack(alignment: .top, spacing: spacing) {
-                        Spacer()
-                        body(geometry)
-                    }.padding(.trailing)
-                    Spacer()
-                }.padding(.top)
-            case .bottomRight:
-                VStack(alignment: .trailing) {
-                    Spacer()
-                    HStack(alignment: .bottom, spacing: spacing) {
-                        Spacer()
-                        body(geometry)
-                    }.padding(.trailing)
-                }.padding(.bottom)
-            case .topLeft:
-                VStack(alignment: .leading) {
-                    HStack(alignment: .top, spacing: spacing) {
-                        body(geometry)
-                        Spacer()
-                    }.padding(.leading)
-                    Spacer()
-                }.padding(.top)
-            case .bottomLeft:
-                VStack(alignment: .leading) {
-                    Spacer()
-                    HStack(alignment: .bottom, spacing: spacing) {
-                        body(geometry)
-                        Spacer()
-                    }.padding(.leading)
-                }.padding(.bottom)
+    private var buttons: some View {
+        Group {
+            Button {
+                if state.isRunning {
+                    state.alert = .powerDown
+                } else {
+                    state.alert = .terminateApp
+                }
+            } label: {
+                if state.isRunning {
+                    Label("Power Off", systemImage: "power")
+                } else {
+                    Label("Force Kill", systemImage: "xmark")
+                }
+            }.animationUniqueID("power", in: namespace)
+            Button {
+                session.pauseResume()
+            } label: {
+                Label(state.isRunning ? "Pause" : "Play", systemImage: state.isRunning ? "pause" : "play")
+            }.animationUniqueID("pause", in: namespace)
+            Button {
+                state.alert = .restart
+            } label: {
+                Label("Restart", systemImage: "restart")
+            }.animationUniqueID("restart", in: namespace)
+            Button {
+                if case .serial(_, _) = state.device {
+                    let template = session.qemuConfig.serials[state.device!.configIndex].terminal?.resizeCommand
+                    state.toggleDisplayResize(command: template)
+                } else {
+                    state.toggleDisplayResize()
+                }
+            } label: {
+                Label("Zoom", systemImage: state.isViewportChanged ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
+            }.animationUniqueID("resize", in: namespace)
+            #if WITH_USB
+            if session.vm.hasUsbRedirection {
+                VMToolbarUSBMenuView()
+                    .animationUniqueID("usb", in: namespace)
             }
+            #endif
+            VMToolbarDriveMenuView(config: session.qemuConfig)
+                .animationUniqueID("drive", in: namespace)
+            VMToolbarDisplayMenuView(state: $state)
+                .animationUniqueID("display", in: namespace)
+            Button {
+                // ignore if we are showing shortcuts
+                guard !isKeyShortcutsShown else {
+                    return
+                }
+                if state.inputDeckFrame != nil {
+                    state.cycleInputDeck()
+                } else {
+                    state.isKeyboardRequested = !state.isKeyboardShown
+                }
+            } label: {
+                Label("Keyboard", systemImage: "keyboard")
+            }.animationUniqueID("keyboard", in: namespace)
+            #if !WITH_REMOTE
+            .simultaneousGesture(
+                LongPressGesture().onEnded { _ in
+                    isKeyShortcutsShown.toggle()
+                }
+            )
+            .sheet(isPresented: $isKeyShortcutsShown) {
+                VMKeyboardShortcutsView { keys in
+                    session.sendKeys(keys: keys)
+                }
+            }
+            #endif
+        }.toolbarButtonStyle(horizontalSizeClass: horizontalSizeClass, verticalSizeClass: verticalSizeClass)
+        .disabled(state.isBusy)
+    }
+    
+    /// The vertical layout is pinned next to the system's controls, so only the corner layout can be dragged.
+    private func showHideButton(geometry: GeometryProxy, layout: Layout) -> some View {
+        Button {
+            resetIdle()
+            assertUserInteraction()
+            withOptionalAnimation {
+                state.toggleToolbarCollapsed()
+            }
+        } label: {
+            Label("Hide", systemImage: showHideIcon(for: layout))
+        }.toolbarButtonStyle(horizontalSizeClass: horizontalSizeClass, verticalSizeClass: verticalSizeClass)
+        .animationUniqueID("hide", in: namespace)
+        .modifier(HideToolbarTipModifier(isCollapsed: state.isToolbarCollapsed, layout: layout))
+        .opacity(toolbarToggleOpacity)
+        .modifier(Shake(shake: shake))
+        .offset(dragOffset)
+        .highPriorityGesture(
+            DragGesture(coordinateSpace: .named("Window"))
+                .onChanged { value in
+                    withOptionalAnimation {
+                        state.setToolbarCollapsed(true)
+                        isMoving = true
+                        dragOffset = value.translation
+                    }
+                }
+                .onEnded { value in
+                    withOptionalAnimation {
+                        location = closestLocation(to: value.location, for: geometry)
+                        isMoving = false
+                        dragOffset = .zero
+                    }
+                    resetIdle()
+                    assertUserInteraction()
+                },
+            including: layout.isVertical ? .subviews : .all
+        )
+    }
+    
+    /// The closed iPhone Duo reserves a vertical strip on one side of the window for the status bar and
+    /// camera, and Apple puts controls in a column next to it. Other phones inset both sides equally in
+    /// landscape and neither in portrait, so an inset on one side only is what tells the strip apart.
+    ///
+    /// The reader stays inside the safe area, which is what makes it report the insets around it.
+    private func layout(for geometry: GeometryProxy) -> Layout {
+        let insets = geometry.safeAreaInsets
+        guard horizontalSizeClass == .compact, abs(insets.leading - insets.trailing) >= 44 else {
+            return .corner(location)
+        }
+        return .vertical(insets.trailing > insets.leading ? .trailing : .leading)
+    }
+    
+    @ViewBuilder
+    private func toolbarContainer<Content: View>(@ViewBuilder body: @escaping (GeometryProxy, Layout) -> Content) -> some View {
+        GeometryReader { geometry in
+            let layout = layout(for: geometry)
+            Group {
+                switch layout {
+                case .vertical(let edge):
+                    if let region = verticalBarRegion {
+                        // inside the strip, where the system puts its own bars
+                        VStack(alignment: .center, spacing: spacing) {
+                            body(geometry, layout)
+                            Spacer()
+                        }.frame(width: region.width, height: region.height)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                        .offset(x: region.minX - geometry.safeAreaInsets.leading, y: region.minY - geometry.safeAreaInsets.top)
+                    } else {
+                        HStack(alignment: .top) {
+                            if edge == .trailing {
+                                Spacer()
+                            }
+                            VStack(alignment: .center, spacing: spacing) {
+                                body(geometry, layout)
+                                Spacer()
+                            }.padding(.top)
+                            if edge == .leading {
+                                Spacer()
+                            }
+                        }.padding(edge == .trailing ? .trailing : .leading)
+                    }
+                case .corner(.topRight):
+                    VStack(alignment: .trailing) {
+                        HStack(alignment: .top, spacing: spacing) {
+                            Spacer()
+                            body(geometry, layout)
+                        }.padding(.trailing)
+                        Spacer()
+                    }.padding(.top)
+                case .corner(.bottomRight):
+                    VStack(alignment: .trailing) {
+                        Spacer()
+                        HStack(alignment: .bottom, spacing: spacing) {
+                            Spacer()
+                            body(geometry, layout)
+                        }.padding(.trailing)
+                    }.padding(.bottom)
+                    .padding(.bottom, bottomInset(for: geometry))
+                case .corner(.topLeft):
+                    VStack(alignment: .leading) {
+                        HStack(alignment: .top, spacing: spacing) {
+                            body(geometry, layout)
+                            Spacer()
+                        }.padding(.leading)
+                        Spacer()
+                    }.padding(.top)
+                case .corner(.bottomLeft):
+                    VStack(alignment: .leading) {
+                        Spacer()
+                        HStack(alignment: .bottom, spacing: spacing) {
+                            body(geometry, layout)
+                            Spacer()
+                        }.padding(.leading)
+                    }.padding(.bottom)
+                    .padding(.bottom, bottomInset(for: geometry))
+                }
+            }
+            .background(verticalBarRegionReader(for: layout))
         }.coordinateSpace(name: "Window")
     }
     
-    private func withOptionalAnimation<Result>(_ animation: Animation? = .default, _ body: () throws -> Result) rethrows -> Result {
-        if UIAccessibility.isReduceMotionEnabled {
-            return try body()
-        } else {
-            return try withAnimation(animation, body)
+    /// Keeps a bottom corner above the input deck.
+    ///
+    /// The padding is applied inside the reader so that it does not become a minimum height of the
+    /// window: SwiftUI measures the window against the part above the keyboard, and a window that
+    /// does not fit there is centred over it.
+    private func bottomInset(for geometry: GeometryProxy) -> CGFloat {
+        state.toolbarBottomInset(toolbarBottom: geometry.frame(in: .global).maxY)
+    }
+
+    /// Reads the region from the window, since the strip lies outside the safe area the toolbar is laid out in.
+    @ViewBuilder
+    private func verticalBarRegionReader(for layout: Layout) -> some View {
+        #if canImport(SwiftUI, _version: 8.0.85)
+        if #available(iOS 27.1, *), case .vertical(let edge) = layout {
+            VerticalBarRegionReader(edge: edge, extent: 44, region: $verticalBarRegion)
+                .ignoresSafeArea()
         }
+        #endif
     }
     
     private func closestLocation(to point: CGPoint, for geometry: GeometryProxy) -> ToolbarLocation {
@@ -266,19 +351,113 @@ struct VMToolbarView: View {
     }
     
     private func resetIdle() {
-        if let task = shortIdleTask {
-            task.cancel()
-        }
-        self.isIdle = false
-        shortIdleTask = DispatchWorkItem {
-            self.shortIdleTask = nil
-            withOptionalAnimation {
-                self.isIdle = true
-            }
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5, execute: shortIdleTask!)
+        idle.resetDimming()
+    }
+    
+    private func assertUserInteraction() {
+        idle.resetHiding()
     }
 }
+
+/// Animates unless the user has asked for reduced motion.
+private func withOptionalAnimation<Result>(_ animation: Animation? = .default, _ body: () throws -> Result) rethrows -> Result {
+    if UIAccessibility.isReduceMotionEnabled {
+        return try body()
+    } else {
+        return try withAnimation(animation, body)
+    }
+}
+
+/// Idle timers of the toolbar, kept apart from the window state so that they do not update the whole window.
+@MainActor private final class ToolbarIdleState: ObservableObject {
+    /// The show/hide button is dimmed after a short time without interaction.
+    @Published private(set) var isDimmed: Bool = false
+
+    /// The collapsed toolbar is faded out after a long time without interaction, until the next touch.
+    @Published private(set) var isHidden: Bool = false
+
+    private var dimTask: DispatchWorkItem?
+    private var hideTask: DispatchWorkItem?
+
+    func resetDimming() {
+        dimTask?.cancel()
+        isDimmed = false
+        dimTask = schedule(after: 5) { $0.isDimmed = true }
+    }
+
+    func resetHiding() {
+        hideTask?.cancel()
+        withOptionalAnimation {
+            isHidden = false
+        }
+        hideTask = schedule(after: 15) { $0.isHidden = true }
+    }
+
+    private func schedule(after seconds: TimeInterval, _ change: @escaping (ToolbarIdleState) -> Void) -> DispatchWorkItem {
+        let task = DispatchWorkItem { [weak self] in
+            guard let self = self else {
+                return
+            }
+            withOptionalAnimation {
+                change(self)
+            }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + seconds, execute: task)
+        return task
+    }
+}
+
+#if canImport(SwiftUI, _version: 8.0.85)
+/// Where the system would lay out a vertical bar of the given width on an edge of the window.
+///
+/// On the closed iPhone Duo that is a column inside the strip, below the camera.
+@available(iOS 27.1, *)
+private struct VerticalBarRegionReader: UIViewRepresentable {
+    let edge: HorizontalEdge
+    let extent: CGFloat
+    @Binding var region: CGRect?
+
+    final class RegionView: UIView {
+        var edge: NSDirectionalRectEdge = .trailing
+        var extent: CGFloat = 44
+        var onChange: ((CGRect) -> Void)?
+        private var lastFrame: CGRect?
+
+        override func layoutSubviews() {
+            super.layoutSubviews()
+            let frame = layoutGuide(for: .bar(onEdge: edge, extent: extent)).layoutFrame
+            if frame != lastFrame {
+                lastFrame = frame
+                onChange?(frame)
+            }
+        }
+
+        override func safeAreaInsetsDidChange() {
+            super.safeAreaInsetsDidChange()
+            setNeedsLayout()
+        }
+    }
+
+    func makeUIView(context: Context) -> RegionView {
+        let view = RegionView()
+        view.isUserInteractionEnabled = false
+        return view
+    }
+
+    func updateUIView(_ view: RegionView, context: Context) {
+        view.edge = edge == .trailing ? .trailing : .leading
+        view.extent = extent
+        view.onChange = { frame in
+            DispatchQueue.main.async {
+                if region != frame {
+                    region = frame
+                }
+            }
+        }
+        view.setNeedsLayout()
+    }
+}
+#endif
 
 enum ToolbarLocation: Int {
     case topRight
@@ -447,37 +626,9 @@ extension MenuStyle where Self == ToolbarMenuStyle {
     }
 }
 
-@MainActor private class LongIdleTimeout: ObservableObject {
-    private var longIdleTask: DispatchWorkItem?
-    
-    @Published var isUserInteracting: Bool = true
-    
-    private func setIsUserInteracting(_ value: Bool) {
-        if !UIAccessibility.isReduceMotionEnabled {
-            withAnimation {
-                self.isUserInteracting = value
-            }
-        } else {
-            self.isUserInteracting = value
-        }
-    }
-    
-    func assertUserInteraction() {
-        if let task = longIdleTask {
-            task.cancel()
-        }
-        setIsUserInteracting(true)
-        longIdleTask = DispatchWorkItem {
-            self.longIdleTask = nil
-            self.setIsUserInteracting(false)
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 15, execute: longIdleTask!)
-    }
-}
-
 private struct HideToolbarTipModifier: ViewModifier {
-    @Binding var isCollapsed: Bool
-    let location: ToolbarLocation
+    let isCollapsed: Bool
+    let layout: VMToolbarView.Layout
     private let _hideToolbarTip: Any?
 
     /// Keeps the tip on the side of the toolbar facing the middle of the screen.
@@ -485,9 +636,11 @@ private struct HideToolbarTipModifier: ViewModifier {
     /// From iOS 26 a single arrow edge is only a preference, and when the toolbar spans most of
     /// the width the system attaches the tip beside the button instead, covering the toolbar.
     private var arrowEdges: Edge.Set {
-        switch location {
-        case .topLeft, .topRight: return .top
-        case .bottomLeft, .bottomRight: return .bottom
+        switch layout {
+        case .corner(.topLeft), .corner(.topRight): return .top
+        case .corner(.bottomLeft), .corner(.bottomRight): return .bottom
+        case .vertical(.leading): return .leading
+        case .vertical(.trailing): return .trailing
         }
     }
 
@@ -496,9 +649,9 @@ private struct HideToolbarTipModifier: ViewModifier {
         _hideToolbarTip as! UTMTipHideToolbar
     }
 
-    init(isCollapsed: Binding<Bool>, location: ToolbarLocation) {
-        _isCollapsed = isCollapsed
-        self.location = location
+    init(isCollapsed: Bool, layout: VMToolbarView.Layout) {
+        self.isCollapsed = isCollapsed
+        self.layout = layout
         if #available(iOS 17, *) {
             _hideToolbarTip = UTMTipHideToolbar()
         } else {

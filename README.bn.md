@@ -1,11 +1,14 @@
 #  UTM
 [![Build](https://github.com/utmapp/UTM/actions/workflows/build.yml/badge.svg?branch=main&event=push)][1]
+[![Mac App Store](https://img.shields.io/badge/Mac_App_Store-UTM-0D96F6?logo=appstore&logoColor=white)](https://apps.apple.com/in/app/utm-virtual-machines/id1538878817)
+[![App Store](https://img.shields.io/badge/App_Store-UTM_SE-0D96F6?logo=appstore&logoColor=white)](https://apps.apple.com/in/app/utm-se-retro-pc-emulator/id1564628856)
+[![Download](https://img.shields.io/badge/Download-UTM.dmg-24292F?logo=github&logoColor=white)](https://github.com/utmapp/UTM/releases/latest/download/UTM.dmg)
 
 > এমন মেশিন আবিষ্কার করা সম্ভব যা যেকোনো ধরনের সিকোয়েনশিয়াল গণনা করতে পারে তা যত কঠিন গণনাই হোক না কেন 
 
 -- <cite>অ্যালান টুরিং, ১৯৩৬</cite>
 
-UTM হল iOS এবং macOS-এর জন্য সমস্ত ফিচার বিশিষ্ট সিস্টেম ইমিউলেটর এবং  ভার্চুয়াল মেশিন হোস্ট। এটি QEMU এর উপর বেজ করে বানানো হয়েছে । সংক্ষেপে বলা যায় যে, UTM আপনাকে আপনার ম্যাক, আইফোন এবং আইপ্যাডে উইন্ডোজ, লিনাক্স এবং আরও অনেক অপারেটিং সিস্টেম চালানোর অনুমতি দেয়। লিঙ্ক গুলোতে আরও বিস্তারিত জানতে পারবেনঃ 
+UTM হল iOS, macOS এবং visionOS-এর জন্য সমস্ত ফিচার বিশিষ্ট সিস্টেম ইমিউলেটর এবং  ভার্চুয়াল মেশিন হোস্ট। এটি QEMU এর উপর বেজ করে বানানো হয়েছে । সংক্ষেপে বলা যায় যে, UTM আপনাকে আপনার ম্যাক, আইফোন এবং আইপ্যাডে উইন্ডোজ, লিনাক্স এবং আরও অনেক অপারেটিং সিস্টেম চালানোর অনুমতি দেয়। লিঙ্ক গুলোতে আরও বিস্তারিত জানতে পারবেনঃ 
 ১। https://getutm.app/ এবং 
 ২। https://mac.getutm.app/ 
 
@@ -23,13 +26,13 @@ UTM হল iOS এবং macOS-এর জন্য সমস্ত ফিচা�
 * টেক্সট টার্মিনাল মোড
 * ইউএসবি ডিভাইস
 * QEMU TCG ব্যবহার করে JIT ভিত্তিক এক্সিলারেশন 
-* সবচেয়ে লেটেস্ট এবং সেরা API গুলো ব্যবহার করে macOS 11 এবং iOS 11+ এর জন্য স্ক্র্যাচ থেকে ডিজাইন করা ফ্রন্টেন্ড
+* সবচেয়ে লেটেস্ট এবং সেরা API গুলো ব্যবহার করে macOS 12+ এবং iOS 15+ এর জন্য স্ক্র্যাচ থেকে ডিজাইন করা ফ্রন্টেন্ড
 * আপনার ডিভাইস থেকে সরাসরি VM তৈরি করুন, ম্যানেজ করুন, চালান
 
 ## macOS এর ক্ষেত্রে অতিরিক্ত যা যা ফিচার আছে
 
 * Hypervisor.framework এবং QEMU ব্যবহার করে হার্ডওয়্যার এক্সিলারেটেড ভার্চুয়ালাইজেশন
-* macOS 12+ এ Virtualization.framework সহ macOS গেস্ট বুট করুন
+* Virtualization.framework সহ macOS গেস্ট বুট করুন
 
 ## UTM SE
 
@@ -41,9 +44,9 @@ UTM SE ("স্লো এডিশন") একটি [থ্রেডেড ই�
 
 ## ইনস্টল
 
-iOS এর জন্য UTM (SE): https://getutm.app/install/
+iOS এর জন্য UTM (SE): https://docs.getutm.app/installation/ios/
 
- macOS এর জন্য UTM নামাতে পারবেন এখান থেকে: https://mac.getutm.app/
+ macOS এর জন্য UTM নামাতে পারবেন এখান থেকে: https://docs.getutm.app/installation/macos/
 
 ## ডেভেলপমেন্ট
 
