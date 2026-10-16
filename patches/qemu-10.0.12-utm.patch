@@ -5080,3 +5080,71 @@ index b103a5682d..de53f96d6c 100644
 -- 
 2.41.0
 
+From ae92cdc41fb0b0dab36c6ac724e1729ffc47ef18 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Fri, 16 Oct 2026 11:52:08 -0700
+Subject: [PATCH] usb-storage: don't park a CSW that arrives while the command
+ completes
+
+usb_msd_command_complete() completed the pending data packet before it
+dropped s->req.  Completing a packet lets the host controller process
+the next TRB on that endpoint synchronously, and when the guest has
+already queued its CSW request, usb_msd_handle_data() runs re-entrantly
+in CSW mode, sees s->req still set and parks the packet as "still in
+flight".  The command has finished by then, so nothing ever completes
+that packet: the guest times out the transfer, stops the endpoint and
+resets the device before it retries.
+
+Windows' USB storage timeout is 10 s, so a Windows install from a USB
+CD stalled ~10 s after every short burst of reads (ep_stop, msd reset,
+slot reset each time).  The window is narrow, but with the HVF in-kernel
+GICv3 the guest takes the interrupt and queues the CSW fast enough to
+hit it on nearly every burst: copying Windows files went from ~160 s to
+~1230 s.
+
+Release the request before completing the packet, so a packet handled
+re-entrantly sees the same state as one that arrives after
+usb_msd_command_complete() returns: the CSW gets its status immediately.
+The SCSI layer holds its own reference across the complete callback,
+and nothing after the release touches the request, so dropping ours
+earlier is safe.  The same install now copies its files in ~135 s with
+the in-kernel GIC, with no timeout resets.
+
+Assisted-by: Claude:claude-opus-5-5
+---
+ hw/usb/dev-storage.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/hw/usb/dev-storage.c b/hw/usb/dev-storage.c
+index 4f1e8b7f6c..aac4b26424 100644
+--- a/hw/usb/dev-storage.c
++++ b/hw/usb/dev-storage.c
+@@ -273,6 +273,16 @@ void usb_msd_command_complete(SCSIRequest *req, size_t resid)
+     s->csw.residue = cpu_to_le32(s->data_len);
+     s->csw.status = req->status != 0;
+ 
++    /*
++     * Release the request before completing the packet: completing it can
++     * make the host controller process the guest's already queued CSW
++     * request synchronously, and usb_msd_handle_data() would park that
++     * packet as "still in flight" while s->req is set, with nothing left
++     * to complete it.
++     */
++    scsi_req_unref(req);
++    s->req = NULL;
++
+     if (s->packet) {
+         if (s->data_len == 0 && s->mode == USB_MSDM_DATAOUT) {
+             /* A deferred packet with no write data remaining must be
+@@ -300,8 +310,6 @@ void usb_msd_command_complete(SCSIRequest *req, size_t resid)
+     } else if (s->data_len == 0) {
+         s->mode = USB_MSDM_CSW;
+     }
+-    scsi_req_unref(req);
+-    s->req = NULL;
+ }
+ 
+ void usb_msd_request_cancelled(SCSIRequest *req)
+-- 
+2.54.0 (Apple Git-157)
+
