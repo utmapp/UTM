@@ -99,7 +99,7 @@ struct ContentView: View {
                 #endif
             }
             #if os(macOS)
-            NSWindow.allowsAutomaticWindowTabbing = false
+            NSWindow.allowsAutomaticWindowTabbing = UserDefaults.standard.bool(forKey: "OpenVMWindowsAsTabs")
             #else
             data.triggeriOSNetworkAccessPrompt()
             #if !os(visionOS)
