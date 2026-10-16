@@ -1,11 +1,14 @@
 #  UTM
 [![Build](https://github.com/utmapp/UTM/actions/workflows/build.yml/badge.svg?branch=main&event=push)][1]
+[![Mac App Store](https://img.shields.io/badge/Mac_App_Store-UTM-0D96F6?logo=appstore&logoColor=white)](https://apps.apple.com/kr/app/utm-virtual-machines/id1538878817)
+[![App Store](https://img.shields.io/badge/App_Store-UTM_SE-0D96F6?logo=appstore&logoColor=white)](https://apps.apple.com/kr/app/utm-se-retro-pc-emulator/id1564628856)
+[![Download](https://img.shields.io/badge/Download-UTM.dmg-24292F?logo=github&logoColor=white)](https://github.com/utmapp/UTM/releases/latest/download/UTM.dmg)
 
 > 계산 가능한 수열을 계산하는 단일 기계를 발명할 수 있습니다.(It is possible to invent a single machine which can be used to compute any computable sequence.)
 
 -- <cite>엘런 튜링, 1936</cite>
 
-UTM은 QEMU를 기반으로 하는, iOS와 macOS를 위한 완전한 시스템 에뮬레이터 및 가상 머신 호스트 프로그램입니다. 이 프로그램을 이용해 Windows나 Linux와 같은 운영체제들을 Mac, iPhone, iPad 등에서 구동할 수 있습니다. 자세한 내용은 https://getutm.app/ 및 https://mac.getutm.app/ 를 참고해주세요.
+UTM은 QEMU를 기반으로 하는, iOS, macOS, visionOS를 위한 완전한 시스템 에뮬레이터 및 가상 머신 호스트 프로그램입니다. 이 프로그램을 이용해 Windows나 Linux와 같은 운영체제들을 Mac, iPhone, iPad 등에서 구동할 수 있습니다. 자세한 내용은 https://getutm.app/ 및 https://mac.getutm.app/ 를 참고해주세요.
 
 <p align="center">
   <img width="450px" alt="iPhone에서 동작하는 UTM" src="screen.png">
@@ -21,13 +24,13 @@ UTM은 QEMU를 기반으로 하는, iOS와 macOS를 위한 완전한 시스템 �
 * 텍스트 터미널 모드
 * USB 장치 연결
 * QEMU TCG를 활용한 JIT 기반 가속
-* macOS 11 / iOS 11 이상에서 제공되는 최신·최고의 API를 사용한 프론트엔드
+* macOS 12 / iOS 15 이상에서 제공되는 최신·최고의 API를 사용한 프론트엔드
 * 사용자의 기기에서 직접 가상 머신 생성·관리·구동
 
 ## macOS 추가 기능
 
 * Hypervisor.framework와 QEMU를 활용한 하드웨어 가속 가상화
-* macOS 12 이상에서 Virtualization.framework를 통해 macOS 게스트 구동
+* Virtualization.framework를 통해 macOS 게스트 구동
 
 ## UTM SE
 
@@ -39,9 +42,9 @@ UTM SE ("slow edition")은 [스레드된 인터프리터][3]를 사용합니다.
 
 ## 설치
 
-iOS용 UTM (SE): https://getutm.app/install/
+iOS용 UTM (SE): https://docs.getutm.app/installation/ios/
 
-macOS용 UTM: https://mac.getutm.app/
+macOS용 UTM: https://docs.getutm.app/installation/macos/
 
 ## 개발
 

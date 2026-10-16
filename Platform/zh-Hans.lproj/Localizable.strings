@@ -1,3 +1,6 @@
+/* No comment provided by engineer. */
+"-option value" = "-option value";
+
 /* VMDisplayAppleWindowController */
 "'%@' is connected to '%@'. Do you want to disconnect it and connect it to this virtual machine instead?" = "“%1$@”已连接到“%2$@”。你要断开连接并将其连接到此虚拟机吗？";
 
@@ -63,8 +66,17 @@ VMDisplayQemuTerminalWindowController */
 /* No comment provided by engineer. */
 "• " = "• ";
 
+/* UTMAppleDiskImage */
+"A drive cannot be read only once a snapshot has been taken of it." = "在创建驱动器的快照后，无法设置驱动器为只读。";
+
+/* UTMAppleDiskImage */
+"A drive cannot be resized once a snapshot has been taken of it." = "在创建驱动器的快照后，无法调整驱动器的大小。";
+
 /* AppDelegate */
 "A running VM became unavailable before requesting power down." = "在请求关闭电源之前，正在运行的虚拟机将变为不可用状态。";
+
+/* UTMSnapshotService */
+"A snapshot needs a drive that the virtual machine can write to." = "快照需要虚拟机可以写入的驱动器。";
 
 /* UTMScriptingAppDelegate */
 "A valid backend must be specified." = "必须指定有效的后端。";
@@ -124,7 +136,7 @@ VMDisplayQemuTerminalWindowController */
 "ANGLE (OpenGL)" = "ANGLE (OpenGL)";
 
 /* VMConfigSystemView */
-"Any unsaved changes will be lost." = "所有未存储的更改都将丢失。";
+"Any unsaved changes will be lost." = "所有未保存的更改都将丢失。";
 
 /* No comment provided by engineer. */
 "Apple Core OpenGL" = "Apple 核心 OpenGL";
@@ -142,10 +154,13 @@ VMDisplayQemuTerminalWindowController */
 "Are you sure you want to permanently delete this disk image?" = "你确定要永久删除此磁盘映像吗？";
 
 /* No comment provided by engineer. */
-"Are you sure you want to reset this VM? Any unsaved changes will be lost." = "你确定要重置此虚拟机吗？任何未存储的更改都将丢失。";
+"Are you sure you want to reset this VM? Any unsaved changes will be lost." = "你确定要重置此虚拟机吗？所有未保存的更改都将丢失。";
 
 /* No comment provided by engineer. */
-"Are you sure you want to stop this VM and exit? Any unsaved changes will be lost." = "你确定要停止此虚拟机并退出吗？任何未存储的更改都将丢失。";
+"Are you sure you want to stop this VM and exit? Any unsaved changes will be lost." = "你确定要停止此虚拟机并退出吗？所有未保存的更改都将丢失。";
+
+/* No comment provided by engineer. */
+"Argument" = "参数";
 
 /* UTMAppleDiskImage */
 "ASIF" = "ASIF";
@@ -209,9 +224,6 @@ UTMQemuConstants */
 /* No comment provided by engineer. */
 "Bridged Settings" = "桥接设置";
 
-/* Welcome view */
-"Browse UTM Gallery" = "浏览 UTM 库";
-
 /* VMDisplayQemuWindowController */
 "Browse…" = "浏览…";
 
@@ -225,6 +237,9 @@ UTMQemuConstants */
 /* VMDisplayWindowController
 VMQemuDisplayMetalWindowController */
 "Cancel" = "取消";
+
+/* UTMQemuImage */
+"Cannot access '%@'." = "无法访问“%@”。";
 
 /* UTMAppleVirtualMachine */
 "Cannot access resource: %@" = "无法访问资源：%@";
@@ -245,7 +260,10 @@ VMQemuDisplayMetalWindowController */
 "Cannot import this VM. Either the configuration is invalid, created in a newer version of UTM, or on a platform that is incompatible with this version of UTM." = "无法导入此虚拟机。此虚拟机可能配置无效，或是在较新版本的 UTM 中、与此版本的 UTM 不兼容的平台上创建。";
 
 /* UTMRemoteServer */
-"Cannot reserve port %d for external access from NAT. Make sure no other device on the network has reserved it." = "无法保留端口 %d 用作通过 NAT 的外部访问。确保网络上没有其他设备保留该端口。";
+"Cannot reserve port %d for external access from NAT. Make sure no other device on the network has reserved it." = "无法保留端口 %d 用于通过 NAT 的外部访问。确保网络上没有其他设备保留该端口。";
+
+/* VMKeyboardAccessoryView */
+"Caps Lock" = "Caps Lock";
 
 /* No comment provided by engineer. */
 "Caps Lock (⇪) is treated as a key" = "将 Caps Lock (⇪) 视为按键处理";
@@ -290,8 +308,17 @@ UTMQemuConstants */
 /* No comment provided by engineer. */
 "Close" = "关闭";
 
+/* No comment provided by engineer. */
+"Closing the window stops the virtual machine. Any unsaved changes will be lost." = "关闭窗口会停止虚拟机。所有未保存的更改都将丢失。";
+
 /* VMQemuDisplayMetalWindowController */
 "Closing this window will kill the VM." = "关闭此窗口将终止虚拟机。";
+
+/* VMKeyboardAccessoryView */
+"Command" = "Command";
+
+/* No comment provided by engineer. */
+"Command Line" = "命令行";
 
 /* VMQemuDisplayMetalWindowController */
 "Confirm" = "确认";
@@ -328,6 +355,9 @@ VMDisplayQemuDisplayController */
 /* No comment provided by engineer. */
 "Continue" = "继续";
 
+/* VMKeyboardAccessoryView */
+"Control" = "Control";
+
 /* No comment provided by engineer. */
 "Copy" = "拷贝";
 
@@ -355,8 +385,20 @@ VMDisplayQemuDisplayController */
 /* No comment provided by engineer. */
 "Create a new virtual machine or import an existing one." = "创建一个新虚拟机或导入现有的虚拟机。";
 
+/* No comment provided by engineer. */
+"Created %@" = "创建于 %@";
+
+/* No comment provided by engineer. */
+"Current State" = "当前状态";
+
 /* VMConfigAppleDisplayView */
 "Custom" = "自定义";
+
+/* No comment provided by engineer. */
+"Custom Arguments" = "自定义参数";
+
+/* No comment provided by engineer. */
+"Custom arguments are for debugging only. Compatibility with future versions is not guaranteed." = "自定义参数仅用于调试。无法保证与未来版本的兼容性。";
 
 /* No comment provided by engineer. */
 "D3DMetal" = "D3DMetal";
@@ -382,6 +424,9 @@ UTMQemuConstants */
 
 /* No comment provided by engineer. */
 "Delete" = "删除";
+
+/* No comment provided by engineer. */
+"Details" = "详细信息";
 
 /* No comment provided by engineer. */
 "Devices" = "设备";
@@ -410,6 +455,9 @@ VMDisplayQemuDisplayController */
 UTMQemuConstants */
 "Disk Image" = "磁盘映像";
 
+/* No comment provided by engineer. */
+"Disks Only" = "仅磁盘";
+
 /* VMDisplayAppleWindowController */
 "Display" = "显示";
 
@@ -424,7 +472,7 @@ VMDisplayQemuDisplayController */
 "Disposable Mode" = "一次性模式";
 
 /* No comment provided by engineer. */
-"Do not save VM screenshot to disk" = "不要将虚拟机截图存储到磁盘";
+"Do not save VM screenshot to disk" = "不要将虚拟机截图保存到磁盘";
 
 /* No comment provided by engineer. */
 "Do not show confirmation when closing a running VM" = "关闭正在运行的虚拟机时不显示确认";
@@ -436,6 +484,12 @@ VMDisplayQemuDisplayController */
 "Do you want to copy this VM and all its data to internal storage?" = "你要将此虚拟机及其所有数据拷贝到内部存储吗？";
 
 /* No comment provided by engineer. */
+"Do you want to delete the snapshot “%@” and all its data?" = "你要删除快照“%@”及其所有数据吗？";
+
+/* No comment provided by engineer. */
+"Do you want to delete the suspended state? The virtual machine will start up normally and all unsaved data will be lost." = "你要删除挂起状态吗？虚拟机将正常启动，所有未保存的数据都将丢失。";
+
+/* No comment provided by engineer. */
 "Do you want to delete this VM and all its data?" = "你要删除此虚拟机及其所有数据吗？";
 
 /* No comment provided by engineer. */
@@ -445,7 +499,7 @@ VMDisplayQemuDisplayController */
 "Do you want to duplicate this VM and all its data?" = "你要复制此虚拟机及其所有数据吗？";
 
 /* No comment provided by engineer. */
-"Do you want to force stop this VM and lose all unsaved data?" = "你要强制停止此虚拟机并丢失所有未存储的数据吗？";
+"Do you want to force stop this VM and lose all unsaved data?" = "你要强制停止此虚拟机并丢失所有未保存的数据吗？";
 
 /* No comment provided by engineer. */
 "Do you want to forget all clients and generate a new server identity? Any clients that previously paired with this server will be instructed to manually unpair with this server before they can connect again." = "你要忽略所有客户端并生成新的服务器身份吗？之前与此服务器配对的任何客户端将被告知手动取消与此服务器的配对，之后才能再次连接。";
@@ -457,13 +511,22 @@ VMDisplayQemuDisplayController */
 "Do you want to move this VM to another location? This will copy the data to the new location, delete the data from the original location, and then create a shortcut." = "你要将此虚拟机移动到别处吗？这将会复制数据到新位置，删除原始位置的数据，然后创建一个快捷方式。";
 
 /* No comment provided by engineer. */
+"Do you want to overwrite the snapshot “%@” with the current state of the virtual machine? What it holds now will be lost." = "你要用虚拟机的当前状态覆盖快照“%@”吗？目前包含的数据都将丢失。";
+
+/* No comment provided by engineer. */
 "Do you want to remove this shortcut? The data will not be deleted." = "你要移除此快捷方式吗？数据不会被删除。";
+
+/* No comment provided by engineer. */
+"Do you want to restore the snapshot “%@”? The current state of the virtual machine will be overwritten and any changes that are not saved as a snapshot will be lost." = "你要恢复快照“%@”吗？虚拟机的当前状态将被覆盖，所有未保存为快照的更改都将丢失。";
 
 /* No comment provided by engineer. */
 "Do you wish to reset all saved USB devices?" = "你要重置所有保存的 USB 设备吗？";
 
 /* No comment provided by engineer. */
 "Done" = "完成";
+
+/* VMKeyboardAccessoryView */
+"Down" = "下";
 
 /* No comment provided by engineer. */
 "Download" = "下载";
@@ -510,17 +573,20 @@ VMDisplayQemuDisplayController */
 /* No comment provided by engineer. */
 "Enable Clipboard Sharing" = "启用剪贴板共享";
 
+/* VMKeyboardAccessoryView */
+"End" = "End";
+
 /* No comment provided by engineer. */
 "Enjoying the app? Consider making a donation to support development." = "喜欢这个 App 吗？考虑捐赠来支持开发吧！";
 
 /* VMDisplayWindowController */
 "Error" = "错误";
 
-/* No comment provided by engineer. */
-"Existing" = "现有的";
+/* VMKeyboardAccessoryView */
+"Escape" = "Escape";
 
 /* No comment provided by engineer. */
-"Export QEMU Command…" = "导出 QEMU 命令…";
+"Existing" = "现有的";
 
 /* Word for decompressing a compressed folder */
 "Extracting…" = "正在提取…";
@@ -600,10 +666,13 @@ UTMRemoteServer */
 
 /* AppDelegate
 VMDisplayWindowController */
-"Failed to save suspend state" = "无法存储挂起状态。";
+"Failed to save suspend state" = "无法保存挂起状态。";
 
 /* UTMQemuVirtualMachine */
-"Failed to save VM snapshot. Usually this means at least one device does not support snapshots. %@" = "无法存储虚拟机快照。通常这意味着至少有一个设备不支持快照。%@";
+"Failed to save VM snapshot. Usually this means at least one device does not support snapshots. %@" = "无法保存虚拟机快照。通常这意味着至少有一个设备不支持快照。%@";
+
+/* UTMAppleConfiguration */
+"Failed to set up Secure Boot for this virtual machine." = "未能为此虚拟机设置安全启动。";
 
 /* UTMSpiceIO */
 "Failed to start SPICE client." = "无法启动 SPICE 客户端。";
@@ -639,6 +708,12 @@ UTMQemuConstants */
 /* VMDisplayWindowController */
 "Force shut down" = "强制关机";
 
+/* VMKeyboardAccessoryView */
+"Forward Delete" = "向前删除";
+
+/* No comment provided by engineer. */
+"From “%@”" = "来自“%@”";
+
 /* UTMQemuConstants */
 "GDB Debug Stub" = "GDB 调试存根";
 
@@ -658,7 +733,7 @@ UTMQemuConstants */
 "GiB" = "GiB";
 
 /* AppDelegate */
-"Graceful quit cancelled: %@" = "正常退出失败：%@";
+"Graceful quit cancelled: %@" = "正常退出已取消：%@";
 
 /* No comment provided by engineer. */
 "Guest drivers are required for 3D acceleration." = "需要客户机驱动程序来使用 3D 加速。";
@@ -672,11 +747,17 @@ UTMQemuConstants */
 /* No comment provided by engineer. */
 "Hardware" = "硬件";
 
+/* VMKeyboardAccessoryView */
+"Hide Keyboard" = "隐藏键盘";
+
 /* No comment provided by engineer. */
 "Hide Unused…" = "隐藏未使用的…";
 
 /* No comment provided by engineer. */
 "Hold Control (⌃) for right click" = "按住 Control (⌃) 键以右键单击";
+
+/* VMKeyboardAccessoryView */
+"Home" = "Home";
 
 /* No comment provided by engineer. */
 "Host" = "主机";
@@ -732,6 +813,15 @@ UTMQemuConstants */
 
 /* No comment provided by engineer. */
 "Information" = "信息";
+
+/* UTMAppleConfigurationDevices */
+"Input and Output" = "输入和输出";
+
+/* UTMAppleConfigurationDevices */
+"Input Only" = "仅输入";
+
+/* VMKeyboardAccessoryView */
+"Insert" = "Insert";
 
 /* VMDisplayAppleWindowController */
 "Install Guest Tools…" = "安装客户机工具…";
@@ -792,6 +882,9 @@ UTMQemuConstants */
 
 /* UTMAppleDiskImage */
 "Layered" = "分层";
+
+/* VMKeyboardAccessoryView */
+"Left" = "左";
 
 /* No comment provided by engineer. */
 "License" = "许可";
@@ -875,6 +968,9 @@ UTMQemuConstants */
 "Minimum size: %@" = "最小文件大小：%@";
 
 /* No comment provided by engineer. */
+"Modified %@" = "修改于 %@";
+
+/* No comment provided by engineer. */
 "MoltenVK" = "MoltenVK";
 
 /* UTMDonateView */
@@ -882,12 +978,6 @@ UTMQemuConstants */
 
 /* No comment provided by engineer. */
 "Mouse/Keyboard" = "鼠标/键盘";
-
-/* No comment provided by engineer. */
-"Move Down" = "下移";
-
-/* No comment provided by engineer. */
-"Move Up" = "上移";
 
 /* UTMQemuConstants */
 "MTD (NAND/NOR)" = "MTD (NAND/NOR)";
@@ -949,6 +1039,9 @@ UTMQemuConstants */
 /* No comment provided by engineer. */
 "No release notes found for version %@." = "未找到 %@ 版本的发布说明。";
 
+/* No comment provided by engineer. */
+"No Snapshots" = "无快照";
+
 /* VMDisplayAppleWindowController */
 "No USB devices assigned to UTM." = "没有分配给 UTM 的 USB 设备。";
 
@@ -978,11 +1071,17 @@ UTMQemuConstants */
 UTMVirtualMachine */
 "Not implemented." = "未实现。";
 
+/* VMSnapshotsView */
+"Not running" = "未运行";
+
 /* No comment provided by engineer. */
 "Note: No DHCP will be provided by UTM" = "注意：UTM 不提供 DHCP";
 
 /* No comment provided by engineer. */
-"Notes" = "注释";
+"Notes" = "备注";
+
+/* VMKeyboardAccessoryView */
+"Num Lock" = "Num Lock";
 
 /* No comment provided by engineer. */
 "Num Lock is forced on" = "强制打开数字锁定 (Num Lock)";
@@ -994,7 +1093,10 @@ UTMVirtualMachine */
 "OK" = "好";
 
 /* UTMScriptingVirtualMachineImpl */
-"One or more required parameters are missing or invalid." = "一个或多个必填的参数缺失或无效。";
+"One or more required parameters are missing or invalid." = "一个或多个必填的参数缺少或无效。";
+
+/* Welcome view */
+"Open Existing Virtual Machine" = "打开现有虚拟机";
 
 /* No comment provided by engineer. */
 "Open Settings" = "打开设置";
@@ -1012,6 +1114,9 @@ UTMVirtualMachine */
 UTMScriptingVirtualMachineImpl */
 "Operation not supported by the backend." = "操作不受后端支持。";
 
+/* VMKeyboardAccessoryView */
+"Option" = "Option";
+
 /* No comment provided by engineer. */
 "Option (⌥) is Meta key" = "将 Option (⌥) 键视为 Meta 键";
 
@@ -1021,6 +1126,15 @@ UTMScriptingVirtualMachineImpl */
 /* No comment provided by engineer. */
 "Other" = "其他";
 
+/* UTMAppleConfigurationDevices */
+"Output Only" = "仅输出";
+
+/* VMKeyboardAccessoryView */
+"Page Down" = "下一页";
+
+/* VMKeyboardAccessoryView */
+"Page Up" = "上一页";
+
 /* No comment provided by engineer. */
 "Password" = "密码";
 
@@ -1029,6 +1143,9 @@ UTMScriptingVirtualMachineImpl */
 
 /* UTMRemoteClient */
 "Password is required." = "需要密码。";
+
+/* VMKeyboardAccessoryView */
+"Paste" = "粘贴";
 
 /* VMDisplayWindowController */
 "Pause" = "暂停";
@@ -1087,12 +1204,12 @@ UTMScriptingVirtualMachineImpl */
 /* No comment provided by engineer. */
 "Prevent system from sleeping when any VM is running" = "当任何虚拟机运行时防止系统处于睡眠状态";
 
+/* VMKeyboardAccessoryView */
+"Print Screen" = "Print Screen";
+
 /* UTMAppleConfigurationTerminal
 UTMQemuConstants */
 "Pseudo-TTY Device" = "虚拟终端设备";
-
-/* No comment provided by engineer. */
-"QEMU Arguments" = "QEMU 参数";
 
 /* No comment provided by engineer. */
 "QEMU Backend" = "QEMU 后端";
@@ -1165,7 +1282,7 @@ VMQemuDisplayMetalWindowController */
 "Reset Identity" = "重置身份";
 
 /* No comment provided by engineer. */
-"Resize" = "重新调整";
+"Resize" = "调整大小";
 
 /* No comment provided by engineer. */
 "Resize display to screen size and orientation automatically" = "自动将显示调整为屏幕大小和方向";
@@ -1191,6 +1308,9 @@ VMQemuDisplayMetalWindowController */
 /* No comment provided by engineer. */
 "Retry" = "重试";
 
+/* VMKeyboardAccessoryView */
+"Right" = "右";
+
 /* UTMAppleConfiguration */
 "Rosetta is not supported on the current host machine." = "当前主机不支持 Rosetta。";
 
@@ -1201,19 +1321,25 @@ VMQemuDisplayMetalWindowController */
 "Running low on memory! UTM might soon be killed by iOS. You can prevent this by decreasing the amount of memory and/or JIT cache assigned to this VM" = "运行内存不足！UTM 可能很快就会被 iOS 终止。你可以通过减少分配给此虚拟机的内存和/或 JIT 缓存来防止这种情况。";
 
 /* No comment provided by engineer. */
-"Save" = "存储";
+"Save" = "保存";
 
 /* No comment provided by engineer. */
 "Save State (Default)" = "保存状态 (默认)";
 
 /* No comment provided by engineer. */
-"Saved" = "已存储";
+"Save the current state of the virtual machine as a snapshot to return to it later." = "将虚拟机的当前状态保存为快照，以便稍后返回。";
+
+/* No comment provided by engineer. */
+"Saved" = "已保存";
 
 /* VMData */
-"Saving" = "正在存储";
+"Saving" = "正在保存";
 
 /* No comment provided by engineer. */
 "Scaling" = "粗化";
+
+/* VMKeyboardAccessoryView */
+"Scroll Lock" = "Scroll Lock";
 
 /* UTMQemuConstants */
 "SCSI" = "SCSI";
@@ -1235,13 +1361,10 @@ VMDisplayWindowController */
 "Select Shared Folder" = "选择共享的文件夹";
 
 /* SavePanel */
-"Select where to export QEMU command:" = "选择导出 QEMU 命令的位置：";
+"Select where to save debug log:" = "选择保存调试日志的位置：";
 
 /* SavePanel */
-"Select where to save debug log:" = "选择存储调试日志的位置：";
-
-/* SavePanel */
-"Select where to save UTM Virtual Machine:" = "选择存储 UTM 虚拟机的位置：";
+"Select where to save UTM Virtual Machine:" = "选择保存 UTM 虚拟机的位置：";
 
 /* VMDisplayWindowController */
 "Send Key" = "发送按键";
@@ -1281,6 +1404,9 @@ UTMQemuConstants */
 /* No comment provided by engineer. */
 "Sharing" = "共享";
 
+/* VMKeyboardAccessoryView */
+"Shift" = "Shift";
+
 /* No comment provided by engineer. */
 "Show Advanced Settings" = "显示高级设置";
 
@@ -1303,10 +1429,19 @@ UTMQemuConstants */
 "Slower, but can run other CPU architectures." = "速度较慢，但可以运行其他 CPU 架构。";
 
 /* UTMSnapshotService */
+"Snapshot %lld" = "快照 %lld";
+
+/* No comment provided by engineer. */
+"Snapshots" = "快照";
+
+/* UTMSnapshotService */
 "Snapshots are not supported for this virtual machine." = "此虚拟机不支持快照。";
 
 /* UTMSWTPM */
 "Socket not specified." = "未指定套接字。";
+
+/* UTMData */
+"Space cannot be reclaimed from a drive while it holds snapshots or a suspended state." = "当驱动器包含快照或处于挂起状态时，无法从驱动器中回收空间。";
 
 /* No comment provided by engineer. */
 "Specify the size of the drive where data will be stored into." = "指定将在其中存储数据的驱动器大小。";
@@ -1345,7 +1480,7 @@ UTMQemuConstants */
 "Style" = "样式";
 
 /* No comment provided by engineer. */
-"Summary" = "总结";
+"Summary" = "摘要";
 
 /* Welcome view */
 "Support" = "支持";
@@ -1363,12 +1498,13 @@ UTMQemuConstants */
 "Suspend is not supported when GPU acceleration is enabled." = "启用 GPU 加速时不支持挂起。";
 
 /* UTMQemuVirtualMachine */
-"Suspend state cannot be saved when running in disposible mode." = "在一次性模式下运行时无法存储挂起状态。";
+"Suspend state cannot be saved when running in disposible mode." = "在一次性模式下运行时，无法保存挂起状态。";
 
 /* UTMAppleVirtualMachine */
-"Suspend state cannot be saved when running without saving changes." = "在不保存更改的情况下运行时，无法保存暂停状态。";
+"Suspend state cannot be saved when running without saving changes." = "在不保存更改的情况下运行时，无法保存挂起状态。";
 
-/* VMData */
+/* VMData
+VMSnapshotsView */
 "Suspended" = "已挂起";
 
 /* UTMSWTPM */
@@ -1388,6 +1524,9 @@ UTMQemuConstants */
 
 /* No comment provided by engineer. */
 "System" = "系统";
+
+/* VMKeyboardAccessoryView */
+"Tab" = "Tab";
 
 /* No comment provided by engineer. */
 "Tap to hide/show toolbar" = "点按以隐藏/显示工具栏";
@@ -1410,11 +1549,20 @@ UTMQemuConstants */
 /* UTMRemoteServer */
 "The client interface version does not match the server." = "客户端接口版本与服务器不匹配。";
 
+/* UTMSnapshotService */
+"The data of the snapshot '%@' is missing. It may have been removed by another application." = "快照“%@”的数据丢失。它可能已被另一个应用程序删除。";
+
 /* UTMScriptingUSBDeviceImpl */
 "The device cannot be found." = "找不到该设备。";
 
 /* UTMScriptingUSBDeviceImpl */
 "The device is not currently connected." = "设备目前尚未连接。";
+
+/* UTMAppleDiskImage */
+"The disk image has no snapshot '%@'." = "磁盘映像没有快照“%@”。";
+
+/* UTMAppleDiskImage */
+"The disk image is incomplete because some of its data could not be read." = "磁盘映像不完整，因为某些数据无法读取。";
 
 /* Error shown when importing a ZIP file from web that contains an entry pointing outside of the virtual machine directory. */
 "The downloaded ZIP archive contains an invalid path." = "下载的 ZIP 归档包含了一个无效的路径。";
@@ -1431,20 +1579,20 @@ UTMQemuConstants */
 /* UTMDownloadSupportToolsTaskError */
 "The guest support tools have already been mounted." = "客户机支持工具已装载。";
 
+/* UTMHelperProcess */
+"The helper for this operation is not installed." = "未安装此操作的帮助程序。";
+
+/* UTMHelperProcess */
+"The helper for this operation quit unexpectedly." = "此操作的帮助程序意外退出。";
+
 /* UTMRemoteClient */
-"The host fingerprint does not match the saved value. This means that UTM Server was reset, a different host is using the same name, or an attacker is pretending to be the host. For your protection, you need to delete this saved host to continue." = "主机指纹与存储的值不匹配。这意味着 UTM 服务器被重置、不同的主机使用相同的名称，或者攻击者正在冒充主机。为了保护你的安全，你需要删除已存储的主机才能继续。";
+"The host fingerprint does not match the saved value. This means that UTM Server was reset, a different host is using the same name, or an attacker is pretending to be the host. For your protection, you need to delete this saved host to continue." = "主机指纹与保存的值不匹配。这意味着 UTM 服务器被重置、不同的主机使用相同的名称，或者攻击者正在冒充主机。为保护你的安全，你需要删除已保存的主机才能继续。";
 
 /* UTMAppleConfiguration */
 "The host operating system needs to be updated to support one or more features requested by the guest." = "需要更新主机操作系统以支持客户机请求的一个或多个功能。";
 
 /* UTMScriptingConfigImpl */
 "The icon named '%@' cannot be found in the built-in icons." = "在内置图标中找不到名为“%@”的图标。";
-
-/* UTMSnapshotService */
-"The name '%@' is not a valid snapshot name. Use letters, numbers, and the characters _.- (up to 64 characters)." = "名称“%@”不是有效的快照名称。请使用字母、数字与下划线 (_)、英文句点 (.)及减号 (-) (最多 64 个字符)。";
-
-/* UTMSnapshotService */
-"The name '%@' is reserved and cannot be used for a snapshot." = "名称“%@”已被预留，不能用于快照。";
 
 /* UTMAppleVirtualMachine */
 "The operating system cannot be installed on this machine." = "操作系统无法安装在此机器上。";
@@ -1459,7 +1607,7 @@ UTMQemuConstants */
 "The QEMU guest agent is not running or not installed on the guest." = "QEMU 客户机代理没有运行或未安装在客户机上。";
 
 /* UTMAppleVirtualMachine */
-"The recovery IPSW cannot be read. Please select a new IPSW in Boot settings." = "无法读取 IPSW 恢复文件。请在启动设置中选择一个新的 IPSW。";
+"The recovery IPSW cannot be read. Please select a new IPSW in Boot settings." = "无法读取 IPSW 恢复映像。请在启动设置中选择一个新的 IPSW。";
 
 /* No comment provided by engineer. */
 "The selected architecture is unsupported in this version of UTM." = "此版本的 UTM 不支持所选架构。";
@@ -1477,13 +1625,19 @@ UTMQemuConstants */
 "The server interface version does not match the client." = "服务器接口版本与客户端不匹配。";
 
 /* UTMSnapshotService */
+"The snapshot '%@' cannot be restored because it does not cover every drive of the virtual machine, such as a drive added after it was taken." = "无法还原快照“%@”，因为它并未覆盖虚拟机的每个磁盘，例如创建快照后新增的磁盘。";
+
+/* UTMSnapshotService */
 "The snapshot '%@' does not exist." = "快照“%@”不存在。";
 
 /* UTMScriptingAppDelegate */
 "The specified operating system is not supported on your machine." = "你的机器不支持指定的操作系统。";
 
 /* No comment provided by engineer. */
-"The target does not support hardware emulated serial connections." = "目标系统不支持硬件模拟串行连接。";
+"The target does not support hardware emulated serial connections." = "目标平台不支持硬件模拟串行连接。";
+
+/* UTMAppleConfiguration */
+"The UEFI variables of this virtual machine could not be accessed." = "无法访问此虚拟机的UEFI变量。";
 
 /* UTMAppleVirtualMachine */
 "The USB device '%@' cannot be found." = "找不到 USB 设备“%@”。";
@@ -1506,14 +1660,11 @@ UTMQemuConstants */
 /* UTMScriptingVirtualMachineImpl */
 "The virtual machine is not running." = "虚拟机未运行。";
 
-/* UTMSnapshotService */
-"The virtual machine must be stopped before listing snapshots." = "在载入快照列表之前，必须停止虚拟机。";
-
-/* UTMSnapshotService */
-"The virtual machine must be stopped before restoring a snapshot." = "在恢复快照之前，必须停止虚拟机。";
-
 /* UTMScriptingVirtualMachineImpl */
 "The virtual machine must be stopped before this operation can be performed." = "在执行此操作之前，必须停止虚拟机。";
+
+/* UTMSnapshotService */
+"The virtual machine must be stopped for this snapshot operation." = "此快照操作必须停止虚拟机。";
 
 /* Error shown when importing a ZIP file from web that doesn't contain a UTM Virtual Machine. */
 "There is no UTM file in the downloaded ZIP archive." = "下载的 ZIP 归档中无 UTM 文件。";
@@ -1534,7 +1685,7 @@ UTMQemuConstants */
 "This change will reset all settings" = "此更改将重置所有设置";
 
 /* UTMConfiguration */
-"This configuration is saved with a newer version of UTM and is not compatible with this version." = "此配置是用较新版本的 UTM 存储的，并且与此版本不兼容。";
+"This configuration is saved with a newer version of UTM and is not compatible with this version." = "此配置是用较新版本的 UTM 保存的，并且与此版本不兼容。";
 
 /* UTMConfiguration */
 "This configuration is too old and is not supported." = "此配置过旧，无法支持。";
@@ -1544,6 +1695,9 @@ UTMQemuConstants */
 
 /* VMConfigAppleSharingView */
 "This directory is already being shared." = "此目录已被共享。";
+
+/* UTMAppleDiskImage */
+"This drive holds snapshots and can only be used on macOS 27 or later." = "此驱动器包含快照，且只能在 macOS 27 或更高版本上使用。";
 
 /* VMData */
 "This function is not implemented." = "此功能未实现。";
@@ -1558,10 +1712,13 @@ UTMQemuConstants */
 "This is not a valid Apple Virtualization configuration." = "并非有效的 Apple 虚拟化配置。";
 
 /* VMDisplayWindowController */
-"This may corrupt the VM and any unsaved changes will be lost. To quit safely, shut down from the guest." = "这可能会损坏虚拟机，任何未存储的更改都将丢失。为了安全退出，请从客户机操作系统关闭。";
+"This may corrupt the VM and any unsaved changes will be lost. To quit safely, shut down from the guest." = "这可能会损坏虚拟机，所有未保存的更改都将丢失。为了安全退出，请从客户机操作系统关闭。";
 
 /* UTMScriptingVirtualMachineImpl */
 "This operation cannot be performed while macOS is being installed." = "安装 macOS 时无法执行此操作。";
+
+/* UTMHelperProcess */
+"This operation requires a newer version of iOS." = "此操作需要较新版本的 iOS。";
 
 /* UTMDataExtension */
 "This virtual machine cannot be run on this machine." = "此虚拟机无法在这台机器上运行。";
@@ -1576,7 +1733,7 @@ UTMQemuConstants */
 "This virtual machine has been removed." = "此虚拟机已被移除。";
 
 /* UTMScriptingVirtualMachineImpl */
-"This virtual machine has no IPSW recovery image configured, so there is nothing to install from." = "此虚拟机未配置 IPSW 恢复映像，因此无软件可安装。";
+"This virtual machine has no IPSW recovery image configured, so there is nothing to install from." = "此虚拟机未配置 IPSW 恢复映像，因此没有可安装的软件。";
 
 /* UTMDataExtension */
 "This virtual machine is already running. In order to run it from this device, you must stop it first." = "此虚拟机已在运行。若要从该设备运行此虚拟机，你必须先停止它。";
@@ -1591,7 +1748,7 @@ UTMQemuConstants */
 "This VM is unavailable." = "此虚拟机不可用。";
 
 /* VMDisplayWindowController */
-"This will reset the VM and any unsaved state will be lost." = "这将重置虚拟机，任何未存储的状态都将丢失。";
+"This will reset the VM and any unsaved state will be lost." = "这将重置虚拟机，所有未保存的状态都将丢失。";
 
 /* AppDelegate */
 "Timed out after 45 seconds waiting for running VMs to stop." = "在等待运行的虚拟机停止的 45 秒后超时。";
@@ -1606,7 +1763,7 @@ UTMQemuConstants */
 "To capture input or to release the capture, press Command and Option at the same time." = "若要捕获或释放捕获输入，请同时按下 Command 和 Option 键。";
 
 /* No comment provided by engineer. */
-"To install macOS, you need to download a recovery IPSW. If you do not select an existing IPSW, the latest macOS IPSW will be downloaded from Apple." = "若要安装 macOS，你需要下载 IPSW 恢复文件。如果你没有选择现有的 IPSW，将会从 Apple 下载最新的 macOS IPSW。";
+"To install macOS, you need to download a recovery IPSW. If you do not select an existing IPSW, the latest macOS IPSW will be downloaded from Apple." = "若要安装 macOS，你需要下载 IPSW 恢复映像。如果你没有选择现有的 IPSW，将会从 Apple 下载最新的 macOS IPSW。";
 
 /* VMDisplayQemuMetalWindowController */
 "To release the mouse cursor, press %@ at the same time." = "若要释放鼠标光标，请同时按 %@。";
@@ -1641,6 +1798,9 @@ UTMQemuConstants */
 /* UTMAppleDiskImage */
 "Unknown" = "未知";
 
+/* VMKeyboardAccessoryView */
+"Up" = "上";
+
 /* No comment provided by engineer. */
 "Update" = "更新";
 
@@ -1666,7 +1826,7 @@ UTMQemuConstants */
 "USB Devices" = "USB 设备";
 
 /* VMDisplayAppleDisplayController */
-"USB Mass Storage: %@" = "USB 海量储存设备：%@";
+"USB Mass Storage: %@" = "USB 海量存储设备：%@";
 
 /* No comment provided by engineer. */
 "USB Sharing" = "USB 共享";
@@ -1873,6 +2033,9 @@ VMWizardOSMacView */
 
 /* No comment provided by engineer. */
 "Bridged Settings" = "桥接设置";
+
+/* Welcome view */
+"Browse UTM Gallery" = "浏览 UTM 库";
 
 /* No comment provided by engineer. */
 "Build" = "构建版本";
@@ -2091,6 +2254,9 @@ VMWizardOSMacView */
 "Export Debug Log" = "导出调试日志";
 
 /* No comment provided by engineer. */
+"Export QEMU Command…" = "导出 QEMU 命令…";
+
+/* No comment provided by engineer. */
 "External Drive" = "外部磁盘";
 
 /* UTMData */
@@ -2155,6 +2321,9 @@ VMWizardOSMacView */
 
 /* No comment provided by engineer. */
 "Hide dock icon on next launch" = "下次启动时隐藏程序坞图标";
+
+/* VMKeyboardAccessoryView */
+"Hide Keyboard" = "隐藏键盘";
 
 /* No comment provided by engineer. */
 "Host Address" = "主机地址";
@@ -2326,10 +2495,16 @@ VMWizardOSMacView */
 "Move…" = "移动…";
 
 /* No comment provided by engineer. */
+"Move Down" = "下移";
+
+/* No comment provided by engineer. */
 "Move selected VM" = "移动已选择的虚拟机";
 
 /* No comment provided by engineer. */
 "Move this VM from internal storage to elsewhere." = "将此虚拟机从内部存储空间移动到其他地方。";
+
+/* No comment provided by engineer. */
+"Move Up" = "上移";
 
 /* No comment provided by engineer. */
 "Navigate to '/Library/Preferences/VMware Fusion' (⌘+Shift+G) and select the 'networking' file" = "导览至 '/Library/Preferences/VMware Fusion' (Command + Shift + G) 并选择“networking”文件";
@@ -2408,6 +2583,9 @@ VMWizardOSMacView */
 
 /* No comment provided by engineer. */
 "Protocol" = "协议";
+
+/* No comment provided by engineer. */
+"QEMU Arguments" = "QEMU 参数";
 
 /* No comment provided by engineer. */
 "QEMU Machine Properties" = "QEMU 虚拟机属性";
@@ -2522,6 +2700,9 @@ VMWizardOSMacView */
 
 /* No comment provided by engineer. */
 "Select an existing disk image." = "选择一个现有的磁盘映像。";
+
+/* SavePanel */
+"Select where to export QEMU command:" = "选择导出 QEMU 命令的位置：";
 
 /* No comment provided by engineer. */
 "Selected:" = "已选择：";
@@ -2652,6 +2833,18 @@ VMWizardOSMacView */
 /* No comment provided by engineer. */
 "The amount of storage to allocate for this image. Ignored if importing an image. If this is a raw image, then an empty file of this size will be stored with the VM. Otherwise, the disk image will dynamically expand up to this size." = "为此映像分配的存储空间。在导入映像时，此参数会被忽略。若导入的是 raw 映像，则虚拟机将存储一个与此相同大小的空文件。否则，磁盘映像将动态扩展至此大小。";
 
+/* UTMSnapshotService */
+"The name '%@' is not a valid snapshot name. Use letters, numbers, and the characters _.- (up to 64 characters)." = "名称“%@”不是有效的快照名称。请使用字母、数字与下划线 (_)、英文句点 (.)及减号 (-) (最多 64 个字符)。";
+
+/* UTMSnapshotService */
+"The name '%@' is reserved and cannot be used for a snapshot." = "名称“%@”已被预留，不能用于快照。";
+
+/* UTMSnapshotService */
+"The virtual machine must be stopped before listing snapshots." = "在载入快照列表之前，必须停止虚拟机。";
+
+/* UTMSnapshotService */
+"The virtual machine must be stopped before restoring a snapshot." = "在恢复快照之前，必须停止虚拟机。";
+
 /* No comment provided by engineer. */
 "Theme" = "主题";
 
@@ -2750,6 +2943,13 @@ VMWizardOSMacView */
 "VGA Device RAM (MB)" = "VGA 设备内存 (MB)";
 
 /* No comment provided by engineer. */
+"Virtual machines using this mode in the same UTM app can connect to each other and access the internet through your Mac." = "在同一 UTM App 中使用此模式的虚拟机可以相互连接，并通过你的 Mac 访问互联网。";
+
+/* No comment provided by engineer. */
+"Virtual machines using this mode in the same UTM app can connect to each other and your Mac. This network does not provide internet access." = "在同一 UTM App 中使用此模式的虚拟机可以相互连接，并连接到你的 Mac。此网络不提供互联网访问。";
+
+
+/* No comment provided by engineer. */
 "Virtualization" = "虚拟化";
 
 /* No comment provided by engineer. */
@@ -2785,29 +2985,3 @@ VMWizardOSMacView */
 /* No comment provided by engineer. */
 "Zoom" = "缩放";
 
-/* VMKeyboardAccessoryView */
-"Up" = "上";
-
-/* VMKeyboardAccessoryView */
-"Down" = "下";
-
-/* VMKeyboardAccessoryView */
-"Left" = "左";
-
-/* VMKeyboardAccessoryView */
-"Right" = "右";
-
-/* VMKeyboardAccessoryView */
-"Caps Lock" = "大写锁定";
-
-/* VMKeyboardAccessoryView */
-"Page Up" = "上一页";
-
-/* VMKeyboardAccessoryView */
-"Page Down" = "下一页";
-
-/* VMKeyboardAccessoryView */
-"Paste" = "粘贴";
-
-/* VMKeyboardAccessoryView */
-"Hide Keyboard" = "隐藏键盘";

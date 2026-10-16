@@ -16,6 +16,12 @@
 
 import Foundation
 
+/// What the bottom half of a device folded like a laptop shows.
+@objc enum VMInputDeck: Int {
+    case keyboard
+    case touchpad
+}
+
 @objc protocol VMDisplayViewControllerDelegate {
     var qemuInputLegacy: Bool { get }
     var qemuDisplayUpscaler: MTLSamplerMinMagFilter { get }
@@ -27,10 +33,12 @@ import Foundation
     var displayScale: CGFloat { get set }
     var displayViewSize: CGSize { get set }
     var displayIsZoomLocked: Bool { get set }
+    var deckAccessoryHeight: CGFloat { get set }
 
     func displayDidAssertUserInteraction()
     func displayDidAppear()
     func display(_ display: CSDisplay, didResizeTo size: CGSize)
     func serialDidError(_ error: String)
     func requestInputTablet(_ tablet: Bool)
+    func displayDidRequestInputDeck(_ deck: VMInputDeck)
 }

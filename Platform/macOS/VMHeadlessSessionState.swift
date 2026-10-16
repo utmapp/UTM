@@ -48,6 +48,9 @@ import IOKit.pwr_mgt
                 hasStarted = true
                 didStart()
             }
+            if state == .paused {
+                releaseIdleSleepAssertion()
+            }
             if state == .stopped {
                 if hasStarted {
                     didStop() // graceful exit
@@ -79,24 +82,34 @@ import IOKit.pwr_mgt
 extension VMHeadlessSessionState {
     private func didStart() {
         NotificationCenter.default.post(name: .vmSessionCreated, object: nil, userInfo: ["Session": self])
-        if isPreventIdleSleep {
-            var preventIdleSleepAssertion: IOPMAssertionID = .zero
-            let success = IOPMAssertionCreateWithName(kIOPMAssertPreventUserIdleSystemSleep as CFString,
-                                                      IOPMAssertionLevel(kIOPMAssertionLevelOn),
-                                                      "UTM Virtual Machine Background" as CFString,
-                                                      &preventIdleSleepAssertion)
-            if success == kIOReturnSuccess {
-                self.preventIdleSleepAssertion = preventIdleSleepAssertion
-            }
-        }
+        acquireIdleSleepAssertion()
     }
     
     private func didStop() {
         NotificationCenter.default.post(name: .vmSessionEnded, object: nil, userInfo: ["Session": self])
+        releaseIdleSleepAssertion()
+        onStop?()
+    }
+    
+    private func acquireIdleSleepAssertion() {
+        guard isPreventIdleSleep && preventIdleSleepAssertion == nil else {
+            return
+        }
+        var preventIdleSleepAssertion: IOPMAssertionID = .zero
+        let success = IOPMAssertionCreateWithName(kIOPMAssertPreventUserIdleSystemSleep as CFString,
+                                                  IOPMAssertionLevel(kIOPMAssertionLevelOn),
+                                                  "UTM Virtual Machine Background" as CFString,
+                                                  &preventIdleSleepAssertion)
+        if success == kIOReturnSuccess {
+            self.preventIdleSleepAssertion = preventIdleSleepAssertion
+        }
+    }
+    
+    private func releaseIdleSleepAssertion() {
         if let preventIdleSleepAssertion = preventIdleSleepAssertion {
             IOPMAssertionRelease(preventIdleSleepAssertion)
+            self.preventIdleSleepAssertion = nil
         }
-        onStop?()
     }
 }
 

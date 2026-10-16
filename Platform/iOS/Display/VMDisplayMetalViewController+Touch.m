@@ -622,6 +622,29 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
     }
 }
 
+#pragma mark - Touchpad
+
+- (void)prepareForTouchpad {
+    [self switchMouseType:VMMouseTypeRelative];
+}
+
+- (void)touchpadMoveBy:(CGPoint)delta {
+    [self switchMouseType:VMMouseTypeRelative];
+    CGFloat multiplier = self.cursor.cursorSpeedMultiplier;
+    [self moveMouseRelative:CGPointMake(delta.x * multiplier, delta.y * multiplier)];
+}
+
+- (void)touchpadPressButton:(CSInputButton)button pressed:(BOOL)pressed {
+    [self switchMouseType:VMMouseTypeRelative];
+    switch (button) {
+        case kCSInputButtonLeft: self.mouseLeftDown = pressed; break;
+        case kCSInputButtonRight: self.mouseRightDown = pressed; break;
+        case kCSInputButtonMiddle: self.mouseMiddleDown = pressed; break;
+        default: break;
+    }
+    [self.vmInput sendMouseButton:button mask:self.mouseButtonDown pressed:pressed];
+}
+
 #pragma mark - UIGestureRecognizerDelegate
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
@@ -752,16 +775,29 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
 
 #pragma mark - Touch event handling
 
+/// Touches on the input deck reach the controller through the responder chain but are not for the guest.
+- (NSSet<UITouch *> *)displayTouches:(NSSet<UITouch *> *)touches {
+    return [touches objectsPassingTest:^BOOL(UITouch *touch, BOOL *stop) {
+        return [touch.view isDescendantOfView:self.mtkView];
+    }];
+}
+
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    NSSet<UITouch *> *displayTouches = [self displayTouches:touches];
+    if (displayTouches.count == 0) {
+        [super touchesBegan:touches withEvent:event];
+        return;
+    }
+    NSUInteger allDisplayTouches = [self displayTouches:event.allTouches].count;
     if (!self.delegate.qemuInputLegacy) {
-        for (UITouch *touch in touches) {
+        for (UITouch *touch in displayTouches) {
             VMMouseType type = [self touchTypeToMouseType:touch.type];
 #if TARGET_OS_VISION
             if ([self isTouchGazeGesture:touch]) {
                 type = VMMouseTypeRelative;
             }
 #endif
-            if (event.allTouches.count == touches.count) { // a touch joining later does not change the gesture
+            if (allDisplayTouches == displayTouches.count) { // a touch joining later does not change the gesture
                 self.isTouchScrolling = (type == VMMouseTypeAbsoluteScroll);
             }
             if ([self switchMouseType:type]) {
@@ -769,7 +805,7 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
                 [self dragCursor:UIGestureRecognizerStateEnded primary:YES secondary:YES middle:YES]; // reset drag
             } else if (!self.vmInput.serverModeCursor) { // start click for client mode
                 if (self.isTouchScrolling) { // clicks come from the gestures instead
-                    if (event.allTouches.count == 1) {
+                    if (allDisplayTouches == 1) {
                         CGPoint pos = [touch locationInView:self.mtkView];
                         if (![self isRepeatTapAtLocation:pos]) { // else leave the cursor for the double click
                             [self.cursor startMovement:pos];
@@ -810,7 +846,7 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     // move cursor in client mode, in server mode we handle in gesturePan
     if (!self.delegate.qemuInputLegacy && !self.vmInput.serverModeCursor && !self.isTouchScrolling) {
-        for (UITouch *touch in touches) {
+        for (UITouch *touch in [self displayTouches:touches]) {
             [self.cursor updateMovement:[touch locationInView:self.mtkView]];
             break; // handle single touch
         }
@@ -820,7 +856,7 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
 
 - (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     // release click in client mode, in server mode we handle in gesturePan
-    if (!self.delegate.qemuInputLegacy && !self.vmInput.serverModeCursor && !self.isTouchScrolling) {
+    if (!self.delegate.qemuInputLegacy && !self.vmInput.serverModeCursor && !self.isTouchScrolling && [self displayTouches:touches].count > 0) {
         [self dragCursor:UIGestureRecognizerStateEnded primary:YES secondary:YES middle:YES];
     }
     [super touchesCancelled:touches withEvent:event];
@@ -828,7 +864,7 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
 
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     // release click in client mode, in server mode we handle in gesturePan
-    if (!self.delegate.qemuInputLegacy && !self.vmInput.serverModeCursor && !self.isTouchScrolling) {
+    if (!self.delegate.qemuInputLegacy && !self.vmInput.serverModeCursor && !self.isTouchScrolling && [self displayTouches:touches].count > 0) {
         [self dragCursor:UIGestureRecognizerStateEnded primary:YES secondary:YES middle:YES];
     }
     [super touchesEnded:touches withEvent:event];

@@ -1,11 +1,14 @@
 #  UTM
 [![Build](https://github.com/utmapp/UTM/actions/workflows/build.yml/badge.svg?branch=main&event=push)][1]
+[![Mac App Store](https://img.shields.io/badge/Mac_App_Store-UTM-0D96F6?logo=appstore&logoColor=white)](https://apps.apple.com/pl/app/utm-virtual-machines/id1538878817)
+[![App Store](https://img.shields.io/badge/App_Store-UTM_SE-0D96F6?logo=appstore&logoColor=white)](https://apps.apple.com/pl/app/utm-se-retro-pc-emulator/id1564628856)
+[![Download](https://img.shields.io/badge/Download-UTM.dmg-24292F?logo=github&logoColor=white)](https://github.com/utmapp/UTM/releases/latest/download/UTM.dmg)
 
 > Możliwe jest wymyślenie pojedynczej maszyny, której można użyć do obliczenia dowolnej sekwencji obliczeniowej.
 
 -- <cite>Alan Turing, 1936</cite>
 
-UTM to wielofunkcyjny emulator systemu oraz menedżer wirtualnych maszyn dla iOS i macOS. Bazuje na QEMU. W skrócie, pozwala na uruchomienie systemu Windows, Linux, i wiele więcej na twoim Macu, iPhonie czy iPadzie. Więcej informacji na https://getutm.app/ i https://mac.getutm.app/
+UTM to wielofunkcyjny emulator systemu oraz menedżer wirtualnych maszyn dla iOS, macOS i visionOS. Bazuje na QEMU. W skrócie, pozwala na uruchomienie systemu Windows, Linux, i wiele więcej na twoim Macu, iPhonie czy iPadzie. Więcej informacji na https://getutm.app/ i https://mac.getutm.app/
 
 <p align="center">
   <img width="450px" alt="UTM uruchomione na iPhonie" src="screen.png">
@@ -21,13 +24,13 @@ UTM to wielofunkcyjny emulator systemu oraz menedżer wirtualnych maszyn dla iOS
 * Tryb tekstowy (konsola),
 * Urządzenia USB,
 * Akceleracja JIT z pomocą QEMU TCG
-* Frontend zaprojektowany od zera dla macOS 11 i iOS 11+ używając najlepszych i aktualnych API!
+* Frontend zaprojektowany od zera dla macOS 12+ i iOS 15+ używając najlepszych i aktualnych API!
 * Stwórz, zarządzaj i uruchamiaj wirtualne maszyny bezpośrednio z twojego urządzenia.
 
 ## Dodatkowe funkcje dla macOS
 
 * Wirtualizacja z akceleracją sprzętową używając Hypervisor.framework i QEMU
-* Uruchamiaj maszyny wirtualne macOS z wykorzystaniem Virtualization.framework na macOS 12+
+* Uruchamiaj maszyny wirtualne macOS z wykorzystaniem Virtualization.framework
 
 ## UTM SE
 
@@ -39,9 +42,9 @@ Aby zoptymalizować czas kompliacji i rozmiar aplikacji, tylko wymienione archit
 
 ## Instalacja
 
-UTM (SE) dla iOS: https://getutm.app/install/
+UTM (SE) dla iOS: https://docs.getutm.app/installation/ios/
 
-UTM jest również dostępne na macOS: https://mac.getutm.app/
+UTM jest również dostępne na macOS: https://docs.getutm.app/installation/macos/
 
 ## Rozwój projektu
 

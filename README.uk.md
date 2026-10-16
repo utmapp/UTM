@@ -1,11 +1,14 @@
 #  UTM
 [![Build](https://github.com/utmapp/UTM/actions/workflows/build.yml/badge.svg?branch=main&event=push)][1]
+[![Mac App Store](https://img.shields.io/badge/Mac_App_Store-UTM-0D96F6?logo=appstore&logoColor=white)](https://apps.apple.com/ua/app/utm-virtual-machines/id1538878817)
+[![App Store](https://img.shields.io/badge/App_Store-UTM_SE-0D96F6?logo=appstore&logoColor=white)](https://apps.apple.com/ua/app/utm-se-retro-pc-emulator/id1564628856)
+[![Download](https://img.shields.io/badge/Download-UTM.dmg-24292F?logo=github&logoColor=white)](https://github.com/utmapp/UTM/releases/latest/download/UTM.dmg)
 
 > Можливо створити єдину машину, яку можна використовувати для обчислення будь-якої обчислювальної послідовності.
 
 -- <cite>Алан Тюрінг, 1936</cite>
 
-UTM - це повнофункціональний емулятор систем та віртуальних машин хостів для iOS та macOS. Він базується на QEMU. Коротко кажучи, він дозволяє запускати Windows, Linux та інші операційні системи на вашому Mac, iPhone та iPad. Додаткову інформацію можна знайти на https://getutm.app/ та https://mac.getutm.app/.
+UTM - це повнофункціональний емулятор систем та віртуальних машин хостів для iOS, macOS та visionOS. Він базується на QEMU. Коротко кажучи, він дозволяє запускати Windows, Linux та інші операційні системи на вашому Mac, iPhone та iPad. Додаткову інформацію можна знайти на https://getutm.app/ та https://mac.getutm.app/.
 
 <p align="center">
   <img width="450px" alt="UTM працює на iPhone" src="screen.png">
@@ -21,13 +24,13 @@ UTM - це повнофункціональний емулятор систем 
 * Режим текстового терміналу
 * USB пристрої
 * Прискорення на основі JIT з використанням QEMU TCG
-* Фронтенд розроблено з нуля для macOS 11 та iOS 11+ з використанням найновіших та найкращих API
+* Фронтенд розроблено з нуля для macOS 12+ та iOS 15+ з використанням найновіших та найкращих API
 * Створюйте, керуйте та запускайте віртуальні машини безпосередньо зі свого пристрою
 
 ## Додаткові можливості macOS
 
 * Апаратне прискорення віртуалізації за допомогою використання Hypervisor.framework та QEMU
-* Запуск гостьових операційних систем macOS з використанням Virtualization.framework на macOS 12+
+* Запуск гостьових операційних систем macOS з використанням Virtualization.framework
 
 ## UTM SE
 
@@ -39,9 +42,9 @@ UTM SE ("повільна версія") використовує [потіко�
 
 ## Встановлення
 
-UTM (SE) для iOS: https://getutm.app/install/
+UTM (SE) для iOS: https://docs.getutm.app/installation/ios/
 
-UTM також доступний для macOS: https://mac.getutm.app/
+UTM також доступний для macOS: https://docs.getutm.app/installation/macos/
 
 ## Розробка
 

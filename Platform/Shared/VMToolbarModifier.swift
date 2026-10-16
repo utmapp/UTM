@@ -46,109 +46,7 @@ struct VMToolbarModifier: ViewModifier {
     #endif
     
     func body(content: Content) -> some View {
-        content.toolbar {
-            #if os(visionOS)
-            UTMPreferenceButtonToolbarContent()
-            #endif
-            ToolbarItemGroup(placement: buttonPlacement) {
-                #if !WITH_REMOTE // FIXME: implement remote feature
-                if vm.isShortcut {
-                    DestructiveButton {
-                        confirmAction = .confirmDeleteVM(vm: vm)
-                    } label: {
-                        Label("Remove", systemImage: "trash")
-                            .labelStyle(.iconOnly)
-                    }.help("Remove selected shortcut")
-                    .disabled(!vm.isModifyAllowed)
-                    .padding(.leading, padding)
-                } else {
-                    DestructiveButton {
-                        confirmAction = .confirmDeleteVM(vm: vm)
-                    } label: {
-                        Label("Delete", systemImage: "trash")
-                            .labelStyle(.iconOnly)
-                    }.help("Delete selected VM")
-                    .disabled(!vm.isModifyAllowed)
-                    .padding(.leading, padding)
-                }
-                #if !os(macOS)
-                if bottom {
-                    Spacer()
-                }
-                #endif
-                Button {
-                    confirmAction = .confirmCloneVM(vm: vm)
-                } label: {
-                    Label("Clone", systemImage: "doc.on.doc")
-                        .labelStyle(.iconOnly)
-                }.help("Clone selected VM")
-                .padding(.leading, padding)
-                #if !os(macOS)
-                if bottom {
-                    Spacer()
-                }
-                #endif
-                #if os(macOS)
-                if !vm.isShortcut {
-                    Button {
-                        confirmAction = .confirmMoveVM(vm: vm)
-                    } label: {
-                        Label("Move", systemImage: "arrow.down.doc")
-                            .labelStyle(.iconOnly)
-                    }.help("Move selected VM")
-                    .disabled(!vm.isModifyAllowed)
-                    .padding(.leading, padding)
-                }
-                #endif
-                Button {
-                    shareItem = .utmCopy(vm)
-                    showSharePopup.toggle()
-                } label: {
-                    Label("Share", systemImage: "square.and.arrow.up")
-                        .labelStyle(.iconOnly)
-                }.help("Share selected VM")
-                .padding(.leading, padding)
-                #if !os(macOS)
-                if bottom {
-                    Spacer()
-                }
-                #endif
-                #endif
-                if vm.hasSuspendState || !vm.isStopped {
-                    Button {
-                        confirmAction = .confirmStopVM(vm: vm)
-                    } label: {
-                        Label("Stop", systemImage: "stop")
-                            .labelStyle(.iconOnly)
-                    }.help("Stop selected VM")
-                    .padding(.leading, padding)
-                } else {
-                    Button {
-                        data.run(vm: data.selectedVM!)
-                    } label: {
-                        Label("Run", systemImage: "play")
-                            .labelStyle(.iconOnly)
-                    }.help("Run selected VM")
-                    .padding(.leading, padding)
-                }
-                #if !WITH_REMOTE // FIXME: implement remote feature
-                #if !os(macOS)
-                if bottom {
-                    Spacer()
-                }
-                #endif
-                Button {
-                    data.close(vm: vm) // close window
-                    data.edit(vm: vm)
-                } label: {
-                    Label("Edit", systemImage: "slider.horizontal.3")
-                        .labelStyle(.iconOnly)
-                }.help("Edit selected VM")
-                .disabled(vm.hasSuspendState || !vm.isModifyAllowed)
-                .padding(.leading, padding)
-                #endif
-            }
-        }
+        toolbar(content)
         .modifier(VMShareItemModifier(isPresented: $showSharePopup, shareItem: shareItem))
         .modifier(VMConfirmActionModifier(confirmAction: $confirmAction) { action in
             if case .confirmMoveVM(let vm) = action {
@@ -156,6 +54,201 @@ struct VMToolbarModifier: ViewModifier {
                 showSharePopup.toggle()
             }
         })
+    }
+}
+
+// MARK: - Layouts
+
+private extension VMToolbarModifier {
+    /// Toolbar content cannot branch on availability before iOS 16, so the view does.
+    @ViewBuilder
+    func toolbar(_ content: Content) -> some View {
+        #if os(iOS)
+        if #available(iOS 27, *) {
+            content.toolbar {
+                prioritizedToolbarContent
+            }
+        } else {
+            content.toolbar {
+                groupedToolbarContent
+            }
+        }
+        #else
+        content.toolbar {
+            #if os(visionOS)
+            UTMPreferenceButtonToolbarContent()
+            #endif
+            groupedToolbarContent
+        }
+        #endif
+    }
+
+    /// One group with manual spacing, which is laid out as a single unit.
+    var groupedToolbarContent: some ToolbarContent {
+        ToolbarItemGroup(placement: buttonPlacement) {
+            #if !WITH_REMOTE // FIXME: implement remote feature
+            deleteButton
+                .padding(.leading, padding)
+            groupSpacer
+            cloneButton
+                .padding(.leading, padding)
+            groupSpacer
+            #if os(macOS)
+            if !vm.isShortcut {
+                moveButton
+                    .padding(.leading, padding)
+            }
+            #endif
+            shareButton
+                .padding(.leading, padding)
+            groupSpacer
+            #endif
+            runStopButton
+                .padding(.leading, padding)
+            #if !WITH_REMOTE // FIXME: implement remote feature
+            groupSpacer
+            editButton
+                .padding(.leading, padding)
+            #endif
+        }
+    }
+
+    @ViewBuilder
+    var groupSpacer: some View {
+        #if !os(macOS)
+        if bottom {
+            Spacer()
+        }
+        #endif
+    }
+
+    #if os(iOS)
+    /// Separate items so that a bar too short for all of them drops the least important ones first.
+    ///
+    /// A vertical bar on the closed iPhone Duo overflows from the bottom, where Run and Stop sit.
+    @available(iOS 27, *)
+    @ToolbarContentBuilder
+    var prioritizedToolbarContent: some ToolbarContent {
+        #if !WITH_REMOTE // FIXME: implement remote feature
+        ToolbarItem(placement: buttonPlacement) {
+            deleteButton
+        }
+        if bottom {
+            ToolbarSpacer(.flexible, placement: buttonPlacement)
+        }
+        ToolbarItem(placement: buttonPlacement) {
+            cloneButton
+        }.visibilityPriority(.low)
+        if bottom {
+            ToolbarSpacer(.flexible, placement: buttonPlacement)
+        }
+        ToolbarItem(placement: buttonPlacement) {
+            shareButton
+        }
+        if bottom {
+            ToolbarSpacer(.flexible, placement: buttonPlacement)
+        }
+        #endif
+        ToolbarItem(placement: buttonPlacement) {
+            runStopButton
+        }.visibilityPriority(.high)
+        #if !WITH_REMOTE // FIXME: implement remote feature
+        if bottom {
+            ToolbarSpacer(.flexible, placement: buttonPlacement)
+        }
+        ToolbarItem(placement: buttonPlacement) {
+            editButton
+        }
+        #endif
+    }
+    #endif
+}
+
+// MARK: - Buttons
+
+private extension VMToolbarModifier {
+    #if !WITH_REMOTE
+    @ViewBuilder
+    var deleteButton: some View {
+        if vm.isShortcut {
+            DestructiveButton {
+                confirmAction = .confirmDeleteVM(vm: vm)
+            } label: {
+                Label("Remove", systemImage: "trash")
+                    .labelStyle(.iconOnly)
+            }.help("Remove selected shortcut")
+            .disabled(!vm.isModifyAllowed)
+        } else {
+            DestructiveButton {
+                confirmAction = .confirmDeleteVM(vm: vm)
+            } label: {
+                Label("Delete", systemImage: "trash")
+                    .labelStyle(.iconOnly)
+            }.help("Delete selected VM")
+            .disabled(!vm.isModifyAllowed)
+        }
+    }
+
+    var cloneButton: some View {
+        Button {
+            confirmAction = .confirmCloneVM(vm: vm)
+        } label: {
+            Label("Clone", systemImage: "doc.on.doc")
+                .labelStyle(.iconOnly)
+        }.help("Clone selected VM")
+    }
+
+    #if os(macOS)
+    var moveButton: some View {
+        Button {
+            confirmAction = .confirmMoveVM(vm: vm)
+        } label: {
+            Label("Move", systemImage: "arrow.down.doc")
+                .labelStyle(.iconOnly)
+        }.help("Move selected VM")
+        .disabled(!vm.isModifyAllowed)
+    }
+    #endif
+
+    var shareButton: some View {
+        Button {
+            shareItem = .utmCopy(vm)
+            showSharePopup.toggle()
+        } label: {
+            Label("Share", systemImage: "square.and.arrow.up")
+                .labelStyle(.iconOnly)
+        }.help("Share selected VM")
+    }
+
+    var editButton: some View {
+        Button {
+            data.close(vm: vm) // close window
+            data.edit(vm: vm)
+        } label: {
+            Label("Edit", systemImage: "slider.horizontal.3")
+                .labelStyle(.iconOnly)
+        }.help("Edit selected VM")
+        .disabled(vm.hasSuspendState || !vm.isModifyAllowed)
+    }
+    #endif
+
+    @ViewBuilder
+    var runStopButton: some View {
+        if vm.hasSuspendState || !vm.isStopped {
+            Button {
+                confirmAction = .confirmStopVM(vm: vm)
+            } label: {
+                Label("Stop", systemImage: "stop")
+                    .labelStyle(.iconOnly)
+            }.help("Stop selected VM")
+        } else {
+            Button {
+                data.run(vm: data.selectedVM!)
+            } label: {
+                Label("Run", systemImage: "play")
+                    .labelStyle(.iconOnly)
+            }.help("Run selected VM")
+        }
     }
 }
 

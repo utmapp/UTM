@@ -1,11 +1,14 @@
 #  UTM
 [![Build](https://github.com/utmapp/UTM/actions/workflows/build.yml/badge.svg?branch=main&event=push)][1]
+[![Mac App Store](https://img.shields.io/badge/Mac_App_Store-UTM-0D96F6?logo=appstore&logoColor=white)](https://apps.apple.com/jp/app/utm-virtual-machines/id1538878817)
+[![App Store](https://img.shields.io/badge/App_Store-UTM_SE-0D96F6?logo=appstore&logoColor=white)](https://apps.apple.com/jp/app/utm-se-retro-pc-emulator/id1564628856)
+[![Download](https://img.shields.io/badge/Download-UTM.dmg-24292F?logo=github&logoColor=white)](https://github.com/utmapp/UTM/releases/latest/download/UTM.dmg)
 
 > It is possible to invent a single machine which can be used to compute any computable sequence.
 
 -- <cite>Alan Turing, 1936</cite>
 
-UTMは、QEMUベースのiOSとmacOSのためのフル機能システムエミュレータと仮想マシンホストです。Mac、iPhone及びiPad上でWindows、Linuxなどを実行することができます。詳細については、[https://getutm.app/](https://getutm.app/) および [https://mac.getutm.app/](https://mac.getutm.app/) をご覧ください。
+UTMは、QEMUベースのiOS、macOS、visionOSのためのフル機能システムエミュレータと仮想マシンホストです。Mac、iPhone及びiPad上でWindows、Linuxなどを実行することができます。詳細については、[https://getutm.app/](https://getutm.app/) および [https://mac.getutm.app/](https://mac.getutm.app/) をご覧ください。
 
 <p align="center">
   <img width="450px" alt="UTM running on an iPhone" src="screen.png">
@@ -21,13 +24,13 @@ UTMは、QEMUベースのiOSとmacOSのためのフル機能システムエミ�
 * ターミナルモード
 * USBデバイス
 * QEMU TCGを用いたJITベースのアクセラレーション
-* フロントエンドは、最新かつ最高のAPIを使用して、macOS 11およびiOS 11+用にゼロから設計
+* フロントエンドは、最新かつ最高のAPIを使用して、macOS 12+およびiOS 15+用にゼロから設計
 * デバイスから直接VMの作成、管理、実行が可能
 
 ## macOSでの追加機能
 
 * Hypervisor.frameworkとQEMUによるハードウェアアクセラレーション仮想化
-* macOS 12+でVirtualization.frameworkを使用してmacOSゲストを起動
+* Virtualization.frameworkを使用してmacOSゲストを起動
 
 ## UTM SE
 
@@ -39,9 +42,9 @@ UTM SE ("slow edition") は従来のインタープリタよりは性能が良�
 
 ## インストール
 
-iOSのためのUTM (SE): [https://getutm.app/install/](https://getutm.app/install/)
+iOSのためのUTM (SE): [https://docs.getutm.app/installation/ios/](https://docs.getutm.app/installation/ios/)
 
-macOSのためのUTM: [https://mac.getutm.app/](https://mac.getutm.app/)
+macOSのためのUTM: [https://docs.getutm.app/installation/macos/](https://docs.getutm.app/installation/macos/)
 
 ## Development
 
