@@ -74,21 +74,10 @@ import UIKit
     /// Toggleable keys which the target releases after another key is pressed.
     @objc let modifierButtons: [VMKeyboardButton]
 
-    private let touchpadButton: UIButton
-
-    /// Offers the touchpad in place of the keyboard while the device is folded like a laptop.
-    @objc var isTouchpadKeyShown: Bool = false {
-        didSet {
-            touchpadButton.isHidden = !isTouchpadKeyShown
-        }
-    }
-
     @objc init(target: VMDisplayMetalViewController) {
         let style = Self.style
         modifierButtons = Self.modifierKeys.map { $0.makeButton(style: style, isToggleable: true) }
         let keyButtons = Self.keys.map { $0.makeButton(style: style) }
-        touchpadButton = Self.makeActionButton(image: UIImage(systemName: "rectangle.and.hand.point.up.left"),
-                                               accessibilityLabel: NSLocalizedString("Show Touchpad", comment: "VMKeyboardAccessoryView"))
         super.init(frame: .zero, inputViewStyle: .keyboard)
         allowsSelfSizing = true
         translatesAutoresizingMaskIntoConstraints = false
@@ -103,8 +92,6 @@ import UIKit
         let hideButton = Self.makeActionButton(imageName: "Keyboard Hide",
                                                accessibilityLabel: NSLocalizedString("Hide Keyboard", comment: "VMKeyboardAccessoryView"))
         hideButton.addTarget(target, action: #selector(VMDisplayMetalViewController.keyboardDonePressed(_:)), for: .touchUpInside)
-        touchpadButton.addTarget(target, action: #selector(VMDisplayMetalViewController.keyboardTouchpadPressed(_:)), for: .touchUpInside)
-        touchpadButton.isHidden = true
 
         let keySpacing: CGFloat = style == .classic ? 8 : 6
         let modifierStack = UIStackView(arrangedSubviews: modifierButtons)
@@ -116,7 +103,7 @@ import UIKit
         scrollView.addSubview(keyStack)
         Self.pin(keyStack, to: scrollView.contentLayoutGuide)
         keyStack.heightAnchor.constraint(equalTo: scrollView.frameLayoutGuide.heightAnchor).isActive = true
-        let contentStack = UIStackView(arrangedSubviews: [modifierStack, scrollView, touchpadButton, pasteButton, hideButton])
+        let contentStack = UIStackView(arrangedSubviews: [modifierStack, scrollView, pasteButton, hideButton])
         contentStack.spacing = 8
         contentStack.alignment = .center
 
@@ -157,12 +144,8 @@ import UIKit
     }
 
     private static func makeActionButton(imageName: String, accessibilityLabel: String) -> UIButton {
-        makeActionButton(image: UIImage(named: imageName), accessibilityLabel: accessibilityLabel)
-    }
-
-    static func makeActionButton(image: UIImage?, accessibilityLabel: String) -> UIButton {
         let button = UIButton(type: .system)
-        button.setImage(image, for: .normal)
+        button.setImage(UIImage(named: imageName), for: .normal)
         button.accessibilityLabel = accessibilityLabel
         button.widthAnchor.constraint(equalToConstant: 30).isActive = true
         button.heightAnchor.constraint(equalToConstant: 30).isActive = true
@@ -170,7 +153,7 @@ import UIKit
     }
 
     /// - Parameter top: Overrides the top of `guide` when only its other edges should be respected.
-    static func pin(_ view: UIView, to guide: LayoutAnchorProviding, top: NSLayoutYAxisAnchor? = nil, insets: UIEdgeInsets = .zero) {
+    private static func pin(_ view: UIView, to guide: LayoutAnchorProviding, top: NSLayoutYAxisAnchor? = nil, insets: UIEdgeInsets = .zero) {
         view.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             view.topAnchor.constraint(equalTo: top ?? guide.topAnchor, constant: insets.top),
@@ -181,7 +164,7 @@ import UIKit
     }
 }
 
-protocol LayoutAnchorProviding {
+private protocol LayoutAnchorProviding {
     var topAnchor: NSLayoutYAxisAnchor { get }
     var bottomAnchor: NSLayoutYAxisAnchor { get }
     var leadingAnchor: NSLayoutXAxisAnchor { get }
@@ -191,7 +174,7 @@ protocol LayoutAnchorProviding {
 extension UIView: LayoutAnchorProviding {}
 extension UILayoutGuide: LayoutAnchorProviding {}
 
-extension UIColor {
+private extension UIColor {
     /// Sits between the backdrops of the iOS 26 and iOS 27 keyboards, which differ slightly.
     static let glassKeyboardBackdrop = UIColor { traits in
         traits.userInterfaceStyle == .dark ? UIColor(white: 30/255, alpha: 0.85) : UIColor(red: 216/255, green: 218/255, blue: 222/255, alpha: 0.83)

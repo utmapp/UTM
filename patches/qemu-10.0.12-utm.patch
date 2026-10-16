@@ -2832,4 +2832,2251 @@ index c4323574e1..fba1a56ceb 100644
      /*
 -- 
 2.54.0 (Apple Git-157)
+From 63f81f5066001f336c19211746a53dfb91590b25 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Wed, 2 Sep 2026 08:11:45 -0700
+Subject: [PATCH 1/2] hvf: use the Hypervisor.framework in-kernel GICv3
+
+On macOS 15+ Hypervisor.framework offers an in-kernel GICv3 (hv_gic_*)
+that keeps SGIs, the timer PPIs and every GIC register access inside the
+kernel; with the emulated GIC each of those is a VM exit, and a guest
+whose job system wakes threads across CPUs pays one per wake.
+
+Add the "hvf-arm-gicv3" device, an ARM_GICV3_COMMON subclass in the
+mould of kvm-arm-gicv3 whose MMIO regions are placeholders: SPIs go to
+hv_gic_set_spi() and the PPIs QEMU raises itself (the emulated PMU) are
+pended into the owning vCPU's redistributor from that vCPU's thread
+right before hv_vcpu_run(). hv_gic_set_spi() only marks the interrupt
+pending; a vCPU executing guest code does not re-evaluate until its next
+exit, so the SPI's affinity route is read from GICD_IROUTER and that
+vCPU (every vCPU for a 1-of-N route) is exited with hv_vcpus_exit().
+
+hv_gic_create() must run after the VM exists and before any vCPU is
+created, so the virt board creates it right after the GIC version is
+finalized, before the CPUs are realized. The hypervisor GIC has no ITS,
+so the board disables the ITS and exposes a GICv2m MSI frame instead,
+which the MADT now advertises whenever a v2m controller was created.
+The accelerator gains "kernel-irqchip=on|off" (default on where
+available) and the -machine kernel-irqchip= sugar covers hvf like kvm.
+
+WFI no longer traps with the in-kernel GIC and there are no
+VTIMER_ACTIVATED exits; an unexpected one is reported once. Migration
+is blocked. Windows 11 and Linux guests boot with it; the PMU overflow
+path is not accepted by Windows' sampling profiler (wpr reports the
+profile source unsupported), so profiling needs kernel-irqchip=off.
+
+Assisted-by: Claude:claude-fable-5-1
+---
+ accel/hvf/hvf-accel-ops.c      |  21 +++
+ accel/stubs/hvf-stub.c         |  11 ++
+ accel/stubs/meson.build        |   1 +
+ hw/arm/virt-acpi-build.c       |   3 +-
+ hw/arm/virt.c                  |  22 ++-
+ hw/intc/Kconfig                |   5 +
+ hw/intc/arm_gicv3_common.c     |   3 +
+ hw/intc/arm_gicv3_hvf.c        | 155 +++++++++++++++++++++
+ hw/intc/arm_gicv3_its_common.c |   4 +
+ hw/intc/meson.build            |   1 +
+ include/system/hvf.h           |   4 +
+ include/system/hvf_int.h       |   4 +
+ system/vl.c                    |   2 +
+ target/arm/hvf/hvf.c           | 240 ++++++++++++++++++++++++++++++++-
+ target/arm/hvf_arm.h           |  38 ++++++
+ target/i386/hvf/hvf.c          |   5 +
+ 16 files changed, 516 insertions(+), 3 deletions(-)
+ create mode 100644 accel/stubs/hvf-stub.c
+ create mode 100644 hw/intc/arm_gicv3_hvf.c
+
+diff --git a/accel/hvf/hvf-accel-ops.c b/accel/hvf/hvf-accel-ops.c
+index 036c121..ac1973b 100644
+--- a/accel/hvf/hvf-accel-ops.c
++++ b/accel/hvf/hvf-accel-ops.c
+@@ -66,6 +66,9 @@
+ 
+ HVFState *hvf_state;
+ bool hvf_tso_mode = 0;
++/* in-kernel GIC: -accel hvf,kernel-irqchip=on|off (default on where the host offers it) */
++static bool hvf_kernel_irqchip_allowed = true;
++bool hvf_kernel_irqchip;
+ uint32_t hvf_ipa_granule_size = 0;
+ 
+ /* Memory slots */
+@@ -397,6 +400,9 @@ static int hvf_accel_init(MachineState *ms)
+     ret = hvf_arch_vm_create(ms, (uint32_t)pa_range, hvf_ipa_granule_size);
+     assert_hvf_ok(ret);
+ 
++    hvf_kernel_irqchip = hvf_kernel_irqchip_allowed &&
++                         hvf_arch_kernel_irqchip_available();
++
+     s = g_new0(HVFState, 1);
+ 
+     success = hvf_slots_grow(s, HVF_MEMSLOTS_NUM_ALLOC_DEFAULT);
+@@ -457,6 +463,16 @@ static void hvf_set_ipa_granule_size(Object *obj, Visitor *v,
+     hvf_ipa_granule_size = value;
+ }
+ 
++static bool hvf_get_kernel_irqchip(Object *obj, Error **errp)
++{
++    return hvf_kernel_irqchip_allowed;
++}
++
++static void hvf_set_kernel_irqchip(Object *obj, bool value, Error **errp)
++{
++    hvf_kernel_irqchip_allowed = value;
++}
++
+ static void hvf_accel_class_init(ObjectClass *oc, void *data)
+ {
+     AccelClass *ac = ACCEL_CLASS(oc);
+@@ -477,6 +493,11 @@ static void hvf_accel_class_init(ObjectClass *oc, void *data)
+         NULL, NULL);
+     object_class_property_set_description(oc, "ipa-granule-size",
+         "Size of a single guest page");
++
++    object_class_property_add_bool(oc, "kernel-irqchip",
++        hvf_get_kernel_irqchip, hvf_set_kernel_irqchip);
++    object_class_property_set_description(oc, "kernel-irqchip",
++        "Use the Hypervisor.framework in-kernel GICv3 (macOS 15+)");
+ }
+ 
+ static const TypeInfo hvf_accel_type = {
+diff --git a/accel/stubs/hvf-stub.c b/accel/stubs/hvf-stub.c
+new file mode 100644
+index 0000000..834acfc
+--- /dev/null
++++ b/accel/stubs/hvf-stub.c
+@@ -0,0 +1,11 @@
++/*
++ * HVF stubs for builds without the Hypervisor.framework accelerator.
++ *
++ * This work is licensed under the terms of the GNU GPL, version 2 or later.
++ * See the COPYING file in the top-level directory.
++ */
++
++#include "qemu/osdep.h"
++#include "system/hvf.h"
++
++bool hvf_kernel_irqchip;
+diff --git a/accel/stubs/meson.build b/accel/stubs/meson.build
+index 91a2d21..1ce1e48 100644
+--- a/accel/stubs/meson.build
++++ b/accel/stubs/meson.build
+@@ -1,6 +1,7 @@
+ system_stubs_ss = ss.source_set()
+ system_stubs_ss.add(when: 'CONFIG_XEN', if_false: files('xen-stub.c'))
+ system_stubs_ss.add(when: 'CONFIG_KVM', if_false: files('kvm-stub.c'))
++system_stubs_ss.add(when: 'CONFIG_HVF', if_false: files('hvf-stub.c'))
+ system_stubs_ss.add(when: 'CONFIG_TCG', if_false: files('tcg-stub.c'))
+ 
+ specific_ss.add_all(when: ['CONFIG_SYSTEM_ONLY'], if_true: system_stubs_ss)
+diff --git a/hw/arm/virt-acpi-build.c b/hw/arm/virt-acpi-build.c
+index f9fecec..d33bfff 100644
+--- a/hw/arm/virt-acpi-build.c
++++ b/hw/arm/virt-acpi-build.c
+@@ -721,7 +721,8 @@ build_madt(GArray *table_data, BIOSLinker *linker, VirtMachineState *vms)
+             build_append_int_noprefix(table_data, memmap[VIRT_GIC_ITS].base, 8);
+             build_append_int_noprefix(table_data, 0, 4);    /* Reserved */
+         }
+-    } else {
++    }
++    if (vms->msi_controller == VIRT_MSI_CTRL_GICV2M) {
+         const uint16_t spi_base = vms->irqmap[VIRT_GIC_V2M] + ARM_SPI_BASE;
+ 
+         /* 5.2.12.16 GIC MSI Frame Structure */
+diff --git a/hw/arm/virt.c b/hw/arm/virt.c
+index 3314fcc..f494ace 100644
+--- a/hw/arm/virt.c
++++ b/hw/arm/virt.c
+@@ -929,7 +929,8 @@ static void create_gic(VirtMachineState *vms, MemoryRegion *mem)
+ 
+     if (vms->gic_version != VIRT_GIC_VERSION_2 && vms->its) {
+         create_its(vms);
+-    } else if (vms->gic_version == VIRT_GIC_VERSION_2) {
++    } else if (vms->gic_version == VIRT_GIC_VERSION_2 ||
++               hvf_irqchip_in_kernel()) {
+         create_v2m(vms);
+     }
+ }
+@@ -2102,6 +2103,10 @@ static void finalize_gic_version(VirtMachineState *vms)
+         /* KVM w/o kernel irqchip can only deal with GICv2 */
+         gics_supported |= VIRT_GIC_VERSION_2_MASK;
+         accel_name = "KVM with kernel-irqchip=off";
++    } else if (hvf_enabled() && hvf_irqchip_in_kernel()) {
++        /* the Hypervisor.framework GIC is a GICv3 without EL2 support */
++        gics_supported |= VIRT_GIC_VERSION_3_MASK;
++        accel_name = "HVF with kernel-irqchip=on";
+     } else if (tcg_enabled() || hvf_enabled() || qtest_enabled())  {
+         gics_supported |= VIRT_GIC_VERSION_2_MASK;
+         if (module_object_class_by_name("arm-gicv3")) {
+@@ -2240,6 +2245,21 @@ static void machvirt_init(MachineState *machine)
+      */
+     finalize_gic_version(vms);
+ 
++    if (hvf_irqchip_in_kernel()) {
++        /*
++         * hv_gic_create() must precede vCPU creation, which happens when
++         * the CPUs are realized below; the "hvf-arm-gicv3" device created
++         * by create_gic() only wires lines to it.  The hypervisor GIC has
++         * no ITS, so PCI MSIs come from a GICv2m frame instead.
++         */
++        hvf_arm_gic_create(vms->memmap[VIRT_GIC_DIST].base,
++                           vms->memmap[VIRT_GIC_REDIST].base,
++                           vms->memmap[VIRT_GIC_REDIST].size,
++                           machine->smp.max_cpus, NUM_IRQS, &error_fatal);
++        vms->its = false;
++        vms->tcg_its = false;
++    }
++
+     if (vms->secure) {
+         /*
+          * The Secure view of the world is the same as the NonSecure,
+diff --git a/hw/intc/Kconfig b/hw/intc/Kconfig
+index 7547528..dd92f7f 100644
+--- a/hw/intc/Kconfig
++++ b/hw/intc/Kconfig
+@@ -25,6 +25,7 @@ config ARM_GIC
+     bool
+     select ARM_GICV3 if TCG
+     select ARM_GIC_KVM if KVM
++    select ARM_GIC_HVF if HVF
+     select MSI_NONBROKEN
+ 
+ config ARM_GICV3
+@@ -35,6 +36,10 @@ config ARM_GIC_KVM
+     bool
+     depends on ARM_GIC && KVM
+ 
++config ARM_GIC_HVF
++    bool
++    depends on ARM_GIC && HVF
++
+ config XICS
+     bool
+ 
+diff --git a/hw/intc/arm_gicv3_common.c b/hw/intc/arm_gicv3_common.c
+index 76b2283..4bc782d 100644
+--- a/hw/intc/arm_gicv3_common.c
++++ b/hw/intc/arm_gicv3_common.c
+@@ -32,6 +32,7 @@
+ #include "gicv3_internal.h"
+ #include "hw/arm/linux-boot-if.h"
+ #include "system/kvm.h"
++#include "system/hvf.h"
+ 
+ 
+ static void gicv3_gicd_no_migration_shift_bug_post_load(GICv3State *cs)
+@@ -661,6 +662,8 @@ const char *gicv3_class_name(void)
+ {
+     if (kvm_irqchip_in_kernel()) {
+         return "kvm-arm-gicv3";
++    } else if (hvf_irqchip_in_kernel()) {
++        return "hvf-arm-gicv3";
+     } else {
+         if (kvm_enabled()) {
+             error_report("Userspace GICv3 is not supported with KVM");
+diff --git a/hw/intc/arm_gicv3_hvf.c b/hw/intc/arm_gicv3_hvf.c
+new file mode 100644
+index 0000000..8cf238b
+--- /dev/null
++++ b/hw/intc/arm_gicv3_hvf.c
+@@ -0,0 +1,155 @@
++/*
++ * ARM Generic Interrupt Controller v3 backed by the Hypervisor.framework
++ * in-kernel GIC (hv_gic_*, macOS 15+).
++ *
++ * The distributor, the redistributors and the CPU interfaces live inside
++ * the hypervisor: SGIs, timer PPIs and register accesses never leave the
++ * kernel.  This device owns only the QEMU-side wiring -- SPIs raised by
++ * emulated devices go to hv_gic_set_spi(), and the PPIs QEMU itself raises
++ * (the emulated PMU) are pended into the owning vCPU's redistributor from
++ * that vCPU's thread.
++ *
++ * This work is licensed under the terms of the GNU GPL, version 2 or later.
++ * See the COPYING file in the top-level directory.
++ */
++
++#include "qemu/osdep.h"
++#include <TargetConditionals.h>
++
++/* the hv_gic_* API behind this device only exists on macOS */
++#if TARGET_OS_OSX
++
++#include "qapi/error.h"
++#include "hw/intc/arm_gicv3_common.h"
++#include "hw/core/cpu.h"
++#include "qemu/error-report.h"
++#include "qemu/module.h"
++#include "system/hvf.h"
++#include "hvf_arm.h"
++#include "migration/blocker.h"
++#include "qom/object.h"
++
++#define TYPE_HVF_ARM_GICV3 "hvf-arm-gicv3"
++typedef struct HVFARMGICv3Class HVFARMGICv3Class;
++/* This is reusing the GICv3State typedef from ARM_GICV3_ITS_COMMON */
++DECLARE_OBJ_CHECKERS(GICv3State, HVFARMGICv3Class,
++                     HVF_ARM_GICV3, TYPE_HVF_ARM_GICV3)
++
++struct HVFARMGICv3Class {
++    ARMGICv3CommonClass parent_class;
++    DeviceRealize parent_realize;
++    ResettablePhases parent_phases;
++};
++
++/*
++ * GPIO layout (gicv3_init_irqs_and_mmio): [0..N-1] SPIs, then 32 PPI
++ * lines per CPU indexed by (intid - 16).
++ */
++static void hvf_arm_gicv3_set_irq(void *opaque, int irq, int level)
++{
++    GICv3State *s = opaque;
++    int num_spi = s->num_irq - GIC_INTERNAL;
++
++    if (irq < num_spi) {
++        hvf_arm_gic_set_spi(irq + GIC_INTERNAL, level);
++    } else {
++        int cpuidx = (irq - num_spi) / GIC_INTERNAL;
++        int intid = (irq - num_spi) % GIC_INTERNAL + GIC_NR_SGIS;
++
++        hvf_arm_gic_set_ppi(qemu_get_cpu(cpuidx), intid, level);
++    }
++}
++
++static void hvf_arm_gicv3_realize(DeviceState *dev, Error **errp)
++{
++    GICv3State *s = HVF_ARM_GICV3(dev);
++    HVFARMGICv3Class *hgc = HVF_ARM_GICV3_GET_CLASS(s);
++    Error *local_err = NULL;
++
++    hgc->parent_realize(dev, &local_err);
++    if (local_err) {
++        error_propagate(errp, local_err);
++        return;
++    }
++
++    if (s->revision != 3) {
++        error_setg(errp, "unsupported GIC revision %d for the HVF in-kernel GIC",
++                   s->revision);
++        return;
++    }
++    if (s->security_extn) {
++        error_setg(errp, "the HVF in-kernel GIC does not implement the "
++                   "security extensions");
++        return;
++    }
++    if (s->nmi_support) {
++        error_setg(errp, "NMI is not supported with the HVF in-kernel GIC");
++        return;
++    }
++    if (s->nb_redist_regions != 1) {
++        error_setg(errp, "the HVF in-kernel GIC supports a single "
++                   "redistributor region");
++        return;
++    }
++    if (!hvf_arm_gic_created()) {
++        error_setg(errp, "the HVF in-kernel GIC must be created before the "
++                   "vCPUs (the board did not call hvf_arm_gic_create())");
++        return;
++    }
++
++    /*
++     * The MMIO regions are placeholders: guest accesses to the distributor
++     * and redistributor frames are handled by the hypervisor and never
++     * reach QEMU.
++     */
++    gicv3_init_irqs_and_mmio(s, hvf_arm_gicv3_set_irq, NULL);
++
++    error_setg(&s->migration_blocker,
++               "migration is not supported with the HVF in-kernel GIC");
++    if (migrate_add_blocker(&s->migration_blocker, errp) < 0) {
++        return;
++    }
++}
++
++static void hvf_arm_gicv3_reset_hold(Object *obj, ResetType type)
++{
++    GICv3State *s = HVF_ARM_GICV3(obj);
++    HVFARMGICv3Class *hgc = HVF_ARM_GICV3_GET_CLASS(s);
++
++    if (hgc->parent_phases.hold) {
++        hgc->parent_phases.hold(obj, type);
++    }
++    hvf_arm_gic_reset();
++}
++
++static void hvf_arm_gicv3_class_init(ObjectClass *klass, void *data)
++{
++    DeviceClass *dc = DEVICE_CLASS(klass);
++    ResettableClass *rc = RESETTABLE_CLASS(klass);
++    ARMGICv3CommonClass *agcc = ARM_GICV3_COMMON_CLASS(klass);
++    HVFARMGICv3Class *hgc = HVF_ARM_GICV3_CLASS(klass);
++
++    agcc->pre_save = NULL;
++    agcc->post_load = NULL;
++    device_class_set_parent_realize(dc, hvf_arm_gicv3_realize,
++                                    &hgc->parent_realize);
++    resettable_class_set_parent_phases(rc, NULL, hvf_arm_gicv3_reset_hold,
++                                       NULL, &hgc->parent_phases);
++}
++
++static const TypeInfo hvf_arm_gicv3_info = {
++    .name = TYPE_HVF_ARM_GICV3,
++    .parent = TYPE_ARM_GICV3_COMMON,
++    .instance_size = sizeof(GICv3State),
++    .class_init = hvf_arm_gicv3_class_init,
++    .class_size = sizeof(HVFARMGICv3Class),
++};
++
++static void hvf_arm_gicv3_register_types(void)
++{
++    type_register_static(&hvf_arm_gicv3_info);
++}
++
++type_init(hvf_arm_gicv3_register_types)
++
++#endif /* TARGET_OS_OSX */
+diff --git a/hw/intc/arm_gicv3_its_common.c b/hw/intc/arm_gicv3_its_common.c
+index 6a8fb0e..670d8d2 100644
+--- a/hw/intc/arm_gicv3_its_common.c
++++ b/hw/intc/arm_gicv3_its_common.c
+@@ -25,6 +25,7 @@
+ #include "qemu/log.h"
+ #include "qemu/module.h"
+ #include "system/kvm.h"
++#include "system/hvf.h"
+ 
+ static int gicv3_its_pre_save(void *opaque)
+ {
+@@ -164,6 +165,9 @@ const char *its_class_name(void)
+ {
+     if (kvm_irqchip_in_kernel()) {
+         return "arm-its-kvm";
++    } else if (hvf_irqchip_in_kernel()) {
++        /* MSIs come from a GICv2m frame; the hypervisor GIC has no ITS */
++        return NULL;
+     } else {
+         /* Software emulation based model */
+         return "arm-gicv3-its";
+diff --git a/hw/intc/meson.build b/hw/intc/meson.build
+index 602da30..1654400 100644
+--- a/hw/intc/meson.build
++++ b/hw/intc/meson.build
+@@ -42,6 +42,7 @@ specific_ss.add(when: 'CONFIG_ARM_GIC', if_true: files('arm_gicv3_cpuif_common.c
+ specific_ss.add(when: 'CONFIG_ARM_GICV3', if_true: files('arm_gicv3_cpuif.c'))
+ specific_ss.add(when: 'CONFIG_ARM_GIC_KVM', if_true: files('arm_gic_kvm.c'))
+ specific_ss.add(when: ['CONFIG_ARM_GIC_KVM', 'TARGET_AARCH64'], if_true: files('arm_gicv3_kvm.c', 'arm_gicv3_its_kvm.c'))
++specific_ss.add(when: ['CONFIG_ARM_GIC_HVF', 'TARGET_AARCH64'], if_true: files('arm_gicv3_hvf.c'))
+ specific_ss.add(when: 'CONFIG_ARM_V7M', if_true: files('armv7m_nvic.c'))
+ specific_ss.add(when: 'CONFIG_GRLIB', if_true: files('grlib_irqmp.c'))
+ specific_ss.add(when: 'CONFIG_IOAPIC', if_true: files('ioapic.c'))
+diff --git a/include/system/hvf.h b/include/system/hvf.h
+index 730f927..4e880de 100644
+--- a/include/system/hvf.h
++++ b/include/system/hvf.h
+@@ -30,6 +30,10 @@ extern bool hvf_allowed;
+ 
+ #define TYPE_HVF_ACCEL ACCEL_CLASS_NAME("hvf")
+ 
++/* Set once the accelerator decided to use the Hypervisor.framework in-kernel GIC. */
++extern bool hvf_kernel_irqchip;
++#define hvf_irqchip_in_kernel() (hvf_kernel_irqchip)
++
+ typedef struct HVFState HVFState;
+ DECLARE_INSTANCE_CHECKER(HVFState, HVF_STATE,
+                          TYPE_HVF_ACCEL)
+diff --git a/include/system/hvf_int.h b/include/system/hvf_int.h
+index 93e1b23..5dbc428 100644
+--- a/include/system/hvf_int.h
++++ b/include/system/hvf_int.h
+@@ -85,6 +85,9 @@ struct AccelCPUState {
+     sigset_t unblock_ipi_mask;
+     bool guest_debug_enabled;
+     bool dirty;
++    /* PPIs to pend/unpend in this vCPU's in-kernel redistributor (owning thread only) */
++    uint32_t gic_ppi_set;
++    uint32_t gic_ppi_clear;
+ };
+ 
+ void assert_hvf_ok_impl(hv_return_t ret, const char *file, unsigned int line,
+@@ -92,6 +95,7 @@ void assert_hvf_ok_impl(hv_return_t ret, const char *file, unsigned int line,
+ #define assert_hvf_ok(EX) assert_hvf_ok_impl((EX), __FILE__, __LINE__, #EX)
+ const char *hvf_return_string(hv_return_t ret);
+ int hvf_arch_init(void);
++bool hvf_arch_kernel_irqchip_available(void);
+ hv_return_t hvf_arch_vm_create(MachineState *ms, uint32_t pa_range,
+                                uint32_t ipa_granule_size);
+ int hvf_arch_init_vcpu(CPUState *cpu);
+diff --git a/system/vl.c b/system/vl.c
+index e9d7636..be3c38c 100644
+--- a/system/vl.c
++++ b/system/vl.c
+@@ -1774,6 +1774,8 @@ static void qemu_apply_legacy_machine_options(QDict *qdict)
+                                    false);
+         object_register_sugar_prop(ACCEL_CLASS_NAME("whpx"), "kernel-irqchip", value,
+                                    false);
++        object_register_sugar_prop(ACCEL_CLASS_NAME("hvf"), "kernel-irqchip", value,
++                                   false);
+         qdict_del(qdict, "kernel-irqchip");
+     }
+ 
+diff --git a/target/arm/hvf/hvf.c b/target/arm/hvf/hvf.c
+index f187968..13d79cb 100644
+--- a/target/arm/hvf/hvf.c
++++ b/target/arm/hvf/hvf.c
+@@ -11,6 +11,8 @@
+ 
+ #include "qemu/osdep.h"
+ #include "qemu/error-report.h"
++#include "qapi/error.h"
++#include "hw/intc/arm_gic_common.h"
+ #include "qemu/log.h"
+ #include <dlfcn.h>
+ #include <AvailabilityMacros.h>
+@@ -1223,6 +1225,237 @@ cleanup:
+     return ret;
+ }
+ 
++/*
++ * Hypervisor.framework in-kernel GICv3 (macOS 15+).  With it, SGIs, the
++ * timer PPIs and every GIC register access stay in the kernel; QEMU only
++ * feeds SPIs in and pends the PPIs it raises itself (the emulated PMU).
++ * The hv_gic_* API only exists on macOS; other Apple platforms get stubs
++ * that never advertise an in-kernel irqchip.
++ */
++#if TARGET_OS_OSX
++
++static struct {
++    bool created;
++    hwaddr dist_base;
++    hwaddr redist_base;
++} hvf_gic;
++
++bool hvf_arch_kernel_irqchip_available(void)
++{
++    if (__builtin_available(macOS 15.0, *)) {
++        return true;
++    }
++    return false;
++}
++
++bool hvf_arm_gic_created(void)
++{
++    return hvf_gic.created;
++}
++
++void hvf_arm_gic_create(hwaddr dist_base, hwaddr redist_base,
++                        hwaddr redist_size, unsigned max_cpus,
++                        unsigned num_spi, Error **errp)
++{
++    if (__builtin_available(macOS 15.0, *)) {
++        size_t dist_align, redist_align, redist_stride;
++        uint32_t spi_base, spi_count;
++        hv_gic_config_t config;
++        hv_return_t ret;
++
++        if (hvf_gic.created) {
++            error_setg(errp, "the HVF in-kernel GIC was already created");
++            return;
++        }
++        assert_hvf_ok(hv_gic_get_distributor_base_alignment(&dist_align));
++        assert_hvf_ok(hv_gic_get_redistributor_base_alignment(&redist_align));
++        assert_hvf_ok(hv_gic_get_redistributor_size(&redist_stride));
++        assert_hvf_ok(hv_gic_get_spi_interrupt_range(&spi_base, &spi_count));
++
++        if (dist_base & (dist_align - 1)) {
++            error_setg(errp, "GIC distributor base 0x%" HWADDR_PRIx
++                       " is not %zu-byte aligned", dist_base, dist_align);
++            return;
++        }
++        if (redist_base & (redist_align - 1)) {
++            error_setg(errp, "GIC redistributor base 0x%" HWADDR_PRIx
++                       " is not %zu-byte aligned", redist_base, redist_align);
++            return;
++        }
++        if ((hwaddr)max_cpus * redist_stride > redist_size) {
++            error_setg(errp, "GIC redistributor region (0x%" HWADDR_PRIx
++                       " bytes) holds %" HWADDR_PRIu " of the %u vCPUs",
++                       redist_size, redist_size / redist_stride, max_cpus);
++            return;
++        }
++        if (spi_base > GIC_INTERNAL ||
++            spi_base + spi_count < GIC_INTERNAL + num_spi) {
++            error_setg(errp, "HVF in-kernel GIC supports SPIs %u-%u, the "
++                       "board needs %u-%u", spi_base, spi_base + spi_count - 1,
++                       GIC_INTERNAL, GIC_INTERNAL + num_spi - 1);
++            return;
++        }
++
++        config = hv_gic_config_create();
++        assert_hvf_ok(hv_gic_config_set_distributor_base(config, dist_base));
++        assert_hvf_ok(hv_gic_config_set_redistributor_base(config,
++                                                           redist_base));
++        ret = hv_gic_create(config);
++        os_release(config);
++        if (ret != HV_SUCCESS) {
++            error_setg(errp, "hv_gic_create failed: 0x%x", (unsigned)ret);
++            return;
++        }
++        hvf_gic.created = true;
++        hvf_gic.dist_base = dist_base;
++        hvf_gic.redist_base = redist_base;
++        info_report("HVF: in-kernel GICv3 (dist 0x%" HWADDR_PRIx ", redist 0x%"
++                    HWADDR_PRIx ", SPIs %u-%u)", dist_base, redist_base,
++                    GIC_INTERNAL, GIC_INTERNAL + num_spi - 1);
++        return;
++    }
++    error_setg(errp, "the HVF in-kernel GIC needs macOS 15 or newer");
++}
++
++/*
++ * hv_gic_set_spi() makes the interrupt pending but does not force a vCPU
++ * that is currently running guest code to re-evaluate its pending state:
++ * the interrupt is only taken at that vCPU's next exit, which for a guest
++ * busy in user code can be a timer tick away.  Look up the SPI's affinity
++ * route and exit that vCPU so it re-enters with the interrupt; a 1-of-N
++ * route (IRM set) exits every vCPU.
++ */
++static void hvf_arm_gic_kick_spi_target(uint32_t intid)
++{
++    const uint64_t aff_mask = 0xff00ffffffULL;   /* Aff3 | Aff2 | Aff1 | Aff0 */
++    hv_vcpu_t ids[128];
++    unsigned n = 0;
++    uint64_t router = 1ULL << 31;
++    CPUState *cs;
++
++    if (__builtin_available(macOS 15.0, *)) {
++        hv_gic_get_distributor_reg(HV_GIC_DISTRIBUTOR_REG_GICD_IROUTER32 +
++                                   (intid - GIC_INTERNAL) * 8, &router);
++    }
++    CPU_FOREACH(cs) {
++        if (!cs->accel || n == ARRAY_SIZE(ids)) {
++            continue;
++        }
++        if ((router & (1ULL << 31)) ||
++            ARM_CPU(cs)->mp_affinity == (router & aff_mask)) {
++            ids[n++] = cs->accel->fd;
++        }
++    }
++    if (n) {
++        hv_vcpus_exit(ids, n);
++    }
++}
++
++void hvf_arm_gic_set_spi(uint32_t intid, int level)
++{
++    if (__builtin_available(macOS 15.0, *)) {
++        assert_hvf_ok(hv_gic_set_spi(intid, level != 0));
++        if (level) {
++            hvf_arm_gic_kick_spi_target(intid);
++        }
++    }
++}
++
++/*
++ * A PPI's redistributor is only writable from the owning vCPU thread, so
++ * record the change and let hvf_arm_gic_flush_ppis() apply it right before
++ * the next hv_vcpu_run().
++ */
++void hvf_arm_gic_set_ppi(CPUState *cpu, uint32_t intid, int level)
++{
++    AccelCPUState *acc = cpu->accel;
++    uint32_t bit = 1u << intid;
++
++    if (!acc) {
++        return;
++    }
++    if (level) {
++        qatomic_and(&acc->gic_ppi_clear, ~bit);
++        qatomic_or(&acc->gic_ppi_set, bit);
++    } else {
++        qatomic_and(&acc->gic_ppi_set, ~bit);
++        qatomic_or(&acc->gic_ppi_clear, bit);
++    }
++    if (cpu != current_cpu) {
++        qemu_cpu_kick(cpu);
++    }
++}
++
++static void hvf_arm_gic_flush_ppis(CPUState *cpu)
++{
++    AccelCPUState *acc = cpu->accel;
++    uint32_t set, clear;
++
++    if (!hvf_irqchip_in_kernel() ||
++        (!qatomic_read(&acc->gic_ppi_set) &&
++         !qatomic_read(&acc->gic_ppi_clear))) {
++        return;
++    }
++    set = qatomic_xchg(&acc->gic_ppi_set, 0);
++    clear = qatomic_xchg(&acc->gic_ppi_clear, 0);
++    if (__builtin_available(macOS 15.0, *)) {
++        if (clear) {
++            assert_hvf_ok(hv_gic_set_redistributor_reg(acc->fd,
++                              HV_GIC_REDISTRIBUTOR_REG_GICR_ICPENDR0, clear));
++        }
++        if (set) {
++            assert_hvf_ok(hv_gic_set_redistributor_reg(acc->fd,
++                              HV_GIC_REDISTRIBUTOR_REG_GICR_ISPENDR0, set));
++        }
++    }
++}
++
++void hvf_arm_gic_reset(void)
++{
++    if (__builtin_available(macOS 15.0, *)) {
++        if (hvf_gic.created) {
++            assert_hvf_ok(hv_gic_reset());
++        }
++    }
++}
++
++#else /* !TARGET_OS_OSX */
++
++bool hvf_arch_kernel_irqchip_available(void)
++{
++    return false;
++}
++
++bool hvf_arm_gic_created(void)
++{
++    return false;
++}
++
++void hvf_arm_gic_create(hwaddr dist_base, hwaddr redist_base,
++                        hwaddr redist_size, unsigned max_cpus,
++                        unsigned num_spi, Error **errp)
++{
++    error_setg(errp, "the HVF in-kernel GIC is only available on macOS");
++}
++
++void hvf_arm_gic_set_spi(uint32_t intid, int level)
++{
++}
++
++void hvf_arm_gic_set_ppi(CPUState *cpu, uint32_t intid, int level)
++{
++}
++
++static void hvf_arm_gic_flush_ppis(CPUState *cpu)
++{
++}
++
++void hvf_arm_gic_reset(void)
++{
++}
++
++#endif /* TARGET_OS_OSX */
++
+ int hvf_arch_init_vcpu(CPUState *cpu)
+ {
+     ARMCPU *arm_cpu = ARM_CPU(cpu);
+@@ -1280,7 +1513,7 @@ int hvf_arch_init_vcpu(CPUState *cpu)
+ 
+     ret = hv_vcpu_get_sys_reg(cpu->accel->fd, HV_SYS_REG_ID_AA64PFR0_EL1, &pfr);
+     assert_hvf_ok(ret);
+-    pfr |= env->gicv3state ? (1 << 24) : 0;
++    pfr |= (env->gicv3state || hvf_irqchip_in_kernel()) ? (1 << 24) : 0;
+     ret = hv_vcpu_set_sys_reg(cpu->accel->fd, HV_SYS_REG_ID_AA64PFR0_EL1, pfr);
+     assert_hvf_ok(ret);
+ 
+@@ -2181,6 +2414,7 @@ int hvf_vcpu_exec(CPUState *cpu)
+     }
+ 
+     flush_cpu_state(cpu);
++    hvf_arm_gic_flush_ppis(cpu);
+ 
+     uint64_t exit_reason, syndrome;
+     uint32_t ec;
+@@ -2215,6 +2449,10 @@ run_again:
+         /* This is the main one, handle below. */
+         break;
+     case HV_EXIT_REASON_VTIMER_ACTIVATED:
++        if (hvf_irqchip_in_kernel()) {
++            /* the in-kernel GIC owns the timer PPI; this exit is not expected */
++            warn_report_once("HVF: VTIMER_ACTIVATED exit with the in-kernel GIC");
++        }
+         qemu_set_irq(arm_cpu->gt_timer_outputs[GTIMER_VIRT], 1);
+         cpu->accel->vtimer_masked = true;
+         return 0;
+diff --git a/target/arm/hvf_arm.h b/target/arm/hvf_arm.h
+index 13bc892..eece0ff 100644
+--- a/target/arm/hvf_arm.h
++++ b/target/arm/hvf_arm.h
+@@ -27,8 +27,46 @@ void hvf_arm_set_cpu_features_from_host(ARMCPU *cpu);
+ uint32_t hvf_arm_get_default_ipa_bit_size(void);
+ uint32_t hvf_arm_get_max_ipa_bit_size(void);
+ 
++/*
++ * Hypervisor.framework in-kernel GICv3 (hv_gic_*).  hvf_arm_gic_create()
++ * must run after the VM exists and before any vCPU is created, i.e. before
++ * the board realizes its CPUs; the "hvf-arm-gicv3" device then only wires
++ * interrupt lines to it.
++ */
++void hvf_arm_gic_create(hwaddr dist_base, hwaddr redist_base,
++                        hwaddr redist_size, unsigned max_cpus,
++                        unsigned num_spi, Error **errp);
++bool hvf_arm_gic_created(void);
++void hvf_arm_gic_set_spi(uint32_t intid, int level);
++void hvf_arm_gic_set_ppi(CPUState *cpu, uint32_t intid, int level);
++void hvf_arm_gic_reset(void);
++
+ #else
+ 
++static inline void hvf_arm_gic_create(hwaddr dist_base, hwaddr redist_base,
++                                      hwaddr redist_size, unsigned max_cpus,
++                                      unsigned num_spi, Error **errp)
++{
++}
++
++static inline bool hvf_arm_gic_created(void)
++{
++    return false;
++}
++
++static inline void hvf_arm_gic_set_spi(uint32_t intid, int level)
++{
++}
++
++static inline void hvf_arm_gic_set_ppi(CPUState *cpu, uint32_t intid,
++                                       int level)
++{
++}
++
++static inline void hvf_arm_gic_reset(void)
++{
++}
++
+ static inline uint32_t hvf_arm_get_default_ipa_bit_size(void)
+ {
+     return 0;
+diff --git a/target/i386/hvf/hvf.c b/target/i386/hvf/hvf.c
+index 3cfe843..523ec92 100644
+--- a/target/i386/hvf/hvf.c
++++ b/target/i386/hvf/hvf.c
+@@ -219,6 +219,11 @@ void hvf_kick_vcpu_thread(CPUState *cpu)
+     hv_vcpu_interrupt(&cpu->accel->fd, 1);
+ }
+ 
++bool hvf_arch_kernel_irqchip_available(void)
++{
++    return false;
++}
++
+ int hvf_arch_init(void)
+ {
+     return 0;
+-- 
+2.43.0
+
+
+From 5b298b74f684c14e573bd2298c66754f78abfa16 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Thu, 15 Oct 2026 01:04:50 -0700
+Subject: [PATCH 2/2] hvf: save and restore the in-kernel GICv3
+
+Lift the migration blocker on hvf-arm-gicv3 so savevm/loadvm and
+migration work with kernel-irqchip=on.
+
+Hypervisor.framework exports the distributor and the redistributors only
+as an opaque, versioned blob (hv_gic_state_create/get_data, restored with
+hv_gic_set_state); the CPU interfaces are not part of it. The blob travels
+in a new "arm_gicv3/kernel_state" subsection of the common GICv3 vmstate,
+driven by two optional class hooks (save_kernel_state/load_kernel_state)
+that only the HVF model implements. The ICC_* registers are owning-thread
+only, so they are read and written on each vCPU with run_on_cpu() into the
+existing GICv3CPUState icc_* fields, after the blob on restore.
+
+A failing hv_gic_set_state() (e.g. a state from an incompatible host) fails
+the load instead of resuming on a reset GIC, and an emulated GIC refuses a
+stream that carries in-kernel state.
+
+Tested on macOS 15.6 with an Ubuntu 25.10 guest, 14 vCPUs: savevm, quit,
+-loadvm (twice, the second from a restored instance), a live loadvm, and
+migrate to file + -incoming all resume the same boot with timer and IPI
+delivery on every vCPU, disk and network working.
+
+Assisted-by: Claude:claude-opus-5-5
+---
+ hw/intc/arm_gicv3_common.c         |  65 ++++++++++++
+ hw/intc/arm_gicv3_hvf.c            |  17 ++--
+ include/hw/intc/arm_gicv3_common.h |  14 +++
+ target/arm/hvf/hvf.c               | 154 +++++++++++++++++++++++++++++
+ target/arm/hvf_arm.h               |  24 +++++
+ 5 files changed, 266 insertions(+), 8 deletions(-)
+
+diff --git a/hw/intc/arm_gicv3_common.c b/hw/intc/arm_gicv3_common.c
+index 4bc782d..839364a 100644
+--- a/hw/intc/arm_gicv3_common.c
++++ b/hw/intc/arm_gicv3_common.c
+@@ -276,6 +276,70 @@ const VMStateDescription vmstate_gicv3_gicd_nmi = {
+     }
+ };
+ 
++static bool gicv3_kernel_state_needed(void *opaque)
++{
++    ARMGICv3CommonClass *c = ARM_GICV3_COMMON_GET_CLASS(opaque);
++
++    return c->save_kernel_state != NULL;
++}
++
++static int gicv3_kernel_state_pre_save(void *opaque)
++{
++    GICv3State *s = opaque;
++    ARMGICv3CommonClass *c = ARM_GICV3_COMMON_GET_CLASS(s);
++    Error *local_err = NULL;
++
++    if (c->save_kernel_state(s, &local_err) < 0) {
++        error_report_err(local_err);
++        return -EINVAL;
++    }
++    return 0;
++}
++
++static int gicv3_kernel_state_post_save(void *opaque)
++{
++    GICv3State *s = opaque;
++
++    g_clear_pointer(&s->kernel_state, g_free);
++    s->kernel_state_size = 0;
++    return 0;
++}
++
++static int gicv3_kernel_state_post_load(void *opaque, int version_id)
++{
++    GICv3State *s = opaque;
++    ARMGICv3CommonClass *c = ARM_GICV3_COMMON_GET_CLASS(s);
++    Error *local_err = NULL;
++    int ret = 0;
++
++    if (!c->load_kernel_state) {
++        error_report("%s cannot load the state of an in-kernel GIC",
++                     object_get_typename(OBJECT(s)));
++        ret = -EINVAL;
++    } else if (c->load_kernel_state(s, &local_err) < 0) {
++        error_report_err(local_err);
++        ret = -EINVAL;
++    }
++    gicv3_kernel_state_post_save(s);
++    return ret;
++}
++
++static const VMStateDescription vmstate_gicv3_kernel_state = {
++    .name = "arm_gicv3/kernel_state",
++    .version_id = 1,
++    .minimum_version_id = 1,
++    .needed = gicv3_kernel_state_needed,
++    .pre_save = gicv3_kernel_state_pre_save,
++    .post_save = gicv3_kernel_state_post_save,
++    .post_load = gicv3_kernel_state_post_load,
++    .fields = (const VMStateField[]) {
++        VMSTATE_UINT32(kernel_state_size, GICv3State),
++        VMSTATE_VBUFFER_ALLOC_UINT32(kernel_state, GICv3State, 0, NULL,
++                                     kernel_state_size),
++        VMSTATE_END_OF_LIST()
++    }
++};
++
+ static const VMStateDescription vmstate_gicv3 = {
+     .name = "arm_gicv3",
+     .version_id = 1,
+@@ -305,6 +369,7 @@ static const VMStateDescription vmstate_gicv3 = {
+     .subsections = (const VMStateDescription * const []) {
+         &vmstate_gicv3_gicd_no_migration_shift_bug,
+         &vmstate_gicv3_gicd_nmi,
++        &vmstate_gicv3_kernel_state,
+         NULL
+     }
+ };
+diff --git a/hw/intc/arm_gicv3_hvf.c b/hw/intc/arm_gicv3_hvf.c
+index 8cf238b..d5325e7 100644
+--- a/hw/intc/arm_gicv3_hvf.c
++++ b/hw/intc/arm_gicv3_hvf.c
+@@ -26,7 +26,6 @@
+ #include "qemu/module.h"
+ #include "system/hvf.h"
+ #include "hvf_arm.h"
+-#include "migration/blocker.h"
+ #include "qom/object.h"
+ 
+ #define TYPE_HVF_ARM_GICV3 "hvf-arm-gicv3"
+@@ -103,12 +102,6 @@ static void hvf_arm_gicv3_realize(DeviceState *dev, Error **errp)
+      * reach QEMU.
+      */
+     gicv3_init_irqs_and_mmio(s, hvf_arm_gicv3_set_irq, NULL);
+-
+-    error_setg(&s->migration_blocker,
+-               "migration is not supported with the HVF in-kernel GIC");
+-    if (migrate_add_blocker(&s->migration_blocker, errp) < 0) {
+-        return;
+-    }
+ }
+ 
+ static void hvf_arm_gicv3_reset_hold(Object *obj, ResetType type)
+@@ -129,8 +122,16 @@ static void hvf_arm_gicv3_class_init(ObjectClass *klass, void *data)
+     ARMGICv3CommonClass *agcc = ARM_GICV3_COMMON_CLASS(klass);
+     HVFARMGICv3Class *hgc = HVF_ARM_GICV3_CLASS(klass);
+ 
+-    agcc->pre_save = NULL;
++    /*
++     * The CPU interfaces travel in the common per-CPU fields, which are
++     * written before the kernel_state subsection; that subsection carries
++     * the opaque distributor/redistributor blob and its load restores the
++     * CPU interfaces on top of it.
++     */
++    agcc->pre_save = hvf_arm_gic_save_cpu_state;
+     agcc->post_load = NULL;
++    agcc->save_kernel_state = hvf_arm_gic_save_state;
++    agcc->load_kernel_state = hvf_arm_gic_load_state;
+     device_class_set_parent_realize(dc, hvf_arm_gicv3_realize,
+                                     &hgc->parent_realize);
+     resettable_class_set_parent_phases(rc, NULL, hvf_arm_gicv3_reset_hold,
+diff --git a/include/hw/intc/arm_gicv3_common.h b/include/hw/intc/arm_gicv3_common.h
+index 75bbc40..63dbeec 100644
+--- a/include/hw/intc/arm_gicv3_common.h
++++ b/include/hw/intc/arm_gicv3_common.h
+@@ -242,6 +242,14 @@ struct GICv3State {
+     int dev_fd; /* kvm device fd if backed by kvm vgic support */
+     Error *migration_blocker;
+ 
++    /*
++     * Opaque distributor/redistributor state of an in-kernel GIC whose
++     * hypervisor only exports it as a blob (HVF); only valid between
++     * save_kernel_state and the end of the save, or while loading.
++     */
++    uint8_t *kernel_state;
++    uint32_t kernel_state_size;
++
+     MemoryRegion *dma;
+     AddressSpace dma_as;
+ 
+@@ -315,6 +323,12 @@ struct ARMGICv3CommonClass {
+ 
+     void (*pre_save)(GICv3State *s);
+     void (*post_load)(GICv3State *s);
++    /*
++     * Fill / apply kernel_state.  load_kernel_state runs before post_load,
++     * so the CPU interface state can be restored on top of it.
++     */
++    int (*save_kernel_state)(GICv3State *s, Error **errp);
++    int (*load_kernel_state)(GICv3State *s, Error **errp);
+ };
+ 
+ void gicv3_init_irqs_and_mmio(GICv3State *s, qemu_irq_handler handler,
+diff --git a/target/arm/hvf/hvf.c b/target/arm/hvf/hvf.c
+index 13d79cb..5c4a505 100644
+--- a/target/arm/hvf/hvf.c
++++ b/target/arm/hvf/hvf.c
+@@ -13,6 +13,7 @@
+ #include "qemu/error-report.h"
+ #include "qapi/error.h"
+ #include "hw/intc/arm_gic_common.h"
++#include "hw/intc/arm_gicv3_common.h"
+ #include "qemu/log.h"
+ #include <dlfcn.h>
+ #include <AvailabilityMacros.h>
+@@ -1419,6 +1420,143 @@ void hvf_arm_gic_reset(void)
+     }
+ }
+ 
++/*
++ * hv_gic_state_* serialize the distributor and the redistributors as an
++ * opaque, versioned blob; the CPU interfaces are not part of it.  Their
++ * ICC_* registers are only reachable from the owning vCPU thread and are
++ * carried in the GICv3CPUState fields the other GICv3 models use, in the
++ * order KVM restores them (SRE first, it changes what the rest mean).
++ */
++static uint64_t *hvf_arm_gic_icc_field(GICv3CPUState *c, unsigned i,
++                                       hv_gic_icc_reg_t *reg)
++    API_AVAILABLE(macos(15.0))
++{
++    switch (i) {
++    case 0:
++        *reg = HV_GIC_ICC_REG_SRE_EL1;
++        return &c->icc_sre_el1;
++    case 1:
++        *reg = HV_GIC_ICC_REG_CTLR_EL1;
++        return &c->icc_ctlr_el1[GICV3_NS];
++    case 2:
++        *reg = HV_GIC_ICC_REG_PMR_EL1;
++        return &c->icc_pmr_el1;
++    case 3:
++        *reg = HV_GIC_ICC_REG_BPR0_EL1;
++        return &c->icc_bpr[GICV3_G0];
++    case 4:
++        *reg = HV_GIC_ICC_REG_BPR1_EL1;
++        return &c->icc_bpr[GICV3_G1NS];
++    case 5:
++        *reg = HV_GIC_ICC_REG_AP0R0_EL1;
++        return &c->icc_apr[GICV3_G0][0];
++    case 6:
++        *reg = HV_GIC_ICC_REG_AP1R0_EL1;
++        return &c->icc_apr[GICV3_G1NS][0];
++    case 7:
++        *reg = HV_GIC_ICC_REG_IGRPEN0_EL1;
++        return &c->icc_igrpen[GICV3_G0];
++    case 8:
++        *reg = HV_GIC_ICC_REG_IGRPEN1_EL1;
++        return &c->icc_igrpen[GICV3_G1NS];
++    default:
++        return NULL;
++    }
++}
++
++static void hvf_arm_gic_get_icc(CPUState *cpu, run_on_cpu_data arg)
++{
++    GICv3CPUState *c = arg.host_ptr;
++    hv_gic_icc_reg_t reg;
++    uint64_t *field;
++
++    if (__builtin_available(macOS 15.0, *)) {
++        for (unsigned i = 0; (field = hvf_arm_gic_icc_field(c, i, &reg)); i++) {
++            assert_hvf_ok(hv_gic_get_icc_reg(cpu->accel->fd, reg, field));
++        }
++    }
++}
++
++static void hvf_arm_gic_set_icc(CPUState *cpu, run_on_cpu_data arg)
++{
++    GICv3CPUState *c = arg.host_ptr;
++    hv_gic_icc_reg_t reg;
++    uint64_t *field;
++
++    if (__builtin_available(macOS 15.0, *)) {
++        for (unsigned i = 0; (field = hvf_arm_gic_icc_field(c, i, &reg)); i++) {
++            assert_hvf_ok(hv_gic_set_icc_reg(cpu->accel->fd, reg, *field));
++        }
++    }
++}
++
++void hvf_arm_gic_save_cpu_state(GICv3State *s)
++{
++    for (unsigned i = 0; i < s->num_cpu; i++) {
++        run_on_cpu(s->cpu[i].cpu, hvf_arm_gic_get_icc,
++                   RUN_ON_CPU_HOST_PTR(&s->cpu[i]));
++    }
++}
++
++int hvf_arm_gic_save_state(GICv3State *s, Error **errp)
++{
++    if (__builtin_available(macOS 15.0, *)) {
++        hv_gic_state_t state;
++        size_t size;
++        hv_return_t ret;
++
++        /* only valid while every vCPU is stopped, which the save ensures */
++        state = hv_gic_state_create();
++        if (!state) {
++            error_setg(errp, "the HVF in-kernel GIC state cannot be saved");
++            return -1;
++        }
++        ret = hv_gic_state_get_size(state, &size);
++        if (ret == HV_SUCCESS && size > UINT32_MAX) {
++            ret = HV_NO_RESOURCES;
++        }
++        if (ret == HV_SUCCESS) {
++            s->kernel_state = g_malloc(size);
++            s->kernel_state_size = size;
++            ret = hv_gic_state_get_data(state, s->kernel_state);
++        }
++        os_release(state);
++        if (ret != HV_SUCCESS) {
++            g_clear_pointer(&s->kernel_state, g_free);
++            s->kernel_state_size = 0;
++            error_setg(errp, "saving the HVF in-kernel GIC state failed: %s",
++                       hvf_return_string(ret));
++            return -1;
++        }
++        return 0;
++    }
++    error_setg(errp, "the HVF in-kernel GIC needs macOS 15 or newer");
++    return -1;
++}
++
++int hvf_arm_gic_load_state(GICv3State *s, Error **errp)
++{
++    if (__builtin_available(macOS 15.0, *)) {
++        hv_return_t ret;
++
++        /* the blob first: the CPU interfaces are restored on top of it */
++        ret = hv_gic_set_state(s->kernel_state, s->kernel_state_size);
++        if (ret != HV_SUCCESS) {
++            error_setg(errp, "restoring the HVF in-kernel GIC state failed: "
++                       "%s (saved by an incompatible host?)",
++                       hvf_return_string(ret));
++            return -1;
++        }
++        for (unsigned i = 0; i < s->num_cpu; i++) {
++            run_on_cpu(s->cpu[i].cpu, hvf_arm_gic_set_icc,
++                       RUN_ON_CPU_HOST_PTR(&s->cpu[i]));
++        }
++        return 0;
++    }
++    error_setg(errp, "the HVF in-kernel GIC needs macOS 15 or newer");
++    return -1;
++}
++
+ #else /* !TARGET_OS_OSX */
+ 
+ bool hvf_arch_kernel_irqchip_available(void)
+@@ -1454,6 +1592,22 @@ void hvf_arm_gic_reset(void)
+ {
+ }
+ 
++void hvf_arm_gic_save_cpu_state(GICv3State *s)
++{
++}
++
++int hvf_arm_gic_save_state(GICv3State *s, Error **errp)
++{
++    error_setg(errp, "the HVF in-kernel GIC is only available on macOS");
++    return -1;
++}
++
++int hvf_arm_gic_load_state(GICv3State *s, Error **errp)
++{
++    error_setg(errp, "the HVF in-kernel GIC is only available on macOS");
++    return -1;
++}
++
+ #endif /* TARGET_OS_OSX */
+ 
+ int hvf_arch_init_vcpu(CPUState *cpu)
+diff --git a/target/arm/hvf_arm.h b/target/arm/hvf_arm.h
+index eece0ff..efd80e3 100644
+--- a/target/arm/hvf_arm.h
++++ b/target/arm/hvf_arm.h
+@@ -13,6 +13,8 @@
+ 
+ #include "cpu.h"
+ 
++typedef struct GICv3State GICv3State;
++
+ /**
+  * hvf_arm_init_debug() - initialize guest debug capabilities
+  *
+@@ -40,6 +42,14 @@ bool hvf_arm_gic_created(void);
+ void hvf_arm_gic_set_spi(uint32_t intid, int level);
+ void hvf_arm_gic_set_ppi(CPUState *cpu, uint32_t intid, int level);
+ void hvf_arm_gic_reset(void);
++/*
++ * Save/restore: the distributor and redistributors travel as the opaque
++ * hv_gic_state blob in s->kernel_state, the CPU interfaces in s->cpu[].
++ * All three require every vCPU to be stopped.
++ */
++void hvf_arm_gic_save_cpu_state(GICv3State *s);
++int hvf_arm_gic_save_state(GICv3State *s, Error **errp);
++int hvf_arm_gic_load_state(GICv3State *s, Error **errp);
+ 
+ #else
+ 
+@@ -67,6 +77,20 @@ static inline void hvf_arm_gic_reset(void)
+ {
+ }
+ 
++static inline void hvf_arm_gic_save_cpu_state(GICv3State *s)
++{
++}
++
++static inline int hvf_arm_gic_save_state(GICv3State *s, Error **errp)
++{
++    return -1;
++}
++
++static inline int hvf_arm_gic_load_state(GICv3State *s, Error **errp)
++{
++    return -1;
++}
++
+ static inline uint32_t hvf_arm_get_default_ipa_bit_size(void)
+ {
+     return 0;
+-- 
+2.43.0
+
+From 71bfcf2c06fb53a94611518117553772450c88bb Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Thu, 3 Sep 2026 11:17:16 -0700
+Subject: [PATCH 1/3] edid: carry the host refresh rate consistently, up to
+ DisplayID 2.0
+
+Two places in the generated EDID contradicted the preferred detailed
+timing, which already carried the host's refresh rate.
+
+The standard timing descriptors hardcoded 60 Hz in their six-bit rate
+field, so a guest that builds its mode list from them gave every mode
+60 Hz. Windows does exactly that, and drove a 120 Hz display at 60.
+Encode the rate the UI reported, saturated to the 60..123 Hz the field
+spans, and keep the 60 Hz DMT modes when the UI reported nothing rather
+than the 75 Hz placeholder the detailed timing is synthesised from.
+
+The display range limits descriptor declared a fixed 50..125 Hz and
+30..160 kHz. A host display faster than 125 Hz, or a large mode whose
+line rate passes 160 kHz, puts the preferred timing outside the range
+the same EDID declares. Windows rejects an EDID that contradicts itself:
+it drops the monitor's mode list for a default one, the adapter stops
+driving the display, and D3D device creation fails with E_FAIL. Widen
+the range to contain the preferred timing as the guest derives it from
+the detailed timing, rounding the minimum down and the maximum up, and
+use EDID 1.4's +255 offset flags for a maximum that does not fit a
+byte; 510 is the most the descriptor can express.
+
+A rate in the standard timings that no DMT mode carries asks the guest
+to derive a raster from a formula, so declare one, together with the
+continuous frequency feature bit that has to accompany it. Declare CVT
+rather than the GTF that EDID 1.4 deprecates, and give the preferred
+timing the horizontal blanking of CVT reduced blanking v2. The narrow
+blanking keeps the pixel clock of common fast modes inside the
+655.35 MHz a detailed timing descriptor holds, so 2560x1440 at 144 Hz
+or 1920x1080 at 240 Hz stay in the base block, and under the 2550 MHz
+the range limits can express.
+
+Past the range limits descriptor, 510 Hz, 510 kHz per line and
+2550 MHz, the base block cannot describe the timing at all, and neither
+can a DisplayID 1.3 section, whose type I timing counts the pixel clock
+in tens of kHz and which carries no range of its own. A 4K display past
+about 220 Hz, whose line rate passes 510 kHz, has no way to state what
+it does. Emit a DisplayID 2.0 section for such a timing: its type VII
+timing counts the pixel clock in kHz, and the dynamic video timing
+range limits block beside it holds a 24 bit pixel clock and a ten bit
+vertical rate, and constrains no line rate at all. Only such a timing
+gets one. A guest has understood type I timings far longer than type
+VII ones, which Linux learned to read in 5.18, so anything a 1.3
+section can describe keeps the 1.3 section it always had.
+
+The type I and type VII timings share one writer, which stores the
+clock one less than it counts as DisplayID requires; the 1.3 section
+used to publish it 10 kHz high.
+
+None of this applies to a host that reports no rate, or one whose rate
+the standard timings already carry. The EDID those produce stays byte
+for byte the one QEMU has always generated, unless its range limits
+already contradicted its preferred timing, as a 4K display's 167 kHz
+line rate did at the 75 Hz placeholder, or it carries that DisplayID
+clock.
+
+Have vfio-display pass on the rate the UI reports as well, and give
+qemu-edid a -r option to generate an EDID for a given rate.
+
+Assisted-by: Claude:claude-fable-5-1
+Assisted-by: Claude:claude-opus-5
+---
+ hw/display/edid-generate.c | 354 ++++++++++++++++++++++++++++++-------
+ hw/vfio/display.c          |  11 +-
+ include/hw/display/edid.h  |   2 +-
+ qemu-edid.c                |  11 +-
+ 4 files changed, 308 insertions(+), 70 deletions(-)
+
+diff --git a/hw/display/edid-generate.c b/hw/display/edid-generate.c
+index 2cb819675e..57fe93700b 100644
+--- a/hw/display/edid-generate.c
++++ b/hw/display/edid-generate.c
+@@ -8,6 +8,13 @@
+ #include "qemu/bswap.h"
+ #include "hw/display/edid.h"
+ 
++/*
++ * The established timing bits (.byte), the additional standard timings 3
++ * bits (.xtra3) and the CTA video data block VICs (.dta) each name a fixed
++ * refresh rate. Everything else, including .xtra3 entries while a standard
++ * timing slot is still free, goes into the standard timings, which carry
++ * the host's refresh rate.
++ */
+ static const struct edid_mode {
+     uint32_t xres;
+     uint32_t yres;
+@@ -48,6 +55,13 @@ static const struct edid_mode {
+     { .xres =  640,   .yres =  480,   .byte  = 35,   .bit = 5 },
+ };
+ 
++/*
++ * The most a display range limits descriptor can express: a byte plus the
++ * EDID 1.4 +255 offset for the rates, a byte of 10 MHz for the clock.
++ */
++#define EDID_RANGE_MAX_RATE     510     /* Hz and kHz */
++#define EDID_RANGE_MAX_CLOCK    2550    /* MHz */
++
+ typedef struct Timings {
+     uint32_t xfront;
+     uint32_t xsync;
+@@ -57,24 +71,76 @@ typedef struct Timings {
+     uint32_t ysync;
+     uint32_t yblank;
+ 
+-    uint64_t clock;
++    uint64_t clock;     /* 10 kHz */
++
++    /* as a guest derives them from the fields above */
++    uint32_t hfreq;     /* line rate, Hz */
++    uint32_t vfreq;     /* refresh rate, mHz */
+ } Timings;
+ 
++/* the display range limits, base block units */
++typedef struct Ranges {
++    uint32_t vmin;      /* Hz */
++    uint32_t vmax;
++    uint32_t hmin;      /* kHz */
++    uint32_t hmax;
++} Ranges;
++
+ static void generate_timings(Timings *timings, uint32_t refresh_rate,
+-                             uint32_t xres, uint32_t yres)
++                             uint32_t xres, uint32_t yres, bool reduced)
+ {
+-    /* pull some realistic looking timings out of thin air */
+-    timings->xfront = xres * 25 / 100;
+-    timings->xsync  = xres *  3 / 100;
+-    timings->xblank = xres * 35 / 100;
++    uint32_t xtotal, ytotal;
++
++    if (reduced) {
++        /*
++         * The horizontal blanking of CVT reduced blanking v2, which is what
++         * a flat panel drives. It keeps the pixel clock of a fast timing
++         * inside the fields that carry it: 655.35 MHz in a detailed timing,
++         * 2550 MHz in the range limits.
++         */
++        timings->xfront = 8;
++        timings->xsync  = 32;
++        timings->xblank = 80;
++    } else {
++        /* pull some realistic looking timings out of thin air */
++        timings->xfront = xres * 25 / 100;
++        timings->xsync  = xres *  3 / 100;
++        timings->xblank = xres * 35 / 100;
++    }
++    xtotal = xres + timings->xblank;
+ 
+     timings->yfront = yres *  5 / 1000;
+     timings->ysync  = yres *  5 / 1000;
+     timings->yblank = yres * 35 / 1000;
++    ytotal = yres + timings->yblank;
+ 
+-    timings->clock  = ((uint64_t)refresh_rate *
+-                       (xres + timings->xblank) *
+-                       (yres + timings->yblank)) / 10000000;
++    timings->clock = ((uint64_t)refresh_rate * xtotal * ytotal) / 10000000;
++
++    /*
++     * Derive the rates from the published clock rather than from
++     * refresh_rate: the clock lost up to 10 kHz to rounding, and the guest
++     * only ever sees the clock.
++     */
++    timings->hfreq = timings->clock * 10000 / xtotal;
++    timings->vfreq = timings->clock * 10000 * 1000 /
++                     ((uint64_t)xtotal * ytotal);
++}
++
++/*
++ * The range has to contain every listed timing, the preferred one included
++ * (E-EDID 1.4, display range limits descriptor). A guest that finds its
++ * preferred timing outside the declared range treats the EDID as invalid
++ * and falls back to a default mode list. Widen the range QEMU has always
++ * declared to the preferred timing, rounding its minimum down and its
++ * maximum up, so the timing stays inside however the guest rounds its own
++ * computation of the rate. Zero is reserved.
++ */
++static void generate_ranges(Ranges *ranges, const Timings *timings)
++{
++    ranges->vmin = MIN(50, MAX(timings->vfreq / 1000, 1));
++    ranges->vmax = MAX(125, DIV_ROUND_UP(timings->vfreq, 1000));
++    ranges->hmin = MIN(30, MAX(timings->hfreq / 1000, 1));
++    ranges->hmax = MAX(160, DIV_ROUND_UP(timings->hfreq, 1000));
+ }
+ 
+ static void edid_ext_dta(uint8_t *dta)
+@@ -95,7 +161,8 @@ static void edid_ext_dta_mode(uint8_t *dta, uint8_t nr)
+     dta[4]++;
+ }
+ 
+-static int edid_std_mode(uint8_t *mode, uint32_t xres, uint32_t yres)
++static int edid_std_mode(uint8_t *mode, uint32_t xres, uint32_t yres,
++                         uint32_t hz)
+ {
+     uint32_t aspect;
+ 
+@@ -120,13 +187,20 @@ static int edid_std_mode(uint8_t *mode, uint32_t xres, uint32_t yres)
+         return -1;
+     }
+ 
++    /*
++     * The 6-bit field spans 60..123 Hz. Saturate rather than fall back to
++     * 60 Hz, so a guest that builds its mode list from these entries gets
++     * the closest rate the field can express to the preferred timing.
++     */
++    hz = MIN(MAX(hz, 60), 123);
++
+     mode[0] = (xres / 8) - 31;
+-    mode[1] = ((aspect << 6) | (60 - 60));
++    mode[1] = ((aspect << 6) | (hz - 60));
+     return 0;
+ }
+ 
+ static void edid_fill_modes(uint8_t *edid, uint8_t *xtra3, uint8_t *dta,
+-                            uint32_t maxx, uint32_t maxy)
++                            uint32_t maxx, uint32_t maxy, uint32_t hz)
+ {
+     const struct edid_mode *mode;
+     int std = 38;
+@@ -143,7 +217,7 @@ static void edid_fill_modes(uint8_t *edid, uint8_t *xtra3, uint8_t *dta,
+         if (mode->byte) {
+             edid[mode->byte] |= (1 << mode->bit);
+         } else if (std < 54) {
+-            rc = edid_std_mode(edid + std, mode->xres, mode->yres);
++            rc = edid_std_mode(edid + std, mode->xres, mode->yres, hz);
+             if (rc == 0) {
+                 std += 2;
+             }
+@@ -157,7 +231,7 @@ static void edid_fill_modes(uint8_t *edid, uint8_t *xtra3, uint8_t *dta,
+     }
+ 
+     while (std < 54) {
+-        edid_std_mode(edid + std, 0, 0);
++        edid_std_mode(edid + std, 0, 0, hz);
+         std += 2;
+     }
+ }
+@@ -220,27 +294,91 @@ static void edid_desc_text(uint8_t *desc, uint8_t type,
+     desc[5 + len] = '\n';
+ }
+ 
+-static void edid_desc_ranges(uint8_t *desc)
++/* the preferred aspect ratio code of the CVT support bytes */
++static uint8_t edid_cvt_aspect(uint32_t xres, uint32_t yres)
+ {
++    if (xres * 3 == yres * 4) {
++        return 0;
++    } else if (xres * 10 == yres * 16) {
++        return 2;
++    } else if (xres * 4 == yres * 5) {
++        return 3;
++    } else if (xres * 9 == yres * 15) {
++        return 4;
++    }
++    return 1; /* 16:9 */
++}
++
++/*
++ * cvt_hz is the refresh rate the standard timings carry when it is not one
++ * the VESA DMT modes have, and zero when it is.
++ */
++static void edid_desc_ranges(uint8_t *desc, const Ranges *ranges,
++                             uint32_t cvt_hz, uint32_t xres, uint32_t yres)
++{
++    uint32_t vmax = MIN(ranges->vmax, EDID_RANGE_MAX_RATE);
++    uint32_t hmax = MIN(ranges->hmax, EDID_RANGE_MAX_RATE);
++
+     edid_desc_type(desc, 0xfd);
+ 
+-    /* vertical (50 -> 125 Hz) */
+-    desc[5] =  50;
+-    desc[6] = 125;
++    /*
++     * EDID 1.4 offset flags: a maximum above 255 is stored less 255. The
++     * minima only ever shrink from their defaults, so they never need one.
++     */
++    if (vmax > 255) {
++        desc[4] |= 0x02;
++        vmax -= 255;
++    }
++    if (hmax > 255) {
++        desc[4] |= 0x08;
++        hmax -= 255;
++    }
++
++    /* vertical (Hz) */
++    desc[5] = ranges->vmin;
++    desc[6] = vmax;
++
++    /* horizontal (kHz) */
++    desc[7] = ranges->hmin;
++    desc[8] = hmax;
++
++    /* max dot clock: 2550 MHz, the most the field can express */
++    desc[9] = EDID_RANGE_MAX_CLOCK / 10;
++
++    if (!cvt_hz) {
++        /* range limits only */
++        desc[10] = 0x01;
++
++        /* padding */
++        desc[11] = '\n';
++        memset(desc + 12, ' ', 6);
++        return;
++    }
++
++    /*
++     * A standard timing at a rate no DMT mode has asks the guest to derive
++     * its raster from a formula, so declare one; GTF is deprecated in
++     * EDID 1.4. The continuous frequency bit of the feature byte has to
++     * accompany this.
++     */
++    desc[10] = 0x04;
++    desc[11] = 0x11; /* CVT 1.1 */
++
++    /* no dot clock correction, no limit on active pixels per line */
++    desc[12] = 0;
++    desc[13] = 0;
+ 
+-    /* horizontal (30 -> 160 kHz) */
+-    desc[7] =  30;
+-    desc[8] = 160;
++    /* the aspect ratios a standard timing can express: 4:3 16:9 16:10 5:4 */
++    desc[14] = 0xf0;
+ 
+-    /* max dot clock (2550 MHz) */
+-    desc[9] = 2550 / 10;
++    /* preferred aspect ratio, reduced blanking */
++    desc[15] = (edid_cvt_aspect(xres, yres) << 5) | 0x10;
+ 
+-    /* no extended timing information */
+-    desc[10] = 0x01;
++    /* no scaling */
++    desc[16] = 0;
+ 
+-    /* padding */
+-    desc[11] = '\n';
+-    memset(desc + 12, ' ', 6);
++    /* preferred refresh rate (Hz) */
++    desc[17] = MIN(cvt_hz, 255);
+ }
+ 
+ /* additional standard timings 3 */
+@@ -337,43 +475,101 @@ uint32_t qemu_edid_dpi_to_mm(uint32_t dpi, uint32_t res)
+     return res * 254 / 10 / dpi;
+ }
+ 
+-static void init_displayid(uint8_t *did)
++/*
++ * The range limits descriptor stops at 510 Hz, 510 kHz per line and
++ * 2550 MHz. A timing past any of those needs the room a DisplayID 2.0
++ * range block has, and only then is it worth asking a guest to read one:
++ * type VII timings have been understood since Linux 5.18, type I since
++ * long before.
++ */
++static bool displayid_needs_2_0(const Timings *timings, const Ranges *ranges)
+ {
+-    did[0] = 0x70; /* display id extension */
+-    did[1] = 0x13; /* version 1.3 */
+-    did[2] = 4;    /* length */
+-    did[3] = 0x03; /* product type (0x03 == standalone display device) */
+-    edid_checksum(did + 1, did[2] + 4);
++    return ranges->vmax > EDID_RANGE_MAX_RATE ||
++           ranges->hmax > EDID_RANGE_MAX_RATE ||
++           timings->clock > EDID_RANGE_MAX_CLOCK * 100;
+ }
+ 
+-static void qemu_displayid_generate(uint8_t *did, const Timings *timings,
+-                                    uint32_t xres, uint32_t yres,
+-                                    uint32_t xmm, uint32_t ymm)
++/* every DisplayID field is stored one less than it counts */
++static void displayid_clock(uint8_t *dst, uint32_t clock)
++{
++    clock--;
++    dst[0] = clock & 0xff;
++    dst[1] = (clock & 0xff00) >> 8;
++    dst[2] = (clock & 0xff0000) >> 16;
++}
++
++/*
++ * A type I (DisplayID 1.3) or type VII (DisplayID 2.0) timing; the two are
++ * laid out alike and differ only in the unit of the clock.
++ */
++static void displayid_timing(uint8_t *timing, const Timings *timings,
++                             uint32_t xres, uint32_t yres, uint32_t clock)
++{
++    displayid_clock(timing, clock);
++
++    timing[3] = 0x88; /* preferred timing, aspect ratio undefined */
++
++    stw_le_p(timing + 4,  0xffff & (xres - 1));
++    stw_le_p(timing + 6,  0xffff & (timings->xblank - 1));
++    stw_le_p(timing + 8,  0xffff & (timings->xfront - 1));
++    stw_le_p(timing + 10, 0xffff & (timings->xsync - 1));
++
++    stw_le_p(timing + 12, 0xffff & (yres - 1));
++    stw_le_p(timing + 14, 0xffff & (timings->yblank - 1));
++    stw_le_p(timing + 16, 0xffff & (timings->yfront - 1));
++    stw_le_p(timing + 18, 0xffff & (timings->ysync - 1));
++}
++
++static void displayid_generate_1_3(uint8_t *did, const Timings *timings,
++                                   uint32_t xres, uint32_t yres)
+ {
+     did[0] = 0x70; /* display id extension */
+     did[1] = 0x13; /* version 1.3 */
+     did[2] = 23;   /* length */
+     did[3] = 0x03; /* product type (0x03 == standalone display device) */
+ 
+-    did[5] = 0x03; /* Detailed Timings Data Block */
++    did[5] = 0x03; /* Type I Detailed Timing Data Block */
+     did[6] = 0x00; /* revision */
+     did[7] = 0x14; /* block length */
+ 
+-    did[8]  = timings->clock  & 0xff;
+-    did[9]  = (timings->clock & 0xff00) >> 8;
+-    did[10] = (timings->clock & 0xff0000) >> 16;
++    displayid_timing(did + 8, timings, xres, yres, timings->clock);
+ 
+-    did[11] = 0x88; /* leave aspect ratio undefined */
++    edid_checksum(did + 1, did[2] + 4);
++}
++
++static void displayid_generate_2_0(uint8_t *did, const Timings *timings,
++                                   const Ranges *ranges,
++                                   uint32_t xres, uint32_t yres)
++{
++    uint32_t clock_khz = timings->clock * 10;
++    uint32_t vmax = MIN(ranges->vmax, 1023);
++    uint8_t *block;
++
++    did[0] = 0x70; /* display id extension */
++    did[1] = 0x20; /* version 2.0 */
++    did[2] = 35;   /* length */
++    did[3] = 0x04; /* primary use case: desktop productivity display */
+ 
+-    stw_le_p(did + 12, 0xffff & (xres - 1));
+-    stw_le_p(did + 14, 0xffff & (timings->xblank - 1));
+-    stw_le_p(did + 16, 0xffff & (timings->xfront - 1));
+-    stw_le_p(did + 18, 0xffff & (timings->xsync - 1));
++    block = did + 5;
++    block[0] = 0x22; /* Type VII Timing Data Block */
++    block[1] = 0x00; /* revision */
++    block[2] = 0x14; /* block length */
+ 
+-    stw_le_p(did + 20, 0xffff & (yres - 1));
+-    stw_le_p(did + 22, 0xffff & (timings->yblank - 1));
+-    stw_le_p(did + 24, 0xffff & (timings->yfront - 1));
+-    stw_le_p(did + 26, 0xffff & (timings->ysync - 1));
++    displayid_timing(block + 3, timings, xres, yres, clock_khz);
++
++    block += 3 + block[2];
++    block[0] = 0x25; /* Dynamic Video Timing Range Limits Data Block */
++    block[1] = 0x01; /* revision 1: the vertical maximum has ten bits */
++    block[2] = 0x09; /* block length */
++
++    /* pixel clock (kHz): a scanout the host composites has no lower limit */
++    displayid_clock(block + 3, 1);
++    displayid_clock(block + 6, clock_khz);
++
++    /* vertical (Hz) */
++    block[9]  = ranges->vmin;
++    block[10] = vmax & 0xff;
++    block[11] = (vmax & 0x300) >> 8;
+ 
+     edid_checksum(did + 1, did[2] + 4);
+ }
+@@ -382,14 +578,29 @@ void qemu_edid_generate(uint8_t *edid, size_t size,
+                         qemu_edid_info *info)
+ {
+     Timings timings;
++    Ranges ranges;
+     uint8_t *desc = edid + 54;
+     uint8_t *xtra3 = NULL;
+     uint8_t *dta = NULL;
+     uint8_t *did = NULL;
+     uint32_t width_mm, height_mm;
++    /*
++     * Without a host rate the detailed timing is synthesised at 75 Hz to
++     * give it a plausible pixel clock, while the standard timings keep the
++     * 60 Hz VESA DMT modes.
++     */
+     uint32_t refresh_rate = info->refresh_rate ? info->refresh_rate : 75000;
++    uint32_t std_hz = info->refresh_rate ?
++        ((uint64_t)info->refresh_rate + 500) / 1000 : 60;
++    /*
++     * A rate the standard timings end up carrying, once saturated to the
++     * 60..123 Hz their field spans, pulls in the formula declaration and
++     * the raster that goes with it. Anything else generates the EDID QEMU
++     * always has, byte for byte.
++     */
++    bool host_rate = info->refresh_rate && std_hz > 60;
+     uint32_t dpi = 100; /* if no width_mm/height_mm */
+-    uint32_t large_screen = 0;
++    bool large_screen;
+ 
+     /* =============== set defaults  =============== */
+ 
+@@ -414,10 +625,19 @@ void qemu_edid_generate(uint8_t *edid, size_t size,
+         height_mm = qemu_edid_dpi_to_mm(dpi, info->prefy);
+     }
+ 
+-    generate_timings(&timings, refresh_rate, info->prefx, info->prefy);
+-    if (info->prefx >= 4096 || info->prefy >= 4096 || timings.clock >= 65536) {
+-        large_screen = 1;
+-    }
++    generate_timings(&timings, refresh_rate, info->prefx, info->prefy,
++                     host_rate);
++    generate_ranges(&ranges, &timings);
++
++    /*
++     * The base block describes the preferred timing only while its detailed
++     * timing descriptor holds the resolution and the pixel clock, and its
++     * range limits descriptor holds the rates. Past that the DisplayID
++     * extension carries it.
++     */
++    large_screen = info->prefx >= 4096 || info->prefy >= 4096 ||
++                   timings.clock >= 65536 ||
++                   displayid_needs_2_0(&timings, &ranges);
+ 
+     /* =============== extensions  =============== */
+ 
+@@ -430,7 +650,6 @@ void qemu_edid_generate(uint8_t *edid, size_t size,
+     if (size >= 384 && large_screen) {
+         did = edid + 256;
+         edid[126]++;
+-        init_displayid(did);
+     }
+ 
+     /* =============== header information =============== */
+@@ -476,8 +695,11 @@ void qemu_edid_generate(uint8_t *edid, size_t size,
+     /* display gamma: 2.2 */
+     edid[23] = 220 - 100;
+ 
+-    /* supported features bitmap: std sRGB, preferred timing */
+-    edid[24] = 0x06;
++    /*
++     * supported features bitmap: preferred timing, std sRGB, and continuous
++     * frequency when the range limits declare a formula
++     */
++    edid[24] = host_rate ? 0x07 : 0x06;
+ 
+ 
+     /* =============== chromaticity coordinates =============== */
+@@ -498,7 +720,6 @@ void qemu_edid_generate(uint8_t *edid, size_t size,
+     /* =============== descriptor blocks =============== */
+ 
+     if (!large_screen) {
+-        /* The DTD section has only 12 bits to store the resolution */
+         edid_desc_timing(desc, &timings, info->prefx, info->prefy,
+                          width_mm, height_mm);
+         desc = edid_desc_next(edid, dta, desc);
+@@ -507,13 +728,14 @@ void qemu_edid_generate(uint8_t *edid, size_t size,
+     xtra3 = desc;
+     edid_desc_xtra3_std(xtra3);
+     desc = edid_desc_next(edid, dta, desc);
+-    edid_fill_modes(edid, xtra3, dta, info->maxx, info->maxy);
++    edid_fill_modes(edid, xtra3, dta, info->maxx, info->maxy, std_hz);
+     /*
+      * dta video data block is finished at thus point,
+      * so dta descriptor offsets don't move any more.
+      */
+ 
+-    edid_desc_ranges(desc);
++    edid_desc_ranges(desc, &ranges, host_rate ? std_hz : 0,
++                     info->prefx, info->prefy);
+     desc = edid_desc_next(edid, dta, desc);
+ 
+     if (desc && info->name) {
+@@ -533,9 +755,13 @@ void qemu_edid_generate(uint8_t *edid, size_t size,
+ 
+     /* =============== display id extensions =============== */
+ 
+-    if (did && large_screen) {
+-        qemu_displayid_generate(did, &timings, info->prefx, info->prefy,
+-                                width_mm, height_mm);
++    if (did) {
++        if (displayid_needs_2_0(&timings, &ranges)) {
++            displayid_generate_2_0(did, &timings, &ranges,
++                                   info->prefx, info->prefy);
++        } else {
++            displayid_generate_1_3(did, &timings, info->prefx, info->prefy);
++        }
+     }
+ 
+     /* =============== finish up =============== */
+diff --git a/hw/vfio/display.c b/hw/vfio/display.c
+index ea87830fe0..adc54213e3 100644
+--- a/hw/vfio/display.c
++++ b/hw/vfio/display.c
+@@ -55,7 +55,8 @@ err:
+ }
+ 
+ static void vfio_display_edid_update(VFIOPCIDevice *vdev, bool enabled,
+-                                     int prefx, int prefy)
++                                     int prefx, int prefy,
++                                     uint32_t refresh_rate)
+ {
+     VFIODisplay *dpy = vdev->dpy;
+     int fd = vdev->vbasedev.fd;
+@@ -64,6 +65,7 @@ static void vfio_display_edid_update(VFIOPCIDevice *vdev, bool enabled,
+         .maxy  = dpy->edid_regs->max_yres,
+         .prefx = prefx ?: vdev->display_xres,
+         .prefy = prefy ?: vdev->display_yres,
++        .refresh_rate = refresh_rate,
+     };
+ 
+     timer_del(dpy->edid_link_timer);
+@@ -118,9 +120,10 @@ static void vfio_display_edid_ui_info(void *opaque, uint32_t idx,
+     }
+ 
+     if (info->width && info->height) {
+-        vfio_display_edid_update(vdev, true, info->width, info->height);
++        vfio_display_edid_update(vdev, true, info->width, info->height,
++                                 info->refresh_rate);
+     } else {
+-        vfio_display_edid_update(vdev, false, 0, 0);
++        vfio_display_edid_update(vdev, false, 0, 0, 0);
+     }
+ }
+ 
+@@ -167,7 +170,7 @@ static bool vfio_display_edid_init(VFIOPCIDevice *vdev, Error **errp)
+     dpy->edid_link_timer = timer_new_ms(QEMU_CLOCK_REALTIME,
+                                         vfio_display_edid_link_up, vdev);
+ 
+-    vfio_display_edid_update(vdev, true, 0, 0);
++    vfio_display_edid_update(vdev, true, 0, 0, 0);
+     return true;
+ 
+ err:
+diff --git a/include/hw/display/edid.h b/include/hw/display/edid.h
+index 520f8ec202..5000455eca 100644
+--- a/include/hw/display/edid.h
++++ b/include/hw/display/edid.h
+@@ -11,7 +11,7 @@ typedef struct qemu_edid_info {
+     uint32_t    prefy;
+     uint32_t    maxx;
+     uint32_t    maxy;
+-    uint32_t    refresh_rate;
++    uint32_t    refresh_rate; /* mHz, 0 = unknown */
+ } qemu_edid_info;
+ 
+ void qemu_edid_generate(uint8_t *edid, size_t size,
+diff --git a/qemu-edid.c b/qemu-edid.c
+index 92e1a660a7..72237d45f6 100644
+--- a/qemu-edid.c
++++ b/qemu-edid.c
+@@ -35,6 +35,7 @@ static void usage(FILE *out)
+             "    -y <prefy>     set preferred height\n"
+             "    -X <maxx>      set maximum width\n"
+             "    -Y <maxy>      set maximum height\n"
++            "    -r <rate>      set refresh rate in Hz (0 = unknown)\n"
+             "\n");
+ }
+ 
+@@ -44,10 +45,11 @@ int main(int argc, char *argv[])
+     uint8_t blob[512];
+     size_t size;
+     uint32_t dpi = 100;
++    double rate;
+     int rc;
+ 
+     for (;;) {
+-        rc = getopt(argc, argv, "ho:x:y:X:Y:d:v:n:s:");
++        rc = getopt(argc, argv, "ho:x:y:X:Y:d:r:v:n:s:");
+         if (rc == -1) {
+             break;
+         }
+@@ -97,6 +99,13 @@ int main(int argc, char *argv[])
+                 exit(1);
+             }
+             break;
++        case 'r':
++            if (qemu_strtod_finite(optarg, NULL, &rate) < 0 || rate < 0) {
++                fprintf(stderr, "not a refresh rate: %s\n", optarg);
++                exit(1);
++            }
++            info.refresh_rate = rate * 1000 + 0.5;
++            break;
+         case 'v':
+             info.vendor = optarg;
+             break;
+-- 
+2.41.0
+
+From 40b5b1ff33e69ad46bac12aeba5acc6d90d5d9ee Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Wed, 7 Oct 2026 00:29:47 -0700
+Subject: [PATCH 2/3] virtio-gpu: let a create wait for a deferred unref of the
+ same id
+
+An UNREF of a still-mapped blob is deferred until its MemoryRegion
+finalizes while the control queue keeps flowing (3bdba2ae2e).  A guest
+that reuses the id as soon as it has queued the UNREF -- the Windows
+viogpu3d KMD does when it re-establishes its blob windows -- had its
+CREATE rejected with INVALID_RESOURCE_ID ("resource already exists") and
+came up with no display.
+
+Park a CREATE_2D/3D/BLOB whose id has a deferred unref at the cmdq head,
+the way a re-MAP is parked.  The unmap completion releases the block,
+completes the unref and resumes the queue, and the create re-runs
+against a free id.
+
+Assisted-by: Claude:claude-fable-5-1
+---
+ hw/display/virtio-gpu-virgl.c | 61 ++++++++++++++++++++++++++++-------
+ 1 file changed, 50 insertions(+), 11 deletions(-)
+
+diff --git a/hw/display/virtio-gpu-virgl.c b/hw/display/virtio-gpu-virgl.c
+index 2592fb4e77..a57f9e0e48 100644
+--- a/hw/display/virtio-gpu-virgl.c
++++ b/hw/display/virtio-gpu-virgl.c
+@@ -68,6 +68,29 @@ virtio_gpu_virgl_find_resource(VirtIOGPU *g, uint32_t resource_id)
+     return container_of(res, struct virtio_gpu_virgl_resource, base);
+ }
+ 
++/*
++ * A guest may reuse a resource id as soon as it has queued the UNREF, but
++ * the UNREF of a mapped blob completes only when its MemoryRegion
++ * finalizes.  Park a create of that id at the cmdq head, as a re-MAP is
++ * parked; the finalizer releases the block, completes the unref and
++ * resumes the queue.  Returns true if the create was parked.
++ */
++static bool
++virtio_gpu_virgl_create_waits_for_unref(VirtIOGPU *g,
++                                        struct virtio_gpu_virgl_resource *res,
++                                        bool *cmd_suspended)
++{
++    if (!res->unref_cmd) {
++        return false;
++    }
++    if (!res->map_blocked) {
++        res->map_blocked = true;
++        VIRTIO_GPU_BASE(g)->renderer_blocked++;
++    }
++    *cmd_suspended = true;
++    return true;
++}
++
+ #if VIRGL_RENDERER_CALLBACKS_VERSION >= 4
+ static void *
+ virgl_get_egl_display(G_GNUC_UNUSED void *cookie)
+@@ -384,7 +407,8 @@ void virtio_gpu_virgl_resource_destroy(VirtIOGPU *g,
+ }
+ 
+ static void virgl_cmd_create_resource_2d(VirtIOGPU *g,
+-                                         struct virtio_gpu_ctrl_command *cmd)
++                                         struct virtio_gpu_ctrl_command *cmd,
++                                         bool *cmd_suspended)
+ {
+     struct virtio_gpu_resource_create_2d c2d;
+     struct virgl_renderer_resource_create_args args;
+@@ -403,6 +427,9 @@ static void virgl_cmd_create_resource_2d(VirtIOGPU *g,
+ 
+     res = virtio_gpu_virgl_find_resource(g, c2d.resource_id);
+     if (res) {
++        if (virtio_gpu_virgl_create_waits_for_unref(g, res, cmd_suspended)) {
++            return;
++        }
+         qemu_log_mask(LOG_GUEST_ERROR, "%s: resource already exists %d\n",
+                       __func__, c2d.resource_id);
+         cmd->error = VIRTIO_GPU_RESP_ERR_INVALID_RESOURCE_ID;
+@@ -432,7 +459,8 @@ static void virgl_cmd_create_resource_2d(VirtIOGPU *g,
+ }
+ 
+ static void virgl_cmd_create_resource_3d(VirtIOGPU *g,
+-                                         struct virtio_gpu_ctrl_command *cmd)
++                                         struct virtio_gpu_ctrl_command *cmd,
++                                         bool *cmd_suspended)
+ {
+     struct virtio_gpu_resource_create_3d c3d;
+     struct virgl_renderer_resource_create_args args;
+@@ -451,6 +479,9 @@ static void virgl_cmd_create_resource_3d(VirtIOGPU *g,
+ 
+     res = virtio_gpu_virgl_find_resource(g, c3d.resource_id);
+     if (res) {
++        if (virtio_gpu_virgl_create_waits_for_unref(g, res, cmd_suspended)) {
++            return;
++        }
+         qemu_log_mask(LOG_GUEST_ERROR, "%s: resource already exists %d\n",
+                       __func__, c3d.resource_id);
+         cmd->error = VIRTIO_GPU_RESP_ERR_INVALID_RESOURCE_ID;
+@@ -899,7 +930,8 @@ static void virgl_cmd_get_capset(VirtIOGPU *g,
+ 
+ #if VIRGL_VERSION_MAJOR >= 1
+ static void virgl_cmd_resource_create_blob(VirtIOGPU *g,
+-                                           struct virtio_gpu_ctrl_command *cmd)
++                                           struct virtio_gpu_ctrl_command *cmd,
++                                           bool *cmd_suspended)
+ {
+     struct virgl_renderer_resource_create_blob_args virgl_args = { 0 };
+     g_autofree struct virtio_gpu_virgl_resource *res = NULL;
+@@ -923,11 +955,18 @@ static void virgl_cmd_resource_create_blob(VirtIOGPU *g,
+         return;
+     }
+ 
+-    if (virtio_gpu_virgl_find_resource(g, cblob.resource_id)) {
+-        qemu_log_mask(LOG_GUEST_ERROR, "%s: resource already exists %d\n",
+-                      __func__, cblob.resource_id);
+-        cmd->error = VIRTIO_GPU_RESP_ERR_INVALID_RESOURCE_ID;
+-        return;
++    {
++        struct virtio_gpu_virgl_resource *old =
++            virtio_gpu_virgl_find_resource(g, cblob.resource_id);
++        if (old) {
++            if (virtio_gpu_virgl_create_waits_for_unref(g, old, cmd_suspended)) {
++                return;
++            }
++            qemu_log_mask(LOG_GUEST_ERROR, "%s: resource already exists %d\n",
++                          __func__, cblob.resource_id);
++            cmd->error = VIRTIO_GPU_RESP_ERR_INVALID_RESOURCE_ID;
++            return;
++        }
+     }
+ 
+     res = g_new0(struct virtio_gpu_virgl_resource, 1);
+@@ -1228,10 +1267,10 @@ void virtio_gpu_virgl_process_cmd(VirtIOGPU *g,
+         virgl_cmd_context_destroy(g, cmd);
+         break;
+     case VIRTIO_GPU_CMD_RESOURCE_CREATE_2D:
+-        virgl_cmd_create_resource_2d(g, cmd);
++        virgl_cmd_create_resource_2d(g, cmd, &cmd_suspended);
+         break;
+     case VIRTIO_GPU_CMD_RESOURCE_CREATE_3D:
+-        virgl_cmd_create_resource_3d(g, cmd);
++        virgl_cmd_create_resource_3d(g, cmd, &cmd_suspended);
+         break;
+     case VIRTIO_GPU_CMD_SUBMIT_3D:
+         virgl_cmd_submit_3d(g, cmd);
+@@ -1282,7 +1321,7 @@ void virtio_gpu_virgl_process_cmd(VirtIOGPU *g,
+         break;
+ #if VIRGL_VERSION_MAJOR >= 1
+     case VIRTIO_GPU_CMD_RESOURCE_CREATE_BLOB:
+-        virgl_cmd_resource_create_blob(g, cmd);
++        virgl_cmd_resource_create_blob(g, cmd, &cmd_suspended);
+         break;
+     case VIRTIO_GPU_CMD_RESOURCE_MAP_BLOB:
+         virgl_cmd_resource_map_blob(g, cmd, &cmd_suspended);
+-- 
+2.41.0
+
+From fdaf37123a5cf6d74a9da7cd97d1b5b18eadd305 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Wed, 7 Oct 2026 00:29:54 -0700
+Subject: [PATCH 3/3] virtio-gpu-gl: initialise the deferred flag on every
+ popped command
+
+3bdba2ae2e added virtio_gpu_ctrl_command.deferred and cleared it in
+virtio_gpu_handle_ctrl, but the GL device pops commands through
+virtio_gpu_gl_handle_ctrl, which never set it.  virtqueue_pop allocates
+with g_malloc, so the flag held leftover heap bytes: a command that
+landed on a non-zero byte was processed, then taken off cmdq as deferred
+and never answered or freed.
+
+The guest sees those as commands that never complete.  On Windows a lost
+CREATE_BLOB reply made the KMD retry the id ("resource already exists
+25"), and lost unref/fence replies hung shutdown on the "Restarting"
+screen (34 unanswered descriptors, empty cmdq and fenceq).  On Linux a
+lost context or fence reply stalled Fire Strike and Time Spy at the
+second D3D context.
+
+Clear it with the other per-command flags.  Windows install -> reboot ->
+desktop: 4/4 pass after, 3/4 failed before.
+
+Assisted-by: Claude:claude-opus-5-5
+---
+ hw/display/virtio-gpu-gl.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/hw/display/virtio-gpu-gl.c b/hw/display/virtio-gpu-gl.c
+index 9f104afa64..29dab4fb7b 100644
+--- a/hw/display/virtio-gpu-gl.c
++++ b/hw/display/virtio-gpu-gl.c
+@@ -94,6 +94,7 @@ static void virtio_gpu_gl_handle_ctrl(VirtIODevice *vdev, VirtQueue *vq)
+         cmd->error = 0;
+         cmd->finished = false;
+         cmd->suspended = false;
++        cmd->deferred = false;
+         QTAILQ_INSERT_TAIL(&g->cmdq, cmd, next);
+         cmd = virtqueue_pop(vq, sizeof(struct virtio_gpu_ctrl_command));
+     }
+-- 
+2.41.0
+
+From 88e5ee7ec6703662fec7b638cca74c4769e683d6 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Tue, 13 Oct 2026 10:42:13 -0700
+Subject: [PATCH] virtio-gpu: initialise popped control commands in one helper
+
+virtio_gpu_process_cmdq() reads cmd->suspended and cmd->deferred for every
+device, but each handle_ctrl loop reset the per-command state on its own.
+fdaf37123a fixed the GL loop for deferred; the rutabaga loop still set only
+vq, error and finished, so its commands carried leftover g_malloc bytes in
+both flags and could be parked at the queue head or dropped without a
+response.
+
+Move the reset into virtio_gpu_ctrl_cmd_init() and call it from all three
+loops, so a new per-command flag is initialised in one place.
+
+Assisted-by: Claude:claude-opus-5-5
+---
+ hw/display/virtio-gpu-gl.c       |  6 +-----
+ hw/display/virtio-gpu-rutabaga.c |  4 +---
+ hw/display/virtio-gpu.c          |  6 +-----
+ include/hw/virtio/virtio-gpu.h   | 12 ++++++++++++
+ 4 files changed, 15 insertions(+), 13 deletions(-)
+
+diff --git a/hw/display/virtio-gpu-gl.c b/hw/display/virtio-gpu-gl.c
+index 29dab4fb7b..30151268b7 100644
+--- a/hw/display/virtio-gpu-gl.c
++++ b/hw/display/virtio-gpu-gl.c
+@@ -90,11 +90,7 @@ static void virtio_gpu_gl_handle_ctrl(VirtIODevice *vdev, VirtQueue *vq)
+ 
+     cmd = virtqueue_pop(vq, sizeof(struct virtio_gpu_ctrl_command));
+     while (cmd) {
+-        cmd->vq = vq;
+-        cmd->error = 0;
+-        cmd->finished = false;
+-        cmd->suspended = false;
+-        cmd->deferred = false;
++        virtio_gpu_ctrl_cmd_init(cmd, vq);
+         QTAILQ_INSERT_TAIL(&g->cmdq, cmd, next);
+         cmd = virtqueue_pop(vq, sizeof(struct virtio_gpu_ctrl_command));
+     }
+diff --git a/hw/display/virtio-gpu-rutabaga.c b/hw/display/virtio-gpu-rutabaga.c
+index a61454aeb9..4caeaf05c3 100644
+--- a/hw/display/virtio-gpu-rutabaga.c
++++ b/hw/display/virtio-gpu-rutabaga.c
+@@ -1066,9 +1066,7 @@ static void virtio_gpu_rutabaga_handle_ctrl(VirtIODevice *vdev, VirtQueue *vq)
+ 
+     cmd = virtqueue_pop(vq, sizeof(struct virtio_gpu_ctrl_command));
+     while (cmd) {
+-        cmd->vq = vq;
+-        cmd->error = 0;
+-        cmd->finished = false;
++        virtio_gpu_ctrl_cmd_init(cmd, vq);
+         QTAILQ_INSERT_TAIL(&g->cmdq, cmd, next);
+         cmd = virtqueue_pop(vq, sizeof(struct virtio_gpu_ctrl_command));
+     }
+diff --git a/hw/display/virtio-gpu.c b/hw/display/virtio-gpu.c
+index 52ca772864..edd2c1c040 100644
+--- a/hw/display/virtio-gpu.c
++++ b/hw/display/virtio-gpu.c
+@@ -1138,11 +1138,7 @@ static void virtio_gpu_handle_ctrl(VirtIODevice *vdev, VirtQueue *vq)
+ 
+     cmd = virtqueue_pop(vq, sizeof(struct virtio_gpu_ctrl_command));
+     while (cmd) {
+-        cmd->vq = vq;
+-        cmd->error = 0;
+-        cmd->finished = false;
+-        cmd->suspended = false;
+-        cmd->deferred = false;
++        virtio_gpu_ctrl_cmd_init(cmd, vq);
+         QTAILQ_INSERT_TAIL(&g->cmdq, cmd, next);
+         cmd = virtqueue_pop(vq, sizeof(struct virtio_gpu_ctrl_command));
+     }
+diff --git a/include/hw/virtio/virtio-gpu.h b/include/hw/virtio/virtio-gpu.h
+index b103a5682d..de53f96d6c 100644
+--- a/include/hw/virtio/virtio-gpu.h
++++ b/include/hw/virtio/virtio-gpu.h
+@@ -151,6 +151,18 @@ struct virtio_gpu_ctrl_command {
+     QTAILQ_ENTRY(virtio_gpu_ctrl_command) next;
+ };
+ 
++/* virtqueue_pop() does not zero the element, so every popper must reset
++ * the per-command state that virtio_gpu_process_cmdq() reads. */
++static inline void virtio_gpu_ctrl_cmd_init(struct virtio_gpu_ctrl_command *cmd,
++                                            VirtQueue *vq)
++{
++    cmd->vq = vq;
++    cmd->error = 0;
++    cmd->finished = false;
++    cmd->suspended = false;
++    cmd->deferred = false;
++}
++
+ struct VirtIOGPUBase {
+     VirtIODevice parent_obj;
+ 
+-- 
+2.41.0
 
