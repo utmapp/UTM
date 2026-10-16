@@ -1,11 +1,14 @@
 # UTM
 [![Build](https://github.com/utmapp/UTM/actions/workflows/build.yml/badge.svg?branch=main&event=push)][1]
+[![Mac App Store](https://img.shields.io/badge/Mac_App_Store-UTM-0D96F6?logo=appstore&logoColor=white)](https://apps.apple.com/tw/app/utm-virtual-machines/id1538878817)
+[![App Store](https://img.shields.io/badge/App_Store-UTM_SE-0D96F6?logo=appstore&logoColor=white)](https://apps.apple.com/tw/app/utm-se-retro-pc-emulator/id1564628856)
+[![Download](https://img.shields.io/badge/Download-UTM.dmg-24292F?logo=github&logoColor=white)](https://github.com/utmapp/UTM/releases/latest/download/UTM.dmg)
 
 > 發明一台可以用來計算任何可計算序列的機器是完全有可能的。
 
 -- <cite>艾倫·圖靈（Alan Turing），1936年</cite>
 
-UTM 是一個功能完整的系統模擬器和虛擬機器主機，適用於 iOS 和 macOS，基於 QEMU 開發。簡單來說，它讓你能在你的 Mac、iPhone 和 iPad 上執行 Windows、Linux 等作業系統。更多資訊請參考 [https://getutm.app/](https://getutm.app/) 和 [https://mac.getutm.app/](https://mac.getutm.app/)。
+UTM 是一個功能完整的系統模擬器和虛擬機器主機，適用於 iOS、macOS 和 visionOS，基於 QEMU 開發。簡單來說，它讓你能在你的 Mac、iPhone 和 iPad 上執行 Windows、Linux 等作業系統。更多資訊請參考 [https://getutm.app/](https://getutm.app/) 和 [https://mac.getutm.app/](https://mac.getutm.app/)。
 
 <p align="center">
   <img width="450px" alt="在 iPhone 上執行 UTM" src="screen.png">
@@ -21,13 +24,13 @@ UTM 是一個功能完整的系統模擬器和虛擬機器主機，適用於 iOS
 * 文字終端模式
 * USB 裝置
 * 使用 QEMU TCG 的 JIT 基礎加速
-* 專為 macOS 11 和 iOS 11+ 使用最新 API 從零設計的前端
+* 專為 macOS 12+ 和 iOS 15+ 使用最新 API 從零設計的前端
 * 直接從你的裝置建立、管理、執行虛擬機器
 
 ## macOS 額外功能
 
 * 使用 Hypervisor.framework 和 QEMU 的硬體加速虛擬化
-* 在 macOS 12+ 上使用 Virtualization.framework 啟動 macOS 客體
+* 使用 Virtualization.framework 啟動 macOS 客體
 
 ## UTM SE
 
@@ -39,9 +42,9 @@ UTM SE（"慢速版/slow edition"）使用一個 [執行緒直譯器][3]，效�
 
 ## 安裝
 
-適用於 iOS 的 UTM(SE)：[https://getutm.app/install/](https://getutm.app/install/)
+適用於 iOS 的 UTM(SE)：[https://docs.getutm.app/installation/ios/](https://docs.getutm.app/installation/ios/)
 
-也適用於 macOS 的 UTM：[https://mac.getutm.app/](https://mac.getutm.app/)
+也適用於 macOS 的 UTM：[https://docs.getutm.app/installation/macos/](https://docs.getutm.app/installation/macos/)
 
 ## 開發
 

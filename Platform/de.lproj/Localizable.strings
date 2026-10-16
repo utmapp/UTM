@@ -180,6 +180,9 @@
 /* No comment provided by engineer. */
 "Clear" = "Entfernen";
 
+/* VMDisplayWindowController */
+"Close" = "Schließen";
+
 /* VMQemuDisplayMetalWindowController */
 "Closing this window will kill the VM." = "Das Schließen des Fensters wird die VM direkt beenden.";
 
@@ -654,6 +657,9 @@
 
 /* VMQemuDisplayMetalWindowController */
 "Querying USB devices..." = "USB-Geräte werden abgerufen…";
+
+/* AppDelegate */
+"Quit" = "Beenden";
 
 /* VMQemuDisplayMetalWindowController */
 "Quitting UTM will kill all running VMs." = "Mit dem Beenden von UTM werden alle laufenden VMs direkt beendet.";

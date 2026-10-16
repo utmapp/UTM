@@ -458,7 +458,7 @@ extension VMDisplayWindowController: NSWindowDelegate {
         if let error = error {
             alert.informativeText = error.localizedDescription + "\n" + alert.informativeText
         }
-        alert.addButton(withTitle: NSLocalizedString("OK", comment: "VMDisplayWindowController"))
+        alert.addButton(withTitle: NSLocalizedString("Close", comment: "VMDisplayWindowController"))
         alert.addButton(withTitle: NSLocalizedString("Cancel", comment: "VMDisplayWindowController"))
         alert.showsSuppressionButton = true
         alert.beginSheetModal(for: sender) { response in

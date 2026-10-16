@@ -52,6 +52,14 @@
     }
 }
 
+- (void)keyboardTouchpadPressed:(UIButton *)sender {
+    [self.delegate displayDidRequestInputDeck:VMInputDeckTouchpad];
+}
+
+- (void)touchpadKeyboardPressed:(UIButton *)sender {
+    [self.delegate displayDidRequestInputDeck:VMInputDeckKeyboard];
+}
+
 - (void)resetModifierToggles {
     for (VMKeyboardButton *button in self.inputAccessoryView.modifierButtons) {
         if (button.isToggled) {

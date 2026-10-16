@@ -40,7 +40,7 @@ struct UTMSettingsView: View {
                         }
                     }
                 }
-        }
+        }.navigationViewStyle(.stack)
     }
 }
 

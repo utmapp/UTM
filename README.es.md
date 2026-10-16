@@ -1,12 +1,15 @@
 # UTM
 
 [![Build](https://github.com/utmapp/UTM/actions/workflows/build.yml/badge.svg?branch=main&event=push)][1]
+[![Mac App Store](https://img.shields.io/badge/Mac_App_Store-UTM-0D96F6?logo=appstore&logoColor=white)](https://apps.apple.com/es/app/utm-virtual-machines/id1538878817)
+[![App Store](https://img.shields.io/badge/App_Store-UTM_SE-0D96F6?logo=appstore&logoColor=white)](https://apps.apple.com/es/app/utm-se-retro-pc-emulator/id1564628856)
+[![Download](https://img.shields.io/badge/Download-UTM.dmg-24292F?logo=github&logoColor=white)](https://github.com/utmapp/UTM/releases/latest/download/UTM.dmg)
 
 > Es posible inventar una única máquina que pueda ser usada para computar cualquier secuencia computable. (It is possible to invent a single machine which can be used to compute any computable sequence.)
 
 -- <cite>Alan Turing, 1936</cite>
 
-UTM es un emulador de sistemas completo y un host de máquinas virtuales para iOS y macOS, que está basado directamente en QEMU. En otras palabras, te permite ejecutar Windows, Linux y más en tu Mac, iPhone e iPad. Puedes ver más información en https://getutm.app y https://mac.getutm.app.
+UTM es un emulador de sistemas completo y un host de máquinas virtuales para iOS, macOS y visionOS, que está basado directamente en QEMU. En otras palabras, te permite ejecutar Windows, Linux y más en tu Mac, iPhone e iPad. Puedes ver más información en https://getutm.app y https://mac.getutm.app.
 
 <p align="center">
   <img width="450px" alt="UTM ejecutando en un iPhone" src="screen.png">
@@ -22,13 +25,13 @@ UTM es un emulador de sistemas completo y un host de máquinas virtuales para iO
 * Modo de terminal de texto.
 * Dispositivos USB.
 * Aceleración basada en JIT con QEMU TCG.
-* Interfaz diseñada desde cero para macOS 11 e iOS 11+ usando las mejores y más recientes APIs.
+* Interfaz diseñada desde cero para macOS 12+ e iOS 15+ usando las mejores y más recientes APIs.
 * Crea, gestiona y ejecuta máquinas virtuales (VM) directamente desde tu dispositivo.
 
 ## Características adicionales de macOS
 
 * Virtualización acelerada por hardware con el uso de Hypervisor.framework y QEMU.
-* Ejecuta clientes de macOS con Virtualization.framework en macOS 12+.
+* Ejecuta clientes de macOS con Virtualization.framework.
 
 ## UTM SE
 
@@ -40,9 +43,9 @@ Para optimizar el tamaño y los tiempos de compilación, sólo se incluyen las s
 
 ## Instalar
 
-UTM (SE) para iOS: https://getutm.app/install/
+UTM (SE) para iOS: https://docs.getutm.app/installation/ios/
 
-UTM está también disponible para macOS: https://mac.getutm.app/
+UTM está también disponible para macOS: https://docs.getutm.app/installation/macos/
 
 ## Desarrollo
 

@@ -1,11 +1,14 @@
 #  UTM
 [![Build](https://github.com/utmapp/UTM/actions/workflows/build.yml/badge.svg?branch=main&event=push)][1]
+[![Mac App Store](https://img.shields.io/badge/Mac_App_Store-UTM-0D96F6?logo=appstore&logoColor=white)](https://apps.apple.com/hk/app/utm-virtual-machines/id1538878817)
+[![App Store](https://img.shields.io/badge/App_Store-UTM_SE-0D96F6?logo=appstore&logoColor=white)](https://apps.apple.com/hk/app/utm-se-retro-pc-emulator/id1564628856)
+[![Download](https://img.shields.io/badge/Download-UTM.dmg-24292F?logo=github&logoColor=white)](https://github.com/utmapp/UTM/releases/latest/download/UTM.dmg)
 
 > 可以發明一個用於計算任何可計算序列的機器。
 
 -- <cite>艾倫·圖靈（Alan Turing），1936 年</cite>
 
-UTM 是一個為 iOS 與 macOS 而設的全功能系統模擬器與虛擬機主機，它基於 QEMU。簡而言之，它允許你在 Mac、iPhone 與 iPad 上執行 Windows、Linux 等。有關更多訊息，請見 https://getutm.app 與 https://mac.getutm.app
+UTM 是一個為 iOS、macOS 與 visionOS 而設的全功能系統模擬器與虛擬機主機，它基於 QEMU。簡而言之，它允許你在 Mac、iPhone 與 iPad 上執行 Windows、Linux 等。有關更多訊息，請見 https://getutm.app 與 https://mac.getutm.app
 
 <p align="center">
   <img width="450px" alt="在 iPhone 上執行的 UTM" src="screen.png">
@@ -21,13 +24,13 @@ UTM 是一個為 iOS 與 macOS 而設的全功能系統模擬器與虛擬機主�
 * 文字終端模式
 * USB 裝置
 * 使用 QEMU TCG 的基於 JIT 的加速
-* 採用最新最靚的 API，為 macOS 11+ 與 iOS 11+ 從頭開始設計前端
+* 採用最新最靚的 API，為 macOS 12+ 與 iOS 15+ 從頭開始設計前端
 * 直接從你的裝置製作、管理與執行虛擬機
 
 ## 其他 macOS 功能
 
 * 使用 Hypervisor.framework 與 QEMU 進行硬件加速虛擬化
-* 於 macOS 12+ 上使用 Virtualization.framework 啟動 macOS 客户端
+* 使用 Virtualization.framework 啟動 macOS 客户端
 
 ## UTM SE
 
@@ -39,9 +42,9 @@ UTM SE（「慢速版」）使用[執行緒解釋器][3]，其效能雖然優於
 
 ## 安裝
 
-iOS 版本 UTM (SE)：https://getutm.app/install/
+iOS 版本 UTM (SE)：https://docs.getutm.app/installation/ios/
 
-UTM 亦可以於 macOS 上使用：https://mac.getutm.app/
+UTM 亦可以於 macOS 上使用：https://docs.getutm.app/installation/macos/
 
 ## 開發
 

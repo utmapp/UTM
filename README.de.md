@@ -1,11 +1,14 @@
 #  UTM
 [![Build](https://github.com/utmapp/UTM/actions/workflows/build.yml/badge.svg?branch=main&event=push)][1]
+[![Mac App Store](https://img.shields.io/badge/Mac_App_Store-UTM-0D96F6?logo=appstore&logoColor=white)](https://apps.apple.com/de/app/utm-virtual-machines/id1538878817)
+[![App Store](https://img.shields.io/badge/App_Store-UTM_SE-0D96F6?logo=appstore&logoColor=white)](https://apps.apple.com/de/app/utm-se-retro-pc-emulator/id1564628856)
+[![Download](https://img.shields.io/badge/Download-UTM.dmg-24292F?logo=github&logoColor=white)](https://github.com/utmapp/UTM/releases/latest/download/UTM.dmg)
 
 > Es ist möglich, eine einzige Maschine zu entwerfen, mit der jede berechenbare Folge berechnet werden kann.
 
 -- <cite>Alan Turing, 1936</cite>
 
-UTM ist ein voll umfänglicher Systememulator und Virtualisierungs-Host für iOS und macOS. Es basiert auf QEMU. Kurz gesagt ermöglicht es, Windows, Linux und weitere Betriebssysteme auf Ihrem Mac, iPhone und iPad auszuführen. Weitere Informationen finden Sie unter https://getutm.app/ und https://mac.getutm.app/
+UTM ist ein voll umfänglicher Systememulator und Virtualisierungs-Host für iOS, macOS und visionOS. Es basiert auf QEMU. Kurz gesagt ermöglicht es, Windows, Linux und weitere Betriebssysteme auf Ihrem Mac, iPhone und iPad auszuführen. Weitere Informationen finden Sie unter https://getutm.app/ und https://mac.getutm.app/
 
 <p align="center">
   <img width="450px" alt="UTM running on an iPhone" src="screen.png">
@@ -21,13 +24,13 @@ UTM ist ein voll umfänglicher Systememulator und Virtualisierungs-Host für iOS
 * Textterminalmodus
 * USB-Geräte
 * JIT-basierte Beschleunigung mithilfe von QEMU TCG
-* Von Grund auf neu entwickeltes Frontend für macOS 11 und iOS 11+ unter Nutzung aktueller und modernster APIs
+* Von Grund auf neu entwickeltes Frontend für macOS 12+ und iOS 15+ unter Nutzung aktueller und modernster APIs
 * Virtuelle Maschinen direkt auf dem Gerät erstellen, verwalten und ausführen
 
 ## Zusätzliche macOS-Funktionen
 
 * Hardwarebeschleunigte Virtualisierung unter Verwendung von Hypervisor.framework und QEMU
-* Starten von macOS-Gastsystemen mit dem Virtualization.framework unter macOS 12+
+* Starten von macOS-Gastsystemen mit dem Virtualization.framework
 
 ## UTM SE
 
@@ -40,9 +43,9 @@ Zur Optimierung von Größe und Build-Zeiten sind in UTM SE ausschließlich die 
 
 ## Installation
 
-UTM (SE) für iOS: https://getutm.app/install/
+UTM (SE) für iOS: https://docs.getutm.app/installation/ios/
 
-UTM ist auch für macOS verfügbar: https://mac.getutm.app/
+UTM ist auch für macOS verfügbar: https://docs.getutm.app/installation/macos/
 
 ## Entwicklung
 

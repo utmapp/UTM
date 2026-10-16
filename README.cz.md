@@ -1,12 +1,15 @@
 # UTM
 
 [![Build](https://github.com/utmapp/UTM/actions/workflows/build.yml/badge.svg?branch=main&event=push)][1]
+[![Mac App Store](https://img.shields.io/badge/Mac_App_Store-UTM-0D96F6?logo=appstore&logoColor=white)](https://apps.apple.com/cz/app/utm-virtual-machines/id1538878817)
+[![App Store](https://img.shields.io/badge/App_Store-UTM_SE-0D96F6?logo=appstore&logoColor=white)](https://apps.apple.com/cz/app/utm-se-retro-pc-emulator/id1564628856)
+[![Download](https://img.shields.io/badge/Download-UTM.dmg-24292F?logo=github&logoColor=white)](https://github.com/utmapp/UTM/releases/latest/download/UTM.dmg)
 
 > Je možné vynalézt jediný stroj, který lze použít k výpočtu libovolné vypočitatelné posloupnosti.
 
 -- <cite>Alan Turing, 1936</cite>
 
-UTM je plnohodnotný emulátor systému a hostitel virtuálního počítače pro iOS a macOS, který je založen přímo na QEMU. Jinými slovy, na Macu, iPhonu a iPadu můžete spouštět Windows, Linux a další systémy. Další informace naleznete zde  https://getutm.app y https://mac.getutm.app.
+UTM je plnohodnotný emulátor systému a hostitel virtuálního počítače pro iOS, macOS a visionOS, který je založen přímo na QEMU. Jinými slovy, na Macu, iPhonu a iPadu můžete spouštět Windows, Linux a další systémy. Další informace naleznete zde  https://getutm.app y https://mac.getutm.app.
 
 <p align="center">
   <img width="450px" alt="UTM ejecutando en un iPhone" src="screen.png">
@@ -22,14 +25,14 @@ UTM je plnohodnotný emulátor systému a hostitel virtuálního počítače pro
 *  Režim textového terminálu.
 *  Zařízení USB.
 *  Akcelerace na bázi JIT pomocí QEMU TCG.
-*  Rozhraní od základu navržené pro macOS 11 a iOS 11+ s využitím nejnovějších a nejlepších rozhraní API.
+*  Rozhraní od základu navržené pro macOS 12+ a iOS 15+ s využitím nejnovějších a nejlepších rozhraní API.
 *  Vytvářejte, spravujte a spouštějte virtuální počítače (VM) přímo ze svého zařízení.
 
 Translated with www.DeepL.com/Translator (free version)
 ## Další funkce v systému macOS
 
 * Hardwarově akcelerovaná virtualizace pomocí Hypervisor.frameworku a QEMU.
-* Spouštění klientů macOS s Virtualization.framework v systému macOS 12+.
+* Spouštění klientů macOS s Virtualization.framework.
 
 ## UTM SE
 
@@ -41,9 +44,9 @@ Z důvodu optimalizace velikosti a doby kompilace jsou v UTM SE zahrnuty pouze n
 
 ## Instalace
 
-UTM (SE) pro iOS: https://getutm.app/install/
+UTM (SE) pro iOS: https://docs.getutm.app/installation/ios/
 
-UTM je k dispozici také pro macOS: https://mac.getutm.app/
+UTM je k dispozici také pro macOS: https://docs.getutm.app/installation/macos/
 
 ## Vývoj
 
