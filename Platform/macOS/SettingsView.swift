@@ -218,7 +218,7 @@ struct DisplaySettingsView: View {
             return true // always show option if already selected
         } else {
             if #available(macOS 14, *) {
-                return Self.hasD3DMetal
+                return Self.hasD3DMetal && UTMQemuVirtualMachine.canRunD3DMetal
             } else {
                 return false
             }

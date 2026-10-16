@@ -18,6 +18,7 @@ import Foundation
 import QEMUKit
 #if os(macOS)
 import SwiftPortmap
+import Virtualization
 #endif
 
 private var SpiceIoServiceGuestAgentContext = 0
@@ -257,8 +258,26 @@ extension UTMQemuVirtualMachine {
     private var directXDriver: UTMQEMUDirectXDriver {
         get {
             let rawValue = UserDefaults.standard.integer(forKey: "QEMUDirectXDriver")
-            return UTMQEMUDirectXDriver(rawValue: rawValue) ?? .qemuDirectXDriverDefault
+            let driver = UTMQEMUDirectXDriver(rawValue: rawValue) ?? .qemuDirectXDriverDefault
+            if (driver == .qemuDirectXDriverDefault || driver == .qemuDirectXDriverD3DMetal) && !Self.canRunD3DMetal {
+                // the default would pick D3DMetal whenever it is bundled
+                return .qemuDirectXDriverDXMT
+            }
+            return driver
         }
+    }
+
+    /// D3DMetal is x86_64 only, so on Apple Silicon it needs Rosetta
+    static var canRunD3DMetal: Bool {
+        #if os(macOS) && arch(arm64)
+        if #available(macOS 13, *) {
+            return VZLinuxRosettaDirectoryShare.availability == .installed
+        } else {
+            return false
+        }
+        #else
+        return true
+        #endif
     }
 
     @MainActor private func qemuEnsureEfiVarsAvailable() async throws {
