@@ -1,0 +1,46 @@
+From 5f0f2f5f9d5f0f2f5f9d5f0f2f5f9d5f0f2f5f9d Mon Sep 17 00:00:00 2001
+From: UTM contributors <utmapp@turing.llc>
+Date: Mon, 28 Sep 2026 12:00:00 +0000
+Subject: [PATCH] usbredirhost: present SuperSpeedPlus devices as SuperSpeed
+
+USB 3.2 Gen 2 (10 Gbps) devices report LIBUSB_SPEED_SUPER_PLUS, which
+the usb-redir protocol cannot express. The speed was reported as
+"unknown", which QEMU interprets as full speed while it still forwards
+the device's SuperSpeed descriptors (bMaxPacketSize0 == 9). Guests then
+fail to enumerate the device with errors such as "Invalid ep0 maxpacket:
+9" and "unable to enumerate USB device".
+
+This affected many external SSDs and NVMe enclosures. A 5 Gbps USB 3.0
+device reports LIBUSB_SPEED_SUPER and worked, and forcing the device to
+USB 2.0 (for example with a USB 2.0 hub) also worked, which is why only
+SuperSpeedPlus devices were reported broken.
+
+Present SuperSpeedPlus devices as SuperSpeed instead. The guest then
+enumerates the device with a matching SuperSpeed link and descriptors,
+capped at 5 Gbps.
+
+Assisted-by: DeepSeek:deepseek-v4.1-flash
+---
+ usbredirhost/usbredirhost.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/usbredirhost/usbredirhost.c b/usbredirhost/usbredirhost.c
+index 3b6f0c1..5a2d4e8 100644
+--- a/usbredirhost/usbredirhost.c
++++ b/usbredirhost/usbredirhost.c
+@@ -421,6 +421,13 @@
+     case LIBUSB_SPEED_HIGH:
+         device_connect.speed = usb_redir_speed_high; break;
+     case LIBUSB_SPEED_SUPER:
++#if LIBUSB_API_VERSION >= 0x01000106
++    case LIBUSB_SPEED_SUPER_PLUS:
++#endif
++        /* The usb-redir protocol has no SuperSpeedPlus speed, so present
++         * the device as SuperSpeed. Reporting it as unknown speed instead
++         * makes QEMU attach it at full speed while forwarding its SuperSpeed
++         * descriptors, and the guest then fails to enumerate it. */
+         device_connect.speed = usb_redir_speed_super; break;
+     default:
+         device_connect.speed = usb_redir_speed_unknown;
+-- 
+2.41.0

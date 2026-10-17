@@ -5148,3 +5148,49 @@ index 4f1e8b7f6c..aac4b26424 100644
 -- 
 2.54.0 (Apple Git-157)
 
+
+From 9f0b3fac327103a9eadcd3c5b4030f0cb9d96e41 Mon Sep 17 00:00:00 2001
+From: UTM contributors <utmapp@turing.llc>
+Date: Mon, 28 Sep 2026 12:00:00 +0000
+Subject: [PATCH] usb-redir: fix SuperSpeed descriptors on non-SuperSpeed links
+
+A USB 3.x device can be forwarded to a guest that enumerates it at a
+lower speed: when the host reports a speed the usb-redir protocol cannot
+express (SuperSpeedPlus is sent as "unknown" speed), when the device is
+attached to a USB 2.0 bus, or when the port cannot do SuperSpeed.
+
+The existing fix-up only rewrote the SuperSpeed bMaxPacketSize0 value
+when QEMU itself had marked the device as SuperSpeed. Also do it when the
+device is attached at any other speed, which is exactly when the
+forwarded SuperSpeed descriptor is inconsistent. Guests then fail to
+enumerate the device with "Invalid ep0 maxpacket: 9" and "unable to
+enumerate USB device" instead of falling back to the lower speed.
+
+Assisted-by: DeepSeek:deepseek-v4.1-flash
+---
+ hw/usb/redirect.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/hw/usb/redirect.c b/hw/usb/redirect.c
+index 999a690..c034b19 100644
+--- a/hw/usb/redirect.c
++++ b/hw/usb/redirect.c
+@@ -2003,9 +2003,15 @@ static void usbredir_control_packet(void *priv, uint64_t id,
+             len, id);
+ 
+     /* Fix up USB-3 ep0 maxpacket size to allow superspeed connected devices
+-     * to work redirected to a not superspeed capable hcd */
+-    if (dev->dev.speed == USB_SPEED_SUPER &&
+-            !((dev->dev.port->speedmask & USB_SPEED_MASK_SUPER)) &&
++     * to work redirected to a not superspeed capable hcd
++     *
++     * This also catches devices the usb-redir client reported at a lower
++     * speed (for example a SuperSpeedPlus device reported as unknown speed,
++     * which attaches as full speed) while their SuperSpeed descriptor is
++     * still forwarded. The guest would otherwise reject the descriptor with
++     * "Invalid ep0 maxpacket: 9" and fail to enumerate the device. */
++    if (!(dev->dev.speed == USB_SPEED_SUPER &&
++            (dev->dev.port->speedmask & USB_SPEED_MASK_SUPER)) &&
+             control_packet->requesttype == 0x80 &&
+             control_packet->request == 6 &&
+             control_packet->value == 0x100 && control_packet->index == 0 &&
