@@ -97,10 +97,8 @@ class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
             logger.critical("Failed to create renderer.")
             return
         }
-        if rendererFpsLimit > 0 {
-            metalView.preferredFramesPerSecond = rendererFpsLimit
-        } else if let maxFps = self.window?.screen?.maximumFramesPerSecond {
-            metalView.preferredFramesPerSecond = maxFps
+        if let fps = preferredFramesPerSecond {
+            metalView.preferredFramesPerSecond = fps
         }
         renderer.changeUpscaler(displayConfig?.upscalingFilter.metalSamplerMinMagFilter ?? .linear, downscaler: displayConfig?.downscalingFilter.metalSamplerMinMagFilter ?? .linear)
         vmDisplay?.addRenderer(renderer) // can be nil if primary
@@ -179,6 +177,28 @@ class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
         }
         stopAllCapture()
         super.enterSuspended(isBusy: busy)
+    }
+
+    override func virtualMachineDisplayRefreshRate(_ vm: any UTMVirtualMachine) -> Int? {
+        // the window may have moved screens since it was loaded
+        guard let fps = preferredFramesPerSecond else {
+            return nil
+        }
+        metalView.preferredFramesPerSecond = fps
+        return fps
+    }
+
+    /// Frame rate the display is rendered at on the current screen, respecting the user's limit
+    private var preferredFramesPerSecond: Int? {
+        // a minimized window has no screen
+        let maxFps = (window?.screen ?? NSScreen.main)?.maximumFramesPerSecond ?? 0
+        if rendererFpsLimit > 0 {
+            return maxFps > 0 ? min(rendererFpsLimit, maxFps) : rendererFpsLimit
+        } else if maxFps > 0 {
+            return maxFps
+        } else {
+            return nil
+        }
     }
 
     private func stopAllCapture() {

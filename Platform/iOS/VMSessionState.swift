@@ -172,6 +172,28 @@ extension VMSessionState: UTMVirtualMachineDelegate {
     nonisolated func virtualMachine(_ vm: any UTMVirtualMachine, didUpdateInstallationProgress progress: Double) {
         
     }
+
+    /// Must match the frame rate chosen in `VMDisplayMetalViewController`
+    func virtualMachineDisplayRefreshRate(_ vm: any UTMVirtualMachine) -> Int? {
+        let fpsLimit = UserDefaults.standard.integer(forKey: "QEMURendererFPSLimit")
+        #if os(visionOS)
+        return fpsLimit > 0 ? fpsLimit : 60
+        #else
+        let scenes = UIApplication.shared.connectedScenes
+            .compactMap({ $0 as? UIWindowScene })
+            .filter({ $0.session.role == .windowApplication })
+        let screen = (scenes.first(where: { $0.activationState == .foregroundActive }) ?? scenes.first)?.screen
+        let maxFps = screen?.maximumFramesPerSecond ?? 0
+        if fpsLimit > 0 {
+            return maxFps > 0 ? min(fpsLimit, maxFps) : fpsLimit
+        } else if UIDevice.current.userInterfaceIdiom == .pad && maxFps > 0 {
+            // ProMotion is only used by default on iPad
+            return maxFps
+        } else {
+            return 60 // MTKView default
+        }
+        #endif
+    }
 }
 
 extension VMSessionState: UTMSpiceIODelegate {

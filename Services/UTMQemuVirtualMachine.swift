@@ -344,6 +344,7 @@ extension UTMQemuVirtualMachine {
         #endif
         await MainActor.run {
             config.qemu.isDisposable = isRunningAsDisposible
+            config.qemu.hostRefreshRate = isRemoteSession ? nil : delegate?.virtualMachineDisplayRefreshRate(self)
             #if WITH_SERVER
             config.qemu.spiceServerPort = spicePort?.internalPort
             config.qemu.spiceServerPassword = spicePassword
