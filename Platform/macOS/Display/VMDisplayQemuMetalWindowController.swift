@@ -45,6 +45,8 @@ class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
     private var globalEventMonitor: Any? = nil
     private var ctrlKeyDown: Bool = false
     private var screenChangedToken: Any?
+    /// `CAMetalDisplayLink` on macOS 14 and later
+    private var displayLink: AnyObject?
 
     private var displayConfig: UTMQemuConfigurationDisplay? {
         vmQemuConfig?.displays[id]
@@ -97,17 +99,27 @@ class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
             logger.critical("Failed to create renderer.")
             return
         }
-        if rendererFpsLimit > 0 {
-            metalView.preferredFramesPerSecond = rendererFpsLimit
-        } else if let maxFps = self.window?.screen?.maximumFramesPerSecond {
-            metalView.preferredFramesPerSecond = maxFps
+        if #available(macOS 14, *), let layer = metalView.layer as? CAMetalLayer {
+            // A CAMetalDisplayLink paces the layer at the rate it requests; MTKView's own
+            // timer can stay at 60 Hz on a ProMotion display.
+            let link = CAMetalDisplayLink(metalLayer: layer)
+            link.delegate = self
+            link.add(to: .main, forMode: .common)
+            metalView.isPaused = true
+            metalView.enableSetNeedsDisplay = false
+            displayLink = link
         }
+        updateFrameRate()
         renderer.changeUpscaler(displayConfig?.upscalingFilter.metalSamplerMinMagFilter ?? .linear, downscaler: displayConfig?.downscalingFilter.metalSamplerMinMagFilter ?? .linear)
         vmDisplay?.addRenderer(renderer) // can be nil if primary
         metalView.delegate = renderer
         metalView.inputDelegate = self
 
-        screenChangedToken = NotificationCenter.default.addObserver(forName: NSWindow.didChangeScreenNotification, object: nil, queue: .main) { [weak self] _ in
+        screenChangedToken = NotificationCenter.default.addObserver(forName: NSWindow.didChangeScreenNotification, object: nil, queue: .main) { [weak self] notification in
+            // the new screen can refresh at a different rate
+            if let self = self, notification.object as? NSWindow == window {
+                updateFrameRate()
+            }
             // update minSize when we change screens
             if let self = self,
                let window = window,
@@ -124,7 +136,29 @@ class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
         super.windowDidLoad()
     }
     
+    /// Refresh at the rate of the screen the window is on, unless the user set a limit.
+    private func updateFrameRate() {
+        let fps: Int
+        if rendererFpsLimit > 0 {
+            fps = rendererFpsLimit
+        } else if let maxFps = window?.screen?.maximumFramesPerSecond {
+            fps = maxFps
+        } else {
+            return
+        }
+        if #available(macOS 14, *), let link = displayLink as? CAMetalDisplayLink {
+            let rate = Float(fps)
+            link.preferredFrameRateRange = CAFrameRateRange(minimum: rate, maximum: rate, preferred: rate)
+        } else {
+            metalView.preferredFramesPerSecond = fps
+        }
+    }
+
     override func windowWillClose(_ notification: Notification) {
+        if #available(macOS 14, *), let link = displayLink as? CAMetalDisplayLink {
+            link.invalidate()
+        }
+        displayLink = nil
         vmDisplay?.removeRenderer(renderer!)
         stopAllCapture()
         if let screenChangedToken = screenChangedToken {
@@ -160,6 +194,11 @@ class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
             displaySizeDidChange(size: vmDisplay.displaySize)
         }
         super.enterLive()
+        // pick up an FPS limit changed while the window was open
+        updateFrameRate()
+        if #available(macOS 14, *), let link = displayLink as? CAMetalDisplayLink {
+            link.isPaused = false
+        }
         setControl(.resize, isEnabled: false) // disable item
         if isWindowFocusAutoCapture {
             captureMouse()
@@ -167,6 +206,9 @@ class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
     }
     
     override func enterSuspended(isBusy busy: Bool) {
+        if #available(macOS 14, *), let link = displayLink as? CAMetalDisplayLink {
+            link.isPaused = true
+        }
         if !busy {
             metalView.isHidden = true
             screenshotView.image = vm.screenshot?.image
@@ -733,5 +775,16 @@ extension VMDisplayQemuMetalWindowController {
         let sheetWindow = NSWindow(contentViewController: content)
         sheetWindow.setContentSize(fittingSize)
         window.beginSheet(sheetWindow)
+    }
+}
+
+// MARK: - Display link
+
+@available(macOS 14, *)
+extension VMDisplayQemuMetalWindowController: CAMetalDisplayLinkDelegate {
+    func metalDisplayLink(_ link: CAMetalDisplayLink, needsUpdate update: CAMetalDisplayLink.Update) {
+        metalView.displayLinkDrawable = update.drawable
+        renderer.draw(in: metalView)
+        metalView.displayLinkDrawable = nil
     }
 }
