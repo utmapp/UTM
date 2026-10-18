@@ -5148,3 +5148,64 @@ index 4f1e8b7f6c..aac4b26424 100644
 -- 
 2.54.0 (Apple Git-157)
 
+From bc512edc56ec9d70684b4706961c9c2273bf8658 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Sat, 17 Oct 2026 16:54:41 -0700
+Subject: [PATCH] target/arm/hvf: inject an external abort for data aborts
+ without ISV
+
+A data abort that traps to the host with ISV=0 (pair, pre/post-indexed
+and SIMD loads and stores) carries no target register or access size,
+so hvf asserted and the whole VM died.  Windows 11 hits this on most
+every shutdown with a virtio-gpu blob device: a user-mode process is
+still storing to a blob mapping (strh w12, [x9], #2) after the blob has
+been unmapped from the hostmem BAR, so the store lands in an unbacked
+hole and traps as MMIO.
+
+Deliver a synchronous external abort to the guest instead, as KVM does
+for accesses it cannot decode, with FAR set to the faulting address.
+Windows keeps retrying the faulting instruction until the process
+exits, and then powers off normally.
+
+Assisted-by: Claude:claude-opus-5-5
+---
+ target/arm/hvf/hvf.c | 23 ++++++++++++++++++++++-
+ 1 file changed, 22 insertions(+), 1 deletion(-)
+
+diff --git a/target/arm/hvf/hvf.c b/target/arm/hvf/hvf.c
+index f187968787..1941f959c4 100644
+--- a/target/arm/hvf/hvf.c
++++ b/target/arm/hvf/hvf.c
+@@ -2292,7 +2292,28 @@ run_again:
+             break;
+         }
+ 
+-        assert(isv);
++        if (!isv) {
++            /*
++             * Pair, pre/post-indexed and SIMD loads and stores fault without
++             * a valid syndrome, so we cannot tell which register to use or
++             * how wide the access is. Windows does this at shutdown when a
++             * process still writes to a virtio-gpu blob that has already been
++             * unmapped. Deliver a synchronous external abort to the guest, as
++             * KVM does, instead of taking down the whole VM.
++             */
++            cpu_synchronize_state(cpu);
++            qemu_log_mask(LOG_GUEST_ERROR,
++                          "hvf: undecodable data abort at pc=0x%" PRIx64
++                          " pa=0x%" PRIx64 ", injecting external abort\n",
++                          env->pc,
++                          (uint64_t)hvf_exit->exception.physical_address);
++            env->exception.vaddress = hvf_exit->exception.virtual_address;
++            hvf_raise_exception(cpu, EXCP_DATA_ABORT,
++                                syn_data_abort_no_iss(arm_current_el(env) == 1,
++                                                      0, 0, 0, s1ptw, iswrite,
++                                                      0x10));
++            break;
++        }
+ 
+         if (iswrite) {
+             val = hvf_get_reg(cpu, srt);
+-- 
+2.54.0 (Apple Git-157)
+
