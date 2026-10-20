@@ -5148,3 +5148,84 @@ index 4f1e8b7f6c..aac4b26424 100644
 -- 
 2.54.0 (Apple Git-157)
 
+
+From de58c0705aed5d6d34f14d95ad3836a63642c998 Mon Sep 17 00:00:00 2001
+From: Giova <giovariot@users.noreply.github.com>
+Date: Wed, 30 Sep 2026 00:50:06 +0200
+Subject: [PATCH] hw/display/edid-generate: fix and complete the mode list
+
+Mac OS guests on the mac99 machine use a native driver (QemuVga) that
+enumerates the available display modes from the generated EDID: it reads
+the established timing bitmaps, the 0xF7 "Established Timings III" bitmap
+and the CEA-861 video data block, but it does not read the standard timing
+section.
+
+edid_fill_modes() only sets the 0xF7 bit of a mode when the eight standard
+timing slots have already been used, so modes such as 1280x960, 1280x1024,
+1440x900, 1600x1200, 1680x1050 and 1920x1200 end up as standard timings
+only and are never advertised to that driver.
+
+Always set the 0xF7 bit for modes that define one, and add display modes
+that are still missing: 1152x864, 2560x1440, 2560x1600, 1280x854 and
+1600x1024 through the 0xF7 bitmap, plus the Apple 832x624 and 1152x870
+established timings.
+
+The modes that gain a bitmap bit keep their standard timing entry as well,
+and the bitmap bits match the EDID 1.4 definitions of those modes, so other
+guests see the same modes as before.
+
+Assisted-by: DeepSeek:deepseek-v4.1-flash
+---
+ hw/display/edid-generate.c | 24 +++++++++++++++++-------
+ 1 file changed, 17 insertions(+), 7 deletions(-)
+
+diff --git a/hw/display/edid-generate.c b/hw/display/edid-generate.c
+index 2cb8196..a7666eb 100644
+--- a/hw/display/edid-generate.c
++++ b/hw/display/edid-generate.c
+@@ -41,11 +41,18 @@ static const struct edid_mode {
+     { .xres = 1792,   .yres = 1344,   .xtra3 = 10,   .bit = 5 },
+     { .xres = 1440,   .yres = 1050,   .xtra3 =  8,   .bit = 1 },
+     { .xres = 1360,   .yres =  768,   .xtra3 =  8,   .bit = 7 },
++    { .xres = 1152,   .yres =  864,   .xtra3 =  6,   .bit = 0 },
++    { .xres = 2560,   .yres = 1440,   .xtra3 = 11,   .bit = 0 },
++    { .xres = 2560,   .yres = 1600,   .xtra3 = 11,   .bit = 1 },
++    { .xres = 1280,   .yres =  854,   .xtra3 = 11,   .bit = 2 },
++    { .xres = 1600,   .yres = 1024,   .xtra3 = 11,   .bit = 3 },
+ 
+-    /* established timings (all @ 60Hz) */
++    /* established timings */
+     { .xres = 1024,   .yres =  768,   .byte  = 36,   .bit = 3 },
++    { .xres =  832,   .yres =  624,   .byte  = 36,   .bit = 5 },
+     { .xres =  800,   .yres =  600,   .byte  = 35,   .bit = 0 },
+     { .xres =  640,   .yres =  480,   .byte  = 35,   .bit = 5 },
++    { .xres = 1152,   .yres =  870,   .byte  = 37,   .bit = 7 },
+ };
+ 
+ typedef struct Timings {
+@@ -142,13 +149,16 @@ static void edid_fill_modes(uint8_t *edid, uint8_t *xtra3, uint8_t *dta,
+ 
+         if (mode->byte) {
+             edid[mode->byte] |= (1 << mode->bit);
+-        } else if (std < 54) {
+-            rc = edid_std_mode(edid + std, mode->xres, mode->yres);
+-            if (rc == 0) {
+-                std += 2;
++        } else {
++            if (std < 54) {
++                rc = edid_std_mode(edid + std, mode->xres, mode->yres);
++                if (rc == 0) {
++                    std += 2;
++                }
++            }
++            if (mode->xtra3 && xtra3) {
++                xtra3[mode->xtra3] |= (1 << mode->bit);
+             }
+-        } else if (mode->xtra3 && xtra3) {
+-            xtra3[mode->xtra3] |= (1 << mode->bit);
+         }
+ 
+         if (dta && mode->dta) {
+-- 
+2.54.0 (Apple Git-157)
+
