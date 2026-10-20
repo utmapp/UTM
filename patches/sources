@@ -53,9 +53,9 @@ MOLTENVK_REPO="https://github.com/utmapp/MoltenVK.git"
 MOLTENVK_COMMIT="0790efd55b6b302e19487e5654f7fc30f0bdf3df"
 LLVM15_SRC="https://github.com/llvm/llvm-project/releases/download/llvmorg-15.0.7/llvm-project-15.0.7.src.tar.xz"
 DXMT_REPO="https://github.com/utmapp/dxmt.git"
-DXMT_COMMIT="66e27f3759ff79e41a791ec40e2a70ef6d0c964c"
+DXMT_COMMIT="8b9d33470d6417734bf156d87d265ca2ede0aaa8"
 D3DMETAL_REPO="https://github.com/utmapp/d3dmetal-native.git"
-D3DMETAL_COMMIT="fd09f2edd6f972f28b0f65117b39c361ecf99ad1"
+D3DMETAL_COMMIT="422df8736de0f371d5ecee71e04b3ed19c4a2183"
 
 # Decompiled Hypervisor for iOS
 HYPERVISOR_REPO="https://github.com/utmapp/Hypervisor.git"

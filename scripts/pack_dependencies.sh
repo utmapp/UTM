@@ -59,17 +59,29 @@ pack_all_objs() {
     IFS=$OLDIFS
 }
 
+# Merges DIR from every arch's sysroot, so a directory only one arch installs
+# is still packed.  Where a file exists in several, the main arch's copy wins.
 pack_dir() {
     BASEDIR="$1"
     DIR="$2"
-    SRC="$BASEDIR/sysroot-$SCHEME-$MAIN_ARCH"
     TGT="$BASEDIR/sysroot-$SCHEME-${ALL_ARCHS/ /_}"
+    REVERSED=""
+    for ARCH in $ALL_ARCHS; do
+        REVERSED="$ARCH $REVERSED"
+    done
     rm -rf "$TGT/$DIR"
-    if [ ! -d "$(dirname "$TGT/$DIR")" ]; then
-        mkdir -p "$(dirname "$TGT/$DIR")"
-    fi
     echo "Packing /$DIR"
-    cp -a "$SRC/$DIR" "$TGT/$DIR"
+    for ARCH in $REVERSED; do
+        SRC="$BASEDIR/sysroot-$SCHEME-$ARCH"
+        if [ -d "$SRC/$DIR" ]; then
+            mkdir -p "$TGT/$DIR"
+            cp -a "$SRC/$DIR/." "$TGT/$DIR/"
+        fi
+    done
+    if [ ! -d "$TGT/$DIR" ]; then
+        echo "error: /$DIR is in no sysroot" >&2
+        exit 1
+    fi
 }
 
 pack_all_objs "$BASEDIR" "*/libexec/virgl_render_server"
@@ -82,3 +94,4 @@ pack_dir "$BASEDIR" "include"
 pack_dir "$BASEDIR" "lib/glib-2.0/include"
 pack_dir "$BASEDIR" "share/qemu"
 pack_dir "$BASEDIR" "share/vulkan"
+pack_dir "$BASEDIR" "share/d3dmetal-native"
