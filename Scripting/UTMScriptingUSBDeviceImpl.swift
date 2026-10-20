@@ -136,7 +136,7 @@ class UTMScriptingUSBDeviceImpl: NSObject, UTMScriptable {
                 guard let usbDevice = same(usbDevice: box, for: usbManager) else {
                     throw ScriptingError.deviceNotFound
                 }
-                try await usbManager.connectUsbDevice(usbDevice)
+                try await usbManager.prepareAndConnectUsbDevice(usbDevice)
             } else if #available(macOS 27, *), let vm = scriptingVM?.vm as? UTMAppleVirtualMachine {
                 guard vm.hasUsbRedirection else {
                     throw UTMScriptingVirtualMachineImpl.ScriptingError.operationNotAvailable
