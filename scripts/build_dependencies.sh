@@ -921,6 +921,10 @@ build_d3d_drivers () {
     )
     if [ "$ARCH" == "x86_64" -a "$PLATFORM" == "macos" ]; then
         meson_build $D3DMETAL_REPO -Dtests=disabled
+        # used by install_d3dmetal.sh to rebind D3DMetal's private imports to
+        # this d3dmetal-native
+        mkdir -p "$PREFIX/share/d3dmetal-native"
+        cp "$BUILD_DIR/$(basename $D3DMETAL_REPO)/scripts/patch_d3dmetal_imports.py" "$PREFIX/share/d3dmetal-native/"
     else
         # empty placeholder file
         $CC -dynamiclib -x c /dev/null -o "$PREFIX/lib/libd3dmetal-native.dylib"

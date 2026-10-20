@@ -8,7 +8,8 @@ usage () {
     echo "  dmg-url      D3DMetal distribution DMG, either a URL or a local path."
     echo ""
     echo "Installs D3DMetal.framework into <sysroot-dir>/Frameworks, rebranded to"
-    echo "BUNDLE_ID below and ad-hoc signed. Does nothing if no URL is given."
+    echo "BUNDLE_ID below, its private-API imports rebound to d3dmetal-native, and"
+    echo "ad-hoc signed. Does nothing if no URL is given."
     echo ""
     exit 1
 }
@@ -40,6 +41,8 @@ if [ ${#APPLE_BUNDLE_ID} -ne ${#BUNDLE_ID} ]; then
 fi
 
 FRAMEWORK="$SYSROOT_DIR/Frameworks/D3DMetal.framework"
+PROVIDER="$SYSROOT_DIR/Frameworks/d3dmetal-native.framework/d3dmetal-native"
+PATCHER="$SYSROOT_DIR/share/d3dmetal-native/patch_d3dmetal_imports.py"
 MOUNT="$PWD/d3dmetal-mount"
 DMG="$PWD/d3dmetal.dmg"
 
@@ -72,6 +75,16 @@ xattr -drs com.apple.quarantine "$FRAMEWORK"
 
 patch_binary_identifier "$APPLE_BUNDLE_ID" "$BUNDLE_ID" "$FRAMEWORK/Versions/A/D3DMetal"
 plutil -replace CFBundleIdentifier -string "$BUNDLE_ID" "$FRAMEWORK/Resources/Info.plist"
+
+# Remove D3DMetal's private API imports (CoreAnalytics, Metal shader-cache and
+# swizzle-key helpers, dyld image lookups, an acceleration-structure descriptor
+# class) by rebinding them, under visible names, to the public-API replacements
+# in d3dmetal-native, which is the only image that ever loads D3DMetal. The
+# patcher refuses an unexpected D3DMetal, and a d3dmetal-native that does not
+# export every replacement it binds.
+python3 -I "$PATCHER" patch "$FRAMEWORK/Versions/A/D3DMetal" \
+    --provider "$(otool -arch x86_64 -D "$PROVIDER" | tail -1)" \
+    --check-provider "$PROVIDER" --sign none
 
 # Signs after the rewrite so the signing identifier is derived from the new
 # Info.plist and the two agree.
