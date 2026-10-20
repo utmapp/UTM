@@ -16,6 +16,7 @@
 
 import Foundation
 #if os(macOS)
+import AppKit // for the host display refresh rate
 import Virtualization // for getting network interfaces
 #endif
 
@@ -295,11 +296,29 @@ import Virtualization // for getting network interfaces
                         }
                         "neptune=true"
                     }
+                    #if os(macOS)
+                    if display.hardware.rawValue.hasPrefix("virtio"), let refreshRate = hostRefreshRate {
+                        "refresh_rate=\(refreshRate)"
+                    }
+                    #endif
                     f()
                 }
             }
         }
     }
+
+    #if os(macOS)
+    /// Refresh rate of the main screen in mHz, advertised to the guest in the display's EDID.
+    ///
+    /// SPICE has no way to report it, so without this QEMU makes up a 75 Hz mode, which neither
+    /// a 60 Hz nor a 120 Hz display can show evenly.
+    private var hostRefreshRate: Int? {
+        guard let fps = NSScreen.main?.maximumFramesPerSecond, fps > 0 else {
+            return nil
+        }
+        return fps * 1000
+    }
+    #endif
 
     private func isDisplayGLSupported(_ display: UTMQemuConfigurationDisplay) -> Bool {
         display.hardware.rawValue.contains("-gl-") || display.hardware.rawValue.hasSuffix("-gl")
