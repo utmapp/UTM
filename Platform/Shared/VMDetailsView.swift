@@ -304,23 +304,25 @@ struct Screenshot: View {
     
     var body: some View {
         ZStack {
-            Rectangle()
-                .fill(Color.black)
-            if let screenshotImage = vm.screenshotImage {
-                #if os(macOS)
-                Image(nsImage: screenshotImage)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                #else
-                Image(uiImage: screenshotImage)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                #endif
+            ZStack {
+                Rectangle()
+                    .fill(Color.black)
+                if let screenshotImage = vm.screenshotImage {
+                    #if os(macOS)
+                    Image(nsImage: screenshotImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                    #else
+                    Image(uiImage: screenshotImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                    #endif
+                }
+                Rectangle()
+                    .fill(colorScheme == .dark ? darkOverlay : lightOverlay)
+                    .blendMode(colorScheme == .dark ? .multiply : .hardLight)
             }
-            Rectangle()
-                .fill(colorScheme == .dark ? darkOverlay : lightOverlay)
-                .blendMode(colorScheme == .dark ? .multiply : .hardLight)
-                .optionalBackgroundExtensionEffect()
+            .optionalBackgroundExtensionEffect()
             #if os(visionOS)
                 .overlay {
                     if vm.isStopped || vm.isTakeoverAllowed {
@@ -357,7 +359,9 @@ private extension View {
     @ViewBuilder
     func optionalBackgroundExtensionEffect() -> some View {
         if #available(iOS 26, macOS 26, visionOS 26, *) {
-            self.backgroundExtensionEffect()
+            // flatten first, or the effect snapshots only the topmost layer and any blend
+            // with the content behind it is lost
+            self.compositingGroup().backgroundExtensionEffect()
         } else {
             self
         }
