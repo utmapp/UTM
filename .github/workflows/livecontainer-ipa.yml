@@ -1,0 +1,57 @@
+name: LiveContainer IPA
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - fix/livecontainer-ioshelper-install
+    paths:
+      - scripts/livecontainer_ipa.py
+      - .github/workflows/livecontainer-ipa.yml
+
+permissions:
+  contents: read
+
+jobs:
+  repack:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download latest official UTM IPA
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, urllib.request
+          api = "https://api.github.com/repos/utmapp/UTM/releases/latest"
+          req = urllib.request.Request(api, headers={"Accept":"application/vnd.github+json", "User-Agent":"utm-livecontainer-ci"})
+          with urllib.request.urlopen(req) as response:
+              release = json.load(response)
+          asset = next((a for a in release["assets"] if a["name"] == "UTM.ipa"), None)
+          if asset is None:
+              raise SystemExit("Latest upstream release has no UTM.ipa asset")
+          url = asset["browser_download_url"]
+          print("Downloading from:", url)
+          urllib.request.urlretrieve(url, "UTM.ipa")
+          PY
+      - name: Patch IPA
+        run: python3 scripts/livecontainer_ipa.py UTM.ipa UTM-LiveContainer.ipa
+      - name: Verify archive
+        run: |
+          python3 - <<'PY'
+          import zipfile
+          with zipfile.ZipFile("UTM-LiveContainer.ipa") as z:
+              assert z.testzip() is None
+              assert any(n.endswith(".app/Info.plist") for n in z.namelist())
+              assert not any("iOSHelper.appex/" in n or "iOSHelper-SE.appex/" in n for n in z.namelist())
+          print("Archive integrity verified")
+          PY
+      - name: Upload patched IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: UTM-LiveContainer
+          path: UTM-LiveContainer.ipa
+          if-no-files-found: error
+          retention-days: 14
