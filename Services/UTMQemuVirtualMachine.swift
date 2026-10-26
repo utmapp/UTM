@@ -271,7 +271,7 @@ extension UTMQemuVirtualMachine {
     static var canRunD3DMetal: Bool {
         #if os(macOS) && arch(arm64)
         if #available(macOS 13, *) {
-            return VZLinuxRosettaDirectoryShare.availability == .installed
+            return FileManager.default.fileExists(atPath: "/Library/Apple/usr/libexec/oah/runtime")
         } else {
             return false
         }
