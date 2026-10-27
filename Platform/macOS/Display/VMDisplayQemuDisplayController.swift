@@ -328,11 +328,31 @@ extension VMDisplayQemuWindowController: CSUSBManagerDelegate {
     
     func spiceUsbManager(_ usbManager: CSUSBManager, deviceAttached device: CSUSBDevice) {
         logger.debug("USB device attached: \(device)")
-        if !isNoUsbPrompt {
-            Task { @MainActor in
-                if self.window!.isKeyWindow && self.vm.state == .started {
-                    self.showConnectPrompt(for: device)
-                }
+        Task { @MainActor in
+            // A device saved for this virtual machine is connected again without prompting,
+            // including one that reset itself, for example while updating its firmware.
+            if self.isAutoConnect(device) {
+                self.autoConnect(device, with: usbManager)
+                return
+            }
+            if !self.isNoUsbPrompt && self.window!.isKeyWindow && self.vm.state == .started {
+                self.showConnectPrompt(for: device)
+            }
+        }
+    }
+
+    /// Connect a device the user saved for this virtual machine
+    private func autoConnect(_ device: CSUSBDevice, with usbManager: CSUSBManager) {
+        guard !isSecondary, vm.state == .started else {
+            return
+        }
+        withErrorAlert { [self] in
+            guard !usbManager.isUsbDeviceConnected(device) else {
+                return
+            }
+            try await usbManager.prepareAndConnectUsbDevice(device)
+            await MainActor.run {
+                self.connectedUsbDevices.append(device)
             }
         }
     }
@@ -366,7 +386,7 @@ extension VMDisplayQemuWindowController: CSUSBManagerDelegate {
             }
             Task.detached {
                 do {
-                    try await usbManager.connectUsbDevice(usbDevice)
+                    try await usbManager.prepareAndConnectUsbDevice(usbDevice)
                     await MainActor.run {
                         self.connectedUsbDevices.append(usbDevice)
                     }
@@ -464,7 +484,7 @@ extension VMDisplayQemuWindowController {
         let device = allUsbDevices[menu.tag]
         Task.detached {
             self.withErrorAlert {
-                try await usbManager.connectUsbDevice(device)
+                try await usbManager.prepareAndConnectUsbDevice(device)
                 await MainActor.run {
                     self.primaryDisplayController.connectedUsbDevices.append(device)
                 }
@@ -516,12 +536,7 @@ extension VMDisplayQemuWindowController {
             }
             let filtered = devices.filter({ self.isAutoConnect($0) })
             for device in filtered {
-                self.withErrorAlert {
-                    try await usbManager.connectUsbDevice(device)
-                    await MainActor.run {
-                        self.connectedUsbDevices.append(device)
-                    }
-                }
+                self.autoConnect(device, with: usbManager)
             }
         }
     }
