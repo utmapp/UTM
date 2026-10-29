@@ -207,6 +207,19 @@ protocol UTMVirtualMachineDelegate: AnyObject {
     ///   - vm: Virtual machine
     ///   - success: True if installation is successful
     func virtualMachine(_ vm: any UTMVirtualMachine, didCompleteInstallation success: Bool)
+
+    /// Called when the VM starts to get the rate the display will be rendered at
+    ///
+    /// Will always be called from the main thread.
+    /// - Parameter vm: Virtual machine
+    /// - Returns: Refresh rate in Hz or nil if there is no local display
+    @MainActor func virtualMachineDisplayRefreshRate(_ vm: any UTMVirtualMachine) -> Int?
+}
+
+extension UTMVirtualMachineDelegate {
+    @MainActor func virtualMachineDisplayRefreshRate(_ vm: any UTMVirtualMachine) -> Int? {
+        nil
+    }
 }
 
 /// Virtual machine state

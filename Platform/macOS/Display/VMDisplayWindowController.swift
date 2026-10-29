@@ -415,6 +415,10 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
     func virtualMachine(_ vm: any UTMVirtualMachine, didUpdateInstallationProgress progress: Double) {
         
     }
+
+    func virtualMachineDisplayRefreshRate(_ vm: any UTMVirtualMachine) -> Int? {
+        nil
+    }
 }
 
 extension VMDisplayWindowController: NSWindowDelegate {

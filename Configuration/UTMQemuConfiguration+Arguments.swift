@@ -295,6 +295,9 @@ import Virtualization // for getting network interfaces
                         }
                         "neptune=true"
                     }
+                    if display.hardware.rawValue.hasPrefix("virtio"), let refreshRate = qemu.hostRefreshRate, refreshRate > 0 {
+                        "refresh_rate=\(refreshRate * 1000)"
+                    }
                     f()
                 }
             }

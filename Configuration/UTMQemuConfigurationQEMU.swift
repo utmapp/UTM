@@ -76,6 +76,9 @@ struct UTMQemuConfigurationQEMU: Codable {
     /// Set to a password shared with the client. Not saved.
     var spiceServerPassword: String?
 
+    /// Refresh rate (Hz) of the host display the VM is shown on, advertised in the guest EDID. Not saved.
+    var hostRefreshRate: Int?
+
     /// When resetting UEFI vars, also set up Secure Boot keys
     var hasPreloadedSecureBootKeys: Bool = false
 
