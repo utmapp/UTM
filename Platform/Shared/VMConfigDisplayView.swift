@@ -20,18 +20,62 @@ struct VMConfigDisplayView: View {
     @Binding var config: UTMQemuConfigurationDisplay
     @Binding var system: UTMQemuConfigurationSystem
     
-    var isGLSupported: Bool {
-        config.hardware.rawValue.contains("-gl-") || config.hardware.rawValue.hasSuffix("-gl")
+    private var displayDeviceType: any QEMUDisplayDevice.Type {
+        system.architecture.displayDeviceType
+    }
+    
+    private var isGLEnabled: Bool {
+        Self.isGLVariant(config.hardware.rawValue)
+    }
+    
+    private var hasGLVariant: Bool {
+        glVariant(of: baseModel(of: config.hardware.rawValue)) != nil
+    }
+    
+    /// Models shown in the picker with the GL variants filtered out
+    private var baseModels: [String] {
+        displayDeviceType.allRawValues.filter { baseModel(of: $0) == $0 }
+    }
+    
+    private var baseModelSelection: Binding<String> {
+        Binding {
+            baseModel(of: config.hardware.rawValue)
+        } set: { newValue in
+            guard newValue != baseModel(of: config.hardware.rawValue) else {
+                return
+            }
+            // default to GPU acceleration when the new model supports it
+            setHardware(glVariant(of: newValue) ?? newValue)
+        }
+    }
+    
+    private var glEnabledSelection: Binding<Bool> {
+        Binding {
+            isGLEnabled
+        } set: { newValue in
+            let base = baseModel(of: config.hardware.rawValue)
+            if newValue, let gl = glVariant(of: base) {
+                setHardware(gl)
+            } else if !newValue {
+                setHardware(base)
+            }
+        }
     }
     
     var body: some View {
         VStack {
             Form {
                 Section(header: Text("Hardware")) {
-                    VMConfigConstantPicker("Emulated Display Card", selection: $config.hardware, type: system.architecture.displayDeviceType)
+                    Picker("Emulated Display Card", selection: baseModelSelection) {
+                        ForEach(baseModels, id: \.self) { model in
+                            Text(prettyValue(of: model)).tag(model)
+                        }
+                    }
                     
-                    Toggle("GPU Acceleration Supported", isOn: .constant(isGLSupported)).disabled(true)
-                    if isGLSupported {
+                    if hasGLVariant {
+                        Toggle("GPU Acceleration", isOn: glEnabledSelection)
+                    }
+                    if isGLEnabled {
                         Text("Guest drivers are required for 3D acceleration.")
                             .font(.footnote)
                     }
@@ -62,6 +106,44 @@ struct VMConfigDisplayView: View {
                 }
             }
         }.disableAutocorrection(true)
+    }
+    
+    private static func isGLVariant(_ rawValue: String) -> Bool {
+        rawValue.contains("-gl-") || rawValue.hasSuffix("-gl")
+    }
+    
+    private static func stripGL(_ rawValue: String) -> String {
+        if rawValue.hasSuffix("-gl") {
+            return String(rawValue.dropLast(3))
+        } else {
+            return rawValue.replacingOccurrences(of: "-gl-", with: "-")
+        }
+    }
+    
+    /// Returns the non-GL model for a GL variant, or the model itself if there is none
+    private func baseModel(of rawValue: String) -> String {
+        guard Self.isGLVariant(rawValue) else {
+            return rawValue
+        }
+        let base = Self.stripGL(rawValue)
+        return displayDeviceType.allRawValues.contains(base) ? base : rawValue
+    }
+    
+    private func glVariant(of base: String) -> String? {
+        displayDeviceType.allRawValues.first { rawValue in
+            rawValue != base && Self.isGLVariant(rawValue) && Self.stripGL(rawValue) == base
+        }
+    }
+    
+    private func prettyValue(of rawValue: String) -> String {
+        guard let index = displayDeviceType.allRawValues.firstIndex(of: rawValue) else {
+            return rawValue
+        }
+        return displayDeviceType.allPrettyValues[index]
+    }
+    
+    private func setHardware(_ rawValue: String) {
+        config.hardware = displayDeviceType.init(rawValue: rawValue)!
     }
 }
 
