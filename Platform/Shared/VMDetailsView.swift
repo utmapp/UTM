@@ -161,11 +161,15 @@ struct VMDetailsView: View {
     @ViewBuilder private var detailsPane: some View {
         VStack {
             let notes = vm.detailsNotes ?? ""
+            let formattedNotes = (try? AttributedString(
+                markdown: notes,
+                options: .init(interpretedSyntax: .inlineOnlyPreservingWhitespace)
+            )) ?? AttributedString(notes)
             if regularScreenSizeClass && !notes.isEmpty {
                 HStack(alignment: .top) {
                     Details(vm: vm, sizeLabel: sizeLabel)
                         .frame(maxWidth: .infinity)
-                    Text(notes)
+                    Text(formattedNotes)
                         .font(.body)
                         .frame(maxWidth: .infinity, alignment: .topLeading)
                         .fixedSize(horizontal: false, vertical: true)
@@ -188,7 +192,7 @@ struct VMDetailsView: View {
                 VStack {
                     Details(vm: vm, sizeLabel: sizeLabel)
                     if !notes.isEmpty {
-                        Text(notes)
+                        Text(formattedNotes)
                             .font(.body)
                             .fixedSize(horizontal: false, vertical: true)
                     }
