@@ -143,6 +143,7 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
         let bootRecoveryMode = command.evaluatedArguments?["bootRecoveryFlag"] as? Bool ?? false
         let hasProvisioning = command.evaluatedArguments?["provisioningOptions"] != nil
         let provisioning = command.evaluatedArguments?["provisioningOptions"] as? [AnyHashable : Any]
+        let environment = command.evaluatedArguments?["environment"] as? [String]
 
         withScriptCommand(command) { [self] in
             var options: UTMVirtualMachineStartOptions = []
@@ -166,6 +167,23 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
                     throw ScriptingError.operationNotSupported
                 }
                 options.insert(.bootRecovery)
+            }
+
+            var extraEnvironment: [String: String] = [:]
+            for entry in environment ?? [] {
+                guard let separator = entry.firstIndex(of: "="), separator != entry.startIndex else {
+                    throw ScriptingError.invalidParameter
+                }
+                extraEnvironment[String(entry[..<separator])] = String(entry[entry.index(after: separator)...])
+            }
+            if !extraEnvironment.isEmpty {
+                guard let vm = vm as? UTMQemuVirtualMachine else {
+                    throw ScriptingError.operationNotSupported
+                }
+                // a paused VM is resumed and keeps the environment it started with
+                guard vm.state == .stopped else {
+                    throw ScriptingError.operationNotAvailable
+                }
             }
 
             var guestProvisioning: UTMAppleGuestProvisioningOptions?
@@ -192,6 +210,8 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
             data.run(vm: box, startImmediately: false)
             if let guestProvisioning = guestProvisioning, let vm = vm as? UTMAppleVirtualMachine {
                 try await vm.start(options: options, guestProvisioning: guestProvisioning)
+            } else if !extraEnvironment.isEmpty, let vm = vm as? UTMQemuVirtualMachine {
+                try await vm.start(options: options, environment: extraEnvironment)
             } else if vm.state == .stopped {
                 try await vm.start(options: options)
             } else if vm.state == .paused {

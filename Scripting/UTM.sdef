@@ -75,6 +75,10 @@
           <parameter name="provisioning" code="GpOp" description="Set up a macOS guest without user interaction. Only applies to the first start after macOS is installed and is never saved. Requires the Apple backend, macOS 27 or later, and a guest with macOS 27 or later." type="guest provisioning" optional="yes">
             <cocoa key="provisioningOptions"/>
           </parameter>
+          <parameter name="environment" code="EnVi" description="Extra environment variables for this start only, each as &quot;NAME=value&quot;. They are passed to the emulator and its helper processes (for example the GPU render server) and are never saved. Only supported on QEMU backend." optional="yes">
+            <type type="text" list="yes"/>
+            <cocoa key="environment"/>
+          </parameter>
         </command>
         
         <record-type name="guest provisioning" code="GpCf" description="Account to create when setting up a macOS guest.">

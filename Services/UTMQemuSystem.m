@@ -240,7 +240,12 @@ static int startQemu(UTMProcess *process, int argc, const char *argv[], const ch
 }
 
 - (NSDictionary<NSString *,NSString *> *)environment {
-    return self.mutableEnvironment;
+    if (self.extraEnvironment.count == 0) {
+        return self.mutableEnvironment;
+    }
+    NSMutableDictionary<NSString *, NSString *> *environment = [self.mutableEnvironment mutableCopy];
+    [environment addEntriesFromDictionary:self.extraEnvironment];
+    return environment;
 }
 
 - (instancetype)initWithArguments:(NSArray<NSString *> *)arguments architecture:(nonnull NSString *)architecture {

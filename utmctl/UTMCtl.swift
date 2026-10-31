@@ -276,6 +276,9 @@ extension UTMCtl {
         @Flag(help: "Boot a VM in recovery mode.")
         var recovery: Bool = false
 
+        @Option(name: .customLong("env"), help: ArgumentHelp("Set an environment variable for the emulator and its helper processes, for this start only. Can be repeated. Only supported on QEMU backend.", valueName: "name=value"))
+        var env: [String] = []
+
         struct Provisioning: ParsableArguments {
             @Option(name: .customLong("provision-username"), help: "Set up a macOS guest with this account on the first start after macOS is installed. Requires macOS 27 or later on both the host and the guest.")
             var username: String?
@@ -362,7 +365,12 @@ extension UTMCtl {
                     provisioningOptions!["fullName"] = fullName
                 }
             }
-            vm.startSaving!(!disposable, recovery: recovery, provisioning: provisioningOptions)
+            for entry in env {
+                guard let separator = entry.firstIndex(of: "="), separator != entry.startIndex else {
+                    throw ValidationError("Invalid --env '\(entry)': expected name=value")
+                }
+            }
+            vm.startSaving!(!disposable, recovery: recovery, provisioning: provisioningOptions, environment: env.isEmpty ? nil : env)
             if attach {
                 print("WARNING: attach command is not implemented yet!")
             }

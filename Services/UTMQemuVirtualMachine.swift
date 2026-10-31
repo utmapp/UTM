@@ -316,7 +316,7 @@ extension UTMQemuVirtualMachine {
         return nil
     }
     
-    private func _start(options: UTMVirtualMachineStartOptions) async throws {
+    private func _start(options: UTMVirtualMachineStartOptions, environment: [String: String]) async throws {
         // check if we can actually start this VM
         guard await isSupported else {
             throw UTMQemuVirtualMachineError.emulationNotSupported
@@ -377,6 +377,8 @@ extension UTMQemuVirtualMachine {
         system.shmemDirectoryURL = await config.shmemDirectoryURL
         system.appSandboxGroupId = await config.appGroupIdentifier
         system.hasDebugLog = hasDebugLog
+        // last, so it overrides any variable set above
+        system.extraEnvironment = environment
         try Task.checkCancellation()
 
         if isShortcut {
@@ -505,13 +507,20 @@ extension UTMQemuVirtualMachine {
     }
     
     func start(options: UTMVirtualMachineStartOptions = []) async throws {
+        try await start(options: options, environment: [:])
+    }
+
+    /// Start with extra environment variables for QEMU and its helper processes
+    ///
+    /// The variables apply to this start only and are never saved.
+    func start(options: UTMVirtualMachineStartOptions = [], environment: [String: String]) async throws {
         guard state == .stopped else {
             throw UTMQemuVirtualMachineError.invalidVmState
         }
         state = .starting
         do {
             startTask = Task {
-                try await _start(options: options)
+                try await _start(options: options, environment: environment)
             }
             defer {
                 startTask = nil
