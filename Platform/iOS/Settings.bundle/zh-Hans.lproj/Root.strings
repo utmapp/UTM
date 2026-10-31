@@ -68,6 +68,9 @@
 "Group" = "组";
 
 /* (No Comment) */
+"Home" = "主页";
+
+/* (No Comment) */
 "Left" = "左";
 
 /* (No Comment) */
@@ -99,6 +102,9 @@
 
 /* (No Comment) */
 "none given" = "未指定";
+
+/* (No Comment) */
+"Options" = "选项";
 
 /* (No Comment) */
 "Right" = "右";
