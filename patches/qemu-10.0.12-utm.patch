@@ -4753,3 +4753,126 @@ index 2cb819675e..8706ef6926 100644
 2.54.0 (Apple Git-157)
 
 
+From 3c66a354b0f7888184a07aadac571ae3f8263b6b Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Tue, 10 Nov 2026 19:50:50 -0800
+Subject: [PATCH] usb/xhci: keep the pace of a busy isochronous endpoint when
+ timers are late
+
+An isochronous transfer without a frame id (SIA) is scheduled one
+interval after the previous one. When the endpoint's timer fires more
+than four intervals late, xhci_calc_iso_kick() takes the transfer for
+the first one after a pause and schedules it from the current
+microframe instead. The intervals in between are dropped, although the
+guest has transfers queued for every one of them, and the stream runs
+slower than the guest's clock from then on.
+
+Four intervals are 0.5 ms for a high-speed endpoint with a 125 us
+interval, and 4 ms for a full-speed one. On macOS the main loop's timers
+are often later than that, so a guest's USB audio played at a fraction
+of its speed: a Linux guest playing to the emulated usb-audio device got
+about 0.2x and aplay stopped with an I/O error after a few seconds.
+
+Tell a late timer from a pause in the guest's transfers by the ring.
+While the ring has transfers, the next one follows the last, however
+late it is served. When the ring was found empty, the guest has four
+intervals from that moment to queue the next transfer without a gap, as
+it had from the last transfer before; being late ourselves no longer
+counts against it. An endpoint that was stopped or reset keeps the old
+rule.
+
+Catching up can now serve more transfers in one go than the limit of
+xhci_kick_epctx() allows, with no completion or doorbell to continue
+after it, so the endpoint's timer is set to go on. That timer is now
+also removed when the endpoint's transfers are dropped, so that it
+cannot restart a stopped endpoint.
+
+Based on a change by hdu_willsky.
+
+Assisted-by: Claude:claude-fable-5-2
+---
+ hw/usb/hcd-xhci.c | 27 ++++++++++++++++++++++++++-
+ 1 file changed, 26 insertions(+), 1 deletion(-)
+
+diff --git a/hw/usb/hcd-xhci.c b/hw/usb/hcd-xhci.c
+index 969f275f32..b057f9f891 100644
+--- a/hw/usb/hcd-xhci.c
++++ b/hw/usb/hcd-xhci.c
+@@ -292,6 +292,8 @@ struct XHCIEPContext {
+     /* iso xfer scheduling */
+     unsigned int interval;
+     int64_t mfindex_last;
++    /* iso: when the ring was found empty, negative while it has transfers */
++    int64_t mfindex_idle;
+     QEMUTimer *kick_timer;
+ };
+ 
+@@ -1115,6 +1117,7 @@ static void xhci_init_epctx(XHCIEPContext *epctx,
+     dequeue = xhci_addr64(ctx[2] & ~0xf, ctx[3]);
+ 
+     epctx->type = (ctx[1] >> EP_TYPE_SHIFT) & EP_TYPE_MASK;
++    epctx->mfindex_idle = 0;
+     epctx->pctx = pctx;
+     epctx->max_psize = ctx[1]>>16;
+     epctx->max_psize *= 1+((ctx[1]>>8)&0xff);
+@@ -1245,6 +1248,10 @@ static int xhci_ep_nuke_xfers(XHCIState *xhci, unsigned int slotid,
+ 
+     epctx = slot->eps[epid-1];
+ 
++    /* no transfer is left to kick, and the next one does not follow these */
++    timer_del(epctx->kick_timer);
++    epctx->mfindex_idle = epctx->mfindex_last;
++
+     for (;;) {
+         xfer = QTAILQ_FIRST(&epctx->transfers);
+         if (xfer == NULL) {
+@@ -1754,12 +1761,22 @@ static void xhci_calc_iso_kick(XHCIState *xhci, XHCITransfer *xfer,
+     if (xfer->trbs[0].control & TRB_TR_SIA) {
+         uint64_t asap = ((mfindex + epctx->interval - 1) &
+                          ~(epctx->interval-1));
++        /*
++         * The transfers of a busy endpoint are one interval apart, so this
++         * one follows the last however late we get to it: starting over
++         * from now would drop the time we are behind for good. Once the
++         * ring was empty, the guest has a few intervals from then to go on
++         * without a gap.
++         */
+         if (asap >= epctx->mfindex_last &&
+-            asap <= epctx->mfindex_last + epctx->interval * 4) {
++            (epctx->mfindex_idle < 0 ||
++             asap <= MAX(epctx->mfindex_last, epctx->mfindex_idle) +
++                     epctx->interval * 4)) {
+             xfer->mfindex_kick = epctx->mfindex_last + epctx->interval;
+         } else {
+             xfer->mfindex_kick = asap;
+         }
++        epctx->mfindex_idle = -1;
+     } else {
+         xfer->mfindex_kick = ((xfer->trbs[0].control >> TRB_TR_FRAMEID_SHIFT)
+                               & TRB_TR_FRAMEID_MASK) << 3;
+@@ -1971,6 +1988,9 @@ static void xhci_kick_epctx(XHCIEPContext *epctx, unsigned int streamid)
+             if (epctx->type == ET_ISO_OUT || epctx->type == ET_ISO_IN) {
+                 /* 4.10.3.1 */
+                 XHCIEvent ev = { ER_TRANSFER };
++                if (epctx->mfindex_idle < 0) {
++                    epctx->mfindex_idle = xhci_mfindex_get(xhci);
++                }
+                 ev.ccode  = epctx->type == ET_ISO_IN ?
+                     CC_RING_OVERRUN : CC_RING_UNDERRUN;
+                 ev.slotid = epctx->slotid;
+@@ -2024,6 +2044,11 @@ static void xhci_kick_epctx(XHCIEPContext *epctx, unsigned int streamid)
+         }
+         if (count++ > TRANSFER_LIMIT) {
+             trace_usb_xhci_enforced_limit("transfers");
++            if (epctx->type == ET_ISO_OUT || epctx->type == ET_ISO_IN) {
++                /* still behind: go on once the main loop had its turn */
++                timer_mod(epctx->kick_timer,
++                          qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL));
++            }
+             break;
+         }
+     }
+-- 
+2.54.0 (Apple Git-157)
+
+
