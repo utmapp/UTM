@@ -1,0 +1,40 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Cannot find QEMU support libraries." : {
+      "comment" : "iOSHelper",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "找不到 QEMU 支持库。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未找到 QEMU 支援資料庫。"
+          }
+        }
+      }
+    },
+    "The helper is already in use." : {
+      "comment" : "iOSHelper",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "帮助程序已被使用。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "輔助程式已被使用。"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.3"
+}
