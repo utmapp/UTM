@@ -349,6 +349,7 @@ private let ICON_TITLE_MAP: [String: LocalizedStringKey] = [
     "linux": "Linux",
     "lubuntu": "Lubuntu",
     "mac": "macOS",
+    "macos": "Classic Mac OS",
     "maemo": "Maemo",
     "mandriva": "Mandriva",
     "meego": "MeeGo",
