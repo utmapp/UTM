@@ -999,6 +999,19 @@
     <suite name="UTM Input Automation Suite" code="UTMi" description="UTM virtual machine input automation suite. Only supported on QEMU backend.">
         <access-group identifier="com.utmapp.UTM.vm-access" />
 
+        <class-extension extends="virtual machine" description="Display capture.">
+            <responds-to command="capture screen">
+              <cocoa method="captureScreen:"/>
+            </responds-to>
+        </class-extension>
+
+        <command name="capture screen" code="UTMiCpSc" description="Save an image of the primary display of a running virtual machine as a PNG file. The display does not need to be visible on the host.">
+          <direct-parameter description="Virtual machine to capture." type="virtual machine"/>
+          <parameter name="to" code="CpTo" description="The host file to save the image to. It is replaced if it exists." type="file">
+            <cocoa key="file"/>
+          </parameter>
+        </command>
+
         <class-extension extends="virtual machine" description="Input automation.">
             <responds-to command="input scan code">
               <cocoa method="sendScanCode:"/>

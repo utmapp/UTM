@@ -136,3 +136,32 @@ private extension UTMScriptingMouseButton {
         }
     }
 }
+
+// MARK: - Display capture
+@objc extension UTMScriptingVirtualMachineImpl {
+    @objc func captureScreen(_ command: NSScriptCommand) {
+        let file = command.evaluatedArguments?["file"] as? URL
+        withScriptCommand(command) { [self] in
+            guard let file = file else {
+                throw ScriptingError.invalidParameter
+            }
+            guard vm.state == .started else {
+                throw ScriptingError.notRunning
+            }
+            // an Apple VM can only take a screenshot from its open window
+            guard vm is any UTMSpiceVirtualMachine else {
+                throw ScriptingError.operationNotSupported
+            }
+            // the previous screenshot stays in place when capturing fails: never save that one
+            let previous = vm.screenshot?.image
+            guard await vm.takeScreenshot(), let screenshot = vm.screenshot, screenshot.image !== previous, let pngData = screenshot.pngData else {
+                throw ScriptingError.operationNotAvailable
+            }
+            _ = file.startAccessingSecurityScopedResource()
+            defer {
+                file.stopAccessingSecurityScopedResource()
+            }
+            try pngData.write(to: file)
+        }
+    }
+}
