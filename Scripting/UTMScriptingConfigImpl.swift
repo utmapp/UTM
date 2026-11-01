@@ -108,11 +108,19 @@ extension UTMScriptingConfigImpl {
             "cpuCores": config.system.cpuCount,
             "hypervisor": config.qemu.hasHypervisor,
             "uefi": config.qemu.hasUefiBoot,
+            "debugLog": config.qemu.hasDebugLog,
+            "rngDevice": config.qemu.hasRNGDevice,
+            "balloonDevice": config.qemu.hasBalloonDevice,
+            "tpm": config.qemu.hasTPMDevice,
+            "tso": config.qemu.hasTSO,
+            "rtcLocalTime": config.qemu.hasRTCLocalTime,
+            "ps2Controller": config.qemu.hasPS2Controller,
             "directoryShareMode": qemuDirectoryShareMode(from: config.sharing.directoryShareMode).rawValue,
             "drives": config.drives.map({ serializeQemuDriveExisting($0) }),
             "networkInterfaces": config.networks.enumerated().map({ serializeQemuNetwork($1, index: $0) }),
             "serialPorts": config.serials.enumerated().map({ serializeQemuSerial($1, index: $0) }),
             "displays": config.displays.enumerated().map({ serializeQemuDisplay($1, index: $0)}),
+            "soundDevices": config.sound.enumerated().map({ serializeQemuSound($1, index: $0) }),
             "qemuAdditionalArguments": config.qemu.additionalArguments.map({ serializeQemuAdditionalArgument($0)}),
         ]
     }
@@ -215,6 +223,13 @@ extension UTMScriptingConfigImpl {
             "nativeResolution": config.isNativeResolution,
             "upscalingFilter": qemuScaler(from: config.upscalingFilter).rawValue,
             "downscalingFilter": qemuScaler(from: config.downscalingFilter).rawValue,
+        ]
+    }
+    
+    private func serializeQemuSound(_ config: UTMQemuConfigurationSound, index: Int) -> [AnyHashable : Any] {
+        [
+            "index": index,
+            "hardware": config.hardware.rawValue,
         ]
     }
     
@@ -386,6 +401,34 @@ extension UTMScriptingConfigImpl {
         if let uefi = record["uefi"] as? Bool {
             config.qemu.hasUefiBoot = uefi
         }
+        if let debugLog = record["debugLog"] as? Bool {
+            config.qemu.hasDebugLog = debugLog
+        }
+        if let rngDevice = record["rngDevice"] as? Bool {
+            config.qemu.hasRNGDevice = rngDevice
+        }
+        if let balloonDevice = record["balloonDevice"] as? Bool {
+            config.qemu.hasBalloonDevice = balloonDevice
+        }
+        if let tpm = record["tpm"] as? Bool, tpm != config.qemu.hasTPMDevice {
+            config.qemu.hasTPMDevice = tpm
+            // like the TPM toggle in the settings: Secure Boot keys come with the TPM
+            if tpm {
+                config.qemu.isUefiVariableResetRequested = true
+                config.qemu.hasPreloadedSecureBootKeys = true
+            } else {
+                config.qemu.hasPreloadedSecureBootKeys = false
+            }
+        }
+        if let tso = record["tso"] as? Bool {
+            config.qemu.hasTSO = tso
+        }
+        if let rtcLocalTime = record["rtcLocalTime"] as? Bool {
+            config.qemu.hasRTCLocalTime = rtcLocalTime
+        }
+        if let ps2Controller = record["ps2Controller"] as? Bool {
+            config.qemu.hasPS2Controller = ps2Controller
+        }
         if let directoryShareMode = parseQemuDirectoryShareMode(record["directoryShareMode"] as? AEKeyword) {
             config.sharing.directoryShareMode = directoryShareMode
         }
@@ -400,6 +443,9 @@ extension UTMScriptingConfigImpl {
         }
         if let displays = record["displays"] as? [[AnyHashable : Any]] {
             try updateQemuDisplays(from: displays)
+        }
+        if let soundDevices = record["soundDevices"] as? [[AnyHashable : Any]] {
+            try updateQemuSounds(from: soundDevices)
         }
         if let qemuAdditionalArguments = record["qemuAdditionalArguments"] as? [[AnyHashable: Any]] {
             try updateQemuAdditionalArguments(from: qemuAdditionalArguments)
@@ -590,6 +636,24 @@ extension UTMScriptingConfigImpl {
             try updateQemuExistingDisplay(&newDisplay, from: record)
             return newDisplay
         })
+    }
+    
+    private func updateQemuSounds(from records: [[AnyHashable : Any]]) throws {
+        let config = config as! UTMQemuConfiguration
+        try updateElements(&config.sound, with: records, onExisting: updateQemuExistingSound, onNew: { record in
+            guard var newSound = UTMQemuConfigurationSound(forArchitecture: config.system.architecture, target: config.system.target) else {
+                throw ConfigurationError.deviceNotSupported
+            }
+            try updateQemuExistingSound(&newSound, from: record)
+            return newSound
+        })
+    }
+    
+    private func updateQemuExistingSound(_ sound: inout UTMQemuConfigurationSound, from record: [AnyHashable : Any]) throws {
+        let config = config as! UTMQemuConfiguration
+        if let hardware = record["hardware"] as? String, let hardware = config.system.architecture.soundDeviceType.init(rawValue: hardware) {
+            sound.hardware = hardware
+        }
     }
     
     private func parseQemuScaler(_ value: AEKeyword?) -> QEMUScaler? {

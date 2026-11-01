@@ -584,6 +584,27 @@
           <property name="uefi" code="UeFi" type="boolean"
             description="Use UEFI boot?"/>
             
+          <property name="debug log" code="DbLg" type="boolean"
+            description="Write the emulator's output to debug.log in the virtual machine's data?"/>
+            
+          <property name="rng device" code="RnGd" type="boolean"
+            description="Create a virtio-rng device (if supported)?"/>
+            
+          <property name="balloon device" code="BlNd" type="boolean"
+            description="Create a virtio-balloon device (if supported)?"/>
+            
+          <property name="tpm" code="TpMd" type="boolean"
+            description="Create a TPM 2.0 device? Turning it on resets the UEFI variables and loads the Secure Boot keys, as the TPM 2.0 Device setting does."/>
+            
+          <property name="tso" code="TsOr" type="boolean"
+            description="Use total store ordering (if supported by the hypervisor)?"/>
+            
+          <property name="rtc local time" code="RtLt" type="boolean"
+            description="Use local time instead of UTC for the real time clock (required for Windows)?"/>
+            
+          <property name="ps2 controller" code="Ps2C" type="boolean"
+            description="Create a PS/2 controller even when USB input is supported (required for older Windows)?"/>
+            
           <property name="directory share mode" code="DrSm" type="qemu directory share mode"
             description="Mode for directory sharing."/>
             
@@ -605,6 +626,11 @@
           <property name="displays" code="DiPs"
             description="List of display configuration.">
             <type type="qemu display configuration" list="yes"/>
+          </property>
+          
+          <property name="sound devices" code="SnDs"
+            description="List of sound configuration.">
+            <type type="qemu sound configuration" list="yes"/>
           </property>
           
           <property name="qemu additional arguments" code="QeAd"
@@ -753,6 +779,14 @@
             
           <property name="downscaling filter" code="DoFi" type="qemu scaler"
             description="Filter to use when downscaling."/>
+        </record-type>
+        
+        <record-type name="qemu sound configuration" code="QeSd" description="QEMU virtual sound configuration.">
+          <property name="index" code="pidx" type="integer"
+            description="The position of the configuration to update. It can be empty to create a new device. Index is invalid after updating the configuration and must be reset to the current position."/>
+
+          <property name="hardware" code="HaWe" type="text"
+            description="Name of the emulated sound card (if empty or not found, the default will be used)."/>
         </record-type>
         
         <enumeration name="qemu scaler" code="QeSc" description="QEMU Scaler.">
