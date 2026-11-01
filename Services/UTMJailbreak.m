@@ -229,6 +229,27 @@ bool jb_has_usb_entitlement(void) {
     return entitled;
 }
 
+bool jb_has_vmnet_entitlement(void) {
+    NSURL *launcherURL = [NSBundle.mainBundle.bundleURL URLByAppendingPathComponent:@"Contents/XPCServices/QEMUHelper.xpc/Contents/MacOS/QEMULauncher.app"];
+    SecStaticCodeRef code = NULL;
+    CFDictionaryRef info = NULL;
+    bool entitled;
+
+    // vmnet is opened by QEMULauncher, which is signed separately from UTM
+    if (SecStaticCodeCreateWithPath((__bridge CFURLRef)launcherURL, kSecCSDefaultFlags, &code) != errSecSuccess) {
+        return true;
+    }
+    if (SecCodeCopySigningInformation(code, kSecCSDefaultFlags, &info) != errSecSuccess) {
+        CFRelease(code);
+        return true;
+    }
+    NSDictionary *entitlements = ((__bridge NSDictionary *)info)[(__bridge NSString *)kSecCodeInfoEntitlementsDict];
+    entitled = [entitlements[@"com.apple.vm.networking"] boolValue];
+    CFRelease(info);
+    CFRelease(code);
+    return entitled;
+}
+
 bool jb_has_hypervisor(void) {
     return true;
 }
@@ -240,6 +261,10 @@ bool jb_has_container(void) {
 bool jb_has_usb_entitlement(void) {
     NSDictionary *entitlements = cached_app_entitlements();
     return entitlements[@"com.apple.security.exception.iokit-user-client-class"] != nil;
+}
+
+bool jb_has_vmnet_entitlement(void) {
+    return false;
 }
 
 #if TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR

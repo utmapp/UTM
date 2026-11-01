@@ -1282,6 +1282,9 @@ struct UTMCapabilities: OptionSet, Codable {
     /// If set, host is x86_64
     static let isX86_64 = Self(rawValue: 1 << 3)
 
+    /// If set, QEMU can create vmnet (shared, host-only and bridged) networks.
+    static let hasVmnetEntitlement = Self(rawValue: 1 << 4)
+
     static internal(set) var current: Self = {
         var current = Self()
         #if WITH_JIT
@@ -1290,6 +1293,11 @@ struct UTMCapabilities: OptionSet, Codable {
         }
         if jb_has_hypervisor() {
             current.insert(.hasHypervisorSupport)
+        }
+        #endif
+        #if os(macOS)
+        if jb_has_vmnet_entitlement() {
+            current.insert(.hasVmnetEntitlement)
         }
         #endif
         #if arch(arm64)

@@ -158,6 +158,19 @@ struct UTMQemuConfigurationNetwork: Codable, Identifiable {
     }
 }
 
+// MARK: - Backend
+
+extension UTMQemuConfigurationNetwork {
+    /// Shared, host-only and bridged networks use vmnet, which needs an entitlement
+    var isVmnet: Bool {
+        #if os(macOS)
+        return mode != .emulated
+        #else
+        return false
+        #endif
+    }
+}
+
 // MARK: - Default construction
 
 extension UTMQemuConfigurationNetwork {
