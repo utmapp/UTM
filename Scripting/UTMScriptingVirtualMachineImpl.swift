@@ -389,7 +389,9 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
             if let properties = properties, let newConfiguration = properties["configuration"] as? [AnyHashable : Any] {
                 let wrapper = UTMScriptingConfigImpl(newVM.config!)
                 try wrapper.updateConfiguration(from: newConfiguration)
+                try await wrapper.validateDriveResizes()
                 try await data.save(vm: newVM)
+                try await wrapper.resizeDrives(of: newVM.wrapped!, data: data)
             }
         }
     }

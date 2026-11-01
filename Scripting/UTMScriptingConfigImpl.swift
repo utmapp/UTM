@@ -37,7 +37,9 @@ import Foundation
             data.close(vm: box) // close window
             let wrapper = UTMScriptingConfigImpl(vm.config)
             try wrapper.updateConfiguration(from: newConfiguration)
+            try await wrapper.validateDriveResizes()
             try await data.save(vm: box)
+            try await wrapper.resizeDrives(of: vm, data: data)
         }
     }
 }
@@ -50,6 +52,8 @@ class UTMScriptingConfigImpl {
     
     private(set) var config: any UTMConfiguration
     private weak var data: UTMData?
+    /// Existing drives to grow to a new guest size (MiB)
+    private var pendingDriveResizes: [(id: String, sizeMib: Int)] = []
     
     init(_ config: any UTMConfiguration, data: UTMData? = nil) {
         self.config = config
@@ -483,6 +487,53 @@ extension UTMScriptingConfigImpl {
         if let source = record["source"] as? URL {
             drive.imageURL = source
         }
+        if let size = record["guestSize"] as? Int, size > 0 {
+            // like the drive settings: only a qcow2 image in the VM can grow
+            guard !drive.isExternal, !drive.isRawImage else {
+                throw ConfigurationError.driveNotResizable
+            }
+            pendingDriveResizes.append((id: drive.id, sizeMib: size))
+        }
+    }
+    
+    /// Check the new guest sizes before anything is saved, so that an invalid size changes nothing
+    ///
+    /// A drive whose source is replaced in the same update is checked at that source, which is
+    /// the image saving copies into the virtual machine.
+    func validateDriveResizes() async throws {
+        guard let config = config as? UTMQemuConfiguration else {
+            return
+        }
+        var resizes: [(id: String, sizeMib: Int)] = []
+        for resize in pendingDriveResizes {
+            guard let url = config.drives.first(where: { $0.id == resize.id })?.imageURL else {
+                throw ConfigurationError.identifierNotFound(id: resize.id)
+            }
+            let currentMib = Int(try await UTMQemuImage.size(image: url) / bytesInMib)
+            if resize.sizeMib < currentMib {
+                throw ConfigurationError.driveCannotShrink
+            } else if resize.sizeMib > currentMib {
+                resizes.append(resize)
+            }
+        }
+        pendingDriveResizes = resizes
+    }
+    
+    /// Grow the drives checked by `validateDriveResizes()`
+    ///
+    /// Run after saving, which copies a replaced source into the virtual machine and reloads
+    /// the configuration of a renamed one, so the drives are found in `vm`'s configuration.
+    func resizeDrives(of vm: any UTMVirtualMachine, data: UTMData) async throws {
+        guard let config = vm.config as? UTMQemuConfiguration else {
+            return
+        }
+        for resize in pendingDriveResizes {
+            guard let url = config.drives.first(where: { $0.id == resize.id })?.imageURL else {
+                throw ConfigurationError.identifierNotFound(id: resize.id)
+            }
+            try await data.resizeQcow2Drive(for: url, sizeInMib: resize.sizeMib)
+        }
+        pendingDriveResizes = []
     }
     
     private func unserializeQemuDriveNew(from record: [AnyHashable : Any]) throws -> UTMQemuConfigurationDrive {
@@ -855,6 +906,8 @@ extension UTMScriptingConfigImpl {
         case indexNotFound(index: Int)
         case deviceNotSupported
         case iconNotFound(icon: String)
+        case driveNotResizable
+        case driveCannotShrink
         
         var errorDescription: String? {
             switch self {
@@ -863,6 +916,8 @@ extension UTMScriptingConfigImpl {
             case .indexNotFound(let index): return String.localizedStringWithFormat(NSLocalizedString("Index %lld cannot be found.", comment: "UTMScriptingConfigImpl"), index)
             case .deviceNotSupported: return NSLocalizedString("This device is not supported by the target.", comment: "UTMScriptingConfigImpl")
             case .iconNotFound(let icon): return String.localizedStringWithFormat(NSLocalizedString("The icon named '%@' cannot be found in the built-in icons.", comment: "UTMScriptingConfigImpl"), icon)
+            case .driveNotResizable: return NSLocalizedString("Only a QCOW2 drive stored in the virtual machine can be resized.", comment: "UTMScriptingConfigImpl")
+            case .driveCannotShrink: return NSLocalizedString("A drive can only be made larger.", comment: "UTMScriptingConfigImpl")
             }
         }
     }

@@ -659,7 +659,7 @@
             description="The size of this drive as seen by the host (in MiB)."/>
             
           <property name="guest size" code="GuSz" type="integer"
-            description="The size of this drive as seen by the guest (in MiB)."/>
+            description="The size of this drive as seen by the guest (in MiB). Setting it on an existing QCOW2 drive stored in the virtual machine makes the drive larger (it cannot be made smaller); back up the virtual machine first."/>
             
           <property name="raw" code="RaAw" type="boolean"
             description="Is this disk image raw format (only for newly created drives)?"/>
