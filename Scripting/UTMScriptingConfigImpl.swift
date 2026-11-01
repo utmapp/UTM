@@ -593,7 +593,7 @@ extension UTMScriptingConfigImpl {
             network.bridgeInterface = interface
         }
         if let portForwards = record["portForwards"] as? [[AnyHashable : Any]] {
-            network.portForward = portForwards.map({ unserializeQemuPortForward(from: $0) })
+            network.portForward = try portForwards.map({ try unserializeQemuPortForward(from: $0) })
         }
         if let value = record["vlanGuestAddress"] as? String, !value.isEmpty {
             network.vlanGuestAddress = value
@@ -613,6 +613,10 @@ extension UTMScriptingConfigImpl {
     }
     
     private func parseNetworkProtocol(_ value: AEKeyword?) -> QEMUNetworkProtocol? {
+        // `protocol:TCP` compiles to the serial interface enumerator `tcp`, whose name comes first
+        if value == UTMScriptingSerialInterface.tcp.rawValue {
+            return .tcp
+        }
         guard let value = value, let parsed = UTMScriptingNetworkProtocol(rawValue: value) else {
             return Optional.none
         }
@@ -623,9 +627,13 @@ extension UTMScriptingConfigImpl {
         }
     }
     
-    private func unserializeQemuPortForward(from record: [AnyHashable : Any]) -> UTMQemuConfigurationPortForward {
+    private func unserializeQemuPortForward(from record: [AnyHashable : Any]) throws -> UTMQemuConfigurationPortForward {
         var forward = UTMQemuConfigurationPortForward()
-        if let protoc = parseNetworkProtocol(record["protocol"] as? AEKeyword) {
+        if let value = record["protocol"] as? AEKeyword {
+            // the other serial interface constants are accepted by the record too
+            guard let protoc = parseNetworkProtocol(value) else {
+                throw ConfigurationError.invalidNetworkProtocol
+            }
             forward.protocol = protoc
         }
         if let hostAddress = record["hostAddress"] as? String, !hostAddress.isEmpty {
@@ -908,6 +916,7 @@ extension UTMScriptingConfigImpl {
         case iconNotFound(icon: String)
         case driveNotResizable
         case driveCannotShrink
+        case invalidNetworkProtocol
         
         var errorDescription: String? {
             switch self {
@@ -918,6 +927,7 @@ extension UTMScriptingConfigImpl {
             case .iconNotFound(let icon): return String.localizedStringWithFormat(NSLocalizedString("The icon named '%@' cannot be found in the built-in icons.", comment: "UTMScriptingConfigImpl"), icon)
             case .driveNotResizable: return NSLocalizedString("Only a QCOW2 drive stored in the virtual machine can be resized.", comment: "UTMScriptingConfigImpl")
             case .driveCannotShrink: return NSLocalizedString("A drive can only be made larger.", comment: "UTMScriptingConfigImpl")
+            case .invalidNetworkProtocol: return NSLocalizedString("The protocol of a port forward must be TCP or UDP.", comment: "UTMScriptingConfigImpl")
             }
         }
     }

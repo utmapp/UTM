@@ -729,8 +729,11 @@
         </enumeration>
         
         <record-type name="qemu port forward" code="QePf" description="QEMU port forward configuration.">
-          <property name="protocol" code="PrTl" type="network protocol"
-            description="Protocol of the port that will be forwarded."/>
+          <property name="protocol" code="PrTl"
+            description="Protocol of the port that will be forwarded.">
+            <type type="network protocol"/>
+            <type type="serial interface" hidden="yes"/>
+          </property>
             
           <property name="host address" code="HoAd" type="text"
             description="The host interface IP address to forward to (if empty, it will forward to any interface)."/>
