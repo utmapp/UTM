@@ -81,6 +81,10 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
         }
     }
     
+    @objc var file: URL {
+        vm.pathUrl
+    }
+    
     @objc var serialPorts: [UTMScriptingSerialPortImpl] {
         if let config = vm.config as? UTMQemuConfiguration {
             return config.serials.indices.map({ UTMScriptingSerialPortImpl(qemuSerial: config.serials[$0], parent: self, index: $0) })

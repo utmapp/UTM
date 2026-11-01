@@ -208,6 +208,9 @@
           <property name="status" code="StUs" type="status" access="r"
             description="Current running status."/>
 
+          <property name="file" code="file" type="file" access="r"
+            description="Location of the virtual machine (its .utm package) on disk."/>
+
           <element type="serial port" access="r"
             description="Serial ports exposed by the guest to the host to access.">
             <cocoa key="serialPorts"/>
