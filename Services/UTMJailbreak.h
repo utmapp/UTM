@@ -21,6 +21,7 @@
 
 bool jb_has_jit_entitlement(void);
 bool jb_has_usb_entitlement(void);
+bool jb_has_vmnet_entitlement(void);
 bool jb_has_hypervisor(void);
 bool jb_has_container(void);
 bool jb_has_cs_disabled(void);
