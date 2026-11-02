@@ -470,9 +470,21 @@ struct DisplaySettingsView: View {
         }
     }
 
+    private var vulkanDriverOptions: [(String, UTMQEMUVulkanDriver)] {
+        var options: [(String, UTMQEMUVulkanDriver)] = [
+            ("Default", .qemuVulkanDriverDefault),
+            ("Disabled", .qemuVulkanDriverDisabled),
+            ("MoltenVK", .qemuVulkanDriverMoltenVK)
+        ]
+        if #available(macOS 26, *) {
+            options.append(("KosmicKrisp", .qemuVulkanDriverKosmicKrisp))
+        }
+        return options
+    }
+
     var body: some View {
-        Form {
-            Section(header: Text("Display")) {
+        SettingsPane {
+            SettingsRow("Screenshots") {
                 Toggle(isOn: $isNoScreenshot) {
                     Text("Disable VM screenshot")
                 }.help("No VM screenshots will be taken.")
@@ -483,40 +495,43 @@ struct DisplaySettingsView: View {
                     Text("Do not save VM screenshot to disk")
                 }.help("If enabled, any existing screenshot will be deleted the next time the VM is started.")
                 .disabled(isNoScreenshot)
+            }
+            SettingsRow("Full Screen") {
                 Toggle(isOn: $isFullScreenUseCameraHousingArea) {
                     Text("Fill the area beside the camera housing in full screen")
                 }.help("If enabled, a full screen VM display will use the entire screen including the area beside the built-in camera. The menu bar will cover this area while it is revealed.")
             }
-            
-            Section(header: Text("QEMU Graphics Acceleration")) {
-                Picker("Renderer Backend", selection: $qemuRendererBackend) {
-                    Text("Default").tag(UTMQEMURendererBackend.qemuRendererBackendDefault)
-                    Text("ANGLE (OpenGL)").tag(UTMQEMURendererBackend.qemuRendererBackendAngleGL)
-                    Text("ANGLE (Metal)").tag(UTMQEMURendererBackend.qemuRendererBackendAngleMetal)
-                    Text("Apple Core OpenGL").tag(UTMQEMURendererBackend.qemuRendererBackendCGL)
-                }.help("By default, the best renderer for this device will be used. You can override this with to always use a specific renderer. This only applies to QEMU VMs with GPU accelerated graphics.")
-                Picker("Vulkan Driver", selection: $qemuVulkanDriver) {
-                    Text("Default").tag(UTMQEMUVulkanDriver.qemuVulkanDriverDefault)
-                    Text("Disabled").tag(UTMQEMUVulkanDriver.qemuVulkanDriverDisabled)
-                    Text("MoltenVK").tag(UTMQEMUVulkanDriver.qemuVulkanDriverMoltenVK)
-                    if #available(macOS 26, *) {
-                        Text("KosmicKrisp").tag(UTMQEMUVulkanDriver.qemuVulkanDriverKosmicKrisp)
-                    }
-                }.help("Select the Vulkan driver to use for host passthrough rendering. Vulkan requires guest drivers to be installed.")
+            SettingsRow("Renderer Backend") {
+                SettingsPicker(
+                    "Renderer Backend",
+                    selection: $qemuRendererBackend,
+                    options: [
+                        ("Default", .qemuRendererBackendDefault),
+                        ("ANGLE (OpenGL)", .qemuRendererBackendAngleGL),
+                        ("ANGLE (Metal)", .qemuRendererBackendAngleMetal),
+                        ("Apple Core OpenGL", .qemuRendererBackendCGL)
+                    ]
+                ).help("By default, the best renderer for this device will be used. You can override this with to always use a specific renderer. This only applies to QEMU VMs with GPU accelerated graphics.")
+            }
+            SettingsRow("Vulkan Driver") {
+                SettingsPicker(
+                    "Vulkan Driver",
+                    selection: $qemuVulkanDriver,
+                    options: vulkanDriverOptions
+                ).help("Select the Vulkan driver to use for host passthrough rendering. Vulkan requires guest drivers to be installed.")
                 .disabled(!isVulkanSupported)
                 .onChange(of: qemuRendererBackend) { _ in
                     if !isVulkanSupported {
                         qemuVulkanDriver = .qemuVulkanDriverDefault
                     }
                 }
-                Picker("DirectX Driver", selection: $qemuDirectXDriver) {
-                    Text("Default").tag(UTMQEMUDirectXDriver.qemuDirectXDriverDefault)
-                    Text("Disabled").tag(UTMQEMUDirectXDriver.qemuDirectXDriverDisabled)
-                    Text("DXMT").tag(UTMQEMUDirectXDriver.qemuDirectXDriverDXMT)
-                    if isD3DMetalAvailable {
-                        Text("D3DMetal").tag(UTMQEMUDirectXDriver.qemuDirectXDriverD3DMetal)
-                    }
-                }.help("Select the DirectX driver to use for host passthrough rendering. DirectX requires guest drivers to be installed.")
+            }
+            SettingsRow("DirectX Driver") {
+                SettingsPicker(
+                    "DirectX Driver",
+                    selection: $qemuDirectXDriver,
+                    options: [("Default", .qemuDirectXDriverDefault), ("Disabled", .qemuDirectXDriverDisabled), ("DXMT", .qemuDirectXDriverDXMT)] + (isD3DMetalAvailable ? [("D3DMetal", .qemuDirectXDriverD3DMetal)] : [])
+                ).help("Select the DirectX driver to use for host passthrough rendering. DirectX requires guest drivers to be installed.")
                 .disabled(!isVulkanSupported)
                 .onChange(of: qemuRendererBackend) { _ in
                     if !isVulkanSupported {
@@ -526,13 +541,15 @@ struct DisplaySettingsView: View {
                 if !isVulkanSupported {
                     Text("The selected renderer backend does not support Vulkan.")
                 }
-                HStack {
-                    Stepper("FPS Limit", value: $qemuRendererFpsLimit, in: 0...240, step: 15)
+            }
+            SettingsRow("FPS Limit") {
+                HStack(spacing: 8) {
                     NumberTextField("", number: $qemuRendererFpsLimit, prompt: "None")
-                        .frame(width: 80)
-                        .multilineTextAlignment(.trailing)
-                        .help("If set, a frame limit can improve smoothness in rendering by preventing stutters when set to the lowest value your device can handle.")
-                }
+                    .frame(width: 80)
+                    .multilineTextAlignment(.trailing)
+                    .help("If set, a frame limit can improve smoothness in rendering by preventing stutters when set to the lowest value your device can handle.")
+                    Stepper("FPS Limit", value: $qemuRendererFpsLimit, in: 0...240, step: 15).labelsHidden()
+                }.fixedSize(horizontal: true, vertical: false)
             }
         }
     }
