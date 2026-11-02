@@ -784,49 +784,53 @@ struct ServerSettingsView: View {
     // they can gain execution in UTM application context... which is the context needed to read the password.
 
     var body: some View {
-        Form {
-            Section(header: Text("Startup")) {
+        SettingsPane {
+            SettingsRow("Startup") {
                 Toggle("Automatically start UTM server", isOn: $isServerAutostart)
             }
-            Section(header: Text("Network")) {
+            SettingsRow("Network") {
                 Toggle("Reject unknown connections by default", isOn: $isServerAutoblock)
-                    .help("If checked, you will not be prompted about any unknown connection and they will be rejected.")
+                .help("If checked, you will not be prompted about any unknown connection and they will be rejected.")
                 Toggle("Allow access from external clients", isOn: $isServerExternal)
-                    .help("By default, the server is only available on LAN but setting this will use UPnP/NAT-PMP to port forward to WAN.")
-                    .onChange(of: isServerExternal) { newValue in
-                        if newValue {
-                            if serverPort == 0 {
-                                serverPort = defaultPort
-                            }
-                            if !isServerPasswordRequired {
-                                isServerPasswordRequired = true
-                            }
-                        }
-                    }
-                NumberTextField("", number: $serverPort, prompt: "Any")
-                    .frame(width: 80)
-                    .multilineTextAlignment(.trailing)
-                    .help("Specify a port number to listen on. This is required if external clients are permitted.")
-                    .onChange(of: serverPort) { newValue in
-                        if newValue == 0 {
-                            isServerExternal = false
-                        }
-                        if newValue < 0 || newValue >= UInt16.max {
+                .help("By default, the server is only available on LAN but setting this will use UPnP/NAT-PMP to port forward to WAN.")
+                .onChange(of: isServerExternal) { newValue in
+                    if newValue {
+                        if serverPort == 0 {
                             serverPort = defaultPort
                         }
-                    }
-            }
-            Section(header: Text("Authentication")) {
-                Toggle("Require Password", isOn: $isServerPasswordRequired)
-                    .disabled(isServerExternal)
-                    .help("If enabled, clients must enter a password. This is required if you want to access the server externally.")
-                    .onChange(of: isServerPasswordRequired) { newValue in
-                        if newValue && serverPassword.count == 0 {
-                            serverPassword = .random(length: 32)
+                        if !isServerPasswordRequired {
+                            isServerPasswordRequired = true
                         }
                     }
-                TextField("Password", text: $serverPassword)
-                    .disabled(!isServerPasswordRequired)
+                }
+            }
+            SettingsRow("Listening Port") {
+                NumberTextField("", number: $serverPort, prompt: "Any")
+                .frame(width: 80)
+                .multilineTextAlignment(.trailing)
+                .help("Specify a port number to listen on. This is required if external clients are permitted.")
+                .onChange(of: serverPort) { newValue in
+                    if newValue == 0 {
+                        isServerExternal = false
+                    }
+                    if newValue < 0 || newValue >= UInt16.max {
+                        serverPort = defaultPort
+                    }
+                }
+            }
+            SettingsRow("Authentication") {
+                Toggle("Require Password", isOn: $isServerPasswordRequired)
+                .disabled(isServerExternal)
+                .help("If enabled, clients must enter a password. This is required if you want to access the server externally.")
+                .onChange(of: isServerPasswordRequired) { newValue in
+                    if newValue && serverPassword.count == 0 {
+                        serverPassword = .random(length: 32)
+                    }
+                }
+            }
+            SettingsRow("Password") {
+                TextField("Password", text: $serverPassword).labelsHidden()
+                .disabled(!isServerPasswordRequired)
             }
         }
     }
