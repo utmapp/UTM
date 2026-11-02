@@ -42,21 +42,21 @@ final class AppSettingsTests: UTMUITestCase {
     }
 
     /// Every element of every pane of the app settings window lies within the window (#7117,
-    /// #7319: a pane larger than the window had its edges cut off). The window is the
-    /// sidebar one of macOS 26 and later; older releases show a tab view instead.
+    /// #7319: a pane larger than the window had its edges cut off).
     func testEveryAppSettingsPaneFitsItsWindow() throws {
-        try XCTSkipUnless(ProcessInfo.processInfo.isOperatingSystemAtLeast(OperatingSystemVersion(majorVersion: 26, minorVersion: 0, patchVersion: 0)), "the settings window has a sidebar on macOS 26 and later only")
         app.typeKey(",", modifierFlags: .command)
         // SwiftUI's Settings scene names its window
         let window = app.windows["com_apple_SwiftUI_Settings_window"].firstMatch
         XCTAssertTrue(window.waitForExistence(timeout: 10), "the settings window did not open")
-        let rows = window.outlineRows.allElementsBoundByIndex
-        XCTAssertGreaterThan(rows.count, 1, "the settings window has no sidebar rows")
-        for row in rows {
-            // the row itself is not hittable; its title is
-            let title = row.staticTexts.firstMatch
-            let pane = title.value as? String ?? row.label
-            title.click()
+        let toolbar = window.toolbars.firstMatch
+        XCTAssertTrue(toolbar.waitForExistence(timeout: 10), "the settings toolbar did not appear")
+        let tabs = toolbar.buttons.allElementsBoundByIndex
+        XCTAssertEqual(tabs.count, 7, "the settings toolbar does not contain every pane")
+        for tab in tabs {
+            let pane = tab.label
+            tab.click()
+            let selected = XCTNSPredicateExpectation(predicate: NSPredicate(format: "title == %@", pane), object: window)
+            XCTAssertEqual(XCTWaiter.wait(for: [selected], timeout: 10), .completed, "\(pane) did not become selected")
             waitForSettledFrame(of: window)
             // kept with a failure, so that the cut-off pane can be seen
             let shot = XCTAttachment(screenshot: window.screenshot())

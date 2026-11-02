@@ -89,38 +89,17 @@ struct SettingsView: View {
         }
     }
 
-    @State private var selection: Selection = .application
-
+    @ViewBuilder
     var body: some View {
-        if #available(macOS 26, *) {
-            newBody
+        if #available(macOS 15, *) {
+            tabs.tabViewStyle(.tabBarOnly)
         } else {
-            oldBody
-        }
-    }
-
-    @available(macOS 15, *)
-    @ViewBuilder
-    var newBody: some View {
-        NavigationSplitView {
-            List(Selection.allCases, selection: $selection) { category in
-                Label(category.title, systemImage: category.systemImage)
-            }.toolbar(removing: .sidebarToggle)
-        } detail: {
-            VStack(alignment: .leading) {
-                HStack(alignment: .top) {
-                    selection.view.padding()
-                    Spacer()
-                }
-                Spacer()
-            }
-            // wide enough for the Input pane, whose form does not shrink below its labels and controls
-            .frame(minWidth: 860)
+            tabs
         }
     }
 
     @ViewBuilder
-    var oldBody: some View {
+    var tabs: some View {
         TabView {
             ForEach(Selection.allCases) { category in
                 VStack(alignment: .leading) {
