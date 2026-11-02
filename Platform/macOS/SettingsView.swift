@@ -760,8 +760,8 @@ struct FileSettingsView: View {
     @AppStorage("UseFileLock") var isUseFileLock = true
 
     var body: some View {
-        Form {
-            Section(header: Text("QEMU Backend")) {
+        SettingsPane {
+            SettingsRow("QEMU Backend") {
                 Toggle(isOn: $isUseFileLock) {
                     Text("Lock drive images when in use")
                 }.help("If enabled, all writable drive images will be locked when the VM is running. Read-only drive images will not be locked.")
