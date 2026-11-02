@@ -559,13 +559,17 @@ struct SoundSettingsView: View {
     @AppStorage("QEMUSoundBackend") var qemuSoundBackend: UTMQEMUSoundBackend = .qemuSoundBackendDefault
     
     var body: some View {
-        Form {
-            Section(header: Text("QEMU Sound")) {
-                Picker("Sound Backend", selection: $qemuSoundBackend) {
-                    Text("Default").tag(UTMQEMUSoundBackend.qemuSoundBackendDefault)
-                    Text("SPICE with GStreamer (Input & Output)").tag(UTMQEMUSoundBackend.qemuSoundBackendSPICE)
-                    Text("CoreAudio (Output Only)").tag(UTMQEMUSoundBackend.qemuSoundBackendCoreAudio)
-                }.help("By default, the best backend for the target will be used. If the selected backend is not available for any reason, an alternative will automatically be selected.")
+        SettingsPane {
+            SettingsRow("QEMU Sound") {
+                SettingsPicker(
+                    "Sound Backend",
+                    selection: $qemuSoundBackend,
+                    options: [
+                        ("Default", .qemuSoundBackendDefault),
+                        ("SPICE with GStreamer (Input & Output)", .qemuSoundBackendSPICE),
+                        ("CoreAudio (Output Only)", .qemuSoundBackendCoreAudio)
+                    ]
+                ).help("By default, the best backend for the target will be used. If the selected backend is not available for any reason, an alternative will automatically be selected.")
             }
         }
     }
