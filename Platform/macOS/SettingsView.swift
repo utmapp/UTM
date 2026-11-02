@@ -691,12 +691,12 @@ struct NetworkSettingsView: View {
     }
     
     var body: some View {
-        Form {
-            Section(header: Text("Cloning")) {
+        SettingsPane {
+            SettingsRow("Cloning") {
                 Toggle("Regenerate MAC addresses on clone", isOn: $isRegenerateMACOnClone)
-                    .help("When cloning a VM, regenerate MAC addresses on every network interface to prevent conflicts.")
+                .help("When cloning a VM, regenerate MAC addresses on every network interface to prevent conflicts.")
             }
-            Section(header: Text("Host Networks")) {
+            SettingsRow("Host Networks", alignment: .top) {
                 Table($hostNetworks, selection: $selectedID) {
                     TableColumn("Name") { $network in
                         TextField(
@@ -720,19 +720,19 @@ struct NetworkSettingsView: View {
                         .foregroundStyle(UUID(uuidString: network.uuid) == nil ? .red : .primary)
                     }
                     .width(min: 160)
-                }.help("QEMU machines in 'Host' network mode can be placed in the same network to communicate with each other.")
+                }.frame(height: 180).help("QEMU machines in 'Host' network mode can be placed in the same network to communicate with each other.")
                 HStack {
                     Button("Import from VMware Fusion") {
                         isImporterPresented.toggle()
                     }.fileImporter(isPresented: $isImporterPresented, allowedContentTypes: [.data]) { result in
-                        
+
                         if let url = try? result.get() {
                             for network in UTMConfigurationHostNetwork.parseVMware(from: url) {
                                 if !hostNetworks.contains(where: {$0.uuid == network.uuid}) {
                                     hostNetworks.append(network)
                                 }
                             }
-                            
+
                             saveData()
                         }
                     }.help("Navigate to '/Library/Preferences/VMware Fusion' (⌘+Shift+G) and select the 'networking' file")
@@ -743,7 +743,7 @@ struct NetworkSettingsView: View {
                         }
                         selectedID = nil
                         saveData()
-                        
+
                     }.disabled(selectedID == nil)
                     Button("Add") {
                         let network = UTMConfigurationHostNetwork(name: "Network \(hostNetworks.count)")
