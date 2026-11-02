@@ -613,8 +613,8 @@ struct InputSettingsView: View {
     }
     
     var body: some View {
-        Form {
-            Section(header: Text("Mouse/Keyboard")) {
+        SettingsPane {
+            SettingsRow("Capture Input") {
                 Toggle(isOn: $isFullScreenAutoCapture) {
                     Text("Capture input automatically when entering full screen")
                 }.help("If enabled, input capture will toggle automatically when entering and exiting full screen mode.")
@@ -622,14 +622,12 @@ struct InputSettingsView: View {
                     Text("Capture input automatically when window is focused")
                 }.help("If enabled, input capture will toggle automatically when the VM's window is focused.")
             }
-            
-            Section(header: Text("Console")) {
+            SettingsRow("Console") {
                 Toggle(isOn: $isOptionAsMetaKey, label: {
                     Text("Option (⌥) is Meta key")
                 }).help("If enabled, Option will be mapped to the Meta key which can be useful for emacs. Otherwise, option will work as the system intended (such as for entering international text).")
             }
-            
-            Section(header: Text("QEMU Pointer")) {
+            SettingsRow("QEMU Pointer") {
                 Toggle(isOn: $isCtrlRightClick, label: {
                     Text("Hold Control (⌃) for right click")
                 })
@@ -640,8 +638,7 @@ struct InputSettingsView: View {
                     Text("Handle input on initial click")
                 }.help("If enabled, when the VM is out of focus, the first click will be handled by the VM. Otherwise, the first click will only bring the window into focus.")
             }
-            
-            Section(header: Text("QEMU Keyboard")) {
+            SettingsRow("QEMU Keyboard") {
                 Button("Keyboard Shortcuts…") {
                     isKeyboardShortcutsShown.toggle()
                 }.help("Set up custom keyboard shortcuts that can be triggered from the keyboard menu.")
@@ -654,19 +651,26 @@ struct InputSettingsView: View {
                 Toggle(isOn: $isNumLockForced, label: {
                     Text("Num Lock is forced on")
                 }).help("If enabled, num lock will always be on to the guest. Note this may make your keyboard's num lock indicator out of sync.")
-                Picker("Control, Option, and Command keys", selection: modifierKeyMappingBinding) {
-                    Text("Default").tag(ModifierKeyMapping.none)
-                    Text("Swap Control (⌃) and Command (⌘)").tag(ModifierKeyMapping.ctrlCmd)
-                    Text("Swap Command (⌘) and Option (⌥)").tag(ModifierKeyMapping.cmdOpt)
-                }.help("This does not apply to key binding outside the guest.")
+            }
+            SettingsRow("Modifier Keys") {
+                SettingsPicker(
+                    "Control, Option, and Command keys",
+                    selection: modifierKeyMappingBinding,
+                    options: [
+                        ("Default", .none),
+                        ("Swap Control (⌃) and Command (⌘)", .ctrlCmd),
+                        ("Swap Command (⌘) and Option (⌥)", .cmdOpt)
+                    ]
+                ).help("This does not apply to key binding outside the guest.")
+            }
+            SettingsRow("ISO Keyboard") {
                 Toggle(isOn: $isISOKeySwapped) {
                     Text("Swap the leftmost key on the number row and the key next to left shift on ISO keyboards")
                 }.help("This only applies to ISO layout keyboards.")
             }
-            .sheet(isPresented: $isKeyboardShortcutsShown) {
-                VMKeyboardShortcutsView().padding()
-                    .frame(idealWidth: 400)
-            }
+        }.sheet(isPresented: $isKeyboardShortcutsShown) {
+            VMKeyboardShortcutsView().padding()
+            .frame(idealWidth: 400)
         }
     }
 }
