@@ -375,7 +375,7 @@ extension UTMQemuVirtualMachine {
         system.vulkanDriver = try vulkanDriver
         system.directXDriver = directXDriver
         system.shmemDirectoryURL = await config.shmemDirectoryURL
-        system.appSandboxGroupId = await config.appGroupIdentifier
+        system.appSandboxGroupId = await config.sandboxIPCGroupIdentifier
         system.hasDebugLog = hasDebugLog
         try Task.checkCancellation()
 

@@ -85,9 +85,13 @@ else
 	if [ ! -z "$TEAM_ID" ]; then
 		TEAM_ID_PREFIX="${TEAM_ID}."
 	fi
+fi
 
-	/usr/libexec/PlistBuddy -c "Set :com.apple.security.application-groups:0 ${TEAM_ID_PREFIX}${PRODUCT_BUNDLE_PREFIX}.UTM" "$UTM_ENTITLEMENTS"
-	/usr/libexec/PlistBuddy -c "Set :com.apple.security.application-groups:0 ${TEAM_ID_PREFIX}${PRODUCT_BUNDLE_PREFIX}.UTM" "$HELPER_ENTITLEMENTS"
+# codesign takes the entitlements as is, so expand the group here; unsigned builds keep an unprefixed group, which the
+# sandbox still needs for the POSIX shared memory names used by GPU acceleration
+/usr/libexec/PlistBuddy -c "Set :com.apple.security.application-groups:0 ${TEAM_ID_PREFIX}${PRODUCT_BUNDLE_PREFIX}.UTM" "$UTM_ENTITLEMENTS"
+/usr/libexec/PlistBuddy -c "Set :com.apple.security.application-groups:0 ${TEAM_ID_PREFIX}${PRODUCT_BUNDLE_PREFIX}.UTM" "$HELPER_ENTITLEMENTS"
+if /usr/libexec/PlistBuddy -c "Print :com.apple.security.application-groups:0" "$CLI_ENTITLEMENTS" >/dev/null 2>&1; then
 	/usr/libexec/PlistBuddy -c "Set :com.apple.security.application-groups:0 ${TEAM_ID_PREFIX}${PRODUCT_BUNDLE_PREFIX}.UTM" "$CLI_ENTITLEMENTS"
 fi
 

@@ -37,6 +37,18 @@ import Virtualization // for getting network interfaces
         return nil
     }
 
+    /// Prefix for POSIX shared memory names in the sandbox, which only allows names under an
+    /// entitled application group. Unsigned builds have no valid app group, so they name one here.
+    var sandboxIPCGroupIdentifier: String? {
+        if let appGroup = appGroupIdentifier {
+            return appGroup
+        }
+        if let ipcGroup = Bundle.main.infoDictionary?["SandboxIPCGroupIdentifier"] as? String, !ipcGroup.isEmpty {
+            return ipcGroup
+        }
+        return nil
+    }
+
     /// Shared between helper and main process to store Unix sockets
     var socketURL: URL {
         #if os(iOS) || os(visionOS)
