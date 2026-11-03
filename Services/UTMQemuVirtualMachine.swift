@@ -275,10 +275,26 @@ extension UTMQemuVirtualMachine {
         } else {
             return false
         }
+        #elseif os(macOS) && arch(x86_64)
+        // D3DMetal also requires Apple silicon: on an Intel Mac its DXGIFactory
+        // shows an alert and exits, which hangs the render server. An x86_64
+        // build can only use it when translated by Rosetta.
+        return isTranslatedByRosetta
         #else
         return true
         #endif
     }
+
+    #if os(macOS) && arch(x86_64)
+    private static var isTranslatedByRosetta: Bool {
+        var translated: Int32 = 0
+        var size = MemoryLayout<Int32>.size
+        guard sysctlbyname("sysctl.proc_translated", &translated, &size, nil, 0) == 0 else {
+            return false
+        }
+        return translated == 1
+    }
+    #endif
 
     @MainActor private func qemuEnsureEfiVarsAvailable() async throws {
         guard let efiVarsURL = config.qemu.efiVarsURL else {
