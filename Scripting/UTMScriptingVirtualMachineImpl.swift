@@ -347,6 +347,20 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
         }
     }
 
+    @objc func installGuestTools(_ command: NSScriptCommand) {
+        withScriptCommand(command) { [self] in
+            guard let vm = vm as? any UTMSpiceVirtualMachine else {
+                throw ScriptingError.operationNotSupported
+            }
+            // waited for, unlike the menu item: a script goes on to use the drive once this returns
+            do {
+                try await data.mountWindowsSupportTools(for: vm, isWaitingForDownload: true)
+            } catch UTMDownloadSupportToolsTaskError.alreadyMounted {
+                // already in a drive: nothing to do
+            }
+        }
+    }
+
     @objc func discardSavedState(_ command: NSScriptCommand) {
         withScriptCommand(command) { [self] in
             guard vm.registryEntry.isSuspended else {

@@ -847,10 +847,23 @@ enum AlertItem: Identifiable {
         }
     }
 
-    private func mountWindowsSupportTools(for vm: any UTMSpiceVirtualMachine) async throws {
+    /// Mount the Windows guest tools, downloading them first when they are missing or out of date
+    /// - Parameters:
+    ///   - vm: Virtual machine to mount the tools in
+    ///   - isWaitingForDownload: Return once downloaded tools are mounted instead of downloading in the background
+    func mountWindowsSupportTools(for vm: any UTMSpiceVirtualMachine, isWaitingForDownload: Bool = false) async throws {
         let task = UTMDownloadSupportToolsTask(for: vm)
         if await task.hasExistingSupportTools {
             _ = try await task.mountTools()
+        } else if isWaitingForDownload {
+            try await task.validateMount()
+            listAdd(pendingVM: task.pendingVM)
+            defer {
+                listRemove(pendingVM: task.pendingVM)
+            }
+            guard try await task.download() != nil else {
+                throw UTMDownloadSupportToolsTaskError.downloadCancelled
+            }
         } else {
             listAdd(pendingVM: task.pendingVM)
             Task {

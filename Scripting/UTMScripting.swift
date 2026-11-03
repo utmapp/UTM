@@ -246,6 +246,7 @@ extension SBObject: UTMScriptingWindow {}
     @objc optional func stopBy(_ by: UTMScriptingStopMethod) // Shuts down a running virtual machine.
     @objc optional func createSnapshotNamed(_ named: String!) -> UTMScriptingSnapshot // Save the current state of a virtual machine as a new snapshot. A running QEMU virtual machine is saved along with its running state, otherwise only the disks are.
     @objc optional func scanSnapshots() // Look through the disk images of a virtual machine for snapshots that UTM does not know about yet, and mark the ones whose data has gone missing. Only needed for snapshots made by other tools.
+    @objc optional func installGuestTools() // Put the guest tools in the virtual machine's empty removable drive, as Install Windows Guest Tools does: the latest tools are downloaded first when they are missing or out of date. Returns once they are mounted (a stopped virtual machine gets them at its next start), so a download can take longer than the default Apple Event timeout: use a with timeout block. Does nothing when they are already mounted. QEMU backend only.
     @objc optional func discardSavedState() // Throw away the state a suspended virtual machine would resume from, so that it starts up normally instead. Snapshots are not affected.
     @objc optional func delete() // Delete a virtual machine. All data will be deleted, there is no confirmation!
     @objc optional func duplicateWithProperties(_ withProperties: [AnyHashable : Any]!) // Copy an virtual machine and all its data.
