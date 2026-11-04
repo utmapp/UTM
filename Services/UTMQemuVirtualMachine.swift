@@ -321,6 +321,10 @@ extension UTMQemuVirtualMachine {
         guard await isSupported else {
             throw UTMQemuVirtualMachineError.emulationNotSupported
         }
+        let networks = await config.networks
+        if !UTMCapabilities.current.contains(.hasVmnetEntitlement) && networks.contains(where: { $0.isVmnet }) {
+            throw UTMQemuVirtualMachineError.vmnetNotEntitled
+        }
 
         // create QEMU resource cache if needed
         try await ensureQemuResourceCacheUpToDate()
@@ -1130,6 +1134,7 @@ enum UTMQemuVirtualMachineError: Error {
     case keyGenerationFailed
     case vulkanNotCompatible
     case vulkanVersionNotSupported
+    case vmnetNotEntitled
 }
 
 extension UTMQemuVirtualMachineError: LocalizedError {
@@ -1152,6 +1157,8 @@ extension UTMQemuVirtualMachineError: LocalizedError {
             return NSLocalizedString("The selected Vulkan driver is not compatible with the selected renderer backend.", comment: "UTMQemuVirtualMachine")
         case .vulkanVersionNotSupported:
             return NSLocalizedString("Host OS version is too old to support the selected Vulkan driver.", comment: "UTMQemuVirtualMachine")
+        case .vmnetNotEntitled:
+            return NSLocalizedString("This build of UTM does not have the entitlement for Shared Network, Host Only or Bridged networking. Change the network mode to Emulated VLAN.", comment: "UTMQemuVirtualMachine")
         }
     }
 }
