@@ -16,6 +16,7 @@
 
 import Foundation
 import QEMUKitInternal
+import Virtualization
 
 @MainActor
 @objc(UTMScriptingVirtualMachineImpl)
@@ -245,13 +246,17 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
             guard appleVM.state == .stopped else {
                 throw ScriptingError.notStopped
             }
-            guard let ipsw = appleVM.config.system.boot.macRecoveryIpswURL else {
-                throw ScriptingError.macRecoveryIpswNotConfigured
-            }
+            let configuredIpsw = appleVM.config.system.boot.macRecoveryIpswURL
             let installation = Installation()
             Self.installations[appleVM.id] = installation
             Task { @MainActor in
                 do {
+                    // no IPSW configured: the latest one this Mac supports, downloaded first
+                    let ipsw = if let configuredIpsw {
+                        configuredIpsw
+                    } else {
+                        try await Self.downloadLatestIpsw()
+                    }
                     try await appleVM.installVM(with: ipsw)
                     // there is no window to do this in didCompleteInstallation
                     appleVM.config.system.boot.macRecoveryIpswURL = nil
@@ -615,7 +620,7 @@ extension UTMScriptingVirtualMachineImpl {
         case notStopped
         case guestAgentNotRunning
         case invalidParameter
-        case macRecoveryIpswNotConfigured
+        case ipswDownloadFailed(Int)
         case installInProgress
         case installNotStarted
         
@@ -627,7 +632,7 @@ extension UTMScriptingVirtualMachineImpl {
             case .notStopped: return NSLocalizedString("The virtual machine must be stopped before this operation can be performed.", comment: "UTMScriptingVirtualMachineImpl")
             case .guestAgentNotRunning: return NSLocalizedString("The QEMU guest agent is not running or not installed on the guest.", comment: "UTMScriptingVirtualMachineImpl")
             case .invalidParameter: return NSLocalizedString("One or more required parameters are missing or invalid.", comment: "UTMScriptingVirtualMachineImpl")
-            case .macRecoveryIpswNotConfigured: return NSLocalizedString("This virtual machine has no IPSW recovery image configured, so there is nothing to install from.", comment: "UTMScriptingVirtualMachineImpl")
+            case .ipswDownloadFailed(let status): return String.localizedStringWithFormat(NSLocalizedString("Downloading the latest IPSW recovery image failed (HTTP %d).", comment: "UTMScriptingVirtualMachineImpl"), status)
             case .installInProgress: return NSLocalizedString("This operation cannot be performed while macOS is being installed.", comment: "UTMScriptingVirtualMachineImpl")
             case .installNotStarted: return NSLocalizedString("No installation was started for this virtual machine.", comment: "UTMScriptingVirtualMachineImpl")
             }
@@ -641,5 +646,33 @@ extension UTMScriptingVirtualMachineImpl {
     private class Installation {
         var isFinished = false
         var error: Error?
+    }
+
+    /// The latest IPSW this Mac supports, from the caches directory or downloaded there
+    @nonobjc private static func downloadLatestIpsw() async throws -> URL {
+        #if arch(arm64)
+        let image = try await VZMacOSRestoreImage.latestSupported
+        let fileManager = FileManager.default
+        let cacheUrl = fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first!
+        let cacheIpsw = cacheUrl.appendingPathComponent(image.url.lastPathComponent)
+        if fileManager.fileExists(atPath: cacheIpsw.path) {
+            return cacheIpsw
+        }
+        let (location, response) = try await URLSession.shared.download(from: image.url)
+        if let response = response as? HTTPURLResponse, !(200..<300).contains(response.statusCode) {
+            try? fileManager.removeItem(at: location)
+            throw ScriptingError.ipswDownloadFailed(response.statusCode)
+        }
+        try fileManager.createDirectory(at: cacheUrl, withIntermediateDirectories: true)
+        do {
+            try fileManager.moveItem(at: location, to: cacheIpsw)
+        } catch CocoaError.fileWriteFileExists {
+            // another install downloaded it meanwhile and may be reading it: keep that one
+            try? fileManager.removeItem(at: location)
+        }
+        return cacheIpsw
+        #else
+        throw ScriptingError.operationNotSupported
+        #endif
     }
 }

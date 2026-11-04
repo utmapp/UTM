@@ -118,13 +118,17 @@ class UTMScriptingCreateCommand: NSCreateCommand, UTMScriptable {
         config.system.boot = try UTMAppleConfigurationBoot(for: bootOS)
         var macGuestMajorVersion = 0
         if bootOS == .macOS {
-            guard let ipsw = record["macRecoveryIpsw"] as? URL else {
-                throw ScriptingError.macRecoveryIpswNotSpecified
-            }
-            config.system.boot.macRecoveryIpswURL = ipsw
             #if arch(arm64)
-            // the hardware model must match the IPSW the caller chose
-            let image = try await VZMacOSRestoreImage.image(from: ipsw)
+            // without an IPSW, the hardware of the latest one this Mac supports, which
+            // install then downloads
+            let image: VZMacOSRestoreImage
+            if let ipsw = record["macRecoveryIpsw"] as? URL {
+                image = try await VZMacOSRestoreImage.image(from: ipsw)
+                config.system.boot.macRecoveryIpswURL = ipsw
+            } else {
+                image = try await VZMacOSRestoreImage.latestSupported
+            }
+            // the hardware model must match the IPSW
             guard let model = image.mostFeaturefulSupportedConfiguration?.hardwareModel else {
                 throw ScriptingError.ipswNotSupported
             }
@@ -170,7 +174,6 @@ class UTMScriptingCreateCommand: NSCreateCommand, UTMScriptable {
         case nameNotSpecified
         case architectureNotSpecified
         case operatingSystemNotSupported
-        case macRecoveryIpswNotSpecified
         case ipswNotSupported
         
         var errorDescription: String? {
@@ -182,7 +185,6 @@ class UTMScriptingCreateCommand: NSCreateCommand, UTMScriptable {
             case .nameNotSpecified: return NSLocalizedString("No name specified in the configuration.", comment: "UTMScriptingAppDelegate")
             case .architectureNotSpecified: return NSLocalizedString("No architecture specified in the configuration.", comment: "UTMScriptingAppDelegate")
             case .operatingSystemNotSupported: return NSLocalizedString("The specified operating system is not supported on your machine.", comment: "UTMScriptingAppDelegate")
-            case .macRecoveryIpswNotSpecified: return NSLocalizedString("An IPSW recovery image must be specified to create a macOS virtual machine.", comment: "UTMScriptingAppDelegate")
             case .ipswNotSupported: return NSLocalizedString("Your machine does not support running this IPSW.", comment: "UTMScriptingAppDelegate")
             }
         }
