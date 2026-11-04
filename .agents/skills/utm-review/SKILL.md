@@ -70,14 +70,29 @@ explicitly:
 - **AI attribution.** Every AI-assisted commit in `"$base"..HEAD` **must** carry an
   `Assisted-by: AGENT:MODEL` trailer — many agents omit it by default, so a missing
   trailer is a common, easy-to-miss finding, not an acceptable absence — and **no
-  `Co-authored-by`** (strip it — UTM takes full human responsibility per the
-  Linux-kernel policy). Verify with `git log --format='%H%n%B' "$base"..HEAD`.
+  `Co-authored-by`** (strip it — a human takes full responsibility for the
+  code). Verify with `git log --format='%H%n%B' "$base"..HEAD`.
 - **Scope discipline.** One feature/fix; no edits, refactors, reformatting, or
   whitespace/header churn in unrelated files; no stray logging.
 - **Generated files not hand-edited** — `Configuration/QEMUConstantGenerated.swift`,
   `Scripting/UTMScripting.swift`, QAPI/QMP wrappers. Edit the generator instead.
 - **Logging** goes through `UTMLogging`/`logging` at `debug` level (warnings and
   errors excepted); bring-up-only logging is removed before committing.
+- **Testing evidence** (rule 3), only for diffs that change code. Check the
+  evidence against rule 3's wording: how the test was done, before/after for a
+  fix, every code path including errors for a feature, and screenshots where it
+  asks for them. Look for evidence from `/utm-test` in this session, the
+  branch's evidence folder (`utm-test-evidence/<branch>` under
+  `git rev-parse --path-format=absolute --git-common-dir`; read its
+  `notes.md`), the user, or the body of an existing PR via `gh pr view`. It
+  must cover the current diff, not an earlier revision. Recompute the
+  fingerprint the way utm-test describes it, against the merge-base of `HEAD` and utmapp/UTM's `main`, using whichever remote points at utmapp/UTM (not necessarily `origin`). If it
+  doesn't match the one in `notes.md`, the code changed after testing, so
+  judge whether that change needs testing again. If it's missing, flag it as a blocker for `/utm-submit`.
+  The all-configurations UI screenshots are optional, so suggest them but don't
+  block on them. Prose-only diffs (docs, translations, skill text) don't need
+  testing, but commands or scripts in them that people or agents will run do.
+  CI configuration and scripts count as code.
 - **UI strings** avoid jargon ("GPU Acceleration" not "Venus", "Apple Silicon"
   not ARM64); commit titles are `component: short description` explaining *why*.
 
@@ -98,6 +113,31 @@ didn't touch). The goal is a change that sails through human review on the UTM
 repo, not a wall of pedantry.
 
 ## Step 6 — Record that the review ran (handoff to /utm-submit)
+
+First clean up old testing evidence. `/utm-test` keeps one folder per branch
+under `utm-test-evidence/` in the git dir, and `/utm-submit` deletes a folder
+once its PR is written. Folders left behind come from branches that no longer
+exist, so remove those:
+
+```sh
+root="$(git rev-parse --path-format=absolute --git-common-dir)/utm-test-evidence"
+[ -d "$root" ] && find "$root" -type f -name meta | while read -r m; do
+  b=$(sed -n 's/^branch=//p' "$m"); d=$(dirname "$m")
+  [ -n "$b" ] && ! git show-ref --verify --quiet "refs/heads/$b" || continue
+  echo "removing evidence for $b"
+  find "$d" -mindepth 1 -maxdepth 1 -type f -delete; rmdir "$d" 2>/dev/null
+done
+```
+
+This deletes only the files in a stale folder, never its subfolders, which may
+hold evidence for a live branch such as `foo/bar` under a deleted `foo`.
+
+List any removed folders in the report.
+
+If Step 4 found that the current branch's evidence no longer matches the change
+(for example, the fix was rewritten since it was tested), say so in the report
+and ask the user before deleting it. Before-fix screenshots often stay valid
+and are slow to recreate.
 
 `/utm-submit` checks whether the current changes were reviewed. Leave a marker so
 it can confirm even across sessions or a different agent:

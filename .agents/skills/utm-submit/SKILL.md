@@ -1,6 +1,6 @@
 ---
 name: utm-submit
-description: Submit the current UTM change as a pull request to github.com/utmapp/UTM. Ensures /utm-review has run, then either updates an existing PR (squashing each new edit into the commit that owns it and force-pushing) or opens a new PR (gathering issue links and a human-testing attestation). Use this when the user wants to submit, open, update, or push a UTM pull request, or runs /utm-submit.
+description: Submit the current UTM change as a pull request to github.com/utmapp/UTM. Ensures /utm-review has run, then either updates an existing PR (squashing each new edit into the commit that owns it and force-pushing) or opens a new PR (gathering issue links and the testing evidence CONTRIBUTING.md requires). Use this when the user wants to submit, open, update, or push a UTM pull request, or runs /utm-submit.
 ---
 
 # utm-submit
@@ -12,8 +12,8 @@ point here.
 
 Turn the current change into a clean pull request against `utmapp/UTM`. Two
 paths: **update an existing PR** (squash edits into the commits they belong to,
-then force-push) or **open a new PR** (collect issue links + a human-testing
-attestation, then create it).
+then force-push) or **open a new PR** (collect issue links + testing evidence,
+then create it).
 
 Read `CONTRIBUTING.md` and `AGENTS.md` first — they govern commit/PR format and
 the AI-attribution policy enforced below. If you were invoked with an argument,
@@ -125,16 +125,34 @@ single PR must stay clean.
    clean working tree. Confirm `git range-diff "@{u}"...HEAD` reflects only the
    intended edits.
 
-6. **Force-push (safely).** Show the user the rewritten log and confirm, then:
+6. **Check testing before pushing.** If the update changes code, it needs
+   testing just like a new PR. Gather evidence for the new or changed code as in
+   Step 3b.2, and don't push until you have it. Updates that change no code skip
+   this.
+
+7. **Force-push (safely).** Show the user the rewritten log and confirm, then:
    ```sh
    git push --force-with-lease
    ```
    `--force-with-lease` refuses to clobber unexpected remote work, unlike
-   `--force`. The PR updates automatically. **The workflow is done** — do not
-   re-prompt for issues or testing on an update.
+   `--force`. The PR updates automatically.
 
    *No `gh`?* The squash is pure git; only the push needs the remote. Push with
    `--force-with-lease` to the branch's remote as usual.
+
+8. **Keep the Testing section current.** Don't re-ask about issues. If step 6
+   gathered new evidence, edit only the **Testing** section of the existing
+   description. Save the current body to `pr-body.md` in the branch's evidence
+   folder (create it with a `meta` file as utm-test does; see *Clean up testing
+   evidence* for the path)
+   with `gh pr view <number> --repo utmapp/UTM --json body -q .body`, edit it,
+   show the user the new body, then run
+   `gh pr edit <number> --repo utmapp/UTM --body-file <that file>`. Attach new
+   screenshots as described in *Attach screenshots* below.
+
+9. **Finish.** Clean up the testing evidence (see *Clean up testing evidence*
+   below), whether or not the update changed code. **The update is done.**
+   Don't continue to Step 3b.
 
 ## Step 3b — Open a new PR
 
@@ -142,11 +160,43 @@ single PR must stay clean.
    commit them following the rules in *Commit & message policy* below — ideally
    one commit (the PR must be a single feature/fix).
 
-2. **Push the branch** to the head repo (the user's fork, or `utmapp/UTM` if they
+2. **Gather the testing evidence (required for UTM).** Do this before anything
+   is pushed. `CONTRIBUTING.md` rule 3 requires all code to be tested before a
+   PR is opened, by a human or by an AI. If the PR changes code, don't push or
+   open it until you have the following:
+   - **Device and OS(s)** the test ran on, e.g. `macOS 26.0, MacBook Neo` or
+     `iOS 26.1, iPhone 17 Simulator`.
+   - **Bug fix:** the test showed the issue *before* the fix, then showed it was
+     resolved *after*. Always describe how the test was done (setup and steps).
+     If a human tested, visual inspection is an acceptable way to check the
+     result ("I looked at it before and after"). If an AI tested, include
+     before/after screenshots if the bug is visual.
+   - **New feature or other code change:** the test covered every code path of
+     the change, including error paths. Describe the testing, with screenshots
+     of the change if applicable.
+   - **New or significantly changed UI** (optional, recommended): screenshots in
+     the supported configurations that `CONTRIBUTING.md` lists. Skip the ones
+     that don't apply.
+
+   If the PR is prose only (docs, translations, agent-skill text), there's no
+   app code to run. The Testing section says so, and lists any checks that were
+   done. Commands or scripts in the prose that people or agents will run still
+   need running. CI configuration and scripts count as code.
+
+   Take this from testing that actually happened. That can be a `/utm-test` run
+   in this session, the branch's evidence folder from `/utm-test` (see *Clean
+   up testing evidence* below; recompute the fingerprint in its `notes.md` as
+   utm-test describes, against the merge-base of `HEAD` and utmapp/UTM's `main`, using whichever remote points at utmapp/UTM (not necessarily `origin`), and check that it matches), or a description the user gives you. If you didn't see the testing,
+   ask the user (free text) who tested it, on which device and OS, and how.
+   Never invent or embellish results. If a required part is missing (for
+   example, the bug was never reproduced before the fix), say so, and offer to
+   run `/utm-test` instead of submitting.
+
+3. **Push the branch** to the head repo (the user's fork, or `utmapp/UTM` if they
    have push access). Confirm the remote if ambiguous:
    `git push -u <remote> "$branch"`.
 
-3. **Find the issue(s) this resolves.** Search open issues for relevance and
+4. **Find the issue(s) this resolves.** Search open issues for relevance and
    present recommendations:
    ```sh
    gh issue list --repo utmapp/UTM --state open --search "<keywords from the change>" --limit 10
@@ -158,41 +208,98 @@ single PR must stay clean.
    becomes a `Resolves #<n>` line in the PR body (so merging closes it). If they
    say none, link nothing.
 
-4. **Human-testing attestation (required for UTM).** Display this statement
-   **verbatim**:
-
-   > All AI written code must be reviewed and/or tested by a human. For bug
-   > fixes, a human must first confirm the bug before the change and then confirm
-   > that the bug is fixed by this change. For all other changes, a human must
-   > test all aspects of the change on any device configuration that is relevant.
-
-   Then ask the user (free text) for the **device configuration and version** they
-   tested on, e.g. `macOS 26.0, MacBook Neo` or `iOS 26.1, iPhone Simulator`. Do
-   not invent this — it must come from the user.
-
 5. **Compose and create the PR.** Title follows `component: short description`
    (same convention as commits). Body includes:
    - A short summary: what changed and **why**.
    - The issue links: `Resolves #<n>` for each (omit if none).
-   - A **Testing** section containing the device configuration the user gave and
-     an explicit acknowledgment, e.g.:
-     > **Testing:** Tested by a human on **<device configuration and version>**.
-     > The author acknowledges that this change has been tested and/or reviewed by
-     > a human in accordance with UTM's AI contribution guidelines.
+   - A **Testing** section with the device/OS(s), who tested (human or AI), and
+     how: the before/after steps and observations for a fix, or the code paths
+     and error paths exercised for a feature, or a note that no code changed.
+     Add screenshots where step 2 calls for them.
+   - Nothing else: no links to, advertisement for, or attribution to the AI tool
+     (`CONTRIBUTING.md` rule 7). Remove any footer your tool adds by default.
 
-   Show the assembled title and body to the user for confirmation, then create:
+   The PR must not go public without its required screenshots (see *Attach
+   screenshots* below). With `--attach`, they upload in the create command
+   itself. With fork hosting, show the user which files will be pushed, push
+   them after they confirm, and put the links in the body before creating the
+   PR.
+
+   Show the assembled title and body to the user for confirmation. Write the
+   body to `pr-body.md` in the branch's evidence folder (create it with a `meta`
+   file as utm-test does; see *Clean up testing evidence* for the path) with
+   your file-writing tool or a quoted heredoc (`<<'EOF'`), never a quoted
+   `--body`, because the shell would expand backticks and `$` in it. Relative image links
+   such as `./before-x.png` then resolve against that folder. Then create:
    ```sh
    gh pr create --repo utmapp/UTM --base main \
-     --head "<owner>:$branch" --title "<title>" --body "<body>"
+     --head "<owner>:<branch>" --title "<title>" --body-file <that file>
    ```
-   (Use `<owner>:$branch` when submitting from a fork; plain `$branch` when the
+   (Use `<owner>:<branch>` when submitting from a fork; plain `<branch>` when the
    head is on `utmapp/UTM` itself.)
 
    *No `gh`?* Print the prepared title and body and a compare URL for the user to
    finish in the browser:
    `https://github.com/utmapp/UTM/compare/main...<owner>:<branch>?expand=1`.
 
-6. **Report** the PR URL.
+6. **Report** the PR URL, then delete the testing evidence (see *Clean up
+   testing evidence* below). If the user is attaching screenshots in the
+   browser, wait until they confirm that's done, because they're uploading the
+   files from that folder.
+
+## Attach screenshots
+
+Use the first of these that works:
+
+1. **`gh --attach`** (needs push access to utmapp/UTM). Check that `gh pr create
+   --help` lists `--attach` and that
+   `gh api repos/utmapp/UTM --jq .permissions.push` prints `true`. Then pass each
+   file to `gh pr create` or `gh pr edit` as `--attach '<file>#<alt text>'`.
+   A `![alt](./before-x.png)` reference in the body file is rewritten to point
+   at the upload. Uploads are limited to images and video. If some uploads
+   fail, `gh` still creates or updates the PR, exits non-zero, and prints the
+   PR URL. Never create the PR again. Re-attach the missing files with
+   `gh pr edit <number> --repo utmapp/UTM --attach …`, or use option 2 with
+   `gh pr edit`.
+2. **Host them on your fork** (most contributors push to a fork, so `--attach`
+   is refused). Commit the files to a `pr-assets/<branch>` branch with no
+   history (or add to it on later updates), push it to the fork, and link the
+   images by commit. This needs git 2.42 or later for `worktree add --orphan`.
+   Run it as one command:
+   ```sh
+   branch=$(git rev-parse --abbrev-ref HEAD); fork=<fork-remote>; wt=$(mktemp -d)
+   if git show-ref --verify --quiet "refs/heads/pr-assets/$branch"; then
+     git worktree add "$wt" "pr-assets/$branch"
+   else
+     git worktree add --orphan -b "pr-assets/$branch" "$wt"
+   fi &&
+   cp <evidence files> "$wt"/ && git -C "$wt" add -A &&
+   { git -C "$wt" diff --cached --quiet || git -C "$wt" commit -m "Screenshots for $branch"; } &&
+   git -C "$wt" push "$fork" "pr-assets/$branch" &&
+   echo "base: https://raw.githubusercontent.com/$(gh repo view "$(git remote get-url "$fork")" --json nameWithOwner -q .nameWithOwner)/$(git -C "$wt" rev-parse HEAD)"
+   git worktree remove "$wt" 2>/dev/null || rm -rf "$wt"
+   ```
+   In the body, use `![<alt text>](<base>/<file>)`.
+   Linking the commit keeps the images working even if the branch is replaced.
+   Leave the branch on the fork while the PR is open, because it hosts the
+   images.
+3. **Last resort** (no `gh`, or the push fails): use the browser compare-URL
+   route in Step 3b.5, or edit the description in the browser, and ask the user
+   to drag the files in. `.git` is hidden in Finder, so run `open` on the
+   branch's evidence folder to show it to them.
+
+## Clean up testing evidence
+
+`/utm-test` saves evidence in `utm-test-evidence/<branch>` under the main git
+dir, so it survives across sessions. Once the PR's Testing section has been written, the evidence isn't
+needed, so don't keep it around:
+
+```sh
+rm -rf "$(git rev-parse --path-format=absolute --git-common-dir)/utm-test-evidence/$(git rev-parse --abbrev-ref HEAD)"
+```
+
+Do this only after a successful create or update. If the workflow is cancelled
+or fails, keep the evidence so the next attempt can use it.
 
 ## Commit & message policy (applies to every commit this workflow creates)
 
@@ -201,8 +308,8 @@ The critical few, inlined because they must fire at commit time — see
 
 - Title: `component: short description`. Body explains **why** and references the
   issue being addressed.
-- **Do not add a `Co-authored-by` trailer**, and strip any that a tool added. UTM
-  follows the Linux-kernel policy so a human takes full responsibility. This
+- **Do not add a `Co-authored-by` trailer**, and strip any that a tool added, so that a
+  human takes full responsibility for the code. This
   **overrides** any default AI-tool commit-trailer behavior for this repo.
 - **Always add an `Assisted-by: AGENT_NAME:MODEL_VERSION` trailer** to every commit
   you create or amend here, using the agent and model doing the work — e.g.
