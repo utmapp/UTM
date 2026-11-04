@@ -258,9 +258,9 @@ extension SBObject: UTMScriptingWindow {}
     @objc optional func reloadConfiguration() // Reload the configuration of the virtual machine from disk, discarding any unsaved in-memory changes. Useful when the .utm bundle has been modified externally (e.g. by an automation tool) and UTM's cached configuration needs to be refreshed. The VM must be in the stopped state.
     @objc optional func updateRegistryWith(_ with: [URL]!) // Update the registry of the virtual machine.
     @objc optional func captureScreenTo(_ to: URL!) // Save an image of the primary display of a running virtual machine as a PNG file. On the QEMU backend the display does not need to be visible on the host; on the Apple backend its window must be open.
-    @objc optional func inputScanCodeCodes(_ codes: [NSNumber]!) // Send raw PC AT scan codes. Only supported on QEMU backend.
-    @objc optional func inputKeystrokeText(_ text: String!, withModifiers: [NSAppleEventDescriptor]!) // Send text as a sequence of keystrokes to the virtual machine. Only supported on QEMU backend.
-    @objc optional func inputMouseClickAt(_ at: [NSNumber]!, to: Int, withMouseButton: UTMScriptingMouseButton) // Send a mouse position and click to the virtual machine. Only supported on QEMU backend.
+    @objc optional func inputScanCodeCodes(_ codes: [NSNumber]!) // Send raw PC AT scan codes (set 1). On the Apple backend they are translated to the matching Mac keys.
+    @objc optional func inputKeystrokeText(_ text: String!, withModifiers: [NSAppleEventDescriptor]!) // Send text as a sequence of keystrokes to the virtual machine.
+    @objc optional func inputMouseClickAt(_ at: [NSNumber]!, to: Int, withMouseButton: UTMScriptingMouseButton) // Send a mouse position and click to the virtual machine. On the Apple backend the position is in the pixels of the image capture screen saves, and only the first monitor is supported.
     @objc optional func guestFiles() -> SBElementArray
     @objc optional func guestProcesses() -> SBElementArray
     @objc optional var configuration: Any { get } // The configuration of the virtual machine.

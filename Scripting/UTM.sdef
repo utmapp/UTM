@@ -1009,7 +1009,7 @@
            </command>
     </suite>
 
-    <suite name="UTM Input Automation Suite" code="UTMi" description="UTM virtual machine input automation suite. Only supported on QEMU backend.">
+    <suite name="UTM Input Automation Suite" code="UTMi" description="UTM virtual machine input automation suite. On the Apple backend, input goes through the virtual machine's display window, which must be open.">
         <access-group identifier="com.utmapp.UTM.vm-access" />
 
         <class-extension extends="virtual machine" description="Display capture.">
@@ -1037,7 +1037,7 @@
             </responds-to>
         </class-extension>
 
-        <command name="input scan code" code="UTMiInSc" description="Send raw PC AT scan codes. Only supported on QEMU backend.">
+        <command name="input scan code" code="UTMiInSc" description="Send raw PC AT scan codes (set 1). On the Apple backend they are translated to the matching Mac keys.">
           <direct-parameter description="Virtual machine to send scan code to." type="virtual machine"/>
           <parameter name="codes" code="ScCd" description="List of PC AT scan codes.">
             <type type="integer" list="yes"/>
@@ -1054,7 +1054,7 @@
             <enumerator name="escape" code="MoEs" description="Escape (⎋)"/>
         </enumeration>
 
-        <command name="input keystroke" code="UTMiInKs" description="Send text as a sequence of keystrokes to the virtual machine. Only supported on QEMU backend.">
+        <command name="input keystroke" code="UTMiInKs" description="Send text as a sequence of keystrokes to the virtual machine.">
           <direct-parameter description="Virtual machine to send keystrokes to." type="virtual machine"/>
           <parameter name="text" code="InTx" description="ASCII characters to send as a sequence." type="text">
             <cocoa key="keystrokes"/>
@@ -1071,7 +1071,7 @@
             <enumerator name="middle" code="MsMd" description="Middle Click"/>
         </enumeration>
 
-        <command name="input mouse click" code="UTMiInMc" description="Send a mouse position and click to the virtual machine. Only supported on QEMU backend.">
+        <command name="input mouse click" code="UTMiInMc" description="Send a mouse position and click to the virtual machine. On the Apple backend the position is in the pixels of the image capture screen saves, and only the first monitor is supported.">
           <direct-parameter description="Virtual machine to send scan code to." type="virtual machine"/>
           <parameter name="at" code="McAt" description="X-Y coordinate of the absolute position on screen to perform the click. Must be a list of two numbers.">
             <type type="integer" list="yes"/>
