@@ -154,7 +154,7 @@ private struct VMListModifier: ViewModifier {
     }
 
     func body(content: Content) -> some View {
-        content
+        withToolbar(content
         #if os(macOS)
         .frame(minWidth: 250, idealWidth: 350)
         #endif
@@ -163,71 +163,7 @@ private struct VMListModifier: ViewModifier {
         #if os(macOS)
         .navigationSubtitle(data.selectedVM?.detailsTitleLabel ?? "")
         #endif
-        .toolbar {
-            #if os(macOS)
-            ToolbarItem(placement: .navigation) {
-                newButton
-            }
-            #else
-            #if !WITH_REMOTE // FIXME: implement remote feature
-            ToolbarItem(placement: .navigationBarLeading) {
-                if #available(iOS 17, visionOS 99, *) {
-                    Button {
-                        createTip.invalidate(reason: .actionPerformed)
-                        data.newVM()
-                    } label: {
-                        Image(systemName: "plus") // SwiftUI bug: tip won't show up if this is a label
-                    }.help("Create a new VM")
-                    .accessibilityIdentifier(UTMAccessibilityID.Library.newVM)
-                    .popoverTip(createTip, arrowEdge: .top)
-                } else {
-                    newButton
-                }
-            }
-            #endif
-            #if !WITH_REMOTE
-            #if os(iOS) // ToolbarSpacer is unavailable on visionOS
-            if #available(iOS 26, *) {
-                ToolbarSpacer(.fixed, placement: .navigationBarLeading)
-            }
-            #endif
-            ToolbarItem(placement: .navigationBarLeading) {
-                if #available(iOS 17, visionOS 99, *) {
-                    Button {
-                        donateTip.invalidate(reason: .actionPerformed)
-                        donatePresented.toggle()
-                    } label: {
-                        Image(systemName: "heart.fill") // SwiftUI bug: tip won't show up if this is a label
-                    }.popoverTip(donateTip, arrowEdge: .top) { action in
-                        donateTip.invalidate(reason: .actionPerformed)
-                        if action.id == "donate" {
-                            donatePresented.toggle()
-                        }
-                    }
-                } else {
-                    Button {
-                        donatePresented.toggle()
-                    } label: {
-                        Label("Donate", systemImage: "heart.fill")
-                    }
-                }
-            }
-            #endif
-            #if !os(visionOS) && !WITH_REMOTE
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button {
-                    settingsPresented.toggle()
-                } label: {
-                    Label("Settings", systemImage: "gear")
-                }
-                .accessibilityIdentifier(UTMAccessibilityID.Library.settings)
-            }
-            #endif
-            ToolbarItem(placement: .navigationBarTrailing) {
-                EditButton()
-            }
-            #endif
-        }
+        )
         #if os(iOS)
         // SwiftUI bug on iOS 14.4 and previous versions prevents multiple .sheet from working
         .sheet(isPresented: $sheetPresented) {
@@ -289,6 +225,112 @@ private struct VMListModifier: ViewModifier {
         #endif
     }
     
+    /// The list's toolbar. On iOS 26 a spacer separates the create and donate buttons. The
+    /// availability check is made here, outside the toolbar builder: a conditional inside a
+    /// ToolbarContentBuilder needs iOS 16, and the iOS 26-only spacer erased inside the builder
+    /// crashes iOS 15 on launch.
+    @ViewBuilder
+    private func withToolbar<V: View>(_ view: V) -> some View {
+        #if os(macOS)
+        view.toolbar {
+            ToolbarItem(placement: .navigation) {
+                newButton
+            }
+        }
+        #elseif WITH_REMOTE // FIXME: implement remote feature
+        view.toolbar {
+            editItem
+        }
+        #elseif os(iOS)
+        if #available(iOS 26, *) {
+            view.toolbar {
+                createItem
+                ToolbarSpacer(.fixed, placement: .navigationBarLeading)
+                donateItem
+                settingsItem
+                editItem
+            }
+        } else {
+            view.toolbar {
+                createItem
+                donateItem
+                settingsItem
+                editItem
+            }
+        }
+        #else // visionOS: no spacer, no settings
+        view.toolbar {
+            createItem
+            donateItem
+            editItem
+        }
+        #endif
+    }
+
+    #if !os(macOS)
+    #if !WITH_REMOTE
+    private var createItem: some ToolbarContent {
+        ToolbarItem(placement: .navigationBarLeading) {
+            if #available(iOS 17, visionOS 99, *) {
+                Button {
+                    createTip.invalidate(reason: .actionPerformed)
+                    data.newVM()
+                } label: {
+                    Image(systemName: "plus") // SwiftUI bug: tip won't show up if this is a label
+                }.help("Create a new VM")
+                .accessibilityIdentifier(UTMAccessibilityID.Library.newVM)
+                .popoverTip(createTip, arrowEdge: .top)
+            } else {
+                newButton
+            }
+        }
+    }
+
+    private var donateItem: some ToolbarContent {
+        ToolbarItem(placement: .navigationBarLeading) {
+            if #available(iOS 17, visionOS 99, *) {
+                Button {
+                    donateTip.invalidate(reason: .actionPerformed)
+                    donatePresented.toggle()
+                } label: {
+                    Image(systemName: "heart.fill") // SwiftUI bug: tip won't show up if this is a label
+                }.popoverTip(donateTip, arrowEdge: .top) { action in
+                    donateTip.invalidate(reason: .actionPerformed)
+                    if action.id == "donate" {
+                        donatePresented.toggle()
+                    }
+                }
+            } else {
+                Button {
+                    donatePresented.toggle()
+                } label: {
+                    Label("Donate", systemImage: "heart.fill")
+                }
+            }
+        }
+    }
+    #endif
+
+    #if !os(visionOS) && !WITH_REMOTE
+    private var settingsItem: some ToolbarContent {
+        ToolbarItem(placement: .navigationBarTrailing) {
+            Button {
+                settingsPresented.toggle()
+            } label: {
+                Label("Settings", systemImage: "gear")
+            }
+            .accessibilityIdentifier(UTMAccessibilityID.Library.settings)
+        }
+    }
+    #endif
+
+    private var editItem: some ToolbarContent {
+        ToolbarItem(placement: .navigationBarTrailing) {
+            EditButton()
+        }
+    }
+    #endif
+
     private var newButton: some View {
         Button(action: { data.newVM() }, label: {
             Label("New VM", systemImage: "plus").labelStyle(.iconOnly)
