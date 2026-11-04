@@ -81,6 +81,10 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
         }
     }
     
+    @objc var file: URL {
+        vm.pathUrl
+    }
+    
     @objc var serialPorts: [UTMScriptingSerialPortImpl] {
         if let config = vm.config as? UTMQemuConfiguration {
             return config.serials.indices.map({ UTMScriptingSerialPortImpl(qemuSerial: config.serials[$0], parent: self, index: $0) })
@@ -143,6 +147,7 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
         let bootRecoveryMode = command.evaluatedArguments?["bootRecoveryFlag"] as? Bool ?? false
         let hasProvisioning = command.evaluatedArguments?["provisioningOptions"] != nil
         let provisioning = command.evaluatedArguments?["provisioningOptions"] as? [AnyHashable : Any]
+        let environment = command.evaluatedArguments?["environment"] as? [String]
 
         withScriptCommand(command) { [self] in
             var options: UTMVirtualMachineStartOptions = []
@@ -166,6 +171,23 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
                     throw ScriptingError.operationNotSupported
                 }
                 options.insert(.bootRecovery)
+            }
+
+            var extraEnvironment: [String: String] = [:]
+            for entry in environment ?? [] {
+                guard let separator = entry.firstIndex(of: "="), separator != entry.startIndex else {
+                    throw ScriptingError.invalidParameter
+                }
+                extraEnvironment[String(entry[..<separator])] = String(entry[entry.index(after: separator)...])
+            }
+            if !extraEnvironment.isEmpty {
+                guard let vm = vm as? UTMQemuVirtualMachine else {
+                    throw ScriptingError.operationNotSupported
+                }
+                // a paused VM is resumed and keeps the environment it started with
+                guard vm.state == .stopped else {
+                    throw ScriptingError.operationNotAvailable
+                }
             }
 
             var guestProvisioning: UTMAppleGuestProvisioningOptions?
@@ -192,6 +214,8 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
             data.run(vm: box, startImmediately: false)
             if let guestProvisioning = guestProvisioning, let vm = vm as? UTMAppleVirtualMachine {
                 try await vm.start(options: options, guestProvisioning: guestProvisioning)
+            } else if !extraEnvironment.isEmpty, let vm = vm as? UTMQemuVirtualMachine {
+                try await vm.start(options: options, environment: extraEnvironment)
             } else if vm.state == .stopped {
                 try await vm.start(options: options)
             } else if vm.state == .paused {
@@ -323,6 +347,20 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
         }
     }
 
+    @objc func installGuestTools(_ command: NSScriptCommand) {
+        withScriptCommand(command) { [self] in
+            guard let vm = vm as? any UTMSpiceVirtualMachine else {
+                throw ScriptingError.operationNotSupported
+            }
+            // waited for, unlike the menu item: a script goes on to use the drive once this returns
+            do {
+                try await data.mountWindowsSupportTools(for: vm, isWaitingForDownload: true)
+            } catch UTMDownloadSupportToolsTaskError.alreadyMounted {
+                // already in a drive: nothing to do
+            }
+        }
+    }
+
     @objc func discardSavedState(_ command: NSScriptCommand) {
         withScriptCommand(command) { [self] in
             guard vm.registryEntry.isSuspended else {
@@ -368,8 +406,15 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
             let newVM = try await data.clone(vm: box)
             if let properties = properties, let newConfiguration = properties["configuration"] as? [AnyHashable : Any] {
                 let wrapper = UTMScriptingConfigImpl(newVM.config!)
-                try wrapper.updateConfiguration(from: newConfiguration)
+                do {
+                    try wrapper.updateConfiguration(from: newConfiguration)
+                    try await wrapper.validateDriveResizes()
+                } catch {
+                    try? data.discardChanges(for: newVM)
+                    throw error
+                }
                 try await data.save(vm: newVM)
+                try await wrapper.resizeDrives(of: newVM.wrapped!, data: data)
             }
         }
     }

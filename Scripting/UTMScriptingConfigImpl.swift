@@ -36,8 +36,16 @@ import Foundation
             }
             data.close(vm: box) // close window
             let wrapper = UTMScriptingConfigImpl(vm.config)
-            try wrapper.updateConfiguration(from: newConfiguration)
+            do {
+                try wrapper.updateConfiguration(from: newConfiguration)
+                try await wrapper.validateDriveResizes()
+            } catch {
+                // the configuration was changed in place: undo what is not going to be saved
+                try? data.discardChanges(for: box)
+                throw error
+            }
             try await data.save(vm: box)
+            try await wrapper.resizeDrives(of: vm, data: data)
         }
     }
 }
@@ -50,6 +58,8 @@ class UTMScriptingConfigImpl {
     
     private(set) var config: any UTMConfiguration
     private weak var data: UTMData?
+    /// Existing drives to grow to a new guest size (MiB)
+    private var pendingDriveResizes: [(id: String, sizeMib: Int)] = []
     
     init(_ config: any UTMConfiguration, data: UTMData? = nil) {
         self.config = config
@@ -108,11 +118,19 @@ extension UTMScriptingConfigImpl {
             "cpuCores": config.system.cpuCount,
             "hypervisor": config.qemu.hasHypervisor,
             "uefi": config.qemu.hasUefiBoot,
+            "debugLog": config.qemu.hasDebugLog,
+            "rngDevice": config.qemu.hasRNGDevice,
+            "balloonDevice": config.qemu.hasBalloonDevice,
+            "tpm": config.qemu.hasTPMDevice,
+            "tso": config.qemu.hasTSO,
+            "rtcLocalTime": config.qemu.hasRTCLocalTime,
+            "ps2Controller": config.qemu.hasPS2Controller,
             "directoryShareMode": qemuDirectoryShareMode(from: config.sharing.directoryShareMode).rawValue,
             "drives": config.drives.map({ serializeQemuDriveExisting($0) }),
             "networkInterfaces": config.networks.enumerated().map({ serializeQemuNetwork($1, index: $0) }),
             "serialPorts": config.serials.enumerated().map({ serializeQemuSerial($1, index: $0) }),
             "displays": config.displays.enumerated().map({ serializeQemuDisplay($1, index: $0)}),
+            "soundDevices": config.sound.enumerated().map({ serializeQemuSound($1, index: $0) }),
             "qemuAdditionalArguments": config.qemu.additionalArguments.map({ serializeQemuAdditionalArgument($0)}),
         ]
     }
@@ -215,6 +233,13 @@ extension UTMScriptingConfigImpl {
             "nativeResolution": config.isNativeResolution,
             "upscalingFilter": qemuScaler(from: config.upscalingFilter).rawValue,
             "downscalingFilter": qemuScaler(from: config.downscalingFilter).rawValue,
+        ]
+    }
+    
+    private func serializeQemuSound(_ config: UTMQemuConfigurationSound, index: Int) -> [AnyHashable : Any] {
+        [
+            "index": index,
+            "hardware": config.hardware.rawValue,
         ]
     }
     
@@ -386,6 +411,34 @@ extension UTMScriptingConfigImpl {
         if let uefi = record["uefi"] as? Bool {
             config.qemu.hasUefiBoot = uefi
         }
+        if let debugLog = record["debugLog"] as? Bool {
+            config.qemu.hasDebugLog = debugLog
+        }
+        if let rngDevice = record["rngDevice"] as? Bool {
+            config.qemu.hasRNGDevice = rngDevice
+        }
+        if let balloonDevice = record["balloonDevice"] as? Bool {
+            config.qemu.hasBalloonDevice = balloonDevice
+        }
+        if let tpm = record["tpm"] as? Bool, tpm != config.qemu.hasTPMDevice {
+            config.qemu.hasTPMDevice = tpm
+            // like the TPM toggle in the settings: Secure Boot keys come with the TPM
+            if tpm {
+                config.qemu.isUefiVariableResetRequested = true
+                config.qemu.hasPreloadedSecureBootKeys = true
+            } else {
+                config.qemu.hasPreloadedSecureBootKeys = false
+            }
+        }
+        if let tso = record["tso"] as? Bool {
+            config.qemu.hasTSO = tso
+        }
+        if let rtcLocalTime = record["rtcLocalTime"] as? Bool {
+            config.qemu.hasRTCLocalTime = rtcLocalTime
+        }
+        if let ps2Controller = record["ps2Controller"] as? Bool {
+            config.qemu.hasPS2Controller = ps2Controller
+        }
         if let directoryShareMode = parseQemuDirectoryShareMode(record["directoryShareMode"] as? AEKeyword) {
             config.sharing.directoryShareMode = directoryShareMode
         }
@@ -400,6 +453,9 @@ extension UTMScriptingConfigImpl {
         }
         if let displays = record["displays"] as? [[AnyHashable : Any]] {
             try updateQemuDisplays(from: displays)
+        }
+        if let soundDevices = record["soundDevices"] as? [[AnyHashable : Any]] {
+            try updateQemuSounds(from: soundDevices)
         }
         if let qemuAdditionalArguments = record["qemuAdditionalArguments"] as? [[AnyHashable: Any]] {
             try updateQemuAdditionalArguments(from: qemuAdditionalArguments)
@@ -437,6 +493,53 @@ extension UTMScriptingConfigImpl {
         if let source = record["source"] as? URL {
             drive.imageURL = source
         }
+        if let size = record["guestSize"] as? Int, size > 0 {
+            // like the drive settings: only a qcow2 image in the VM can grow
+            guard !drive.isExternal, !drive.isRawImage else {
+                throw ConfigurationError.driveNotResizable
+            }
+            pendingDriveResizes.append((id: drive.id, sizeMib: size))
+        }
+    }
+    
+    /// Check the new guest sizes before anything is saved, so that an invalid size changes nothing
+    ///
+    /// A drive whose source is replaced in the same update is checked at that source, which is
+    /// the image saving copies into the virtual machine.
+    func validateDriveResizes() async throws {
+        guard let config = config as? UTMQemuConfiguration else {
+            return
+        }
+        var resizes: [(id: String, sizeMib: Int)] = []
+        for resize in pendingDriveResizes {
+            guard let url = config.drives.first(where: { $0.id == resize.id })?.imageURL else {
+                throw ConfigurationError.identifierNotFound(id: resize.id)
+            }
+            let currentMib = Int(try await UTMQemuImage.size(image: url) / bytesInMib)
+            if resize.sizeMib < currentMib {
+                throw ConfigurationError.driveCannotShrink
+            } else if resize.sizeMib > currentMib {
+                resizes.append(resize)
+            }
+        }
+        pendingDriveResizes = resizes
+    }
+    
+    /// Grow the drives checked by `validateDriveResizes()`
+    ///
+    /// Run after saving, which copies a replaced source into the virtual machine and reloads
+    /// the configuration of a renamed one, so the drives are found in `vm`'s configuration.
+    func resizeDrives(of vm: any UTMVirtualMachine, data: UTMData) async throws {
+        guard let config = vm.config as? UTMQemuConfiguration else {
+            return
+        }
+        for resize in pendingDriveResizes {
+            guard let url = config.drives.first(where: { $0.id == resize.id })?.imageURL else {
+                throw ConfigurationError.identifierNotFound(id: resize.id)
+            }
+            try await data.resizeQcow2Drive(for: url, sizeInMib: resize.sizeMib)
+        }
+        pendingDriveResizes = []
     }
     
     private func unserializeQemuDriveNew(from record: [AnyHashable : Any]) throws -> UTMQemuConfigurationDrive {
@@ -496,7 +599,7 @@ extension UTMScriptingConfigImpl {
             network.bridgeInterface = interface
         }
         if let portForwards = record["portForwards"] as? [[AnyHashable : Any]] {
-            network.portForward = portForwards.map({ unserializeQemuPortForward(from: $0) })
+            network.portForward = try portForwards.map({ try unserializeQemuPortForward(from: $0) })
         }
         if let value = record["vlanGuestAddress"] as? String, !value.isEmpty {
             network.vlanGuestAddress = value
@@ -516,6 +619,10 @@ extension UTMScriptingConfigImpl {
     }
     
     private func parseNetworkProtocol(_ value: AEKeyword?) -> QEMUNetworkProtocol? {
+        // `protocol:TCP` compiles to the serial interface enumerator `tcp`, whose name comes first
+        if value == UTMScriptingSerialInterface.tcp.rawValue {
+            return .tcp
+        }
         guard let value = value, let parsed = UTMScriptingNetworkProtocol(rawValue: value) else {
             return Optional.none
         }
@@ -526,9 +633,13 @@ extension UTMScriptingConfigImpl {
         }
     }
     
-    private func unserializeQemuPortForward(from record: [AnyHashable : Any]) -> UTMQemuConfigurationPortForward {
+    private func unserializeQemuPortForward(from record: [AnyHashable : Any]) throws -> UTMQemuConfigurationPortForward {
         var forward = UTMQemuConfigurationPortForward()
-        if let protoc = parseNetworkProtocol(record["protocol"] as? AEKeyword) {
+        if let value = record["protocol"] as? AEKeyword {
+            // the other serial interface constants are accepted by the record too
+            guard let protoc = parseNetworkProtocol(value) else {
+                throw ConfigurationError.invalidNetworkProtocol
+            }
             forward.protocol = protoc
         }
         if let hostAddress = record["hostAddress"] as? String, !hostAddress.isEmpty {
@@ -590,6 +701,24 @@ extension UTMScriptingConfigImpl {
             try updateQemuExistingDisplay(&newDisplay, from: record)
             return newDisplay
         })
+    }
+    
+    private func updateQemuSounds(from records: [[AnyHashable : Any]]) throws {
+        let config = config as! UTMQemuConfiguration
+        try updateElements(&config.sound, with: records, onExisting: updateQemuExistingSound, onNew: { record in
+            guard var newSound = UTMQemuConfigurationSound(forArchitecture: config.system.architecture, target: config.system.target) else {
+                throw ConfigurationError.deviceNotSupported
+            }
+            try updateQemuExistingSound(&newSound, from: record)
+            return newSound
+        })
+    }
+    
+    private func updateQemuExistingSound(_ sound: inout UTMQemuConfigurationSound, from record: [AnyHashable : Any]) throws {
+        let config = config as! UTMQemuConfiguration
+        if let hardware = record["hardware"] as? String, let hardware = config.system.architecture.soundDeviceType.init(rawValue: hardware) {
+            sound.hardware = hardware
+        }
     }
     
     private func parseQemuScaler(_ value: AEKeyword?) -> QEMUScaler? {
@@ -791,6 +920,9 @@ extension UTMScriptingConfigImpl {
         case indexNotFound(index: Int)
         case deviceNotSupported
         case iconNotFound(icon: String)
+        case driveNotResizable
+        case driveCannotShrink
+        case invalidNetworkProtocol
         
         var errorDescription: String? {
             switch self {
@@ -799,6 +931,9 @@ extension UTMScriptingConfigImpl {
             case .indexNotFound(let index): return String.localizedStringWithFormat(NSLocalizedString("Index %lld cannot be found.", comment: "UTMScriptingConfigImpl"), index)
             case .deviceNotSupported: return NSLocalizedString("This device is not supported by the target.", comment: "UTMScriptingConfigImpl")
             case .iconNotFound(let icon): return String.localizedStringWithFormat(NSLocalizedString("The icon named '%@' cannot be found in the built-in icons.", comment: "UTMScriptingConfigImpl"), icon)
+            case .driveNotResizable: return NSLocalizedString("Only a QCOW2 drive stored in the virtual machine can be resized.", comment: "UTMScriptingConfigImpl")
+            case .driveCannotShrink: return NSLocalizedString("A drive can only be made larger.", comment: "UTMScriptingConfigImpl")
+            case .invalidNetworkProtocol: return NSLocalizedString("The protocol of a port forward must be TCP or UDP.", comment: "UTMScriptingConfigImpl")
             }
         }
     }

@@ -32,6 +32,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak) id<QEMULauncherDelegate> launcherDelegate;
 @property (nonatomic, nullable) QEMULogging *logging;
 @property (nonatomic) BOOL hasDebugLog;
+/// Merged into the environment after every other setting, so these values take precedence.
+@property (nonatomic, nullable, copy) NSDictionary<NSString *, NSString *> *extraEnvironment;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithArguments:(NSArray<NSString *> *)arguments NS_UNAVAILABLE;
