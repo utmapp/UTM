@@ -80,6 +80,12 @@ struct VMConfigQEMUView: View {
                             .help("Only available when Hypervisor is used on supported hardware. TSO speeds up Intel emulation in the guest at the cost of decreased performance in general.")
                             .disabled(!config.system.architecture.hasTSOSupport)
                     }
+                    #if os(macOS) && arch(x86_64)
+                    if config.system.architecture == .x86_64 && config.qemu.hasHypervisor {
+                        Toggle("Lock guest memory", isOn: $config.qemu.hasMemoryLock)
+                            .help("Keeps the guest's memory resident so macOS does not compress or swap it. The Mac needs enough free memory for the whole guest.")
+                    }
+                    #endif
                     Toggle("Use local time for base clock", isOn: $config.qemu.hasRTCLocalTime)
                         .help("If checked, use local time for RTC which is required for Windows. Otherwise, use UTC clock.")
                     Toggle("Force PS/2 controller", isOn: $config.qemu.hasPS2Controller)
