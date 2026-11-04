@@ -406,8 +406,13 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
             let newVM = try await data.clone(vm: box)
             if let properties = properties, let newConfiguration = properties["configuration"] as? [AnyHashable : Any] {
                 let wrapper = UTMScriptingConfigImpl(newVM.config!)
-                try wrapper.updateConfiguration(from: newConfiguration)
-                try await wrapper.validateDriveResizes()
+                do {
+                    try wrapper.updateConfiguration(from: newConfiguration)
+                    try await wrapper.validateDriveResizes()
+                } catch {
+                    try? data.discardChanges(for: newVM)
+                    throw error
+                }
                 try await data.save(vm: newVM)
                 try await wrapper.resizeDrives(of: newVM.wrapped!, data: data)
             }

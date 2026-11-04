@@ -36,8 +36,14 @@ import Foundation
             }
             data.close(vm: box) // close window
             let wrapper = UTMScriptingConfigImpl(vm.config)
-            try wrapper.updateConfiguration(from: newConfiguration)
-            try await wrapper.validateDriveResizes()
+            do {
+                try wrapper.updateConfiguration(from: newConfiguration)
+                try await wrapper.validateDriveResizes()
+            } catch {
+                // the configuration was changed in place: undo what is not going to be saved
+                try? data.discardChanges(for: box)
+                throw error
+            }
             try await data.save(vm: box)
             try await wrapper.resizeDrives(of: vm, data: data)
         }
