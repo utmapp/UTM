@@ -138,6 +138,7 @@ import Virtualization // for getting network interfaces
         resourceURL
         f()
         f("-S") // startup stopped
+        iommuArguments // must come before the devices it serves
         spiceArguments
         networkArguments
         displayArguments
@@ -510,6 +511,28 @@ import Virtualization // for getting network interfaces
         system.architecture.hasHypervisorSupport && qemu.hasHypervisor
     }
     
+    private var isQ35: Bool {
+        let target = system.target.rawValue
+        return target == "q35" || target.hasPrefix("pc-q35-")
+    }
+
+    /// Interrupt remapping lets the guest run its local APIC in x2APIC mode, where APIC accesses are
+    /// MSR exits instead of MMIO exits that hold the global lock. DMA translation stays off.
+    private var isInterruptRemappingUsed: Bool {
+        system.architecture == .x86_64 && isHypervisorUsed && isQ35 && qemu.hasInterruptRemapping
+    }
+
+    @QEMUArgumentBuilder private var iommuArguments: [QEMUArgument] {
+        if isInterruptRemappingUsed {
+            f("-device")
+            "intel-iommu"
+            "intremap=on"
+            "eim=on"
+            "dma-translation=off"
+            f()
+        }
+    }
+
     private var isTSOUsed: Bool {
         system.architecture.hasTSOSupport && qemu.hasTSO
     }
