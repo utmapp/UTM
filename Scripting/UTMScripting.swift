@@ -190,6 +190,7 @@ import ScriptingBridge
     @objc optional func `open`(_ x: Any!) -> Any // Open a document.
     @objc optional func print(_ x: Any!, withProperties: [AnyHashable : Any]!, printDialog: Bool) // Print a document.
     @objc optional func quitSaving(_ saving: UTMScriptingSaveOptions) // Quit the application.
+    @objc optional func exists(_ x: Any!) -> Bool // Verify that an object exists.
     @objc optional func importNew(_ new_: NSNumber!, from: URL!) -> SBObject // Import a new virtual machine from a file.
     @objc optional func virtualMachines() -> SBElementArray
     @objc optional var autoTerminate: Bool { get } // Auto terminate the application when all windows are closed?
@@ -252,6 +253,7 @@ extension SBObject: UTMScriptingWindow {}
     @objc optional func executeAt(_ at: String!, withArguments: [String]!, withEnvironment: [String]!, usingInput: String!, base64Encoding: Bool, outputCapturing: Bool) -> UTMScriptingGuestProcess // Execute a command or script on the guest.
     @objc optional func queryIp() -> [Any] // Query the guest for all IP addresses on its network interfaces (excluding loopback).
     @objc optional func updateConfigurationWith(_ with: Any!) // Update the configuration of the virtual machine. The VM must be in the stopped state.
+    @objc optional func reloadConfiguration() // Reload the configuration of the virtual machine from disk, discarding any unsaved in-memory changes. Useful when the .utm bundle has been modified externally (e.g. by an automation tool) and UTM's cached configuration needs to be refreshed. The VM must be in the stopped state.
     @objc optional func updateRegistryWith(_ with: [URL]!) // Update the registry of the virtual machine.
     @objc optional func inputScanCodeCodes(_ codes: [NSNumber]!) // Send raw PC AT scan codes. Only supported on QEMU backend.
     @objc optional func inputKeystrokeText(_ text: String!, withModifiers: [NSAppleEventDescriptor]!) // Send text as a sequence of keystrokes to the virtual machine. Only supported on QEMU backend.
@@ -310,7 +312,7 @@ extension SBObject: UTMScriptingGuestProcess {}
 
 // MARK: UTMScriptingUsbDevice
 @objc public protocol UTMScriptingUsbDevice: SBObjectProtocol, UTMScriptingGenericMethods {
-    @objc optional func id() -> Int // A unique identifier corrosponding to the USB bus and port number.
+    @objc optional func id() -> Int // A unique identifier corresponding to the USB bus and port number.
     @objc optional var name: String { get } // The name of the USB device.
     @objc optional var manufacturerName: String { get } // The product name described by the iManufacturer descriptor.
     @objc optional var productName: String { get } // The product name described by the iProduct descriptor.
