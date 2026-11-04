@@ -149,8 +149,8 @@ private extension UTMScriptingMouseButton {
                 throw ScriptingError.notRunning
             }
             // an Apple VM can only take a screenshot from its open window
-            guard vm is any UTMSpiceVirtualMachine else {
-                throw ScriptingError.operationNotSupported
+            if let appleVM = vm as? UTMAppleVirtualMachine, appleVM.screenshotDelegate == nil {
+                throw ScriptingError.operationNotAvailable
             }
             // the previous screenshot stays in place when capturing fails: never save that one
             let previous = vm.screenshot?.image

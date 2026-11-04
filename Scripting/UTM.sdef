@@ -1018,7 +1018,7 @@
             </responds-to>
         </class-extension>
 
-        <command name="capture screen" code="UTMiCpSc" description="Save an image of the primary display of a running virtual machine as a PNG file. The display does not need to be visible on the host.">
+        <command name="capture screen" code="UTMiCpSc" description="Save an image of the primary display of a running virtual machine as a PNG file. On the QEMU backend the display does not need to be visible on the host; on the Apple backend its window must be open.">
           <direct-parameter description="Virtual machine to capture." type="virtual machine"/>
           <parameter name="to" code="CpTo" description="The host file to save the image to. It is replaced if it exists." type="file">
             <cocoa key="file"/>
