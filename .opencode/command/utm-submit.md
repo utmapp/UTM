@@ -1,5 +1,5 @@
 ---
-description: Submit the current UTM change as a PR to utmapp/UTM — ensures /utm-review ran, then updates an existing PR (blame-squash + force-push) or opens a new one (issue links + human-test attestation).
+description: Submit the current UTM change as a PR to utmapp/UTM — ensures /utm-review ran, then updates an existing PR (blame-squash + force-push) or opens a new one (issue links + testing evidence).
 ---
 
 Follow this UTM submission workflow end to end. To run the Step 1 review gate,
