@@ -61,6 +61,17 @@ class UTMDownloadSupportToolsTask: UTMDownloadTask {
     }
     
     func mountTools() async throws -> any UTMVirtualMachine {
+        let drive = try await mountableDrive()
+        try await vm.changeMedium(drive, to: supportToolsLocalUrl)
+        return vm
+    }
+    
+    /// Throws the error that mounting the tools would, without downloading or mounting them
+    func validateMount() async throws {
+        _ = try await mountableDrive()
+    }
+    
+    private func mountableDrive() async throws -> UTMQemuConfigurationDrive {
         for file in await vm.registryEntry.externalDrives.values {
             if file.path == supportToolsLocalUrl.path {
                 throw UTMDownloadSupportToolsTaskError.alreadyMounted
@@ -69,14 +80,14 @@ class UTMDownloadSupportToolsTask: UTMDownloadTask {
         guard let drive = await vm.config.drives.last(where: { $0.isExternal && $0.imageURL == nil }) else {
             throw UTMDownloadSupportToolsTaskError.driveUnavailable
         }
-        try await vm.changeMedium(drive, to: supportToolsLocalUrl)
-        return vm
+        return drive
     }
 }
 
 enum UTMDownloadSupportToolsTaskError: Error {
     case driveUnavailable
     case alreadyMounted
+    case downloadCancelled
 }
 
 extension UTMDownloadSupportToolsTaskError: LocalizedError {
@@ -84,6 +95,7 @@ extension UTMDownloadSupportToolsTaskError: LocalizedError {
         switch self {
         case .driveUnavailable: return NSLocalizedString("No empty removable drive found. Make sure you have at least one removable drive that is not in use.", comment: "UTMDownloadSupportToolsTaskError")
         case .alreadyMounted: return NSLocalizedString("The guest support tools have already been mounted.", comment: "UTMDownloadSupportToolsTaskError")
+        case .downloadCancelled: return NSLocalizedString("The download of the guest support tools was cancelled.", comment: "UTMDownloadSupportToolsTaskError")
         }
     }
 }

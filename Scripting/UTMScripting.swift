@@ -190,6 +190,7 @@ import ScriptingBridge
     @objc optional func `open`(_ x: Any!) -> Any // Open a document.
     @objc optional func print(_ x: Any!, withProperties: [AnyHashable : Any]!, printDialog: Bool) // Print a document.
     @objc optional func quitSaving(_ saving: UTMScriptingSaveOptions) // Quit the application.
+    @objc optional func exists(_ x: Any!) -> Bool // Verify that an object exists.
     @objc optional func importNew(_ new_: NSNumber!, from: URL!) -> SBObject // Import a new virtual machine from a file.
     @objc optional func virtualMachines() -> SBElementArray
     @objc optional var autoTerminate: Bool { get } // Auto terminate the application when all windows are closed?
@@ -237,13 +238,15 @@ extension SBObject: UTMScriptingWindow {}
     @objc optional var name: String { get } // The name of the VM.
     @objc optional var backend: UTMScriptingBackend { get } // Emulation/virtualization engine used.
     @objc optional var status: UTMScriptingStatus { get } // Current running status.
-    @objc optional func startSaving(_ saving: Bool, recovery: Bool, provisioning: [AnyHashable : Any]!) // Start a virtual machine or resume a suspended virtual machine.
+    @objc optional var file: URL { get } // Location of the virtual machine (its .utm package) on disk.
+    @objc optional func startSaving(_ saving: Bool, recovery: Bool, provisioning: [AnyHashable : Any]!, environment: [String]!) // Start a virtual machine or resume a suspended virtual machine.
     @objc optional func install() // Install macOS on a stopped Apple virtual machine from its IPSW recovery image. All data on the primary drive will be erased, there is no confirmation! Returns once the installation starts, use query install to follow its progress.
     @objc optional func queryInstall() -> [AnyHashable : Any] // Query the progress of the last installation started with install. Raises an error if the installation failed.
     @objc optional func suspendSaving(_ saving: Bool) // Suspend a running virtual machine to memory.
     @objc optional func stopBy(_ by: UTMScriptingStopMethod) // Shuts down a running virtual machine.
     @objc optional func createSnapshotNamed(_ named: String!) -> UTMScriptingSnapshot // Save the current state of a virtual machine as a new snapshot. A running QEMU virtual machine is saved along with its running state, otherwise only the disks are.
     @objc optional func scanSnapshots() // Look through the disk images of a virtual machine for snapshots that UTM does not know about yet, and mark the ones whose data has gone missing. Only needed for snapshots made by other tools.
+    @objc optional func installGuestTools() // Put the guest tools in the virtual machine's empty removable drive, as Install Windows Guest Tools does: the latest tools are downloaded first when they are missing or out of date. Returns once they are mounted (a stopped virtual machine gets them at its next start), so a download can take longer than the default Apple Event timeout: use a with timeout block. Does nothing when they are already mounted. QEMU backend only.
     @objc optional func discardSavedState() // Throw away the state a suspended virtual machine would resume from, so that it starts up normally instead. Snapshots are not affected.
     @objc optional func delete() // Delete a virtual machine. All data will be deleted, there is no confirmation!
     @objc optional func duplicateWithProperties(_ withProperties: [AnyHashable : Any]!) // Copy an virtual machine and all its data.
@@ -252,7 +255,9 @@ extension SBObject: UTMScriptingWindow {}
     @objc optional func executeAt(_ at: String!, withArguments: [String]!, withEnvironment: [String]!, usingInput: String!, base64Encoding: Bool, outputCapturing: Bool) -> UTMScriptingGuestProcess // Execute a command or script on the guest.
     @objc optional func queryIp() -> [Any] // Query the guest for all IP addresses on its network interfaces (excluding loopback).
     @objc optional func updateConfigurationWith(_ with: Any!) // Update the configuration of the virtual machine. The VM must be in the stopped state.
+    @objc optional func reloadConfiguration() // Reload the configuration of the virtual machine from disk, discarding any unsaved in-memory changes. Useful when the .utm bundle has been modified externally (e.g. by an automation tool) and UTM's cached configuration needs to be refreshed. The VM must be in the stopped state.
     @objc optional func updateRegistryWith(_ with: [URL]!) // Update the registry of the virtual machine.
+    @objc optional func captureScreenTo(_ to: URL!) // Save an image of the primary display of a running virtual machine as a PNG file. The display does not need to be visible on the host.
     @objc optional func inputScanCodeCodes(_ codes: [NSNumber]!) // Send raw PC AT scan codes. Only supported on QEMU backend.
     @objc optional func inputKeystrokeText(_ text: String!, withModifiers: [NSAppleEventDescriptor]!) // Send text as a sequence of keystrokes to the virtual machine. Only supported on QEMU backend.
     @objc optional func inputMouseClickAt(_ at: [NSNumber]!, to: Int, withMouseButton: UTMScriptingMouseButton) // Send a mouse position and click to the virtual machine. Only supported on QEMU backend.
@@ -310,7 +315,7 @@ extension SBObject: UTMScriptingGuestProcess {}
 
 // MARK: UTMScriptingUsbDevice
 @objc public protocol UTMScriptingUsbDevice: SBObjectProtocol, UTMScriptingGenericMethods {
-    @objc optional func id() -> Int // A unique identifier corrosponding to the USB bus and port number.
+    @objc optional func id() -> Int // A unique identifier corresponding to the USB bus and port number.
     @objc optional var name: String { get } // The name of the USB device.
     @objc optional var manufacturerName: String { get } // The product name described by the iManufacturer descriptor.
     @objc optional var productName: String { get } // The product name described by the iProduct descriptor.

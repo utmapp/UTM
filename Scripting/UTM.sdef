@@ -75,6 +75,10 @@
           <parameter name="provisioning" code="GpOp" description="Set up a macOS guest without user interaction. Only applies to the first start after macOS is installed and is never saved. Requires the Apple backend, macOS 27 or later, and a guest with macOS 27 or later." type="guest provisioning" optional="yes">
             <cocoa key="provisioningOptions"/>
           </parameter>
+          <parameter name="environment" code="EnVi" description="Extra environment variables for this start only, each as &quot;NAME=value&quot;. They are passed to the emulator and its helper processes (for example the GPU render server) and are never saved. Only supported on QEMU backend." optional="yes">
+            <type type="text" list="yes"/>
+            <cocoa key="environment"/>
+          </parameter>
         </command>
         
         <record-type name="guest provisioning" code="GpCf" description="Account to create when setting up a macOS guest.">
@@ -151,6 +155,10 @@
           <direct-parameter description="Virtual machine to scan." type="virtual machine"/>
         </command>
 
+        <command name="install guest tools" code="UTMvigts" description="Put the guest tools in the virtual machine's empty removable drive, as Install Windows Guest Tools does: the latest tools are downloaded first when they are missing or out of date. Returns once they are mounted (a stopped virtual machine gets them at its next start), so a download can take longer than the default Apple Event timeout: use a with timeout block. Does nothing when they are already mounted. QEMU backend only.">
+          <direct-parameter description="Virtual machine to put the guest tools in." type="virtual machine"/>
+        </command>
+
         <command name="discard saved state" code="UTMvdcss" description="Throw away the state a suspended virtual machine would resume from, so that it starts up normally instead. Snapshots are not affected.">
           <direct-parameter description="Virtual machine to discard the saved state of." type="virtual machine"/>
         </command>
@@ -204,6 +212,9 @@
           <property name="status" code="StUs" type="status" access="r"
             description="Current running status."/>
 
+          <property name="file" code="file" type="file" access="r"
+            description="Location of the virtual machine (its .utm package) on disk."/>
+
           <element type="serial port" access="r"
             description="Serial ports exposed by the guest to the host to access.">
             <cocoa key="serialPorts"/>
@@ -242,6 +253,9 @@
             <cocoa method="scanSnapshots:"/>
           </responds-to>
 
+          <responds-to command="install guest tools">
+            <cocoa method="installGuestTools:"/>
+          </responds-to>
           <responds-to command="discard saved state">
             <cocoa method="discardSavedState:"/>
           </responds-to>
@@ -580,6 +594,27 @@
           <property name="uefi" code="UeFi" type="boolean"
             description="Use UEFI boot?"/>
             
+          <property name="debug log" code="DbLg" type="boolean"
+            description="Write the emulator's output to debug.log in the virtual machine's data?"/>
+            
+          <property name="rng device" code="RnGd" type="boolean"
+            description="Create a virtio-rng device (if supported)?"/>
+            
+          <property name="balloon device" code="BlNd" type="boolean"
+            description="Create a virtio-balloon device (if supported)?"/>
+            
+          <property name="tpm" code="TpMd" type="boolean"
+            description="Create a TPM 2.0 device? Turning it on resets the UEFI variables and loads the Secure Boot keys, as the TPM 2.0 Device setting does."/>
+            
+          <property name="tso" code="TsOr" type="boolean"
+            description="Use total store ordering (if supported by the hypervisor)?"/>
+            
+          <property name="rtc local time" code="RtLt" type="boolean"
+            description="Use local time instead of UTC for the real time clock (required for Windows)?"/>
+            
+          <property name="ps2 controller" code="Ps2C" type="boolean"
+            description="Create a PS/2 controller even when USB input is supported (required for older Windows)?"/>
+            
           <property name="directory share mode" code="DrSm" type="qemu directory share mode"
             description="Mode for directory sharing."/>
             
@@ -601,6 +636,11 @@
           <property name="displays" code="DiPs"
             description="List of display configuration.">
             <type type="qemu display configuration" list="yes"/>
+          </property>
+          
+          <property name="sound devices" code="SnDs"
+            description="List of sound configuration.">
+            <type type="qemu sound configuration" list="yes"/>
           </property>
           
           <property name="qemu additional arguments" code="QeAd"
@@ -629,7 +669,7 @@
             description="The size of this drive as seen by the host (in MiB)."/>
             
           <property name="guest size" code="GuSz" type="integer"
-            description="The size of this drive as seen by the guest (in MiB)."/>
+            description="The size of this drive as seen by the guest (in MiB). Setting it on an existing QCOW2 drive stored in the virtual machine makes the drive larger (it cannot be made smaller); back up the virtual machine first."/>
             
           <property name="raw" code="RaAw" type="boolean"
             description="Is this disk image raw format (only for newly created drives)?"/>
@@ -696,8 +736,11 @@
         </enumeration>
         
         <record-type name="qemu port forward" code="QePf" description="QEMU port forward configuration.">
-          <property name="protocol" code="PrTl" type="network protocol"
-            description="Protocol of the port that will be forwarded."/>
+          <property name="protocol" code="PrTl"
+            description="Protocol of the port that will be forwarded.">
+            <type type="network protocol"/>
+            <type type="serial interface" hidden="yes"/>
+          </property>
             
           <property name="host address" code="HoAd" type="text"
             description="The host interface IP address to forward to (if empty, it will forward to any interface)."/>
@@ -749,6 +792,14 @@
             
           <property name="downscaling filter" code="DoFi" type="qemu scaler"
             description="Filter to use when downscaling."/>
+        </record-type>
+        
+        <record-type name="qemu sound configuration" code="QeSd" description="QEMU virtual sound configuration.">
+          <property name="index" code="pidx" type="integer"
+            description="The position of the configuration to update. It can be empty to create a new device. Index is invalid after updating the configuration and must be reset to the current position."/>
+
+          <property name="hardware" code="HaWe" type="text"
+            description="Name of the emulated sound card (if empty or not found, the default will be used)."/>
         </record-type>
         
         <enumeration name="qemu scaler" code="QeSc" description="QEMU Scaler.">
@@ -960,6 +1011,19 @@
 
     <suite name="UTM Input Automation Suite" code="UTMi" description="UTM virtual machine input automation suite. Only supported on QEMU backend.">
         <access-group identifier="com.utmapp.UTM.vm-access" />
+
+        <class-extension extends="virtual machine" description="Display capture.">
+            <responds-to command="capture screen">
+              <cocoa method="captureScreen:"/>
+            </responds-to>
+        </class-extension>
+
+        <command name="capture screen" code="UTMiCpSc" description="Save an image of the primary display of a running virtual machine as a PNG file. The display does not need to be visible on the host.">
+          <direct-parameter description="Virtual machine to capture." type="virtual machine"/>
+          <parameter name="to" code="CpTo" description="The host file to save the image to. It is replaced if it exists." type="file">
+            <cocoa key="file"/>
+          </parameter>
+        </command>
 
         <class-extension extends="virtual machine" description="Input automation.">
             <responds-to command="input scan code">

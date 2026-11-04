@@ -224,9 +224,10 @@ extension UTMQemuConfigurationQEMU {
         } else if FileManager.default.fileExists(atPath: possibleTpmDataURL.path) {
             existing.append(possibleTpmDataURL) // do not delete any existing TPM data
         }
+        // set like the decoder does, so a VM created in this session logs too
+        debugLogURL = dataURL.appendingPathComponent(QEMUPackageFileName.debugLog.rawValue)
         if hasDebugLog {
-            let debugLogURL = dataURL.appendingPathComponent(QEMUPackageFileName.debugLog.rawValue)
-            existing.append(debugLogURL)
+            existing.append(debugLogURL!)
         }
         return existing
     }
