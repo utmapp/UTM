@@ -551,6 +551,11 @@ import Virtualization // for getting network interfaces
         }
     }
 
+    /// Keeps guest RAM resident so the host does not compress or swap it.
+    private var isMemoryLockUsed: Bool {
+        system.architecture == .x86_64 && isHypervisorUsed && qemu.hasMemoryLock
+    }
+
     private var isTSOUsed: Bool {
         system.architecture.hasTSOSupport && qemu.hasTSO
     }
@@ -694,6 +699,10 @@ import Virtualization // for getting network interfaces
         f("-m")
         system.memorySize
         f()
+        if isMemoryLockUsed {
+            f("-overcommit")
+            f("mem-lock=on")
+        }
     }
     
     var hasCustomBios: Bool {
