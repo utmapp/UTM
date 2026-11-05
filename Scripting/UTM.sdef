@@ -52,7 +52,7 @@
             <enumerator name="stopping" code="StSg" description="VM is stopping."/>
         </enumeration>
         
-        <enumeration name="stop method" code="VmEs" description="Stop by method.">
+        <enumeration name="stop method" code="VmSm" description="Stop by method.">
             <enumerator name="force" code="FoRc" description="Force stop VM by sending stop request to the backend."/>
             <enumerator name="kill" code="KiLl" description="Force kill VM by terminating the backend."/>
             <enumerator name="request" code="ReQu" description="Send a power down request to the guest OS which may be ignored."/>
