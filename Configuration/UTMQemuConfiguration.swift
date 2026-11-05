@@ -368,3 +368,27 @@ extension UTMQemuConfiguration {
         return existingDataURLs
     }
 }
+
+// MARK: - Device availability
+
+@MainActor extension UTMQemuConfiguration {
+    /// Architectures with one fixed framebuffer take a single display; the others any
+    /// number of the cards they offer.
+    var canAddDisplay: Bool {
+        if [.sparc, .sparc64, .m68k].contains(system.architecture) {
+            return displays.count < 1
+        } else {
+            return !system.architecture.displayDeviceType.allRawValues.isEmpty
+        }
+    }
+    
+    /// A network device can be added when the architecture offers one.
+    var canAddNetwork: Bool {
+        !system.architecture.networkDeviceType.allRawValues.isEmpty
+    }
+    
+    /// A sound device can be added when the architecture offers one.
+    var canAddSound: Bool {
+        !system.architecture.soundDeviceType.allRawValues.isEmpty
+    }
+}
