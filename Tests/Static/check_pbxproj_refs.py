@@ -16,7 +16,7 @@ import sys
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 PBXPROJ = os.path.join(ROOT, "UTM.xcodeproj", "project.pbxproj")
 SOURCE_DIRS = ["Configuration", "Services", "Scripting", "Remote", "Intents", "Platform",
-               "QEMUHelper", "QEMULauncher", "iOSHelper", "JailbreakInterposer", "utmctl"]
+               "QEMUHelper", "QEMULauncher", "iOSHelper", "JailbreakInterposer", "utmctl", "Tests"]
 EXTENSIONS = (".swift", ".m", ".c", ".h", ".sdef")
 REF_RE = re.compile(r'isa = PBXFileReference;.*?path = "?([^";]+)"?;')
 
