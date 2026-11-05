@@ -17,11 +17,13 @@ case "$mode" in
         run check_l10n_format.py
         run check_settings_bundle.py
         run check_pbxproj_refs.py
+        run check_scripting_bridge.py
         run check_sdef_codes.py --no-sdp ;;
     all)
         run check_l10n_format.py
         run check_settings_bundle.py
         run check_pbxproj_refs.py
+        run check_scripting_bridge.py
         run check_sdef_codes.py ;;
     *)
         echo "usage: $0 [--no-sdp | --sdp-only]" >&2

@@ -72,3 +72,4 @@ sysroot*/
 .DS_Store
 CodeSigning.xcconfig
 __pycache__/
+scripts/SwiftScripting/
