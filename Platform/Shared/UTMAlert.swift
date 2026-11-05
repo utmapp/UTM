@@ -20,7 +20,8 @@ import SwiftUI
 ///
 /// This is `.alert(item:content:)` wrapped in a modifier whose stored properties the
 /// unit tests can read, so a presented alert can be inspected. There is no behaviour
-/// difference from calling `.alert(item:content:)` directly.
+/// difference from calling `.alert(item:content:)` directly. Call sites move to it as
+/// their views gain tests; both spellings are expected to coexist until then.
 struct UTMAlertWithItemModifier<Item: Identifiable>: ViewModifier {
     let item: Binding<Item?>
     let popupBuilder: (Item) -> Alert
