@@ -10,6 +10,7 @@ settings of an installed UTM.
 | `macOS/` | `UTMTests` | Tests of macOS-only code such as scripting, compiled only into the macOS-hosted bundle |
 | `Shared/` | `UTMTests`, `UTMTests-iOS` | XCTest unit tests hosted by the macOS app, and by the iOS app on a simulator (`@testable import UTM`); every file here is compiled into both bundles |
 | `Fixtures/` | `UTMTests`, `UTMTests-iOS` | Resource files the tests load, such as legacy `config.plist` files |
+| `UITests/macOS/` | `UTMUITests` | XCUITest flows that launch the macOS app and drive its windows |
 | `Static/` | none | Scripts that check the tree without building it (`sh Tests/Static/run_all.sh`) |
 
 The `Shared/Views/` tests inspect SwiftUI views with
@@ -63,6 +64,26 @@ keeps its data per app, so nothing of an installed UTM is touched. The script ke
 the simulator build out of Documents, Desktop and Downloads: a simulator app that
 opens a file there is held on macOS's privacy prompt, and dyld opens the derived
 data paths before XCTest can connect, so the host would hang silently.
+
+## Running the UI tests
+
+The UI tests launch the same test build of the app and click through it, so
+they need a logged-in desktop session on the machine that runs them. The
+script runs them only when selected (a scheme cannot both skip a bundle and
+let `-only-testing` pick it, so in Xcode deselect `UTMUITests` in the test
+action before pressing Cmd-U against a Debug app that is not a test build):
+
+```sh
+./scripts/test_utm.sh -only-testing:UTMUITests
+```
+
+Each test starts the app with `-UTMTestReset`, which empties the test build's
+defaults and documents, and `-UTMTestMode`, which keeps the release notes, the
+server and screenshots out of the way (`Platform/UTMTestSupport.swift`; only a
+bundle identifier with the test prefix honours them). Tests find controls by the
+identifiers in `Platform/Shared/UTMAccessibilityID.swift`, which is compiled
+into the bundle, and only by a visible label where there is no identifier yet.
+No test starts a VM.
 
 ## Writing tests
 

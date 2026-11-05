@@ -5,7 +5,8 @@
 # own sandbox container and defaults and never touches an installed UTM. A dSYM
 # is generated because XCTest symbolicates failures against the host, which
 # takes minutes without one. Any extra arguments go to xcodebuild, for example
-# -only-testing:UTMTests/QEMUArgumentFragmentTests (UTMTests-iOS/... under -s).
+# -only-testing:UTMTests/QEMUArgumentFragmentTests (UTMTests-iOS/... under -s), or
+# -only-testing:UTMUITests for the UI tests, which need a logged-in desktop session.
 #
 # With -s the same tests run in the UTMTests-iOS bundle hosted by the iOS app
 # on a simulator: the newest runtime's first iPhone, or the device named with -s.
