@@ -115,3 +115,27 @@ extension UTMQemuConfigurationSerial {
         terminal = UTMConfigurationTerminal(migrating: oldConfig)
     }
 }
+
+// MARK: - Editing rules
+
+extension UTMQemuConfigurationSerial {
+    /// Changes the connection mode; the built-in terminal gets default settings if it has none.
+    mutating func setMode(_ mode: QEMUSerialMode) {
+        self.mode = mode
+        if mode == .builtin && terminal == nil {
+            terminal = .init()
+        }
+    }
+    
+    /// Changes the target; a manual device needs the architecture to offer serial devices.
+    ///
+    /// Returns false when the target is unavailable, in which case the target is automatic.
+    mutating func setTarget(_ target: QEMUSerialTarget, for architecture: QEMUArchitecture) -> Bool {
+        if target == .manualDevice && architecture.serialDeviceType.allRawValues.isEmpty {
+            self.target = .autoDevice
+            return false
+        }
+        self.target = target
+        return true
+    }
+}
