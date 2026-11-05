@@ -1358,6 +1358,12 @@
 		951F69FE19D644E4A92B80EC /* BackendParityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DA6FCF6A6640F182F851DF /* BackendParityTests.swift */; };
 		BA0FE8CFF9B34E3A95F168AF /* TestConfigurations.swift in Sources */ = {isa = PBXBuildFile; fileRef = C62B133DC3164A6A806FAD0D /* TestConfigurations.swift */; };
 		0F157B0720664F8F98037999 /* UTMRegistryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A7451A6F94449678EEF94C3 /* UTMRegistryTests.swift */; };
+		496BD9543BD94B9D9B10F9BF /* QemuArgumentGoldenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C559D6005C434CECA5B787A1 /* QemuArgumentGoldenTests.swift */; };
+		F4ADA10BCC2F44CAABC17854 /* aarch64-virt-virtio-disk.argv in Resources */ = {isa = PBXBuildFile; fileRef = E45365E7544B43488BA1366D /* aarch64-virt-virtio-disk.argv */; };
+		A8BC5FDA89544654A64A1DE4 /* aarch64-virt-headless-serial.argv in Resources */ = {isa = PBXBuildFile; fileRef = AF6542B7D3514345AB4F2EE3 /* aarch64-virt-headless-serial.argv */; };
+		0DA80D8DB5F64B7A918C139D /* x86_64-q35-ide-cd-disk.argv in Resources */ = {isa = PBXBuildFile; fileRef = DD5CFAD3EAD34985867FB436 /* x86_64-q35-ide-cd-disk.argv */; };
+		09979BCA86684F29BA320B34 /* x86_64-pc-ide-disk.argv in Resources */ = {isa = PBXBuildFile; fileRef = 6DB2BC2EEE4648FEBFBE0094 /* x86_64-pc-ide-disk.argv */; };
+		1C8E0FDB83BC495FA850F0F7 /* QemuArgumentTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B3FD77481DA4C73A8AF6B1B /* QemuArgumentTestCase.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -2366,6 +2372,12 @@
 		C6DA6FCF6A6640F182F851DF /* BackendParityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendParityTests.swift; sourceTree = "<group>"; };
 		C62B133DC3164A6A806FAD0D /* TestConfigurations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestConfigurations.swift; sourceTree = "<group>"; };
 		1A7451A6F94449678EEF94C3 /* UTMRegistryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMRegistryTests.swift; sourceTree = "<group>"; };
+		C559D6005C434CECA5B787A1 /* QemuArgumentGoldenTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QemuArgumentGoldenTests.swift; sourceTree = "<group>"; };
+		E45365E7544B43488BA1366D /* aarch64-virt-virtio-disk.argv */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "aarch64-virt-virtio-disk.argv"; sourceTree = "<group>"; };
+		AF6542B7D3514345AB4F2EE3 /* aarch64-virt-headless-serial.argv */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "aarch64-virt-headless-serial.argv"; sourceTree = "<group>"; };
+		DD5CFAD3EAD34985867FB436 /* x86_64-q35-ide-cd-disk.argv */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "x86_64-q35-ide-cd-disk.argv"; sourceTree = "<group>"; };
+		6DB2BC2EEE4648FEBFBE0094 /* x86_64-pc-ide-disk.argv */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "x86_64-pc-ide-disk.argv"; sourceTree = "<group>"; };
+		8B3FD77481DA4C73A8AF6B1B /* QemuArgumentTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QemuArgumentTestCase.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2768,6 +2780,7 @@
 		77DE0AB22822BD906EC364A7 /* Fixtures */ = {
 			isa = PBXGroup;
 			children = (
+				1471EB5EA8794EE1833C6E4C /* expected */,
 				52BBF302E368431F1EC0A61D /* legacy */,
 			);
 			name = Fixtures;
@@ -2840,6 +2853,7 @@
 				E29161B576128A4351B58791 /* UTMQemuConfigurationLegacyMigrationTests.swift */,
 				E6D2C33615EC3C4B208DDA33 /* UTMQemuConfigurationPortForwardTests.swift */,
 				B3F4D5F286AD403BA029AEA5 /* QemuArgumentsTests.swift */,
+				C559D6005C434CECA5B787A1 /* QemuArgumentGoldenTests.swift */,
 			);
 			name = Configuration;
 			path = Configuration;
@@ -3462,6 +3476,7 @@
 				4DE790202347484DBF037863 /* ZipArchiveBuilder.swift */,
 				C3375AF9FA6F41F884122476 /* QEMUArgumentList.swift */,
 				C62B133DC3164A6A806FAD0D /* TestConfigurations.swift */,
+				8B3FD77481DA4C73A8AF6B1B /* QemuArgumentTestCase.swift */,
 			);
 			path = Support;
 			sourceTree = "<group>";
@@ -3513,6 +3528,18 @@
 				1A7451A6F94449678EEF94C3 /* UTMRegistryTests.swift */,
 			);
 			path = Services;
+			sourceTree = "<group>";
+		};
+		1471EB5EA8794EE1833C6E4C /* expected */ = {
+			isa = PBXGroup;
+			children = (
+				6DB2BC2EEE4648FEBFBE0094 /* x86_64-pc-ide-disk.argv */,
+				DD5CFAD3EAD34985867FB436 /* x86_64-q35-ide-cd-disk.argv */,
+				AF6542B7D3514345AB4F2EE3 /* aarch64-virt-headless-serial.argv */,
+				E45365E7544B43488BA1366D /* aarch64-virt-virtio-disk.argv */,
+			);
+			name = expected;
+			path = expected;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -3914,6 +3941,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				09979BCA86684F29BA320B34 /* x86_64-pc-ide-disk.argv in Resources */,
+				0DA80D8DB5F64B7A918C139D /* x86_64-q35-ide-cd-disk.argv in Resources */,
+				A8BC5FDA89544654A64A1DE4 /* aarch64-virt-headless-serial.argv in Resources */,
+				F4ADA10BCC2F44CAABC17854 /* aarch64-virt-virtio-disk.argv in Resources */,
 				3EF4774825B9E62A1A96929B /* v2-qemu-ac97.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4196,6 +4227,8 @@
 				951F69FE19D644E4A92B80EC /* BackendParityTests.swift in Sources */,
 				2C5F17103A1541BF84350067 /* UTMDataListTests.swift in Sources */,
 				0F157B0720664F8F98037999 /* UTMRegistryTests.swift in Sources */,
+				1C8E0FDB83BC495FA850F0F7 /* QemuArgumentTestCase.swift in Sources */,
+				496BD9543BD94B9D9B10F9BF /* QemuArgumentGoldenTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
