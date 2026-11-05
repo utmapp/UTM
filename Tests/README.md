@@ -39,6 +39,7 @@ still stalls is reported as exceeding its allowance instead of blocking the run.
 - Name a test after the bug it would have caught, with the fix's commit hash as a
   suffix (`testSingleUrlArgumentIsNotEscaped_a2552606`), when you have shown that
   the test fails with that commit reverted. Cite the commit in a comment otherwise.
-- Keep tests free of host state: no `UserDefaults.standard` writes, no files
-  outside `FileManager.default.temporaryDirectory`, no running VMs.
+- Keep tests free of host state: writes go only to the test host's own container
+  and to `FileManager.default.temporaryDirectory`, and a test resets what it
+  touched (`TestStorage` does this for the VM list and registry). No running VMs.
 - Put fixtures under `Fixtures/` and load them from `Bundle(for: Self.self)`.
