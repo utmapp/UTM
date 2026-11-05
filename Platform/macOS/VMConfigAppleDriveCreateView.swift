@@ -17,11 +17,7 @@
 import SwiftUI
 
 struct VMConfigAppleDriveCreateView: View {
-    private let mibToGib = 1024
-    let minSizeMib = 1
-    
     @Binding var config: UTMAppleConfigurationDrive
-    @State private var isGiB: Bool = true
     
     private var isASIFSupported: Bool {
         UTMAppleDiskImage.isASIFSupported
@@ -61,31 +57,6 @@ struct VMConfigAppleDriveCreateView: View {
                     SizeTextField($config.sizeMib)
                 }
             }
-        }
-    }
-    
-    private func validateSize(editing: Bool) {
-        guard !editing else {
-            return
-        }
-        if config.sizeMib < minSizeMib {
-            config.sizeMib = minSizeMib
-        }
-    }
-    
-    private func convertToMib(fromSize size: Int) -> Int {
-        if isGiB {
-            return size * mibToGib
-        } else {
-            return size
-        }
-    }
-    
-    private func convertToDisplay(fromSizeMib sizeMib: Int) -> Int {
-        if isGiB {
-            return sizeMib / mibToGib
-        } else {
-            return sizeMib
         }
     }
 }
