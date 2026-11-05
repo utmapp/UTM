@@ -66,7 +66,7 @@ class UTMDownloadVMTask: UTMDownloadTask {
         }
     }
     
-    private func partialUnzipOnlyUtmVM(zipFileURL: URL, destinationFolder: URL, fileManager: FileManager) throws -> URL {
+    func partialUnzipOnlyUtmVM(zipFileURL: URL, destinationFolder: URL, fileManager: FileManager) throws -> URL {
         let utmFileEnding = ".utm"
         let utmDirectoryEnding = "\(utmFileEnding)/"
         if let archive = Archive(url: zipFileURL, accessMode: .read),
@@ -114,7 +114,7 @@ class UTMDownloadVMTask: UTMDownloadTask {
     ///
     /// A crafted archive can name an entry `some.utm/../../elsewhere`. `appendingPathComponent()` does not
     /// resolve `..`, so the traversal would only be resolved by the filesystem at write time.
-    private func containedDestination(for relativePath: String, in destinationFolder: URL, isDirectory: Bool) throws -> URL {
+    func containedDestination(for relativePath: String, in destinationFolder: URL, isDirectory: Bool) throws -> URL {
         let candidate = destinationFolder.appendingPathComponent(relativePath, isDirectory: isDirectory)
         /// POSIX `fopen()` collapses repeated separators before resolving `..`, so an entry named `/../elsewhere`
         /// would otherwise standardize to a contained path here but escape once written. Collapse them first.
