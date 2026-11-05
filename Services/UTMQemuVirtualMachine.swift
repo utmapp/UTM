@@ -304,7 +304,7 @@ extension UTMQemuVirtualMachine {
         }
         #endif
         for display in await config.displays {
-            if display.hardware.rawValue.contains("-gl-") || display.hardware.rawValue.hasSuffix("-gl") {
+            if display.isGLSupported {
                 return UTMQemuVirtualMachineError.qemuError(NSLocalizedString("Suspend is not supported when GPU acceleration is enabled.", comment: "UTMQemuVirtualMachine"))
             }
         }

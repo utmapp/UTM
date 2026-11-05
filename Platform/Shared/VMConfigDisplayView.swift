@@ -20,25 +20,19 @@ struct VMConfigDisplayView: View {
     @Binding var config: UTMQemuConfigurationDisplay
     @Binding var system: UTMQemuConfigurationSystem
     
-    var isGLSupported: Bool {
-        config.hardware.rawValue.contains("-gl-") || config.hardware.rawValue.hasSuffix("-gl")
-    }
-    
     var body: some View {
         VStack {
             Form {
                 Section(header: Text("Hardware")) {
                     VMConfigConstantPicker("Emulated Display Card", selection: $config.hardware, type: system.architecture.displayDeviceType)
                     
-                    Toggle("GPU Acceleration Supported", isOn: .constant(isGLSupported)).disabled(true)
-                    if isGLSupported {
+                    Toggle("GPU Acceleration Supported", isOn: .constant(config.isGLSupported)).disabled(true)
+                    if config.isGLSupported {
                         Text("Guest drivers are required for 3D acceleration.")
                             .font(.footnote)
                     }
                     
-                    if config.hardware.rawValue.contains("-vga") ||
-                        config.hardware.rawValue == "VGA" ||
-                        config.hardware.rawValue == "vmware-svga" {
+                    if config.hasVgaRamSetting {
                         NumberTextField("VGA Device RAM (MB)", number: $config.vgaRamMib.bound, prompt: "16")
                     }
                 }
