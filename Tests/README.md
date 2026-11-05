@@ -10,6 +10,12 @@ settings of an installed UTM.
 | `macOS/` | `UTMTests` | Tests of macOS-only code such as scripting, compiled only into the macOS-hosted bundle |
 | `Static/` | none | Scripts that check the tree without building it (`sh Tests/Static/run_all.sh`) |
 
+`Shared/PreviewSmokeTests.generated.swift` holds one test per `PreviewProvider` of
+the app and is written by `scripts/gen-preview-smoke.py`; run the script after adding
+or removing a preview (the static checks fail when it is out of date). Each test
+renders the preview offscreen with the environment objects the base class builds, so
+a trap in a view's body fails the test that names it.
+
 ## Running the unit tests
 
 The tests are hosted by `UTM.app`, so they need the prebuilt `sysroot-*`
