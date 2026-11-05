@@ -16,6 +16,9 @@
 
 import Logging
 import TipKit
+#if os(macOS)
+import AppKit
+#endif
 
 let logger = Logger(label: "com.utmapp.UTM") { label in
     var utmLogger = UTMLoggingSwift(label: label)
@@ -35,6 +38,13 @@ class Main {
     static var jitAvailable = true
     
     static func main() {
+        #if os(macOS)
+        if isTestHost {
+            UTMPatches.patchAll()
+            runAsTestHost()
+            return
+        }
+        #endif
         #if (os(iOS) || os(visionOS)) && WITH_JIT
         // check if we have jailbreak
         if jb_spawn_ptrace_child(CommandLine.argc, CommandLine.unsafeArgv) {
@@ -67,6 +77,22 @@ class Main {
         UTMApp.main()
     }
     
+    #if os(macOS)
+    /// True when XCTest loaded this app as the host for a unit test bundle.
+    static private var isTestHost: Bool {
+        let environment = ProcessInfo.processInfo.environment
+        return environment["XCTestConfigurationFilePath"] != nil || environment["XCTestBundlePath"] != nil || environment["XCTestSessionIdentifier"] != nil
+    }
+
+    /// Runs an empty, invisible application so the test bundle can be injected
+    /// without the home window opening, the VM list being scanned, or release
+    /// notes being fetched.
+    static private func runAsTestHost() {
+        NSApplication.shared.setActivationPolicy(.prohibited)
+        NSApplication.shared.run()
+    }
+    #endif
+
     // https://stackoverflow.com/a/44675628
     static private func registerDefaultsFromSettingsBundle() {
         let userDefaults = UserDefaults.standard

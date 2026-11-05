@@ -88,6 +88,25 @@ APP=$(ls -dt ~/Library/Developer/Xcode/DerivedData/UTM-*/Build/Products/Debug/UT
   3. Build with its own `-derivedDataPath`.
   4. Remove the symlinks by name, then run `git worktree remove`.
 
+## Run the unit tests
+
+`Tests/README.md` is the reference. `scripts/test_utm.sh` builds the `UTMTests`
+bundle hosted by the macOS app with the test bundle prefix, ad-hoc signing, a
+dSYM, and a per-test time allowance, so the host is `com.utmapp.test.UTM` with
+its own container and never the installed app:
+
+```sh
+./scripts/test_utm.sh -d "$SCRATCH/dd-tests" -r "$SCRATCH/tests.xcresult" > "$SCRATCH/tests.log" 2>&1
+grep -E "Test Case .* (passed|failed)|Executed|error:|^\*\* TEST" "$SCRATCH/tests.log" | sort -u
+./scripts/test_utm.sh -d "$SCRATCH/dd-tests" -only-testing:UTMTests/<Class>/<test>   # one test
+```
+
+- A test that would have caught a bug fix belongs in the fix's PR. Prove it
+  with `git revert --no-commit <fix>` → fail → restore → pass, and only then
+  put the fix's hash in the test name.
+- Keep the separate `-derivedDataPath`: the script's override settings must not
+  mix with a normal Debug build.
+
 ## Dependencies
 
 QEMU, SPICE, GLib, and the other native dependencies reach the app as frameworks
