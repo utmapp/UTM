@@ -7,6 +7,7 @@ settings of an installed UTM.
 |---|---|---|
 | `Shared/` | `UTMTests` | XCTest unit tests hosted by the macOS app (`@testable import UTM`), compiled into every app-hosted test bundle |
 | `Fixtures/` | `UTMTests` | Resource files the tests load, such as legacy `config.plist` files |
+| `macOS/` | `UTMTests` | Tests of macOS-only code such as scripting, compiled only into the macOS-hosted bundle |
 | `Static/` | none | Scripts that check the tree without building it (`sh Tests/Static/run_all.sh`) |
 
 ## Running the unit tests
