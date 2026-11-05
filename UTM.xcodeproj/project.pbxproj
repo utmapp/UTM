@@ -1364,6 +1364,8 @@
 		0DA80D8DB5F64B7A918C139D /* x86_64-q35-ide-cd-disk.argv in Resources */ = {isa = PBXBuildFile; fileRef = DD5CFAD3EAD34985867FB436 /* x86_64-q35-ide-cd-disk.argv */; };
 		09979BCA86684F29BA320B34 /* x86_64-pc-ide-disk.argv in Resources */ = {isa = PBXBuildFile; fileRef = 6DB2BC2EEE4648FEBFBE0094 /* x86_64-pc-ide-disk.argv */; };
 		1C8E0FDB83BC495FA850F0F7 /* QemuArgumentTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B3FD77481DA4C73A8AF6B1B /* QemuArgumentTestCase.swift */; };
+		C88B0C708F26469A8096B348 /* PreviewSmokeTests.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9138A8D75E344EA9ACB4633A /* PreviewSmokeTests.generated.swift */; };
+		B65B0A1653DF4B8C9D5373CE /* PreviewSmokeTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82D41F152729480496EA0CA6 /* PreviewSmokeTestCase.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -2378,6 +2380,8 @@
 		DD5CFAD3EAD34985867FB436 /* x86_64-q35-ide-cd-disk.argv */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "x86_64-q35-ide-cd-disk.argv"; sourceTree = "<group>"; };
 		6DB2BC2EEE4648FEBFBE0094 /* x86_64-pc-ide-disk.argv */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "x86_64-pc-ide-disk.argv"; sourceTree = "<group>"; };
 		8B3FD77481DA4C73A8AF6B1B /* QemuArgumentTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QemuArgumentTestCase.swift; sourceTree = "<group>"; };
+		9138A8D75E344EA9ACB4633A /* PreviewSmokeTests.generated.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewSmokeTests.generated.swift; sourceTree = "<group>"; };
+		82D41F152729480496EA0CA6 /* PreviewSmokeTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewSmokeTestCase.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2763,6 +2767,8 @@
 				F470CB2392EB499E884ACC7C /* Platform */,
 				1AB79AE331C84A3DA4E65189 /* Platform */,
 				02232223BFEA40FB801D981D /* Services */,
+				82D41F152729480496EA0CA6 /* PreviewSmokeTestCase.swift */,
+				9138A8D75E344EA9ACB4633A /* PreviewSmokeTests.generated.swift */,
 			);
 			name = Shared;
 			path = Shared;
@@ -4229,6 +4235,8 @@
 				0F157B0720664F8F98037999 /* UTMRegistryTests.swift in Sources */,
 				1C8E0FDB83BC495FA850F0F7 /* QemuArgumentTestCase.swift in Sources */,
 				496BD9543BD94B9D9B10F9BF /* QemuArgumentGoldenTests.swift in Sources */,
+				B65B0A1653DF4B8C9D5373CE /* PreviewSmokeTestCase.swift in Sources */,
+				C88B0C708F26469A8096B348 /* PreviewSmokeTests.generated.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

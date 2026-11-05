@@ -30,7 +30,8 @@ gotchas:
 
 Edit the generator and regenerate, not the output: `Configuration/QEMUConstantGenerated.swift`
 (`scripts/const-gen.py`), `Scripting/UTMScripting.swift` (`scripts/bridge-gen.sh`
-from `UTM.sdef`), and QAPI/QMP wrappers (produced by the dependency build).
+from `UTM.sdef`), `Tests/Shared/PreviewSmokeTests.generated.swift`
+(`scripts/gen-preview-smoke.py`), and QAPI/QMP wrappers (produced by the dependency build).
 Third-party patches live in `patches/`.
 
 ## Conventions
