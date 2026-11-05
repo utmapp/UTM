@@ -1354,6 +1354,9 @@
 		77CA56CE2B864EE0BCFA78E0 /* ZipArchiveBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DE790202347484DBF037863 /* ZipArchiveBuilder.swift */; };
 		641FD674DBEC4B13A12361B2 /* UTMDownloadVMTaskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D437C3300940C3AAE5596C /* UTMDownloadVMTaskTests.swift */; };
 		233848B00A5B4F7BB1F88DF6 /* UTMRemoteMessageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40BDB00C7BAC499895100B6A /* UTMRemoteMessageTests.swift */; };
+		2C5F17103A1541BF84350067 /* UTMDataListTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DB20CDC80FE4C9983431840 /* UTMDataListTests.swift */; };
+		951F69FE19D644E4A92B80EC /* BackendParityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DA6FCF6A6640F182F851DF /* BackendParityTests.swift */; };
+		BA0FE8CFF9B34E3A95F168AF /* TestConfigurations.swift in Sources */ = {isa = PBXBuildFile; fileRef = C62B133DC3164A6A806FAD0D /* TestConfigurations.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -2358,6 +2361,9 @@
 		4DE790202347484DBF037863 /* ZipArchiveBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZipArchiveBuilder.swift; sourceTree = "<group>"; };
 		55D437C3300940C3AAE5596C /* UTMDownloadVMTaskTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMDownloadVMTaskTests.swift; sourceTree = "<group>"; };
 		40BDB00C7BAC499895100B6A /* UTMRemoteMessageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMRemoteMessageTests.swift; sourceTree = "<group>"; };
+		8DB20CDC80FE4C9983431840 /* UTMDataListTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMDataListTests.swift; sourceTree = "<group>"; };
+		C6DA6FCF6A6640F182F851DF /* BackendParityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendParityTests.swift; sourceTree = "<group>"; };
+		C62B133DC3164A6A806FAD0D /* TestConfigurations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestConfigurations.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2741,6 +2747,7 @@
 				CE8DE4F015BF429591AD8070 /* Support */,
 				1DBF020FD77E4398A18B89B7 /* Remote */,
 				F470CB2392EB499E884ACC7C /* Platform */,
+				1AB79AE331C84A3DA4E65189 /* Platform */,
 			);
 			name = Shared;
 			path = Shared;
@@ -3451,6 +3458,7 @@
 			children = (
 				4DE790202347484DBF037863 /* ZipArchiveBuilder.swift */,
 				C3375AF9FA6F41F884122476 /* QEMUArgumentList.swift */,
+				C62B133DC3164A6A806FAD0D /* TestConfigurations.swift */,
 			);
 			path = Support;
 			sourceTree = "<group>";
@@ -3485,6 +3493,15 @@
 				40BDB00C7BAC499895100B6A /* UTMRemoteMessageTests.swift */,
 			);
 			path = Remote;
+			sourceTree = "<group>";
+		};
+		1AB79AE331C84A3DA4E65189 /* Platform */ = {
+			isa = PBXGroup;
+			children = (
+				C6DA6FCF6A6640F182F851DF /* BackendParityTests.swift */,
+				8DB20CDC80FE4C9983431840 /* UTMDataListTests.swift */,
+			);
+			path = Platform;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -4164,6 +4181,9 @@
 				233848B00A5B4F7BB1F88DF6 /* UTMRemoteMessageTests.swift in Sources */,
 				641FD674DBEC4B13A12361B2 /* UTMDownloadVMTaskTests.swift in Sources */,
 				77CA56CE2B864EE0BCFA78E0 /* ZipArchiveBuilder.swift in Sources */,
+				BA0FE8CFF9B34E3A95F168AF /* TestConfigurations.swift in Sources */,
+				951F69FE19D644E4A92B80EC /* BackendParityTests.swift in Sources */,
+				2C5F17103A1541BF84350067 /* UTMDataListTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
