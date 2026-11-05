@@ -147,16 +147,45 @@ struct UTMQemuConfigurationQEMU: Codable {
     }
 }
 
+// MARK: - Editing rules
+
+extension UTMQemuConfigurationQEMU {
+    /// Adds or removes the TPM. A new TPM resets the UEFI variables so the Secure Boot
+    /// keys can be preloaded; removing it drops the key preload.
+    mutating func setTPMDevice(_ hasTPMDevice: Bool) {
+        self.hasTPMDevice = hasTPMDevice
+        if hasTPMDevice {
+            isUefiVariableResetRequested = true
+            hasPreloadedSecureBootKeys = true
+        } else {
+            hasPreloadedSecureBootKeys = false
+        }
+    }
+    
+    /// Requests or cancels a reset of the UEFI variables; keys are only preloaded into reset variables.
+    mutating func setUefiVariableResetRequested(_ isRequested: Bool) {
+        isUefiVariableResetRequested = isRequested
+        if !isRequested {
+            hasPreloadedSecureBootKeys = false
+        }
+    }
+    
+    /// Secure Boot keys can be preloaded into reset UEFI variables when a TPM is present.
+    var canPreloadSecureBootKeys: Bool {
+        isUefiVariableResetRequested && hasTPMDevice
+    }
+}
+
 // MARK: - Default construction
 
 extension UTMQemuConfigurationQEMU {
     init(forArchitecture architecture: QEMUArchitecture, target: any QEMUTarget) {
         self.init()
         let rawTarget = target.rawValue
-        if rawTarget.hasPrefix("pc") || rawTarget.hasPrefix("q35") {
+        if target.isPcOrQ35Machine {
             hasUefiBoot = true
             hasRNGDevice = true
-        } else if Self.uefiImagePrefix(forArchitecture: architecture) != nil && (rawTarget.hasPrefix("virt-") || rawTarget == "virt") {
+        } else if architecture.hasUefiSupport && (rawTarget.hasPrefix("virt-") || rawTarget == "virt") {
             hasUefiBoot = true
             hasRNGDevice = true
         }

@@ -421,14 +421,7 @@ extension UTMScriptingConfigImpl {
             config.qemu.hasBalloonDevice = balloonDevice
         }
         if let tpm = record["tpm"] as? Bool, tpm != config.qemu.hasTPMDevice {
-            config.qemu.hasTPMDevice = tpm
-            // like the TPM toggle in the settings: Secure Boot keys come with the TPM
-            if tpm {
-                config.qemu.isUefiVariableResetRequested = true
-                config.qemu.hasPreloadedSecureBootKeys = true
-            } else {
-                config.qemu.hasPreloadedSecureBootKeys = false
-            }
+            config.qemu.setTPMDevice(tpm)
         }
         if let tso = record["tso"] as? Bool {
             config.qemu.hasTSO = tso

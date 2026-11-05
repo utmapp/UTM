@@ -21,7 +21,7 @@ struct VMWizardOSOtherView: View {
     @State private var isFileImporterPresented: Bool = false
 
     private var supportsUefi: Bool {
-        UTMQemuConfigurationQEMU.uefiImagePrefix(forArchitecture: wizardState.systemArchitecture) != nil
+        wizardState.systemArchitecture.hasUefiSupport
     }
 
     var body: some View {

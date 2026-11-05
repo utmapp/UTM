@@ -468,6 +468,11 @@ extension QEMUArchitecture {
         default: return false
         }
     }
+    
+    /// UEFI boot needs firmware images for the architecture.
+    var hasUefiSupport: Bool {
+        UTMQemuConfigurationQEMU.uefiImagePrefix(forArchitecture: self) != nil
+    }
 }
 
 extension QEMUTarget {
@@ -490,6 +495,16 @@ extension QEMUTarget {
         case "microvm": return false
         default: return true
         }
+    }
+    
+    /// The i440FX ("pc") and Q35 machines, which share most of their defaults.
+    var isPcOrQ35Machine: Bool {
+        rawValue.hasPrefix("pc") || rawValue.hasPrefix("q35")
+    }
+    
+    /// Only the PC and Q35 machines have a PS/2 controller to force.
+    var hasPS2ControllerSupport: Bool {
+        isPcOrQ35Machine
     }
 }
 

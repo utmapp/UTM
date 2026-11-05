@@ -1374,6 +1374,7 @@
 		84560A7469CA4CC7A767B187 /* BusyOverlayTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F70FBE1150144FE88203BF4 /* BusyOverlayTests.swift */; };
 		C4A5EA10DC1241D79B8EEF63 /* SizeTextFieldTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 734EBDE6C29041A18D059218 /* SizeTextFieldTests.swift */; };
 		604C176F3233498C80F7522B /* UTMConfigurationSerialTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A443D27FFDAE4BF68ECB0386 /* UTMConfigurationSerialTests.swift */; };
+		4A8A4C46AC1A4B2884CDB8AE /* UTMQemuConfigurationQEMUTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D6D243B0F54B8996DC027F /* UTMQemuConfigurationQEMUTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -2394,6 +2395,7 @@
 		4F70FBE1150144FE88203BF4 /* BusyOverlayTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusyOverlayTests.swift; sourceTree = "<group>"; };
 		734EBDE6C29041A18D059218 /* SizeTextFieldTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SizeTextFieldTests.swift; sourceTree = "<group>"; };
 		A443D27FFDAE4BF68ECB0386 /* UTMConfigurationSerialTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMConfigurationSerialTests.swift; sourceTree = "<group>"; };
+		66D6D243B0F54B8996DC027F /* UTMQemuConfigurationQEMUTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMQemuConfigurationQEMUTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2873,6 +2875,7 @@
 				B3F4D5F286AD403BA029AEA5 /* QemuArgumentsTests.swift */,
 				C559D6005C434CECA5B787A1 /* QemuArgumentGoldenTests.swift */,
 				A443D27FFDAE4BF68ECB0386 /* UTMConfigurationSerialTests.swift */,
+				66D6D243B0F54B8996DC027F /* UTMQemuConfigurationQEMUTests.swift */,
 			);
 			name = Configuration;
 			path = Configuration;
@@ -4269,6 +4272,7 @@
 				ABBBBC667C484DF8963BC218 /* ViewInspectorSupport.swift in Sources */,
 				C4A5EA10DC1241D79B8EEF63 /* SizeTextFieldTests.swift in Sources */,
 				604C176F3233498C80F7522B /* UTMConfigurationSerialTests.swift in Sources */,
+				4A8A4C46AC1A4B2884CDB8AE /* UTMQemuConfigurationQEMUTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
