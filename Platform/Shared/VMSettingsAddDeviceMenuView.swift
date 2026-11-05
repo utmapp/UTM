@@ -35,14 +35,6 @@ struct VMSettingsAddDeviceMenuView: View {
         }
     }
     
-    private var isAddDisplayEnabled: Bool {
-        if [.sparc, .sparc64, .m68k].contains(config.system.architecture) {
-            return config.displays.count < 1
-        } else {
-            return !config.system.architecture.displayDeviceType.allRawValues.isEmpty
-        }
-    }
-    
     var body: some View {
         Menu {
             Button {
@@ -50,7 +42,7 @@ struct VMSettingsAddDeviceMenuView: View {
                 config.displays.append(newDisplay!)
             } label: {
                 Label("Display", systemImage: "rectangle.on.rectangle")
-            }.disabled(!isAddDisplayEnabled)
+            }.disabled(!config.canAddDisplay)
             Button {
                 let newSerial = UTMQemuConfigurationSerial(forArchitecture: config.system.architecture, target: config.system.target)
                 config.serials.append(newSerial!)
@@ -62,13 +54,13 @@ struct VMSettingsAddDeviceMenuView: View {
                 config.networks.append(newNetwork!)
             } label: {
                 Label("Network", systemImage: "network")
-            }.disabled(config.system.architecture.networkDeviceType.allRawValues.isEmpty)
+            }.disabled(!config.canAddNetwork)
             Button {
                 let newSound = UTMQemuConfigurationSound(forArchitecture: config.system.architecture, target: config.system.target)
                 config.sound.append(newSound!)
             } label: {
                 Label("Sound", systemImage: "speaker.wave.2")
-            }.disabled(config.system.architecture.soundDeviceType.allRawValues.isEmpty)
+            }.disabled(!config.canAddSound)
             #if os(iOS) || os(visionOS)
             Divider()
             Button {
