@@ -59,6 +59,9 @@ tested where it applies. The simulator needs `sysroot-iOS_Simulator-arm64`:
 `Fixtures/` is missing from either bundle, so a test cannot quietly run on one
 platform only.
 
+CI runs this bundle on every push and pull request (`Test UTM (iOS Simulator)` in
+`.github/workflows/build.yml`), next to the macOS bundle.
+
 The host is built with the test bundle prefix and no code signing; the simulator
 keeps its data per app, so nothing of an installed UTM is touched. The script keeps
 the simulator build out of Documents, Desktop and Downloads: a simulator app that
@@ -76,6 +79,10 @@ action before pressing Cmd-U against a Debug app that is not a test build):
 ```sh
 ./scripts/test_utm.sh -only-testing:UTMUITests
 ```
+
+CI runs them after a merge to `main` and on manual dispatch (`Test UTM (macOS UI)`),
+not on pull requests: the job fails without a desktop session and never blocks
+the workflow.
 
 Each test starts the app with `-UTMTestReset`, which empties the test build's
 defaults and documents, and `-UTMTestMode`, which keeps the release notes, the

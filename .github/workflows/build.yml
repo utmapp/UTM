@@ -252,6 +252,69 @@ jobs:
           name: UTMTests-results
           path: UTMTests.xcresult
           if-no-files-found: ignore
+  test-utm-ios:
+    name: Test UTM (iOS Simulator)
+    runs-on: ${{ fromJSON(needs.configuration.outputs.runner) }}
+    needs: [configuration, build-sysroot]
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: Cache Sysroot
+        id: cache-sysroot
+        uses: actions/cache/restore@v4
+        with:
+          path: ./sysroot-ios_simulator-arm64
+          key: ios_simulator-arm64-${{ hashFiles('scripts/build_dependencies.sh', 'scripts/fixup.sh') }}-${{ hashFiles('patches/**') }}
+          fail-on-cache-miss: true
+      - name: Setup Xcode
+        shell: bash
+        run: |
+          [[ "$(xcode-select -p)" == "${{ env.BUILD_XCODE_PATH }}"* ]] || sudo xcode-select -s "${{ env.BUILD_XCODE_PATH }}"
+      - name: Run unit tests on the simulator
+        run: ./scripts/test_utm.sh -s -r UTMTests-iOS.xcresult
+      - name: Upload test results
+        if: failure() || cancelled()
+        uses: actions/upload-artifact@v4
+        with:
+          name: UTMTests-iOS-results
+          path: UTMTests-iOS.xcresult
+          if-no-files-found: ignore
+  test-utm-ui:
+    name: Test UTM (macOS UI)
+    runs-on: ${{ fromJSON(needs.configuration.outputs.runner) }}
+    needs: [configuration, build-sysroot]
+    # the flows need a desktop session, which not every runner has: run them after a merge, never gate a PR
+    if: github.event_name != 'pull_request'
+    continue-on-error: true
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: Cache Sysroot
+        id: cache-sysroot
+        uses: actions/cache/restore@v4
+        with:
+          path: ./sysroot-macos-arm64
+          key: macos-arm64-${{ hashFiles('scripts/build_dependencies.sh', 'scripts/fixup.sh') }}-${{ hashFiles('patches/**') }}
+          fail-on-cache-miss: true
+      - name: Setup Xcode
+        shell: bash
+        run: |
+          [[ "$(xcode-select -p)" == "${{ env.BUILD_XCODE_PATH }}"* ]] || sudo xcode-select -s "${{ env.BUILD_XCODE_PATH }}"
+      - name: Run UI tests
+        run: ./scripts/test_utm.sh -r UTMUITests.xcresult -only-testing:UTMUITests
+      - name: Upload test results
+        if: failure() || cancelled()
+        uses: actions/upload-artifact@v4
+        with:
+          name: UTMUITests-results
+          path: UTMUITests.xcresult
+          if-no-files-found: ignore
   build-universal:
     name: Build UTM (Universal Mac)
     runs-on: ${{ fromJSON(needs.configuration.outputs.runner) }}
