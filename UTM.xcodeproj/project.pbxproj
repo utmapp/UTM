@@ -1383,6 +1383,10 @@
 		A170028C6B5443A8A43343BF /* VMDetailsViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 765EA3B03B7248EF835145D2 /* VMDetailsViewTests.swift */; };
 		2E00F8A08521488F946C9B44 /* VMNameFieldTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 981EC5BCC36C4B9AA1A6DC82 /* VMNameFieldTests.swift */; };
 		D9942A0FC95140A289AD11C2 /* VMWizardStartViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2139625EE1DC407E833C3F1D /* VMWizardStartViewTests.swift */; };
+		A9E063512C2748E5976BED2C /* UTMAccessibilityID.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAEDBED3E5F74148807C75F9 /* UTMAccessibilityID.swift */; };
+		80BADF4993CD463FB4ED15D4 /* UTMAccessibilityID.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAEDBED3E5F74148807C75F9 /* UTMAccessibilityID.swift */; };
+		F326382FB49D42669F07A619 /* UTMAccessibilityID.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAEDBED3E5F74148807C75F9 /* UTMAccessibilityID.swift */; };
+		0C62A9C1DDA34210B8274C81 /* UTMAccessibilityID.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAEDBED3E5F74148807C75F9 /* UTMAccessibilityID.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -2412,6 +2416,7 @@
 		765EA3B03B7248EF835145D2 /* VMDetailsViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDetailsViewTests.swift; sourceTree = "<group>"; };
 		981EC5BCC36C4B9AA1A6DC82 /* VMNameFieldTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMNameFieldTests.swift; sourceTree = "<group>"; };
 		2139625EE1DC407E833C3F1D /* VMWizardStartViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMWizardStartViewTests.swift; sourceTree = "<group>"; };
+		BAEDBED3E5F74148807C75F9 /* UTMAccessibilityID.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMAccessibilityID.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -3449,6 +3454,7 @@
 				CED779E42C78C82A00EB82AE /* UTMTips.swift */,
 				CE88A1632E24E4C000EAA28E /* VMKeyboardMap.h */,
 				CE88A1642E24E4C000EAA28E /* VMKeyboardMap.m */,
+				BAEDBED3E5F74148807C75F9 /* UTMAccessibilityID.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -4526,6 +4532,7 @@
 				CE88A1592E247D0100EAA28E /* UTMActionIntent.swift in Sources */,
 				841619A6284315C1000034B2 /* UTMQemuConfiguration.swift in Sources */,
 				CE88A1622E24B2B400EAA28E /* UTMInputIntent.swift in Sources */,
+				A9E063512C2748E5976BED2C /* UTMAccessibilityID.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4752,6 +4759,7 @@
 				84C4D9042880CA8A00EC3B2B /* VMSettingsAddDeviceMenuView.swift in Sources */,
 				CE88A1562E247CCE00EAA28E /* UTMIntent.swift in Sources */,
 				CEBE820526A4C1B5007AAB12 /* VMWizardDrivesView.swift in Sources */,
+				80BADF4993CD463FB4ED15D4 /* UTMAccessibilityID.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4945,6 +4953,7 @@
 				8471772927CD3CAB00D3A50B /* DetailedSection.swift in Sources */,
 				841E58D62893D01B00137A20 /* UTMApp.swift in Sources */,
 				84909A9227CADAE0005605F1 /* UTMUnavailableVMView.swift in Sources */,
+				F326382FB49D42669F07A619 /* UTMAccessibilityID.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5117,6 +5126,7 @@
 				CEF7F62A2AEEDCC400E34952 /* VMConfigNetworkPortForwardView.swift in Sources */,
 				CEF7F62B2AEEDCC400E34952 /* UTMDownloadSupportToolsTask.swift in Sources */,
 				CEF7F62C2AEEDCC400E34952 /* UTMQemuConfiguration.swift in Sources */,
+				0C62A9C1DDA34210B8274C81 /* UTMAccessibilityID.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

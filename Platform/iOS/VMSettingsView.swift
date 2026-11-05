@@ -38,12 +38,14 @@ struct VMSettingsView: View {
                             Label("Information", systemImage: "info.circle")
                                 .labelStyle(.roundRectIcon)
                         })
+                    .accessibilityIdentifier(UTMAccessibilityID.Settings.information)
                     NavigationLink(
                         destination: VMConfigSystemView(config: $config.system, isResetConfig: $isResetConfig).navigationTitle("System"),
                         label: {
                             Label("System", systemImage: "cpu")
                                 .labelStyle(.roundRectIcon)
                         })
+                    .accessibilityIdentifier(UTMAccessibilityID.Settings.system)
                     .onChange(of: isResetConfig) { newValue in
                         if newValue {
                             config.reset(forArchitecture: config.system.architecture, target: config.system.target)
@@ -56,18 +58,21 @@ struct VMSettingsView: View {
                             Label("QEMU", systemImage: "shippingbox")
                                 .labelStyle(.roundRectIcon)
                         })
+                    .accessibilityIdentifier(UTMAccessibilityID.Settings.qemu)
                     NavigationLink(
                         destination: VMConfigInputView(config: $config.input, hasUsbSupport: config.system.architecture.hasUsbSupport).navigationTitle("Input"),
                         label: {
                             Label("Input", systemImage: "keyboard")
                                 .labelStyle(.roundRectIcon)
                         })
+                    .accessibilityIdentifier(UTMAccessibilityID.Settings.input)
                     NavigationLink(
                         destination: VMConfigSharingView(config: $config.sharing).navigationTitle("Sharing"),
                         label: {
                             Label("Sharing", systemImage: "person.crop.circle")
                                 .labelStyle(.roundRectIcon)
                         })
+                    .accessibilityIdentifier(UTMAccessibilityID.Settings.sharing)
                     Devices(config: config, state: devicesState)
                 }
             }
@@ -83,10 +88,12 @@ struct VMSettingsView: View {
                 Button(action: cancel) {
                     Text("Cancel")
                 }
+                .accessibilityIdentifier(UTMAccessibilityID.Settings.cancel)
             }, saveContent: {
                 Button(action: save) {
                     Text("Save")
                 }
+                .accessibilityIdentifier(UTMAccessibilityID.Settings.save)
             })
             .fileImporter(isPresented: $globalFileImporterShim.isPresented, allowedContentTypes: globalFileImporterShim.allowedContentTypes, onCompletion: globalFileImporterShim.onCompletion)
         }.environmentObject(globalFileImporterShim)

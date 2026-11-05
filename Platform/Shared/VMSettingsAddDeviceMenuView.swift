@@ -78,6 +78,7 @@ struct VMSettingsAddDeviceMenuView: View {
             Label("New…", systemImage: "plus")
         }.help("Add a new device.")
         .addDeviceMenuStyle()
+        .accessibilityIdentifier(UTMAccessibilityID.Settings.addDevice)
     }
 }
 

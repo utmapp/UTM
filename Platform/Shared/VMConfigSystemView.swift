@@ -152,6 +152,7 @@ private struct HardwareOptions: View {
     var body: some View {
         Section(header: Text("Hardware")) {
             VMConfigConstantPicker("Architecture", selection: $architecture)
+                .accessibilityIdentifier(UTMAccessibilityID.Settings.architecture)
                 .onAppear {
                     if isArchitectureFirstAppear {
                         architecture = config.architecture
@@ -174,6 +175,7 @@ private struct HardwareOptions: View {
                     .foregroundColor(.red)
             }
             VMConfigConstantPicker("System", selection: $target, type: config.architecture.targetType)
+                .accessibilityIdentifier(UTMAccessibilityID.Settings.target)
                 .onAppear {
                     if isTargetFirstAppear {
                         target = config.target

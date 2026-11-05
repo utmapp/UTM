@@ -103,6 +103,7 @@ struct VMWizardSummaryView: View {
         Group {
             TextField("Name", text: $wizardState.name.bound)
                 .lineLimit(1)
+                .accessibilityIdentifier(UTMAccessibilityID.Wizard.name)
             #if os(macOS)
             Toggle("Open VM Settings", isOn: $wizardState.isOpenSettingsAfterCreation)
                 .disabled(wizardState.isPendingIPSWDownload)

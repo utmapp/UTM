@@ -26,8 +26,10 @@ struct VMConfigDriveCreateView: View {
             }).onChange(of: config.isExternal) { removable in
                 config.setRemovable(removable)
             }.help("If checked, no drive image will be stored with the VM. Instead you can mount/unmount image while the VM is running.")
+            .accessibilityIdentifier(UTMAccessibilityID.Drive.removable)
             VMConfigConstantPicker("Interface", selection: $config.interface)
                 .help("Hardware interface on the guest used to mount this image. Different operating systems support different interfaces. The default will be the most common interface.")
+                .accessibilityIdentifier(UTMAccessibilityID.Drive.interface)
                 .onChange(of: config.interface) { interface in
                     config.setInterfaceWhenCreating(interface)
                 }

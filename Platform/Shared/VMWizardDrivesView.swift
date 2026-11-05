@@ -28,6 +28,7 @@ struct VMWizardDrivesView: View {
                     NumberTextField("", number: $wizardState.storageSizeGib)
                         .textFieldStyle(.roundedBorder)
                         .frame(maxWidth: 50)
+                        .accessibilityIdentifier(UTMAccessibilityID.Wizard.storageSize)
                     Text("GiB")
                 }
             } header: {

@@ -178,6 +178,7 @@ private extension VMToolbarModifier {
                     .labelStyle(.iconOnly)
             }.help("Remove selected shortcut")
             .disabled(!vm.isModifyAllowed)
+            .accessibilityIdentifier(UTMAccessibilityID.Details.delete)
         } else {
             DestructiveButton {
                 confirmAction = .confirmDeleteVM(vm: vm)
@@ -186,6 +187,7 @@ private extension VMToolbarModifier {
                     .labelStyle(.iconOnly)
             }.help("Delete selected VM")
             .disabled(!vm.isModifyAllowed)
+            .accessibilityIdentifier(UTMAccessibilityID.Details.delete)
         }
     }
 
@@ -196,6 +198,7 @@ private extension VMToolbarModifier {
             Label("Clone", systemImage: "doc.on.doc")
                 .labelStyle(.iconOnly)
         }.help("Clone selected VM")
+        .accessibilityIdentifier(UTMAccessibilityID.Details.clone)
     }
 
     #if os(macOS)
@@ -207,6 +210,7 @@ private extension VMToolbarModifier {
                 .labelStyle(.iconOnly)
         }.help("Move selected VM")
         .disabled(!vm.isModifyAllowed)
+        .accessibilityIdentifier(UTMAccessibilityID.Details.move)
     }
     #endif
 
@@ -218,6 +222,7 @@ private extension VMToolbarModifier {
             Label("Share", systemImage: "square.and.arrow.up")
                 .labelStyle(.iconOnly)
         }.help("Share selected VM")
+        .accessibilityIdentifier(UTMAccessibilityID.Details.share)
     }
 
     var editButton: some View {
@@ -229,6 +234,7 @@ private extension VMToolbarModifier {
                 .labelStyle(.iconOnly)
         }.help("Edit selected VM")
         .disabled(vm.hasSuspendState || !vm.isModifyAllowed)
+        .accessibilityIdentifier(UTMAccessibilityID.Details.edit)
     }
     #endif
 
@@ -241,6 +247,7 @@ private extension VMToolbarModifier {
                 Label("Stop", systemImage: "stop")
                     .labelStyle(.iconOnly)
             }.help("Stop selected VM")
+            .accessibilityIdentifier(UTMAccessibilityID.Details.stop)
         } else {
             Button {
                 data.run(vm: data.selectedVM!)
@@ -248,6 +255,7 @@ private extension VMToolbarModifier {
                 Label("Run", systemImage: "play")
                     .labelStyle(.iconOnly)
             }.help("Run selected VM")
+            .accessibilityIdentifier(UTMAccessibilityID.Details.run)
         }
     }
 }
