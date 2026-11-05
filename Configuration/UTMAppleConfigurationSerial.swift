@@ -83,3 +83,15 @@ struct UTMAppleConfigurationSerial: Codable, Identifiable {
         return serialConfig
     }
 }
+
+// MARK: - Editing rules
+
+extension UTMAppleConfigurationSerial {
+    /// Changes the connection mode; the built-in terminal gets default settings if it has none.
+    mutating func setMode(_ mode: SerialMode) {
+        self.mode = mode
+        if mode == .builtin && terminal == nil {
+            terminal = .init()
+        }
+    }
+}

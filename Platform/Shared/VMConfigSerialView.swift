@@ -30,14 +30,11 @@ struct VMConfigSerialView: View {
                 Section(header: Text("Connection")) {
                     VMConfigConstantPicker("Mode", selection: $config.mode)
                         .onChange(of: config.mode) { newValue in
-                            if newValue == .builtin && config.terminal == nil {
-                                config.terminal = .init()
-                            }
+                            config.setMode(newValue)
                         }
                     VMConfigConstantPicker("Target", selection: $config.target)
                         .onChange(of: config.target) { newValue in
-                            if newValue == .manualDevice && system.architecture.serialDeviceType.allRawValues.isEmpty {
-                                config.target = .autoDevice
+                            if !config.setTarget(newValue, for: system.architecture) {
                                 isUnsupportedAlertShown.toggle()
                             }
                         }
