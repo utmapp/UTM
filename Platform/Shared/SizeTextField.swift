@@ -37,6 +37,7 @@ struct SizeTextField: View {
             }), onEditingChanged: validateSize)
                 .multilineTextAlignment(.trailing)
                 .help("The amount of storage to allocate for this image. Ignored if importing an image. If this is a raw image, then an empty file of this size will be stored with the VM. Otherwise, the disk image will dynamically expand up to this size.")
+                .accessibilityIdentifier(UTMAccessibilityID.Drive.size)
             Button(action: { isGiB.toggle() }, label: {
                 Group {
                     if isGiB {
@@ -46,6 +47,7 @@ struct SizeTextField: View {
                     }
                 }.foregroundColor(.blue)
             }).buttonStyle(.plain)
+            .accessibilityIdentifier(UTMAccessibilityID.Drive.sizeUnit)
         }
     }
     

@@ -108,12 +108,14 @@ struct SettingsToolbarViewModifier<AdditionalContent>: ViewModifier where Additi
                 Button(action: cancel) {
                     Text("Cancel")
                 }
+                .accessibilityIdentifier(UTMAccessibilityID.Settings.cancel)
             }
             ToolbarItemGroup(placement: .confirmationAction) {
                 Form {
                     Button(action: save) {
                         Text("Save")
                     }
+                    .accessibilityIdentifier(UTMAccessibilityID.Settings.save)
                     .buttonStyle(.borderedProminent)
                 }
             }

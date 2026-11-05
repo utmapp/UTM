@@ -62,11 +62,13 @@ struct VMWizardHardwareView: View {
         VMWizardContent("Hardware") {
             if !wizardState.useVirtualization {
                 Toggle("Expert Mode", isOn: $isExpertMode)
+                    .accessibilityIdentifier(UTMAccessibilityID.Wizard.expertMode)
                     .help("List all supported hardware. May require manual configuration to boot.")
             }
             if !wizardState.useVirtualization && isExpertMode {
                 Section {
                     VMConfigConstantPicker(selection: $wizardState.systemArchitecture)
+                        .accessibilityIdentifier(UTMAccessibilityID.Wizard.architecture)
                         .onChange(of: wizardState.systemArchitecture) { newValue in
                             wizardState.setSystemArchitecture(newValue)
                         }
@@ -76,6 +78,7 @@ struct VMWizardHardwareView: View {
                 
                 Section {
                     VMConfigConstantPicker(selection: $wizardState.systemTarget, type: wizardState.systemArchitecture.targetType)
+                        .accessibilityIdentifier(UTMAccessibilityID.Wizard.target)
                 } header: {
                     Text("System")
                 }
@@ -86,6 +89,7 @@ struct VMWizardHardwareView: View {
                         Text(system.title).tag(system)
                     }
                 }.pickerStyle(.inline)
+                .accessibilityIdentifier(UTMAccessibilityID.Wizard.machine)
                 .onChange(of: selectedMachine) { newValue in
                     guard let newValue = newValue else {
                         return
@@ -112,6 +116,7 @@ struct VMWizardHardwareView: View {
                         })
                         .frame(width: 80)
                         .multilineTextAlignment(.trailing)
+                        .accessibilityIdentifier(UTMAccessibilityID.Wizard.cores)
                     }
                 } header: {
                     Text("CPU")

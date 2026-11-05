@@ -60,6 +60,7 @@ struct VMWizardStartView: View {
                 }
                 .buttonStyle(.inList)
                 .disabled(!isVirtualizationSupported)
+                .accessibilityIdentifier(UTMAccessibilityID.Wizard.virtualize)
                 virtButton
 
                 Button {
@@ -80,6 +81,7 @@ struct VMWizardStartView: View {
                     .padding()
                 }
                 .buttonStyle(.inList)
+                .accessibilityIdentifier(UTMAccessibilityID.Wizard.emulate)
                 
             } header: {
                 Text("Custom")
@@ -102,6 +104,7 @@ struct VMWizardStartView: View {
                         Image(systemName: "doc")
                     }
                 }
+                .accessibilityIdentifier(UTMAccessibilityID.Wizard.open)
                 #if os(macOS)
                 .buttonStyle(.link)
                 #endif

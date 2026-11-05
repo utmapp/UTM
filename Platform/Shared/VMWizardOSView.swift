@@ -31,6 +31,7 @@ struct VMWizardOSView: View {
                     } label: {
                         OperatingSystem(imageName: "Logo-macOS", name: "macOS 12+")
                     }
+                    .accessibilityIdentifier(UTMAccessibilityID.Wizard.osMacOS)
                 }
                 #endif
                 if !wizardState.useVirtualization {
@@ -42,6 +43,7 @@ struct VMWizardOSView: View {
                     } label: {
                         OperatingSystem(imageName: "Logo-macOS", name: "Classic Mac OS")
                     }
+                    .accessibilityIdentifier(UTMAccessibilityID.Wizard.osClassicMacOS)
                 }
                 Button {
                     wizardState.operatingSystem = .Windows
@@ -51,6 +53,7 @@ struct VMWizardOSView: View {
                 } label: {
                     OperatingSystem(imageName: "Logo-Windows", name: "Windows")
                 }
+                .accessibilityIdentifier(UTMAccessibilityID.Wizard.osWindows)
                 Button {
                     wizardState.operatingSystem = .Linux
                     wizardState.isGuestToolsInstallRequested = false
@@ -58,6 +61,7 @@ struct VMWizardOSView: View {
                 } label: {
                     OperatingSystem(imageName: "Logo-Linux", name: "Linux")
                 }
+                .accessibilityIdentifier(UTMAccessibilityID.Wizard.osLinux)
             } header: {
                 Text("Preconfigured")
             }
@@ -78,6 +82,7 @@ struct VMWizardOSView: View {
                     }
                     .padding()
                 }
+                .accessibilityIdentifier(UTMAccessibilityID.Wizard.osOther)
             } header: {
                 Text("Custom")
             }

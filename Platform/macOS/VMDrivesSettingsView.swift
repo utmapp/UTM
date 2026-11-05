@@ -80,6 +80,7 @@ struct VMDrivesSettingsView<Drive: UTMConfigurationDrive>: View {
         }
         .buttonStyle(.borderless)
         .help("Add a new drive.")
+        .accessibilityIdentifier(UTMAccessibilityID.Settings.newDrive)
         .fileImporter(isPresented: $importDrivePresented, allowedContentTypes: [.item], onCompletion: importDrive)
         .onChange(of: newDrivePopover, perform: { showPopover in
             if showPopover {
@@ -105,9 +106,11 @@ struct VMDrivesSettingsView<Drive: UTMConfigurationDrive>: View {
                             Text("Import…")
                         }
                     }).help("Select an existing disk image.")
+                    .accessibilityIdentifier(UTMAccessibilityID.Drive.import)
                     Button(action: { addNewDrive(newDrive) }, label: {
                         Text("Create")
                     }).help("Create an empty drive.")
+                    .accessibilityIdentifier(UTMAccessibilityID.Drive.create)
                 }
             }.padding()
         }

@@ -33,6 +33,7 @@ struct VMAppleSettingsView: View {
         NavigationLink(destination: VMConfigInfoView(config: $config.information).scrollable().settingsToolbar(), isActive: $infoActive) {
             Label("Information", systemImage: "info.circle")
         }
+        .accessibilityIdentifier(UTMAccessibilityID.Settings.information)
         NavigationLink {
             VMConfigAppleSystemView(config: $config.system)
                 .scrollable()
@@ -40,6 +41,7 @@ struct VMAppleSettingsView: View {
         } label: {
             Label("System", systemImage: "cpu")
         }
+        .accessibilityIdentifier(UTMAccessibilityID.Settings.system)
         NavigationLink {
             VMConfigAppleBootView(config: $config.system)
                 .scrollable()
@@ -62,6 +64,7 @@ struct VMAppleSettingsView: View {
             } label: {
                 Label("Sharing", systemImage: "person.crop.circle")
             }
+            .accessibilityIdentifier(UTMAccessibilityID.Settings.sharing)
         }
         Section(header: Text("Devices")) {
             if hasVenturaFeatures || config.system.boot.operatingSystem == .macOS {
