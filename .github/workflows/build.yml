@@ -47,6 +47,14 @@ jobs:
         else
           echo "runners='$RUNNER_IMAGE'" >> $GITHUB_OUTPUT
         fi
+  static-checks:
+    name: Static checks
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Run static checks
+      run: sh Tests/Static/run_all.sh --no-sdp
   build-sysroot:
     name: Build Sysroot
     runs-on: ${{ fromJSON(needs.configuration.outputs.runner) }}
@@ -198,6 +206,8 @@ jobs:
         shell: bash
         run: |
           [[ "$(xcode-select -p)" == "${{ env.BUILD_XCODE_PATH }}"* ]] || sudo xcode-select -s "${{ env.BUILD_XCODE_PATH }}"
+      - name: Static checks
+        run: sh Tests/Static/run_all.sh --sdp-only
       - name: Build UTM
         run: |
           ./scripts/build_utm.sh -k ${{ matrix.configuration.sdk }} -s ${{ matrix.configuration.scheme }} -a ${{ matrix.configuration.arch }} -o UTM
