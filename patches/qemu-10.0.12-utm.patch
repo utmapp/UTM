@@ -4548,3 +4548,101 @@ index de53f96d6c..2af06db3e4 100644
 -- 
 2.41.0
 
+From 2df12a54c1c6138c39d9f5256444ce1c95602410 Mon Sep 17 00:00:00 2001
+From: hdu_willsky <hdu_willsky@foxmail.com>
+Date: Sat, 31 Oct 2026 08:34:19 +0800
+Subject: [PATCH] usb/xhci: preserve continuous isochronous scheduling
+
+SIA transfers are reanchored to the current MFINDEX if a host timer is
+more than four service intervals late, even while the guest ring is
+nonempty. Repeated reanchoring discards the continuous timeline and can
+reduce 125 us USB audio playback to around 0.22x on macOS/HVF.
+
+Preserve the service timeline for a Running Busy endpoint. Reanchor only
+on initialization, an actual ring underrun/overrun, endpoint stop, or a
+clock restart. Rearm the existing timer after bounded catch-up work and
+cancel it when stopping the endpoint so the ring neither stalls nor
+restarts unexpectedly. Leave explicit Frame ID and interrupt scheduling
+unchanged.
+
+Assisted-by: Codex:GPT-6
+---
+ hw/usb/hcd-xhci.c | 29 ++++++++++++++++++++++++-----
+ 1 file changed, 24 insertions(+), 5 deletions(-)
+
+diff --git a/hw/usb/hcd-xhci.c b/hw/usb/hcd-xhci.c
+index 969f275..b793683 100644
+--- a/hw/usb/hcd-xhci.c
++++ b/hw/usb/hcd-xhci.c
+@@ -1082,6 +1082,12 @@ static void xhci_set_ep_state(XHCIState *xhci, XHCIEPContext *epctx,
+                                 ep_state_name(state));
+     }
+     epctx->state = state;
++    if (state != EP_RUNNING &&
++        (epctx->type == ET_ISO_OUT || epctx->type == ET_ISO_IN)) {
++        epctx->mfindex_last = -1;
++        /* A deferred catch-up kick must not restart a stopped endpoint. */
++        timer_del(epctx->kick_timer);
++    }
+ }
+ 
+ static void xhci_ep_kick_timer(void *opaque)
+@@ -1115,6 +1121,9 @@ static void xhci_init_epctx(XHCIEPContext *epctx,
+     dequeue = xhci_addr64(ctx[2] & ~0xf, ctx[3]);
+ 
+     epctx->type = (ctx[1] >> EP_TYPE_SHIFT) & EP_TYPE_MASK;
++    /* An idle isochronous pipe has no established service timeline. */
++    epctx->mfindex_last =
++        (epctx->type == ET_ISO_OUT || epctx->type == ET_ISO_IN) ? -1 : 0;
+     epctx->pctx = pctx;
+     epctx->max_psize = ctx[1]>>16;
+     epctx->max_psize *= 1+((ctx[1]>>8)&0xff);
+@@ -1153,8 +1162,6 @@ static TRBCCode xhci_enable_ep(XHCIState *xhci, unsigned int slotid,
+     DPRINTF("xhci: endpoint %d.%d type is %d, max transaction (burst) "
+             "size is %d\n", epid/2, epid%2, epctx->type, epctx->max_psize);
+ 
+-    epctx->mfindex_last = 0;
+-
+     epctx->state = EP_RUNNING;
+     ctx[0] &= ~EP_STATE_MASK;
+     ctx[0] |= EP_RUNNING;
+@@ -1754,8 +1761,11 @@ static void xhci_calc_iso_kick(XHCIState *xhci, XHCITransfer *xfer,
+     if (xfer->trbs[0].control & TRB_TR_SIA) {
+         uint64_t asap = ((mfindex + epctx->interval - 1) &
+                          ~(epctx->interval-1));
+-        if (asap >= epctx->mfindex_last &&
+-            asap <= epctx->mfindex_last + epctx->interval * 4) {
++        /*
++         * Host timer latency must not make a busy isoch pipe skip service
++         * slots. Re-anchor only when the pipe is idle or its clock restarts.
++         */
++        if (epctx->mfindex_last >= 0 && asap >= epctx->mfindex_last) {
+             xfer->mfindex_kick = epctx->mfindex_last + epctx->interval;
+         } else {
+             xfer->mfindex_kick = asap;
+@@ -1969,8 +1979,9 @@ static void xhci_kick_epctx(XHCIEPContext *epctx, unsigned int streamid)
+         length = xhci_ring_chain_length(xhci, ring);
+         if (length <= 0) {
+             if (epctx->type == ET_ISO_OUT || epctx->type == ET_ISO_IN) {
+-                /* 4.10.3.1 */
++                /* 4.10.3.1: the pipe is now Running Idle. */
+                 XHCIEvent ev = { ER_TRANSFER };
++                epctx->mfindex_last = -1;
+                 ev.ccode  = epctx->type == ET_ISO_IN ?
+                     CC_RING_OVERRUN : CC_RING_UNDERRUN;
+                 ev.slotid = epctx->slotid;
+@@ -2024,6 +2035,14 @@ static void xhci_kick_epctx(XHCIEPContext *epctx, unsigned int streamid)
+         }
+         if (count++ > TRANSFER_LIMIT) {
+             trace_usb_xhci_enforced_limit("transfers");
++            if (epctx->type == ET_ISO_OUT || epctx->type == ET_ISO_IN) {
++                /*
++                 * Let host I/O run before continuing catch-up. A full ring
++                 * needs another kick even without a new guest doorbell.
++                 */
++                timer_mod(epctx->kick_timer,
++                          qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL) + 1);
++            }
+             break;
+         }
+     }
