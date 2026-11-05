@@ -427,7 +427,13 @@ import Virtualization // for getting network interfaces
                 #if arch(x86_64)
                 if let cpu = highestIntelCPUConfigurationForHost() {
                     f("-cpu")
-                    f(cpu)
+                    cpu
+                    if system.architecture == .x86_64 {
+                        // Windows uses the TSC as its clock only if it is invariant and no hypervisor is reported.
+                        "+invtsc"
+                        "-hypervisor"
+                    }
+                    f()
                 }
                 #else
                 f("-cpu")
