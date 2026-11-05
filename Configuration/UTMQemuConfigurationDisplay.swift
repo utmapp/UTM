@@ -139,3 +139,17 @@ extension UTMQemuConfigurationDisplay {
         }
     }
 }
+
+// MARK: - Editing rules
+
+extension UTMQemuConfigurationDisplay {
+    /// The card renders with the host GPU when it is a GL variant.
+    var isGLSupported: Bool {
+        hardware.rawValue.contains("-gl-") || hardware.rawValue.hasSuffix("-gl")
+    }
+    
+    /// VGA-compatible cards take a video memory size.
+    var hasVgaRamSetting: Bool {
+        hardware.rawValue.contains("-vga") || hardware.rawValue == "VGA" || hardware.rawValue == "vmware-svga"
+    }
+}

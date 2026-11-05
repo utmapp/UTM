@@ -1375,6 +1375,7 @@
 		C4A5EA10DC1241D79B8EEF63 /* SizeTextFieldTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 734EBDE6C29041A18D059218 /* SizeTextFieldTests.swift */; };
 		604C176F3233498C80F7522B /* UTMConfigurationSerialTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A443D27FFDAE4BF68ECB0386 /* UTMConfigurationSerialTests.swift */; };
 		4A8A4C46AC1A4B2884CDB8AE /* UTMQemuConfigurationQEMUTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D6D243B0F54B8996DC027F /* UTMQemuConfigurationQEMUTests.swift */; };
+		8A6E8B1265B844E2BAA3FD2D /* UTMQemuConfigurationDisplayTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29CC70E336C04BF399F46E31 /* UTMQemuConfigurationDisplayTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -2396,6 +2397,7 @@
 		734EBDE6C29041A18D059218 /* SizeTextFieldTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SizeTextFieldTests.swift; sourceTree = "<group>"; };
 		A443D27FFDAE4BF68ECB0386 /* UTMConfigurationSerialTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMConfigurationSerialTests.swift; sourceTree = "<group>"; };
 		66D6D243B0F54B8996DC027F /* UTMQemuConfigurationQEMUTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMQemuConfigurationQEMUTests.swift; sourceTree = "<group>"; };
+		29CC70E336C04BF399F46E31 /* UTMQemuConfigurationDisplayTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMQemuConfigurationDisplayTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2876,6 +2878,7 @@
 				C559D6005C434CECA5B787A1 /* QemuArgumentGoldenTests.swift */,
 				A443D27FFDAE4BF68ECB0386 /* UTMConfigurationSerialTests.swift */,
 				66D6D243B0F54B8996DC027F /* UTMQemuConfigurationQEMUTests.swift */,
+				29CC70E336C04BF399F46E31 /* UTMQemuConfigurationDisplayTests.swift */,
 			);
 			name = Configuration;
 			path = Configuration;
@@ -4273,6 +4276,7 @@
 				C4A5EA10DC1241D79B8EEF63 /* SizeTextFieldTests.swift in Sources */,
 				604C176F3233498C80F7522B /* UTMConfigurationSerialTests.swift in Sources */,
 				4A8A4C46AC1A4B2884CDB8AE /* UTMQemuConfigurationQEMUTests.swift in Sources */,
+				8A6E8B1265B844E2BAA3FD2D /* UTMQemuConfigurationDisplayTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
