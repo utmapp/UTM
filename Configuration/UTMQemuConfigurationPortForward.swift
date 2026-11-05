@@ -96,7 +96,7 @@ extension UTMQemuConfigurationPortForward {
             `protocol` = oldProtocol
         }
         hostAddress = oldForward.hostAddress
-        if let portNum = oldForward.guestPort {
+        if let portNum = oldForward.hostPort {
             hostPort = portNum.intValue
         }
         guestAddress = oldForward.guestAddress

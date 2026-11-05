@@ -669,8 +669,18 @@ import Virtualization // for getting network interfaces
     }
     
     private var resourceURL: URL {
-        FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!.appendingPathComponent("qemu", isDirectory: true)
+        #if DEBUG
+        if let override = Self.resourceURLOverride {
+            return override
+        }
+        #endif
+        return FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!.appendingPathComponent("qemu", isDirectory: true)
     }
+
+    #if DEBUG
+    /// Replaces the QEMU resource cache so tests can control which firmware images exist.
+    nonisolated(unsafe) static var resourceURLOverride: URL?
+    #endif
     
     private var soundBackend: UTMQEMUSoundBackend {
         let value = UserDefaults.standard.integer(forKey: "QEMUSoundBackend")

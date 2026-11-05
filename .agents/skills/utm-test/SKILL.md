@@ -25,6 +25,35 @@ as the working directory. `$SCRATCH` means your agent's scratch directory, or
   changed, say so rather than implying the change was validated. Before you call
   a failure pre-existing, build `main` in a worktree and compare, and check the
   issue tracker.
+- **Keep evidence for the PR.** `/utm-submit` needs what `CONTRIBUTING.md`
+  rule 3 asks for. Read it, and plan the runs to produce that evidence (for a
+  bug fix, that includes a run on a build *without* the fix). Save it in a
+  per-branch folder in the git dir, so `/utm-review` and `/utm-submit` can find
+  it from another session:
+
+  ```sh
+  B=$(git rev-parse --abbrev-ref HEAD)   # in a detached baseline worktree, set B to the feature branch's name
+  [ "$B" != HEAD ] || { echo "detached HEAD: set B to the feature branch name"; exit 1; }
+  EVIDENCE="$(git rev-parse --path-format=absolute --git-common-dir)/utm-test-evidence/$B"
+  mkdir -p "$EVIDENCE" && printf 'branch=%s\n' "$B" > "$EVIDENCE/meta"
+  ```
+
+  - The folder is `utm-test-evidence/<branch>` under the main git dir. Slashes in
+    the branch name become subfolders, and git doesn't allow branch names that
+    would collide this way. `/utm-review` and `/utm-submit` use the same path.
+  - Shell variables don't carry over between agent commands, so run these
+    lines again in each command that uses `EVIDENCE`.
+  - Give each screenshot a distinct name, such as `before-<what>.png` and
+    `after-<what>.png`, and copy it in at full size, before any `sips`
+    downscaling.
+  - When you finish, write to `$EVIDENCE/notes.md`: the device/OS, the steps you
+    ran, what you saw, and a fingerprint of the change you tested (it may be
+    uncommitted). Run `git add -N <new files>` first so untracked files are
+    included, then fingerprint against the base of utmapp/UTM's `main`
+    (`<upstream>` is whichever remote points at utmapp/UTM):
+    `git diff --stat "$(git merge-base HEAD <upstream>/main)"` plus
+    `git diff "$(git merge-base HEAD <upstream>/main)" | git hash-object --stdin`.
+  - `/utm-submit` deletes the folder once the PR has its Testing section.
 
 ## Build UTM
 
@@ -58,6 +87,25 @@ APP=$(ls -dt ~/Library/Developer/Xcode/DerivedData/UTM-*/Build/Products/Debug/UT
      missing sysroot shows up as a misleading "missing resource" error.
   3. Build with its own `-derivedDataPath`.
   4. Remove the symlinks by name, then run `git worktree remove`.
+
+## Run the unit tests
+
+`Tests/README.md` is the reference. `scripts/test_utm.sh` builds the `UTMTests`
+bundle hosted by the macOS app with the test bundle prefix, ad-hoc signing, a
+dSYM, and a per-test time allowance, so the host is `com.utmapp.test.UTM` with
+its own container and never the installed app:
+
+```sh
+./scripts/test_utm.sh -d "$SCRATCH/dd-tests" -r "$SCRATCH/tests.xcresult" > "$SCRATCH/tests.log" 2>&1
+grep -E "Test Case .* (passed|failed)|Executed|error:|^\*\* TEST" "$SCRATCH/tests.log" | sort -u
+./scripts/test_utm.sh -d "$SCRATCH/dd-tests" -only-testing:UTMTests/<Class>/<test>   # one test
+```
+
+- A test that would have caught a bug fix belongs in the fix's PR. Prove it
+  with `git revert --no-commit <fix>` → fail → restore → pass, and only then
+  put the fix's hash in the test name.
+- Keep the separate `-derivedDataPath`: the script's override settings must not
+  mix with a normal Debug build.
 
 ## Dependencies
 
@@ -211,7 +259,11 @@ A `started` status proves only that the process launched.
 
   ```sh
   WID=$(osascript -l JavaScript -e "ObjC.import('CoreGraphics'); ObjC.deepUnwrap(ObjC.castRefToObject(\$.CGWindowListCopyWindowInfo(\$.kCGWindowListOptionAll, 0))).filter(w => w.kCGWindowOwnerName == 'UTM' && w.kCGWindowName == '$VM' && w.kCGWindowIsOnscreen).map(w => w.kCGWindowNumber).join('\n')")
-  screencapture -x -o -l "$WID" "$SCRATCH/vm.png" && sips -Z 1200 "$SCRATCH/vm.png"
+  SHOT="$SCRATCH/vm-$(date +%H%M%S).png"
+  screencapture -x -o -l "$WID" "$SHOT" &&
+  # for PR evidence, set EVIDENCE (see Ground rules) and keep a full-size copy:
+  # cp "$SHOT" "$EVIDENCE/<before|after>-<what>.png" &&
+  sips -Z 1200 "$SHOT"
   ```
 
   - A healthy run shows the EDK2 banner, `Mapping table`, and `Shell>`.
@@ -302,7 +354,8 @@ pgrep -fl "MacOS/UTM|QEMULauncher"                 # expect nothing of yours
   about 100 ms, then post `.leftMouseDown` and `.leftMouseUp` through
   `CGEvent(mouseEventSource:…).post(tap: .cghidEventTap)`.
 - **Coordinates are points.** Retina screenshots are 2× that, so downscale with
-  `sips -Z <screen width in points>` to make image pixels match points.
+  `sips -Z <screen width in points>` to make image pixels match points. Copy a
+  shot into the evidence folder before you downscale it.
 - **Bring UTM to the front** before each click, and take a screenshot after each
   click to check what happened:
   `tell application "System Events" to set frontmost of process "UTM" to true`.

@@ -1,7 +1,7 @@
 ---
-description: Submit the current UTM change as a PR to utmapp/UTM — ensures /utm-review ran, then updates an existing PR (blame-squash + force-push) or opens a new one (issue links + human-test attestation).
+description: Submit the current UTM change as a PR to utmapp/UTM — ensures /utm-review ran, then updates an existing PR (blame-squash + force-push) or opens a new one (issue links + testing evidence).
 argument-hint: [PR number or URL — for updates]
-allowed-tools: Bash, Read, Grep, Glob, Skill, Task, AskUserQuestion
+allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Task, AskUserQuestion
 ---
 
 Read and follow the canonical, agent-neutral workflow in
