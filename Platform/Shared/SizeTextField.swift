@@ -20,7 +20,7 @@ struct SizeTextField: View {
     @Binding var sizeMib: Int
     @State private var isGiB: Bool = true
     
-    private let mibToGib = 1024
+    static let mibPerGib = 1024
     let minSizeMib: Int
     
     init(_ sizeMib: Binding<Int>, minSizeMib: Int = 1) {
@@ -31,9 +31,9 @@ struct SizeTextField: View {
     var body: some View {
         HStack {
             NumberTextField("Size", number: Binding<Int>(get: {
-                convertToDisplay(fromSizeMib: sizeMib)
+                Self.displayValue(fromMib: sizeMib, isGiB: isGiB)
             }, set: {
-                sizeMib = convertToMib(fromSize: $0)
+                sizeMib = Self.mibValue(fromDisplay: $0, isGiB: isGiB)
             }), onEditingChanged: validateSize)
                 .multilineTextAlignment(.trailing)
                 .help("The amount of storage to allocate for this image. Ignored if importing an image. If this is a raw image, then an empty file of this size will be stored with the VM. Otherwise, the disk image will dynamically expand up to this size.")
@@ -53,26 +53,36 @@ struct SizeTextField: View {
         guard !editing else {
             return
         }
-        if sizeMib < minSizeMib {
-            sizeMib = minSizeMib
+        let validSizeMib = Self.validSize(sizeMib, minSizeMib: minSizeMib)
+        if sizeMib != validSizeMib {
+            sizeMib = validSizeMib
         }
     }
     
-    private func convertToMib(fromSize size: Int) -> Int {
+    /// The size in MiB for a number typed into the field.
+    ///
+    /// A GiB value too large in magnitude to express in MiB becomes 0 rather than trapping on overflow.
+    static func mibValue(fromDisplay size: Int, isGiB: Bool) -> Int {
         if isGiB {
-            let (partial, overflow) = size.multipliedReportingOverflow(by: mibToGib)
+            let (partial, overflow) = size.multipliedReportingOverflow(by: mibPerGib)
             return overflow ? 0 : partial
         } else {
             return size
         }
     }
     
-    private func convertToDisplay(fromSizeMib sizeMib: Int) -> Int {
+    /// The number shown in the field for a size in MiB, truncated to whole GiB when `isGiB`.
+    static func displayValue(fromMib sizeMib: Int, isGiB: Bool) -> Int {
         if isGiB {
-            return sizeMib / mibToGib
+            return sizeMib / mibPerGib
         } else {
             return sizeMib
         }
+    }
+    
+    /// The size to keep once editing ends: never below `minSizeMib`.
+    static func validSize(_ sizeMib: Int, minSizeMib: Int) -> Int {
+        max(sizeMib, minSizeMib)
     }
 }
 
