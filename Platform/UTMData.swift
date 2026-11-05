@@ -1272,7 +1272,7 @@ struct UTMCapabilities: OptionSet, Codable {
     /// If set, host is x86_64
     static let isX86_64 = Self(rawValue: 1 << 3)
 
-    static fileprivate(set) var current: Self = {
+    static internal(set) var current: Self = {
         var current = Self()
         #if WITH_JIT
         if jb_has_jit_entitlement() {
