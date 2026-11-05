@@ -538,7 +538,7 @@ import Virtualization // for getting network interfaces
             if system.isForceMulticore {
                 "thread=multi"
             }
-            let tbSize = system.jitCacheSize > 0 ? system.jitCacheSize : system.memorySize / 4
+            let tbSize = system.effectiveJitCacheSizeMib
             "tb-size=\(tbSize)"
             #if WITH_JIT
             // use mirror mapping when we don't have JIT entitlements

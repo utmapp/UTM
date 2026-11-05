@@ -85,3 +85,15 @@ extension UTMQemuConfigurationInput {
         }
     }
 }
+
+// MARK: - Editing rules
+
+extension UTMQemuConfigurationInput {
+    /// How many USB devices can be shared with the guest at once.
+    static let maximumUsbShareRange = 0...64
+    
+    /// Keeps the shared USB device limit within range when editing ends.
+    mutating func clampMaximumUsbShare() {
+        maximumUsbShare = min(max(maximumUsbShare, Self.maximumUsbShareRange.lowerBound), Self.maximumUsbShareRange.upperBound)
+    }
+}

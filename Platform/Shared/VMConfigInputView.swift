@@ -38,7 +38,7 @@ struct VMConfigInputView: View {
                             Text("Share USB devices from host")
                         }
                         HStack {
-                            Stepper(value: $config.maximumUsbShare, in: 0...64) {
+                            Stepper(value: $config.maximumUsbShare, in: UTMQemuConfigurationInput.maximumUsbShareRange) {
                                 Text("Maximum Shared USB Devices")
                             }
                             NumberTextField("", number: $config.maximumUsbShare, onEditingChanged: validateMaxUsb)
@@ -58,11 +58,7 @@ struct VMConfigInputView: View {
         guard !editing else {
             return
         }
-        if config.maximumUsbShare < 0 {
-            config.maximumUsbShare = 0
-        } else if config.maximumUsbShare > 64 {
-            config.maximumUsbShare = 64
-        }
+        config.clampMaximumUsbShare()
     }
 }
 
