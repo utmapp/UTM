@@ -1346,6 +1346,8 @@
 		FFB02A90266CB09C006CD71A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = FFB02A8E266CB09C006CD71A /* InfoPlist.strings */; };
 		FFB02A93266CB09C006CD71A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = FFB02A91266CB09C006CD71A /* InfoPlist.strings */; };
 		FFB02A96266CB09C006CD71A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = FFB02A94266CB09C006CD71A /* Localizable.strings */; };
+		2CB1B8ECADC048309889E36B /* QEMUArgumentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3375AF9FA6F41F884122476 /* QEMUArgumentList.swift */; };
+		A8D8D42273944483A385BB8B /* QemuArgumentsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F4D5F286AD403BA029AEA5 /* QemuArgumentsTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -2342,6 +2344,8 @@
 		FFB02A8F266CB09C006CD71A /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		FFB02A92266CB09C006CD71A /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		FFB02A95266CB09C006CD71A /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		C3375AF9FA6F41F884122476 /* QEMUArgumentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QEMUArgumentList.swift; sourceTree = "<group>"; };
+		B3F4D5F286AD403BA029AEA5 /* QemuArgumentsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QemuArgumentsTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2720,6 +2724,7 @@
 		1B7FA4FED57DF488141BABF6 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				CE8DE4F015BF429591AD8070 /* Support */,
 				86C34BA826940427924E913E /* Configuration */,
 			);
 			name = Shared;
@@ -2804,6 +2809,7 @@
 		86C34BA826940427924E913E /* Configuration */ = {
 			isa = PBXGroup;
 			children = (
+				B3F4D5F286AD403BA029AEA5 /* QemuArgumentsTests.swift */,
 				2448DF4778134DA871DFBE5B /* QEMUArgumentFragmentTests.swift */,
 				1CD6D0A1EBCC1E0AFDA03425 /* UTMConfigurationDriveTests.swift */,
 				E29161B576128A4351B58791 /* UTMQemuConfigurationLegacyMigrationTests.swift */,
@@ -3413,6 +3419,14 @@
 			);
 			name = Tests;
 			path = Tests;
+			sourceTree = "<group>";
+		};
+		CE8DE4F015BF429591AD8070 /* Support */ = {
+			isa = PBXGroup;
+			children = (
+				C3375AF9FA6F41F884122476 /* QEMUArgumentList.swift */,
+			);
+			path = Support;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -4080,6 +4094,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A8D8D42273944483A385BB8B /* QemuArgumentsTests.swift in Sources */,
+				2CB1B8ECADC048309889E36B /* QEMUArgumentList.swift in Sources */,
 				F2D542A5BA01E404E3441F5C /* QEMUArgumentFragmentTests.swift in Sources */,
 				30B714E9925030D2DDD5550D /* UTMConfigurationDriveTests.swift in Sources */,
 				7D627E0B20049F2C04B80B32 /* UTMQemuConfigurationLegacyMigrationTests.swift in Sources */,
