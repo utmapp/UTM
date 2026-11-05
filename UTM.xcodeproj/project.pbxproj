@@ -1381,6 +1381,10 @@
 		D5376D58ED3A4E79B19D4DB9 /* UTMQemuConfigurationDeviceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42353968BD114DE19DF13E1F /* UTMQemuConfigurationDeviceTests.swift */; };
 		E087C64D08594205869D38AA /* UTMQemuConfigurationSystemTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F8EB46F52E4131A4A15D98 /* UTMQemuConfigurationSystemTests.swift */; };
 		D2760CDE32E3435A8794247B /* UTMQemuConfigurationInputTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3C6A1495B04419ABAD01FD7 /* UTMQemuConfigurationInputTests.swift */; };
+		E9FE4DF8A13047E79F53D4E9 /* VMConfirmActionModifierTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21DE3BB522474E04BA2FB470 /* VMConfirmActionModifierTests.swift */; };
+		A170028C6B5443A8A43343BF /* VMDetailsViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 765EA3B03B7248EF835145D2 /* VMDetailsViewTests.swift */; };
+		2E00F8A08521488F946C9B44 /* VMNameFieldTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 981EC5BCC36C4B9AA1A6DC82 /* VMNameFieldTests.swift */; };
+		D9942A0FC95140A289AD11C2 /* VMWizardStartViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2139625EE1DC407E833C3F1D /* VMWizardStartViewTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -2408,6 +2412,10 @@
 		42353968BD114DE19DF13E1F /* UTMQemuConfigurationDeviceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMQemuConfigurationDeviceTests.swift; sourceTree = "<group>"; };
 		D7F8EB46F52E4131A4A15D98 /* UTMQemuConfigurationSystemTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMQemuConfigurationSystemTests.swift; sourceTree = "<group>"; };
 		F3C6A1495B04419ABAD01FD7 /* UTMQemuConfigurationInputTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMQemuConfigurationInputTests.swift; sourceTree = "<group>"; };
+		21DE3BB522474E04BA2FB470 /* VMConfirmActionModifierTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfirmActionModifierTests.swift; sourceTree = "<group>"; };
+		765EA3B03B7248EF835145D2 /* VMDetailsViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDetailsViewTests.swift; sourceTree = "<group>"; };
+		981EC5BCC36C4B9AA1A6DC82 /* VMNameFieldTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMNameFieldTests.swift; sourceTree = "<group>"; };
+		2139625EE1DC407E833C3F1D /* VMWizardStartViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMWizardStartViewTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -3590,6 +3598,10 @@
 				4F70FBE1150144FE88203BF4 /* BusyOverlayTests.swift */,
 				734EBDE6C29041A18D059218 /* SizeTextFieldTests.swift */,
 				C0A39698E89F437A9926BF66 /* VMConfigDriveCreateViewTests.swift */,
+				21DE3BB522474E04BA2FB470 /* VMConfirmActionModifierTests.swift */,
+				765EA3B03B7248EF835145D2 /* VMDetailsViewTests.swift */,
+				981EC5BCC36C4B9AA1A6DC82 /* VMNameFieldTests.swift */,
+				2139625EE1DC407E833C3F1D /* VMWizardStartViewTests.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -4297,6 +4309,10 @@
 				D5376D58ED3A4E79B19D4DB9 /* UTMQemuConfigurationDeviceTests.swift in Sources */,
 				D2760CDE32E3435A8794247B /* UTMQemuConfigurationInputTests.swift in Sources */,
 				E087C64D08594205869D38AA /* UTMQemuConfigurationSystemTests.swift in Sources */,
+				E9FE4DF8A13047E79F53D4E9 /* VMConfirmActionModifierTests.swift in Sources */,
+				A170028C6B5443A8A43343BF /* VMDetailsViewTests.swift in Sources */,
+				2E00F8A08521488F946C9B44 /* VMNameFieldTests.swift in Sources */,
+				D9942A0FC95140A289AD11C2 /* VMWizardStartViewTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
