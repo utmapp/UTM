@@ -38,7 +38,7 @@ enum VMWizardPage: Int, Identifiable {
     case summary
 }
 
-enum VMWizardOS: Identifiable {
+enum VMWizardOS: Identifiable, CaseIterable {
     var id: Self { self }
 
     case Other
@@ -656,6 +656,233 @@ extension VMWizardError: LocalizedError {
         switch self {
         case .confusedArchitectureWarning(let pattern, let architecture, let expected): return String.localizedStringWithFormat(NSLocalizedString("The selected boot image contains the word '%@' but the guest architecture is '%@'. Please ensure you have selected an image that is compatible with '%@'.", comment: "VMWizardState"), pattern, architecture.prettyValue, expected)
         case .nameEmpty: return NSLocalizedString("Name cannot be empty.", comment: "VMWizardState")
+        }
+    }
+}
+
+// MARK: - Hardware and Windows page rules
+
+extension VMWizardState {
+    enum SupportedMachine: CaseIterable, Identifiable {
+        case quadra800
+        //case powerMacG3Beige
+        case powerMacG4
+        //case powerMacG5
+        case i440FX
+        case q35
+        case arm64Virt
+        case riscv64Virt
+
+        var id: Self { self }
+
+        var title: LocalizedStringKey {
+            switch self {
+            case .quadra800: "Macintosh Quadra 800 (1993, M68K)"
+            //case .powerMacG3Beige: "Power Macintosh G3 (1997, Beige)"
+            case .powerMacG4: "Power Macintosh G4 (1999, PPC)"
+            //case .powerMacG5: "Power Macintosh G5 (2003, PPC64)"
+            case .i440FX: "Intel i440FX based PC (1996, i386)"
+            case .q35: "Intel ICH9 based PC (2009, x86_64)"
+            case .arm64Virt: "ARM64 virtual machine (2014, ARM64)"
+            case .riscv64Virt: "RISC-V64 virtual machine (2018, RISC-V64)"
+            }
+        }
+
+        var architecture: QEMUArchitecture {
+            switch self {
+            case .quadra800: return .m68k
+            //case .powerMacG3Beige: return .ppc
+            case .powerMacG4: return .ppc
+            //case .powerMacG5: return .ppc64
+            case .i440FX: return .i386
+            case .q35: return .x86_64
+            case .arm64Virt: return .aarch64
+            case .riscv64Virt: return .riscv64
+            }
+        }
+
+        var target: any QEMUTarget {
+            switch self {
+            case .quadra800: return QEMUTarget_m68k.q800
+            //case .powerMacG3Beige: return QEMUTarget_ppc.g3beige
+            case .powerMacG4: return QEMUTarget_ppc.mac99
+            //case .powerMacG5: return QEMUTarget_ppc.mac99
+            case .i440FX: return QEMUTarget_i386.pc
+            case .q35: return QEMUTarget_x86_64.q35
+            case .arm64Virt: return QEMUTarget_aarch64.virt
+            case .riscv64Virt: return QEMUTarget_riscv64.virt
+            }
+        }
+
+        var minRam: Int {
+            switch self {
+            case .quadra800: return 8
+            //case .powerMacG3Beige: return 32
+            case .powerMacG4: return 64
+            //case .powerMacG5: return 64
+            default: return 0
+            }
+        }
+
+        var maxRam: Int {
+            switch self {
+            case .quadra800: return 1024
+            //case .powerMacG3Beige: return 2047
+            case .powerMacG4: return 2048
+            //case .powerMacG5: return 2048
+            default: return 0
+            }
+        }
+
+        var defaultRam: Int {
+            switch self {
+            case .quadra800: return 128
+            //case .powerMacG3Beige: return 512
+            case .powerMacG4: return 512
+            //case .powerMacG5: return 512
+            case .i440FX: return 512
+            #if os(macOS)
+            default: return 4096
+            #else
+            default: return 512
+            #endif
+            }
+        }
+
+        var defaultStorageGiB: Int {
+            switch self {
+            case .quadra800, .powerMacG4: return 2
+            case .i440FX: return 2
+            #if os(macOS)
+            default: return 64
+            #else
+            default: return 2
+            #endif
+            }
+        }
+
+        var maxSupportedCores: Int {
+            switch self {
+            case .quadra800, .powerMacG4: return 1
+            default: return 0
+            }
+        }
+
+        var isLegacyHardware: Bool {
+            switch self {
+            case .quadra800, .powerMacG4, .i440FX: return true
+            default: return false
+            }
+        }
+
+        func isSupported(running os: VMWizardOS) -> Bool {
+            switch os {
+            case .Other: return true
+            case .macOS: return [.arm64Virt].contains(self)
+            case .Linux: return true
+            case .Windows: return [.i440FX, .q35, .arm64Virt].contains(self)
+            case .ClassicMacOS: return [.quadra800, .powerMacG4].contains(self)
+            }
+        }
+
+        static func `default`(for os: VMWizardOS) -> Self {
+            switch os {
+            case .Other: return .q35
+            case .macOS: return .arm64Virt
+            case .Linux: return .q35
+            case .Windows: return .q35
+            case .ClassicMacOS: return .powerMacG4
+            }
+        }
+    }
+    
+    /// Takes the architecture, machine, memory, cores, storage and hardware level of a machine the user picked.
+    func applyMachine(_ machine: SupportedMachine) {
+        systemArchitecture = machine.architecture
+        systemTarget = machine.target
+        systemMemoryMib = machine.defaultRam
+        systemCpuCount = machine.maxSupportedCores
+        storageSizeGib = machine.defaultStorageGiB
+        legacyHardware = machine.isLegacyHardware
+    }
+    
+    /// Virtualization runs the host's architecture on its default machine with current hardware.
+    func prepareVirtualizedHardware() {
+        #if arch(arm64)
+        systemArchitecture = .aarch64
+        #elseif arch(x86_64)
+        systemArchitecture = .x86_64
+        #else
+        #error("Unsupported architecture.")
+        #endif
+        systemTarget = systemArchitecture.targetType.default
+        legacyHardware = false
+    }
+    
+    /// A new architecture starts on its default machine.
+    func setSystemArchitecture(_ architecture: QEMUArchitecture) {
+        systemArchitecture = architecture
+        systemTarget = architecture.targetType.default
+    }
+    
+    /// Keeps the memory within what the machine supports, or the host's maximum when
+    /// the machine has no limit of its own.
+    func clampSystemMemory(for machine: SupportedMachine?, hostMaximumMib: Int) {
+        let machineMaximum = machine?.maxRam ?? 0
+        let validMaximum = machineMaximum > 0 ? machineMaximum : hostMaximumMib
+        if systemMemoryMib > validMaximum {
+            systemMemoryMib = validMaximum
+        }
+        let validMinimum = machine?.minRam ?? 0
+        if systemMemoryMib < validMinimum {
+            systemMemoryMib = validMinimum
+        }
+    }
+    
+    /// Keeps an explicit core count within the host's range; zero means the default.
+    func clampSystemCpuCount(in range: ClosedRange<Int>) {
+        guard systemCpuCount != 0 else {
+            return
+        }
+        if systemCpuCount < range.lowerBound {
+            systemCpuCount = range.lowerBound
+        } else if systemCpuCount > range.upperBound {
+            systemCpuCount = range.upperBound
+        }
+    }
+    
+    /// GPU acceleration needs a display.
+    func setDisplayEnabled(_ isEnabled: Bool) {
+        isDisplayEnabled = isEnabled
+        if !isEnabled {
+            isGLEnabled = false
+        }
+    }
+    
+    /// Windows 10 and later boot UEFI with a TPM and get the guest tools; older versions do not.
+    func setWindows10OrHigher(_ isWindows10OrHigher: Bool) {
+        self.isWindows10OrHigher = isWindows10OrHigher
+        systemBootUefi = isWindows10OrHigher
+        systemBootTpm = isWindows10OrHigher
+        isGuestToolsInstallRequested = isWindows10OrHigher
+    }
+    
+    /// A TPM needs UEFI boot.
+    func setBootUefi(_ isUefi: Bool) {
+        systemBootUefi = isUefi
+        if !isUefi {
+            systemBootTpm = false
+        }
+    }
+    
+    /// Windows installs from a CD image; legacy hardware (always, in UTM SE) cannot run Windows 10.
+    func prepareWindowsPage() {
+        bootDevice = .cd
+        #if WITH_QEMU_TCI
+        legacyHardware = true
+        #endif
+        if legacyHardware {
+            setWindows10OrHigher(false)
         }
     }
 }
