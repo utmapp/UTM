@@ -77,6 +77,12 @@ class Main {
         registerDefaultsFromSettingsBundle()
         // register tips
         if #available(iOS 17, macOS 14, *) {
+            #if DEBUG
+            // a tip's popover would cover the toolbar the UI tests drive
+            if UTMTestSupport.isTestMode {
+                Tips.hideAllTipsForTesting()
+            }
+            #endif
             try? Tips.configure()
         }
         #endif
@@ -87,9 +93,11 @@ class Main {
     ///
     /// An app launched by a UI test runs normally even if the runner's environment reaches it.
     static private var isTestHost: Bool {
-        if CommandLine.arguments.contains("-UTMTestMode") {
+        #if DEBUG
+        if CommandLine.arguments.contains(UTMTestSupport.testModeArgument) {
             return false
         }
+        #endif
         let environment = ProcessInfo.processInfo.environment
         return environment["XCTestConfigurationFilePath"] != nil || environment["XCTestBundlePath"] != nil || environment["XCTestSessionIdentifier"] != nil
     }

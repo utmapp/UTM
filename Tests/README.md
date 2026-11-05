@@ -11,6 +11,7 @@ settings of an installed UTM.
 | `Shared/` | `UTMTests`, `UTMTests-iOS` | XCTest unit tests hosted by the macOS app, and by the iOS app on a simulator (`@testable import UTM`); every file here is compiled into both bundles |
 | `Fixtures/` | `UTMTests`, `UTMTests-iOS` | Resource files the tests load, such as legacy `config.plist` files |
 | `UITests/macOS/` | `UTMUITests` | XCUITest flows that launch the macOS app and drive its windows |
+| `UITests/iOS/` | `UTMUITests-iOS` | XCUITest flows that launch the iOS app on a simulator and drive its screens |
 | `Static/` | none | Scripts that check the tree without building it (`sh Tests/Static/run_all.sh`) |
 
 The `Shared/Views/` tests inspect SwiftUI views with
@@ -78,11 +79,12 @@ action before pressing Cmd-U against a Debug app that is not a test build):
 
 ```sh
 ./scripts/test_utm.sh -only-testing:UTMUITests
+./scripts/test_utm.sh -s -only-testing:UTMUITests-iOS     # the iOS flows, on a simulator
 ```
 
-CI runs them after a merge to `main` and on manual dispatch (`Test UTM (macOS UI)`),
-not on pull requests: the job fails without a desktop session and never blocks
-the workflow.
+CI runs them after a merge to `main` and on manual dispatch (`Test UTM (macOS UI)`
+and the UI step of `Test UTM (iOS Simulator)`), not on pull requests: the macOS job
+fails without a desktop session, and neither blocks the workflow.
 
 Each test starts the app with `-UTMTestReset`, which empties the test build's
 defaults and documents, and `-UTMTestMode`, which keeps the release notes, the

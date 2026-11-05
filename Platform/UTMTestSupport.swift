@@ -32,6 +32,11 @@ enum UTMTestSupport {
     /// Empties the app's defaults and its documents before anything reads them.
     static let resetArgument = "-UTMTestReset"
     
+    /// Whether this launch of a test build asked for test mode.
+    static var isTestMode: Bool {
+        CommandLine.arguments.contains(testModeArgument) && Bundle.main.bundleIdentifier?.hasPrefix(testBundlePrefix) == true
+    }
+    
     static func applyLaunchArguments() {
         let arguments = CommandLine.arguments
         guard arguments.contains(testModeArgument) || arguments.contains(resetArgument) else {

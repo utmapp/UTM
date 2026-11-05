@@ -108,9 +108,11 @@ private struct CreateDrive: View {
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
                         Button("Cancel", action: cancel)
+                            .accessibilityIdentifier(UTMAccessibilityID.Drive.cancel)
                     }
                     ToolbarItem(placement: .confirmationAction) {
                         Button("Done", action: done)
+                            .accessibilityIdentifier(UTMAccessibilityID.Drive.create)
                     }
                 }
         }.navigationViewStyle(.stack)
