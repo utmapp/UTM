@@ -67,7 +67,7 @@ extension UTMQemuConfigurationSharing {
             directoryShareMode = .none
         }
         // overrides for specific configurations
-        if rawTarget.hasPrefix("pc") || rawTarget.hasPrefix("q35") {
+        if target.isPcOrQ35Machine {
             directoryShareMode = .webdav
             hasClipboardSharing = true
         } else if (architecture == .arm || architecture == .aarch64) && (rawTarget.hasPrefix("virt-") || rawTarget == "virt") {
