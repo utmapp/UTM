@@ -180,4 +180,150 @@ import XCTest
         XCTAssertEqual(config.displays.first?.upscalingFilter, .nearest)
         XCTAssertFalse(config.qemu.hasUefiBoot)
     }
+
+    // MARK: - Hardware page
+
+    func testPickingAMachineSetsEverythingItImplies() {
+        let state = VMWizardState()
+        state.applyMachine(.quadra800)
+        XCTAssertEqual(state.systemArchitecture, .m68k)
+        XCTAssertEqual(state.systemTarget.rawValue, QEMUTarget_m68k.q800.rawValue)
+        XCTAssertEqual(state.systemMemoryMib, 128)
+        XCTAssertEqual(state.systemCpuCount, 1)
+        XCTAssertEqual(state.storageSizeGib, 2)
+        XCTAssertTrue(state.legacyHardware)
+        state.applyMachine(.q35)
+        XCTAssertEqual(state.systemArchitecture, .x86_64)
+        XCTAssertEqual(state.systemTarget.rawValue, QEMUTarget_x86_64.q35.rawValue)
+        XCTAssertEqual(state.systemCpuCount, 0, "no core limit means the default")
+        XCTAssertFalse(state.legacyHardware)
+    }
+
+    func testEachOperatingSystemHasASupportedDefaultMachine() {
+        for os in VMWizardOS.allCases {
+            let machine = VMWizardState.SupportedMachine.default(for: os)
+            XCTAssertTrue(machine.isSupported(running: os), "\(os)")
+        }
+    }
+
+    func testWindowsRunsOnlyOnPcAndArm64Machines() {
+        let windows = VMWizardState.SupportedMachine.allCases.filter { $0.isSupported(running: .Windows) }
+        XCTAssertEqual(windows, [.i440FX, .q35, .arm64Virt])
+        let classic = VMWizardState.SupportedMachine.allCases.filter { $0.isSupported(running: .ClassicMacOS) }
+        XCTAssertEqual(classic, [.quadra800, .powerMacG4])
+        XCTAssertEqual(VMWizardState.SupportedMachine.allCases.filter { $0.isSupported(running: .macOS) }, [.arm64Virt])
+    }
+
+    func testVirtualizationUsesTheHostArchitectureWithCurrentHardware() {
+        let state = VMWizardState()
+        state.legacyHardware = true
+        state.prepareVirtualizedHardware()
+        #if arch(arm64)
+        XCTAssertEqual(state.systemArchitecture, .aarch64)
+        #else
+        XCTAssertEqual(state.systemArchitecture, .x86_64)
+        #endif
+        XCTAssertEqual(state.systemTarget.rawValue, state.systemArchitecture.targetType.default.rawValue)
+        XCTAssertFalse(state.legacyHardware)
+    }
+
+    func testChangingTheArchitectureStartsOnItsDefaultMachine() {
+        let state = VMWizardState()
+        state.setSystemArchitecture(.aarch64)
+        XCTAssertEqual(state.systemTarget.rawValue, QEMUArchitecture.aarch64.targetType.default.rawValue)
+    }
+
+    func testMemoryIsKeptWithinTheMachineLimits() {
+        let state = VMWizardState()
+        state.systemMemoryMib = 4096
+        state.clampSystemMemory(for: .powerMacG4, hostMaximumMib: 65536)
+        XCTAssertEqual(state.systemMemoryMib, 2048)
+        state.systemMemoryMib = 32
+        state.clampSystemMemory(for: .powerMacG4, hostMaximumMib: 65536)
+        XCTAssertEqual(state.systemMemoryMib, 64)
+    }
+
+    func testMemoryFallsBackToTheHostLimitForMachinesWithoutOne() {
+        let state = VMWizardState()
+        state.systemMemoryMib = 16384
+        state.clampSystemMemory(for: .q35, hostMaximumMib: 8192)
+        XCTAssertEqual(state.systemMemoryMib, 8192)
+        state.systemMemoryMib = 16384
+        state.clampSystemMemory(for: nil, hostMaximumMib: 8192)
+        XCTAssertEqual(state.systemMemoryMib, 8192)
+        state.systemMemoryMib = 1024
+        state.clampSystemMemory(for: nil, hostMaximumMib: 8192)
+        XCTAssertEqual(state.systemMemoryMib, 1024)
+    }
+
+    func testCoreCountIsKeptWithinTheHostRangeUnlessDefault() {
+        let state = VMWizardState()
+        for (entry, expected) in [(0, 0), (-1, 1), (4, 4), (20, 8)] {
+            state.systemCpuCount = entry
+            state.clampSystemCpuCount(in: 1...8)
+            XCTAssertEqual(state.systemCpuCount, expected, "\(entry)")
+        }
+    }
+
+    func testDisablingTheDisplayDisablesGpuAcceleration() {
+        let state = VMWizardState()
+        state.isGLEnabled = true
+        state.setDisplayEnabled(false)
+        XCTAssertFalse(state.isDisplayEnabled)
+        XCTAssertFalse(state.isGLEnabled)
+        state.isGLEnabled = true
+        state.setDisplayEnabled(true)
+        XCTAssertTrue(state.isGLEnabled)
+    }
+
+    // MARK: - Windows page
+
+    func testWindows10OrHigherBootsUefiWithTpmAndGuestTools() {
+        let state = VMWizardState()
+        state.setWindows10OrHigher(false)
+        XCTAssertFalse(state.isWindows10OrHigher)
+        XCTAssertFalse(state.systemBootUefi)
+        XCTAssertFalse(state.systemBootTpm)
+        XCTAssertFalse(state.isGuestToolsInstallRequested)
+        state.setWindows10OrHigher(true)
+        XCTAssertTrue(state.systemBootUefi)
+        XCTAssertTrue(state.systemBootTpm)
+        XCTAssertTrue(state.isGuestToolsInstallRequested)
+    }
+
+    func testTurningUefiOffTurnsTheTpmOff() {
+        let state = VMWizardState()
+        state.setWindows10OrHigher(true)
+        state.setBootUefi(false)
+        XCTAssertFalse(state.systemBootUefi)
+        XCTAssertFalse(state.systemBootTpm)
+        state.setBootUefi(true)
+        XCTAssertTrue(state.systemBootUefi)
+        XCTAssertFalse(state.systemBootTpm, "UEFI alone does not bring the TPM back")
+    }
+
+    func testLegacyHardwareCannotInstallWindows10() {
+        let state = VMWizardState()
+        state.legacyHardware = true
+        state.setWindows10OrHigher(true)
+        state.prepareWindowsPage()
+        XCTAssertEqual(state.bootDevice, .cd)
+        XCTAssertFalse(state.isWindows10OrHigher)
+        XCTAssertFalse(state.isGuestToolsInstallRequested)
+        XCTAssertFalse(state.systemBootUefi)
+        XCTAssertFalse(state.systemBootTpm)
+    }
+
+    #if !WITH_QEMU_TCI
+    func testCurrentHardwareKeepsTheWindows10Choice() {
+        let state = VMWizardState()
+        state.legacyHardware = false
+        state.setWindows10OrHigher(true)
+        state.bootDevice = .kernel
+        state.prepareWindowsPage()
+        XCTAssertEqual(state.bootDevice, .cd)
+        XCTAssertTrue(state.isWindows10OrHigher)
+        XCTAssertTrue(state.systemBootUefi)
+    }
+    #endif
 }

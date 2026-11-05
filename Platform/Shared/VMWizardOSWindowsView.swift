@@ -26,15 +26,7 @@ struct VMWizardOSWindowsView: View {
             Section {
                 Toggle("Install Windows 10 or higher", isOn: $wizardState.isWindows10OrHigher)
                     .onChange(of: wizardState.isWindows10OrHigher) { newValue in
-                        if newValue {
-                            wizardState.systemBootUefi = true
-                            wizardState.systemBootTpm = true
-                            wizardState.isGuestToolsInstallRequested = true
-                        } else {
-                            wizardState.systemBootUefi = false
-                            wizardState.systemBootTpm = false
-                            wizardState.isGuestToolsInstallRequested = false
-                        }
+                        wizardState.setWindows10OrHigher(newValue)
                     }
                     .disabled(wizardState.legacyHardware)
 
@@ -94,9 +86,7 @@ struct VMWizardOSWindowsView: View {
                 DetailedSection("", description: "Some older systems do not support UEFI boot, such as Windows 7 and below.") {
                     Toggle("UEFI Boot", isOn: $wizardState.systemBootUefi)
                         .onChange(of: wizardState.systemBootUefi) { newValue in
-                            if !newValue {
-                                wizardState.systemBootTpm = false
-                            }
+                            wizardState.setBootUefi(newValue)
                         }
                     Toggle("Secure Boot with TPM 2.0", isOn: $wizardState.systemBootTpm)
                         .disabled(!wizardState.systemBootUefi)
@@ -112,16 +102,7 @@ struct VMWizardOSWindowsView: View {
         }
         .fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.data], onCompletion: processImage)
         .onAppear {
-            wizardState.bootDevice = .cd
-            #if WITH_QEMU_TCI
-            wizardState.legacyHardware = true
-            #endif
-            if wizardState.legacyHardware {
-                wizardState.isWindows10OrHigher = false
-                wizardState.isGuestToolsInstallRequested = false
-                wizardState.systemBootUefi = false
-                wizardState.systemBootTpm = false
-            }
+            wizardState.prepareWindowsPage()
         }
     }
     
