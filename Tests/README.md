@@ -68,6 +68,18 @@ still stalls is reported as exceeding its allowance instead of blocking the run.
 - Keep tests free of host state: no `UserDefaults.standard` writes, no files
   outside `FileManager.default.temporaryDirectory`, no running VMs.
 - Put fixtures under `Fixtures/` and load them from `Bundle(for: Self.self)`.
+- `Fixtures/snapshots/<name>.<platform><major>.<minor>.png` are reference images of pure
+  content panels (`SnapshotTests`), rendered offscreen at 1x in the light
+  appearance and English, and compared pixel by pixel with a small tolerance
+  (`Tests/Shared/Support/SnapshotSupport.swift`). References are per OS version
+  and a test without one for the OS it runs on is skipped. To record them, run
+  `TEST_RUNNER_UTM_RECORD_SNAPSHOTS=1 ./scripts/test_utm.sh -only-testing:UTMTests/SnapshotTests`,
+  copy the files the skipped tests name into `Fixtures/snapshots/`, look at them,
+  and add them to the test target's resources. The `Record snapshots` job
+  (`workflow_dispatch` with `record_snapshots`) does the same on a CI runner and
+  uploads the images, which is how references for the runner's OS are made.
+  macOS only for now. Never snapshot a spinner, a
+  window's chrome, or anything with a material that changes with what is behind it.
 
 ## SwiftUI views
 

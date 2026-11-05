@@ -32,6 +32,7 @@ exec xcodebuild test \
     -project UTM.xcodeproj -scheme macOS -destination "platform=macOS,arch=$(uname -m)" \
     -only-testing:UTMTests -skipPackagePluginValidation -derivedDataPath "$DERIVED_DATA" \
     -test-timeouts-enabled YES -default-test-execution-time-allowance 120 \
+    -testLanguage en -testRegion US \
     "$@" \
     PRODUCT_BUNDLE_PREFIX=com.utmapp.test CODE_SIGN_IDENTITY_MAC=- DEVELOPER_ACCOUNT_VM_ACCESS=NO \
     PROVISIONING_PROFILE_SPECIFIER_MAC= PROVISIONING_PROFILE_SPECIFIER_HELPER= PROVISIONING_PROFILE_SPECIFIER_LAUNCHER= \

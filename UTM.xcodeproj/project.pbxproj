@@ -1385,6 +1385,13 @@
 		A170028C6B5443A8A43343BF /* VMDetailsViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 765EA3B03B7248EF835145D2 /* VMDetailsViewTests.swift */; };
 		2E00F8A08521488F946C9B44 /* VMNameFieldTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 981EC5BCC36C4B9AA1A6DC82 /* VMNameFieldTests.swift */; };
 		D9942A0FC95140A289AD11C2 /* VMWizardStartViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2139625EE1DC407E833C3F1D /* VMWizardStartViewTests.swift */; };
+		3FF93AF3871D405EA2120B98 /* SnapshotSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A6A894C55D1416E928DF677 /* SnapshotSupport.swift */; };
+		14D403E80CCE40C8920ECD0D /* SnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDB0B749C68D49CC87A6C108 /* SnapshotTests.swift */; };
+		C1143E069D0F489884178851 /* card-stopped.macOS27.2.png in Resources */ = {isa = PBXBuildFile; fileRef = 20F012947CA3443180153C21 /* card-stopped.macOS27.2.png */; };
+		C1EB7E16EDE749EDB43043D9 /* details-registry-only.macOS27.2.png in Resources */ = {isa = PBXBuildFile; fileRef = 3246A8A915E4468E82ACC30A /* details-registry-only.macOS27.2.png */; };
+		155F416644B44533B641D0BD /* wizard-summary-apple.macOS27.2.png in Resources */ = {isa = PBXBuildFile; fileRef = FC8CD162E8364B60BD1039AD /* wizard-summary-apple.macOS27.2.png */; };
+		26FA7E3560BD4FE394D0FD4C /* wizard-summary-linux.macOS27.2.png in Resources */ = {isa = PBXBuildFile; fileRef = 0852808FA4B845229F32BE26 /* wizard-summary-linux.macOS27.2.png */; };
+		4C7572F4B94043D694924692 /* wizard-summary-windows.macOS27.2.png in Resources */ = {isa = PBXBuildFile; fileRef = 2FF23EEB62B94FE2A98E705B /* wizard-summary-windows.macOS27.2.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -2416,6 +2423,13 @@
 		765EA3B03B7248EF835145D2 /* VMDetailsViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDetailsViewTests.swift; sourceTree = "<group>"; };
 		981EC5BCC36C4B9AA1A6DC82 /* VMNameFieldTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMNameFieldTests.swift; sourceTree = "<group>"; };
 		2139625EE1DC407E833C3F1D /* VMWizardStartViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMWizardStartViewTests.swift; sourceTree = "<group>"; };
+		8A6A894C55D1416E928DF677 /* SnapshotSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotSupport.swift; sourceTree = "<group>"; };
+		FDB0B749C68D49CC87A6C108 /* SnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotTests.swift; sourceTree = "<group>"; };
+		20F012947CA3443180153C21 /* card-stopped.macOS27.2.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "card-stopped.macOS27.2.png"; sourceTree = "<group>"; };
+		3246A8A915E4468E82ACC30A /* details-registry-only.macOS27.2.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "details-registry-only.macOS27.2.png"; sourceTree = "<group>"; };
+		FC8CD162E8364B60BD1039AD /* wizard-summary-apple.macOS27.2.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "wizard-summary-apple.macOS27.2.png"; sourceTree = "<group>"; };
+		0852808FA4B845229F32BE26 /* wizard-summary-linux.macOS27.2.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "wizard-summary-linux.macOS27.2.png"; sourceTree = "<group>"; };
+		2FF23EEB62B94FE2A98E705B /* wizard-summary-windows.macOS27.2.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "wizard-summary-windows.macOS27.2.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2824,6 +2838,7 @@
 			children = (
 				1471EB5EA8794EE1833C6E4C /* expected */,
 				52BBF302E368431F1EC0A61D /* legacy */,
+				8DC31494DABE41EBBEAB24B6 /* snapshots */,
 			);
 			name = Fixtures;
 			path = Fixtures;
@@ -3527,6 +3542,7 @@
 				C62B133DC3164A6A806FAD0D /* TestConfigurations.swift */,
 				8B3FD77481DA4C73A8AF6B1B /* QemuArgumentTestCase.swift */,
 				1CF7FB9FE05245099070BE2C /* ViewInspectorSupport.swift */,
+				8A6A894C55D1416E928DF677 /* SnapshotSupport.swift */,
 			);
 			path = Support;
 			sourceTree = "<group>";
@@ -3602,8 +3618,22 @@
 				765EA3B03B7248EF835145D2 /* VMDetailsViewTests.swift */,
 				981EC5BCC36C4B9AA1A6DC82 /* VMNameFieldTests.swift */,
 				2139625EE1DC407E833C3F1D /* VMWizardStartViewTests.swift */,
+				FDB0B749C68D49CC87A6C108 /* SnapshotTests.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		8DC31494DABE41EBBEAB24B6 /* snapshots */ = {
+			isa = PBXGroup;
+			children = (
+				2FF23EEB62B94FE2A98E705B /* wizard-summary-windows.macOS27.2.png */,
+				0852808FA4B845229F32BE26 /* wizard-summary-linux.macOS27.2.png */,
+				FC8CD162E8364B60BD1039AD /* wizard-summary-apple.macOS27.2.png */,
+				3246A8A915E4468E82ACC30A /* details-registry-only.macOS27.2.png */,
+				20F012947CA3443180153C21 /* card-stopped.macOS27.2.png */,
+			);
+			name = snapshots;
+			path = snapshots;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -4014,6 +4044,11 @@
 				A8BC5FDA89544654A64A1DE4 /* aarch64-virt-headless-serial.argv in Resources */,
 				F4ADA10BCC2F44CAABC17854 /* aarch64-virt-virtio-disk.argv in Resources */,
 				3EF4774825B9E62A1A96929B /* v2-qemu-ac97.plist in Resources */,
+				4C7572F4B94043D694924692 /* wizard-summary-windows.macOS27.2.png in Resources */,
+				26FA7E3560BD4FE394D0FD4C /* wizard-summary-linux.macOS27.2.png in Resources */,
+				155F416644B44533B641D0BD /* wizard-summary-apple.macOS27.2.png in Resources */,
+				C1EB7E16EDE749EDB43043D9 /* details-registry-only.macOS27.2.png in Resources */,
+				C1143E069D0F489884178851 /* card-stopped.macOS27.2.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4313,6 +4348,8 @@
 				A170028C6B5443A8A43343BF /* VMDetailsViewTests.swift in Sources */,
 				2E00F8A08521488F946C9B44 /* VMNameFieldTests.swift in Sources */,
 				D9942A0FC95140A289AD11C2 /* VMWizardStartViewTests.swift in Sources */,
+				14D403E80CCE40C8920ECD0D /* SnapshotTests.swift in Sources */,
+				3FF93AF3871D405EA2120B98 /* SnapshotSupport.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
