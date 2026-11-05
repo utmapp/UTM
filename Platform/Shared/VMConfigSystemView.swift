@@ -17,9 +17,6 @@
 import SwiftUI
 
 private let bytesInMib: UInt64 = 1024 * 1024
-private let minMemoryMib = 32
-private let baseUsageMib = 128
-private let warningThreshold = 0.9
 
 struct VMConfigSystemView: View {
     @Binding var config: UTMQemuConfigurationSystem
@@ -83,14 +80,7 @@ struct VMConfigSystemView: View {
         guard !editing else {
             return
         }
-        let memorySizeMib = config.memorySize
-        guard memorySizeMib >= minMemoryMib else {
-            config.memorySize = 0
-            return
-        }
-        let jitSizeMib = config.jitCacheSize
-        guard jitSizeMib >= 0 else {
-            config.jitCacheSize = 0
+        guard config.clampMemorySettings() else {
             return
         }
         var totalDeviceMemory = ProcessInfo.processInfo.physicalMemory
@@ -100,11 +90,11 @@ struct VMConfigSystemView: View {
             totalDeviceMemory = min(availableMemory, totalDeviceMemory)
         }
         #endif
-        let actualJitSizeMib = jitSizeMib == 0 ? memorySizeMib / 4 : jitSizeMib
-        let jitMirrorMultiplier = UTMCapabilities.current.contains(.hasJitEntitlements) ? 1 : 2;
-        let estMemoryUsage = UInt64(memorySizeMib + jitMirrorMultiplier*actualJitSizeMib + baseUsageMib) * bytesInMib
-        if Double(estMemoryUsage) > Double(totalDeviceMemory) * warningThreshold {
-            warningMessage = WarningMessage.overallocatedRam(totalMib: totalDeviceMemory / bytesInMib, estimatedMib: estMemoryUsage / bytesInMib)
+        let totalDeviceMemoryMib = totalDeviceMemory / bytesInMib
+        let hasJitEntitlements = UTMCapabilities.current.contains(.hasJitEntitlements)
+        if config.isMemoryOverallocated(totalDeviceMemoryMib: totalDeviceMemoryMib, hasJitEntitlements: hasJitEntitlements) {
+            let estimatedMib = UInt64(max(0, config.estimatedMemoryUsageMib(hasJitEntitlements: hasJitEntitlements)))
+            warningMessage = WarningMessage.overallocatedRam(totalMib: totalDeviceMemoryMib, estimatedMib: estimatedMib)
         }
     }
 
@@ -112,10 +102,7 @@ struct VMConfigSystemView: View {
         guard !editing else {
             return
         }
-        guard config.cpuCount >= 0 else {
-            config.cpuCount = 0
-            return
-        }
+        config.clampCpuCount()
     }
 }
 
