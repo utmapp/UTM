@@ -212,6 +212,74 @@ extension UTMQemuConfigurationDrive {
     }
 }
 
+// MARK: - Editing rules
+
+extension UTMQemuConfigurationDrive {
+    /// Turns a new drive into a removable one or back, as the create view's toggle does.
+    ///
+    /// A removable drive is a read-only raw image: a CD, or a disk when its interface is
+    /// a floppy. When a default interface for the image type is known, the drive takes
+    /// it and the image type follows the new interface.
+    mutating func setRemovable(_ isExternal: Bool) {
+        self.isExternal = isExternal
+        imageType = Self.newImageType(isExternal: isExternal, interface: interface)
+        isRawImage = isExternal
+        isReadOnly = isExternal
+        if let defaultInterfaceForImageType = defaultInterfaceForImageType {
+            interface = defaultInterfaceForImageType(imageType)
+            imageType = Self.newImageType(isExternal: isExternal, interface: interface)
+        }
+    }
+    
+    /// Changes the interface of a new drive, keeping the image type a floppy can hold.
+    mutating func setInterfaceWhenCreating(_ interface: QEMUDriveInterface) {
+        self.interface = interface
+        imageType = Self.newImageType(isExternal: isExternal, interface: interface)
+    }
+    
+    /// Changes the image type of an existing drive; anything other than a disk is read-only.
+    mutating func setImageType(_ imageType: QEMUDriveImageType) {
+        self.imageType = imageType
+        if imageType != .none && imageType != .disk {
+            isReadOnly = true
+        }
+    }
+    
+    /// Changes the interface of an existing drive, which also moves it to the current
+    /// interface layout and turns a CD into a disk image when it becomes a floppy.
+    mutating func setInterface(_ interface: QEMUDriveInterface) {
+        self.interface = interface
+        interfaceVersion = Self.latestInterfaceVersion
+        if interface == .floppy && imageType == .cd {
+            imageType = .disk
+        }
+    }
+    
+    /// Only a disk image, or a drive without an image, can be made writable.
+    var isReadOnlyEditable: Bool {
+        imageType == .none || imageType == .disk
+    }
+    
+    /// Only disk and CD images are attached through a selectable interface.
+    var hasSelectableInterface: Bool {
+        imageType == .disk || imageType == .cd
+    }
+    
+    /// An IDE drive saved by an older version still uses one bus per unit.
+    var isInterfaceUpdateAvailable: Bool {
+        interface == .ide && interfaceVersion != Self.latestInterfaceVersion
+    }
+    
+    /// Moves the drive to the current interface layout.
+    mutating func updateInterface() {
+        interfaceVersion = Self.latestInterfaceVersion
+    }
+    
+    private static func newImageType(isExternal: Bool, interface: QEMUDriveInterface) -> QEMUDriveImageType {
+        isExternal && interface != .floppy ? .cd : .disk
+    }
+}
+
 // MARK: - New drive
 
 extension UTMQemuConfigurationDrive {

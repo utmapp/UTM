@@ -17,7 +17,6 @@
 import SwiftUI
 
 private let bytesInMib: Int64 = 1024 * 1024
-private let mibInGib: Int = 1024
 
 struct VMConfigDriveDetailsView: View {
     private enum ConfirmItem: Identifiable {
@@ -69,25 +68,20 @@ struct VMConfigDriveDetailsView: View {
                 }
             }
             Toggle("Read Only?", isOn: $config.isReadOnly)
-                .disabled(config.imageType != .none && config.imageType != .disk)
+                .disabled(!config.isReadOnlyEditable)
             VMConfigConstantPicker("Image Type", selection: $config.imageType)
                 .onChange(of: config.imageType) { imageType in
-                    if imageType != .none && config.imageType != .disk {
-                        config.isReadOnly = true
-                    }
+                    config.setImageType(imageType)
                 }
-            if config.imageType == .disk || config.imageType == .cd {
+            if config.hasSelectableInterface {
                 VMConfigConstantPicker("Interface", selection: $config.interface)
                     .onChange(of: config.interface) { interface in
-                        config.interfaceVersion = UTMQemuConfigurationDrive.latestInterfaceVersion
-                        if interface == .floppy && config.imageType == .cd {
-                            config.imageType = .disk
-                        }
+                        config.setInterface(interface)
                     }
             }
-            if config.interface == .ide && config.interfaceVersion != UTMQemuConfigurationDrive.latestInterfaceVersion {
+            if config.isInterfaceUpdateAvailable {
                 Button {
-                    config.interfaceVersion = UTMQemuConfigurationDrive.latestInterfaceVersion
+                    config.updateInterface()
                 } label: {
                     Text("Update Interface")
                 }.help("Older versions of UTM added each IDE device to a separate bus. Check this to change the configuration to place two units on each bus.")
@@ -210,7 +204,7 @@ private struct ResizePopoverView: View {
                 ProgressView("Calculating current size...")
             }
         }.alert(isPresented: $isConfirming) {
-            Alert(title: Text("Resizing is experimental and could result in data loss. You are strongly encouraged to back-up this VM before proceeding. Would you like to resize to \(proposedSizeMib / mibInGib) GiB?"), primaryButton: .destructive(Text("Resize")) {
+            Alert(title: Text("Resizing is experimental and could result in data loss. You are strongly encouraged to back-up this VM before proceeding. Would you like to resize to \(proposedSizeMib / SizeTextField.mibPerGib) GiB?"), primaryButton: .destructive(Text("Resize")) {
                 onConfirm(proposedSizeMib)
                 presentationMode.wrappedValue.dismiss()
             }, secondaryButton: .cancel())
