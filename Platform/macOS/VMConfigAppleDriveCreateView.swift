@@ -30,15 +30,7 @@ struct VMConfigAppleDriveCreateView: View {
                     Text("Removable")
                 }).help("If checked, the drive image will be stored with the VM.")
                 .onChange(of: config.isExternal) { newValue in
-                    if newValue {
-                        config.sizeMib = 0
-                        config.isReadOnly = true
-                        config.isNvme = false
-                    } else {
-                        config.sizeMib = 10240
-                        config.isReadOnly = false
-                        config.isASIF = isASIFSupported
-                    }
+                    config.setRemovable(newValue, isASIFSupported: isASIFSupported)
                 }
                 if #available(macOS 14, *), !config.isExternal {
                     Toggle(isOn: $config.isNvme.animation(), label: {

@@ -487,8 +487,9 @@ extension UTMScriptingConfigImpl {
     }
     
     private func updateQemuExistingDrive(_ drive: inout UTMQemuConfigurationDrive, from record: [AnyHashable : Any]) throws {
-        if let interface = parseQemuDriveInterface(record["interface"] as? AEKeyword) {
-            drive.interface = interface
+        if let interface = parseQemuDriveInterface(record["interface"] as? AEKeyword), interface != drive.interface {
+            // like the interface picker in the settings
+            drive.setInterface(interface)
         }
         if let source = record["source"] as? URL {
             drive.imageURL = source

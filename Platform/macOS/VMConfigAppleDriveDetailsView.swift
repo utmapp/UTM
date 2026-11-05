@@ -17,7 +17,6 @@
 import SwiftUI
 
 private let bytesInMib: Int64 = 1024 * 1024
-private let mibInGib: Int = 1024
 
 struct VMConfigAppleDriveDetailsView: View {
     private enum ConfirmItem: Identifiable {
@@ -70,7 +69,7 @@ struct VMConfigAppleDriveDetailsView: View {
             }.alert(item: $confirmAlert) { item in
                 switch item {
                 case .resize(let imageURL):
-                    Alert(title: Text("Resizing is experimental and could result in data loss. You are strongly encouraged to back-up this VM before proceeding. Would you like to resize to \(proposedSizeMib / mibInGib) GiB?"), primaryButton: .destructive(Text("Resize")) {
+                    Alert(title: Text("Resizing is experimental and could result in data loss. You are strongly encouraged to back-up this VM before proceeding. Would you like to resize to \(proposedSizeMib / SizeTextField.mibPerGib) GiB?"), primaryButton: .destructive(Text("Resize")) {
                         resizeDrive(for: imageURL, sizeInMib: proposedSizeMib)
                     }, secondaryButton: .cancel())
                 }

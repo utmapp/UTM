@@ -155,3 +155,24 @@ extension UTMAppleConfigurationDrive {
         imageURL = oldDrive.imageURL
     }
 }
+
+// MARK: - Editing rules
+
+extension UTMAppleConfigurationDrive {
+    /// Turns a new drive into a removable one or back, as the create view's toggle does.
+    ///
+    /// A removable drive has no image of its own and is read-only; a new disk image gets
+    /// the default size and uses the sparse format when the host supports it.
+    mutating func setRemovable(_ isExternal: Bool, isASIFSupported: Bool) {
+        self.isExternal = isExternal
+        if isExternal {
+            sizeMib = 0
+            isReadOnly = true
+            isNvme = false
+        } else {
+            sizeMib = 10240
+            isReadOnly = false
+            isASIF = isASIFSupported
+        }
+    }
+}
