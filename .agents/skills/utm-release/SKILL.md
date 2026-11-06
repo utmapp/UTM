@@ -39,10 +39,21 @@ git rev-parse --abbrev-ref HEAD            # must be main
 git rev-list --left-right --count HEAD...origin/main   # must be 0 0
 grep -E '^(MARKETING_VERSION|CURRENT_PROJECT_VERSION)' Build.xcconfig
 gh release list -R utmapp/UTM -L 10
+python3 Tests/Static/check_scripting_bridge.py   # the scripting bridge matches UTM.sdef
+sh scripts/check_generated.sh            # exact regeneration of the generated sources
 ```
 
 - Stop and ask if you're not on `main`, if `main` differs from `origin/main`, or
   if `Build.xcconfig` has uncommitted changes. Other dirty files are fine.
+- Stop and ask if `check_scripting_bridge.py` reports a problem: a release
+  must not ship a scripting bridge that lags behind `UTM.sdef`.
+- Stop and ask if `check_generated.sh` exits 2 (it could not regenerate a
+  file, for example without pyenv's python 2.7) or 1 with a difference outside
+  the Standard Suite. A difference confined to the standard commands (open,
+  print, quit, exists, close, delete, duplicate) comes from the host's own
+  scripting definitions, so run it on the macOS the release is built on. It
+  skips the QEMU constants unless given `--qemu-build <dir>`; pass the QEMU
+  build directory when the dependencies were rebuilt for this release.
 - If `gh` isn't authenticated, ask the user to run `gh auth login`.
 - The **previous release** is the newest entry in `gh release list`. Its tag
   should match the current `MARKETING_VERSION`. If it doesn't, tell the user
