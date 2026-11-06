@@ -1350,6 +1350,7 @@
 		F2A7C17B8AB34DA3B406450B /* UTMSnapshotManifestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F451DE6BF59C4D16BD8CBB38 /* UTMSnapshotManifestTests.swift */; };
 		A8D8D42273944483A385BB8B /* QemuArgumentsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F4D5F286AD403BA029AEA5 /* QemuArgumentsTests.swift */; };
 		2CB1B8ECADC048309889E36B /* QEMUArgumentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3375AF9FA6F41F884122476 /* QEMUArgumentList.swift */; };
+		2E46ACD8553343D0BAF591E8 /* UTMScriptingConfigImplTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BB20F4E491246B2A49D72D0 /* UTMScriptingConfigImplTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -2350,6 +2351,7 @@
 		F451DE6BF59C4D16BD8CBB38 /* UTMSnapshotManifestTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMSnapshotManifestTests.swift; sourceTree = "<group>"; };
 		B3F4D5F286AD403BA029AEA5 /* QemuArgumentsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QemuArgumentsTests.swift; sourceTree = "<group>"; };
 		C3375AF9FA6F41F884122476 /* QEMUArgumentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QEMUArgumentList.swift; sourceTree = "<group>"; };
+		3BB20F4E491246B2A49D72D0 /* UTMScriptingConfigImplTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMScriptingConfigImplTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -3420,6 +3422,7 @@
 		EBBCFE1A7894622806597A83 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				E06137D15AA548989A1D59EB /* macOS */,
 				1B7FA4FED57DF488141BABF6 /* Shared */,
 				77DE0AB22822BD906EC364A7 /* Fixtures */,
 			);
@@ -3441,6 +3444,22 @@
 				C3375AF9FA6F41F884122476 /* QEMUArgumentList.swift */,
 			);
 			path = Support;
+			sourceTree = "<group>";
+		};
+		E06137D15AA548989A1D59EB /* macOS */ = {
+			isa = PBXGroup;
+			children = (
+				12AB2C651C9F4C5999BC4D43 /* Scripting */,
+			);
+			path = macOS;
+			sourceTree = "<group>";
+		};
+		12AB2C651C9F4C5999BC4D43 /* Scripting */ = {
+			isa = PBXGroup;
+			children = (
+				3BB20F4E491246B2A49D72D0 /* UTMScriptingConfigImplTests.swift */,
+			);
+			path = Scripting;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -4116,6 +4135,7 @@
 				E7C5D7C2B05FCF3F5BC7C52E /* UTMQemuConfigurationPortForwardTests.swift in Sources */,
 				A8D8D42273944483A385BB8B /* QemuArgumentsTests.swift in Sources */,
 				2CB1B8ECADC048309889E36B /* QEMUArgumentList.swift in Sources */,
+				2E46ACD8553343D0BAF591E8 /* UTMScriptingConfigImplTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
