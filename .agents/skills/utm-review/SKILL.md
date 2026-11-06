@@ -95,6 +95,29 @@ explicitly:
   CI configuration and scripts count as code.
 - **UI strings** avoid jargon ("GPU Acceleration" not "Venus", "Apple Silicon"
   not ARM64); commit titles are `component: short description` explaining *why*.
+- **Tests.** Not every change needs one, but the ones below do; the test suite's
+  layout and commands are in `Tests/README.md`. Flag a missing test as a finding
+  that names the tier it belongs in. Judge by what the diff touches:
+
+  | The change | Test it needs | Where |
+  |---|---|---|
+  | How a configuration turns into QEMU arguments, is encoded, or migrates (`Configuration/`) | A unit test on the configuration: an argument sub-sequence through `QemuArgumentTestCase`, a `config.plist` fixture that round-trips, or a legacy fixture that migrates | `Tests/Shared/Configuration/` |
+  | A rule of a settings or wizard view (what a toggle enables, a default, a clamp, a cascade) | The rule as a function on the configuration or `VMWizardState`, tested as a plain unit test; a ViewInspector test only when the bug is the view's wiring (a disabled control, a line limit, a picker binding) | `Tests/Shared/Views/`, rules next to the type they belong to |
+  | The VM list, registry, downloads, scripting records, remote messages (`Platform/UTMData.swift`, `Services/`) | A hosted unit test with its own storage (`TestStorage`, `UTMRegistry(defaults:)`), covering the error path too | `Tests/Shared/Platform/`, `Tests/Shared/Services/` |
+  | Starting, stopping, pausing, saving or restoring a QEMU VM (`Services/UTMQemuVirtualMachine.swift`, the launch path) | A scenario in `VMLifecycleTests` when the signed host can show it (it boots the firmware shell; a disk image, a serial port and a saved state are available); otherwise the manual test rule 3 asks for, described in the PR | `Tests/macOS/` |
+  | A control or flow of the library, wizard or settings (a value set in one screen that another screen must keep, an alert that must appear) | A flow in the UI tests, on both platforms when both have the screen; every new interactive control gets an identifier in `UTMAccessibilityID` | `Tests/UITests/macOS/`, `Tests/UITests/iOS/` |
+  | A layout fix on a current OS (something cut off, misplaced, the wrong column) | A geometry assertion in `VMLayoutTests` when the symptom is measurable; the screenshots of rule 3c otherwise | `Tests/UITests/` |
+  | Generated sources, `UTM.sdef`, `Localizable.strings`, `Settings.bundle`, the project file | The static checks (`sh Tests/Static/run_all.sh`), extended when a new kind of mistake slipped through | `Tests/Static/` |
+
+  No test is expected for translations, documentation, comments, a pure refactor
+  that the existing tests still cover, dependency bumps, or the AppKit and UIKit
+  display window controllers (they need a real display; the manual test of rule 3
+  stands in). CI configuration and scripts are code and need a run, not a test.
+
+  A test for a bug fix is named after the fix only once it has been shown to fail
+  with the fix reverted and pass with it restored (`git revert --no-commit <fix>`);
+  the PR says so. Tests never sleep for a fixed time: they poll with a deadline.
+  A test the host cannot run skips with the reason rather than failing.
 
 ## Step 5 — Report
 
