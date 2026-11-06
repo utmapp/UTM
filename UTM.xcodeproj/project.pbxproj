@@ -1351,6 +1351,9 @@
 		A8D8D42273944483A385BB8B /* QemuArgumentsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F4D5F286AD403BA029AEA5 /* QemuArgumentsTests.swift */; };
 		2CB1B8ECADC048309889E36B /* QEMUArgumentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3375AF9FA6F41F884122476 /* QEMUArgumentList.swift */; };
 		2E46ACD8553343D0BAF591E8 /* UTMScriptingConfigImplTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BB20F4E491246B2A49D72D0 /* UTMScriptingConfigImplTests.swift */; };
+		77CA56CE2B864EE0BCFA78E0 /* ZipArchiveBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DE790202347484DBF037863 /* ZipArchiveBuilder.swift */; };
+		641FD674DBEC4B13A12361B2 /* UTMDownloadVMTaskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D437C3300940C3AAE5596C /* UTMDownloadVMTaskTests.swift */; };
+		233848B00A5B4F7BB1F88DF6 /* UTMRemoteMessageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40BDB00C7BAC499895100B6A /* UTMRemoteMessageTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -2352,6 +2355,9 @@
 		B3F4D5F286AD403BA029AEA5 /* QemuArgumentsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QemuArgumentsTests.swift; sourceTree = "<group>"; };
 		C3375AF9FA6F41F884122476 /* QEMUArgumentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QEMUArgumentList.swift; sourceTree = "<group>"; };
 		3BB20F4E491246B2A49D72D0 /* UTMScriptingConfigImplTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMScriptingConfigImplTests.swift; sourceTree = "<group>"; };
+		4DE790202347484DBF037863 /* ZipArchiveBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZipArchiveBuilder.swift; sourceTree = "<group>"; };
+		55D437C3300940C3AAE5596C /* UTMDownloadVMTaskTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMDownloadVMTaskTests.swift; sourceTree = "<group>"; };
+		40BDB00C7BAC499895100B6A /* UTMRemoteMessageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMRemoteMessageTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2733,6 +2739,8 @@
 				7DDD429C6CBB4D28B5E32815 /* Wizard */,
 				86C34BA826940427924E913E /* Configuration */,
 				CE8DE4F015BF429591AD8070 /* Support */,
+				1DBF020FD77E4398A18B89B7 /* Remote */,
+				F470CB2392EB499E884ACC7C /* Platform */,
 			);
 			name = Shared;
 			path = Shared;
@@ -3441,6 +3449,7 @@
 		CE8DE4F015BF429591AD8070 /* Support */ = {
 			isa = PBXGroup;
 			children = (
+				4DE790202347484DBF037863 /* ZipArchiveBuilder.swift */,
 				C3375AF9FA6F41F884122476 /* QEMUArgumentList.swift */,
 			);
 			path = Support;
@@ -3460,6 +3469,22 @@
 				3BB20F4E491246B2A49D72D0 /* UTMScriptingConfigImplTests.swift */,
 			);
 			path = Scripting;
+			sourceTree = "<group>";
+		};
+		F470CB2392EB499E884ACC7C /* Platform */ = {
+			isa = PBXGroup;
+			children = (
+				55D437C3300940C3AAE5596C /* UTMDownloadVMTaskTests.swift */,
+			);
+			path = Platform;
+			sourceTree = "<group>";
+		};
+		1DBF020FD77E4398A18B89B7 /* Remote */ = {
+			isa = PBXGroup;
+			children = (
+				40BDB00C7BAC499895100B6A /* UTMRemoteMessageTests.swift */,
+			);
+			path = Remote;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -4136,6 +4161,9 @@
 				A8D8D42273944483A385BB8B /* QemuArgumentsTests.swift in Sources */,
 				2CB1B8ECADC048309889E36B /* QEMUArgumentList.swift in Sources */,
 				2E46ACD8553343D0BAF591E8 /* UTMScriptingConfigImplTests.swift in Sources */,
+				233848B00A5B4F7BB1F88DF6 /* UTMRemoteMessageTests.swift in Sources */,
+				641FD674DBEC4B13A12361B2 /* UTMDownloadVMTaskTests.swift in Sources */,
+				77CA56CE2B864EE0BCFA78E0 /* ZipArchiveBuilder.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
