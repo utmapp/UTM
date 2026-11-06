@@ -220,6 +220,7 @@ private struct VMListModifier: ViewModifier {
                 } label: {
                     Label("Settings", systemImage: "gear")
                 }
+                .accessibilityIdentifier(UTMAccessibilityID.Library.settings)
             }
             #endif
             ToolbarItem(placement: .navigationBarTrailing) {

@@ -280,7 +280,8 @@ jobs:
         id: ui-tests
         if: github.event_name != 'pull_request'
         continue-on-error: true
-        run: ./scripts/test_utm.sh -s -r UTMUITests-iOS.xcresult -only-testing:UTMUITests-iOS
+        # an iPad: a regular-width sheet lays out differently, and the flows run on both
+        run: ./scripts/test_utm.sh -s iPad -r UTMUITests-iOS.xcresult -only-testing:UTMUITests-iOS
       - name: Upload test results
         # the UI step is allowed to fail, which does not count as a failed job
         if: failure() || cancelled() || steps.ui-tests.outcome == 'failure'

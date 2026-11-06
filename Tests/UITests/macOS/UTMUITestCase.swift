@@ -63,8 +63,8 @@ class UTMUITestCase: XCTestCase {
         return button
     }
 
-    /// Walks the wizard to create a QEMU VM with no boot image and the given name.
-    func createVM(named name: String) {
+    /// Walks the wizard for an emulated QEMU VM with no boot image up to its summary page.
+    func walkWizardToSummary() {
         element(UTMAccessibilityID.Library.newVM).click()
         element(UTMAccessibilityID.Wizard.emulate).click()
         element(UTMAccessibilityID.Wizard.osOther).click()
@@ -77,6 +77,11 @@ class UTMUITestCase: XCTestCase {
         element(UTMAccessibilityID.Wizard.storageSize)
         element(UTMAccessibilityID.Wizard.continue).click()
         element(UTMAccessibilityID.Wizard.continue).click()
+    }
+
+    /// Walks the wizard to create a QEMU VM with no boot image and the given name.
+    func createVM(named name: String) {
+        walkWizardToSummary()
         let nameField = element(UTMAccessibilityID.Wizard.name)
         nameField.click()
         nameField.typeKey("a", modifierFlags: .command)
