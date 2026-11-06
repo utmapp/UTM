@@ -43,3 +43,9 @@ still stalls is reported as exceeding its allowance instead of blocking the run.
   and to `FileManager.default.temporaryDirectory`, and a test resets what it
   touched (`TestStorage` does this for the VM list and registry). No running VMs.
 - Put fixtures under `Fixtures/` and load them from `Bundle(for: Self.self)`.
+- `Fixtures/expected/*.argv` are whole macOS QEMU command lines of a few canonical
+  configurations, one argument per line, compared by `QemuArgumentGoldenTests`
+  with the resources path and per-drive identifiers masked. When a change to
+  the generator is intended, record them again with
+  `TEST_RUNNER_UTM_RECORD_GOLDENS=1 ./scripts/test_utm.sh -only-testing:UTMTests/QemuArgumentGoldenTests`,
+  copy the files the skipped tests name into `Fixtures/expected/`, and review the diff.
