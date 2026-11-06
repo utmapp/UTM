@@ -22,6 +22,11 @@ on:
         required: true
         default: 'false'
 
+# a newer push to the same pull request cancels the run of the one it replaced
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 env:
   BUILD_XCODE_PATH: ${{ vars.HOST_XCODE_PATH || '/Applications/Xcode.app' }}
   RUNNER_IMAGE: ${{ vars.RUNNER_IMAGE || 'macos-26' }}
