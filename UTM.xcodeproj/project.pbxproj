@@ -1357,6 +1357,7 @@
 		2C5F17103A1541BF84350067 /* UTMDataListTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DB20CDC80FE4C9983431840 /* UTMDataListTests.swift */; };
 		951F69FE19D644E4A92B80EC /* BackendParityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DA6FCF6A6640F182F851DF /* BackendParityTests.swift */; };
 		BA0FE8CFF9B34E3A95F168AF /* TestConfigurations.swift in Sources */ = {isa = PBXBuildFile; fileRef = C62B133DC3164A6A806FAD0D /* TestConfigurations.swift */; };
+		0F157B0720664F8F98037999 /* UTMRegistryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A7451A6F94449678EEF94C3 /* UTMRegistryTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -2364,6 +2365,7 @@
 		8DB20CDC80FE4C9983431840 /* UTMDataListTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMDataListTests.swift; sourceTree = "<group>"; };
 		C6DA6FCF6A6640F182F851DF /* BackendParityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendParityTests.swift; sourceTree = "<group>"; };
 		C62B133DC3164A6A806FAD0D /* TestConfigurations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestConfigurations.swift; sourceTree = "<group>"; };
+		1A7451A6F94449678EEF94C3 /* UTMRegistryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMRegistryTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2748,6 +2750,7 @@
 				1DBF020FD77E4398A18B89B7 /* Remote */,
 				F470CB2392EB499E884ACC7C /* Platform */,
 				1AB79AE331C84A3DA4E65189 /* Platform */,
+				02232223BFEA40FB801D981D /* Services */,
 			);
 			name = Shared;
 			path = Shared;
@@ -3504,6 +3507,14 @@
 			path = Platform;
 			sourceTree = "<group>";
 		};
+		02232223BFEA40FB801D981D /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				1A7451A6F94449678EEF94C3 /* UTMRegistryTests.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -4184,6 +4195,7 @@
 				BA0FE8CFF9B34E3A95F168AF /* TestConfigurations.swift in Sources */,
 				951F69FE19D644E4A92B80EC /* BackendParityTests.swift in Sources */,
 				2C5F17103A1541BF84350067 /* UTMDataListTests.swift in Sources */,
+				0F157B0720664F8F98037999 /* UTMRegistryTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

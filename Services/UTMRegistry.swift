@@ -18,15 +18,18 @@ import Combine
 import Foundation
 
 class UTMRegistry: NSObject {
-    @objc static let shared = UTMRegistry()
+    @objc static let shared = UTMRegistry(defaults: .standard)
+    
+    /// Where the entries are stored, under the "Registry" key.
+    private let defaults: UserDefaults
     
     private var serializedEntries: [String: Any] {
         get {
-            UserDefaults.standard.dictionary(forKey: "Registry") ?? [:]
+            defaults.dictionary(forKey: "Registry") ?? [:]
         }
         
         set {
-            UserDefaults.standard.setValue(newValue, forKey: "Registry")
+            defaults.setValue(newValue, forKey: "Registry")
         }
     }
     
@@ -55,7 +58,9 @@ class UTMRegistry: NSObject {
         }
     }
     
-    private override init() {
+    /// Creates a registry backed by the given defaults; the app uses `shared`.
+    init(defaults: UserDefaults) {
+        self.defaults = defaults
         entries = [:]
         super.init()
         if let newEntries = try? serializedEntries.mapValues({ value in
