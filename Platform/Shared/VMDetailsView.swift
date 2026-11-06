@@ -180,9 +180,10 @@ struct VMDetailsView: View {
                         .padding([.leading, .trailing, .bottom])
                 }
                 #else
-                let qemuConfig = vm.config as! UTMQemuConfiguration
-                VMRemovableDrivesView(vm: vm, config: qemuConfig)
-                    .padding([.leading, .trailing, .bottom])
+                if let qemuConfig = vm.config as? UTMQemuConfiguration {
+                    VMRemovableDrivesView(vm: vm, config: qemuConfig)
+                        .padding([.leading, .trailing, .bottom])
+                }
                 #endif
             } else {
                 VStack {
@@ -199,8 +200,9 @@ struct VMDetailsView: View {
                         VMRemovableDrivesView(vm: vm, config: qemuVM.config)
                     }
                     #else
-                    let qemuConfig = vm.config as! UTMQemuConfiguration
-                    VMRemovableDrivesView(vm: vm, config: qemuConfig)
+                    if let qemuConfig = vm.config as? UTMQemuConfiguration {
+                        VMRemovableDrivesView(vm: vm, config: qemuConfig)
+                    }
                     #endif
                 }.padding([.leading, .trailing, .bottom])
             }
