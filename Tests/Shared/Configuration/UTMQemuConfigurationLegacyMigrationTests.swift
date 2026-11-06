@@ -61,6 +61,24 @@ import XCTest
         XCTAssertEqual(config.sound.first?.hardware.rawValue, "AC97")
     }
 
+    /// A UTM 3 forward from host port 2222 to guest port 22 keeps both ports; the
+    /// migration once copied the guest port into the host port (b2215bc1). The
+    /// second forward keeps its protocol and its place.
+    func testPortForwardKeepsHostAndGuestPorts_b2215bc1() throws {
+        let config = try loadQemuConfiguration()
+        let forwards = try XCTUnwrap(config.networks.first?.portForward)
+        XCTAssertEqual(forwards.count, 2)
+        XCTAssertEqual(forwards[0].protocol, .tcp)
+        XCTAssertEqual(forwards[0].hostAddress, "127.0.0.1")
+        XCTAssertEqual(forwards[0].hostPort, 2222)
+        XCTAssertEqual(forwards[0].guestAddress, "10.0.2.15")
+        XCTAssertEqual(forwards[0].guestPort, 22)
+        XCTAssertEqual(forwards[1].protocol, .udp)
+        XCTAssertEqual(forwards[1].hostAddress, "0.0.0.0")
+        XCTAssertEqual(forwards[1].hostPort, 5353)
+        XCTAssertEqual(forwards[1].guestPort, 53)
+    }
+
     func testMigratedConfigurationEncodesAsCurrentVersion() throws {
         let config = try loadQemuConfiguration()
         let data = try PropertyListEncoder().encode(config)
@@ -72,5 +90,6 @@ import XCTest
         let again = try decoder.decode(UTMQemuConfiguration.self, from: data)
         XCTAssertFalse(again.isLegacy)
         XCTAssertEqual(again.sound.first?.hardware.rawValue, "AC97")
+        XCTAssertEqual(again.networks.first?.portForward.map(\.hostPort), [2222, 5353])
     }
 }

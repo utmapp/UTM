@@ -82,7 +82,32 @@
 		<key>NetworkMode</key>
 		<string>emulated</string>
 		<key>PortForward</key>
-		<array/>
+		<array>
+			<dict>
+				<key>GuestAddress</key>
+				<string>10.0.2.15</string>
+				<key>GuestPort</key>
+				<integer>22</integer>
+				<key>HostAddress</key>
+				<string>127.0.0.1</string>
+				<key>HostPort</key>
+				<integer>2222</integer>
+				<key>Protocol</key>
+				<string>tcp</string>
+			</dict>
+			<dict>
+				<key>GuestAddress</key>
+				<string>10.0.2.15</string>
+				<key>GuestPort</key>
+				<integer>53</integer>
+				<key>HostAddress</key>
+				<string>0.0.0.0</string>
+				<key>HostPort</key>
+				<integer>5353</integer>
+				<key>Protocol</key>
+				<string>udp</string>
+			</dict>
+		</array>
 	</dict>
 	<key>Sharing</key>
 	<dict>
