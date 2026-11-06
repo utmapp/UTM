@@ -12,6 +12,7 @@ settings of an installed UTM.
 | `Fixtures/` | `UTMTests`, `UTMTests-iOS` | Resource files the tests load, such as legacy `config.plist` files |
 | `UITests/macOS/` | `UTMUITests` | XCUITest flows that launch the macOS app and drive its windows |
 | `UITests/iOS/` | `UTMUITests-iOS` | XCUITest flows that launch the iOS app on a simulator and drive its screens |
+| `macOS/` | `UTMTests` | Tests only the macOS host can run: the scripting records, and the VM lifecycle tests that start real QEMU virtual machines in a signed host |
 | `Static/` | none | Scripts that check the tree without building it (`sh Tests/Static/run_all.sh`) |
 
 The `Shared/Views/` tests inspect SwiftUI views with
@@ -93,6 +94,29 @@ bundle identifier with the test prefix honours them). Tests find controls by the
 identifiers in `Platform/Shared/UTMAccessibilityID.swift`, which is compiled
 into the bundle, and only by a visible label where there is no identifier yet.
 No test starts a VM.
+
+## Running the VM lifecycle tests
+
+`VMLifecycleTests` creates a disposable aarch64 VM with no drives and no network
+(it boots the bundled firmware to its shell in seconds under the hypervisor), starts,
+pauses, stops and screenshots it through the same `UTMQemuVirtualMachine` calls the
+app makes, and deletes it. The host must be signed with a development identity so
+that its app group and the helpers' hypervisor entitlement are valid, and it uses a
+bundle prefix of its own (`com.utmapp.test.vm`) so that it never shares a container
+with the unsigned unit-test host; start it from a desktop session:
+
+```sh
+./scripts/test_utm.sh -v        # needs DEVELOPMENT_TEAM in CodeSigning.xcconfig
+```
+
+The script builds the tests first, then signs `QEMULauncher` and `QEMURenderServer`
+again without the two sandbox exceptions Xcode adds to every sandboxed product of a
+test build (they inherit the helper's sandbox, and a process that inherits a sandbox
+is trapped at launch if it carries any other sandbox exception), re-seals the helper
+and the host, and runs the tests without building.
+In any other host, every test of the class skips. An installed UTM and its VMs are
+not touched, and a test that fails kills and deletes its own VM. These tests are not
+part of the CI workflow on pull requests.
 
 ## Writing tests
 
