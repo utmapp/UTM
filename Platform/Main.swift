@@ -18,6 +18,8 @@ import Logging
 import TipKit
 #if os(macOS)
 import AppKit
+#else
+import UIKit
 #endif
 
 let logger = Logger(label: "com.utmapp.UTM") { label in
@@ -38,13 +40,14 @@ class Main {
     static var jitAvailable = true
     
     static func main() {
-        #if os(macOS)
         if isTestHost {
             UTMPatches.patchAll()
+            #if os(iOS) || os(visionOS)
+            registerDefaultsFromSettingsBundle()
+            #endif
             runAsTestHost()
             return
         }
-        #endif
         #if (os(iOS) || os(visionOS)) && WITH_JIT
         // check if we have jailbreak
         if jb_spawn_ptrace_child(CommandLine.argc, CommandLine.unsafeArgv) {
@@ -77,7 +80,6 @@ class Main {
         UTMApp.main()
     }
     
-    #if os(macOS)
     /// True when XCTest loaded this app as the host for a unit test bundle.
     static private var isTestHost: Bool {
         let environment = ProcessInfo.processInfo.environment
@@ -88,10 +90,13 @@ class Main {
     /// without the home window opening, the VM list being scanned, or release
     /// notes being fetched.
     static private func runAsTestHost() {
+        #if os(macOS)
         NSApplication.shared.setActivationPolicy(.prohibited)
         NSApplication.shared.run()
+        #else
+        _ = UIApplicationMain(CommandLine.argc, CommandLine.unsafeArgv, nil, nil)
+        #endif
     }
-    #endif
 
     // https://stackoverflow.com/a/44675628
     static private func registerDefaultsFromSettingsBundle() {

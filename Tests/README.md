@@ -8,6 +8,8 @@ settings of an installed UTM.
 | `Shared/` | `UTMTests` | XCTest unit tests hosted by the macOS app (`@testable import UTM`), compiled into every app-hosted test bundle |
 | `Fixtures/` | `UTMTests` | Resource files the tests load, such as legacy `config.plist` files |
 | `macOS/` | `UTMTests` | Tests of macOS-only code such as scripting, compiled only into the macOS-hosted bundle |
+| `Shared/` | `UTMTests`, `UTMTests-iOS` | XCTest unit tests hosted by the macOS app, and by the iOS app on a simulator (`@testable import UTM`); every file here is compiled into both bundles |
+| `Fixtures/` | `UTMTests`, `UTMTests-iOS` | Resource files the tests load, such as legacy `config.plist` files |
 | `Static/` | none | Scripts that check the tree without building it (`sh Tests/Static/run_all.sh`) |
 
 The `Shared/Views/` tests inspect SwiftUI views with
@@ -39,6 +41,28 @@ allowance. Without a dSYM, the first failing test after the host is rebuilt take
 minutes to report, because XCTest symbolicates the failure by reading the debug
 map of the large `-Onone` host; with a dSYM it reports in seconds. A test that
 still stalls is reported as exceeding its allowance instead of blocking the run.
+
+## Running the tests on the iOS simulator
+
+The same test files are compiled into `UTMTests-iOS`, hosted by the iOS app on
+a simulator, so a rule that differs between platforms (`#if os(macOS)`) is
+tested where it applies. The simulator needs `sysroot-iOS_Simulator-arm64`:
+
+```sh
+./scripts/test_utm.sh -s                  # the newest runtime's first iPhone simulator
+./scripts/test_utm.sh -s "iPhone 17"      # a simulator by name prefix
+./scripts/test_utm.sh -s -only-testing:UTMTests-iOS/QEMUArgumentFragmentTests
+```
+
+`Tests/Static/check_test_targets.py` fails when a file under `Shared/` or
+`Fixtures/` is missing from either bundle, so a test cannot quietly run on one
+platform only.
+
+The host is built with the test bundle prefix and no code signing; the simulator
+keeps its data per app, so nothing of an installed UTM is touched. The script keeps
+the simulator build out of Documents, Desktop and Downloads: a simulator app that
+opens a file there is held on macOS's privacy prompt, and dyld opens the derived
+data paths before XCTest can connect, so the host would hang silently.
 
 ## Writing tests
 

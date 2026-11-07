@@ -99,8 +99,12 @@ its own container and never the installed app:
 ./scripts/test_utm.sh -d "$SCRATCH/dd-tests" -r "$SCRATCH/tests.xcresult" > "$SCRATCH/tests.log" 2>&1
 grep -E "Test Case .* (passed|failed)|Executed|error:|^\*\* TEST" "$SCRATCH/tests.log" | sort -u
 ./scripts/test_utm.sh -d "$SCRATCH/dd-tests" -only-testing:UTMTests/<Class>/<test>   # one test
+./scripts/test_utm.sh -s -d "$SCRATCH/dd-ios" > "$SCRATCH/tests-ios.log" 2>&1       # same tests on the iOS simulator
 ```
 
+- A rule that differs between platforms is tested where it applies: run the
+  suite with `-s` too when the change touches `#if os(...)` code or shared
+  configuration logic (test identifiers are `UTMTests-iOS/...` there).
 - A test that would have caught a bug fix belongs in the fix's PR. Prove it
   with `git revert --no-commit <fix>` → fail → restore → pass, and only then
   put the fix's hash in the test name.
