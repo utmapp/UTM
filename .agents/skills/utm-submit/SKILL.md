@@ -31,10 +31,12 @@ treat it as a PR number or URL to update.
    ```sh
    { git rev-parse HEAD; git diff "$(git merge-base HEAD origin/main)"...HEAD; git diff HEAD; } | git hash-object --stdin
    ```
-   If it matches the marker's `diff_hash`, the current changes were reviewed
-   (possibly in an earlier session or by another agent) — proceed, and say so. If
-   the marker exists but the hash differs, the code was edited after review —
-   treat as un-reviewed.
+   If it matches the marker's `diff_hash` and the marker's `branch` is the branch
+   being submitted, the current changes were reviewed (possibly in an earlier
+   session or by another agent) — proceed, and say so. If the marker exists but
+   the hash differs, the code was edited after review — treat as un-reviewed. In
+   a stack (below), every PR is reviewed and submitted on its own, so the marker
+   is checked once per branch.
 3. Otherwise ask the user: *"I can't confirm /utm-review ran on the current
    changes. How do you want to proceed?"* — offer: **Run /utm-review now**
    (recommended; run that workflow, then continue), **I've already reviewed it
@@ -154,6 +156,56 @@ single PR must stay clean.
    below), whether or not the update changed code. **The update is done.**
    Don't continue to Step 3b.
 
+## One PR with several commits, or a stack of PRs
+
+Decide the shape before pushing anything.
+
+- **One PR, several commits** when every commit is a step of the same feature or
+  fix: an extraction and the tests that cover it, a fix and the test that shows
+  it, a change and its documentation. The PR is reviewed and merged as a whole,
+  so its commits do not have to stand on their own; each still has a proper
+  `component: description` title, a body that says why, and the `Assisted-by`
+  trailer. Updates fold into the commit that owns the lines (Step 3a).
+- **A stack of PRs** when several contributions serve one larger goal but can be
+  judged separately: the maintainer may merge some and reject others. Each PR in
+  a stack therefore stands on its own: it builds and passes its tests on its own
+  base, it has its own title, description and Testing section, it goes through
+  `/utm-review` on its own branch with its own marker, and it follows every rule
+  of this workflow by itself. A PR may depend on the PRs below it, never on one
+  above it or beside it.
+- Changes that must land in one order, or that all touch the same shared file
+  (`project.pbxproj`, `Tests/README.md`, a workflow), go in a stack, never in
+  sibling PRs against `main`: siblings conflict with each other as soon as one
+  merges, and every rebase re-runs CI.
+
+How a stack works on GitHub (the native stacked pull requests):
+
+1. Each PR's base is the head branch of the PR below it; the bottom PR's base is
+   `main`. Open them bottom-up with `gh pr create --base <branch below>` and
+   start each body with `**Stack n/N** — stacked on #<below>; merge the stack
+   bottom-up.` Then register the stack once, in order, so GitHub shows and
+   retargets it:
+   ```sh
+   gh api -X POST -H "X-GitHub-Api-Version: 2026-03-10" repos/utmapp/UTM/stacks \
+     --input - <<< '{"pull_requests": [<bottom>, ..., <top>]}'
+   ```
+   (`POST .../stacks/<n>/add` appends to an existing stack; `GET
+   .../stacks?pull_request=<n>` finds a PR's stack.)
+2. The maintainer merges bottom-up with merge commits; GitHub retargets the next
+   PR to `main` by itself. Never rebase or force-push a lower PR because a lower
+   one merged.
+3. When a PR in the stack changes after review, every PR above it is rebased
+   onto it and force-pushed with `--force-with-lease`, bottom-up, in one pass;
+   cancel only the runs on the commits that pass replaces, never a run on
+   `main` or on a merged branch.
+4. Dropping a PR from the middle: a PR inside a stack refuses a base change,
+   and closing it does not retarget the PRs above it. Dissolve the stack with
+   `POST .../stacks/<n>/unstack`, close the PR, retarget the PR above it, rebuild
+   the branches above, and create the stack again with the remaining PRs. GitHub
+   may create no `pull_request` runs for pushes made while the stack was
+   inconsistent; dispatch the workflow on each branch then
+   (`gh workflow run build.yml --ref <branch>`).
+
 ## Step 3b — Open a new PR
 
 1. **Make sure the change is committed cleanly.** If there are uncommitted edits,
@@ -235,6 +287,8 @@ single PR must stay clean.
    gh pr create --repo utmapp/UTM --base main \
      --head "<owner>:<branch>" --title "<title>" --body-file <that file>
    ```
+   (In a stack, `--base` is the branch of the PR below; see *One PR with
+   several commits, or a stack of PRs*.)
    (Use `<owner>:<branch>` when submitting from a fork; plain `<branch>` when the
    head is on `utmapp/UTM` itself.)
 
