@@ -59,7 +59,7 @@ extension UTMQemuConfigurationInput {
         let rawTarget = target.rawValue
         if !architecture.hasUsbSupport || !target.hasUsbSupport {
             usbBusSupport = .disabled
-        } else if rawTarget.hasPrefix("pc") || rawTarget.hasPrefix("q35") {
+        } else if target.isPcOrQ35Machine {
             usbBusSupport = .usb3_0
         } else if (architecture == .arm || architecture == .aarch64) && (rawTarget.hasPrefix("virt-") || rawTarget == "virt") {
             usbBusSupport = .usb3_0

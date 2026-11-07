@@ -30,18 +30,6 @@ struct VMConfigQEMUView: View {
         return FileManager.default.fileExists(atPath: debugLogURL.path)
     }
     
-    private var supportsUefi: Bool {
-        UTMQemuConfigurationQEMU.uefiImagePrefix(forArchitecture: config.system.architecture) != nil
-    }
-    
-    private var supportsPs2: Bool {
-        if config.system.target.rawValue.starts(with: "pc") || config.system.target.rawValue.starts(with: "q35") {
-            return true
-        } else {
-            return false
-        }
-    }
-    
     var body: some View {
         VStack {
             Form {
@@ -56,7 +44,7 @@ struct VMConfigQEMUView: View {
                 }
                 DetailedSection("Tweaks", description: "These are advanced settings affecting QEMU which should be kept default unless you are running into issues.") {
                     Toggle("UEFI Boot", isOn: $config.qemu.hasUefiBoot)
-                        .disabled(!supportsUefi)
+                        .disabled(!config.system.architecture.hasUefiSupport)
                         .help("Should be off for older operating systems such as Windows 7 or lower.")
                     Toggle("RNG Device", isOn: $config.qemu.hasRNGDevice)
                         .help("Should be on always unless the guest cannot boot because of this.")
@@ -65,12 +53,7 @@ struct VMConfigQEMUView: View {
                     Toggle("TPM 2.0 Device", isOn: $config.qemu.hasTPMDevice)
                         .help("TPM can be used to protect secrets in the guest operating system. Note that the host will always be able to read these secrets and therefore no expectation of physical security is provided.")
                         .onChange(of: config.qemu.hasTPMDevice) { newValue in
-                            if newValue {
-                                config.qemu.isUefiVariableResetRequested = true
-                                config.qemu.hasPreloadedSecureBootKeys = true
-                            } else {
-                                config.qemu.hasPreloadedSecureBootKeys = false
-                            }
+                            config.qemu.setTPMDevice(newValue)
                         }
                     Toggle("Use Hypervisor", isOn: $config.qemu.hasHypervisor)
                         .help("Only available if host architecture matches the target. Otherwise, TCG emulation is used.")
@@ -83,7 +66,7 @@ struct VMConfigQEMUView: View {
                     Toggle("Use local time for base clock", isOn: $config.qemu.hasRTCLocalTime)
                         .help("If checked, use local time for RTC which is required for Windows. Otherwise, use UTC clock.")
                     Toggle("Force PS/2 controller", isOn: $config.qemu.hasPS2Controller)
-                        .disabled(!supportsPs2)
+                        .disabled(!config.system.target.hasPS2ControllerSupport)
                         .help("Instantiate PS/2 controller even when USB input is supported. Required for older Windows.")
                 }
                 DetailedSection("Maintenance", description: "Options here only apply on next boot and are not saved.") {
@@ -92,11 +75,9 @@ struct VMConfigQEMUView: View {
                         .disabled(!config.qemu.hasUefiBoot)
                     Toggle("Preload Secure Boot Keys", isOn: $config.qemu.hasPreloadedSecureBootKeys)
                         .help("Enable Secure Boot with Microsoft UEFI keys. This is required to Secure Boot Windows.")
-                        .disabled(!config.qemu.isUefiVariableResetRequested || !config.qemu.hasTPMDevice)
+                        .disabled(!config.qemu.canPreloadSecureBootKeys)
                         .onChange(of: config.qemu.isUefiVariableResetRequested) { newValue in
-                            if !newValue {
-                                config.qemu.hasPreloadedSecureBootKeys = false
-                            }
+                            config.qemu.setUefiVariableResetRequested(newValue)
                         }
                 }
                 DetailedSection("QEMU Machine Properties", description: "This is appended to the -machine argument.") {
