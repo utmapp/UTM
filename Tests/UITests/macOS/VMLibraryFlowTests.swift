@@ -77,7 +77,10 @@ final class VMLibraryFlowTests: UTMUITestCase {
         size.typeText("99999999999999999999\t")
         XCTAssertEqual(app.state, .runningForeground)
         let create = element(UTMAccessibilityID.Drive.create)
-        app.typeKey(.escape, modifierFlags: [])
+        // a click on the settings window's title bar closes the popover; Escape can reach the
+        // settings window and close it too
+        let settings = app.windows.containing(.any, identifier: UTMAccessibilityID.Settings.cancel).firstMatch
+        settings.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.01)).click()
         XCTAssertTrue(create.waitForNonExistence(timeout: 10), "the new drive popover did not close")
         element(UTMAccessibilityID.Settings.cancel).click()
     }
