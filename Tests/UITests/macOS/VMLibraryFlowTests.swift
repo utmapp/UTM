@@ -48,15 +48,19 @@ final class VMLibraryFlowTests: UTMUITestCase {
         element(UTMAccessibilityID.Wizard.cancel).click()
     }
 
-    /// The settings window's Save and Cancel are reachable (a1e1087f moved them off-screen once).
+    /// The settings window's Save and Cancel are reachable, in the detail column right of the
+    /// sidebar (a1e1087f: the toolbar spanned the sidebar too and the buttons ended up off-screen).
     func testSettingsSaveAndCancelAreReachable() {
         createVM(named: vmName)
         element(UTMAccessibilityID.Library.card(named: vmName), timeout: 30).click()
         element(UTMAccessibilityID.Details.edit).click()
+        let sidebarRow = element(UTMAccessibilityID.Settings.information)
         let save = element(UTMAccessibilityID.Settings.save)
         let cancel = element(UTMAccessibilityID.Settings.cancel)
         XCTAssertTrue(save.isHittable)
         XCTAssertTrue(cancel.isHittable)
+        XCTAssertGreaterThanOrEqual(cancel.frame.minX, sidebarRow.frame.maxX, "Cancel \(cancel.frame) is not right of the sidebar \(sidebarRow.frame)")
+        XCTAssertGreaterThanOrEqual(save.frame.minX, sidebarRow.frame.maxX, "Save \(save.frame) is not right of the sidebar \(sidebarRow.frame)")
         cancel.click()
         XCTAssertTrue(save.waitForNonExistence(timeout: 10))
     }

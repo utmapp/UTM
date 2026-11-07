@@ -23,6 +23,7 @@
 enum UTMAccessibilityID {
     enum Library {
         static let newVM = "utm.library.newVM"
+        static let settings = "utm.library.settings"
         
         /// The row of the VM with this name.
         static func card(named name: String) -> String {
