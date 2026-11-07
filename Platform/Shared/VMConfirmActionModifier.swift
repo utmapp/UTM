@@ -64,7 +64,7 @@ struct VMConfirmActionModifier: ViewModifier {
     }
 
     @ViewBuilder func oldBody(content: Content) -> some View {
-        content.alert(item: $confirmAction) { action in
+        content.utmAlert(item: $confirmAction) { action in
             switch action {
             case .confirmCloneVM(let vm):
                 if vm.isShortcut {
