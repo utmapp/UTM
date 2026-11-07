@@ -114,6 +114,8 @@ struct SettingsView: View {
                 }
                 Spacer()
             }
+            // wide enough for the Input pane, whose form does not shrink below its labels and controls
+            .frame(minWidth: 860)
         }
     }
 
