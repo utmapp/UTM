@@ -52,7 +52,17 @@ struct VMConfirmActionModifier: ViewModifier {
     var workaroundSwipeBug: Bool = false
     let onConfirm: (ConfirmAction) -> Void
     @EnvironmentObject private var data: UTMData
-    @State private var isPresented: Bool = false
+
+    /// Derived from `confirmAction` so that dismissing the dialog clears it and the same action can be requested again
+    private var isPresented: Binding<Bool> {
+        Binding {
+            confirmAction != nil
+        } set: { isPresented in
+            if !isPresented {
+                confirmAction = nil
+            }
+        }
+    }
 
     @ViewBuilder func body(content: Content) -> some View {
         // SwiftUI bug: swipe + confirmationDialog is broken
@@ -112,7 +122,7 @@ struct VMConfirmActionModifier: ViewModifier {
     }
 
     @ViewBuilder func newBody(content: Content) -> some View {
-        content.confirmationDialog("Confirm", isPresented: $isPresented, presenting: confirmAction) { action in
+        content.confirmationDialog("Confirm", isPresented: isPresented, presenting: confirmAction) { action in
             Button("Cancel", role: .cancel) {}
             switch action {
             case .confirmCloneVM(let vm):
@@ -172,11 +182,6 @@ struct VMConfirmActionModifier: ViewModifier {
                 Text("Do you want to force stop this VM and lose all unsaved data?")
             case .confirmMoveVM(_):
                 Text("Do you want to move this VM to another location? This will copy the data to the new location, delete the data from the original location, and then create a shortcut.")
-            }
-        }
-        .onChange(of: confirmAction) { newValue in
-            if newValue != nil {
-                isPresented = true
             }
         }
     }
