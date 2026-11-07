@@ -1364,6 +1364,14 @@
 		0DA80D8DB5F64B7A918C139D /* x86_64-q35-ide-cd-disk.argv in Resources */ = {isa = PBXBuildFile; fileRef = DD5CFAD3EAD34985867FB436 /* x86_64-q35-ide-cd-disk.argv */; };
 		09979BCA86684F29BA320B34 /* x86_64-pc-ide-disk.argv in Resources */ = {isa = PBXBuildFile; fileRef = 6DB2BC2EEE4648FEBFBE0094 /* x86_64-pc-ide-disk.argv */; };
 		1C8E0FDB83BC495FA850F0F7 /* QemuArgumentTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B3FD77481DA4C73A8AF6B1B /* QemuArgumentTestCase.swift */; };
+		352E3B885CD04608A9E99E15 /* ViewInspector in Frameworks */ = {isa = PBXBuildFile; productRef = BD90E1DF2C034FA19A7B2390 /* ViewInspector */; };
+		1F60C1F6459D4F569C5B0BA7 /* UTMAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D39FEBA96364961AC129CF6 /* UTMAlert.swift */; };
+		D7D11817EA8A46979B96C147 /* UTMAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D39FEBA96364961AC129CF6 /* UTMAlert.swift */; };
+		817D30F59C4142D5A6FDECFF /* UTMAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D39FEBA96364961AC129CF6 /* UTMAlert.swift */; };
+		B1AEFBC7144C4357A88FAAA1 /* UTMAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D39FEBA96364961AC129CF6 /* UTMAlert.swift */; };
+		ABBBBC667C484DF8963BC218 /* ViewInspectorSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CF7FB9FE05245099070BE2C /* ViewInspectorSupport.swift */; };
+		8553043692B74D7C86F0D0D1 /* VMConfigDriveCreateViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A39698E89F437A9926BF66 /* VMConfigDriveCreateViewTests.swift */; };
+		84560A7469CA4CC7A767B187 /* BusyOverlayTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F70FBE1150144FE88203BF4 /* BusyOverlayTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -2378,6 +2386,10 @@
 		DD5CFAD3EAD34985867FB436 /* x86_64-q35-ide-cd-disk.argv */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "x86_64-q35-ide-cd-disk.argv"; sourceTree = "<group>"; };
 		6DB2BC2EEE4648FEBFBE0094 /* x86_64-pc-ide-disk.argv */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "x86_64-pc-ide-disk.argv"; sourceTree = "<group>"; };
 		8B3FD77481DA4C73A8AF6B1B /* QemuArgumentTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QemuArgumentTestCase.swift; sourceTree = "<group>"; };
+		3D39FEBA96364961AC129CF6 /* UTMAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMAlert.swift; sourceTree = "<group>"; };
+		1CF7FB9FE05245099070BE2C /* ViewInspectorSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewInspectorSupport.swift; sourceTree = "<group>"; };
+		C0A39698E89F437A9926BF66 /* VMConfigDriveCreateViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigDriveCreateViewTests.swift; sourceTree = "<group>"; };
+		4F70FBE1150144FE88203BF4 /* BusyOverlayTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusyOverlayTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2385,6 +2397,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				352E3B885CD04608A9E99E15 /* ViewInspector in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2763,6 +2776,7 @@
 				F470CB2392EB499E884ACC7C /* Platform */,
 				1AB79AE331C84A3DA4E65189 /* Platform */,
 				02232223BFEA40FB801D981D /* Services */,
+				01EE999127954CB9A4F368BF /* Views */,
 			);
 			name = Shared;
 			path = Shared;
@@ -3350,6 +3364,7 @@
 				CEF0304D26A2AFBE00667B63 /* Spinner.swift */,
 				84018696288B71BF0050AC51 /* BusyIndicator.swift */,
 				CE7D972B24B2B17D0080CB69 /* BusyOverlay.swift */,
+				3D39FEBA96364961AC129CF6 /* UTMAlert.swift */,
 				CE772AAB25C8B0F600E4E379 /* ContentView.swift */,
 				8471770527CC974F00D3A50B /* DefaultTextField.swift */,
 				8432329328C2ED9000CFBC97 /* FileBrowseField.swift */,
@@ -3477,6 +3492,7 @@
 				C3375AF9FA6F41F884122476 /* QEMUArgumentList.swift */,
 				C62B133DC3164A6A806FAD0D /* TestConfigurations.swift */,
 				8B3FD77481DA4C73A8AF6B1B /* QemuArgumentTestCase.swift */,
+				1CF7FB9FE05245099070BE2C /* ViewInspectorSupport.swift */,
 			);
 			path = Support;
 			sourceTree = "<group>";
@@ -3540,6 +3556,15 @@
 			);
 			name = expected;
 			path = expected;
+			sourceTree = "<group>";
+		};
+		01EE999127954CB9A4F368BF /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				4F70FBE1150144FE88203BF4 /* BusyOverlayTests.swift */,
+				C0A39698E89F437A9926BF66 /* VMConfigDriveCreateViewTests.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -3835,6 +3860,9 @@
 				231D5EB3C7DE3A7F9F013E71 /* PBXTargetDependency */,
 			);
 			name = UTMTests;
+			packageProductDependencies = (
+				BD90E1DF2C034FA19A7B2390 /* ViewInspector */,
+			);
 			productName = UTMTests;
 			productReference = 83D247E634B2F02C2901FCAE /* UTMTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -3915,6 +3943,7 @@
 				CEDD11BF2B7C74D7004DDAC6 /* XCRemoteSwiftPackageReference "SwiftPortmap" */,
 				CE89CB0C2B8B1B49006B2CC2 /* XCRemoteSwiftPackageReference "VisionKeyboardKit" */,
 				CE231D502BE03617006D6DC3 /* XCRemoteSwiftPackageReference "SwiftCopyfile" */,
+				6EABBCB84D234530987621EF /* XCRemoteSwiftPackageReference "ViewInspector" */,
 			);
 			productRefGroup = CE550BCA225947990063E575 /* Products */;
 			projectDirPath = "";
@@ -4229,6 +4258,9 @@
 				0F157B0720664F8F98037999 /* UTMRegistryTests.swift in Sources */,
 				1C8E0FDB83BC495FA850F0F7 /* QemuArgumentTestCase.swift in Sources */,
 				496BD9543BD94B9D9B10F9BF /* QemuArgumentGoldenTests.swift in Sources */,
+				84560A7469CA4CC7A767B187 /* BusyOverlayTests.swift in Sources */,
+				8553043692B74D7C86F0D0D1 /* VMConfigDriveCreateViewTests.swift in Sources */,
+				ABBBBC667C484DF8963BC218 /* ViewInspectorSupport.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4293,6 +4325,7 @@
 				CEF0307126A2B04400667B63 /* VMWizardView.swift in Sources */,
 				84909A8D27CACD5C005605F1 /* UTMPlaceholderVMView.swift in Sources */,
 				CE7D972C24B2B17D0080CB69 /* BusyOverlay.swift in Sources */,
+				1F60C1F6459D4F569C5B0BA7 /* UTMAlert.swift in Sources */,
 				848A98C4286F332D006F0550 /* UTMConfiguration.swift in Sources */,
 				841619AA284315F9000034B2 /* UTMConfigurationInfo.swift in Sources */,
 				CE2D955724AD4F980059923A /* VMConfigDisplayView.swift in Sources */,
@@ -4558,6 +4591,7 @@
 				848A98B8286A1589006F0550 /* UTMAppleConfigurationDisplay.swift in Sources */,
 				848A98BE286A1B62006F0550 /* UTMAppleConfigurationDrive.swift in Sources */,
 				CE93758924B930270074066F /* BusyOverlay.swift in Sources */,
+				D7D11817EA8A46979B96C147 /* UTMAlert.swift in Sources */,
 				CE6804852E4E5D84001671E9 /* UTMScriptingInputImpl.swift in Sources */,
 				848A98CA28720CFC006F0550 /* VMConfigAppleSerialView.swift in Sources */,
 				848D99C22866D9CE0055C215 /* QEMUArgumentBuilder.swift in Sources */,
@@ -4719,6 +4753,7 @@
 				846F8D5B2E3891FE0037162B /* UTMKeyboardShortcuts.swift in Sources */,
 				848D99C528670F650055C215 /* UTMQemuConfiguration+Arguments.swift in Sources */,
 				CEA45E4B263519B5002FA97D /* BusyOverlay.swift in Sources */,
+				817D30F59C4142D5A6FDECFF /* UTMAlert.swift in Sources */,
 				84937F032897451C003148F4 /* VMToolbarDriveMenuView.swift in Sources */,
 				CEA45E4E263519B5002FA97D /* VMConfigDisplayView.swift in Sources */,
 				843BF82D284482C10029D60D /* UTMQemuConfigurationInput.swift in Sources */,
@@ -4901,6 +4936,7 @@
 				CEF7F5A52AEEDCC400E34952 /* VMWizardView.swift in Sources */,
 				CEF7F5A62AEEDCC400E34952 /* UTMPlaceholderVMView.swift in Sources */,
 				CEF7F5A72AEEDCC400E34952 /* BusyOverlay.swift in Sources */,
+				B1AEFBC7144C4357A88FAAA1 /* UTMAlert.swift in Sources */,
 				CE9B15432B11A74E003A32DD /* UTMRemoteKeyManager.swift in Sources */,
 				CEF7F5A82AEEDCC400E34952 /* UTMConfiguration.swift in Sources */,
 				CEF7F5A92AEEDCC400E34952 /* UTMConfigurationInfo.swift in Sources */,
@@ -6466,6 +6502,14 @@
 				minimumVersion = 3.0.0;
 			};
 		};
+		6EABBCB84D234530987621EF /* XCRemoteSwiftPackageReference "ViewInspector" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/nalexn/ViewInspector.git";
+			requirement = {
+				kind = exactVersion;
+				version = 0.10.5;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -6692,6 +6736,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 84B36D1C27B3261E00C22685 /* XCRemoteSwiftPackageReference "CocoaSpice" */;
 			productName = CocoaSpiceNoUsb;
+		};
+		BD90E1DF2C034FA19A7B2390 /* ViewInspector */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6EABBCB84D234530987621EF /* XCRemoteSwiftPackageReference "ViewInspector" */;
+			productName = ViewInspector;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
