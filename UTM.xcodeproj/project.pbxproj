@@ -1372,6 +1372,7 @@
 		ABBBBC667C484DF8963BC218 /* ViewInspectorSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CF7FB9FE05245099070BE2C /* ViewInspectorSupport.swift */; };
 		8553043692B74D7C86F0D0D1 /* VMConfigDriveCreateViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A39698E89F437A9926BF66 /* VMConfigDriveCreateViewTests.swift */; };
 		84560A7469CA4CC7A767B187 /* BusyOverlayTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F70FBE1150144FE88203BF4 /* BusyOverlayTests.swift */; };
+		C4A5EA10DC1241D79B8EEF63 /* SizeTextFieldTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 734EBDE6C29041A18D059218 /* SizeTextFieldTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -2390,6 +2391,7 @@
 		1CF7FB9FE05245099070BE2C /* ViewInspectorSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewInspectorSupport.swift; sourceTree = "<group>"; };
 		C0A39698E89F437A9926BF66 /* VMConfigDriveCreateViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigDriveCreateViewTests.swift; sourceTree = "<group>"; };
 		4F70FBE1150144FE88203BF4 /* BusyOverlayTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusyOverlayTests.swift; sourceTree = "<group>"; };
+		734EBDE6C29041A18D059218 /* SizeTextFieldTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SizeTextFieldTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -3562,6 +3564,7 @@
 			isa = PBXGroup;
 			children = (
 				4F70FBE1150144FE88203BF4 /* BusyOverlayTests.swift */,
+				734EBDE6C29041A18D059218 /* SizeTextFieldTests.swift */,
 				C0A39698E89F437A9926BF66 /* VMConfigDriveCreateViewTests.swift */,
 			);
 			path = Views;
@@ -4261,6 +4264,7 @@
 				84560A7469CA4CC7A767B187 /* BusyOverlayTests.swift in Sources */,
 				8553043692B74D7C86F0D0D1 /* VMConfigDriveCreateViewTests.swift in Sources */,
 				ABBBBC667C484DF8963BC218 /* ViewInspectorSupport.swift in Sources */,
+				C4A5EA10DC1241D79B8EEF63 /* SizeTextFieldTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
