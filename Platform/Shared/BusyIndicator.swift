@@ -29,6 +29,7 @@ struct BusyIndicator: View {
             .foregroundColor(.white)
             .background(Color.gray.opacity(0.5))
             .clipShape(RoundedRectangle(cornerRadius: 25.0, style: .continuous))
+            .accessibilityIdentifier(UTMAccessibilityID.busyIndicator)
     }
 
     #if os(macOS)

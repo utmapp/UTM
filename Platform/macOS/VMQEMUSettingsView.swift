@@ -34,13 +34,16 @@ struct VMQEMUSettingsView: View {
         NavigationLink(destination: VMConfigInfoView(config: $config.information).scrollable().settingsToolbar(), isActive: $infoActive) {
             Label("Information", systemImage: "info.circle")
         }
+        .accessibilityIdentifier(UTMAccessibilityID.Settings.information)
         NavigationLink {
             VMConfigSystemView(config: $config.system, isResetConfig: $isResetConfig)
                 .scrollable()
                 .settingsToolbar()
         } label: {
             Label("System", systemImage: "cpu")
-        }.onChange(of: isResetConfig) { newValue in
+        }
+        .accessibilityIdentifier(UTMAccessibilityID.Settings.system)
+        .onChange(of: isResetConfig) { newValue in
             if newValue {
                 config.reset(forArchitecture: config.system.architecture, target: config.system.target)
                 isResetConfig = false
@@ -54,6 +57,7 @@ struct VMQEMUSettingsView: View {
         } label: {
             Label("QEMU", systemImage: "shippingbox")
         }
+        .accessibilityIdentifier(UTMAccessibilityID.Settings.qemu)
         if isCustomArgumentsEnabled {
             NavigationLink {
                 VMConfigQEMUArgumentsView(config: config)
@@ -70,6 +74,7 @@ struct VMQEMUSettingsView: View {
         } label: {
             Label("Input", systemImage: "keyboard")
         }
+        .accessibilityIdentifier(UTMAccessibilityID.Settings.input)
         NavigationLink {
             VMConfigSharingView(config: $config.sharing)
                 .scrollable()
@@ -77,6 +82,7 @@ struct VMQEMUSettingsView: View {
         } label: {
             Label("Sharing", systemImage: "person.crop.circle")
         }
+        .accessibilityIdentifier(UTMAccessibilityID.Settings.sharing)
         Section(header: Text("Devices")) {
             ForEach($config.displays) { $display in
                 NavigationLink {

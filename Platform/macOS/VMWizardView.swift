@@ -80,6 +80,7 @@ struct VMWizardView: View {
                     Button("Cancel") {
                         presentationMode.wrappedValue.dismiss()
                     }
+                    .accessibilityIdentifier(UTMAccessibilityID.Wizard.cancel)
                 }
             }
             ToolbarItem(placement: .cancellationAction) {
@@ -87,10 +88,12 @@ struct VMWizardView: View {
                     Button("Go Back") {
                         wizardState.back()
                     }
+                    .accessibilityIdentifier(UTMAccessibilityID.Wizard.back)
                 } else {
                     Button("Cancel") {
                         presentationMode.wrappedValue.dismiss()
                     }
+                    .accessibilityIdentifier(UTMAccessibilityID.Wizard.cancel)
                 }
             }
             ToolbarItem(placement: .confirmationAction) {
@@ -98,6 +101,7 @@ struct VMWizardView: View {
                     Button("Continue") {
                         wizardState.next()
                     }
+                    .accessibilityIdentifier(UTMAccessibilityID.Wizard.continue)
                 } else if wizardState.currentPage == .summary {
                     Button("Save") {
                         presentationMode.wrappedValue.dismiss()
@@ -124,6 +128,7 @@ struct VMWizardView: View {
                             }
                         }
                     }
+                    .accessibilityIdentifier(UTMAccessibilityID.Wizard.save)
                 }
             }
         }.alert(item: $wizardState.alertMessage) { msg in

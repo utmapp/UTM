@@ -51,6 +51,7 @@ fileprivate struct WizardToolbar: ViewModifier {
                     Button("Cancel") {
                         onDismiss()
                     }
+                    .accessibilityIdentifier(UTMAccessibilityID.Wizard.cancel)
                 }
             }
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -58,6 +59,7 @@ fileprivate struct WizardToolbar: ViewModifier {
                     Button("Continue") {
                         wizardState.next()
                     }
+                    .accessibilityIdentifier(UTMAccessibilityID.Wizard.continue)
                 } else if wizardState.currentPage == .summary {
                     Button("Save") {
                         onDismiss()
@@ -78,6 +80,7 @@ fileprivate struct WizardToolbar: ViewModifier {
                             }
                         }
                     }
+                    .accessibilityIdentifier(UTMAccessibilityID.Wizard.save)
                 }
             }
         }
