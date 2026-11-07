@@ -16,6 +16,7 @@
 
 import Foundation
 import CocoaSpice
+import Carbon.HIToolbox
 
 private let kDelayNs: UInt64 = 20000000
 
@@ -35,11 +36,48 @@ private let kDelayNs: UInt64 = 20000000
         }
     }
 
+    /// The input of an Apple VM: through its display window, which must be open.
+    @nonobjc @MainActor private var appleInput: UTMAppleInputProvider? {
+        get throws {
+            guard let appleVM = vm as? UTMAppleVirtualMachine else {
+                return nil
+            }
+            guard vm.state == .started else {
+                throw ScriptingError.notRunning
+            }
+            guard let input = appleVM.inputDelegate else {
+                throw ScriptingError.operationNotAvailable
+            }
+            return input
+        }
+    }
+
+    /// Press or release a key given by its PC scan code (set 1 make code, 0xE0xx for extended keys).
+    @nonobjc @MainActor private func sendAppleScanCode(_ scanCode: Int, isDown: Bool, to input: UTMAppleInputProvider) throws {
+        guard let keyCode = AppleKeyCodes.fromScanCode[scanCode] else {
+            throw ScriptingError.invalidParameter
+        }
+        guard input.sendKey(keyCode, isDown: isDown) else {
+            throw ScriptingError.operationNotAvailable
+        }
+    }
+
     @objc func sendScanCode(_ command: NSScriptCommand) {
         let scanCodes = command.evaluatedArguments?["codes"] as? [Int]
         withScriptCommand(command) { [self] in
             guard let scanCodes = scanCodes else {
                 throw ScriptingError.invalidParameter
+            }
+            if let appleInput = try self.appleInput {
+                for scanCode in scanCodes {
+                    // a break code is the make code with 0x80 set (0xE0 prefix kept for extended keys)
+                    let isExtended = (scanCode & 0xFF00) == 0xE000
+                    let isDown = (scanCode & 0x80) == 0
+                    let makeCode = (isExtended ? 0xE000 : 0) | (scanCode & 0x7F)
+                    try sendAppleScanCode(makeCode, isDown: isDown, to: appleInput)
+                    try await Task.sleep(nanoseconds: kDelayNs)
+                }
+                return
             }
             let input = try self.primaryInput
             for scanCode in scanCodes {
@@ -73,6 +111,40 @@ private let kDelayNs: UInt64 = 20000000
             guard let keystrokes = keystrokes else {
                 throw ScriptingError.invalidParameter
             }
+            if let appleInput = try self.appleInput {
+                // the keyboard map calls back with make codes; replay them in order on this actor
+                let recorded = RecordedKeys()
+                let keyboardMap = VMKeyboardMap()
+                await keyboardMap.mapText(keystrokes) { scanCode in
+                    recorded.append(Int(scanCode), isDown: false)
+                } keyDown: { scanCode in
+                    recorded.append(Int(scanCode), isDown: true)
+                }
+                var pressed: [Int] = []
+                do {
+                    for modifier in modifiers {
+                        let scanCode = Int(modifier.toSpiceKeyCode()).toScanCode
+                        try sendAppleScanCode(scanCode, isDown: true, to: appleInput)
+                        pressed.append(scanCode)
+                        try await Task.sleep(nanoseconds: kDelayNs)
+                    }
+                    for (scanCode, isDown) in recorded.keys {
+                        try sendAppleScanCode(scanCode, isDown: isDown, to: appleInput)
+                        try await Task.sleep(nanoseconds: kDelayNs)
+                    }
+                } catch {
+                    // don't leave modifiers held for the next command
+                    for scanCode in pressed.reversed() {
+                        try? sendAppleScanCode(scanCode, isDown: false, to: appleInput)
+                    }
+                    throw error
+                }
+                for scanCode in pressed.reversed() {
+                    try sendAppleScanCode(scanCode, isDown: false, to: appleInput)
+                    try await Task.sleep(nanoseconds: kDelayNs)
+                }
+                return
+            }
             let input = try self.primaryInput
             for modifier in modifiers {
                 input.send(.press, code: modifier.toSpiceKeyCode())
@@ -103,6 +175,20 @@ private let kDelayNs: UInt64 = 20000000
             }
             let xPosition = coordinate[0]
             let yPosition = coordinate[1]
+            if let appleInput = try self.appleInput {
+                guard monitorNumber == 1 else {
+                    throw ScriptingError.invalidParameter
+                }
+                let button = switch mouseButton {
+                case .left: 0
+                case .right: 1
+                case .middle: 2
+                }
+                guard appleInput.sendMouseClick(at: CGPoint(x: xPosition, y: yPosition), button: button) else {
+                    throw ScriptingError.operationNotAvailable
+                }
+                return
+            }
             let input = try self.primaryInput
             try await (vm as! UTMQemuVirtualMachine).changeInputTablet(true)
             input.sendMousePosition(mouseButton.toSpiceButton(), absolutePoint: CGPoint(x: xPosition, y: yPosition), forMonitorID: monitorNumber-1)
@@ -149,8 +235,8 @@ private extension UTMScriptingMouseButton {
                 throw ScriptingError.notRunning
             }
             // an Apple VM can only take a screenshot from its open window
-            guard vm is any UTMSpiceVirtualMachine else {
-                throw ScriptingError.operationNotSupported
+            if let appleVM = vm as? UTMAppleVirtualMachine, appleVM.screenshotDelegate == nil {
+                throw ScriptingError.operationNotAvailable
             }
             // the previous screenshot stays in place when capturing fails: never save that one
             let previous = vm.screenshot?.image
@@ -164,4 +250,45 @@ private extension UTMScriptingMouseButton {
             try pngData.write(to: file)
         }
     }
+}
+
+// MARK: - Apple VM key codes
+
+/// Key events recorded from the keyboard map's callbacks, which may run on any thread.
+private final class RecordedKeys: @unchecked Sendable {
+    private let lock = NSLock()
+    private var _keys: [(Int, Bool)] = []
+
+    func append(_ scanCode: Int, isDown: Bool) {
+        lock.lock()
+        _keys.append((scanCode, isDown))
+        lock.unlock()
+    }
+
+    var keys: [(Int, Bool)] {
+        lock.lock()
+        defer { lock.unlock() }
+        return _keys
+    }
+}
+
+private extension Int {
+    /// A SPICE key code (extended keys as 0x1xx) as a scan code (0xE0xx).
+    var toScanCode: Int {
+        (self & 0x100) != 0 ? 0xE000 | (self & 0xFF) : self
+    }
+}
+
+private enum AppleKeyCodes {
+    /// PC scan codes (set 1 make codes) to macOS virtual key codes, the reverse of the display's own map
+    static let fromScanCode: [Int: UInt16] = {
+        var map: [Int: UInt16] = [:]
+        for (keyCode, scanCodes) in KeyCodeMap.keyCodeToScanCodes {
+            // the first key wins where two share a scan code
+            if map[Int(scanCodes.down)] == nil || keyCode < Int(map[Int(scanCodes.down)]!) {
+                map[Int(scanCodes.down)] = UInt16(keyCode)
+            }
+        }
+        return map
+    }()
 }

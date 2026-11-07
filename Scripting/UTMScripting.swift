@@ -240,7 +240,7 @@ extension SBObject: UTMScriptingWindow {}
     @objc optional var status: UTMScriptingStatus { get } // Current running status.
     @objc optional var file: URL { get } // Location of the virtual machine (its .utm package) on disk.
     @objc optional func startSaving(_ saving: Bool, recovery: Bool, provisioning: [AnyHashable : Any]!, environment: [String]!) // Start a virtual machine or resume a suspended virtual machine.
-    @objc optional func install() // Install macOS on a stopped Apple virtual machine from its IPSW recovery image. All data on the primary drive will be erased, there is no confirmation! Returns once the installation starts, use query install to follow its progress.
+    @objc optional func install() // Install macOS on a stopped Apple virtual machine from its IPSW recovery image, or, when it has none, from the latest one this Mac supports, downloaded first. All data on the primary drive will be erased, there is no confirmation! Returns once the installation starts, use query install to follow its progress.
     @objc optional func queryInstall() -> [AnyHashable : Any] // Query the progress of the last installation started with install. Raises an error if the installation failed.
     @objc optional func suspendSaving(_ saving: Bool) // Suspend a running virtual machine to memory.
     @objc optional func stopBy(_ by: UTMScriptingStopMethod) // Shuts down a running virtual machine.
@@ -257,10 +257,10 @@ extension SBObject: UTMScriptingWindow {}
     @objc optional func updateConfigurationWith(_ with: Any!) // Update the configuration of the virtual machine. The VM must be in the stopped state.
     @objc optional func reloadConfiguration() // Reload the configuration of the virtual machine from disk, discarding any unsaved in-memory changes. Useful when the .utm bundle has been modified externally (e.g. by an automation tool) and UTM's cached configuration needs to be refreshed. The VM must be in the stopped state.
     @objc optional func updateRegistryWith(_ with: [URL]!) // Update the registry of the virtual machine.
-    @objc optional func captureScreenTo(_ to: URL!) // Save an image of the primary display of a running virtual machine as a PNG file. The display does not need to be visible on the host.
-    @objc optional func inputScanCodeCodes(_ codes: [NSNumber]!) // Send raw PC AT scan codes. Only supported on QEMU backend.
-    @objc optional func inputKeystrokeText(_ text: String!, withModifiers: [NSAppleEventDescriptor]!) // Send text as a sequence of keystrokes to the virtual machine. Only supported on QEMU backend.
-    @objc optional func inputMouseClickAt(_ at: [NSNumber]!, to: Int, withMouseButton: UTMScriptingMouseButton) // Send a mouse position and click to the virtual machine. Only supported on QEMU backend.
+    @objc optional func captureScreenTo(_ to: URL!) // Save an image of the primary display of a running virtual machine as a PNG file. On the QEMU backend the display does not need to be visible on the host; on the Apple backend its window must be open.
+    @objc optional func inputScanCodeCodes(_ codes: [NSNumber]!) // Send raw PC AT scan codes (set 1). On the Apple backend they are translated to the matching Mac keys.
+    @objc optional func inputKeystrokeText(_ text: String!, withModifiers: [NSAppleEventDescriptor]!) // Send text as a sequence of keystrokes to the virtual machine.
+    @objc optional func inputMouseClickAt(_ at: [NSNumber]!, to: Int, withMouseButton: UTMScriptingMouseButton) // Send a mouse position and click to the virtual machine. On the Apple backend the position is in the pixels of the image capture screen saves, and only the first monitor is supported.
     @objc optional func guestFiles() -> SBElementArray
     @objc optional func guestProcesses() -> SBElementArray
     @objc optional var configuration: Any { get } // The configuration of the virtual machine.

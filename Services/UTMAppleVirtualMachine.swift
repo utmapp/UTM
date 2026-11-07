@@ -119,6 +119,8 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
     private var sharedDirectoriesChanged: AnyCancellable?
     
     weak var screenshotDelegate: UTMScreenshotProvider?
+
+    weak var inputDelegate: UTMAppleInputProvider?
     
     private var activeResourceUrls: [String: URL] = [:]
 
@@ -1456,6 +1458,15 @@ extension UTMAppleVirtualMachine {
 
 protocol UTMScreenshotProvider: AnyObject {
     var screenshot: UTMVirtualMachineScreenshot? { get }
+}
+
+/// Sends keyboard and mouse events to the guest through the VM's display, for scripting.
+protocol UTMAppleInputProvider: AnyObject {
+    /// Press or release a key by its macOS virtual key code (`kVK_*`); modifier keys change the held modifiers.
+    @MainActor func sendKey(_ keyCode: UInt16, isDown: Bool) -> Bool
+    /// Move the pointer to a point of the display, in the pixels of its screenshot (origin top left), and click
+    /// a button (0 left, 1 right, 2 middle).
+    @MainActor func sendMouseClick(at point: CGPoint, button: Int) -> Bool
 }
 
 enum UTMAppleVirtualMachineError: Error {
