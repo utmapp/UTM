@@ -38,6 +38,16 @@
                ReferencedContainer = "container:UTM.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "9E9D7AD421764EDC80FBEEE8"
+               BuildableName = "UTMUITests.xctest"
+               BlueprintName = "UTMUITests"
+               ReferencedContainer = "container:UTM.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

@@ -40,6 +40,9 @@ class Main {
     static var jitAvailable = true
     
     static func main() {
+        #if DEBUG
+        UTMTestSupport.applyLaunchArguments()
+        #endif
         if isTestHost {
             UTMPatches.patchAll()
             #if os(iOS) || os(visionOS)
@@ -81,7 +84,12 @@ class Main {
     }
     
     /// True when XCTest loaded this app as the host for a unit test bundle.
+    ///
+    /// An app launched by a UI test runs normally even if the runner's environment reaches it.
     static private var isTestHost: Bool {
+        if CommandLine.arguments.contains("-UTMTestMode") {
+            return false
+        }
         let environment = ProcessInfo.processInfo.environment
         return environment["XCTestConfigurationFilePath"] != nil || environment["XCTestBundlePath"] != nil || environment["XCTestSessionIdentifier"] != nil
     }
