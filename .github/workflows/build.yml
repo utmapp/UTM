@@ -22,9 +22,11 @@ on:
         required: true
         default: 'false'
 
-# a newer push to the same pull request cancels the run of the one it replaced
+# a newer push to the same pull request cancels the run of the one it replaced; every other
+# run (a merge to main, a release, a dispatch) has a group of its own, since a group keeps
+# only one pending run and would cancel a waiting merge commit's run for the next one
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.run_id }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
