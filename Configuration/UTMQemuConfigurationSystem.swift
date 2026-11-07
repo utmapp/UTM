@@ -139,3 +139,55 @@ extension UTMQemuConfigurationSystem {
         }
     }
 }
+
+// MARK: - Editing rules
+
+extension UTMQemuConfigurationSystem {
+    /// Smallest memory size QEMU is given; a smaller entry is cleared.
+    static let minimumMemorySizeMib = 32
+    
+    /// Memory QEMU itself needs on top of the guest memory and JIT cache, in MiB.
+    static let baseMemoryUsageMib = 128
+    
+    /// Share of the device memory the estimated usage may reach before it is flagged.
+    static let memoryWarningThreshold = 0.9
+    
+    /// Clears a memory size below the minimum and a negative JIT cache size when editing
+    /// ends. Returns false when it cleared either, in which case there is nothing to estimate.
+    mutating func clampMemorySettings() -> Bool {
+        var isValid = true
+        if memorySize < Self.minimumMemorySizeMib {
+            memorySize = 0
+            isValid = false
+        }
+        if jitCacheSize < 0 {
+            jitCacheSize = 0
+            isValid = false
+        }
+        return isValid
+    }
+    
+    /// The JIT cache size QEMU is given: the entry, or a quarter of the memory by default.
+    var effectiveJitCacheSizeMib: Int {
+        jitCacheSize > 0 ? jitCacheSize : memorySize / 4
+    }
+    
+    /// Host memory the VM is expected to use, in MiB: the guest memory, the JIT cache
+    /// (mirrored without the JIT entitlement) and QEMU's own needs.
+    func estimatedMemoryUsageMib(hasJitEntitlements: Bool) -> Int {
+        let jitMirrorMultiplier = hasJitEntitlements ? 1 : 2
+        return memorySize + jitMirrorMultiplier * effectiveJitCacheSizeMib + Self.baseMemoryUsageMib
+    }
+    
+    /// Whether the estimated usage exceeds the warning threshold of the device memory.
+    func isMemoryOverallocated(totalDeviceMemoryMib: UInt64, hasJitEntitlements: Bool) -> Bool {
+        Double(estimatedMemoryUsageMib(hasJitEntitlements: hasJitEntitlements)) > Double(totalDeviceMemoryMib) * Self.memoryWarningThreshold
+    }
+    
+    /// Clears a negative core count when editing ends; zero means the default.
+    mutating func clampCpuCount() {
+        if cpuCount < 0 {
+            cpuCount = 0
+        }
+    }
+}
