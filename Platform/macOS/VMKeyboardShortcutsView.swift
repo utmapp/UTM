@@ -61,7 +61,7 @@ struct VMKeyboardShortcutsView: View {
             .frame(height: 200)
             HStack {
                 Spacer()
-                if let index = currentlyEditingIndex?.id {
+                if let index = currentlyEditingIndex?.id, keyboardShortcuts.indices.contains(index) {
                     DestructiveButton("Delete") {
                         keyboardShortcuts.remove(at: index)
                     }
@@ -81,7 +81,7 @@ struct VMKeyboardShortcutsView: View {
             }
         }
         .sheet(isPresented: $isEditing, onDismiss: {
-            if let index = currentlyEditingIndex {
+            if let index = currentlyEditingIndex, keyboardShortcuts.indices.contains(index.id) {
                 if !currentlyEditingShortcut.isEmpty {
                     keyboardShortcuts[index.id] = currentlyEditingShortcut
                 } else {
@@ -102,7 +102,7 @@ struct VMKeyboardShortcutsView: View {
             UTMKeyboardShortcuts.shared.saveKeyboardShortcuts(newValue)
         }
         .onChange(of: currentlyEditingIndex) { newValue in
-            if let index = newValue?.id {
+            if let index = newValue?.id, keyboardShortcuts.indices.contains(index) {
                 currentlyEditingShortcut = keyboardShortcuts[index]
             } else {
                 currentlyEditingShortcut = []
@@ -154,7 +154,7 @@ private struct EditKeyboardShortcutView: View {
                     }
                 }
                 Spacer()
-                if let index = currentlyEditingIndex?.id {
+                if let index = currentlyEditingIndex?.id, keyboardShortcut.indices.contains(index) {
                     DestructiveButton("Delete") {
                         keyboardShortcut.remove(at: index)
                     }
