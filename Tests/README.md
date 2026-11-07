@@ -12,7 +12,7 @@ settings of an installed UTM.
 | `Fixtures/` | `UTMTests`, `UTMTests-iOS` | Resource files the tests load, such as legacy `config.plist` files |
 | `UITests/macOS/` | `UTMUITests` | XCUITest flows that launch the macOS app and drive its windows |
 | `UITests/iOS/` | `UTMUITests-iOS` | XCUITest flows that launch the iOS app on a simulator and drive its screens |
-| `macOS/` | `UTMTests` | Tests only the macOS host can run: the scripting records, and the VM lifecycle tests that start real QEMU virtual machines in a signed host |
+| `macOS/` | `UTMTests` | Tests only the macOS host can run: the scripting records, unit tests of macOS-only code such as the Apple Virtualization registry, and the VM lifecycle tests that start real QEMU virtual machines in a signed host |
 | `Static/` | none | Scripts that check the tree without building it (`sh Tests/Static/run_all.sh`) |
 
 The `Shared/Views/` tests inspect SwiftUI views with
