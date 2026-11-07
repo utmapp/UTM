@@ -98,9 +98,12 @@ No test starts a VM.
 ## Running the VM lifecycle tests
 
 `VMLifecycleTests` creates a disposable aarch64 VM with no drives and no network
-(it boots the bundled firmware to its shell in seconds under the hypervisor), starts,
-pauses, stops and screenshots it through the same `UTMQemuVirtualMachine` calls the
-app makes, and deletes it. The host must be signed with a development identity so
+(it boots the bundled firmware to its shell in seconds under the hypervisor) and drives
+it through the same `UTMQemuVirtualMachine` calls the app makes: start, screenshot,
+pause, restart, a forced stop and a kill, a start after the display was removed, the
+firmware console on a TCP serial port, and a saved state that the next start resumes
+(that VM gets a small disk image to keep the state in). Each test deletes its VM.
+The host must be signed with a development identity so
 that its app group and the helpers' hypervisor entitlement are valid, and it uses a
 bundle prefix of its own (`com.utmapp.test.vm`) so that it never shares a container
 with the unsigned unit-test host; start it from a desktop session:
