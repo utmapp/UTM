@@ -105,6 +105,10 @@ grep -E "Test Case .* (passed|failed)|Executed|error:|^\*\* TEST" "$SCRATCH/test
 - A rule that differs between platforms is tested where it applies: run the
   suite with `-s` too when the change touches `#if os(...)` code or shared
   configuration logic (test identifiers are `UTMTests-iOS/...` there).
+- `./scripts/test_utm.sh -v` runs the VM lifecycle tests (`UTMTests/VMLifecycleTests`):
+  real QEMU VMs started inside a host signed by the local development identity.
+  Run it from a desktop session when the change touches VM start, stop, pause or
+  the QEMU launch path.
 - A test that would have caught a bug fix belongs in the fix's PR. Prove it
   with `git revert --no-commit <fix>` → fail → restore → pass, and only then
   put the fix's hash in the test name.

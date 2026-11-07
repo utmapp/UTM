@@ -1434,6 +1434,7 @@
 		E06107794C76517DA8D07324 /* UTMUITestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0B2BD4B2905F42AA3F59EF /* UTMUITestCase.swift */; };
 		3B5D39F952815D6ABC95EC0D /* VMLibraryFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CC2321A4F455012BDD3FCAE /* VMLibraryFlowTests.swift */; };
 		1A3B5C7D0E2F4A4B6C8D9E0F /* UTMAccessibilityID.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAEDBED3E5F74148807C75F9 /* UTMAccessibilityID.swift */; };
+		FE7624D79C054783853776EF /* VMLifecycleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0B34177E894AFB81641614 /* VMLifecycleTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -2493,6 +2494,7 @@
 		AA0B2BD4B2905F42AA3F59EF /* UTMUITestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMUITestCase.swift; sourceTree = "<group>"; };
 		8CC2321A4F455012BDD3FCAE /* VMLibraryFlowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMLibraryFlowTests.swift; sourceTree = "<group>"; };
 		7C5D1E2F3A4B4C5D9E8F0A1B /* UTMUITests-iOS.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "UTMUITests-iOS.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4F0B34177E894AFB81641614 /* VMLifecycleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMLifecycleTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -3637,6 +3639,7 @@
 		E06137D15AA548989A1D59EB /* macOS */ = {
 			isa = PBXGroup;
 			children = (
+				4F0B34177E894AFB81641614 /* VMLifecycleTests.swift */,
 				12AB2C651C9F4C5999BC4D43 /* Scripting */,
 			);
 			path = macOS;
@@ -4504,6 +4507,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FE7624D79C054783853776EF /* VMLifecycleTests.swift in Sources */,
 				F2A7C17B8AB34DA3B406450B /* UTMSnapshotManifestTests.swift in Sources */,
 				41421300977143369096FDC4 /* VMWizardStateTests.swift in Sources */,
 				F2D542A5BA01E404E3441F5C /* QEMUArgumentFragmentTests.swift in Sources */,
