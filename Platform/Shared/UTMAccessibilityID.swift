@@ -90,6 +90,7 @@ enum UTMAccessibilityID {
         static let size = "utm.drive.size"
         static let sizeUnit = "utm.drive.sizeUnit"
         static let create = "utm.drive.create"
+        static let cancel = "utm.drive.cancel"
         static let `import` = "utm.drive.import"
     }
     

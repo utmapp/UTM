@@ -1431,6 +1431,9 @@
 		FCB5757F51C94E8280A12BA5 /* UTMUITestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EF4452FF19441369197C0CE /* UTMUITestCase.swift */; };
 		2E1A17315E5140AE95D407BF /* VMLibraryFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DF4447849647D8BCF8ED4B /* VMLibraryFlowTests.swift */; };
 		361AF3C5C1D54BBAB45953EB /* UTMAccessibilityID.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAEDBED3E5F74148807C75F9 /* UTMAccessibilityID.swift */; };
+		E06107794C76517DA8D07324 /* UTMUITestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0B2BD4B2905F42AA3F59EF /* UTMUITestCase.swift */; };
+		3B5D39F952815D6ABC95EC0D /* VMLibraryFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CC2321A4F455012BDD3FCAE /* VMLibraryFlowTests.swift */; };
+		1A3B5C7D0E2F4A4B6C8D9E0F /* UTMAccessibilityID.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAEDBED3E5F74148807C75F9 /* UTMAccessibilityID.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1503,6 +1506,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = CE2D951B24AD48BE0059923A;
 			remoteInfo = macOS;
+		};
+		6B8C0D2E5F7A4B9C1D3E4F5A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CE550BC1225947990063E575 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CE2D926824AD46670059923A;
+			remoteInfo = iOS;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -2480,6 +2490,9 @@
 		5DB603DFF3214168B0E1071E /* UTMUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UTMUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7EF4452FF19441369197C0CE /* UTMUITestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMUITestCase.swift; sourceTree = "<group>"; };
 		D9DF4447849647D8BCF8ED4B /* VMLibraryFlowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMLibraryFlowTests.swift; sourceTree = "<group>"; };
+		AA0B2BD4B2905F42AA3F59EF /* UTMUITestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMUITestCase.swift; sourceTree = "<group>"; };
+		8CC2321A4F455012BDD3FCAE /* VMLibraryFlowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMLibraryFlowTests.swift; sourceTree = "<group>"; };
+		7C5D1E2F3A4B4C5D9E8F0A1B /* UTMUITests-iOS.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "UTMUITests-iOS.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2862,6 +2875,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		474A74813D9F4251B57B900B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3E5F7A9B2C4D4E6F8A0B1C2D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -3317,6 +3337,7 @@
 				84A57D0930641D0000BA5139 /* iOSHelper-SE.appex */,
 				83D247E634B2F02C2901FCAE /* UTMTests.xctest */,
 				5DB603DFF3214168B0E1071E /* UTMUITests.xctest */,
+				7C5D1E2F3A4B4C5D9E8F0A1B /* UTMUITests-iOS.xctest */,
 				9071847770214043866F7BD9 /* UTMTests-iOS.xctest */,
 			);
 			name = Products;
@@ -3692,6 +3713,7 @@
 			isa = PBXGroup;
 			children = (
 				5899A2A4E0E34C2EA0C43BEA /* macOS */,
+				0F2A4B6C9D1E4F3A5B7C8D9E /* iOS */,
 			);
 			path = UITests;
 			sourceTree = "<group>";
@@ -3703,6 +3725,15 @@
 				D9DF4447849647D8BCF8ED4B /* VMLibraryFlowTests.swift */,
 			);
 			path = macOS;
+			sourceTree = "<group>";
+		};
+		0F2A4B6C9D1E4F3A5B7C8D9E /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				AA0B2BD4B2905F42AA3F59EF /* UTMUITestCase.swift */,
+				8CC2321A4F455012BDD3FCAE /* VMLibraryFlowTests.swift */,
+			);
+			path = iOS;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -4044,6 +4075,24 @@
 			productReference = 5DB603DFF3214168B0E1071E /* UTMUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		4B2A7C9E1D3F4E5A8B6C7D0E /* UTMUITests-iOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7C9D1E3F6A8B4C0D2E4F5A6B /* Build configuration list for PBXNativeTarget "UTMUITests-iOS" */;
+			buildPhases = (
+				2D4E6F8A1B3C4D5E7F9A0B1C /* Sources */,
+				3E5F7A9B2C4D4E6F8A0B1C2D /* Frameworks */,
+				4F6A8B0C3D5E4F7A9B1C2D3E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				5A7B9C1D4E6F4A8B0C2D3E4F /* PBXTargetDependency */,
+			);
+			name = "UTMUITests-iOS";
+			productName = "UTMUITests-iOS";
+			productReference = 7C5D1E2F3A4B4C5D9E8F0A1B /* UTMUITests-iOS.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -4057,6 +4106,9 @@
 				TargetAttributes = {
 					9E9D7AD421764EDC80FBEEE8 = {
 						TestTargetID = CE2D951B24AD48BE0059923A;
+					};
+					4B2A7C9E1D3F4E5A8B6C7D0E = {
+						TestTargetID = CE2D926824AD46670059923A;
 					};
 					58633E04F238450DB4E3E328 = {
 						TestTargetID = CE2D926824AD46670059923A;
@@ -4146,6 +4198,7 @@
 				E99F7EFE5343A0EF89C4579F /* UTMTests */,
 				58633E04F238450DB4E3E328 /* UTMTests-iOS */,
 				9E9D7AD421764EDC80FBEEE8 /* UTMUITests */,
+				4B2A7C9E1D3F4E5A8B6C7D0E /* UTMUITests-iOS */,
 			);
 		};
 /* End PBXProject section */
@@ -4282,6 +4335,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		9BB473D45B6C471698A83756 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4F6A8B0C3D5E4F7A9B1C2D3E /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -5347,6 +5407,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		2D4E6F8A1B3C4D5E7F9A0B1C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1A3B5C7D0E2F4A4B6C8D9E0F /* UTMAccessibilityID.swift in Sources */,
+				E06107794C76517DA8D07324 /* UTMUITestCase.swift in Sources */,
+				3B5D39F952815D6ABC95EC0D /* VMLibraryFlowTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -5413,6 +5483,12 @@
 			name = macOS;
 			target = CE2D951B24AD48BE0059923A /* macOS */;
 			targetProxy = 909F015A05E54A4385AAEC9E /* PBXContainerItemProxy */;
+		};
+		5A7B9C1D4E6F4A8B0C2D3E4F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = iOS;
+			target = CE2D926824AD46670059923A /* iOS */;
+			targetProxy = 6B8C0D2E5F7A4B9C1D3E4F5A /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -6582,6 +6658,50 @@
 			};
 			name = Release;
 		};
+		9E1F3A5B8C0D4E2F4A6B7C8D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_IOS:default=Apple Development)";
+				CODE_SIGN_STYLE = "$(CODE_SIGN_STYLE_IOS:default=)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).UTMUITests-iOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "$(PROVISIONING_PROFILE_SPECIFIER_IOS:default=)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iOS;
+			};
+			name = Release;
+		};
+		8D0E2F4A7B9C4D1E3F5A6B7C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "$(CODE_SIGN_IDENTITY_IOS:default=Apple Development)";
+				CODE_SIGN_STYLE = "$(CODE_SIGN_STYLE_IOS:default=)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(PRODUCT_BUNDLE_PREFIX:default=com.utmapp).UTMUITests-iOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "$(PROVISIONING_PROFILE_SPECIFIER_IOS:default=)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = iOS;
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -6716,6 +6836,15 @@
 			buildConfigurations = (
 				0A17BE076C6542E6B216218E /* Release */,
 				0498BAB16D9941989792BB98 /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7C9D1E3F6A8B4C0D2E4F5A6B /* Build configuration list for PBXNativeTarget "UTMUITests-iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9E1F3A5B8C0D4E2F4A6B7C8D /* Release */,
+				8D0E2F4A7B9C4D1E3F5A6B7C /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -275,12 +275,21 @@ jobs:
           [[ "$(xcode-select -p)" == "${{ env.BUILD_XCODE_PATH }}"* ]] || sudo xcode-select -s "${{ env.BUILD_XCODE_PATH }}"
       - name: Run unit tests on the simulator
         run: ./scripts/test_utm.sh -s -r UTMTests-iOS.xcresult
+      - name: Run UI tests on the simulator
+        # after a merge only, until the flows have proven stable enough to gate a PR
+        id: ui-tests
+        if: github.event_name != 'pull_request'
+        continue-on-error: true
+        run: ./scripts/test_utm.sh -s -r UTMUITests-iOS.xcresult -only-testing:UTMUITests-iOS
       - name: Upload test results
-        if: failure() || cancelled()
+        # the UI step is allowed to fail, which does not count as a failed job
+        if: failure() || cancelled() || steps.ui-tests.outcome == 'failure'
         uses: actions/upload-artifact@v4
         with:
           name: UTMTests-iOS-results
-          path: UTMTests-iOS.xcresult
+          path: |
+            UTMTests-iOS.xcresult
+            UTMUITests-iOS.xcresult
           if-no-files-found: ignore
   test-utm-ui:
     name: Test UTM (macOS UI)

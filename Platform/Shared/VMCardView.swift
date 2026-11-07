@@ -66,12 +66,12 @@ struct VMCardView: View {
             data.run(vm: vm)
         }
         .accessibilityElement(children: .contain)
-        .accessibilityIdentifier(UTMAccessibilityID.Library.card(named: vm.detailsTitleLabel))
         #else
         .simultaneousGesture(TapGesture(count: 2).onEnded {
             data.run(vm: vm)
         })
         #endif
+        .accessibilityIdentifier(UTMAccessibilityID.Library.card(named: vm.detailsTitleLabel))
     }
 }
 
