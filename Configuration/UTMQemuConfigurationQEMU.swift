@@ -151,12 +151,13 @@ struct UTMQemuConfigurationQEMU: Codable {
 
 extension UTMQemuConfigurationQEMU {
     /// Adds or removes the TPM. A new TPM resets the UEFI variables so the Secure Boot
-    /// keys can be preloaded; removing it drops the key preload.
-    mutating func setTPMDevice(_ hasTPMDevice: Bool) {
+    /// keys can be preloaded where the machine supports Secure Boot; removing it drops
+    /// the key preload.
+    mutating func setTPMDevice(_ hasTPMDevice: Bool, for system: UTMQemuConfigurationSystem) {
         self.hasTPMDevice = hasTPMDevice
         if hasTPMDevice {
             isUefiVariableResetRequested = true
-            hasPreloadedSecureBootKeys = true
+            hasPreloadedSecureBootKeys = system.hasSecureBootSupport
         } else {
             hasPreloadedSecureBootKeys = false
         }
@@ -170,9 +171,10 @@ extension UTMQemuConfigurationQEMU {
         }
     }
     
-    /// Secure Boot keys can be preloaded into reset UEFI variables when a TPM is present.
-    var canPreloadSecureBootKeys: Bool {
-        isUefiVariableResetRequested && hasTPMDevice
+    /// Secure Boot keys can be preloaded into reset UEFI variables when a TPM is present
+    /// and the machine supports Secure Boot.
+    func canPreloadSecureBootKeys(for system: UTMQemuConfigurationSystem) -> Bool {
+        isUefiVariableResetRequested && hasTPMDevice && system.hasSecureBootSupport
     }
 }
 
@@ -223,7 +225,8 @@ extension UTMQemuConfigurationQEMU {
             // save EFI variables
             let resourceURL = Bundle.main.url(forResource: "qemu", withExtension: nil)!
             let templateVarsURL: URL
-            let secure = hasPreloadedSecureBootKeys ? "-secure" : ""
+            // only machines with Secure Boot support ship variables with the keys preloaded
+            let secure = hasPreloadedSecureBootKeys && system.hasSecureBootSupport ? "-secure" : ""
             if let prefix = Self.uefiImagePrefix(forArchitecture: system.architecture, isVars: true) {
                 templateVarsURL = resourceURL.appendingPathComponent("\(prefix)\(secure)-vars.fd")
             } else {

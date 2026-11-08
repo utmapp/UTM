@@ -515,7 +515,7 @@ import Virtualization // for getting network interfaces
     }
     
     private var isSecureBootUsed: Bool {
-        system.architecture.hasSecureBootSupport && system.target.hasSecureBootSupport && qemu.hasTPMDevice
+        system.hasSecureBootSupport && qemu.hasTPMDevice
     }
     
     @QEMUArgumentBuilder private var machineArguments: [QEMUArgument] {
