@@ -47,6 +47,22 @@ final class UTMConfigurationSerialTests: XCTestCase {
         }
     }
 
+    /// A config.plist with the built-in terminal and no terminal settings (edited by
+    /// hand or by another tool) must still decode with settings: the terminal window
+    /// unwraps them.
+    func testBuiltInTerminalDecodedWithoutSettingsGetsDefaults() throws {
+        let plist = try PropertyListSerialization.data(fromPropertyList: ["Mode": "Terminal", "Target": "Auto"], format: .xml, options: 0)
+        let serial = try PropertyListDecoder().decode(UTMQemuConfigurationSerial.self, from: plist)
+        XCTAssertEqual(serial.mode, .builtin)
+        XCTAssertNotNil(serial.terminal)
+    }
+
+    func testOtherModesDecodedWithoutSettingsGetNoTerminal() throws {
+        let plist = try PropertyListSerialization.data(fromPropertyList: ["Mode": "TcpServer", "Target": "Auto"], format: .xml, options: 0)
+        let serial = try PropertyListDecoder().decode(UTMQemuConfigurationSerial.self, from: plist)
+        XCTAssertNil(serial.terminal)
+    }
+
     func testManualDeviceIsAcceptedWhenTheArchitectureHasSerialDevices() {
         var serial = UTMQemuConfigurationSerial()
         XCTAssertFalse(QEMUArchitecture.x86_64.serialDeviceType.allRawValues.isEmpty)
@@ -87,6 +103,13 @@ final class UTMConfigurationSerialTests: XCTestCase {
         serial.setMode(.ptty)
         serial.setMode(.builtin)
         XCTAssertEqual(serial.terminal?.fontSize, 20)
+    }
+
+    func testAppleBuiltInTerminalDecodedWithoutSettingsGetsDefaults() throws {
+        let plist = try PropertyListSerialization.data(fromPropertyList: ["Mode": "Terminal"], format: .xml, options: 0)
+        let serial = try PropertyListDecoder().decode(UTMAppleConfigurationSerial.self, from: plist)
+        XCTAssertEqual(serial.mode, .builtin)
+        XCTAssertNotNil(serial.terminal)
     }
 
     func testApplePttyDoesNotCreateTerminalSettings() {
