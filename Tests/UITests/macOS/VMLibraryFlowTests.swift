@@ -48,6 +48,23 @@ final class VMLibraryFlowTests: UTMUITestCase {
         element(UTMAccessibilityID.Wizard.cancel).click()
     }
 
+    /// Coming back to the hardware page keeps the machine the user picked: the macOS wizard
+    /// builds a new page on every visit, which used to apply the default machine again.
+    func testWizardKeepsTheMachineWhenComingBackToTheHardwarePage() {
+        element(UTMAccessibilityID.Library.newVM).click()
+        element(UTMAccessibilityID.Wizard.emulate).click()
+        element(UTMAccessibilityID.Wizard.osOther).click()
+        let arm64 = app.radioButtons["ARM64 virtual machine (2014, ARM64)"].firstMatch
+        XCTAssertTrue(arm64.waitForExistence(timeout: 10), "the machine choices did not appear")
+        arm64.click()
+        element(UTMAccessibilityID.Wizard.continue).click()
+        XCTAssertTrue(app.radioButtons["None"].firstMatch.waitForExistence(timeout: 10), "the boot page did not appear")
+        element(UTMAccessibilityID.Wizard.back).click()
+        XCTAssertTrue(arm64.waitForExistence(timeout: 10), "the hardware page did not come back")
+        XCTAssertEqual((arm64.value as? NSNumber)?.boolValue, true, "the picked machine is no longer selected")
+        element(UTMAccessibilityID.Wizard.cancel).click()
+    }
+
     /// The settings window's Save and Cancel are reachable, in the detail column right of the
     /// sidebar (a1e1087f: the toolbar spanned the sidebar too and the buttons ended up off-screen).
     func testSettingsSaveAndCancelAreReachable() {
