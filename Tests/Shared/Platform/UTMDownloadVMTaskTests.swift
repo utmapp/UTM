@@ -87,6 +87,20 @@ final class UTMDownloadVMTaskTests: XCTestCase {
         XCTAssertEqual(try contents(of: folder), ["Test.utm", "download.zip"])
     }
 
+    /// An archiver that lists the resource-fork folder first must not make its copy of
+    /// the package the one that is imported, which would be empty.
+    func testResourceForkFolderListedFirstIsNotThePackage() throws {
+        let zip = try archive { builder in
+            builder.addDirectory("__MACOSX/Test.utm/")
+            builder.addFile("__MACOSX/Test.utm/._config.plist", contents: "resource fork")
+            builder.addDirectory("Test.utm/")
+            builder.addFile("Test.utm/config.plist", contents: "plist")
+        }
+        let package = try extract(zip)
+        XCTAssertEqual(package.lastPathComponent, "Test.utm")
+        XCTAssertEqual(try contents(of: package), ["config.plist"])
+    }
+
     func testExistingPackageNameGetsASuffix() throws {
         try FileManager.default.createDirectory(at: folder.appendingPathComponent("Test.utm"), withIntermediateDirectories: false)
         let zip = try archive { builder in

@@ -70,8 +70,8 @@ class UTMDownloadVMTask: UTMDownloadTask {
         let utmFileEnding = ".utm"
         let utmDirectoryEnding = "\(utmFileEnding)/"
         if let archive = Archive(url: zipFileURL, accessMode: .read),
-           /// find the UTM directory and its contents
-           let utmFolderInZip = archive.first(where: { $0.path.hasSuffix(utmDirectoryEnding) }) {
+           /// find the UTM directory and its contents, never its copy in the `__MACOSX` resource-fork folder
+           let utmFolderInZip = archive.first(where: { $0.path.hasSuffix(utmDirectoryEnding) && !$0.path.contains("__MACOSX") }) {
             /// get the UTM package filename
             let originalFileName = URL(fileURLWithPath: utmFolderInZip.path).lastPathComponent
             var destinationUtmDirectory = originalFileName
