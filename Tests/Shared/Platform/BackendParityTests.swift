@@ -15,6 +15,9 @@
 //
 
 import XCTest
+#if os(macOS)
+import Virtualization
+#endif
 @testable import UTM
 
 /// Rules that both backends must follow, run against each from one table so a
@@ -75,6 +78,8 @@ import XCTest
 
     #if os(macOS)
     func testAppleExternalBootImageSurvivesCreateSaveAndReload() async throws {
+        // creating the VM validates its configuration with Virtualization, which a VM guest may not offer
+        try XCTSkipUnless(VZVirtualMachine.isSupported, "Virtualization is not available on this Mac")
         try await assertExternalBootImageSurvives(Self.apple)
     }
     #endif
