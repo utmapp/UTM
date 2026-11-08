@@ -96,6 +96,33 @@ final class UTMRegistryTests: XCTestCase {
         XCTAssertEqual(defaults.dictionary(forKey: "Registry")?.keys.sorted(), [second.uuid.uuidString])
     }
 
+    /// One entry that no longer decodes (here, it has lost its name) must not take
+    /// every other VM's entry with it at the next launch.
+    func testUndecodableEntryDropsOnlyItself() throws {
+        let good = makeEntry(name: "Good")
+        registry.sync()
+        var stored = try XCTUnwrap(defaults.dictionary(forKey: "Registry"))
+        let broken = UUID().uuidString
+        stored[broken] = ["UUID": broken]
+        defaults.set(stored, forKey: "Registry")
+        let relaunched = UTMRegistry(defaults: defaults)
+        XCTAssertEqual(relaunched.entry(for: good.uuid.uuidString)?.name, "Good")
+        XCTAssertNil(relaunched.entry(for: broken))
+    }
+
+    /// A value that is not a dictionary at all is skipped the same way rather than trapping.
+    func testNonDictionaryEntryDropsOnlyItself() throws {
+        let good = makeEntry(name: "Good")
+        registry.sync()
+        var stored = try XCTUnwrap(defaults.dictionary(forKey: "Registry"))
+        let broken = UUID().uuidString
+        stored[broken] = "not an entry"
+        defaults.set(stored, forKey: "Registry")
+        let relaunched = UTMRegistry(defaults: defaults)
+        XCTAssertEqual(relaunched.entry(for: good.uuid.uuidString)?.name, "Good")
+        XCTAssertNil(relaunched.entry(for: broken))
+    }
+
     // MARK: - The entry's property list
 
     func testOptionalKeysAreWrittenOnlyWhenSet() throws {

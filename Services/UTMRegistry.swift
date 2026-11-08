@@ -63,12 +63,20 @@ class UTMRegistry: NSObject {
         self.defaults = defaults
         entries = [:]
         super.init()
-        if let newEntries = try? serializedEntries.mapValues({ value in
-            let dict = value as! [String: Any]
-            return try UTMRegistryEntry(fromPropertyList: dict)
-        }) {
-            entries = newEntries
+        // an entry that no longer decodes is dropped on its own so it cannot take the others with it
+        var newEntries: [String: UTMRegistryEntry] = [:]
+        for (key, value) in serializedEntries {
+            guard let dict = value as? [String: Any] else {
+                logger.debug("Dropping registry entry \(key) that is not a dictionary")
+                continue
+            }
+            do {
+                newEntries[key] = try UTMRegistryEntry(fromPropertyList: dict)
+            } catch {
+                logger.debug("Dropping undecodable registry entry \(key): \(error)")
+            }
         }
+        entries = newEntries
         registryListener = $entries
             .debounce(for: .seconds(1), scheduler: DispatchQueue.global(qos: .utility))
             .sink { [weak self] newEntries in
