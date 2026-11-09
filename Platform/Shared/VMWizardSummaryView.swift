@@ -84,8 +84,9 @@ struct VMWizardSummaryView: View {
         }
         #if os(macOS)
         .padding([.horizontal, .bottom])
-        #endif
+        #else
         .navigationTitle(Text("Summary"))
+        #endif
         .onAppear {
             if wizardState.name == nil {
                 let os = wizardState.operatingSystem
