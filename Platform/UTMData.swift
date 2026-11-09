@@ -64,6 +64,37 @@ enum AlertItem: Identifiable {
         #endif
         return FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     }
+    
+    /// Name of the folder that holds the VMs on a drive when the whole drive is chosen as the location
+    nonisolated static let driveStorageFolderName = "UTM Virtual Machines"
+    
+    /// The folder where new VMs go when `location` is chosen to store them
+    ///
+    /// A whole drive gets a folder of its own so the VMs do not mix with other files on it. Any other
+    /// folder is used as it is. Nothing is saved about the folder: it is created when it is missing, so one
+    /// that was renamed or deleted is simply made again.
+    /// - Parameter location: Folder or drive chosen by the user
+    nonisolated static func virtualMachinesFolder(in location: URL) -> URL {
+        guard isVolumeRoot(location) else {
+            return location
+        }
+        return location.appendingPathComponent(driveStorageFolderName, isDirectory: true)
+    }
+    
+    /// True if the URL is the top folder of a drive other than the startup disk
+    nonisolated private static func isVolumeRoot(_ url: URL) -> Bool {
+        let isScopedAccess = url.startAccessingSecurityScopedResource()
+        defer {
+            if isScopedAccess {
+                url.stopAccessingSecurityScopedResource()
+            }
+        }
+        let path = url.resolvingSymlinksInPath().path
+        guard path != "/", let volume = try? url.resourceValues(forKeys: [.volumeURLKey]).volume else {
+            return false
+        }
+        return volume.resolvingSymlinksInPath().path == path
+    }
 
     #if DEBUG
     /// Replaces the storage location so tests keep their bundles in a directory they own.
@@ -485,11 +516,59 @@ enum AlertItem: Identifiable {
     /// Save a new VM to disk
     /// - Parameters:
     ///   - config: New VM configuration
-    func create<Config: UTMConfiguration>(config: Config) async throws -> VMData {
+    ///   - destinationUrl: Folder to create the VM in, such as one on an external drive. The default storage if nil.
+    func create<Config: UTMConfiguration>(config: Config, destinationUrl: URL? = nil) async throws -> VMData {
         guard !virtualMachines.contains(where: { !$0.isShortcut && $0.config?.information.name == config.information.name }) else {
             throw UTMDataError.virtualMachineAlreadyExists
         }
-        let vm = try VMData(creatingFromConfig: config, destinationUrl: Self.defaultStorageUrl)
+        guard let destinationUrl = destinationUrl, destinationUrl.standardizedFileURL != Self.defaultStorageUrl.standardizedFileURL else {
+            return try await create(config: config, in: Self.defaultStorageUrl)
+        }
+        // the folder is only accessible while we hold its security scope
+        let isScopedAccess = destinationUrl.startAccessingSecurityScopedResource()
+        defer {
+            if isScopedAccess {
+                destinationUrl.stopAccessingSecurityScopedResource()
+            }
+        }
+        let folderUrl = Self.virtualMachinesFolder(in: destinationUrl)
+        let isNewFolder = !fileManager.fileExists(atPath: folderUrl.path)
+        if isNewFolder {
+            logger.debug("Creating folder \(folderUrl.path)")
+            try fileManager.createDirectory(at: folderUrl, withIntermediateDirectories: false)
+        }
+        let packageUrl = ConcreteVirtualMachine.virtualMachinePath(for: config.information.name, in: folderUrl)
+        guard !fileManager.fileExists(atPath: packageUrl.path) else {
+            throw UTMDataError.virtualMachineAlreadyExists
+        }
+        let created: VMData
+        do {
+            created = try await create(config: config, in: folderUrl)
+        } catch {
+            // do not leave behind the empty folder that this call made on the user's drive
+            if isNewFolder, (try? fileManager.contentsOfDirectory(atPath: folderUrl.path))?.isEmpty ?? false {
+                try? fileManager.removeItem(at: folderUrl)
+            }
+            throw error
+        }
+        // reopen from the bookmark so that the VM keeps its own access after the folder's scope ends
+        let vm: VMData
+        do {
+            let bookmark = try created.pathUrl.persistentBookmarkData()
+            vm = try VMData(url: try URL(resolvingPersistentBookmarkData: bookmark))
+        } catch {
+            // the VM is saved and listed, so keep it instead of reporting that creating it failed
+            logger.error("Cannot reopen \(created.pathUrl.path): \(error)")
+            return created
+        }
+        let index = listRemove(vm: created)
+        listAdd(vm: vm, at: index)
+        listSelect(vm: vm)
+        return vm
+    }
+    
+    private func create<Config: UTMConfiguration>(config: Config, in destinationUrl: URL) async throws -> VMData {
+        let vm = try VMData(creatingFromConfig: config, destinationUrl: destinationUrl)
         do {
             try await save(vm: vm)
         } catch {
@@ -1453,7 +1532,7 @@ class UTMRemoteData: UTMData {
         throw UTMDataError.notImplemented
     }
 
-    override func create<Config: UTMConfiguration>(config: Config) async throws -> VMData {
+    override func create<Config: UTMConfiguration>(config: Config, destinationUrl: URL?) async throws -> VMData {
         throw UTMDataError.notImplemented
     }
 
