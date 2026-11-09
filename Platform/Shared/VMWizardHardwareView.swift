@@ -23,8 +23,6 @@ struct VMWizardHardwareView: View {
     private typealias SupportedMachine = VMWizardState.SupportedMachine
     
     @ObservedObject var wizardState: VMWizardState
-    @State private var isExpertMode: Bool = false
-    @State private var selectedMachine: SupportedMachine?
 
     var minCores: Int {
         #if canImport(Virtualization)
@@ -61,11 +59,11 @@ struct VMWizardHardwareView: View {
     var body: some View {
         VMWizardContent("Hardware") {
             if !wizardState.useVirtualization {
-                Toggle("Expert Mode", isOn: $isExpertMode)
+                Toggle("Expert Mode", isOn: $wizardState.isExpertMode)
                     .accessibilityIdentifier(UTMAccessibilityID.Wizard.expertMode)
                     .help("List all supported hardware. May require manual configuration to boot.")
             }
-            if !wizardState.useVirtualization && isExpertMode {
+            if !wizardState.useVirtualization && wizardState.isExpertMode {
                 Section {
                     VMConfigConstantPicker(selection: $wizardState.systemArchitecture)
                         .accessibilityIdentifier(UTMAccessibilityID.Wizard.architecture)
@@ -83,14 +81,14 @@ struct VMWizardHardwareView: View {
                     Text("System")
                 }
 
-            } else if !isExpertMode {
-                Picker("Machine", selection: $selectedMachine) {
+            } else if !wizardState.isExpertMode {
+                Picker("Machine", selection: $wizardState.selectedMachine) {
                     ForEach(SupportedMachine.allCases.filter({ $0.isSupported(running: wizardState.operatingSystem )})) { system in
                         Text(system.title).tag(system)
                     }
                 }.pickerStyle(.inline)
                 .accessibilityIdentifier(UTMAccessibilityID.Wizard.machine)
-                .onChange(of: selectedMachine) { newValue in
+                .onChange(of: wizardState.selectedMachine) { newValue in
                     guard let newValue = newValue else {
                         return
                     }
@@ -99,13 +97,13 @@ struct VMWizardHardwareView: View {
             }
             Section {
                 RAMSlider(systemMemory: $wizardState.systemMemoryMib) { _ in
-                    wizardState.clampSystemMemory(for: selectedMachine, hostMaximumMib: maxMemoryMib)
+                    wizardState.clampSystemMemory(for: wizardState.selectedMachine, hostMaximumMib: maxMemoryMib)
                 }
             } header: {
                 Text("Memory")
             }
 
-            if isExpertMode || selectedMachine?.maxSupportedCores == 0 {
+            if wizardState.isExpertMode || wizardState.selectedMachine?.maxSupportedCores == 0 {
                 Section {
                     HStack {
                         Stepper(value: $wizardState.systemCpuCount, in: minCores...maxCores) {
@@ -136,7 +134,7 @@ struct VMWizardHardwareView: View {
                 }
             }
 
-            if !wizardState.useVirtualization && isExpertMode {
+            if !wizardState.useVirtualization && wizardState.isExpertMode {
                 Section {
                     Toggle("Legacy Hardware", isOn: $wizardState.legacyHardware)
                         .help("If checked, emulated devices with higher compatibility will be instantiated at the cost of performance.")
@@ -148,13 +146,11 @@ struct VMWizardHardwareView: View {
         .textFieldStyle(.roundedBorder)
         .onAppear {
             if wizardState.useVirtualization {
-                isExpertMode = true
-                selectedMachine = nil
+                wizardState.isExpertMode = true
+                wizardState.selectedMachine = nil
                 wizardState.prepareVirtualizedHardware()
-            } else if selectedMachine == nil {
-                let machine = SupportedMachine.default(for: wizardState.operatingSystem)
-                selectedMachine = machine
-                wizardState.applyMachine(machine)
+            } else if wizardState.selectedMachine == nil {
+                wizardState.applyMachine(SupportedMachine.default(for: wizardState.operatingSystem))
             }
         }
     }

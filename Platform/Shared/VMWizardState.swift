@@ -113,6 +113,11 @@ struct AlertMessage: Identifiable {
             if !useVirtualization {
                 useAppleVirtualization = false
             }
+            // virtualization and emulation offer different hardware, so the page starts over
+            if useVirtualization != oldValue {
+                selectedMachine = nil
+                isExpertMode = false
+            }
         }
     }
     @Published var useAppleVirtualization: Bool = false {
@@ -122,7 +127,15 @@ struct AlertMessage: Identifiable {
             }
         }
     }
-    @Published var operatingSystem: VMWizardOS = .Other
+    @Published var operatingSystem: VMWizardOS = .Other {
+        didSet {
+            // another operating system starts the hardware page over on its default machine
+            if operatingSystem != oldValue {
+                selectedMachine = nil
+                isExpertMode = false
+            }
+        }
+    }
     #if os(macOS) && arch(arm64)
     @Published var macPlatform: UTMAppleConfigurationMacPlatform?
     @Published var macRecoveryIpswURL: URL?
@@ -154,6 +167,10 @@ struct AlertMessage: Identifiable {
     @Published var quadra800RomUrl: URL?
     @Published var systemArchitecture: QEMUArchitecture = .x86_64
     @Published var systemTarget: any QEMUTarget = QEMUTarget_x86_64.default
+    /// The machine picked on the hardware page, kept here because macOS builds a new page on every visit.
+    @Published var selectedMachine: SupportedMachine?
+    /// Whether the hardware page lists all supported hardware instead of the machines.
+    @Published var isExpertMode: Bool = false
     #if os(macOS)
     @Published var systemMemoryMib: Int = 4096
     @Published var storageSizeGib: Int = 64
@@ -798,6 +815,7 @@ extension VMWizardState {
     
     /// Takes the architecture, machine, memory, cores, storage and hardware level of a machine the user picked.
     func applyMachine(_ machine: SupportedMachine) {
+        selectedMachine = machine
         systemArchitecture = machine.architecture
         systemTarget = machine.target
         systemMemoryMib = machine.defaultRam
@@ -819,8 +837,9 @@ extension VMWizardState {
         legacyHardware = false
     }
     
-    /// A new architecture starts on its default machine.
+    /// A new architecture starts on its default machine and is none of the picked machines.
     func setSystemArchitecture(_ architecture: QEMUArchitecture) {
+        selectedMachine = nil
         systemArchitecture = architecture
         systemTarget = architecture.targetType.default
     }

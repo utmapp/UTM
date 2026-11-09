@@ -1383,6 +1383,7 @@
 		A170028C6B5443A8A43343BF /* VMDetailsViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 765EA3B03B7248EF835145D2 /* VMDetailsViewTests.swift */; };
 		2E00F8A08521488F946C9B44 /* VMNameFieldTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 981EC5BCC36C4B9AA1A6DC82 /* VMNameFieldTests.swift */; };
 		D9942A0FC95140A289AD11C2 /* VMWizardStartViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2139625EE1DC407E833C3F1D /* VMWizardStartViewTests.swift */; };
+		6A2D5E70817DC6C9DA00002C /* VMWizardHardwareViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58766F8E08A04EB1DE631232 /* VMWizardHardwareViewTests.swift */; };
 		A9E063512C2748E5976BED2C /* UTMAccessibilityID.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAEDBED3E5F74148807C75F9 /* UTMAccessibilityID.swift */; };
 		80BADF4993CD463FB4ED15D4 /* UTMAccessibilityID.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAEDBED3E5F74148807C75F9 /* UTMAccessibilityID.swift */; };
 		F326382FB49D42669F07A619 /* UTMAccessibilityID.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAEDBED3E5F74148807C75F9 /* UTMAccessibilityID.swift */; };
@@ -1419,6 +1420,7 @@
 		CEEEA7407B255A80867D14E1 /* VMDetailsViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 765EA3B03B7248EF835145D2 /* VMDetailsViewTests.swift */; };
 		ACAF43C92ACD532580C95D0A /* VMNameFieldTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 981EC5BCC36C4B9AA1A6DC82 /* VMNameFieldTests.swift */; };
 		2BDF24345F9C5481857EDBCF /* VMWizardStartViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2139625EE1DC407E833C3F1D /* VMWizardStartViewTests.swift */; };
+		9E21EF2B3055C660DFF8D426 /* VMWizardHardwareViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58766F8E08A04EB1DE631232 /* VMWizardHardwareViewTests.swift */; };
 		80A299D8FDBA54CABA06798F /* x86_64-pc-ide-disk.argv in Resources */ = {isa = PBXBuildFile; fileRef = 6DB2BC2EEE4648FEBFBE0094 /* x86_64-pc-ide-disk.argv */; };
 		18D48C750DB5554BA7F349B0 /* x86_64-q35-ide-cd-disk.argv in Resources */ = {isa = PBXBuildFile; fileRef = DD5CFAD3EAD34985867FB436 /* x86_64-q35-ide-cd-disk.argv */; };
 		3CCB0C0971E757F7972099D8 /* aarch64-virt-headless-serial.argv in Resources */ = {isa = PBXBuildFile; fileRef = AF6542B7D3514345AB4F2EE3 /* aarch64-virt-headless-serial.argv */; };
@@ -2488,6 +2490,7 @@
 		765EA3B03B7248EF835145D2 /* VMDetailsViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDetailsViewTests.swift; sourceTree = "<group>"; };
 		981EC5BCC36C4B9AA1A6DC82 /* VMNameFieldTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMNameFieldTests.swift; sourceTree = "<group>"; };
 		2139625EE1DC407E833C3F1D /* VMWizardStartViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMWizardStartViewTests.swift; sourceTree = "<group>"; };
+		58766F8E08A04EB1DE631232 /* VMWizardHardwareViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMWizardHardwareViewTests.swift; sourceTree = "<group>"; };
 		BAEDBED3E5F74148807C75F9 /* UTMAccessibilityID.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMAccessibilityID.swift; sourceTree = "<group>"; };
 		9071847770214043866F7BD9 /* UTMTests-iOS.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "UTMTests-iOS.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3003A1C417A9467599FF5A93 /* UTMTestSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMTestSupport.swift; sourceTree = "<group>"; };
@@ -3715,6 +3718,7 @@
 				765EA3B03B7248EF835145D2 /* VMDetailsViewTests.swift */,
 				981EC5BCC36C4B9AA1A6DC82 /* VMNameFieldTests.swift */,
 				2139625EE1DC407E833C3F1D /* VMWizardStartViewTests.swift */,
+				58766F8E08A04EB1DE631232 /* VMWizardHardwareViewTests.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -4550,6 +4554,7 @@
 				A170028C6B5443A8A43343BF /* VMDetailsViewTests.swift in Sources */,
 				2E00F8A08521488F946C9B44 /* VMNameFieldTests.swift in Sources */,
 				D9942A0FC95140A289AD11C2 /* VMWizardStartViewTests.swift in Sources */,
+				6A2D5E70817DC6C9DA00002C /* VMWizardHardwareViewTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5408,6 +5413,7 @@
 				CEEEA7407B255A80867D14E1 /* VMDetailsViewTests.swift in Sources */,
 				ACAF43C92ACD532580C95D0A /* VMNameFieldTests.swift in Sources */,
 				2BDF24345F9C5481857EDBCF /* VMWizardStartViewTests.swift in Sources */,
+				9E21EF2B3055C660DFF8D426 /* VMWizardHardwareViewTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

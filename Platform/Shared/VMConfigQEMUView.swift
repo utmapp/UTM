@@ -53,7 +53,7 @@ struct VMConfigQEMUView: View {
                     Toggle("TPM 2.0 Device", isOn: $config.qemu.hasTPMDevice)
                         .help("TPM can be used to protect secrets in the guest operating system. Note that the host will always be able to read these secrets and therefore no expectation of physical security is provided.")
                         .onChange(of: config.qemu.hasTPMDevice) { newValue in
-                            config.qemu.setTPMDevice(newValue)
+                            config.qemu.setTPMDevice(newValue, for: config.system)
                         }
                     Toggle("Use Hypervisor", isOn: $config.qemu.hasHypervisor)
                         .help("Only available if host architecture matches the target. Otherwise, TCG emulation is used.")
@@ -75,7 +75,7 @@ struct VMConfigQEMUView: View {
                         .disabled(!config.qemu.hasUefiBoot)
                     Toggle("Preload Secure Boot Keys", isOn: $config.qemu.hasPreloadedSecureBootKeys)
                         .help("Enable Secure Boot with Microsoft UEFI keys. This is required to Secure Boot Windows.")
-                        .disabled(!config.qemu.canPreloadSecureBootKeys)
+                        .disabled(!config.qemu.canPreloadSecureBootKeys(for: config.system))
                         .onChange(of: config.qemu.isUefiVariableResetRequested) { newValue in
                             config.qemu.setUefiVariableResetRequested(newValue)
                         }

@@ -421,7 +421,7 @@ extension UTMScriptingConfigImpl {
             config.qemu.hasBalloonDevice = balloonDevice
         }
         if let tpm = record["tpm"] as? Bool, tpm != config.qemu.hasTPMDevice {
-            config.qemu.setTPMDevice(tpm)
+            config.qemu.setTPMDevice(tpm, for: config.system)
         }
         if let tso = record["tso"] as? Bool {
             config.qemu.hasTSO = tso

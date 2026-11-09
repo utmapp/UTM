@@ -67,6 +67,10 @@ struct UTMQemuConfigurationSerial: Codable, Identifiable {
         mode = try values.decode(QEMUSerialMode.self, forKey: .mode)
         target = try values.decode(QEMUSerialTarget.self, forKey: .target)
         terminal = try values.decodeIfPresent(UTMConfigurationTerminal.self, forKey: .terminal)
+        // the built-in terminal always has settings, as `setMode(_:)` ensures when editing
+        if mode == .builtin && terminal == nil {
+            terminal = .init()
+        }
         hardware = try values.decodeIfPresent(AnyQEMUConstant.self, forKey: .hardware)
         tcpHostAddress = try values.decodeIfPresent(String.self, forKey: .tcpHostAddress)
         tcpPort = try values.decodeIfPresent(Int.self, forKey: .tcpPort)

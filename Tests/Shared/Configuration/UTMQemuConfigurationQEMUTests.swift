@@ -19,9 +19,12 @@ import XCTest
 
 /// The rules behind the QEMU tweaks and maintenance settings.
 final class UTMQemuConfigurationQEMUTests: XCTestCase {
+    /// The default machine, which supports Secure Boot.
+    private let system = UTMQemuConfigurationSystem()
+
     func testAddingATPMResetsUefiVariablesAndPreloadsSecureBootKeys() {
         var qemu = UTMQemuConfigurationQEMU()
-        qemu.setTPMDevice(true)
+        qemu.setTPMDevice(true, for: system)
         XCTAssertTrue(qemu.hasTPMDevice)
         XCTAssertTrue(qemu.isUefiVariableResetRequested)
         XCTAssertTrue(qemu.hasPreloadedSecureBootKeys)
@@ -29,8 +32,8 @@ final class UTMQemuConfigurationQEMUTests: XCTestCase {
 
     func testRemovingTheTPMDropsTheKeyPreloadButKeepsTheResetRequest() {
         var qemu = UTMQemuConfigurationQEMU()
-        qemu.setTPMDevice(true)
-        qemu.setTPMDevice(false)
+        qemu.setTPMDevice(true, for: system)
+        qemu.setTPMDevice(false, for: system)
         XCTAssertFalse(qemu.hasTPMDevice)
         XCTAssertTrue(qemu.isUefiVariableResetRequested)
         XCTAssertFalse(qemu.hasPreloadedSecureBootKeys)
@@ -38,7 +41,7 @@ final class UTMQemuConfigurationQEMUTests: XCTestCase {
 
     func testCancellingTheVariableResetDropsTheKeyPreload() {
         var qemu = UTMQemuConfigurationQEMU()
-        qemu.setTPMDevice(true)
+        qemu.setTPMDevice(true, for: system)
         qemu.setUefiVariableResetRequested(false)
         XCTAssertFalse(qemu.isUefiVariableResetRequested)
         XCTAssertFalse(qemu.hasPreloadedSecureBootKeys)
@@ -57,7 +60,7 @@ final class UTMQemuConfigurationQEMUTests: XCTestCase {
             var qemu = UTMQemuConfigurationQEMU()
             qemu.isUefiVariableResetRequested = isReset
             qemu.hasTPMDevice = hasTPM
-            XCTAssertEqual(qemu.canPreloadSecureBootKeys, isReset && hasTPM, "reset \(isReset), TPM \(hasTPM)")
+            XCTAssertEqual(qemu.canPreloadSecureBootKeys(for: system), isReset && hasTPM, "reset \(isReset), TPM \(hasTPM)")
         }
     }
 
@@ -83,5 +86,47 @@ final class UTMQemuConfigurationQEMUTests: XCTestCase {
         XCTAssertFalse(QEMUTarget_x86_64.isapc.hasPS2ControllerSupport)
         XCTAssertFalse(QEMUTarget_x86_64.microvm.hasPS2ControllerSupport)
         XCTAssertFalse(QEMUTarget_aarch64.virt.hasPS2ControllerSupport)
+    }
+}
+
+// MARK: - Secure Boot support
+
+extension UTMQemuConfigurationQEMUTests {
+    /// riscv64 ships no Secure Boot variables image: adding a TPM there must not ask for
+    /// one, or saving the VM fails copying a file that does not exist.
+    @MainActor func testTPMOnAMachineWithoutSecureBootStillSaves() async throws {
+        var system = UTMQemuConfigurationSystem()
+        system.architecture = .riscv64
+        system.target = QEMUTarget_riscv64.default
+        var qemu = UTMQemuConfigurationQEMU(forArchitecture: system.architecture, target: system.target)
+        XCTAssertTrue(qemu.hasUefiBoot)
+        qemu.setTPMDevice(true, for: system)
+        XCTAssertFalse(qemu.hasPreloadedSecureBootKeys)
+        XCTAssertFalse(qemu.canPreloadSecureBootKeys(for: system))
+        let dataURL = FileManager.default.temporaryDirectory.appendingPathComponent("QEMUTests-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: dataURL, withIntermediateDirectories: true)
+        defer {
+            try? FileManager.default.removeItem(at: dataURL)
+        }
+        _ = try await qemu.saveData(to: dataURL, for: system)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: dataURL.appendingPathComponent(QEMUPackageFileName.efiVariables.rawValue).path))
+    }
+
+    /// The wizard and a VM start that recreates missing variables set the key preload from
+    /// the TPM directly; saving must still use the plain variables where Secure Boot is unsupported.
+    @MainActor func testKeyPreloadIsIgnoredOnAMachineWithoutSecureBoot() async throws {
+        var system = UTMQemuConfigurationSystem()
+        system.architecture = .riscv64
+        system.target = QEMUTarget_riscv64.default
+        var qemu = UTMQemuConfigurationQEMU(forArchitecture: system.architecture, target: system.target)
+        qemu.hasTPMDevice = true
+        qemu.hasPreloadedSecureBootKeys = true
+        let dataURL = FileManager.default.temporaryDirectory.appendingPathComponent("QEMUTests-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: dataURL, withIntermediateDirectories: true)
+        defer {
+            try? FileManager.default.removeItem(at: dataURL)
+        }
+        _ = try await qemu.saveData(to: dataURL, for: system)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: dataURL.appendingPathComponent(QEMUPackageFileName.efiVariables.rawValue).path))
     }
 }

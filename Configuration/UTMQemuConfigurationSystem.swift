@@ -190,4 +190,9 @@ extension UTMQemuConfigurationSystem {
             cpuCount = 0
         }
     }
+    
+    /// Whether the firmware for this machine can boot with Secure Boot keys.
+    var hasSecureBootSupport: Bool {
+        architecture.hasSecureBootSupport && target.hasSecureBootSupport
+    }
 }

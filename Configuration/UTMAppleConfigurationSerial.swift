@@ -59,6 +59,10 @@ struct UTMAppleConfigurationSerial: Codable, Identifiable {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         mode = try values.decode(SerialMode.self, forKey: .mode)
         terminal = try values.decodeIfPresent(UTMConfigurationTerminal.self, forKey: .terminal)
+        // the built-in terminal always has settings, as `setMode(_:)` ensures when editing
+        if mode == .builtin && terminal == nil {
+            terminal = .init()
+        }
     }
     
     func encode(to encoder: Encoder) throws {
