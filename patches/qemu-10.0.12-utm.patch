@@ -5085,3 +5085,262 @@ index a02c649567..8fa3f9c7c2 100644
 -- 
 2.54.0 (Apple Git-157)
 
+From 9974fed6901e71faa440678f1b2c85dd28d057f3 Mon Sep 17 00:00:00 2001
+From: Kaede <kaedetai@gmail.com>
+Date: Sat, 17 Oct 2026 21:41:06 +0800
+Subject: [PATCH] virtio-gpu: keep the hostmem BAR decoding after a guest reset
+
+A device reset destroys every resource, and with them every blob mapped
+into the hostmem BAR.  The guest driver cannot always revoke the CPU
+mappings it handed out before it resets: the Windows display driver
+resets the device on its way to D3 at shutdown and reboot, while
+user-mode processes (DWM drawing the "Restarting" screen, a game that
+is still exiting) can keep writing through their mappings.  Those
+writes then land in holes of the BAR.
+
+On hvf such a write is usually a store pair or a SIMD store from
+memcpy, which exits without a valid instruction syndrome, so QEMU
+aborts on assert(isv) in hvf_handle_exception() and the VM dies on its
+way down (UTM reports a QEMULauncher crash when a Windows VM is shut
+down after running a D3D12 game).  Under TCG the guest takes an
+external abort instead.  A real GPU's BAR keeps decoding.
+
+When a guest-initiated reset finds blobs mapped, put RAM behind the
+blob subregions (priority -1, so every blob mapped later shadows it)
+and keep it until the next machine reset, after which no guest code
+can hold a stale mapping.  A reset with nothing mapped (firmware,
+driver start) leaves the BAR untouched, so a normal boot pays nothing.
+The RAM is only reserved; host pages are committed only for what the
+stale mappings touch.  Guest-initiated and machine resets are told
+apart the way virtio_gpu_reset() already does, by whether the reset
+runs on a vCPU thread.
+
+Assisted-by: Claude:claude-opus-5-5
+---
+ hw/display/trace-events        |  1 +
+ hw/display/virtio-gpu.c        | 57 ++++++++++++++++++++++++++++++++++
+ include/hw/virtio/virtio-gpu.h |  8 +++++
+ 3 files changed, 66 insertions(+)
+
+diff --git a/hw/display/trace-events b/hw/display/trace-events
+index 52786e6e18..adab4196a3 100644
+--- a/hw/display/trace-events
++++ b/hw/display/trace-events
+@@ -27,6 +27,7 @@ vmware_verify_rect_surface_bound_exceeded(const char *name, const char *componen
+ vmware_update_rect_delayed_flush(void) "display update FIFO full - forcing flush"
+ 
+ # virtio-gpu-base.c
++virtio_gpu_hostmem_scratch(bool mapped) "mapped=%d"
+ virtio_gpu_features(bool virgl) "virgl %d"
+ 
+ # virtio-gpu-3d.c
+diff --git a/hw/display/virtio-gpu.c b/hw/display/virtio-gpu.c
+index edd2c1c040..0bc66e5c23 100644
+--- a/hw/display/virtio-gpu.c
++++ b/hw/display/virtio-gpu.c
+@@ -1633,11 +1633,68 @@ static void virtio_gpu_reset_bh(void *opaque)
+     qemu_cond_signal(&g->reset_cond);
+ }
+ 
++/*
++ * A reset destroys every resource, so every blob mapped into the hostmem
++ * BAR goes away with it.  The guest driver cannot always revoke the CPU
++ * mappings it handed out first: a Windows display driver resets the device
++ * on its way to D3 while user-mode processes (DWM drawing the "Restarting"
++ * screen, or an application that is still exiting) keep writing through
++ * their mappings.  Those accesses then land in holes of the BAR.  A real
++ * GPU's BAR keeps decoding, but here a hole is unassigned memory: with hvf
++ * a store pair or SIMD store there exits without a valid ISS and QEMU
++ * aborts (assert(isv)), and under TCG the guest takes an external abort.
++ *
++ * So a guest-initiated reset that finds blobs mapped puts RAM behind the
++ * blob subregions (priority -1, shadowed by every blob mapped later) and
++ * keeps it there until the next machine reset, when no guest code can be
++ * holding a stale mapping.  Resets with nothing mapped (firmware, driver
++ * start) leave the BAR as it is.  The RAM is only reserved: host pages are
++ * committed only for what stale mappings actually touch.
++ */
++static void virtio_gpu_hostmem_scratch_update(VirtIOGPU *g, bool guest_reset)
++{
++    VirtIOGPUBase *b = VIRTIO_GPU_BASE(g);
++    Error *local_err = NULL;
++
++    if (!virtio_gpu_hostmem_enabled(b->conf) ||
++        guest_reset == b->hostmem_scratch_mapped) {
++        return;
++    }
++
++    if (guest_reset && QTAILQ_EMPTY(&b->hostmem.subregions)) {
++        return;
++    }
++
++    if (!guest_reset) {
++        memory_region_del_subregion(&b->hostmem, &b->hostmem_scratch);
++        b->hostmem_scratch_mapped = false;
++        trace_virtio_gpu_hostmem_scratch(false);
++        return;
++    }
++
++    if (!b->hostmem_scratch_init) {
++        if (!memory_region_init_ram_nomigrate(&b->hostmem_scratch, OBJECT(g),
++                                              "virtio-gpu-hostmem-scratch",
++                                              b->conf.hostmem, &local_err)) {
++            warn_reportf_err(local_err, "virtio-gpu: hostmem scratch: ");
++            return;
++        }
++        b->hostmem_scratch_init = true;
++    }
++    memory_region_add_subregion_overlap(&b->hostmem, 0, &b->hostmem_scratch,
++                                        -1);
++    b->hostmem_scratch_mapped = true;
++    trace_virtio_gpu_hostmem_scratch(true);
++}
++
+ void virtio_gpu_reset(VirtIODevice *vdev)
+ {
+     VirtIOGPU *g = VIRTIO_GPU(vdev);
+     struct virtio_gpu_ctrl_command *cmd;
+ 
++    /* Before the resources (and their blob mappings) are destroyed. */
++    virtio_gpu_hostmem_scratch_update(g, qemu_in_vcpu_thread());
++
+     if (qemu_in_vcpu_thread()) {
+         g->reset_finished = false;
+         qemu_bh_schedule(g->reset_bh);
+diff --git a/include/hw/virtio/virtio-gpu.h b/include/hw/virtio/virtio-gpu.h
+index 2af06db3e4..75dfba47e5 100644
+--- a/include/hw/virtio/virtio-gpu.h
++++ b/include/hw/virtio/virtio-gpu.h
+@@ -178,6 +178,14 @@ struct VirtIOGPUBase {
+     int enable;
+ 
+     MemoryRegion hostmem;
++    /*
++     * Lowest-priority RAM behind the blob subregions, enabled from a
++     * guest-initiated reset until the next machine reset (see
++     * virtio_gpu_hostmem_scratch_update()).
++     */
++    MemoryRegion hostmem_scratch;
++    bool hostmem_scratch_init;
++    bool hostmem_scratch_mapped;
+ 
+     struct virtio_gpu_scanout scanout[VIRTIO_GPU_MAX_SCANOUTS];
+ 
+-- 
+2.54.0 (Apple Git-157)
+
+From 1fe2938b4262c40e82f798f311cb21f35224b05b Mon Sep 17 00:00:00 2001
+From: Kaede <kaedetai@gmail.com>
+Date: Mon, 19 Oct 2026 13:49:41 +0800
+Subject: [PATCH] target/arm/hvf: retry a data abort on RAM that is mapped
+ again
+
+A memory topology update unmaps and then maps again every hvf slot it
+touches.  A vCPU that accesses such a range in between takes a stage-2
+translation fault, and handles it only after the update is done, once
+it gets the BQL; by then the IPA is RAM again.  QEMU still treats the
+exit as MMIO, so an access without a valid instruction syndrome (a
+store pair or SIMD store from memcpy) aborts on assert(isv), and one
+with a syndrome is emulated into RAM.
+
+This is easy to hit with virtio-gpu's hostmem BAR, whose layout changes
+whenever a blob is mapped or unmapped while guest processes keep
+writing to the blobs that stay: shutting down a Windows guest while an
+application is still drawing aborted QEMU this way.
+
+If the IPA is covered by a RAM slot, retry the access instead, as the
+x86 hvf code does for EPT violations.  Writes to read-only and
+dirty-logged slots still go through emulation.
+
+Assisted-by: Claude:claude-opus-5-5
+---
+ target/arm/hvf/hvf.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
+
+diff --git a/target/arm/hvf/hvf.c b/target/arm/hvf/hvf.c
+index f187968787..ff64932d14 100644
+--- a/target/arm/hvf/hvf.c
++++ b/target/arm/hvf/hvf.c
+@@ -2292,6 +2292,25 @@ run_again:
+             break;
+         }
+ 
++        /*
++         * A memory topology update unmaps and maps again every hvf slot it
++         * touches.  A vCPU that faults on such a range in between only
++         * gets here once the update is done and the RAM is mapped again,
++         * so retry the access instead of emulating it: it may well have
++         * no valid syndrome (a store pair or SIMD access from memcpy).
++         * Writes to read-only and dirty-logged slots are still emulated.
++         */
++        {
++            hvf_slot *slot = hvf_find_overlap_slot(
++                hvf_exit->exception.physical_address, 1);
++
++            if (slot && memory_region_is_ram(slot->region) &&
++                !(iswrite && (slot->region->readonly ||
++                              (slot->flags & HVF_SLOT_LOG)))) {
++                break;
++            }
++        }
++
+         assert(isv);
+ 
+         if (iswrite) {
+-- 
+2.54.0 (Apple Git-157)
+
+From fa05ee46edb68bb07870dcf6811f2cec12a29c54 Mon Sep 17 00:00:00 2001
+From: Kaede <kaedetai@gmail.com>
+Date: Mon, 19 Oct 2026 13:49:41 +0800
+Subject: [PATCH] target/arm/hvf: report an external abort for an access with
+ no syndrome
+
+A data abort without a valid instruction syndrome (a store pair, SIMD
+or SVE access) on an address nothing is mapped at cannot be emulated,
+and QEMU aborted on assert(isv), taking the VM down.  A Windows guest
+gets there at shutdown: it turns off the virtio-gpu device's memory
+decoding, so its BARs drop out of the address space, while an
+application is still writing through its mapping of a hostmem blob.
+
+Inject a synchronous external abort into the guest instead, which is
+what QEMU does for the same access under KVM
+(kvm_arm_handle_dabt_nisv()).
+
+Assisted-by: Claude:claude-opus-5-5
+---
+ target/arm/hvf/hvf.c | 18 +++++++++++++++++-
+ 1 file changed, 17 insertions(+), 1 deletion(-)
+
+diff --git a/target/arm/hvf/hvf.c b/target/arm/hvf/hvf.c
+index ff64932d14..288f42abe0 100644
+--- a/target/arm/hvf/hvf.c
++++ b/target/arm/hvf/hvf.c
+@@ -2311,7 +2311,23 @@ run_again:
+             }
+         }
+ 
+-        assert(isv);
++        if (!isv) {
++            /*
++             * Nothing is mapped there to retry on, and without a syndrome
++             * (a store pair, SIMD or SVE access) the access cannot be
++             * emulated.  Report a synchronous external abort to the guest,
++             * as KVM does, instead of aborting QEMU.
++             */
++            int same_el;
++
++            cpu_synchronize_state(cpu);
++            same_el = arm_current_el(env) == 1;
++            env->exception.vaddress = hvf_exit->exception.virtual_address;
++            hvf_raise_exception(cpu, EXCP_DATA_ABORT,
++                                syn_data_abort_no_iss(same_el, 0, 1, 0, s1ptw,
++                                                      iswrite, 0x10));
++            break;
++        }
+ 
+         if (iswrite) {
+             val = hvf_get_reg(cpu, srt);
+-- 
+2.54.0 (Apple Git-157)
+
