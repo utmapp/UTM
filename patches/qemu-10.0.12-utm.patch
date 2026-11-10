@@ -5488,3 +5488,71 @@ index 036c121adb..d1d4fb097a 100644
 -- 
 2.54.0 (Apple Git-157)
 
+From 5e2b2062bf78b194aa12e8f7d9c5f47fe797aa17 Mon Sep 17 00:00:00 2001
+From: Josh Guyette <joshguyette@yahoo.com>
+Date: Tue, 3 Nov 2026 15:15:12 -0600
+Subject: [PATCH] virtio-gpu-virgl: keep the VGA framebuffer until a real
+ scanout
+
+virgl_cmd_set_scanout switched virtio-vga away from the VGA framebuffer
+for every SET_SCANOUT, including ones that disable the scanout. Windows'
+viogpu3d driver disables scanout 0 hundreds of times during boot before
+DWM's first frame, so the boot screen was replaced by "Display output is
+not active." for about 12 seconds.
+
+Only switch away from VGA when a resource is actually scanned out, like
+the 2D path in virtio-gpu.c does, and also on the Metal native blob path,
+which did not set it at all and relied on the disable calls.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Josh Guyette <joshguyette@yahoo.com>
+---
+ hw/display/virtio-gpu-virgl.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/hw/display/virtio-gpu-virgl.c b/hw/display/virtio-gpu-virgl.c
+index a57f9e0e48..964ea43de0 100644
+--- a/hw/display/virtio-gpu-virgl.c
++++ b/hw/display/virtio-gpu-virgl.c
+@@ -647,7 +647,6 @@ static void virgl_cmd_set_scanout(VirtIOGPU *g,
+         cmd->error = VIRTIO_GPU_RESP_ERR_INVALID_SCANOUT_ID;
+         return;
+     }
+-    g->parent_obj.enable = 1;
+ 
+     if (ss.resource_id && ss.r.width && ss.r.height) {
+         struct virgl_renderer_resource_info info;
+@@ -697,6 +696,7 @@ static void virgl_cmd_set_scanout(VirtIOGPU *g,
+             cmd->error = VIRTIO_GPU_RESP_ERR_INVALID_RESOURCE_ID;
+             return;
+         }
++        g->parent_obj.enable = 1;
+         qemu_console_resize(g->parent_obj.scanout[ss.scanout_id].con,
+                             ss.r.width, ss.r.height);
+         virgl_renderer_force_ctx_0();
+@@ -706,7 +706,13 @@ static void virgl_cmd_set_scanout(VirtIOGPU *g,
+             info.width, info.height,
+             ss.r.x, ss.r.y, ss.r.width, ss.r.height,
+             native, NULL);
+-    } else {
++    } else if (g->parent_obj.enable) {
++        /*
++         * Disabling a scanout that never showed a resource leaves
++         * virtio-vga on the VGA framebuffer. Windows' viogpu3d disables
++         * the scanout repeatedly during boot, before DWM's first frame,
++         * which otherwise blanks the boot screen for many seconds.
++         */
+         dpy_gfx_replace_surface(
+             g->parent_obj.scanout[ss.scanout_id].con, NULL);
+         dpy_gl_scanout_disable(g->parent_obj.scanout[ss.scanout_id].con);
+@@ -1147,6 +1153,7 @@ static bool virgl_scanout_native_blob(VirtIOGPU *g,
+             .type = SCANOUT_TEXTURE_NATIVE_TYPE_METAL,
+             .handle = handle,
+         };
++        g->parent_obj.enable = 1;
+         qemu_console_resize(scanout->con,
+                             ss->r.width, ss->r.height);
+         dpy_gl_scanout_texture(
+-- 
+2.54.0 (Apple Git-157)
+
