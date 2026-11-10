@@ -6690,3 +6690,366 @@ index f3bde9332b..880fb36e17 100644
 -- 
 2.54.0 (Apple Git-157)
 
+From 80d3e749a83f836b724a17f880446d3876e315d2 Mon Sep 17 00:00:00 2001
+From: Josh Guyette <joshguyette@yahoo.com>
+Date: Tue, 3 Nov 2026 16:30:53 -0600
+Subject: [PATCH] audio: steadier HDA playback on a busy Mac
+
+Three changes, based on OmacVM's patches (MIT,
+github.com/gillesgoetsch/OmacVM, PR #93):
+
+- system/main.c: on macOS the main loop thread asks for user-interactive
+  QoS. It feeds the HDA DMA timer and the audio timer and runs virgl; at
+  the default QoS it waits behind the vCPU threads, so the sound breaks up.
+  QEMU_MAIN_LOOP_QOS=default keeps the old behaviour.
+- hda-codec: on a full output ring, keep the queued samples and only reset
+  the catch-up debt, instead of dropping the whole 8 KB buffer (~42 ms).
+- hda-codec: pacing (new "pace" property, on by default). After a stalled
+  main loop, take the guest's audio at most 1/32 faster than real time
+  instead of all at once.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Josh Guyette <joshguyette@yahoo.com>
+---
+ hw/audio/hda-codec.c  | 75 ++++++++++++++++++++++++++++++++++++++++---
+ hw/audio/trace-events |  1 +
+ system/main.c         | 27 ++++++++++++++++
+ 3 files changed, 98 insertions(+), 5 deletions(-)
+
+diff --git a/hw/audio/hda-codec.c b/hw/audio/hda-codec.c
+index 6f3a8f691b..66991009a1 100644
+--- a/hw/audio/hda-codec.c
++++ b/hw/audio/hda-codec.c
+@@ -172,6 +172,11 @@ struct HDAAudioStream {
+     int64_t wpos;
+     QEMUTimer *buft;
+     int64_t buft_start;
++    /* output pacing, see hda_audio_output_pace() */
++    bool primed;
++    int64_t run_ns;
++    int64_t pace_ns;
++    int64_t budget;
+ };
+ 
+ struct HDAAudioState {
+@@ -188,6 +193,7 @@ struct HDAAudioState {
+     uint32_t debug;
+     bool     mixer;
+     bool     use_timer;
++    bool     pace;
+ };
+ 
+ static inline uint32_t hda_bytes_per_second(HDAAudioStream *st)
+@@ -287,6 +293,55 @@ static void hda_audio_input_cb(void *opaque, int avail)
+     hda_timer_sync_adjust(st, -((wpos - rpos) - (B_SIZE >> 1)));
+ }
+ 
++/*
++ * No catch-up after a stalled main loop.
++ *
++ * The output timer takes guest audio by the clock. When the main loop stalls
++ * for S ms (virgl, or a Mac with every core busy), the backend keeps playing
++ * from its own ring, and the next timer runs took the whole S of guest audio
++ * at once, then the sync corrections pulled faster still. The guest saw its
++ * DMA position jump by S and under-ran unless its own buffer was larger.
++ *
++ * Once the stream has run for HDA_PACE_PRIME, the guest's audio is taken at
++ * most 1/32 faster than real time plus a burst of B_SIZE / 8; a debt beyond
++ * that is forgiven (the guest's clock pauses during a stall) and the
++ * backend's ring covers the stall. pace=off restores the old behaviour.
++ * Based on OmacVM's qemu-hda-no-catch-up.patch (MIT).
++ */
++#define HDA_PACE_BURST (B_SIZE / 8)
++#define HDA_PACE_PRIME (250 * SCALE_MS)
++
++static int64_t hda_audio_output_pace(HDAAudioStream *st, int64_t now,
++                                     int64_t wanted, int64_t to_transfer)
++{
++    int64_t bps = hda_bytes_per_second(st);
++
++    if (!st->state->pace || bps <= 0) {
++        return to_transfer;
++    }
++    if (!st->primed) {
++        if (now - st->run_ns < HDA_PACE_PRIME) {
++            st->pace_ns = now;
++            return to_transfer;
++        }
++        st->primed = true;
++        st->budget = HDA_PACE_BURST;
++    }
++    if (st->pace_ns && now > st->pace_ns) {
++        st->budget += muldiv64(now - st->pace_ns, bps + bps / 32,
++                               NANOSECONDS_PER_SECOND);
++    }
++    st->pace_ns = now;
++    st->budget = MIN(st->budget, (int64_t)HDA_PACE_BURST);
++    if (wanted - st->wpos > (int64_t)HDA_PACE_BURST) {
++        int64_t excess = wanted - st->wpos - HDA_PACE_BURST;
++
++        st->buft_start += muldiv64(excess, NANOSECONDS_PER_SECOND, bps);
++        trace_hda_audio_pace_forgive(st->node->name, excess);
++    }
++    return MIN(to_transfer, st->budget & -4);
++}
++
+ static void hda_audio_output_timer(void *opaque)
+ {
+     HDAAudioStream *st = opaque;
+@@ -313,6 +368,7 @@ static void hda_audio_output_timer(void *opaque)
+     }
+ 
+     int64_t to_transfer = MIN(B_SIZE - (wpos - rpos), wanted_wpos - wpos);
++    to_transfer = hda_audio_output_pace(st, now, wanted_wpos, to_transfer);
+     while (to_transfer) {
+         uint32_t start = (wpos & B_MASK);
+         uint32_t chunk = MIN(B_SIZE - start, to_transfer);
+@@ -324,6 +380,7 @@ static void hda_audio_output_timer(void *opaque)
+         wpos += chunk;
+         to_transfer -= chunk;
+         st->wpos += chunk;
++        st->budget -= chunk;
+     }
+ 
+ out_timer:
+@@ -343,12 +400,15 @@ static void hda_audio_output_cb(void *opaque, int avail)
+     int64_t to_transfer = MIN(wpos - rpos, avail);
+ 
+     if (wpos - rpos == B_SIZE) {
+-        /* drop buffer, reset timer adjust */
+-        st->rpos = 0;
+-        st->wpos = 0;
+-        st->buft_start = qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL);
++        /*
++         * Keep the queued samples (dropping them is an audible gap) and only
++         * discard the elapsed-time catch-up debt.
++         * Based on OmacVM's qemu-hda-full-ring-recovery.patch (MIT).
++         */
++        int64_t now = qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL);
++        st->buft_start = now - muldiv64(wpos, NANOSECONDS_PER_SECOND,
++                                       hda_bytes_per_second(st));
+         trace_hda_audio_overrun(st->node->name);
+-        return;
+     }
+ 
+     while (to_transfer) {
+@@ -434,6 +494,10 @@ static void hda_audio_set_running(HDAAudioStream *st, bool running)
+             st->rpos = 0;
+             st->wpos = 0;
+             st->buft_start = now;
++            st->primed = false;
++            st->run_ns = now;
++            st->pace_ns = 0;
++            st->budget = 0;
+             timer_mod_anticipate_ns(st->buft, now + HDA_TIMER_TICKS);
+         } else {
+             timer_del(st->buft);
+@@ -862,6 +926,7 @@ static const Property hda_audio_properties[] = {
+     DEFINE_PROP_UINT32("debug", HDAAudioState, debug,   0),
+     DEFINE_PROP_BOOL("mixer", HDAAudioState, mixer,  true),
+     DEFINE_PROP_BOOL("use-timer", HDAAudioState, use_timer,  true),
++    DEFINE_PROP_BOOL("pace", HDAAudioState, pace, true),
+ };
+ 
+ static void hda_audio_init_output(HDACodecDevice *hda, Error **errp)
+diff --git a/hw/audio/trace-events b/hw/audio/trace-events
+index b8ef572767..fadad9c333 100644
+--- a/hw/audio/trace-events
++++ b/hw/audio/trace-events
+@@ -22,6 +22,7 @@ hda_audio_running(const char *stream, int nr, bool running) "st %s, nr %d, run %
+ hda_audio_format(const char *stream, int chan, const char *fmt, int freq) "st %s, %d x %s @ %d Hz"
+ hda_audio_adjust(const char *stream, int pos) "st %s, pos %d"
+ hda_audio_overrun(const char *stream) "st %s"
++hda_audio_pace_forgive(const char *stream, int64_t bytes) "st %s forgiven %" PRId64 " bytes"
+ 
+ #via-ac97.c
+ via_ac97_codec_write(uint8_t addr, uint16_t val) "0x%x <- 0x%x"
+diff --git a/system/main.c b/system/main.c
+index 1c02206734..c41f4d0415 100644
+--- a/system/main.c
++++ b/system/main.c
+@@ -39,12 +39,39 @@
+ 
+ #ifdef CONFIG_DARWIN
+ #include <CoreFoundation/CoreFoundation.h>
++#include <pthread/qos.h>
++#endif
++
++#ifdef CONFIG_DARWIN
++/*
++ * The main loop feeds the sound card (the HDA DMA timer and the audio timer)
++ * and runs virgl. At the default QoS it competes with the vCPU threads, so a
++ * busy guest on a busy Mac delays it by tens of ms and the sound breaks up.
++ * Ask for user-interactive QoS, as the window thread has.
++ * QEMU_MAIN_LOOP_QOS=default keeps the default.
++ * Based on OmacVM's qemu-darwin-main-loop-qos.patch (MIT).
++ */
++static void darwin_main_loop_qos(void)
++{
++    const char *v = getenv("QEMU_MAIN_LOOP_QOS");
++
++    if (v && strcmp(v, "default") == 0) {
++        return;
++    }
++    if (pthread_set_qos_class_self_np(QOS_CLASS_USER_INTERACTIVE, 0) != 0) {
++        fprintf(stderr, "main loop: user-interactive QoS refused\n");
++    }
++}
+ #endif
+ 
+ static void *qemu_default_main(void *opaque)
+ {
+     int status;
+ 
++#ifdef CONFIG_DARWIN
++    darwin_main_loop_qos();
++#endif
++
+     replay_mutex_lock();
+     bql_lock();
+     status = qemu_main_loop();
+-- 
+2.54.0 (Apple Git-157)
+
+From 7d312eb47a94ee0a094d95cfa229d6b1b14f923f Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Tue, 10 Nov 2026 13:25:12 -0800
+Subject: [PATCH] hda-codec: catch up at once after a stall the ring covers
+
+The output pacing forgave any debt beyond B_SIZE / 8 (5 ms at 48 kHz
+stereo), and forgiven time comes back only at 1/32. A main loop that is
+late by more than that over and over therefore played the guest's audio
+slow: with the loop blocked for 12 ms 34 times a second, a 10 s tone took
+12.4 s to play, where it took 10.0 s before pacing. A host that coalesces
+timers to 8 ms did the same (a 20 s tone took 31 s).
+
+Allow a burst of the whole ring, so that a stall the ring can take is
+caught up at once, as it was before pacing. After a longer stall the debt
+is still forgiven down to B_SIZE / 8, so the guest's position does not
+jump.
+
+Assisted-by: Claude:claude-fable-5-2
+---
+ hw/audio/hda-codec.c | 27 ++++++++++++++++++---------
+ 1 file changed, 18 insertions(+), 9 deletions(-)
+
+diff --git a/hw/audio/hda-codec.c b/hw/audio/hda-codec.c
+index 66991009a1..d9993a4c28 100644
+--- a/hw/audio/hda-codec.c
++++ b/hw/audio/hda-codec.c
+@@ -294,21 +294,29 @@ static void hda_audio_input_cb(void *opaque, int avail)
+ }
+ 
+ /*
+- * No catch-up after a stalled main loop.
++ * Bounded catch-up after a stalled main loop.
+  *
+  * The output timer takes guest audio by the clock. When the main loop stalls
+  * for S ms (virgl, or a Mac with every core busy), the backend keeps playing
+- * from its own ring, and the next timer runs took the whole S of guest audio
+- * at once, then the sync corrections pulled faster still. The guest saw its
+- * DMA position jump by S and under-ran unless its own buffer was larger.
++ * from its own ring, and the next timer runs take the S of guest audio that
++ * is owed. That is right while the ring here can hold it. After a longer
++ * stall it cannot: the guest saw its DMA position jump and under-ran unless
++ * its own buffer was larger, and the sync corrections pulled faster still.
+  *
+  * Once the stream has run for HDA_PACE_PRIME, the guest's audio is taken at
+- * most 1/32 faster than real time plus a burst of B_SIZE / 8; a debt beyond
+- * that is forgiven (the guest's clock pauses during a stall) and the
+- * backend's ring covers the stall. pace=off restores the old behaviour.
++ * most 1/32 faster than real time plus a burst of HDA_PACE_BURST, the whole
++ * ring. A debt beyond the burst is forgiven down to HDA_PACE_RESUME (the
++ * guest's clock pauses during the stall) and the backend's ring covers the
++ * stall. pace=off restores the old behaviour.
+  * Based on OmacVM's qemu-hda-no-catch-up.patch (MIT).
++ *
++ * The burst must not be smaller than a stall that comes often. Forgiven time
++ * comes back only at 1/32, so a main loop that is late by more than the burst
++ * over and over (a frame of virgl work, coalesced timers) plays the guest's
++ * audio slow.
+  */
+-#define HDA_PACE_BURST (B_SIZE / 8)
++#define HDA_PACE_BURST B_SIZE
++#define HDA_PACE_RESUME (B_SIZE / 8)
+ #define HDA_PACE_PRIME (250 * SCALE_MS)
+ 
+ static int64_t hda_audio_output_pace(HDAAudioStream *st, int64_t now,
+@@ -334,9 +342,10 @@ static int64_t hda_audio_output_pace(HDAAudioStream *st, int64_t now,
+     st->pace_ns = now;
+     st->budget = MIN(st->budget, (int64_t)HDA_PACE_BURST);
+     if (wanted - st->wpos > (int64_t)HDA_PACE_BURST) {
+-        int64_t excess = wanted - st->wpos - HDA_PACE_BURST;
++        int64_t excess = wanted - st->wpos - HDA_PACE_RESUME;
+ 
+         st->buft_start += muldiv64(excess, NANOSECONDS_PER_SECOND, bps);
++        st->budget = MIN(st->budget, (int64_t)HDA_PACE_RESUME);
+         trace_hda_audio_pace_forgive(st->node->name, excess);
+     }
+     return MIN(to_transfer, st->budget & -4);
+-- 
+2.54.0 (Apple Git-157)
+
+From 65ddba202fe2ae31c9d0b4d333ca3bb226f6bb85 Mon Sep 17 00:00:00 2001
+From: Josh Guyette <joshguyette@yahoo.com>
+Date: Tue, 3 Nov 2026 17:14:31 -0600
+Subject: [PATCH] audio/coreaudio: jitter buffer
+
+Start playing only once half of the ring is queued, and prime again after
+an underrun. Without the cushion, playback runs with about one buffer
+queued, and every late audio timer costs a whole buffer of silence.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Josh Guyette <joshguyette@yahoo.com>
+---
+ audio/coreaudio.m | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+diff --git a/audio/coreaudio.m b/audio/coreaudio.m
+index 72a6df0f75..9303958cb9 100644
+--- a/audio/coreaudio.m
++++ b/audio/coreaudio.m
+@@ -42,6 +42,7 @@
+     UInt32 audioDevicePropertyBufferFrameSize;
+     AudioDeviceIOProcID ioprocid;
+     bool enabled;
++    bool primed;
+ } coreaudioVoiceOut;
+ 
+ static const AudioObjectPropertyAddress voice_addr = {
+@@ -325,8 +326,22 @@ static OSStatus audioDeviceIOProc(
+     frameCount = core->audioDevicePropertyBufferFrameSize;
+     pending_frames = hw->pending_emul / hw->info.bytes_per_frame;
+ 
++    /*
++     * Jitter buffer: start playing only once half of the ring is queued, and
++     * prime again after an underrun. Without the cushion, playback runs with
++     * about one buffer queued, and every late audio timer (the main loop also
++     * runs the vCPUs' I/O and virgl) costs a whole buffer of silence.
++     */
++    if (!core->primed && pending_frames < hw->samples / 2) {
++        inInputTime = 0;
++        coreaudio_buf_unlock (core, "audioDeviceIOProc(priming)");
++        return 0;
++    }
++    core->primed = true;
++
+     /* if there are not enough samples, set signal and return */
+     if (pending_frames < frameCount) {
++        core->primed = false;
+         inInputTime = 0;
+         coreaudio_buf_unlock (core, "audioDeviceIOProc(empty)");
+         return 0;
+@@ -642,6 +657,9 @@ static void coreaudio_enable_out(HWVoiceOut *hw, bool enable)
+     coreaudioVoiceOut *core = (coreaudioVoiceOut *) hw;
+ 
+     core->enabled = enable;
++    if (enable) {
++        core->primed = false;
++    }
+     update_device_playback_state(core);
+ }
+ 
+-- 
+2.54.0 (Apple Git-157)
+
