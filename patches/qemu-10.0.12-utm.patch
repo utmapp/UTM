@@ -5556,3 +5556,81 @@ index a57f9e0e48..964ea43de0 100644
 -- 
 2.54.0 (Apple Git-157)
 
+From 1219f88549f6dc89466bc30012fe91068f8cf44a Mon Sep 17 00:00:00 2001
+From: Josh Guyette <joshguyette@yahoo.com>
+Date: Tue, 3 Nov 2026 10:06:00 -0600
+Subject: [PATCH] accel/hvf, os-posix: support -overcommit mem-lock=on on macOS
+
+mlockall() returns ENOSYS on macOS, so -overcommit mem-lock=on failed at
+startup. Lock each guest RAM mapping with mlock() as HVF maps it instead,
+and let os_mlock() succeed on macOS.
+
+On a 2017 Intel MacBook Pro (16 GB) with an 8 GB Windows 11 guest, about
+8 GB stays wired with the option on. Without it, a memory-heavy run on our
+earlier fork left only 2.8 GB resident. On utm-edition I measured no idle
+CPU difference and no clear speed benefit.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Josh Guyette <joshguyette@yahoo.com>
+---
+ accel/hvf/hvf-accel-ops.c | 11 +++++++++++
+ os-posix.c                |  7 ++++++-
+ 2 files changed, 17 insertions(+), 1 deletion(-)
+
+diff --git a/accel/hvf/hvf-accel-ops.c b/accel/hvf/hvf-accel-ops.c
+index d1d4fb097a..5597983ec4 100644
+--- a/accel/hvf/hvf-accel-ops.c
++++ b/accel/hvf/hvf-accel-ops.c
+@@ -65,6 +65,7 @@
+ #include "system/hvf.h"
+ #include "system/hvf_int.h"
+ #include "system/runstate.h"
++#include "system/system.h"
+ #include "qemu/guest-random.h"
+ #include "hw/boards.h"
+ 
+@@ -200,6 +201,16 @@ static int do_hvf_set_memory(hvf_slot *slot, hv_memory_flags_t flags)
+         flags &= ~HV_MEMORY_EXEC;
+     }
+ #endif
++    /*
++     * mlockall() returns ENOSYS on macOS, and left alone the host compresses
++     * guest RAM until every touch faults, so honour -overcommit mem-lock=on
++     * for each RAM mapping.
++     */
++    if (should_mlock(mlock_state) && memory_region_is_ram(slot->region) &&
++        mlock(slot->mem, slot->size) < 0) {
++        error_report_once("hvf: mlock of guest RAM failed: %s",
++                          strerror(errno));
++    }
+     ret = hv_vm_map(slot->mem, slot->start, slot->size, flags);
+     assert_hvf_ok(ret);
+     return 0;
+diff --git a/os-posix.c b/os-posix.c
+index 52925c23d3..0cc1ce9eed 100644
+--- a/os-posix.c
++++ b/os-posix.c
+@@ -329,7 +329,7 @@ void os_set_line_buffering(void)
+ 
+ int os_mlock(bool on_fault)
+ {
+-#ifdef HAVE_MLOCKALL
++#if defined(HAVE_MLOCKALL) && !defined(CONFIG_DARWIN)
+     int ret = 0;
+     int flags = MCL_CURRENT | MCL_FUTURE;
+ 
+@@ -350,6 +350,11 @@ int os_mlock(bool on_fault)
+     return ret;
+ #else
+     (void)on_fault;
++#ifdef CONFIG_DARWIN
++    /* mlockall() fails with ENOSYS on macOS; HVF locks each RAM mapping. */
++    return 0;
++#else
+     return -ENOSYS;
+ #endif
++#endif
+ }
+-- 
+2.54.0 (Apple Git-157)
+
