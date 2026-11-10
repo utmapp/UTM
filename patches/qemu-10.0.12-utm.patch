@@ -5634,3 +5634,218 @@ index 52925c23d3..0cc1ce9eed 100644
 -- 
 2.54.0 (Apple Git-157)
 
+From aa44dfaca18b579180c608f60e96dc12630c0b55 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Sat, 7 Nov 2026 08:49:26 -0800
+Subject: [PATCH] ui/spice-display-metal: convert scanouts the surface cannot
+ hold verbatim
+
+The Metal scanout path copies the guest's scanout texture into the
+shared IOSurface with a blit.  The surface is BGRA8 or RGBA8, but a
+scanout can be R10G10B10A2 (a 10-bit fullscreen primary): a blit copies
+raw bits, so the 10-bit pixels were shown as BGRA8 (an orange clear came
+out blue).
+
+When the scanout is a 10-bit UNORM format (RGB10A2, BGR10A2), draw it
+instead: a full-screen triangle whose fragments read the source texel at
+the position the blit would copy from, scissored to the damaged rect.
+Its values are display-encoded like an 8-bit scanout's, so they are
+written as read, with alpha forced opaque (scanout alpha carries
+nothing).  The scissor is clamped to the surface and to the scanout
+texture past its origin; a 10-bit scanout is never blitted raw (with an
+empty rect, or a pipeline that failed to build, the frame is skipped),
+and a failed pipeline build is not retried every frame.  A 16-bit-float scanout (normally scRGB: linear, values
+above 1.0) would need clamping and sRGB encoding and is left on the blit
+path, as is every same-layout format, sRGB twins included.
+
+Measured with exclusive fullscreen at 800x600 cleared orange (1.0, 0.5,
+0.0), R10G10B10A2 and R8G8B8A8/B8G8R8A8, blt and flip model: the VM
+window shows orange (window capture 239,135,51 after display colour
+management); before, the 10-bit cases showed blue (screenshot 50,28,255).
+
+Assisted-by: Claude:claude-opus-5-5
+---
+ ui/spice-display-metal.m | 139 ++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 122 insertions(+), 17 deletions(-)
+
+diff --git a/ui/spice-display-metal.m b/ui/spice-display-metal.m
+index 23d8408068..e16a318801 100644
+--- a/ui/spice-display-metal.m
++++ b/ui/spice-display-metal.m
+@@ -6,6 +6,7 @@
+  */
+ 
+ #include "qemu/osdep.h"
++#include "qemu/error-report.h"
+ #include "ui/egl-helpers.h"
+ #include "ui/spice-display.h"
+ #include <CoreGraphics/CoreGraphics.h>
+@@ -18,6 +19,10 @@ @interface SpiceDisplayMetal : NSObject
+ @property (nonatomic, readonly) id<MTLCommandQueue> commandQueue;
+ @property (nonatomic, nullable, retain) id<MTLTexture> scanoutTexture;
+ @property (nonatomic, assign) CGRect scanoutRect;
++/* draws a scanout whose texel layout differs from the surface's (a 10-bit
++ * fullscreen primary into the 8-bit surface): a blit copies raw bits */
++@property (nonatomic, nullable, retain) id<MTLRenderPipelineState> convertPipeline;
++@property (nonatomic, assign) BOOL convertPipelineFailed;
+ 
+ - (instancetype)initWithDevice:(id<MTLDevice>)device
+                        surface:(IOSurfaceRef)surface
+@@ -62,6 +67,7 @@ - (instancetype)initWithDevice:(id<MTLDevice>)device
+ - (void)dealloc
+ {
+     [_scanoutTexture release];
++    [_convertPipeline release];
+     [_commandQueue release];
+     [_renderTarget release];
+     [super dealloc];
+@@ -79,6 +85,70 @@ - (void)scanoutDisable
+     self.scanoutRect = CGRectMake(0, 0, 0, 0);
+ }
+ 
++/* A full-screen triangle whose fragments read the source texel at the same
++ * position the blit would copy from (destination pixel + scanout origin).
++ * Scanout alpha carries nothing (DXGI ignores it), so the output is opaque. */
++static NSString *const convert_shader_source =
++    @"#include <metal_stdlib>\n"
++     "using namespace metal;\n"
++     "struct V { float4 pos [[position]]; };\n"
++     "vertex V convert_vs(uint vid [[vertex_id]]) {\n"
++     "    float2 p = float2((vid << 1) & 2, vid & 2);\n"
++     "    return { float4(p * 2.0 - 1.0, 0.0, 1.0) };\n"
++     "}\n"
++     "fragment float4 convert_fs(V in [[stage_in]],\n"
++     "                           texture2d<float> src [[texture(0)]],\n"
++     "                           constant uint2 &origin [[buffer(0)]]) {\n"
++     "    return float4(src.read(uint2(in.pos.xy) + origin).rgb, 1.0);\n"
++     "}\n";
++
++/* Formats the conversion may copy unencoded into the 8-bit surface: the
++ * 10-bit UNORM scanouts, which carry the same (sRGB-encoded) values as an
++ * 8-bit one.  A 16-bit-float scanout is normally scRGB (linear, can
++ * exceed 1.0) and would need clamping and sRGB encoding, so it is not
++ * converted here. */
++static bool convertible(MTLPixelFormat f)
++{
++    switch (f) {
++    case MTLPixelFormatRGB10A2Unorm:
++    case MTLPixelFormatBGR10A2Unorm:
++        return true;
++    default:
++        return false;
++    }
++}
++
++- (id<MTLRenderPipelineState>)pipeline
++{
++    if (!self.convertPipeline && !self.convertPipelineFailed) {
++        id<MTLDevice> device = self.commandQueue.device;
++        NSError *err = nil;
++        id<MTLLibrary> lib = [device newLibraryWithSource:convert_shader_source
++                                                  options:nil
++                                                    error:&err];
++        if (!lib) {
++            error_report("spice-display-metal: conversion shader: %s",
++                         err.localizedDescription.UTF8String);
++            self.convertPipelineFailed = YES;
++            return nil;
++        }
++        MTLRenderPipelineDescriptor *desc = [[MTLRenderPipelineDescriptor alloc] init];
++        desc.vertexFunction = [[lib newFunctionWithName:@"convert_vs"] autorelease];
++        desc.fragmentFunction = [[lib newFunctionWithName:@"convert_fs"] autorelease];
++        desc.colorAttachments[0].pixelFormat = self.renderTarget.pixelFormat;
++        self.convertPipeline = [[device newRenderPipelineStateWithDescriptor:desc
++                                                                       error:&err] autorelease];
++        [desc release];
++        [lib release];
++        if (!self.convertPipeline) {
++            error_report("spice-display-metal: conversion pipeline: %s",
++                         err.localizedDescription.UTF8String);
++            self.convertPipelineFailed = YES;
++        }
++    }
++    return self.convertPipeline;
++}
++
+ - (void)drawFrameAtRect:(CGRect)rect completion:(void (^)(void))completion
+ {
+     @autoreleasepool {
+@@ -87,23 +157,58 @@ - (void)drawFrameAtRect:(CGRect)rect completion:(void (^)(void))completion
+         }
+ 
+         id<MTLCommandBuffer> commandBuffer = [self.commandQueue commandBuffer];
+-        id<MTLBlitCommandEncoder> blit = [commandBuffer blitCommandEncoder];
+-        MTLOrigin origin = MTLOriginMake(self.scanoutRect.origin.x + rect.origin.x,
+-                                         self.scanoutRect.origin.y + rect.origin.y,
+-                                         0);
+-        MTLSize size = MTLSizeMake(rect.size.width, rect.size.height, 1);
+-
+-        [blit copyFromTexture:self.scanoutTexture
+-                  sourceSlice:0
+-                  sourceLevel:0
+-                 sourceOrigin:origin
+-                   sourceSize:size
+-                    toTexture:self.renderTarget
+-             destinationSlice:0
+-             destinationLevel:0
+-            destinationOrigin:(MTLOrigin){rect.origin.x,rect.origin.y,0}];
+-
+-        [blit endEncoding];
++        MTLPixelFormat srcFormat = self.scanoutTexture.pixelFormat;
++        /* the rect comes from the guest's flush: keep the scissor inside
++         * the attachment, as Metal requires, and the reads inside the
++         * scanout texture past its origin */
++        NSUInteger ox = (NSUInteger)self.scanoutRect.origin.x;
++        NSUInteger oy = (NSUInteger)self.scanoutRect.origin.y;
++        NSUInteger srcw = self.scanoutTexture.width > ox ? self.scanoutTexture.width - ox : 0;
++        NSUInteger srch = self.scanoutTexture.height > oy ? self.scanoutTexture.height - oy : 0;
++        NSUInteger tw = MIN(self.renderTarget.width, srcw);
++        NSUInteger th = MIN(self.renderTarget.height, srch);
++        NSUInteger sx = MIN((NSUInteger)MAX(rect.origin.x, 0), tw);
++        NSUInteger sy = MIN((NSUInteger)MAX(rect.origin.y, 0), th);
++        NSUInteger sw = MIN((NSUInteger)MAX(rect.size.width, 0), tw - sx);
++        NSUInteger sh = MIN((NSUInteger)MAX(rect.size.height, 0), th - sy);
++        if (convertible(srcFormat)) {
++            /* never blit a 10-bit scanout raw: with nothing to draw (an
++             * empty rect, or no pipeline) the frame is skipped */
++            if (sw && sh && [self pipeline]) {
++                MTLRenderPassDescriptor *pass = [MTLRenderPassDescriptor renderPassDescriptor];
++                pass.colorAttachments[0].texture = self.renderTarget;
++                pass.colorAttachments[0].loadAction = MTLLoadActionLoad;
++                pass.colorAttachments[0].storeAction = MTLStoreActionStore;
++                id<MTLRenderCommandEncoder> enc =
++                    [commandBuffer renderCommandEncoderWithDescriptor:pass];
++                uint32_t origin[2] = { (uint32_t)self.scanoutRect.origin.x,
++                                       (uint32_t)self.scanoutRect.origin.y };
++                [enc setRenderPipelineState:self.convertPipeline];
++                [enc setScissorRect:(MTLScissorRect){ sx, sy, sw, sh }];
++                [enc setFragmentTexture:self.scanoutTexture atIndex:0];
++                [enc setFragmentBytes:origin length:sizeof(origin) atIndex:0];
++                [enc drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:3];
++                [enc endEncoding];
++            }
++        } else {
++            id<MTLBlitCommandEncoder> blit = [commandBuffer blitCommandEncoder];
++            MTLOrigin origin = MTLOriginMake(self.scanoutRect.origin.x + rect.origin.x,
++                                             self.scanoutRect.origin.y + rect.origin.y,
++                                             0);
++            MTLSize size = MTLSizeMake(rect.size.width, rect.size.height, 1);
++
++            [blit copyFromTexture:self.scanoutTexture
++                      sourceSlice:0
++                      sourceLevel:0
++                     sourceOrigin:origin
++                       sourceSize:size
++                        toTexture:self.renderTarget
++                 destinationSlice:0
++                 destinationLevel:0
++                destinationOrigin:(MTLOrigin){rect.origin.x,rect.origin.y,0}];
++
++            [blit endEncoding];
++        }
+ 
+         [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> cb) {
+             completion();
+-- 
+2.54.0 (Apple Git-157)
+
