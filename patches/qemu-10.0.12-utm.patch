@@ -5344,3 +5344,50 @@ index ff64932d14..288f42abe0 100644
 -- 
 2.54.0 (Apple Git-157)
 
+From ed597a6131bb344a566b92ecba5804b308ec5e7b Mon Sep 17 00:00:00 2001
+From: Allen Wang <allen@Allens-MacBook-Air.local>
+Date: Tue, 27 Oct 2026 17:25:58 -0700
+Subject: [PATCH] tcg/aarch64-tcti: correct reversed vector comparisons
+
+Signed-off-by: Allen Wang <allen@Allens-MacBook-Air.local>
+---
+ tcg/aarch64-tcti/tcg-target.c.inc | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/tcg/aarch64-tcti/tcg-target.c.inc b/tcg/aarch64-tcti/tcg-target.c.inc
+index 8b78abe4bb..14199eaf38 100644
+--- a/tcg/aarch64-tcti/tcg-target.c.inc
++++ b/tcg/aarch64-tcti/tcg-target.c.inc
+@@ -1739,25 +1739,25 @@ static void tcg_out_vec_op(TCGContext *s, TCGOpcode opc, unsigned vecl, unsigned
+                 tcg_out_ternary_vector_gadget_with_scalar(s, cmgt, is_scalar, vece, w0, w1, w2);
+                 break;
+             case TCG_COND_LE:
+-                tcg_out_ternary_vector_gadget_with_scalar(s, cmgt, is_scalar, vece, w0, w2, w1);
++                tcg_out_ternary_vector_gadget_with_scalar(s, cmge, is_scalar, vece, w0, w2, w1);
+                 break;
+             case TCG_COND_GE:
+                 tcg_out_ternary_vector_gadget_with_scalar(s, cmge, is_scalar, vece, w0, w1, w2);
+                 break;
+             case TCG_COND_LT:
+-                tcg_out_ternary_vector_gadget_with_scalar(s, cmge, is_scalar, vece, w0, w2, w1);
++                tcg_out_ternary_vector_gadget_with_scalar(s, cmgt, is_scalar, vece, w0, w2, w1);
+                 break;
+             case TCG_COND_GTU:
+                 tcg_out_ternary_vector_gadget_with_scalar(s, cmhi, is_scalar, vece, w0, w1, w2);
+                 break;
+             case TCG_COND_LEU:
+-                tcg_out_ternary_vector_gadget_with_scalar(s, cmhi, is_scalar, vece, w0, w2, w1);
++                tcg_out_ternary_vector_gadget_with_scalar(s, cmhs, is_scalar, vece, w0, w2, w1);
+                 break;
+             case TCG_COND_GEU:
+                 tcg_out_ternary_vector_gadget_with_scalar(s, cmhs, is_scalar, vece, w0, w1, w2);
+                 break;
+             case TCG_COND_LTU:
+-                tcg_out_ternary_vector_gadget_with_scalar(s, cmhs, is_scalar, vece, w0, w2, w1);
++                tcg_out_ternary_vector_gadget_with_scalar(s, cmhi, is_scalar, vece, w0, w2, w1);
+                 break;
+             default:
+                 g_assert_not_reached();
+-- 
+2.54.0 (Apple Git-157)
+
