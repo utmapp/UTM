@@ -5849,3 +5849,844 @@ index 23d8408068..e16a318801 100644
 -- 
 2.54.0 (Apple Git-157)
 
+From 93019576da0490b72f5b49b972156ce36cef05de Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Bruno=20Castell=C3=B3?= <bfcastello@gmail.com>
+Date: Fri, 16 Oct 2026 00:07:54 +0200
+Subject: [PATCH] screamer: pace TX DMA to the sample rate
+
+With 1 GB or more RAM Mac OS 9 turns VM off and its sound driver uses a
+single 4 KiB ring. Screamer consumed the whole ring at once, so the
+driver saw both half-buffer interrupts before anything played and kept
+restarting: alert sounds came out as short blips.
+
+Complete OUTPUT commands at the codec sample rate instead, with a small
+FIFO lead, and count FRAME_CNT as frames are consumed.
+
+Assisted-by: Claude:claude-opus-5-5
+---
+ hw/audio/screamer.c         | 180 ++++++++++++++++++++++++------------
+ include/hw/audio/screamer.h |  13 ++-
+ 2 files changed, 128 insertions(+), 65 deletions(-)
+
+diff --git a/hw/audio/screamer.c b/hw/audio/screamer.c
+index 26e8322c5b..b2ac6dc104 100644
+--- a/hw/audio/screamer.c
++++ b/hw/audio/screamer.c
+@@ -64,26 +64,101 @@
+ /* Audio */
+ static const char *s_spk = "screamer";
+ 
++/*
++ * The real chip pulls TX samples from DBDMA at the codec sample rate through
++ * a small FIFO, so OUTPUT descriptors complete in real time. Emulate that:
++ * TX DMA may consume s->rate frames per second of virtual time, plus up to
++ * SCREAMER_FIFO_FRAMES of lead. Without this a guest ring that fits in our
++ * buffer completes (and raises its interrupts) almost instantly, which is
++ * what the Mac OS 9 driver does with VM off (>= 1 GB RAM): one 4 KiB page.
++ */
++#define SCREAMER_FIFO_FRAMES 128
++#define SCREAMER_TX_TICK_NS  (1 * SCALE_MS)
++
++static void screamer_tx_credit_update(ScreamerState *s)
++{
++    int64_t now = qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL);
++    uint64_t frames;
++
++    if (now <= s->tx_last_ns) {
++        return;
++    }
++    frames = muldiv64(now - s->tx_last_ns, s->rate, NANOSECONDS_PER_SECOND);
++    s->tx_last_ns += muldiv64(frames, NANOSECONDS_PER_SECOND, s->rate);
++    s->tx_credit = MIN(s->tx_credit + frames, SCREAMER_FIFO_FRAMES);
++}
++
++/* Copy guest frames into the ring; drop the oldest if the host lags */
++static void screamer_ring_write(ScreamerState *s, hwaddr addr, uint32_t frames)
++{
++    while (frames) {
++        uint32_t n = MIN(frames, s->samples - s->wpos);
++        MemTxResult res;
++
++        res = dma_memory_read(&address_space_memory, addr,
++                              &s->mixbuf[s->wpos << s->shift], n << s->shift,
++                              MEMTXATTRS_UNSPECIFIED);
++        if (res != MEMTX_OK) {
++            qemu_log_mask(LOG_GUEST_ERROR,
++                          "screamer: TX DMA read failed at 0x%" HWADDR_PRIx
++                          "\n", addr);
++        }
++        s->wpos = (s->wpos + n) % s->samples;
++        s->fill += n;
++        addr += n << s->shift;
++        frames -= n;
++    }
++
++    if (s->fill > s->samples) {
++        SCREAMER_DPRINTF("TX ring overrun, dropped %d frames\n",
++                         s->fill - s->samples);
++        s->rpos = s->wpos;
++        s->fill = s->samples;
++    }
++}
++
+ static void pmac_screamer_tx_transfer(ScreamerState *s)
+ {
+     DBDMA_io *io = &s->io;
+-    int samples;
++    uint32_t frames;
+ 
+-    samples = MIN(io->len >> s->shift, s->samples - s->wpos);
+-    dma_memory_read(&address_space_memory, io->addr,
+-                    &s->mixbuf[s->wpos << s->shift], samples << s->shift,
+-                    MEMTXATTRS_UNSPECIFIED);
++    screamer_tx_credit_update(s);
++    frames = MIN(io->len >> s->shift, s->tx_credit);
+ 
+-    SCREAMER_DPRINTF("DMA actually transferred 0x%x, wpos is %d\n", samples << s->shift, s->wpos);
++    if (frames) {
++        screamer_ring_write(s, io->addr, frames);
++        io->addr += frames << s->shift;
++        io->len -= frames << s->shift;
++        s->tx_credit -= frames;
+ 
+-    io->addr += (samples << s->shift);
+-    io->len -= (samples << s->shift);
+-    s->wpos += samples;
++        /* The frame counter counts frames sent to the codec */
++        s->regs[FRAME_CNT_REG] += frames;
++        SCREAMER_DPRINTF("DMA actually transferred 0x%x\n",
++                         frames << s->shift);
++    }
++
++    /* A trailing partial frame can never be consumed; drop it */
++    if (io->len < (1 << s->shift)) {
++        io->len = 0;
++    }
+ 
+     /* Continue DBDMA if we have completed the transfer, otherwise defer */
+     if (io->len == 0) {
+         SCREAMER_DPRINTF("-> End of transfer\n");
+         io->dma_end(io);
++    } else if (!timer_pending(s->tx_timer)) {
++        timer_mod(s->tx_timer, qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL) +
++                               SCREAMER_TX_TICK_NS);
++    }
++}
++
++static void screamer_tx_timer_cb(void *opaque)
++{
++    ScreamerState *s = opaque;
++
++    if (s->io.len) {
++        SCREAMER_DPRINTF("Continue deferred transfer\n");
++        pmac_screamer_tx_transfer(s);
+     }
+ }
+ 
+@@ -95,15 +170,12 @@ static void pmac_screamer_tx(DBDMA_io *io)
+                      " len: %x\n", io->addr, io->len);
+ 
+     memcpy(&s->io, io, sizeof(DBDMA_io));
+-    //if (s->wpos + (s->io.len >> s->shift) > s->samples) {
+-    //    return;
+-    //}
+-
+     pmac_screamer_tx_transfer(s);
+ }
+ 
+ static void pmac_screamer_tx_flush(DBDMA_io *io)
+ {
++    ScreamerState *s = io->opaque;
+     DBDMA_channel *ch = io->channel;
+     dbdma_cmd *current = &ch->current;
+     uint16_t cmd;
+@@ -124,6 +196,13 @@ static void pmac_screamer_tx_flush(DBDMA_io *io)
+ 
+     ch->io.processing = false;
+ 
++    /* The guest is stopping the channel: abandon any deferred transfer */
++    if (((ch->regs[DBDMA_CONTROL] >> 16) & RUN) &&
++        !(ch->regs[DBDMA_CONTROL] & RUN)) {
++        s->io.len = 0;
++        timer_del(s->tx_timer);
++    }
++
+     cmd = le16_to_cpu(current->command) & COMMAND_MASK;
+     if (cmd == INPUT_MORE || cmd == INPUT_LAST) {
+         current->xfer_status = cpu_to_le16(ch->regs[DBDMA_STATUS]);
+@@ -182,51 +261,22 @@ void macio_screamer_register_dma(ScreamerState *s, void *dbdma, int txchannel, i
+ static void screamerspk_callback(void *opaque, int free_b)
+ {
+     ScreamerState *s = opaque;
+-    DBDMA_io *io = &s->io;
+-    int samples, generated;
+-
+-    if (free_b == 0) {
+-        return;
+-    }
+-
+-    if (s->wpos - s->rpos == 0) {
+-        return;
+-    }
+-
+-    samples = MIN(s->samples, free_b >> s->shift);
+-    generated = MIN(samples, s->wpos - s->rpos);
+-
+-    AUD_write(s->voice, s->mixbuf + (uintptr_t)(s->rpos << s->shift),
+-              generated << s->shift);
+-
+-    SCREAMER_DPRINTF("  - generated %d, wpos %d, rpos %d\n", generated, s->wpos, s->rpos);
+-    
+-    s->regs[FRAME_CNT_REG] += generated;
+-    s->rpos += generated;
+-    if (s->rpos < s->wpos) {
+-        return;
+-    }
+-
+-    s->wpos = 0;
+-    s->rpos = 0;
+ 
+-    if (io->len) {
+-        DBDMA_channel *ch = io->channel;
+-        uint32_t status = ch->regs[DBDMA_STATUS];
+-
+-        SCREAMER_DPRINTF("Continue deferred transfer\n");
+-
+-        /* Disable channel so we only complete the current transfer */
+-        ch->regs[DBDMA_STATUS] &= ~RUN;
+-
+-        /* Perform deferred transfer */
+-        pmac_screamer_tx_transfer(s);
+-
+-        /* Re-enable channel */
+-        ch->regs[DBDMA_STATUS] = status;
+-
+-        /* Kick channel to continue */
+-        DBDMA_kick(container_of(ch, DBDMAState, channels[ch->channel]));
++    while (s->fill && free_b >= (1 << s->shift)) {
++        uint32_t n = MIN(MIN(free_b >> s->shift, s->fill),
++                         s->samples - s->rpos);
++        size_t written;
++
++        written = AUD_write(s->voice, &s->mixbuf[s->rpos << s->shift],
++                            n << s->shift) >> s->shift;
++        SCREAMER_DPRINTF("  - generated %zu, fill %d, rpos %d\n", written,
++                         s->fill, s->rpos);
++        if (!written) {
++            break;
++        }
++        s->rpos = (s->rpos + written) % s->samples;
++        s->fill -= written;
++        free_b -= written << s->shift;
+     }
+ }
+ 
+@@ -241,10 +291,6 @@ static void screamer_update_settings(ScreamerState *s)
+         return;
+     }
+ 
+-    s->shift = 2;
+-    s->samples = AUD_get_buffer_size_out(s->voice) >> s->shift;
+-    s->mixbuf = g_malloc0(s->samples << s->shift);
+-
+     AUD_set_active_out(s->voice, true);
+ }
+ 
+@@ -275,6 +321,13 @@ static void screamer_reset(DeviceState *dev)
+     s->bpos = 0;
+     s->ppos = 0;
+ 
++    timer_del(s->tx_timer);
++    s->tx_last_ns = qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL);
++    s->tx_credit = 0;
++    s->wpos = 0;
++    s->rpos = 0;
++    s->fill = 0;
++
+     return;
+ }
+ 
+@@ -286,6 +339,11 @@ static void screamer_realizefn(DeviceState *dev, Error **errp)
+         return;
+     }
+ 
++    s->shift = 2;
++    s->samples = SCREAMER_BUFFER_SIZE >> s->shift;
++    s->mixbuf = g_malloc0(SCREAMER_BUFFER_SIZE);
++    s->tx_timer = timer_new_ns(QEMU_CLOCK_VIRTUAL, screamer_tx_timer_cb, s);
++
+     s->rate = 44100;
+     screamer_update_settings(s);
+ }
+diff --git a/include/hw/audio/screamer.h b/include/hw/audio/screamer.h
+index b6c1fefb2b..f709726b0a 100644
+--- a/include/hw/audio/screamer.h
++++ b/include/hw/audio/screamer.h
+@@ -48,12 +48,17 @@ struct ScreamerState {
+ 
+     QEMUSoundCard card;
+     SWVoiceOut *voice;
+-    uint8_t *mixbuf;
+-    int samples;
++    uint8_t *mixbuf;        /* ring of TX frames waiting for the host */
++    int samples;            /* ring size in frames */
+     int shift;
+ 
+-    uint32_t wpos;
+-    uint32_t rpos;
++    uint32_t wpos;          /* ring write index (frames) */
++    uint32_t rpos;          /* ring read index (frames) */
++    uint32_t fill;          /* frames in the ring */
++
++    QEMUTimer *tx_timer;    /* paces TX DMA at the sample rate */
++    int64_t tx_last_ns;
++    uint32_t tx_credit;     /* frames TX DMA may consume now */
+ 
+     uint32_t bpos;
+     uint32_t ppos;
+-- 
+2.54.0 (Apple Git-157)
+
+From a8dfd66f4ccbd9b253d21d5a4d1977950116ae80 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Bruno=20Castell=C3=B3?= <bfcastello@gmail.com>
+Date: Fri, 16 Oct 2026 00:07:54 +0200
+Subject: [PATCH] mac_dbdma, screamer: only write back res_count and
+ xfer_status
+
+The hardware only updates those two fields when a command completes.
+Writing back the whole cached descriptor could undo changes the guest
+made to it in the meantime.
+
+Assisted-by: Claude:claude-opus-5-5
+---
+ hw/audio/screamer.c       | 24 ++++++++++++++++++------
+ hw/misc/macio/mac_dbdma.c | 14 ++++++++++++--
+ 2 files changed, 30 insertions(+), 8 deletions(-)
+
+diff --git a/hw/audio/screamer.c b/hw/audio/screamer.c
+index b2ac6dc104..dbf31c65b1 100644
+--- a/hw/audio/screamer.c
++++ b/hw/audio/screamer.c
+@@ -188,8 +188,12 @@ static void pmac_screamer_tx_flush(DBDMA_io *io)
+         current->xfer_status = cpu_to_le16(ch->regs[DBDMA_STATUS]);
+         current->res_count = cpu_to_le16(io->len);
+ 
+-        dma_memory_write(&address_space_memory, ch->regs[DBDMA_CMDPTR_LO],
+-                         &ch->current, sizeof(dbdma_cmd),
++        dma_memory_write(&address_space_memory,
++                         ch->regs[DBDMA_CMDPTR_LO] +
++                         offsetof(dbdma_cmd, res_count),
++                         &current->res_count,
++                         sizeof(current->res_count) +
++                         sizeof(current->xfer_status),
+                          MEMTXATTRS_UNSPECIFIED);
+     }
+ #endif
+@@ -208,8 +212,12 @@ static void pmac_screamer_tx_flush(DBDMA_io *io)
+         current->xfer_status = cpu_to_le16(ch->regs[DBDMA_STATUS]);
+         current->res_count = cpu_to_le16(io->len);
+ 
+-            dma_memory_write(&address_space_memory, ch->regs[DBDMA_CMDPTR_LO],
+-                         &ch->current, sizeof(dbdma_cmd),
++            dma_memory_write(&address_space_memory,
++                         ch->regs[DBDMA_CMDPTR_LO] +
++                         offsetof(dbdma_cmd, res_count),
++                         &current->res_count,
++                         sizeof(current->res_count) +
++                         sizeof(current->xfer_status),
+                          MEMTXATTRS_UNSPECIFIED);
+     }
+ 
+@@ -242,8 +250,12 @@ static void pmac_screamer_rx_flush(DBDMA_io *io)
+         current->xfer_status = cpu_to_le16(ch->regs[DBDMA_STATUS]);
+         current->res_count = cpu_to_le16(io->len);
+ 
+-        dma_memory_write(&address_space_memory, ch->regs[DBDMA_CMDPTR_LO],
+-                         &ch->current, sizeof(dbdma_cmd),
++        dma_memory_write(&address_space_memory,
++                         ch->regs[DBDMA_CMDPTR_LO] +
++                         offsetof(dbdma_cmd, res_count),
++                         &current->res_count,
++                         sizeof(current->res_count) +
++                         sizeof(current->xfer_status),
+                          MEMTXATTRS_UNSPECIFIED);
+     }
+ #endif
+diff --git a/hw/misc/macio/mac_dbdma.c b/hw/misc/macio/mac_dbdma.c
+index de0f934f7d..49a8fd5c6d 100644
+--- a/hw/misc/macio/mac_dbdma.c
++++ b/hw/misc/macio/mac_dbdma.c
+@@ -103,8 +103,18 @@ static void dbdma_cmdptr_save(DBDMA_channel *ch)
+                     ch->regs[DBDMA_CMDPTR_LO],
+                     le16_to_cpu(ch->current.xfer_status),
+                     le16_to_cpu(ch->current.res_count));
+-    dma_memory_write(&address_space_memory, ch->regs[DBDMA_CMDPTR_LO],
+-                     &ch->current, sizeof(dbdma_cmd), MEMTXATTRS_UNSPECIFIED);
++    /*
++     * Like the real controller, only write back res_count and xfer_status:
++     * the guest may have rewritten the rest of the descriptor since we
++     * loaded it, and restoring our stale copy would undo that.
++     */
++    dma_memory_write(&address_space_memory,
++                     ch->regs[DBDMA_CMDPTR_LO] +
++                     offsetof(dbdma_cmd, res_count),
++                     &ch->current.res_count,
++                     sizeof(ch->current.res_count) +
++                     sizeof(ch->current.xfer_status),
++                     MEMTXATTRS_UNSPECIFIED);
+ }
+ 
+ static void kill_channel(DBDMA_channel *ch)
+-- 
+2.54.0 (Apple Git-157)
+
+From b93cf1ab6451cc439fcffdb007dc30b4287766a2 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Bruno=20Castell=C3=B3?= <bfcastello@gmail.com>
+Date: Thu, 15 Oct 2026 22:17:03 +0200
+Subject: [PATCH] mac_dbdma, screamer: fix LOAD_WORD, s0-s7 status bits and RX
+ DMA
+
+- LOAD_WORD: store the loaded data in the cmdDep field of the command in
+  memory, as real DBDMA does. Since only res_count/xfer_status are written
+  back now, the Mac OS 9 Screamer driver (VM off, >= 1 GB) never saw the
+  frame counter it samples with LOAD_WORD.
+- dbdma_control_write: honour the software-settable device status bits
+  s0-s7. The Mac OS 9 sound input driver sets s0 to make its INPUT command
+  branch out of the ring; it was ignored, so the ring never stopped.
+- screamer RX: instead of completing INPUT commands instantly with nothing
+  transferred and forcing RUN off (a workaround for the above), deliver
+  silence and complete each command after its duration at the sample rate.
+
+Assisted-by: Claude:claude-opus-5-5
+---
+ hw/audio/screamer.c         | 50 +++++++++++++++++++++++++++++++------
+ hw/misc/macio/mac_dbdma.c   | 12 +++++++++
+ include/hw/audio/screamer.h |  3 +++
+ 3 files changed, 58 insertions(+), 7 deletions(-)
+
+diff --git a/hw/audio/screamer.c b/hw/audio/screamer.c
+index dbf31c65b1..d9e5604ee1 100644
+--- a/hw/audio/screamer.c
++++ b/hw/audio/screamer.c
+@@ -223,27 +223,60 @@ static void pmac_screamer_tx_flush(DBDMA_io *io)
+ 
+ }
+ 
++/*
++ * There is no capture source: RX DMA receives silence. Like real hardware,
++ * an INPUT descriptor completes only after its frames have been sampled,
++ * i.e. after len / frame size / rate seconds.
++ */
++static void screamer_rx_timer_cb(void *opaque)
++{
++    ScreamerState *s = opaque;
++    DBDMA_io *io = &s->rx_io;
++
++    if (!io->len) {
++        return;
++    }
++
++    if (dma_memory_set(&address_space_memory, io->addr, 0, io->len,
++                       MEMTXATTRS_UNSPECIFIED) != MEMTX_OK) {
++        qemu_log_mask(LOG_GUEST_ERROR,
++                      "screamer: RX DMA write failed at 0x%" HWADDR_PRIx
++                      "\n", io->addr);
++    }
++    io->addr += io->len;
++    io->len = 0;
++    io->dma_end(io);
++}
++
+ static void pmac_screamer_rx(DBDMA_io *io)
+ {
++    ScreamerState *s = io->opaque;
++    uint64_t frames = io->len >> s->shift;
++
+     SCREAMER_DPRINTF("DMA RX transfer: addr %" HWADDR_PRIx
+                      " len: %x\n", io->addr, io->len);
+ 
+-    //ScreamerState *s = io->opaque;
+-    DBDMA_channel *ch = io->channel;
+-        
+-    /* FIXME: stop channel after updating with status to stop MacOS 9 freezing */
+-    ch->regs[DBDMA_STATUS] &= ~RUN;
+-
+-    io->dma_end(io);
++    memcpy(&s->rx_io, io, sizeof(DBDMA_io));
++    timer_mod(s->rx_timer, qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL) +
++                           muldiv64(frames, NANOSECONDS_PER_SECOND, s->rate));
+ }
+ 
+ static void pmac_screamer_rx_flush(DBDMA_io *io)
+ {
++    ScreamerState *s = io->opaque;
+     DBDMA_channel *ch = io->channel;
+     dbdma_cmd *current = &ch->current;
+     uint16_t cmd;
+ 
+     SCREAMER_DPRINTF("DMA RX flush!\n");
++
++    /* The guest is stopping the channel: abandon the pending transfer */
++    if (((ch->regs[DBDMA_CONTROL] >> 16) & RUN) &&
++        !(ch->regs[DBDMA_CONTROL] & RUN)) {
++        s->rx_io.len = 0;
++        timer_del(s->rx_timer);
++        ch->io.processing = false;
++    }
+ #if 1
+     cmd = le16_to_cpu(current->command) & COMMAND_MASK;
+     if (cmd == INPUT_MORE || cmd == INPUT_LAST) {
+@@ -334,6 +367,8 @@ static void screamer_reset(DeviceState *dev)
+     s->ppos = 0;
+ 
+     timer_del(s->tx_timer);
++    timer_del(s->rx_timer);
++    memset(&s->rx_io, 0, sizeof(DBDMA_io));
+     s->tx_last_ns = qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL);
+     s->tx_credit = 0;
+     s->wpos = 0;
+@@ -355,6 +390,7 @@ static void screamer_realizefn(DeviceState *dev, Error **errp)
+     s->samples = SCREAMER_BUFFER_SIZE >> s->shift;
+     s->mixbuf = g_malloc0(SCREAMER_BUFFER_SIZE);
+     s->tx_timer = timer_new_ns(QEMU_CLOCK_VIRTUAL, screamer_tx_timer_cb, s);
++    s->rx_timer = timer_new_ns(QEMU_CLOCK_VIRTUAL, screamer_rx_timer_cb, s);
+ 
+     s->rate = 44100;
+     screamer_update_settings(s);
+diff --git a/hw/misc/macio/mac_dbdma.c b/hw/misc/macio/mac_dbdma.c
+index 49a8fd5c6d..a5773162d7 100644
+--- a/hw/misc/macio/mac_dbdma.c
++++ b/hw/misc/macio/mac_dbdma.c
+@@ -384,6 +384,12 @@ static void load_word(DBDMA_channel *ch, int key, uint32_t addr,
+     dma_memory_read(&address_space_memory, addr, &current->cmd_dep, len,
+                     MEMTXATTRS_UNSPECIFIED);
+ 
++    /* The loaded data goes to the cmdDep field of the command in memory */
++    dma_memory_write(&address_space_memory,
++                     ch->regs[DBDMA_CMDPTR_LO] + offsetof(dbdma_cmd, cmd_dep),
++                     &current->cmd_dep, sizeof(current->cmd_dep),
++                     MEMTXATTRS_UNSPECIFIED);
++
+     if (conditional_wait(ch))
+         goto wait;
+ 
+@@ -612,6 +618,12 @@ static void dbdma_control_write(DBDMA_channel *ch)
+      * logic to ensure all cases are covered.
+      */
+ 
++    /* The device status bits s0-s7 can be set and cleared by SW (or by
++     * the device); they are tested by the interrupt, branch and wait
++     * conditions of the channel program.
++     */
++    status = (status & ~(mask & DEVSTAT)) | (value & mask & DEVSTAT);
++
+     /* Setting RUN will tentatively activate the channel
+      */
+     if ((mask & RUN) && (value & RUN)) {
+diff --git a/include/hw/audio/screamer.h b/include/hw/audio/screamer.h
+index f709726b0a..20ae566b66 100644
+--- a/include/hw/audio/screamer.h
++++ b/include/hw/audio/screamer.h
+@@ -65,6 +65,9 @@ struct ScreamerState {
+     uint32_t rate;
+     DBDMA_io io;
+ 
++    QEMUTimer *rx_timer;    /* completes RX DMA at the sample rate */
++    DBDMA_io rx_io;
++
+     uint32_t regs[6];
+     uint32_t codec_ctrl_regs[8];
+ };
+-- 
+2.54.0 (Apple Git-157)
+
+From 9c6999578b9048c8ae8d35332f3880a5eff6e923 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Tue, 10 Nov 2026 10:12:46 -0800
+Subject: [PATCH] screamer, mac_dbdma: fix stuck and replayed DMA with paced
+ transfers
+
+TX and RX transfers now stay in flight on a timer, which exposed a few
+paths that assumed they complete at once:
+
+- A zero-length INPUT descriptor never completed: the RX timer returned
+  early on len == 0, so the channel stayed "processing" forever.
+- mac_dbdma_reset left io.processing set while screamer_reset deleted the
+  timers that would clear it, so sound stayed dead after a guest reboot
+  that interrupted playback or recording.
+- tx_flush cleared io.processing on PAUSE or FLUSH too, so DBDMA restarted
+  the descriptor still being paced and its frames were sent twice. Only
+  clear it when the guest stops the channel, as rx_flush does.
+- If the virtual clock went backwards (loadvm), TX got no credit until
+  it caught up again.
+
+Also factor the duplicated res_count/xfer_status write-back and the
+"guest cleared RUN" test into helpers, and fix a block comment style.
+
+Assisted-by: Claude:claude-opus-5-5
+---
+ hw/audio/screamer.c       | 84 +++++++++++++++++++--------------------
+ hw/misc/macio/mac_dbdma.c |  5 ++-
+ 2 files changed, 46 insertions(+), 43 deletions(-)
+
+diff --git a/hw/audio/screamer.c b/hw/audio/screamer.c
+index d9e5604ee1..f3bde9332b 100644
+--- a/hw/audio/screamer.c
++++ b/hw/audio/screamer.c
+@@ -81,6 +81,8 @@ static void screamer_tx_credit_update(ScreamerState *s)
+     uint64_t frames;
+ 
+     if (now <= s->tx_last_ns) {
++        /* The virtual clock went back (loadvm): restart the accounting */
++        s->tx_last_ns = now;
+         return;
+     }
+     frames = muldiv64(now - s->tx_last_ns, s->rate, NANOSECONDS_PER_SECOND);
+@@ -117,6 +119,30 @@ static void screamer_ring_write(ScreamerState *s, hwaddr addr, uint32_t frames)
+     }
+ }
+ 
++/* Write back res_count and xfer_status of the current command */
++static void screamer_dma_update_status(DBDMA_channel *ch, uint32_t len)
++{
++    dbdma_cmd *current = &ch->current;
++
++    current->xfer_status = cpu_to_le16(ch->regs[DBDMA_STATUS]);
++    current->res_count = cpu_to_le16(len);
++
++    dma_memory_write(&address_space_memory,
++                     ch->regs[DBDMA_CMDPTR_LO] +
++                     offsetof(dbdma_cmd, res_count),
++                     &current->res_count,
++                     sizeof(current->res_count) +
++                     sizeof(current->xfer_status),
++                     MEMTXATTRS_UNSPECIFIED);
++}
++
++/* Is the flush caused by the guest clearing RUN? */
++static bool screamer_dma_stopping(DBDMA_channel *ch)
++{
++    return ((ch->regs[DBDMA_CONTROL] >> 16) & RUN) &&
++           !(ch->regs[DBDMA_CONTROL] & RUN);
++}
++
+ static void pmac_screamer_tx_transfer(ScreamerState *s)
+ {
+     DBDMA_io *io = &s->io;
+@@ -185,42 +211,26 @@ static void pmac_screamer_tx_flush(DBDMA_io *io)
+     cmd = le16_to_cpu(current->command) & COMMAND_MASK;
+     if (cmd == OUTPUT_MORE || cmd == OUTPUT_LAST ||
+         cmd == INPUT_MORE || cmd == INPUT_LAST) {
+-        current->xfer_status = cpu_to_le16(ch->regs[DBDMA_STATUS]);
+-        current->res_count = cpu_to_le16(io->len);
+-
+-        dma_memory_write(&address_space_memory,
+-                         ch->regs[DBDMA_CMDPTR_LO] +
+-                         offsetof(dbdma_cmd, res_count),
+-                         &current->res_count,
+-                         sizeof(current->res_count) +
+-                         sizeof(current->xfer_status),
+-                         MEMTXATTRS_UNSPECIFIED);
++        screamer_dma_update_status(ch, io->len);
+     }
+ #endif
+ 
+-    ch->io.processing = false;
+-
+-    /* The guest is stopping the channel: abandon any deferred transfer */
+-    if (((ch->regs[DBDMA_CONTROL] >> 16) & RUN) &&
+-        !(ch->regs[DBDMA_CONTROL] & RUN)) {
++    /*
++     * The guest is stopping the channel: abandon any deferred transfer.
++     * Otherwise (PAUSE, FLUSH) let it finish: it completes through
++     * dma_end, and clearing processing now would make DBDMA restart the
++     * same descriptor and send its frames twice.
++     */
++    if (screamer_dma_stopping(ch)) {
+         s->io.len = 0;
+         timer_del(s->tx_timer);
++        ch->io.processing = false;
+     }
+ 
+     cmd = le16_to_cpu(current->command) & COMMAND_MASK;
+     if (cmd == INPUT_MORE || cmd == INPUT_LAST) {
+-        current->xfer_status = cpu_to_le16(ch->regs[DBDMA_STATUS]);
+-        current->res_count = cpu_to_le16(io->len);
+-
+-            dma_memory_write(&address_space_memory,
+-                         ch->regs[DBDMA_CMDPTR_LO] +
+-                         offsetof(dbdma_cmd, res_count),
+-                         &current->res_count,
+-                         sizeof(current->res_count) +
+-                         sizeof(current->xfer_status),
+-                         MEMTXATTRS_UNSPECIFIED);
++        screamer_dma_update_status(ch, io->len);
+     }
+-
+ }
+ 
+ /*
+@@ -233,10 +243,10 @@ static void screamer_rx_timer_cb(void *opaque)
+     ScreamerState *s = opaque;
+     DBDMA_io *io = &s->rx_io;
+ 
+-    if (!io->len) {
+-        return;
+-    }
+-
++    /*
++     * Only armed for a live transfer (flush and reset delete it); a
++     * zero-length INPUT still has to complete.
++     */
+     if (dma_memory_set(&address_space_memory, io->addr, 0, io->len,
+                        MEMTXATTRS_UNSPECIFIED) != MEMTX_OK) {
+         qemu_log_mask(LOG_GUEST_ERROR,
+@@ -271,8 +281,7 @@ static void pmac_screamer_rx_flush(DBDMA_io *io)
+     SCREAMER_DPRINTF("DMA RX flush!\n");
+ 
+     /* The guest is stopping the channel: abandon the pending transfer */
+-    if (((ch->regs[DBDMA_CONTROL] >> 16) & RUN) &&
+-        !(ch->regs[DBDMA_CONTROL] & RUN)) {
++    if (screamer_dma_stopping(ch)) {
+         s->rx_io.len = 0;
+         timer_del(s->rx_timer);
+         ch->io.processing = false;
+@@ -280,16 +289,7 @@ static void pmac_screamer_rx_flush(DBDMA_io *io)
+ #if 1
+     cmd = le16_to_cpu(current->command) & COMMAND_MASK;
+     if (cmd == INPUT_MORE || cmd == INPUT_LAST) {
+-        current->xfer_status = cpu_to_le16(ch->regs[DBDMA_STATUS]);
+-        current->res_count = cpu_to_le16(io->len);
+-
+-        dma_memory_write(&address_space_memory,
+-                         ch->regs[DBDMA_CMDPTR_LO] +
+-                         offsetof(dbdma_cmd, res_count),
+-                         &current->res_count,
+-                         sizeof(current->res_count) +
+-                         sizeof(current->xfer_status),
+-                         MEMTXATTRS_UNSPECIFIED);
++        screamer_dma_update_status(ch, io->len);
+     }
+ #endif
+ }
+diff --git a/hw/misc/macio/mac_dbdma.c b/hw/misc/macio/mac_dbdma.c
+index a5773162d7..3231adb88e 100644
+--- a/hw/misc/macio/mac_dbdma.c
++++ b/hw/misc/macio/mac_dbdma.c
+@@ -618,7 +618,8 @@ static void dbdma_control_write(DBDMA_channel *ch)
+      * logic to ensure all cases are covered.
+      */
+ 
+-    /* The device status bits s0-s7 can be set and cleared by SW (or by
++    /*
++     * The device status bits s0-s7 can be set and cleared by SW (or by
+      * the device); they are tested by the interrupt, branch and wait
+      * conditions of the channel program.
+      */
+@@ -885,6 +886,8 @@ static void mac_dbdma_reset(DeviceState *d)
+ 
+     for (i = 0; i < DBDMA_CHANNELS; i++) {
+         memset(s->channels[i].regs, 0, DBDMA_SIZE);
++        /* No command is in progress after a reset */
++        s->channels[i].io.processing = false;
+     }
+ }
+ 
+-- 
+2.54.0 (Apple Git-157)
+
+From 7fe362b13268ff239e09994b96e077d0cb743038 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Tue, 10 Nov 2026 10:13:43 -0800
+Subject: [PATCH] screamer: let a late TX tick catch up
+
+The TX credit was capped at the 128-frame FIFO on every update, so a
+pacing tick more than ~3 ms late threw away frames that were already
+due. The guest's DMA then ran slower than the sample rate, the host
+ring drained, and FRAME_CNT fell behind real time.
+
+Within a transfer, let a late tick catch up to twice the FIFO. Idle time
+before a descriptor starts still only fills the FIFO, and stopping the
+channel drops any surplus, so a new ring still cannot complete at once.
+
+Assisted-by: Claude:claude-opus-5-5
+---
+ hw/audio/screamer.c | 22 ++++++++++++++++------
+ 1 file changed, 16 insertions(+), 6 deletions(-)
+
+diff --git a/hw/audio/screamer.c b/hw/audio/screamer.c
+index f3bde9332b..880fb36e17 100644
+--- a/hw/audio/screamer.c
++++ b/hw/audio/screamer.c
+@@ -74,8 +74,14 @@ static const char *s_spk = "screamer";
+  */
+ #define SCREAMER_FIFO_FRAMES 128
+ #define SCREAMER_TX_TICK_NS  (1 * SCALE_MS)
++/*
++ * Within a transfer, a late tick may catch up on frames that are already
++ * due, up to this bound so one long host stall cannot drain a guest ring.
++ */
++#define SCREAMER_TX_MAX_CREDIT (2 * SCREAMER_FIFO_FRAMES)
+ 
+-static void screamer_tx_credit_update(ScreamerState *s)
++/* Accrue TX credit for the virtual time elapsed, up to @limit frames */
++static void screamer_tx_credit_update(ScreamerState *s, uint32_t limit)
+ {
+     int64_t now = qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL);
+     uint64_t frames;
+@@ -87,7 +93,9 @@ static void screamer_tx_credit_update(ScreamerState *s)
+     }
+     frames = muldiv64(now - s->tx_last_ns, s->rate, NANOSECONDS_PER_SECOND);
+     s->tx_last_ns += muldiv64(frames, NANOSECONDS_PER_SECOND, s->rate);
+-    s->tx_credit = MIN(s->tx_credit + frames, SCREAMER_FIFO_FRAMES);
++    if (s->tx_credit < limit) {
++        s->tx_credit = MIN(s->tx_credit + frames, limit);
++    }
+ }
+ 
+ /* Copy guest frames into the ring; drop the oldest if the host lags */
+@@ -143,12 +151,12 @@ static bool screamer_dma_stopping(DBDMA_channel *ch)
+            !(ch->regs[DBDMA_CONTROL] & RUN);
+ }
+ 
+-static void pmac_screamer_tx_transfer(ScreamerState *s)
++static void pmac_screamer_tx_transfer(ScreamerState *s, uint32_t limit)
+ {
+     DBDMA_io *io = &s->io;
+     uint32_t frames;
+ 
+-    screamer_tx_credit_update(s);
++    screamer_tx_credit_update(s, limit);
+     frames = MIN(io->len >> s->shift, s->tx_credit);
+ 
+     if (frames) {
+@@ -184,7 +192,7 @@ static void screamer_tx_timer_cb(void *opaque)
+ 
+     if (s->io.len) {
+         SCREAMER_DPRINTF("Continue deferred transfer\n");
+-        pmac_screamer_tx_transfer(s);
++        pmac_screamer_tx_transfer(s, SCREAMER_TX_MAX_CREDIT);
+     }
+ }
+ 
+@@ -196,7 +204,8 @@ static void pmac_screamer_tx(DBDMA_io *io)
+                      " len: %x\n", io->addr, io->len);
+ 
+     memcpy(&s->io, io, sizeof(DBDMA_io));
+-    pmac_screamer_tx_transfer(s);
++    /* Time the channel spent idle only fills the FIFO */
++    pmac_screamer_tx_transfer(s, SCREAMER_FIFO_FRAMES);
+ }
+ 
+ static void pmac_screamer_tx_flush(DBDMA_io *io)
+@@ -223,6 +232,7 @@ static void pmac_screamer_tx_flush(DBDMA_io *io)
+      */
+     if (screamer_dma_stopping(ch)) {
+         s->io.len = 0;
++        s->tx_credit = MIN(s->tx_credit, SCREAMER_FIFO_FRAMES);
+         timer_del(s->tx_timer);
+         ch->io.processing = false;
+     }
+-- 
+2.54.0 (Apple Git-157)
+
