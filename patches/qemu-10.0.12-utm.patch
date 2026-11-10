@@ -4876,3 +4876,212 @@ index 969f275f32..b057f9f891 100644
 2.54.0 (Apple Git-157)
 
 
+From a9cfe58341b5f9c1d4f8a9bc29b38ea2cb681358 Mon Sep 17 00:00:00 2001
+From: Kaede <kaedetai@gmail.com>
+Date: Mon, 19 Oct 2026 16:57:19 +0800
+Subject: [PATCH] hvf: reset the in-kernel GIC CPU interfaces on a system reset
+
+hv_gic_reset() resets the distributor and the redistributors only (its
+documentation says as much); the CPU interfaces keep what the guest left
+in them.  Nothing else resets them either, so after a reboot every vCPU
+starts with the previous boot's ICC_PMR_EL1 and ICC_IGRPEN1_EL1, and a
+vCPU that was handling an interrupt when the reset came still has that
+priority active in ICC_AP1R0_EL1.
+
+Windows reboots exactly that way: the CPU that calls PSCI SYSTEM_RESET
+has first parked the others in an IPI handler.  The next boot then hangs
+once one of them is a CPU it needs to interrupt.  In one such hang every
+CPU but vCPU 3 sat in the SGI 0 handler waiting for it, and vCPU 3 had
+SGI 0 pending but could not take it, because ICC_AP1R0_EL1 still had the
+bit (running priority 0x10) from before the reset.  With the firmware
+on the stuck CPU the boot stops at "Start boot option" instead.
+
+Record each CPU interface as Hypervisor.framework created it, when the
+vCPU is set up, and write it back on the vCPU thread in the GIC's reset
+hold, after hv_gic_reset().  A migration load still runs after the
+reset, so it overrides these values.
+
+Assisted-by: Claude:claude-opus-5-5
+---
+ hw/intc/arm_gicv3_hvf.c  |  1 +
+ include/system/hvf_int.h |  3 +++
+ target/arm/hvf/hvf.c     | 58 ++++++++++++++++++++++++++++++++++++++++
+ target/arm/hvf_arm.h     |  5 ++++
+ 4 files changed, 67 insertions(+)
+
+diff --git a/hw/intc/arm_gicv3_hvf.c b/hw/intc/arm_gicv3_hvf.c
+index d5325e7f77..8400ec950f 100644
+--- a/hw/intc/arm_gicv3_hvf.c
++++ b/hw/intc/arm_gicv3_hvf.c
+@@ -113,6 +113,7 @@ static void hvf_arm_gicv3_reset_hold(Object *obj, ResetType type)
+         hgc->parent_phases.hold(obj, type);
+     }
+     hvf_arm_gic_reset();
++    hvf_arm_gic_reset_cpu_state(s);
+ }
+ 
+ static void hvf_arm_gicv3_class_init(ObjectClass *klass, void *data)
+diff --git a/include/system/hvf_int.h b/include/system/hvf_int.h
+index 5dbc428b97..8e99772d66 100644
+--- a/include/system/hvf_int.h
++++ b/include/system/hvf_int.h
+@@ -88,6 +88,9 @@ struct AccelCPUState {
+     /* PPIs to pend/unpend in this vCPU's in-kernel redistributor (owning thread only) */
+     uint32_t gic_ppi_set;
+     uint32_t gic_ppi_clear;
++    /* the in-kernel CPU interface as created, put back on a system reset */
++    bool gic_icc_reset_saved;
++    uint64_t gic_icc_reset[16];
+ };
+ 
+ void assert_hvf_ok_impl(hv_return_t ret, const char *file, unsigned int line,
+diff --git a/target/arm/hvf/hvf.c b/target/arm/hvf/hvf.c
+index 5c4a505667..a02c649567 100644
+--- a/target/arm/hvf/hvf.c
++++ b/target/arm/hvf/hvf.c
+@@ -1498,6 +1498,54 @@ void hvf_arm_gic_save_cpu_state(GICv3State *s)
+     }
+ }
+ 
++/*
++ * hv_gic_reset() resets the distributor and the redistributors only; the
++ * CPU interfaces keep whatever the guest left in them.  A vCPU that was
++ * reset while it was handling an interrupt (for instance a CPU parked in
++ * an IPI handler while another one requests the system reset) comes back
++ * with that priority still active in ICC_AP1R0_EL1, and from then on
++ * takes no interrupt of equal or lower priority.  So record each CPU
++ * interface as Hypervisor.framework created it, when the vCPU is set up,
++ * and put that back on every reset.
++ */
++static void hvf_arm_gic_save_icc_reset(CPUState *cpu)
++{
++    GICv3CPUState tmp;
++    hv_gic_icc_reg_t reg;
++
++    if (__builtin_available(macOS 15.0, *)) {
++        for (unsigned i = 0; hvf_arm_gic_icc_field(&tmp, i, &reg); i++) {
++            assert(i < ARRAY_SIZE(cpu->accel->gic_icc_reset));
++            assert_hvf_ok(hv_gic_get_icc_reg(cpu->accel->fd, reg,
++                                             &cpu->accel->gic_icc_reset[i]));
++        }
++        cpu->accel->gic_icc_reset_saved = true;
++    }
++}
++
++static void hvf_arm_gic_reset_icc(CPUState *cpu, run_on_cpu_data arg)
++{
++    GICv3CPUState tmp;
++    hv_gic_icc_reg_t reg;
++
++    if (!cpu->accel->gic_icc_reset_saved) {
++        return;
++    }
++    if (__builtin_available(macOS 15.0, *)) {
++        for (unsigned i = 0; hvf_arm_gic_icc_field(&tmp, i, &reg); i++) {
++            assert_hvf_ok(hv_gic_set_icc_reg(cpu->accel->fd, reg,
++                                             cpu->accel->gic_icc_reset[i]));
++        }
++    }
++}
++
++void hvf_arm_gic_reset_cpu_state(GICv3State *s)
++{
++    for (unsigned i = 0; i < s->num_cpu; i++) {
++        run_on_cpu(s->cpu[i].cpu, hvf_arm_gic_reset_icc, RUN_ON_CPU_NULL);
++    }
++}
++
+ int hvf_arm_gic_save_state(GICv3State *s, Error **errp)
+ {
+     if (__builtin_available(macOS 15.0, *)) {
+@@ -1596,6 +1644,10 @@ void hvf_arm_gic_save_cpu_state(GICv3State *s)
+ {
+ }
+ 
++void hvf_arm_gic_reset_cpu_state(GICv3State *s)
++{
++}
++
+ int hvf_arm_gic_save_state(GICv3State *s, Error **errp)
+ {
+     error_setg(errp, "the HVF in-kernel GIC is only available on macOS");
+@@ -1702,6 +1754,12 @@ int hvf_arch_init_vcpu(CPUState *cpu)
+         assert_hvf_ok(ret);
+     }
+ 
++#if TARGET_OS_OSX
++    if (hvf_irqchip_in_kernel()) {
++        hvf_arm_gic_save_icc_reset(cpu);
++    }
++#endif
++
+     return 0;
+ }
+ 
+diff --git a/target/arm/hvf_arm.h b/target/arm/hvf_arm.h
+index efd80e399b..66b6d113a0 100644
+--- a/target/arm/hvf_arm.h
++++ b/target/arm/hvf_arm.h
+@@ -48,6 +48,7 @@ void hvf_arm_gic_reset(void);
+  * All three require every vCPU to be stopped.
+  */
+ void hvf_arm_gic_save_cpu_state(GICv3State *s);
++void hvf_arm_gic_reset_cpu_state(GICv3State *s);
+ int hvf_arm_gic_save_state(GICv3State *s, Error **errp);
+ int hvf_arm_gic_load_state(GICv3State *s, Error **errp);
+ 
+@@ -77,6 +78,10 @@ static inline void hvf_arm_gic_reset(void)
+ {
+ }
+ 
++static inline void hvf_arm_gic_reset_cpu_state(GICv3State *s)
++{
++}
++
+ static inline void hvf_arm_gic_save_cpu_state(GICv3State *s)
+ {
+ }
+-- 
+2.54.0 (Apple Git-157)
+
+From 071692575488c0d33e2c37934a02b66e92571670 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Tue, 10 Nov 2026 09:30:50 -0800
+Subject: [PATCH] hvf: snapshot the GIC CPU interface only when the in-kernel
+ GIC exists
+
+hvf_arch_init_vcpu() records each vCPU's ICC_* registers for the system
+reset whenever hvf_irqchip_in_kernel() is true. That only means the
+in-kernel GIC is allowed and the host supports it; only the virt board
+creates one. Any other board run with HVF on macOS 15+ (xlnx-zcu102, for
+one) now aborts at vCPU creation:
+
+  hv_gic_get_icc_reg(...) = HV_NO_DEVICE
+
+Take the snapshot only when hvf_arm_gic_created(), the check
+hvf_arm_gic_reset() makes. Without a snapshot the reset already does
+nothing. xlnx-zcu102 with -accel hvf runs again, and a virt guest with
+4 vCPUs still comes back from repeated reboots.
+
+Assisted-by: Claude:claude-opus-5-5
+---
+ target/arm/hvf/hvf.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/target/arm/hvf/hvf.c b/target/arm/hvf/hvf.c
+index a02c649567..8fa3f9c7c2 100644
+--- a/target/arm/hvf/hvf.c
++++ b/target/arm/hvf/hvf.c
+@@ -1755,7 +1755,8 @@ int hvf_arch_init_vcpu(CPUState *cpu)
+     }
+ 
+ #if TARGET_OS_OSX
+-    if (hvf_irqchip_in_kernel()) {
++    /* only a board that created the in-kernel GIC gives the vCPU one */
++    if (hvf_arm_gic_created()) {
+         hvf_arm_gic_save_icc_reset(cpu);
+     }
+ #endif
+-- 
+2.54.0 (Apple Git-157)
+
