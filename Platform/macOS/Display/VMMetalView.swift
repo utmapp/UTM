@@ -128,16 +128,19 @@ class VMMetalView: MTKView {
     
     override func mouseDown(with event: NSEvent) {
         logger.trace("mouse down: \(event.buttonNumber)")
+        sendAbsolutePosition(for: event)
         inputDelegate?.mouseDown(button: .left, mask: NSEvent.pressedMouseButtons.inputButtons())
     }
     
     override func rightMouseDown(with event: NSEvent) {
         logger.trace("right mouse down: \(event.buttonNumber)")
+        sendAbsolutePosition(for: event)
         inputDelegate?.mouseDown(button: .right, mask: NSEvent.pressedMouseButtons.inputButtons())
     }
     
     override func otherMouseDown(with event: NSEvent) {
         logger.trace("other mouse down: \(event.buttonNumber)")
+        sendAbsolutePosition(for: event)
         switch event.buttonNumber {
         case 2: inputDelegate?.mouseDown(button: .middle, mask: NSEvent.pressedMouseButtons.inputButtons())
         case 3: inputDelegate?.mouseDown(button: .side, mask: NSEvent.pressedMouseButtons.inputButtons())
@@ -316,12 +319,32 @@ class VMMetalView: MTKView {
         guard isHandleInitialClick && !isMouseCaptured else {
             return false
         }
-        if let location = event?.locationInWindow {
-            let converted = convert(location, from: nil)
-            inputDelegate?.mouseMove(absolutePoint: converted,
-                                     buttonMask: NSEvent.pressedMouseButtons.inputButtons())
+        if let event = event {
+            sendAbsolutePosition(for: event)
         }
         return true
+    }
+
+    /// Moves the guest cursor to where the event happened.
+    ///
+    /// A button press is not always preceded by a move to its location (a click posted by another process, a
+    /// tap on a touch display), so the guest would otherwise click wherever its cursor was left.
+    /// The button that a mouse down event is about to press is not reported as held yet. The guest would
+    /// otherwise see it pressed before the move, and released again by the next move without it.
+    /// - Parameter event: Mouse event to take the location from
+    private func sendAbsolutePosition(for event: NSEvent) {
+        guard !isMouseCaptured else {
+            return
+        }
+        var buttons = NSEvent.pressedMouseButtons.inputButtons()
+        switch event.type {
+        case .leftMouseDown, .rightMouseDown, .otherMouseDown:
+            buttons.subtract((1 << event.buttonNumber).inputButtons())
+        default:
+            break
+        }
+        let converted = convert(event.locationInWindow, from: nil)
+        inputDelegate?.mouseMove(absolutePoint: converted, buttonMask: buttons)
     }
 }
 
