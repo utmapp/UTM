@@ -239,6 +239,49 @@ final class SettingsTabViewController: NSTabViewController {
     }
 }
 
+private enum SettingsLayout {
+    static let formWidth: CGFloat = 576
+}
+
+private struct SettingsPane<Content: View>: View {
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            content
+        }
+        .toggleStyle(.checkbox)
+        .frame(width: SettingsLayout.formWidth)
+        .padding(.vertical, 12)
+        .frame(maxWidth: .infinity)
+    }
+}
+
+private struct SettingsRow<Content: View>: View {
+    private let title: LocalizedStringKey
+    private let content: Content
+    private let alignment: VerticalAlignment
+
+    init(_ title: LocalizedStringKey, alignment: VerticalAlignment = .firstTextBaseline, @ViewBuilder content: () -> Content) {
+        self.title = title
+        self.alignment = alignment
+        self.content = content()
+    }
+
+    var body: some View {
+        HStack(alignment: alignment, spacing: 12) {
+            (Text(title) + Text(verbatim: ":"))
+                .multilineTextAlignment(.trailing)
+                .frame(width: SettingsLayout.formWidth / 4, alignment: .trailing)
+            VStack(alignment: .leading, spacing: 8) {
+                content
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .fixedSize(horizontal: false, vertical: true)
+    }
+}
+
 struct ApplicationSettingsView: View {
     @AppStorage("KeepRunningAfterLastWindowClosed") var isKeepRunningAfterLastWindowClosed = false
     @AppStorage("HideDockIcon") var isDockIconHidden = false
