@@ -649,6 +649,10 @@ extension UTMQemuVirtualMachine {
                 try await _saveSnapshot(name: suspendName)
                 let staleNames = try UTMSnapshotManifest.replaceSuspendState(in: pathUrl, with: suspendName)
                 await registryEntry.setIsSuspended(true)
+                // iOS can suspend the app as soon as this returns, before the registry commits by itself
+                await MainActor.run {
+                    UTMRegistry.shared.sync()
+                }
                 try saveScreenshot()
                 // a state that cannot go now stays listed and goes the next time
                 try? await deleteStaleSnapshots(staleNames)

@@ -302,6 +302,9 @@ final class VMLifecycleTests: XCTestCase {
         XCTAssertTrue(prompt, "no shell prompt before the save")
         try await vm.saveSnapshot()
         XCTAssertTrue(vm.registryEntry.isSuspended, "the VM is not marked suspended after a save")
+        // iOS can suspend the app as soon as the save returns, so the mark must be stored by then
+        let stored = UserDefaults.standard.dictionary(forKey: "Registry")?[vm.id.uuidString] as? [String: Any]
+        XCTAssertEqual(stored?["Suspended"] as? Bool, true, "the suspended mark is not in the stored registry when the save returns")
         try await vm.stop(usingMethod: .force)
         var stopped = await waitForState(vm, .stopped, timeout: Self.stopTimeout)
         XCTAssertTrue(stopped, "the VM is \(vm.state) after a forced stop")
