@@ -4876,3 +4876,2362 @@ index 969f275f32..b057f9f891 100644
 2.54.0 (Apple Git-157)
 
 
+From a9cfe58341b5f9c1d4f8a9bc29b38ea2cb681358 Mon Sep 17 00:00:00 2001
+From: Kaede <kaedetai@gmail.com>
+Date: Mon, 19 Oct 2026 16:57:19 +0800
+Subject: [PATCH] hvf: reset the in-kernel GIC CPU interfaces on a system reset
+
+hv_gic_reset() resets the distributor and the redistributors only (its
+documentation says as much); the CPU interfaces keep what the guest left
+in them.  Nothing else resets them either, so after a reboot every vCPU
+starts with the previous boot's ICC_PMR_EL1 and ICC_IGRPEN1_EL1, and a
+vCPU that was handling an interrupt when the reset came still has that
+priority active in ICC_AP1R0_EL1.
+
+Windows reboots exactly that way: the CPU that calls PSCI SYSTEM_RESET
+has first parked the others in an IPI handler.  The next boot then hangs
+once one of them is a CPU it needs to interrupt.  In one such hang every
+CPU but vCPU 3 sat in the SGI 0 handler waiting for it, and vCPU 3 had
+SGI 0 pending but could not take it, because ICC_AP1R0_EL1 still had the
+bit (running priority 0x10) from before the reset.  With the firmware
+on the stuck CPU the boot stops at "Start boot option" instead.
+
+Record each CPU interface as Hypervisor.framework created it, when the
+vCPU is set up, and write it back on the vCPU thread in the GIC's reset
+hold, after hv_gic_reset().  A migration load still runs after the
+reset, so it overrides these values.
+
+Assisted-by: Claude:claude-opus-5-5
+---
+ hw/intc/arm_gicv3_hvf.c  |  1 +
+ include/system/hvf_int.h |  3 +++
+ target/arm/hvf/hvf.c     | 58 ++++++++++++++++++++++++++++++++++++++++
+ target/arm/hvf_arm.h     |  5 ++++
+ 4 files changed, 67 insertions(+)
+
+diff --git a/hw/intc/arm_gicv3_hvf.c b/hw/intc/arm_gicv3_hvf.c
+index d5325e7f77..8400ec950f 100644
+--- a/hw/intc/arm_gicv3_hvf.c
++++ b/hw/intc/arm_gicv3_hvf.c
+@@ -113,6 +113,7 @@ static void hvf_arm_gicv3_reset_hold(Object *obj, ResetType type)
+         hgc->parent_phases.hold(obj, type);
+     }
+     hvf_arm_gic_reset();
++    hvf_arm_gic_reset_cpu_state(s);
+ }
+ 
+ static void hvf_arm_gicv3_class_init(ObjectClass *klass, void *data)
+diff --git a/include/system/hvf_int.h b/include/system/hvf_int.h
+index 5dbc428b97..8e99772d66 100644
+--- a/include/system/hvf_int.h
++++ b/include/system/hvf_int.h
+@@ -88,6 +88,9 @@ struct AccelCPUState {
+     /* PPIs to pend/unpend in this vCPU's in-kernel redistributor (owning thread only) */
+     uint32_t gic_ppi_set;
+     uint32_t gic_ppi_clear;
++    /* the in-kernel CPU interface as created, put back on a system reset */
++    bool gic_icc_reset_saved;
++    uint64_t gic_icc_reset[16];
+ };
+ 
+ void assert_hvf_ok_impl(hv_return_t ret, const char *file, unsigned int line,
+diff --git a/target/arm/hvf/hvf.c b/target/arm/hvf/hvf.c
+index 5c4a505667..a02c649567 100644
+--- a/target/arm/hvf/hvf.c
++++ b/target/arm/hvf/hvf.c
+@@ -1498,6 +1498,54 @@ void hvf_arm_gic_save_cpu_state(GICv3State *s)
+     }
+ }
+ 
++/*
++ * hv_gic_reset() resets the distributor and the redistributors only; the
++ * CPU interfaces keep whatever the guest left in them.  A vCPU that was
++ * reset while it was handling an interrupt (for instance a CPU parked in
++ * an IPI handler while another one requests the system reset) comes back
++ * with that priority still active in ICC_AP1R0_EL1, and from then on
++ * takes no interrupt of equal or lower priority.  So record each CPU
++ * interface as Hypervisor.framework created it, when the vCPU is set up,
++ * and put that back on every reset.
++ */
++static void hvf_arm_gic_save_icc_reset(CPUState *cpu)
++{
++    GICv3CPUState tmp;
++    hv_gic_icc_reg_t reg;
++
++    if (__builtin_available(macOS 15.0, *)) {
++        for (unsigned i = 0; hvf_arm_gic_icc_field(&tmp, i, &reg); i++) {
++            assert(i < ARRAY_SIZE(cpu->accel->gic_icc_reset));
++            assert_hvf_ok(hv_gic_get_icc_reg(cpu->accel->fd, reg,
++                                             &cpu->accel->gic_icc_reset[i]));
++        }
++        cpu->accel->gic_icc_reset_saved = true;
++    }
++}
++
++static void hvf_arm_gic_reset_icc(CPUState *cpu, run_on_cpu_data arg)
++{
++    GICv3CPUState tmp;
++    hv_gic_icc_reg_t reg;
++
++    if (!cpu->accel->gic_icc_reset_saved) {
++        return;
++    }
++    if (__builtin_available(macOS 15.0, *)) {
++        for (unsigned i = 0; hvf_arm_gic_icc_field(&tmp, i, &reg); i++) {
++            assert_hvf_ok(hv_gic_set_icc_reg(cpu->accel->fd, reg,
++                                             cpu->accel->gic_icc_reset[i]));
++        }
++    }
++}
++
++void hvf_arm_gic_reset_cpu_state(GICv3State *s)
++{
++    for (unsigned i = 0; i < s->num_cpu; i++) {
++        run_on_cpu(s->cpu[i].cpu, hvf_arm_gic_reset_icc, RUN_ON_CPU_NULL);
++    }
++}
++
+ int hvf_arm_gic_save_state(GICv3State *s, Error **errp)
+ {
+     if (__builtin_available(macOS 15.0, *)) {
+@@ -1596,6 +1644,10 @@ void hvf_arm_gic_save_cpu_state(GICv3State *s)
+ {
+ }
+ 
++void hvf_arm_gic_reset_cpu_state(GICv3State *s)
++{
++}
++
+ int hvf_arm_gic_save_state(GICv3State *s, Error **errp)
+ {
+     error_setg(errp, "the HVF in-kernel GIC is only available on macOS");
+@@ -1702,6 +1754,12 @@ int hvf_arch_init_vcpu(CPUState *cpu)
+         assert_hvf_ok(ret);
+     }
+ 
++#if TARGET_OS_OSX
++    if (hvf_irqchip_in_kernel()) {
++        hvf_arm_gic_save_icc_reset(cpu);
++    }
++#endif
++
+     return 0;
+ }
+ 
+diff --git a/target/arm/hvf_arm.h b/target/arm/hvf_arm.h
+index efd80e399b..66b6d113a0 100644
+--- a/target/arm/hvf_arm.h
++++ b/target/arm/hvf_arm.h
+@@ -48,6 +48,7 @@ void hvf_arm_gic_reset(void);
+  * All three require every vCPU to be stopped.
+  */
+ void hvf_arm_gic_save_cpu_state(GICv3State *s);
++void hvf_arm_gic_reset_cpu_state(GICv3State *s);
+ int hvf_arm_gic_save_state(GICv3State *s, Error **errp);
+ int hvf_arm_gic_load_state(GICv3State *s, Error **errp);
+ 
+@@ -77,6 +78,10 @@ static inline void hvf_arm_gic_reset(void)
+ {
+ }
+ 
++static inline void hvf_arm_gic_reset_cpu_state(GICv3State *s)
++{
++}
++
+ static inline void hvf_arm_gic_save_cpu_state(GICv3State *s)
+ {
+ }
+-- 
+2.54.0 (Apple Git-157)
+
+From 071692575488c0d33e2c37934a02b66e92571670 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Tue, 10 Nov 2026 09:30:50 -0800
+Subject: [PATCH] hvf: snapshot the GIC CPU interface only when the in-kernel
+ GIC exists
+
+hvf_arch_init_vcpu() records each vCPU's ICC_* registers for the system
+reset whenever hvf_irqchip_in_kernel() is true. That only means the
+in-kernel GIC is allowed and the host supports it; only the virt board
+creates one. Any other board run with HVF on macOS 15+ (xlnx-zcu102, for
+one) now aborts at vCPU creation:
+
+  hv_gic_get_icc_reg(...) = HV_NO_DEVICE
+
+Take the snapshot only when hvf_arm_gic_created(), the check
+hvf_arm_gic_reset() makes. Without a snapshot the reset already does
+nothing. xlnx-zcu102 with -accel hvf runs again, and a virt guest with
+4 vCPUs still comes back from repeated reboots.
+
+Assisted-by: Claude:claude-opus-5-5
+---
+ target/arm/hvf/hvf.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/target/arm/hvf/hvf.c b/target/arm/hvf/hvf.c
+index a02c649567..8fa3f9c7c2 100644
+--- a/target/arm/hvf/hvf.c
++++ b/target/arm/hvf/hvf.c
+@@ -1755,7 +1755,8 @@ int hvf_arch_init_vcpu(CPUState *cpu)
+     }
+ 
+ #if TARGET_OS_OSX
+-    if (hvf_irqchip_in_kernel()) {
++    /* only a board that created the in-kernel GIC gives the vCPU one */
++    if (hvf_arm_gic_created()) {
+         hvf_arm_gic_save_icc_reset(cpu);
+     }
+ #endif
+-- 
+2.54.0 (Apple Git-157)
+
+From 9974fed6901e71faa440678f1b2c85dd28d057f3 Mon Sep 17 00:00:00 2001
+From: Kaede <kaedetai@gmail.com>
+Date: Sat, 17 Oct 2026 21:41:06 +0800
+Subject: [PATCH] virtio-gpu: keep the hostmem BAR decoding after a guest reset
+
+A device reset destroys every resource, and with them every blob mapped
+into the hostmem BAR.  The guest driver cannot always revoke the CPU
+mappings it handed out before it resets: the Windows display driver
+resets the device on its way to D3 at shutdown and reboot, while
+user-mode processes (DWM drawing the "Restarting" screen, a game that
+is still exiting) can keep writing through their mappings.  Those
+writes then land in holes of the BAR.
+
+On hvf such a write is usually a store pair or a SIMD store from
+memcpy, which exits without a valid instruction syndrome, so QEMU
+aborts on assert(isv) in hvf_handle_exception() and the VM dies on its
+way down (UTM reports a QEMULauncher crash when a Windows VM is shut
+down after running a D3D12 game).  Under TCG the guest takes an
+external abort instead.  A real GPU's BAR keeps decoding.
+
+When a guest-initiated reset finds blobs mapped, put RAM behind the
+blob subregions (priority -1, so every blob mapped later shadows it)
+and keep it until the next machine reset, after which no guest code
+can hold a stale mapping.  A reset with nothing mapped (firmware,
+driver start) leaves the BAR untouched, so a normal boot pays nothing.
+The RAM is only reserved; host pages are committed only for what the
+stale mappings touch.  Guest-initiated and machine resets are told
+apart the way virtio_gpu_reset() already does, by whether the reset
+runs on a vCPU thread.
+
+Assisted-by: Claude:claude-opus-5-5
+---
+ hw/display/trace-events        |  1 +
+ hw/display/virtio-gpu.c        | 57 ++++++++++++++++++++++++++++++++++
+ include/hw/virtio/virtio-gpu.h |  8 +++++
+ 3 files changed, 66 insertions(+)
+
+diff --git a/hw/display/trace-events b/hw/display/trace-events
+index 52786e6e18..adab4196a3 100644
+--- a/hw/display/trace-events
++++ b/hw/display/trace-events
+@@ -27,6 +27,7 @@ vmware_verify_rect_surface_bound_exceeded(const char *name, const char *componen
+ vmware_update_rect_delayed_flush(void) "display update FIFO full - forcing flush"
+ 
+ # virtio-gpu-base.c
++virtio_gpu_hostmem_scratch(bool mapped) "mapped=%d"
+ virtio_gpu_features(bool virgl) "virgl %d"
+ 
+ # virtio-gpu-3d.c
+diff --git a/hw/display/virtio-gpu.c b/hw/display/virtio-gpu.c
+index edd2c1c040..0bc66e5c23 100644
+--- a/hw/display/virtio-gpu.c
++++ b/hw/display/virtio-gpu.c
+@@ -1633,11 +1633,68 @@ static void virtio_gpu_reset_bh(void *opaque)
+     qemu_cond_signal(&g->reset_cond);
+ }
+ 
++/*
++ * A reset destroys every resource, so every blob mapped into the hostmem
++ * BAR goes away with it.  The guest driver cannot always revoke the CPU
++ * mappings it handed out first: a Windows display driver resets the device
++ * on its way to D3 while user-mode processes (DWM drawing the "Restarting"
++ * screen, or an application that is still exiting) keep writing through
++ * their mappings.  Those accesses then land in holes of the BAR.  A real
++ * GPU's BAR keeps decoding, but here a hole is unassigned memory: with hvf
++ * a store pair or SIMD store there exits without a valid ISS and QEMU
++ * aborts (assert(isv)), and under TCG the guest takes an external abort.
++ *
++ * So a guest-initiated reset that finds blobs mapped puts RAM behind the
++ * blob subregions (priority -1, shadowed by every blob mapped later) and
++ * keeps it there until the next machine reset, when no guest code can be
++ * holding a stale mapping.  Resets with nothing mapped (firmware, driver
++ * start) leave the BAR as it is.  The RAM is only reserved: host pages are
++ * committed only for what stale mappings actually touch.
++ */
++static void virtio_gpu_hostmem_scratch_update(VirtIOGPU *g, bool guest_reset)
++{
++    VirtIOGPUBase *b = VIRTIO_GPU_BASE(g);
++    Error *local_err = NULL;
++
++    if (!virtio_gpu_hostmem_enabled(b->conf) ||
++        guest_reset == b->hostmem_scratch_mapped) {
++        return;
++    }
++
++    if (guest_reset && QTAILQ_EMPTY(&b->hostmem.subregions)) {
++        return;
++    }
++
++    if (!guest_reset) {
++        memory_region_del_subregion(&b->hostmem, &b->hostmem_scratch);
++        b->hostmem_scratch_mapped = false;
++        trace_virtio_gpu_hostmem_scratch(false);
++        return;
++    }
++
++    if (!b->hostmem_scratch_init) {
++        if (!memory_region_init_ram_nomigrate(&b->hostmem_scratch, OBJECT(g),
++                                              "virtio-gpu-hostmem-scratch",
++                                              b->conf.hostmem, &local_err)) {
++            warn_reportf_err(local_err, "virtio-gpu: hostmem scratch: ");
++            return;
++        }
++        b->hostmem_scratch_init = true;
++    }
++    memory_region_add_subregion_overlap(&b->hostmem, 0, &b->hostmem_scratch,
++                                        -1);
++    b->hostmem_scratch_mapped = true;
++    trace_virtio_gpu_hostmem_scratch(true);
++}
++
+ void virtio_gpu_reset(VirtIODevice *vdev)
+ {
+     VirtIOGPU *g = VIRTIO_GPU(vdev);
+     struct virtio_gpu_ctrl_command *cmd;
+ 
++    /* Before the resources (and their blob mappings) are destroyed. */
++    virtio_gpu_hostmem_scratch_update(g, qemu_in_vcpu_thread());
++
+     if (qemu_in_vcpu_thread()) {
+         g->reset_finished = false;
+         qemu_bh_schedule(g->reset_bh);
+diff --git a/include/hw/virtio/virtio-gpu.h b/include/hw/virtio/virtio-gpu.h
+index 2af06db3e4..75dfba47e5 100644
+--- a/include/hw/virtio/virtio-gpu.h
++++ b/include/hw/virtio/virtio-gpu.h
+@@ -178,6 +178,14 @@ struct VirtIOGPUBase {
+     int enable;
+ 
+     MemoryRegion hostmem;
++    /*
++     * Lowest-priority RAM behind the blob subregions, enabled from a
++     * guest-initiated reset until the next machine reset (see
++     * virtio_gpu_hostmem_scratch_update()).
++     */
++    MemoryRegion hostmem_scratch;
++    bool hostmem_scratch_init;
++    bool hostmem_scratch_mapped;
+ 
+     struct virtio_gpu_scanout scanout[VIRTIO_GPU_MAX_SCANOUTS];
+ 
+-- 
+2.54.0 (Apple Git-157)
+
+From 1fe2938b4262c40e82f798f311cb21f35224b05b Mon Sep 17 00:00:00 2001
+From: Kaede <kaedetai@gmail.com>
+Date: Mon, 19 Oct 2026 13:49:41 +0800
+Subject: [PATCH] target/arm/hvf: retry a data abort on RAM that is mapped
+ again
+
+A memory topology update unmaps and then maps again every hvf slot it
+touches.  A vCPU that accesses such a range in between takes a stage-2
+translation fault, and handles it only after the update is done, once
+it gets the BQL; by then the IPA is RAM again.  QEMU still treats the
+exit as MMIO, so an access without a valid instruction syndrome (a
+store pair or SIMD store from memcpy) aborts on assert(isv), and one
+with a syndrome is emulated into RAM.
+
+This is easy to hit with virtio-gpu's hostmem BAR, whose layout changes
+whenever a blob is mapped or unmapped while guest processes keep
+writing to the blobs that stay: shutting down a Windows guest while an
+application is still drawing aborted QEMU this way.
+
+If the IPA is covered by a RAM slot, retry the access instead, as the
+x86 hvf code does for EPT violations.  Writes to read-only and
+dirty-logged slots still go through emulation.
+
+Assisted-by: Claude:claude-opus-5-5
+---
+ target/arm/hvf/hvf.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
+
+diff --git a/target/arm/hvf/hvf.c b/target/arm/hvf/hvf.c
+index f187968787..ff64932d14 100644
+--- a/target/arm/hvf/hvf.c
++++ b/target/arm/hvf/hvf.c
+@@ -2292,6 +2292,25 @@ run_again:
+             break;
+         }
+ 
++        /*
++         * A memory topology update unmaps and maps again every hvf slot it
++         * touches.  A vCPU that faults on such a range in between only
++         * gets here once the update is done and the RAM is mapped again,
++         * so retry the access instead of emulating it: it may well have
++         * no valid syndrome (a store pair or SIMD access from memcpy).
++         * Writes to read-only and dirty-logged slots are still emulated.
++         */
++        {
++            hvf_slot *slot = hvf_find_overlap_slot(
++                hvf_exit->exception.physical_address, 1);
++
++            if (slot && memory_region_is_ram(slot->region) &&
++                !(iswrite && (slot->region->readonly ||
++                              (slot->flags & HVF_SLOT_LOG)))) {
++                break;
++            }
++        }
++
+         assert(isv);
+ 
+         if (iswrite) {
+-- 
+2.54.0 (Apple Git-157)
+
+From fa05ee46edb68bb07870dcf6811f2cec12a29c54 Mon Sep 17 00:00:00 2001
+From: Kaede <kaedetai@gmail.com>
+Date: Mon, 19 Oct 2026 13:49:41 +0800
+Subject: [PATCH] target/arm/hvf: report an external abort for an access with
+ no syndrome
+
+A data abort without a valid instruction syndrome (a store pair, SIMD
+or SVE access) on an address nothing is mapped at cannot be emulated,
+and QEMU aborted on assert(isv), taking the VM down.  A Windows guest
+gets there at shutdown: it turns off the virtio-gpu device's memory
+decoding, so its BARs drop out of the address space, while an
+application is still writing through its mapping of a hostmem blob.
+
+Inject a synchronous external abort into the guest instead, which is
+what QEMU does for the same access under KVM
+(kvm_arm_handle_dabt_nisv()).
+
+Assisted-by: Claude:claude-opus-5-5
+---
+ target/arm/hvf/hvf.c | 18 +++++++++++++++++-
+ 1 file changed, 17 insertions(+), 1 deletion(-)
+
+diff --git a/target/arm/hvf/hvf.c b/target/arm/hvf/hvf.c
+index ff64932d14..288f42abe0 100644
+--- a/target/arm/hvf/hvf.c
++++ b/target/arm/hvf/hvf.c
+@@ -2311,7 +2311,23 @@ run_again:
+             }
+         }
+ 
+-        assert(isv);
++        if (!isv) {
++            /*
++             * Nothing is mapped there to retry on, and without a syndrome
++             * (a store pair, SIMD or SVE access) the access cannot be
++             * emulated.  Report a synchronous external abort to the guest,
++             * as KVM does, instead of aborting QEMU.
++             */
++            int same_el;
++
++            cpu_synchronize_state(cpu);
++            same_el = arm_current_el(env) == 1;
++            env->exception.vaddress = hvf_exit->exception.virtual_address;
++            hvf_raise_exception(cpu, EXCP_DATA_ABORT,
++                                syn_data_abort_no_iss(same_el, 0, 1, 0, s1ptw,
++                                                      iswrite, 0x10));
++            break;
++        }
+ 
+         if (iswrite) {
+             val = hvf_get_reg(cpu, srt);
+-- 
+2.54.0 (Apple Git-157)
+
+From ed597a6131bb344a566b92ecba5804b308ec5e7b Mon Sep 17 00:00:00 2001
+From: Allen Wang <allen@Allens-MacBook-Air.local>
+Date: Tue, 27 Oct 2026 17:25:58 -0700
+Subject: [PATCH] tcg/aarch64-tcti: correct reversed vector comparisons
+
+Signed-off-by: Allen Wang <allen@Allens-MacBook-Air.local>
+---
+ tcg/aarch64-tcti/tcg-target.c.inc | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/tcg/aarch64-tcti/tcg-target.c.inc b/tcg/aarch64-tcti/tcg-target.c.inc
+index 8b78abe4bb..14199eaf38 100644
+--- a/tcg/aarch64-tcti/tcg-target.c.inc
++++ b/tcg/aarch64-tcti/tcg-target.c.inc
+@@ -1739,25 +1739,25 @@ static void tcg_out_vec_op(TCGContext *s, TCGOpcode opc, unsigned vecl, unsigned
+                 tcg_out_ternary_vector_gadget_with_scalar(s, cmgt, is_scalar, vece, w0, w1, w2);
+                 break;
+             case TCG_COND_LE:
+-                tcg_out_ternary_vector_gadget_with_scalar(s, cmgt, is_scalar, vece, w0, w2, w1);
++                tcg_out_ternary_vector_gadget_with_scalar(s, cmge, is_scalar, vece, w0, w2, w1);
+                 break;
+             case TCG_COND_GE:
+                 tcg_out_ternary_vector_gadget_with_scalar(s, cmge, is_scalar, vece, w0, w1, w2);
+                 break;
+             case TCG_COND_LT:
+-                tcg_out_ternary_vector_gadget_with_scalar(s, cmge, is_scalar, vece, w0, w2, w1);
++                tcg_out_ternary_vector_gadget_with_scalar(s, cmgt, is_scalar, vece, w0, w2, w1);
+                 break;
+             case TCG_COND_GTU:
+                 tcg_out_ternary_vector_gadget_with_scalar(s, cmhi, is_scalar, vece, w0, w1, w2);
+                 break;
+             case TCG_COND_LEU:
+-                tcg_out_ternary_vector_gadget_with_scalar(s, cmhi, is_scalar, vece, w0, w2, w1);
++                tcg_out_ternary_vector_gadget_with_scalar(s, cmhs, is_scalar, vece, w0, w2, w1);
+                 break;
+             case TCG_COND_GEU:
+                 tcg_out_ternary_vector_gadget_with_scalar(s, cmhs, is_scalar, vece, w0, w1, w2);
+                 break;
+             case TCG_COND_LTU:
+-                tcg_out_ternary_vector_gadget_with_scalar(s, cmhs, is_scalar, vece, w0, w2, w1);
++                tcg_out_ternary_vector_gadget_with_scalar(s, cmhi, is_scalar, vece, w0, w2, w1);
+                 break;
+             default:
+                 g_assert_not_reached();
+-- 
+2.54.0 (Apple Git-157)
+
+From 681717abd34a74271bf5556f8799a2dece0cdb20 Mon Sep 17 00:00:00 2001
+From: Josh Guyette <joshguyette@yahoo.com>
+Date: Mon, 2 Nov 2026 17:31:58 -0600
+Subject: [PATCH] accel/hvf: map non-executable host memory without EXEC on
+ Intel
+
+Intel Hypervisor.framework rejects hv_vm_map() with HV_MEMORY_EXEC when
+the host mapping's maximum protection lacks execute, returning HV_ERROR.
+virtio-gpu blob resources shared from the render server are mapped
+read/write only (maxprot=RW), so the first Neptune/venus blob map aborted
+QEMU in do_hvf_set_memory() (utmapp/UTM#8036). Arm64 HVF does not reject
+these mappings.
+
+Check the host entries backing a slot and leave EXEC out when any of them
+cannot be executable. Guest RAM is unaffected. Tested on a MacBookPro14,3
+(i7-7700HQ, Radeon Pro 555) with a Windows 11 x64 guest: blob maps now
+succeed and Neptune contexts are created.
+
+Fixes: https://github.com/utmapp/UTM/issues/8036
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Josh Guyette <joshguyette@yahoo.com>
+---
+ accel/hvf/hvf-accel-ops.c | 43 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 43 insertions(+)
+
+diff --git a/accel/hvf/hvf-accel-ops.c b/accel/hvf/hvf-accel-ops.c
+index 036c121adb..d1d4fb097a 100644
+--- a/accel/hvf/hvf-accel-ops.c
++++ b/accel/hvf/hvf-accel-ops.c
+@@ -48,6 +48,10 @@
+  */
+ 
+ #include "qemu/osdep.h"
++#ifdef HOST_X86_64
++#include <mach/mach.h>
++#include <mach/mach_vm.h>
++#endif
+ #include "qemu/error-report.h"
+ #include "qemu/main-loop.h"
+ #include "exec/address-spaces.h"
+@@ -135,6 +139,40 @@ hvf_slot *hvf_find_overlap_slot(uint64_t start, uint64_t size)
+     return NULL;
+ }
+ 
++#ifdef HOST_X86_64
++/*
++ * Intel Hypervisor.framework refuses hv_vm_map() with HV_MEMORY_EXEC when the
++ * host mapping's maximum protection lacks execute.  virtio-gpu blobs shared
++ * from the render server are mapped read/write only, so check the host
++ * entries backing [mem, mem + size) and leave EXEC out for such memory.
++ */
++static bool hvf_host_mem_executable(void *mem, uint64_t size)
++{
++    mach_vm_address_t addr = (mach_vm_address_t)mem;
++    mach_vm_address_t end = addr + size;
++
++    while (addr < end) {
++        mach_vm_address_t start = addr;
++        mach_vm_size_t len = 0;
++        natural_t depth = 1;
++        vm_region_submap_info_data_64_t info;
++        mach_msg_type_number_t count = VM_REGION_SUBMAP_INFO_COUNT_64;
++
++        if (mach_vm_region_recurse(mach_task_self(), &start, &len, &depth,
++                                   (vm_region_recurse_info_t)&info,
++                                   &count) != KERN_SUCCESS ||
++            start > addr) {
++            return true;
++        }
++        if (!(info.max_protection & VM_PROT_EXECUTE)) {
++            return false;
++        }
++        addr = start + len;
++    }
++    return true;
++}
++#endif
++
+ static int do_hvf_set_memory(hvf_slot *slot, hv_memory_flags_t flags)
+ {
+     hvf_mac_slot *macslot;
+@@ -157,6 +195,11 @@ static int do_hvf_set_memory(hvf_slot *slot, hv_memory_flags_t flags)
+     macslot->present = 1;
+     macslot->gpa_start = slot->start;
+     macslot->size = slot->size;
++#ifdef HOST_X86_64
++    if (!hvf_host_mem_executable(slot->mem, slot->size)) {
++        flags &= ~HV_MEMORY_EXEC;
++    }
++#endif
+     ret = hv_vm_map(slot->mem, slot->start, slot->size, flags);
+     assert_hvf_ok(ret);
+     return 0;
+-- 
+2.54.0 (Apple Git-157)
+
+From 5e2b2062bf78b194aa12e8f7d9c5f47fe797aa17 Mon Sep 17 00:00:00 2001
+From: Josh Guyette <joshguyette@yahoo.com>
+Date: Tue, 3 Nov 2026 15:15:12 -0600
+Subject: [PATCH] virtio-gpu-virgl: keep the VGA framebuffer until a real
+ scanout
+
+virgl_cmd_set_scanout switched virtio-vga away from the VGA framebuffer
+for every SET_SCANOUT, including ones that disable the scanout. Windows'
+viogpu3d driver disables scanout 0 hundreds of times during boot before
+DWM's first frame, so the boot screen was replaced by "Display output is
+not active." for about 12 seconds.
+
+Only switch away from VGA when a resource is actually scanned out, like
+the 2D path in virtio-gpu.c does, and also on the Metal native blob path,
+which did not set it at all and relied on the disable calls.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Josh Guyette <joshguyette@yahoo.com>
+---
+ hw/display/virtio-gpu-virgl.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/hw/display/virtio-gpu-virgl.c b/hw/display/virtio-gpu-virgl.c
+index a57f9e0e48..964ea43de0 100644
+--- a/hw/display/virtio-gpu-virgl.c
++++ b/hw/display/virtio-gpu-virgl.c
+@@ -647,7 +647,6 @@ static void virgl_cmd_set_scanout(VirtIOGPU *g,
+         cmd->error = VIRTIO_GPU_RESP_ERR_INVALID_SCANOUT_ID;
+         return;
+     }
+-    g->parent_obj.enable = 1;
+ 
+     if (ss.resource_id && ss.r.width && ss.r.height) {
+         struct virgl_renderer_resource_info info;
+@@ -697,6 +696,7 @@ static void virgl_cmd_set_scanout(VirtIOGPU *g,
+             cmd->error = VIRTIO_GPU_RESP_ERR_INVALID_RESOURCE_ID;
+             return;
+         }
++        g->parent_obj.enable = 1;
+         qemu_console_resize(g->parent_obj.scanout[ss.scanout_id].con,
+                             ss.r.width, ss.r.height);
+         virgl_renderer_force_ctx_0();
+@@ -706,7 +706,13 @@ static void virgl_cmd_set_scanout(VirtIOGPU *g,
+             info.width, info.height,
+             ss.r.x, ss.r.y, ss.r.width, ss.r.height,
+             native, NULL);
+-    } else {
++    } else if (g->parent_obj.enable) {
++        /*
++         * Disabling a scanout that never showed a resource leaves
++         * virtio-vga on the VGA framebuffer. Windows' viogpu3d disables
++         * the scanout repeatedly during boot, before DWM's first frame,
++         * which otherwise blanks the boot screen for many seconds.
++         */
+         dpy_gfx_replace_surface(
+             g->parent_obj.scanout[ss.scanout_id].con, NULL);
+         dpy_gl_scanout_disable(g->parent_obj.scanout[ss.scanout_id].con);
+@@ -1147,6 +1153,7 @@ static bool virgl_scanout_native_blob(VirtIOGPU *g,
+             .type = SCANOUT_TEXTURE_NATIVE_TYPE_METAL,
+             .handle = handle,
+         };
++        g->parent_obj.enable = 1;
+         qemu_console_resize(scanout->con,
+                             ss->r.width, ss->r.height);
+         dpy_gl_scanout_texture(
+-- 
+2.54.0 (Apple Git-157)
+
+From 1219f88549f6dc89466bc30012fe91068f8cf44a Mon Sep 17 00:00:00 2001
+From: Josh Guyette <joshguyette@yahoo.com>
+Date: Tue, 3 Nov 2026 10:06:00 -0600
+Subject: [PATCH] accel/hvf, os-posix: support -overcommit mem-lock=on on macOS
+
+mlockall() returns ENOSYS on macOS, so -overcommit mem-lock=on failed at
+startup. Lock each guest RAM mapping with mlock() as HVF maps it instead,
+and let os_mlock() succeed on macOS.
+
+On a 2017 Intel MacBook Pro (16 GB) with an 8 GB Windows 11 guest, about
+8 GB stays wired with the option on. Without it, a memory-heavy run on our
+earlier fork left only 2.8 GB resident. On utm-edition I measured no idle
+CPU difference and no clear speed benefit.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Josh Guyette <joshguyette@yahoo.com>
+---
+ accel/hvf/hvf-accel-ops.c | 11 +++++++++++
+ os-posix.c                |  7 ++++++-
+ 2 files changed, 17 insertions(+), 1 deletion(-)
+
+diff --git a/accel/hvf/hvf-accel-ops.c b/accel/hvf/hvf-accel-ops.c
+index d1d4fb097a..5597983ec4 100644
+--- a/accel/hvf/hvf-accel-ops.c
++++ b/accel/hvf/hvf-accel-ops.c
+@@ -65,6 +65,7 @@
+ #include "system/hvf.h"
+ #include "system/hvf_int.h"
+ #include "system/runstate.h"
++#include "system/system.h"
+ #include "qemu/guest-random.h"
+ #include "hw/boards.h"
+ 
+@@ -200,6 +201,16 @@ static int do_hvf_set_memory(hvf_slot *slot, hv_memory_flags_t flags)
+         flags &= ~HV_MEMORY_EXEC;
+     }
+ #endif
++    /*
++     * mlockall() returns ENOSYS on macOS, and left alone the host compresses
++     * guest RAM until every touch faults, so honour -overcommit mem-lock=on
++     * for each RAM mapping.
++     */
++    if (should_mlock(mlock_state) && memory_region_is_ram(slot->region) &&
++        mlock(slot->mem, slot->size) < 0) {
++        error_report_once("hvf: mlock of guest RAM failed: %s",
++                          strerror(errno));
++    }
+     ret = hv_vm_map(slot->mem, slot->start, slot->size, flags);
+     assert_hvf_ok(ret);
+     return 0;
+diff --git a/os-posix.c b/os-posix.c
+index 52925c23d3..0cc1ce9eed 100644
+--- a/os-posix.c
++++ b/os-posix.c
+@@ -329,7 +329,7 @@ void os_set_line_buffering(void)
+ 
+ int os_mlock(bool on_fault)
+ {
+-#ifdef HAVE_MLOCKALL
++#if defined(HAVE_MLOCKALL) && !defined(CONFIG_DARWIN)
+     int ret = 0;
+     int flags = MCL_CURRENT | MCL_FUTURE;
+ 
+@@ -350,6 +350,11 @@ int os_mlock(bool on_fault)
+     return ret;
+ #else
+     (void)on_fault;
++#ifdef CONFIG_DARWIN
++    /* mlockall() fails with ENOSYS on macOS; HVF locks each RAM mapping. */
++    return 0;
++#else
+     return -ENOSYS;
+ #endif
++#endif
+ }
+-- 
+2.54.0 (Apple Git-157)
+
+From aa44dfaca18b579180c608f60e96dc12630c0b55 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Sat, 7 Nov 2026 08:49:26 -0800
+Subject: [PATCH] ui/spice-display-metal: convert scanouts the surface cannot
+ hold verbatim
+
+The Metal scanout path copies the guest's scanout texture into the
+shared IOSurface with a blit.  The surface is BGRA8 or RGBA8, but a
+scanout can be R10G10B10A2 (a 10-bit fullscreen primary): a blit copies
+raw bits, so the 10-bit pixels were shown as BGRA8 (an orange clear came
+out blue).
+
+When the scanout is a 10-bit UNORM format (RGB10A2, BGR10A2), draw it
+instead: a full-screen triangle whose fragments read the source texel at
+the position the blit would copy from, scissored to the damaged rect.
+Its values are display-encoded like an 8-bit scanout's, so they are
+written as read, with alpha forced opaque (scanout alpha carries
+nothing).  The scissor is clamped to the surface and to the scanout
+texture past its origin; a 10-bit scanout is never blitted raw (with an
+empty rect, or a pipeline that failed to build, the frame is skipped),
+and a failed pipeline build is not retried every frame.  A 16-bit-float scanout (normally scRGB: linear, values
+above 1.0) would need clamping and sRGB encoding and is left on the blit
+path, as is every same-layout format, sRGB twins included.
+
+Measured with exclusive fullscreen at 800x600 cleared orange (1.0, 0.5,
+0.0), R10G10B10A2 and R8G8B8A8/B8G8R8A8, blt and flip model: the VM
+window shows orange (window capture 239,135,51 after display colour
+management); before, the 10-bit cases showed blue (screenshot 50,28,255).
+
+Assisted-by: Claude:claude-opus-5-5
+---
+ ui/spice-display-metal.m | 139 ++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 122 insertions(+), 17 deletions(-)
+
+diff --git a/ui/spice-display-metal.m b/ui/spice-display-metal.m
+index 23d8408068..e16a318801 100644
+--- a/ui/spice-display-metal.m
++++ b/ui/spice-display-metal.m
+@@ -6,6 +6,7 @@
+  */
+ 
+ #include "qemu/osdep.h"
++#include "qemu/error-report.h"
+ #include "ui/egl-helpers.h"
+ #include "ui/spice-display.h"
+ #include <CoreGraphics/CoreGraphics.h>
+@@ -18,6 +19,10 @@ @interface SpiceDisplayMetal : NSObject
+ @property (nonatomic, readonly) id<MTLCommandQueue> commandQueue;
+ @property (nonatomic, nullable, retain) id<MTLTexture> scanoutTexture;
+ @property (nonatomic, assign) CGRect scanoutRect;
++/* draws a scanout whose texel layout differs from the surface's (a 10-bit
++ * fullscreen primary into the 8-bit surface): a blit copies raw bits */
++@property (nonatomic, nullable, retain) id<MTLRenderPipelineState> convertPipeline;
++@property (nonatomic, assign) BOOL convertPipelineFailed;
+ 
+ - (instancetype)initWithDevice:(id<MTLDevice>)device
+                        surface:(IOSurfaceRef)surface
+@@ -62,6 +67,7 @@ - (instancetype)initWithDevice:(id<MTLDevice>)device
+ - (void)dealloc
+ {
+     [_scanoutTexture release];
++    [_convertPipeline release];
+     [_commandQueue release];
+     [_renderTarget release];
+     [super dealloc];
+@@ -79,6 +85,70 @@ - (void)scanoutDisable
+     self.scanoutRect = CGRectMake(0, 0, 0, 0);
+ }
+ 
++/* A full-screen triangle whose fragments read the source texel at the same
++ * position the blit would copy from (destination pixel + scanout origin).
++ * Scanout alpha carries nothing (DXGI ignores it), so the output is opaque. */
++static NSString *const convert_shader_source =
++    @"#include <metal_stdlib>\n"
++     "using namespace metal;\n"
++     "struct V { float4 pos [[position]]; };\n"
++     "vertex V convert_vs(uint vid [[vertex_id]]) {\n"
++     "    float2 p = float2((vid << 1) & 2, vid & 2);\n"
++     "    return { float4(p * 2.0 - 1.0, 0.0, 1.0) };\n"
++     "}\n"
++     "fragment float4 convert_fs(V in [[stage_in]],\n"
++     "                           texture2d<float> src [[texture(0)]],\n"
++     "                           constant uint2 &origin [[buffer(0)]]) {\n"
++     "    return float4(src.read(uint2(in.pos.xy) + origin).rgb, 1.0);\n"
++     "}\n";
++
++/* Formats the conversion may copy unencoded into the 8-bit surface: the
++ * 10-bit UNORM scanouts, which carry the same (sRGB-encoded) values as an
++ * 8-bit one.  A 16-bit-float scanout is normally scRGB (linear, can
++ * exceed 1.0) and would need clamping and sRGB encoding, so it is not
++ * converted here. */
++static bool convertible(MTLPixelFormat f)
++{
++    switch (f) {
++    case MTLPixelFormatRGB10A2Unorm:
++    case MTLPixelFormatBGR10A2Unorm:
++        return true;
++    default:
++        return false;
++    }
++}
++
++- (id<MTLRenderPipelineState>)pipeline
++{
++    if (!self.convertPipeline && !self.convertPipelineFailed) {
++        id<MTLDevice> device = self.commandQueue.device;
++        NSError *err = nil;
++        id<MTLLibrary> lib = [device newLibraryWithSource:convert_shader_source
++                                                  options:nil
++                                                    error:&err];
++        if (!lib) {
++            error_report("spice-display-metal: conversion shader: %s",
++                         err.localizedDescription.UTF8String);
++            self.convertPipelineFailed = YES;
++            return nil;
++        }
++        MTLRenderPipelineDescriptor *desc = [[MTLRenderPipelineDescriptor alloc] init];
++        desc.vertexFunction = [[lib newFunctionWithName:@"convert_vs"] autorelease];
++        desc.fragmentFunction = [[lib newFunctionWithName:@"convert_fs"] autorelease];
++        desc.colorAttachments[0].pixelFormat = self.renderTarget.pixelFormat;
++        self.convertPipeline = [[device newRenderPipelineStateWithDescriptor:desc
++                                                                       error:&err] autorelease];
++        [desc release];
++        [lib release];
++        if (!self.convertPipeline) {
++            error_report("spice-display-metal: conversion pipeline: %s",
++                         err.localizedDescription.UTF8String);
++            self.convertPipelineFailed = YES;
++        }
++    }
++    return self.convertPipeline;
++}
++
+ - (void)drawFrameAtRect:(CGRect)rect completion:(void (^)(void))completion
+ {
+     @autoreleasepool {
+@@ -87,23 +157,58 @@ - (void)drawFrameAtRect:(CGRect)rect completion:(void (^)(void))completion
+         }
+ 
+         id<MTLCommandBuffer> commandBuffer = [self.commandQueue commandBuffer];
+-        id<MTLBlitCommandEncoder> blit = [commandBuffer blitCommandEncoder];
+-        MTLOrigin origin = MTLOriginMake(self.scanoutRect.origin.x + rect.origin.x,
+-                                         self.scanoutRect.origin.y + rect.origin.y,
+-                                         0);
+-        MTLSize size = MTLSizeMake(rect.size.width, rect.size.height, 1);
+-
+-        [blit copyFromTexture:self.scanoutTexture
+-                  sourceSlice:0
+-                  sourceLevel:0
+-                 sourceOrigin:origin
+-                   sourceSize:size
+-                    toTexture:self.renderTarget
+-             destinationSlice:0
+-             destinationLevel:0
+-            destinationOrigin:(MTLOrigin){rect.origin.x,rect.origin.y,0}];
+-
+-        [blit endEncoding];
++        MTLPixelFormat srcFormat = self.scanoutTexture.pixelFormat;
++        /* the rect comes from the guest's flush: keep the scissor inside
++         * the attachment, as Metal requires, and the reads inside the
++         * scanout texture past its origin */
++        NSUInteger ox = (NSUInteger)self.scanoutRect.origin.x;
++        NSUInteger oy = (NSUInteger)self.scanoutRect.origin.y;
++        NSUInteger srcw = self.scanoutTexture.width > ox ? self.scanoutTexture.width - ox : 0;
++        NSUInteger srch = self.scanoutTexture.height > oy ? self.scanoutTexture.height - oy : 0;
++        NSUInteger tw = MIN(self.renderTarget.width, srcw);
++        NSUInteger th = MIN(self.renderTarget.height, srch);
++        NSUInteger sx = MIN((NSUInteger)MAX(rect.origin.x, 0), tw);
++        NSUInteger sy = MIN((NSUInteger)MAX(rect.origin.y, 0), th);
++        NSUInteger sw = MIN((NSUInteger)MAX(rect.size.width, 0), tw - sx);
++        NSUInteger sh = MIN((NSUInteger)MAX(rect.size.height, 0), th - sy);
++        if (convertible(srcFormat)) {
++            /* never blit a 10-bit scanout raw: with nothing to draw (an
++             * empty rect, or no pipeline) the frame is skipped */
++            if (sw && sh && [self pipeline]) {
++                MTLRenderPassDescriptor *pass = [MTLRenderPassDescriptor renderPassDescriptor];
++                pass.colorAttachments[0].texture = self.renderTarget;
++                pass.colorAttachments[0].loadAction = MTLLoadActionLoad;
++                pass.colorAttachments[0].storeAction = MTLStoreActionStore;
++                id<MTLRenderCommandEncoder> enc =
++                    [commandBuffer renderCommandEncoderWithDescriptor:pass];
++                uint32_t origin[2] = { (uint32_t)self.scanoutRect.origin.x,
++                                       (uint32_t)self.scanoutRect.origin.y };
++                [enc setRenderPipelineState:self.convertPipeline];
++                [enc setScissorRect:(MTLScissorRect){ sx, sy, sw, sh }];
++                [enc setFragmentTexture:self.scanoutTexture atIndex:0];
++                [enc setFragmentBytes:origin length:sizeof(origin) atIndex:0];
++                [enc drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:3];
++                [enc endEncoding];
++            }
++        } else {
++            id<MTLBlitCommandEncoder> blit = [commandBuffer blitCommandEncoder];
++            MTLOrigin origin = MTLOriginMake(self.scanoutRect.origin.x + rect.origin.x,
++                                             self.scanoutRect.origin.y + rect.origin.y,
++                                             0);
++            MTLSize size = MTLSizeMake(rect.size.width, rect.size.height, 1);
++
++            [blit copyFromTexture:self.scanoutTexture
++                      sourceSlice:0
++                      sourceLevel:0
++                     sourceOrigin:origin
++                       sourceSize:size
++                        toTexture:self.renderTarget
++                 destinationSlice:0
++                 destinationLevel:0
++                destinationOrigin:(MTLOrigin){rect.origin.x,rect.origin.y,0}];
++
++            [blit endEncoding];
++        }
+ 
+         [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> cb) {
+             completion();
+-- 
+2.54.0 (Apple Git-157)
+
+From 93019576da0490b72f5b49b972156ce36cef05de Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Bruno=20Castell=C3=B3?= <bfcastello@gmail.com>
+Date: Fri, 16 Oct 2026 00:07:54 +0200
+Subject: [PATCH] screamer: pace TX DMA to the sample rate
+
+With 1 GB or more RAM Mac OS 9 turns VM off and its sound driver uses a
+single 4 KiB ring. Screamer consumed the whole ring at once, so the
+driver saw both half-buffer interrupts before anything played and kept
+restarting: alert sounds came out as short blips.
+
+Complete OUTPUT commands at the codec sample rate instead, with a small
+FIFO lead, and count FRAME_CNT as frames are consumed.
+
+Assisted-by: Claude:claude-opus-5-5
+---
+ hw/audio/screamer.c         | 180 ++++++++++++++++++++++++------------
+ include/hw/audio/screamer.h |  13 ++-
+ 2 files changed, 128 insertions(+), 65 deletions(-)
+
+diff --git a/hw/audio/screamer.c b/hw/audio/screamer.c
+index 26e8322c5b..b2ac6dc104 100644
+--- a/hw/audio/screamer.c
++++ b/hw/audio/screamer.c
+@@ -64,26 +64,101 @@
+ /* Audio */
+ static const char *s_spk = "screamer";
+ 
++/*
++ * The real chip pulls TX samples from DBDMA at the codec sample rate through
++ * a small FIFO, so OUTPUT descriptors complete in real time. Emulate that:
++ * TX DMA may consume s->rate frames per second of virtual time, plus up to
++ * SCREAMER_FIFO_FRAMES of lead. Without this a guest ring that fits in our
++ * buffer completes (and raises its interrupts) almost instantly, which is
++ * what the Mac OS 9 driver does with VM off (>= 1 GB RAM): one 4 KiB page.
++ */
++#define SCREAMER_FIFO_FRAMES 128
++#define SCREAMER_TX_TICK_NS  (1 * SCALE_MS)
++
++static void screamer_tx_credit_update(ScreamerState *s)
++{
++    int64_t now = qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL);
++    uint64_t frames;
++
++    if (now <= s->tx_last_ns) {
++        return;
++    }
++    frames = muldiv64(now - s->tx_last_ns, s->rate, NANOSECONDS_PER_SECOND);
++    s->tx_last_ns += muldiv64(frames, NANOSECONDS_PER_SECOND, s->rate);
++    s->tx_credit = MIN(s->tx_credit + frames, SCREAMER_FIFO_FRAMES);
++}
++
++/* Copy guest frames into the ring; drop the oldest if the host lags */
++static void screamer_ring_write(ScreamerState *s, hwaddr addr, uint32_t frames)
++{
++    while (frames) {
++        uint32_t n = MIN(frames, s->samples - s->wpos);
++        MemTxResult res;
++
++        res = dma_memory_read(&address_space_memory, addr,
++                              &s->mixbuf[s->wpos << s->shift], n << s->shift,
++                              MEMTXATTRS_UNSPECIFIED);
++        if (res != MEMTX_OK) {
++            qemu_log_mask(LOG_GUEST_ERROR,
++                          "screamer: TX DMA read failed at 0x%" HWADDR_PRIx
++                          "\n", addr);
++        }
++        s->wpos = (s->wpos + n) % s->samples;
++        s->fill += n;
++        addr += n << s->shift;
++        frames -= n;
++    }
++
++    if (s->fill > s->samples) {
++        SCREAMER_DPRINTF("TX ring overrun, dropped %d frames\n",
++                         s->fill - s->samples);
++        s->rpos = s->wpos;
++        s->fill = s->samples;
++    }
++}
++
+ static void pmac_screamer_tx_transfer(ScreamerState *s)
+ {
+     DBDMA_io *io = &s->io;
+-    int samples;
++    uint32_t frames;
+ 
+-    samples = MIN(io->len >> s->shift, s->samples - s->wpos);
+-    dma_memory_read(&address_space_memory, io->addr,
+-                    &s->mixbuf[s->wpos << s->shift], samples << s->shift,
+-                    MEMTXATTRS_UNSPECIFIED);
++    screamer_tx_credit_update(s);
++    frames = MIN(io->len >> s->shift, s->tx_credit);
+ 
+-    SCREAMER_DPRINTF("DMA actually transferred 0x%x, wpos is %d\n", samples << s->shift, s->wpos);
++    if (frames) {
++        screamer_ring_write(s, io->addr, frames);
++        io->addr += frames << s->shift;
++        io->len -= frames << s->shift;
++        s->tx_credit -= frames;
+ 
+-    io->addr += (samples << s->shift);
+-    io->len -= (samples << s->shift);
+-    s->wpos += samples;
++        /* The frame counter counts frames sent to the codec */
++        s->regs[FRAME_CNT_REG] += frames;
++        SCREAMER_DPRINTF("DMA actually transferred 0x%x\n",
++                         frames << s->shift);
++    }
++
++    /* A trailing partial frame can never be consumed; drop it */
++    if (io->len < (1 << s->shift)) {
++        io->len = 0;
++    }
+ 
+     /* Continue DBDMA if we have completed the transfer, otherwise defer */
+     if (io->len == 0) {
+         SCREAMER_DPRINTF("-> End of transfer\n");
+         io->dma_end(io);
++    } else if (!timer_pending(s->tx_timer)) {
++        timer_mod(s->tx_timer, qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL) +
++                               SCREAMER_TX_TICK_NS);
++    }
++}
++
++static void screamer_tx_timer_cb(void *opaque)
++{
++    ScreamerState *s = opaque;
++
++    if (s->io.len) {
++        SCREAMER_DPRINTF("Continue deferred transfer\n");
++        pmac_screamer_tx_transfer(s);
+     }
+ }
+ 
+@@ -95,15 +170,12 @@ static void pmac_screamer_tx(DBDMA_io *io)
+                      " len: %x\n", io->addr, io->len);
+ 
+     memcpy(&s->io, io, sizeof(DBDMA_io));
+-    //if (s->wpos + (s->io.len >> s->shift) > s->samples) {
+-    //    return;
+-    //}
+-
+     pmac_screamer_tx_transfer(s);
+ }
+ 
+ static void pmac_screamer_tx_flush(DBDMA_io *io)
+ {
++    ScreamerState *s = io->opaque;
+     DBDMA_channel *ch = io->channel;
+     dbdma_cmd *current = &ch->current;
+     uint16_t cmd;
+@@ -124,6 +196,13 @@ static void pmac_screamer_tx_flush(DBDMA_io *io)
+ 
+     ch->io.processing = false;
+ 
++    /* The guest is stopping the channel: abandon any deferred transfer */
++    if (((ch->regs[DBDMA_CONTROL] >> 16) & RUN) &&
++        !(ch->regs[DBDMA_CONTROL] & RUN)) {
++        s->io.len = 0;
++        timer_del(s->tx_timer);
++    }
++
+     cmd = le16_to_cpu(current->command) & COMMAND_MASK;
+     if (cmd == INPUT_MORE || cmd == INPUT_LAST) {
+         current->xfer_status = cpu_to_le16(ch->regs[DBDMA_STATUS]);
+@@ -182,51 +261,22 @@ void macio_screamer_register_dma(ScreamerState *s, void *dbdma, int txchannel, i
+ static void screamerspk_callback(void *opaque, int free_b)
+ {
+     ScreamerState *s = opaque;
+-    DBDMA_io *io = &s->io;
+-    int samples, generated;
+-
+-    if (free_b == 0) {
+-        return;
+-    }
+-
+-    if (s->wpos - s->rpos == 0) {
+-        return;
+-    }
+-
+-    samples = MIN(s->samples, free_b >> s->shift);
+-    generated = MIN(samples, s->wpos - s->rpos);
+-
+-    AUD_write(s->voice, s->mixbuf + (uintptr_t)(s->rpos << s->shift),
+-              generated << s->shift);
+-
+-    SCREAMER_DPRINTF("  - generated %d, wpos %d, rpos %d\n", generated, s->wpos, s->rpos);
+-    
+-    s->regs[FRAME_CNT_REG] += generated;
+-    s->rpos += generated;
+-    if (s->rpos < s->wpos) {
+-        return;
+-    }
+-
+-    s->wpos = 0;
+-    s->rpos = 0;
+ 
+-    if (io->len) {
+-        DBDMA_channel *ch = io->channel;
+-        uint32_t status = ch->regs[DBDMA_STATUS];
+-
+-        SCREAMER_DPRINTF("Continue deferred transfer\n");
+-
+-        /* Disable channel so we only complete the current transfer */
+-        ch->regs[DBDMA_STATUS] &= ~RUN;
+-
+-        /* Perform deferred transfer */
+-        pmac_screamer_tx_transfer(s);
+-
+-        /* Re-enable channel */
+-        ch->regs[DBDMA_STATUS] = status;
+-
+-        /* Kick channel to continue */
+-        DBDMA_kick(container_of(ch, DBDMAState, channels[ch->channel]));
++    while (s->fill && free_b >= (1 << s->shift)) {
++        uint32_t n = MIN(MIN(free_b >> s->shift, s->fill),
++                         s->samples - s->rpos);
++        size_t written;
++
++        written = AUD_write(s->voice, &s->mixbuf[s->rpos << s->shift],
++                            n << s->shift) >> s->shift;
++        SCREAMER_DPRINTF("  - generated %zu, fill %d, rpos %d\n", written,
++                         s->fill, s->rpos);
++        if (!written) {
++            break;
++        }
++        s->rpos = (s->rpos + written) % s->samples;
++        s->fill -= written;
++        free_b -= written << s->shift;
+     }
+ }
+ 
+@@ -241,10 +291,6 @@ static void screamer_update_settings(ScreamerState *s)
+         return;
+     }
+ 
+-    s->shift = 2;
+-    s->samples = AUD_get_buffer_size_out(s->voice) >> s->shift;
+-    s->mixbuf = g_malloc0(s->samples << s->shift);
+-
+     AUD_set_active_out(s->voice, true);
+ }
+ 
+@@ -275,6 +321,13 @@ static void screamer_reset(DeviceState *dev)
+     s->bpos = 0;
+     s->ppos = 0;
+ 
++    timer_del(s->tx_timer);
++    s->tx_last_ns = qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL);
++    s->tx_credit = 0;
++    s->wpos = 0;
++    s->rpos = 0;
++    s->fill = 0;
++
+     return;
+ }
+ 
+@@ -286,6 +339,11 @@ static void screamer_realizefn(DeviceState *dev, Error **errp)
+         return;
+     }
+ 
++    s->shift = 2;
++    s->samples = SCREAMER_BUFFER_SIZE >> s->shift;
++    s->mixbuf = g_malloc0(SCREAMER_BUFFER_SIZE);
++    s->tx_timer = timer_new_ns(QEMU_CLOCK_VIRTUAL, screamer_tx_timer_cb, s);
++
+     s->rate = 44100;
+     screamer_update_settings(s);
+ }
+diff --git a/include/hw/audio/screamer.h b/include/hw/audio/screamer.h
+index b6c1fefb2b..f709726b0a 100644
+--- a/include/hw/audio/screamer.h
++++ b/include/hw/audio/screamer.h
+@@ -48,12 +48,17 @@ struct ScreamerState {
+ 
+     QEMUSoundCard card;
+     SWVoiceOut *voice;
+-    uint8_t *mixbuf;
+-    int samples;
++    uint8_t *mixbuf;        /* ring of TX frames waiting for the host */
++    int samples;            /* ring size in frames */
+     int shift;
+ 
+-    uint32_t wpos;
+-    uint32_t rpos;
++    uint32_t wpos;          /* ring write index (frames) */
++    uint32_t rpos;          /* ring read index (frames) */
++    uint32_t fill;          /* frames in the ring */
++
++    QEMUTimer *tx_timer;    /* paces TX DMA at the sample rate */
++    int64_t tx_last_ns;
++    uint32_t tx_credit;     /* frames TX DMA may consume now */
+ 
+     uint32_t bpos;
+     uint32_t ppos;
+-- 
+2.54.0 (Apple Git-157)
+
+From a8dfd66f4ccbd9b253d21d5a4d1977950116ae80 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Bruno=20Castell=C3=B3?= <bfcastello@gmail.com>
+Date: Fri, 16 Oct 2026 00:07:54 +0200
+Subject: [PATCH] mac_dbdma, screamer: only write back res_count and
+ xfer_status
+
+The hardware only updates those two fields when a command completes.
+Writing back the whole cached descriptor could undo changes the guest
+made to it in the meantime.
+
+Assisted-by: Claude:claude-opus-5-5
+---
+ hw/audio/screamer.c       | 24 ++++++++++++++++++------
+ hw/misc/macio/mac_dbdma.c | 14 ++++++++++++--
+ 2 files changed, 30 insertions(+), 8 deletions(-)
+
+diff --git a/hw/audio/screamer.c b/hw/audio/screamer.c
+index b2ac6dc104..dbf31c65b1 100644
+--- a/hw/audio/screamer.c
++++ b/hw/audio/screamer.c
+@@ -188,8 +188,12 @@ static void pmac_screamer_tx_flush(DBDMA_io *io)
+         current->xfer_status = cpu_to_le16(ch->regs[DBDMA_STATUS]);
+         current->res_count = cpu_to_le16(io->len);
+ 
+-        dma_memory_write(&address_space_memory, ch->regs[DBDMA_CMDPTR_LO],
+-                         &ch->current, sizeof(dbdma_cmd),
++        dma_memory_write(&address_space_memory,
++                         ch->regs[DBDMA_CMDPTR_LO] +
++                         offsetof(dbdma_cmd, res_count),
++                         &current->res_count,
++                         sizeof(current->res_count) +
++                         sizeof(current->xfer_status),
+                          MEMTXATTRS_UNSPECIFIED);
+     }
+ #endif
+@@ -208,8 +212,12 @@ static void pmac_screamer_tx_flush(DBDMA_io *io)
+         current->xfer_status = cpu_to_le16(ch->regs[DBDMA_STATUS]);
+         current->res_count = cpu_to_le16(io->len);
+ 
+-            dma_memory_write(&address_space_memory, ch->regs[DBDMA_CMDPTR_LO],
+-                         &ch->current, sizeof(dbdma_cmd),
++            dma_memory_write(&address_space_memory,
++                         ch->regs[DBDMA_CMDPTR_LO] +
++                         offsetof(dbdma_cmd, res_count),
++                         &current->res_count,
++                         sizeof(current->res_count) +
++                         sizeof(current->xfer_status),
+                          MEMTXATTRS_UNSPECIFIED);
+     }
+ 
+@@ -242,8 +250,12 @@ static void pmac_screamer_rx_flush(DBDMA_io *io)
+         current->xfer_status = cpu_to_le16(ch->regs[DBDMA_STATUS]);
+         current->res_count = cpu_to_le16(io->len);
+ 
+-        dma_memory_write(&address_space_memory, ch->regs[DBDMA_CMDPTR_LO],
+-                         &ch->current, sizeof(dbdma_cmd),
++        dma_memory_write(&address_space_memory,
++                         ch->regs[DBDMA_CMDPTR_LO] +
++                         offsetof(dbdma_cmd, res_count),
++                         &current->res_count,
++                         sizeof(current->res_count) +
++                         sizeof(current->xfer_status),
+                          MEMTXATTRS_UNSPECIFIED);
+     }
+ #endif
+diff --git a/hw/misc/macio/mac_dbdma.c b/hw/misc/macio/mac_dbdma.c
+index de0f934f7d..49a8fd5c6d 100644
+--- a/hw/misc/macio/mac_dbdma.c
++++ b/hw/misc/macio/mac_dbdma.c
+@@ -103,8 +103,18 @@ static void dbdma_cmdptr_save(DBDMA_channel *ch)
+                     ch->regs[DBDMA_CMDPTR_LO],
+                     le16_to_cpu(ch->current.xfer_status),
+                     le16_to_cpu(ch->current.res_count));
+-    dma_memory_write(&address_space_memory, ch->regs[DBDMA_CMDPTR_LO],
+-                     &ch->current, sizeof(dbdma_cmd), MEMTXATTRS_UNSPECIFIED);
++    /*
++     * Like the real controller, only write back res_count and xfer_status:
++     * the guest may have rewritten the rest of the descriptor since we
++     * loaded it, and restoring our stale copy would undo that.
++     */
++    dma_memory_write(&address_space_memory,
++                     ch->regs[DBDMA_CMDPTR_LO] +
++                     offsetof(dbdma_cmd, res_count),
++                     &ch->current.res_count,
++                     sizeof(ch->current.res_count) +
++                     sizeof(ch->current.xfer_status),
++                     MEMTXATTRS_UNSPECIFIED);
+ }
+ 
+ static void kill_channel(DBDMA_channel *ch)
+-- 
+2.54.0 (Apple Git-157)
+
+From b93cf1ab6451cc439fcffdb007dc30b4287766a2 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Bruno=20Castell=C3=B3?= <bfcastello@gmail.com>
+Date: Thu, 15 Oct 2026 22:17:03 +0200
+Subject: [PATCH] mac_dbdma, screamer: fix LOAD_WORD, s0-s7 status bits and RX
+ DMA
+
+- LOAD_WORD: store the loaded data in the cmdDep field of the command in
+  memory, as real DBDMA does. Since only res_count/xfer_status are written
+  back now, the Mac OS 9 Screamer driver (VM off, >= 1 GB) never saw the
+  frame counter it samples with LOAD_WORD.
+- dbdma_control_write: honour the software-settable device status bits
+  s0-s7. The Mac OS 9 sound input driver sets s0 to make its INPUT command
+  branch out of the ring; it was ignored, so the ring never stopped.
+- screamer RX: instead of completing INPUT commands instantly with nothing
+  transferred and forcing RUN off (a workaround for the above), deliver
+  silence and complete each command after its duration at the sample rate.
+
+Assisted-by: Claude:claude-opus-5-5
+---
+ hw/audio/screamer.c         | 50 +++++++++++++++++++++++++++++++------
+ hw/misc/macio/mac_dbdma.c   | 12 +++++++++
+ include/hw/audio/screamer.h |  3 +++
+ 3 files changed, 58 insertions(+), 7 deletions(-)
+
+diff --git a/hw/audio/screamer.c b/hw/audio/screamer.c
+index dbf31c65b1..d9e5604ee1 100644
+--- a/hw/audio/screamer.c
++++ b/hw/audio/screamer.c
+@@ -223,27 +223,60 @@ static void pmac_screamer_tx_flush(DBDMA_io *io)
+ 
+ }
+ 
++/*
++ * There is no capture source: RX DMA receives silence. Like real hardware,
++ * an INPUT descriptor completes only after its frames have been sampled,
++ * i.e. after len / frame size / rate seconds.
++ */
++static void screamer_rx_timer_cb(void *opaque)
++{
++    ScreamerState *s = opaque;
++    DBDMA_io *io = &s->rx_io;
++
++    if (!io->len) {
++        return;
++    }
++
++    if (dma_memory_set(&address_space_memory, io->addr, 0, io->len,
++                       MEMTXATTRS_UNSPECIFIED) != MEMTX_OK) {
++        qemu_log_mask(LOG_GUEST_ERROR,
++                      "screamer: RX DMA write failed at 0x%" HWADDR_PRIx
++                      "\n", io->addr);
++    }
++    io->addr += io->len;
++    io->len = 0;
++    io->dma_end(io);
++}
++
+ static void pmac_screamer_rx(DBDMA_io *io)
+ {
++    ScreamerState *s = io->opaque;
++    uint64_t frames = io->len >> s->shift;
++
+     SCREAMER_DPRINTF("DMA RX transfer: addr %" HWADDR_PRIx
+                      " len: %x\n", io->addr, io->len);
+ 
+-    //ScreamerState *s = io->opaque;
+-    DBDMA_channel *ch = io->channel;
+-        
+-    /* FIXME: stop channel after updating with status to stop MacOS 9 freezing */
+-    ch->regs[DBDMA_STATUS] &= ~RUN;
+-
+-    io->dma_end(io);
++    memcpy(&s->rx_io, io, sizeof(DBDMA_io));
++    timer_mod(s->rx_timer, qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL) +
++                           muldiv64(frames, NANOSECONDS_PER_SECOND, s->rate));
+ }
+ 
+ static void pmac_screamer_rx_flush(DBDMA_io *io)
+ {
++    ScreamerState *s = io->opaque;
+     DBDMA_channel *ch = io->channel;
+     dbdma_cmd *current = &ch->current;
+     uint16_t cmd;
+ 
+     SCREAMER_DPRINTF("DMA RX flush!\n");
++
++    /* The guest is stopping the channel: abandon the pending transfer */
++    if (((ch->regs[DBDMA_CONTROL] >> 16) & RUN) &&
++        !(ch->regs[DBDMA_CONTROL] & RUN)) {
++        s->rx_io.len = 0;
++        timer_del(s->rx_timer);
++        ch->io.processing = false;
++    }
+ #if 1
+     cmd = le16_to_cpu(current->command) & COMMAND_MASK;
+     if (cmd == INPUT_MORE || cmd == INPUT_LAST) {
+@@ -334,6 +367,8 @@ static void screamer_reset(DeviceState *dev)
+     s->ppos = 0;
+ 
+     timer_del(s->tx_timer);
++    timer_del(s->rx_timer);
++    memset(&s->rx_io, 0, sizeof(DBDMA_io));
+     s->tx_last_ns = qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL);
+     s->tx_credit = 0;
+     s->wpos = 0;
+@@ -355,6 +390,7 @@ static void screamer_realizefn(DeviceState *dev, Error **errp)
+     s->samples = SCREAMER_BUFFER_SIZE >> s->shift;
+     s->mixbuf = g_malloc0(SCREAMER_BUFFER_SIZE);
+     s->tx_timer = timer_new_ns(QEMU_CLOCK_VIRTUAL, screamer_tx_timer_cb, s);
++    s->rx_timer = timer_new_ns(QEMU_CLOCK_VIRTUAL, screamer_rx_timer_cb, s);
+ 
+     s->rate = 44100;
+     screamer_update_settings(s);
+diff --git a/hw/misc/macio/mac_dbdma.c b/hw/misc/macio/mac_dbdma.c
+index 49a8fd5c6d..a5773162d7 100644
+--- a/hw/misc/macio/mac_dbdma.c
++++ b/hw/misc/macio/mac_dbdma.c
+@@ -384,6 +384,12 @@ static void load_word(DBDMA_channel *ch, int key, uint32_t addr,
+     dma_memory_read(&address_space_memory, addr, &current->cmd_dep, len,
+                     MEMTXATTRS_UNSPECIFIED);
+ 
++    /* The loaded data goes to the cmdDep field of the command in memory */
++    dma_memory_write(&address_space_memory,
++                     ch->regs[DBDMA_CMDPTR_LO] + offsetof(dbdma_cmd, cmd_dep),
++                     &current->cmd_dep, sizeof(current->cmd_dep),
++                     MEMTXATTRS_UNSPECIFIED);
++
+     if (conditional_wait(ch))
+         goto wait;
+ 
+@@ -612,6 +618,12 @@ static void dbdma_control_write(DBDMA_channel *ch)
+      * logic to ensure all cases are covered.
+      */
+ 
++    /* The device status bits s0-s7 can be set and cleared by SW (or by
++     * the device); they are tested by the interrupt, branch and wait
++     * conditions of the channel program.
++     */
++    status = (status & ~(mask & DEVSTAT)) | (value & mask & DEVSTAT);
++
+     /* Setting RUN will tentatively activate the channel
+      */
+     if ((mask & RUN) && (value & RUN)) {
+diff --git a/include/hw/audio/screamer.h b/include/hw/audio/screamer.h
+index f709726b0a..20ae566b66 100644
+--- a/include/hw/audio/screamer.h
++++ b/include/hw/audio/screamer.h
+@@ -65,6 +65,9 @@ struct ScreamerState {
+     uint32_t rate;
+     DBDMA_io io;
+ 
++    QEMUTimer *rx_timer;    /* completes RX DMA at the sample rate */
++    DBDMA_io rx_io;
++
+     uint32_t regs[6];
+     uint32_t codec_ctrl_regs[8];
+ };
+-- 
+2.54.0 (Apple Git-157)
+
+From 9c6999578b9048c8ae8d35332f3880a5eff6e923 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Tue, 10 Nov 2026 10:12:46 -0800
+Subject: [PATCH] screamer, mac_dbdma: fix stuck and replayed DMA with paced
+ transfers
+
+TX and RX transfers now stay in flight on a timer, which exposed a few
+paths that assumed they complete at once:
+
+- A zero-length INPUT descriptor never completed: the RX timer returned
+  early on len == 0, so the channel stayed "processing" forever.
+- mac_dbdma_reset left io.processing set while screamer_reset deleted the
+  timers that would clear it, so sound stayed dead after a guest reboot
+  that interrupted playback or recording.
+- tx_flush cleared io.processing on PAUSE or FLUSH too, so DBDMA restarted
+  the descriptor still being paced and its frames were sent twice. Only
+  clear it when the guest stops the channel, as rx_flush does.
+- If the virtual clock went backwards (loadvm), TX got no credit until
+  it caught up again.
+
+Also factor the duplicated res_count/xfer_status write-back and the
+"guest cleared RUN" test into helpers, and fix a block comment style.
+
+Assisted-by: Claude:claude-opus-5-5
+---
+ hw/audio/screamer.c       | 84 +++++++++++++++++++--------------------
+ hw/misc/macio/mac_dbdma.c |  5 ++-
+ 2 files changed, 46 insertions(+), 43 deletions(-)
+
+diff --git a/hw/audio/screamer.c b/hw/audio/screamer.c
+index d9e5604ee1..f3bde9332b 100644
+--- a/hw/audio/screamer.c
++++ b/hw/audio/screamer.c
+@@ -81,6 +81,8 @@ static void screamer_tx_credit_update(ScreamerState *s)
+     uint64_t frames;
+ 
+     if (now <= s->tx_last_ns) {
++        /* The virtual clock went back (loadvm): restart the accounting */
++        s->tx_last_ns = now;
+         return;
+     }
+     frames = muldiv64(now - s->tx_last_ns, s->rate, NANOSECONDS_PER_SECOND);
+@@ -117,6 +119,30 @@ static void screamer_ring_write(ScreamerState *s, hwaddr addr, uint32_t frames)
+     }
+ }
+ 
++/* Write back res_count and xfer_status of the current command */
++static void screamer_dma_update_status(DBDMA_channel *ch, uint32_t len)
++{
++    dbdma_cmd *current = &ch->current;
++
++    current->xfer_status = cpu_to_le16(ch->regs[DBDMA_STATUS]);
++    current->res_count = cpu_to_le16(len);
++
++    dma_memory_write(&address_space_memory,
++                     ch->regs[DBDMA_CMDPTR_LO] +
++                     offsetof(dbdma_cmd, res_count),
++                     &current->res_count,
++                     sizeof(current->res_count) +
++                     sizeof(current->xfer_status),
++                     MEMTXATTRS_UNSPECIFIED);
++}
++
++/* Is the flush caused by the guest clearing RUN? */
++static bool screamer_dma_stopping(DBDMA_channel *ch)
++{
++    return ((ch->regs[DBDMA_CONTROL] >> 16) & RUN) &&
++           !(ch->regs[DBDMA_CONTROL] & RUN);
++}
++
+ static void pmac_screamer_tx_transfer(ScreamerState *s)
+ {
+     DBDMA_io *io = &s->io;
+@@ -185,42 +211,26 @@ static void pmac_screamer_tx_flush(DBDMA_io *io)
+     cmd = le16_to_cpu(current->command) & COMMAND_MASK;
+     if (cmd == OUTPUT_MORE || cmd == OUTPUT_LAST ||
+         cmd == INPUT_MORE || cmd == INPUT_LAST) {
+-        current->xfer_status = cpu_to_le16(ch->regs[DBDMA_STATUS]);
+-        current->res_count = cpu_to_le16(io->len);
+-
+-        dma_memory_write(&address_space_memory,
+-                         ch->regs[DBDMA_CMDPTR_LO] +
+-                         offsetof(dbdma_cmd, res_count),
+-                         &current->res_count,
+-                         sizeof(current->res_count) +
+-                         sizeof(current->xfer_status),
+-                         MEMTXATTRS_UNSPECIFIED);
++        screamer_dma_update_status(ch, io->len);
+     }
+ #endif
+ 
+-    ch->io.processing = false;
+-
+-    /* The guest is stopping the channel: abandon any deferred transfer */
+-    if (((ch->regs[DBDMA_CONTROL] >> 16) & RUN) &&
+-        !(ch->regs[DBDMA_CONTROL] & RUN)) {
++    /*
++     * The guest is stopping the channel: abandon any deferred transfer.
++     * Otherwise (PAUSE, FLUSH) let it finish: it completes through
++     * dma_end, and clearing processing now would make DBDMA restart the
++     * same descriptor and send its frames twice.
++     */
++    if (screamer_dma_stopping(ch)) {
+         s->io.len = 0;
+         timer_del(s->tx_timer);
++        ch->io.processing = false;
+     }
+ 
+     cmd = le16_to_cpu(current->command) & COMMAND_MASK;
+     if (cmd == INPUT_MORE || cmd == INPUT_LAST) {
+-        current->xfer_status = cpu_to_le16(ch->regs[DBDMA_STATUS]);
+-        current->res_count = cpu_to_le16(io->len);
+-
+-            dma_memory_write(&address_space_memory,
+-                         ch->regs[DBDMA_CMDPTR_LO] +
+-                         offsetof(dbdma_cmd, res_count),
+-                         &current->res_count,
+-                         sizeof(current->res_count) +
+-                         sizeof(current->xfer_status),
+-                         MEMTXATTRS_UNSPECIFIED);
++        screamer_dma_update_status(ch, io->len);
+     }
+-
+ }
+ 
+ /*
+@@ -233,10 +243,10 @@ static void screamer_rx_timer_cb(void *opaque)
+     ScreamerState *s = opaque;
+     DBDMA_io *io = &s->rx_io;
+ 
+-    if (!io->len) {
+-        return;
+-    }
+-
++    /*
++     * Only armed for a live transfer (flush and reset delete it); a
++     * zero-length INPUT still has to complete.
++     */
+     if (dma_memory_set(&address_space_memory, io->addr, 0, io->len,
+                        MEMTXATTRS_UNSPECIFIED) != MEMTX_OK) {
+         qemu_log_mask(LOG_GUEST_ERROR,
+@@ -271,8 +281,7 @@ static void pmac_screamer_rx_flush(DBDMA_io *io)
+     SCREAMER_DPRINTF("DMA RX flush!\n");
+ 
+     /* The guest is stopping the channel: abandon the pending transfer */
+-    if (((ch->regs[DBDMA_CONTROL] >> 16) & RUN) &&
+-        !(ch->regs[DBDMA_CONTROL] & RUN)) {
++    if (screamer_dma_stopping(ch)) {
+         s->rx_io.len = 0;
+         timer_del(s->rx_timer);
+         ch->io.processing = false;
+@@ -280,16 +289,7 @@ static void pmac_screamer_rx_flush(DBDMA_io *io)
+ #if 1
+     cmd = le16_to_cpu(current->command) & COMMAND_MASK;
+     if (cmd == INPUT_MORE || cmd == INPUT_LAST) {
+-        current->xfer_status = cpu_to_le16(ch->regs[DBDMA_STATUS]);
+-        current->res_count = cpu_to_le16(io->len);
+-
+-        dma_memory_write(&address_space_memory,
+-                         ch->regs[DBDMA_CMDPTR_LO] +
+-                         offsetof(dbdma_cmd, res_count),
+-                         &current->res_count,
+-                         sizeof(current->res_count) +
+-                         sizeof(current->xfer_status),
+-                         MEMTXATTRS_UNSPECIFIED);
++        screamer_dma_update_status(ch, io->len);
+     }
+ #endif
+ }
+diff --git a/hw/misc/macio/mac_dbdma.c b/hw/misc/macio/mac_dbdma.c
+index a5773162d7..3231adb88e 100644
+--- a/hw/misc/macio/mac_dbdma.c
++++ b/hw/misc/macio/mac_dbdma.c
+@@ -618,7 +618,8 @@ static void dbdma_control_write(DBDMA_channel *ch)
+      * logic to ensure all cases are covered.
+      */
+ 
+-    /* The device status bits s0-s7 can be set and cleared by SW (or by
++    /*
++     * The device status bits s0-s7 can be set and cleared by SW (or by
+      * the device); they are tested by the interrupt, branch and wait
+      * conditions of the channel program.
+      */
+@@ -885,6 +886,8 @@ static void mac_dbdma_reset(DeviceState *d)
+ 
+     for (i = 0; i < DBDMA_CHANNELS; i++) {
+         memset(s->channels[i].regs, 0, DBDMA_SIZE);
++        /* No command is in progress after a reset */
++        s->channels[i].io.processing = false;
+     }
+ }
+ 
+-- 
+2.54.0 (Apple Git-157)
+
+From 7fe362b13268ff239e09994b96e077d0cb743038 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Tue, 10 Nov 2026 10:13:43 -0800
+Subject: [PATCH] screamer: let a late TX tick catch up
+
+The TX credit was capped at the 128-frame FIFO on every update, so a
+pacing tick more than ~3 ms late threw away frames that were already
+due. The guest's DMA then ran slower than the sample rate, the host
+ring drained, and FRAME_CNT fell behind real time.
+
+Within a transfer, let a late tick catch up to twice the FIFO. Idle time
+before a descriptor starts still only fills the FIFO, and stopping the
+channel drops any surplus, so a new ring still cannot complete at once.
+
+Assisted-by: Claude:claude-opus-5-5
+---
+ hw/audio/screamer.c | 22 ++++++++++++++++------
+ 1 file changed, 16 insertions(+), 6 deletions(-)
+
+diff --git a/hw/audio/screamer.c b/hw/audio/screamer.c
+index f3bde9332b..880fb36e17 100644
+--- a/hw/audio/screamer.c
++++ b/hw/audio/screamer.c
+@@ -74,8 +74,14 @@ static const char *s_spk = "screamer";
+  */
+ #define SCREAMER_FIFO_FRAMES 128
+ #define SCREAMER_TX_TICK_NS  (1 * SCALE_MS)
++/*
++ * Within a transfer, a late tick may catch up on frames that are already
++ * due, up to this bound so one long host stall cannot drain a guest ring.
++ */
++#define SCREAMER_TX_MAX_CREDIT (2 * SCREAMER_FIFO_FRAMES)
+ 
+-static void screamer_tx_credit_update(ScreamerState *s)
++/* Accrue TX credit for the virtual time elapsed, up to @limit frames */
++static void screamer_tx_credit_update(ScreamerState *s, uint32_t limit)
+ {
+     int64_t now = qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL);
+     uint64_t frames;
+@@ -87,7 +93,9 @@ static void screamer_tx_credit_update(ScreamerState *s)
+     }
+     frames = muldiv64(now - s->tx_last_ns, s->rate, NANOSECONDS_PER_SECOND);
+     s->tx_last_ns += muldiv64(frames, NANOSECONDS_PER_SECOND, s->rate);
+-    s->tx_credit = MIN(s->tx_credit + frames, SCREAMER_FIFO_FRAMES);
++    if (s->tx_credit < limit) {
++        s->tx_credit = MIN(s->tx_credit + frames, limit);
++    }
+ }
+ 
+ /* Copy guest frames into the ring; drop the oldest if the host lags */
+@@ -143,12 +151,12 @@ static bool screamer_dma_stopping(DBDMA_channel *ch)
+            !(ch->regs[DBDMA_CONTROL] & RUN);
+ }
+ 
+-static void pmac_screamer_tx_transfer(ScreamerState *s)
++static void pmac_screamer_tx_transfer(ScreamerState *s, uint32_t limit)
+ {
+     DBDMA_io *io = &s->io;
+     uint32_t frames;
+ 
+-    screamer_tx_credit_update(s);
++    screamer_tx_credit_update(s, limit);
+     frames = MIN(io->len >> s->shift, s->tx_credit);
+ 
+     if (frames) {
+@@ -184,7 +192,7 @@ static void screamer_tx_timer_cb(void *opaque)
+ 
+     if (s->io.len) {
+         SCREAMER_DPRINTF("Continue deferred transfer\n");
+-        pmac_screamer_tx_transfer(s);
++        pmac_screamer_tx_transfer(s, SCREAMER_TX_MAX_CREDIT);
+     }
+ }
+ 
+@@ -196,7 +204,8 @@ static void pmac_screamer_tx(DBDMA_io *io)
+                      " len: %x\n", io->addr, io->len);
+ 
+     memcpy(&s->io, io, sizeof(DBDMA_io));
+-    pmac_screamer_tx_transfer(s);
++    /* Time the channel spent idle only fills the FIFO */
++    pmac_screamer_tx_transfer(s, SCREAMER_FIFO_FRAMES);
+ }
+ 
+ static void pmac_screamer_tx_flush(DBDMA_io *io)
+@@ -223,6 +232,7 @@ static void pmac_screamer_tx_flush(DBDMA_io *io)
+      */
+     if (screamer_dma_stopping(ch)) {
+         s->io.len = 0;
++        s->tx_credit = MIN(s->tx_credit, SCREAMER_FIFO_FRAMES);
+         timer_del(s->tx_timer);
+         ch->io.processing = false;
+     }
+-- 
+2.54.0 (Apple Git-157)
+
+From 80d3e749a83f836b724a17f880446d3876e315d2 Mon Sep 17 00:00:00 2001
+From: Josh Guyette <joshguyette@yahoo.com>
+Date: Tue, 3 Nov 2026 16:30:53 -0600
+Subject: [PATCH] audio: steadier HDA playback on a busy Mac
+
+Three changes, based on OmacVM's patches (MIT,
+github.com/gillesgoetsch/OmacVM, PR #93):
+
+- system/main.c: on macOS the main loop thread asks for user-interactive
+  QoS. It feeds the HDA DMA timer and the audio timer and runs virgl; at
+  the default QoS it waits behind the vCPU threads, so the sound breaks up.
+  QEMU_MAIN_LOOP_QOS=default keeps the old behaviour.
+- hda-codec: on a full output ring, keep the queued samples and only reset
+  the catch-up debt, instead of dropping the whole 8 KB buffer (~42 ms).
+- hda-codec: pacing (new "pace" property, on by default). After a stalled
+  main loop, take the guest's audio at most 1/32 faster than real time
+  instead of all at once.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Josh Guyette <joshguyette@yahoo.com>
+---
+ hw/audio/hda-codec.c  | 75 ++++++++++++++++++++++++++++++++++++++++---
+ hw/audio/trace-events |  1 +
+ system/main.c         | 27 ++++++++++++++++
+ 3 files changed, 98 insertions(+), 5 deletions(-)
+
+diff --git a/hw/audio/hda-codec.c b/hw/audio/hda-codec.c
+index 6f3a8f691b..66991009a1 100644
+--- a/hw/audio/hda-codec.c
++++ b/hw/audio/hda-codec.c
+@@ -172,6 +172,11 @@ struct HDAAudioStream {
+     int64_t wpos;
+     QEMUTimer *buft;
+     int64_t buft_start;
++    /* output pacing, see hda_audio_output_pace() */
++    bool primed;
++    int64_t run_ns;
++    int64_t pace_ns;
++    int64_t budget;
+ };
+ 
+ struct HDAAudioState {
+@@ -188,6 +193,7 @@ struct HDAAudioState {
+     uint32_t debug;
+     bool     mixer;
+     bool     use_timer;
++    bool     pace;
+ };
+ 
+ static inline uint32_t hda_bytes_per_second(HDAAudioStream *st)
+@@ -287,6 +293,55 @@ static void hda_audio_input_cb(void *opaque, int avail)
+     hda_timer_sync_adjust(st, -((wpos - rpos) - (B_SIZE >> 1)));
+ }
+ 
++/*
++ * No catch-up after a stalled main loop.
++ *
++ * The output timer takes guest audio by the clock. When the main loop stalls
++ * for S ms (virgl, or a Mac with every core busy), the backend keeps playing
++ * from its own ring, and the next timer runs took the whole S of guest audio
++ * at once, then the sync corrections pulled faster still. The guest saw its
++ * DMA position jump by S and under-ran unless its own buffer was larger.
++ *
++ * Once the stream has run for HDA_PACE_PRIME, the guest's audio is taken at
++ * most 1/32 faster than real time plus a burst of B_SIZE / 8; a debt beyond
++ * that is forgiven (the guest's clock pauses during a stall) and the
++ * backend's ring covers the stall. pace=off restores the old behaviour.
++ * Based on OmacVM's qemu-hda-no-catch-up.patch (MIT).
++ */
++#define HDA_PACE_BURST (B_SIZE / 8)
++#define HDA_PACE_PRIME (250 * SCALE_MS)
++
++static int64_t hda_audio_output_pace(HDAAudioStream *st, int64_t now,
++                                     int64_t wanted, int64_t to_transfer)
++{
++    int64_t bps = hda_bytes_per_second(st);
++
++    if (!st->state->pace || bps <= 0) {
++        return to_transfer;
++    }
++    if (!st->primed) {
++        if (now - st->run_ns < HDA_PACE_PRIME) {
++            st->pace_ns = now;
++            return to_transfer;
++        }
++        st->primed = true;
++        st->budget = HDA_PACE_BURST;
++    }
++    if (st->pace_ns && now > st->pace_ns) {
++        st->budget += muldiv64(now - st->pace_ns, bps + bps / 32,
++                               NANOSECONDS_PER_SECOND);
++    }
++    st->pace_ns = now;
++    st->budget = MIN(st->budget, (int64_t)HDA_PACE_BURST);
++    if (wanted - st->wpos > (int64_t)HDA_PACE_BURST) {
++        int64_t excess = wanted - st->wpos - HDA_PACE_BURST;
++
++        st->buft_start += muldiv64(excess, NANOSECONDS_PER_SECOND, bps);
++        trace_hda_audio_pace_forgive(st->node->name, excess);
++    }
++    return MIN(to_transfer, st->budget & -4);
++}
++
+ static void hda_audio_output_timer(void *opaque)
+ {
+     HDAAudioStream *st = opaque;
+@@ -313,6 +368,7 @@ static void hda_audio_output_timer(void *opaque)
+     }
+ 
+     int64_t to_transfer = MIN(B_SIZE - (wpos - rpos), wanted_wpos - wpos);
++    to_transfer = hda_audio_output_pace(st, now, wanted_wpos, to_transfer);
+     while (to_transfer) {
+         uint32_t start = (wpos & B_MASK);
+         uint32_t chunk = MIN(B_SIZE - start, to_transfer);
+@@ -324,6 +380,7 @@ static void hda_audio_output_timer(void *opaque)
+         wpos += chunk;
+         to_transfer -= chunk;
+         st->wpos += chunk;
++        st->budget -= chunk;
+     }
+ 
+ out_timer:
+@@ -343,12 +400,15 @@ static void hda_audio_output_cb(void *opaque, int avail)
+     int64_t to_transfer = MIN(wpos - rpos, avail);
+ 
+     if (wpos - rpos == B_SIZE) {
+-        /* drop buffer, reset timer adjust */
+-        st->rpos = 0;
+-        st->wpos = 0;
+-        st->buft_start = qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL);
++        /*
++         * Keep the queued samples (dropping them is an audible gap) and only
++         * discard the elapsed-time catch-up debt.
++         * Based on OmacVM's qemu-hda-full-ring-recovery.patch (MIT).
++         */
++        int64_t now = qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL);
++        st->buft_start = now - muldiv64(wpos, NANOSECONDS_PER_SECOND,
++                                       hda_bytes_per_second(st));
+         trace_hda_audio_overrun(st->node->name);
+-        return;
+     }
+ 
+     while (to_transfer) {
+@@ -434,6 +494,10 @@ static void hda_audio_set_running(HDAAudioStream *st, bool running)
+             st->rpos = 0;
+             st->wpos = 0;
+             st->buft_start = now;
++            st->primed = false;
++            st->run_ns = now;
++            st->pace_ns = 0;
++            st->budget = 0;
+             timer_mod_anticipate_ns(st->buft, now + HDA_TIMER_TICKS);
+         } else {
+             timer_del(st->buft);
+@@ -862,6 +926,7 @@ static const Property hda_audio_properties[] = {
+     DEFINE_PROP_UINT32("debug", HDAAudioState, debug,   0),
+     DEFINE_PROP_BOOL("mixer", HDAAudioState, mixer,  true),
+     DEFINE_PROP_BOOL("use-timer", HDAAudioState, use_timer,  true),
++    DEFINE_PROP_BOOL("pace", HDAAudioState, pace, true),
+ };
+ 
+ static void hda_audio_init_output(HDACodecDevice *hda, Error **errp)
+diff --git a/hw/audio/trace-events b/hw/audio/trace-events
+index b8ef572767..fadad9c333 100644
+--- a/hw/audio/trace-events
++++ b/hw/audio/trace-events
+@@ -22,6 +22,7 @@ hda_audio_running(const char *stream, int nr, bool running) "st %s, nr %d, run %
+ hda_audio_format(const char *stream, int chan, const char *fmt, int freq) "st %s, %d x %s @ %d Hz"
+ hda_audio_adjust(const char *stream, int pos) "st %s, pos %d"
+ hda_audio_overrun(const char *stream) "st %s"
++hda_audio_pace_forgive(const char *stream, int64_t bytes) "st %s forgiven %" PRId64 " bytes"
+ 
+ #via-ac97.c
+ via_ac97_codec_write(uint8_t addr, uint16_t val) "0x%x <- 0x%x"
+diff --git a/system/main.c b/system/main.c
+index 1c02206734..c41f4d0415 100644
+--- a/system/main.c
++++ b/system/main.c
+@@ -39,12 +39,39 @@
+ 
+ #ifdef CONFIG_DARWIN
+ #include <CoreFoundation/CoreFoundation.h>
++#include <pthread/qos.h>
++#endif
++
++#ifdef CONFIG_DARWIN
++/*
++ * The main loop feeds the sound card (the HDA DMA timer and the audio timer)
++ * and runs virgl. At the default QoS it competes with the vCPU threads, so a
++ * busy guest on a busy Mac delays it by tens of ms and the sound breaks up.
++ * Ask for user-interactive QoS, as the window thread has.
++ * QEMU_MAIN_LOOP_QOS=default keeps the default.
++ * Based on OmacVM's qemu-darwin-main-loop-qos.patch (MIT).
++ */
++static void darwin_main_loop_qos(void)
++{
++    const char *v = getenv("QEMU_MAIN_LOOP_QOS");
++
++    if (v && strcmp(v, "default") == 0) {
++        return;
++    }
++    if (pthread_set_qos_class_self_np(QOS_CLASS_USER_INTERACTIVE, 0) != 0) {
++        fprintf(stderr, "main loop: user-interactive QoS refused\n");
++    }
++}
+ #endif
+ 
+ static void *qemu_default_main(void *opaque)
+ {
+     int status;
+ 
++#ifdef CONFIG_DARWIN
++    darwin_main_loop_qos();
++#endif
++
+     replay_mutex_lock();
+     bql_lock();
+     status = qemu_main_loop();
+-- 
+2.54.0 (Apple Git-157)
+
+From 7d312eb47a94ee0a094d95cfa229d6b1b14f923f Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Tue, 10 Nov 2026 13:25:12 -0800
+Subject: [PATCH] hda-codec: catch up at once after a stall the ring covers
+
+The output pacing forgave any debt beyond B_SIZE / 8 (5 ms at 48 kHz
+stereo), and forgiven time comes back only at 1/32. A main loop that is
+late by more than that over and over therefore played the guest's audio
+slow: with the loop blocked for 12 ms 34 times a second, a 10 s tone took
+12.4 s to play, where it took 10.0 s before pacing. A host that coalesces
+timers to 8 ms did the same (a 20 s tone took 31 s).
+
+Allow a burst of the whole ring, so that a stall the ring can take is
+caught up at once, as it was before pacing. After a longer stall the debt
+is still forgiven down to B_SIZE / 8, so the guest's position does not
+jump.
+
+Assisted-by: Claude:claude-fable-5-2
+---
+ hw/audio/hda-codec.c | 27 ++++++++++++++++++---------
+ 1 file changed, 18 insertions(+), 9 deletions(-)
+
+diff --git a/hw/audio/hda-codec.c b/hw/audio/hda-codec.c
+index 66991009a1..d9993a4c28 100644
+--- a/hw/audio/hda-codec.c
++++ b/hw/audio/hda-codec.c
+@@ -294,21 +294,29 @@ static void hda_audio_input_cb(void *opaque, int avail)
+ }
+ 
+ /*
+- * No catch-up after a stalled main loop.
++ * Bounded catch-up after a stalled main loop.
+  *
+  * The output timer takes guest audio by the clock. When the main loop stalls
+  * for S ms (virgl, or a Mac with every core busy), the backend keeps playing
+- * from its own ring, and the next timer runs took the whole S of guest audio
+- * at once, then the sync corrections pulled faster still. The guest saw its
+- * DMA position jump by S and under-ran unless its own buffer was larger.
++ * from its own ring, and the next timer runs take the S of guest audio that
++ * is owed. That is right while the ring here can hold it. After a longer
++ * stall it cannot: the guest saw its DMA position jump and under-ran unless
++ * its own buffer was larger, and the sync corrections pulled faster still.
+  *
+  * Once the stream has run for HDA_PACE_PRIME, the guest's audio is taken at
+- * most 1/32 faster than real time plus a burst of B_SIZE / 8; a debt beyond
+- * that is forgiven (the guest's clock pauses during a stall) and the
+- * backend's ring covers the stall. pace=off restores the old behaviour.
++ * most 1/32 faster than real time plus a burst of HDA_PACE_BURST, the whole
++ * ring. A debt beyond the burst is forgiven down to HDA_PACE_RESUME (the
++ * guest's clock pauses during the stall) and the backend's ring covers the
++ * stall. pace=off restores the old behaviour.
+  * Based on OmacVM's qemu-hda-no-catch-up.patch (MIT).
++ *
++ * The burst must not be smaller than a stall that comes often. Forgiven time
++ * comes back only at 1/32, so a main loop that is late by more than the burst
++ * over and over (a frame of virgl work, coalesced timers) plays the guest's
++ * audio slow.
+  */
+-#define HDA_PACE_BURST (B_SIZE / 8)
++#define HDA_PACE_BURST B_SIZE
++#define HDA_PACE_RESUME (B_SIZE / 8)
+ #define HDA_PACE_PRIME (250 * SCALE_MS)
+ 
+ static int64_t hda_audio_output_pace(HDAAudioStream *st, int64_t now,
+@@ -334,9 +342,10 @@ static int64_t hda_audio_output_pace(HDAAudioStream *st, int64_t now,
+     st->pace_ns = now;
+     st->budget = MIN(st->budget, (int64_t)HDA_PACE_BURST);
+     if (wanted - st->wpos > (int64_t)HDA_PACE_BURST) {
+-        int64_t excess = wanted - st->wpos - HDA_PACE_BURST;
++        int64_t excess = wanted - st->wpos - HDA_PACE_RESUME;
+ 
+         st->buft_start += muldiv64(excess, NANOSECONDS_PER_SECOND, bps);
++        st->budget = MIN(st->budget, (int64_t)HDA_PACE_RESUME);
+         trace_hda_audio_pace_forgive(st->node->name, excess);
+     }
+     return MIN(to_transfer, st->budget & -4);
+-- 
+2.54.0 (Apple Git-157)
+
+From 65ddba202fe2ae31c9d0b4d333ca3bb226f6bb85 Mon Sep 17 00:00:00 2001
+From: Josh Guyette <joshguyette@yahoo.com>
+Date: Tue, 3 Nov 2026 17:14:31 -0600
+Subject: [PATCH] audio/coreaudio: jitter buffer
+
+Start playing only once half of the ring is queued, and prime again after
+an underrun. Without the cushion, playback runs with about one buffer
+queued, and every late audio timer costs a whole buffer of silence.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Josh Guyette <joshguyette@yahoo.com>
+---
+ audio/coreaudio.m | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+diff --git a/audio/coreaudio.m b/audio/coreaudio.m
+index 72a6df0f75..9303958cb9 100644
+--- a/audio/coreaudio.m
++++ b/audio/coreaudio.m
+@@ -42,6 +42,7 @@
+     UInt32 audioDevicePropertyBufferFrameSize;
+     AudioDeviceIOProcID ioprocid;
+     bool enabled;
++    bool primed;
+ } coreaudioVoiceOut;
+ 
+ static const AudioObjectPropertyAddress voice_addr = {
+@@ -325,8 +326,22 @@ static OSStatus audioDeviceIOProc(
+     frameCount = core->audioDevicePropertyBufferFrameSize;
+     pending_frames = hw->pending_emul / hw->info.bytes_per_frame;
+ 
++    /*
++     * Jitter buffer: start playing only once half of the ring is queued, and
++     * prime again after an underrun. Without the cushion, playback runs with
++     * about one buffer queued, and every late audio timer (the main loop also
++     * runs the vCPUs' I/O and virgl) costs a whole buffer of silence.
++     */
++    if (!core->primed && pending_frames < hw->samples / 2) {
++        inInputTime = 0;
++        coreaudio_buf_unlock (core, "audioDeviceIOProc(priming)");
++        return 0;
++    }
++    core->primed = true;
++
+     /* if there are not enough samples, set signal and return */
+     if (pending_frames < frameCount) {
++        core->primed = false;
+         inInputTime = 0;
+         coreaudio_buf_unlock (core, "audioDeviceIOProc(empty)");
+         return 0;
+@@ -642,6 +657,9 @@ static void coreaudio_enable_out(HWVoiceOut *hw, bool enable)
+     coreaudioVoiceOut *core = (coreaudioVoiceOut *) hw;
+ 
+     core->enabled = enable;
++    if (enable) {
++        core->primed = false;
++    }
+     update_device_playback_state(core);
+ }
+ 
+-- 
+2.54.0 (Apple Git-157)
+
+From e1c17c2009f746a6c1c0a9c6de222f8070a441b9 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Tue, 10 Nov 2026 16:51:06 -0800
+Subject: [PATCH] target/ppc: clear the BATs on CPU reset
+
+On 6xx/7xx/74xx CPUs the BAT registers are kept in env->IBAT[] and
+env->DBAT[], not in env->spr[]. ppc_cpu_reset_hold() restores env->spr[]
+from the SPR defaults and flushes the TLB, but it never touches the BAT
+arrays, so they are zero on a cold boot (the CPU state is allocated
+zeroed) and keep the guest's last values on every later reset.
+
+OpenBIOS relies on the cold boot state: it turns translation on without
+loading the BATs first and expects the next instruction fetch to raise
+an ISI, which is how it starts filling its page table. When a guest OS
+that has mapped the firmware's address range with a BAT resets the
+machine (Mac OS 9 "Restart" on mac99, or system_reset from the
+monitor), that fetch goes through the stale mapping instead. OpenBIOS
+then executes whatever the guest left there and hangs before it
+reinitialises the display, so the restart ends on a black screen:
+
+  CPU Reset (CPU 0)
+  Raise exception at fff08b3c => HV_EMU (96) error=21
+
+Clear both arrays in the reset handler so a reset starts from the same
+BAT state as a cold boot. This is done for all accelerators: with KVM
+the arrays are what kvm_arch_put_registers() pushes to the kernel after
+a reset.
+
+Upstream QEMU master has the same omission as of v11.2.0-rc0.
+
+Reported-by: TinBane
+Assisted-by: Claude:claude-fable-5-2
+---
+ target/ppc/cpu_init.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/target/ppc/cpu_init.c b/target/ppc/cpu_init.c
+index 21a76e904a..012957eb39 100644
+--- a/target/ppc/cpu_init.c
++++ b/target/ppc/cpu_init.c
+@@ -7282,6 +7282,15 @@ static void ppc_cpu_reset_hold(Object *obj, ResetType type)
+ #if !defined(CONFIG_USER_ONLY)
+     env->nip = env->hreset_vector | env->excp_prefix;
+ 
++    /*
++     * The BATs live outside env->spr[], so the loop over the SPR defaults
++     * below does not touch them. Clear them here, otherwise the mappings
++     * of the previous boot are still valid when the firmware turns
++     * translation back on after a guest-initiated reset.
++     */
++    memset(env->IBAT, 0, sizeof(env->IBAT));
++    memset(env->DBAT, 0, sizeof(env->DBAT));
++
+     if (tcg_enabled()) {
+         cpu_breakpoint_remove_all(cs, BP_CPU);
+         cpu_watchpoint_remove_all(cs, BP_CPU);
+-- 
+2.54.0 (Apple Git-157)
+
+
+From 0f1b8666d16024fc1a615ef641833ceebc260039 Mon Sep 17 00:00:00 2001
+From: Mike Miller <emkey1@oneopa.com>
+Date: Wed, 4 Nov 2026 09:13:08 +0000
+Subject: [PATCH] migration/savevm: answer the command that starts a snapshot
+ job first
+
+snapshot-save, snapshot-load and snapshot-delete start a job whose
+coroutine schedules the actual work as a bottom half in the main
+AioContext and yields. The command itself runs in a bottom half of the
+iohandler context, and its reply is sent by the QMP dispatcher
+coroutine, which is woken through that same context once the command
+handler returns. The main loop gets to the main AioContext's bottom
+half before it gets back to the dispatcher, and the work blocks the
+main loop until it is done. So the reply goes out only after the
+snapshot has been written or loaded, together with the job's
+"concluded" event.
+
+A client that puts a deadline on the reply (QEMUKit, used by UTM, waits
+10 s) then reports a save that takes longer as failed, although QEMU
+finishes it and the state stays in the image with nothing referring to
+it.
+
+Put the work behind the reply: the job coroutine now schedules a bottom
+half in the iohandler context, and that one schedules the work in the
+main AioContext. It runs in the same pass over the iohandler context as
+the dispatcher's wake-up, and the main AioContext is only dispatched
+after that pass, so the reply is written first. Errors are reported
+through the job as before.
+
+Measured over QMP with an aarch64 HVF guest holding 2 GiB of random data
+in tmpfs (2.7 GiB vmstate), time from sending the command to its reply /
+to JOB_STATUS_CHANGE "concluded":
+
+                    before                  after
+  snapshot-save     1467.4 ms / 1467.5 ms   0.9 ms / 1467.6 ms
+  snapshot-load     1433.5 ms / 1433.6 ms   1.3 ms / 1425.4 ms
+  snapshot-delete     90.3 ms /   90.3 ms   1.7 ms /   91.6 ms
+
+Upstream QEMU master (v11.2.0-rc0) schedules the work the same way and
+has the same ordering.
+
+(cherry picked from commit 3f572363b83a3b64de9fd2d21a5fbbfc652caff8
+ of https://github.com/emkey1/qemu; commit message rewritten)
+Assisted-by: Claude:claude-opus-5-5
+Assisted-by: Claude:claude-fable-5-2
+---
+ migration/savevm.c | 32 ++++++++++++++++++++++++++------
+ 1 file changed, 26 insertions(+), 6 deletions(-)
+
+diff --git a/migration/savevm.c b/migration/savevm.c
+index ce158c3512..f4dcd2a471 100644
+--- a/migration/savevm.c
++++ b/migration/savevm.c
+@@ -3547,6 +3547,7 @@ typedef struct SnapshotJob {
+     Coroutine *co;
+     Error **errp;
+     bool ret;
++    QEMUBHFunc *work;
+ } SnapshotJob;
+ 
+ static void qmp_snapshot_job_free(SnapshotJob *s)
+@@ -3605,13 +3606,30 @@ static void snapshot_delete_job_bh(void *opaque)
+     aio_co_wake(s->co);
+ }
+ 
++/*
++ * A snapshot job's work holds up the main loop, so QEMU answers nothing until
++ * it is done, and that includes the command that started the job, whose answer
++ * is still on its way out. A client that gives up on that answer takes a long
++ * save for a failed one, while the save goes on and stays in the image. So the
++ * work goes behind the answer: the monitor's wake-up is waiting in the monitor's
++ * context when this runs there, and the main context's turn comes after it.
++ */
++static void snapshot_job_after_answer_bh(void *opaque)
++{
++    Job *job = opaque;
++    SnapshotJob *s = container_of(job, SnapshotJob, common);
++
++    aio_bh_schedule_oneshot(qemu_get_aio_context(), s->work, job);
++}
++
+ static int coroutine_fn snapshot_save_job_run(Job *job, Error **errp)
+ {
+     SnapshotJob *s = container_of(job, SnapshotJob, common);
+     s->errp = errp;
+     s->co = qemu_coroutine_self();
+-    aio_bh_schedule_oneshot(qemu_get_aio_context(),
+-                            snapshot_save_job_bh, job);
++    s->work = snapshot_save_job_bh;
++    aio_bh_schedule_oneshot(iohandler_get_aio_context(),
++                            snapshot_job_after_answer_bh, job);
+     qemu_coroutine_yield();
+     return s->ret ? 0 : -1;
+ }
+@@ -3621,8 +3639,9 @@ static int coroutine_fn snapshot_load_job_run(Job *job, Error **errp)
+     SnapshotJob *s = container_of(job, SnapshotJob, common);
+     s->errp = errp;
+     s->co = qemu_coroutine_self();
+-    aio_bh_schedule_oneshot(qemu_get_aio_context(),
+-                            snapshot_load_job_bh, job);
++    s->work = snapshot_load_job_bh;
++    aio_bh_schedule_oneshot(iohandler_get_aio_context(),
++                            snapshot_job_after_answer_bh, job);
+     qemu_coroutine_yield();
+     return s->ret ? 0 : -1;
+ }
+@@ -3632,8 +3651,9 @@ static int coroutine_fn snapshot_delete_job_run(Job *job, Error **errp)
+     SnapshotJob *s = container_of(job, SnapshotJob, common);
+     s->errp = errp;
+     s->co = qemu_coroutine_self();
+-    aio_bh_schedule_oneshot(qemu_get_aio_context(),
+-                            snapshot_delete_job_bh, job);
++    s->work = snapshot_delete_job_bh;
++    aio_bh_schedule_oneshot(iohandler_get_aio_context(),
++                            snapshot_job_after_answer_bh, job);
+     qemu_coroutine_yield();
+     return s->ret ? 0 : -1;
+ }
+-- 
+2.54.0 (Apple Git-157)
+
+
