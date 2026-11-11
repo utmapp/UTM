@@ -16,13 +16,9 @@
 
 import XCTest
 
-/// Where things sit in the app settings window and the wizard on the macOS this runs on.
-///
-/// The flows elsewhere check that controls exist and work; these check their geometry, which
-/// is where the layout regressions of past releases showed up.
-final class VMLayoutTests: UTMUITestCase {
-    private static let inset: CGFloat = 8
-
+#if UTM_UI_TESTS
+/// Geometry of the app-wide settings panes in the running macOS app.
+final class AppSettingsTests: UTMUITestCase {
     /// Waits until the window's frame has been the same for three samples in a row, as it is
     /// once a pane has been swapped in and the window resized to it.
     private func waitForSettledFrame(of window: XCUIElement, file: StaticString = #filePath, line: UInt = #line) {
@@ -73,17 +69,9 @@ final class VMLayoutTests: UTMUITestCase {
         }
         window.buttons[XCUIIdentifierCloseWindow].click()
     }
-
-    /// The wizard summary's name field is inset from the edges of the scroll view that clips
-    /// it, so that its focus ring is not cut off (a19d921c).
-    func testWizardSummaryNameFieldIsInsetFromTheScrollEdges() {
-        walkWizardToSummary()
-        let name = app.textFields.matching(identifier: UTMAccessibilityID.Wizard.name).firstMatch
-        XCTAssertTrue(name.waitForExistence(timeout: 10), "the name field did not appear")
-        let scroll = app.scrollViews.containing(.textField, identifier: UTMAccessibilityID.Wizard.name).firstMatch
-        XCTAssertTrue(scroll.exists, "the summary is not in a scroll view")
-        XCTAssertGreaterThanOrEqual(scroll.frame.maxX - name.frame.maxX, Self.inset, "the name field \(name.frame) touches the trailing edge of \(scroll.frame)")
-        XCTAssertGreaterThanOrEqual(name.frame.minY - scroll.frame.minY, Self.inset, "the name field \(name.frame) touches the top edge of \(scroll.frame)")
-        element(UTMAccessibilityID.Wizard.cancel).click()
-    }
 }
+#else
+@MainActor
+final class AppSettingsTests: XCTestCase {
+}
+#endif

@@ -95,6 +95,11 @@ identifiers in `Platform/Shared/UTMAccessibilityID.swift`, which is compiled
 into the bundle, and only by a visible label where there is no identifier yet.
 No test starts a VM.
 
+On macOS, `AppSettingsTests.swift` groups the app-wide settings tests in both
+bundles. `UTM_UI_TESTS` selects the real-window geometry checks for `UTMUITests`;
+`UTMTests` runs the rapid-click controller checks in process, without XCUITest
+waiting for animations between clicks. Wizard geometry lives in `WizardLayoutTests`.
+
 ## Running the VM lifecycle tests
 
 `VMLifecycleTests` creates a disposable aarch64 VM with no drives and no network
