@@ -165,31 +165,49 @@ class VMDisplayWindowController: NSWindowController, UTMVirtualMachineDelegate {
     @IBAction dynamic func usbButtonPressed(_ sender: Any) {
         let menu = NSMenu()
         updateUsbMenu(menu)
-        menu.popUp(positioning: nil, at: NSEvent.mouseLocation, in: nil)
+        popUp(menu, from: sender)
     }
     
     @IBAction dynamic func drivesButtonPressed(_ sender: Any) {
         let menu = NSMenu()
         updateDrivesMenu(menu)
-        menu.popUp(positioning: nil, at: NSEvent.mouseLocation, in: nil)
+        popUp(menu, from: sender)
     }
     
     @IBAction dynamic func sharedFolderButtonPressed(_ sender: Any) {
         let menu = NSMenu()
         updateSharedFolderMenu(menu)
-        menu.popUp(positioning: nil, at: NSEvent.mouseLocation, in: nil)
+        popUp(menu, from: sender)
     }
     
     @IBAction dynamic func windowsButtonPressed(_ sender: Any) {
         let menu = NSMenu()
         updateWindowsMenu(menu)
-        menu.popUp(positioning: nil, at: NSEvent.mouseLocation, in: nil)
+        popUp(menu, from: sender)
     }
 
     @IBAction dynamic func keyboardShortcutsButtonPressed(_ sender: Any) {
         let menu = NSMenu()
         updateKeyboardShortcutMenu(menu)
-        menu.popUp(positioning: nil, at: NSEvent.mouseLocation, in: nil)
+        popUp(menu, from: sender)
+    }
+
+    /// Shows a menu under the toolbar button it belongs to.
+    ///
+    /// The button is not always pressed with the pointer over it (keyboard, VoiceOver, touch display), so
+    /// the pointer location is only used when there is no button to anchor to, as in the toolbar overflow menu.
+    /// - Parameters:
+    ///   - menu: Menu to show
+    ///   - sender: Sender of the action
+    private func popUp(_ menu: NSMenu, from sender: Any) {
+        guard let view = sender as? NSView, view.window != nil else {
+            menu.popUp(positioning: nil, at: NSEvent.mouseLocation, in: nil)
+            return
+        }
+        let spacing: CGFloat = 4
+        let origin = NSPoint(x: view.bounds.minX,
+                             y: view.isFlipped ? view.bounds.maxY + spacing : view.bounds.minY - spacing)
+        menu.popUp(positioning: nil, at: origin, in: view)
     }
 
     @MainActor
