@@ -7113,3 +7113,125 @@ index 21a76e904a..012957eb39 100644
 2.54.0 (Apple Git-157)
 
 
+From 0f1b8666d16024fc1a615ef641833ceebc260039 Mon Sep 17 00:00:00 2001
+From: Mike Miller <emkey1@oneopa.com>
+Date: Wed, 4 Nov 2026 09:13:08 +0000
+Subject: [PATCH] migration/savevm: answer the command that starts a snapshot
+ job first
+
+snapshot-save, snapshot-load and snapshot-delete start a job whose
+coroutine schedules the actual work as a bottom half in the main
+AioContext and yields. The command itself runs in a bottom half of the
+iohandler context, and its reply is sent by the QMP dispatcher
+coroutine, which is woken through that same context once the command
+handler returns. The main loop gets to the main AioContext's bottom
+half before it gets back to the dispatcher, and the work blocks the
+main loop until it is done. So the reply goes out only after the
+snapshot has been written or loaded, together with the job's
+"concluded" event.
+
+A client that puts a deadline on the reply (QEMUKit, used by UTM, waits
+10 s) then reports a save that takes longer as failed, although QEMU
+finishes it and the state stays in the image with nothing referring to
+it.
+
+Put the work behind the reply: the job coroutine now schedules a bottom
+half in the iohandler context, and that one schedules the work in the
+main AioContext. It runs in the same pass over the iohandler context as
+the dispatcher's wake-up, and the main AioContext is only dispatched
+after that pass, so the reply is written first. Errors are reported
+through the job as before.
+
+Measured over QMP with an aarch64 HVF guest holding 2 GiB of random data
+in tmpfs (2.7 GiB vmstate), time from sending the command to its reply /
+to JOB_STATUS_CHANGE "concluded":
+
+                    before                  after
+  snapshot-save     1467.4 ms / 1467.5 ms   0.9 ms / 1467.6 ms
+  snapshot-load     1433.5 ms / 1433.6 ms   1.3 ms / 1425.4 ms
+  snapshot-delete     90.3 ms /   90.3 ms   1.7 ms /   91.6 ms
+
+Upstream QEMU master (v11.2.0-rc0) schedules the work the same way and
+has the same ordering.
+
+(cherry picked from commit 3f572363b83a3b64de9fd2d21a5fbbfc652caff8
+ of https://github.com/emkey1/qemu; commit message rewritten)
+Assisted-by: Claude:claude-opus-5-5
+Assisted-by: Claude:claude-fable-5-2
+---
+ migration/savevm.c | 32 ++++++++++++++++++++++++++------
+ 1 file changed, 26 insertions(+), 6 deletions(-)
+
+diff --git a/migration/savevm.c b/migration/savevm.c
+index ce158c3512..f4dcd2a471 100644
+--- a/migration/savevm.c
++++ b/migration/savevm.c
+@@ -3547,6 +3547,7 @@ typedef struct SnapshotJob {
+     Coroutine *co;
+     Error **errp;
+     bool ret;
++    QEMUBHFunc *work;
+ } SnapshotJob;
+ 
+ static void qmp_snapshot_job_free(SnapshotJob *s)
+@@ -3605,13 +3606,30 @@ static void snapshot_delete_job_bh(void *opaque)
+     aio_co_wake(s->co);
+ }
+ 
++/*
++ * A snapshot job's work holds up the main loop, so QEMU answers nothing until
++ * it is done, and that includes the command that started the job, whose answer
++ * is still on its way out. A client that gives up on that answer takes a long
++ * save for a failed one, while the save goes on and stays in the image. So the
++ * work goes behind the answer: the monitor's wake-up is waiting in the monitor's
++ * context when this runs there, and the main context's turn comes after it.
++ */
++static void snapshot_job_after_answer_bh(void *opaque)
++{
++    Job *job = opaque;
++    SnapshotJob *s = container_of(job, SnapshotJob, common);
++
++    aio_bh_schedule_oneshot(qemu_get_aio_context(), s->work, job);
++}
++
+ static int coroutine_fn snapshot_save_job_run(Job *job, Error **errp)
+ {
+     SnapshotJob *s = container_of(job, SnapshotJob, common);
+     s->errp = errp;
+     s->co = qemu_coroutine_self();
+-    aio_bh_schedule_oneshot(qemu_get_aio_context(),
+-                            snapshot_save_job_bh, job);
++    s->work = snapshot_save_job_bh;
++    aio_bh_schedule_oneshot(iohandler_get_aio_context(),
++                            snapshot_job_after_answer_bh, job);
+     qemu_coroutine_yield();
+     return s->ret ? 0 : -1;
+ }
+@@ -3621,8 +3639,9 @@ static int coroutine_fn snapshot_load_job_run(Job *job, Error **errp)
+     SnapshotJob *s = container_of(job, SnapshotJob, common);
+     s->errp = errp;
+     s->co = qemu_coroutine_self();
+-    aio_bh_schedule_oneshot(qemu_get_aio_context(),
+-                            snapshot_load_job_bh, job);
++    s->work = snapshot_load_job_bh;
++    aio_bh_schedule_oneshot(iohandler_get_aio_context(),
++                            snapshot_job_after_answer_bh, job);
+     qemu_coroutine_yield();
+     return s->ret ? 0 : -1;
+ }
+@@ -3632,8 +3651,9 @@ static int coroutine_fn snapshot_delete_job_run(Job *job, Error **errp)
+     SnapshotJob *s = container_of(job, SnapshotJob, common);
+     s->errp = errp;
+     s->co = qemu_coroutine_self();
+-    aio_bh_schedule_oneshot(qemu_get_aio_context(),
+-                            snapshot_delete_job_bh, job);
++    s->work = snapshot_delete_job_bh;
++    aio_bh_schedule_oneshot(iohandler_get_aio_context(),
++                            snapshot_job_after_answer_bh, job);
+     qemu_coroutine_yield();
+     return s->ret ? 0 : -1;
+ }
+-- 
+2.54.0 (Apple Git-157)
+
+
