@@ -7053,3 +7053,63 @@ index 72a6df0f75..9303958cb9 100644
 -- 
 2.54.0 (Apple Git-157)
 
+From e1c17c2009f746a6c1c0a9c6de222f8070a441b9 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Tue, 10 Nov 2026 16:51:06 -0800
+Subject: [PATCH] target/ppc: clear the BATs on CPU reset
+
+On 6xx/7xx/74xx CPUs the BAT registers are kept in env->IBAT[] and
+env->DBAT[], not in env->spr[]. ppc_cpu_reset_hold() restores env->spr[]
+from the SPR defaults and flushes the TLB, but it never touches the BAT
+arrays, so they are zero on a cold boot (the CPU state is allocated
+zeroed) and keep the guest's last values on every later reset.
+
+OpenBIOS relies on the cold boot state: it turns translation on without
+loading the BATs first and expects the next instruction fetch to raise
+an ISI, which is how it starts filling its page table. When a guest OS
+that has mapped the firmware's address range with a BAT resets the
+machine (Mac OS 9 "Restart" on mac99, or system_reset from the
+monitor), that fetch goes through the stale mapping instead. OpenBIOS
+then executes whatever the guest left there and hangs before it
+reinitialises the display, so the restart ends on a black screen:
+
+  CPU Reset (CPU 0)
+  Raise exception at fff08b3c => HV_EMU (96) error=21
+
+Clear both arrays in the reset handler so a reset starts from the same
+BAT state as a cold boot. This is done for all accelerators: with KVM
+the arrays are what kvm_arch_put_registers() pushes to the kernel after
+a reset.
+
+Upstream QEMU master has the same omission as of v11.2.0-rc0.
+
+Reported-by: TinBane
+Assisted-by: Claude:claude-fable-5-2
+---
+ target/ppc/cpu_init.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/target/ppc/cpu_init.c b/target/ppc/cpu_init.c
+index 21a76e904a..012957eb39 100644
+--- a/target/ppc/cpu_init.c
++++ b/target/ppc/cpu_init.c
+@@ -7282,6 +7282,15 @@ static void ppc_cpu_reset_hold(Object *obj, ResetType type)
+ #if !defined(CONFIG_USER_ONLY)
+     env->nip = env->hreset_vector | env->excp_prefix;
+ 
++    /*
++     * The BATs live outside env->spr[], so the loop over the SPR defaults
++     * below does not touch them. Clear them here, otherwise the mappings
++     * of the previous boot are still valid when the firmware turns
++     * translation back on after a guest-initiated reset.
++     */
++    memset(env->IBAT, 0, sizeof(env->IBAT));
++    memset(env->DBAT, 0, sizeof(env->DBAT));
++
+     if (tcg_enabled()) {
+         cpu_breakpoint_remove_all(cs, BP_CPU);
+         cpu_watchpoint_remove_all(cs, BP_CPU);
+-- 
+2.54.0 (Apple Git-157)
+
+
