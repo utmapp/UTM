@@ -381,43 +381,55 @@ struct ApplicationSettingsView: View {
     @State private var isConfirmResetAutoConnect = false
 
     var body: some View {
-        Form {
-            Toggle(isOn: $isKeepRunningAfterLastWindowClosed, label: {
-                Text("Keep UTM running after last window is closed and all VMs are shut down")
-            })
-            if #available(macOS 13, *) {
-                Toggle(isOn: $isDockIconHidden.inverted, label: {
-                    Text("Show dock icon")
-                }).onChange(of: isDockIconHidden) { newValue in
-                    if newValue {
-                        isMenuIconShown = true
-                        isKeepRunningAfterLastWindowClosed = true
+        SettingsPane {
+            SettingsRow("Application") {
+                Toggle(isOn: $isKeepRunningAfterLastWindowClosed, label: {
+                    Text("Keep running after all windows and virtual machines are closed")
+                })
+                if #available(macOS 13, *) {
+                    Toggle(isOn: $isDockIconHidden.inverted, label: {
+                        Text("Show dock icon")
+                    }).onChange(of: isDockIconHidden) { newValue in
+                        if newValue {
+                            isMenuIconShown = true
+                            isKeepRunningAfterLastWindowClosed = true
+                        }
                     }
+                    Toggle(isOn: $isMenuIconShown, label: {
+                        Text("Show menu bar icon")
+                    }).disabled(isDockIconHidden)
                 }
-                Toggle(isOn: $isMenuIconShown, label: {
-                    Text("Show menu bar icon")
-                }).disabled(isDockIconHidden)
             }
-            Toggle(isOn: $isPreventIdleSleep, label: {
-                Text("Prevent system from sleeping when any VM is running")
-            })
-            Picker("Running VMs on quit", selection: $quitPolicy) {
-                Text("Save State (Default)").tag(UTMQuitPolicy.saveState.rawValue)
-                Text("Request Power Down").tag(UTMQuitPolicy.requestPowerDown.rawValue)
+            SettingsRow("Sleep") {
+                Toggle(isOn: $isPreventIdleSleep, label: {
+                    Text("Prevent system from sleeping when any VM is running")
+                })
             }
-            .fixedSize(horizontal: true, vertical: false)
-            .help("Choose whether UTM saves the state of running virtual machines or requests that their guest operating systems shut down when UTM quits.")
-            Toggle(isOn: $isNoQuitConfirmation, label: {
-                Text("Do not show confirmation when closing a running VM")
-            }).help("Closing a VM without properly shutting it down could result in data loss.")
-
-            Section(header: Text("QEMU USB")) {
+            SettingsRow("Running VMs on quit") {
+                SettingsPicker(
+                    "Running VMs on quit",
+                    selection: $quitPolicy,
+                    options: [
+                        ("Save State (Default)", UTMQuitPolicy.saveState.rawValue),
+                        ("Request Power Down", UTMQuitPolicy.requestPowerDown.rawValue)
+                    ]
+                )
+                .fixedSize(horizontal: true, vertical: false)
+                .help("Choose whether UTM saves the state of running virtual machines or requests that their guest operating systems shut down when UTM quits.")
+            }
+            SettingsRow("Closing a VM") {
+                Toggle(isOn: $isNoQuitConfirmation, label: {
+                    Text("Do not show confirmation when closing a running VM")
+                }).help("Closing a VM without properly shutting it down could result in data loss.")
+            }
+            SettingsRow("QEMU USB") {
                 Toggle(isOn: $isNoUsbPrompt, label: {
                     Text("Do not show prompt when USB device is plugged in")
                 })
                 Button("Reset auto connect devices…") {
                     isConfirmResetAutoConnect.toggle()
                 }.help("Clears all saved USB devices.")
+                .padding(.top, 6)
                 .alert(isPresented: $isConfirmResetAutoConnect) {
                     Alert(title: Text("Do you wish to reset all saved USB devices?"), primaryButton: .cancel(), secondaryButton: .destructive(Text("Reset")) {
                         UTMUSBManager.shared.usbDevices.removeAll()
