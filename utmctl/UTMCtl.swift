@@ -71,7 +71,13 @@ extension UTMAPICommand {
                 }
             }
         }
+        // hiding the window is best effort and does not decide the exit status
+        UTMCtl.EventErrorHandler.shared.hasFailed = false
         try run(with: utmApp)
+        // a failed event has been reported already
+        if UTMCtl.EventErrorHandler.shared.hasFailed {
+            throw ExitCode.failure
+        }
     }
     
     /// Get a virtual machine from an identifier
@@ -140,7 +146,7 @@ extension UTMCtl {
         static let shared = EventErrorHandler()
 
         /// An event failed, so what it returned must not be used
-        private(set) var hasFailed = false
+        var hasFailed = false
         
         /// Error handler for scripting events
         /// - Parameters:
@@ -519,6 +525,9 @@ extension UTMCtl {
         func run(with application: UTMScriptingApplication) throws {
             let vm = try virtualMachine(forIdentifier: identifer, in: application)
             let file = vm.openFileAt!(path, for: .reading, updating: false)
+            guard !EventErrorHandler.shared.hasFailed else {
+                throw ExitCode.failure
+            }
             var data: Data
             repeat {
                 let text = file.readAtOffset!(0, from: .currentPosition, forLength: 4096, base64Encoding: true, closing: false)
@@ -545,6 +554,9 @@ extension UTMCtl {
         func run(with application: UTMScriptingApplication) throws {
             let vm = try virtualMachine(forIdentifier: identifer, in: application)
             let file = vm.openFileAt!(path, for: .writing, updating: false)
+            guard !EventErrorHandler.shared.hasFailed else {
+                throw ExitCode.failure
+            }
             var data: Data
             repeat {
                 data = try FileHandle.standardInput.read(upToCount: 4096) ?? Data()
@@ -586,6 +598,9 @@ extension UTMCtl {
                 data = Data()
             }
             let process = vm.executeAt!(path, withArguments: args, withEnvironment: env, usingInput: data.base64EncodedString(), base64Encoding: true, outputCapturing: true)
+            guard !EventErrorHandler.shared.hasFailed else {
+                throw ExitCode.failure
+            }
             var result: [AnyHashable: Any]
             repeat {
                 result = process.getResult!()
