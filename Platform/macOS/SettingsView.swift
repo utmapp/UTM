@@ -245,15 +245,102 @@ private enum SettingsLayout {
 
 private struct SettingsPane<Content: View>: View {
     @ViewBuilder let content: Content
+    @State private var pickerWidth: CGFloat = 0
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             content
         }
         .toggleStyle(.checkbox)
+        .environment(\.settingsPickerWidth, pickerWidth)
+        .onPreferenceChange(SettingsPickerWidth.self) { pickerWidth = $0 }
         .frame(width: SettingsLayout.formWidth)
         .padding(.vertical, 12)
         .frame(maxWidth: .infinity)
+    }
+}
+
+private extension EnvironmentValues {
+    var settingsPickerWidth: CGFloat {
+        get { self[SettingsPickerWidth.self] }
+        set { self[SettingsPickerWidth.self] = newValue }
+    }
+}
+
+private struct SettingsPickerWidth: EnvironmentKey, PreferenceKey {
+    static var defaultValue: CGFloat { 0 }
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = max(value, nextValue())
+    }
+}
+
+private struct SettingsPicker<Value: Equatable>: View {
+    let title: LocalizedStringKey
+    @Binding var selection: Value
+    let options: [(String, Value)]
+    @Environment(\.settingsPickerWidth) private var width
+
+    init(_ title: LocalizedStringKey, selection: Binding<Value>, options: [(String, Value)]) {
+        self.title = title
+        self._selection = selection
+        self.options = options
+    }
+
+    var body: some View {
+        let sizingButton = NSPopUpButton(frame: .zero, pullsDown: false)
+        sizingButton.font = .systemFont(ofSize: NSFont.systemFontSize)
+        sizingButton.addItems(withTitles: options.map { NSLocalizedString($0.0, comment: "") })
+        sizingButton.sizeToFit()
+        let naturalWidth = ceil(sizingButton.frame.width)
+        return NativeSettingsPicker(title: title, selection: $selection, options: options)
+            .frame(width: max(width, naturalWidth), height: 22, alignment: .leading)
+            .preference(key: SettingsPickerWidth.self, value: naturalWidth)
+    }
+}
+
+struct NativeSettingsPicker<Value: Equatable>: NSViewRepresentable {
+    let title: LocalizedStringKey
+    @Binding var selection: Value
+    let options: [(String, Value)]
+    @Environment(\.isEnabled) private var isEnabled
+
+    func makeCoordinator() -> Coordinator { Coordinator(self) }
+
+    func makeNSView(context: Context) -> NSPopUpButton {
+        let button = NSPopUpButton(frame: .zero, pullsDown: false)
+        button.font = .systemFont(ofSize: NSFont.systemFontSize)
+        button.setContentHuggingPriority(.init(1), for: .horizontal)
+        button.setContentCompressionResistancePriority(.init(1), for: .horizontal)
+        button.target = context.coordinator
+        button.action = #selector(Coordinator.select(_:))
+        return button
+    }
+
+    func updateNSView(_ button: NSPopUpButton, context: Context) {
+        context.coordinator.parent = self
+        let titles = options.map { NSLocalizedString($0.0, comment: "") }
+        if button.itemTitles != titles {
+            button.removeAllItems()
+            button.addItems(withTitles: titles)
+        }
+        if let index = options.firstIndex(where: { $0.1 == selection }) {
+            button.selectItem(at: index)
+        } else {
+            button.select(nil)
+        }
+        button.isEnabled = isEnabled
+        button.setAccessibilityLabel(title.localizedString)
+    }
+
+    @MainActor
+    final class Coordinator: NSObject {
+        var parent: NativeSettingsPicker
+        init(_ parent: NativeSettingsPicker) { self.parent = parent }
+        @objc func select(_ sender: NSPopUpButton) {
+            let index = sender.indexOfSelectedItem
+            guard parent.options.indices.contains(index) else { return }
+            parent.selection = parent.options[index].1
+        }
     }
 }
 

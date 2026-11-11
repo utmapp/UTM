@@ -121,5 +121,38 @@ final class AppSettingsTests: XCTestCase {
     func testThirdPaneDuringTransitionUsesLatestClick() async throws {
         try await checkLatestClick(2)
     }
+
+    private func picker(in view: NSView) -> NSPopUpButton? {
+        (view as? NSPopUpButton) ?? view.subviews.lazy.compactMap { self.picker(in: $0) }.first
+    }
+
+    func testUnavailablePickerValuesDoNotDisplayAnotherChoice() async throws {
+        _ = NSApplication.shared
+        var selection = 3
+        let options = [("Default", 0), ("Disabled", 1), ("MoltenVK", 2)]
+        let makePicker = { options in
+            NativeSettingsPicker(title: "Vulkan Driver", selection: Binding(get: { selection }, set: { selection = $0 }), options: options)
+        }
+        let host = NSHostingView(rootView: makePicker(options))
+        host.frame = NSRect(x: 0, y: 0, width: 200, height: 100)
+        host.layoutSubtreeIfNeeded()
+        _ = await waitUntil { self.picker(in: host) != nil }
+        let button = try XCTUnwrap(picker(in: host))
+        XCTAssertNil(button.selectedItem, "An unavailable value must not appear as Default")
+        XCTAssertEqual(selection, 3, "Rendering must preserve the stored setting")
+        selection = 2
+        for (items, index) in [(options, 2), (Array(options.prefix(2)), -1), (options, 2)] {
+            host.rootView = makePicker(items)
+            let updated = await waitUntil {
+                host.layoutSubtreeIfNeeded()
+                return button.numberOfItems == items.count && button.indexOfSelectedItem == index
+            }
+            XCTAssertTrue(updated, "Expected selection \(index) with \(items.count) options")
+            XCTAssertEqual(selection, 2)
+        }
+        button.selectItem(at: 0)
+        XCTAssertTrue(NSApp.sendAction(try XCTUnwrap(button.action), to: button.target, from: button))
+        XCTAssertEqual(selection, 0, "The user must still be able to choose a supported value")
+    }
 }
 #endif
