@@ -41,7 +41,7 @@ private struct SettingsTabsView: NSViewControllerRepresentable {
         var title: LocalizedStringKey {
             switch self {
             case .application:
-                return "Application"
+                return "General"
             case .display:
                 return "Display"
             case .sound:
@@ -51,7 +51,7 @@ private struct SettingsTabsView: NSViewControllerRepresentable {
             case .network:
                 return "Network"
             case .file:
-                return "File"
+                return "Files"
             case .server:
                 return "Server"
             }
@@ -60,7 +60,7 @@ private struct SettingsTabsView: NSViewControllerRepresentable {
         var systemImage: String {
             switch self {
             case .application:
-                return "app.badge"
+                return "gearshape"
             case .display:
                 return "rectangle.on.rectangle"
             case .sound:
