@@ -267,7 +267,7 @@ extension UTMCtl {
         
         @OptionGroup var identifer: VMIdentifier
         
-        @Flag(name: .shortAndLong, help: "Attach to the first serial port after start.")
+        @Flag(name: .shortAndLong, help: "Attach to the first serial port after start. (Not implemented yet.)")
         var attach: Bool = false
         
         @Flag(help: "Run VM as a snapshot and do not save changes to disk.")
@@ -455,7 +455,8 @@ extension UTMCtl {
 extension UTMCtl {
     struct Attach: UTMAPICommand {
         static var configuration = CommandConfiguration(
-            abstract: "Redirect the serial input/output to this terminal."
+            abstract: "Print the address of a serial port to connect to.",
+            discussion: "Redirecting the serial input/output to this terminal is not implemented yet."
         )
         
         @OptionGroup var environment: EnvironmentOptions
