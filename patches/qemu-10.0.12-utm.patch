@@ -4548,3 +4548,146 @@ index de53f96d6c..2af06db3e4 100644
 -- 
 2.41.0
 
+From e37b2e515d5ce07f09aa34d458baf5c1b0316697 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Tue, 10 Nov 2026 20:10:52 -0800
+Subject: [PATCH] usb-redir: fix up ep0 maxpacket for every device not attached
+ at superspeed
+
+A USB 3 device reports bMaxPacketSize0 = 9 (2^9 bytes) in its device
+descriptor. That is only valid on a SuperSpeed link, so the descriptor
+of a redirected device is rewritten to 64 when the guest sees the device
+at a lower speed. A guest that gets the 9 gives up on the device:
+
+  usb 1-1: new high-speed USB device number 2 using xhci_hcd
+  usb 1-1: Invalid ep0 maxpacket: 9
+
+The rewrite was limited to devices whose speed is SuperSpeed on a port
+without it. Since usb_pick_speed() (b791c3b38c) the speed of an attached
+device is the one it runs at on its port, so that is never the case and
+the rewrite did not happen at all:
+
+- A SuperSpeed device on a USB 2 controller is attached at high speed.
+- A device the usb-host announces with an unknown speed is attached at
+  full or high speed. The usb-redir protocol has no speed above
+  SuperSpeed, and usbredirhost announces a SuperSpeedPlus (10 Gbit/s)
+  device as unknown.
+
+Rewrite the descriptor whenever the device is not attached at
+SuperSpeed. A device that really runs below SuperSpeed never has a 9
+there, so nothing changes for those.
+
+Based on a change by giovariot.
+
+Assisted-by: Claude:claude-fable-5-2
+---
+ hw/usb/redirect.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/hw/usb/redirect.c b/hw/usb/redirect.c
+index 999a690218..a1f04d6faf 100644
+--- a/hw/usb/redirect.c
++++ b/hw/usb/redirect.c
+@@ -2002,10 +2002,12 @@ static void usbredir_control_packet(void *priv, uint64_t id,
+     DPRINTF("ctrl-in status %d len %d id %"PRIu64"\n", control_packet->status,
+             len, id);
+ 
+-    /* Fix up USB-3 ep0 maxpacket size to allow superspeed connected devices
+-     * to work redirected to a not superspeed capable hcd */
+-    if (dev->dev.speed == USB_SPEED_SUPER &&
+-            !((dev->dev.port->speedmask & USB_SPEED_MASK_SUPER)) &&
++    /*
++     * Fix up USB-3 ep0 maxpacket size to allow superspeed connected devices
++     * to work when they are not attached at superspeed: redirected to a not
++     * superspeed capable hcd, or announced at a speed we do not know.
++     */
++    if (dev->dev.speed != USB_SPEED_SUPER &&
+             control_packet->requesttype == 0x80 &&
+             control_packet->request == 6 &&
+             control_packet->value == 0x100 && control_packet->index == 0 &&
+-- 
+2.54.0 (Apple Git-157)
+
+
+From 8ab298bc52158e52bbaf91b7f91b75d46d7384c9 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Tue, 10 Nov 2026 22:03:44 -0800
+Subject: [PATCH] usb-redir: attach a device of unknown speed at superspeed if
+ it has superspeed endpoints
+
+The usb-redir protocol has no speed above SuperSpeed. usbredirhost
+announces a SuperSpeedPlus (10 Gbit/s) device with an unknown speed, and
+an unknown speed is attached as full speed. The device itself still runs
+at its own speed on the host, so the guest drives a SuperSpeed device
+over a full or high speed link. Enumeration can be made to work, but a
+USB Attached SCSI drive, which is what most of these devices are, uses
+streams on a SuperSpeed link and none below it, and its first command
+times out:
+
+  usb 2-3: new high-speed USB device number 3 using ehci-pci
+  scsi host0: uas
+  scsi 0:0:0:0: tag#16 uas_eh_abort_handler 0 uas-tag 1 inflight: CMD
+  scsi 0:0:0:0: Device offlined - not ready after error recovery
+
+Only a SuperSpeed link has bulk endpoints with 1024 byte packets, and
+the endpoint info arrives before the connect. Attach a device of unknown
+speed that has such an endpoint at SuperSpeed.
+
+Assisted-by: Claude:claude-fable-5-2
+---
+ hw/usb/redirect.c | 31 +++++++++++++++++++++++++++++--
+ 1 file changed, 29 insertions(+), 2 deletions(-)
+
+diff --git a/hw/usb/redirect.c b/hw/usb/redirect.c
+index a1f04d6faf..f521011812 100644
+--- a/hw/usb/redirect.c
++++ b/hw/usb/redirect.c
+@@ -1645,6 +1645,23 @@ static void usbredir_hello(void *priv, struct usb_redir_hello_header *h)
+     }
+ }
+ 
++static bool usbredir_has_superspeed_endpoints(USBRedirDevice *dev)
++{
++    int i;
++
++    if (!usbredirparser_peer_has_cap(dev->parser,
++                                     usb_redir_cap_ep_info_max_packet_size)) {
++        return false;
++    }
++    for (i = 0; i < MAX_ENDPOINTS; i++) {
++        if (dev->endpoint[i].type == usb_redir_type_bulk &&
++            dev->endpoint[i].max_packet_size == 1024) {
++            return true;
++        }
++    }
++    return false;
++}
++
+ static void usbredir_device_connect(void *priv,
+     struct usb_redir_device_connect_header *device_connect)
+ {
+@@ -1677,8 +1694,18 @@ static void usbredir_device_connect(void *priv,
+         dev->dev.speed = USB_SPEED_SUPER;
+         break;
+     default:
+-        speed = "unknown speed";
+-        dev->dev.speed = USB_SPEED_FULL;
++        /*
++         * The protocol has no speed above super, and usbredirhost sends
++         * unknown for one (SuperSpeedPlus). Only a SuperSpeed link has
++         * bulk endpoints of 1024 bytes.
++         */
++        if (usbredir_has_superspeed_endpoints(dev)) {
++            speed = "unknown speed, taken for super speed";
++            dev->dev.speed = USB_SPEED_SUPER;
++        } else {
++            speed = "unknown speed";
++            dev->dev.speed = USB_SPEED_FULL;
++        }
+     }
+ 
+     if (usbredirparser_peer_has_cap(dev->parser,
+-- 
+2.54.0 (Apple Git-157)
+
+
