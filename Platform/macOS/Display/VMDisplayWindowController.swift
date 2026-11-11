@@ -590,7 +590,9 @@ extension VMDisplayWindowController {
         NotificationCenter.default.addObserver(self, selector: #selector(windowBecameMain), name: NSWindow.didBecomeMainNotification, object: window)
         NotificationCenter.default.addObserver(self, selector: #selector(windowResignedMain), name: NSWindow.didResignMainNotification, object: window)
         NotificationCenter.default.addObserver(self, selector: #selector(menuDidRemoveItem), name: NSMenu.didRemoveItemNotification, object: NSApp.mainMenu)
-        let menu = NSMenu()
+        let title = NSLocalizedString("Virtual Machine", comment: "VMDisplayWindowController")
+        // macOS 12 shows the submenu's title in the menu bar, not the item's
+        let menu = NSMenu(title: title)
         menu.autoenablesItems = false
         stopMenuItem = NSMenuItem()
         stopMenuItem.title = NSLocalizedString("Power", comment: "VMDisplayWindowController")
@@ -621,7 +623,7 @@ extension VMDisplayWindowController {
         menu.addItem(windowsMenuItem)
         mainMenu = menu
         mainMenuItem = NSMenuItem()
-        mainMenuItem.title = NSLocalizedString("Virtual Machine", comment: "VMDisplayWindowController")
+        mainMenuItem.title = title
         mainMenuItem.submenu = menu
         return menu
     }
