@@ -40,8 +40,11 @@ import CocoaSpice
     fileprivate let systemPasteboard: SystemPasteboard
     private var timer: Timer?
     private var listeners = Set<AnyHashable>()
+    /// SPICE uses the pasteboard from its own thread while the main thread polls it
+    private let lock = NSRecursiveLock()
     
-    private init(for systemPasteboard: SystemPasteboard) {
+    /// Wraps the given pasteboard; the app uses `general`.
+    init(for systemPasteboard: SystemPasteboard) {
         self.systemPasteboard = systemPasteboard
         self.changeCount = systemPasteboard.changeCount
     }
@@ -72,6 +75,10 @@ import CocoaSpice
     }
     
     private func onTimerTick() {
+        lock.lock()
+        defer {
+            lock.unlock()
+        }
         let newCount = systemPasteboard.changeCount
         if newCount > changeCount {
             if hasContents() {
@@ -220,6 +227,10 @@ extension CSPasteboardType {
 
 @objc extension UTMPasteboard {
     func hasContents() -> Bool {
+        lock.lock()
+        defer {
+            lock.unlock()
+        }
         if let items = systemPasteboard.pasteboardItems {
             return items.count > 0
         } else {
@@ -228,21 +239,37 @@ extension CSPasteboardType {
     }
     
     func clearContents() {
+        lock.lock()
+        defer {
+            lock.unlock()
+        }
         changeCount += 1
         _ = systemPasteboard.clearContents()
     }
     
     func setData(_ data: Data, for type: CSPasteboardType) {
+        lock.lock()
+        defer {
+            lock.unlock()
+        }
         clearContents()
         changeCount += 1
         _ = systemPasteboard.setData(data, forType: type.rawValue)
     }
     
     func data(for type: CSPasteboardType) -> Data? {
+        lock.lock()
+        defer {
+            lock.unlock()
+        }
         return systemPasteboard.data(forType: type.rawValue)
     }
     
     func setString(_ string: String, for type: CSPasteboardType) {
+        lock.lock()
+        defer {
+            lock.unlock()
+        }
         clearContents()
         changeCount += 1
         _ = systemPasteboard.setString(string, forType: type.rawValue)
@@ -253,6 +280,10 @@ extension CSPasteboardType {
     }
     
     func string(for type: CSPasteboardType) -> String? {
+        lock.lock()
+        defer {
+            lock.unlock()
+        }
         return systemPasteboard.string(forType: type.rawValue)
     }
     
@@ -261,7 +292,11 @@ extension CSPasteboardType {
     }
     
     func canReadItem(for type: CSPasteboardType) -> Bool {
-        systemPasteboard.availableType(from: [type.rawValue]) != nil
+        lock.lock()
+        defer {
+            lock.unlock()
+        }
+        return systemPasteboard.availableType(from: [type.rawValue]) != nil
     }
 }
 #endif
