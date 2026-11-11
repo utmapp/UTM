@@ -1042,3 +1042,47 @@ index d385a0e8..6407d7b6 100644
 -- 
 2.41.0
 
+From c1c01e65937e375e025027b8692500aa95e34f0d Mon Sep 17 00:00:00 2001
+From: Giova <giovariot@users.noreply.github.com>
+Date: Fri, 2 Oct 2026 17:00:00 +0200
+Subject: [PATCH] darwin: allow cancelling bulk stream transfers
+
+darwin_cancel_transfer() routes bulk, interrupt and isochronous
+transfers to darwin_abort_transfers(), which already knows how to abort
+a single bulk stream with AbortStreamsPipe(). LIBUSB_TRANSFER_TYPE_BULK_STREAM
+was missing from the switch, so libusb_cancel_transfer() returned
+LIBUSB_ERROR_INVALID_PARAM for every stream transfer.
+
+USB Attached SCSI uses the command tag as the bulk stream id, so a
+redirection host cancels stream transfers constantly. When the cancel is
+not applied the transfer stays in flight on the host controller and the
+guest's command never completes, which surfaces as a 30 second SCSI
+timeout and a device reset in the guest.
+
+A caller that cancels its transfers and waits for them to complete, as
+usbredirhost does when it releases a device, waits forever while a
+stream transfer is pending, and USB Attached SCSI keeps one pending on
+its status pipe.
+
+Assisted-by: OpenCode:deepseek-v4.1-flash
+Assisted-by: Claude:claude-fable-5-2
+---
+ libusb/os/darwin_usb.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/libusb/os/darwin_usb.c b/libusb/os/darwin_usb.c
+index 6407d7b6..0a672029 100644
+--- a/libusb/os/darwin_usb.c
++++ b/libusb/os/darwin_usb.c
+@@ -2329,6 +2329,7 @@ static int darwin_cancel_transfer(struct usbi_transfer *itransfer) {
+   case LIBUSB_TRANSFER_TYPE_BULK:
+   case LIBUSB_TRANSFER_TYPE_INTERRUPT:
+   case LIBUSB_TRANSFER_TYPE_ISOCHRONOUS:
++  case LIBUSB_TRANSFER_TYPE_BULK_STREAM:
+     return darwin_abort_transfers (itransfer);
+   default:
+     usbi_err (TRANSFER_CTX(transfer), "unknown endpoint type %d", transfer->type);
+-- 
+2.54.0 (Apple Git-157)
+
+
