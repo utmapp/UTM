@@ -71,7 +71,55 @@ final class AppSettingsTests: UTMUITestCase {
     }
 }
 #else
+import AppKit
+import SwiftUI
+@testable import UTM
+
 @MainActor
 final class AppSettingsTests: XCTestCase {
+    private func waitUntil(_ condition: () -> Bool, timeout: TimeInterval = 3) async -> Bool {
+        let deadline = Date().addingTimeInterval(timeout)
+        while !condition() {
+            guard Date() < deadline else { return false }
+            try? await Task.sleep(nanoseconds: 10_000_000)
+        }
+        return true
+    }
+
+    private func checkLatestClick(_ destination: Int) async throws {
+        _ = NSApplication.shared
+        let panes = (0..<3).map { index in
+            let host = NSHostingController(rootView: Text("Pane \(index)").frame(width: 400, height: CGFloat(100 + index * 80)))
+            let item = NSTabViewItem(viewController: host)
+            item.identifier = "pane\(index)"
+            item.label = "Pane \(index)"
+            return item
+        }
+        let controller = SettingsTabViewController(panes: panes)
+        let window = NSWindow(contentRect: NSRect(x: -3000, y: -3000, width: 400, height: 100), styleMask: [.titled, .closable], backing: .buffered, defer: false)
+        window.isReleasedWhenClosed = false
+        window.contentViewController = controller
+        window.orderFront(nil)
+        defer { window.close() }
+        let ready = await waitUntil { window.toolbar?.items.count == panes.count && window.title == panes[0].label }
+        XCTAssertTrue(ready, "The settings toolbar did not appear")
+        let toolbar = try XCTUnwrap(window.toolbar)
+        let first = try XCTUnwrap(toolbar.items.first { $0.itemIdentifier.rawValue == "pane1" })
+        let last = try XCTUnwrap(toolbar.items.first { $0.itemIdentifier.rawValue == "pane\(destination)" })
+        XCTAssertTrue(NSApp.sendAction(try XCTUnwrap(first.action), to: first.target, from: first))
+        XCTAssertTrue(NSApp.sendAction(try XCTUnwrap(last.action), to: last.target, from: last))
+        let intermediate = await waitUntil { controller.selectedTabViewItemIndex == 1 }
+        XCTAssertTrue(intermediate, "The first transition did not run")
+        let finished = await waitUntil { controller.selectedTabViewItemIndex == destination && window.title == panes[destination].label }
+        XCTAssertTrue(finished, "The most recent toolbar click was lost")
+    }
+
+    func testReturningToCurrentPaneDuringTransitionUsesLatestClick() async throws {
+        try await checkLatestClick(0)
+    }
+
+    func testThirdPaneDuringTransitionUsesLatestClick() async throws {
+        try await checkLatestClick(2)
+    }
 }
 #endif

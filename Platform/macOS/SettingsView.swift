@@ -17,6 +17,14 @@
 import SwiftUI
 
 struct SettingsView: View {
+    var body: some View {
+        SettingsTabsView()
+            .frame(width: 810)
+            .frame(minHeight: 100, idealHeight: 400, maxHeight: .infinity)
+    }
+}
+
+private struct SettingsTabsView: NSViewControllerRepresentable {
     private enum Selection: CaseIterable, Identifiable {
         case application
         case display
@@ -89,29 +97,143 @@ struct SettingsView: View {
         }
     }
 
-    @ViewBuilder
-    var body: some View {
-        if #available(macOS 15, *) {
-            tabs.tabViewStyle(.tabBarOnly)
-        } else {
-            tabs
+    func makeNSViewController(context: Context) -> SettingsTabViewController {
+        let panes = Selection.allCases.map { category in
+            let content = HStack(alignment: .top) {
+                category.view
+                    .frame(minHeight: category == .network ? 300 : 0)
+                    .padding()
+                Spacer()
+            }
+            .frame(width: 810, alignment: .topLeading)
+            .fixedSize(horizontal: false, vertical: true)
+            let host = NSHostingController(rootView: AnyView(content))
+            let item = NSTabViewItem(viewController: host)
+            item.identifier = String(describing: category)
+            item.label = category.title.localizedString
+            item.image = NSImage(systemSymbolName: category.systemImage, accessibilityDescription: item.label)
+            return item
+        }
+        return SettingsTabViewController(panes: panes)
+    }
+
+    func updateNSViewController(_ controller: SettingsTabViewController, context: Context) {}
+}
+
+@MainActor
+final class SettingsTabViewController: NSTabViewController {
+    private var isCommittingSelection = false
+    private var isTransitioning = false
+    private var pendingItem: NSTabViewItem?
+    private var isReady = false
+
+    init(panes: [NSTabViewItem]) {
+        super.init(nibName: nil, bundle: nil)
+        tabStyle = .toolbar
+        transitionOptions = []
+        canPropagateSelectedChildViewControllerTitle = false
+        tabViewItems = panes
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func viewDidAppear() {
+        super.viewDidAppear()
+        guard !isReady else { return }
+        isReady = true
+        guard let window = view.window, let item = tabView.selectedTabViewItem else { return }
+        window.toolbar?.displayMode = .iconAndLabel
+        window.toolbar?.allowsUserCustomization = false
+        window.toolbarStyle = .preference
+        window.title = item.label
+        DispatchQueue.main.async {
+            window.setFrame(self.frame(for: item, in: window), display: true)
         }
     }
 
-    @ViewBuilder
-    var tabs: some View {
-        TabView {
-            ForEach(Selection.allCases) { category in
-                VStack(alignment: .leading) {
-                    HStack(alignment: .top) {
-                        category.view.padding()
-                        Spacer()
-                    }
-                    Spacer()
+    override func tabView(_ tabView: NSTabView, shouldSelect tabViewItem: NSTabViewItem?) -> Bool {
+        let allowed = super.tabView(tabView, shouldSelect: tabViewItem)
+        guard allowed, isReady, !isCommittingSelection, let item = tabViewItem else { return allowed }
+        if isTransitioning {
+            pendingItem = item
+            return false
+        }
+        guard item !== tabView.selectedTabViewItem else { return allowed }
+        transition(to: item)
+        return false
+    }
+
+    override func toolbar(_ toolbar: NSToolbar, itemForItemIdentifier itemIdentifier: NSToolbarItem.Identifier, willBeInsertedIntoToolbar flag: Bool) -> NSToolbarItem? {
+        let item = super.toolbar(toolbar, itemForItemIdentifier: itemIdentifier, willBeInsertedIntoToolbar: flag)
+        item?.target = self
+        item?.action = #selector(selectPane(_:))
+        return item
+    }
+
+    @objc private func selectPane(_ sender: NSToolbarItem) {
+        guard let item = tabViewItems.first(where: { $0.identifier as? String == sender.itemIdentifier.rawValue }) else { return }
+        if isTransitioning {
+            pendingItem = item
+        } else {
+            tabView.selectTabViewItem(item)
+        }
+    }
+
+    private func frame(for item: NSTabViewItem, in window: NSWindow) -> NSRect {
+        guard let content = item.viewController?.view else { return window.frame }
+        content.layoutSubtreeIfNeeded()
+        let contentHeight = max(100, ceil(content.fittingSize.height))
+        let chromeHeight = window.frame.height - window.contentLayoutRect.height
+        var frame = window.frame
+        let height = contentHeight + chromeHeight
+        frame.origin.y += frame.height - height
+        frame.size.height = height
+        return frame
+    }
+
+    private func transition(to item: NSTabViewItem) {
+        guard let window = view.window,
+              let oldView = tabView.selectedTabViewItem?.viewController?.view,
+              let newView = item.viewController?.view,
+              let index = tabViewItems.firstIndex(of: item) else { return }
+        isTransitioning = true
+        Task { @MainActor in
+            await animate(duration: 0.12) {
+                oldView.animator().alphaValue = 0
+            }
+            let frame = self.frame(for: item, in: window)
+            await animate(duration: 0.22) {
+                window.animator().setFrame(frame, display: true)
+            }
+            newView.alphaValue = 0
+            isCommittingSelection = true
+            selectedTabViewItemIndex = index
+            isCommittingSelection = false
+            window.title = item.label
+            await animate(duration: 0.12) {
+                newView.animator().alphaValue = 1
+            }
+            oldView.alphaValue = 1
+            isTransitioning = false
+            if let pending = pendingItem {
+                pendingItem = nil
+                if pending !== item {
+                    transition(to: pending)
                 }
-                .tabItem {
-                    Label(category.title, systemImage: category.systemImage)
-                }
+            }
+        }
+    }
+
+    private func animate(duration: TimeInterval, changes: @MainActor () -> Void) async {
+        await withCheckedContinuation { continuation in
+            NSAnimationContext.runAnimationGroup { context in
+                context.duration = duration
+                context.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+                changes()
+            } completionHandler: {
+                continuation.resume()
             }
         }
     }
