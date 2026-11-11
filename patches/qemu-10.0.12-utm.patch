@@ -4691,3 +4691,65 @@ index a1f04d6faf..f521011812 100644
 2.54.0 (Apple Git-157)
 
 
+From bb76def9a79d81b99c430905d1f9debd20393645 Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Tue, 10 Nov 2026 20:39:00 -0800
+Subject: [PATCH] edid: set the established timings III bit of every mode that
+ has one
+
+edid_fill_modes() puts a mode in one of the eight standard timing slots
+while there are free ones, and sets the mode's bit in the Established
+Timings III descriptor only once the slots are used up. Which modes end
+up where depends on their order in the table: with no size limit,
+1920x1200, 1600x1200, 1680x1050, 1440x900, 1280x1024 and 1280x960 get a
+standard timing and no bit.
+
+A guest that builds its mode list from the established timings and does
+not read the standard timings never offers those modes. The QemuVga
+driver that Mac OS 9 and Mac OS X use on mac99 is one: it reads the
+established timings, the Established Timings III descriptor and the
+CTA-861 video data block.
+
+Set the bit whenever the mode has one, next to the standard timing. The
+bits are the ones VESA defines for these modes at 60 Hz, and the modes
+were advertised before, so a guest that reads both sees the same list.
+
+Based on a change by giovariot.
+
+Assisted-by: Claude:claude-fable-5-2
+---
+ hw/display/edid-generate.c | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
+
+diff --git a/hw/display/edid-generate.c b/hw/display/edid-generate.c
+index 2cb819675e..8706ef6926 100644
+--- a/hw/display/edid-generate.c
++++ b/hw/display/edid-generate.c
+@@ -142,13 +142,17 @@ static void edid_fill_modes(uint8_t *edid, uint8_t *xtra3, uint8_t *dta,
+ 
+         if (mode->byte) {
+             edid[mode->byte] |= (1 << mode->bit);
+-        } else if (std < 54) {
+-            rc = edid_std_mode(edid + std, mode->xres, mode->yres);
+-            if (rc == 0) {
+-                std += 2;
++        } else {
++            if (std < 54) {
++                rc = edid_std_mode(edid + std, mode->xres, mode->yres);
++                if (rc == 0) {
++                    std += 2;
++                }
++            }
++            /* a mode with a standard timing too: not every guest reads those */
++            if (mode->xtra3 && xtra3) {
++                xtra3[mode->xtra3] |= (1 << mode->bit);
+             }
+-        } else if (mode->xtra3 && xtra3) {
+-            xtra3[mode->xtra3] |= (1 << mode->bit);
+         }
+ 
+         if (dta && mode->dta) {
+-- 
+2.54.0 (Apple Git-157)
+
+
