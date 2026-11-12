@@ -1143,19 +1143,16 @@ import Virtualization // for getting network interfaces
                 f()
             }
             f("-netdev")
-            var useVMnet = false
+            let useVMnet = networks[i].isVmnet
             #if os(macOS)
             if networks[i].mode == .shared {
-                useVMnet = true
                 "vmnet-shared"
                 "id=net\(i)"
             } else if networks[i].mode == .bridged {
-                useVMnet = true
                 "vmnet-bridged"
                 "id=net\(i)"
                 "ifname=\(networks[i].bridgeInterface ?? defaultBridgedInterface)"
             } else if networks[i].mode == .host {
-                useVMnet = true
                 "vmnet-host"
                 "id=net\(i)"
                 if let netUuid = networks[i].hostNetUuid {
