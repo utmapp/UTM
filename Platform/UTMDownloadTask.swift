@@ -179,16 +179,31 @@ class UTMDownloadTask: NSObject, URLSessionDelegate, URLSessionDownloadDelegate 
         downloadTask?.cancel()
     }
     
+    /// Parses HTTP dates: the IMF-fixdate, RFC 850 and asctime formats of RFC 9110 section 5.6.7
+    ///
+    /// HTTP dates are always English and Gregorian, so the formatters do not use the user's locale:
+    /// in it, the day and month names do not parse and cached downloads are never refreshed.
+    static let httpDateFormatters: [DateFormatter] = [
+        "EEE, dd MMM yyyy HH:mm:ss zzz",
+        "EEEE, dd-MMM-yy HH:mm:ss zzz",
+        "EEE MMM d HH:mm:ss yyyy",
+    ].map { format in
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(identifier: "GMT")
+        formatter.dateFormat = format
+        return formatter
+    }
+
     /// Get the Last-Modified header as a Unix timestamp
     /// - Parameter response: URL response
     /// - Returns: Unix timestamp
     func lastModifiedTimestamp(for response: URLResponse?) -> Int? {
-        guard let headers = (response as? HTTPURLResponse)?.allHeaderFields, let lastModified = headers["Last-Modified"] as? String else {
+        guard let lastModified = (response as? HTTPURLResponse)?.value(forHTTPHeaderField: "Last-Modified") else {
             return nil
         }
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss zzz"
-        guard let lastModifiedDate = dateFormatter.date(from: lastModified) else {
+        let normalized = lastModified.split(separator: " ", omittingEmptySubsequences: true).joined(separator: " ")
+        guard let lastModifiedDate = Self.httpDateFormatters.lazy.compactMap({ $0.date(from: normalized) }).first else {
             return nil
         }
         return Int(lastModifiedDate.timeIntervalSince1970)
