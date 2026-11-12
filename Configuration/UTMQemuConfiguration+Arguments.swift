@@ -85,24 +85,32 @@ import Virtualization // for getting network interfaces
         socketURL.appendingPathComponent(information.uuid.uuidString).appendingPathExtension("swtpm")
     }
     
+    /// Used only if in remote server mode. Holds the files that the main process creates for QEMU.
+    ///
+    /// These cannot go in `socketURL`: without an app group that is the helper's container,
+    /// where the main process can connect to a socket but cannot create a file.
+    var remoteSessionURL: URL {
+        FileManager.default.temporaryDirectory.appendingPathComponent(information.uuid.uuidString).appendingPathExtension("remote")
+    }
+
     /// Used only if in remote server mode.
     var monitorPipeURL: URL {
-        socketURL.appendingPathComponent(information.uuid.uuidString).appendingPathExtension("qmp")
+        remoteSessionURL.appendingPathComponent("qmp")
     }
 
     /// Used only if in remote server mode.
     var guestAgentPipeURL: URL {
-        socketURL.appendingPathComponent(information.uuid.uuidString).appendingPathExtension("qga")
+        remoteSessionURL.appendingPathComponent("qga")
     }
 
     /// Used only if in remote server mode.
     var spiceTlsKeyUrl: URL {
-        socketURL.appendingPathComponent(information.uuid.uuidString).appendingPathExtension("pem")
+        remoteSessionURL.appendingPathComponent("spice.pem")
     }
 
     /// Used only if in remote server mode.
     var spiceTlsCertUrl: URL {
-        socketURL.appendingPathComponent(information.uuid.uuidString).appendingPathExtension("crt")
+        remoteSessionURL.appendingPathComponent("spice.crt")
     }
 
     /// Used by virglrenderer to allocate shmem

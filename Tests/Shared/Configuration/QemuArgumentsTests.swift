@@ -230,6 +230,34 @@ import XCTest
         XCTAssertTrue(arguments(config).values(of: "-fsdev").isEmpty)
     }
 
+    // MARK: Remote session
+
+    /// The app creates the pipes and TLS files of a remote session, so they are in a directory
+    /// of their own in its temporary directory: the socket directory can be the helper's
+    /// container on macOS, where the app cannot create a file.
+    func testRemoteSessionFilesAreInADirectoryTheAppOwns() throws {
+        let config = configuration(architecture: .aarch64, target: QEMUTarget_aarch64.virt)
+        config.qemu.spiceServerPort = 4444
+        config.qemu.isSpiceServerTlsEnabled = true
+        let args = arguments(config)
+        func path(of flag: String, containing option: String, key: String) throws -> URL {
+            let value = try XCTUnwrap(args.value(of: flag, containing: option), "no \(flag) with \(option)")
+            let path = try XCTUnwrap(QEMUArgumentList.options(value).first { $0.hasPrefix(key + "=") }, value)
+            return URL(fileURLWithPath: String(path.dropFirst(key.count + 1)))
+        }
+        let files = [
+            try path(of: "-chardev", containing: "id=org.qemu.monitor.qmp", key: "path"),
+            try path(of: "-chardev", containing: "id=org.qemu.guest_agent", key: "path"),
+            try path(of: "-spice", containing: "tls-port=4444", key: "x509-key-file"),
+            try path(of: "-spice", containing: "tls-port=4444", key: "x509-cert-file"),
+        ]
+        let directory = files[0].deletingLastPathComponent()
+        XCTAssertEqual(directory.deletingLastPathComponent().standardizedFileURL.path, FileManager.default.temporaryDirectory.standardizedFileURL.path, "the files are not in a directory in the temporary directory")
+        for file in files {
+            XCTAssertEqual(file.deletingLastPathComponent().path, directory.path, "\(file.path) is not with the session's other files")
+        }
+    }
+
     // MARK: Accelerator
 
     #if WITH_JIT
