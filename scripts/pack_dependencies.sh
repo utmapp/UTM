@@ -11,7 +11,7 @@ usage () {
     exit 1
 }
 
-if [ $# -lt 4 ]; then
+if [ $# -lt 3 ]; then
     usage
 fi
 
