@@ -57,6 +57,8 @@ struct UTMQemuConfigurationQEMU: Codable {
 
     /// Add an interrupt remapping IOMMU for x86_64 q35 guests using the hypervisor on Intel.
     var hasInterruptRemapping: Bool = true
+    /// Lock guest RAM in host memory for x86_64 guests using the hypervisor on Intel.
+    var hasMemoryLock: Bool = true
     
     /// QEMU machine property that overrides the default property defined by UTM.
     var machinePropertyOverride: String?
@@ -96,6 +98,7 @@ struct UTMQemuConfigurationQEMU: Codable {
         case hasRTCLocalTime = "RTCLocalTime"
         case hasPS2Controller = "PS2Controller"
         case hasInterruptRemapping = "InterruptRemapping"
+        case hasMemoryLock = "MemoryLock"
         case machinePropertyOverride = "MachinePropertyOverride"
         case additionalArguments = "AdditionalArguments"
     }
@@ -115,6 +118,7 @@ struct UTMQemuConfigurationQEMU: Codable {
         hasRTCLocalTime = try values.decode(Bool.self, forKey: .hasRTCLocalTime)
         hasPS2Controller = try values.decode(Bool.self, forKey: .hasPS2Controller)
         hasInterruptRemapping = try values.decodeIfPresent(Bool.self, forKey: .hasInterruptRemapping) ?? true
+        hasMemoryLock = try values.decodeIfPresent(Bool.self, forKey: .hasMemoryLock) ?? true
         machinePropertyOverride = try values.decodeIfPresent(String.self, forKey: .machinePropertyOverride)
         additionalArguments = try values.decode([QEMUArgument].self, forKey: .additionalArguments)
         if let dataURL = decoder.userInfo[.dataURL] as? URL {
@@ -136,6 +140,7 @@ struct UTMQemuConfigurationQEMU: Codable {
         try container.encode(hasRTCLocalTime, forKey: .hasRTCLocalTime)
         try container.encode(hasPS2Controller, forKey: .hasPS2Controller)
         try container.encode(hasInterruptRemapping, forKey: .hasInterruptRemapping)
+        try container.encode(hasMemoryLock, forKey: .hasMemoryLock)
         try container.encodeIfPresent(machinePropertyOverride, forKey: .machinePropertyOverride)
         try container.encode(additionalArguments, forKey: .additionalArguments)
     }

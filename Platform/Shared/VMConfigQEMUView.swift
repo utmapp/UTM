@@ -67,6 +67,8 @@ struct VMConfigQEMUView: View {
                     if config.system.architecture == .x86_64 && config.qemu.hasHypervisor {
                         Toggle("Interrupt remapping", isOn: $config.qemu.hasInterruptRemapping)
                             .help("Lets the guest use faster interrupt handling, which reduces stutter and audio dropouts in Windows. Requires the Q35 machine.")
+                        Toggle("Lock guest memory", isOn: $config.qemu.hasMemoryLock)
+                            .help("Keeps the guest's memory resident so macOS does not compress or swap it. The Mac needs enough free memory for the whole guest.")
                     }
                     #endif
                     Toggle("Use local time for base clock", isOn: $config.qemu.hasRTCLocalTime)
