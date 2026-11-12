@@ -30,6 +30,26 @@ class VMMetalView: MTKView {
     @Setting("IsISOKeySwapped") private var isISOKeySwapped = false
     @Setting("IsCapsLockKey") private var isCapsLockKey: Bool = false
 
+    /// Drawable supplied by a display link for the frame being drawn, used instead of one
+    /// acquired from the layer.
+    var displayLinkDrawable: CAMetalDrawable?
+
+    override var currentDrawable: CAMetalDrawable? {
+        displayLinkDrawable ?? super.currentDrawable
+    }
+
+    override var currentRenderPassDescriptor: MTLRenderPassDescriptor? {
+        guard let drawable = displayLinkDrawable else {
+            return super.currentRenderPassDescriptor
+        }
+        let descriptor = MTLRenderPassDescriptor()
+        descriptor.colorAttachments[0].texture = drawable.texture
+        descriptor.colorAttachments[0].loadAction = .clear
+        descriptor.colorAttachments[0].storeAction = .store
+        descriptor.colorAttachments[0].clearColor = clearColor
+        return descriptor
+    }
+
     private enum ModifierKeySwap {
         case none
         case ctrlCmd
