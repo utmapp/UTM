@@ -57,7 +57,10 @@ extension UTMData {
             vmWindows[vm] = unwrappedWindow
             vm.wrapped!.delegate = unwrappedWindow
             unwrappedWindow.showWindow(nil)
-            unwrappedWindow.window!.makeMain()
+            // a hidden app's window is not visible and making it main throws
+            if unwrappedWindow.window!.canBecomeMain {
+                unwrappedWindow.window!.makeMain()
+            }
             if startImmediately {
                 unwrappedWindow.requestAutoStart(options: options)
             }
