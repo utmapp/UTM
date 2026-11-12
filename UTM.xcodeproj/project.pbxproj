@@ -1356,6 +1356,7 @@
 		2E46ACD8553343D0BAF591E8 /* UTMScriptingConfigImplTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BB20F4E491246B2A49D72D0 /* UTMScriptingConfigImplTests.swift */; };
 		77CA56CE2B864EE0BCFA78E0 /* ZipArchiveBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DE790202347484DBF037863 /* ZipArchiveBuilder.swift */; };
 		641FD674DBEC4B13A12361B2 /* UTMDownloadVMTaskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D437C3300940C3AAE5596C /* UTMDownloadVMTaskTests.swift */; };
+		36B4B188F91749D0B6465031 /* UTMDownloadTaskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA226EA21FEC4DF4A859A243 /* UTMDownloadTaskTests.swift */; };
 		233848B00A5B4F7BB1F88DF6 /* UTMRemoteMessageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40BDB00C7BAC499895100B6A /* UTMRemoteMessageTests.swift */; };
 		2C5F17103A1541BF84350067 /* UTMDataListTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DB20CDC80FE4C9983431840 /* UTMDataListTests.swift */; };
 		951F69FE19D644E4A92B80EC /* BackendParityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DA6FCF6A6640F182F851DF /* BackendParityTests.swift */; };
@@ -1402,6 +1403,7 @@
 		E946D8EB599D59A78F0320D4 /* VMWizardStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A43E1F0821644D78B5F11D0 /* VMWizardStateTests.swift */; };
 		67184E31AA975302B7915B26 /* UTMRemoteMessageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40BDB00C7BAC499895100B6A /* UTMRemoteMessageTests.swift */; };
 		6679A0F4C28A59A98D456D00 /* UTMDownloadVMTaskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D437C3300940C3AAE5596C /* UTMDownloadVMTaskTests.swift */; };
+		144B8ABA06404C1891A88DF4 /* UTMDownloadTaskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA226EA21FEC4DF4A859A243 /* UTMDownloadTaskTests.swift */; };
 		903B44F4847E5DE4B082445E /* ZipArchiveBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DE790202347484DBF037863 /* ZipArchiveBuilder.swift */; };
 		966AA9DA53AB5D3898B2BF26 /* TestConfigurations.swift in Sources */ = {isa = PBXBuildFile; fileRef = C62B133DC3164A6A806FAD0D /* TestConfigurations.swift */; };
 		35BBBCF4D008596AB09A24EB /* BackendParityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DA6FCF6A6640F182F851DF /* BackendParityTests.swift */; };
@@ -2471,6 +2473,7 @@
 		3BB20F4E491246B2A49D72D0 /* UTMScriptingConfigImplTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMScriptingConfigImplTests.swift; sourceTree = "<group>"; };
 		4DE790202347484DBF037863 /* ZipArchiveBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZipArchiveBuilder.swift; sourceTree = "<group>"; };
 		55D437C3300940C3AAE5596C /* UTMDownloadVMTaskTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMDownloadVMTaskTests.swift; sourceTree = "<group>"; };
+		DA226EA21FEC4DF4A859A243 /* UTMDownloadTaskTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMDownloadTaskTests.swift; sourceTree = "<group>"; };
 		40BDB00C7BAC499895100B6A /* UTMRemoteMessageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMRemoteMessageTests.swift; sourceTree = "<group>"; };
 		8DB20CDC80FE4C9983431840 /* UTMDataListTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMDataListTests.swift; sourceTree = "<group>"; };
 		C6DA6FCF6A6640F182F851DF /* BackendParityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendParityTests.swift; sourceTree = "<group>"; };
@@ -3680,6 +3683,7 @@
 			isa = PBXGroup;
 			children = (
 				55D437C3300940C3AAE5596C /* UTMDownloadVMTaskTests.swift */,
+				DA226EA21FEC4DF4A859A243 /* UTMDownloadTaskTests.swift */,
 			);
 			path = Platform;
 			sourceTree = "<group>";
@@ -4550,6 +4554,7 @@
 				2E46ACD8553343D0BAF591E8 /* UTMScriptingConfigImplTests.swift in Sources */,
 				233848B00A5B4F7BB1F88DF6 /* UTMRemoteMessageTests.swift in Sources */,
 				641FD674DBEC4B13A12361B2 /* UTMDownloadVMTaskTests.swift in Sources */,
+				36B4B188F91749D0B6465031 /* UTMDownloadTaskTests.swift in Sources */,
 				77CA56CE2B864EE0BCFA78E0 /* ZipArchiveBuilder.swift in Sources */,
 				BA0FE8CFF9B34E3A95F168AF /* TestConfigurations.swift in Sources */,
 				951F69FE19D644E4A92B80EC /* BackendParityTests.swift in Sources */,
@@ -5410,6 +5415,7 @@
 				E946D8EB599D59A78F0320D4 /* VMWizardStateTests.swift in Sources */,
 				67184E31AA975302B7915B26 /* UTMRemoteMessageTests.swift in Sources */,
 				6679A0F4C28A59A98D456D00 /* UTMDownloadVMTaskTests.swift in Sources */,
+				144B8ABA06404C1891A88DF4 /* UTMDownloadTaskTests.swift in Sources */,
 				903B44F4847E5DE4B082445E /* ZipArchiveBuilder.swift in Sources */,
 				966AA9DA53AB5D3898B2BF26 /* TestConfigurations.swift in Sources */,
 				35BBBCF4D008596AB09A24EB /* BackendParityTests.swift in Sources */,
