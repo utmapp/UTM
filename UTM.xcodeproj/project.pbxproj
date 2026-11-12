@@ -1440,10 +1440,12 @@
 		3B5D39F952815D6ABC95EC0D /* VMLibraryFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CC2321A4F455012BDD3FCAE /* VMLibraryFlowTests.swift */; };
 		1A3B5C7D0E2F4A4B6C8D9E0F /* UTMAccessibilityID.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAEDBED3E5F74148807C75F9 /* UTMAccessibilityID.swift */; };
 		FE7624D79C054783853776EF /* VMLifecycleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0B34177E894AFB81641614 /* VMLifecycleTests.swift */; };
-		CAA1C8EA94264216BA721E5F /* VMLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D299C72856294431A2034700 /* VMLayoutTests.swift */; };
+		CAA1C8EA94264216BA721E5F /* AppSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D299C72856294431A2034700 /* AppSettingsTests.swift */; };
 		E6DD050DA874478695033081 /* VMLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE4E5421058748C3B3442DF8 /* VMLayoutTests.swift */; };
 		0A176EF06DEA4763B25BE32F /* AppleVMRegistryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F002E4D45F164405A2B13860 /* AppleVMRegistryTests.swift */; };
 		7B1D0A6E5C3F4E2A9D8C1F04 /* UTMPasteboardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E9A6C2D8B4F4A17A5D0E6B9 /* UTMPasteboardTests.swift */; };
+		88B67CC57E6346DB9A8AA5EA /* AppSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D299C72856294431A2034700 /* AppSettingsTests.swift */; };
+		7AFC004AA2CF4B82B309D6C2 /* WizardLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DAD238263443C99888F7D1 /* WizardLayoutTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -2507,10 +2509,11 @@
 		8CC2321A4F455012BDD3FCAE /* VMLibraryFlowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMLibraryFlowTests.swift; sourceTree = "<group>"; };
 		7C5D1E2F3A4B4C5D9E8F0A1B /* UTMUITests-iOS.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "UTMUITests-iOS.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F0B34177E894AFB81641614 /* VMLifecycleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMLifecycleTests.swift; sourceTree = "<group>"; };
-		D299C72856294431A2034700 /* VMLayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMLayoutTests.swift; sourceTree = "<group>"; };
+		D299C72856294431A2034700 /* AppSettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettingsTests.swift; sourceTree = "<group>"; };
 		DE4E5421058748C3B3442DF8 /* VMLayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMLayoutTests.swift; sourceTree = "<group>"; };
 		F002E4D45F164405A2B13860 /* AppleVMRegistryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleVMRegistryTests.swift; sourceTree = "<group>"; };
 		3E9A6C2D8B4F4A17A5D0E6B9 /* UTMPasteboardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMPasteboardTests.swift; sourceTree = "<group>"; };
+		C6DAD238263443C99888F7D1 /* WizardLayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WizardLayoutTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -3745,7 +3748,8 @@
 		5899A2A4E0E34C2EA0C43BEA /* macOS */ = {
 			isa = PBXGroup;
 			children = (
-				D299C72856294431A2034700 /* VMLayoutTests.swift */,
+				D299C72856294431A2034700 /* AppSettingsTests.swift */,
+				C6DAD238263443C99888F7D1 /* WizardLayoutTests.swift */,
 				7EF4452FF19441369197C0CE /* UTMUITestCase.swift */,
 				D9DF4447849647D8BCF8ED4B /* VMLibraryFlowTests.swift */,
 			);
@@ -4534,6 +4538,7 @@
 			files = (
 				0A176EF06DEA4763B25BE32F /* AppleVMRegistryTests.swift in Sources */,
 				7B1D0A6E5C3F4E2A9D8C1F04 /* UTMPasteboardTests.swift in Sources */,
+				88B67CC57E6346DB9A8AA5EA /* AppSettingsTests.swift in Sources */,
 				FE7624D79C054783853776EF /* VMLifecycleTests.swift in Sources */,
 				F2A7C17B8AB34DA3B406450B /* UTMSnapshotManifestTests.swift in Sources */,
 				41421300977143369096FDC4 /* VMWizardStateTests.swift in Sources */,
@@ -5435,7 +5440,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CAA1C8EA94264216BA721E5F /* VMLayoutTests.swift in Sources */,
+				CAA1C8EA94264216BA721E5F /* AppSettingsTests.swift in Sources */,
+				7AFC004AA2CF4B82B309D6C2 /* WizardLayoutTests.swift in Sources */,
 				361AF3C5C1D54BBAB45953EB /* UTMAccessibilityID.swift in Sources */,
 				FCB5757F51C94E8280A12BA5 /* UTMUITestCase.swift in Sources */,
 				2E1A17315E5140AE95D407BF /* VMLibraryFlowTests.swift in Sources */,
@@ -6673,6 +6679,7 @@
 				SDKROOT = macosx;
 				SUPPORTED_PLATFORMS = macosx;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "UTM_UI_TESTS $(inherited)";
 				SWIFT_VERSION = 5.0;
 				TEST_TARGET_NAME = macOS;
 			};
@@ -6689,6 +6696,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "UTM_UI_TESTS $(inherited)";
 				SWIFT_VERSION = 5.0;
 				TEST_TARGET_NAME = macOS;
 			};

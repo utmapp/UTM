@@ -17,6 +17,14 @@
 import SwiftUI
 
 struct SettingsView: View {
+    var body: some View {
+        SettingsTabsView()
+            .frame(width: 810)
+            .frame(minHeight: 100, idealHeight: 400, maxHeight: .infinity)
+    }
+}
+
+private struct SettingsTabsView: NSViewControllerRepresentable {
     private enum Selection: CaseIterable, Identifiable {
         case application
         case display
@@ -33,7 +41,7 @@ struct SettingsView: View {
         var title: LocalizedStringKey {
             switch self {
             case .application:
-                return "Application"
+                return "General"
             case .display:
                 return "Display"
             case .sound:
@@ -43,7 +51,7 @@ struct SettingsView: View {
             case .network:
                 return "Network"
             case .file:
-                return "File"
+                return "Files"
             case .server:
                 return "Server"
             }
@@ -52,7 +60,7 @@ struct SettingsView: View {
         var systemImage: String {
             switch self {
             case .application:
-                return "app.badge"
+                return "gearshape"
             case .display:
                 return "rectangle.on.rectangle"
             case .sound:
@@ -89,52 +97,275 @@ struct SettingsView: View {
         }
     }
 
-    @State private var selection: Selection = .application
-
-    var body: some View {
-        if #available(macOS 26, *) {
-            newBody
-        } else {
-            oldBody
-        }
-    }
-
-    @available(macOS 15, *)
-    @ViewBuilder
-    var newBody: some View {
-        NavigationSplitView {
-            List(Selection.allCases, selection: $selection) { category in
-                Label(category.title, systemImage: category.systemImage)
-            }.toolbar(removing: .sidebarToggle)
-        } detail: {
-            VStack(alignment: .leading) {
-                HStack(alignment: .top) {
-                    selection.view.padding()
-                    Spacer()
-                }
+    func makeNSViewController(context: Context) -> SettingsTabViewController {
+        let panes = Selection.allCases.map { category in
+            let content = HStack(alignment: .top) {
+                category.view
+                    .frame(minHeight: category == .network ? 300 : 0)
+                    .padding()
                 Spacer()
             }
-            // wide enough for the Input pane, whose form does not shrink below its labels and controls
-            .frame(minWidth: 860)
+            .frame(width: 810, alignment: .topLeading)
+            .fixedSize(horizontal: false, vertical: true)
+            let host = NSHostingController(rootView: AnyView(content))
+            let item = NSTabViewItem(viewController: host)
+            item.identifier = String(describing: category)
+            item.label = category.title.localizedString
+            item.image = NSImage(systemSymbolName: category.systemImage, accessibilityDescription: item.label)
+            return item
+        }
+        return SettingsTabViewController(panes: panes)
+    }
+
+    func updateNSViewController(_ controller: SettingsTabViewController, context: Context) {}
+}
+
+@MainActor
+final class SettingsTabViewController: NSTabViewController {
+    private var isCommittingSelection = false
+    private var isTransitioning = false
+    private var pendingItem: NSTabViewItem?
+    private var isReady = false
+
+    init(panes: [NSTabViewItem]) {
+        super.init(nibName: nil, bundle: nil)
+        tabStyle = .toolbar
+        transitionOptions = []
+        canPropagateSelectedChildViewControllerTitle = false
+        tabViewItems = panes
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func viewDidAppear() {
+        super.viewDidAppear()
+        guard !isReady else { return }
+        isReady = true
+        guard let window = view.window, let item = tabView.selectedTabViewItem else { return }
+        window.toolbar?.displayMode = .iconAndLabel
+        window.toolbar?.allowsUserCustomization = false
+        window.toolbarStyle = .preference
+        window.title = item.label
+        DispatchQueue.main.async {
+            window.setFrame(self.frame(for: item, in: window), display: true)
         }
     }
 
-    @ViewBuilder
-    var oldBody: some View {
-        TabView {
-            ForEach(Selection.allCases) { category in
-                VStack(alignment: .leading) {
-                    HStack(alignment: .top) {
-                        category.view.padding()
-                        Spacer()
-                    }
-                    Spacer()
-                }
-                .tabItem {
-                    Label(category.title, systemImage: category.systemImage)
+    override func tabView(_ tabView: NSTabView, shouldSelect tabViewItem: NSTabViewItem?) -> Bool {
+        let allowed = super.tabView(tabView, shouldSelect: tabViewItem)
+        guard allowed, isReady, !isCommittingSelection, let item = tabViewItem else { return allowed }
+        if isTransitioning {
+            pendingItem = item
+            return false
+        }
+        guard item !== tabView.selectedTabViewItem else { return allowed }
+        transition(to: item)
+        return false
+    }
+
+    override func toolbar(_ toolbar: NSToolbar, itemForItemIdentifier itemIdentifier: NSToolbarItem.Identifier, willBeInsertedIntoToolbar flag: Bool) -> NSToolbarItem? {
+        let item = super.toolbar(toolbar, itemForItemIdentifier: itemIdentifier, willBeInsertedIntoToolbar: flag)
+        item?.target = self
+        item?.action = #selector(selectPane(_:))
+        return item
+    }
+
+    @objc private func selectPane(_ sender: NSToolbarItem) {
+        guard let item = tabViewItems.first(where: { $0.identifier as? String == sender.itemIdentifier.rawValue }) else { return }
+        if isTransitioning {
+            pendingItem = item
+        } else {
+            tabView.selectTabViewItem(item)
+        }
+    }
+
+    private func frame(for item: NSTabViewItem, in window: NSWindow) -> NSRect {
+        guard let content = item.viewController?.view else { return window.frame }
+        content.layoutSubtreeIfNeeded()
+        let contentHeight = max(100, ceil(content.fittingSize.height))
+        let chromeHeight = window.frame.height - window.contentLayoutRect.height
+        var frame = window.frame
+        let height = contentHeight + chromeHeight
+        frame.origin.y += frame.height - height
+        frame.size.height = height
+        return frame
+    }
+
+    private func transition(to item: NSTabViewItem) {
+        guard let window = view.window,
+              let oldView = tabView.selectedTabViewItem?.viewController?.view,
+              let newView = item.viewController?.view,
+              let index = tabViewItems.firstIndex(of: item) else { return }
+        isTransitioning = true
+        Task { @MainActor in
+            await animate(duration: 0.12) {
+                oldView.animator().alphaValue = 0
+            }
+            let frame = self.frame(for: item, in: window)
+            await animate(duration: 0.22) {
+                window.animator().setFrame(frame, display: true)
+            }
+            newView.alphaValue = 0
+            isCommittingSelection = true
+            selectedTabViewItemIndex = index
+            isCommittingSelection = false
+            window.title = item.label
+            await animate(duration: 0.12) {
+                newView.animator().alphaValue = 1
+            }
+            oldView.alphaValue = 1
+            isTransitioning = false
+            if let pending = pendingItem {
+                pendingItem = nil
+                if pending !== item {
+                    transition(to: pending)
                 }
             }
         }
+    }
+
+    private func animate(duration: TimeInterval, changes: @MainActor () -> Void) async {
+        await withCheckedContinuation { continuation in
+            NSAnimationContext.runAnimationGroup { context in
+                context.duration = duration
+                context.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+                changes()
+            } completionHandler: {
+                continuation.resume()
+            }
+        }
+    }
+}
+
+private enum SettingsLayout {
+    static let formWidth: CGFloat = 576
+}
+
+private struct SettingsPane<Content: View>: View {
+    @ViewBuilder let content: Content
+    @State private var pickerWidth: CGFloat = 0
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            content
+        }
+        .toggleStyle(.checkbox)
+        .environment(\.settingsPickerWidth, pickerWidth)
+        .onPreferenceChange(SettingsPickerWidth.self) { pickerWidth = $0 }
+        .frame(width: SettingsLayout.formWidth)
+        .padding(.vertical, 12)
+        .frame(maxWidth: .infinity)
+    }
+}
+
+private extension EnvironmentValues {
+    var settingsPickerWidth: CGFloat {
+        get { self[SettingsPickerWidth.self] }
+        set { self[SettingsPickerWidth.self] = newValue }
+    }
+}
+
+private struct SettingsPickerWidth: EnvironmentKey, PreferenceKey {
+    static var defaultValue: CGFloat { 0 }
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = max(value, nextValue())
+    }
+}
+
+private struct SettingsPicker<Value: Equatable>: View {
+    let title: LocalizedStringKey
+    @Binding var selection: Value
+    let options: [(String, Value)]
+    @Environment(\.settingsPickerWidth) private var width
+
+    init(_ title: LocalizedStringKey, selection: Binding<Value>, options: [(String, Value)]) {
+        self.title = title
+        self._selection = selection
+        self.options = options
+    }
+
+    var body: some View {
+        let sizingButton = NSPopUpButton(frame: .zero, pullsDown: false)
+        sizingButton.font = .systemFont(ofSize: NSFont.systemFontSize)
+        sizingButton.addItems(withTitles: options.map { NSLocalizedString($0.0, comment: "") })
+        sizingButton.sizeToFit()
+        let naturalWidth = ceil(sizingButton.frame.width)
+        return NativeSettingsPicker(title: title, selection: $selection, options: options)
+            .frame(width: max(width, naturalWidth), height: 22, alignment: .leading)
+            .preference(key: SettingsPickerWidth.self, value: naturalWidth)
+    }
+}
+
+struct NativeSettingsPicker<Value: Equatable>: NSViewRepresentable {
+    let title: LocalizedStringKey
+    @Binding var selection: Value
+    let options: [(String, Value)]
+    @Environment(\.isEnabled) private var isEnabled
+
+    func makeCoordinator() -> Coordinator { Coordinator(self) }
+
+    func makeNSView(context: Context) -> NSPopUpButton {
+        let button = NSPopUpButton(frame: .zero, pullsDown: false)
+        button.font = .systemFont(ofSize: NSFont.systemFontSize)
+        button.setContentHuggingPriority(.init(1), for: .horizontal)
+        button.setContentCompressionResistancePriority(.init(1), for: .horizontal)
+        button.target = context.coordinator
+        button.action = #selector(Coordinator.select(_:))
+        return button
+    }
+
+    func updateNSView(_ button: NSPopUpButton, context: Context) {
+        context.coordinator.parent = self
+        let titles = options.map { NSLocalizedString($0.0, comment: "") }
+        if button.itemTitles != titles {
+            button.removeAllItems()
+            button.addItems(withTitles: titles)
+        }
+        if let index = options.firstIndex(where: { $0.1 == selection }) {
+            button.selectItem(at: index)
+        } else {
+            button.select(nil)
+        }
+        button.isEnabled = isEnabled
+        button.setAccessibilityLabel(title.localizedString)
+    }
+
+    @MainActor
+    final class Coordinator: NSObject {
+        var parent: NativeSettingsPicker
+        init(_ parent: NativeSettingsPicker) { self.parent = parent }
+        @objc func select(_ sender: NSPopUpButton) {
+            let index = sender.indexOfSelectedItem
+            guard parent.options.indices.contains(index) else { return }
+            parent.selection = parent.options[index].1
+        }
+    }
+}
+
+private struct SettingsRow<Content: View>: View {
+    private let title: LocalizedStringKey
+    private let content: Content
+    private let alignment: VerticalAlignment
+
+    init(_ title: LocalizedStringKey, alignment: VerticalAlignment = .firstTextBaseline, @ViewBuilder content: () -> Content) {
+        self.title = title
+        self.alignment = alignment
+        self.content = content()
+    }
+
+    var body: some View {
+        HStack(alignment: alignment, spacing: 12) {
+            (Text(title) + Text(verbatim: ":"))
+                .multilineTextAlignment(.trailing)
+                .frame(width: SettingsLayout.formWidth / 4, alignment: .trailing)
+            VStack(alignment: .leading, spacing: 8) {
+                content
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .fixedSize(horizontal: false, vertical: true)
     }
 }
 
@@ -150,43 +381,55 @@ struct ApplicationSettingsView: View {
     @State private var isConfirmResetAutoConnect = false
 
     var body: some View {
-        Form {
-            Toggle(isOn: $isKeepRunningAfterLastWindowClosed, label: {
-                Text("Keep UTM running after last window is closed and all VMs are shut down")
-            })
-            if #available(macOS 13, *) {
-                Toggle(isOn: $isDockIconHidden.inverted, label: {
-                    Text("Show dock icon")
-                }).onChange(of: isDockIconHidden) { newValue in
-                    if newValue {
-                        isMenuIconShown = true
-                        isKeepRunningAfterLastWindowClosed = true
+        SettingsPane {
+            SettingsRow("Application") {
+                Toggle(isOn: $isKeepRunningAfterLastWindowClosed, label: {
+                    Text("Keep running after all windows and virtual machines are closed")
+                })
+                if #available(macOS 13, *) {
+                    Toggle(isOn: $isDockIconHidden.inverted, label: {
+                        Text("Show dock icon")
+                    }).onChange(of: isDockIconHidden) { newValue in
+                        if newValue {
+                            isMenuIconShown = true
+                            isKeepRunningAfterLastWindowClosed = true
+                        }
                     }
+                    Toggle(isOn: $isMenuIconShown, label: {
+                        Text("Show menu bar icon")
+                    }).disabled(isDockIconHidden)
                 }
-                Toggle(isOn: $isMenuIconShown, label: {
-                    Text("Show menu bar icon")
-                }).disabled(isDockIconHidden)
             }
-            Toggle(isOn: $isPreventIdleSleep, label: {
-                Text("Prevent system from sleeping when any VM is running")
-            })
-            Picker("Running VMs on quit", selection: $quitPolicy) {
-                Text("Save State (Default)").tag(UTMQuitPolicy.saveState.rawValue)
-                Text("Request Power Down").tag(UTMQuitPolicy.requestPowerDown.rawValue)
+            SettingsRow("Sleep") {
+                Toggle(isOn: $isPreventIdleSleep, label: {
+                    Text("Prevent system from sleeping when any VM is running")
+                })
             }
-            .fixedSize(horizontal: true, vertical: false)
-            .help("Choose whether UTM saves the state of running virtual machines or requests that their guest operating systems shut down when UTM quits.")
-            Toggle(isOn: $isNoQuitConfirmation, label: {
-                Text("Do not show confirmation when closing a running VM")
-            }).help("Closing a VM without properly shutting it down could result in data loss.")
-
-            Section(header: Text("QEMU USB")) {
+            SettingsRow("Running VMs on quit") {
+                SettingsPicker(
+                    "Running VMs on quit",
+                    selection: $quitPolicy,
+                    options: [
+                        ("Save State (Default)", UTMQuitPolicy.saveState.rawValue),
+                        ("Request Power Down", UTMQuitPolicy.requestPowerDown.rawValue)
+                    ]
+                )
+                .fixedSize(horizontal: true, vertical: false)
+                .help("Choose whether UTM saves the state of running virtual machines or requests that their guest operating systems shut down when UTM quits.")
+            }
+            SettingsRow("Closing a VM") {
+                Toggle(isOn: $isNoQuitConfirmation, label: {
+                    Text("Do not show confirmation when closing a running VM")
+                }).help("Closing a VM without properly shutting it down could result in data loss.")
+            }
+            SettingsRow("QEMU USB") {
                 Toggle(isOn: $isNoUsbPrompt, label: {
                     Text("Do not show prompt when USB device is plugged in")
                 })
                 Button("Reset auto connect devices…") {
                     isConfirmResetAutoConnect.toggle()
                 }.help("Clears all saved USB devices.")
+                .padding(.top, 6)
                 .alert(isPresented: $isConfirmResetAutoConnect) {
                     Alert(title: Text("Do you wish to reset all saved USB devices?"), primaryButton: .cancel(), secondaryButton: .destructive(Text("Reset")) {
                         UTMUSBManager.shared.usbDevices.removeAll()
@@ -227,9 +470,21 @@ struct DisplaySettingsView: View {
         }
     }
 
+    private var vulkanDriverOptions: [(String, UTMQEMUVulkanDriver)] {
+        var options: [(String, UTMQEMUVulkanDriver)] = [
+            ("Default", .qemuVulkanDriverDefault),
+            ("Disabled", .qemuVulkanDriverDisabled),
+            ("MoltenVK", .qemuVulkanDriverMoltenVK)
+        ]
+        if #available(macOS 26, *) {
+            options.append(("KosmicKrisp", .qemuVulkanDriverKosmicKrisp))
+        }
+        return options
+    }
+
     var body: some View {
-        Form {
-            Section(header: Text("Display")) {
+        SettingsPane {
+            SettingsRow("Screenshots") {
                 Toggle(isOn: $isNoScreenshot) {
                     Text("Disable VM screenshot")
                 }.help("No VM screenshots will be taken.")
@@ -240,40 +495,43 @@ struct DisplaySettingsView: View {
                     Text("Do not save VM screenshot to disk")
                 }.help("If enabled, any existing screenshot will be deleted the next time the VM is started.")
                 .disabled(isNoScreenshot)
+            }
+            SettingsRow("Full Screen") {
                 Toggle(isOn: $isFullScreenUseCameraHousingArea) {
                     Text("Fill the area beside the camera housing in full screen")
                 }.help("If enabled, a full screen VM display will use the entire screen including the area beside the built-in camera. The menu bar will cover this area while it is revealed.")
             }
-            
-            Section(header: Text("QEMU Graphics Acceleration")) {
-                Picker("Renderer Backend", selection: $qemuRendererBackend) {
-                    Text("Default").tag(UTMQEMURendererBackend.qemuRendererBackendDefault)
-                    Text("ANGLE (OpenGL)").tag(UTMQEMURendererBackend.qemuRendererBackendAngleGL)
-                    Text("ANGLE (Metal)").tag(UTMQEMURendererBackend.qemuRendererBackendAngleMetal)
-                    Text("Apple Core OpenGL").tag(UTMQEMURendererBackend.qemuRendererBackendCGL)
-                }.help("By default, the best renderer for this device will be used. You can override this with to always use a specific renderer. This only applies to QEMU VMs with GPU accelerated graphics.")
-                Picker("Vulkan Driver", selection: $qemuVulkanDriver) {
-                    Text("Default").tag(UTMQEMUVulkanDriver.qemuVulkanDriverDefault)
-                    Text("Disabled").tag(UTMQEMUVulkanDriver.qemuVulkanDriverDisabled)
-                    Text("MoltenVK").tag(UTMQEMUVulkanDriver.qemuVulkanDriverMoltenVK)
-                    if #available(macOS 26, *) {
-                        Text("KosmicKrisp").tag(UTMQEMUVulkanDriver.qemuVulkanDriverKosmicKrisp)
-                    }
-                }.help("Select the Vulkan driver to use for host passthrough rendering. Vulkan requires guest drivers to be installed.")
+            SettingsRow("Renderer Backend") {
+                SettingsPicker(
+                    "Renderer Backend",
+                    selection: $qemuRendererBackend,
+                    options: [
+                        ("Default", .qemuRendererBackendDefault),
+                        ("ANGLE (OpenGL)", .qemuRendererBackendAngleGL),
+                        ("ANGLE (Metal)", .qemuRendererBackendAngleMetal),
+                        ("Apple Core OpenGL", .qemuRendererBackendCGL)
+                    ]
+                ).help("By default, the best renderer for this device will be used. You can override this with to always use a specific renderer. This only applies to QEMU VMs with GPU accelerated graphics.")
+            }
+            SettingsRow("Vulkan Driver") {
+                SettingsPicker(
+                    "Vulkan Driver",
+                    selection: $qemuVulkanDriver,
+                    options: vulkanDriverOptions
+                ).help("Select the Vulkan driver to use for host passthrough rendering. Vulkan requires guest drivers to be installed.")
                 .disabled(!isVulkanSupported)
                 .onChange(of: qemuRendererBackend) { _ in
                     if !isVulkanSupported {
                         qemuVulkanDriver = .qemuVulkanDriverDefault
                     }
                 }
-                Picker("DirectX Driver", selection: $qemuDirectXDriver) {
-                    Text("Default").tag(UTMQEMUDirectXDriver.qemuDirectXDriverDefault)
-                    Text("Disabled").tag(UTMQEMUDirectXDriver.qemuDirectXDriverDisabled)
-                    Text("DXMT").tag(UTMQEMUDirectXDriver.qemuDirectXDriverDXMT)
-                    if isD3DMetalAvailable {
-                        Text("D3DMetal").tag(UTMQEMUDirectXDriver.qemuDirectXDriverD3DMetal)
-                    }
-                }.help("Select the DirectX driver to use for host passthrough rendering. DirectX requires guest drivers to be installed.")
+            }
+            SettingsRow("DirectX Driver") {
+                SettingsPicker(
+                    "DirectX Driver",
+                    selection: $qemuDirectXDriver,
+                    options: [("Default", .qemuDirectXDriverDefault), ("Disabled", .qemuDirectXDriverDisabled), ("DXMT", .qemuDirectXDriverDXMT)] + (isD3DMetalAvailable ? [("D3DMetal", .qemuDirectXDriverD3DMetal)] : [])
+                ).help("Select the DirectX driver to use for host passthrough rendering. DirectX requires guest drivers to be installed.")
                 .disabled(!isVulkanSupported)
                 .onChange(of: qemuRendererBackend) { _ in
                     if !isVulkanSupported {
@@ -283,13 +541,15 @@ struct DisplaySettingsView: View {
                 if !isVulkanSupported {
                     Text("The selected renderer backend does not support Vulkan.")
                 }
-                HStack {
-                    Stepper("FPS Limit", value: $qemuRendererFpsLimit, in: 0...240, step: 15)
+            }
+            SettingsRow("FPS Limit") {
+                HStack(spacing: 8) {
                     NumberTextField("", number: $qemuRendererFpsLimit, prompt: "None")
-                        .frame(width: 80)
-                        .multilineTextAlignment(.trailing)
-                        .help("If set, a frame limit can improve smoothness in rendering by preventing stutters when set to the lowest value your device can handle.")
-                }
+                    .frame(width: 80)
+                    .multilineTextAlignment(.trailing)
+                    .help("If set, a frame limit can improve smoothness in rendering by preventing stutters when set to the lowest value your device can handle.")
+                    Stepper("FPS Limit", value: $qemuRendererFpsLimit, in: 0...240, step: 15).labelsHidden()
+                }.fixedSize(horizontal: true, vertical: false)
             }
         }
     }
@@ -299,13 +559,17 @@ struct SoundSettingsView: View {
     @AppStorage("QEMUSoundBackend") var qemuSoundBackend: UTMQEMUSoundBackend = .qemuSoundBackendDefault
     
     var body: some View {
-        Form {
-            Section(header: Text("QEMU Sound")) {
-                Picker("Sound Backend", selection: $qemuSoundBackend) {
-                    Text("Default").tag(UTMQEMUSoundBackend.qemuSoundBackendDefault)
-                    Text("SPICE with GStreamer (Input & Output)").tag(UTMQEMUSoundBackend.qemuSoundBackendSPICE)
-                    Text("CoreAudio (Output Only)").tag(UTMQEMUSoundBackend.qemuSoundBackendCoreAudio)
-                }.help("By default, the best backend for the target will be used. If the selected backend is not available for any reason, an alternative will automatically be selected.")
+        SettingsPane {
+            SettingsRow("QEMU Sound") {
+                SettingsPicker(
+                    "Sound Backend",
+                    selection: $qemuSoundBackend,
+                    options: [
+                        ("Default", .qemuSoundBackendDefault),
+                        ("SPICE with GStreamer (Input & Output)", .qemuSoundBackendSPICE),
+                        ("CoreAudio (Output Only)", .qemuSoundBackendCoreAudio)
+                    ]
+                ).help("By default, the best backend for the target will be used. If the selected backend is not available for any reason, an alternative will automatically be selected.")
             }
         }
     }
@@ -349,8 +613,8 @@ struct InputSettingsView: View {
     }
     
     var body: some View {
-        Form {
-            Section(header: Text("Mouse/Keyboard")) {
+        SettingsPane {
+            SettingsRow("Capture Input") {
                 Toggle(isOn: $isFullScreenAutoCapture) {
                     Text("Capture input automatically when entering full screen")
                 }.help("If enabled, input capture will toggle automatically when entering and exiting full screen mode.")
@@ -358,14 +622,12 @@ struct InputSettingsView: View {
                     Text("Capture input automatically when window is focused")
                 }.help("If enabled, input capture will toggle automatically when the VM's window is focused.")
             }
-            
-            Section(header: Text("Console")) {
+            SettingsRow("Console") {
                 Toggle(isOn: $isOptionAsMetaKey, label: {
                     Text("Option (⌥) is Meta key")
                 }).help("If enabled, Option will be mapped to the Meta key which can be useful for emacs. Otherwise, option will work as the system intended (such as for entering international text).")
             }
-            
-            Section(header: Text("QEMU Pointer")) {
+            SettingsRow("QEMU Pointer") {
                 Toggle(isOn: $isCtrlRightClick, label: {
                     Text("Hold Control (⌃) for right click")
                 })
@@ -376,8 +638,7 @@ struct InputSettingsView: View {
                     Text("Handle input on initial click")
                 }.help("If enabled, when the VM is out of focus, the first click will be handled by the VM. Otherwise, the first click will only bring the window into focus.")
             }
-            
-            Section(header: Text("QEMU Keyboard")) {
+            SettingsRow("QEMU Keyboard") {
                 Button("Keyboard Shortcuts…") {
                     isKeyboardShortcutsShown.toggle()
                 }.help("Set up custom keyboard shortcuts that can be triggered from the keyboard menu.")
@@ -390,19 +651,26 @@ struct InputSettingsView: View {
                 Toggle(isOn: $isNumLockForced, label: {
                     Text("Num Lock is forced on")
                 }).help("If enabled, num lock will always be on to the guest. Note this may make your keyboard's num lock indicator out of sync.")
-                Picker("Control, Option, and Command keys", selection: modifierKeyMappingBinding) {
-                    Text("Default").tag(ModifierKeyMapping.none)
-                    Text("Swap Control (⌃) and Command (⌘)").tag(ModifierKeyMapping.ctrlCmd)
-                    Text("Swap Command (⌘) and Option (⌥)").tag(ModifierKeyMapping.cmdOpt)
-                }.help("This does not apply to key binding outside the guest.")
+            }
+            SettingsRow("Modifier Keys") {
+                SettingsPicker(
+                    "Control, Option, and Command keys",
+                    selection: modifierKeyMappingBinding,
+                    options: [
+                        ("Default", .none),
+                        ("Swap Control (⌃) and Command (⌘)", .ctrlCmd),
+                        ("Swap Command (⌘) and Option (⌥)", .cmdOpt)
+                    ]
+                ).help("This does not apply to key binding outside the guest.")
+            }
+            SettingsRow("ISO Keyboard") {
                 Toggle(isOn: $isISOKeySwapped) {
                     Text("Swap the leftmost key on the number row and the key next to left shift on ISO keyboards")
                 }.help("This only applies to ISO layout keyboards.")
             }
-            .sheet(isPresented: $isKeyboardShortcutsShown) {
-                VMKeyboardShortcutsView().padding()
-                    .frame(idealWidth: 400)
-            }
+        }.sheet(isPresented: $isKeyboardShortcutsShown) {
+            VMKeyboardShortcutsView().padding()
+            .frame(idealWidth: 400)
         }
     }
 }
@@ -423,12 +691,12 @@ struct NetworkSettingsView: View {
     }
     
     var body: some View {
-        Form {
-            Section(header: Text("Cloning")) {
+        SettingsPane {
+            SettingsRow("Cloning") {
                 Toggle("Regenerate MAC addresses on clone", isOn: $isRegenerateMACOnClone)
-                    .help("When cloning a VM, regenerate MAC addresses on every network interface to prevent conflicts.")
+                .help("When cloning a VM, regenerate MAC addresses on every network interface to prevent conflicts.")
             }
-            Section(header: Text("Host Networks")) {
+            SettingsRow("Host Networks", alignment: .top) {
                 Table($hostNetworks, selection: $selectedID) {
                     TableColumn("Name") { $network in
                         TextField(
@@ -452,19 +720,19 @@ struct NetworkSettingsView: View {
                         .foregroundStyle(UUID(uuidString: network.uuid) == nil ? .red : .primary)
                     }
                     .width(min: 160)
-                }.help("QEMU machines in 'Host' network mode can be placed in the same network to communicate with each other.")
+                }.frame(height: 180).help("QEMU machines in 'Host' network mode can be placed in the same network to communicate with each other.")
                 HStack {
                     Button("Import from VMware Fusion") {
                         isImporterPresented.toggle()
                     }.fileImporter(isPresented: $isImporterPresented, allowedContentTypes: [.data]) { result in
-                        
+
                         if let url = try? result.get() {
                             for network in UTMConfigurationHostNetwork.parseVMware(from: url) {
                                 if !hostNetworks.contains(where: {$0.uuid == network.uuid}) {
                                     hostNetworks.append(network)
                                 }
                             }
-                            
+
                             saveData()
                         }
                     }.help("Navigate to '/Library/Preferences/VMware Fusion' (⌘+Shift+G) and select the 'networking' file")
@@ -475,7 +743,7 @@ struct NetworkSettingsView: View {
                         }
                         selectedID = nil
                         saveData()
-                        
+
                     }.disabled(selectedID == nil)
                     Button("Add") {
                         let network = UTMConfigurationHostNetwork(name: "Network \(hostNetworks.count)")
@@ -492,8 +760,8 @@ struct FileSettingsView: View {
     @AppStorage("UseFileLock") var isUseFileLock = true
 
     var body: some View {
-        Form {
-            Section(header: Text("QEMU Backend")) {
+        SettingsPane {
+            SettingsRow("QEMU Backend") {
                 Toggle(isOn: $isUseFileLock) {
                     Text("Lock drive images when in use")
                 }.help("If enabled, all writable drive images will be locked when the VM is running. Read-only drive images will not be locked.")
@@ -516,49 +784,53 @@ struct ServerSettingsView: View {
     // they can gain execution in UTM application context... which is the context needed to read the password.
 
     var body: some View {
-        Form {
-            Section(header: Text("Startup")) {
+        SettingsPane {
+            SettingsRow("Startup") {
                 Toggle("Automatically start UTM server", isOn: $isServerAutostart)
             }
-            Section(header: Text("Network")) {
+            SettingsRow("Network") {
                 Toggle("Reject unknown connections by default", isOn: $isServerAutoblock)
-                    .help("If checked, you will not be prompted about any unknown connection and they will be rejected.")
+                .help("If checked, you will not be prompted about any unknown connection and they will be rejected.")
                 Toggle("Allow access from external clients", isOn: $isServerExternal)
-                    .help("By default, the server is only available on LAN but setting this will use UPnP/NAT-PMP to port forward to WAN.")
-                    .onChange(of: isServerExternal) { newValue in
-                        if newValue {
-                            if serverPort == 0 {
-                                serverPort = defaultPort
-                            }
-                            if !isServerPasswordRequired {
-                                isServerPasswordRequired = true
-                            }
-                        }
-                    }
-                NumberTextField("", number: $serverPort, prompt: "Any")
-                    .frame(width: 80)
-                    .multilineTextAlignment(.trailing)
-                    .help("Specify a port number to listen on. This is required if external clients are permitted.")
-                    .onChange(of: serverPort) { newValue in
-                        if newValue == 0 {
-                            isServerExternal = false
-                        }
-                        if newValue < 0 || newValue >= UInt16.max {
+                .help("By default, the server is only available on LAN but setting this will use UPnP/NAT-PMP to port forward to WAN.")
+                .onChange(of: isServerExternal) { newValue in
+                    if newValue {
+                        if serverPort == 0 {
                             serverPort = defaultPort
                         }
-                    }
-            }
-            Section(header: Text("Authentication")) {
-                Toggle("Require Password", isOn: $isServerPasswordRequired)
-                    .disabled(isServerExternal)
-                    .help("If enabled, clients must enter a password. This is required if you want to access the server externally.")
-                    .onChange(of: isServerPasswordRequired) { newValue in
-                        if newValue && serverPassword.count == 0 {
-                            serverPassword = .random(length: 32)
+                        if !isServerPasswordRequired {
+                            isServerPasswordRequired = true
                         }
                     }
-                TextField("Password", text: $serverPassword)
-                    .disabled(!isServerPasswordRequired)
+                }
+            }
+            SettingsRow("Listening Port") {
+                NumberTextField("", number: $serverPort, prompt: "Any")
+                .frame(width: 80)
+                .multilineTextAlignment(.trailing)
+                .help("Specify a port number to listen on. This is required if external clients are permitted.")
+                .onChange(of: serverPort) { newValue in
+                    if newValue == 0 {
+                        isServerExternal = false
+                    }
+                    if newValue < 0 || newValue >= UInt16.max {
+                        serverPort = defaultPort
+                    }
+                }
+            }
+            SettingsRow("Authentication") {
+                Toggle("Require Password", isOn: $isServerPasswordRequired)
+                .disabled(isServerExternal)
+                .help("If enabled, clients must enter a password. This is required if you want to access the server externally.")
+                .onChange(of: isServerPasswordRequired) { newValue in
+                    if newValue && serverPassword.count == 0 {
+                        serverPassword = .random(length: 32)
+                    }
+                }
+            }
+            SettingsRow("Password") {
+                TextField("Password", text: $serverPassword).labelsHidden()
+                .disabled(!isServerPasswordRequired)
             }
         }
     }
