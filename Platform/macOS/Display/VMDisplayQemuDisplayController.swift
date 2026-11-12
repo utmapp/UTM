@@ -366,7 +366,7 @@ extension VMDisplayQemuWindowController: CSUSBManagerDelegate {
             }
             Task.detached {
                 do {
-                    try await usbManager.connectUsbDevice(usbDevice)
+                    try await usbManager.connectUsbDeviceAfterUnmounting(usbDevice)
                     await MainActor.run {
                         self.connectedUsbDevices.append(usbDevice)
                     }
@@ -464,7 +464,7 @@ extension VMDisplayQemuWindowController {
         let device = allUsbDevices[menu.tag]
         Task.detached {
             self.withErrorAlert {
-                try await usbManager.connectUsbDevice(device)
+                try await usbManager.connectUsbDeviceAfterUnmounting(device)
                 await MainActor.run {
                     self.primaryDisplayController.connectedUsbDevices.append(device)
                 }
@@ -517,7 +517,7 @@ extension VMDisplayQemuWindowController {
             let filtered = devices.filter({ self.isAutoConnect($0) })
             for device in filtered {
                 self.withErrorAlert {
-                    try await usbManager.connectUsbDevice(device)
+                    try await usbManager.connectUsbDeviceAfterUnmounting(device)
                     await MainActor.run {
                         self.connectedUsbDevices.append(device)
                     }
