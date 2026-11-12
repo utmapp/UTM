@@ -328,11 +328,31 @@ extension VMDisplayQemuWindowController: CSUSBManagerDelegate {
     
     func spiceUsbManager(_ usbManager: CSUSBManager, deviceAttached device: CSUSBDevice) {
         logger.debug("USB device attached: \(device)")
-        if !isNoUsbPrompt {
-            Task { @MainActor in
-                if self.window!.isKeyWindow && self.vm.state == .started {
+        Task.detached {
+            // looking the device up reads its descriptors, which is kept off the main thread
+            let isAutoConnect = self.isAutoConnect(device)
+            await MainActor.run {
+                guard self.vm.state == .started else {
+                    return
+                }
+                if isAutoConnect {
+                    // also brings back a device that restarted itself, as one does after a firmware update
+                    if usbManager.canRedirectUsbDevice(device, errorMessage: nil) && !usbManager.isUsbDeviceConnected(device) {
+                        self.autoConnect(device, with: usbManager)
+                    }
+                } else if !self.isNoUsbPrompt && self.window!.isKeyWindow {
                     self.showConnectPrompt(for: device)
                 }
+            }
+        }
+    }
+
+    /// Connect a device that is set to connect by itself
+    private func autoConnect(_ device: CSUSBDevice, with usbManager: CSUSBManager) {
+        withErrorAlert {
+            try await usbManager.connectUsbDeviceAfterUnmounting(device)
+            await MainActor.run {
+                self.primaryDisplayController.connectedUsbDevices.append(device)
             }
         }
     }
@@ -516,12 +536,7 @@ extension VMDisplayQemuWindowController {
             }
             let filtered = devices.filter({ self.isAutoConnect($0) })
             for device in filtered {
-                self.withErrorAlert {
-                    try await usbManager.connectUsbDeviceAfterUnmounting(device)
-                    await MainActor.run {
-                        self.connectedUsbDevices.append(device)
-                    }
-                }
+                self.autoConnect(device, with: usbManager)
             }
         }
     }
