@@ -1444,6 +1444,7 @@
 		E6DD050DA874478695033081 /* VMLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE4E5421058748C3B3442DF8 /* VMLayoutTests.swift */; };
 		0A176EF06DEA4763B25BE32F /* AppleVMRegistryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F002E4D45F164405A2B13860 /* AppleVMRegistryTests.swift */; };
 		7B1D0A6E5C3F4E2A9D8C1F04 /* UTMPasteboardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E9A6C2D8B4F4A17A5D0E6B9 /* UTMPasteboardTests.swift */; };
+		5C2E8F1A9D7B4C36B0A4E7D2 /* UTMAppleConfigurationAudioTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A4D1E7C3B6F4D58A2C8F0E1 /* UTMAppleConfigurationAudioTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -2511,6 +2512,7 @@
 		DE4E5421058748C3B3442DF8 /* VMLayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMLayoutTests.swift; sourceTree = "<group>"; };
 		F002E4D45F164405A2B13860 /* AppleVMRegistryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleVMRegistryTests.swift; sourceTree = "<group>"; };
 		3E9A6C2D8B4F4A17A5D0E6B9 /* UTMPasteboardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMPasteboardTests.swift; sourceTree = "<group>"; };
+		9A4D1E7C3B6F4D58A2C8F0E1 /* UTMAppleConfigurationAudioTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMAppleConfigurationAudioTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -3659,6 +3661,7 @@
 			children = (
 				F002E4D45F164405A2B13860 /* AppleVMRegistryTests.swift */,
 				3E9A6C2D8B4F4A17A5D0E6B9 /* UTMPasteboardTests.swift */,
+				9A4D1E7C3B6F4D58A2C8F0E1 /* UTMAppleConfigurationAudioTests.swift */,
 				4F0B34177E894AFB81641614 /* VMLifecycleTests.swift */,
 				12AB2C651C9F4C5999BC4D43 /* Scripting */,
 			);
@@ -4534,6 +4537,7 @@
 			files = (
 				0A176EF06DEA4763B25BE32F /* AppleVMRegistryTests.swift in Sources */,
 				7B1D0A6E5C3F4E2A9D8C1F04 /* UTMPasteboardTests.swift in Sources */,
+				5C2E8F1A9D7B4C36B0A4E7D2 /* UTMAppleConfigurationAudioTests.swift in Sources */,
 				FE7624D79C054783853776EF /* VMLifecycleTests.swift in Sources */,
 				F2A7C17B8AB34DA3B406450B /* UTMSnapshotManifestTests.swift in Sources */,
 				41421300977143369096FDC4 /* VMWizardStateTests.swift in Sources */,

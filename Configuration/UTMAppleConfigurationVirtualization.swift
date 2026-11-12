@@ -179,19 +179,29 @@ extension UTMAppleConfigurationVirtualization {
         if hasEntropy {
             vzconfig.entropyDevices = [VZVirtioEntropyDeviceConfiguration()]
         }
-        if hasAudio || hasAudioInput {
+        var audioStreams: [VZVirtioSoundDeviceStreamConfiguration] = []
+        if hasAudioInput {
+            let audioInput = VZVirtioSoundDeviceInputStreamConfiguration()
+            audioInput.source = VZHostAudioInputStreamSource()
+            audioStreams.append(audioInput)
+        }
+        if hasAudio {
+            let audioOutput = VZVirtioSoundDeviceOutputStreamConfiguration()
+            audioOutput.sink = VZHostAudioOutputStreamSink()
+            audioStreams.append(audioOutput)
+        }
+        if isMacOSGuest && !audioStreams.isEmpty {
+            // one device for both streams, or macOS has two clocks to keep in sync
             let audioConfiguration = VZVirtioSoundDeviceConfiguration()
-            if hasAudioInput {
-                let audioInput = VZVirtioSoundDeviceInputStreamConfiguration()
-                audioInput.source = VZHostAudioInputStreamSource()
-                audioConfiguration.streams.append(audioInput)
-            }
-            if hasAudio {
-                let audioOutput = VZVirtioSoundDeviceOutputStreamConfiguration()
-                audioOutput.sink = VZHostAudioOutputStreamSink()
-                audioConfiguration.streams.append(audioOutput)
-            }
+            audioConfiguration.streams = audioStreams
             vzconfig.audioDevices = [audioConfiguration]
+        } else {
+            // Linux sound servers only use the first stream of a device, so each stream gets its own
+            vzconfig.audioDevices = audioStreams.map { stream in
+                let audioConfiguration = VZVirtioSoundDeviceConfiguration()
+                audioConfiguration.streams = [stream]
+                return audioConfiguration
+            }
         }
         if keyboard != .disabled {
             vzconfig.keyboards = [VZUSBKeyboardConfiguration()]
