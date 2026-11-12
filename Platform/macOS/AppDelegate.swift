@@ -315,6 +315,10 @@ enum UTMQuitPolicy: Int {
         }
     }
     
+    func applicationWillFinishLaunching(_ notification: Notification) {
+        NSApp.scriptingDelegate = self
+    }
+    
     func applicationDidFinishLaunching(_ notification: Notification) {
         CapsLockRemapper.shared.recoverAtLaunch()
         UTMAppleVirtualMachine.removeStaleDisposableOverlayDirectories()
