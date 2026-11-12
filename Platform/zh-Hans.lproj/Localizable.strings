@@ -66,6 +66,9 @@ VMDisplayQemuTerminalWindowController */
 /* No comment provided by engineer. */
 "• " = "• ";
 
+/* UTMScriptingConfigImpl */
+"A drive can only be made larger." = "驱动器只能扩大容量。";
+
 /* UTMAppleDiskImage */
 "A drive cannot be read only once a snapshot has been taken of it." = "在创建驱动器的快照后，无法设置驱动器为只读。";
 
@@ -305,7 +308,7 @@ UTMQemuConstants */
 /* No comment provided by engineer. */
 "Cloning" = "复制";
 
-/* No comment provided by engineer. */
+/* VMDisplayWindowController */
 "Close" = "关闭";
 
 /* No comment provided by engineer. */
@@ -1095,6 +1098,9 @@ UTMVirtualMachine */
 /* UTMScriptingVirtualMachineImpl */
 "One or more required parameters are missing or invalid." = "一个或多个必填的参数缺少或无效。";
 
+/* UTMScriptingConfigImpl */
+"Only a QCOW2 drive stored in the virtual machine can be resized." = "只有存储在虚拟机中的 QCOW2 磁盘才能调整大小。";
+
 /* Welcome view */
 "Open Existing Virtual Machine" = "打开现有虚拟机";
 
@@ -1238,6 +1244,9 @@ UTMQemuConstants */
 /* VMDisplayAppleWindowController
 VMQemuDisplayMetalWindowController */
 "Querying USB devices..." = "正在查询 USB 设备状态…";
+
+/* AppDelegate */
+"Quit" = "退出";
 
 /* VMQemuDisplayMetalWindowController */
 "Quitting UTM will kill all running VMs." = "退出 UTM 将终止所有正在运行的虚拟机。";
@@ -1422,6 +1431,9 @@ UTMQemuConstants */
 /* No comment provided by engineer. */
 "Show menu bar icon" = "显示菜单栏图标";
 
+/* VMKeyboardAccessoryView */
+"Show Touchpad" = "显示触摸板";
+
 /* No comment provided by engineer. */
 "Size" = "大小";
 
@@ -1564,6 +1576,9 @@ VMSnapshotsView */
 /* UTMAppleDiskImage */
 "The disk image is incomplete because some of its data could not be read." = "磁盘映像不完整，因为某些数据无法读取。";
 
+/* UTMDownloadSupportToolsTaskError */
+"The download of the guest support tools was cancelled." = "客户机支持工具的下载已被取消。";
+
 /* Error shown when importing a ZIP file from web that contains an entry pointing outside of the virtual machine directory. */
 "The downloaded ZIP archive contains an invalid path." = "下载的 ZIP 归档包含了一个无效的路径。";
 
@@ -1602,6 +1617,9 @@ VMSnapshotsView */
 
 /* UTMAppleVirtualMachine */
 "The password for the guest account is not valid." = "客户机帐户的密码无效。";
+
+/* UTMScriptingConfigImpl */
+"The protocol of a port forward must be TCP or UDP." = "端口转发的协议必须是 TCP 或 UDP。";
 
 /* UTMScriptingVirtualMachineImpl */
 "The QEMU guest agent is not running or not installed on the guest." = "QEMU 客户机代理没有运行或未安装在客户机上。";
@@ -1647,6 +1665,9 @@ VMSnapshotsView */
 
 /* UTMAppleVirtualMachine */
 "The USB device '%@' is not connected to this virtual machine." = "USB 设备“%@”未连接到此虚拟机。";
+
+/* UTMAppleVirtualMachine */
+"The USB device '%@' is not supported for capture by virtual machines." = "USB 设备“%@”不支持从虚拟机捕获。";
 
 /* UTMAppleVirtualMachine */
 "The username for the guest account is not valid." = "客户机帐户的用户名无效。";
@@ -2758,6 +2779,9 @@ VMWizardOSMacView */
 /* No comment provided by engineer. */
 "Show in Finder" = "在访达中显示";
 
+/* VMTouchpadView */
+"Show Keyboard" = "显示键盘";
+
 /* No comment provided by engineer. */
 "Show the main window." = "显示主窗口。";
 
@@ -2877,6 +2901,9 @@ VMWizardOSMacView */
 
 /* No comment provided by engineer. */
 "To change this, remove the shared directory and add it again." = "若要更改此选项，请移除共享目录并重新添加。";
+
+/* VMTouchpadView */
+"Touchpad" = "触摸板";
 
 /* No comment provided by engineer. */
 "TPM 2.0 Device" = "TPM 2.0 设备";

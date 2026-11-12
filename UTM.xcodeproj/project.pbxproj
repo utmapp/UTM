@@ -1064,6 +1064,8 @@
 		CEF0307526A2B40B00667B63 /* VMWizardHardwareView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0307326A2B40B00667B63 /* VMWizardHardwareView.swift */; };
 		CEF0307626A2B40B00667B63 /* VMWizardHardwareView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0307326A2B40B00667B63 /* VMWizardHardwareView.swift */; };
 		CEF469EF2BD2D165005A0B68 /* VMWizardStartViewTCI.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF469EE2BD2D165005A0B68 /* VMWizardStartViewTCI.swift */; };
+		CEF53CBF309579BE00E004BB /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = CEF53CBE309579BE00E004BB /* Localizable.xcstrings */; };
+		CEF53CC0309579BE00E004BB /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = CEF53CBE309579BE00E004BB /* Localizable.xcstrings */; };
 		CEF78EE626B99F350022CAF4 /* EGL.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE5451A426AF5F0F008594E5 /* EGL.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CEF78EE726B99F350022CAF4 /* epoxy.0.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE5451A226AF5F0F008594E5 /* epoxy.0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CEF78EE826B99F350022CAF4 /* GLESv2.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = CE5451A326AF5F0F008594E5 /* GLESv2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -2407,6 +2409,7 @@
 		CEF0307026A2B04300667B63 /* VMWizardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMWizardView.swift; sourceTree = "<group>"; };
 		CEF0307326A2B40B00667B63 /* VMWizardHardwareView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMWizardHardwareView.swift; sourceTree = "<group>"; };
 		CEF469EE2BD2D165005A0B68 /* VMWizardStartViewTCI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMWizardStartViewTCI.swift; sourceTree = "<group>"; };
+		CEF53CBE309579BE00E004BB /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		CEF6F5EA26DDD60500BC434D /* macOS-unsigned.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "macOS-unsigned.entitlements"; sourceTree = "<group>"; };
 		CEF6F5EB26DDD63100BC434D /* QEMUHelper-unsigned.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "QEMUHelper-unsigned.entitlements"; sourceTree = "<group>"; };
 		CEF6F5EC26DDD65700BC434D /* QEMULauncher-unsigned.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "QEMULauncher-unsigned.entitlements"; sourceTree = "<group>"; };
@@ -2977,6 +2980,7 @@
 		84A57CC030641C9100BA5139 /* iOSHelper */ = {
 			isa = PBXGroup;
 			children = (
+				CEF53CBE309579BE00E004BB /* Localizable.xcstrings */,
 				84A57CBF30641C9100BA5139 /* iOSHelper.swift */,
 				84A57D0F30641D0000BA5139 /* iOSHelper-Bridging-Header.h */,
 			);
@@ -4245,6 +4249,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CEF53CC0309579BE00E004BB /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4252,6 +4257,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CEF53CBF309579BE00E004BB /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

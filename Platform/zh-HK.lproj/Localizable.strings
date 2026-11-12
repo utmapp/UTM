@@ -66,6 +66,9 @@ VMDisplayQemuTerminalWindowController */
 /* No comment provided by engineer. */
 "• " = "• ";
 
+/* UTMScriptingConfigImpl */
+"A drive can only be made larger." = "磁碟只能擴大儲存空間。";
+
 /* UTMAppleDiskImage */
 "A drive cannot be read only once a snapshot has been taken of it." = "一旦製作磁碟快照，將無法將磁碟設為唯讀。";
 
@@ -305,7 +308,7 @@ UTMQemuConstants */
 /* No comment provided by engineer. */
 "Cloning" = "製作副本";
 
-/* No comment provided by engineer. */
+/* VMDisplayWindowController */
 "Close" = "關閉";
 
 /* No comment provided by engineer. */
@@ -1095,6 +1098,9 @@ UTMVirtualMachine */
 /* UTMScriptingVirtualMachineImpl */
 "One or more required parameters are missing or invalid." = "一個或多個所需的引數缺失或無效。";
 
+/* UTMScriptingConfigImpl */
+"Only a QCOW2 drive stored in the virtual machine can be resized." = "只可以調整儲存於虛擬機中的 QCOW2 磁碟大小。";
+
 /* Welcome view */
 "Open Existing Virtual Machine" = "開啟現有的虛擬機";
 
@@ -1238,6 +1244,9 @@ UTMQemuConstants */
 /* VMDisplayAppleWindowController
 VMQemuDisplayMetalWindowController */
 "Querying USB devices..." = "正在查詢 USB 裝置⋯";
+
+/* AppDelegate */
+"Quit" = "結束";
 
 /* VMQemuDisplayMetalWindowController */
 "Quitting UTM will kill all running VMs." = "結束 UTM 會結束所有執行的虛擬機。";
@@ -1422,6 +1431,9 @@ UTMQemuConstants */
 /* No comment provided by engineer. */
 "Show menu bar icon" = "顯示選單列圖示";
 
+/* VMKeyboardAccessoryView */
+"Show Touchpad" = "顯示觸碰板";
+
 /* No comment provided by engineer. */
 "Size" = "大小";
 
@@ -1564,6 +1576,9 @@ VMSnapshotsView */
 /* UTMAppleDiskImage */
 "The disk image is incomplete because some of its data could not be read." = "磁碟映像檔不完整，因為當中的一些資料無法讀取。";
 
+/* UTMDownloadSupportToolsTaskError */
+"The download of the guest support tools was cancelled." = "客户端支援工具的下載已取消。";
+
 /* Error shown when importing a ZIP file from web that contains an entry pointing outside of the virtual machine directory. */
 "The downloaded ZIP archive contains an invalid path." = "下載的 ZIP 封存檔中包含無效路徑。";
 
@@ -1602,6 +1617,9 @@ VMSnapshotsView */
 
 /* UTMAppleVirtualMachine */
 "The password for the guest account is not valid." = "客户端帳户的密碼無效。";
+
+/* UTMScriptingConfigImpl */
+"The protocol of a port forward must be TCP or UDP." = "連接埠轉發的通訊協定必須是 TCP 或 UDP。";
 
 /* UTMScriptingVirtualMachineImpl */
 "The QEMU guest agent is not running or not installed on the guest." = "QEMU 客户端代理程式未執行，或是未在客户端上安裝。";
@@ -1647,6 +1665,9 @@ VMSnapshotsView */
 
 /* UTMAppleVirtualMachine */
 "The USB device '%@' is not connected to this virtual machine." = "USB 裝置「%@」未連接至此虛擬機。";
+
+/* UTMAppleVirtualMachine */
+"The USB device '%@' is not supported for capture by virtual machines." = "USB 裝置「%@」不支援由虛擬機擷取。";
 
 /* UTMAppleVirtualMachine */
 "The username for the guest account is not valid." = "客户端帳户的用户名稱無效。";
@@ -2233,7 +2254,7 @@ VMWizardOSMacView */
 "Enable Rosetta on Linux (x86_64 Emulation)" = "在 Linux 中啟用 Rosetta (x86_64 模擬)";
 
 /* No comment provided by engineer. */
-"Enable Secure Boot with Microsoft UEFI keys. This is required to Secure Boot Windows." = "使用 Microsoft UEFI 鑰匙啟用保安啟󠄁動。這對於保安啟󠄁動 Windows 為必需。";
+"Enable Secure Boot with Microsoft UEFI keys. This is required to Secure Boot Windows." = "使用 Microsoft UEFI 鑰匙啟用保安啟動。這對於保安啟動 Windows 為必需。";
 
 /* No comment provided by engineer. */
 "Enable Sound" = "啟用聲音";
@@ -2366,7 +2387,7 @@ VMWizardOSMacView */
 "If enabled, a virtiofs share tagged 'rosetta' will be available on the Linux guest for installing Rosetta for emulating x86_64 on ARM64." = "如啟用，Linux 客户端會有一個標記為「rosetta」的 virtiofs 分享，用於在 ARM64 上安裝 Rosetta 以模擬 x86_64。";
 
 /* No comment provided by engineer. */
-"If enabled, all writable drive images will be locked when the VM is running. Read-only drive images will not be locked." = "如啟󠄁用，執行虛擬機时，所有可寫的磁碟映像檔都將會被鎖定。唯讀磁碟映像檔不會被被鎖定。";
+"If enabled, all writable drive images will be locked when the VM is running. Read-only drive images will not be locked." = "如啟用，執行虛擬機时，所有可寫的磁碟映像檔都將會被鎖定。唯讀磁碟映像檔不會被被鎖定。";
 
 /* No comment provided by engineer. */
 "If enabled, any existing screenshot will be deleted the next time the VM is started." = "如啟用，下次啟動虛擬機時，所有現有的螢幕截圖將會刪除。";
@@ -2375,7 +2396,7 @@ VMWizardOSMacView */
 "If enabled, caps lock will be handled like other keys. If disabled, it is treated as a toggle that is synchronized with the host." = "如啟用，Caps Lock 將會同其他鍵一般處理。如停用，它將會被視為開關鍵，並與主機同步。";
 
 /* No comment provided by engineer. */
-"If enabled, clients must enter a password. This is required if you want to access the server externally." = "如啟󠄁用，客户端必須輸入密碼。如你要取用伺服器，這個為必需。";
+"If enabled, clients must enter a password. This is required if you want to access the server externally." = "如啟用，客户端必須輸入密碼。如你要取用伺服器，這個為必需。";
 
 /* No comment provided by engineer. */
 "If enabled, input capture will toggle automatically when entering and exiting full screen mode." = "如啟用，在進入和離開全螢幕模式時，將會自動切換輸入擷取。";
@@ -2576,7 +2597,7 @@ VMWizardOSMacView */
 "Power Off" = "關閉電源";
 
 /* No comment provided by engineer. */
-"Preload Secure Boot Keys" = "預載入保安啟󠄁動鑰匙";
+"Preload Secure Boot Keys" = "預載入保安啟動鑰匙";
 
 /* No comment provided by engineer. */
 "Prompt" = "提示";
@@ -2630,7 +2651,7 @@ VMWizardOSMacView */
 "Require Password" = "需要密碼";
 
 /* No comment provided by engineer. */
-"Requires restarting UTM to take affect." = "需要重新啟󠄁動 UTM 以生效。";
+"Requires restarting UTM to take affect." = "需要重新啟動 UTM 以生效。";
 
 /* No comment provided by engineer. */
 "Requires SPICE guest agent tools to be installed." = "需要安裝 SPICE 客户端代理程式工具。";
@@ -2758,6 +2779,9 @@ VMWizardOSMacView */
 /* No comment provided by engineer. */
 "Show in Finder" = "在 Finder 中顯示";
 
+/* VMTouchpadView */
+"Show Keyboard" = "顯示鍵盤";
+
 /* No comment provided by engineer. */
 "Show the main window." = "顯示主視窗。";
 
@@ -2877,6 +2901,9 @@ VMWizardOSMacView */
 
 /* No comment provided by engineer. */
 "To change this, remove the shared directory and add it again." = "如要更改此選項，請移除分享的目錄並重新加回。";
+
+/* VMTouchpadView */
+"Touchpad" = "觸碰板";
 
 /* No comment provided by engineer. */
 "TPM 2.0 Device" = "TPM 2.0 裝置";
