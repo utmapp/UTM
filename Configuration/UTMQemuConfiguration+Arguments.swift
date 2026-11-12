@@ -37,6 +37,22 @@ import Virtualization // for getting network interfaces
         return nil
     }
 
+    /// App group that prefixes the names of POSIX shared memory (virglrenderer's blob resources)
+    ///
+    /// The sandbox allows shared memory only under a group the process is entitled to. An
+    /// unsigned build is entitled to its group without a team prefix even though it does not use
+    /// the group's container (see `appGroupIdentifier`), so its shared memory goes there.
+    var sharedMemoryGroupIdentifier: String? {
+        if let appGroupIdentifier {
+            return appGroupIdentifier
+        }
+        let appGroup = Bundle.main.infoDictionary?["AppGroupIdentifier"] as? String
+        if let appGroup, appGroup.hasPrefix("invalid.") {
+            return String(appGroup.dropFirst("invalid.".count))
+        }
+        return nil
+    }
+
     /// Shared between helper and main process to store Unix sockets
     var socketURL: URL {
         #if os(iOS) || os(visionOS)

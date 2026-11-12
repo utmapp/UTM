@@ -75,6 +75,14 @@ if [ "$MODE" == "unsigned" ]; then
 	cp "$BASEDIR/../QEMURenderServer/QEMURenderServer-unsigned.entitlements" "$RENDERER_ENTITLEMENTS"
 	cp "$BASEDIR/../QEMUHelper/QEMUHelper-unsigned.entitlements" "$HELPER_ENTITLEMENTS"
 	cp "$BASEDIR/../utmctl/utmctl-unsigned.entitlements" "$CLI_ENTITLEMENTS"
+
+	# the app group is built from build settings that Xcode expands only when it signs; codesign takes the file as is,
+	# so the app would be entitled to a group with that literal name and could not create GPU shared memory
+	# take the group the app was built with instead, which is marked invalid when it has no team prefix
+	APP_GROUP=$(/usr/libexec/PlistBuddy -c "Print :AppGroupIdentifier" "$INPUT/Products/Applications/UTM.app/Contents/Info.plist")
+	APP_GROUP="${APP_GROUP#invalid.}"
+	/usr/libexec/PlistBuddy -c "Set :com.apple.security.application-groups:0 ${APP_GROUP}" "$UTM_ENTITLEMENTS"
+	/usr/libexec/PlistBuddy -c "Set :com.apple.security.application-groups:0 ${APP_GROUP}" "$HELPER_ENTITLEMENTS"
 else
 	cp "$BASEDIR/../Platform/macOS/macOS.entitlements" "$UTM_ENTITLEMENTS"
 	cp "$BASEDIR/../QEMULauncher/QEMULauncher.entitlements" "$LAUNCHER_ENTITLEMENTS"

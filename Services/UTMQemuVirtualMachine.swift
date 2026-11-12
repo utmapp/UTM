@@ -391,7 +391,7 @@ extension UTMQemuVirtualMachine {
         system.vulkanDriver = try vulkanDriver
         system.directXDriver = directXDriver
         system.shmemDirectoryURL = await config.shmemDirectoryURL
-        system.appSandboxGroupId = await config.appGroupIdentifier
+        system.appSandboxGroupId = await config.sharedMemoryGroupIdentifier
         system.hasDebugLog = hasDebugLog
         // last, so it overrides any variable set above
         system.extraEnvironment = environment
