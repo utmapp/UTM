@@ -46,16 +46,18 @@ struct VMKeyboardShortcutsView: View {
                         .tag(SelectedIndex(id: index))
                         .contextMenu {
                             Button("Edit") {
+                                currentlyEditingIndex = SelectedIndex(id: index)
+                                currentlyEditingShortcut = element
                                 isEditing.toggle()
                             }
                             DestructiveButton("Delete") {
-                                keyboardShortcuts.remove(at: index)
+                                removeShortcuts(atOffsets: [index])
                             }
                         }
                 }.onDelete { indexSet in
-                    keyboardShortcuts.remove(atOffsets: indexSet)
+                    removeShortcuts(atOffsets: indexSet)
                 }.onMove { indexSet, offset in
-                    keyboardShortcuts.move(fromOffsets: indexSet, toOffset: offset)
+                    moveShortcuts(fromOffsets: indexSet, toOffset: offset)
                 }
             }.listStyle(.bordered)
             .frame(height: 200)
@@ -63,7 +65,7 @@ struct VMKeyboardShortcutsView: View {
                 Spacer()
                 if let index = currentlyEditingIndex?.id, keyboardShortcuts.indices.contains(index) {
                     DestructiveButton("Delete") {
-                        keyboardShortcuts.remove(at: index)
+                        removeShortcuts(atOffsets: [index])
                     }
                     Button {
                         isEditing.toggle()
@@ -85,7 +87,7 @@ struct VMKeyboardShortcutsView: View {
                 if !currentlyEditingShortcut.isEmpty {
                     keyboardShortcuts[index.id] = currentlyEditingShortcut
                 } else {
-                    keyboardShortcuts.remove(at: index.id)
+                    removeShortcuts(atOffsets: [index.id])
                 }
             } else {
                 if !currentlyEditingShortcut.isEmpty {
@@ -97,6 +99,7 @@ struct VMKeyboardShortcutsView: View {
         })
         .onAppear {
             keyboardShortcuts = UTMKeyboardShortcuts.shared.loadKeyboardShortcuts()
+            currentlyEditingIndex = nil
         }
         .onChange(of: keyboardShortcuts) { newValue in
             UTMKeyboardShortcuts.shared.saveKeyboardShortcuts(newValue)
@@ -108,6 +111,14 @@ struct VMKeyboardShortcutsView: View {
                 currentlyEditingShortcut = []
             }
         }
+    }
+
+    private func removeShortcuts(atOffsets offsets: IndexSet) {
+        SelectedIndex.remove(atOffsets: offsets, from: &keyboardShortcuts, selection: &currentlyEditingIndex)
+    }
+
+    private func moveShortcuts(fromOffsets offsets: IndexSet, toOffset offset: Int) {
+        SelectedIndex.move(fromOffsets: offsets, toOffset: offset, in: &keyboardShortcuts, selection: &currentlyEditingIndex)
     }
 }
 
@@ -133,13 +144,13 @@ private struct EditKeyboardShortcutView: View {
                         .tag(SelectedIndex(id: index))
                         .contextMenu {
                             DestructiveButton("Delete") {
-                                keyboardShortcut.remove(at: index)
+                                removeKeys(atOffsets: [index])
                             }
                         }
                 }.onDelete { indexSet in
-                    keyboardShortcut.remove(atOffsets: indexSet)
+                    removeKeys(atOffsets: indexSet)
                 }.onMove { indexSet, offset in
-                    keyboardShortcut.move(fromOffsets: indexSet, toOffset: offset)
+                    moveKeys(fromOffsets: indexSet, toOffset: offset)
                 }
             }.listStyle(.bordered)
             .frame(height: 100)
@@ -156,7 +167,7 @@ private struct EditKeyboardShortcutView: View {
                 Spacer()
                 if let index = currentlyEditingIndex?.id, keyboardShortcut.indices.contains(index) {
                     DestructiveButton("Delete") {
-                        keyboardShortcut.remove(at: index)
+                        removeKeys(atOffsets: [index])
                     }
                     Button {
                         if let currentlyEditingKey = currentlyEditingKey {
@@ -179,12 +190,40 @@ private struct EditKeyboardShortcutView: View {
             }
         }
     }
+
+    private func removeKeys(atOffsets offsets: IndexSet) {
+        SelectedIndex.remove(atOffsets: offsets, from: &keyboardShortcut, selection: &currentlyEditingIndex)
+    }
+
+    private func moveKeys(fromOffsets offsets: IndexSet, toOffset offset: Int) {
+        SelectedIndex.move(fromOffsets: offsets, toOffset: offset, in: &keyboardShortcut, selection: &currentlyEditingIndex)
+    }
 }
 
 private struct SelectedIndex: Identifiable, Hashable {
     var id: Int
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
+    }
+
+    static func remove<T>(atOffsets offsets: IndexSet, from array: inout [T], selection: inout SelectedIndex?) {
+        selection = following(selection, count: array.count) { $0.remove(atOffsets: offsets) }
+        array.remove(atOffsets: offsets)
+    }
+
+    static func move<T>(fromOffsets offsets: IndexSet, toOffset offset: Int, in array: inout [T], selection: inout SelectedIndex?) {
+        selection = following(selection, count: array.count) { $0.move(fromOffsets: offsets, toOffset: offset) }
+        array.move(fromOffsets: offsets, toOffset: offset)
+    }
+
+    /// Keeps the selection on the same row after rows are removed or moved, or clears it if that row was removed.
+    private static func following(_ selection: SelectedIndex?, count: Int, through change: (inout [Int]) -> Void) -> SelectedIndex? {
+        guard let selection = selection else {
+            return nil
+        }
+        var rows = Array(0..<count)
+        change(&rows)
+        return rows.firstIndex(of: selection.id).map { SelectedIndex(id: $0) }
     }
 }
 
