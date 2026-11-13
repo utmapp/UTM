@@ -76,12 +76,19 @@ enum UTMAccessibilityID {
         static let qemu = "utm.settings.sidebar.qemu"
         static let input = "utm.settings.sidebar.input"
         static let sharing = "utm.settings.sidebar.sharing"
+        static let displayCard = "utm.settings.display.card"
+        static let usbSupport = "utm.settings.input.usbSupport"
         static let addDevice = "utm.settings.addDevice"
         static let architecture = "utm.settings.system.architecture"
         static let target = "utm.settings.system.target"
         static let newDrive = "utm.settings.drives.new"
         static let importDrive = "utm.settings.drives.import"
         static let shareMode = "utm.settings.sharing.mode"
+        
+        /// The sidebar row of the VM's display at this index.
+        static func display(_ index: Int) -> String {
+            "utm.settings.sidebar.display." + String(index)
+        }
     }
     
     /// The sheet or popover that creates a drive.

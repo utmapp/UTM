@@ -22,6 +22,7 @@ import XCTest
 /// is where the layout regressions of past releases showed up.
 final class VMLayoutTests: UTMUITestCase {
     private static let inset: CGFloat = 8
+    private let vmName = "Layout Test VM"
 
     /// Waits until the window's frame has been the same for three samples in a row, as it is
     /// once a pane has been swapped in and the window resized to it.
@@ -72,6 +73,44 @@ final class VMLayoutTests: UTMUITestCase {
             }
         }
         window.buttons[XCUIIdentifierCloseWindow].click()
+    }
+
+    /// Every element of the Display and Input panes of a QEMU VM's settings lies between the
+    /// sidebar and the trailing edge of the settings sheet when UTM runs in Russian (#7782: long
+    /// labels made the pane wider than the sheet, which cut off both of its sides and hid the
+    /// VGA RAM field).
+    func testVmSettingsPanesFitTheSheetWithLongLabels() throws {
+        // the wizard is driven by English labels; the panes are checked in Russian
+        createVM(named: vmName)
+        element(UTMAccessibilityID.Library.card(named: vmName), timeout: 30)
+        app.terminate()
+        launch(language: "ru", locale: "ru_RU", reset: false)
+        element(UTMAccessibilityID.Library.card(named: vmName), timeout: 30).click()
+        element(UTMAccessibilityID.Details.edit).click()
+        // the settings are a sheet on the main window, which has scroll views of its own
+        let settings = app.sheets.firstMatch
+        XCTAssertTrue(settings.waitForExistence(timeout: 10), "the settings sheet did not open")
+        let panes = [(UTMAccessibilityID.Settings.display(0), UTMAccessibilityID.Settings.displayCard),
+                     (UTMAccessibilityID.Settings.input, UTMAccessibilityID.Settings.usbSupport)]
+        for (row, control) in panes {
+            let sidebarRow = element(row)
+            sidebarRow.click()
+            // a control of the pane, so that the pane has been swapped in before it is measured
+            element(control)
+            waitForSettledFrame(of: settings)
+            let sidebar = settings.scrollViews.containing(.any, identifier: row).firstMatch
+            let detail = settings.scrollViews.containing(.any, identifier: control).firstMatch
+            XCTAssertTrue(sidebar.exists && detail.exists, "\(row): the sidebar or the pane is not in a scroll view")
+            let shot = XCTAttachment(screenshot: settings.screenshot())
+            shot.name = "settings-ru-\(row)"
+            add(shot)
+            let minX = sidebar.frame.maxX - 1
+            let maxX = settings.frame.maxX + 1
+            for element in elements(of: try detail.snapshot()) where !element.frame.isEmpty {
+                XCTAssertTrue(element.frame.minX >= minX && element.frame.maxX <= maxX, "\(row): \(element.elementType.rawValue) '\(element.label)' at \(element.frame) is not between the sidebar \(sidebar.frame) and the edge of the sheet \(settings.frame)")
+            }
+        }
+        element(UTMAccessibilityID.Settings.cancel).click()
     }
 
     /// The wizard summary's name field is inset from the edges of the scroll view that clips
