@@ -98,7 +98,9 @@ struct VMQEMUSettingsView: View {
                         }
                 } label: {
                     Label("Display", systemImage: "rectangle.on.rectangle")
-                }.contextMenu {
+                }
+                .accessibilityIdentifier(UTMAccessibilityID.Settings.display(config.displays.firstIndex { $0.id == display.id } ?? 0))
+                .contextMenu {
                     DestructiveButton("Remove") {
                         config.displays.removeAll(where: { $0.id == display.id })
                         refresh()

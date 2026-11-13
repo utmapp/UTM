@@ -46,6 +46,18 @@ struct DetailedSection<Content>: View where Content: View {
     }
 }
 
+extension View {
+    /// Lets a row of a macOS form shrink to the width of its column, so that a long label wraps
+    /// instead of making the form wider than its window. Does nothing on other platforms.
+    @ViewBuilder func fitsFormColumn() -> some View {
+        #if os(macOS)
+        self.frame(maxWidth: .infinity, alignment: .leading)
+        #else
+        self
+        #endif
+    }
+}
+
 struct DetailedSection_Previews: PreviewProvider {
     static var previews: some View {
         Form {

@@ -25,6 +25,7 @@ struct VMConfigInputView: View {
             Form {
                 DetailedSection("USB", description: "If enabled, the default input devices will be emulated on the USB bus.") {
                     VMConfigConstantPicker("USB Support", selection: $config.usbBusSupport)
+                        .accessibilityIdentifier(UTMAccessibilityID.Settings.usbSupport)
                         .disabled(!hasUsbSupport)
                 }
                 
@@ -36,15 +37,17 @@ struct VMConfigInputView: View {
                         }
                         Toggle(isOn: $config.hasUsbSharing) {
                             Text("Share USB devices from host")
-                        }
+                                .fixedSize(horizontal: false, vertical: true)
+                        }.fitsFormColumn()
                         HStack {
                             Stepper(value: $config.maximumUsbShare, in: UTMQemuConfigurationInput.maximumUsbShareRange) {
                                 Text("Maximum Shared USB Devices")
+                                    .fixedSize(horizontal: false, vertical: true)
                             }
                             NumberTextField("", number: $config.maximumUsbShare, onEditingChanged: validateMaxUsb)
                                 .frame(width: 50)
                                 .multilineTextAlignment(.trailing)
-                        }
+                        }.fitsFormColumn()
                     }.disabled(!jb_has_usb_entitlement())
                 }
                 #endif

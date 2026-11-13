@@ -29,7 +29,15 @@ class UTMUITestCase: XCTestCase {
         continueAfterFailure = false
         // the app this bundle targets: always the build under test, never an installed copy
         app = XCUIApplication()
-        app.launchArguments = ["-AppleLanguages", "(en)", "-AppleLocale", "en_US", "-UTMTestMode", "YES", "-UTMTestReset", "YES"]
+        launch(language: "en", locale: "en_US", reset: true)
+    }
+
+    /// Launches the app in this language, emptying its defaults and documents first with `reset`.
+    func launch(language: String, locale: String, reset: Bool) {
+        app.launchArguments = ["-AppleLanguages", "(\(language))", "-AppleLocale", locale, "-UTMTestMode", "YES"]
+        if reset {
+            app.launchArguments += ["-UTMTestReset", "YES"]
+        }
         app.launch()
     }
 

@@ -25,6 +25,7 @@ struct VMConfigDisplayView: View {
             Form {
                 Section(header: Text("Hardware")) {
                     VMConfigConstantPicker("Emulated Display Card", selection: $config.hardware, type: system.architecture.displayDeviceType)
+                        .accessibilityIdentifier(UTMAccessibilityID.Settings.displayCard)
                     
                     Toggle("GPU Acceleration Supported", isOn: .constant(config.isGLSupported)).disabled(true)
                     if config.isGLSupported {
@@ -41,10 +42,11 @@ struct VMConfigDisplayView: View {
                     Toggle(isOn: $config.isDynamicResolution, label: {
                         #if os(macOS)
                         Text("Resize display to window size automatically")
+                            .fixedSize(horizontal: false, vertical: true)
                         #else
                         Text("Resize display to screen size and orientation automatically")
                         #endif
-                    })
+                    }).fitsFormColumn()
                 }
                 
                 Section(header: Text("Scaling")) {
