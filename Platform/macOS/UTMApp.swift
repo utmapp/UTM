@@ -27,15 +27,14 @@ struct UTMApp: App {
         if #available(macOS 13, *) {
             AppDependencyManager.shared.add(dependency: data)
         }
+        // set here rather than when the home window appears: AppleScript (and utmctl)
+        // must see the VMs even if UTM is relaunched hidden with its window closed
+        appDelegate.data = data
     }
 
     @ViewBuilder
     var homeWindow: some View {
         ContentView().environmentObject(data)
-            .onAppear {
-                appDelegate.data = data
-                NSApp.scriptingDelegate = appDelegate
-            }
             .onReceive(.vmSessionError) { notification in
                 if let message = notification.userInfo?["Message"] as? String {
                     data.showErrorAlert(message: message)
