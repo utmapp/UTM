@@ -22,6 +22,7 @@ import XCTest
 /// is where the layout regressions of past releases showed up.
 final class VMLayoutTests: UTMUITestCase {
     private static let inset: CGFloat = 8
+    private let vmName = "Layout Test VM"
 
     /// Waits until the window's frame has been the same for three samples in a row, as it is
     /// once a pane has been swapped in and the window resized to it.
@@ -101,6 +102,72 @@ final class VMLayoutTests: UTMUITestCase {
         let trailing = abs(field.frame.maxX - renderer.frame.maxX) <= 1
         XCTAssertTrue(leading || trailing, "the FPS Limit stepper \(stepper.frame) and field \(field.frame) are not lined up with the Renderer Backend picker \(renderer.frame)")
         window.buttons[XCUIIdentifierCloseWindow].click()
+    }
+
+    /// Every element of every pane of a QEMU VM's settings lies between the sidebar and the
+    /// trailing edge of the settings sheet when UTM runs in Russian, whose labels are among the
+    /// longest (#7782: a long label made the Display and Input panes wider than the sheet, which
+    /// cut off both of their sides). The VM has a drive, a network, a serial port and a sound
+    /// card, so that each kind of pane is checked.
+    func testEveryVmSettingsPaneFitsTheSheetWithLongLabels() throws {
+        // the wizard and the menu are driven by English labels; the panes are checked in Russian
+        createVM(named: vmName)
+        element(UTMAccessibilityID.Library.card(named: vmName), timeout: 30).click()
+        element(UTMAccessibilityID.Details.edit).click()
+        element(UTMAccessibilityID.Settings.addDevice).click()
+        let serial = app.menuItems["Serial"].firstMatch
+        XCTAssertTrue(serial.waitForExistence(timeout: 10), "the add device menu has no Serial item")
+        serial.click()
+        element(UTMAccessibilityID.Settings.save).click()
+        XCTAssertTrue(app.sheets.firstMatch.waitForNonExistence(timeout: 30), "the settings sheet did not close")
+        app.terminate()
+        launch(language: "ru", locale: "ru_RU", reset: false)
+        element(UTMAccessibilityID.Library.card(named: vmName), timeout: 30).click()
+        element(UTMAccessibilityID.Details.edit).click()
+        // the settings are a sheet on the main window, which has scroll views of its own
+        let settings = app.sheets.firstMatch
+        XCTAssertTrue(settings.waitForExistence(timeout: 10), "the settings sheet did not open")
+        let rows = settings.outlineRows.allElementsBoundByIndex
+        XCTAssertGreaterThan(rows.count, 8, "the settings sheet does not list every pane")
+        var checked = 0
+        var misplaced: [String] = []
+        for row in rows {
+            // a pane's row is a button; section headers have none, and the buttons that add a
+            // device or a drive open a menu or a sheet instead of a pane
+            let link = row.buttons.firstMatch
+            guard link.exists && ![UTMAccessibilityID.Settings.addDevice, UTMAccessibilityID.Settings.newDrive, UTMAccessibilityID.Settings.importDrive].contains(link.identifier) else {
+                continue
+            }
+            let name = link.label
+            link.click()
+            // the pane is swapped in once its row is selected; the sheet keeps its size
+            let selected = expectation(for: NSPredicate(format: "isSelected == true"), evaluatedWith: row)
+            wait(for: [selected], timeout: 10)
+            waitForSettledFrame(of: settings)
+            // every pane of this VM goes through the shared scroll view (port forwarding, which
+            // does not, is only listed for an emulated network)
+            let pane = settings.scrollViews.matching(identifier: UTMAccessibilityID.Settings.pane).firstMatch
+            guard pane.waitForExistence(timeout: 5) else {
+                misplaced.append("\(name): the pane has no scroll view \(UTMAccessibilityID.Settings.pane)")
+                continue
+            }
+            let sidebar = settings.scrollViews.containing(.outlineRow, identifier: nil).firstMatch
+            XCTAssertTrue(sidebar.exists, "\(name): the sidebar is not in a scroll view")
+            // kept with a failure, so that the cut-off pane can be seen
+            let shot = XCTAttachment(screenshot: settings.screenshot())
+            shot.name = "settings-ru-\(name)"
+            add(shot)
+            let minX = sidebar.frame.maxX - 1
+            let maxX = settings.frame.maxX + 1
+            // the first element out of place in each pane, so that one run names every pane that does not fit
+            if let element = elements(of: try pane.snapshot()).first(where: { !$0.frame.isEmpty && ($0.frame.minX < minX || $0.frame.maxX > maxX) }) {
+                misplaced.append("\(name): \(element.elementType.rawValue) '\(element.label)' at \(element.frame)")
+            }
+            checked += 1
+        }
+        XCTAssertGreaterThanOrEqual(checked, 10, "too few panes were checked")
+        XCTAssertTrue(misplaced.isEmpty, "not between the sidebar and the edge of the sheet \(settings.frame): \(misplaced.joined(separator: "; "))")
+        element(UTMAccessibilityID.Settings.cancel).click()
     }
 
     /// The wizard summary's name field is inset from the edges of the scroll view that clips
