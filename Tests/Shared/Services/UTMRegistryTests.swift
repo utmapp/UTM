@@ -183,6 +183,26 @@ final class UTMRegistryTests: XCTestCase {
         XCTAssertEqual(entry.sharedDirectories.map(\.path), ["/tmp/kept.img"])
     }
 
+    #if os(macOS)
+    /// A file made from a URL without a security scope (as an Apple event sends it) can be
+    /// accessed right away, as a file loaded from the registry after a relaunch can (#8129).
+    func testFileFromAnUnscopedUrlCanBeAccessed() throws {
+        let image = FileManager.default.temporaryDirectory.appendingPathComponent("UTMRegistryTests-" + UUID().uuidString + ".img")
+        try Data().write(to: image)
+        defer {
+            try? FileManager.default.removeItem(at: image)
+        }
+        let file = try UTMRegistryEntry.File(url: URL(fileURLWithPath: image.path), isReadOnly: true)
+        XCTAssertEqual(file.path, image.path, "the path is not the one given")
+        XCTAssertEqual(file.url.resolvingSymlinksInPath().path, image.resolvingSymlinksInPath().path, "the file names another image")
+        let isAccessing = file.url.startAccessingSecurityScopedResource()
+        if isAccessing {
+            file.url.stopAccessingSecurityScopedResource()
+        }
+        XCTAssertTrue(isAccessing, "the file cannot be accessed until its bookmark is resolved")
+    }
+    #endif
+
     func testSettingsSurviveARoundTrip() throws {
         let entry = UTMRegistryEntry(uuid: UUID(), name: "VM", path: "/tmp/VM.utm")
         var window = UTMRegistryEntry.Window()

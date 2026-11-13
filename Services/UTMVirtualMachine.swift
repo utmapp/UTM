@@ -410,6 +410,9 @@ extension UTMVirtualMachine {
         let newPath = Self.virtualMachinePath(for: config.information.name, in: existingPath.deletingLastPathComponent())
         try await config.save(to: existingPath)
         try await updateRegistryFromConfig()
+        // use the registry's file URLs now rather than when its observer next runs, so that a
+        // start right after saving opens the files the same way it would after a relaunch
+        updateConfigFromRegistry()
         let hasRenamed: Bool
         if !isShortcut && existingPath.path != newPath.path {
             try await Task.detached {
