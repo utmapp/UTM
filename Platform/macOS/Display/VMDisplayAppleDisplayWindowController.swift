@@ -19,8 +19,8 @@ import Virtualization
 import Carbon.HIToolbox
 
 class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
-    var appleView: VZVirtualMachineView! {
-        mainView as? VZVirtualMachineView
+    var appleView: VMAppleVirtualMachineView! {
+        mainView as? VMAppleVirtualMachineView
     }
 
     override var contentView: NSView? {
@@ -54,7 +54,7 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
     private var scriptedModifierKeys: Set<UInt16> = []
     
     override func windowDidLoad() {
-        mainView = VZVirtualMachineView()
+        mainView = VMAppleVirtualMachineView()
         captureMouseToolbarButton.image = captureMouseToolbarButton.alternateImage // show capture keyboard image
         (window as? VMDisplayWindow)?.isCameraHousingAreaAllowed = true
         screenChangedToken = NotificationCenter.default.addObserver(forName: NSWindow.didChangeScreenNotification, object: nil, queue: .main) { [weak self] _ in
@@ -81,6 +81,7 @@ class VMDisplayAppleDisplayWindowController: VMDisplayAppleWindowController {
     override func enterLive() {
         appleView.isHidden = false
         appleView.virtualMachine = appleVM.apple
+        appleView.isExtraButtonsIgnored = !(appleConfig.system.boot.operatingSystem == .macOS && appleConfig.virtualization.pointer == .trackpad)
         appleVM.inputDelegate = self
         screenshotView.isHidden = true
         if #available(macOS 14, *) {
@@ -341,5 +342,42 @@ extension VMDisplayAppleDisplayWindowController: UTMAppleInputProvider {
             view.mouseUp(with: up)
         }
         return true
+    }
+}
+
+class VMAppleVirtualMachineView: VZVirtualMachineView {
+    /// Set when the guest has the generic USB pointing device, which only has three buttons and reports any other button as a middle click.
+    var isExtraButtonsIgnored: Bool = false
+
+    private func isIgnored(_ event: NSEvent) -> Bool {
+        isExtraButtonsIgnored && event.buttonNumber > 2
+    }
+
+    override func otherMouseDown(with event: NSEvent) {
+        guard !isIgnored(event) else {
+            return
+        }
+        super.otherMouseDown(with: event)
+    }
+
+    override func otherMouseUp(with event: NSEvent) {
+        guard !isIgnored(event) else {
+            return
+        }
+        super.otherMouseUp(with: event)
+    }
+
+    override func otherMouseDragged(with event: NSEvent) {
+        guard !isIgnored(event) else {
+            if let moved = event.cgEvent?.copy() {
+                moved.type = .mouseMoved
+                moved.setIntegerValueField(.mouseEventButtonNumber, value: 0)
+                if let movedEvent = NSEvent(cgEvent: moved) {
+                    super.mouseMoved(with: movedEvent)
+                }
+            }
+            return
+        }
+        super.otherMouseDragged(with: event)
     }
 }
