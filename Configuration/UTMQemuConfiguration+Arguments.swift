@@ -855,6 +855,22 @@ import Virtualization // for getting network interfaces
         return system.target.rawValue.starts(with: "pc") || system.target.rawValue == "q35" || system.target.rawValue == "isapc"
     }
 
+    /// The SCSI controller device, or nil when the machine has a built-in SCSI bus.
+    /// ARM64 kernels such as RHEL's lack the LSI driver and the ARM64 UEFI firmware
+    /// cannot boot from it, so ARM64 virt machines use VirtIO SCSI.
+    private var scsiControllerDevice: String? {
+        switch system.architecture {
+        case .sparc, .sparc64:
+            return nil
+        case .m68k:
+            return system.target.rawValue == QEMUTarget_m68k.virt.rawValue ? "virtio-scsi-device" : nil
+        case .aarch64 where system.target.rawValue.hasPrefix("virt"):
+            return "virtio-scsi-pci"
+        default:
+            return "lsi53c895a"
+        }
+    }
+
     /// These machines are hard coded to have one IDE unit per bus in QEMU
     private var isIdeInterfaceSingleUnit: Bool {
         isPcCompatible ||
@@ -893,18 +909,11 @@ import Virtualization // for getting network interfaces
             f()
         } else if drive.interface == .scsi {
             var bus = "scsi"
-            if system.architecture != .sparc && system.architecture != .sparc64 && system.architecture != .m68k {
+            if let controller = scsiControllerDevice {
                 bus = "scsi0"
                 if busindex == 0 {
                     f("-device")
-                    f("lsi53c895a,id=scsi0")
-                }
-            }
-            if system.architecture == .m68k && system.target.rawValue == QEMUTarget_m68k.virt.rawValue {
-                bus = "scsi0"
-                if busindex == 0 {
-                    f("-device")
-                    f("virtio-scsi-device,id=scsi0")
+                    f("\(controller),id=scsi0")
                 }
             }
             f("-device")
