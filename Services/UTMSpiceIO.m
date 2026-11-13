@@ -116,16 +116,6 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
     }
     // do not need to encode/decode audio locally
     g_setenv("SPICE_DISABLE_OPUS", "1", YES);
-    if (self.socketUrl) {
-        // need to chdir to workaround AF_UNIX sun_len limitations
-        NSString *curdir = self.socketUrl.URLByDeletingLastPathComponent.path;
-        if (!curdir || ![NSFileManager.defaultManager changeCurrentDirectoryPath:curdir]) {
-            if (error) {
-                *error = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Failed to change current directory.", "UTMSpiceIO")}];
-            }
-            return NO;
-        }
-    }
     if (![self.spice spiceStart]) {
         if (error) {
             *error = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Failed to start SPICE client.", "UTMSpiceIO")}];
@@ -138,6 +128,18 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
 }
 
 - (BOOL)connectWithError:(NSError * _Nullable *)error {
+    if (self.socketUrl) {
+        // need to chdir to workaround AF_UNIX sun_len limitations
+        // this is done at connect time because on macOS, the socket directory is in the
+        // helper's container which does not exist until the helper launches the first time
+        NSString *curdir = self.socketUrl.URLByDeletingLastPathComponent.path;
+        if (!curdir || ![NSFileManager.defaultManager changeCurrentDirectoryPath:curdir]) {
+            if (error) {
+                *error = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Failed to change current directory.", "UTMSpiceIO")}];
+            }
+            return NO;
+        }
+    }
     if (![self.spiceConnection connect]) {
         if (error) {
             *error = [NSError errorWithDomain:kUTMErrorDomain code:-1 userInfo:@{NSLocalizedDescriptionKey: NSLocalizedString(@"Internal error trying to connect to SPICE server.", "UTMSpiceIO")}];

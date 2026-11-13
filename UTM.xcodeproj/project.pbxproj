@@ -1362,6 +1362,7 @@
 		951F69FE19D644E4A92B80EC /* BackendParityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DA6FCF6A6640F182F851DF /* BackendParityTests.swift */; };
 		BA0FE8CFF9B34E3A95F168AF /* TestConfigurations.swift in Sources */ = {isa = PBXBuildFile; fileRef = C62B133DC3164A6A806FAD0D /* TestConfigurations.swift */; };
 		0F157B0720664F8F98037999 /* UTMRegistryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A7451A6F94449678EEF94C3 /* UTMRegistryTests.swift */; };
+		CA9BFFA031EBA9BD8CCA8F73 /* UTMSpiceIOTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12B1D2B72DBEE51F64E4E422 /* UTMSpiceIOTests.swift */; };
 		496BD9543BD94B9D9B10F9BF /* QemuArgumentGoldenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C559D6005C434CECA5B787A1 /* QemuArgumentGoldenTests.swift */; };
 		F4ADA10BCC2F44CAABC17854 /* aarch64-virt-virtio-disk.argv in Resources */ = {isa = PBXBuildFile; fileRef = E45365E7544B43488BA1366D /* aarch64-virt-virtio-disk.argv */; };
 		A8BC5FDA89544654A64A1DE4 /* aarch64-virt-headless-serial.argv in Resources */ = {isa = PBXBuildFile; fileRef = AF6542B7D3514345AB4F2EE3 /* aarch64-virt-headless-serial.argv */; };
@@ -1409,6 +1410,7 @@
 		35BBBCF4D008596AB09A24EB /* BackendParityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DA6FCF6A6640F182F851DF /* BackendParityTests.swift */; };
 		EC9E5E24983559FD9DB0DD9E /* UTMDataListTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DB20CDC80FE4C9983431840 /* UTMDataListTests.swift */; };
 		6FF41929D2875525B4AD1CA5 /* UTMRegistryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A7451A6F94449678EEF94C3 /* UTMRegistryTests.swift */; };
+		35028E93B2C6977F18F956DA /* UTMSpiceIOTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12B1D2B72DBEE51F64E4E422 /* UTMSpiceIOTests.swift */; };
 		1D0FD2D439895349874937AA /* QemuArgumentTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B3FD77481DA4C73A8AF6B1B /* QemuArgumentTestCase.swift */; };
 		BDB46509B0165FE99C012BFC /* QemuArgumentGoldenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C559D6005C434CECA5B787A1 /* QemuArgumentGoldenTests.swift */; };
 		B0F1BA7E53E2566F81F62337 /* BusyOverlayTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F70FBE1150144FE88203BF4 /* BusyOverlayTests.swift */; };
@@ -2479,6 +2481,7 @@
 		C6DA6FCF6A6640F182F851DF /* BackendParityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendParityTests.swift; sourceTree = "<group>"; };
 		C62B133DC3164A6A806FAD0D /* TestConfigurations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestConfigurations.swift; sourceTree = "<group>"; };
 		1A7451A6F94449678EEF94C3 /* UTMRegistryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMRegistryTests.swift; sourceTree = "<group>"; };
+		12B1D2B72DBEE51F64E4E422 /* UTMSpiceIOTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMSpiceIOTests.swift; sourceTree = "<group>"; };
 		C559D6005C434CECA5B787A1 /* QemuArgumentGoldenTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QemuArgumentGoldenTests.swift; sourceTree = "<group>"; };
 		E45365E7544B43488BA1366D /* aarch64-virt-virtio-disk.argv */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "aarch64-virt-virtio-disk.argv"; sourceTree = "<group>"; };
 		AF6542B7D3514345AB4F2EE3 /* aarch64-virt-headless-serial.argv */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "aarch64-virt-headless-serial.argv"; sourceTree = "<group>"; };
@@ -3709,6 +3712,7 @@
 			isa = PBXGroup;
 			children = (
 				1A7451A6F94449678EEF94C3 /* UTMRegistryTests.swift */,
+				12B1D2B72DBEE51F64E4E422 /* UTMSpiceIOTests.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -4560,6 +4564,7 @@
 				951F69FE19D644E4A92B80EC /* BackendParityTests.swift in Sources */,
 				2C5F17103A1541BF84350067 /* UTMDataListTests.swift in Sources */,
 				0F157B0720664F8F98037999 /* UTMRegistryTests.swift in Sources */,
+				CA9BFFA031EBA9BD8CCA8F73 /* UTMSpiceIOTests.swift in Sources */,
 				1C8E0FDB83BC495FA850F0F7 /* QemuArgumentTestCase.swift in Sources */,
 				496BD9543BD94B9D9B10F9BF /* QemuArgumentGoldenTests.swift in Sources */,
 				84560A7469CA4CC7A767B187 /* BusyOverlayTests.swift in Sources */,
@@ -5421,6 +5426,7 @@
 				35BBBCF4D008596AB09A24EB /* BackendParityTests.swift in Sources */,
 				EC9E5E24983559FD9DB0DD9E /* UTMDataListTests.swift in Sources */,
 				6FF41929D2875525B4AD1CA5 /* UTMRegistryTests.swift in Sources */,
+				35028E93B2C6977F18F956DA /* UTMSpiceIOTests.swift in Sources */,
 				1D0FD2D439895349874937AA /* QemuArgumentTestCase.swift in Sources */,
 				BDB46509B0165FE99C012BFC /* QemuArgumentGoldenTests.swift in Sources */,
 				B0F1BA7E53E2566F81F62337 /* BusyOverlayTests.swift in Sources */,
