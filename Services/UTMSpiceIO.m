@@ -171,10 +171,61 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
 - (void)screenshotWithCompletion:(screenshotCallback_t)completion {
     CSDisplay *primaryDisplay = self.primaryDisplay;
     if (primaryDisplay) {
-        [self.primaryDisplay screenshotWithCompletion:completion];
+        [primaryDisplay screenshotWithCompletion:^(CSScreenshot *screenshot) {
+            completion([UTMSpiceIO screenshotOwningPixels:screenshot]);
+        }];
     } else {
         completion(nil);
     }
+}
+
++ (nullable CSScreenshot *)screenshotOwningPixels:(nullable CSScreenshot *)screenshot {
+    if (!screenshot) {
+        return nil;
+    }
+#if TARGET_OS_IPHONE
+    CGImageRef image = screenshot.image.CGImage;
+#else
+    CGImageRef image = [screenshot.image CGImageForProposedRect:NULL context:nil hints:nil];
+#endif
+    if (!image) {
+        return screenshot;
+    }
+    CGDataProviderRef sourceProvider = CGImageGetDataProvider(image);
+    CFDataRef source = sourceProvider ? CGDataProviderCopyData(sourceProvider) : NULL;
+    if (!source) {
+        return screenshot;
+    }
+    // the data CoreGraphics returns can still point at the source bytes, so copy them explicitly
+    CFDataRef pixels = CFDataCreateMutableCopy(kCFAllocatorDefault, 0, source);
+    CFRelease(source);
+    if (!pixels) {
+        return screenshot;
+    }
+    CGDataProviderRef provider = CGDataProviderCreateWithCFData(pixels);
+    CFRelease(pixels);
+    CGImageRef copy = CGImageCreate(CGImageGetWidth(image),
+                                    CGImageGetHeight(image),
+                                    CGImageGetBitsPerComponent(image),
+                                    CGImageGetBitsPerPixel(image),
+                                    CGImageGetBytesPerRow(image),
+                                    CGImageGetColorSpace(image),
+                                    CGImageGetBitmapInfo(image),
+                                    provider,
+                                    CGImageGetDecode(image),
+                                    CGImageGetShouldInterpolate(image),
+                                    CGImageGetRenderingIntent(image));
+    CGDataProviderRelease(provider);
+    if (!copy) {
+        return screenshot;
+    }
+#if TARGET_OS_IPHONE
+    UIImage *owned = [UIImage imageWithCGImage:copy];
+#else
+    NSImage *owned = [[NSImage alloc] initWithCGImage:copy size:screenshot.image.size];
+#endif
+    CGImageRelease(copy);
+    return [[CSScreenshot alloc] initWithImage:owned];
 }
 
 #pragma mark - CSConnectionDelegate

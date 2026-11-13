@@ -81,4 +81,53 @@ final class UTMSpiceIOTests: XCTestCase {
         }
         XCTAssertEqual(FileManager.default.currentDirectoryPath, savedDirectory)
     }
+
+    /// A screenshot must not read the SPICE canvas after it is taken: SPICE frees the canvas when
+    /// the guest changes resolution or the VM stops while the screenshot is still on screen (#7745).
+    func testScreenshotOwnsItsPixels() throws {
+        let width = 4, height = 2, stride = width * 4
+        let canvas = UnsafeMutableRawPointer.allocate(byteCount: stride * height, alignment: 16)
+        for i in 0..<(stride * height) {
+            canvas.storeBytes(of: UInt8(truncatingIfNeeded: i), toByteOffset: i, as: UInt8.self)
+        }
+        let expected = Data(bytes: canvas, count: stride * height)
+        // wrap the canvas without copying it, as CocoaSpice does for a non-GL display
+        let provider = try XCTUnwrap(CGDataProvider(dataInfo: nil, data: canvas, size: stride * height, releaseData: { _, data, _ in data.deallocate() }))
+        let wrapped = try XCTUnwrap(CGImage(width: width,
+                                            height: height,
+                                            bitsPerComponent: 8,
+                                            bitsPerPixel: 32,
+                                            bytesPerRow: stride,
+                                            space: CGColorSpaceCreateDeviceRGB(),
+                                            bitmapInfo: CGBitmapInfo(rawValue: CGBitmapInfo.byteOrder32Little.rawValue | CGImageAlphaInfo.noneSkipFirst.rawValue),
+                                            provider: provider,
+                                            decode: nil,
+                                            shouldInterpolate: false,
+                                            intent: .defaultIntent))
+        #if os(macOS)
+        let screenshot = CSScreenshot(image: NSImage(cgImage: wrapped, size: .zero))
+        #else
+        let screenshot = CSScreenshot(image: UIImage(cgImage: wrapped))
+        #endif
+
+        let owned = try XCTUnwrap(UTMSpiceIO.screenshotOwningPixels(screenshot))
+        // SPICE reuses or frees the canvas
+        canvas.initializeMemory(as: UInt8.self, repeating: 0xEE, count: stride * height)
+
+        #if os(macOS)
+        let image = try XCTUnwrap(owned.image.cgImage(forProposedRect: nil, context: nil, hints: nil))
+        #else
+        let image = try XCTUnwrap(owned.image.cgImage)
+        #endif
+        XCTAssertEqual(image.width, width)
+        XCTAssertEqual(image.height, height)
+        XCTAssertEqual(image.bytesPerRow, stride)
+        XCTAssertEqual(image.bitmapInfo, wrapped.bitmapInfo)
+        let pixels = try XCTUnwrap(image.dataProvider?.data) as Data
+        XCTAssertEqual(pixels, expected)
+    }
+
+    func testScreenshotOwningPixelsOfNothing() {
+        XCTAssertNil(UTMSpiceIO.screenshotOwningPixels(nil))
+    }
 }
