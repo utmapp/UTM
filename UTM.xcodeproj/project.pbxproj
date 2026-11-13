@@ -1447,6 +1447,7 @@
 		CAA1C8EA94264216BA721E5F /* VMLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D299C72856294431A2034700 /* VMLayoutTests.swift */; };
 		E6DD050DA874478695033081 /* VMLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE4E5421058748C3B3442DF8 /* VMLayoutTests.swift */; };
 		0A176EF06DEA4763B25BE32F /* AppleVMRegistryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F002E4D45F164405A2B13860 /* AppleVMRegistryTests.swift */; };
+		A424F286AA854F7688955447 /* AppleVMInstallErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8B0B35E5C33432BB8AE296C /* AppleVMInstallErrorTests.swift */; };
 		7B1D0A6E5C3F4E2A9D8C1F04 /* UTMPasteboardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E9A6C2D8B4F4A17A5D0E6B9 /* UTMPasteboardTests.swift */; };
 		5C2E8F1A9D7B4C36B0A4E7D2 /* UTMAppleConfigurationAudioTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A4D1E7C3B6F4D58A2C8F0E1 /* UTMAppleConfigurationAudioTests.swift */; };
 /* End PBXBuildFile section */
@@ -2517,6 +2518,7 @@
 		D299C72856294431A2034700 /* VMLayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMLayoutTests.swift; sourceTree = "<group>"; };
 		DE4E5421058748C3B3442DF8 /* VMLayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMLayoutTests.swift; sourceTree = "<group>"; };
 		F002E4D45F164405A2B13860 /* AppleVMRegistryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleVMRegistryTests.swift; sourceTree = "<group>"; };
+		D8B0B35E5C33432BB8AE296C /* AppleVMInstallErrorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleVMInstallErrorTests.swift; sourceTree = "<group>"; };
 		3E9A6C2D8B4F4A17A5D0E6B9 /* UTMPasteboardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMPasteboardTests.swift; sourceTree = "<group>"; };
 		9A4D1E7C3B6F4D58A2C8F0E1 /* UTMAppleConfigurationAudioTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMAppleConfigurationAudioTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -3665,6 +3667,7 @@
 		E06137D15AA548989A1D59EB /* macOS */ = {
 			isa = PBXGroup;
 			children = (
+				D8B0B35E5C33432BB8AE296C /* AppleVMInstallErrorTests.swift */,
 				F002E4D45F164405A2B13860 /* AppleVMRegistryTests.swift */,
 				3E9A6C2D8B4F4A17A5D0E6B9 /* UTMPasteboardTests.swift */,
 				9A4D1E7C3B6F4D58A2C8F0E1 /* UTMAppleConfigurationAudioTests.swift */,
@@ -4544,6 +4547,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0A176EF06DEA4763B25BE32F /* AppleVMRegistryTests.swift in Sources */,
+				A424F286AA854F7688955447 /* AppleVMInstallErrorTests.swift in Sources */,
 				7B1D0A6E5C3F4E2A9D8C1F04 /* UTMPasteboardTests.swift in Sources */,
 				5C2E8F1A9D7B4C36B0A4E7D2 /* UTMAppleConfigurationAudioTests.swift in Sources */,
 				FE7624D79C054783853776EF /* VMLifecycleTests.swift in Sources */,
