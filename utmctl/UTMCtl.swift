@@ -175,6 +175,7 @@ extension UTMCtl {
         case invalidIdentifier(String)
         case deviceNotFound
         case snapshotNotFound
+        case unexpectedResult
         
         var errorDescription: String? {
             switch self {
@@ -183,6 +184,7 @@ extension UTMCtl {
             case .snapshotNotFound: return "Snapshot not found."
             case .invalidIdentifier(let identifier): return "Identifier '\(identifier)' is invalid."
             case .deviceNotFound: return "Device not found."
+            case .unexpectedResult: return "Unexpected result from the virtual machine."
             }
         }
     }
@@ -602,16 +604,33 @@ extension UTMCtl {
                 throw ExitCode.failure
             }
             var result: [AnyHashable: Any]
-            repeat {
+            var delay: TimeInterval = 0.01
+            while true {
                 result = process.getResult!()
-            } while result["hasExited"] as? Bool == false
+                guard !EventErrorHandler.shared.hasFailed else {
+                    throw ExitCode.failure
+                }
+                // the record is keyed by the sdef property names, not the Cocoa keys
+                guard let exited = result["exited"] as? Bool else {
+                    throw UTMCtl.APIError.unexpectedResult
+                }
+                if exited {
+                    break
+                }
+                Thread.sleep(forTimeInterval: delay)
+                delay = min(delay * 2, 1)
+            }
             let exitCode = result["exitCode"] as? Int ?? 0
+            let signalCode = result["signalCode"] as? Int ?? 0
             let outputData = result["outputData"] as? String ?? ""
             let errorData = result["errorData"] as? String ?? ""
             try FileHandle.standardOutput.write(contentsOf: Data(base64Encoded: outputData) ?? Data())
             try FileHandle.standardError.write(contentsOf: Data(base64Encoded: errorData) ?? Data())
-            if exitCode != 0 {
-                Darwin.exit(Int32(exitCode))
+            let status = exitCode != 0 ? exitCode : (signalCode != 0 ? 128 + signalCode : 0)
+            if status != 0 {
+                // the shell sees only the low 8 bits, so keep a failure from reading as success
+                let lowBits = Int32(truncatingIfNeeded: status & 0xFF)
+                Darwin.exit(lowBits != 0 ? lowBits : 1)
             }
         }
     }
