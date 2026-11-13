@@ -53,7 +53,7 @@ extension UTMQemuConfigurationSound {
             hardware = QEMUSoundDevice_x86_64.AC97
         } else if rawTarget.hasPrefix("q35") || rawTarget.hasPrefix("virt-") || rawTarget == "virt" {
             hardware = QEMUSoundDevice_x86_64.intel_hda
-        } else if rawTarget == "mac99" {
+        } else if target.isPowerMacMachine {
             hardware = QEMUSoundDevice_ppc.screamer
         } else if architecture == .m68k && rawTarget == QEMUTarget_m68k.q800.rawValue {
             hardware = QEMUSoundDevice_m68k.asc
