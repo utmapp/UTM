@@ -344,6 +344,7 @@ private let ICON_TITLE_MAP: [String: LocalizedStringKey] = [
     "haiku-os": "Haiku OS",
     "hp-ux": "HP-UX",
     "kaios": "KaiOS",
+    "kali-linux": "Kali Linux",
     "knoppix": "Knoppix",
     "kubuntu": "Kubuntu",
     "linux": "Linux",
