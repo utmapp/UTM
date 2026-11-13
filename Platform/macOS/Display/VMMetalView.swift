@@ -190,9 +190,11 @@ class VMMetalView: MTKView {
     }
     
     override func keyDown(with event: NSEvent) {
-        guard !event.isARepeat else { return }
-        logger.trace("key down: \(event.keyCode)")
-        if event.modifierFlags.contains(.numericPad) {
+        // Repeats are forwarded as more key presses, the way a real keyboard's typematic
+        // repeat does: QEMU's PS/2 keyboard does not repeat by itself, and USB/virtio
+        // keyboards ignore a press of a key that is already down.
+        logger.trace("key down: \(event.keyCode) repeat: \(event.isARepeat)")
+        if !event.isARepeat && event.modifierFlags.contains(.numericPad) {
             inputDelegate?.didUseNumericPad()
         }
         lastKeyDown = getScanCodeForEvent(event)
