@@ -101,8 +101,9 @@ No test starts a VM.
 (it boots the bundled firmware to its shell in seconds under the hypervisor) and drives
 it through the same `UTMQemuVirtualMachine` calls the app makes: start, screenshot,
 pause, restart, a forced stop and a kill, a start after the display was removed, the
-firmware console on a TCP serial port, and a saved state that the next start resumes
-(that VM gets a small disk image to keep the state in). Each test deletes its VM.
+firmware console on a TCP serial port, a saved state that the next start resumes
+(that VM gets a small disk image to keep the state in), and a remote session of the kind
+UTM Server starts, which a SPICE client connects to over TLS. Each test deletes its VM.
 The host must be signed with a development identity so
 that its app group and the helpers' hypervisor entitlement are valid, and it uses a
 bundle prefix of its own (`com.utmapp.test.vm`) so that it never shares a container

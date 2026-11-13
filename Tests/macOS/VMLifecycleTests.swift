@@ -117,19 +117,27 @@ final class VMLifecycleTests: XCTestCase {
         return true
     }
 
-    /// Takes screenshots until one shows more than a single colour or the timeout passes.
-    private func waitForDrawnDisplay(_ vm: UTMQemuVirtualMachine, timeout: TimeInterval) async throws -> Bool {
+    /// Asks `source` for screenshots until one shows more than a single colour, which is
+    /// returned, or the timeout passes.
+    private func waitForDrawnScreenshot(timeout: TimeInterval, from source: () async -> UTMVirtualMachineScreenshot?) async throws -> UTMVirtualMachineScreenshot? {
         let deadline = Date().addingTimeInterval(timeout)
         while true {
-            _ = await vm.takeScreenshot()
-            if let image = vm.screenshot?.image, try XCTUnwrap(Self.isUniform(image), "the screenshot has no pixels") == false {
-                return true
+            if let screenshot = await source(), try XCTUnwrap(Self.isUniform(screenshot.image), "the screenshot has no pixels") == false {
+                return screenshot
             }
             if Date() >= deadline {
-                return false
+                return nil
             }
             try await Task.sleep(nanoseconds: 1_000_000_000)
         }
+    }
+
+    /// Takes screenshots until one shows more than a single colour or the timeout passes.
+    private func waitForDrawnDisplay(_ vm: UTMQemuVirtualMachine, timeout: TimeInterval) async throws -> Bool {
+        try await waitForDrawnScreenshot(timeout: timeout) {
+            _ = await vm.takeScreenshot()
+            return vm.screenshot
+        } != nil
     }
 
     /// Start reaches `started`, the display shows something, a forced stop reaches `stopped`.
@@ -364,6 +372,67 @@ final class VMLifecycleTests: XCTestCase {
         try await vm.stop(usingMethod: .force)
         stopped = await waitForState(vm, .stopped, timeout: Self.stopTimeout)
         XCTAssertTrue(stopped, "the VM is \(vm.state) after a forced stop")
+    }
+
+    /// A remote session, the way UTM Server starts a VM for a client: QEMU's monitor goes
+    /// through pipes instead of SPICE, and its SPICE server takes a TLS client that is shown
+    /// the display. The session's files, which include the server's private key, are gone
+    /// once the VM has stopped.
+    func testRemoteSessionServesASpiceClient() async throws {
+        let vm = try await makeShellVM()
+        try await vm.start(options: .remoteSession)
+        XCTAssertEqual(vm.state, .started)
+        let server = try XCTUnwrap(vm.spiceServerInfo, "a remote session has no SPICE server details")
+        // the client side of UTMRemoteSpiceVirtualMachine, on the loopback interface
+        let client = UTMSpiceIO(host: "127.0.0.1", tlsPort: Int(server.spicePortInternal), serverPublicKey: server.spicePublicKey, password: server.spicePassword, options: [])
+        try client.start()
+        defer {
+            client.disconnect()
+        }
+        try client.connect()
+        let screenshot = try await waitForDrawnScreenshot(timeout: Self.drawTimeout) {
+            guard client.isConnected, client.primaryDisplay != nil else {
+                return nil
+            }
+            let image = await withCheckedContinuation { continuation in
+                client.screenshot { continuation.resume(returning: $0?.image) }
+            }
+            return image.map { UTMVirtualMachineScreenshot(wrapping: $0) }
+        }
+        if let data = screenshot?.pngData {
+            let attachment = XCTAttachment(data: data, uniformTypeIdentifier: "public.png")
+            attachment.lifetime = .keepAlways
+            add(attachment)
+        }
+        XCTAssertTrue(client.isConnected, "the client did not connect to the SPICE server")
+        XCTAssertNotNil(screenshot, "the client was not shown the firmware within \(Int(Self.drawTimeout)) s")
+        XCTAssertEqual(vm.state, .started, "the VM stopped on its own")
+        try await vm.stop(usingMethod: .force)
+        let stopped = await waitForState(vm, .stopped, timeout: Self.stopTimeout)
+        XCTAssertTrue(stopped, "the VM is \(vm.state) after a forced stop")
+        XCTAssertFalse(FileManager.default.fileExists(atPath: vm.config.spiceTlsKeyUrl.path), "the session's private key was left behind")
+    }
+
+    /// A remote session that fails to start leaves none of its files behind either. The start
+    /// fails after they are created: the UEFI variables are gone and the bundle is read-only,
+    /// so they cannot be created again.
+    func testFailedRemoteSessionLeavesNoPrivateKey() async throws {
+        let vm = try await makeShellVM()
+        let variables = try XCTUnwrap(vm.config.qemu.efiVarsURL)
+        let data = variables.deletingLastPathComponent()
+        try FileManager.default.removeItem(at: variables)
+        try FileManager.default.setAttributes([.posixPermissions: 0o500], ofItemAtPath: data.path)
+        defer {
+            try? FileManager.default.setAttributes([.posixPermissions: 0o700], ofItemAtPath: data.path)
+        }
+        do {
+            try await vm.start(options: .remoteSession)
+            XCTFail("starting without UEFI variables in a read-only bundle did not fail")
+        } catch {
+            // the error is the failed write; a session file left behind is the regression
+        }
+        XCTAssertEqual(vm.state, .stopped)
+        XCTAssertFalse(FileManager.default.fileExists(atPath: vm.config.spiceTlsKeyUrl.path), "the session's private key was left behind")
     }
 
     /// A paused VM can be killed.
