@@ -31,7 +31,6 @@ struct UTMCtl: ParsableCommand {
             Start.self,
             Suspend.self,
             Stop.self,
-            Attach.self,
             File.self,
             Exec.self,
             IPAddress.self,
@@ -267,9 +266,6 @@ extension UTMCtl {
         
         @OptionGroup var identifer: VMIdentifier
         
-        @Flag(name: .shortAndLong, help: "Attach to the first serial port after start. (Not implemented yet.)")
-        var attach: Bool = false
-        
         @Flag(help: "Run VM as a snapshot and do not save changes to disk.")
         var disposable: Bool = false
 
@@ -371,9 +367,6 @@ extension UTMCtl {
                 }
             }
             vm.startSaving!(!disposable, recovery: recovery, provisioning: provisioningOptions, environment: env.isEmpty ? nil : env)
-            if attach {
-                print("WARNING: attach command is not implemented yet!")
-            }
         }
     }
 }
@@ -448,50 +441,6 @@ extension UTMCtl {
                 stopMethod = .kill
             }
             vm.stopBy!(stopMethod)
-        }
-    }
-}
-
-extension UTMCtl {
-    struct Attach: UTMAPICommand {
-        static var configuration = CommandConfiguration(
-            abstract: "Print the address of a serial port to connect to.",
-            discussion: "Redirecting the serial input/output to this terminal is not implemented yet."
-        )
-        
-        @OptionGroup var environment: EnvironmentOptions
-        
-        @OptionGroup var identifer: VMIdentifier
-        
-        @Option(help: "Index of the serial device to attach to.")
-        var index: Int?
-        
-        func run(with application: UTMScriptingApplication) throws {
-            let vm = try virtualMachine(forIdentifier: identifer, in: application)
-            guard let serialPorts = vm.serialPorts!() as? [UTMScriptingSerialPort] else {
-                return
-            }
-            for serialPort in serialPorts {
-                if let index = index {
-                    if index != serialPort.id!() {
-                        continue
-                    }
-                }
-                print("WARNING: attach command is not implemented yet!")
-                if let interface = serialPort.interface, interface != .unavailable {
-                    printResponse(serialPort)
-                    return
-                }
-            }
-        }
-        
-        func printResponse(_ serialPort: UTMScriptingSerialPort) {
-            // TODO: spawn a terminal emulator
-            if serialPort.interface == .ptty {
-                print("PTTY: \(serialPort.address!)")
-            } else if serialPort.interface == .tcp {
-                print("TCP: \(serialPort.address!):\(serialPort.port!)")
-            }
         }
     }
 }
