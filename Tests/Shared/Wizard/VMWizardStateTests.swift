@@ -326,4 +326,113 @@ import XCTest
         XCTAssertTrue(state.systemBootUefi)
     }
     #endif
+
+    #if os(macOS)
+    // MARK: - Save location
+
+    private func temporaryFolder(permissions: Int = 0o755) throws -> URL {
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true, attributes: [.posixPermissions: permissions])
+        addTeardownBlock {
+            try? FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: url.path)
+            try? FileManager.default.removeItem(at: url)
+        }
+        return url
+    }
+
+    func testTheDefaultSaveLocationNeedsNoCheck() throws {
+        let state = VMWizardState()
+        XCTAssertNil(state.saveLocationURL)
+        XCTAssertNoThrow(try state.validateSaveLocation())
+    }
+
+    func testAWritableFolderCanBeUsedAsSaveLocation() throws {
+        let state = VMWizardState()
+        state.saveLocationURL = try temporaryFolder()
+        XCTAssertNoThrow(try state.validateSaveLocation())
+    }
+
+    func testAFolderThatIsGoneCannotBeUsedAsSaveLocation() throws {
+        let state = VMWizardState()
+        state.saveLocationURL = try temporaryFolder().appendingPathComponent("unplugged")
+        XCTAssertThrowsError(try state.validateSaveLocation()) { error in
+            guard case VMWizardError.saveLocationUnavailable(let name) = error else {
+                return XCTFail("\(error)")
+            }
+            XCTAssertEqual(name, "unplugged")
+        }
+    }
+
+    func testAFolderThatCannotBeWrittenToCannotBeUsedAsSaveLocation() throws {
+        let state = VMWizardState()
+        state.saveLocationURL = try temporaryFolder(permissions: 0o555)
+        XCTAssertThrowsError(try state.validateSaveLocation()) { error in
+            guard case VMWizardError.saveLocationReadOnly = error else {
+                return XCTFail("\(error)")
+            }
+        }
+    }
+
+    func testANameAlreadyInTheSaveLocationIsRefusedBeforeAnythingIsCreated() throws {
+        let folder = try temporaryFolder()
+        try FileManager.default.createDirectory(at: folder.appendingPathComponent("Taken.utm"), withIntermediateDirectories: false)
+        let state = VMWizardState()
+        state.saveLocationURL = folder
+        state.name = "Taken"
+        XCTAssertThrowsError(try state.validateSaveLocation()) { error in
+            guard case VMWizardError.saveLocationNameTaken(let name, let folderName) = error else {
+                return XCTFail("\(error)")
+            }
+            XCTAssertEqual(name, "Taken")
+            XCTAssertEqual(folderName, folder.lastPathComponent)
+        }
+        state.name = "Free"
+        XCTAssertNoThrow(try state.validateSaveLocation())
+    }
+
+    func testTheNameCheckUsesTheSameFileNameAsTheSavedVirtualMachine() throws {
+        let folder = try temporaryFolder()
+        try FileManager.default.createDirectory(at: folder.appendingPathComponent("a-b.utm"), withIntermediateDirectories: false)
+        let state = VMWizardState()
+        state.saveLocationURL = folder
+        state.name = "a/b"
+        XCTAssertThrowsError(try state.validateSaveLocation(), "characters that cannot be in a file name are replaced")
+    }
+
+    func testTheShownFolderIsWorkedOutWhenTheLocationIsChosen() throws {
+        let folder = try temporaryFolder()
+        let state = VMWizardState()
+        XCTAssertNil(state.saveFolderPath)
+        state.saveLocationURL = folder
+        XCTAssertEqual(state.saveFolderPath, UTMData.virtualMachinesFolder(in: folder).path)
+        state.saveLocationURL = nil
+        XCTAssertNil(state.saveFolderPath)
+    }
+
+    #if arch(arm64)
+    /// The VM of a macOS guest is created after its IPSW is downloaded, in the default storage.
+    func testASaveLocationDoesNotApplyToAnIpswDownload() throws {
+        let state = VMWizardState()
+        state.useAppleVirtualization = true
+        state.operatingSystem = .macOS
+        state.macRecoveryIpswURL = try XCTUnwrap(URL(string: "https://example.com/restore.ipsw"))
+        XCTAssertTrue(state.isPendingIPSWDownload)
+        state.saveLocationURL = try temporaryFolder().appendingPathComponent("unplugged")
+        XCTAssertNil(state.effectiveSaveLocationURL)
+        XCTAssertNoThrow(try state.validateSaveLocation(), "a folder that is not used cannot stop the user from saving")
+        state.macRecoveryIpswURL = image
+        XCTAssertFalse(state.isPendingIPSWDownload)
+        XCTAssertNotNil(state.effectiveSaveLocationURL)
+        XCTAssertThrowsError(try state.validateSaveLocation())
+    }
+    #endif
+
+    func testSaveLocationErrorsNameTheFolder() {
+        XCTAssertTrue(VMWizardError.saveLocationUnavailable("Backup").localizedDescription.contains("Backup"))
+        XCTAssertTrue(VMWizardError.saveLocationReadOnly("Backup").localizedDescription.contains("Backup"))
+        XCTAssertTrue(VMWizardError.saveLocationFileSystemTooSmall("Backup").localizedDescription.contains("Backup"))
+        let taken = VMWizardError.saveLocationNameTaken("Win", "Backup").localizedDescription
+        XCTAssertTrue(taken.contains("Backup") && taken.contains("Win"))
+    }
+    #endif
 }

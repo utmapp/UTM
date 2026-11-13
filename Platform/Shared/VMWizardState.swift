@@ -187,6 +187,20 @@ struct AlertMessage: Identifiable {
     @Published var isOpenSettingsAfterCreation: Bool = false
     @Published var useNvmeAsDiskInterface = false
     @Published var machineProperties: String?
+    #if os(macOS)
+    /// Folder or drive to create the VM in, such as an external drive. The default storage if nil.
+    @Published var saveLocationURL: URL? {
+        didSet {
+            saveFolderPath = saveLocationURL.map { UTMData.virtualMachinesFolder(in: $0).path }
+        }
+    }
+    /// Folder the VM goes in for `saveLocationURL`, worked out once because it looks at the drive.
+    @Published private(set) var saveFolderPath: String?
+    /// `saveLocationURL`, unless the VM is created later by the IPSW download, which uses the default storage.
+    var effectiveSaveLocationURL: URL? {
+        isPendingIPSWDownload ? nil : saveLocationURL
+    }
+    #endif
 
     /// SwiftUI BUG: on macOS 12, when VoiceOver is enabled and isBusy changes the disable state of a button being clicked, 
     var isNeverDisabledWorkaround: Bool {
@@ -611,6 +625,43 @@ struct AlertMessage: Identifiable {
         }
     }
     
+    #if os(macOS)
+    /// Check that the VM can be created in the chosen folder
+    ///
+    /// The folder is on a drive that UTM does not control, so a read-only drive (such as NTFS) or
+    /// a FAT32 drive that cannot hold a large disk image is reported before anything is created.
+    func validateSaveLocation() throws {
+        guard let url = effectiveSaveLocationURL else {
+            return
+        }
+        let isScopedAccess = url.startAccessingSecurityScopedResource()
+        defer {
+            if isScopedAccess {
+                url.stopAccessingSecurityScopedResource()
+            }
+        }
+        var info = statfs()
+        guard statfs(url.path, &info) == 0 else {
+            throw VMWizardError.saveLocationUnavailable(url.lastPathComponent)
+        }
+        guard info.f_flags & UInt32(MNT_RDONLY) == 0, FileManager.default.isWritableFile(atPath: url.path) else {
+            throw VMWizardError.saveLocationReadOnly(url.lastPathComponent)
+        }
+        let fileSystem = withUnsafeBytes(of: info.f_fstypename) { String(cString: $0.bindMemory(to: CChar.self).baseAddress!) }
+        let maxFat32FileSizeGib = 4
+        if fileSystem == "msdos" && storageSizeGib >= maxFat32FileSizeGib {
+            throw VMWizardError.saveLocationFileSystemTooSmall(url.lastPathComponent)
+        }
+        // the suggested name only avoids the VMs in the default storage, so one in this folder can have it
+        if let name = name, !name.isEmpty {
+            let folder = UTMData.virtualMachinesFolder(in: url)
+            if FileManager.default.fileExists(atPath: ConcreteVirtualMachine.virtualMachinePath(for: name, in: folder).path) {
+                throw VMWizardError.saveLocationNameTaken(name, folder.lastPathComponent)
+            }
+        }
+    }
+    #endif
+
     /// Execute a task with spinning progress indicator (Swift concurrency version)
     /// - Parameter work: Function to execute
     func busyWorkAsync(_ work: @escaping @Sendable () async throws -> Void) {
@@ -666,6 +717,10 @@ extension VMWizardState {
 enum VMWizardError: Error {
     case confusedArchitectureWarning(String, QEMUArchitecture, String)
     case nameEmpty
+    case saveLocationUnavailable(String)
+    case saveLocationReadOnly(String)
+    case saveLocationFileSystemTooSmall(String)
+    case saveLocationNameTaken(String, String)
 }
 
 extension VMWizardError: LocalizedError {
@@ -673,6 +728,10 @@ extension VMWizardError: LocalizedError {
         switch self {
         case .confusedArchitectureWarning(let pattern, let architecture, let expected): return String.localizedStringWithFormat(NSLocalizedString("The selected boot image contains the word '%@' but the guest architecture is '%@'. Please ensure you have selected an image that is compatible with '%@'.", comment: "VMWizardState"), pattern, architecture.prettyValue, expected)
         case .nameEmpty: return NSLocalizedString("Name cannot be empty.", comment: "VMWizardState")
+        case .saveLocationUnavailable(let name): return String.localizedStringWithFormat(NSLocalizedString("The folder “%@” cannot be accessed. Is the drive still connected?", comment: "VMWizardState"), name)
+        case .saveLocationReadOnly(let name): return String.localizedStringWithFormat(NSLocalizedString("The folder “%@” is read-only, so the virtual machine cannot be saved there. Some drives, such as NTFS drives, can only be read on a Mac.", comment: "VMWizardState"), name)
+        case .saveLocationNameTaken(let name, let folder): return String.localizedStringWithFormat(NSLocalizedString("The folder “%@” already has a virtual machine named “%@”. Please choose a different name.", comment: "VMWizardState"), folder, name)
+        case .saveLocationFileSystemTooSmall(let name): return String.localizedStringWithFormat(NSLocalizedString("The drive holding “%@” is formatted as FAT32, which cannot store a file of 4 GiB or more. Choose a smaller storage size or a drive formatted as APFS, Mac OS Extended or exFAT.", comment: "VMWizardState"), name)
         }
     }
 }

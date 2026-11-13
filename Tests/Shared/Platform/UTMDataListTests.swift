@@ -134,4 +134,45 @@ import XCTest
         XCTAssertTrue(data.isSameFile(storage.url.appendingPathComponent("A.utm"), as: link.appendingPathComponent("A.utm")))
         XCTAssertFalse(data.isSameFile(storage.url.appendingPathComponent("A.utm"), as: link.appendingPathComponent("B.utm")))
     }
+
+    #if os(macOS)
+    // MARK: - Storing a VM in a folder of the user's choice
+
+    func testAWholeDriveGetsAFolderOfItsOwnForVirtualMachines() {
+        let drive = URL(fileURLWithPath: "/System/Volumes/Data")
+        XCTAssertEqual(UTMData.virtualMachinesFolder(in: drive).path, "/System/Volumes/Data/UTM Virtual Machines")
+    }
+
+    func testAnyOtherFolderIsUsedAsItIs() {
+        let folder = storage.url.appendingPathComponent("My VMs", isDirectory: true)
+        XCTAssertEqual(UTMData.virtualMachinesFolder(in: folder), folder)
+        let insideDrive = URL(fileURLWithPath: "/System/Volumes/Data/Users")
+        XCTAssertEqual(UTMData.virtualMachinesFolder(in: insideDrive), insideDrive)
+    }
+
+    func testTheStartupDiskIsNotTreatedAsAnExternalDrive() {
+        let root = URL(fileURLWithPath: "/")
+        XCTAssertEqual(UTMData.virtualMachinesFolder(in: root), root)
+    }
+
+    func testAVirtualMachineIsCreatedInTheChosenFolderAndKeptThere() async throws {
+        let folder = storage.url.appendingPathComponent("Elsewhere", isDirectory: true)
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: false)
+        let vm = try await data.create(config: configuration(named: "Away"), destinationUrl: folder)
+        XCTAssertEqual(vm.pathUrl.deletingLastPathComponent().resolvingSymlinksInPath(), folder.resolvingSymlinksInPath())
+        XCTAssertTrue(vm.isShortcut)
+        XCTAssertTrue(data.virtualMachines.contains(vm))
+        XCTAssertFalse(FileManager.default.fileExists(atPath: storage.url.appendingPathComponent("Away.utm").path), "nothing goes to the default storage")
+    }
+
+    func testAVirtualMachineCannotReplaceOneThatIsAlreadyInTheChosenFolder() async throws {
+        let folder = storage.url.appendingPathComponent("Elsewhere", isDirectory: true)
+        try FileManager.default.createDirectory(at: folder.appendingPathComponent("Away.utm"), withIntermediateDirectories: true)
+        do {
+            _ = try await data.create(config: configuration(named: "Away"), destinationUrl: folder)
+            XCTFail("the existing virtual machine must not be overwritten")
+        } catch UTMDataError.virtualMachineAlreadyExists {
+        }
+    }
+    #endif
 }

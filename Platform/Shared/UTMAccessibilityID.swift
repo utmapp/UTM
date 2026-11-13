@@ -48,6 +48,7 @@ enum UTMAccessibilityID {
     
     enum Wizard {
         static let virtualize = "utm.wizard.start.virtualize"
+        static let saveLocation = "utm.wizard.summary.saveLocation"
         static let emulate = "utm.wizard.start.emulate"
         static let open = "utm.wizard.start.open"
         static let osMacOS = "utm.wizard.os.macOS"
