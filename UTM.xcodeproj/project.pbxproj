@@ -1449,6 +1449,7 @@
 		0A176EF06DEA4763B25BE32F /* AppleVMRegistryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F002E4D45F164405A2B13860 /* AppleVMRegistryTests.swift */; };
 		A424F286AA854F7688955447 /* AppleVMInstallErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8B0B35E5C33432BB8AE296C /* AppleVMInstallErrorTests.swift */; };
 		7B1D0A6E5C3F4E2A9D8C1F04 /* UTMPasteboardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E9A6C2D8B4F4A17A5D0E6B9 /* UTMPasteboardTests.swift */; };
+		8E4C2B7A3D9F4A16B5E0C7D3 /* VMMetalViewKeyboardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D2A9C4E1B8F4E7A9C3D5B21 /* VMMetalViewKeyboardTests.swift */; };
 		5C2E8F1A9D7B4C36B0A4E7D2 /* UTMAppleConfigurationAudioTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A4D1E7C3B6F4D58A2C8F0E1 /* UTMAppleConfigurationAudioTests.swift */; };
 /* End PBXBuildFile section */
 
@@ -2520,6 +2521,7 @@
 		F002E4D45F164405A2B13860 /* AppleVMRegistryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleVMRegistryTests.swift; sourceTree = "<group>"; };
 		D8B0B35E5C33432BB8AE296C /* AppleVMInstallErrorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleVMInstallErrorTests.swift; sourceTree = "<group>"; };
 		3E9A6C2D8B4F4A17A5D0E6B9 /* UTMPasteboardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMPasteboardTests.swift; sourceTree = "<group>"; };
+		6D2A9C4E1B8F4E7A9C3D5B21 /* VMMetalViewKeyboardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMMetalViewKeyboardTests.swift; sourceTree = "<group>"; };
 		9A4D1E7C3B6F4D58A2C8F0E1 /* UTMAppleConfigurationAudioTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMAppleConfigurationAudioTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -3672,6 +3674,7 @@
 				3E9A6C2D8B4F4A17A5D0E6B9 /* UTMPasteboardTests.swift */,
 				9A4D1E7C3B6F4D58A2C8F0E1 /* UTMAppleConfigurationAudioTests.swift */,
 				4F0B34177E894AFB81641614 /* VMLifecycleTests.swift */,
+				6D2A9C4E1B8F4E7A9C3D5B21 /* VMMetalViewKeyboardTests.swift */,
 				12AB2C651C9F4C5999BC4D43 /* Scripting */,
 			);
 			path = macOS;
@@ -4551,6 +4554,7 @@
 				7B1D0A6E5C3F4E2A9D8C1F04 /* UTMPasteboardTests.swift in Sources */,
 				5C2E8F1A9D7B4C36B0A4E7D2 /* UTMAppleConfigurationAudioTests.swift in Sources */,
 				FE7624D79C054783853776EF /* VMLifecycleTests.swift in Sources */,
+				8E4C2B7A3D9F4A16B5E0C7D3 /* VMMetalViewKeyboardTests.swift in Sources */,
 				F2A7C17B8AB34DA3B406450B /* UTMSnapshotManifestTests.swift in Sources */,
 				41421300977143369096FDC4 /* VMWizardStateTests.swift in Sources */,
 				F2D542A5BA01E404E3441F5C /* QEMUArgumentFragmentTests.swift in Sources */,
