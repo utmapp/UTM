@@ -75,12 +75,9 @@ class UTMScriptingRegistryEntryImpl {
                 }
                 file = UTMRegistryEntry.File(dummyFromPath: url.path, remoteBookmark: bookmark)
             } else {
-                // Apple Virtualization backend: QEMU runs in-process, so create a real
-                // security-scoped bookmark directly (no XPC helper to hand it off to),
-                // then resolve it back into a URL that actually carries the security
-                // scope, the same way the registry does when reloading from disk.
-                let bookmark = try url.persistentBookmarkData(isReadyOnly: false)
-                file = try UTMRegistryEntry.File(path: url.path, bookmark: bookmark)
+                // Apple Virtualization backend: no XPC helper, so the registry's own
+                // security-scoped bookmark (and the URL resolved from it) is used directly
+                file = try UTMRegistryEntry.File(url: url)
             }
 
             // Store bookmark in registry

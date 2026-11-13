@@ -15,6 +15,7 @@
 //
 
 #if os(macOS)
+import Virtualization
 import XCTest
 @testable import UTM
 
@@ -56,12 +57,42 @@ final class AppleVMRegistryTests: XCTestCase {
         let vm = try UTMAppleVirtualMachine(packageUrl: package, configuration: config)
         self.vm = vm
         try await vm.updateRegistryFromConfig()
-        XCTAssertEqual(vm.registryEntry.macRecoveryIpsw?.url, ipsw, "the restore image was not recorded")
+        XCTAssertEqual(vm.registryEntry.macRecoveryIpsw?.url.resolvingSymlinksInPath().path, ipsw.resolvingSymlinksInPath().path, "the restore image was not recorded")
         config.system.boot.macRecoveryIpswURL = nil
         try await vm.updateRegistryFromConfig()
         XCTAssertNil(vm.registryEntry.macRecoveryIpsw, "the registry still names the cleared restore image")
         vm.updateConfigFromRegistry()
         XCTAssertNil(config.system.boot.macRecoveryIpswURL, "the cleared restore image came back from the registry")
+    }
+
+    /// A removable drive given as a plain file URL (as AppleScript's `source` sends it) can be
+    /// accessed at the first start after the VM is saved, not only after a relaunch resolves
+    /// its bookmark (#8129: "Cannot access resource" on the first start).
+    func testRemovableDriveIsAccessibleAfterSaving() async throws {
+        // saving validates the configuration with Virtualization, which a VM guest may not offer
+        try XCTSkipUnless(VZVirtualMachine.isSupported, "Virtualization is not available on this Mac")
+        let iso = packageDirectory.appendingPathComponent("removable.iso")
+        try Data("not really an iso".utf8).write(to: iso)
+        let config = UTMAppleConfiguration()
+        config.information.name = "removable"
+        config.system.boot = try UTMAppleConfigurationBoot(for: .linux)
+        config.drives = [UTMAppleConfigurationDrive(existingURL: URL(fileURLWithPath: iso.path), isExternal: true)]
+        let package = packageDirectory.appendingPathComponent("removable.utm", isDirectory: true)
+        try FileManager.default.createDirectory(at: package, withIntermediateDirectories: true)
+        let vm = try UTMAppleVirtualMachine(packageUrl: package, configuration: config)
+        self.vm = vm
+        try await vm.save()
+        let drive = try XCTUnwrap(vm.config.drives.first)
+        let url = try XCTUnwrap(drive.imageURL, "the removable drive lost its image")
+        let registryUrl = try XCTUnwrap(vm.registryEntry.externalDrives[drive.id]?.url, "the removable drive was not recorded")
+        for (url, place) in [(url, "configuration"), (registryUrl, "registry")] {
+            XCTAssertEqual(url.resolvingSymlinksInPath().path, iso.resolvingSymlinksInPath().path, "the \(place) names another image")
+            let isAccessing = url.startAccessingSecurityScopedResource()
+            if isAccessing {
+                url.stopAccessingSecurityScopedResource()
+            }
+            XCTAssertTrue(isAccessing, "the removable drive in the \(place) cannot be accessed until its bookmark is resolved")
+        }
     }
 }
 #endif

@@ -428,7 +428,10 @@ extension UTMRegistryEntry {
             self.path = url.path
             self.bookmark = try url.persistentBookmarkData(isReadyOnly: isReadOnly)
             self.isReadOnly = isReadOnly
-            self.url = url
+            // use the URL resolved from the bookmark, as a file loaded from the registry does:
+            // the given URL might not carry a security scope (for example, one from an Apple
+            // event), so it could not be accessed until the bookmark is resolved after a relaunch
+            self.url = (try? URL(resolvingPersistentBookmarkData: bookmark)) ?? url
             self.isValid = true
         }
         
