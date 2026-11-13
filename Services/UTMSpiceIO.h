@@ -67,6 +67,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)screenshotWithCompletion:(screenshotCallback_t)completion;
 
+/// Copy a screenshot's pixels into memory the image owns.
+///
+/// On a display without GL, CocoaSpice returns a screenshot that wraps the live SPICE canvas,
+/// which SPICE frees when the guest changes resolution or the client disconnects. A copy stays
+/// valid after that. Call this on the SPICE context, where the canvas cannot be freed meanwhile.
+/// - Parameter screenshot: Screenshot to copy
+/// - Returns: A screenshot independent of the source's memory, or the source if it cannot be copied
++ (nullable CSScreenshot *)screenshotOwningPixels:(nullable CSScreenshot *)screenshot;
+
 @end
 
 NS_ASSUME_NONNULL_END
