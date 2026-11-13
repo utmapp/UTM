@@ -92,6 +92,71 @@ struct NumberTextField: View {
     }
 }
 
+/// A stepper and a number field, as one labelled row of a form.
+///
+/// On macOS 13 and later, the title sits in the form's label column and the stepper and field in
+/// its control column, lined up with the other rows. A form does not line up a stepper and a
+/// field that are only put side by side (#7702). macOS 12 (which has no `LabeledContent`) and the
+/// other platforms keep the stepper with its title, then the field.
+struct NumberStepper: View {
+    private let titleKey: LocalizedStringKey
+    @Binding private var value: Int
+    private let range: ClosedRange<Int>
+    private let step: Int
+    private let promptKey: LocalizedStringKey
+    private let fieldWidth: CGFloat
+    private let identifier: String?
+    private let onEditingChanged: (Bool) -> Void
+    
+    /// - Parameter identifier: accessibility identifier of the field; the stepper gets it with `.stepper` appended
+    init(_ titleKey: LocalizedStringKey, value: Binding<Int>, in range: ClosedRange<Int>, step: Int = 1, prompt: LocalizedStringKey = "0", fieldWidth: CGFloat = 50, identifier: String? = nil, onEditingChanged: @escaping (Bool) -> Void = { _ in }) {
+        self.titleKey = titleKey
+        self._value = value
+        self.range = range
+        self.step = step
+        self.promptKey = prompt
+        self.fieldWidth = fieldWidth
+        self.identifier = identifier
+        self.onEditingChanged = onEditingChanged
+    }
+    
+    var body: some View {
+        #if os(macOS)
+        if #available(macOS 13, *) {
+            LabeledContent(titleKey) {
+                HStack {
+                    stepper
+                    field
+                }.labelsHidden()
+            }
+        } else {
+            stepperBeforeField
+        }
+        #else
+        stepperBeforeField
+        #endif
+    }
+    
+    private var stepper: some View {
+        Stepper(titleKey, value: $value, in: range, step: step)
+            .accessibilityIdentifier(identifier.map { $0 + ".stepper" } ?? "")
+    }
+    
+    private var field: some View {
+        NumberTextField("", number: $value, prompt: promptKey, onEditingChanged: onEditingChanged)
+            .frame(width: fieldWidth)
+            .accessibilityLabel(Text(titleKey))
+            .accessibilityIdentifier(identifier ?? "")
+    }
+    
+    private var stepperBeforeField: some View {
+        HStack {
+            stepper
+            field
+        }
+    }
+}
+
 extension NSNumber {
     struct StringFormatStyle: ParseableFormatStyle {
         var parseStrategy: StringParseStrategy {
