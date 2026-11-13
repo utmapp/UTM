@@ -84,6 +84,12 @@ enum UTMAccessibilityID {
         static let shareMode = "utm.settings.sharing.mode"
     }
     
+    /// The app settings window (macOS).
+    enum AppSettings {
+        static let rendererBackend = "utm.appSettings.display.rendererBackend"
+        static let fpsLimit = "utm.appSettings.display.fpsLimit"
+    }
+    
     /// The sheet or popover that creates a drive.
     enum Drive {
         static let removable = "utm.drive.removable"

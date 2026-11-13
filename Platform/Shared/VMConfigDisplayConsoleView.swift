@@ -50,14 +50,7 @@ struct VMConfigDisplayConsoleView: View {
             ColorPicker("Text Color", selection: textColor)
             ColorPicker("Background Color", selection: backgroundColor)
             VMConfigConstantPicker("Font", selection: $config.font)
-            HStack {
-                Stepper(value: $config.fontSize, in: 1...72) {
-                        Text("Font Size")
-                }
-                NumberTextField("", number: $config.fontSize, prompt: "12")
-                    .frame(width: 50)
-                    .multilineTextAlignment(.trailing)
-            }
+            NumberStepper("Font Size", value: $config.fontSize, in: 1...72, prompt: "12")
             Toggle("Blinking cursor?", isOn: $config.hasCursorBlink)
         }
         
