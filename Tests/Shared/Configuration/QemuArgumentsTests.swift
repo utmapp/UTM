@@ -206,6 +206,47 @@ import XCTest
         XCTAssertEqual(QEMUArgumentList(config.generatedArguments).strings.count, strings.count - 2)
     }
 
+    // MARK: Sound and network
+
+    /// A new g3beige machine got the first PPC sound card (sb16, an ISA card) and
+    /// network card (eTSEC, an e500 SoC device), neither of which QEMU can attach
+    /// there, and its built-in screamer was left without an audio backend (#7803).
+    func testG3BeigeDefaultsUseBuiltInScreamerAndSungem_7803() throws {
+        let config = configuration(architecture: .ppc, target: QEMUTarget_ppc.g3beige)
+        XCTAssertEqual(config.sound.map(\.hardware.rawValue), [QEMUSoundDevice_ppc.screamer.rawValue])
+        XCTAssertEqual(config.networks.map(\.hardware.rawValue), [QEMUNetworkDevice_ppc.sungem.rawValue])
+        let args = arguments(config)
+        XCTAssertEqual(args.values(of: "-audio").count, 1, "\(args.strings)")
+        XCTAssertTrue(args.devices(ofType: "sb16").isEmpty, "\(args.strings)")
+        XCTAssertTrue(args.devices(ofType: "eTSEC").isEmpty, "\(args.strings)")
+        XCTAssertEqual(args.devices(ofType: "sungem").count, 1, "\(args.strings)")
+    }
+
+    /// The screamer is part of both Power Mac machines, so it needs the same `-audio`
+    /// backend when another sound card is selected, or QEMU exits with "no default
+    /// audio driver available" (#7803).
+    func testPowerMacWithOtherSoundCardStillGetsAudioBackend_7803() throws {
+        for target in [QEMUTarget_ppc.mac99, .g3beige] {
+            let config = configuration(architecture: .ppc, target: target)
+            var sound = try XCTUnwrap(UTMQemuConfigurationSound(forArchitecture: .ppc, target: target))
+            sound.hardware = QEMUSoundDevice_ppc.AC97
+            config.sound = [sound]
+            let args = arguments(config)
+            #if os(iOS) || os(visionOS)
+            XCTAssertEqual(args.values(of: "-audio"), ["none"], "\(target)")
+            #else
+            XCTAssertEqual(args.values(of: "-audio"), ["coreaudio"], "\(target)")
+            #endif
+            XCTAssertEqual(args.devices(ofType: "AC97").count, 1, "\(target)")
+        }
+    }
+
+    func testPcWithSoundCardHasNoDefaultAudioBackend() {
+        let config = configuration(architecture: .x86_64, target: QEMUTarget_x86_64.q35)
+        XCTAssertFalse(config.sound.isEmpty)
+        XCTAssertTrue(arguments(config).values(of: "-audio").isEmpty)
+    }
+
     // MARK: Sharing
 
     /// VirtFS sharing must produce the `-fsdev` without any further user action (#5531).

@@ -189,7 +189,7 @@ extension UTMQemuConfigurationNetwork {
             hardware = QEMUNetworkDevice_x86_64.ne2k_isa
         } else if rawTarget.hasPrefix("virt-") || rawTarget == "virt" {
             hardware = QEMUNetworkDevice_aarch64.virtio_net_pci
-        } else if [.ppc, .ppc64].contains(architecture) && rawTarget == QEMUTarget_ppc.mac99.rawValue {
+        } else if target.isPowerMacMachine {
             hardware = QEMUNetworkDevice_ppc.sungem
         } else if architecture == .m68k && rawTarget == QEMUTarget_m68k.q800.rawValue {
             hardware = QEMUNetworkDevice_m68k.dp8393x

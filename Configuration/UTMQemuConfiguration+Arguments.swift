@@ -773,10 +773,12 @@ import Virtualization // for getting network interfaces
     }
 
     @QEMUArgumentBuilder private var soundArguments: [QEMUArgument] {
+        // the screamer is built into Power Macs, so it needs a backend even when another card is selected
+        let hasScreamer = system.target.isPowerMacMachine || sound.contains(where: { $0.hardware.rawValue == QEMUSoundDevice_ppc.screamer.rawValue })
         if sound.isEmpty {
             f("-audio")
             f("none")
-        } else if sound.contains(where: { $0.hardware.rawValue == "screamer" }) {
+        } else if hasScreamer {
             #if os(iOS) || os(visionOS)
             f("-audio")
             f("none")

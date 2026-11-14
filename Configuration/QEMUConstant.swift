@@ -506,6 +506,11 @@ extension QEMUTarget {
     var hasPS2ControllerSupport: Bool {
         isPcOrQ35Machine
     }
+
+    /// The New World (mac99) and Heathrow (g3beige) Power Macs, which both have a built-in screamer.
+    var isPowerMacMachine: Bool {
+        rawValue == "mac99" || rawValue == "g3beige"
+    }
 }
 
 #if WITH_QEMU_TCI
