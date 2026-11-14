@@ -164,6 +164,7 @@ import Virtualization // for getting network interfaces
         f("-S") // startup stopped
         iommuArguments // must come before the devices it serves
         spiceArguments
+        boardArguments // before other PCI devices, so they keep the board's own slots
         networkArguments
         displayArguments
         serialArguments
@@ -398,6 +399,29 @@ import Virtualization // for getting network interfaces
         [.ppc, .ppc64].contains(system.architecture) && system.target.rawValue == QEMUTarget_ppc.mac99.rawValue
     }
 
+    /// The aCube Sam460ex board has one CPU, and with -nodefaults it has neither its SATA
+    /// controller nor its UART, which its firmware needs to start.
+    private var isSam460ex: Bool {
+        [.ppc, .ppc64].contains(system.architecture) && system.target.rawValue == QEMUTarget_ppc.sam460ex.rawValue
+    }
+
+    /// Board devices that QEMU only creates without -nodefaults.
+    @QEMUArgumentBuilder private var boardArguments: [QEMUArgument] {
+        if isSam460ex {
+            // one SiI3112 SATA controller (two buses of one unit) for every two IDE drives
+            let ideDrives = drives.filter { $0.interface == .ide && ($0.imageType == .disk || $0.imageType == .cd) }.count
+            for _ in stride(from: 0, to: ideDrives, by: 2) {
+                f("-device")
+                f("sii3112")
+            }
+            // the board maps its UART only when it has a backend, and U-Boot does not start without it
+            if !serials.contains(where: { $0.target == .autoDevice }) {
+                f("-serial")
+                f("null")
+            }
+        }
+    }
+
     @QEMUArgumentBuilder private var serialArguments: [QEMUArgument] {
         for i in serials.indices {
             f("-chardev")
@@ -504,6 +528,10 @@ import Virtualization // for getting network interfaces
         let hostPhysicalCpu = Int(Self.sysctlIntRead("hw.physicalcpu"))
         let hostLogicalCpu = Int(Self.sysctlIntRead("hw.logicalcpu"))
         let userCpu = system.cpuCount
+        // sam460ex supports only one CPU
+        if isSam460ex {
+            return singleCpu
+        }
         if userCpu > 0 || hostPhysicalCpu == 0 {
             return (userCpu, userCpu) // user override
         }
@@ -862,7 +890,8 @@ import Virtualization // for getting network interfaces
         system.target.rawValue == "cubieboard" ||
         system.target.rawValue == "highbank" ||
         system.target.rawValue == "midway" ||
-        system.target.rawValue == "xlnx_zcu102"
+        system.target.rawValue == "xlnx_zcu102" ||
+        isSam460ex
     }
     
     @QEMUArgumentBuilder private func driveArgument(for drive: UTMQemuConfigurationDrive, busInterfaceMap: inout [String: Int], disableBootIndex: Bool = false) -> [QEMUArgument] {
