@@ -18,6 +18,7 @@ case "$mode" in
         run check_settings_bundle.py
         run check_pbxproj_refs.py
         run check_scripting_bridge.py
+        run check_utmctl_record_keys.py
         run check_test_targets.py
         run check_sdef_codes.py --no-sdp ;;
     all)
@@ -25,6 +26,7 @@ case "$mode" in
         run check_settings_bundle.py
         run check_pbxproj_refs.py
         run check_scripting_bridge.py
+        run check_utmctl_record_keys.py
         run check_test_targets.py
         run check_sdef_codes.py ;;
     *)
