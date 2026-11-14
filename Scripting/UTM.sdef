@@ -675,7 +675,7 @@
             description="Is this disk image raw format (only for newly created drives)?"/>
             
           <property name="source" code="SrCe" type="file"
-            description="An existing file to use as the source image."/>
+            description="The disk image of this drive, or the image in a removable drive (missing when a removable drive is empty). Setting another file replaces the image: a fixed drive copies it into the virtual machine."/>
         </record-type>
         
         <enumeration name="qemu drive interface" code="QeDi" description="QEMU drive interfaces.">
@@ -886,7 +886,7 @@
             description="The size of this drive as seen by the guest (in MiB)."/>
             
           <property name="source" code="SrCe" type="file"
-            description="An existing file to use as the source image."/>
+            description="The disk image of this drive, or the image in a removable drive (missing when a removable drive is empty). Setting another file replaces the image: a fixed drive copies it into the virtual machine."/>
         </record-type>
         
         <record-type name="apple network configuration" code="ApCn" description="Apple virtual network configuration.">

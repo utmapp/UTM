@@ -156,6 +156,74 @@ import XCTest
         }
     }
 
+    /// `source` is declared on both drive records, so `get configuration` must return it:
+    /// the disk image of a fixed drive and the image in a removable one (#7743).
+    func testDriveRecordsReturnTheirSource_7743() throws {
+        let config = configuration()
+        let disk = URL(fileURLWithPath: "/tmp/Data/disk.qcow2")
+        let iso = URL(fileURLWithPath: "/tmp/install.iso")
+        config.drives[0].imageURL = disk
+        var cd = UTMQemuConfigurationDrive(forArchitecture: .aarch64, target: QEMUTarget_aarch64.virt, isExternal: true)
+        cd.imageURL = iso
+        let empty = UTMQemuConfigurationDrive(forArchitecture: .aarch64, target: QEMUTarget_aarch64.virt, isExternal: true)
+        config.drives += [cd, empty]
+        let drives = try XCTUnwrap(UTMScriptingConfigImpl(config).serializeConfiguration()["drives"] as? [[AnyHashable: Any]])
+        XCTAssertEqual(drives[0]["source"] as? URL, disk)
+        XCTAssertEqual(drives[1]["source"] as? URL, iso)
+        XCTAssertNil(drives[2]["source"], "an empty removable drive has no source")
+    }
+
+    func testAppleDriveRecordsReturnTheirSource_7743() throws {
+        let config = UTMAppleConfiguration()
+        let disk = URL(fileURLWithPath: "/tmp/Data/disk.img")
+        let iso = URL(fileURLWithPath: "/tmp/install.iso")
+        config.drives = [UTMAppleConfigurationDrive(existingURL: disk),
+                         UTMAppleConfigurationDrive(existingURL: iso, isExternal: true),
+                         UTMAppleConfigurationDrive(existingURL: nil, isExternal: true)]
+        let drives = try XCTUnwrap(UTMScriptingConfigImpl(config).serializeConfiguration()["drives"] as? [[AnyHashable: Any]])
+        XCTAssertEqual(drives[0]["source"] as? URL, disk)
+        XCTAssertEqual(drives[1]["source"] as? URL, iso)
+        XCTAssertNil(drives[2]["source"], "an empty removable drive has no source")
+    }
+
+    /// A record from `get configuration` names every drive's current image: applying it back
+    /// must not replace those images (saving would copy or remount them), even when the
+    /// path comes back spelled differently, while a different file still replaces one.
+    func testCurrentSourceLeavesDriveAlone_7743() throws {
+        let config = configuration()
+        let disk = URL(fileURLWithPath: "/tmp/Data/disk.qcow2")
+        // a resolved security-scoped URL, which must survive the update unchanged
+        let iso = URL(string: "file:///tmp/install.iso?scoped")!
+        config.drives[0].imageURL = disk
+        var cd = UTMQemuConfigurationDrive(forArchitecture: .aarch64, target: QEMUTarget_aarch64.virt, isExternal: true)
+        cd.imageURL = iso
+        config.drives.append(cd)
+        let records: [[AnyHashable: Any]] = [
+            ["id": config.drives[0].id, "source": URL(fileURLWithPath: "/tmp/Data/../Data/disk.qcow2")],
+            ["id": config.drives[1].id, "source": URL(fileURLWithPath: "/tmp/install.iso")],
+        ]
+        try UTMScriptingConfigImpl(config).updateConfiguration(from: ["drives": records])
+        XCTAssertEqual(config.drives[0].imageURL?.absoluteString, disk.absoluteString)
+        XCTAssertEqual(config.drives[1].imageURL?.absoluteString, iso.absoluteString)
+
+        let other = URL(fileURLWithPath: "/tmp/other.iso")
+        try UTMScriptingConfigImpl(config).updateConfiguration(from: ["drives": [records[0], ["id": config.drives[1].id, "source": other]]])
+        XCTAssertEqual(config.drives[1].imageURL, other)
+    }
+
+    func testAppleCurrentSourceLeavesDriveAlone_7743() throws {
+        let config = UTMAppleConfiguration()
+        let iso = URL(string: "file:///tmp/install.iso?scoped")!
+        config.drives = [UTMAppleConfigurationDrive(existingURL: iso, isExternal: true)]
+        let id = config.drives[0].id
+        try UTMScriptingConfigImpl(config).updateConfiguration(from: ["drives": [["id": id, "source": URL(fileURLWithPath: "/tmp/install.iso")]]])
+        XCTAssertEqual(config.drives[0].imageURL?.absoluteString, iso.absoluteString)
+
+        let other = URL(fileURLWithPath: "/tmp/other.iso")
+        try UTMScriptingConfigImpl(config).updateConfiguration(from: ["drives": [["id": id, "source": other]]])
+        XCTAssertEqual(config.drives[0].imageURL, other)
+    }
+
     /// Only a qcow2 image inside the bundle can be grown (7c01ae38).
     func testGuestSizeIsRejectedForRawAndRemovableDrives() throws {
         for (label, prepare) in [("raw", { (drive: inout UTMQemuConfigurationDrive) in drive.isRawImage = true }),
