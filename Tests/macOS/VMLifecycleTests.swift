@@ -446,5 +446,50 @@ final class VMLifecycleTests: XCTestCase {
         let stopped = await waitForState(vm, .stopped, timeout: Self.stopTimeout)
         XCTAssertTrue(stopped, "the VM is \(vm.state) after kill")
     }
+
+    /// A VM whose state cannot be saved refuses to suspend to disk and keeps running.
+    func testSaveStateRefusedKeepsTheVMRunning() async throws {
+        let vm = try await makeShellVM { config in
+            var drive = UTMQemuConfigurationDrive(forArchitecture: .aarch64, target: QEMUTarget_aarch64.virt)
+            drive.interface = .nvme
+            drive.sizeMib = 32
+            config.drives = [drive]
+        }
+        try await vm.start()
+        XCTAssertNotNil(vm.snapshotUnsupportedError, "an NVMe drive should rule out saving the state")
+        do {
+            try await vm.pauseAndSaveState()
+            XCTFail("the state was saved")
+        } catch {
+            add(XCTAttachment(string: error.localizedDescription))
+            // a save that was attempted fails this way, after the VM has been paused
+            if case UTMQemuVirtualMachineError.saveSnapshotFailed(_) = error {
+                XCTFail("the VM was paused for a save that cannot succeed")
+            }
+        }
+        XCTAssertEqual(vm.state, .started, "the VM is not running after the refused save")
+        XCTAssertFalse(vm.registryEntry.isSuspended, "the VM is marked suspended after the refused save")
+    }
+
+    /// A save that fails in QEMU resumes the VM instead of leaving it paused.
+    func testSaveStateFailureResumesTheVM() async throws {
+        // QEMU cannot keep a state in a writable raw image
+        let vm = try await makeShellVM { config in
+            var drive = UTMQemuConfigurationDrive(forArchitecture: .aarch64, target: QEMUTarget_aarch64.virt)
+            drive.isRawImage = true
+            drive.sizeMib = 32
+            config.drives = [drive]
+        }
+        try await vm.start()
+        XCTAssertNil(vm.snapshotUnsupportedError)
+        do {
+            try await vm.pauseAndSaveState()
+            XCTFail("the state was saved in a raw image")
+        } catch {
+            add(XCTAttachment(string: error.localizedDescription))
+        }
+        XCTAssertEqual(vm.state, .started, "the VM is not running after the failed save")
+        XCTAssertFalse(vm.registryEntry.isSuspended, "the VM is marked suspended after the failed save")
+    }
 }
 #endif

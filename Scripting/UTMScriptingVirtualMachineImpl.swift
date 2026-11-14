@@ -301,9 +301,10 @@ class UTMScriptingVirtualMachineImpl: NSObject, UTMScriptable {
             guard vm.state == .started else {
                 throw ScriptingError.notRunning
             }
-            try await vm.pause()
             if shouldSaveState {
-                try await vm.saveSnapshot(name: nil)
+                try await vm.pauseAndSaveState()
+            } else {
+                try await vm.pause()
             }
         }
     }
