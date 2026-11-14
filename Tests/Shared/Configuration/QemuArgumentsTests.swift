@@ -321,4 +321,95 @@ import XCTest
         XCTAssertTrue(config.hasCustomBios)
         XCTAssertTrue(pflashDrives(config).isEmpty)
     }
+
+    // MARK: PowerPC sam460ex
+
+    /// The defaults for sam460ex as the wizard leaves them for a custom machine: the
+    /// core count left at its default, a CD drive and a disk drive.
+    private func sam460exConfiguration() -> UTMQemuConfiguration {
+        let config = configuration(architecture: .ppc, target: QEMUTarget_ppc.sam460ex)
+        config.system.cpuCount = 0
+        let interface = UTMQemuConfigurationDrive.defaultInterface(forArchitecture: .ppc, target: QEMUTarget_ppc.sam460ex, imageType: .disk)
+        config.drives = [drive(config, interface: interface, type: .cd, imageURL: nil), drive(config, interface: interface)]
+        return config
+    }
+
+    /// sam460ex supports one CPU, so the default core count must not follow the host (#7603).
+    func testSam460exDefaultsToOneCpu_7603() throws {
+        let config = sam460exConfiguration()
+        let smp = try XCTUnwrap(arguments(config).values(of: "-smp").first)
+        XCTAssertTrue(QEMUArgumentList.options(smp).contains("cpus=1"), smp)
+    }
+
+    /// A core count set on a sam460ex VM (by hand, or kept from another machine) is
+    /// still limited to the board's one CPU.
+    func testSam460exLimitsConfiguredCpuCount() throws {
+        let config = sam460exConfiguration()
+        config.system.cpuCount = 4
+        let smp = try XCTUnwrap(arguments(config).values(of: "-smp").first)
+        XCTAssertTrue(QEMUArgumentList.options(smp).contains("cpus=1"), smp)
+    }
+
+    /// Every two IDE drives get another SiI3112, whose buses continue the numbering, and the
+    /// controllers come before the other PCI devices as on the board.
+    func testSam460exMoreThanTwoIdeDrivesGetASecondController() throws {
+        let config = sam460exConfiguration()
+        config.drives += [drive(config, interface: .ide)]
+        let args = arguments(config)
+        XCTAssertEqual(args.devices(ofType: "sii3112").count, 2, "\(args.strings)")
+        let buses = args.devices(ofType: "ide-hd").map { QEMUArgumentList.options($0).filter { $0.hasPrefix("bus=") } }
+        XCTAssertEqual(buses, [["bus=ide.1"], ["bus=ide.2"]])
+        let strings = args.strings
+        let controller = try XCTUnwrap(strings.firstIndex(of: "sii3112"))
+        let nic = try XCTUnwrap(strings.firstIndex { $0.hasPrefix("rtl8139") })
+        XCTAssertLessThan(controller, nic, "the controller must take the first PCI slot")
+    }
+
+    /// With -nodefaults the board leaves out its SiI3112 SATA controller, which has two
+    /// buses of one unit each, so IDE drives need it added explicitly (#7603).
+    func testSam460exIdeDrivesGetSii3112Controller_7603() throws {
+        let config = sam460exConfiguration()
+        XCTAssertEqual(config.drives.map(\.interface), [.ide, .ide])
+        let args = arguments(config)
+        XCTAssertEqual(args.devices(ofType: "sii3112").count, 1, "\(args.strings)")
+        let cd = QEMUArgumentList.options(try XCTUnwrap(args.devices(ofType: "ide-cd").first))
+        let hd = QEMUArgumentList.options(try XCTUnwrap(args.devices(ofType: "ide-hd").first))
+        XCTAssertTrue(cd.contains("bus=ide.0") && !cd.contains { $0.hasPrefix("unit=") }, "\(cd)")
+        XCTAssertTrue(hd.contains("bus=ide.1") && !hd.contains { $0.hasPrefix("unit=") }, "\(hd)")
+        let strings = args.strings
+        let controller = try XCTUnwrap(strings.firstIndex(of: "sii3112"))
+        let firstIde = try XCTUnwrap(strings.firstIndex { $0.hasPrefix("ide-") })
+        XCTAssertLessThan(controller, firstIde, "the controller must exist before its drives")
+    }
+
+    /// No SiI3112 when no drive is on IDE.
+    func testSam460exNoSii3112WithoutIdeDrives() {
+        let config = configuration(architecture: .ppc, target: QEMUTarget_ppc.sam460ex)
+        config.drives = [drive(config, interface: .usb)]
+        XCTAssertTrue(arguments(config).devices(ofType: "sii3112").isEmpty)
+    }
+
+    /// The board's firmware needs its UART, which QEMU maps only when it has a backend,
+    /// so a VM without a serial port gets a null one (#7603).
+    func testSam460exGetsNullSerialWithoutSerialPort_7603() {
+        let config = sam460exConfiguration()
+        XCTAssertTrue(config.serials.isEmpty)
+        XCTAssertEqual(arguments(config).values(of: "-serial"), ["null"])
+        var serial = UTMQemuConfigurationSerial()
+        serial.mode = .builtin
+        serial.target = .autoDevice
+        config.serials = [serial]
+        XCTAssertEqual(arguments(config).values(of: "-serial"), ["chardev:term0"])
+    }
+
+    /// The fallback network card (eTSEC) is a sysbus device sam460ex does not accept and the
+    /// fallback sound card (sb16) needs an ISA bus it does not have; both must be PCI (#7603).
+    func testSam460exDefaultNetworkAndSoundArePci_7603() throws {
+        let config = sam460exConfiguration()
+        XCTAssertEqual(config.networks.first?.hardware.rawValue, QEMUNetworkDevice_ppc.rtl8139.rawValue)
+        XCTAssertEqual(config.sound.first?.hardware.rawValue, QEMUSoundDevice_ppc.ES1370.rawValue)
+        let args = arguments(config)
+        XCTAssertEqual(args.devices(ofType: "rtl8139").count, 1, "\(args.strings)")
+        XCTAssertEqual(args.devices(ofType: "ES1370").count, 1, "\(args.strings)")
+    }
 }

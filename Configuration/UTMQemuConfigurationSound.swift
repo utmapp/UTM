@@ -55,6 +55,8 @@ extension UTMQemuConfigurationSound {
             hardware = QEMUSoundDevice_x86_64.intel_hda
         } else if rawTarget == "mac99" {
             hardware = QEMUSoundDevice_ppc.screamer
+        } else if [.ppc, .ppc64].contains(architecture) && rawTarget == QEMUTarget_ppc.sam460ex.rawValue {
+            hardware = QEMUSoundDevice_ppc.ES1370
         } else if architecture == .m68k && rawTarget == QEMUTarget_m68k.q800.rawValue {
             hardware = QEMUSoundDevice_m68k.asc
         } else {
