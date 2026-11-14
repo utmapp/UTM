@@ -19,6 +19,9 @@ import SwiftUI
 struct VMWizardSummaryView: View {
     @ObservedObject var wizardState: VMWizardState
     @EnvironmentObject private var data: UTMData
+    #if os(macOS)
+    @State private var isChoosingSaveLocation = false
+    #endif
     
     var storageDescription: String {
         var size = Int64(wizardState.storageSizeGib * wizardState.bytesInGib)
@@ -106,11 +109,45 @@ struct VMWizardSummaryView: View {
                 .lineLimit(1)
                 .accessibilityIdentifier(UTMAccessibilityID.Wizard.name)
             #if os(macOS)
+            saveLocation
             Toggle("Open VM Settings", isOn: $wizardState.isOpenSettingsAfterCreation)
                 .disabled(wizardState.isPendingIPSWDownload)
             #endif
         }
     }
+    
+    #if os(macOS)
+    var saveLocation: some View {
+        HStack {
+            TextField("Save To", text: .constant(wizardState.effectiveSaveLocationURL == nil ? NSLocalizedString("Default", comment: "VMWizardSummaryView") : wizardState.saveFolderPath ?? ""))
+                .disabled(true)
+            if wizardState.effectiveSaveLocationURL != nil {
+                Button("Reset") {
+                    wizardState.saveLocationURL = nil
+                }
+            }
+            Button("Choose…") {
+                isChoosingSaveLocation = true
+            }
+        }
+        .disabled(wizardState.isPendingIPSWDownload)
+        .help("Create the virtual machine in a folder of your choice, such as on an external drive. If you choose a whole drive, the virtual machines are kept in a folder named “UTM Virtual Machines” that is created when needed. Other files on the drive are not touched.")
+        .accessibilityIdentifier(UTMAccessibilityID.Wizard.saveLocation)
+        .fileImporter(isPresented: $isChoosingSaveLocation, allowedContentTypes: [.folder]) { result in
+            switch result {
+            case .success(let url):
+                // keep access to the folder until the VM is created
+                if let bookmark = try? url.persistentBookmarkData(), let resolved = try? URL(resolvingPersistentBookmarkData: bookmark) {
+                    wizardState.saveLocationURL = resolved
+                } else {
+                    wizardState.saveLocationURL = url
+                }
+            case .failure(let error):
+                wizardState.alertMessage = AlertMessage(error.localizedDescription)
+            }
+        }
+    }
+    #endif
     
     var system: some View {
         Group {

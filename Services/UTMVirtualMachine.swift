@@ -284,7 +284,8 @@ extension UTMVirtualMachine {
     ///   - destinationUrl: Directory to store VM
     init(newForConfiguration configuration: Self.Configuration, destinationUrl: URL) throws {
         let packageUrl = Self.virtualMachinePath(for: configuration.information.name, in: destinationUrl)
-        try self.init(packageUrl: packageUrl, configuration: configuration, isShortcut: false)
+        let isOutsideDefaultStorage = destinationUrl.standardizedFileURL != UTMData.defaultStorageUrl.standardizedFileURL
+        try self.init(packageUrl: packageUrl, configuration: configuration, isShortcut: isOutsideDefaultStorage)
     }
 }
 

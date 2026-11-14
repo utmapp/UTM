@@ -104,9 +104,16 @@ struct VMWizardView: View {
                     .accessibilityIdentifier(UTMAccessibilityID.Wizard.continue)
                 } else if wizardState.currentPage == .summary {
                     Button("Save") {
+                        do {
+                            try wizardState.validateSaveLocation()
+                        } catch {
+                            wizardState.alertMessage = AlertMessage(error.localizedDescription)
+                            return
+                        }
                         presentationMode.wrappedValue.dismiss()
                         data.busyWorkAsync {
                             let config = try await wizardState.generateConfig()
+                            let saveLocationURL = await wizardState.effectiveSaveLocationURL
                             #if arch(arm64)
                             if await wizardState.isPendingIPSWDownload, let appleConfig = config as? UTMAppleConfiguration {
                                 await data.downloadIPSW(using: appleConfig)
@@ -114,14 +121,14 @@ struct VMWizardView: View {
                             }
                             #endif
                             if let qemuConfig = config as? UTMQemuConfiguration {
-                                let vm = try await data.create(config: qemuConfig)
+                                let vm = try await data.create(config: qemuConfig, destinationUrl: saveLocationURL)
                                 await MainActor.run {
                                     if wizardState.isGuestToolsInstallRequested {
                                         NotificationCenter.default.post(name: NSNotification.InstallGuestTools, object: vm.wrapped!)
                                     }
                                 }
                             } else if let appleConfig = config as? UTMAppleConfiguration {
-                                _ = try await data.create(config: appleConfig)
+                                _ = try await data.create(config: appleConfig, destinationUrl: saveLocationURL)
                             }
                             if await wizardState.isOpenSettingsAfterCreation {
                                 await data.showSettingsForCurrentVM()
