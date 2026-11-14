@@ -155,10 +155,19 @@ struct UTMPauseActionIntent: AppIntent, UTMIntent {
 
     @MainActor
     func perform(with vm: any UTMVirtualMachine, boxed: VMData) async throws -> some IntentResult {
-        try await vm.pause()
-        if isSaveState {
-            try await vm.save()
+        guard isSaveState else {
+            try await vm.pause()
+            return .result()
         }
+        // refuse before pausing, so that a VM whose state cannot be saved keeps running
+        if let error = vm.snapshotUnsupportedError {
+            throw error
+        }
+        // the state of a VM that is already paused can still be saved
+        if vm.state != .paused {
+            try await vm.pause()
+        }
+        try await vm.saveSnapshot(name: nil)
         return .result()
     }
 }
