@@ -22,11 +22,32 @@ struct VMContextMenuModifier: ViewModifier {
     @State private var showSharePopup = false
     @State private var confirmAction: ConfirmAction?
     @State private var shareItem: VMShareItemModifier.ShareItem?
+    #if !os(macOS)
+    @Environment(\.editMode) private var editMode
+    #endif
     
     func body(content: Content) -> some View {
         bodyFull(content: content)
     }
     
+    /// Runs an action that shows a VM's settings, after leaving the list's edit mode.
+    ///
+    /// The settings sheet belongs to the VM's details, which a compact split view does not show
+    /// in edit mode. Leaving edit mode clears the list's selection, so the action, which selects
+    /// the VM, runs after that.
+    private func endingListEditing(_ action: @escaping @MainActor () -> Void) {
+        #if !os(macOS)
+        if let editMode = editMode, editMode.wrappedValue.isEditing {
+            editMode.wrappedValue = .inactive
+            Task { @MainActor in
+                action()
+            }
+            return
+        }
+        #endif
+        action()
+    }
+
     /// Full context menu
     /// - Parameter content: Content
     /// - Returns: View
@@ -43,7 +64,9 @@ struct VMContextMenuModifier: ViewModifier {
             #if !WITH_REMOTE // FIXME: implement remote feature
             Button {
                 data.close(vm: vm) // close window
-                data.edit(vm: vm)
+                endingListEditing {
+                    data.edit(vm: vm)
+                }
             } label: {
                 Label("Edit", systemImage: "slider.horizontal.3")
             }.disabled(vm.hasSuspendState || !vm.isModifyAllowed)
@@ -123,8 +146,10 @@ struct VMContextMenuModifier: ViewModifier {
                 Label("Clone…", systemImage: "doc.on.doc")
             }.help("Duplicate this VM along with all its data.")
             Button {
-                data.busyWorkAsync {
-                    try await data.template(vm: vm)
+                endingListEditing {
+                    data.busyWorkAsync {
+                        try await data.template(vm: vm)
+                    }
                 }
             } label: {
                 Label("New from template…", systemImage: "doc.on.clipboard")
