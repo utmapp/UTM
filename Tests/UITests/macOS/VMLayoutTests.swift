@@ -74,6 +74,35 @@ final class VMLayoutTests: UTMUITestCase {
         window.buttons[XCUIIdentifierCloseWindow].click()
     }
 
+    /// The FPS Limit stepper and field of the Display settings pane line up with the Renderer
+    /// Backend picker above them (#7702: the form lined up neither the stepper nor the field of
+    /// that row with its columns). The row lines up through `LabeledContent`, new in macOS 13.
+    func testAppSettingsNumberStepperLinesUpWithTheForm() throws {
+        try XCTSkipUnless(ProcessInfo.processInfo.isOperatingSystemAtLeast(OperatingSystemVersion(majorVersion: 13, minorVersion: 0, patchVersion: 0)), "number steppers line up with the form on macOS 13 and later only")
+        app.typeKey(",", modifierFlags: .command)
+        let window = app.windows["com_apple_SwiftUI_Settings_window"].firstMatch
+        XCTAssertTrue(window.waitForExistence(timeout: 10), "the settings window did not open")
+        // a sidebar row on macOS 26 and later, a toolbar tab before
+        let row = window.outlineRows.allElementsBoundByIndex.first { ($0.staticTexts.firstMatch.value as? String) == "Display" }
+        if let row = row {
+            row.staticTexts.firstMatch.click()
+        } else {
+            window.toolbars.buttons["Display"].click()
+        }
+        let renderer = element(UTMAccessibilityID.AppSettings.rendererBackend)
+        let stepper = element(UTMAccessibilityID.AppSettings.fpsLimit + ".stepper")
+        let field = element(UTMAccessibilityID.AppSettings.fpsLimit)
+        waitForSettledFrame(of: window)
+        let shot = XCTAttachment(screenshot: window.screenshot())
+        shot.name = "settings-display"
+        add(shot)
+        // controls start at the control column of a columns form, and end at the trailing edge of a grouped one
+        let leading = abs(stepper.frame.minX - renderer.frame.minX) <= 1
+        let trailing = abs(field.frame.maxX - renderer.frame.maxX) <= 1
+        XCTAssertTrue(leading || trailing, "the FPS Limit stepper \(stepper.frame) and field \(field.frame) are not lined up with the Renderer Backend picker \(renderer.frame)")
+        window.buttons[XCUIIdentifierCloseWindow].click()
+    }
+
     /// The wizard summary's name field is inset from the edges of the scroll view that clips
     /// it, so that its focus ring is not cut off (a19d921c).
     func testWizardSummaryNameFieldIsInsetFromTheScrollEdges() {

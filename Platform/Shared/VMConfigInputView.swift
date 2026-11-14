@@ -37,14 +37,7 @@ struct VMConfigInputView: View {
                         Toggle(isOn: $config.hasUsbSharing) {
                             Text("Share USB devices from host")
                         }
-                        HStack {
-                            Stepper(value: $config.maximumUsbShare, in: UTMQemuConfigurationInput.maximumUsbShareRange) {
-                                Text("Maximum Shared USB Devices")
-                            }
-                            NumberTextField("", number: $config.maximumUsbShare, onEditingChanged: validateMaxUsb)
-                                .frame(width: 50)
-                                .multilineTextAlignment(.trailing)
-                        }
+                        NumberStepper("Maximum Shared USB Devices", value: $config.maximumUsbShare, in: UTMQemuConfigurationInput.maximumUsbShareRange, onEditingChanged: validateMaxUsb)
                     }.disabled(!jb_has_usb_entitlement())
                 }
                 #endif
