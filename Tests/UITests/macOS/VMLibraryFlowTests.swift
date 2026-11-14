@@ -82,6 +82,37 @@ final class VMLibraryFlowTests: UTMUITestCase {
         XCTAssertTrue(save.waitForNonExistence(timeout: 10))
     }
 
+    /// The details show the VM's size again after the settings changed its files (#7923):
+    /// the size was computed only when the VM was selected, so a new or compressed drive
+    /// was not counted until another VM was selected and then this one again.
+    func testDetailsSizeUpdatesAfterTheSettingsAddADrive() {
+        createVM(named: vmName)
+        element(UTMAccessibilityID.Library.card(named: vmName), timeout: 30).click()
+        let size = element(UTMAccessibilityID.Details.size)
+        let zero = ByteCountFormatter.string(fromByteCount: 0, countStyle: .binary)
+        XCTAssertTrue(waitForText(of: size, toDifferFrom: zero), "the size was never computed")
+        let before = text(of: size)
+        element(UTMAccessibilityID.Details.edit).click()
+        element(UTMAccessibilityID.Settings.newDrive).click()
+        element(UTMAccessibilityID.Drive.create).click()
+        let save = element(UTMAccessibilityID.Settings.save)
+        save.click()
+        XCTAssertTrue(save.waitForNonExistence(timeout: 30), "the settings did not close")
+        XCTAssertTrue(waitForText(of: size, toDifferFrom: before), "the size is still \(before) after a drive was added")
+    }
+
+    private func text(of element: XCUIElement) -> String {
+        if let value = element.value as? String, !value.isEmpty {
+            return value
+        }
+        return element.label
+    }
+
+    private func waitForText(of element: XCUIElement, toDifferFrom text: String, timeout: TimeInterval = 15) -> Bool {
+        let changed = NSPredicate { _, _ in self.text(of: element) != text }
+        return XCTWaiter().wait(for: [XCTNSPredicateExpectation(predicate: changed, object: nil)], timeout: timeout) == .completed
+    }
+
     /// A huge drive size does not crash the app (8c18e750).
     func testHugeDriveSizeDoesNotCrash() {
         createVM(named: vmName)

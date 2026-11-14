@@ -44,6 +44,7 @@ struct VMDetailsView: View {
     @State private var selectedTab: Tab = .details
     @State private var size: Int64 = 0
     @State private var updateTask: Task<Void, Never>?
+    @State private var refreshSizeTask: Task<Void, Never>?
     private let updateIpIntervalNs = UInt64(10 * 1_000_000_000)
 
     private var sizeLabel: String {
@@ -87,7 +88,7 @@ struct VMDetailsView: View {
             }
             .modifier(VMOptionalNavigationTitleModifier(vm: vm))
             .modifier(VMToolbarModifier(vm: vm, bottom: !regularScreenSizeClass))
-            .sheet(isPresented: $data.showSettingsModal) {
+            .sheet(isPresented: $data.showSettingsModal, onDismiss: refreshSize) {
                 if let qemuConfig = vm.config as? UTMQemuConfiguration {
                     VMSettingsView(vm: vm, config: qemuConfig)
                         .environmentObject(data)
@@ -100,6 +101,7 @@ struct VMDetailsView: View {
                 #endif
             }
             .taskOnAppear(id: vm.id) {
+                refreshSizeTask?.cancel()
                 size = await data.computeSize(for: vm)
                 #if WITH_REMOTE
                 if let vm = vm.wrapped as? UTMRemoteSpiceVirtualMachine {
@@ -111,6 +113,18 @@ struct VMDetailsView: View {
                     try? await Task.sleep(nanoseconds: updateIpIntervalNs)
                 }
                 #endif
+            }
+        }
+    }
+
+    /// Compute the size again after the settings changed the VM's files (a new or compressed drive).
+    private func refreshSize() {
+        refreshSizeTask?.cancel()
+        refreshSizeTask = Task { @MainActor in
+            let newSize = await data.computeSize(for: vm)
+            // another VM was selected in the meantime
+            if !Task.isCancelled {
+                size = newSize
             }
         }
     }
@@ -424,6 +438,7 @@ struct Details: View {
                 Spacer()
                 Text(sizeLabel)
                     .foregroundColor(.secondary)
+                    .accessibilityIdentifier(UTMAccessibilityID.Details.size)
             }
             #if os(macOS)
             if let appleConfig = vm.config as? UTMAppleConfiguration {

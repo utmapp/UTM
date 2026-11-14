@@ -44,6 +44,7 @@ enum UTMAccessibilityID {
         static let clone = "utm.details.clone"
         static let move = "utm.details.move"
         static let share = "utm.details.share"
+        static let size = "utm.details.size"
     }
     
     enum Wizard {
