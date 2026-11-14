@@ -25,34 +25,23 @@ struct VMConfigNetworkPortForwardView: View {
     
     var body: some View {
         VStack {
-            Table(config.portForward, selection: $selectedId) {
-                TableColumn("Protocol") { row in
-                    Text(row.protocol.prettyValue)
+            if #available(macOS 13, *) {
+                table.contextMenu(forSelectionType: UUID.self) { _ in
+                } primaryAction: { ids in
+                    edit(ids.first)
                 }
-                TableColumn("Guest Address") { row in
-                    Text(row.guestAddress ?? "")
-                }
-                TableColumn("Guest Port") { row in
-                    Text(String(row.guestPort))
-                }
-                TableColumn("Host Address") { row in
-                    Text(row.hostAddress ?? "")
-                }
-                TableColumn("Host Port") { row in
-                    Text(String(row.hostPort))
-                }
-            }.onDoubleClick {
-                editPortForward = config.portForward.first(where: { $0.id == selectedId })
+            } else {
+                table
             }
             HStack {
                 Spacer()
-                if let selectedId = selectedId {
+                if let selectedId = selectedId, config.portForward.contains(where: { $0.id == selectedId }) {
                     Button("Delete") {
                         config.portForward.removeAll(where: { $0.id == selectedId })
                         self.selectedId = nil
                     }
                     Button("Edit…") {
-                        editPortForward = config.portForward.first(where: { $0.id == selectedId })
+                        edit(selectedId)
                     }.popover(item: $editPortForward, arrowEdge: .top) { item in
                         PortForwardEdit(config: $config, forward: item).padding()
                             .frame(width: 250)
@@ -65,6 +54,30 @@ struct VMConfigNetworkPortForwardView: View {
                         .frame(width: 250)
                 }
             }.padding()
+        }
+    }
+
+    private func edit(_ id: UUID?) {
+        editPortForward = config.portForward.first(where: { $0.id == id })
+    }
+
+    private var table: some View {
+        Table(config.portForward, selection: $selectedId) {
+            TableColumn("Protocol") { row in
+                Text(row.protocol.prettyValue)
+            }
+            TableColumn("Guest Address") { row in
+                Text(row.guestAddress ?? "")
+            }
+            TableColumn("Guest Port") { row in
+                Text(String(row.guestPort))
+            }
+            TableColumn("Host Address") { row in
+                Text(row.hostAddress ?? "")
+            }
+            TableColumn("Host Port") { row in
+                Text(String(row.hostPort))
+            }
         }
     }
 }
