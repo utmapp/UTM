@@ -145,6 +145,46 @@ import XCTest
         XCTAssertFalse(options.contains { $0.hasPrefix("unit=") }, second)
     }
 
+    /// ARM64 guests such as Rocky Linux 9 have no driver for the LSI controller, so
+    /// SCSI drives on a virt machine get one VirtIO SCSI controller (#7712).
+    func testScsiDrivesUseVirtioScsiOnArm64Virt_7712() throws {
+        let config = configuration(architecture: .aarch64, target: QEMUTarget_aarch64.virt)
+        config.drives = [drive(config, interface: .scsi), drive(config, interface: .scsi, type: .cd)]
+        let args = arguments(config)
+        XCTAssertEqual(args.devices(ofType: "virtio-scsi-pci"), ["virtio-scsi-pci,id=scsi0"])
+        XCTAssertTrue(args.devices(ofType: "lsi53c895a").isEmpty)
+        let cd = try XCTUnwrap(args.devices(ofType: "scsi-cd").first)
+        XCTAssertTrue(QEMUArgumentList.options(cd).contains("bus=scsi0.0"), cd)
+    }
+
+    /// Other PCI machines keep the LSI controller their guests have drivers for.
+    func testScsiDrivesKeepLsiControllerOnPc() {
+        let config = configuration(architecture: .x86_64, target: QEMUTarget_x86_64.q35)
+        config.drives = [drive(config, interface: .scsi)]
+        let args = arguments(config)
+        XCTAssertEqual(args.devices(ofType: "lsi53c895a").count, 1)
+        XCTAssertTrue(args.devices(ofType: "virtio-scsi-pci").isEmpty)
+    }
+
+    /// The m68k virt machine has no PCI bus and keeps its VirtIO MMIO SCSI controller (#7008).
+    func testScsiDrivesUseVirtioMmioScsiOnM68kVirt() {
+        let config = configuration(architecture: .m68k, target: QEMUTarget_m68k.virt)
+        config.drives = [drive(config, interface: .scsi)]
+        let args = arguments(config)
+        XCTAssertEqual(args.devices(ofType: "virtio-scsi-device"), ["virtio-scsi-device,id=scsi0"])
+        XCTAssertTrue(args.devices(ofType: "virtio-scsi-pci").isEmpty)
+    }
+
+    /// The Quadra 800 has a built-in SCSI bus, so no controller is added.
+    func testScsiDrivesUseBuiltInBusOnQ800() throws {
+        let config = configuration(architecture: .m68k, target: QEMUTarget_m68k.q800)
+        config.drives = [drive(config, interface: .scsi)]
+        let args = arguments(config)
+        XCTAssertTrue(args.values(of: "-device").filter { $0.hasSuffix(",id=scsi0") }.isEmpty)
+        let disk = try XCTUnwrap(args.devices(ofType: "scsi-hd").first)
+        XCTAssertTrue(QEMUArgumentList.options(disk).contains("bus=scsi.0"), disk)
+    }
+
     /// The device carries the drive's shortened serial, not its 36-character id (0f138b8a).
     func testVirtioDriveCarriesDriveSerial_0f138b8a() throws {
         let config = configuration(architecture: .aarch64, target: QEMUTarget_aarch64.virt)
