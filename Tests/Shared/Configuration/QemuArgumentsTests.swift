@@ -229,6 +229,32 @@ import XCTest
         XCTAssertEqual(args.devices(ofType: "usb-mouse").count, 1)
     }
 
+    // MARK: Network
+
+    /// eTSEC, the first PowerPC card in the list, is a sysbus device that only ppce500 can
+    /// take; on any other machine QEMU refused to start: "Parameter 'driver' expects a
+    /// dynamic sysbus device type for the machine" (#7592).
+    func testPseriesDefaultNetworkCardIsVirtio() {
+        let targets = QEMUTarget_ppc64.allCases.filter { $0.rawValue.hasPrefix("pseries") }
+        XCTAssertFalse(targets.isEmpty)
+        for target in targets {
+            let args = arguments(configuration(architecture: .ppc64, target: target))
+            XCTAssertEqual(args.devices(ofType: "virtio-net-pci").count, 1, target.rawValue)
+            XCTAssertTrue(args.devices(ofType: "eTSEC").isEmpty, target.rawValue)
+        }
+    }
+
+    func testOnlyPpce500DefaultsToEtsec() {
+        let targets: [(QEMUArchitecture, any QEMUTarget)] = QEMUTarget_ppc.allCases.map { (.ppc, $0) } + QEMUTarget_ppc64.allCases.map { (.ppc64, $0) }
+        for (architecture, target) in targets {
+            let args = arguments(configuration(architecture: architecture, target: target))
+            let expected = target.rawValue == QEMUTarget_ppc.ppce500.rawValue ? 1 : 0
+            XCTAssertEqual(args.devices(ofType: "eTSEC").count, expected, "\(architecture) \(target.rawValue)")
+        }
+        let args = arguments(configuration(architecture: .ppc, target: QEMUTarget_ppc.g3beige))
+        XCTAssertEqual(args.devices(ofType: "e1000e").count, 1)
+    }
+
     // MARK: Custom arguments
 
     /// A quoted word is one argument; quotes inside a word are kept (1cf09506).
