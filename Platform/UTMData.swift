@@ -683,24 +683,33 @@ enum AlertItem: Identifiable {
         let fileName = url.lastPathComponent
         let dest = documentsURL.appendingPathComponent(fileName, isDirectory: true)
         if let vm = virtualMachines.first(where: { vm -> Bool in
-            return isSameFile(vm.pathUrl, as: url)
+            return vm.isLoaded && isSameFile(vm.pathUrl, as: url)
         }) {
             logger.info("found existing vm!")
-            if !vm.isLoaded {
-                logger.info("existing vm is wrapped")
-                try vm.load()
-            } else {
-                logger.info("existing vm is not wrapped")
-                listSelect(vm: vm)
-            }
+            listSelect(vm: vm)
             return
         }
         // check if VM is valid
-        guard let _ = try? VMData(url: url) else {
+        guard let opened = try? VMData(url: url) else {
             throw UTMDataError.importFailed
         }
+        let isInbox = fileBasePath.resolvingSymlinksInPath().path == documentsURL.appendingPathComponent("Inbox", isDirectory: true).path
+        // an unavailable VM (its saved bookmark did not resolve at launch) is replaced by the one
+        // just opened, with a new bookmark, or it would be unavailable again after the next launch
+        if asShortcut && !isInbox, let index = virtualMachines.firstIndex(where: { !$0.isLoaded && $0.id == opened.id }) {
+            logger.info("replacing unavailable vm")
+            endObservingChanges(for: virtualMachines[index])
+            virtualMachines[index] = opened
+            beginObservingChanges(for: opened)
+            try? await opened.wrapped?.updateRegistryFromConfig()
+            // the launcher's bookmark was made from the one that failed
+            opened.registryEntry?.package.remoteBookmark = nil
+            listSelect(vm: opened)
+            warnIfCustomArguments(in: opened)
+            return
+        }
         let vm: VMData?
-        if (fileBasePath.resolvingSymlinksInPath().path == documentsURL.appendingPathComponent("Inbox", isDirectory: true).path) {
+        if isInbox {
             logger.info("moving from Inbox")
             try fileManager.moveItem(at: url, to: dest)
             vm = try VMData(url: dest)
