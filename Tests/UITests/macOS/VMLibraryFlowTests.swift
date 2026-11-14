@@ -101,4 +101,57 @@ final class VMLibraryFlowTests: UTMUITestCase {
         XCTAssertTrue(create.waitForNonExistence(timeout: 10), "the new drive popover did not close")
         element(UTMAccessibilityID.Settings.cancel).click()
     }
+
+    /// A click on a port forward row selects it and a double click opens it (#7600: the
+    /// double-click overlay on top of the table took every click outside its rightmost 40
+    /// points, so a row could only be selected with the keyboard).
+    func testClickingAPortForwardSelectsIt() {
+        createVM(named: vmName)
+        element(UTMAccessibilityID.Library.card(named: vmName), timeout: 30).click()
+        element(UTMAccessibilityID.Details.edit).click()
+        let network = app.outlines.buttons["Network"].firstMatch
+        XCTAssertTrue(network.waitForExistence(timeout: 10), "the settings have no Network page")
+        network.click()
+        // the mode picker has no label of its own: find it by the default mode
+        let mode = app.popUpButtons.matching(NSPredicate(format: "value == %@", "Shared Network")).firstMatch
+        XCTAssertTrue(mode.waitForExistence(timeout: 10), "the network page did not appear")
+        mode.click()
+        app.menuItems["Emulated VLAN"].firstMatch.click()
+        let portForward = app.outlines.buttons["Port Forward"].firstMatch
+        XCTAssertTrue(portForward.waitForExistence(timeout: 10), "the settings have no Port Forward page")
+        portForward.click()
+        let newButton = app.buttons["New…"].firstMatch
+        XCTAssertTrue(newButton.waitForExistence(timeout: 10), "the port forward page did not appear")
+        newButton.click()
+        let popover = app.popovers.firstMatch
+        XCTAssertTrue(popover.waitForExistence(timeout: 10), "the new port forward popover did not appear")
+        // the fields in order: guest address, guest port, host address, host port
+        let fields = popover.textFields
+        XCTAssertTrue(fields.element(boundBy: 3).waitForExistence(timeout: 10), "the port fields did not appear")
+        fields.element(boundBy: 1).click()
+        fields.element(boundBy: 1).typeText("22")
+        fields.element(boundBy: 3).click()
+        fields.element(boundBy: 3).typeText("2222")
+        popover.buttons["Save"].firstMatch.click()
+        XCTAssertTrue(popover.waitForNonExistence(timeout: 10), "the new port forward popover did not close")
+        // the table's row with the new host port
+        let row = app.outlineRows.containing(NSPredicate(format: "value == %@", "2222")).firstMatch
+        XCTAssertTrue(row.waitForExistence(timeout: 10), "the new port forward is not listed")
+        let edit = app.buttons["Edit…"].firstMatch
+        XCTAssertFalse(edit.exists, "a port forward was selected before the click")
+        row.coordinate(withNormalizedOffset: CGVector(dx: 0.25, dy: 0.5)).click()
+        XCTAssertTrue(edit.waitForExistence(timeout: 5), "clicking the port forward did not select it")
+        // a double click opens the port forward for editing (macOS 13 and later); it is aimed
+        // away from the first click so the two are not counted as one triple click
+        if #available(macOS 13, *) {
+            row.coordinate(withNormalizedOffset: CGVector(dx: 0.6, dy: 0.5)).doubleClick()
+            XCTAssertTrue(popover.buttons["Delete"].firstMatch.waitForExistence(timeout: 5), "double-clicking the port forward did not open it")
+            // deleting it there also takes away the buttons for the selected row
+            popover.buttons["Delete"].firstMatch.click()
+            XCTAssertTrue(popover.waitForNonExistence(timeout: 10), "the port forward popover did not close")
+            XCTAssertTrue(row.waitForNonExistence(timeout: 10), "the deleted port forward is still listed")
+            XCTAssertTrue(edit.waitForNonExistence(timeout: 5), "Edit… is still shown for the deleted port forward")
+        }
+        element(UTMAccessibilityID.Settings.cancel).click()
+    }
 }
