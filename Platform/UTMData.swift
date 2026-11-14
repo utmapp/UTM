@@ -717,7 +717,12 @@ enum AlertItem: Identifiable {
         }
         listAdd(vm: vm)
         listSelect(vm: vm)
-        // warn user if imported .utm has custom arguments
+        warnIfCustomArguments(in: vm)
+    }
+
+    /// Warn the user if a VM from an untrusted source has custom QEMU arguments
+    /// - Parameter vm: Imported or downloaded VM
+    private func warnIfCustomArguments(in vm: VMData) {
         if let qemuConfig = vm.wrapped?.config as? UTMQemuConfiguration, !qemuConfig.qemu.additionalArguments.isEmpty {
             showLocalizedErrorAlert("This virtual machine uses custom QEMU arguments which is potentially dangerous and can cause damage to your machine. You should only run this virtual machine if you trust it.")
         }
@@ -840,15 +845,19 @@ enum AlertItem: Identifiable {
 
     /// Create a new VM by downloading a .zip and extracting it
     /// - Parameter components: Download URL components
-    func downloadUTMZip(from url: URL) {
+    /// - Returns: Task that finishes once the VM is added or the download failed
+    @discardableResult
+    func downloadUTMZip(from url: URL) -> Task<Void, Never> {
         let task = UTMDownloadVMTask(for: url)
         listAdd(pendingVM: task.pendingVM)
-        Task {
+        return Task {
             do {
                 if let wrapped = try await task.download() {
                     let vm = VMData(wrapping: wrapped)
                     try await self.save(vm: vm)
                     listAdd(vm: vm)
+                    listSelect(vm: vm)
+                    warnIfCustomArguments(in: vm)
                 }
             } catch {
                 showErrorAlert(message: error.localizedDescription)

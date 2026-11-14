@@ -134,4 +134,43 @@ import XCTest
         XCTAssertTrue(data.isSameFile(storage.url.appendingPathComponent("A.utm"), as: link.appendingPathComponent("A.utm")))
         XCTAssertFalse(data.isSameFile(storage.url.appendingPathComponent("A.utm"), as: link.appendingPathComponent("B.utm")))
     }
+
+    /// Zip a bundle the way a `utm://downloadVM` link serves it, and download it
+    /// from a `file://` URL through the same call the link's prompt makes.
+    private func download(_ config: UTMQemuConfiguration) async throws {
+        let source = FileManager.default.temporaryDirectory.appendingPathComponent("Download-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: source, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: source) }
+        let vm = try VMData(creatingFromConfig: config, destinationUrl: source)
+        try await vm.save()
+        // a downloaded VM is new to this Mac, so forget the source bundle
+        UTMRegistry.shared.prune(exceptFor: [])
+        let name = vm.pathUrl.lastPathComponent
+        var zip = ZipArchiveBuilder()
+        zip.addDirectory(name)
+        zip.addFile("\(name)/config.plist", contents: try String(contentsOf: vm.pathUrl.appendingPathComponent("config.plist"), encoding: .utf8))
+        let zipUrl = source.appendingPathComponent("\(UUID().uuidString).zip")
+        try zip.write(to: zipUrl)
+        await data.downloadUTMZip(from: zipUrl).value
+    }
+
+    /// A VM downloaded through a `utm://downloadVM` link warns about custom QEMU
+    /// arguments, as importing the same `.utm` does (#7733).
+    func testDownloadedVMWithCustomArgumentsWarns_7733() async throws {
+        let config = configuration(named: "Custom")
+        config.qemu.additionalArguments = [QEMUArgument("-custom")]
+        try await download(config)
+        XCTAssertEqual(data.virtualMachines.map(\.detailsTitleLabel), ["Custom"])
+        XCTAssertTrue(data.selectedVM === data.virtualMachines.first, "the warning must be about the selected VM")
+        guard case .localizedMessage(let message) = data.alertItem else {
+            return XCTFail("expected the custom arguments warning, got \(String(describing: data.alertItem))")
+        }
+        XCTAssertTrue(message.localizedString.contains("custom QEMU arguments"), message.localizedString)
+    }
+
+    func testDownloadedVMWithoutCustomArgumentsDoesNotWarn_7733() async throws {
+        try await download(configuration(named: "Plain"))
+        XCTAssertEqual(data.virtualMachines.map(\.detailsTitleLabel), ["Plain"])
+        XCTAssertNil(data.alertItem)
+    }
 }
