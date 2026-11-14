@@ -1,0 +1,275 @@
+From 9bd63d0d265bd8128ffdee9cd5c3cc9821b37e92 Mon Sep 17 00:00:00 2001
+From: Ihar Hrachyshka <ihar.hrachyshka@gmail.com>
+Date: Mon, 22 Dec 2025 22:02:21 -0500
+Subject: [PATCH 1/3] darwin: Support g_poll:maxfd >= FD_SETSIZE
+
+By default, Darwin limits the number of fds supported by select to
+FD_SETSIZE (1024), and fails if passed fds >= 1024.
+
+On Darwin, g_poll uses select because poll doesn't support device files.
+This behavior becomes a problem when a g_poll caller needs to monitor
+more fds. When they do, Darwin libSystem will trigger a EXC_GUARD fault:
+
+libsystem_kernel.dylib 0x[...] os_fault_with_payload + 8
+libsystem_kernel.dylib 0x[...] __darwin_check_fd_set_overflow + 212
+libglib-2.0.0.dylib    0x[...] g_poll + 408
+
+A real world example of this situation is a nixpkgs qemu VM
+that mounts a large host directory (`/nix` store) using 9p, then runs
+all its services from it. Each service running inside the VM loads its
+shared libraries from this 9p mount. On file open, qemu will allocate a
+fd. If there are a lot of services running inside such VM, the situation
+may arise where qemu calls g_poll with fds >= FD_SETSIZE. At this point,
+qemu VM hangs.
+
+This problem is specific to Darwin for several reasons. First, qemu will
+use ppoll directly without calling to g_pool if available (Linux etc.)
+Second, g_poll will use poll on all platforms but Windows and MacOS
+(because neither supports polling device files). Because of it, the
+common recommendation to use poll family of interfaces instead of select
+doesn't apply here.
+
+Good news is that while select on Darwin is limited to 1024 fds, this
+enforcement can be adjusted to allow for more fds. Turns out that
+FreeBSD - the base for Darwin kernel socket subsystem - gracefully
+handles more than 1024 fds. This original behavior can be restored on
+Darwin by passing _DARWIN_UNLIMITED_SELECT during compilation, which
+makes libSystem choose *select variants without max 1024 enforcement.
+
+This will not resolve the issue of fds limited to 1024 per se but only
+disable the fault trap in libSystem. To increase the number of fds
+supported by select, one also has to pass larger fdsets.
+
+Before the patch, fdsets were always allocated on stack. After this
+patch, if maxfd is higher than FD_SETSIZE, fdsets will be allocated on
+heap instead.
+
+The __DARWIN_howmany and __DARWIN_NFDBITS macros are used to calculate
+the size of heap allocation to mimic the calculation done in system
+headers.
+
+The patch adds a new test case to confirm that g_poll works even when
+maxfd > FD_SETSIZE. It also raises the soft rlimit for the highest
+fd to 4096 for macos CI job to accommodate the new test scenario.
+
+Signed-off-by: Ihar Hrachyshka <ihar.hrachyshka@gmail.com>
+---
+ glib/gpoll.c | 98 +++++++++++++++++++++++++++++++++++++---------------
+ 1 file changed, 70 insertions(+), 28 deletions(-)
+
+diff --git a/glib/gpoll.c b/glib/gpoll.c
+index 44c1167..686f236 100644
+--- a/glib/gpoll.c
++++ b/glib/gpoll.c
+@@ -32,6 +32,10 @@
+  * MT safe
+  */
+ 
++#if defined(__APPLE__) && !defined(_DARWIN_UNLIMITED_SELECT)
++#define _DARWIN_UNLIMITED_SELECT 1
++#endif
++
+ #include "config.h"
+ #include "glibconfig.h"
+ #include "giochannel.h"
+@@ -49,9 +53,10 @@
+ #define G_MAIN_POLL_DEBUG
+ #endif
+ 
++#include <limits.h>
++#include <stdlib.h>
+ #include <sys/types.h>
+ #include <time.h>
+-#include <stdlib.h>
+ #ifdef HAVE_SYS_TIME_H
+ #include <sys/time.h>
+ #endif /* HAVE_SYS_TIME_H */
+@@ -540,54 +545,91 @@ cleanup:
+ #include <sys/select.h>
+ #endif /* HAVE_SYS_SELECT_H */
+ 
++static gsize
++g_poll_fd_set_alloc_size (int maxfd)
++{
++  gsize nfds = (gsize) maxfd + 1;
++#if defined(__APPLE__)
++  gsize nelems = __DARWIN_howmany (nfds, __DARWIN_NFDBITS);
++#else
++  const gsize bits_per_element = CHAR_BIT * sizeof (((fd_set *) 0)->fds_bits[0]);
++  gsize nelems = (nfds + bits_per_element - 1) / bits_per_element;
++#endif
++
++  return nelems * sizeof (((fd_set *) 0)->fds_bits[0]);
++}
++
+ gint
+ g_poll (GPollFD *fds,
+ 	guint    nfds,
+ 	gint     timeout)
+ {
+   struct timeval tv;
+-  fd_set rset, wset, xset;
+-  GPollFD *f;
++  fd_set rset_stack, wset_stack, xset_stack;
++  fd_set *rset = &rset_stack;
++  fd_set *wset = &wset_stack;
++  fd_set *xset = &xset_stack;
++  GPollFD *f, *f_end;
+   int ready;
+   int maxfd = 0;
++  const gushort poll_events = G_IO_IN | G_IO_OUT | G_IO_PRI;
++  gpointer heap_storage = NULL;
++  gsize fd_set_bytes = 0;
+ 
+-  FD_ZERO (&rset);
+-  FD_ZERO (&wset);
+-  FD_ZERO (&xset);
++  f_end = fds + nfds;
+ 
+-  for (f = fds; f < &fds[nfds]; ++f)
++  for (f = fds; f < f_end; ++f)
++    if (f->fd >= 0 &&
++        (f->events & poll_events) &&
++        f->fd > maxfd)
++      maxfd = f->fd;
++
++  if (G_UNLIKELY (maxfd >= FD_SETSIZE))
++    {
++      fd_set_bytes = g_poll_fd_set_alloc_size (maxfd);
++      heap_storage = g_malloc (fd_set_bytes * 3);
++      rset = heap_storage;
++      wset = (fd_set *) ((char *) heap_storage + fd_set_bytes);
++      xset = (fd_set *) ((char *) heap_storage + (fd_set_bytes * 2));
++    }
++
++  FD_ZERO (rset);
++  FD_ZERO (wset);
++  FD_ZERO (xset);
++
++  for (f = fds; f < f_end; ++f)
+     if (f->fd >= 0)
+       {
+-	if (f->events & G_IO_IN)
+-	  FD_SET (f->fd, &rset);
+-	if (f->events & G_IO_OUT)
+-	  FD_SET (f->fd, &wset);
+-	if (f->events & G_IO_PRI)
+-	  FD_SET (f->fd, &xset);
+-	if (f->fd > maxfd && (f->events & (G_IO_IN|G_IO_OUT|G_IO_PRI)))
+-	  maxfd = f->fd;
++        if (f->events & G_IO_IN)
++          FD_SET (f->fd, rset);
++        if (f->events & G_IO_OUT)
++          FD_SET (f->fd, wset);
++        if (f->events & G_IO_PRI)
++          FD_SET (f->fd, xset);
+       }
+ 
+   tv.tv_sec = timeout / 1000;
+   tv.tv_usec = (timeout % 1000) * 1000;
+ 
+-  ready = select (maxfd + 1, &rset, &wset, &xset,
+-		  timeout == -1 ? NULL : &tv);
++  ready = select (maxfd + 1, rset, wset, xset,
++                  timeout == -1 ? NULL : &tv);
+   if (ready > 0)
+-    for (f = fds; f < &fds[nfds]; ++f)
++    for (f = fds; f < f_end; ++f)
+       {
+-	f->revents = 0;
+-	if (f->fd >= 0)
+-	  {
+-	    if (FD_ISSET (f->fd, &rset))
+-	      f->revents |= G_IO_IN;
+-	    if (FD_ISSET (f->fd, &wset))
+-	      f->revents |= G_IO_OUT;
+-	    if (FD_ISSET (f->fd, &xset))
+-	      f->revents |= G_IO_PRI;
+-	  }
++        f->revents = 0;
++        if (f->fd >= 0)
++          {
++            if (FD_ISSET (f->fd, rset))
++              f->revents |= G_IO_IN;
++            if (FD_ISSET (f->fd, wset))
++              f->revents |= G_IO_OUT;
++            if (FD_ISSET (f->fd, xset))
++              f->revents |= G_IO_PRI;
++          }
+       }
+ 
++  g_free (heap_storage);
++
+   return ready;
+ }
+ 
+
+From 2c9b6d7b3578d141fe12ad26f8c7d68ef93d3bdc Mon Sep 17 00:00:00 2001
+From: Alex Kirszenberg <a.kirszenberg@gmail.com>
+Date: Fri, 10 Jul 2026 14:51:23 +0000
+Subject: [PATCH 2/3] gpoll: Correctly zero-out heap-allocated fd_sets on macOS
+
+---
+ glib/gpoll.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/glib/gpoll.c b/glib/gpoll.c
+index 686f236..293e711 100644
+--- a/glib/gpoll.c
++++ b/glib/gpoll.c
+@@ -587,15 +587,17 @@ g_poll (GPollFD *fds,
+   if (G_UNLIKELY (maxfd >= FD_SETSIZE))
+     {
+       fd_set_bytes = g_poll_fd_set_alloc_size (maxfd);
+-      heap_storage = g_malloc (fd_set_bytes * 3);
++      heap_storage = g_malloc0 (fd_set_bytes * 3);
+       rset = heap_storage;
+       wset = (fd_set *) ((char *) heap_storage + fd_set_bytes);
+       xset = (fd_set *) ((char *) heap_storage + (fd_set_bytes * 2));
+     }
+-
+-  FD_ZERO (rset);
+-  FD_ZERO (wset);
+-  FD_ZERO (xset);
++  else
++    {
++      FD_ZERO (rset);
++      FD_ZERO (wset);
++      FD_ZERO (xset);
++    }
+ 
+   for (f = fds; f < f_end; ++f)
+     if (f->fd >= 0)
+
+From 3900730571cfa011c59cd10e53af42c0e231237f Mon Sep 17 00:00:00 2001
+From: UTMapp-bot <noreply@getutm.app>
+Date: Fri, 13 Nov 2026 21:59:37 -0800
+Subject: [PATCH 3/3] gpoll: Only check fd_sets for descriptors that were added
+ to them
+
+Since the fd_sets are sized from the highest descriptor that has
+G_IO_IN, G_IO_OUT or G_IO_PRI set, a higher descriptor polled for none
+of them (a source that only watches for G_IO_HUP or G_IO_ERR) is past
+the end of the sets. FD_ISSET() on it reads out of bounds, now that
+_DARWIN_UNLIMITED_SELECT turns off the libc check that used to trap.
+
+Skip descriptors without those events when collecting revents; select()
+cannot report anything for them anyway.
+---
+ glib/gpoll.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/glib/gpoll.c b/glib/gpoll.c
+index 293e711..366d8fc 100644
+--- a/glib/gpoll.c
++++ b/glib/gpoll.c
+@@ -619,7 +619,8 @@ g_poll (GPollFD *fds,
+     for (f = fds; f < f_end; ++f)
+       {
+         f->revents = 0;
+-        if (f->fd >= 0)
++        /* The sets only cover descriptors that were added to them. */
++        if (f->fd >= 0 && (f->events & poll_events))
+           {
+             if (FD_ISSET (f->fd, rset))
+               f->revents |= G_IO_IN;
