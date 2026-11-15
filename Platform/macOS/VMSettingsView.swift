@@ -64,6 +64,7 @@ struct ScrollableViewModifier: ViewModifier {
     func body(content: Content) -> some View {
         ScrollView {
             content
+            .toggleStyle(WrappingCheckboxToggleStyle())
             .frame(maxWidth: .infinity)
             .padding()
             .background(
@@ -76,6 +77,21 @@ struct ScrollableViewModifier: ViewModifier {
             )
         }
         .frame(idealWidth: scrollViewContentSize.width)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier(UTMAccessibilityID.Settings.pane)
+    }
+}
+
+/// A checkbox whose label wraps to the width of its form column instead of widening the form.
+///
+/// A macOS form sizes its columns from its widest row and measures a checkbox's label on one
+/// line unless the row may shrink. Toggles that choose another style keep it.
+struct WrappingCheckboxToggleStyle: ToggleStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        Toggle(configuration)
+            .toggleStyle(.checkbox)
+            .fixedSize(horizontal: false, vertical: true)
+            .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 

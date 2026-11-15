@@ -83,6 +83,8 @@ enum UTMAccessibilityID {
         static let newDrive = "utm.settings.drives.new"
         static let importDrive = "utm.settings.drives.import"
         static let shareMode = "utm.settings.sharing.mode"
+        /// The scroll view of the pane shown beside the sidebar.
+        static let pane = "utm.settings.pane"
     }
     
     /// The app settings window (macOS).
