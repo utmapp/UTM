@@ -1,0 +1,14 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Questions and help
+    url: https://github.com/utmapp/UTM/discussions
+    about: Ask how to do something, or get help installing UTM or setting up a guest
+  - name: Game compatibility
+    url: https://db.getutm.app/
+    about: Report how a specific game runs in the UTM Games Database
+  - name: Community support
+    url: https://discord.gg/UV2RUgD
+    about: Chat with other UTM users on Discord
+  - name: Documentation
+    url: https://docs.getutm.app
+    about: Installation, settings reference and guest support guides

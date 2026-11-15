@@ -1,0 +1,105 @@
+name: iOS, iPadOS or visionOS issue
+description: Report a bug or crash in UTM, UTM SE or UTM Remote on iPhone, iPad or Apple Vision Pro
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this. Only the first five fields are required; everything after them is optional, but each one you fill in saves a round of questions.
+
+        Before you submit, please [search the existing issues](https://github.com/utmapp/UTM/issues?q=is%3Aissue) (including closed and pinned ones) and comment there if yours is already reported. For questions and help with installing UTM or setting up a guest, use [Discussions](https://github.com/utmapp/UTM/discussions) instead.
+
+        **Problems with a specific game do not belong here.** Report how a game runs in the [UTM Games Database](https://db.getutm.app/) instead.
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead? Numbered steps that reproduce the problem help the most. You can add screenshots or a screen recording here.
+      placeholder: |
+        1. Start the VM
+        2. ...
+
+        Expected: ...
+        Actual: ...
+    validations:
+      required: true
+  - type: input
+    id: utm-version
+    attributes:
+      label: UTM version
+      description: Shown at the bottom of UTM's settings. Tap the gear icon (Settings) in UTM's VM list and scroll to the end to find Version. Please check that the problem still happens on the [latest release](https://github.com/utmapp/UTM/releases/latest).
+      placeholder: "5.0.8"
+    validations:
+      required: true
+  - type: input
+    id: host
+    attributes:
+      label: Device and OS version
+      placeholder: "iPad Pro 13-inch (M4), iPadOS 26.1"
+    validations:
+      required: true
+  - type: dropdown
+    id: edition
+    attributes:
+      label: Which app?
+      options:
+        - Not sure
+        - UTM SE (no JIT)
+        - UTM (needs JIT)
+        - UTM Remote
+    validations:
+      required: true
+  - type: dropdown
+    id: install
+    attributes:
+      label: How did you install it?
+      options:
+        - N/A (explain above)
+        - App Store
+        - AltStore, SideStore or another sideloading tool
+        - Alternative app marketplace (EU)
+        - TrollStore
+        - Jailbroken device
+        - Built with Xcode
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        ### Optional details
+  - type: input
+    id: jit
+    attributes:
+      label: JIT and jailbreak details
+      description: If you use UTM with JIT, how you enable it. If the device is jailbroken, which jailbreak and version.
+      placeholder: "StikDebug / Dopamine 2.4"
+  - type: input
+    id: guest
+    attributes:
+      label: Guest operating system
+      description: Name, version and architecture. If you installed from a downloaded image or a UTM Gallery VM, a link helps.
+      placeholder: "Windows XP SP3 x86 / Debian 13 ARM64"
+  - type: input
+    id: regression
+    attributes:
+      label: Did this work before?
+      description: If so, the last UTM version (or iOS version) where it worked.
+      placeholder: "Worked in 5.0.6"
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: |
+        Attach the files in this box.
+
+        **Debug log** (for any problem that happens while a VM is running): open the VM's settings → QEMU → turn on **Debug Logging** → Save. Reproduce the problem, then quit the VM and open UTM again. Go back to the same page and tap **Export Debug Log**.
+
+        **Crash log** (if the app closed by itself): open the Settings app → Privacy & Security → Analytics & Improvements → Analytics Data, find the latest entry that starts with UTM, and share it from there.
+  - type: textarea
+    id: config
+    attributes:
+      label: VM configuration
+      description: |
+        Screenshots of the VM's settings pages that relate to the problem, or the `config.plist` from inside the `.utm` if you can get to it.
+
+        If the problem only happens with your disk image, you can link the whole `.utm` from a file sharing service. Remember that it includes everything stored in the VM.

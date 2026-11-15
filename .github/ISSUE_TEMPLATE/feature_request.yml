@@ -1,0 +1,46 @@
+name: Feature request
+description: Request a new feature
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Only the first field is required; the rest are optional, but each one you fill in saves a round of questions.
+
+        Before you submit, please [browse the existing requests](https://github.com/utmapp/UTM/issues?q=is%3Aissue+label%3Aenhancement) (including closed ones) and add a 👍 or a comment there if yours has already been suggested. If something that should work is broken, file a macOS or iOS issue instead.
+  - type: textarea
+    id: description
+    attributes:
+      label: What are you trying to do, and why?
+      description: Describe what you want to achieve, not only the option or setting you would like added. The use case often matters more than the specific solution. You can add screenshots or mock-ups here.
+      placeholder: "I want to ... so that ..."
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      description: Some features are only possible on one platform because of restrictions on the other.
+      options:
+        - macOS
+        - iOS, iPadOS or visionOS
+        - Both
+  - type: dropdown
+    id: backend
+    attributes:
+      label: VM type
+      options:
+        - QEMU
+        - Apple Virtualization
+        - Both
+        - Not specific to a VM (UTM's own windows, settings, utmctl, scripting, ...)
+  - type: input
+    id: workaround
+    attributes:
+      label: How do you do this today?
+      description: Any workaround you use now, for example custom QEMU arguments, something set up inside the guest, or another app.
+  - type: textarea
+    id: reference
+    attributes:
+      label: Does QEMU or another app already do this?
+      description: If you know the QEMU option, the Virtualization framework API, or another app that has this feature, name it or link to its documentation or source code.

@@ -1,0 +1,98 @@
+name: macOS issue
+description: Report a bug or crash in UTM for macOS
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this. Only the first four fields are required; everything after them is optional, but each one you fill in saves a round of questions.
+
+        Before you submit, please [search the existing issues](https://github.com/utmapp/UTM/issues?q=is%3Aissue) (including closed and pinned ones) and comment there if yours is already reported. For questions and help setting up a guest, use [Discussions](https://github.com/utmapp/UTM/discussions) instead.
+
+        **Problems with a specific game do not belong here.** Report how a game runs in the [UTM Games Database](https://db.getutm.app/) instead.
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead? Numbered steps that reproduce the problem help the most. You can drag screenshots or a screen recording in here.
+      placeholder: |
+        1. Start the VM
+        2. ...
+
+        Expected: ...
+        Actual: ...
+    validations:
+      required: true
+  - type: input
+    id: utm-version
+    attributes:
+      label: UTM version
+      description: Shown in UTM → About UTM. Please check that the problem still happens on the [latest release](https://github.com/utmapp/UTM/releases/latest).
+      placeholder: "5.0.8"
+    validations:
+      required: true
+  - type: input
+    id: host
+    attributes:
+      label: Mac and macOS version
+      description: Shown in the Apple menu → About This Mac.
+      placeholder: "MacBook Pro M3 Pro, macOS 26.1"
+    validations:
+      required: true
+  - type: dropdown
+    id: backend
+    attributes:
+      label: VM type
+      description: The VM's settings show a QEMU page for QEMU VMs and a Virtualization page for Apple Virtualization VMs.
+      options:
+        - Not sure
+        - QEMU
+        - Apple Virtualization
+        - Not specific to a VM (UTM's own windows, settings, utmctl, scripting, ...)
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        ### Optional details
+  - type: input
+    id: guest
+    attributes:
+      label: Guest operating system
+      description: Name, version and architecture. If you installed from a downloaded image or a UTM Gallery VM, a link helps.
+      placeholder: "Windows 11 24H2 ARM64 / Ubuntu 26.04 x86_64 (emulated) / macOS 26.1"
+  - type: input
+    id: regression
+    attributes:
+      label: Did this work before?
+      description: If so, the last UTM version (or macOS version) where it worked.
+      placeholder: "Worked in 5.0.6"
+  - type: dropdown
+    id: source
+    attributes:
+      label: Where did you get UTM?
+      options:
+        - GitHub release or getutm.app
+        - Mac App Store
+        - Homebrew
+        - Built from source
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: |
+        Drag the files into this box.
+
+        **Debug log** (QEMU VMs; for any problem that happens while a VM is running): open the VM's settings → QEMU → turn on **Debug Logging** → Save. Reproduce the problem, stop the VM, then go back to the same page and click **Export Debug Log**. Turn Debug Logging off again afterwards, because it slows the VM down. Apple Virtualization VMs have no debug log; if the problem is in one, copy the lines Console.app shows for UTM around the time it happened.
+
+        **Crash report** (if UTM or the VM quit unexpectedly): open Console.app → Crash Reports, find the latest entry for UTM, QEMUHelper or QEMULauncher, right-click → Reveal in Finder, and attach that file.
+  - type: textarea
+    id: config
+    attributes:
+      label: VM configuration
+      description: |
+        Right-click the VM in UTM → **Show in Finder**, then right-click the `.utm` file → **Show Package Contents**. Right-click `config.plist` → Compress, and drag the resulting zip into this box. It contains the VM's settings (including any custom QEMU arguments) but none of your drive data.
+
+        For display or graphics problems, also mention anything you changed from the default in UTM → Settings (for example Renderer Backend or Vulkan Driver). Those are not stored in the VM.
+
+        If the problem only happens with your disk image, you can link the whole `.utm` from a file sharing service. Remember that it includes everything stored in the VM.
