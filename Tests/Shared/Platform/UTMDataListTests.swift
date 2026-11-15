@@ -125,6 +125,61 @@ import XCTest
         XCTAssertEqual(data.virtualMachines.count, 1, "\(data.virtualMachines.map(\.pathUrl.path))")
     }
 
+    /// Adds a VM stored outside the storage directory, then relaunches with its saved
+    /// bookmark unresolvable and the bundle out of reach, so it is listed as unavailable.
+    /// Returns the bundle's original location, its ID, and where the bundle now is.
+    private func makeUnavailableExternalVM(in external: URL) async throws -> (bundle: URL, id: UUID, away: URL) {
+        let created = try VMData(creatingFromConfig: configuration(named: "External"), destinationUrl: external)
+        try await created.save()
+        let bundle = created.pathUrl
+        try await data.importUTM(from: bundle)
+        let entry = try XCTUnwrap(data.virtualMachines.first?.registryEntry)
+        // a bookmark that cannot be resolved, which falls back to a path the sandbox denies
+        entry.package = UTMRegistryEntry.File(dummyFromPath: bundle.path, remoteBookmark: Data("not a bookmark".utf8))
+        let away = external.appendingPathComponent("away", isDirectory: true)
+        try FileManager.default.moveItem(at: bundle, to: away)
+        data = UTMData()
+        XCTAssertEqual(data.virtualMachines.map(\.isLoaded), [false])
+        return (bundle, entry.uuid, away)
+    }
+
+    private func assertReopened(_ id: UUID, at bundle: URL, file: StaticString = #filePath, line: UInt = #line) throws {
+        XCTAssertEqual(data.virtualMachines.map(\.isLoaded), [true], "the same row is loaded, not a second one added", file: file, line: line)
+        XCTAssertEqual(data.virtualMachines.first?.id, id, file: file, line: line)
+        XCTAssertTrue(data.selectedVM === data.virtualMachines.first, file: file, line: line)
+        let package = try XCTUnwrap(data.virtualMachines.first?.registryEntry?.package, file: file, line: line)
+        let resolved = try URL(resolvingPersistentBookmarkData: package.bookmark)
+        XCTAssertEqual(resolved.resolvingSymlinksInPath().path, bundle.resolvingSymlinksInPath().path, file: file, line: line)
+        XCTAssertNil(package.remoteBookmark, "the launcher's bookmark made from the failed one is dropped", file: file, line: line)
+    }
+
+    /// Opening the `.utm` of a VM whose saved bookmark no longer resolves (shown as
+    /// unavailable) loads it and saves a new bookmark, so it still loads after a relaunch
+    /// instead of having to be opened again every time (#7762).
+    func testReopeningUnavailableVMSavesNewBookmark_7762() async throws {
+        let external = FileManager.default.temporaryDirectory.appendingPathComponent("External-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: external, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: external) }
+        let (bundle, id, away) = try await makeUnavailableExternalVM(in: external)
+        try FileManager.default.moveItem(at: away, to: bundle)
+        try await data.importUTM(from: bundle)
+        try assertReopened(id, at: bundle)
+    }
+
+    /// The same, when the bundle is opened from another path than the one saved, such as
+    /// a drive that mounted under another name: the unavailable row is replaced, not kept
+    /// next to a duplicate with a new ID (#7762).
+    func testReopeningUnavailableVMFromAnotherPathReplacesIt_7762() async throws {
+        let external = FileManager.default.temporaryDirectory.appendingPathComponent("External-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: external, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: external) }
+        let (_, id, away) = try await makeUnavailableExternalVM(in: external)
+        let moved = external.appendingPathComponent("Renamed.utm", isDirectory: true)
+        try FileManager.default.moveItem(at: away, to: moved)
+        try await data.importUTM(from: moved)
+        try assertReopened(id, at: moved)
+    }
+
     func testIsSameFileComparesFileIdentityNotPathText() throws {
         let link = FileManager.default.temporaryDirectory.appendingPathComponent("Storage-link-\(UUID().uuidString)")
         try FileManager.default.createSymbolicLink(at: link, withDestinationURL: storage.url)
