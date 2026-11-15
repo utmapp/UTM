@@ -251,7 +251,8 @@ import XCTest
             let expected = target.rawValue == QEMUTarget_ppc.ppce500.rawValue ? 1 : 0
             XCTAssertEqual(args.devices(ofType: "eTSEC").count, expected, "\(architecture) \(target.rawValue)")
         }
-        let args = arguments(configuration(architecture: .ppc, target: QEMUTarget_ppc.g3beige))
+        // 40p has no default card of its own, so it takes the first one left in the list
+        let args = arguments(configuration(architecture: .ppc, target: QEMUTarget_ppc._40p))
         XCTAssertEqual(args.devices(ofType: "e1000e").count, 1)
     }
 
