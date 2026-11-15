@@ -539,6 +539,15 @@ enum AlertItem: Identifiable {
                     config.networks[i].macAddress = UTMQemuConfigurationNetwork.randomMacAddress()
                 }
             }
+            #if os(macOS)
+            if let config = newVM.wrapped!.config as? UTMAppleConfiguration {
+                config.networks = config.networks.map { network in
+                    var network = network
+                    network.macAddress = UTMAppleConfigurationNetwork.randomMacAddress()
+                    return network
+                }
+            }
+            #endif
         }
         try await newVM.save()
         var index = virtualMachines.firstIndex(of: vm)

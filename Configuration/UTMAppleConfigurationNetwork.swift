@@ -67,6 +67,12 @@ struct UTMAppleConfigurationNetwork: Codable, Identifiable {
     init() {
     }
     
+    /// Generate a random MAC address
+    /// - Returns: A random locally administered MAC address
+    static func randomMacAddress() -> String {
+        VZMACAddress.randomLocallyAdministered().string
+    }
+    
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         mode = try values.decode(NetworkMode.self, forKey: .mode)
