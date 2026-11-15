@@ -1,5 +1,6 @@
 name: iOS, iPadOS or visionOS issue
 description: Report a bug or crash in UTM, UTM SE or UTM Remote on iPhone, iPad or Apple Vision Pro
+type: Bug
 body:
   - type: markdown
     attributes:

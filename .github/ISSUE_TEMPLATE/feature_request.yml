@@ -1,13 +1,13 @@
 name: Feature request
 description: Request a new feature
-labels: ["enhancement"]
+type: Feature
 body:
   - type: markdown
     attributes:
       value: |
         Only the first field is required; the rest are optional, but each one you fill in saves a round of questions.
 
-        Before you submit, please [browse the existing requests](https://github.com/utmapp/UTM/issues?q=is%3Aissue+label%3Aenhancement) (including closed ones) and add a 👍 or a comment there if yours has already been suggested. If something that should work is broken, file a macOS or iOS issue instead.
+        Before you submit, please [browse the existing requests](https://github.com/utmapp/UTM/issues?q=is%3Aissue+type%3AFeature) (including closed ones) and add a 👍 or a comment there if yours has already been suggested. If something that should work is broken, file a macOS or iOS issue instead.
   - type: textarea
     id: description
     attributes:

@@ -1,5 +1,6 @@
 name: macOS issue
 description: Report a bug or crash in UTM for macOS
+type: Bug
 body:
   - type: markdown
     attributes:
