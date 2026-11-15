@@ -453,7 +453,7 @@ extension VMDisplayAppleWindowController {
 
 extension VMDisplayAppleWindowController: UTMScreenshotProvider {
     var screenshot: UTMVirtualMachineScreenshot? {
-        if let image = contentView?.image() {
+        if let image = contentView?.cachedDisplayImage() {
             return UTMVirtualMachineScreenshot(wrapping: image)
         } else {
             return nil
@@ -622,13 +622,19 @@ fileprivate extension NSView {
 }
 
 // https://stackoverflow.com/a/41387514/13914748
-fileprivate extension NSView {
+extension NSView {
     /// Get `NSImage` representation of the view.
     ///
-    /// - Returns: `NSImage` of view
-    func image() -> NSImage {
-        let imageRepresentation = bitmapImageRepForCachingDisplay(in: bounds)!
+    /// - Returns: `NSImage` of view, or nil if the view has no area to capture (a window
+    ///   shrunk to nothing with AppleScript)
+    func cachedDisplayImage() -> NSImage? {
+        guard let imageRepresentation = bitmapImageRepForCachingDisplay(in: bounds) else {
+            return nil
+        }
         cacheDisplay(in: bounds, to: imageRepresentation)
-        return NSImage(cgImage: imageRepresentation.cgImage!, size: bounds.size)
+        guard let cgImage = imageRepresentation.cgImage else {
+            return nil
+        }
+        return NSImage(cgImage: cgImage, size: bounds.size)
     }
 }

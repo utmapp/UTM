@@ -683,7 +683,10 @@ final class UTMAppleVirtualMachine: UTMVirtualMachine {
     
     @discardableResult @MainActor
     func takeScreenshot() async -> Bool {
-        screenshot = screenshotDelegate?.screenshot
+        // the previous screenshot stays in place when the window has nothing to capture
+        if let screenshot = screenshotDelegate?.screenshot {
+            self.screenshot = screenshot
+        }
         return true
     }
 
