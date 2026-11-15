@@ -265,6 +265,13 @@ final class VMLifecycleTests: XCTestCase {
     private static let shellPrompt = "Shell>"
     private static let firmwareBanner = "UEFI Interactive Shell"
 
+    /// Adds a small disk image, which a saved state needs to be kept in, to the configuration.
+    private static func addDisk(to config: UTMQemuConfiguration) {
+        var drive = UTMQemuConfigurationDrive(forArchitecture: .aarch64, target: QEMUTarget_aarch64.virt)
+        drive.sizeMib = 32
+        config.drives = [drive]
+    }
+
     /// Adds a serial port served over TCP on a free port to the configuration.
     private static func addSerialPort(to config: UTMQemuConfiguration) throws -> Int {
         let port = try freePort()
@@ -298,10 +305,7 @@ final class VMLifecycleTests: XCTestCase {
         var port = 0
         let vm = try await makeShellVM { config in
             port = (try? Self.addSerialPort(to: config)) ?? 0
-            // a save needs a disk image to keep the state in
-            var drive = UTMQemuConfigurationDrive(forArchitecture: .aarch64, target: QEMUTarget_aarch64.virt)
-            drive.sizeMib = 32
-            config.drives = [drive]
+            Self.addDisk(to: config)
         }
         XCTAssertNotEqual(port, 0, "no free port")
         try await vm.start()
@@ -329,6 +333,82 @@ final class VMLifecycleTests: XCTestCase {
         try await vm.stop(usingMethod: .force)
         stopped = await waitForState(vm, .stopped, timeout: Self.stopTimeout)
         XCTAssertTrue(stopped, "the VM is \(vm.state) after a forced stop")
+    }
+
+    /// Runs the Shortcuts "Pause Virtual Machine" action on the VM.
+    @available(macOS 13, *)
+    private func runPauseAction(on vm: UTMQemuVirtualMachine, saveState: Bool) async throws {
+        let intent = UTMPauseActionIntent()
+        intent.isSaveState = saveState
+        _ = try await intent.perform(with: vm, boxed: VMData(wrapping: vm))
+    }
+
+    /// The Shortcuts "Pause Virtual Machine" action with Save State pauses the VM and saves its state.
+    func testPauseShortcutSavesTheState() async throws {
+        guard #available(macOS 13, *) else {
+            throw XCTSkip("Shortcuts actions need macOS 13")
+        }
+        let vm = try await makeShellVM { config in
+            Self.addDisk(to: config)
+        }
+        try await vm.start()
+        XCTAssertEqual(vm.state, .started)
+        try await runPauseAction(on: vm, saveState: true)
+        XCTAssertEqual(vm.state, .paused, "the VM is not paused after the action")
+        XCTAssertTrue(vm.registryEntry.isSuspended, "the action did not save the VM's state")
+    }
+
+    /// The action with Save State also saves a VM that is already paused.
+    func testPauseShortcutSavesAPausedVM() async throws {
+        guard #available(macOS 13, *) else {
+            throw XCTSkip("Shortcuts actions need macOS 13")
+        }
+        let vm = try await makeShellVM { config in
+            Self.addDisk(to: config)
+        }
+        try await vm.start()
+        try await vm.pause()
+        XCTAssertEqual(vm.state, .paused)
+        try await runPauseAction(on: vm, saveState: true)
+        XCTAssertEqual(vm.state, .paused, "the VM is not paused after the action")
+        XCTAssertTrue(vm.registryEntry.isSuspended, "the action did not save the paused VM's state")
+    }
+
+    /// The action without Save State only pauses the VM.
+    func testPauseShortcutWithoutSaveStateOnlyPauses() async throws {
+        guard #available(macOS 13, *) else {
+            throw XCTSkip("Shortcuts actions need macOS 13")
+        }
+        let vm = try await makeShellVM { config in
+            Self.addDisk(to: config)
+        }
+        try await vm.start()
+        try await runPauseAction(on: vm, saveState: false)
+        XCTAssertEqual(vm.state, .paused, "the VM is not paused after the action")
+        XCTAssertFalse(vm.registryEntry.isSuspended, "the action saved the state without Save State")
+    }
+
+    /// The action with Save State fails on a VM whose state cannot be saved (here an NVMe
+    /// drive) and leaves it running.
+    func testPauseShortcutRefusedKeepsTheVMRunning() async throws {
+        guard #available(macOS 13, *) else {
+            throw XCTSkip("Shortcuts actions need macOS 13")
+        }
+        let vm = try await makeShellVM { config in
+            Self.addDisk(to: config)
+            config.drives[0].interface = .nvme
+        }
+        try await vm.start()
+        XCTAssertNotNil(vm.snapshotUnsupportedError, "a VM with an NVMe drive should not be able to save its state")
+        var failed = false
+        do {
+            try await runPauseAction(on: vm, saveState: true)
+        } catch {
+            failed = true
+        }
+        XCTAssertTrue(failed, "the action succeeded on a VM whose state cannot be saved")
+        XCTAssertEqual(vm.state, .started, "the VM is not running after the refused action")
+        XCTAssertFalse(vm.registryEntry.isSuspended)
     }
 
     /// A restart resets the guest, which boots the firmware again, and leaves the VM started.
