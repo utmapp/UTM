@@ -32,6 +32,7 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
 @property (nonatomic) NSMutableArray<CSDisplay *> *mutableDisplays;
 @property (nonatomic, readwrite, nullable) CSInput *primaryInput;
 @property (nonatomic, readwrite, nullable) CSPort *primarySerial;
+@property (nonatomic, readwrite, nullable) CSPort *gamepadPort;
 @property (nonatomic) NSMutableArray<CSPort *> *mutableSerials;
 #if defined(WITH_USB)
 @property (nonatomic, readwrite, nullable) CSUSBManager *primaryUsbManager;
@@ -161,6 +162,7 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
         [self.mutableDisplays removeAllObjects];
         self.primaryInput = nil;
         self.primarySerial = nil;
+        self.gamepadPort = nil;
         [self.mutableSerials removeAllObjects];
 #if defined(WITH_USB)
         self.primaryUsbManager = nil;
@@ -285,6 +287,9 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
         if ([port.name isEqualToString:@"com.utmapp.terminal.0"]) {
             self.primarySerial = port;
         }
+        if ([port.name isEqualToString:@"com.utmapp.gamepad.0"]) {
+            self.gamepadPort = port;
+        }
         if ([port.name hasPrefix:@"com.utmapp.terminal."]) {
             [self.mutableSerials addObject:port];
             [self.delegate spiceDidCreateSerial:port];
@@ -297,6 +302,9 @@ NSString *const kUTMErrorDomain = @"com.utmapp.utm";
         if ([port.name isEqualToString:@"org.qemu.monitor.qmp.0"]) {
         }
         if ([port.name isEqualToString:@"org.qemu.guest_agent.0"]) {
+        }
+        if (self.gamepadPort == port) {
+            self.gamepadPort = nil;
         }
         if ([port.name hasPrefix:@"com.utmapp.terminal."]) {
             [self.mutableSerials removeObject:port];

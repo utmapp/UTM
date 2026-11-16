@@ -19,6 +19,7 @@ import SwiftUI
 struct VMConfigInputView: View {
     @Binding var config: UTMQemuConfigurationInput
     let hasUsbSupport: Bool
+    var hasGameControllerSupport: Bool = false
 
     var body: some View {
         VStack {
@@ -39,6 +40,16 @@ struct VMConfigInputView: View {
                         }
                         NumberStepper("Maximum Shared USB Devices", value: $config.maximumUsbShare, in: UTMQemuConfigurationInput.maximumUsbShareRange, onEditingChanged: validateMaxUsb)
                     }.disabled(!jb_has_usb_entitlement())
+                }
+                #endif
+                
+                #if os(macOS)
+                if hasGameControllerSupport && config.usbBusSupport != .disabled {
+                    DetailedSection("Game Controller", description: "Gives the guest a USB gamepad that Mac OS X recognises without a driver, driven by the game controller connected to this Mac.") {
+                        Toggle(isOn: $config.hasGameController) {
+                            Text("Use host game controller")
+                        }
+                    }
                 }
                 #endif
                 
