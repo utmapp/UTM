@@ -58,10 +58,12 @@ class UTMUITestCase: XCTestCase {
     }
 
     /// Returns from the details of a VM to the library; an iPhone pushes the details, an
-    /// iPad shows them next to the list.
+    /// iPad shows them next to the list. The back button is in the navigation bar, except
+    /// where the details' toolbar is a column beside them (an open iPhone Duo).
     func backToLibrary() {
-        let back = app.navigationBars.buttons["BackButton"].firstMatch
-        if back.waitForExistence(timeout: 2) {
+        let backButtons = app.buttons.matching(identifier: "BackButton")
+        if backButtons.firstMatch.waitForExistence(timeout: 2),
+           let back = backButtons.allElementsBoundByIndex.first(where: \.isHittable) {
             back.tap()
         }
     }
