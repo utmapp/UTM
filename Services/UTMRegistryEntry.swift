@@ -312,6 +312,21 @@ extension UTMRegistryEntry: UTMRegistryEntryDecodable {}
             package.path = path
         }
     }
+    
+    /// Re-resolve the package bookmark, for a volume mounted after the registry was loaded
+    func resolvePackage() {
+        var options: URL.BookmarkResolutionOptions = [.withoutMounting, .withoutUI]
+        #if os(macOS)
+        options.insert(.withSecurityScope)
+        #endif
+        var stale = false
+        guard !package.bookmark.isEmpty,
+              let url = try? URL(resolvingBookmarkData: package.bookmark, options: options, bookmarkDataIsStale: &stale) else {
+            return
+        }
+        package.url = url
+        package.path = url.path
+    }
 }
 
 // MARK: - Migration from UTMViewState
