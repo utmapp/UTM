@@ -405,6 +405,29 @@ import Virtualization // for getting network interfaces
         [.ppc, .ppc64].contains(system.architecture) && system.target.rawValue == QEMUTarget_ppc.sam460ex.rawValue
     }
 
+    /// The most CPUs QEMU starts each PowerPC board with (`cpu-max` in `query-machines`).
+    /// powernv and pseries take more than any host has.
+    private static let powerPCMaxCpuCounts: [String: Int] = [
+        "40p": 1,
+        "amigaone": 1,
+        "bamboo": 1,
+        "g3beige": 1,
+        "mac99": 1,
+        "none": 1,
+        "pegasos2": 1,
+        "sam460ex": 1,
+        "virtex-ml507": 1,
+        "mpc8544ds": 15,
+        "ppce500": 32,
+    ]
+
+    private var powerPCMaxCpuCount: Int? {
+        guard [.ppc, .ppc64].contains(system.architecture) else {
+            return nil
+        }
+        return Self.powerPCMaxCpuCounts[system.target.rawValue]
+    }
+
     /// Board devices that QEMU only creates without -nodefaults.
     @QEMUArgumentBuilder private var boardArguments: [QEMUArgument] {
         if isSam460ex {
@@ -523,15 +546,21 @@ import Virtualization // for getting network interfaces
         return value
     }
     
+    /// Cores and CPUs for -smp, limited to what the board supports, as QEMU refuses to start
+    /// a board with more CPUs than that, whether they come from the host or from the user.
     private var emulatedCpuCount: (Int, Int) {
+        let count = requestedCpuCount
+        if let maxCpuCount = powerPCMaxCpuCount, count.1 > maxCpuCount || count.1 < 1 {
+            return (maxCpuCount, maxCpuCount)
+        }
+        return count
+    }
+
+    private var requestedCpuCount: (Int, Int) {
         let singleCpu = (1, 1)
         let hostPhysicalCpu = Int(Self.sysctlIntRead("hw.physicalcpu"))
         let hostLogicalCpu = Int(Self.sysctlIntRead("hw.logicalcpu"))
         let userCpu = system.cpuCount
-        // sam460ex supports only one CPU
-        if isSam460ex {
-            return singleCpu
-        }
         if userCpu > 0 || hostPhysicalCpu == 0 {
             return (userCpu, userCpu) // user override
         }

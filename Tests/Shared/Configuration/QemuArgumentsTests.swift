@@ -430,6 +430,71 @@ import XCTest
         XCTAssertTrue(pflashDrives(config).isEmpty)
     }
 
+    // MARK: PowerPC CPU count
+
+    /// The PowerPC boards that QEMU limits to one CPU, under both PowerPC architectures.
+    private let singleCpuPowerPCTargets: [(QEMUArchitecture, any QEMUTarget)] = [
+        QEMUTarget_ppc._40p, .amigaone, .bamboo, .g3beige, .mac99, .none, .pegasos2, .sam460ex, .virtex_ml507,
+    ].map { (.ppc, $0) } + [
+        QEMUTarget_ppc64._40p, .amigaone, .bamboo, .g3beige, .mac99, .pegasos2, .sam460ex, .virtex_ml507,
+    ].map { (.ppc64, $0) }
+
+    private func smpOptions(_ config: UTMQemuConfiguration, file: StaticString = #filePath, line: UInt = #line) throws -> [String] {
+        let smp = try XCTUnwrap(arguments(config).values(of: "-smp").first, file: file, line: line)
+        return QEMUArgumentList.options(smp)
+    }
+
+    /// With the core count left at its default, a single-CPU board such as g3beige (the
+    /// default PowerPC machine) or mac99 must not get the host's core count, which QEMU
+    /// refuses to start (#6025, #2487).
+    func testSingleCpuPowerPCBoardsDefaultToOneCpu_6025() throws {
+        for (architecture, target) in singleCpuPowerPCTargets {
+            let config = configuration(architecture: architecture, target: target)
+            config.system.cpuCount = 0
+            let smp = try smpOptions(config)
+            XCTAssertEqual(smp.filter { $0.hasPrefix("cpus=") || $0.hasPrefix("cores=") || $0.hasPrefix("threads=") },
+                           ["cpus=1", "cores=1", "threads=1"], "\(architecture) \(target.rawValue)")
+        }
+    }
+
+    /// A core count set on a single-CPU board is limited to its one CPU, as on sam460ex.
+    func testSingleCpuPowerPCBoardsLimitConfiguredCpuCount() throws {
+        for (architecture, target) in singleCpuPowerPCTargets {
+            let config = configuration(architecture: architecture, target: target)
+            config.system.cpuCount = 4
+            XCTAssertTrue(try smpOptions(config).contains("cpus=1"), "\(architecture) \(target.rawValue)")
+        }
+    }
+
+    /// The PowerPC boards that take more than one CPU keep a configured core count.
+    func testSmpPowerPCBoardsKeepConfiguredCpuCount() throws {
+        let targets: [(QEMUArchitecture, any QEMUTarget)] = [
+            (.ppc, QEMUTarget_ppc.ppce500), (.ppc, QEMUTarget_ppc.mpc8544ds),
+            (.ppc64, QEMUTarget_ppc64.pseries), (.ppc64, QEMUTarget_ppc64.powernv),
+        ]
+        for (architecture, target) in targets {
+            let config = configuration(architecture: architecture, target: target)
+            config.system.cpuCount = 4
+            XCTAssertTrue(try smpOptions(config).contains("cpus=4"), "\(architecture) \(target.rawValue)")
+        }
+    }
+
+    /// mpc8544ds takes 15 CPUs and ppce500 32: more, from the user or a large host, is
+    /// limited to that, with a topology QEMU accepts.
+    func testSmpPowerPCBoardsLimitCpuCountToTheirMaximum() throws {
+        let targets: [(any QEMUTarget, Int)] = [(QEMUTarget_ppc.mpc8544ds, 15), (QEMUTarget_ppc.ppce500, 32)]
+        for (target, maxCpuCount) in targets {
+            let config = configuration(architecture: .ppc, target: target)
+            config.system.cpuCount = 64
+            let smp = try smpOptions(config)
+            XCTAssertEqual(smp.filter { $0.hasPrefix("cpus=") || $0.hasPrefix("cores=") || $0.hasPrefix("threads=") },
+                           ["cpus=\(maxCpuCount)", "cores=\(maxCpuCount)", "threads=1"], target.rawValue)
+            config.system.cpuCount = 0
+            let cpus = try XCTUnwrap(try smpOptions(config).first { $0.hasPrefix("cpus=") }.flatMap { Int($0.dropFirst(5)) })
+            XCTAssertTrue((1...maxCpuCount).contains(cpus), "\(target.rawValue): cpus=\(cpus)")
+        }
+    }
+
     // MARK: PowerPC sam460ex
 
     /// The defaults for sam460ex as the wizard leaves them for a custom machine: the
