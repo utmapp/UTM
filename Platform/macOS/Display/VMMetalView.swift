@@ -30,6 +30,11 @@ class VMMetalView: MTKView {
     @Setting("IsISOKeySwapped") private var isISOKeySwapped = false
     @Setting("IsCapsLockKey") private var isCapsLockKey: Bool = false
 
+    /// Draws a frame for a tick of the display link that drives this view on macOS 14 and later.
+    func drawDisplayLinkFrame() {
+        draw()
+    }
+
     private enum ModifierKeySwap {
         case none
         case ctrlCmd
