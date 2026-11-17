@@ -795,13 +795,6 @@ extension VMDisplayQemuMetalWindowController {
 @available(macOS 14, *)
 extension VMDisplayQemuMetalWindowController: CAMetalDisplayLinkDelegate {
     func metalDisplayLink(_ link: CAMetalDisplayLink, needsUpdate update: CAMetalDisplayLink.Update) {
-        let texture = update.drawable.texture
-        if let layer = metalView.layer as? CAMetalLayer,
-           CGFloat(texture.width) != layer.drawableSize.width || CGFloat(texture.height) != layer.drawableSize.height {
-            // taken before the view was resized: the renderer's viewport already has the new size, so
-            // draw into the next drawable, which has it too
-            return
-        }
         metalView.displayLinkDrawable = update.drawable
         renderer.draw(in: metalView)
         metalView.displayLinkDrawable = nil

@@ -50,45 +50,6 @@ class VMMetalView: MTKView {
         return descriptor
     }
 
-    override var drawableSize: CGSize {
-        didSet {
-            updateLayerDrawableSize()
-        }
-    }
-
-    override func setFrameSize(_ newSize: NSSize) {
-        super.setFrameSize(newSize)
-        updateLayerDrawableSize()
-    }
-
-    override func setBoundsSize(_ newSize: NSSize) {
-        super.setBoundsSize(newSize)
-        updateLayerDrawableSize()
-    }
-
-    override func viewDidChangeBackingProperties() {
-        super.viewDidChangeBackingProperties()
-        updateLayerDrawableSize()
-    }
-
-    /// Gives the layer the view's drawable size as soon as it changes, while a display link draws.
-    ///
-    /// MTKView applies `drawableSize` to its layer only from its own draw loop, which is paused while a
-    /// display link draws. The layer would otherwise keep the size it had when the window opened, and
-    /// every frame would be scaled into the view, blurring it. The size is the view's `drawableSize`
-    /// because that is the one the renderer's viewport is given.
-    private func updateLayerDrawableSize() {
-        guard isPaused else {
-            // MTKView's own draw loop keeps the layer's size
-            return
-        }
-        let size = drawableSize
-        guard size.width > 0, size.height > 0, let layer = layer as? CAMetalLayer, layer.drawableSize != size else {
-            return
-        }
-        layer.drawableSize = size
-    }
-
     private enum ModifierKeySwap {
         case none
         case ctrlCmd
