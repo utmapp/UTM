@@ -1,7 +1,7 @@
 From 07ba2d801b4a03125dee3f9d5f4a13cad8d62008 Mon Sep 17 00:00:00 2001
 From: osy <osy@turing.llc>
 Date: Fri, 4 Mar 2022 16:35:26 -0800
-Subject: [PATCH 1/5] spice-util: support for non-default GMainContext
+Subject: [PATCH 1/6] spice-util: support for non-default GMainContext
 
 When spice-gtk is used in an application with its own GMainContext, the
 wrong context will be used leading to various issues.
@@ -265,7 +265,7 @@ index 421b4b0..e161c83 100644
 From 92ac46d9328afa036e2e3aebf0f7218ba5b2910f Mon Sep 17 00:00:00 2001
 From: osy <osy@turing.llc>
 Date: Fri, 4 Mar 2022 16:44:20 -0800
-Subject: [PATCH 2/5] spice-gtk: user specified GMainContext for events
+Subject: [PATCH 2/6] spice-gtk: user specified GMainContext for events
 
 Following the previous commit, this replaces all GLib calls that
 implicitly uses the default main context with versions that can use the
@@ -903,7 +903,7 @@ index e26b939..6054f3e 100644
 From f648e0730b8ddbb03f2f9e45c121a5bbcc3ba00f Mon Sep 17 00:00:00 2001
 From: osy <osy@turing.llc>
 Date: Sun, 6 Aug 2023 01:11:31 -0700
-Subject: [PATCH 3/5] meson: disable version script
+Subject: [PATCH 3/6] meson: disable version script
 
 Fails to build on Xcode 15
 ---
@@ -929,7 +929,7 @@ index daff1aa..61e60fa 100644
 From 00cdb145ca1f34e47a1c8ba0d933595709318f85 Mon Sep 17 00:00:00 2001
 From: osy <osy@turing.llc>
 Date: Sun, 17 Aug 2025 19:32:49 -0700
-Subject: [PATCH 4/5] main: only send physical size when used
+Subject: [PATCH 4/6] main: only send physical size when used
 
 Since introducing physical size support four years ago, the
 feature has been broken on Linux. In VDAgent, there is a
@@ -1027,7 +1027,7 @@ index 7830f6f..d4d1a1e 100644
 From 954015a8fdb6f3888d4dfd1667389d187c13a95b Mon Sep 17 00:00:00 2001
 From: Evan Champion <306651197+evan314159@users.noreply.github.com>
 Date: Sat, 5 Sep 2026 10:48:43 +0800
-Subject: [PATCH 5/5] spice-gstaudio: serialize GStreamer pipe state changes
+Subject: [PATCH 5/6] spice-gstaudio: serialize GStreamer pipe state changes
  off the main context
 
 AudioOutputUnitStop() called from GStreamer in the main context thread
@@ -1181,6 +1181,169 @@ index b6fc4eb..2b90774 100644
  
      if (!p->playback.fake && p->mmtime_id == 0) {
          update_mmtime_timeout_cb(gstaudio);
+-- 
+2.54.0 (Apple Git-157)
+
+From 73fdb6619effa5fe5b0e5d0d9ae776508f55e05c Mon Sep 17 00:00:00 2001
+From: osy <osy@turing.llc>
+Date: Mon, 16 Nov 2026 19:19:59 -0800
+Subject: [PATCH 6/6] spice-gstaudio: let playback drain before stopping the
+ pipeline
+
+The server sends playback-stop right after the last data of a stream, so
+switching the pipeline to READY at once discarded the audio still queued
+in it and in the sink's ring buffer. Guests that start and stop the
+stream for every sound (Windows XP on AC97: each card dealt in Spider
+Solitaire is its own stream of about 100 ms) lost the end of every
+sound, and sounds shorter than the sink's latency never played at all.
+
+On playback-stop, stop the latency updates at once but keep the pipeline
+playing for two more seconds (or the sink's last reported latency plus
+half a second, if longer), and keep it running if the guest starts
+playing again in the meantime. The audio device is therefore released up
+to two seconds after a stream or the connection ends; a format change
+and dispose still stop at once.
+
+Assisted-by: Claude:claude-opus-5-5
+---
+ src/spice-gstaudio.c | 64 +++++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 58 insertions(+), 6 deletions(-)
+
+diff --git a/src/spice-gstaudio.c b/src/spice-gstaudio.c
+index 2b90774..0b3f5f5 100644
+--- a/src/spice-gstaudio.c
++++ b/src/spice-gstaudio.c
+@@ -44,6 +44,8 @@ struct _SpiceGstaudioPrivate {
+     struct stream           record;
+     guint                   mmtime_id;
+     guint                   rbus_watch_id;
++    guint                   playback_stop_id;
++    guint                   playback_latency_ms;
+ };
+ 
+ G_DEFINE_TYPE_WITH_PRIVATE(SpiceGstaudio, spice_gstaudio, SPICE_TYPE_AUDIO)
+@@ -132,6 +134,22 @@ static void stream_dispose(struct stream *s)
+     g_clear_pointer(&s->sink, gst_object_unref);
+ }
+ 
++static void playback_cancel_deferred_stop(SpiceGstaudioPrivate *p)
++{
++    if (p->playback_stop_id != 0) {
++        g_spice_source_remove(p->playback_stop_id);
++        p->playback_stop_id = 0;
++    }
++}
++
++static void playback_stop_latency_updates(SpiceGstaudioPrivate *p)
++{
++    if (p->mmtime_id != 0) {
++        g_spice_source_remove(p->mmtime_id);
++        p->mmtime_id = 0;
++    }
++}
++
+ static void spice_gstaudio_dispose(GObject *obj)
+ {
+     SpiceGstaudio *gstaudio = SPICE_GSTAUDIO(obj);
+@@ -139,6 +157,8 @@ static void spice_gstaudio_dispose(GObject *obj)
+     SPICE_DEBUG("%s", __FUNCTION__);
+     p = gstaudio->priv;
+ 
++    playback_cancel_deferred_stop(p);
++    playback_stop_latency_updates(p);
+     stream_dispose(&p->playback);
+     if (p->rbus_watch_id > 0) {
+         g_spice_source_remove(p->rbus_watch_id);
+@@ -310,12 +330,37 @@ static void playback_stop(SpiceGstaudio *gstaudio)
+ {
+     SpiceGstaudioPrivate *p = gstaudio->priv;
+ 
++    playback_cancel_deferred_stop(p);
+     if (p->playback.pipe)
+         stream_set_state_async(&p->playback, GST_STATE_READY);
+-    if (p->mmtime_id != 0) {
+-        g_spice_source_remove(p->mmtime_id);
+-        p->mmtime_id = 0;
+-    }
++    playback_stop_latency_updates(p);
++}
++
++#define PLAYBACK_STOP_DELAY_MS 2000
++
++static gboolean playback_stop_timeout_cb(gpointer data)
++{
++    SpiceGstaudio *gstaudio = data;
++
++    gstaudio->priv->playback_stop_id = 0;
++    playback_stop(gstaudio);
++    return G_SOURCE_REMOVE;
++}
++
++/* The server sends playback-stop right after the last data of a stream, so
++ * going to READY at once would drop what the pipeline and the sink still
++ * hold: let it play out, unless the guest starts playing again first. */
++static void playback_stop_deferred(SpiceGstaudio *gstaudio)
++{
++    SpiceGstaudioPrivate *p = gstaudio->priv;
++    /* The latency updates run only while a stream plays. */
++    gboolean playing = p->playback.pipe != NULL && p->mmtime_id != 0;
++
++    playback_stop_latency_updates(p);
++    if (playing && p->playback_stop_id == 0)
++        p->playback_stop_id = g_spice_timeout_add(MAX(PLAYBACK_STOP_DELAY_MS,
++                                                      p->playback_latency_ms + 500),
++                                                  playback_stop_timeout_cb, gstaudio);
+ }
+ 
+ static gboolean update_mmtime_timeout_cb(gpointer data)
+@@ -334,6 +379,7 @@ static gboolean update_mmtime_timeout_cb(gpointer data)
+         SPICE_DEBUG("got min latency %" GST_TIME_FORMAT ", max latency %"
+                     GST_TIME_FORMAT ", live %d", GST_TIME_ARGS (minlat),
+                     GST_TIME_ARGS (maxlat), live);
++        p->playback_latency_ms = GST_TIME_AS_MSECONDS(minlat);
+         spice_playback_channel_set_delay(SPICE_PLAYBACK_CHANNEL(p->pchannel), GST_TIME_AS_MSECONDS(minlat));
+     }
+     gst_query_unref (q);
+@@ -346,15 +392,21 @@ static void playback_start(SpicePlaybackChannel *channel, gint format, gint chan
+ {
+     SpiceGstaudio *gstaudio = data;
+     SpiceGstaudioPrivate *p = gstaudio->priv;
++    gboolean playing;
+ 
+     g_return_if_fail(p != NULL);
+     g_return_if_fail(format == SPICE_AUDIO_FMT_S16);
+ 
++    /* A deferred stop still pending means the pipeline is still playing. */
++    playing = p->playback_stop_id != 0;
++    playback_cancel_deferred_stop(p);
++
+     if (p->playback.pipe &&
+         (p->playback.rate != frequency ||
+          p->playback.channels != channels)) {
+         playback_stop(gstaudio);
+         g_clear_pointer(&p->playback.pipe, gst_object_unref);
++        playing = FALSE;
+     }
+ 
+     if (!p->playback.pipe) {
+@@ -385,7 +437,7 @@ cleanup:
+         g_free(pipeline);
+     }
+ 
+-    if (p->playback.pipe)
++    if (p->playback.pipe && !playing)
+         stream_set_state_async(&p->playback, GST_STATE_PLAYING);
+ 
+     if (!p->playback.fake && p->mmtime_id == 0) {
+@@ -590,7 +642,7 @@ static gboolean connect_channel(SpiceAudio *audio, SpiceChannel *channel)
+         spice_g_signal_connect_object(channel, "playback-data",
+                                       G_CALLBACK(playback_data), gstaudio, 0);
+         spice_g_signal_connect_object(channel, "playback-stop",
+-                                      G_CALLBACK(playback_stop), gstaudio, G_CONNECT_SWAPPED);
++                                      G_CALLBACK(playback_stop_deferred), gstaudio, G_CONNECT_SWAPPED);
+         spice_g_signal_connect_object(channel, "notify::volume",
+                                       G_CALLBACK(playback_volume_changed), gstaudio, 0);
+         spice_g_signal_connect_object(channel, "notify::mute",
 -- 
 2.54.0 (Apple Git-157)
 
