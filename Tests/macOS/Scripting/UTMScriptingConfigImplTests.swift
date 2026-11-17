@@ -224,6 +224,111 @@ import XCTest
         XCTAssertEqual(config.drives[0].imageURL, other)
     }
 
+    /// A file in a new temporary directory, removed after the test
+    private func temporaryFile(_ name: String) throws -> URL {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        addTeardownBlock {
+            try? FileManager.default.removeItem(at: directory)
+        }
+        return directory.appendingPathComponent(name)
+    }
+
+    /// A QCOW2 header for a disk of `sizeMib`, all that the record reads
+    private func qcow2Image(sizeMib: Int) throws -> URL {
+        try qcow2Image(sizeBytes: UInt64(sizeMib * 1048576))
+    }
+
+    private func qcow2Image(sizeBytes: UInt64) throws -> URL {
+        let url = try temporaryFile("disk.qcow2")
+        var header = Data([0x51, 0x46, 0x49, 0xfb, 0, 0, 0, 3])
+        header += Data(count: 16)
+        withUnsafeBytes(of: sizeBytes.bigEndian) { header += Data($0) }
+        try header.write(to: url)
+        return url
+    }
+
+    /// A sparse raw image of `sizeMib`
+    private func rawImage(_ name: String, sizeMib: Int) throws -> URL {
+        let url = try temporaryFile(name)
+        FileManager.default.createFile(atPath: url.path, contents: nil)
+        let file = try FileHandle(forWritingTo: url)
+        try file.truncate(atOffset: UInt64(sizeMib * 1048576))
+        try file.close()
+        return url
+    }
+
+    /// `guest size` is declared on existing drive records, so `get configuration` must return
+    /// the size the guest sees, not the space the image takes on the host (#8190).
+    func testDriveRecordsReturnTheirGuestSize_8190() throws {
+        let config = configuration()
+        config.drives[0].imageURL = try qcow2Image(sizeMib: 64)
+        var cd = UTMQemuConfigurationDrive(forArchitecture: .aarch64, target: QEMUTarget_aarch64.virt, isExternal: true)
+        cd.imageURL = try rawImage("install.iso", sizeMib: 3)
+        let empty = UTMQemuConfigurationDrive(forArchitecture: .aarch64, target: QEMUTarget_aarch64.virt, isExternal: true)
+        var missing = UTMQemuConfigurationDrive(forArchitecture: .aarch64, target: QEMUTarget_aarch64.virt)
+        missing.imageURL = URL(fileURLWithPath: "/nonexistent/disk.qcow2")
+        var corrupt = UTMQemuConfigurationDrive(forArchitecture: .aarch64, target: QEMUTarget_aarch64.virt)
+        corrupt.imageURL = try qcow2Image(sizeBytes: UInt64.max)
+        config.drives += [cd, empty, missing, corrupt]
+        let drives = try XCTUnwrap(UTMScriptingConfigImpl(config).serializeConfiguration()["drives"] as? [[AnyHashable: Any]])
+        XCTAssertEqual(drives[0]["guestSize"] as? Int, 64)
+        XCTAssertEqual(drives[1]["guestSize"] as? Int, 3)
+        XCTAssertNil(drives[2]["guestSize"], "an empty removable drive has no size")
+        XCTAssertNil(drives[3]["guestSize"], "an image that cannot be read has no size")
+        XCTAssertNil(drives[4]["guestSize"], "nor has an image with an impossible size")
+    }
+
+    func testAppleDriveRecordsReturnTheirGuestSize_8190() throws {
+        let config = UTMAppleConfiguration()
+        config.drives = [UTMAppleConfigurationDrive(existingURL: try rawImage("disk.img", sizeMib: 32)),
+                         UTMAppleConfigurationDrive(existingURL: nil, isExternal: true)]
+        let drives = try XCTUnwrap(UTMScriptingConfigImpl(config).serializeConfiguration()["drives"] as? [[AnyHashable: Any]])
+        XCTAssertEqual(drives[0]["guestSize"] as? Int, 32)
+        XCTAssertNil(drives[1]["guestSize"], "an empty removable drive has no size")
+    }
+
+    /// Records from `get configuration` now carry every drive's guest size: applying one back
+    /// must not ask to resize drives that cannot be resized, nor carry the old size over to a
+    /// source replaced in the same record (#8190).
+    func testUnchangedGuestSizeLeavesDrivesAlone_8190() throws {
+        let config = configuration()
+        config.drives[0].imageURL = try qcow2Image(sizeMib: 64)
+        var raw = UTMQemuConfigurationDrive(forArchitecture: .aarch64, target: QEMUTarget_aarch64.virt)
+        raw.isRawImage = true
+        raw.imageURL = try rawImage("disk.img", sizeMib: 16)
+        var cd = UTMQemuConfigurationDrive(forArchitecture: .aarch64, target: QEMUTarget_aarch64.virt, isExternal: true)
+        cd.imageURL = try rawImage("install.iso", sizeMib: 3)
+        config.drives += [raw, cd]
+        let before = try plist(config)
+        let wrapper = UTMScriptingConfigImpl(config)
+        var record = wrapper.serializeConfiguration()
+        try wrapper.updateConfiguration(from: record)
+        XCTAssertEqual(try plist(config), before)
+
+        var drives = try XCTUnwrap(record["drives"] as? [[AnyHashable: Any]])
+        let other = try rawImage("other.iso", sizeMib: 5)
+        drives[2]["source"] = other
+        record["drives"] = drives
+        try UTMScriptingConfigImpl(config).updateConfiguration(from: record)
+        XCTAssertEqual(config.drives[2].imageURL, other)
+
+        // the size of the new image is no resize either
+        drives[2]["source"] = try rawImage("third.iso", sizeMib: 7)
+        drives[2]["guestSize"] = 7
+        record["drives"] = drives
+        try UTMScriptingConfigImpl(config).updateConfiguration(from: record)
+        XCTAssertEqual(config.drives[2].imageURL, drives[2]["source"] as? URL)
+
+        drives[1]["guestSize"] = 32
+        record["drives"] = drives
+        XCTAssertThrowsError(try UTMScriptingConfigImpl(config).updateConfiguration(from: record), "a new size for a raw drive") { error in
+            guard case UTMScriptingConfigImpl.ConfigurationError.driveNotResizable = error else {
+                return XCTFail("\(error)")
+            }
+        }
+    }
+
     /// Only a qcow2 image inside the bundle can be grown (7c01ae38).
     func testGuestSizeIsRejectedForRawAndRemovableDrives() throws {
         for (label, prepare) in [("raw", { (drive: inout UTMQemuConfigurationDrive) in drive.isRawImage = true }),

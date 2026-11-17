@@ -95,6 +95,8 @@ class UTMScriptingConfigImpl {
         ]
         // an empty removable drive has no source
         record["source"] = drive.imageURL
+        // nor a size, like an image whose size cannot be read
+        record["guestSize"] = guestSize(of: drive)
         return record
     }
     
@@ -109,6 +111,63 @@ class UTMScriptingConfigImpl {
         return source.standardizedFileURL.resolvingSymlinksInPath().path == current.standardizedFileURL.resolvingSymlinksInPath().path
     }
     
+    /// The size of `drive`'s disk as the guest sees it (MiB), or nil when it cannot be read
+    ///
+    /// This is read from the image itself, without `qemu-img`: a scripting property is read
+    /// synchronously.
+    private func guestSize(of drive: any UTMConfigurationDrive) -> Int? {
+        guard let url = drive.imageURL else {
+            return nil
+        }
+        let scoped = url.startAccessingSecurityScopedResource()
+        defer {
+            if scoped {
+                url.stopAccessingSecurityScopedResource()
+            }
+        }
+        let header = imageHeader(of: url)
+        let bytes: Int64?
+        if drive is UTMAppleConfigurationDrive {
+            bytes = appleImageSize(of: url, header: header)
+        } else if let header = header, header.starts(with: [0x51, 0x46, 0x49, 0xfb]) { // QCOW2
+            bytes = Int64(exactly: header[24..<32].reduce(UInt64(0)) { $0 << 8 | UInt64($1) })
+        } else if drive.isRawImage || drive.isExternal {
+            // a removable drive holds a CD or floppy image: raw, whatever QEMU probes
+            bytes = fileSize(of: url)
+        } else {
+            bytes = nil
+        }
+        return bytes.map { Int($0 / bytesInMib) }
+    }
+
+    private func appleImageSize(of url: URL, header: Data?) -> Int64? {
+        if #available(macOS 14, *), let info = try? UTMAppleDiskImage.info(for: url) {
+            return info.size
+        }
+        // an ASIF image is sparse: its file size is not the disk's
+        if let header = header, header.starts(with: Array("shdw".utf8)) {
+            return nil
+        }
+        return fileSize(of: url)
+    }
+
+    private func imageHeader(of url: URL) -> Data? {
+        guard let file = try? FileHandle(forReadingFrom: url) else {
+            return nil
+        }
+        defer {
+            try? file.close()
+        }
+        guard let header = try? file.read(upToCount: 32), header.count == 32 else {
+            return nil
+        }
+        return header
+    }
+
+    private func fileSize(of url: URL) -> Int64? {
+        (try? url.resourceValues(forKeys: [.fileSizeKey]))?.fileSize.map { Int64($0) }
+    }
+
     private func size(of drive: any UTMConfigurationDrive) -> Int {
         guard let data = data else {
             return 0
@@ -496,6 +555,7 @@ extension UTMScriptingConfigImpl {
     }
     
     private func updateQemuExistingDrive(_ drive: inout UTMQemuConfigurationDrive, from record: [AnyHashable : Any]) throws {
+        let previous = drive
         if let interface = parseQemuDriveInterface(record["interface"] as? AEKeyword), interface != drive.interface {
             // like the interface picker in the settings
             drive.setInterface(interface)
@@ -503,7 +563,7 @@ extension UTMScriptingConfigImpl {
         if let source = record["source"] as? URL, !isCurrentImage(source, of: drive) {
             drive.imageURL = source
         }
-        if let size = record["guestSize"] as? Int, size > 0 {
+        if let size = record["guestSize"] as? Int, size > 0, !isUnchangedGuestSize(size, of: drive, previous: previous) {
             // like the drive settings: only a qcow2 image in the VM can grow
             guard !drive.isExternal, !drive.isRawImage else {
                 throw ConfigurationError.driveNotResizable
@@ -511,7 +571,18 @@ extension UTMScriptingConfigImpl {
             pendingDriveResizes.append((id: drive.id, sizeMib: size))
         }
     }
-    
+
+    /// Is `size` what `get configuration` returns for `drive`, so that it asks for no resize?
+    ///
+    /// A record from `get configuration` carries every drive's guest size. When the same record
+    /// replaces the drive's source, the size it carries is still the replaced image's.
+    private func isUnchangedGuestSize(_ size: Int, of drive: UTMQemuConfigurationDrive, previous: UTMQemuConfigurationDrive) -> Bool {
+        if size == guestSize(of: drive) {
+            return true
+        }
+        return drive.imageURL != previous.imageURL && size == guestSize(of: previous)
+    }
+
     /// Check the new guest sizes before anything is saved, so that an invalid size changes nothing
     ///
     /// A drive whose source is replaced in the same update is checked at that source, which is
