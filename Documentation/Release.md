@@ -28,7 +28,7 @@ Agents can do all of this with the `/utm-release` skill ([`.agents/skills/utm-re
 The app downloads the notes for its own version from the GitHub release and shows them as "What's New" the first time it launches, so the notes are parsed as well as read. See [UTMReleaseHelper.swift](../Platform/UTMReleaseHelper.swift) and [VMReleaseNotesView.swift](../Platform/Shared/VMReleaseNotesView.swift).
 
 * Each `## ` heading starts a section. The **first** section is shown up front without its title, so it must be `## Highlights`. "Highlights" and "Installation" are skipped when the user taps "Show All"; every other section is shown.
-* Every line is a `* ` bullet. Other lines (including `### ` headings) are shown as raw text, so do not use sub-headings. Inline Markdown (bold, links, code) is rendered.
+* Every line is a `* ` bullet. Other lines (including `### ` headings) are shown as raw text, so do not use sub-headings, except under `## Installation`, which the app never shows. Inline Markdown (bold, links, code) is rendered.
 * A bullet that starts with a parenthesized prefix, `* (prefix) text`, is shown only on matching builds, with the prefix stripped:
 
   | Prefix | Shown in |
@@ -111,6 +111,10 @@ Please check the full list on [Github](https://github.com/utmapp/UTM/issues) and
 
 1. Hypervisor on iOS requires an M1 iPad or newer.
 2. Enabling JIT may require a separate JIT enabler such as [Jitterbug][2] or Jitstreamer.
+
+### Verification (macOS)
+
+The macOS release (`UTM.dmg`) is notarized by Apple. To verify the download, run `xcrun stapler validate UTM.dmg`. To verify the install, run `spctl -a -vv /Applications/UTM.app` and check that it is notarized and signed by `Turing Software, LLC (WDNLXAD4W8)`. This needs a network connection, so it cannot run from a sandbox that blocks outgoing connections.
 
 [1]: https://getutm.app/install/
 [2]: https://github.com/osy/Jitterbug
