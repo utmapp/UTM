@@ -1,6 +1,6 @@
 ---
 name: utm-release
-description: Publish a new UTM release on GitHub. Drafts the release notes from the commits and pull requests since the last release, has the user approve them, bumps the version in Build.xcconfig, commits and tags it, pushes, and creates the GitHub release with a discussion in the "Releases" category, which starts the release pipeline. Use this when the user wants to cut, publish, tag, or draft a UTM release or beta, or runs /utm-release.
+description: Publish a new UTM release on GitHub. Drafts the release notes from the commits and pull requests since the last release, has the user approve them, bumps the version in Build.xcconfig, commits and tags it, pushes, and creates the GitHub release with a discussion in the "Releases" category, which starts the release pipeline. Also cuts an emergency patch release (vx.y.z-N) of the latest version. Use this when the user wants to cut, publish, tag, or draft a UTM release, beta, or emergency patch release, or runs /utm-release.
 ---
 
 # utm-release
@@ -12,8 +12,11 @@ or `mktemp -d` if you don't have one.
 Arguments, both optional and in this order:
 
 1. **Version** `x.y.z`. The default is the next revision after the current
-   `MARKETING_VERSION` in `Build.xcconfig` (5.0.5 → 5.0.6).
-2. **Prerelease** `yes` or `no`. The default is `yes`.
+   `MARKETING_VERSION` in `Build.xcconfig` (5.0.5 → 5.0.6). `patch` instead
+   cuts an emergency patch release of the current version (5.0.9 → v5.0.9-1);
+   follow "Emergency patch release" at the end.
+2. **Prerelease** `yes` or `no`. The default is `yes`. A patch release ignores
+   it and copies the setting of the release it patches.
 
 Read `Documentation/Release.md` first. Its "Release notes" section describes how
 the app parses the notes, and how to version and write them. Its "Release notes
@@ -56,12 +59,13 @@ sh scripts/check_generated.sh            # exact regeneration of the generated s
   build directory when the dependencies were rebuilt for this release.
 - If `gh` isn't authenticated, ask the user to run `gh auth login`.
 - The **previous release** is the newest entry in `gh release list`. Its tag
-  should match the current `MARKETING_VERSION`. If it doesn't, tell the user
-  before you continue.
+  should match the current `MARKETING_VERSION`, either `vx.y.z` or, after an
+  emergency patch, `vx.y.z-N`. If it doesn't, tell the user before you
+  continue.
 - Work out the new version and check that it is greater than the previous one.
-  If tag `vx.y.z` already exists, locally or on GitHub, stop. The user probably
-  wants a re-release. Point them to "Re-release" in `Release.md` and ask how to
-  proceed.
+  If tag `vx.y.z` already exists, locally or on GitHub, stop. If the user wants
+  to ship a fix for a severe bug in that release, point them to "Emergency
+  patch release" below and ask how to proceed.
 - The new build number is the current `CURRENT_PROJECT_VERSION` + 1.
 
 ## Step 2: Start the notes
@@ -220,3 +224,45 @@ gh run list -R utmapp/UTM --workflow Build --event release -L 1   # not "build.y
 
 Report the release URL, the discussion URL, and the pipeline run URL. Don't wait
 for the pipeline to finish unless the user asks.
+
+## Emergency patch release
+
+An emergency patch release (`/utm-release patch`) ships a fix for a severe bug
+in the latest release without a new version: data loss, a crash at launch, a
+VM that no longer starts, a security issue. It is reserved for that. If the
+changes since the previous release aren't such a fix, say so and suggest a
+normal revision instead, and continue only if the user insists.
+`Documentation/Release.md` ("Emergency patch release") has the rules. Follow
+Steps 1 to 7 with these differences:
+
+- **Step 1.** `MARKETING_VERSION` stays as it is. The previous release must be
+  a release of that version (tag `vx.y.z` or `vx.y.z-N`); stop if it isn't.
+  The new tag is `vx.y.z-N`, where N is one more than the highest existing
+  `vx.y.z-*` tag (`git ls-remote --tags origin "refs/tags/vx.y.z-*"`), or 1 if
+  there is none. The build number is still the current one + 1. Ask the
+  user to confirm in App Store Connect that version `x.y.z` hasn't been
+  approved yet: once it has, the App Store submission jobs fail for every
+  build of `x.y.z`. The patch is tagged on `main`, so everything merged since
+  the previous release ships in it: if Step 3 finds changes other than the
+  fix, list them for the user before you go on.
+- **Step 2.** Start from the previous release's full notes, as for a
+  revision.
+- **Step 3.** Collect the changes since the previous release's tag. Don't add
+  a `## Changes` section. Put the new bullets at the top of the newest
+  `## Changes (vx.y.z)` section, above the bullets already there, sorted among
+  themselves by the usual groups. End each new bullet with the date this
+  release is cut: `* (macOS) QEMU: Fixed a crash when starting a VM (#1234)
+  (added 2026-11-17)`. The date goes last so the platform prefix stays first.
+- **Step 4.** Keep the highlights and notes. Add a note only if users must
+  act. The app shows the notes of `vx.y.z` in every build of that version,
+  patches included, so these notes appear on GitHub and AltStore only.
+- **Step 5.** The title and prerelease setting are those of the release being
+  patched (`gh release view <prev-tag> -R utmapp/UTM --json name,isPrerelease`),
+  for example `v5.0.9` for v5.0.9-1.
+- **Step 6.** Set only `CURRENT_PROJECT_VERSION` to the new build number;
+  `MARKETING_VERSION` stays. Keep the commit title `project: bumped version`,
+  then tag and push `vx.y.z-N`.
+- **Step 7.** Use the tag `vx.y.z-N` with the title from Step 5, `--latest`
+  for a stable release or `--prerelease` for a beta, and the discussion in
+  "Releases". Never delete or edit the release `vx.y.z`: every build of
+  `x.y.z`, including this one, reads its notes from it.

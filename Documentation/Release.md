@@ -124,9 +124,17 @@ The macOS release (`UTM.dmg`) is notarized by Apple. To verify the download, run
 
 Beta releases will not show up as the "latest version" in the GitHub home page. It also will not be posted to AltStore and Cydia and will not be distributed to the App Store (exception: TestFlight).
 
-### Re-release
+### Emergency patch release
 
-In case of issues in post release that warrants a re-release, follow the same steps but do not change `MARKETING_VERSION` (`CURRENT_PROJECT_VERSION` must still be incremented by 1 or App Store Connect rejects the build). The tag should be named `vx.y.z-t` where `t` starts at `2` and increments by 1 for every re-release. Then copy-paste the release notes from the previous release and follow the same steps above. Finally, delete the old release if desired.
+An emergency patch release ships a fix for a severe bug in the latest release (for example data loss, a crash at launch, or a security issue) without a new version. Everything else waits for the next revision. It follows the same steps as above, with these differences:
+
+1. Do not change `MARKETING_VERSION`. Bump `CURRENT_PROJECT_VERSION` by 1 (App Store Connect rejects a reused build number) and change nothing else.
+2. Tag the commit `vx.y.z-t`, where `t` starts at `1` and increments by 1 for every patch of the same version.
+3. Copy the notes of the newest release of `x.y.z`. Do not add a `## Changes` section. Instead, add the new bullets at the top of the newest `## Changes (vx.y.z)` section, each ending with the date it was added: `* (macOS) QEMU: Fixed a crash when starting a VM (#1234) (added 2026-11-17)`. The date goes at the end so the platform prefix stays first.
+4. Use the same title and pre-release setting as the release being patched.
+5. Never delete or edit the release `vx.y.z`. The app downloads its notes from the tag `v` + `MARKETING_VERSION`, so every build of `x.y.z`, including the patches, shows the notes of `vx.y.z`; the patch's notes are shown on GitHub and AltStore only.
+
+Before you start, check App Store Connect: it accepts another build of `x.y.z` only while that version is not yet approved, so if it has been, the App Store submission jobs fail. AltStore and Cydia see the same version as before, so users who already installed `x.y.z` from them are not offered the patch.
 
 ## Actions Details
 
