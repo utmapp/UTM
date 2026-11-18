@@ -669,7 +669,7 @@
             description="The size of this drive as seen by the host (in MiB)."/>
             
           <property name="guest size" code="GuSz" type="integer"
-            description="The size of this drive as seen by the guest (in MiB). Setting it on an existing QCOW2 drive stored in the virtual machine makes the drive larger (it cannot be made smaller); back up the virtual machine first."/>
+            description="The size of this drive as seen by the guest (in MiB), missing when it cannot be read from the drive's image, as for a removable drive with no image. Setting it on an existing QCOW2 drive stored in the virtual machine to a different size makes the drive larger (it cannot be made smaller); back up the virtual machine first. When the same update replaces the drive's source, the size of the replaced image is ignored."/>
             
           <property name="raw" code="RaAw" type="boolean"
             description="Is this disk image raw format (only for newly created drives)?"/>
@@ -883,7 +883,7 @@
             description="The size of this drive as seen by the host (in MiB)."/>
             
           <property name="guest size" code="GuSz" type="integer"
-            description="The size of this drive as seen by the guest (in MiB)."/>
+            description="The size of this drive as seen by the guest (in MiB), missing when it cannot be read from the drive's image, as for a removable drive with no image. It is only set when a drive is created."/>
             
           <property name="source" code="SrCe" type="file"
             description="The disk image of this drive, or the image in a removable drive (missing when a removable drive is empty). Setting another file replaces the image: a fixed drive copies it into the virtual machine."/>
