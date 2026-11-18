@@ -30,65 +30,6 @@ class VMMetalView: MTKView {
     @Setting("IsISOKeySwapped") private var isISOKeySwapped = false
     @Setting("IsCapsLockKey") private var isCapsLockKey: Bool = false
 
-    /// Drawable supplied by a display link for the frame being drawn, used instead of one
-    /// acquired from the layer.
-    var displayLinkDrawable: CAMetalDrawable?
-
-    override var currentDrawable: CAMetalDrawable? {
-        displayLinkDrawable ?? super.currentDrawable
-    }
-
-    override var currentRenderPassDescriptor: MTLRenderPassDescriptor? {
-        guard let drawable = displayLinkDrawable else {
-            return super.currentRenderPassDescriptor
-        }
-        let descriptor = MTLRenderPassDescriptor()
-        descriptor.colorAttachments[0].texture = drawable.texture
-        descriptor.colorAttachments[0].loadAction = .clear
-        descriptor.colorAttachments[0].storeAction = .store
-        descriptor.colorAttachments[0].clearColor = clearColor
-        return descriptor
-    }
-
-    override var drawableSize: CGSize {
-        didSet {
-            updateLayerDrawableSize()
-        }
-    }
-
-    override func setFrameSize(_ newSize: NSSize) {
-        super.setFrameSize(newSize)
-        updateLayerDrawableSize()
-    }
-
-    override func setBoundsSize(_ newSize: NSSize) {
-        super.setBoundsSize(newSize)
-        updateLayerDrawableSize()
-    }
-
-    override func viewDidChangeBackingProperties() {
-        super.viewDidChangeBackingProperties()
-        updateLayerDrawableSize()
-    }
-
-    /// Gives the layer the view's drawable size as soon as it changes, while a display link draws.
-    ///
-    /// MTKView applies `drawableSize` to its layer only from its own draw loop, which is paused while a
-    /// display link draws. The layer would otherwise keep the size it had when the window opened, and
-    /// every frame would be scaled into the view, blurring it. The size is the view's `drawableSize`
-    /// because that is the one the renderer's viewport is given.
-    private func updateLayerDrawableSize() {
-        guard isPaused else {
-            // MTKView's own draw loop keeps the layer's size
-            return
-        }
-        let size = drawableSize
-        guard size.width > 0, size.height > 0, let layer = layer as? CAMetalLayer, layer.drawableSize != size else {
-            return
-        }
-        layer.drawableSize = size
-    }
-
     private enum ModifierKeySwap {
         case none
         case ctrlCmd
