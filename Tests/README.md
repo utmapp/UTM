@@ -62,7 +62,9 @@ tested where it applies. The simulator needs `sysroot-iOS_Simulator-arm64`:
 platform only.
 
 CI runs this bundle on every push and pull request (`Test UTM (iOS Simulator)` in
-`.github/workflows/build.yml`), next to the macOS bundle.
+`.github/workflows/build.yml`), next to the macOS bundle. A release does not run
+the tests: the commits it ships were tested by their pull requests and pushes to
+`main`, and the version bump it is cut from changes nothing they cover.
 
 The host is built with the test bundle prefix and no code signing; the simulator
 keeps its data per app, so nothing of an installed UTM is touched. The script keeps
@@ -84,12 +86,13 @@ action before pressing Cmd-U against a Debug app that is not a test build):
 
 ```sh
 ./scripts/test_utm.sh -only-testing:UTMUITests
-./scripts/test_utm.sh -s -only-testing:UTMUITests-iOS     # the iOS flows, on a simulator
+./scripts/test_utm.sh -s iPad -only-testing:UTMUITests-iOS   # the iOS flows, on an iPad simulator
 ```
 
-CI runs them after a merge to `main` and on manual dispatch (`Test UTM (macOS UI)`
-and the UI step of `Test UTM (iOS Simulator)`), not on pull requests: the macOS job
-fails without a desktop session, and neither blocks the workflow.
+CI does not run them: the macOS flows need a desktop session the runners do not
+reliably have, and the flows are slow and timing-sensitive on a shared runner. Run
+both suites yourself before opening a pull request that touches UI code
+(`/utm-submit` requires it).
 
 Each test starts the app with `-UTMTestReset`, which empties the test build's
 defaults and documents, and `-UTMTestMode`, which keeps the release notes, the
