@@ -110,6 +110,9 @@ final class VMLayoutTests: UTMUITestCase {
     /// cut off both of their sides). The VM has a drive, a network, a serial port and a sound
     /// card, so that each kind of pane is checked.
     func testEveryVmSettingsPaneFitsTheSheetWithLongLabels() throws {
+        // creating the VM, relaunching in Russian and visiting every pane takes up to 105
+        // seconds on a busy Mac, too close to the default allowance of two minutes
+        executionTimeAllowance = 300
         // the wizard and the menu are driven by English labels; the panes are checked in Russian
         createVM(named: vmName)
         element(UTMAccessibilityID.Library.card(named: vmName), timeout: 30).click()
