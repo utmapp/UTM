@@ -77,6 +77,13 @@ sys.exit(1)' "$SIMULATOR") || { echo "no available iOS simulator named $SIMULATO
     SCHEME=iOS
     DESTINATION="platform=iOS Simulator,id=$UDID"
     BUNDLE=UTMTests-iOS
+    # a test that reports a runtime issue, such as a SwiftUI warning, makes xcodebuild collect
+    # the simulator's diagnostics even when every test passes, and on the iOS 27.1 simulator
+    # that collection hangs until its 600-second timeout; a caller may still ask for it
+    case " $* " in
+        *" -collect-test-diagnostics "*) ;;
+        *) set -- -collect-test-diagnostics never "$@" ;;
+    esac
     set -- "$@" PRODUCT_BUNDLE_PREFIX=com.utmapp.test ARCHS="$ARCH" CODE_SIGNING_ALLOWED=NO
 elif [ -n "$VM_TIER" ]; then
     SCHEME=macOS

@@ -230,8 +230,20 @@ How a stack works on GitHub (the native stacked pull requests):
      the supported configurations that `CONTRIBUTING.md` lists. Skip the ones
      that don't apply.
 
+   Run the automated tests as well, and don't push or open the PR while one
+   fails (see `Tests/README.md` for setup):
+   - **Unit tests, always**, on both hosts: `./scripts/test_utm.sh` and
+     `./scripts/test_utm.sh -s`.
+   - **UI tests, whenever the change touches UI code** (a view, a window, the
+     wizard, settings, the library, a toolbar or menu, or `Tests/UITests/`):
+     `./scripts/test_utm.sh -only-testing:UTMUITests` from a logged-in desktop
+     session, and `./scripts/test_utm.sh -s iPad -only-testing:UTMUITests-iOS`.
+     CI does not run the UI tests, so this run is the only one before merge.
+
+   List the suites you ran and their results in the Testing section.
+
    If the PR is prose only (docs, translations, agent-skill text), there's no
-   app code to run. The Testing section says so, and lists any checks that were
+   app code to run beyond the unit tests. The Testing section says so, and lists any checks that were
    done. Commands or scripts in the prose that people or agents will run still
    need running. CI configuration and scripts count as code.
 
