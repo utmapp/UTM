@@ -68,7 +68,11 @@ The host is built with the test bundle prefix and no code signing; the simulator
 keeps its data per app, so nothing of an installed UTM is touched. The script keeps
 the simulator build out of Documents, Desktop and Downloads: a simulator app that
 opens a file there is held on macOS's privacy prompt, and dyld opens the derived
-data paths before XCTest can connect, so the host would hang silently.
+data paths before XCTest can connect, so the host would hang silently. It also
+turns off the simulator diagnostics that xcodebuild collects when a test reports a
+runtime issue: on the iOS 27.1 simulator that collection never finishes, and the
+run waited ten minutes for it after the tests had passed. Pass
+`-collect-test-diagnostics on-failure` to collect them anyway.
 
 ## Running the UI tests
 
