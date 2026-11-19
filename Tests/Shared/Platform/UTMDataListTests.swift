@@ -15,6 +15,10 @@
 //
 
 import XCTest
+import Combine
+#if os(macOS)
+import AppKit
+#endif
 @testable import UTM
 
 /// The VM list: creating, saving, renaming, deleting and refreshing bundles in a
@@ -179,6 +183,102 @@ import XCTest
         try await data.importUTM(from: moved)
         try assertReopened(id, at: moved)
     }
+
+    /// Adds a VM stored outside the storage directory, takes its bundle away the way an
+    /// ejected volume does, and relaunches, so it is listed as unavailable. The copy keeps
+    /// the bookmark from following the bundle. Returns the bundle and where it now is.
+    private func makeEjectedExternalVM(in external: URL) async throws -> (bundle: URL, away: URL) {
+        let created = try VMData(creatingFromConfig: configuration(named: "External"), destinationUrl: external)
+        try await created.save()
+        let bundle = created.pathUrl
+        try await data.importUTM(from: bundle)
+        let away = external.appendingPathComponent("away", isDirectory: true)
+        try FileManager.default.copyItem(at: bundle, to: away)
+        try FileManager.default.removeItem(at: bundle)
+        data = UTMData()
+        XCTAssertEqual(data.virtualMachines.map(\.isLoaded), [false])
+        return (bundle, away)
+    }
+
+    /// Counts how often the VM list is published, which is what redraws the library.
+    private func publishes(during body: () async throws -> Void) async rethrows -> Int {
+        final class Counter {
+            var value = 0
+        }
+        let counter = Counter()
+        let cancellable = data.$virtualMachines.dropFirst().sink { _ in counter.value += 1 }
+        defer { cancellable.cancel() }
+        try await body()
+        return counter.value
+    }
+
+    /// A VM on a volume that is mounted after launch is loaded by the next refresh, and
+    /// the list is published so the library shows it as available (#7364).
+    func testRefreshLoadsUnavailableVMWhenItsVolumeIsMounted_7364() async throws {
+        let external = FileManager.default.temporaryDirectory.appendingPathComponent("External-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: external, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: external) }
+        let (bundle, away) = try await makeEjectedExternalVM(in: external)
+        try FileManager.default.moveItem(at: away, to: bundle)
+        let published = await publishes {
+            await data.listRefresh()
+        }
+        XCTAssertEqual(data.virtualMachines.map(\.isLoaded), [true])
+        XCTAssertGreaterThan(published, 0, "the library only redraws when the list is published")
+    }
+
+    /// A VM loaded at launch whose volume is ejected is shown as unavailable by the next
+    /// refresh. It compares equal to its unavailable placeholder, so the list must be
+    /// published anyway (#7364).
+    func testRefreshShowsVMAsUnavailableWhenItsVolumeIsEjected_7364() async throws {
+        let external = FileManager.default.temporaryDirectory.appendingPathComponent("External-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: external, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: external) }
+        let created = try VMData(creatingFromConfig: configuration(named: "External"), destinationUrl: external)
+        try await created.save()
+        let bundle = created.pathUrl
+        try await data.importUTM(from: bundle)
+        data = UTMData()
+        XCTAssertEqual(data.virtualMachines.map(\.isLoaded), [true])
+        try FileManager.default.removeItem(at: bundle)
+        let published = await publishes {
+            await data.listRefresh()
+        }
+        XCTAssertEqual(data.virtualMachines.map(\.isLoaded), [false])
+        XCTAssertGreaterThan(published, 0, "the library only redraws when the list is published")
+    }
+
+    /// A bundle that comes back but cannot be loaded stays unavailable, and the refresh
+    /// keeps its row (#7364).
+    func testRefreshKeepsVMUnavailableWhenItCannotBeLoaded_7364() async throws {
+        let external = FileManager.default.temporaryDirectory.appendingPathComponent("External-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: external, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: external) }
+        let (bundle, away) = try await makeEjectedExternalVM(in: external)
+        let id = data.virtualMachines.first?.id
+        try FileManager.default.moveItem(at: away, to: bundle)
+        try Data("not a configuration".utf8).write(to: bundle.appendingPathComponent("config.plist"))
+        await data.listRefresh()
+        XCTAssertEqual(data.virtualMachines.map(\.isLoaded), [false])
+        XCTAssertEqual(data.virtualMachines.first?.id, id)
+    }
+
+    #if os(macOS)
+    /// Mounting a volume refreshes the list without anything else asking for it (#7364).
+    func testVolumeMountRefreshesList_7364() async throws {
+        let external = FileManager.default.temporaryDirectory.appendingPathComponent("External-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: external, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: external) }
+        let (bundle, away) = try await makeEjectedExternalVM(in: external)
+        try FileManager.default.moveItem(at: away, to: bundle)
+        NSWorkspace.shared.notificationCenter.post(name: NSWorkspace.didMountNotification, object: NSWorkspace.shared)
+        let deadline = Date().addingTimeInterval(10)
+        while data.virtualMachines.first?.isLoaded != true && Date() < deadline {
+            try await Task.sleep(nanoseconds: 10_000_000)
+        }
+        XCTAssertEqual(data.virtualMachines.map(\.isLoaded), [true])
+    }
+    #endif
 
     func testIsSameFileComparesFileIdentityNotPathText() throws {
         let link = FileManager.default.temporaryDirectory.appendingPathComponent("Storage-link-\(UUID().uuidString)")

@@ -130,6 +130,11 @@ enum AlertItem: Identifiable {
     private var listChangedListener: AnyCancellable?
     #endif
 
+    #if os(macOS)
+    /// Listener for volumes being mounted or unmounted
+    private var volumeChangedListener: AnyCancellable?
+    #endif
+
     /// Queue to run `busyWork` tasks
     private var busyQueue: DispatchQueue
     
@@ -146,6 +151,17 @@ enum AlertItem: Identifiable {
         beginObservingChanges()
         #endif
         listLoadFromDefaults()
+        #if os(macOS)
+        // VMs on external volumes become available or unavailable as they are mounted
+        let workspaceCenter = NSWorkspace.shared.notificationCenter
+        volumeChangedListener = workspaceCenter.publisher(for: NSWorkspace.didMountNotification)
+            .merge(with: workspaceCenter.publisher(for: NSWorkspace.didUnmountNotification))
+            .sink { [weak self] _ in
+                Task {
+                    await self?.listRefresh()
+                }
+            }
+        #endif
     }
     
     // MARK: - VM listing
@@ -158,12 +174,32 @@ enum AlertItem: Identifiable {
         if !fileManager.fileExists(atPath: Self.defaultStorageUrl.path) {
             try? fileManager.createDirectory(at: Self.defaultStorageUrl, withIntermediateDirectories: false)
         }
+        // VMData compares equal by registry entry when unloaded, so the list
+        // will not compare as changed when a VM becomes available or unavailable
+        var hasAvailabilityChanged = false
         // wrap stale VMs
         var list = virtualMachines
         for i in list.indices.reversed() {
             let vm = list[i]
             if let registryEntry = vm.registryEntry, !fileManager.fileExists(atPath: registryEntry.package.path) {
+                hasAvailabilityChanged = hasAvailabilityChanged || vm.isLoaded
                 list[i] = VMData(from: registryEntry)
+            }
+        }
+        // load VMs that were previously unavailable
+        for vm in list where !vm.isLoaded {
+            guard let registryEntry = vm.registryEntry else {
+                continue
+            }
+            registryEntry.resolvePackage()
+            guard fileManager.fileExists(atPath: registryEntry.package.path) else {
+                continue
+            }
+            do {
+                try vm.load()
+                hasAvailabilityChanged = true
+            } catch {
+                logger.debug("Failed to load '\(registryEntry.package.path)': \(error)")
             }
         }
         // now look for and add new VMs in default storage
@@ -204,7 +240,7 @@ enum AlertItem: Identifiable {
             logger.error("\(error.localizedDescription)")
         }
         // replace the VM list with our new one
-        if virtualMachines != list {
+        if hasAvailabilityChanged || virtualMachines != list {
             listReplace(with: list)
         }
         // prune the registry
