@@ -12,7 +12,7 @@ On iOS 14, Apple [patched][1] the trick we used to get JIT working. As a result,
 
 ## Signing
 
-Install and follow the instructions for [iOS App Signer][4]. Make sure your signing certificate and provisioning profiles matches. Select the UTM.ipa release as the input file and press start.
+Install and follow the instructions for [iOS App Signer][4]. Make sure your signing certificate and provisioning profiles matches. Select the UTM.ipa release as the input file, uncheck ```No get-task-allow``` and press start.
 
 Save the signed IPA as `UTM-signed.ipa`. Once the process is completed, rename `UTM-signed.ipa` to `UTM-signed.zip` and open the ZIP file. macOS should extract the files to a new directory named `Payload/`.
 
