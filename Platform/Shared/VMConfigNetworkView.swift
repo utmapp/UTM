@@ -59,6 +59,12 @@ struct VMConfigNetworkView: View {
                             Text("Note: No DHCP will be provided by UTM")
                         }
                     }
+                    // Port forwards are only supported in Emulated mode
+                    if config.mode == .bridged || config.mode == .shared {
+                        Text("Note: Port forwards are only honored in Emulated mode (vmnet framework limitation)")
+                            .font(.footnote)
+                            .foregroundColor(.orange)
+                    }
                     #endif
                     VMConfigConstantPicker("Emulated Network Card", selection: $config.hardware, type: system.architecture.networkDeviceType)
                 }.onAppear(perform: loadData)
