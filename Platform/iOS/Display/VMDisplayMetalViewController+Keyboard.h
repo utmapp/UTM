@@ -27,6 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)touchpadKeyboardPressed:(UIButton *)sender;
 - (void)customKeyTouchDown:(VMKeyboardButton *)sender;
 - (void)customKeyTouchUp:(VMKeyboardButton *)sender;
+- (BOOL)hideDeckAccessory;
+- (BOOL)showDeckKeyboard;
 
 @end
 

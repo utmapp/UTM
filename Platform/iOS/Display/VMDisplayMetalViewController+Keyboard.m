@@ -38,7 +38,37 @@
 }
 
 - (void)keyboardDonePressed:(UIButton *)sender {
-    [self.keyboardView resignFirstResponder];
+    if (![self hideDeckAccessory]) {
+        [self.keyboardView resignFirstResponder];
+    }
+}
+
+#pragma mark - Input deck
+
+/// In the input deck the keyboard stays, so that the deck is never left empty, and only the key row above it goes.
+///
+/// Returns NO outside the input deck, where the keyboard itself is hidden instead.
+- (BOOL)hideDeckAccessory {
+    if (self.inputDeckHeight <= 0) {
+        return NO;
+    }
+    if (self.isDeckAccessoryShown) {
+        // the toggled modifiers would otherwise stay held down with no row left to show them
+        [self resetModifierToggles];
+        [self.delegate displayDidRequestInputDeck:VMInputDeckKeyboardWithoutAccessory];
+    }
+    return YES;
+}
+
+/// Brings the keyboard back to the input deck with its key row.
+///
+/// Returns NO outside the input deck, where the keyboard itself is shown instead.
+- (BOOL)showDeckKeyboard {
+    if (self.inputDeckHeight <= 0) {
+        return NO;
+    }
+    [self.delegate displayDidRequestInputDeck:VMInputDeckKeyboard];
+    return YES;
 }
 
 - (void)keyboardPastePressed:(UIButton *)sender {

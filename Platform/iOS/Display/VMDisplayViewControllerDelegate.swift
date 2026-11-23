@@ -18,8 +18,11 @@ import Foundation
 
 /// What the bottom half of a device folded like a laptop shows.
 @objc enum VMInputDeck: Int {
+    /// The keyboard with the accessory row above the fold.
     case keyboard
     case touchpad
+    /// The keyboard alone, which leaves the accessory row's space to the guest display.
+    case keyboardWithoutAccessory
 }
 
 @objc protocol VMDisplayViewControllerDelegate {

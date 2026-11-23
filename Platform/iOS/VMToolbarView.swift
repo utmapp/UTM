@@ -180,7 +180,14 @@ struct VMToolbarView: View {
                     state.isKeyboardRequested = !state.isKeyboardShown
                 }
             } label: {
-                Label("Keyboard", systemImage: "keyboard")
+                switch state.inputDeckFrame != nil ? state.nextInputDeck : .keyboard {
+                case .touchpad:
+                    Label("Show Touchpad", systemImage: "rectangle.and.hand.point.up.left")
+                case .keyboardWithoutAccessory:
+                    Label("Hide Accessory Keys", systemImage: "keyboard.chevron.compact.down")
+                case .keyboard:
+                    Label("Keyboard", systemImage: "keyboard")
+                }
             }.animationUniqueID("keyboard", in: namespace)
             #if !WITH_REMOTE
             .simultaneousGesture(

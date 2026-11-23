@@ -17,6 +17,7 @@
 #import "VMDisplayMetalViewController.h"
 #import "VMDisplayMetalViewController+Private.h"
 #import "VMDisplayMetalViewController+Touch.h"
+#import "VMDisplayMetalViewController+Keyboard.h"
 #if !defined(TARGET_OS_VISION) || !TARGET_OS_VISION
 #import "VMDisplayMetalViewController+Pencil.h"
 #endif
@@ -596,13 +597,17 @@ static CGRect CGRectClipToBounds(CGRect rect1, CGRect rect2) {
 
 - (IBAction)gestureSwipeUp:(UISwipeGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateEnded) {
-        [self showKeyboard];
+        if (![self showDeckKeyboard]) {
+            [self showKeyboard];
+        }
     }
 }
 
 - (IBAction)gestureSwipeDown:(UISwipeGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateEnded) {
-        [self hideKeyboard];
+        if (![self hideDeckAccessory]) {
+            [self hideKeyboard];
+        }
     }
 }
 

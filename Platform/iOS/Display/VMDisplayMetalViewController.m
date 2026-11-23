@@ -171,7 +171,7 @@ static const NSInteger kResizeTimeoutSecs = 5;
 /// keyboard that is on its way back.
 - (BOOL)isDeckAccessoryShown {
 #if !TARGET_OS_VISION
-    return self.inputDeckHeight > 0 && !self.isTouchpadShown && (self.isKeyboardShown || self.keyboardView.isFirstResponder);
+    return self.inputDeckHeight > 0 && !self.isTouchpadShown && !self.isDeckAccessoryHidden && (self.isKeyboardShown || self.keyboardView.isFirstResponder);
 #else
     return NO;
 #endif
@@ -235,6 +235,16 @@ static const NSInteger kResizeTimeoutSecs = 5;
     [self loadViewIfNeeded];
     _inputDeckFoldHeight = inputDeckFoldHeight;
     [self setNeedsDeckLayout];
+}
+
+- (void)setIsDeckAccessoryHidden:(BOOL)isDeckAccessoryHidden {
+    if (_isDeckAccessoryHidden == isDeckAccessoryHidden) {
+        return;
+    }
+    _isDeckAccessoryHidden = isDeckAccessoryHidden;
+    if (self.inputDeckHeight > 0) {
+        [self setNeedsDeckLayout];
+    }
 }
 
 - (void)setIsKeyboardShown:(BOOL)isKeyboardShown {
