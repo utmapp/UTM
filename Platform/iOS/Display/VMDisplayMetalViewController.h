@@ -52,6 +52,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// Shows the touchpad in the input deck.
 @property (nonatomic) BOOL isTouchpadShown;
 
+/// Hides the accessory row above the keyboard in the input deck.
+@property (nonatomic) BOOL isDeckAccessoryHidden;
+
 /// Whether the software keyboard is on the screen, which decides if the accessory row shows in the input deck.
 @property (nonatomic) BOOL isKeyboardShown;
 

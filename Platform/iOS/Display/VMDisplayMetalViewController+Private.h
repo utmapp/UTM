@@ -47,6 +47,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) VMCursor *cursor;
 @property (nonatomic, nullable) VMScroll *scroll;
 
+// input deck
+@property (nonatomic, readonly) BOOL isDeckAccessoryShown;
+
 // Gestures
 @property (nonatomic, nullable) UISwipeGestureRecognizer *swipeUp;
 @property (nonatomic, nullable) UISwipeGestureRecognizer *swipeDown;

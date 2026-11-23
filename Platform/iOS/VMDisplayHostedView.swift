@@ -203,6 +203,7 @@ struct VMDisplayHostedView: UIViewControllerRepresentable {
             vc.inputDeckHeight = state.inputDeckLayout?.frame.height ?? 0
             vc.inputDeckFoldHeight = state.inputDeckLayout?.fold.height ?? 0
             vc.isTouchpadShown = state.showsTouchpadDeck
+            vc.isDeckAccessoryHidden = state.inputDeck == .keyboardWithoutAccessory
             vc.isKeyboardShown = state.isKeyboardShown
         }
         #if os(visionOS)

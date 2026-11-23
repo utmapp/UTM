@@ -103,9 +103,6 @@ struct VMWindowState: Identifiable {
     /// The zoom lock from before the device was folded, restored when it is opened again.
     var zoomLockBeforeDeck: Bool?
 
-    /// Whether the keyboard was shown before the device was folded, which is what the window remembers.
-    var keyboardVisibleBeforeDeck: Bool?
-
     /// Height reserved for the accessory row at the bottom of the display half while folded.
     var deckAccessoryHeight: CGFloat = 0
 
@@ -155,19 +152,18 @@ extension VMWindowState {
             if zoomLockBeforeDeck == nil {
                 zoomLockBeforeDeck = isDisplayZoomLocked
             }
-            if keyboardVisibleBeforeDeck == nil {
-                keyboardVisibleBeforeDeck = isKeyboardShown
-            }
             isDisplayZoomLocked = true
         } else {
             if let zoomLock = zoomLockBeforeDeck {
                 isDisplayZoomLocked = zoomLock
             }
-            if let keyboardVisible = keyboardVisibleBeforeDeck {
-                isKeyboardRequested = keyboardVisible
+            // the keyboard stays for one that the deck showed, and comes back with its accessory row
+            if case .display = device {
+                isKeyboardRequested = inputDeck != .touchpad
+            } else {
+                isKeyboardRequested = isKeyboardShown
             }
             zoomLockBeforeDeck = nil
-            keyboardVisibleBeforeDeck = nil
         }
     }
 
@@ -179,23 +175,36 @@ extension VMWindowState {
 
     mutating func requestInputDeck(_ deck: VMInputDeck) {
         inputDeck = deck
-        isKeyboardRequested = deck == .keyboard
+        isKeyboardRequested = deck != .touchpad
     }
 
-    /// The keyboard button steps from the keyboard to the touchpad and back while the device is folded.
-    mutating func cycleInputDeck() {
+    /// The deck the keyboard button steps to next while the device is folded.
+    ///
+    /// It steps from the touchpad to the keyboard, then to the keyboard without its accessory row and
+    /// back to the touchpad, so the deck always shows one of them. Only the guest display has a
+    /// touchpad, so other devices keep the keyboard.
+    var nextInputDeck: VMInputDeck {
         guard case .display = device else {
-            isKeyboardRequested = !isKeyboardShown
-            return
+            return .keyboard
         }
         switch inputDeck {
-        case .keyboard where isKeyboardShown:
-            requestInputDeck(.touchpad)
-        case .keyboard:
-            isKeyboardRequested = true
         case .touchpad:
-            requestInputDeck(.keyboard)
+            return .keyboard
+        case .keyboard:
+            return .keyboardWithoutAccessory
+        case .keyboardWithoutAccessory:
+            return .touchpad
         }
+    }
+
+    mutating func cycleInputDeck() {
+        // a keyboard the system took away is brought back before the deck steps on; one that is
+        // still requested without showing is a hardware keyboard's, and the deck steps on from it
+        if inputDeck != .touchpad && !isKeyboardShown && !isKeyboardRequested {
+            isKeyboardRequested = true
+            return
+        }
+        requestInputDeck(nextInputDeck)
     }
 }
 
@@ -293,7 +302,8 @@ extension VMWindowState {
         window.origin = displayOrigin
         window.isDisplayZoomLocked = zoomLockBeforeDeck ?? isDisplayZoomLocked
         #endif
-        window.isKeyboardVisible = keyboardVisibleBeforeDeck ?? isKeyboardShown
+        // while folded, what the keyboard does once the device is opened
+        window.isKeyboardVisible = inputDeckLayout != nil ? inputDeck != .touchpad : isKeyboardShown
         registryEntry.windowSettings[id] = window
     }
     
@@ -308,9 +318,8 @@ extension VMWindowState {
         #else
         displayOrigin = window.origin
         if inputDeckLayout != nil {
-            // the forced fit and keyboard stay while folded and the window's own choices apply once opened
+            // the forced fit and keyboard stay while folded and the window's own zoom applies once opened
             zoomLockBeforeDeck = window.isDisplayZoomLocked
-            keyboardVisibleBeforeDeck = window.isKeyboardVisible
             isDisplayZoomLocked = true
             isKeyboardRequested = !showsTouchpadDeck
         } else {
