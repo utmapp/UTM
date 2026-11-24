@@ -299,6 +299,31 @@ final class VMLifecycleTests: XCTestCase {
         XCTAssertTrue(stopped, "the VM is \(vm.state) after a forced stop")
     }
 
+    /// A removable drive whose image type was changed to none has no QEMU drive device, so the
+    /// image still saved for it is not put back at start, which would fail with "Device not found":
+    /// starting and saving the settings both drop it.
+    func testStartsWithARemovableDriveWhoseImageTypeIsNone() async throws {
+        var driveId = ""
+        let vm = try await makeShellVM { config in
+            var drive = UTMQemuConfigurationDrive(forArchitecture: .aarch64, target: QEMUTarget_aarch64.virt, isExternal: true)
+            drive.setImageType(.none)
+            driveId = drive.id
+            config.drives = [drive]
+        }
+        let imageURL = packageDirectory.appendingPathComponent("removable.iso")
+        try Data(count: 2048).write(to: imageURL)
+        vm.registryEntry.setExternalDrive(try UTMRegistryEntry.File(url: imageURL, isReadOnly: true), forId: driveId)
+        try await vm.start()
+        XCTAssertEqual(vm.state, .started)
+        try await vm.stop(usingMethod: .force)
+        let stopped = await waitForState(vm, .stopped, timeout: Self.stopTimeout)
+        XCTAssertTrue(stopped, "the VM is \(vm.state) after a forced stop")
+        XCTAssertNil(vm.registryEntry.externalDrives[driveId], "starting kept the image of a drive without a drive device")
+        vm.registryEntry.setExternalDrive(try UTMRegistryEntry.File(url: imageURL, isReadOnly: true), forId: driveId)
+        try await vm.updateRegistryFromConfig()
+        XCTAssertNil(vm.registryEntry.externalDrives[driveId], "saving kept the image of a drive without a drive device")
+    }
+
     /// A saved state marks the VM suspended and the next start resumes it: the shell answers
     /// on the serial port without the firmware booting again.
     func testSuspendedStateIsRestoredOnTheNextStart() async throws {

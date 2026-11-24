@@ -149,7 +149,7 @@ extension UTMSpiceVirtualMachine {
         let configShare = config.sharing.directoryShareUrl
         let configDrives = config.drives
         try await updateRegistryBasics()
-        for drive in configDrives {
+        for drive in configDrives where drive.hasDriveDevice {
             if drive.isExternal, let url = drive.imageURL {
                 try await changeMedium(drive, to: url)
             } else if drive.isExternal {
@@ -161,9 +161,10 @@ extension UTMSpiceVirtualMachine {
         } else {
             await clearSharedDirectory()
         }
-        // remove any unreferenced drives
+        // remove any unreferenced drives, and the images of removable drives that no longer
+        // have a drive device to put them in
         registryEntry.externalDrives = registryEntry.externalDrives.filter({ element in
-            configDrives.contains(where: { $0.id == element.key && $0.isExternal })
+            configDrives.contains(where: { $0.id == element.key && $0.isExternal && $0.hasDriveDevice })
         })
     }
 

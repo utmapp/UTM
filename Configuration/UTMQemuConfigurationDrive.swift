@@ -260,9 +260,15 @@ extension UTMQemuConfigurationDrive {
         imageType == .none || imageType == .disk
     }
     
-    /// Only disk and CD images are attached through a selectable interface.
-    var hasSelectableInterface: Bool {
+    /// Only disk and CD images get a QEMU drive (`-drive id=drive<id>`); the other image
+    /// types are passed as firmware or boot files, or not passed at all.
+    var hasDriveDevice: Bool {
         imageType == .disk || imageType == .cd
+    }
+    
+    /// Only a drive with a drive device is attached through a selectable interface.
+    var hasSelectableInterface: Bool {
+        hasDriveDevice
     }
     
     /// An IDE drive saved by an older version still uses one bus per unit.

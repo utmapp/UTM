@@ -93,7 +93,7 @@ struct VMRemovableDrivesView: View {
                         return true
                     }
             }
-            ForEach(config.drives.filter { $0.isExternal }) { drive in
+            ForEach(config.drives.filter { $0.isExternal && $0.hasDriveDevice }) { drive in
                 HStack {
                     #if !WITH_REMOTE // FIXME: implement remote feature
                     // Drive menu

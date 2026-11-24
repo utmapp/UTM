@@ -51,7 +51,7 @@ struct VMToolbarDriveMenuView: View {
                 Divider()
             }
             ForEach(config.drives) { drive in
-                if drive.isExternal {
+                if drive.isExternal && drive.hasDriveDevice {
                     #if !WITH_REMOTE // FIXME: implement remote feature
                     Menu {
                         Button {
