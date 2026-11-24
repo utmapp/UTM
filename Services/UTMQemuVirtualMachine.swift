@@ -1015,6 +1015,15 @@ extension UTMQemuVirtualMachine {
             if !drive.isExternal {
                 continue
             }
+            // a removable drive whose image type was changed to one without a drive
+            // device (such as none) has nothing in QEMU to put its saved image in
+            if !drive.hasDriveDevice {
+                if await registryEntry.externalDrives[drive.id] != nil {
+                    logger.debug("Removable drive \(drive.id) has no drive device for its image type, forgetting its image")
+                    await registryEntry.removeExternalDrive(forId: drive.id)
+                }
+                continue
+            }
             let id = drive.id
             if let bookmark = await registryEntry.externalDrives[id]?.remoteBookmark {
                 // an image bookmark was saved while QEMU was running
@@ -1023,7 +1032,7 @@ extension UTMQemuVirtualMachine {
                 // an image bookmark was saved while QEMU was NOT running
                 let url = try URL(resolvingPersistentBookmarkData: localBookmark)
                 try await changeMedium(drive, to: url, isAccessOnly: !isMounting)
-            } else if isMounting && (drive.imageType == .cd || drive.imageType == .disk) {
+            } else if isMounting {
                 // a placeholder image might have been mounted
                 try await eject(drive)
             }

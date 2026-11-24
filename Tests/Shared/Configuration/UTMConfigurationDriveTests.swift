@@ -141,6 +141,15 @@ final class UTMConfigurationDriveTests: XCTestCase {
         }
     }
 
+    func testOnlyDiskAndCdImagesHaveADriveDevice() {
+        for imageType in QEMUDriveImageType.allCases {
+            var drive = newDisk()
+            drive.isExternal = true
+            drive.setImageType(imageType)
+            XCTAssertEqual(drive.hasDriveDevice, imageType == .disk || imageType == .cd, "\(imageType)")
+        }
+    }
+
     func testChangingTheInterfaceOfACdToFloppyMakesItADisk() {
         var cd = newDisk()
         cd.imageType = .cd

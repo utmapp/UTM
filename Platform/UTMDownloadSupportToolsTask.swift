@@ -72,12 +72,13 @@ class UTMDownloadSupportToolsTask: UTMDownloadTask {
     }
     
     private func mountableDrive() async throws -> UTMQemuConfigurationDrive {
-        for file in await vm.registryEntry.externalDrives.values {
-            if file.path == supportToolsLocalUrl.path {
+        let drives = await vm.config.drives.filter { $0.isExternal && $0.hasDriveDevice }
+        for drive in drives {
+            if await vm.registryEntry.externalDrives[drive.id]?.path == supportToolsLocalUrl.path {
                 throw UTMDownloadSupportToolsTaskError.alreadyMounted
             }
         }
-        guard let drive = await vm.config.drives.last(where: { $0.isExternal && $0.imageURL == nil }) else {
+        guard let drive = drives.last(where: { $0.imageURL == nil }) else {
             throw UTMDownloadSupportToolsTaskError.driveUnavailable
         }
         return drive

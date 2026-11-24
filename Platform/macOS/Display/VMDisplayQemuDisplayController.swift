@@ -92,7 +92,7 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
     
     @nonobjc func updateDrivesMenu(_ menu: NSMenu, drives: [UTMQemuConfigurationDrive]) {
         menu.removeAllItems()
-        if drives.count == 0 {
+        if !drives.contains(where: { $0.hasDriveDevice }) {
             let item = NSMenuItem()
             item.title = NSLocalizedString("No drives connected.", comment: "VMDisplayWindowController")
             item.isEnabled = false
@@ -107,7 +107,7 @@ class VMDisplayQemuWindowController: VMDisplayWindowController {
         }
         for i in drives.indices {
             let drive = drives[i]
-            if drive.imageType != .disk && drive.imageType != .cd && !drive.isExternal {
+            if !drive.hasDriveDevice {
                 continue // skip non-disks
             }
             let item = NSMenuItem()

@@ -883,7 +883,7 @@ import Virtualization // for getting network interfaces
         let disableBootindex = shouldDisableBootIndex
         for drive in drives {
             let hasImage = !drive.isExternal && drive.imageURL != nil
-            if drive.imageType == .disk || drive.imageType == .cd {
+            if drive.hasDriveDevice {
                 driveArgument(for: drive, busInterfaceMap: &busInterfaceMap, disableBootIndex: disableBootindex)
             } else if hasImage {
                 switch drive.imageType {
