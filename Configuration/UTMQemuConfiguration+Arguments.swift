@@ -367,15 +367,17 @@ import Virtualization // for getting network interfaces
         return UTMQEMUDirectXDriver(rawValue: rawValue) ?? .qemuDirectXDriverDefault
     }
 
+    /// A remote session has no GL (`filterDisplayIfRemote` drops the `-gl` device),
+    /// so Venus and Neptune, which need it, are off there.
     private var isVulkanSupported: Bool {
-        isGLSupported &&
+        isGLSupported && !isRemoteSpice &&
         (rendererBackend == .qemuRendererBackendAngleMetal || rendererBackend == .qemuRendererBackendDefault) &&
         vulkanDriver != .qemuVulkanDriverDisabled
     }
 
     private var isNeptuneSupported: Bool {
         if #available(macOS 13, iOS 16, *) {
-            return isGLSupported &&
+            return isGLSupported && !isRemoteSpice &&
             (rendererBackend == .qemuRendererBackendAngleMetal || rendererBackend == .qemuRendererBackendDefault) &&
             directXDriver != .qemuDirectXDriverDisabled
         } else {

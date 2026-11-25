@@ -493,6 +493,55 @@ final class VMLifecycleTests: XCTestCase {
         XCTAssertFalse(FileManager.default.fileExists(atPath: vm.config.spiceTlsKeyUrl.path), "the session's private key was left behind")
     }
 
+    /// A remote session renders without GL, so a GPU-supported display is started as its
+    /// plain device, without the Venus and Neptune properties QEMU has only on the `-gl`
+    /// one (#8228); and the GPU settings, which a remote session does not use, cannot stop
+    /// it from starting either.
+    func testRemoteSessionStartsWithAGPUDisplay_8228() async throws {
+        var domain = UserDefaults.standard.volatileDomain(forName: UserDefaults.argumentDomain)
+        let saved = domain
+        defer {
+            UserDefaults.standard.setVolatileDomain(saved, forName: UserDefaults.argumentDomain)
+        }
+        let settings: [(renderer: UTMQEMURendererBackend, vulkan: UTMQEMUVulkanDriver)] = [
+            (.qemuRendererBackendDefault, .qemuVulkanDriverDefault),
+            (.qemuRendererBackendCGL, .qemuVulkanDriverMoltenVK),
+        ]
+        for setting in settings {
+            domain["QEMURendererBackend"] = setting.renderer.rawValue
+            domain["QEMUVulkanDriver"] = setting.vulkan.rawValue
+            UserDefaults.standard.setVolatileDomain(domain, forName: UserDefaults.argumentDomain)
+            let vm = try await makeShellVM { config in
+                config.displays[0].hardware = QEMUDisplayDevice_aarch64.virtio_ramfb_gl
+            }
+            let name = "renderer \(setting.renderer.rawValue), Vulkan \(setting.vulkan.rawValue)"
+            try await vm.start(options: .remoteSession)
+            XCTAssertEqual(vm.state, .started, name)
+            let server = try XCTUnwrap(vm.spiceServerInfo, "a remote session has no SPICE server details")
+            let client = UTMSpiceIO(host: "127.0.0.1", tlsPort: Int(server.spicePortInternal), serverPublicKey: server.spicePublicKey, password: server.spicePassword, options: [])
+            try client.start()
+            try client.connect()
+            let screenshot = try await waitForDrawnScreenshot(timeout: Self.drawTimeout) {
+                guard client.isConnected, client.primaryDisplay != nil else {
+                    return nil
+                }
+                let image = await withCheckedContinuation { continuation in
+                    client.screenshot { continuation.resume(returning: $0?.image) }
+                }
+                return image.map { UTMVirtualMachineScreenshot(wrapping: $0) }
+            }
+            client.disconnect()
+            XCTAssertNotNil(screenshot, "the client was not shown the firmware within \(Int(Self.drawTimeout)) s (\(name))")
+            XCTAssertEqual(vm.state, .started, "the VM stopped on its own (\(name))")
+            try await vm.stop(usingMethod: .force)
+            let stopped = await waitForState(vm, .stopped, timeout: Self.stopTimeout)
+            XCTAssertTrue(stopped, "the VM is \(vm.state) after a forced stop")
+            UTMRegistry.shared.remove(entry: vm.registryEntry)
+            self.vm = nil
+            try FileManager.default.removeItem(at: vm.pathUrl)
+        }
+    }
+
     /// A remote session that fails to start leaves none of its files behind either. The start
     /// fails after they are created: the UEFI variables are gone and the bundle is read-only,
     /// so they cannot be created again.

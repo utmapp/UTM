@@ -366,6 +366,43 @@ import XCTest
         }
     }
 
+    /// A remote session renders without GL, so the display device loses its `-gl` suffix;
+    /// the Venus and Neptune properties exist only on the `-gl` device and must go with it,
+    /// or QEMU exits with "Property 'virtio-ramfb.venus' not found" (#8228).
+    func testRemoteSessionDisplayHasNoGLOnlyProperties_8228() throws {
+        setDefaults(["QEMURendererBackend": 0, "QEMUVulkanDriver": 0, "QEMUDirectXDriver": 0])
+        let displays: [(QEMUArchitecture, any QEMUTarget, any QEMUDisplayDevice, String)] = [
+            (.x86_64, QEMUTarget_x86_64.q35, QEMUDisplayDevice_x86_64.virtio_ramfb_gl, "virtio-ramfb"),
+            (.x86_64, QEMUTarget_x86_64.q35, QEMUDisplayDevice_x86_64.virtio_vga_gl, "virtio-vga"),
+            (.aarch64, QEMUTarget_aarch64.virt, QEMUDisplayDevice_aarch64.virtio_ramfb_gl, "virtio-ramfb"),
+        ]
+        for (architecture, target, hardware, remoteDevice) in displays {
+            let config = configuration(architecture: architecture, target: target)
+            config.displays[0].hardware = hardware
+            config.qemu.spiceServerPort = 4444
+            let device = try XCTUnwrap(arguments(config).devices(ofType: remoteDevice).first, "no \(remoteDevice) device for \(hardware.rawValue)")
+            let keys = QEMUArgumentList.options(device).map { $0.split(separator: "=").first.map(String.init) ?? $0 }
+            for property in ["venus", "neptune", "blob", "hostmem"] {
+                XCTAssertFalse(keys.contains(property), device)
+            }
+        }
+    }
+
+    /// Run locally, the same display keeps its GL device and the Venus and Neptune properties.
+    func testLocalSessionDisplayKeepsGLProperties() throws {
+        setDefaults(["QEMURendererBackend": 0, "QEMUVulkanDriver": 0, "QEMUDirectXDriver": 0])
+        let config = configuration(architecture: .x86_64, target: QEMUTarget_x86_64.q35)
+        config.displays[0].hardware = QEMUDisplayDevice_x86_64.virtio_ramfb_gl
+        let device = try XCTUnwrap(arguments(config).devices(ofType: "virtio-ramfb-gl").first, "no virtio-ramfb-gl device")
+        let options = QEMUArgumentList.options(device)
+        XCTAssertTrue(options.contains("venus=true"), device)
+        if #available(macOS 13, iOS 16, *) {
+            XCTAssertTrue(options.contains("neptune=true"), device)
+        } else {
+            XCTAssertFalse(options.contains("neptune=true"), device)
+        }
+    }
+
     // MARK: Accelerator
 
     #if WITH_JIT

@@ -395,8 +395,9 @@ extension UTMQemuVirtualMachine {
         system.currentDirectoryUrl = await config.socketURL
         system.remoteBookmarks = remoteBookmarks
         system.rendererBackend = rendererBackend
-        system.vulkanDriver = try vulkanDriver
-        system.directXDriver = directXDriver
+        // a remote session has no GL, so it has no Venus or Neptune either
+        system.vulkanDriver = isRemoteSession ? .qemuVulkanDriverDisabled : try vulkanDriver
+        system.directXDriver = isRemoteSession ? .qemuDirectXDriverDisabled : directXDriver
         system.shmemDirectoryURL = await config.shmemDirectoryURL
         system.appSandboxGroupId = await config.sharedMemoryGroupIdentifier
         system.hasDebugLog = hasDebugLog
