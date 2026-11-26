@@ -19,6 +19,8 @@ import Carbon.HIToolbox
 import SwiftUI
 
 class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
+    /// Sub-pixel part of captured-mouse motion carried to the next event.
+    private var relativeMouseRemainder = CGPoint.zero
     var metalView: VMMetalView!
     var renderer: CSMetalRenderer!
 
@@ -585,7 +587,16 @@ extension VMDisplayQemuMetalWindowController: VMMetalViewInputDelegate {
             qemuVM.requestInputTablet(false)
             return
         }
-        let translated = CGPoint(x: relativePoint.x, y: -relativePoint.y)
+        // Cocoa deltas are in points and SPICE takes whole pixels: scale to guest
+        // pixels like the absolute path, and carry the fraction to the next event
+        // instead of truncating it (otherwise slow moves are lost on Retina).
+        let currentScreenScale = window?.screen?.backingScaleFactor ?? 1.0
+        let viewportScale = renderer?.viewportScale ?? 1.0
+        let scale = currentScreenScale / viewportScale
+        let dx = relativePoint.x * scale + relativeMouseRemainder.x
+        let dy = -relativePoint.y * scale + relativeMouseRemainder.y
+        let translated = CGPoint(x: dx.rounded(.towardZero), y: dy.rounded(.towardZero))
+        relativeMouseRemainder = CGPoint(x: dx - translated.x, y: dy - translated.y)
         vmInput.sendMouseMotion(buttonMask, relativePoint: translated, forMonitorID: vmDisplay?.monitorID ?? 0)
     }
     
