@@ -16,6 +16,8 @@
 
 import Foundation
 #if os(macOS)
+import CoreGraphics // host display size
+import AppKit // NSScreen safe area (notch)
 import Virtualization // for getting network interfaces
 #endif
 
@@ -300,7 +302,21 @@ import Virtualization // for getting network interfaces
             f()
         } else {
             for display in displays {
-                if !shouldSkipDisplay(display) {
+                if isRadeonR100(display) {
+                    // QEMU's ati-vga in R100 mode; ATI's own Mac OS 9 drivers drive it
+                    let size = radeonR100InitialSize
+                    f("-device")
+                    "ati-vga"
+                    "id=ati0"
+                    "model=r100"
+                    "vgamem_mb=\(display.vgaRamMib ?? Self.radeonR100DefaultVramMib)"
+                    "romfile=" // OpenBIOS (openbios-ppc-r100-retail) builds the device node
+                    "guest_hwcursor=off"
+                    "xres=\(size.0)"
+                    "yres=\(size.1)"
+                    "refresh_rate=60000"
+                    f()
+                } else if !shouldSkipDisplay(display) {
                     f("-device")
                     filterDisplayIfRemote(display.hardware)
                     if let vgaRamSize = displays[0].vgaRamMib {
@@ -343,6 +359,30 @@ import Virtualization // for getting network interfaces
         displays.contains { display in
             display.isGLSupported
         }
+    }
+
+    /// Pixel size of a full-screen window on the host's main display, and its backing scale.
+    /// On a Mac with a notch, full-screen windows stay below it, so the notch strip is left out.
+    /// Even sizes.
+    private var hostFullScreenPixelSize: (Int, Int, Int)? {
+        #if os(macOS)
+        guard let mode = CGDisplayCopyDisplayMode(CGMainDisplayID()), mode.width > 0, mode.height > 0 else {
+            return nil
+        }
+        let scale = mode.pixelWidth > mode.width ? 2 : 1
+        var notch = 0
+        if #available(macOS 12, *), let screen = NSScreen.screens.first {
+            notch = Int(screen.safeAreaInsets.top.rounded(.up))
+        }
+        let pixelWidth = mode.pixelWidth & ~1
+        let pixelHeight = (mode.pixelHeight * (mode.height - notch) / mode.height) & ~1
+        guard pixelWidth >= 640, pixelHeight >= 400 else {
+            return nil
+        }
+        return (pixelWidth, pixelHeight, scale)
+        #else
+        return nil
+        #endif
     }
 
     private var rendererBackend: UTMQEMURendererBackend {
@@ -402,6 +442,26 @@ import Virtualization // for getting network interfaces
 
     private var isClassicMacM68K: Bool {
         system.architecture == .m68k && system.target.rawValue == QEMUTarget_m68k.q800.rawValue
+    }
+
+    private static let radeonR100DefaultVramMib = 32
+
+    /// The Radeon 7000 (R100) for Mac OS 9: ati-vga with ATI's own drivers, no qemu_vga NDRV.
+    private func isRadeonR100(_ display: UTMQemuConfigurationDisplay) -> Bool {
+        isClassicMacNewWorld && display.hardware.rawValue == QEMUDisplayDevice_ppc.ati_radeon_7000.rawValue
+    }
+
+    private var isRadeonR100Used: Bool {
+        displays.contains { isRadeonR100($0) }
+    }
+
+    /// Resolution the guest starts in: the host's full-screen size in points, capped to what
+    /// the card's EDID should offer; 1024x768 when unknown.
+    private var radeonR100InitialSize: (Int, Int) {
+        guard let host = hostFullScreenPixelSize else {
+            return (1024, 768)
+        }
+        return (min(host.0 / host.2, 1600) & ~1, min(host.1 / host.2, 1200) & ~1)
     }
 
     private var isClassicMacNewWorld: Bool {
@@ -758,6 +818,10 @@ import Virtualization // for getting network interfaces
             "romfile="
             declrom
             f()
+        }
+        if isRadeonR100Used && !hasCustomBios {
+            f("-bios")
+            f("openbios-ppc-r100-retail")
         }
         if isClassicMacNewWorld {
             let ndrvloader = resourceURL.appendingPathComponent("ppc-ndrvloader")

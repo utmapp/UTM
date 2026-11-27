@@ -6853,6 +6853,7 @@ enum QEMUDisplayDevice_or1k: String, CaseIterable, QEMUDisplayDevice {
 }
 
 enum QEMUDisplayDevice_ppc: String, CaseIterable, QEMUDisplayDevice {
+    case ati_radeon_7000 = "ati-radeon-7000"
     case cirrus_vga = "cirrus-vga"
     case sm501
     case VGA
@@ -6866,6 +6867,7 @@ enum QEMUDisplayDevice_ppc: String, CaseIterable, QEMUDisplayDevice {
 
     var prettyValue: String {
         switch self {
+        case .ati_radeon_7000: return "ATI Radeon 7000 (ati-radeon-7000)"
         case .cirrus_vga: return "Cirrus CLGD 54xx VGA (cirrus-vga)"
         case .sm501: return "SM501 Display Controller (sm501)"
         case .VGA: return "VGA"
@@ -6881,6 +6883,7 @@ enum QEMUDisplayDevice_ppc: String, CaseIterable, QEMUDisplayDevice {
 }
 
 enum QEMUDisplayDevice_ppc64: String, CaseIterable, QEMUDisplayDevice {
+    case ati_radeon_7000 = "ati-radeon-7000"
     case cirrus_vga = "cirrus-vga"
     case sm501
     case VGA
@@ -6896,6 +6899,7 @@ enum QEMUDisplayDevice_ppc64: String, CaseIterable, QEMUDisplayDevice {
 
     var prettyValue: String {
         switch self {
+        case .ati_radeon_7000: return "ATI Radeon 7000 (ati-radeon-7000)"
         case .cirrus_vga: return "Cirrus CLGD 54xx VGA (cirrus-vga)"
         case .sm501: return "SM501 Display Controller (sm501)"
         case .VGA: return "VGA"
