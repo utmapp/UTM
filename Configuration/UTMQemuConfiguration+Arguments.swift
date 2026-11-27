@@ -625,7 +625,7 @@ import Virtualization // for getting network interfaces
         system.architecture.hasTSOSupport && qemu.hasTSO
     }
     
-    private var isUsbUsed: Bool {
+    var isUsbUsed: Bool {
         system.architecture.hasUsbSupport && system.target.hasUsbSupport && input.usbBusSupport != .disabled
     }
     
@@ -1120,6 +1120,14 @@ import Virtualization // for getting network interfaces
             f("-device")
             f("usb-kbd,bus=usb-bus.0")
         }
+        #if os(macOS)
+        if let precisionTouchpadPort = qemu.precisionTouchpadPort, !isClassicMacNewWorld {
+            f("-chardev")
+            f("socket,id=utmptp,host=127.0.0.1,port=\(precisionTouchpadPort),reconnect=2")
+            f("-device")
+            f("usb-redir,chardev=utmptp,bus=usb-bus.0")
+        }
+        #endif
         #if WITH_USB
         let maxDevices = input.maximumUsbShare
         let buses = (maxDevices + 2) / 3

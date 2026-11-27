@@ -157,6 +157,10 @@ final class UTMQemuVirtualMachine: UTMSpiceVirtualMachine {
     private var startTask: Task<Void, any Error>?
     
     private var swtpm: UTMSWTPM?
+
+    #if os(macOS)
+    private(set) var precisionTouchpad: UTMPrecisionTouchpadServer?
+    #endif
     
     private var changeCursorRequestInProgress: Bool = false
 
@@ -164,6 +168,9 @@ final class UTMQemuVirtualMachine: UTMSpiceVirtualMachine {
     private static var isResourceCacheUpdated = false
 
     @Setting("UseFileLock") private var isUseFileLock = true
+    #if os(macOS)
+    @Setting("NoPrecisionTouchpad") private var isPrecisionTouchpadDisabled = false
+    #endif
 
     #if WITH_SERVER
     @Setting("ServerPort") private var serverPort: Int = 0
@@ -365,9 +372,24 @@ extension UTMQemuVirtualMachine {
             throw UTMVirtualMachineError.notImplemented
         }
         #endif
+        #if os(macOS)
+        var precisionTouchpadPort: UInt16?
+        if await config.isUsbUsed && !isRemoteSession && !isPrecisionTouchpadDisabled {
+            let ptp = UTMPrecisionTouchpadServer()
+            do {
+                precisionTouchpadPort = try ptp.start()
+                self.precisionTouchpad = ptp
+            } catch {
+                logger.debug("Failed to start Precision Touchpad server: \(error)")
+            }
+        }
+        #endif
         await MainActor.run {
             config.qemu.isDisposable = isRunningAsDisposible
             config.qemu.hostRefreshRate = isRemoteSession ? nil : delegate?.virtualMachineDisplayRefreshRate(self)
+            #if os(macOS)
+            config.qemu.precisionTouchpadPort = precisionTouchpadPort
+            #endif
             #if WITH_SERVER
             config.qemu.spiceServerPort = spicePort?.internalPort
             config.qemu.spiceServerPassword = spicePassword
@@ -503,6 +525,9 @@ extension UTMQemuVirtualMachine {
         
         // continue VM boot
         try await monitor.continueBoot()
+        #if os(macOS)
+        precisionTouchpad?.notifyGuestBooted()
+        #endif
         
         // delete saved suspend state
         if isSuspended {
@@ -564,6 +589,10 @@ extension UTMQemuVirtualMachine {
             await registryEntry.setIsSuspended(false)
             await qemuVM.kill()
             // a start that fails before QEMU is running is not reported as a stop
+            #if os(macOS)
+            precisionTouchpad?.stop()
+            precisionTouchpad = nil
+            #endif
             removeRemoteSessionFiles()
             state = .stopped
             throw error
@@ -857,6 +886,10 @@ extension UTMQemuVirtualMachine: QEMUVirtualMachineDelegate {
         #endif
         swtpm?.stop()
         swtpm = nil
+        #if os(macOS)
+        precisionTouchpad?.stop()
+        precisionTouchpad = nil
+        #endif
         ioService = nil
         ioServiceDelegate = nil
         pipeInterface?.disconnect()

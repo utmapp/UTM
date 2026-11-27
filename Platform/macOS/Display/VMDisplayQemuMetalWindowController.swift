@@ -69,6 +69,7 @@ class VMDisplayQemuMetalWindowController: VMDisplayQemuWindowController {
     @Setting("IsCapsLockKey") private var isCapsLockKey: Bool = false
     @Setting("IsNumLockForced") private var isNumLockForced: Bool = false
     @Setting("InvertScroll") private var isInvertScroll: Bool = false
+    @Setting("NoPrecisionTouchpad") private var isPrecisionTouchpadDisabled: Bool = false
     @Setting("QEMURendererFPSLimit") private var rendererFpsLimit: Int = 0
     
     // MARK: - Init
@@ -610,6 +611,19 @@ extension VMDisplayQemuMetalWindowController: VMMetalViewInputDelegate {
     func mouseScroll(dy: CGFloat, buttonMask: CSInputButton) {
         let scrollDy = isInvertScroll ? -dy : dy
         vmInput?.sendMouseScroll(.smooth, buttonMask: buttonMask, dy: scrollDy)
+    }
+
+    var isPrecisionTouchpadActive: Bool {
+        !isPrecisionTouchpadDisabled && (qemuVM?.precisionTouchpad?.isActive ?? false)
+    }
+
+    @MainActor func touchpadTouchesChanged(event: NSEvent, in view: NSView) {
+        guard !isPrecisionTouchpadDisabled else { return }
+        qemuVM?.precisionTouchpad?.handleTouches(event: event, in: view)
+    }
+
+    @MainActor func touchpadCancelGesture() {
+        qemuVM?.precisionTouchpad?.cancelActiveGesture()
     }
     
     private func sendExtendedKey(_ button: CSInputKey, keyCode: Int) {

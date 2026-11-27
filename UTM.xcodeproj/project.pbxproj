@@ -310,6 +310,7 @@
 		947DDF020475E2433DDC2A21 /* VMConfigQEMUCommandLineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AEFABA6F4DF195E96AD2D5 /* VMConfigQEMUCommandLineView.swift */; };
 		9DFF2F0A05DA5A4B5FA35917 /* VMKeyboardAccessoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB38A22C8D69DB2D2C64107F /* VMKeyboardAccessoryView.swift */; };
 		A1C4F00230C1200000CA9501 /* CapsLockRemapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C4F00130C1200000CA9501 /* CapsLockRemapper.swift */; };
+		A1C4F00430C1200000CA9501 /* UTMPrecisionTouchpadServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C4F00330C1200000CA9501 /* UTMPrecisionTouchpadServer.swift */; };
 		A5A9A26C444286951EC315D9 /* VMSnapshotData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16001E3BC682D8470EFCF312 /* VMSnapshotData.swift */; };
 		AFC3FBE9C92083C52D800437 /* UTMSnapshotManifest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F9CF0C724EB2633D0B87ACE /* UTMSnapshotManifest.swift */; };
 		B329049C270FE136002707AC /* AltKit in Frameworks */ = {isa = PBXBuildFile; productRef = B329049B270FE136002707AC /* AltKit */; };
@@ -2092,6 +2093,7 @@
 		85EC516327CC8C98004A51DE /* VMConfigAdvancedNetworkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMConfigAdvancedNetworkView.swift; sourceTree = "<group>"; };
 		9786BB59294056960032B858 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		A1C4F00130C1200000CA9501 /* CapsLockRemapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapsLockRemapper.swift; sourceTree = "<group>"; };
+		A1C4F00330C1200000CA9501 /* UTMPrecisionTouchpadServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMPrecisionTouchpadServer.swift; sourceTree = "<group>"; };
 		B5BB911D9C7D6564198DAC87 /* VMSnapshotsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VMSnapshotsView.swift; sourceTree = "<group>"; };
 		C03453AD2709E35100AD51AD /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		C03453AE2709E35100AD51AD /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
@@ -3043,6 +3045,7 @@
 			isa = PBXGroup;
 			children = (
 				A1C4F00130C1200000CA9501 /* CapsLockRemapper.swift */,
+				A1C4F00330C1200000CA9501 /* UTMPrecisionTouchpadServer.swift */,
 				CE061CDD289E6DC30000351C /* VMDisplayWindow.xib */,
 				CE5A7E102E9F4A1100C0FFEE /* VMDisplayWindow.swift */,
 				CE612AC524D3B50700FA6300 /* VMDisplayWindowController.swift */,
@@ -4830,6 +4833,7 @@
 			files = (
 				947DDF020475E2433DDC2A21 /* VMConfigQEMUCommandLineView.swift in Sources */,
 				A1C4F00230C1200000CA9501 /* CapsLockRemapper.swift in Sources */,
+				A1C4F00430C1200000CA9501 /* UTMPrecisionTouchpadServer.swift in Sources */,
 				CEE06B272B2FC89400A811AE /* UTMServerView.swift in Sources */,
 				CEB63A7724F4654400CAF323 /* Main.swift in Sources */,
 				84E3A91B2946D2590024A740 /* UTMMenuBarExtraScene.swift in Sources */,

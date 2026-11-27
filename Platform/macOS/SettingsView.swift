@@ -326,6 +326,7 @@ struct InputSettingsView: View {
     @AppStorage("InvertScroll") var isInvertScroll = false
     @AppStorage("HandleInitialClick") var isHandleInitialClick = false
     @AppStorage("IsISOKeySwapped") var isISOKeySwapped = false
+    @AppStorage("NoPrecisionTouchpad") var isPrecisionTouchpadDisabled = false
 
     @State private var isKeyboardShortcutsShown = false
 
@@ -371,6 +372,9 @@ struct InputSettingsView: View {
                 Toggle(isOn: $isHandleInitialClick) {
                     Text("Handle input on initial click")
                 }.help("If enabled, when the VM is out of focus, the first click will be handled by the VM. Otherwise, the first click will only bring the window into focus.")
+                Toggle(isOn: $isPrecisionTouchpadDisabled.inverted) {
+                    Text("Enable trackpad gestures")
+                }.help("If enabled, multi-finger trackpad gestures (such as smooth scrolling and pinch to zoom) are forwarded to supported guests. Takes effect when the VM is next started.")
             }
             
             Section(header: Text("QEMU Keyboard")) {
@@ -577,6 +581,7 @@ extension UserDefaults {
     @objc dynamic var IsNumLockForced: Bool { false }
     @objc dynamic var NoSaveScreenshot: Bool { false }
     @objc dynamic var InvertScroll: Bool { false }
+    @objc dynamic var NoPrecisionTouchpad: Bool { false }
     @objc dynamic var QEMURendererBackend: Int { 0 }
     @objc dynamic var QEMURendererFPSLimit: Int { 0 }
 }
