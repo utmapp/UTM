@@ -91,9 +91,29 @@ final class UTMQemuVirtualMachine: UTMSpiceVirtualMachine {
         }
         
         didSet {
+            #if os(macOS)
+            updateRunningActivity()
+            #endif
             delegate?.virtualMachine(self, didTransitionToState: state)
         }
     }
+
+    #if os(macOS)
+    /// Keeps App Nap off while the VM runs, as ppc-osx-vgpu's QEMU display does: a hidden or
+    /// occluded UTM window must not move the emulator to efficiency cores or coalesce its timers.
+    private var runningActivity: NSObjectProtocol?
+
+    private func updateRunningActivity() {
+        if state == .stopped {
+            if let activity = runningActivity {
+                ProcessInfo.processInfo.endActivity(activity)
+                runningActivity = nil
+            }
+        } else if runningActivity == nil {
+            runningActivity = ProcessInfo.processInfo.beginActivity(options: [.userInitiated, .latencyCritical], reason: "Virtual machine is running")
+        }
+    }
+    #endif
     
     var screenshot: UTMVirtualMachineScreenshot? {
         willSet {

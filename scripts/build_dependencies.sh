@@ -210,7 +210,9 @@ download_all () {
     download $SPICE_CLIENT_SRC
     download $ZSTD_SRC
     download $SLIRP_SRC
-    download $QEMU_SRC
+    if [ -z "$QEMU_EXTERNAL" ]; then
+        download $QEMU_SRC
+    fi
     if [ -z "$SKIP_USB_BUILD" ]; then
         download $USB_SRC
         download $USBREDIR_SRC
@@ -951,6 +953,7 @@ remove_shared_gst_plugins () {
 ARCH=
 REBUILD=
 QEMU_DIR=
+QEMU_EXTERNAL=
 REDOWNLOAD=
 PLATFORM_FAMILY_NAME=
 while [ "x$1" != "x" ]; do
@@ -967,6 +970,7 @@ while [ "x$1" != "x" ]; do
         ;;
     -q | --qemu )
         QEMU_DIR="$2"
+        QEMU_EXTERNAL=y
         shift
         ;;
     -p )
