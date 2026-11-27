@@ -309,6 +309,10 @@ import Virtualization // for getting network interfaces
                     if display.hardware.rawValue.lowercased().contains("vga") && isClassicMacNewWorld {
                         "edid=on"
                     }
+                    if isClassicMacAccelDisplay(display) {
+                        // hardware cursor for the bundled Mac OS 9 qemu_vga.ndrv
+                        "mac-accel=on"
+                    }
                     if display.isGLSupported && isVulkanSupported {
                         "hostmem=8G"
                         "blob=true"
@@ -328,6 +332,11 @@ import Virtualization // for getting network interfaces
                 }
             }
         }
+    }
+
+    /// Mac OS 9 / Mac OS X PowerPC VGA with the accelerated qemu_vga.ndrv (hardware cursor).
+    private func isClassicMacAccelDisplay(_ display: UTMQemuConfigurationDisplay) -> Bool {
+        display.hardware.rawValue == "VGA" && isClassicMacNewWorld
     }
 
     private var isGLSupported: Bool {
