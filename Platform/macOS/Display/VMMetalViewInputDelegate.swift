@@ -27,4 +27,13 @@ protocol VMMetalViewInputDelegate: AnyObject {
     func captureMouse()
     func releaseMouse()
     func didUseNumericPad()
+    var isPrecisionTouchpadActive: Bool { get }
+    @MainActor func touchpadTouchesChanged(event: NSEvent, in view: NSView)
+    @MainActor func touchpadCancelGesture()
+}
+
+extension VMMetalViewInputDelegate {
+    var isPrecisionTouchpadActive: Bool { false }
+    @MainActor func touchpadTouchesChanged(event: NSEvent, in view: NSView) {}
+    @MainActor func touchpadCancelGesture() {}
 }

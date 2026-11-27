@@ -84,6 +84,9 @@ struct UTMQemuConfigurationQEMU: Codable {
     /// Refresh rate (Hz) of the host display the VM is shown on, advertised in the guest EDID. Not saved.
     var hostRefreshRate: Int?
 
+    /// Loopback TCP port for the virtual USB HID Precision Touchpad `usb-redir` server. Not saved.
+    var precisionTouchpadPort: UInt16?
+
     /// When resetting UEFI vars, also set up Secure Boot keys
     var hasPreloadedSecureBootKeys: Bool = false
 

@@ -76,6 +76,12 @@ class VMMetalView: MTKView {
         }
     }
     
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        allowedTouchTypes = [.indirect]
+        wantsRestingTouches = false
+    }
+
     override var acceptsFirstResponder: Bool { true }
     
     override func becomeFirstResponder() -> Bool {
@@ -96,6 +102,7 @@ class VMMetalView: MTKView {
             sendModifiers(lastModifiers, press: false)
             lastModifiers = []
         }
+        inputDelegate?.touchpadCancelGesture()
         return super.resignFirstResponder()
     }
     
@@ -124,6 +131,7 @@ class VMMetalView: MTKView {
         logger.debug("mouse exited")
         isMouseInWindow = false
         NSCursor.tryUnhide()
+        inputDelegate?.touchpadCancelGesture()
     }
     
     override func mouseDown(with event: NSEvent) {
@@ -311,10 +319,33 @@ class VMMetalView: MTKView {
     }
     
     override func scrollWheel(with event: NSEvent) {
+        if event.hasPreciseScrollingDeltas && (inputDelegate?.isPrecisionTouchpadActive ?? false) {
+            return
+        }
         guard event.deltaY != 0 else { return }
         logger.trace("scroll: \(event.deltaY)")
         inputDelegate?.mouseScroll(dy: event.deltaY,
                                    buttonMask: NSEvent.pressedMouseButtons.inputButtons())
+    }
+
+    override func touchesBegan(with event: NSEvent) {
+        inputDelegate?.touchpadTouchesChanged(event: event, in: self)
+        super.touchesBegan(with: event)
+    }
+
+    override func touchesMoved(with event: NSEvent) {
+        inputDelegate?.touchpadTouchesChanged(event: event, in: self)
+        super.touchesMoved(with: event)
+    }
+
+    override func touchesEnded(with event: NSEvent) {
+        inputDelegate?.touchpadTouchesChanged(event: event, in: self)
+        super.touchesEnded(with: event)
+    }
+
+    override func touchesCancelled(with event: NSEvent) {
+        inputDelegate?.touchpadCancelGesture()
+        super.touchesCancelled(with: event)
     }
 
     override func acceptsFirstMouse(for event: NSEvent?) -> Bool {

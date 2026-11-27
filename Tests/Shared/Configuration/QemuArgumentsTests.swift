@@ -585,4 +585,21 @@ import XCTest
         XCTAssertEqual(args.devices(ofType: "rtl8139").count, 1, "\(args.strings)")
         XCTAssertEqual(args.devices(ofType: "ES1370").count, 1, "\(args.strings)")
     }
+
+    #if os(macOS)
+    /// Setting a transient Precision Touchpad port attaches a loopback `usb-redir` chardev and
+    /// device on the primary USB bus, and omits them when unset or when USB is disabled.
+    func testPrecisionTouchpadAddsUsbRedirDevice() {
+        let config = configuration(architecture: .aarch64, target: QEMUTarget_aarch64.virt)
+        XCTAssertTrue(arguments(config).values(of: "-chardev").allSatisfy { !$0.contains("id=utmptp") })
+
+        config.qemu.precisionTouchpadPort = 54321
+        let args = arguments(config)
+        XCTAssertTrue(args.values(of: "-chardev").contains("socket,id=utmptp,host=127.0.0.1,port=54321,reconnect=2"), "\(args.strings)")
+        XCTAssertTrue(args.devices(ofType: "usb-redir").contains("usb-redir,chardev=utmptp,bus=usb-bus.0"), "\(args.strings)")
+
+        config.input.usbBusSupport = .disabled
+        XCTAssertTrue(arguments(config).values(of: "-chardev").allSatisfy { !$0.contains("id=utmptp") })
+    }
+    #endif
 }
