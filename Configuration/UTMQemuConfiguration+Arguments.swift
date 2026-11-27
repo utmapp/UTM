@@ -167,8 +167,16 @@ import Virtualization // for getting network interfaces
         iommuArguments // must come before the devices it serves
         spiceArguments
         boardArguments // before other PCI devices, so they keep the board's own slots
-        networkArguments
-        displayArguments
+        if isRadeonUsed {
+            // The Radeon must sit in slot 0xE (its OpenBIOS and boot-command
+            // expect /pci@f2000000/QEMU,VGA@e). Emit it before the NIC so an
+            // auto-placed sungem cannot take that slot first.
+            displayArguments
+            networkArguments
+        } else {
+            networkArguments
+            displayArguments
+        }
         serialArguments
         cpuArguments
         machineArguments
@@ -178,6 +186,11 @@ import Virtualization // for getting network interfaces
             usbArguments
         }
         otherInputsArguments
+        if isRadeonR300Used {
+            // Also reaches a tablet added by the user's own arguments.
+            f("-global")
+            f("usb-tablet.abs-scale=\(Self.macOSXTabletScale)")
+        }
         drivesArguments
         sharingArguments
         miscArguments
@@ -319,7 +332,13 @@ import Virtualization // for getting network interfaces
                 } else if !shouldSkipDisplay(display) {
                     f("-device")
                     filterDisplayIfRemote(display.hardware)
-                    if let vgaRamSize = displays[0].vgaRamMib {
+                    if isRadeon(display) {
+                        // slot e matches the OpenFirmware path in the boot-command below
+                        "addr=e.0"
+                        "vgamem_mb=\(radeonVramMib)"
+                        "renderer=metal"
+                        "romfile=" // no ROM, OpenFirmware properties are set in boot-command
+                    } else if let vgaRamSize = displays[0].vgaRamMib {
                         "vgamem_mb=\(vgaRamSize)"
                     }
                     if display.hardware.rawValue.lowercased().contains("vga") && isClassicMacNewWorld {
@@ -444,6 +463,17 @@ import Virtualization // for getting network interfaces
         system.architecture == .m68k && system.target.rawValue == QEMUTarget_m68k.q800.rawValue
     }
 
+    private static let radeonR300DefaultVramMib = 128
+
+    private func isRadeonR300(_ display: UTMQemuConfigurationDisplay) -> Bool {
+        isClassicMacNewWorld && display.hardware.rawValue == QEMUDisplayDevice_ppc.ati_radeon_9700.rawValue
+    }
+
+    /// The Radeon 9000 (RV250) for Mac OS X 10.2 Jaguar, which has no R300 driver.
+    private func isRadeonRV250(_ display: UTMQemuConfigurationDisplay) -> Bool {
+        isClassicMacNewWorld && display.hardware.rawValue == QEMUDisplayDevice_ppc.ati_radeon_9000.rawValue
+    }
+
     private static let radeonR100DefaultVramMib = 32
 
     /// The Radeon 7000 (R100) for Mac OS 9: ati-vga with ATI's own drivers, no qemu_vga NDRV.
@@ -462,6 +492,40 @@ import Virtualization // for getting network interfaces
             return (1024, 768)
         }
         return (min(host.0 / host.2, 1600) & ~1, min(host.1 / host.2, 1200) & ~1)
+    }
+
+    private func isRadeon(_ display: UTMQemuConfigurationDisplay) -> Bool {
+        isRadeonR300(display) || isRadeonRV250(display)
+    }
+
+    private var isRadeonRV250Used: Bool {
+        displays.contains { isRadeonRV250($0) }
+    }
+
+    /// Either Radeon: both take slot 0xE, the hardware-cursor NDRV and the Mac OS X NVRAM layout.
+    private var isRadeonUsed: Bool {
+        displays.contains { isRadeon($0) }
+    }
+
+    /// The Radeon 9700 (Mac OS X 10.3-10.5), which needs its own OpenBIOS and boot properties.
+    private var isRadeonR300Used: Bool {
+        displays.contains { isRadeonR300($0) }
+    }
+
+    private var radeonVramMib: Int {
+        displays.first.flatMap { $0.vgaRamMib } ?? Self.radeonR300DefaultVramMib
+    }
+
+    /// An installed Mac OS X 10.4 stretches USB tablet input by about 1.1775
+    /// about the screen centre, so the guest cursor drifts away from the host
+    /// pointer (which UTM draws itself with the Radeon's hardware cursor).
+    /// QEMU's usb-tablet `abs-scale` undoes it (1/10000 units).
+    private static let macOSXTabletScale = 11775
+
+    /// True when the user's own QEMU arguments already add a USB tablet
+    /// (e.g. `-usbdevice tablet`), so UTM must not add a second one.
+    private var userArgumentsAddTablet: Bool {
+        qemu.additionalArguments.contains { $0.string.contains("tablet") }
     }
 
     private var isClassicMacNewWorld: Bool {
@@ -722,7 +786,13 @@ import Virtualization // for getting network interfaces
             if system.isForceMulticore {
                 "thread=multi"
             }
-            let tbSize = system.effectiveJitCacheSizeMib
+            var tbSize = system.effectiveJitCacheSizeMib
+            if system.jitCacheSize == 0 && isClassicMacNewWorld {
+                // Mac OS X PPC fills a few hundred MiB with translated code on
+                // boot and desktop alone; a full cache throws everything away and
+                // translates it again (ppc-osx-vgpu: 1 GiB lasted ~45 min incl. Doom 3).
+                tbSize = max(tbSize, 1024)
+            }
             "tb-size=\(tbSize)"
             #if WITH_JIT
             // use mirror mapping when we don't have JIT entitlements
@@ -775,6 +845,13 @@ import Virtualization // for getting network interfaces
         }
         if isClassicMacNewWorld {
             properties = properties.appendingDefaultPropertyName("via", value: "pmu")
+            if isRadeonUsed {
+                // the Radeon's hardware cursor is driven by this NDRV
+                properties = properties.appendingDefaultPropertyName("ndrv", value: "qemu_vga_hwc.ndrv")
+                // NVRAM layout Mac OS X can read: nvram and bless (the last
+                // step of an install) fail without it
+                properties = properties.appendingDefaultPropertyName("osx-nvram", value: "on")
+            }
         }
         return properties
     }
@@ -819,6 +896,15 @@ import Virtualization // for getting network interfaces
             declrom
             f()
         }
+        if isRadeonUsed {
+            if !hasCustomBios {
+                // only the OpenBIOS VGA table (the card's PCI ID) differs
+                f("-bios")
+                f(isRadeonRV250Used ? "openbios-ppc-rv250" : "openbios-ppc-r300")
+            }
+            f("-global")
+            f("uni-north-pci.agp-capable=on")
+        }
         if isRadeonR100Used && !hasCustomBios {
             f("-bios")
             f("openbios-ppc-r100-retail")
@@ -832,7 +918,17 @@ import Virtualization // for getting network interfaces
             ndrvloader
             f()
             f("-prom-env")
-            f("boot-command=init-program go")
+            if isRadeonRV250Used {
+                // Jaguar's driver only needs the VRAM size.
+                let vramBytes = String(radeonVramMib * 1024 * 1024, radix: 16)
+                f(#"boot-command=" /pci@f2000000/QEMU,VGA@e" ['] find-device catch 0= if h# \#(vramBytes) encode-int " VRAM,totalsize" property device-end then init-program go"#)
+            } else if isRadeonR300Used {
+                // The Mac OS X driver finds the card through these OpenFirmware properties.
+                let vramBytes = String(radeonVramMib * 1024 * 1024, radix: 16)
+                f(#"boot-command=" /pci@f2000000/QEMU,VGA@e" ['] find-device catch 0= if h# \#(vramBytes) encode-int " VRAM,totalsize" property " ATY,R300" encode-string " model" property " 113-A06500-124" encode-string " ATY,Rom#" property " 109-A06501-00" encode-string " ATY,Card#" property " 1.88" encode-string " ATY,Fcode" property device-end then init-program go"#)
+            } else {
+                f("boot-command=init-program go")
+            }
         }
         f("-m")
         system.memorySize
@@ -1186,6 +1282,11 @@ import Virtualization // for getting network interfaces
         if !isClassicMacNewWorld {
             f("-device")
             f("usb-tablet,bus=usb-bus.0")
+        } else if isRadeonR300Used && !userArgumentsAddTablet {
+            // Mac OS X has no virtio-input driver, so give it a USB tablet
+            // for the uncaptured (absolute) mouse mode.
+            f("-device")
+            f("usb-tablet,bus=usb-bus.0")
         }
         if !qemu.hasPS2Controller {
             f("-device")
@@ -1228,7 +1329,11 @@ import Virtualization // for getting network interfaces
     }
 
     @QEMUArgumentBuilder private var otherInputsArguments: [QEMUArgument] {
-        if isClassicMacNewWorld {
+        // Mac OS X (the Radeon 9700 guests) has no virtio-input driver and uses
+        // the USB tablet. A second absolute device there would break the
+        // uncaptured mouse: UTM selects the first absolute mouse QEMU lists,
+        // and that is often the virtio tablet the guest ignores.
+        if isClassicMacNewWorld && !isRadeonUsed {
             f("-device")
             f("virtio-tablet-pci")
         }
