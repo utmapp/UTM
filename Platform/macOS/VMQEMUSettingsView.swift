@@ -68,7 +68,8 @@ struct VMQEMUSettingsView: View {
             }
         }
         NavigationLink {
-            VMConfigInputView(config: $config.input, hasUsbSupport: config.system.architecture.hasUsbSupport)
+            VMConfigInputView(config: $config.input, hasUsbSupport: config.system.architecture.hasUsbSupport,
+                              hasGameControllerSupport: [.ppc, .ppc64].contains(config.system.architecture) && config.system.target.rawValue == QEMUTarget_ppc.mac99.rawValue)
                 .scrollable()
                 .settingsToolbar()
         } label: {

@@ -241,8 +241,11 @@
 		84937F1F289767F0003148F4 /* zstd.1.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84937EFE28960789003148F4 /* zstd.1.framework */; };
 		84937F20289767F0003148F4 /* zstd.1.framework in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 84937EFE28960789003148F4 /* zstd.1.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		84A0A8832A47D52E0038F329 /* UTMQemuPort.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A0A8822A47D52E0038F329 /* UTMQemuPort.swift */; };
+		CE9A0A122EC9A0A100C0FFEE /* UTMGamepadBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9A0A112EC9A0A100C0FFEE /* UTMGamepadBridge.swift */; };
 		84A0A8842A47D52E0038F329 /* UTMQemuPort.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A0A8822A47D52E0038F329 /* UTMQemuPort.swift */; };
+		CE9A0A132EC9A0A100C0FFEE /* UTMGamepadBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9A0A112EC9A0A100C0FFEE /* UTMGamepadBridge.swift */; };
 		84A0A8852A47D52E0038F329 /* UTMQemuPort.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A0A8822A47D52E0038F329 /* UTMQemuPort.swift */; };
+		CE9A0A142EC9A0A100C0FFEE /* UTMGamepadBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9A0A112EC9A0A100C0FFEE /* UTMGamepadBridge.swift */; };
 		84A0A8882A47D5C50038F329 /* QEMUKit in Frameworks */ = {isa = PBXBuildFile; productRef = 84A0A8872A47D5C50038F329 /* QEMUKit */; };
 		84A0A88A2A47D5D10038F329 /* QEMUKit in Frameworks */ = {isa = PBXBuildFile; productRef = 84A0A8892A47D5D10038F329 /* QEMUKit */; };
 		84A0A88C2A47D5D70038F329 /* QEMUKit in Frameworks */ = {isa = PBXBuildFile; productRef = 84A0A88B2A47D5D70038F329 /* QEMUKit */; };
@@ -2056,6 +2059,7 @@
 		84937F1C289764E8003148F4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		84A0A8812A47D51D0038F329 /* QEMUHelperDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QEMUHelperDelegate.h; sourceTree = "<group>"; };
 		84A0A8822A47D52E0038F329 /* UTMQemuPort.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UTMQemuPort.swift; sourceTree = "<group>"; };
+		CE9A0A112EC9A0A100C0FFEE /* UTMGamepadBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTMGamepadBridge.swift; sourceTree = "<group>"; };
 		84A381A9268CB30C0048EE4D /* VMDrivesSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMDrivesSettingsView.swift; sourceTree = "<group>"; };
 		84A57CB130641C6800BA5139 /* iOSHelper.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.extensionkit-extension"; includeInIndex = 0; path = iOSHelper.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		84A57CBF30641C9100BA5139 /* iOSHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSHelper.swift; sourceTree = "<group>"; };
@@ -3403,6 +3407,7 @@
 				F7335781A3EBC95B7BE01C90 /* UTMQemuSnapshotBackend.swift */,
 				DE6FCF9E7BD060AB81411ABC /* UTMSnapshotBackend.swift */,
 				84A0A8822A47D52E0038F329 /* UTMQemuPort.swift */,
+				CE9A0A112EC9A0A100C0FFEE /* UTMGamepadBridge.swift */,
 				CE03D05424D90BE000F76B84 /* UTMQemuSystem.h */,
 				CE03D05024D90B4E00F76B84 /* UTMQemuSystem.m */,
 				CEE8B4C12B71DF4C0035AE86 /* UTMQemuSystemBackends.h */,
@@ -4778,6 +4783,7 @@
 				CE8011202AD4E9E8009001C2 /* UTMApp.swift in Sources */,
 				CE65BAC026A4D8DE0001BD6B /* VMConfigDisplayConsoleView.swift in Sources */,
 				84A0A8832A47D52E0038F329 /* UTMQemuPort.swift in Sources */,
+				CE9A0A122EC9A0A100C0FFEE /* UTMGamepadBridge.swift in Sources */,
 				848D99B828630A780055C215 /* VMConfigSerialView.swift in Sources */,
 				CEF0305E26A2AFDF00667B63 /* VMWizardState.swift in Sources */,
 				843BF82C284482C10029D60D /* UTMQemuConfigurationInput.swift in Sources */,
@@ -4868,6 +4874,7 @@
 				CEBBF1A824B921F000C15049 /* VMDetailsView.swift in Sources */,
 				848D99AA285DB5550055C215 /* VMConfigConstantPicker.swift in Sources */,
 				84A0A8852A47D52E0038F329 /* UTMQemuPort.swift in Sources */,
+				CE9A0A142EC9A0A100C0FFEE /* UTMGamepadBridge.swift in Sources */,
 				8432329628C2ED9000CFBC97 /* FileBrowseField.swift in Sources */,
 				CE88A09D2E1DDB4200EAA28E /* UTMASIFImage.m in Sources */,
 				848A98C2286A2257006F0550 /* UTMAppleConfigurationMacPlatform.swift in Sources */,
@@ -5092,6 +5099,7 @@
 				CEA45E43263519B5002FA97D /* UTMLegacyQemuConfigurationPortForward.m in Sources */,
 				843BF841284555E70029D60D /* UTMQemuConfigurationPortForward.swift in Sources */,
 				84A0A8842A47D52E0038F329 /* UTMQemuPort.swift in Sources */,
+				CE9A0A132EC9A0A100C0FFEE /* UTMGamepadBridge.swift in Sources */,
 				846F8D5B2E3891FE0037162B /* UTMKeyboardShortcuts.swift in Sources */,
 				848D99C528670F650055C215 /* UTMQemuConfiguration+Arguments.swift in Sources */,
 				CEA45E4B263519B5002FA97D /* BusyOverlay.swift in Sources */,

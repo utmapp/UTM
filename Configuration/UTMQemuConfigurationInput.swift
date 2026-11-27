@@ -27,10 +27,14 @@ struct UTMQemuConfigurationInput: Codable {
     /// The maximum number of USB devices that can be forwarded concurrently.
     var maximumUsbShare: Int = 3
     
+    /// If enabled, a host game controller is given to the guest as a USB gamepad (PowerPC Mac guests).
+    var hasGameController: Bool = false
+    
     enum CodingKeys: String, CodingKey {
         case usbBusSupport = "UsbBusSupport"
         case hasUsbSharing = "UsbSharing"
         case maximumUsbShare = "MaximumUsbShare"
+        case hasGameController = "GameController"
     }
     
     init() {
@@ -41,6 +45,7 @@ struct UTMQemuConfigurationInput: Codable {
         usbBusSupport = try values.decode(QEMUUSBBus.self, forKey: .usbBusSupport)
         hasUsbSharing = try values.decode(Bool.self, forKey: .hasUsbSharing)
         maximumUsbShare = try values.decode(Int.self, forKey: .maximumUsbShare)
+        hasGameController = try values.decodeIfPresent(Bool.self, forKey: .hasGameController) ?? false
     }
     
     func encode(to encoder: Encoder) throws {
@@ -48,6 +53,7 @@ struct UTMQemuConfigurationInput: Codable {
         try container.encode(usbBusSupport, forKey: .usbBusSupport)
         try container.encode(hasUsbSharing, forKey: .hasUsbSharing)
         try container.encode(maximumUsbShare, forKey: .maximumUsbShare)
+        try container.encode(hasGameController, forKey: .hasGameController)
     }
 }
 

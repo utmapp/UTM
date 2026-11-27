@@ -1120,6 +1120,14 @@ import Virtualization // for getting network interfaces
             f("-device")
             f("usb-kbd,bus=usb-bus.0")
         }
+        if isClassicMacNewWorld && input.hasGameController {
+            // The host's game controller as a USB gamepad Mac OS X recognises
+            // without a driver; UTMGamepadBridge feeds it over this SPICE port.
+            f("-chardev")
+            f("spiceport,name=com.utmapp.gamepad.0,id=gamepad0")
+            f("-device")
+            f("poweremu-gamepad,chardev=gamepad0,bus=usb-bus.0")
+        }
         #if WITH_USB
         let maxDevices = input.maximumUsbShare
         let buses = (maxDevices + 2) / 3

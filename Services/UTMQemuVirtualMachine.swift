@@ -127,6 +127,11 @@ final class UTMQemuVirtualMachine: UTMSpiceVirtualMachine {
     
     /// Pipe interface (alternative to UTMSpiceIO)
     private var pipeInterface: UTMPipeInterface?
+    
+    #if os(macOS)
+    /// Host game controller for the guest's USB gamepad
+    @MainActor private var gamepadBridge: UTMGamepadBridge?
+    #endif
 
     /// Directory of the files created for a remote session, removed when the session ends
     private var remoteSessionURL: URL?
@@ -512,6 +517,16 @@ extension UTMQemuVirtualMachine {
         // save ioService and let it set the delegate
         self.ioService = interface as? UTMSpiceIO
         self.pipeInterface = interface as? UTMPipeInterface
+        #if os(macOS)
+        let hasGameController = await config.input.hasGameController
+        if hasGameController, let ioService = interface as? UTMSpiceIO {
+            await MainActor.run {
+                let bridge = UTMGamepadBridge(ioService: ioService)
+                bridge.start()
+                self.gamepadBridge = bridge
+            }
+        }
+        #endif
         self.isRunningAsDisposible = isRunningAsDisposible
         
         // test out snapshots
@@ -857,6 +872,12 @@ extension UTMQemuVirtualMachine: QEMUVirtualMachineDelegate {
         #endif
         swtpm?.stop()
         swtpm = nil
+        #if os(macOS)
+        Task { @MainActor in
+            gamepadBridge?.stop()
+            gamepadBridge = nil
+        }
+        #endif
         ioService = nil
         ioServiceDelegate = nil
         pipeInterface?.disconnect()
