@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- VirtualIntelMac's root guest agent (opengl-guest-agent, MIT), UTM's PowerPC build, on the
+     PCI serial port UTM puts in slot 0x1d. OnDemand=false keeps it running on Tiger and Leopard. -->
+<plist version="1.0"><dict>
+<key>Label</key><string>com.utmapp.ppc-guest-agent</string>
+<key>ProgramArguments</key><array>
+<string>/Library/Application Support/Virtual Intel Mac/GuestTools/opengl-guest-agent</string>
+<string>--device</string>
+<string>/dev/cu.pci-serial29</string>
+</array>
+<key>UserName</key><string>root</string>
+<key>RunAtLoad</key><true/>
+<key>OnDemand</key><false/>
+<key>ServiceIPC</key><false/>
+<key>StandardErrorPath</key><string>/var/log/UTMGuestAgent.log</string>
+</dict></plist>

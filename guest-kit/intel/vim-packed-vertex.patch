@@ -1,0 +1,70 @@
+diff --git a/Source/PassthroughOpenGL/passthrough-opengl-arrays-client.c b/Source/PassthroughOpenGL/passthrough-opengl-arrays-client.c
+index 9736774..84b8429 100644
+--- a/Source/PassthroughOpenGL/passthrough-opengl-arrays-client.c
++++ b/Source/PassthroughOpenGL/passthrough-opengl-arrays-client.c
+@@ -222,7 +222,7 @@ static int DGClientArrayInteger(struct DGContext *c,GLenum key,GLint *out)
+         else if(slot==DG_VERTEX_EDGE_SLOT || slot==DG_VERTEX_INDEX_SLOT)
+             *out=a->wire.stride?(GLint)a->wire.stride:(GLint)DGVertexBytes(a->wire.type);
+         else *out=a->wire.stride?(GLint)a->wire.stride:a->wire.size?
+-            (GLint)(a->wire.size*DGVertexBytes(a->wire.type)):(GLint)(fields[i].default_size*sizeof(GLfloat));
++            (GLint)DGVertexElementBytes(a->wire.type,a->wire.size):(GLint)(fields[i].default_size*sizeof(GLfloat));
+         return 1;
+     }
+     return 0;
+@@ -231,14 +231,14 @@ static void DGArrayPointer(struct DGContext *c,unsigned slot,GLint size,GLenum t
+     const void *pointer,GLboolean normalized)
+ {
+     if(!c) return;
+-    if(slot>=DG_VERTEX_SLOTS || size<1 || size>4 || stride<0 || !DGVertexBytes(type)) { DGDrawFailure(c,1,(unsigned)size);return; }
++    if(slot>=DG_VERTEX_SLOTS || size<1 || size>4 || stride<0 || !DGVertexElementBytes(type,(uint32_t)size)) { DGDrawFailure(c,1,(unsigned)size);return; }
+     if(!c->vertex) c->vertex=DGVertexState(c,0);
+     if(!c->vertex) return;
+     struct DGClientArray *a=&c->vertex->arrays[slot];
+     // Matching native GLEngine ignores normalization for floating formats;
+     // only integer attributes converted to float can be normalized here.
+     int integer=type==GL_BYTE || type==GL_UNSIGNED_BYTE || type==GL_SHORT || type==GL_UNSIGNED_SHORT ||
+-        type==GL_INT || type==GL_UNSIGNED_INT;
++        type==GL_INT || type==GL_UNSIGNED_INT || type==0x8d9f || type==0x8368;
+     a->wire=(struct DGVertexArray){.slot=slot,.size=(uint32_t)size,.type=type,.stride=(uint32_t)stride,
+         .normalized=slot>=16?!!normalized && integer:!!normalized,.buffer=c->array_buffer};a->pointer=pointer;
+     DGUpdateElementVBO(c->vertex,slot);
+@@ -570,7 +570,7 @@ static int DGArrayState(struct DGContext *c,GLuint index,GLenum pname,GLint *out
+     case 0x8624:
+         // Native 13F1911 stores the effective packed stride after Pointer,
+         // but a fresh VAO's untouched default stride is still zero.
+-        *out=a->wire.stride?(GLint)a->wire.stride:(GLint)(a->wire.size*DGVertexBytes(a->wire.type));return 1;
++        *out=a->wire.stride?(GLint)a->wire.stride:(GLint)DGVertexElementBytes(a->wire.type,a->wire.size);return 1;
+     case 0x8625:*out=a->wire.type?(GLint)a->wire.type:GL_FLOAT;return 1;
+     case 0x886a:*out=a->wire.normalized==1;return 1;
+     case 0x889f:*out=(GLint)a->wire.buffer;return 1;
+diff --git a/Source/PassthroughOpenGL/passthrough-opengl-wire.h b/Source/PassthroughOpenGL/passthrough-opengl-wire.h
+index 37ca190..326dbf3 100644
+--- a/Source/PassthroughOpenGL/passthrough-opengl-wire.h
++++ b/Source/PassthroughOpenGL/passthrough-opengl-wire.h
+@@ -632,6 +632,17 @@ static size_t DGVertexBytes(uint32_t type)
+     default:return 0;
+     }
+ }
++/* Packed formats (ARB_vertex_type_2_10_10_10_rev, ARB_vertex_type_10f_11f_11f_rev):
++ * one 32-bit word holds all four (three) components, so the element size is
++ * not component bytes times size. GL 3.3/4.1 core games (SuperTuxKart's packed
++ * normals and tangents) depend on these. */
++static int DGPackedVertexType(uint32_t type)
++{ return type==0x8d9f || type==0x8368 || type==0x8c3b; }
++static size_t DGVertexElementBytes(uint32_t type,uint32_t size)
++{
++    if(DGPackedVertexType(type))return size==(type==0x8c3b?3u:4u)?4:0;
++    return DGVertexBytes(type)*size;
++}
+ static int DGWeightType(uint32_t type)
+ {return (type>=0x1400 && type<=0x1406) || type==0x140a;}
+ static int DGIntegerVertexType(uint32_t type)
+@@ -654,7 +665,7 @@ static int DGVertexArrayModeValid(const struct DGVertexArray *a)
+ }
+ static size_t DGVertexSpan(const struct DGVertexArray *a,uint64_t count)
+ {
+-    size_t element=DGVertexBytes(a->type)*a->size;
++    size_t element=DGVertexElementBytes(a->type,a->size);
+     if(!element || !a->size || a->size>4 || a->stride>DG_MAX_BYTES) return SIZE_MAX;
+     if(!count) return 0;
+     uint64_t stride=a->stride ? a->stride : element;
