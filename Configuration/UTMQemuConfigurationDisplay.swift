@@ -150,6 +150,7 @@ extension UTMQemuConfigurationDisplay {
     
     /// VGA-compatible cards take a video memory size.
     var hasVgaRamSetting: Bool {
-        hardware.rawValue.contains("-vga") || hardware.rawValue == "VGA" || hardware.rawValue == "vmware-svga"
+        hardware.rawValue.contains("-vga") || hardware.rawValue == "VGA" || hardware.rawValue == "vmware-svga" ||
+            hardware.rawValue.hasPrefix("ati-radeon")
     }
 }
