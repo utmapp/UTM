@@ -430,6 +430,54 @@ import XCTest
         XCTAssertTrue(pflashDrives(config).isEmpty)
     }
 
+    // MARK: PowerPC mac99
+
+    /// With -nodefaults QEMU creates mac99's built-in USB controller only when the machine
+    /// has usb=on, so turning USB support off left Mac OS 9 without the controller it
+    /// waits for and it never reached the Finder (#8233).
+    func testMac99KeepsUsbControllerWhenUsbSupportIsOff() throws {
+        let config = configuration(architecture: .ppc, target: QEMUTarget_ppc.mac99)
+        config.input.usbBusSupport = .disabled
+        let args = arguments(config)
+        let machine = try XCTUnwrap(args.values(of: "-machine").first)
+        XCTAssertTrue(QEMUArgumentList.options(machine).contains("usb=on"), machine)
+        XCTAssertTrue(QEMUArgumentList.options(machine).contains("via=pmu"), machine)
+        XCTAssertFalse(args.strings.contains("-usb"), "the board's controller comes back, not UTM's USB support")
+    }
+
+    /// With USB support on, `-usb` builds the controller and the machine keeps the
+    /// properties it had.
+    func testMac99UsbSupportOnKeepsMachineProperties() throws {
+        let config = configuration(architecture: .ppc, target: QEMUTarget_ppc.mac99)
+        config.input.usbBusSupport = .usb2_0
+        let args = arguments(config)
+        let machine = try XCTUnwrap(args.values(of: "-machine").first)
+        XCTAssertEqual(QEMUArgumentList.options(machine), ["mac99", "via=pmu"], machine)
+        XCTAssertTrue(args.strings.contains("-usb"), "\(args.strings)")
+    }
+
+    /// A machine property the user wrote is kept as written, as for the other machines.
+    func testMac99KeepsExplicitUsbMachineProperty() throws {
+        let config = configuration(architecture: .ppc, target: QEMUTarget_ppc.mac99)
+        config.input.usbBusSupport = .disabled
+        config.qemu.machinePropertyOverride = "usb=off"
+        let machine = try XCTUnwrap(arguments(config).values(of: "-machine").first)
+        XCTAssertEqual(QEMUArgumentList.options(machine), ["mac99", "usb=off", "via=pmu"], machine)
+    }
+
+    /// No other PowerPC board gets a usb machine property. g3beige is the default machine
+    /// and stays as it was (#8233).
+    func testOtherPowerPCBoardsGetNoUsbMachineProperty() throws {
+        let targets: [(QEMUArchitecture, any QEMUTarget)] = QEMUTarget_ppc.allCases.map { (.ppc, $0) } + QEMUTarget_ppc64.allCases.map { (.ppc64, $0) }
+        for (architecture, target) in targets where target.rawValue != QEMUTarget_ppc.mac99.rawValue {
+            let config = configuration(architecture: architecture, target: target)
+            config.input.usbBusSupport = .disabled
+            let machine = try XCTUnwrap(arguments(config).values(of: "-machine").first)
+            XCTAssertFalse(QEMUArgumentList.options(machine).contains { $0.hasPrefix("usb=") },
+                           "\(architecture) \(target.rawValue): \(machine)")
+        }
+    }
+
     // MARK: PowerPC CPU count
 
     /// The PowerPC boards that QEMU limits to one CPU, under both PowerPC architectures.

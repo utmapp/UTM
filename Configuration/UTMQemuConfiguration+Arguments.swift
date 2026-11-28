@@ -706,6 +706,11 @@ import Virtualization // for getting network interfaces
         }
         if isClassicMacNewWorld {
             properties = properties.appendingDefaultPropertyName("via", value: "pmu")
+            // Mac OS 9 needs the board's USB controller even with USB support off, and
+            // -nodefaults leaves it out unless the machine enables it (#8233)
+            if !isUsbUsed {
+                properties = properties.appendingDefaultPropertyName("usb", value: "on")
+            }
         }
         return properties
     }
