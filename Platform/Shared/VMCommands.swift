@@ -23,12 +23,12 @@ struct VMCommands: Commands {
     var body: some Commands {
         #if !WITH_REMOTE // FIXME: implement remote feature
         CommandGroup(replacing: .newItem) {
-            Button(action: { NotificationCenter.default.post(name: NSNotification.NewVirtualMachine, object: nil) }, label: {
+            LibraryCommandButton(notification: NSNotification.NewVirtualMachine) {
                 Text("New…")
-            }).keyboardShortcut(KeyEquivalent("n"))
-            Button(action: { NotificationCenter.default.post(name: NSNotification.OpenVirtualMachine, object: nil) }, label: {
+            }.keyboardShortcut(KeyEquivalent("n"))
+            LibraryCommandButton(notification: NSNotification.OpenVirtualMachine) {
                 Text("Open…")
-            }).keyboardShortcut(KeyEquivalent("o"))
+            }.keyboardShortcut(KeyEquivalent("o"))
         }
         #endif
         SidebarCommands()
@@ -56,6 +56,48 @@ struct VMCommands: Commands {
         openURL(URL(string: url)!)
     }
 }
+
+/// A command handled by the library window. On macOS 13 and later the library window is opened
+/// first, since it may have been closed while UTM kept running for a VM (#3632).
+private struct LibraryCommandButton<Label: View>: View {
+    let notification: NSNotification.Name
+    @ViewBuilder let label: () -> Label
+
+    var body: some View {
+        #if os(macOS)
+        if #available(macOS 13, *) {
+            OpeningLibraryButton(notification: notification, label: label)
+        } else {
+            postingButton
+        }
+        #else
+        postingButton
+        #endif
+    }
+
+    private var postingButton: some View {
+        Button(action: { NotificationCenter.default.post(name: notification, object: nil) }, label: label)
+    }
+}
+
+#if os(macOS)
+@available(macOS 13, *)
+private struct OpeningLibraryButton<Label: View>: View {
+    @Environment(\.openWindow) private var openWindow
+    let notification: NSNotification.Name
+    let label: () -> Label
+
+    var body: some View {
+        Button(action: {
+            openWindow(id: "home")
+            // a library window that was closed only receives notifications once it has appeared
+            DispatchQueue.main.async {
+                NotificationCenter.default.post(name: notification, object: nil)
+            }
+        }, label: label)
+    }
+}
+#endif
 
 extension NSNotification {
     static let NewVirtualMachine = NSNotification.Name("NewVirtualMachine")

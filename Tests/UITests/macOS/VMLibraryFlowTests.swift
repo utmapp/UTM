@@ -185,4 +185,31 @@ final class VMLibraryFlowTests: UTMUITestCase {
         }
         element(UTMAccessibilityID.Settings.cancel).click()
     }
+
+    /// New… and Open… in the File menu bring back the library window when it was closed while
+    /// UTM kept running, as it does for a running VM (#3632: both did nothing).
+    func testNewAndOpenReopenTheClosedLibraryWindow() throws {
+        try XCTSkipUnless(ProcessInfo.processInfo.isOperatingSystemAtLeast(OperatingSystemVersion(majorVersion: 13, minorVersion: 0, patchVersion: 0)), "the library window can be opened again on macOS 13 and later only")
+        app.terminate()
+        app.launchArguments += ["-KeepRunningAfterLastWindowClosed", "<true/>"]
+        app.launch()
+        let newVM = element(UTMAccessibilityID.Library.newVM)
+
+        app.typeKey("w", modifierFlags: .command)
+        XCTAssertTrue(newVM.waitForNonExistence(timeout: 10), "the library window did not close")
+        app.menuBars.menuBarItems["File"].click()
+        app.menuBars.menuItems["New…"].click()
+        element(UTMAccessibilityID.Wizard.cancel).click()
+        XCTAssertTrue(newVM.waitForExistence(timeout: 10), "the library window is not back after the wizard")
+
+        app.typeKey("w", modifierFlags: .command)
+        XCTAssertTrue(newVM.waitForNonExistence(timeout: 10), "the library window did not close")
+        app.menuBars.menuBarItems["File"].click()
+        app.menuBars.menuItems["Open…"].click()
+        let panel = app.sheets.firstMatch
+        XCTAssertTrue(panel.waitForExistence(timeout: 10), "no open panel appeared")
+        app.typeKey(.escape, modifierFlags: [])
+        XCTAssertTrue(panel.waitForNonExistence(timeout: 10), "the open panel did not close")
+        XCTAssertTrue(newVM.waitForExistence(timeout: 10), "the library window is not back after the open panel")
+    }
 }
