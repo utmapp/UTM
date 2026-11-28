@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- VirtualIntelMac's root guest agent (opengl-guest-agent, MIT), started directly: VirtualIntelMac
+     starts it through its own installer bootstrap, which needs that app's machine records. -->
+<plist version="1.0"><dict>
+<key>Label</key><string>com.utmapp.intel-guest-agent</string>
+<key>ProgramArguments</key><array>
+<string>/Library/Application Support/Virtual Intel Mac/GuestTools/opengl-guest-agent</string>
+<string>--device</string>
+<string>/dev/cu.serial2</string>
+</array>
+<key>UserName</key><string>root</string>
+<key>RunAtLoad</key><true/>
+<key>KeepAlive</key><dict><key>SuccessfulExit</key><false/></dict>
+<key>ThrottleInterval</key><integer>10</integer>
+<key>StandardErrorPath</key><string>/var/log/UTMIntelGuestAgent.log</string>
+</dict></plist>

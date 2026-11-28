@@ -1,0 +1,44 @@
+name: Intel guest kits
+# Builds the Mac OS X Intel guest kits (guest-kit/intel) from VirtualIntelMac's pinned sources:
+# OpenCore disk + GuestTools.iso per guest, and the Mojave support disc. Nothing is built on
+# the host Mac; download the artifacts instead.
+on:
+  push:
+    branches: [ main ]
+    paths: [ 'guest-kit/**', .github/workflows/guest-kit.yml ]
+  workflow_dispatch:
+    inputs:
+      guests:
+        description: 'Space-separated: snowleopard lion mountainlion mavericks yosemite elcapitan sierra highsierra mojave'
+        default: 'snowleopard mavericks mojave'
+
+jobs:
+  kits:
+    runs-on: macos-15
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: guest-kit
+      - name: Python 3.12+
+        run: |
+          python3 -c 'import sys; sys.exit(sys.version_info < (3, 12))' || brew install python@3.13
+      - name: Build
+        env:
+          GUESTS: ${{ inputs.guests || 'snowleopard mavericks mojave' }}
+        run: |
+          set -e
+          OUT="$RUNNER_TEMP/kits"; mkdir -p "$OUT"
+          for g in $GUESTS; do
+            if [ "$g" = mojave ]; then
+              ./guest-kit/intel/build-mojave-kit.sh "$OUT/mojave"
+            else
+              ./guest-kit/intel/build-kit.sh "$g" "$OUT/intel-$g"
+            fi
+          done
+          ls -lR "$OUT" | head -100
+      - uses: actions/upload-artifact@v4
+        with:
+          name: guest-kits
+          path: ${{ runner.temp }}/kits
+          if-no-files-found: error

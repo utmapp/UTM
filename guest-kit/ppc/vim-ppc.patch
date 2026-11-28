@@ -1,0 +1,96 @@
+diff --git a/Source/tools/guest-clipboard.m b/Source/tools/guest-clipboard.m
+index 000adac..cdd8c9a 100644
+--- a/Source/tools/guest-clipboard.m
++++ b/Source/tools/guest-clipboard.m
+@@ -21,6 +21,9 @@
+ #include <sys/select.h>
+ #import "guest-console-state.h"
+ #import "guest-clipboard-publication.h"
++#if UTM_PPC_GUEST
++#import "opengl-guest-machine.h"
++#endif
+ #if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 1060
+ #include <mach/mach_time.h>
+ #define NSPasteboardTypeString NSStringPboardType
+@@ -51,10 +54,16 @@ static NSString *ConsoleFinderPID(uid_t uid){
+ static NSDictionary *ClipboardDevices(BOOL powerOnly) {
+ #ifdef VIM_OPENGL_GUEST
+     if(powerOnly)return nil;
++#if UTM_PPC_GUEST
++    // UTM PowerPC Mac guests: the clipboard's PCI serial port is in slot 0x1e.
++    if(!VIMOpenGLGuestMachine())return nil;
++    return @{@"Callout":@"/dev/cu.pci-serial30",@"Dialin":@"/dev/tty.pci-serial30"};
++#else
+     io_service_t guard=IOServiceGetMatchingService(MACH_PORT_NULL,IOServiceMatching("VMsvga2"));if(!guard)return nil;IOObjectRelease(guard);
+     // COM1 is dedicated to clipboard on these guests; COM2 remains root-only
+     // QGA. No raw network listener, second QGA reader or graphics traffic.
+     return @{@"Callout":@"/dev/cu.serial1",@"Dialin":@"/dev/tty.serial1"};
++#endif
+ #else
+     // A short basename avoids IOSerialBSDClient's bounded device-name limit.
+     // Discover the BSD suffix instead of depending on a specific port index.
+diff --git a/Source/tools/opengl-guest-agent.m b/Source/tools/opengl-guest-agent.m
+index f6c2b6c..06dd060 100644
+--- a/Source/tools/opengl-guest-agent.m
++++ b/Source/tools/opengl-guest-agent.m
+@@ -300,7 +300,16 @@ int main(int argc,char **argv) {@autoreleasepool {
+ #if VIM_RECOVERY_CONTROL
+     startService=argc==2&&!strcmp(argv[1],"--start-recovery-service");
+ #endif
+-    if(!startService&&(argc!=3||strcmp(argv[1],"--device")||strcmp(argv[2],"/dev/cu.serial2")))return 64;
++#if UTM_PPC_GUEST
++    // UTM PowerPC Mac guests: the agent's PCI serial port is in slot 0x1d (Apple16X50Serial names it
++    // by the decimal PCI device number).
++#define UTM_AGENT_CALLOUT "/dev/cu.pci-serial29"
++#define UTM_AGENT_DIALIN "/dev/tty.pci-serial29"
++#else
++#define UTM_AGENT_CALLOUT "/dev/cu.serial2"
++#define UTM_AGENT_DIALIN "/dev/tty.serial2"
++#endif
++    if(!startService&&(argc!=3||strcmp(argv[1],"--device")||strcmp(argv[2],UTM_AGENT_CALLOUT)))return 64;
+     NSString *version=[[NSDictionary dictionaryWithContentsOfFile:@"/System/Library/CoreServices/SystemVersion.plist"] objectForKey:@"ProductVersion"];
+     // Do not allow this guest root service to be run on a host/reference Mac.
+ #if VIM_RECOVERY_CONTROL
+@@ -338,7 +347,7 @@ int main(int argc,char **argv) {@autoreleasepool {
+     attributes.c_cflag&=~(CCTS_OFLOW|CRTS_IFLOW);attributes.c_cc[VMIN]=1;attributes.c_cc[VTIME]=0;
+     if(tcsetattr(fd,TCSANOW,&attributes))return StartupError("serial callout configuration",69);
+     // The callout and dial-in paths alias the same UART. Protect both.
+-    if(chown("/dev/tty.serial2",0,0)||chmod("/dev/tty.serial2",0600))return StartupError("serial dial-in permissions",69);
++    if(chown(UTM_AGENT_DIALIN,0,0)||chmod(UTM_AGENT_DIALIN,0600))return StartupError("serial dial-in permissions",69);
+     NSMutableData *pending=[NSMutableData data];NSMutableDictionary *tasks=[NSMutableDictionary dictionary],*files=[NSMutableDictionary dictionary];
+     for(;;){@autoreleasepool {
+         unsigned char bytes[4096];ssize_t count=read(fd,bytes,sizeof(bytes));
+diff --git a/Source/tools/opengl-guest-machine.h b/Source/tools/opengl-guest-machine.h
+index f83bb8d..90fc3d7 100644
+--- a/Source/tools/opengl-guest-machine.h
++++ b/Source/tools/opengl-guest-machine.h
+@@ -7,9 +7,14 @@
+ static inline BOOL VIMGuestHasPCIDevice(unsigned short vendorID,unsigned short deviceID){
+     CFMutableDictionaryRef match=IOServiceMatching("IOPCIDevice");
+     if(!match)return NO;
++#if UTM_PPC_GUEST
++    // UTM: PCI properties are native-endian 32-bit words, big-endian on PowerPC.
++    const UInt32 vendor[]={vendorID},device[]={deviceID};
++#else
+     const unsigned char vendor[]={vendorID&255,vendorID>>8,0,0},device[]={deviceID&255,deviceID>>8,0,0};
+-    CFDataRef vendorData=CFDataCreate(NULL,vendor,sizeof(vendor));
+-    CFDataRef deviceData=CFDataCreate(NULL,device,sizeof(device));
++#endif
++    CFDataRef vendorData=CFDataCreate(NULL,(const UInt8 *)vendor,sizeof(vendor));
++    CFDataRef deviceData=CFDataCreate(NULL,(const UInt8 *)device,sizeof(device));
+     const void *keys[]={CFSTR("vendor-id"),CFSTR("device-id")};
+     const void *values[]={vendorData,deviceData};
+     CFDictionaryRef properties=CFDictionaryCreate(NULL,keys,values,2,
+@@ -19,7 +24,12 @@ static inline BOOL VIMGuestHasPCIDevice(unsigned short vendorID,unsigned short d
+     io_service_t service=IOServiceGetMatchingService(kIOMasterPortDefault,match);
+     if(!service)return NO;IOObjectRelease(service);return YES;
+ }
++#if UTM_PPC_GUEST
++// UTM PowerPC Mac guests: the PCI serial ports UTM adds for these helpers (QEMU pci-serial).
++static inline BOOL VIMOpenGLGuestMachine(void){return VIMGuestHasPCIDevice(0x1b36,0x0002);}
++#else
+ static inline BOOL VIMOpenGLGuestMachine(void){return VIMGuestHasPCIDevice(0x15ad,0x0405);}
++#endif
+ static inline BOOL VIMModernSetupGuestMachine(void){
+     // QEMU's existing control transport, independent of VGA/PVG selection.
+     // Exact machine/volume authorization is still required before mutation.

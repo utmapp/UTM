@@ -1,0 +1,254 @@
+diff --git a/Source/scripts/build-opengl-kernel.py b/Source/scripts/build-opengl-kernel.py
+index 94f2b97f..c31e8b1e 100644
+--- a/Source/scripts/build-opengl-kernel.py
++++ b/Source/scripts/build-opengl-kernel.py
+@@ -53,13 +53,16 @@ def main():
+     p.add_argument('--binutils',type=Path,help='Explicit assembler/linker directory for the period GCC driver')
+     p.add_argument('--output',type=Path,required=True)
+     p.add_argument('--audio-only',action='store_true',help='Build the vendored VoodooHDA against the same explicit period SDK')
++    # UTM: build for an older guest with a later SDK when the available period SDK
++    # lacks the guest's real kernel ABI (e.g. Sierra's setGammaTable overload).
++    p.add_argument('--guest-version',help='Target guest version (default: the SDK version)')
+     p.add_argument('--accelerator-only',action='store_true',help='Build only VMsvga2Accel for a graphics-only firmware iteration')
+     a=p.parse_args()
+     if a.audio_only and a.accelerator_only:p.error('Choose audio or the graphics accelerator, not both')
+     a.sdk=a.sdk.resolve();a.cc=a.cc.resolve();a.output=a.output.resolve()
+     if a.output.exists():p.error('Use a new output directory')
+     settings=plistlib.loads((a.sdk/'SDKSettings.plist').read_bytes())
+-    version=settings['Version']
++    version=a.guest_version or settings['Version']
+     if version not in ('10.4','10.5','10.6','10.7','10.8','10.9','10.10','10.11','10.12','10.13'):p.error('Explicitly supported kernel SDKs: 10.4 through 10.13')
+     relocatable=version in ('10.4','10.5')
+     architecture='i386' if relocatable else 'x86_64'
+@@ -125,7 +128,7 @@ def main():
+         configs=objects[target['buildConfigurationList']]['buildConfigurations']
+         configuration='Release' if a.audio_only else 'ReleaseLeo' if relocatable else 'ReleaseSnowLeo'
+         config=next(objects[key]['buildSettings'] for key in configs if objects[key]['name']==configuration)
+-        flags=common+(config['OTHER_CFLAGS'] if a.audio_only else ['-D'+value for value in config['GCC_PREPROCESSOR_DEFINITIONS']])
++        flags=common+(config['OTHER_CFLAGS'] if a.audio_only else ['-D'+value for value in config['GCC_PREPROCESSOR_DEFINITIONS'] if value!='VECTORIZE'])
+         work=a.output/'Objects'/name;work.mkdir(parents=True)
+         inputs=[]
+         for phase in target['buildPhases']:
+@@ -146,7 +149,11 @@ def main():
+             f'KMOD_EXPLICIT_DECL({identifier},"{module_version}",_start,_stop)\n'
+             '__private_extern__ kmod_start_func_t *_realmain = 0;\n'
+             '__private_extern__ kmod_stop_func_t *_antimain = 0;\n'
+-            '__private_extern__ int _kext_apple_cc = __APPLE_CC__;\n')
++            '__private_extern__ int _kext_apple_cc = __APPLE_CC__;\n'
++            # UTM: newer clang lowers zero fills to __bzero, which period kernels
++            # do not export; route it to the exported bzero (built with -fno-builtin).
++            '__private_extern__ void __bzero(void *p, unsigned long n)\n'
++            '{ extern void bzero(void *, unsigned long); bzero(p, n); }\n')
+         metadata=work/'module.o';run([a.cc,*flags,'-c',module,'-o',metadata])
+         bundle=a.output/(name+'.kext')/'Contents';(bundle/'MacOS').mkdir(parents=True)
+         # The supplied 9L30 IOGraphicsFamily is MH_OBJECT/i386. Darwin9
+diff --git a/Source/vendor/source/VMsvga2/FB/VMsvga2.cpp b/Source/vendor/source/VMsvga2/FB/VMsvga2.cpp
+index 1661fedd..17b14567 100644
+--- a/Source/vendor/source/VMsvga2/FB/VMsvga2.cpp
++++ b/Source/vendor/source/VMsvga2/FB/VMsvga2.cpp
+@@ -146,7 +146,7 @@ DisplayModeEntry const* CLASS::GetDisplayMode(IODisplayModeID displayMode)
+ {
+ 	if (displayMode == CUSTOM_MODE_ID)
+ 		return &customMode;
+-	if (displayMode >= 1 && displayMode <= NUM_DISPLAY_MODES)
++	if (displayMode >= 1 && displayMode <= NUM_TABLE_MODES)
+ 		return &modeList[displayMode - 1];
+ 	LogPrintf(1, "%s: Bad mode ID=%d\n", __FUNCTION__, FMT_D(displayMode));
+ 	return 0;
+@@ -410,7 +410,12 @@ IOReturn CLASS::getDisplayModes(IODisplayModeID* allDisplayModes)
+ 	LogPrintf(2, "%s: \n", __FUNCTION__);
+ 	if (!allDisplayModes)
+ 		return kIOReturnBadArgument;
+-	if (m_custom_switch) {
++	// UTM: a native panel that keeps its custom mode (Lion+ large scanout)
++	// never sends the second hotplug that would republish the full list, so
++	// publish it already in the switch's own hotplug: the custom mode plus
++	// the table. Otherwise CoreGraphics keeps a one-mode list for good and
++	// System Preferences -> Displays cannot switch to another resolution.
++	if (m_custom_switch && !fullListDuringSwitch()) {
+ 		*allDisplayModes = CUSTOM_MODE_ID;
+ 		return kIOReturnSuccess;
+ 	}
+@@ -421,7 +426,7 @@ IOReturn CLASS::getDisplayModes(IODisplayModeID* allDisplayModes)
+ IOItemCount CLASS::getDisplayModeCount()
+ {
+ 	IOItemCount r;
+-	r = m_custom_switch ? 1 : m_num_active_modes;
++	r = (m_custom_switch && !fullListDuringSwitch()) ? 1 : m_num_active_modes;
+ 	LogPrintf(3, "%s: mode count=%u\n", __FUNCTION__, FMT_U(r));
+ 	return r;
+ }
+@@ -586,10 +591,13 @@ IOReturn CLASS::setAttribute(IOSelect attribute, uintptr_t value)
+ 		LogPrintf(2, "%s: attr=%s value=%#08lx ret=%#08x\n",
+ 				  __FUNCTION__, &attr[0], value, r);
+ 	}
++	// UTM: with the full list published, WindowServer may commit another
++	// mode first (the display agent selects the 2x custom mode after). Finish
++	// the switch on uncapture anyway so CustomMode's wait never blocks.
+ 	if (attribute == kIOCapturedAttribute &&
+ 		!value &&
+ 		m_custom_switch == 1U &&
+-		m_display_mode == CUSTOM_MODE_ID) {
++		(m_display_mode == CUSTOM_MODE_ID || fullListDuringSwitch())) {
+ 		CustomSwitchStepSet(keepCustomPanelMode() ? 0U : 2U);
+ 	}
+ 	if (attribute==kIOCapturedAttribute && m_panel_interrupt) {
+@@ -689,7 +697,7 @@ IOReturn CLASS::connectFlags(IOIndex connectIndex, IODisplayModeID displayMode,
+ 	// bits with this result. Inheriting Unsupported loses the default bit:
+ 	// IODisplay then supplies only Valid | Safe for every mode.
+ 	*flags = (mode->flags & kDisplayModeSafetyFlags) & ~kDisplayModeDefaultFlag;
+-	if (displayMode == m_panel_mode)
++	if (displayMode == defaultPanelMode())
+ 		*flags |= kDisplayModeDefaultFlag;
+ 	return kIOReturnSuccess;
+ }
+@@ -723,13 +731,17 @@ IOReturn CLASS::getInformationForDisplayMode(IODisplayModeID displayMode, IODisp
+ 		// This virtual panel has a fixed driver-owned native preset, not a
+ 		// sensed external timing. Matching IOKit otherwise revalidates the
+ 		// EDID-less preset and drops its default bit during mode-list build.
+-		if (displayMode==m_panel_mode)info->flags|=kDisplayModeDefaultFlag|kDisplayModeBuiltInFlag;
++		if (displayMode==defaultPanelMode())info->flags|=kDisplayModeDefaultFlag|kDisplayModeBuiltInFlag;
+ 		// Native 11G63 MPIndexToMode/MPModeDescription already consume this
+ 		// exact bit, although Apple's older 10.7 SDK omits its declaration.
+ 		// It becomes the public kDisplayModeValidForHiResFlag in the 10.8
+ 		// headers. Keep the same mode metadata on every supported guest.
+ 		const UInt32 validForHiResFlag=0x00800000;
+-		if (displayMode==CUSTOM_MODE_ID && m_panel_scale==2)
++		// UTM: on a HiDPI panel every mode of at least 2048x1440 pixels is
++		// also a Retina mode ("looks like" half its size), not only the
++		// host-requested custom mode, so Displays' Scaled choices switch.
++		if (m_panel_scale==2 && (displayMode==CUSTOM_MODE_ID ||
++			(dme->width>=2048U && dme->height>=1440U)))
+ 			info->flags|=validForHiResFlag;
+ 	}
+ 	LogPrintf(2, "%s: mode ID=%d, max depth=%d, wxh=%ux%u, flags=%#x\n", __FUNCTION__,
+@@ -870,6 +882,19 @@ bool CLASS::hasDDCConnect(IOIndex connectIndex)
+ #pragma mark Custom Mode Methods
+ #pragma mark -
+ 
++// UTM: see getDisplayModes.
++bool CLASS::fullListDuringSwitch() const
++{
++	return m_panel_mode && keepCustomPanelMode();
++}
++
++// UTM: once the host requested a panel size, that custom mode is the
++// display's default (preferred) mode, not the boot panel.
++IODisplayModeID CLASS::defaultPanelMode() const
++{
++	return (m_panel_generation && fullListDuringSwitch()) ? CUSTOM_MODE_ID : m_panel_mode;
++}
++
+ bool CLASS::keepCustomPanelMode() const
+ {
+ 	// The synthetic panel keeps the chosen custom mode in its mode list.
+@@ -1220,10 +1245,29 @@ bool CLASS::start(IOService* provider)
+ 	 *   ((modeList[i].width + 7U) & -8) * modeList[i].height <= (1U << 22)
+ 	 *   {limiting to GFB area <= 16MiB}
+ 	 */
+-	for (uint32_t i = 0U; i != NUM_DISPLAY_MODES; ++i)
++	/*
++	 * UTM: a HiDPI native panel (scale 2) lists the 2x-only entries, so
++	 * CoreGraphics offers several Retina sizes instead of the single
++	 * host-requested one. They replace six uncommon 1x sizes to keep
++	 * m_modes (shared class layout) at NUM_DISPLAY_MODES slots.
++	 */
++	{
++	bool hidpiPanel = svga.ReadReg(VIM_PANEL_CAPABILITIES_REGISTER) == VIM_PANEL_MAGIC &&
++		svga.ReadReg(VIM_PANEL_SCALE_REGISTER) == 2U;
++	for (uint32_t i = 0U; i != NUM_TABLE_MODES && m_num_active_modes != NUM_DISPLAY_MODES; ++i) {
++		bool hidpiOnly = i >= FIRST_HIDPI_TABLE_MODE;
++		bool rare1x = (modeList[i].width == 1152U && modeList[i].height != 864U) ||
++			modeList[i].width == 1366U || modeList[i].width == 1376U ||
++			modeList[i].width == 1400U || modeList[i].width == 2360U;
++		if (hidpiOnly ? !hidpiPanel : (hidpiPanel && rare1x))
++			continue;
++		if (static_cast<uint64_t>(modeList[i].width) * modeList[i].height * 4U > svga.getPrimaryScanoutBytes())
++			continue;
+ 		if (modeList[i].width <= max_w &&
+ 			modeList[i].height <= max_h)
+ 			m_modes[m_num_active_modes++] = i + 1U;
++	}
++	}
+ 	LogPrintf(3, "%s: Display mode count = %u: %ux%u.\n", __FUNCTION__, m_num_active_modes, max_w, max_h);
+ 	if (m_num_active_modes <= 2U) {
+ 		LogPrintf(1, "%s: Display mode count invalid %u.\n", __FUNCTION__, m_num_active_modes);
+diff --git a/Source/vendor/source/VMsvga2/FB/VMsvga2.h b/Source/vendor/source/VMsvga2/FB/VMsvga2.h
+index d3a9dff1..7833f8d1 100644
+--- a/Source/vendor/source/VMsvga2/FB/VMsvga2.h
++++ b/Source/vendor/source/VMsvga2/FB/VMsvga2.h
+@@ -144,6 +144,8 @@ private:
+ 	void CustomSwitchStepWait(uint32_t value);
+ 	void CustomSwitchStepSet(uint32_t value);
+ 	bool keepCustomPanelMode() const;
++	bool fullListDuringSwitch() const;	// UTM (non-virtual: no layout change)
++	IODisplayModeID defaultPanelMode() const;
+ 	void EmitConnectChangedEvent();
+ 	void RestoreAllModes();
+ 	static void _RestoreAllModes(thread_call_param_t param0, thread_call_param_t param1);
+diff --git a/Source/vendor/source/VMsvga2/FB/VMsvga2Panel.inc b/Source/vendor/source/VMsvga2/FB/VMsvga2Panel.inc
+index 95e9de1e..6a8a8f4e 100644
+--- a/Source/vendor/source/VMsvga2/FB/VMsvga2Panel.inc
++++ b/Source/vendor/source/VMsvga2/FB/VMsvga2Panel.inc
+@@ -23,6 +23,8 @@ void CLASS::configureNativePanel(uint32_t max_width,uint32_t max_height)
+     setProperty("VIMNativePanelWidth",static_cast<uint64_t>(width),32U);
+     setProperty("VIMNativePanelHeight",static_cast<uint64_t>(height),32U);
+     setProperty("VIMNativePanelScale",static_cast<uint64_t>(scale),32U);
++    // UTM: marks the UTM build of this driver (Retina mode list) in the IORegistry.
++    setProperty("UTMDisplayModeCount",static_cast<uint64_t>(m_num_active_modes),32U);
+ }
+ 
+ void CLASS::setupNativePanelInterrupt(IOService* provider)
+diff --git a/Source/vendor/source/VMsvga2/FB/common_fb.h b/Source/vendor/source/VMsvga2/FB/common_fb.h
+index ad37920a..c959e744 100644
+--- a/Source/vendor/source/VMsvga2/FB/common_fb.h
++++ b/Source/vendor/source/VMsvga2/FB/common_fb.h
+@@ -35,7 +35,11 @@
+ #ifndef __VMSVGA2_COMMON_FB_H__
+ #define __VMSVGA2_COMMON_FB_H__
+ 
+-#define NUM_DISPLAY_MODES 26
++#define NUM_DISPLAY_MODES 26	/* active-mode slots (class layout, shared with VMsvga2Accel) */
++/* UTM: 2x-only entries appended after the 26 original modes. A HiDPI panel
++ * activates them in place of six uncommon 1x sizes, so at most 26 are active. */
++#define NUM_TABLE_MODES 32
++#define FIRST_HIDPI_TABLE_MODE 26
+ #define CUSTOM_MODE_ID 1
+ 
+ #ifdef __cplusplus
+@@ -56,7 +60,7 @@ struct CustomModeData
+ 	unsigned height;
+ };
+ 
+-extern DisplayModeEntry const modeList[NUM_DISPLAY_MODES] __attribute__((visibility("hidden")));
++extern DisplayModeEntry const modeList[NUM_TABLE_MODES] __attribute__((visibility("hidden")));
+ 
+ extern int logLevelFB;
+ 
+diff --git a/Source/vendor/source/VMsvga2/FB/modes.cpp b/Source/vendor/source/VMsvga2/FB/modes.cpp
+index 01e9ff5d..1897745e 100644
+--- a/Source/vendor/source/VMsvga2/FB/modes.cpp
++++ b/Source/vendor/source/VMsvga2/FB/modes.cpp
+@@ -35,7 +35,7 @@
+ #include <IOKit/graphics/IOGraphicsTypes.h>
+ #include "common_fb.h"
+ 
+-DisplayModeEntry const modeList[NUM_DISPLAY_MODES] =
++DisplayModeEntry const modeList[NUM_TABLE_MODES] =
+ {
+ 	 800,  600, kDisplayModeValidFlag | kDisplayModeSafeFlag,	// 4x3 Note: reserved for Custom Mode
+ 	 800,  600, kDisplayModeValidFlag | kDisplayModeSafeFlag,	// 4x3
+@@ -62,5 +62,12 @@ DisplayModeEntry const modeList[NUM_DISPLAY_MODES] =
+ 	2048, 1536, kDisplayModeValidFlag | kDisplayModeSafeFlag,	// 4x3
+ 	2360, 1770, kDisplayModeValidFlag | kDisplayModeSafeFlag,	// 4x3 Note: was 2364x1773
+ 	2560, 1440, kDisplayModeValidFlag | kDisplayModeSafeFlag,	// 16x9
+-	2560, 1600, kDisplayModeValidFlag | kDisplayModeSafeFlag	// 8x5
++	2560, 1600, kDisplayModeValidFlag | kDisplayModeSafeFlag,	// 8x5
++	// UTM: HiDPI panels only (2x of 1440x900 .. 1920x1200); need the large scanout
++	2880, 1800, kDisplayModeValidFlag | kDisplayModeSafeFlag,	// 8x5
++	3200, 1800, kDisplayModeValidFlag | kDisplayModeSafeFlag,	// 16x9
++	3200, 2000, kDisplayModeValidFlag | kDisplayModeSafeFlag,	// 8x5
++	3360, 2100, kDisplayModeValidFlag | kDisplayModeSafeFlag,	// 8x5
++	3840, 2160, kDisplayModeValidFlag | kDisplayModeSafeFlag,	// 16x9
++	3840, 2400, kDisplayModeValidFlag | kDisplayModeSafeFlag	// 8x5
+ };

@@ -1,0 +1,80 @@
+name: PPC guest tools
+# Mac OS X PowerPC (Tiger/Leopard) guest helpers, cross-built on Linux with GCC/clang +
+# cctools-port + MacOSX10.4u SDK (ghcr.io/variantxyz/gcc-powerpc-apple-darwin8).
+on:
+  push:
+    branches: [ main ]
+    paths: [ 'guest-kit/ppc/**', .github/workflows/ppc-guest-tools.yml ]
+  workflow_dispatch:
+
+jobs:
+  tools:
+    runs-on: ubuntu-latest
+    container: ghcr.io/variantxyz/gcc-powerpc-apple-darwin8:build-gcc-14.2-MacOSXSDK10.4u
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: guest-kit/ppc
+      - name: Build
+        run: ./guest-kit/ppc/build-ppc-tools.sh "$RUNNER_TEMP/ppc-tools"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ppc-guest-tools
+          path: ${{ runner.temp }}/ppc-tools
+  kit:
+    needs: tools
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: guest-kit/ppc
+      - uses: actions/download-artifact@v4
+        with:
+          name: ppc-guest-tools
+          path: ${{ runner.temp }}/tools
+      - name: Mac OS 9 OpenGLLibrary
+        env:
+          GH_TOKEN: ${{ github.token }}
+          # QemuMacDrivers repository and branch that build the Mac OS 9 OpenGLLibrary and
+          # UTM RAVE Loader (workflow build-ndrv.yml); change them to use another source
+          DRIVERS_REPO: brunocastello/QemuMacDrivers
+          DRIVERS_BRANCH: os9-3d
+        run: |
+          set -e
+          # latest successful build of the OS 9 3D branch (public repo)
+          RUN=$(gh run list -R "$DRIVERS_REPO" -w build-ndrv.yml -b "$DRIVERS_BRANCH" -s success -L 1 --json databaseId -q '.[0].databaseId')
+          echo "QemuMacDrivers run $RUN"
+          gh run download "$RUN" -R "$DRIVERS_REPO" -n OpenGLLibrary-os9 -D "$RUNNER_TEMP/os9gl"
+          gh run download "$RUN" -R "$DRIVERS_REPO" -n RAVELoader-os9 -D "$RUNNER_TEMP/os9rave"
+          find "$RUNNER_TEMP/os9gl" "$RUNNER_TEMP/os9rave" -type f
+      - name: GuestTools.iso
+        run: |
+          set -e
+          ISO="$RUNNER_TEMP/iso"; mkdir -p "$ISO/Payload" "$RUNNER_TEMP/kit"
+          cp "$RUNNER_TEMP/tools/opengl-guest-agent" "$RUNNER_TEMP/tools/guest-clipboard" \
+             "$RUNNER_TEMP/tools/opengl-tiger-console" guest-kit/ppc/com.utmapp.ppc-guest-agent.plist "$ISO/Payload/"
+          chmod 755 "$ISO/Payload/opengl-guest-agent" "$ISO/Payload/guest-clipboard" "$ISO/Payload/opengl-tiger-console"
+          cp guest-kit/ppc/install.command "$ISO/Install.command"; chmod 755 "$ISO/Install.command"
+          cp guest-kit/ppc/README.md "$ISO/ReadMe.md"
+          cp "$RUNNER_TEMP/tools/LICENSE-VirtualIntelMac.txt" "$ISO/"
+          # Mac OS 9 3D: a real HFS file (resource fork, type shlb) plus the MacBinary
+          GL="$ISO/Mac OS 9 3D"; mkdir -p "$GL"
+          BIN=$(find "$RUNNER_TEMP/os9gl" -name OpenGLLibrary.bin | head -1)
+          python3 guest-kit/ppc/os9-3d/macbinary-to-hfs.py "$BIN" "$GL/OpenGLLibrary"
+          cp "$BIN" "$GL/OpenGLLibrary.bin"
+          RBIN=$(find "$RUNNER_TEMP/os9rave" -name UTMRAVELoader.bin | head -1)
+          python3 guest-kit/ppc/os9-3d/macbinary-to-hfs.py "$RBIN" "$GL/UTM RAVE Loader"
+          cp "$RBIN" "$GL/UTM RAVE Loader.bin"
+          cp guest-kit/ppc/os9-3d/ReadMe.txt "$GL/ReadMe.txt"
+          hdiutil makehybrid -quiet -hfs -iso -joliet -default-volume-name "UTM Guest Kit PPC" \
+            -o "$RUNNER_TEMP/kit/GuestTools.iso" "$ISO"
+          ls -la "$RUNNER_TEMP/kit"
+          # best effort: confirm the HFS file kept its resource fork and type
+          hdiutil attach -readonly -nobrowse -mountpoint "$RUNNER_TEMP/chk" "$RUNNER_TEMP/kit/GuestTools.iso" \
+            && { ls -lO@ "$RUNNER_TEMP/chk/Mac OS 9 3D" || true; xattr -l "$RUNNER_TEMP/chk/Mac OS 9 3D/OpenGLLibrary" "$RUNNER_TEMP/chk/Mac OS 9 3D/UTM RAVE Loader" || true; \
+                 hdiutil detach "$RUNNER_TEMP/chk" || true; } || echo "ISO verify skipped"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ppc-guest-kit
+          path: ${{ runner.temp }}/kit
+          if-no-files-found: error

@@ -1,0 +1,40 @@
+diff --git a/Source/PassthroughOpenGL/cgs-drawable.c b/Source/PassthroughOpenGL/cgs-drawable.c
+index 2ef9f247..78b7a3ba 100644
+--- a/Source/PassthroughOpenGL/cgs-drawable.c
++++ b/Source/PassthroughOpenGL/cgs-drawable.c
+@@ -1303,6 +1303,26 @@ static CGLError VIMTextureFromAcceleratorSurface(struct VIMContext *c,unsigned o
+     // the currently attached 1280x22 accelerator drawable. Earlier GL draws
+     // are still on the GPU; importing its stale CPU shadow loses them.
+     struct VIMCGSDrawable *source=c->drawable;
++    /* UTM: Quartz GL imports a window's own backing (e.g. the masked self-copy
++     * behind a pulsing default button) with the backing's padded allocation
++     * size, e.g. 496x192 for a 488x185 drawable at origin 0,0. Native GL
++     * renders that drawable inside the backing, so the texture is a live view
++     * of current GPU pixels. The live-view aliases below accept only sizes up
++     * to the drawable, so the padded request fell through to the stale CPU
++     * image (frozen pulse, text redrawn over itself). The padding is outside
++     * the drawable and never sampled: clamp the view to the drawable. */
++    uint32_t padded_view[7];int padded=0;
++    if(source && source->accelerator_surface && a[0]==(uint32_t)source->surface && a[1]==GL_TEXTURE_RECTANGLE_ARB &&
++       !source->region_view && !source->origin_x && !source->origin_y && !c->format->double_buffer &&
++       (a[3]>(uint32_t)source->width || a[4]>(uint32_t)source->height) &&
++       a[3]>=(uint32_t)source->width && a[4]>=(uint32_t)source->height &&
++       (uint64_t)a[3]<=(uint64_t)source->layout.width && (uint64_t)a[4]<=(uint64_t)source->layout.height &&
++       !getenv("VIM_GL_DISABLE_PADDED_SELF_VIEW")) {
++        for(unsigned i=0;i<5;++i)padded_view[i]=a[i];
++        padded_view[5]=operation==0x3e5?a[5]:0;padded_view[6]=operation==0x3e5?a[6]:0;
++        padded_view[3]=(uint32_t)source->width;padded_view[4]=(uint32_t)source->height;
++        a=padded_view;padded=1;
++    }
+     /* Native14F27 Intel: 3e5/GL_BACK on an actual double-buffered window is
+      * a LIVE destination texture, including unflushed writes and key300/1.
+      * ImageKit uses this for subpixel text. A CPU/front-buffer snapshot loses
+@@ -1348,7 +1368,7 @@ static CGLError VIMTextureFromAcceleratorSurface(struct VIMContext *c,unsigned o
+     if((operation==0x3e5 || operation==0x3e6 || operation==0x3e7) && source && source->accelerator_surface &&
+        (source->surface==1 || source->gpu_family_root ||
+         (!source->region_view && !source->origin_x && !source->origin_y &&
+-         source->width==(int)source->layout.width && source->height==(int)source->layout.height)) &&
++         ((source->width==(int)source->layout.width && source->height==(int)source->layout.height) || padded))) &&
+        source->unflipped && !c->format->double_buffer && (a[0]==(uint32_t)source->surface || a[0]==source->gpu_family_root) &&
+        (operation==0x3e6 || operation==0x3e7 || ((a[6]==0x400 || a[6]==0x404) && !mipmaps)) && a[1]==GL_TEXTURE_RECTANGLE_ARB &&
+        a[3]<=(uint32_t)source->width && a[4]<=(uint32_t)source->height &&
