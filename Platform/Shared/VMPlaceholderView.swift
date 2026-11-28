@@ -18,6 +18,18 @@ import SwiftUI
 
 struct VMPlaceholderView: View {
     var body: some View {
+        #if os(macOS)
+        if #available(macOS 26, *) {
+            VMPlaceholderViewMac()
+        } else {
+            legacyBody
+        }
+        #else
+        legacyBody
+        #endif
+    }
+
+    @ViewBuilder private var legacyBody: some View {
         if #available(iOS 16, macOS 13, *) {
             VMPlaceholderViewNew()
         } else {
@@ -25,6 +37,68 @@ struct VMPlaceholderView: View {
         }
     }
 }
+
+#if os(macOS)
+/// Welcome view in the style of macOS 26: the two main actions as standard buttons and the
+/// secondary ones as links, instead of the tiles shared with iOS.
+@available(macOS 26, *)
+fileprivate struct VMPlaceholderViewMac: View {
+    @EnvironmentObject private var data: UTMData
+    @Environment(\.openURL) private var openURL
+    @Environment(\.openWindow) private var openWindow
+
+    var body: some View {
+        VStack(spacing: 24) {
+            VStack(spacing: 12) {
+                Image(nsImage: NSApplication.shared.applicationIconImage)
+                    .resizable()
+                    .frame(width: 96, height: 96)
+                    .accessibilityHidden(true)
+                Title()
+            }
+            VStack(spacing: 10) {
+                Button {
+                    data.newVM()
+                } label: {
+                    Text(String.create)
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .accessibilityIdentifier(UTMAccessibilityID.Welcome.create)
+                Button {
+                    NotificationCenter.default.post(name: NSNotification.OpenVirtualMachine, object: nil)
+                } label: {
+                    Text(String.open)
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .accessibilityIdentifier(UTMAccessibilityID.Welcome.open)
+            }
+            .controlSize(.large)
+            .frame(minWidth: 260)
+            .fixedSize()
+            HStack(spacing: 20) {
+                Button(String.guide, systemImage: "book") {
+                    openURL(URL(string: "https://docs.getutm.app/basics/basics/")!)
+                }
+                .accessibilityIdentifier(UTMAccessibilityID.Welcome.guide)
+                Button(String.support, systemImage: "questionmark.circle") {
+                    openURL(URL(string: "https://docs.getutm.app/")!)
+                }
+                .accessibilityIdentifier(UTMAccessibilityID.Welcome.support)
+                Button(String.server, systemImage: "server.rack") {
+                    openWindow(id: "server")
+                }
+                .accessibilityIdentifier(UTMAccessibilityID.Welcome.server)
+            }
+            .buttonStyle(.borderless)
+            .foregroundStyle(.secondary)
+        }
+        .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
+#endif
 
 fileprivate struct VMPlaceholderViewOld: View {
     var body: some View {

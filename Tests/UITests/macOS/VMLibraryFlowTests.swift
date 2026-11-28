@@ -48,6 +48,35 @@ final class VMLibraryFlowTests: UTMUITestCase {
         element(UTMAccessibilityID.Wizard.cancel).click()
     }
 
+    /// The welcome view of macOS 26 keeps the actions of the tiles it replaces: Create opens the
+    /// wizard, Open asks for a VM to import and Server opens the server window. The guide and
+    /// support links open the default browser, so they are only checked to be there.
+    func testWelcomeViewButtonsOpenTheirScreens() throws {
+        try XCTSkipUnless(ProcessInfo.processInfo.isOperatingSystemAtLeast(OperatingSystemVersion(majorVersion: 26, minorVersion: 0, patchVersion: 0)), "the welcome view shows these buttons on macOS 26 and later only")
+        let create = element(UTMAccessibilityID.Welcome.create)
+        let shot = XCTAttachment(screenshot: app.windows.firstMatch.screenshot())
+        shot.name = "welcome"
+        shot.lifetime = .keepAlways
+        add(shot)
+        XCTAssertTrue(element(UTMAccessibilityID.Welcome.guide).isHittable)
+        XCTAssertTrue(element(UTMAccessibilityID.Welcome.support).isHittable)
+
+        create.click()
+        element(UTMAccessibilityID.Wizard.cancel).click()
+        XCTAssertTrue(app.descendants(matching: .any).matching(identifier: UTMAccessibilityID.Wizard.cancel).firstMatch.waitForNonExistence(timeout: 10), "the wizard did not close")
+
+        element(UTMAccessibilityID.Welcome.open).click()
+        let panel = app.sheets.firstMatch
+        XCTAssertTrue(panel.waitForExistence(timeout: 10), "no open panel appeared")
+        app.typeKey(.escape, modifierFlags: [])
+        XCTAssertTrue(panel.waitForNonExistence(timeout: 10), "the open panel did not close")
+
+        element(UTMAccessibilityID.Welcome.server).click()
+        let server = app.windows["UTM Server"].firstMatch
+        XCTAssertTrue(server.waitForExistence(timeout: 10), "the server window did not open")
+        server.buttons[XCUIIdentifierCloseWindow].click()
+    }
+
     /// Coming back to the hardware page keeps the machine the user picked: the macOS wizard
     /// builds a new page on every visit, which used to apply the default machine again.
     func testWizardKeepsTheMachineWhenComingBackToTheHardwarePage() {

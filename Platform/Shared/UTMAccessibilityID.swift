@@ -36,6 +36,14 @@ enum UTMAccessibilityID {
         }
     }
     
+    enum Welcome {
+        static let create = "utm.welcome.create"
+        static let open = "utm.welcome.open"
+        static let guide = "utm.welcome.guide"
+        static let support = "utm.welcome.support"
+        static let server = "utm.welcome.server"
+    }
+    
     enum Details {
         static let run = "utm.details.run"
         static let stop = "utm.details.stop"
